@@ -1,0 +1,234 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Property {
+  id            String   @id @default(cuid())
+  mlsId         String   @unique
+  slug          String   @unique
+
+  address       String
+  city          String
+  state         String
+  zip           String
+
+  price         Int
+  beds          Float?
+  baths         Float?
+  sqft          Int?
+  lotSize       Float?
+  yearBuilt     Int?
+
+  propertyType  String
+  status        String
+
+  lat           Float
+  lng           Float
+
+  neighborhood  String?
+  subdivision   String?
+  schoolDistrict String?
+
+  description   String?
+
+  listingAgent  String?
+  listingOffice String?
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  photos        PropertyPhoto[]
+  priceHistory  PriceHistory[]
+  openHouses    OpenHouse[]
+
+  alertEvents   AlertEvent[]
+
+  @@index([city])
+  @@index([status])
+  @@index([price])
+  @@index([beds])
+  @@index([baths])
+  @@index([propertyType])
+  @@index([lat, lng])
+}
+
+model PropertyPhoto {
+  id         String   @id @default(cuid())
+  propertyId String
+  url        String
+  order      Int
+
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@index([propertyId])
+}
+
+model PriceHistory {
+  id         String   @id @default(cuid())
+  propertyId String
+  price      Int
+  event      String
+  date       DateTime
+
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@index([propertyId])
+  @@index([date])
+}
+
+model OpenHouse {
+  id         String   @id @default(cuid())
+  propertyId String
+  startTime  DateTime
+  endTime    DateTime
+
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@index([propertyId])
+  @@index([startTime])
+}
+
+// CORE USER (EMAIL OWNER)
+model User {
+  id              String   @id @default(cuid())
+  email           String   @unique
+
+  isUnsubscribed  Boolean  @default(false)
+  unsubscribedAt  DateTime?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  searches        SavedSearch[]
+  tokens          UnsubscribeToken[]
+  emailLogs       EmailLog[]
+
+  alertEvents     AlertEvent[]
+  alertQueue      AlertQueue[]
+
+  preferences     UserPreference?
+}
+
+// SAVED SEARCH (ALERT ENGINE)
+model SavedSearch {
+  id        String   @id @default(cuid())
+
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  city      String
+  minPrice  Int?
+  beds      Int?
+  type      String?
+
+  north     Float?
+  south     Float?
+  east      Float?
+  west      Float?
+
+  isActive  Boolean  @default(true)
+
+  createdAt DateTime @default(now())
+
+  unsubscribeTokens UnsubscribeToken[]
+}
+
+// TOKENIZED UNSUBSCRIBE LINKS
+model UnsubscribeToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+
+  searchId  String?
+  search    SavedSearch? @relation(fields: [searchId], references: [id])
+
+  createdAt DateTime @default(now())
+  usedAt    DateTime?
+}
+
+// EMAIL AUDIT LOG (CAN-SPAM)
+model EmailLog {
+  id        String   @id @default(cuid())
+
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  subject   String
+  type      String
+
+  sentAt    DateTime @default(now())
+}
+model AlertEvent {
+  id         String   @id @default(cuid())
+  userId     String
+  propertyId String
+  type       String   // "NEW_LISTING", "PRICE_DROP", etc.
+  sentAt     DateTime @default(now())
+
+  user       User     @relation(fields: [userId], references: [id])
+  property   Property @relation(fields: [propertyId], references: [id])
+
+  @@unique([userId, propertyId, type])
+  @@index([userId])
+  @@index([propertyId])
+}
+
+model AlertQueue {
+  id        String   @id
+  userId    String
+  listingId String?
+
+  status    String   @default("pending")
+  payload   Json?
+
+  sentAt    DateTime?
+  clickedAt DateTime?
+
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model UserPreference {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+
+  avgPrice  Int?
+  avgBeds   Float?
+
+  topCities String[] // Postgres array
+
+  updatedAt DateTime @updatedAt
+
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model CrmTask {
+  id            String   @id @default(uuid())
+  leadId        String   @map("leadid")
+  type          String
+  status        String
+  scheduledFor  DateTime @map("scheduledfor")
+  attempts      Int?
+  lastAttemptAt DateTime? @map("lastattemptat")
+  lockedAt      DateTime? @map("lockedat")
+  error         String?
+  createdAt     DateTime @default(now()) @map("createdat")
+
+  @@map("CRMTask")
+}
+
+model SellerLead {
+  id    String @id
+  city  String
+  beds  Int
+  price Int
+  reason String
+}

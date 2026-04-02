@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom price marker styling */
+.price-marker div {
+  white-space: nowrap;
+  font-family: system-ui;
+}
+
+.cluster-marker {
+  background: #111;
+  color: white;
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-weight: bold;
+  font-size: 12px;
+}
+
+.leaflet-container {
+  height: 100%;
+  width: 100%;
+}

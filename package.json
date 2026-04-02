@@ -1,0 +1,36 @@
+{
+  "name": "colorado-real-estate",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "build:workers": "tsc -p tsconfig.worker.json"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.101.0",
+    "bullmq": "^5.7.0",
+    "dotenv": "^17.3.1",
+    "ioredis": "^5.3.2",
+    "leaflet": "^1.9.4",
+    "next": "16.1.6",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-leaflet": "^4.2.1",
+    "recharts": "^3.8.1",
+    "resend": "^6.10.0",
+    "supercluster": "^8.0.1",
+    "typesense": "^3.0.5"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.2.2",
+    "@types/react": "19.2.14",
+    "autoprefixer": "^10.4.27",
+    "postcss": "^8.5.8",
+    "tailwindcss": "^4.2.2",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  }
+}
