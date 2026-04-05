@@ -1,13 +1,18 @@
-if (process.env.NEXT_PHASE === "phase-production-build") {
-  console.log("⛔ Skipping /api/search during build")
-  
-  export const GET = async () => new Response(JSON.stringify({ results: [] }))
-}
-
 export const dynamic = "force-dynamic"
 
-import { NextResponse } from 'next/server'
-import Typesense from 'typesense'
+export async function GET(req: Request) {
+
+  // ✅ HARD STOP DURING BUILD
+  if (process.env.NEXT_PHASE === "phase-production-build") {
+    console.log("⛔ Skipping /api/search during build")
+    return new Response(JSON.stringify({ results: [] }), {
+      status: 200,
+    })
+  }
+
+  import { NextResponse } from 'next/server'
+
+  import Typesense from 'typesense'
 
 const client = new Typesense.Client({
   nodes: [
