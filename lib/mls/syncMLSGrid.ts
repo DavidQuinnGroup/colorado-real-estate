@@ -10,6 +10,7 @@ type SyncOptions = {
 const USE_MOCK = process.env.USE_MOCK === "true";
 const RATE_DELAY_MS = Number(process.env.MLS_RATE_DELAY_MS || 1000);
 const PAGE_SIZE = 50;
+const MAX_PAGES = Number(process.env.MLS_MAX_PAGES || 1);
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -100,10 +101,10 @@ export async function syncMLSGrid({ maxRuntimeMs }: SyncOptions) {
     // =========================
     // HARD STOP: page limit (SAFETY)
     // =========================
-    if (page >= 100) {
-      console.log("⛔ Page limit reached (safety stop)");
-      break;
-    }
+    if (page >= MAX_PAGES) {
+  console.log(`⛔ Page limit reached (${MAX_PAGES}) — stopping`);
+  break;
+}
 
     // =========================
     // RATE LIMIT (CRITICAL)
