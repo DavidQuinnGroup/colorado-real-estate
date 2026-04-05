@@ -7,10 +7,18 @@ type SyncOptions = {
   maxRuntimeMs: number;
 };
 
-const USE_MOCK = process.env.USE_MOCK === "true";
-const RATE_DELAY_MS = Number(process.env.MLS_RATE_DELAY_MS || 1000);
-const PAGE_SIZE = 50;
-const MAX_PAGES = Number(process.env.MLS_MAX_PAGES || 1);
+function getEnvNumber(key: string, fallback: number) {
+  const value = process.env[key];
+  if (!value) return fallback;
+  const parsed = Number(value);
+  return isNaN(parsed) ? fallback : parsed;
+}
+
+function getEnvBool(key: string, fallback: boolean) {
+  const value = process.env[key];
+  if (value === undefined) return fallback;
+  return value === "true";
+}
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -19,9 +27,17 @@ function sleep(ms: number) {
 export async function syncMLSGrid({ maxRuntimeMs }: SyncOptions) {
   const startTime = Date.now();
 
-  console.log("🚀 MLS SYNC START");
+  // ✅ SAFE ENV ACCESS (RUNTIME ONLY)
+  const USE_MOCK = getEnvBool("USE_MOCK", true);
+  const RATE_DELAY_MS = getEnvNumber("MLS_RATE_DELAY_MS", 1000);
+  const PAGE_SIZE = 50;
+  const MAX_PAGES = getEnvNumber("MLS_MAX_PAGES", 1);
 
-  // ✅ Always checkpoint
+  console.log("🚀 MLS SYNC START", {
+    USE_MOCK,
+    MAX_PAGES,
+  });
+
   let lastSync = await getLastSync();
   if (!lastSync) {
     lastSync = new Date(0).toISOString();
@@ -31,7 +47,6 @@ export async function syncMLSGrid({ maxRuntimeMs }: SyncOptions) {
   let totalProcessed = 0;
 
   while (true) {
-    // ✅ HARD STOP: runtime guard
     if (Date.now() - startTime > maxRuntimeMs) {
       console.log("⛔ Max runtime reached — stopping sync");
       break;
@@ -41,15 +56,9 @@ export async function syncMLSGrid({ maxRuntimeMs }: SyncOptions) {
 
     let listings: any[] = [];
 
-    // =========================
-    // MOCK MODE (SAFE)
-    // =========================
     if (USE_MOCK) {
       listings = generateMockListings(PAGE_SIZE);
     } else {
-      // =========================
-      // LIVE MODE
-      // =========================
       listings = await fetchMLSPage({
         top: PAGE_SIZE,
         skip: page * PAGE_SIZE,
@@ -57,17 +66,12 @@ export async function syncMLSGrid({ maxRuntimeMs }: SyncOptions) {
       });
     }
 
-    // ✅ HARD STOP: no more data
     if (!listings || listings.length === 0) {
       console.log("✅ No more listings — ending sync");
       break;
     }
 
-    // =========================
-    // PROCESS LISTINGS (SERIAL)
-    // =========================
     for (const listing of listings) {
-      // runtime guard inside loop
       if (Date.now() - startTime > maxRuntimeMs) {
         console.log("⛔ Runtime exceeded during processing");
         break;
@@ -81,9 +85,6 @@ export async function syncMLSGrid({ maxRuntimeMs }: SyncOptions) {
       }
     }
 
-    // =========================
-    // CHECKPOINT AFTER EACH PAGE
-    // =========================
     const newestTimestamp =
       listings[listings.length - 1]?.ModificationTimestamp;
 
@@ -98,17 +99,11 @@ export async function syncMLSGrid({ maxRuntimeMs }: SyncOptions) {
 
     page++;
 
-    // =========================
-    // HARD STOP: page limit (SAFETY)
-    // =========================
     if (page >= MAX_PAGES) {
-  console.log(`⛔ Page limit reached (${MAX_PAGES}) — stopping`);
-  break;
-}
+      console.log(`⛔ Page limit reached (${MAX_PAGES}) — stopping`);
+      break;
+    }
 
-    // =========================
-    // RATE LIMIT (CRITICAL)
-    // =========================
     await sleep(RATE_DELAY_MS);
   }
 
