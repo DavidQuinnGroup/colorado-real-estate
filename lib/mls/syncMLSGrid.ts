@@ -1,76 +1,118 @@
-import { fetchMLSPage } from "./fetchMLSPage"
-import { upsertListing } from "./upsertListing"
-import { getLastSync, updateLastSync } from "./syncState"
-import { mockListings } from "./mockListings"
+import { upsertListing } from "./upsertListing";
+import { getLastSync, setLastSync } from "./syncState";
+import { fetchMLSPage } from "./fetchMLSPage";
+import { generateMockListings } from "./mockListings";
 
 type SyncOptions = {
-  maxRuntimeMs: number
-}
+  maxRuntimeMs: number;
+};
 
-const RATE_DELAY_MS = 900
-const BATCH_SIZE = 50
-
-export async function syncMLSGrid({ maxRuntimeMs }: SyncOptions) {
-  const start = Date.now()
-
-  const USE_MOCK = process.env.USE_MOCK === "true"
-
-  console.log("⚙️ Sync started")
-  console.log("MODE:", USE_MOCK ? "MOCK" : "LIVE")
-
-  let lastSync = await getLastSync()
-  let hasMore = true
-  let page = 0
-
-  while (hasMore) {
-    // ⛔ HARD STOP: runtime protection
-    if (Date.now() - start > maxRuntimeMs) {
-      console.log("⛔ Max runtime reached — exiting safely")
-      break
-    }
-
-    console.log(`📦 Fetching page ${page}`)
-
-    let listings: any[] = []
-
-    if (USE_MOCK) {
-      listings = mockListings.slice(page * BATCH_SIZE, (page + 1) * BATCH_SIZE)
-      hasMore = listings.length === BATCH_SIZE
-    } else {
-      const result = await fetchMLSPage({
-        lastSync,
-        top: BATCH_SIZE,
-        skip: page * BATCH_SIZE,
-      })
-
-      listings = result.listings
-      hasMore = result.hasMore
-    }
-
-    if (!listings.length) {
-      console.log("✅ No more listings")
-      break
-    }
-
-    for (const listing of listings) {
-      await upsertListing(listing)
-    }
-
-    console.log(`✅ Processed ${listings.length} listings`)
-
-    page++
-
-    // ⏱ RATE LIMIT (CRITICAL)
-    await sleep(RATE_DELAY_MS)
-  }
-
-  if (!USE_MOCK) {
-    await updateLastSync(new Date().toISOString())
-  }
-
-  console.log("🏁 Sync finished")
-}
+const USE_MOCK = process.env.USE_MOCK === "true";
+const RATE_DELAY_MS = Number(process.env.MLS_RATE_DELAY_MS || 1000);
+const PAGE_SIZE = 50;
 
 function sleep(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms))
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+export async function syncMLSGrid({ maxRuntimeMs }: SyncOptions) {
+  const startTime = Date.now();
+
+  console.log("🚀 MLS SYNC START");
+
+  // ✅ Always checkpoint
+  let lastSync = await getLastSync();
+  if (!lastSync) {
+    lastSync = new Date(0).toISOString();
+  }
+
+  let page = 0;
+  let totalProcessed = 0;
+
+  while (true) {
+    // ✅ HARD STOP: runtime guard
+    if (Date.now() - startTime > maxRuntimeMs) {
+      console.log("⛔ Max runtime reached — stopping sync");
+      break;
+    }
+
+    console.log(`📄 Fetching page ${page}`);
+
+    let listings: any[] = [];
+
+    // =========================
+    // MOCK MODE (SAFE)
+    // =========================
+    if (USE_MOCK) {
+      listings = generateMockListings(PAGE_SIZE);
+    } else {
+      // =========================
+      // LIVE MODE
+      // =========================
+      listings = await fetchMLSPage({
+        top: PAGE_SIZE,
+        skip: page * PAGE_SIZE,
+        lastSync,
+      });
+    }
+
+    // ✅ HARD STOP: no more data
+    if (!listings || listings.length === 0) {
+      console.log("✅ No more listings — ending sync");
+      break;
+    }
+
+    // =========================
+    // PROCESS LISTINGS (SERIAL)
+    // =========================
+    for (const listing of listings) {
+      // runtime guard inside loop
+      if (Date.now() - startTime > maxRuntimeMs) {
+        console.log("⛔ Runtime exceeded during processing");
+        break;
+      }
+
+      try {
+        await upsertListing(listing);
+        totalProcessed++;
+      } catch (err) {
+        console.error("❌ Failed to process listing", err);
+      }
+    }
+
+    // =========================
+    // CHECKPOINT AFTER EACH PAGE
+    // =========================
+    const newestTimestamp =
+      listings[listings.length - 1]?.ModificationTimestamp;
+
+    if (newestTimestamp) {
+      lastSync = newestTimestamp;
+      await setLastSync(lastSync);
+    }
+
+    console.log(
+      `✅ Page ${page} complete — total processed: ${totalProcessed}`
+    );
+
+    page++;
+
+    // =========================
+    // HARD STOP: page limit (SAFETY)
+    // =========================
+    if (page >= 100) {
+      console.log("⛔ Page limit reached (safety stop)");
+      break;
+    }
+
+    // =========================
+    // RATE LIMIT (CRITICAL)
+    // =========================
+    await sleep(RATE_DELAY_MS);
+  }
+
+  console.log("🏁 MLS SYNC COMPLETE", {
+    totalProcessed,
+    runtimeMs: Date.now() - startTime,
+  });
 }

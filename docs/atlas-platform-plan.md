@@ -23,191 +23,361 @@ Key rules:
 
 ==============================
 PROJECT BRAIN — CONTEXT CAPTURE
-==============================
-## 🗓️ SESSION METADATA
+===============================
 
-Start Date: 2026-04-05  
-End Date: 2026-04-05  
-Active Hours: ~4–6 hours
+**Chat Start Date:** 2026-04-05
+**Chat End / Transition Date:** 2026-04-05
+**Active Work Duration:** ~4–6 hours
+
 ---
 
 ## 🧱 1. PROJECT SNAPSHOT (CURRENT STATE)
 
-- MLS Grid access suspended due to rate limit violations
-- Worker system rebuilt with strict rate limiting + safe mode
-- Mock ingestion fully working (500 listings processed)
-- Map system stabilized (Leaflet + React issues resolved)
-- API map listings endpoint functioning
-- Frontend map renders cleanly without errors
+**Worked on:**
+
+* Production deployment of MLS worker (Railway)
+* Fixing build pipeline failures (Next.js + worker)
+* Separating build-time vs runtime execution
+* GitHub repo setup + Railway integration
+* Environment + worker orchestration
+* Eliminating Redis / API / external service build crashes
+
+**Now Functional:**
+
+* GitHub repo connected to Railway
+* Clean Railway worker service
+* Build pipeline succeeds (Next.js + worker compile)
+* Worker runs from `dist/workers/main.js`
+* MOCK MLS ingestion pipeline operational
+* Dynamic import system prevents build-time crashes
+
+**Partially Complete:**
+
+* API routes still patched defensively (not fully refactored)
+* Search system works but uses runtime-safe lazy loading
+* Queue system partially guarded (not fully production-hardened)
+
+**Broken / Uncertain:**
+
+* Redis not connected in production (currently bypassed)
+* Typesense / search infra not fully validated in production
+* Some API routes may still contain hidden build-time risks
 
 ---
 
 ## 🏗️ 2. SYSTEM ARCHITECTURE (UPDATED)
 
 ### MLS Ingestion System
-- Worker-based (Node process)
-- Serial requests only
-- Rate limited (~1.1 RPS)
-- Uses lastSync checkpoint
-- Batch size = 50
-- Max runtime enforced (10 min)
+
+* Worker-based ingestion via Railway
+* Entry: `workers/main.ts`
+* Calls `syncMLSGrid({ maxRuntimeMs })`
+* Supports:
+
+  * MOCK mode (safe)
+  * LIVE mode (future)
+* Rate-limited via env config
+* No unbounded loops (critical constraint)
+
+---
 
 ### Alert System
-- DB-backed (AlertQueue)
-- Status lifecycle: pending → sent → failed
+
+* Uses queue (BullMQ)
+* Worker processes listing matches
+* Triggered post-ingestion
+* Currently partially active (depends on Redis)
+
+---
 
 ### Email System
-- Planned: Resend integration
+
+* Uses Resend API
+* Triggered via API routes (e.g. valuation)
+* Must NOT initialize during build
+
+---
 
 ### Queue System
-- Current: DB queue
-- Future: BullMQ + Redis
 
-### Frontend
-- Next.js App Router
-- React client components
-- Leaflet map (react-leaflet)
-- Dynamic import (SSR disabled)
+* BullMQ + Redis
+* Redis connection:
+
+  * Disabled during build
+  * Intended for runtime only
+* Worker file:
+
+  * `/lib/queue/worker.ts`
+* Guarded with `NEXT_PHASE`
+
+---
+
+### Frontend (UI / Pages)
+
+* Next.js 16 (App Router)
+* Pages:
+
+  * Listings map
+  * Home valuation
+  * Search
+* Uses API routes for data
+
+---
 
 ### API Layer
-- /api/map-listings
-- Bounding box filtering
-- Query param filters (price, beds, type)
 
-### Database
-- Supabase Postgres
-- Prisma client only
-- SQL editor = schema authority
+* Located in `/app/api/*`
+* Critical fixes:
+
+  * `export const dynamic = "force-dynamic"`
+  * Runtime guards inside handlers
+  * NO top-level external service imports
+  * Uses lazy loading (`await import()`)
+
+---
+
+### Database (Prisma)
+
+* PostgreSQL via `DATABASE_URL`
+* Used for:
+
+  * Listings
+  * Users
+  * Alerts
+* Upserts used for idempotent ingestion
 
 ---
 
 ## 🗂️ 3. FILES CREATED / MODIFIED
 
-### lib/mls/syncMLSGrid.ts
-- Added strict rate limiting
-- Added max runtime guard
-- Added safe mode (mock data)
-- Added lastSync usage
+### Core Worker
 
-### workers/main.ts
-- Executes sync once
-- Prevents runaway loops
+* `/workers/main.ts`
 
-### components/maps/MapInner.tsx
-- Fixed React hook order issues
-- Removed conditional hook execution
-- Stabilized Leaflet rendering
-- Added FlyToListing component
+  * Entry point for Railway worker
 
-### components/maps/MapEvents.tsx
-- Handles map movement + bounds updates
+* `/workers/mlsWorker.ts`
 
-### components/maps/MapMarkers.tsx
-- Renders listing markers
+  * Calls `syncMLSGrid` with runtime config
+
+---
+
+### MLS Logic
+
+* `/lib/mls/syncMLSGrid.ts`
+
+  * Core ingestion logic
+  * Handles mock + future live mode
+
+* `/lib/mls/mockListings.ts`
+
+  * Generates mock dataset (500 listings)
+
+---
+
+### Queue / Redis
+
+* `/lib/queue/redis.ts`
+
+  * Prevents Redis connection during build
+
+* `/lib/queue/worker.ts`
+
+  * Guard prevents execution during build
+
+---
+
+### API Fixes
+
+* `/app/api/search/route.ts`
+
+  * Removed top-level imports
+  * Added:
+
+    * runtime guard
+    * lazy import (`await import(...)`)
+    * relative path fix
+
+---
+
+### Config
+
+* `/tsconfig.worker.json`
+
+  * Ensures worker compilation to `/dist`
+
+* `/package.json`
+
+  * Build script:
+
+    * `next build && tsc -p tsconfig.worker.json`
+
+* `/next.config.ts`
+
+  * `ignoreBuildErrors: true`
+
+* `/railway.json`
+
+  * Defines:
+
+    * build command
+    * start command
 
 ---
 
 ## 🧠 4. BUSINESS LOGIC & RULES
 
-- Listings fetched via bounding box
-- Filters applied via URL params
-- Map movement triggers data fetch
-- Active listing triggers map flyTo
-- MLS ingestion MUST be rate-limited
+* MLS ingestion must be:
+
+  * Rate-limited
+  * Bounded (no infinite loops)
+  * Environment-controlled (mock vs live)
+
+* Worker must:
+
+  * Run independently of API layer
+  * Be idempotent
+
+* API routes:
+
+  * Must not trigger external services during build
+  * Must lazy-load heavy dependencies
 
 ---
 
 ## ⚙️ 5. ENVIRONMENT / CONFIG
 
-- USE_MOCK = true (current)
-- Supabase connection via pooler (6543)
-- Direct DB only for schema changes
+### Core Variables
+
+* `USE_MOCK=true`
+* `MLS_MAX_RUNTIME_MS=600000`
+* `MLS_RATE_DELAY_MS=900`
+
+### External Services
+
+* Supabase
+* PostgreSQL
+* Resend (email)
+* Redis (planned runtime only)
+* MLS Grid API
 
 ---
 
-## 🔁 6. WORKFLOWS
+## 🔁 6. WORKFLOWS (STEP-BY-STEP)
 
-### MLS Sync Flow
+### MLS Ingestion Flow
 
-1. Start worker
-2. Load lastSync
-3. Fetch listings (paged)
-4. Process + upsert
-5. Update lastSync
-6. Sleep (900ms)
-7. Repeat until done or timeout
+1. Railway runs worker:
+   → `node dist/workers/main.js`
+
+2. `main.ts` triggers:
+   → `mlsWorker.ts`
+
+3. Worker executes:
+   → `syncMLSGrid({ maxRuntimeMs })`
+
+4. If `USE_MOCK=true`:
+   → load mock listings
+
+5. For each listing:
+   → upsert into DB
+
+6. (Future)
+   → trigger alert queue
 
 ---
 
-### Map Interaction Flow
+### Build Flow (Critical)
 
-1. User moves map
-2. Bounds captured
-3. URL updated
-4. API request triggered
-5. Listings updated
-6. Markers rendered
+1. Railway runs:
+   → `npm run build`
+
+2. Next.js:
+   → compiles app
+
+3. Worker:
+   → compiled via `tsc`
+
+4. Guards prevent:
+
+   * Redis connection
+   * API execution
+   * external API init
 
 ---
 
 ## 🚧 7. KNOWN ISSUES / RISKS
 
-- MLS access suspended (external dependency)
-- No queue system yet (single-threaded worker)
-- No clustering/deduplication yet
+* Redis not active in production
+* Search system depends on lazy imports (fragile if misused)
+* Path alias (`@/`) not usable in dynamic imports
+* API routes still vulnerable if new top-level imports added
+* No monitoring/logging system yet
 
 ---
 
 ## 🎯 8. NEXT PRIORITIES
 
-1. Deploy worker to Railway
-2. Re-enable MLS ingestion safely
-3. Add Redis queue (BullMQ)
-4. Improve marker UX (hover sync, clustering)
-5. Build listing detail experience
+1. Enable LIVE MLS ingestion (controlled, 1–2 pages)
+2. Add hard pagination limits in `syncMLSGrid`
+3. Reintroduce Redis safely (Railway Redis or external)
+4. Stabilize alert pipeline
+5. Add logging + observability
+6. Optimize search system (Typesense validation)
 
 ---
 
-## 📏 9. STANDARDS & CONSTRAINTS
+## 📏 9. STANDARDS & CONSTRAINTS (CRITICAL)
 
-- No unbounded loops
-- No parallel MLS requests
-- Must be idempotent
-- Must be rate-safe
-- No blocking API routes
-- Hooks must be consistent
+* NEVER run unbounded MLS loops
+* ALL ingestion must be rate-limited
+* NO external services during build
+* NO top-level imports for:
 
----
-
-## 🧩 10. MISSING BUT NEEDED
-
-- Redis queue system
-- Worker hosting (Railway)
-- Email sending system
-- Listing detail pages
-- Caching layer
+  * Redis
+  * Typesense
+  * external APIs
+* Worker must run from compiled `/dist`
+* Use relative paths in dynamic imports
+* All async work → queue-based (no blocking APIs)
 
 ---
 
-## 🧾 11. TERMINOLOGY
+## 🧩 10. MISSING BUT NEEDED (GAPS)
 
-- Listing = MLS property
-- Sync = MLS ingestion job
-- Worker = background processor
-- Alert = notification trigger
-- Bounds = map viewport box
+* Redis production instance
+* Alert matching engine fully wired
+* Retry / failure handling for worker
+* Observability (logs, metrics)
+* MLS live ingestion safeguards
+* Search indexing pipeline
+
+---
+
+## 🧾 11. TERMINOLOGY (NORMALIZED)
+
+* **Listing** = property from MLS
+* **Ingestion** = pulling MLS data into DB
+* **Worker** = background process (Railway)
+* **Mock Mode** = safe synthetic data mode
+* **Live Mode** = real MLS API ingestion
+* **Alert** = user-triggered notification condition
+* **Queue** = async job processing system
 
 ---
 
 ## 🧠 12. ASSUMPTIONS MADE
 
-- MLS Grid will restore access
-- Worker will be primary ingestion method
-- Supabase remains DB provider
-- Next.js remains frontend framework
+* MLS Grid API will be used for live ingestion
+* Redis will be required for queue scaling
+* Typesense is intended for search (not yet fully validated)
+* Railway will host worker long-term
+* Build-time execution must always be isolated from runtime
 
 ---
-END OF CONTEXT
+
+**END OF CONTEXT CAPTURE**
+
 ````
 
 

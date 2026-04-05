@@ -11,7 +11,7 @@ export async function GET(req: Request) {
   }
 
   // ✅ LAZY IMPORTS (CRITICAL)
-  const { searchListings } = await import("@/lib/search/searchListings")
+  const { searchListings } = await import("../../../lib/search/searchListings")
 
   // your logic
   const results = await searchListings()
