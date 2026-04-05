@@ -7,6 +7,7 @@ export async function GET() {
 
   const listings = [
     {
+      id: "test-id-1",
       price: 500000,
       beds: 3,
       baths: 2,
@@ -17,6 +18,7 @@ export async function GET() {
       photos: ["https://images.unsplash.com/photo-1560184897-ae75f418493e"],
     },
     {
+      id: "test-id-2",
       price: 650000,
       beds: 4,
       baths: 3,

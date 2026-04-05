@@ -44,7 +44,9 @@ function randomVariant() {
 }
 
 async function getContextStats(contextKey: string) {
-  const leads = await prisma.sellerLead.findMany({
+  const db = prisma as any
+
+const leads = await db.sellerLead.findMany({
     where: {
       contextKey,
     },

@@ -1,4 +1,5 @@
 import { sendEmail } from '../email/sendEmail'
+import { Resend } from "resend"
 
 interface SellerLead {
   id: string
@@ -23,10 +24,12 @@ export async function sendSellerOutreach(lead: SellerLead) {
     <p>– David</p>
   `
 
-  return sendEmail({
-    to: lead.email,
-    subject,
-    html,
-    leadId: lead.id, // 🔥 CRITICAL
-  })
+const resend = new Resend(process.env.RESEND_API_KEY)
+
+await resend.emails.send({
+  from: process.env.EMAIL_FROM || "onboarding@resend.dev",
+  to: lead.email,
+  subject,
+  html,
+})
 }

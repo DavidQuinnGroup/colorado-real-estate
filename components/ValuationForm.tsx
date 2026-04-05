@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-export default function ValuationForm() {
+export default function ValuationForm({ city }: { city: string }) {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -10,6 +10,8 @@ export default function ValuationForm() {
   });
 
   const [submitted, setSubmitted] = useState(false);
+
+  <h2>Get your {city} home value</h2>
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({

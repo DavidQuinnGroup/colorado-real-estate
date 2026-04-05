@@ -4,416 +4,216 @@ You are helping me build a production real estate platform.
 
 - Engineering System: /PROJECT_SYSTEM.md
 
+
+````
+
+You are helping me build a production real estate platform.
+
+Key rules:
+
+* Never run unbounded loops against MLS again
+* I follow all of your commands and do them in order as I read them. So please stop giving them to me twice. I don't need to know why something happens. I only need to know what my next command or code is to do. So be concise and task focused.
+* Always specify which Terminal to use
+* Always return FULL file code when updating
+* Always specify which file to replace with the full file name
+* Always update or create code for files so it is correct and scalable architecture unless necessary to standardize
+* Assume existing infrastructure is already built
+* Supabase is the source of truth (NOT Prisma)
+* Production-grade architecture only
+
 ==============================
 PROJECT BRAIN — CONTEXT CAPTURE
-===============================
+==============================
+## 🗓️ SESSION METADATA
 
-**Start Date:** 2026-03-31
-**End Date (handoff):** 2026-03-31
-**Active Work Time:** ~6–8 hours
-
+Start Date: 2026-04-05  
+End Date: 2026-04-05  
+Active Hours: ~4–6 hours
 ---
 
 ## 🧱 1. PROJECT SNAPSHOT (CURRENT STATE)
 
-**Worked On:**
-
-* MLS ingestion pipeline (BullMQ + Redis)
-* Rate limiting (global + adaptive)
-* FlowProducer job orchestration
-* Sync tracking (Supabase)
-* Admin dashboard (status + retry)
-* Alert system (Slack-ready)
-* Typesense setup (partial)
-* Queue architecture stabilization
-* Fixing MLS API suspension issues
-
-**Functional:**
-
-* End-to-end MLS ingestion (queue → worker → DB)
-* Global rate limiting (BullMQ limiter)
-* Adaptive throttling (dynamic delay)
-* Sync run tracking in DB
-* Retry failed jobs via dashboard
-* Alert triggers (console + Slack-ready)
-* Admin dashboard UI
-
-**Partially Complete:**
-
-* Typesense indexing (client + schema started, not fully wired)
-* Adaptive limiter tuning
-* Dashboard (basic, not full ops UI)
-* Flow completion tracking (basic, not fully robust)
-
-**Broken / Uncertain:**
-
-* Incremental sync not implemented yet
-* Typesense not running (Docker missing)
-* Tailwind/PostCSS config unstable earlier
-* MLS API currently rate-limited / warned
-* Coordinator still uses fixed page count (not dynamic)
+- MLS Grid access suspended due to rate limit violations
+- Worker system rebuilt with strict rate limiting + safe mode
+- Mock ingestion fully working (500 listings processed)
+- Map system stabilized (Leaflet + React issues resolved)
+- API map listings endpoint functioning
+- Frontend map renders cleanly without errors
 
 ---
 
 ## 🏗️ 2. SYSTEM ARCHITECTURE (UPDATED)
 
 ### MLS Ingestion System
-
-**Flow:**
-
-1. API triggers sync job
-2. Coordinator (mlsWorker) creates Flow (parent job)
-3. Enqueues page jobs (NO API calls)
-4. Page Worker:
-
-   * Applies adaptive delay
-   * Calls MLS API
-   * Processes listings
-   * Writes to Supabase
-   * Updates sync state
-   * Sends alerts on failure
-
-**Constraints:**
-
-* ONLY page worker calls MLS API
-* Global rate limit enforced (BullMQ)
-* Adaptive limiter adjusts delay dynamically
-
----
+- Worker-based (Node process)
+- Serial requests only
+- Rate limited (~1.1 RPS)
+- Uses lastSync checkpoint
+- Batch size = 50
+- Max runtime enforced (10 min)
 
 ### Alert System
-
-* Central `sendAlert()` function
-* Sends:
-
-  * Console logs
-  * Slack webhook (if configured)
-
-**Triggers:**
-
-* Page failure
-* Sync failure
-* Partial failure (failed_pages > 0)
-
----
+- DB-backed (AlertQueue)
+- Status lifecycle: pending → sent → failed
 
 ### Email System
+- Planned: Resend integration
 
-* Not touched in this chat
-* Exists but unchanged
+### Queue System
+- Current: DB queue
+- Future: BullMQ + Redis
 
----
-
-### Queue System (BullMQ)
-
-* Queues:
-
-  * `mls-sync` (coordinator)
-  * `mls-page` (workers)
-* FlowProducer:
-
-  * Parent-child job structure
-* Global limiter:
-
-```ts
-limiter: {
-  max: 1,
-  duration: 600
-}
-```
-
----
-
-### Frontend (UI / Pages)
-
-* `/admin/mls`
-
-  * Live polling dashboard
-  * Progress bar
-  * Failure indicator
-  * Retry button
-
----
+### Frontend
+- Next.js App Router
+- React client components
+- Leaflet map (react-leaflet)
+- Dynamic import (SSR disabled)
 
 ### API Layer
+- /api/map-listings
+- Bounding box filtering
+- Query param filters (price, beds, type)
 
-* `/api/mls/sync` → enqueue sync job
-* `/api/mls/status` → returns latest sync run
-* `/api/mls/retry` → retries failed jobs
-
----
-
-### Database (Supabase)
-
-Table: `mls_sync_runs`
-
-* id
-* started_at
-* completed_at
-* status
-* total_pages
-* processed_pages
-* failed_pages
-* error
-
-Listings table:
-
-* mls_id (unique)
-* address
-* price
-* updated_at
-* raw (jsonb)
+### Database
+- Supabase Postgres
+- Prisma client only
+- SQL editor = schema authority
 
 ---
 
 ## 🗂️ 3. FILES CREATED / MODIFIED
 
-### `/workers/mlsWorker.ts`
+### lib/mls/syncMLSGrid.ts
+- Added strict rate limiting
+- Added max runtime guard
+- Added safe mode (mock data)
+- Added lastSync usage
 
-* Coordinator (NO API calls)
-* Builds FlowProducer jobs
-* Tracks sync run
-* Handles completion + failure
+### workers/main.ts
+- Executes sync once
+- Prevents runaway loops
 
----
+### components/maps/MapInner.tsx
+- Fixed React hook order issues
+- Removed conditional hook execution
+- Stabilized Leaflet rendering
+- Added FlyToListing component
 
-### `/workers/mlsPageWorker.ts`
+### components/maps/MapEvents.tsx
+- Handles map movement + bounds updates
 
-* ONLY MLS API caller
-* Adaptive rate limiting
-* Processes listings
-* Updates sync state
-* Sends alerts
-
----
-
-### `/lib/queue/mlsQueue.ts`
-
-* Central Redis connection
-* Queue definitions
-* Global rate limiter
-
----
-
-### `/lib/mls/adaptiveLimiter.ts`
-
-* Dynamic delay system
-* Success/failure tracking
-* Backoff logic
-
----
-
-### `/lib/mls/syncState.ts`
-
-* Create/update sync runs
-* Increment counters
-
----
-
-### `/lib/alerts/sendAlert.ts`
-
-* Slack + console alert system
-
----
-
-### `/app/api/mls/status/route.ts`
-
-* Returns latest sync run + progress
-
----
-
-### `/app/api/mls/retry/route.ts`
-
-* Retries failed BullMQ jobs
-
----
-
-### `/app/admin/mls/page.tsx`
-
-* Dashboard UI
-* Live polling
-* Retry button
-* Failure indicators
-
----
-
-### `/lib/typesense/client.ts`
-
-* Typesense client setup (partial)
-
----
-
-### `/scripts/initTypesense.ts`
-
-* Collection creation script
+### components/maps/MapMarkers.tsx
+- Renders listing markers
 
 ---
 
 ## 🧠 4. BUSINESS LOGIC & RULES
 
-* ONLY page worker can call MLS API
-* Coordinator must NEVER fetch listings
-* Max safe rate ≈ 1 request / 600ms
-* Adaptive limiter:
-
-  * Speed up after success streak
-  * Slow down on errors
-  * Double delay on 429
-* Listings upserted by `mls_id`
-* Sync only marked complete after all jobs finish
-* Failures increment counters + trigger alerts
-* Retry system requeues failed jobs only
+- Listings fetched via bounding box
+- Filters applied via URL params
+- Map movement triggers data fetch
+- Active listing triggers map flyTo
+- MLS ingestion MUST be rate-limited
 
 ---
 
 ## ⚙️ 5. ENVIRONMENT / CONFIG
 
-**Env Variables:**
-
-* NEXT_PUBLIC_SUPABASE_URL
-* SUPABASE_SERVICE_ROLE_KEY
-* REDIS_URL
-* MLS_GRID_BASE_URL
-* MLS_GRID_TOKEN
-* SLACK_WEBHOOK_URL (optional)
-* TYPESENSE_API_KEY (future)
-
-**Services:**
-
-* Supabase (DB)
-* Redis (queue)
-* BullMQ (jobs)
-* MLS Grid API
-* Typesense (planned)
-* Slack (alerts)
+- USE_MOCK = true (current)
+- Supabase connection via pooler (6543)
+- Direct DB only for schema changes
 
 ---
 
-## 🔁 6. WORKFLOWS (STEP-BY-STEP)
+## 🔁 6. WORKFLOWS
 
-### MLS Ingestion Flow
+### MLS Sync Flow
 
-1. User triggers `/api/mls/sync`
-2. Job added to `mls-sync`
-3. Coordinator:
-
-   * Creates sync run
-   * Builds child jobs
-   * Creates Flow
-4. Page workers:
-
-   * Wait via adaptiveDelay()
-   * Fetch MLS data
-   * Process + upsert
-   * Update counters
-5. On completion:
-
-   * Mark sync complete
-   * Trigger alerts if needed
+1. Start worker
+2. Load lastSync
+3. Fetch listings (paged)
+4. Process + upsert
+5. Update lastSync
+6. Sleep (900ms)
+7. Repeat until done or timeout
 
 ---
 
-### Failure + Retry Flow
+### Map Interaction Flow
 
-1. Page fails
-2. incrementFailed()
-3. Alert sent
-4. Job marked failed
-5. User clicks "Retry Failed Jobs"
-6. Jobs reprocessed
-
----
-
-### Dashboard Flow
-
-1. UI polls `/api/mls/status`
-2. Displays:
-
-   * status
-   * progress
-   * failures
-3. Retry button triggers API
+1. User moves map
+2. Bounds captured
+3. URL updated
+4. API request triggered
+5. Listings updated
+6. Markers rendered
 
 ---
 
 ## 🚧 7. KNOWN ISSUES / RISKS
 
-* MLS API still rate-sensitive
-* Adaptive limiter not battle-tested
-* Coordinator uses static MAX_PAGES (wasteful)
-* No incremental sync → high API usage
-* Typesense not running (Docker missing)
-* Potential duplicate ingestion without proper filtering
-* No deduplication beyond mls_id
+- MLS access suspended (external dependency)
+- No queue system yet (single-threaded worker)
+- No clustering/deduplication yet
 
 ---
 
 ## 🎯 8. NEXT PRIORITIES
 
-1. ✅ Incremental sync (CRITICAL)
-2. Dynamic page discovery (remove MAX_PAGES)
-3. Typesense indexing completion
-4. Search UI
-5. Improve dashboard (real-time + logs)
-6. Add dead-letter queue
-7. Add job-level observability
+1. Deploy worker to Railway
+2. Re-enable MLS ingestion safely
+3. Add Redis queue (BullMQ)
+4. Improve marker UX (hover sync, clustering)
+5. Build listing detail experience
 
 ---
 
-## 📏 9. STANDARDS & CONSTRAINTS (CRITICAL)
+## 📏 9. STANDARDS & CONSTRAINTS
 
-* Must use queues for ALL async work
-* No API calls in coordinator
-* All ingestion must be idempotent
-* Must respect MLS rate limits at all times
-* Global limiter REQUIRED
-* No blocking operations in API routes
-* All failures must be tracked + alertable
-
----
-
-## 🧩 10. MISSING BUT NEEDED (GAPS)
-
-* Incremental sync (ModificationTimestamp filter)
-* Typesense full integration
-* Search UI
-* Dead-letter queue
-* Historical analytics
-* Rate limit monitoring dashboard
-* Backfill strategy
+- No unbounded loops
+- No parallel MLS requests
+- Must be idempotent
+- Must be rate-safe
+- No blocking API routes
+- Hooks must be consistent
 
 ---
 
-## 🧾 11. TERMINOLOGY (NORMALIZED)
+## 🧩 10. MISSING BUT NEEDED
 
-* **Listing** = MLS property record
-* **Sync Run** = one ingestion cycle
-* **Page Job** = batch fetch of listings
-* **Coordinator** = job scheduler (no API calls)
-* **Worker** = executes API + processing
-* **Adaptive Limiter** = dynamic delay system
-* **Flow** = parent-child job structure
+- Redis queue system
+- Worker hosting (Railway)
+- Email sending system
+- Listing detail pages
+- Caching layer
+
+---
+
+## 🧾 11. TERMINOLOGY
+
+- Listing = MLS property
+- Sync = MLS ingestion job
+- Worker = background processor
+- Alert = notification trigger
+- Bounds = map viewport box
 
 ---
 
 ## 🧠 12. ASSUMPTIONS MADE
 
-* MLS Grid supports filtering by `ModificationTimestamp`
-* Listings are uniquely identified by `ListingId`
-* Supabase is primary DB (not Prisma despite label)
-* Typesense will be used for search
-* Single MLS source (no multi-MLS yet)
-* API limits are strict and enforced in real-time
+- MLS Grid will restore access
+- Worker will be primary ingestion method
+- Supabase remains DB provider
+- Next.js remains frontend framework
 
 ---
-
-**END OF CONTEXT CAPTURE**
-
-**NEXT TASK READY:**
-➡️ **Implement incremental sync (only changed listings)**
+END OF CONTEXT
+````
 
 
 Key rules:
+- Never run unbounded loops against MLS again
+- I follow all of your commands and do them in order as I read them. So please stop giving them to me twice. I don't need to know why something happens. I only need to know what my next command or code is to do. So be concise and task focused.
 - Always specify which Terminal to use
 - Always return FULL file code when updating
 - Always specify which file to replace with the full file name
@@ -428,206 +228,185 @@ Now here is my Project Brain:
 Boulder County Real Estate Platform
 
 Built by:
-David Quinn
-David Atlas
+David Quinn  
+David Atlas  
 
 ---
 
-## Tech Stack
+## 🧱 System Architecture
 
-Next.js App Router  
-Tailwind CSS  
-Static SEO Pages  
-Market Analytics Tools  
+### Frontend
+- Next.js App Router
+- React (Client + Server Components)
+- Tailwind CSS
+- Leaflet (React-Leaflet)
 
----
+### Backend
+- Next.js API Routes
+- Supabase (Postgres)
+- Prisma (client only — NOT schema authority)
 
-## Focus Markets
-
-Boulder  
-Louisville  
-Lafayette  
-Superior  
-Erie  
-Broomfield  
-Longmont  
-Westminster  
-Niwot  
-Brighton  
+### Worker System (PRIMARY INGESTION ARCHITECTURE)
+- Node worker (ts-node)
+- Runs MLS sync jobs
+- Strict rate limiting enforced
+- Designed for Railway deployment (future)
 
 ---
 
-## Platform Features
+## ⚠️ CRITICAL MLS RULES
 
-Home Value Estimator  
-Equity Calculator  
-Market Dashboard  
-Relocation Guides  
-Neighborhood Pages  
-Seller Guides  
-
----
-
-## SEO Strategy
-
-500+ city and market pages expanding to 10,000 neighborhood pages.
-
-Authority loops connecting:
-
-City Pages  
-Neighborhood Pages  
-Market Reports  
-Buyer/Seller Guides  
-
-Goal: Rank #1 for Boulder housing market searches and all focused markets within my servicable territory.
+- NEVER exceed 2 RPS (hard limit target: ~1.1 RPS)
+- ALWAYS run serial requests (no parallel fetches)
+- ALWAYS enforce delay between requests (>= 900ms)
+- ALWAYS include MAX_RUNTIME_MS failsafe
+- NEVER run infinite loops
+- ALWAYS checkpoint sync state
 
 ---
 
-## Compliance
+## 🧠 MLS INGESTION SYSTEM
 
-Atlas Compliance Review before publishing pages.
+### Current Mode
+- SAFE MODE (mock data enabled)
+- USE_MOCK = true
 
-Includes review for:
+### Production Mode (when re-enabled)
+- Worker pulls MLS Grid data
+- Uses incremental sync (lastSync timestamp)
+- Processes in batches (top=50)
+- Persists to database
 
-Fair Housing language  
-Steering language  
-School references  
-Market claim accuracy
+### Flow
 
----
-
-## Lead Funnels
-
-Relocation Leads  
-Seller Valuation Leads  
-Market Report Subscribers  
-
----
-
-## Engagement Tracking
-
-- Click tracking via /api/track-click
-- AlertQueue.clickedAt used for lead scoring
-- Foundation for hot lead detection
+1. Worker starts
+2. Get lastSync from DB
+3. Fetch listings (paged)
+4. Process + upsert listings
+5. Update lastSync
+6. Sleep (rate limit)
+7. Repeat until:
+   - no data OR
+   - max runtime reached
 
 ---
 
-## Queue System (Current)
+## 🗺️ MAP SYSTEM (STABLE)
 
-- Database-backed queue (AlertQueue)
-- Worker processes alerts (scripts/runAlerts.ts)
-- Status lifecycle: pending → sent → failed
+### Stack
+- React-Leaflet
+- Dynamic import (SSR disabled)
+
+### Fixes Applied
+
+- Prevent SSR rendering
+- Removed double initialization issue
+- Removed global map instance hacks
+- Removed conditional hook execution
+- Enforced React hook order consistency
+
+### Final Architecture
+
+- `MapInner.tsx` renders map only (no SSR)
+- `MapEvents` handles bounds updates
+- `MapMarkers` renders pins
+- `FlyToListing` handles selection animation
 
 ---
 
-## Future Upgrade
+## ⚠️ REACT RULES (CRITICAL)
 
-- BullMQ + Redis for horizontal scaling
-
----
-
-## Alert Data Model
-
-- Alerts use payload JSON as source of truth
-- Decoupled from Property table
-- Enables flexible email generation
-- Supports future multi-listing/digest emails
+- NEVER conditionally call hooks
+- NEVER place hooks outside components
+- NEVER early return before hooks
+- ALWAYS maintain hook order across renders
 
 ---
 
-## Platform Goal
+## 🧾 DATABASE RULES
 
-Build the leading independent real estate knowledge platform for Boulder County.
+- Supabase SQL = source of truth
+- Prisma = client only
 
-- Always use pooled connection (port 6543) for development
-- Do NOT rely on DIRECT_URL locally
-- Direct connections may fail due to network restrictions
-- Prisma db push should always succeed via pooled connection
+### Connections
 
-- Always specify terminal number when running commands
-- Never overwrite files without reviewing existing code first
-- Always provide full file replacements when updating
+- 6543 → pooled (runtime)
+- 5432 → direct (schema only)
 
-UI Inspiration:
+---
+
+## 🔁 SYNC STATE SYSTEM
+
+- Table: `mls_sync_state`
+- Stores lastSync timestamp
+- MUST always have valid ID (no nulls)
+
+---
+
+## 📊 PLATFORM FEATURES
+
+- Map-based property search
+- Bounding box queries
+- URL-synced filters
+- Home valuation tool
+- SEO city + neighborhood pages
+
+---
+
+## 🚧 CURRENT STATUS
+
+### ✅ Working
+- Worker SAFE MODE (mock ingestion)
+- Database writes
+- Map rendering (Leaflet stable)
+- API map listings endpoint
+- URL sync + filters
+
+### ⚠️ Disabled
+- MLS Grid (suspended — rate limit violations)
+
+### 🔄 In Progress
+- Production worker deployment (Railway)
+- Real MLS ingestion reactivation (rate-safe)
+
+---
+
+## 🎯 NEXT PHASE
+
+1. Deploy worker to Railway
+2. Re-enable MLS ingestion (STRICT SAFE MODE)
+3. Add Redis queue (BullMQ)
+4. Implement clustering / deduping
+5. Add premium UI interactions
+
+---
+
+## 🎨 UI DIRECTION
+
+Inspired by:
 https://patrickbrowngroup.com/
 
 Goals:
-- Luxury feel
-- Clean spacing
-- High-end typography
-- Smooth transitions
-- Premium real estate aesthetic
+- Luxury aesthetic
+- Smooth animations
+- Premium spacing
+- Zillow-level UX
 
-If schema changes do not appear in DB:
+---
 
-1. rm -rf node_modules/.prisma
-2. npx prisma generate
-3. npx prisma db push --force-reset
+## 🔐 SECURITY
 
-## ⚠️ Supabase + Prisma Rule
+- Rotate:
+  - Supabase password ✅
+  - Resend API key (pending)
 
-- Pooled connection (6543) CANNOT run schema changes
-- Direct connection (5432) is REQUIRED for db push
+---
 
-Fix:
-DATABASE_URL=$DIRECT_URL npx prisma db push
+## 🧠 PLATFORM GOAL
 
-## ⚠️ Prisma Env Gotcha
+Build the dominant real estate intelligence platform for Boulder County.
 
-.env variables are NOT automatically available in shell commands.
-
-This WILL FAIL:
-DATABASE_URL=$DIRECT_URL npx prisma db push
-
-Correct approach:
-Paste full URL manually OR export variables first.
-
-## Supabase + Prisma Rule
-
-- Use pooler (6543) for app runtime
-- DO NOT rely on Prisma db push for schema changes
-- Use Supabase SQL Editor for schema changes
-- Prisma is a client, not the source of truth
-
-## AlertQueue Status
-
-- Table created manually in Supabase
-- Prisma does NOT manage schema (Supabase SQL is source of truth)
-- Verified insert + select working
-- Ready for queue processing integration
-
-## DB Rule
-
-All AlertQueue records MUST have a valid User.
-
-Foreign key constraints are enforced:
-- Cannot insert alerts without user
-
-## Debugging Rule
-
-Never assume IDs.
-
-Always query:
-SELECT id FROM "User";
-
-Foreign keys require exact ID match.
-
-Current system status:
-
-- Prisma + Supabase connected
-- AlertQueue table working
-- Test data inserted successfully
-- Queue processor written
-- Running into module resolution issue (fix in progress)
-
-Next goal:
-→ Send real emails using Resend from AlertQueue
-
-🔐 QUICK SECURITY NOTE (DO THIS LATER)
-
-Since credentials were exposed:
-
-Rotate Supabase DB password-DONE
-Rotate Resend API key
-
-(Not urgent for dev, but do before production)
+- SEO dominance
+- High-quality data
+- Premium UX
+- Conversion-focused funnels

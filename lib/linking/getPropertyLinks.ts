@@ -1,7 +1,8 @@
-import { db } from "@/lib/db"
+import { prisma } from "@/lib/prisma"
 
 export async function getPropertyLinks(property:any) {
-
+  const db = prisma as any
+  
  const neighborhoodHomes = await db.property.findMany({
   where: {
    neighborhood: property.neighborhood,

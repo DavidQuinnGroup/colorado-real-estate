@@ -112,19 +112,19 @@ export default function SearchMap({
   }, [])
 
   // 🔥 Convert listings → geo points
-  const points = useMemo(() => {
-    return listings.map((hit: any) => ({
-      type: "Feature",
-      properties: {
-        cluster: false,
-        listing: hit.document,
-      },
-      geometry: {
-        type: "Point",
-        coordinates: [hit.document.lng, hit.document.lat],
-      },
-    }))
-  }, [listings])
+const points = useMemo(() => {
+  return listings.map((listing) => ({
+    type: "Feature" as const,
+    properties: {
+      cluster: false,
+      listing,
+    },
+    geometry: {
+      type: "Point" as const,
+      coordinates: [listing.lng, listing.lat],
+    },
+  }))
+}, [listings])
 
   // 🔥 Build cluster index
   const clusterIndex = useMemo(() => {

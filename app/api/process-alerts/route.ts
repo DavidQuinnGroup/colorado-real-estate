@@ -1,18 +1,30 @@
 import { NextResponse } from "next/server"
-import { processAlertQueue } from "@/lib/alerts/processAlertQueue"
 import { enqueueAlert } from "@/lib/queue/enqueueAlert"
+import { prisma } from "@/lib/prisma"
 
 export async function GET() {
-  const alerts = await prisma.alertQueue.findMany({
-  where: { status: "pending" },
-  take: 50,
-})
+  try {
+    const db = prisma as any
 
-for (const alert of alerts) {
-  await enqueueAlert(alert.id)
-}
+    const alerts = await db.alertQueue.findMany({
+      where: { status: "pending" },
+      take: 50,
+    })
 
-  return NextResponse.json({
-    success: true
-  })
+    for (const alert of alerts) {
+      await enqueueAlert(alert.id)
+    }
+
+    return NextResponse.json({
+      success: true,
+      processed: alerts.length,
+    })
+  } catch (error) {
+    console.error("Process alerts error:", error)
+
+    return NextResponse.json(
+      { error: "Failed to process alerts" },
+      { status: 500 }
+    )
+  }
 }

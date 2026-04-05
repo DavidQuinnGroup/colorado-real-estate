@@ -1,26 +1,25 @@
 {
+  "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": ".",
-    "module": "CommonJS",
+    "module": "commonjs",
     "target": "ES2020",
-    "moduleResolution": "Node",
+    "moduleResolution": "node",
     "esModuleInterop": true,
     "strict": true,
     "skipLibCheck": true,
     "resolveJsonModule": true
   },
   "include": [
-    "workers/**/*.ts",
-    "lib/mls/**/*.ts",
-    "lib/queue/**/*.ts"
+    "workers/**/*",
+    "lib/**/*"
   ],
   "exclude": [
     "node_modules",
     "lib/email",
-    "lib/alerts",
     "lib/analytics",
-    "lib/prisma.ts",
-    "lib/typesense.ts"
+    "lib/typesense",
+    "lib/prisma.ts"
   ]
 }

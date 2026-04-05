@@ -41,7 +41,9 @@ function randomVariant() {
 }
 
 async function getVariantStats() {
-  const leads = await prisma.sellerLead.findMany()
+  const db = prisma as any
+
+const leads = await db.sellerLead.findMany()
 
   const stats: Record<
     string,

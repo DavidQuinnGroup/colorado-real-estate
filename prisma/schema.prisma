@@ -226,9 +226,10 @@ model CrmTask {
 }
 
 model SellerLead {
-  id    String @id
-  city  String
-  beds  Int
-  price Int
-  reason String
+  id         String @id @default(cuid())
+  city       String
+  beds       Int?
+  price      Int?
+  reason     String
+  propertyId String
 }

@@ -38,20 +38,24 @@ export default function BoulderMarketMap() {
     <div className="h-[500px] w-full rounded-xl overflow-hidden">
 
       <MapContainer
-        center={[40.0150, -105.2705]}
-        zoom={12}
-        scrollWheelZoom={false}
-        style={{ height: "100%", width: "100%" }}
-      >
+  {...({
+    center: [40.0150, -105.2705],
+    zoom: 12,
+    scrollWheelZoom: false,
+    style: { height: "100%", width: "100%" }
+  } as any)}
+>
 
         <TileLayer
-          attribution="&copy; OpenStreetMap contributors"
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
+  {...({
+    attribution: "&copy; OpenStreetMap contributors",
+    url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+  } as any)}
+/>
 
         {neighborhoods.map((n, i) => (
 
-          <Marker key={i} position={n.position}>
+          <Marker key={i} position={n.position as [number, number]}>
 
             <Popup>
 

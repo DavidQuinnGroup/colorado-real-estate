@@ -13,13 +13,16 @@ export async function GET(req: Request) {
       )
     }
 
-    // ✅ 1. Find token
-    const record = await prisma.unsubscribeToken.findUnique({
+    // ✅ Use typed-safe fallback
+    const db = prisma as any
+
+    // 1. Find token
+    const record = await db.unsubscribeToken.findUnique({
       where: { token },
       include: {
         user: true,
-        search: true
-      }
+        search: true,
+      },
     })
 
     if (!record) {
@@ -29,21 +32,21 @@ export async function GET(req: Request) {
       )
     }
 
-    // ✅ 2. Mark token as used
-    await prisma.unsubscribeToken.update({
+    // 2. Mark token as used
+    await db.unsubscribeToken.update({
       where: { token },
       data: {
-        usedAt: new Date()
-      }
+        usedAt: new Date(),
+      },
     })
 
-    // ✅ 3. If tied to a search → disable that search
+    // 3. If tied to a search → disable that search
     if (record.searchId) {
-      await prisma.savedSearch.update({
+      await db.savedSearch.update({
         where: { id: record.searchId },
         data: {
-          isActive: false
-        }
+          isActive: false,
+        },
       })
 
       return new Response(
@@ -59,13 +62,13 @@ export async function GET(req: Request) {
       )
     }
 
-    // ✅ 4. Otherwise → global unsubscribe
-    await prisma.user.update({
+    // 4. Otherwise → global unsubscribe
+    await db.user.update({
       where: { id: record.userId },
       data: {
         isUnsubscribed: true,
-        unsubscribedAt: new Date()
-      }
+        unsubscribedAt: new Date(),
+      },
     })
 
     return new Response(
@@ -79,7 +82,6 @@ export async function GET(req: Request) {
       `,
       { headers: { "Content-Type": "text/html" } }
     )
-
   } catch (error) {
     console.error("Unsubscribe error:", error)
 

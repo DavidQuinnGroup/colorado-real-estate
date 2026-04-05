@@ -26,7 +26,7 @@ export default function RelatedContent({ nodeId }: Props) {
             href={item.slug}
             className="underline"
           >
-            {item.title}
+            {(item as any).title}
           </Link>
         ))}
 

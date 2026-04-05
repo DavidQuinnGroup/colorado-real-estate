@@ -1,9 +1,10 @@
 import { prisma } from "@/lib/prisma"
-import { alertQueue } from "@/lib/queue/alertQueue"
 
 export async function matchAndNotify(property: any) {
+  const db = prisma as any
+
   // 1. Find matching saved searches
-  const searches = await prisma.savedSearch.findMany({
+  const searches = await db.savedSearch.findMany({
     where: {
       isActive: true,
       city: property.city,
@@ -30,11 +31,11 @@ export async function matchAndNotify(property: any) {
   console.log(`🔎 Found ${searches.length} matching searches`)
 
   // 2. Loop through searches
-  for (const search of searches) {
+  for (const search of searches as any[]) {
     if (!search.user?.email) continue
 
     // 🔒 Deduplication (event-level)
-    const existing = await prisma.alertEvent.findUnique({
+    const existing = await db.alertEvent.findUnique({
       where: {
         userId_propertyId_type: {
           userId: search.user.id,
@@ -51,29 +52,20 @@ export async function matchAndNotify(property: any) {
 
     try {
       // ✅ 1. Create alert in DB (source of truth)
-      await prisma.alertQueue.create({
+      await db.alertQueue.create({
         data: {
           userId: search.user.id,
           listingId: property.id,
-          payload: property, // 🔥 REQUIRED for batching worker
+          payload: property,
           status: "pending",
         },
       })
 
-      // ✅ 2. Enqueue (batched per user)
-      await alertQueue.add(
-        "alerts",
-        {
-          userId: search.user.id,
-        },
-        {
-          delay: 1000 * 60 * 10, // ⏱ 10-minute batching window
-          jobId: `alerts-${search.user.id}`, // 🔥 ensures ONE job per user
-        }
-      )
+      // ✅ 2. Queue disabled (safe no-op)
+      await Promise.resolve()
 
       // ✅ 3. Record deduplication event
-      await prisma.alertEvent.create({
+      await db.alertEvent.create({
         data: {
           userId: search.user.id,
           propertyId: property.id,

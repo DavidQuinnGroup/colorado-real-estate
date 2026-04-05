@@ -31,9 +31,8 @@ export async function searchProperties(params: SearchParams) {
         lte: maxPrice ?? undefined
       },
 
-      bedrooms: beds ? { gte: beds } : undefined,
-
-      bathrooms: baths ? { gte: baths } : undefined
+      beds: beds ? { gte: beds } : undefined,
+      baths: baths ? { gte: baths } : undefined
     },
 
     include: {

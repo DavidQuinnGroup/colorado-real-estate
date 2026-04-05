@@ -1,30 +1,33 @@
 import { prisma } from "@/lib/prisma"
 
 export async function getVariantPerformance() {
-  const leads = await prisma.sellerLead.findMany()
+  const db = prisma as any
+
+  const leads = await db.sellerLead.findMany()
 
   const grouped: Record<string, any> = {}
 
-  for (const l of leads) {
-    const v = l.variant || "unknown"
+  for (const lead of leads as any[]) {
+    const variant = lead.variant || "unknown"
 
-    if (!grouped[v]) {
-      grouped[v] = {
+    if (!grouped[variant]) {
+      grouped[variant] = {
         total: 0,
-        replies: 0,
-        wins: 0,
+        contacted: 0,
+        converted: 0,
       }
     }
 
-    grouped[v].total++
+    grouped[variant].total++
 
-    if (l.repliedAt) grouped[v].replies++
-    if (l.status === "won") grouped[v].wins++
+    if (lead.contactedAt) grouped[variant].contacted++
+    if (lead.convertedAt) grouped[variant].converted++
   }
 
-  return Object.entries(grouped).map(([variant, data]) => ({
+  return Object.entries(grouped).map(([variant, stats]) => ({
     variant,
-    replyRate: data.replies / data.total,
-    winRate: data.wins / data.total,
+    ...stats,
+    contactRate: stats.total ? stats.contacted / stats.total : 0,
+    conversionRate: stats.total ? stats.converted / stats.total : 0,
   }))
 }

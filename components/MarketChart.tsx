@@ -156,9 +156,9 @@ function Chart({
             />
 
             <Tooltip
-              formatter={(value: number) =>
-                metric === "price" ? formatPrice(value) : value
-              }
+              formatter={(value) =>
+  metric === "price" ? formatPrice(Number(value ?? 0)) : value
+}
               cursor={{ stroke: textColor, strokeWidth: 1 }}
               contentStyle={{
                 backgroundColor: tooltipBg,

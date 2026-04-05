@@ -16,25 +16,23 @@ export default function PropertyMap({
 }: {
   properties: Property[]
 }) {
-
   return (
-
     <MapContainer
-      center={[40.017, -105.283]}
-      zoom={12}
-      style={{ height: "500px", width: "100%" }}
+      {...({
+        center: [40.017, -105.283],
+        zoom: 12,
+        style: { height: "500px", width: "100%" },
+      } as any)}
     >
-
       <TileLayer
-        attribution='&copy; OpenStreetMap contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        {...({
+          attribution: "&copy; OpenStreetMap contributors",
+          url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+        } as any)}
       />
 
       {properties.map((p) => (
-        <Marker
-          key={p.id}
-          position={[p.lat, p.lng]}
-        >
+        <Marker key={p.id} position={[p.lat, p.lng]}>
           <Popup>
             {p.address}
             <br />
@@ -42,8 +40,6 @@ export default function PropertyMap({
           </Popup>
         </Marker>
       ))}
-
     </MapContainer>
-
   )
 }

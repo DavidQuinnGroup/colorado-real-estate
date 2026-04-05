@@ -11,8 +11,4 @@ export const mlsQueue = new Queue("mls-sync", {
 
 export const mlsPageQueue = new Queue("mls-page", {
   connection,
-  limiter: {
-    max: 1,
-    duration: 600,
-  },
 })

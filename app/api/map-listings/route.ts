@@ -1,65 +1,37 @@
-import { prisma } from "@/lib/prisma"
-import { NextResponse } from "next/server"
-import { listingsToPoints } from "@/lib/map/listingsToPoints"
-import { buildCluster } from "@/lib/map/supercluster"
+import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@supabase/supabase-js";
 
-export async function GET(req: Request) {
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
+
+export async function GET(req: NextRequest) {
   try {
-    const { searchParams } = new URL(req.url)
+    const { searchParams } = new URL(req.url);
 
-    const north = Number(searchParams.get("north"))
-    const south = Number(searchParams.get("south"))
-    const east = Number(searchParams.get("east"))
-    const west = Number(searchParams.get("west"))
-    const zoom = Number(searchParams.get("zoom") || 12)
+    const minLat = parseFloat(searchParams.get("minLat") || "0");
+    const maxLat = parseFloat(searchParams.get("maxLat") || "0");
+    const minLng = parseFloat(searchParams.get("minLng") || "0");
+    const maxLng = parseFloat(searchParams.get("maxLng") || "0");
 
-    // Query database
-    const listings = await prisma.$queryRaw`
-      SELECT
-        id,
-        price,
-        lat,
-        lng,
-        address,
-        city,
-        slug
-      FROM "Property"
-      WHERE ST_Intersects(
-        location,
-        ST_MakeEnvelope(${west}, ${south}, ${east}, ${north}, 4326)
-      )
-      LIMIT 500
-    `
+    const { data, error } = await supabase
+      .from("listings")
+      .select("mls_id, address, price, beds, baths, lat, lng")
+      .gte("lat", minLat)
+      .lte("lat", maxLat)
+      .gte("lng", minLng)
+      .lte("lng", maxLng)
+      .limit(1000);
 
-    const properties = (listings as any[]).map((p) => ({
-      id: p.id,
-      price: p.price,
-      lat: p.lat,
-      lng: p.lng,
-      address: p.address,
-      city: p.city,
-      slug: p.slug,
-    }))
+    if (error) {
+      console.error("❌ Map query failed:", error);
+      return NextResponse.json({ error: "Failed to fetch listings" }, { status: 500 });
+    }
 
-    // Convert listings → GeoJSON points
-    const points = listingsToPoints(properties)
-
-    // Build cluster
-    const cluster = buildCluster(points)
-
-    const clusters = cluster.getClusters(
-      [west, south, east, north],
-      zoom
-    )
-
-    return NextResponse.json(clusters)
-
-  } catch (error) {
-    console.error("Map listings API error:", error)
-
-    return NextResponse.json(
-      { error: "Failed to load listings" },
-      { status: 500 }
-    )
+    return NextResponse.json(data);
+  } catch (err) {
+    console.error("❌ Map API error:", err);
+    return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }

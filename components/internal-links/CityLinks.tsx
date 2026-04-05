@@ -1,6 +1,6 @@
 import Link from "next/link"
 
-export default function CityLinks({ city }) {
+export default function CityLinks({ city }: { city: string }) {
 
   const cityName =
     city.charAt(0).toUpperCase() + city.slice(1)

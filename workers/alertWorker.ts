@@ -7,8 +7,15 @@ const supabase = createClient(
 )
 
 const typesense = new Typesense.Client({
-  nodes: [{ host: "localhost", port: 8108, protocol: "http" }],
-  apiKey: process.env.TYPESENSE_API_KEY || "xyz",
+  nodes: [
+    {
+      host: process.env.TYPESENSE_HOST!,
+      port: Number(process.env.TYPESENSE_PORT!),
+      protocol: process.env.TYPESENSE_PROTOCOL!,
+    },
+  ],
+  apiKey: process.env.TYPESENSE_API_KEY!,
+  connectionTimeoutSeconds: 5,
 })
 
 async function runAlerts() {
@@ -42,7 +49,7 @@ async function runAlerts() {
 }
 
 function buildFilter(filters: any) {
-  let f = []
+  let f: string[] = []
 
   if (filters.minPrice) f.push(`price:>=${filters.minPrice}`)
   if (filters.maxPrice) f.push(`price:<=${filters.maxPrice}`)

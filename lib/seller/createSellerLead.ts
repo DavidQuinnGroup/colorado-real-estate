@@ -1,55 +1,46 @@
-import { prisma } from "@/lib/prisma"
-import { getOutreachStrategy } from "@/lib/outreach/getOutreachStrategy"
+import { prisma } from "@/lib/prisma";
 
-type Input = {
-  listingId: string
-  city?: string
-  price?: number
-  beds?: number
-  dealScore: number
-  reason?: string
-}
+type CreateSellerLeadInput = {
+  propertyId: string;
+  city: string;
+  beds?: number | null;
+  price?: number | null;
+  reason: string;
+};
 
-function getPriority(score: number) {
-  if (score >= 60) return "hot"
-  if (score >= 40) return "warm"
-  return "cold"
-}
+export async function createSellerLead(input: CreateSellerLeadInput) {
+  const { propertyId, city, beds, price, reason } = input;
 
-export async function createSellerLead(input: Input) {
+  if (!propertyId) {
+    throw new Error("createSellerLead: propertyId is required");
+  }
+
   try {
-    // 🔁 HARD DEDUP (by listingId)
+    // ✅ Deduplication: prevent duplicate leads per property
     const existing = await prisma.sellerLead.findFirst({
       where: {
-        listingId: input.listingId,
+        propertyId,
       },
-    })
+    });
 
     if (existing) {
-      return existing
+      return existing;
     }
 
-    const priority = getPriority(input.dealScore)
-
-    const strategy = getOutreachStrategy(input.dealScore)
-
+    // ✅ Create new lead
     const lead = await prisma.sellerLead.create({
       data: {
-        listingId: input.listingId,
-        city: input.city,
-        price: input.price,
-        beds: input.beds,
-        dealScore: input.dealScore,
-        reason: input.reason,
-        status: "new",
-        priority,
-        strategy,
+        propertyId,
+        city,
+        beds: beds ?? null,
+        price: price ?? null,
+        reason,
       },
-    })
+    });
 
-    return lead
-  } catch (err) {
-    console.error("createSellerLead error:", err)
-    return null
+    return lead;
+  } catch (error) {
+    console.error("❌ createSellerLead error:", error);
+    throw error;
   }
 }

@@ -7,5 +7,12 @@ const Map = dynamic(() => import("./MapInner"), {
 })
 
 export default function NearbyHomesMap({ city }: { city: string }) {
-  return <Map city={city} />
+  return (
+  <Map
+    city={city}
+    onListingsChange={() => {}}
+    activeListingId={null}
+    setActiveListingId={() => {}}
+  />
+)
 }

@@ -2,7 +2,7 @@ import { Resend } from "resend"
 import { prisma } from "@/lib/prisma"
 import { ListingDigestEmail } from "@/lib/email/templates/listingDigest"
 import { createSellerLead } from "@/lib/seller/createSellerLead"
-import { createCRMTasks } from "@/lib/crm/createTask"
+import { createTask } from "@/lib/crm/createTask"
 
 type Listing = {
   id: string
@@ -10,6 +10,12 @@ type Listing = {
   beds?: number
   city?: string
   createdAt?: string | Date
+
+  url?: string
+  __dealScore?: number
+  __dealReason?: string
+  __urgency?: string
+
   [key: string]: any
 }
 
@@ -27,6 +33,7 @@ export async function sendAlert({
   if (!user?.email || !user?.id) return
   if (!Array.isArray(listings) || listings.length === 0) return
 
+  const db = prisma as any
   const resend = new Resend(process.env.RESEND_API_KEY)
 
   const baseUrl =
@@ -35,7 +42,7 @@ export async function sendAlert({
   // ==============================
   // 🧠 MARKET BASELINE
   // ==============================
-  const historical = await prisma.alertQueue.findMany({
+  const historical = await db.alertQueue.findMany({
     where: { payload: { not: null } },
     take: 500,
     select: { payload: true },
@@ -138,19 +145,25 @@ export async function sendAlert({
     if (isSellerOpportunity(deal.score)) {
       if (leadsCreated < MAX_LEADS_PER_RUN) {
         try {
-          const lead = await createSellerLead({
-            listingId: l.id,
-            city: l.city,
-            price: l.price,
-            beds: l.beds,
-            dealScore: deal.score,
-            reason: deal.reason,
-          })
+          if (!l.id || !l.city) {
+            console.warn("⚠️ Skipping seller lead — missing required fields", {
+              id: l.id,
+              city: l.city,
+            })
+          } else {
+            const lead = await createSellerLead({
+              propertyId: l.id,
+              city: l.city,
+              price: l.price ?? null,
+              beds: l.beds ?? null,
+              reason: `Deal score ${deal.score}`,
+            })
 
-          // ⚠️ Only create tasks if this is a NEW lead
-          if (lead) {
-            await createCRMTasks(lead.id, deal.score)
-            leadsCreated++
+            // ⚠️ Always valid (existing OR new)
+            if (lead) {
+              await createTask(lead.id)
+              leadsCreated++
+            }
           }
         } catch (err) {
           console.error("Seller lead pipeline error:", err)
@@ -172,7 +185,7 @@ export async function sendAlert({
   // ==============================
   try {
     const html = ListingDigestEmail({
-      listings: enriched,
+      listings: enriched as any,
     })
 
     await resend.emails.send({

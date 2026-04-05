@@ -1,7 +1,9 @@
 import { prisma } from "@/lib/prisma"
 
 export async function getHotLeads() {
-  const leads = await prisma.alertQueue.findMany({
+  const db = prisma as any
+
+const leads = await db.alertQueue.findMany({
     where: {
       clickedAt: {
         not: null,

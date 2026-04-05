@@ -17,7 +17,9 @@ export async function GET(req: NextRequest) {
     }
 
     // 🔒 Update clickedAt for matching alerts
-    await prisma.alertQueue.updateMany({
+    const db = prisma as any
+
+await db.alertQueue.updateMany({
       where: {
         listingId,
         userId,

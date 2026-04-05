@@ -8538,3 +8538,1229 @@ Listings table:
 
 **END OF CONTEXT CAPTURE**
 
+
+2026-04-02
+==============================
+PROJECT BRAIN — CONTEXT CAPTURE
+===============================
+
+**Start Date:** 2026-04-02
+**Continuation Date:** 2026-04-02
+**Active Work Duration:** ~3–5 hours
+
+---
+
+## 🧱 1. PROJECT SNAPSHOT (CURRENT STATE)
+
+**Worked On:**
+
+* Deployment to Vercel
+* Environment variables setup (incomplete)
+* Typesense production migration planning
+* Map UI (clusters, hover sync, previews)
+* Saved searches + alert system architecture
+
+**Functional:**
+
+* Next.js app running locally
+* Map UI with clustering, hover sync, selection
+* Search API working locally
+* Typesense running locally via Docker
+* Supabase integration working
+* MLS ingestion queue + worker system functional locally
+
+**Partially Complete:**
+
+* Deployment (app live but not fully configured)
+* Environment variables (Supabase present, others missing)
+* Typesense integration (local only, not production-ready)
+* Alert system (logic exists, not fully wired to email sending)
+
+**Broken / Uncertain:**
+
+* Production search (no Typesense cloud)
+* Workers not deployed in production
+* Email alerts not operational
+* Environment variables missing → production instability
+
+---
+
+## 🏗️ 2. SYSTEM ARCHITECTURE (UPDATED)
+
+### MLS Ingestion System
+
+* Worker: `mlsPageWorker.ts`
+* Fetches paginated MLS data
+* Uses adaptive rate limiter
+* Stores in Supabase
+* Indexes into Typesense
+* Enqueues next page recursively
+
+---
+
+### Alert System
+
+* Table: `saved_searches`
+* Stores:
+
+  * email
+  * filters (JSON)
+  * last_run timestamp
+* Worker:
+
+  * Queries Typesense using filters
+  * Compares results
+  * Triggers email if matches found
+
+---
+
+### Email System
+
+* Provider: Resend
+* Sends listing alerts
+* HTML email with listing preview
+* Not fully wired into production worker
+
+---
+
+### Queue System
+
+* Library: BullMQ
+* Redis-backed
+* Queues:
+
+  * `mls-page`
+* Workers:
+
+  * Page ingestion worker
+  * (planned) alert worker
+* Concurrency: 1 (rate-limited ingestion)
+
+---
+
+### Frontend (UI / Pages)
+
+#### `/map`
+
+* Leaflet-based map
+* Features:
+
+  * Dynamic clustering (Supercluster)
+  * Hover sync with sidebar
+  * Selected listing preview
+  * Bounding box search
+  * Sidebar listing cards with images
+
+---
+
+### API Layer
+
+#### `/api/search`
+
+* Queries Typesense
+* Supports:
+
+  * text query
+  * city
+  * price range
+  * beds
+  * bounding box (geo search)
+* Returns:
+
+  * hits
+  * count
+
+#### `/api/save-search`
+
+* Stores saved search in Supabase
+* Accepts:
+
+  * email
+  * filters JSON
+
+---
+
+### Database (Supabase)
+
+#### `listings`
+
+* MLS data
+* Upserted by ingestion worker
+
+#### `saved_searches`
+
+* email
+* filters (JSON)
+* last_run
+* created_at
+
+---
+
+## 🗂️ 3. FILES CREATED / MODIFIED
+
+### `/workers/mlsPageWorker.ts`
+
+* Handles paginated MLS ingestion
+* Adaptive throttling
+* Recursive queue chaining
+
+---
+
+### `/lib/mls/processListingsBatch.ts`
+
+* Upserts listings into Supabase
+* Indexes into Typesense
+
+---
+
+### `/app/api/search/route.ts`
+
+* Typesense query layer
+* Filter building logic (geo + filters)
+
+---
+
+### `/app/api/save-search/route.ts`
+
+* Saves user search preferences
+
+---
+
+### `/workers/alertWorker.ts`
+
+* Iterates saved searches
+* Queries Typesense
+* Triggers alerts (email pending integration)
+
+---
+
+### `/components/maps/SearchMap.tsx`
+
+* Leaflet map
+* Supercluster integration
+* Dynamic clustering by viewport + zoom
+* Hover + selection sync
+* Marker rendering logic
+
+---
+
+### `/app/map/page.tsx`
+
+* Sidebar UI
+* Listings display
+* Hover + selection state
+* Fetches listings from API
+
+---
+
+### `/lib/email/sendEmail.ts`
+
+* Sends alert emails via Resend
+
+---
+
+## 🧠 4. BUSINESS LOGIC & RULES
+
+* Listings are uniquely identified by `mls_id`
+* Upserts must be idempotent
+* Search filters:
+
+  * price range
+  * beds minimum
+  * city match
+  * geo bounding box
+* Alerts trigger when:
+
+  * new listings match filters
+* Map behavior:
+
+  * clusters expand on click
+  * hover sync between map + sidebar
+* Listings must include:
+
+  * lat/lng for map
+  * price for display
+  * address for UI
+
+---
+
+## ⚙️ 5. ENVIRONMENT / CONFIG
+
+### Required Env Variables
+
+#### Supabase
+
+* `NEXT_PUBLIC_SUPABASE_URL`
+* `SUPABASE_SERVICE_ROLE_KEY`
+
+#### Typesense (NOT CONFIGURED YET)
+
+* `TYPESENSE_API_KEY`
+* `TYPESENSE_HOST`
+* `TYPESENSE_PORT`
+* `TYPESENSE_PROTOCOL`
+
+#### Email
+
+* `RESEND_API_KEY`
+
+---
+
+### External Services
+
+* Vercel (frontend + API)
+* Supabase (DB)
+* Typesense (search engine)
+* Resend (email)
+
+---
+
+## 🔁 6. WORKFLOWS (STEP-BY-STEP)
+
+### MLS Ingestion Flow
+
+1. Trigger sync API
+2. Enqueue page 0
+3. Worker fetches listings
+4. Save to Supabase
+5. Index into Typesense
+6. Enqueue next page
+7. Repeat until no data
+
+---
+
+### Search Flow
+
+1. User moves map / sets filters
+2. Frontend sends request to `/api/search`
+3. API builds Typesense query
+4. Typesense returns hits
+5. UI updates map + sidebar
+
+---
+
+### Saved Search Flow
+
+1. User enters email + filters
+2. API stores in `saved_searches`
+3. Worker periodically runs
+4. Queries Typesense
+5. Matches found → trigger email
+
+---
+
+### Alert Email Flow
+
+1. Worker detects matching listings
+2. Formats email
+3. Sends via Resend
+4. Updates `last_run`
+
+---
+
+## 🚧 7. KNOWN ISSUES / RISKS
+
+* ❌ Typesense not deployed (blocking production search)
+* ❌ Env vars incomplete in Vercel
+* ❌ Workers not running in production
+* ❌ Email system not triggered automatically
+* ❌ Redis dependency mismatch issues (ioredis vs bullmq)
+* ⚠️ Map performance at scale (needs optimization)
+* ⚠️ No auth system (emails not tied to users)
+
+---
+
+## 🎯 8. NEXT PRIORITIES
+
+1. Setup Typesense Cloud (CRITICAL)
+2. Add environment variables in Vercel
+3. Redeploy app
+4. Verify production search
+5. Deploy workers (Railway or similar)
+6. Enable email alerts fully
+7. Add authentication system
+
+---
+
+## 📏 9. STANDARDS & CONSTRAINTS (CRITICAL)
+
+* All ingestion must be async via queues
+* Workers must be idempotent
+* API routes must be stateless
+* No blocking operations in API routes
+* All external services must be environment-driven
+* Production must NOT depend on localhost services
+* Search must be handled via Typesense (not DB)
+
+---
+
+## 🧩 10. MISSING BUT NEEDED (GAPS)
+
+* Typesense Cloud deployment
+* Worker hosting (Railway)
+* Auth system (users)
+* CRM / lead tracking
+* Payment system (Stripe)
+* SEO pages for listings
+* Image pipeline for listings
+* Rate limiting for public API
+
+---
+
+## 🧾 11. TERMINOLOGY (NORMALIZED)
+
+* Listing = MLS property record
+* Hit = Typesense search result
+* Cluster = grouped map markers
+* Alert = triggered notification for saved search
+* Worker = background processor
+* Sync Run = MLS ingestion session
+* Filters = search constraints (price, beds, geo)
+
+---
+
+## 🧠 12. ASSUMPTIONS MADE
+
+* Supabase is production-ready and correctly configured
+* Listings include lat/lng fields
+* Typesense schema includes geo field (`location`)
+* Email alerts will be batch-based (not real-time streaming)
+* Redis is available locally for queue system
+* Vercel is primary hosting for frontend/API
+* Typesense Cloud will replace local Docker instance
+
+**END OF CONTEXT CAPTURE**
+
+
+2026-04-04
+```
+==============================
+PROJECT BRAIN — CONTEXT CAPTURE
+==============================
+
+Date Started: 2026-04-04  
+Date Continued in New Chat: 2026-04-04  
+Active Work Duration: ~6–8 hours (continuous debugging + deployment)
+
+---
+
+## 🧱 1. PROJECT SNAPSHOT (CURRENT STATE)
+
+### ✅ Completed / Working
+- Next.js app builds almost fully
+- Prisma downgraded to v5 and generating correctly
+- Core API routes compiling
+- MLS ingestion logic structured (skip/top pagination)
+- Alert system logic implemented
+- Email system using Resend working
+- Queue system operational without limiter conflicts
+- Map + clustering system compiled
+- Most TypeScript errors resolved globally
+
+### 🟡 Partially Complete
+- Seller lead pipeline (createSellerLead partially functional)
+- MLS ingestion queue orchestration (logic exists, not fully validated live)
+- Search filtering aligned but needs validation against DB schema
+
+### ❌ Broken / Current Blocking Issue
+- Syntax error in `createSellerLead.ts` (malformed object)
+- Remaining minor schema mismatches possible
+
+---
+
+## 🏗️ 2. SYSTEM ARCHITECTURE (UPDATED)
+
+### MLS Ingestion System
+- Uses MLS Grid API
+- Pagination via `skip + top`
+- Rate limited at API client level
+- Coordinator enqueues pages into queue
+- Worker processes listings asynchronously
+
+Flow:
+MLS API → fetchMLSGridListings → syncMLSGrid → mlsPageQueue → worker
+
+Constraints:
+- No nextLink pagination anymore
+- Controlled batching (TOP = 200)
+- Idempotent ingestion expected
+
+---
+
+### Alert System
+- Matches listings to saved searches
+- Filters:
+  - city match
+  - minPrice <= listing.price
+  - beds <= listing.beds
+- Deduplication via `alertEvent`
+- Writes to `alertQueue`
+
+---
+
+### Email System
+- Uses Resend
+- No generic sendEmail abstraction (removed)
+- Two pipelines:
+  - Listing digest (sendAlert)
+  - Seller outreach (direct Resend call)
+
+Enhancements:
+- Deal scoring engine
+- Urgency detection
+- Seller lead trigger
+
+---
+
+### Queue System
+- BullMQ-based
+- No limiter config (removed due to type conflicts)
+- Rate limiting handled in API client
+- Queues:
+  - mlsPageQueue
+  - alertQueue (DB-backed)
+
+---
+
+### Frontend (UI / Pages)
+- Map-based UI using react-leaflet
+- Cluster logic via supercluster
+- Property maps + neighborhood overlays
+- Some disabled routes still present (causing build issues)
+
+---
+
+### API Layer
+Endpoints:
+- /api/map-listings
+- /api/process-alerts
+- /api/test-alert
+- /api/track-click
+- /api/unsubscribe
+
+Rules:
+- No blocking operations
+- Async-safe logic
+- DB + queue separation
+
+---
+
+### Database (Prisma)
+
+Key Models:
+- Property
+- savedSearch
+- alertQueue
+- alertEvent
+- SellerLead
+- user
+
+Important Fix:
+- Prisma v7 → downgraded to v5
+- prisma client now globally stable (non-null)
+
+SellerLead (current):
+- id
+- city
+- beds
+- price
+- reason
+- propertyId
+
+---
+
+## 🗂️ 3. FILES CREATED / MODIFIED
+
+### Core Fixes
+- lib/prisma.ts → global singleton fix (non-null prisma)
+- lib/db.ts → Prisma import fix
+
+### MLS
+- lib/mls/syncMLSGrid.ts → skip/top pagination, queue integration
+- lib/mls/mlsGridClient.ts → API fetch + rate limiting
+
+### Alerts
+- lib/alerts/matchSearches.ts → matching + queue writes
+- lib/alerts/processAlertQueue.ts → batch processing
+
+### Email
+- lib/email/sendAlert.ts → full pipeline (deal scoring, urgency, leads)
+- lib/outreach/sendSellerOutreach.ts → switched to Resend direct
+
+### Seller
+- lib/seller/createSellerLead.ts → lead creation + dedupe (currently broken syntax)
+
+### Queue
+- lib/queue/mlsQueue.ts → limiter removed
+
+### Maps
+- components/maps/* → multiple Leaflet + clustering fixes
+
+### Search
+- lib/search/searchProperties.ts → beds/baths schema alignment
+
+### Misc Fixes
+- unsubscribe route → prisma null fix
+- process-alerts route → duplicate vars removed
+- test-result route → id required fix
+
+---
+
+## 🧠 4. BUSINESS LOGIC & RULES
+
+### Matching Logic
+- City must match
+- Price ≥ minPrice
+- Beds ≥ search.beds
+
+### Deal Scoring
+- >20% below market → score 60
+- >10% → score 40
+- >5% → score 20
+
+### Seller Lead Trigger
+- dealScore ≥ 40
+- Max 10 leads per run
+
+### Deduplication
+- alertEvent unique constraint:
+  (userId, propertyId, type)
+
+### Email Rules
+- No email if:
+  - no user email
+  - no listings
+  - no API key
+
+---
+
+## ⚙️ 5. ENVIRONMENT / CONFIG
+
+### Required ENV
+- DATABASE_URL
+- NEXT_PUBLIC_SITE_URL
+- RESEND_API_KEY
+- EMAIL_FROM
+- MLS_GRID_BASE_URL
+- MLS_GRID_TOKEN
+- NEXT_PUBLIC_SUPABASE_URL
+- SUPABASE_SERVICE_ROLE_KEY
+
+### Services
+- Supabase (sync state)
+- Resend (email)
+- MLS Grid API
+- Vercel (deployment)
+
+---
+
+## 🔁 6. WORKFLOWS
+
+### MLS Ingestion
+1. syncMLSGrid starts
+2. fetchMLSGridListings(skip, top)
+3. enqueue page into mlsPageQueue
+4. worker processes listings
+5. DB updated
+6. lastSync updated
+
+---
+
+### Alert Trigger Flow
+1. New listing ingested
+2. matchSavedSearches runs
+3. Matching searches found
+4. Dedup check (alertEvent)
+5. alertQueue record created
+6. Worker processes queue
+7. sendAlert triggered
+
+---
+
+### Email Pipeline
+1. Listings enriched (deal + urgency)
+2. Seller lead detection
+3. createSellerLead
+4. createTask (CRM)
+5. Render ListingDigestEmail
+6. Send via Resend
+
+---
+
+## 🚧 7. KNOWN ISSUES / RISKS
+
+- ❌ Syntax error in createSellerLead.ts (missing comma / malformed object)
+- Disabled routes still compiled by Next.js
+- Inconsistent naming:
+  - listingId vs propertyId
+- Type safety bypassed using `as any` in places
+- Queue not yet fully load-tested
+- MLS ingestion not validated at scale
+
+---
+
+## 🎯 8. NEXT PRIORITIES
+
+1. Fix createSellerLead syntax error
+2. Full successful deploy
+3. Validate MLS ingestion live
+4. Validate alert + email pipeline end-to-end
+5. Remove all disabled routes from /app
+6. Add logging + monitoring
+7. Harden type safety (remove `any`)
+8. Add retry/failure handling for queues
+
+---
+
+## 📏 9. STANDARDS & CONSTRAINTS (CRITICAL)
+
+- Prisma must never be nullable
+- All async work → queues
+- API routes must be fast (no heavy work)
+- Deduplication required for alerts
+- Email sending must be idempotent
+- MLS ingestion must be incremental (lastSync)
+- Rate limiting must be enforced at API layer
+
+---
+
+## 🧩 10. MISSING BUT NEEDED (GAPS)
+
+- Queue workers (production-ready deployment)
+- Monitoring / logging system
+- Error retry system
+- Admin dashboard
+- Lead CRM UI
+- Email unsubscribe UI handling improvements
+- MLS ingestion validation + backfill
+
+---
+
+## 🧾 11. TERMINOLOGY (NORMALIZED)
+
+- Listing = property from MLS
+- Property = DB representation of listing
+- Alert = notification trigger record
+- AlertQueue = pending notifications
+- AlertEvent = deduplication record
+- SellerLead = potential seller opportunity
+- Deal Score = pricing advantage metric
+- Worker = background processor
+- Queue = async job system
+
+---
+
+## 🧠 12. ASSUMPTIONS MADE
+
+- Property model uses `beds` and `baths` (not bedrooms/bathrooms)
+- SellerLead uses `propertyId` not `listingId`
+- Queue system uses BullMQ
+- Resend is sole email provider
+- Supabase used only for sync metadata
+- MLS API supports skip/top pagination
+- Disabled folders inside /app still compile
+
+---
+**END OF CONTEXT CAPTURE**
+
+
+2026-04-04
+````
+==============================
+PROJECT BRAIN — CONTEXT CAPTURE
+==============================
+
+Chat Start Date: 2026-04-04  
+Context Capture Created: 2026-04-04  
+Active Work Time: ~2–3 hours (continuous build/debug cycle)
+
+---
+
+## 🧱 1. PROJECT SNAPSHOT (CURRENT STATE)
+
+WORKED ON:
+- Full production deployment pipeline (Next.js + Vercel)
+- TypeScript build stabilization
+- Prisma + DB connectivity fixes
+- MLS ingestion (serverless-compatible version)
+- API reliability (map listings + MLS sync)
+- Environment variable handling on Vercel
+- Removal of worker-based architecture for serverless compatibility
+
+FUNCTIONAL:
+- Production deploy (Vercel) ✅
+- Prisma client generation in build ✅
+- Database reads via raw SQL ✅
+- `/api/map-listings` returning live data ✅ :contentReference[oaicite:0]{index=0}
+- Basic MLS ingestion endpoint (single batch) ✅
+
+PARTIALLY COMPLETE:
+- MLS ingestion (only 1 batch, no pagination/queue)
+- Data normalization inconsistencies (lat/lng vs latitude/longitude)
+- Redis/BullMQ architecture disabled (not production-ready on Vercel)
+
+BROKEN / UNCERTAIN:
+- Queue system (BullMQ) not usable in serverless
+- Redis dependency failing during build
+- MLS ingestion scalability
+- Proper background processing strategy
+
+---
+
+## 🏗️ 2. SYSTEM ARCHITECTURE (UPDATED)
+
+### MLS Ingestion System
+- Trigger: `/api/mls/sync`
+- Fetch: `fetchMLSGridListings({ skip, top, lastSync })`
+- Process: `processListingsBatch(listings)`
+- CURRENT MODE: synchronous, single batch (25 records)
+- CONSTRAINT: must be build-safe (no env usage during build)
+
+---
+
+### Alert System
+- Not modified in this session
+- Still dependent on listing ingestion + scoring
+
+---
+
+### Email System
+- Not modified
+- Uses Resend (configured via env)
+
+---
+
+### Queue System
+- BullMQ + Redis originally implemented
+- REMOVED from runtime usage
+- Reason: Vercel serverless cannot maintain workers / Redis connections
+
+---
+
+### Frontend (UI / Pages)
+- Fixed `useSearchParams` issue via Suspense boundary
+- Pages now successfully prerender/build
+
+---
+
+### API Layer
+- `/api/mls/sync` → safe runtime execution with dynamic imports
+- `/api/mls/status` → stubbed (no real tracking)
+- `/api/map-listings` → raw SQL fallback (working)
+
+---
+
+### Database (Prisma)
+- Prisma client generated during build
+- Schema mismatch detected:
+  - `Property.id` does NOT exist
+- Workaround:
+  - Switched to `$queryRawUnsafe`
+
+---
+
+## 🗂️ 3. FILES CREATED / MODIFIED
+
+### app/api/mls/sync/route.ts
+- Purpose: trigger MLS ingestion
+- Logic:
+  - Build-safe guard (`if !env → skip`)
+  - Dynamic imports to avoid build-time execution
+  - Fetch + process listings
+
+---
+
+### app/api/mls/status/route.ts
+- Purpose: placeholder status endpoint
+- Logic:
+  - Returns static response (no real tracking)
+
+---
+
+### lib/mls/syncMLSGrid.ts
+- Purpose: enqueue MLS pages (deprecated)
+- Logic:
+  - Previously used BullMQ
+  - Now unused
+
+---
+
+### workers/mlsWorker.ts
+- Purpose: MLS coordinator (deprecated)
+- Logic:
+  - Previously queued jobs
+  - Now unused
+
+---
+
+### workers/mlsPageWorker.ts
+- Purpose: worker processor (deprecated)
+- Logic:
+  - Batch processing
+  - Not usable in serverless
+
+---
+
+### app/api/map-listings/route.ts
+- Purpose: return listings for map
+- Logic:
+  - Raw SQL query:
+    ```sql
+    SELECT * FROM "Property" LIMIT 50
+    ```
+  - Returns working dataset
+
+---
+
+### package.json
+- Updated build script:
+  - `"build": "prisma generate && next build"`
+
+---
+
+### app/home-value/address/page.tsx
+### app/home-value/address/AddressContent.tsx
+- Purpose: fix Suspense + search params issue
+
+---
+
+## 🧠 4. BUSINESS LOGIC & RULES
+
+- Listings stored in `Property` table
+- Map endpoint returns latest 50 listings
+- MLS ingestion:
+  - Pulls batch of listings
+  - Immediately processes and stores
+- System assumes:
+  - Listings are append/update safe
+  - No deduplication logic enforced yet
+
+---
+
+## ⚙️ 5. ENVIRONMENT / CONFIG
+
+REQUIRED ENV:
+- MLS_GRID_BASE_URL
+- MLS_GRID_TOKEN
+- REDIS_URL (currently unused in runtime)
+
+IMPORTANT:
+- Env must exist in **Production**, not just Preview
+- Build environment ≠ runtime environment
+
+EXTERNAL SERVICES:
+- Vercel (hosting)
+- Prisma (ORM)
+- Supabase (DB)
+- Typesense (search, not used here)
+- Resend (email)
+
+---
+
+## 🔁 6. WORKFLOWS (STEP-BY-STEP)
+
+### MLS Ingestion (CURRENT)
+
+1. Call `/api/mls/sync`
+2. Check env exists
+3. Dynamically import MLS client
+4. Fetch listings (skip=0, top=25)
+5. Process batch
+6. Store in DB
+7. Return `{ status: success }`
+
+---
+
+### Map Listings Fetch
+
+1. Call `/api/map-listings`
+2. Execute raw SQL query
+3. Return listings array
+
+---
+
+## 🚧 7. KNOWN ISSUES / RISKS
+
+- ❌ Redis connection fails in Vercel (127.0.0.1:6379)
+- ❌ BullMQ not usable in serverless
+- ❌ No background processing
+- ❌ MLS ingestion not scalable
+- ❌ Schema mismatch (`id` missing)
+- ❌ Duplicate/dirty data possible
+- ⚠️ Raw SQL bypasses Prisma safety
+- ⚠️ No pagination in API
+
+---
+
+## 🎯 8. NEXT PRIORITIES
+
+1. Replace queue system (CRITICAL)
+   - Options:
+     - Vercel cron
+     - External worker (Railway / Fly.io)
+2. Fix Prisma schema mismatch
+3. Implement proper MLS pagination ingestion
+4. Add deduplication logic
+5. Normalize lat/lng fields
+6. Add ingestion logging + status tracking
+7. Re-enable async processing (non-blocking)
+
+---
+
+## 📏 9. STANDARDS & CONSTRAINTS (CRITICAL)
+
+- MUST be build-safe (no env access at build time)
+- MUST NOT use long-running processes in API routes
+- MUST avoid blocking API calls
+- MUST support serverless execution
+- MUST use dynamic imports for runtime-only logic
+- MUST ensure Prisma client generated in build
+- MUST assume no persistent workers
+
+---
+
+## 🧩 10. MISSING BUT NEEDED (GAPS)
+
+- Background job system (critical)
+- Deduplication logic
+- Listing update vs insert logic
+- Retry handling for ingestion
+- Monitoring / logging system
+- Real status tracking (not stub)
+- Search indexing pipeline
+
+---
+
+## 🧾 11. TERMINOLOGY (NORMALIZED)
+
+- Listing = MLS property record
+- Property = DB representation of listing
+- Ingestion = pulling + storing MLS data
+- Sync = trigger ingestion process
+- Batch = subset of listings fetched
+- Worker = background processor (currently disabled)
+
+---
+
+## 🧠 12. ASSUMPTIONS MADE
+
+- Property table exists and is primary dataset
+- MLS API returns valid structured data
+- Supabase DB schema differs from Prisma schema
+- Serverless is required deployment model (Vercel)
+- Queue system will be replaced externally
+
+---
+
+## ⚡ COLLABORATION MODE (IMPORTANT)
+
+**Execution Style Established:**
+
+- Zero explanation, command-first workflow
+- One-step-at-a-time instructions
+- Immediate feedback loop (command → result → fix)
+- No redundancy
+- Production-first decisions (not theoretical)
+- Aggressive error resolution
+
+**Name:**  
+→ “Command-Driven Production Loop”
+
+---
+
+END OF CONTEXT
+````
+
+
+2026-04-05
+==============================
+PROJECT BRAIN — CONTEXT CAPTURE
+==============================
+## 🗓️ SESSION METADATA
+
+Start Date: 2026-04-05  
+End Date: 2026-04-05  
+Active Hours: ~4–6 hours
+---
+
+## 🧱 1. PROJECT SNAPSHOT (CURRENT STATE)
+
+- MLS Grid access suspended due to rate limit violations
+- Worker system rebuilt with strict rate limiting + safe mode
+- Mock ingestion fully working (500 listings processed)
+- Map system stabilized (Leaflet + React issues resolved)
+- API map listings endpoint functioning
+- Frontend map renders cleanly without errors
+
+---
+
+## 🏗️ 2. SYSTEM ARCHITECTURE (UPDATED)
+
+### MLS Ingestion System
+- Worker-based (Node process)
+- Serial requests only
+- Rate limited (~1.1 RPS)
+- Uses lastSync checkpoint
+- Batch size = 50
+- Max runtime enforced (10 min)
+
+### Alert System
+- DB-backed (AlertQueue)
+- Status lifecycle: pending → sent → failed
+
+### Email System
+- Planned: Resend integration
+
+### Queue System
+- Current: DB queue
+- Future: BullMQ + Redis
+
+### Frontend
+- Next.js App Router
+- React client components
+- Leaflet map (react-leaflet)
+- Dynamic import (SSR disabled)
+
+### API Layer
+- /api/map-listings
+- Bounding box filtering
+- Query param filters (price, beds, type)
+
+### Database
+- Supabase Postgres
+- Prisma client only
+- SQL editor = schema authority
+
+---
+
+## 🗂️ 3. FILES CREATED / MODIFIED
+
+### lib/mls/syncMLSGrid.ts
+- Added strict rate limiting
+- Added max runtime guard
+- Added safe mode (mock data)
+- Added lastSync usage
+
+### workers/main.ts
+- Executes sync once
+- Prevents runaway loops
+
+### components/maps/MapInner.tsx
+- Fixed React hook order issues
+- Removed conditional hook execution
+- Stabilized Leaflet rendering
+- Added FlyToListing component
+
+### components/maps/MapEvents.tsx
+- Handles map movement + bounds updates
+
+### components/maps/MapMarkers.tsx
+- Renders listing markers
+
+---
+
+## 🧠 4. BUSINESS LOGIC & RULES
+
+- Listings fetched via bounding box
+- Filters applied via URL params
+- Map movement triggers data fetch
+- Active listing triggers map flyTo
+- MLS ingestion MUST be rate-limited
+
+---
+
+## ⚙️ 5. ENVIRONMENT / CONFIG
+
+- USE_MOCK = true (current)
+- Supabase connection via pooler (6543)
+- Direct DB only for schema changes
+
+---
+
+## 🔁 6. WORKFLOWS
+
+### MLS Sync Flow
+
+1. Start worker
+2. Load lastSync
+3. Fetch listings (paged)
+4. Process + upsert
+5. Update lastSync
+6. Sleep (900ms)
+7. Repeat until done or timeout
+
+---
+
+### Map Interaction Flow
+
+1. User moves map
+2. Bounds captured
+3. URL updated
+4. API request triggered
+5. Listings updated
+6. Markers rendered
+
+---
+
+## 🚧 7. KNOWN ISSUES / RISKS
+
+- MLS access suspended (external dependency)
+- No queue system yet (single-threaded worker)
+- No clustering/deduplication yet
+
+---
+
+## 🎯 8. NEXT PRIORITIES
+
+1. Deploy worker to Railway
+2. Re-enable MLS ingestion safely
+3. Add Redis queue (BullMQ)
+4. Improve marker UX (hover sync, clustering)
+5. Build listing detail experience
+
+---
+
+## 📏 9. STANDARDS & CONSTRAINTS
+
+- No unbounded loops
+- No parallel MLS requests
+- Must be idempotent
+- Must be rate-safe
+- No blocking API routes
+- Hooks must be consistent
+
+---
+
+## 🧩 10. MISSING BUT NEEDED
+
+- Redis queue system
+- Worker hosting (Railway)
+- Email sending system
+- Listing detail pages
+- Caching layer
+
+---
+
+## 🧾 11. TERMINOLOGY
+
+- Listing = MLS property
+- Sync = MLS ingestion job
+- Worker = background processor
+- Alert = notification trigger
+- Bounds = map viewport box
+
+---
+
+## 🧠 12. ASSUMPTIONS MADE
+
+- MLS Grid will restore access
+- Worker will be primary ingestion method
+- Supabase remains DB provider
+- Next.js remains frontend framework
+
+---
+END OF CONTEXT
+````
+
+
+

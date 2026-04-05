@@ -10,15 +10,19 @@ export default function NeighborhoodOverlayMap() {
   return (
 
     <MapContainer
-      center={[40.017, -105.283]}
-      zoom={12}
-      style={{ height: "500px", width: "100%" }}
-    >
+  {...({
+    center: [40.017, -105.283],
+    zoom: 12,
+    style: { height: "500px", width: "100%" },
+  } as any)}
+>
 
       <TileLayer
-        attribution='&copy; OpenStreetMap contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
+  {...({
+    attribution: "&copy; OpenStreetMap contributors",
+    url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+  } as any)}
+/>
 
       {neighborhoodPolygons.map((n) => (
 
