@@ -1,87 +1,58 @@
 "use strict";
-// /lib/mls/syncMLSGrid.ts
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.syncMLSGrid = syncMLSGrid;
-const supabase_js_1 = require("@supabase/supabase-js");
-const mlsGridClient_1 = require("./mlsGridClient");
-const mlsPageQueue_1 = require("../queue/mlsPageQueue");
-function getSupabase() {
-    if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
-        throw new Error("Missing NEXT_PUBLIC_SUPABASE_URL");
+const fetchMLSPage_1 = require("./fetchMLSPage");
+const upsertListing_1 = require("./upsertListing");
+const syncState_1 = require("./syncState");
+const mockListings_1 = require("./mockListings");
+const RATE_DELAY_MS = 900;
+const BATCH_SIZE = 50;
+async function syncMLSGrid({ maxRuntimeMs }) {
+    const start = Date.now();
+    const USE_MOCK = process.env.USE_MOCK === "true";
+    console.log("⚙️ Sync started");
+    console.log("MODE:", USE_MOCK ? "MOCK" : "LIVE");
+    let lastSync = await (0, syncState_1.getLastSync)();
+    let hasMore = true;
+    let page = 0;
+    while (hasMore) {
+        // ⛔ HARD STOP: runtime protection
+        if (Date.now() - start > maxRuntimeMs) {
+            console.log("⛔ Max runtime reached — exiting safely");
+            break;
+        }
+        console.log(`📦 Fetching page ${page}`);
+        let listings = [];
+        if (USE_MOCK) {
+            listings = mockListings_1.mockListings.slice(page * BATCH_SIZE, (page + 1) * BATCH_SIZE);
+            hasMore = listings.length === BATCH_SIZE;
+        }
+        else {
+            const result = await (0, fetchMLSPage_1.fetchMLSPage)({
+                lastSync,
+                top: BATCH_SIZE,
+                skip: page * BATCH_SIZE,
+            });
+            listings = result.listings;
+            hasMore = result.hasMore;
+        }
+        if (!listings.length) {
+            console.log("✅ No more listings");
+            break;
+        }
+        for (const listing of listings) {
+            await (0, upsertListing_1.upsertListing)(listing);
+        }
+        console.log(`✅ Processed ${listings.length} listings`);
+        page++;
+        // ⏱ RATE LIMIT (CRITICAL)
+        await sleep(RATE_DELAY_MS);
     }
-    if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
-        throw new Error("Missing SUPABASE_SERVICE_ROLE_KEY");
+    if (!USE_MOCK) {
+        await (0, syncState_1.updateLastSync)(new Date().toISOString());
     }
-    return (0, supabase_js_1.createClient)(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
+    console.log("🏁 Sync finished");
 }
-const MAX_RETRIES = 3;
-const RETRY_DELAY_MS = 2000;
 function sleep(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
-}
-async function withRetry(fn, label) {
-    let attempt = 0;
-    while (attempt < MAX_RETRIES) {
-        try {
-            return await fn();
-        }
-        catch (err) {
-            attempt++;
-            console.error(`❌ ${label} failed (attempt ${attempt})`, err?.message);
-            if (attempt >= MAX_RETRIES)
-                throw err;
-            await sleep(RETRY_DELAY_MS * attempt);
-        }
-    }
-    throw new Error(`Failed after retries: ${label}`);
-}
-async function getLastSync(supabase) {
-    const { data, error } = await supabase
-        .from("mls_sync_state")
-        .select("last_sync")
-        .eq("id", "mls_grid")
-        .single();
-    if (error) {
-        console.error("❌ Failed to fetch lastSync", error);
-        return null;
-    }
-    return data?.last_sync || null;
-}
-async function updateLastSync(supabase, timestamp) {
-    const { error } = await supabase
-        .from("mls_sync_state")
-        .upsert({
-        id: "mls_grid",
-        last_sync: timestamp,
-    });
-    if (error) {
-        console.error("❌ Failed to update lastSync", error);
-    }
-}
-async function syncMLSGrid() {
-    const supabase = getSupabase();
-    console.log("🚀 Starting MLS Grid sync...");
-    const lastSync = await getLastSync(supabase);
-    console.log("⏱ Last Sync:", lastSync);
-    let nextUrl = null;
-    let page = 0;
-    do {
-        page++;
-        console.log(`📦 Fetching page ${page}...`);
-        const data = await withRetry(() => (0, mlsGridClient_1.fetchMLSGridListings)(nextUrl, lastSync), `Fetch page ${page}`);
-        const listings = data?.value || [];
-        console.log(`➡️ ${listings.length} listings fetched`);
-        // 🔥 FAN OUT PAGE JOB
-        await mlsPageQueue_1.mlsPageQueue.add("process-page", {
-            listings,
-            page,
-        }, {
-            removeOnComplete: true,
-            removeOnFail: false,
-        });
-        nextUrl = data?.["@odata.nextLink"] || null;
-    } while (nextUrl);
-    const newSyncTime = new Date().toISOString();
-    await updateLastSync(supabase, newSyncTime);
-    console.log("🎉 Sync complete. Updated lastSync:", newSyncTime);
 }

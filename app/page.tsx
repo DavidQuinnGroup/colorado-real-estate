@@ -10,7 +10,7 @@ const MapInner = dynamic(() => import("@/components/maps/MapInner"), {
 import MapSidebar from "@/components/maps/MapSidebar";
 
 export default function HomePage() {
-  const [listings, setListings] = useState([]);
+  const [listings, setListings] = useState<any[]>([])
   const [activeListingId, setActiveListingId] = useState<string | null>(null);
 
   return (

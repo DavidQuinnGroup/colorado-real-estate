@@ -1,89 +1,54 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const bullmq_1 = require("bullmq");
-const redis_1 = require("@/lib/queue/redis");
-const prisma_1 = require("@/lib/prisma");
-const sendAlert_1 = require("@/lib/email/sendAlert");
-const worker = new bullmq_1.Worker("alerts", async (job) => {
-    const { userId } = job.data;
-    if (!userId) {
-        throw new Error("Missing userId in job");
-    }
-    // 🔥 1. Fetch ALL pending alerts for this user
-    const alerts = await prisma_1.prisma.alertQueue.findMany({
-        where: {
-            userId,
-            status: "pending",
+const supabase_js_1 = require("@supabase/supabase-js");
+const typesense_1 = __importDefault(require("typesense"));
+const supabase = (0, supabase_js_1.createClient)(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
+const typesense = new typesense_1.default.Client({
+    nodes: [
+        {
+            host: process.env.TYPESENSE_HOST,
+            port: Number(process.env.TYPESENSE_PORT),
+            protocol: process.env.TYPESENSE_PROTOCOL,
         },
-        include: {
-            user: true,
-        },
-        orderBy: {
-            createdAt: "asc",
-        },
-    });
-    if (!alerts.length) {
-        console.log("No pending alerts");
-        return;
-    }
-    const user = alerts[0].user;
-    if (!user?.email) {
-        throw new Error("User has no email");
-    }
-    try {
-        // 🔥 2. Extract listings from payload
-        // 🔒 Safely extract valid listings
-        const listings = alerts
-            .map((alert) => alert.payload)
-            .filter((payload) => {
-            if (!payload)
-                return false;
-            // ensure critical fields exist
-            if (!payload.id) {
-                console.warn("⚠️ Missing listing.id in payload", payload);
-                return false;
-            }
-            return true;
-        });
-        if (!listings.length) {
-            console.warn("⚠️ No valid listings to send");
-            return;
-        }
-        // 🔥 3. Send ONE digest email
-        await (0, sendAlert_1.sendAlert)({
-            user,
-            listings,
-        });
-        // 🔥 4. Mark ALL as sent
-        await prisma_1.prisma.alertQueue.updateMany({
-            where: {
-                id: {
-                    in: alerts.map((a) => a.id),
-                },
-            },
-            data: {
-                status: "sent",
-                sentAt: new Date(),
-            },
-        });
-        console.log(`📦 Sent digest (${listings.length}) to ${user.email}`);
-    }
-    catch (error) {
-        console.error("Alert batch failed:", error);
-        await prisma_1.prisma.alertQueue.updateMany({
-            where: {
-                id: {
-                    in: alerts.map((a) => a.id),
-                },
-            },
-            data: {
-                status: "failed",
-            },
-        });
-        throw error; // enables retries
-    }
-}, {
-    connection: redis_1.redis,
-    concurrency: 5,
+    ],
+    apiKey: process.env.TYPESENSE_API_KEY,
+    connectionTimeoutSeconds: 5,
 });
-console.log("🚀 Alert worker running...");
+async function runAlerts() {
+    const { data: searches } = await supabase
+        .from("saved_searches")
+        .select("*");
+    for (const search of searches || []) {
+        const filters = search.filters;
+        const results = await typesense
+            .collections("listings")
+            .documents()
+            .search({
+            q: "*",
+            query_by: "address",
+            filter_by: buildFilter(filters),
+        });
+        if (results.found > 0) {
+            console.log(`📧 Send alert to ${search.email}`);
+            // TODO: send email
+        }
+        await supabase
+            .from("saved_searches")
+            .update({ last_run: new Date().toISOString() })
+            .eq("id", search.id);
+    }
+}
+function buildFilter(filters) {
+    let f = [];
+    if (filters.minPrice)
+        f.push(`price:>=${filters.minPrice}`);
+    if (filters.maxPrice)
+        f.push(`price:<=${filters.maxPrice}`);
+    if (filters.beds)
+        f.push(`beds:>=${filters.beds}`);
+    return f.join(" && ");
+}
+runAlerts();

@@ -1,39 +1,30 @@
 "use strict";
-// /lib/mls/mlsGridClient.ts
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.fetchMLSGridListings = fetchMLSGridListings;
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config({ path: ".env.local" });
+const rateLimiter_1 = require("./rateLimiter");
 const BASE_URL = process.env.MLS_GRID_BASE_URL;
 const TOKEN = process.env.MLS_GRID_TOKEN;
-// 🔥 FIX: Normalize timestamp to MLS format
-function formatMLSTimestamp(ts) {
-    if (!ts)
-        return null;
-    // Convert to Date → ISO → ensures Z format
-    return new Date(ts).toISOString();
-}
-async function fetchMLSGridListings(nextUrl, lastSync) {
-    let url = nextUrl;
-    if (!url) {
-        const params = new URLSearchParams();
-        params.append("$top", "200");
-        // 🔥 FIX APPLIED HERE
-        const formatted = formatMLSTimestamp(lastSync ?? null);
-        if (formatted) {
-            params.append("$filter", `ModificationTimestamp gt ${formatted}`);
-        }
-        url = `${BASE_URL}/Property?${params.toString()}`;
-    }
+if (!BASE_URL)
+    throw new Error("Missing MLS_GRID_BASE_URL");
+if (!TOKEN)
+    throw new Error("Missing MLS_GRID_TOKEN");
+async function fetchMLSGridListings({ skip, top, lastSync, }) {
+    const url = `${BASE_URL}/Property?$top=${top}&$skip=${skip}&$filter=ModificationTimestamp gt ${lastSync}`;
     console.log("🌐 MLS Request:", url);
+    await (0, rateLimiter_1.rateLimit)();
     const res = await fetch(url, {
         headers: {
             Authorization: `Bearer ${TOKEN}`,
-            "Content-Type": "application/json",
         },
     });
     if (!res.ok) {
-        const text = await res.text();
-        console.error("❌ MLS API ERROR:", text);
-        throw new Error("MLS API request failed");
+        throw new Error(`MLS API Error: ${res.status}`);
     }
-    return res.json();
+    const data = await res.json();
+    return data.value || [];
 }

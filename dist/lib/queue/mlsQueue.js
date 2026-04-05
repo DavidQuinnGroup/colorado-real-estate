@@ -1,21 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.mlsQueue = void 0;
-exports.enqueueMLSJob = enqueueMLSJob;
+exports.mlsPageQueue = exports.mlsQueue = exports.connection = void 0;
 const bullmq_1 = require("bullmq");
-const redis_1 = require("./redis");
-const QUEUE_NAME = 'mls-sync';
-// ✅ THIS WAS MISSING
-exports.mlsQueue = new bullmq_1.Queue(QUEUE_NAME, {
-    connection: redis_1.connection,
+exports.connection = {
+    host: "127.0.0.1",
+    port: 6379,
+};
+exports.mlsQueue = new bullmq_1.Queue("mls-sync", {
+    connection: exports.connection,
 });
-async function enqueueMLSJob() {
-    console.log('[QUEUE] Adding MLS job...');
-    const job = await exports.mlsQueue.add(QUEUE_NAME, {}, {
-        removeOnComplete: true,
-        removeOnFail: false,
-        attempts: 5,
-    });
-    console.log('[QUEUE] Job added:', job.id);
-    return job;
-}
+exports.mlsPageQueue = new bullmq_1.Queue("mls-page", {
+    connection: exports.connection,
+});

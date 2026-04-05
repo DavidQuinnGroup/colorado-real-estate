@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.sendSellerOutreach = sendSellerOutreach;
-const sendEmail_1 = require("../email/sendEmail");
+const resend_1 = require("resend");
 async function sendSellerOutreach(lead) {
     if (!lead.email) {
         throw new Error('Missing lead email');
@@ -16,10 +16,11 @@ async function sendSellerOutreach(lead) {
 
     <p>– David</p>
   `;
-    return (0, sendEmail_1.sendEmail)({
+    const resend = new resend_1.Resend(process.env.RESEND_API_KEY);
+    await resend.emails.send({
+        from: process.env.EMAIL_FROM || "onboarding@resend.dev",
         to: lead.email,
         subject,
         html,
-        leadId: lead.id, // 🔥 CRITICAL
     });
 }
