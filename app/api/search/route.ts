@@ -1,3 +1,9 @@
+if (process.env.NEXT_PHASE === "phase-production-build") {
+  console.log("⛔ Skipping /api/search during build")
+  
+  export const GET = async () => new Response(JSON.stringify({ results: [] }))
+}
+
 export const dynamic = "force-dynamic"
 
 import { NextResponse } from 'next/server'
