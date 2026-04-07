@@ -8,7 +8,8 @@ async function upsertListing(listing) {
         .from("Property")
         .upsert({
         listing_key: listing.ListingKey,
-        mls_id: listing.mls_id,
+        mls_id: listing.ListingId,
+        mls_source: listing.MlsId,
         address: listing.address,
         price: listing.price,
         status: listing.status,
