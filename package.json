@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build && tsc -p tsconfig.worker.json",
+    "build": "next build",
     "start": "next start",
     "build:workers": "tsc -p tsconfig.worker.json"
 },
