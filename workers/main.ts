@@ -1,3 +1,5 @@
+import "dotenv/config";
+
 async function start() {
   // 🚨 HARD BUILD GUARD
   if (process.env.NEXT_PHASE === "phase-production-build") {

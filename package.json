@@ -7,12 +7,12 @@
     "build": "next build",
     "start": "next start",
     "build:workers": "tsc -p tsconfig.worker.json"
-},
+  },
   "dependencies": {
     "@prisma/client": "^5.22.0",
     "@supabase/supabase-js": "^2.101.0",
     "bullmq": "^5.7.0",
-    "dotenv": "^17.3.1",
+    "dotenv": "^17.4.1",
     "ioredis": "^5.3.2",
     "leaflet": "^1.9.4",
     "next": "16.1.6",

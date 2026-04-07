@@ -10,8 +10,7 @@ export async function upsertListing(listing: any) {
     .from("Property")
     .upsert(
       {
-        id: listing.listing_id,
-        mls_id: listing.mls_id,
+        mlsid: listing.ListingId,
         address: listing.address,
         price: listing.price,
         status: listing.status,
@@ -23,7 +22,7 @@ export async function upsertListing(listing: any) {
         photos: listing.photos,
         raw_json: listing.raw_json,
       },
-      { onConflict: "id" }
+      { onConflict: "mlsid" }
     );
 
   if (error) {
