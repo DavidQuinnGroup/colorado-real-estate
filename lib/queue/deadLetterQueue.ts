@@ -1,5 +1,7 @@
 import { Queue } from "bullmq";
-import { connection } from "./redis";
+import { getRedisConnection } from "./redis";
+
+const connection = getRedisConnection();
 
 export const deadLetterQueue = new Queue("mls-dead-letter", {
   connection,

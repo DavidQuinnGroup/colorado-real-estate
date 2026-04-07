@@ -1,16 +1,27 @@
-import Redis from "ioredis"
+let connection: any = null;
 
-let redis: Redis | null = null
+function isBuildPhase() {
+  return process.env.NEXT_PHASE === "phase-production-build";
+}
 
-export function getRedis() {
-  if (process.env.NODE_ENV === "production" && process.env.RAILWAY_ENVIRONMENT) {
-    // Only connect in runtime, not build
-    if (!redis) {
-      redis = new Redis(process.env.REDIS_URL!)
-    }
-    return redis
+export function getRedisConnection() {
+  // 🚨 NEVER connect during build
+  if (isBuildPhase()) {
+    console.log("⛔ Skipping Redis connection during build");
+    return null;
   }
 
-  // During build → return null (no connection)
-  return null
+  if (connection) return connection;
+
+  const { Redis } = require("ioredis");
+
+  connection = new Redis(process.env.REDIS_URL || "redis://localhost:6379");
+
+  connection.on("error", (err: any) => {
+    console.error("❌ Redis error", err);
+  });
+
+  console.log("✅ Redis connected");
+
+  return connection;
 }
