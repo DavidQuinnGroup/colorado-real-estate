@@ -1,3 +1,4 @@
+"use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     var desc = Object.getOwnPropertyDescriptor(m, k);
@@ -31,6 +32,8 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
+Object.defineProperty(exports, "__esModule", { value: true });
+require("dotenv/config");
 async function start() {
     // 🚨 HARD BUILD GUARD
     if (process.env.NEXT_PHASE === "phase-production-build") {

@@ -4,12 +4,10 @@ exports.upsertListing = upsertListing;
 const supabase_js_1 = require("@supabase/supabase-js");
 const supabase = (0, supabase_js_1.createClient)(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 async function upsertListing(listing) {
-    const { error } = await supabase
+    await supabase
         .from("Property")
         .upsert({
-        listing_key: listing.ListingKey,
-        mls_id: listing.ListingId,
-        mls_source: listing.MlsId,
+        mlsid: listing.ListingId,
         address: listing.address,
         price: listing.price,
         status: listing.status,
@@ -20,9 +18,5 @@ async function upsertListing(listing) {
         sqft: listing.sqft,
         photos: listing.photos,
         raw_json: listing.raw_json,
-    }, { onConflict: "listing_key" });
-    if (error) {
-        console.error("❌ Upsert error:", error);
-        throw error;
-    }
+    }, { onConflict: "mlsid" });
 }
