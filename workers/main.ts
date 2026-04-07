@@ -1,25 +1,22 @@
-import { syncMLSGrid } from "../lib/mls/syncMLSGrid"
-
-const MAX_RUNTIME_MS = 10 * 60 * 1000 // 10 minutes
-
-async function main() {
-  const start = Date.now()
-
-  console.log("🚀 MLS Worker started")
-
-  try {
-    await syncMLSGrid({
-      maxRuntimeMs: MAX_RUNTIME_MS,
-    })
-
-    console.log("✅ MLS sync completed safely")
-  } catch (err) {
-    console.error("❌ MLS sync failed:", err)
-  } finally {
-    const duration = ((Date.now() - start) / 1000).toFixed(2)
-    console.log(`⏱ Worker finished in ${duration}s`)
-    process.exit(0)
+async function start() {
+  // 🚨 HARD BUILD GUARD
+  if (process.env.NEXT_PHASE === "phase-production-build") {
+    console.log("⛔ Skipping worker during build phase");
+    return;
   }
+
+  console.log("🚀 Worker starting...");
+
+  const { syncMLSGrid } = await import("../lib/mls/syncMLSGrid");
+
+  const maxRuntimeMs = Number(process.env.MLS_MAX_RUNTIME_MS || 600000);
+
+  await syncMLSGrid({ maxRuntimeMs });
+
+  console.log("🏁 Worker finished");
 }
 
-main()
+start().catch((err) => {
+  console.error("❌ Worker crashed", err);
+  process.exit(1);
+});
