@@ -7,7 +7,7 @@ async function upsertListing(listing) {
     const { error } = await supabase
         .from("Property")
         .upsert({
-        id: listing.listing_id,
+        listing_key: listing.ListingKey,
         mls_id: listing.mls_id,
         address: listing.address,
         price: listing.price,
@@ -19,7 +19,7 @@ async function upsertListing(listing) {
         sqft: listing.sqft,
         photos: listing.photos,
         raw_json: listing.raw_json,
-    }, { onConflict: "id" });
+    }, { onConflict: "listing_key" });
     if (error) {
         console.error("❌ Upsert error:", error);
         throw error;
