@@ -14,6 +14,14 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["workers/**/*", "lib/**/*"],
-  "exclude": ["node_modules"]
+  "include": [
+  "workers/**/*",
+  "lib/mls/**/*",
+  "lib/queue/**/*",
+  "lib/typesense/**/*"
+],
+"exclude": [
+  "node_modules",
+  "lib/email/**/*"
+]
 }
