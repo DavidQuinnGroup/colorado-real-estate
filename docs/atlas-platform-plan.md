@@ -21,245 +21,178 @@ Key rules:
 * Supabase is the source of truth (NOT Prisma)
 * Production-grade architecture only
 
+```
 ==============================
 PROJECT BRAIN — CONTEXT CAPTURE
-===============================
+==============================
 
-**Chat Start Date:** 2026-04-05
-**Chat End / Transition Date:** 2026-04-05
-**Active Work Duration:** ~4–6 hours
+Start Date: 2026-04-07  
+Continuation Date: 2026-04-07  
+Active Work Time: ~3–4 hours
 
 ---
 
 ## 🧱 1. PROJECT SNAPSHOT (CURRENT STATE)
 
-**Worked on:**
+Worked on:
+- MLS ingestion worker (Railway deployment)
+- Supabase schema alignment
+- Worker build isolation
+- Redis + queue setup stabilization
+- TypeScript worker compilation
+- MLS API pagination + runtime safety
 
-* Production deployment of MLS worker (Railway)
-* Fixing build pipeline failures (Next.js + worker)
-* Separating build-time vs runtime execution
-* GitHub repo setup + Railway integration
-* Environment + worker orchestration
-* Eliminating Redis / API / external service build crashes
+Functional:
+- Worker builds successfully (Railway)
+- Worker executes without crashing
+- MLS API calls succeed
+- Pagination + runtime limits working
+- Supabase connection working
 
-**Now Functional:**
+Partially Complete:
+- Data ingestion pipeline runs but fails to insert rows
+- Upsert logic implemented but failing due to missing/invalid MLS ID
 
-* GitHub repo connected to Railway
-* Clean Railway worker service
-* Build pipeline succeeds (Next.js + worker compile)
-* Worker runs from `dist/workers/main.js`
-* MOCK MLS ingestion pipeline operational
-* Dynamic import system prevents build-time crashes
-
-**Partially Complete:**
-
-* API routes still patched defensively (not fully refactored)
-* Search system works but uses runtime-safe lazy loading
-* Queue system partially guarded (not fully production-hardened)
-
-**Broken / Uncertain:**
-
-* Redis not connected in production (currently bypassed)
-* Typesense / search infra not fully validated in production
-* Some API routes may still contain hidden build-time risks
+Broken / Uncertain:
+- `mlsid` is NULL during insert
+- Correct MLS identifier field not confirmed (ListingKey vs nested field)
+- No rows successfully inserted into `Property` table yet
 
 ---
 
 ## 🏗️ 2. SYSTEM ARCHITECTURE (UPDATED)
 
 ### MLS Ingestion System
+Flow:
+1. Worker starts (`dist/workers/main.js`)
+2. Calls `syncMLSGrid`
+3. Fetches MLS pages via `fetchMLSPage`
+4. Iterates listings
+5. Calls `upsertListing`
 
-* Worker-based ingestion via Railway
-* Entry: `workers/main.ts`
-* Calls `syncMLSGrid({ maxRuntimeMs })`
-* Supports:
-
-  * MOCK mode (safe)
-  * LIVE mode (future)
-* Rate-limited via env config
-* No unbounded loops (critical constraint)
+Constraints:
+- Max runtime enforced (`MLS_MAX_RUNTIME_MS`)
+- Page limit enforced (`MLS_MAX_PAGES`)
+- Rate limiting enforced (`MLS_RATE_DELAY_MS`)
+- Must never loop infinitely
 
 ---
 
 ### Alert System
-
-* Uses queue (BullMQ)
-* Worker processes listing matches
-* Triggered post-ingestion
-* Currently partially active (depends on Redis)
+- Not implemented yet
 
 ---
 
 ### Email System
-
-* Uses Resend API
-* Triggered via API routes (e.g. valuation)
-* Must NOT initialize during build
+- Exists but excluded from worker build
+- Not active in ingestion flow
 
 ---
 
 ### Queue System
-
-* BullMQ + Redis
-* Redis connection:
-
-  * Disabled during build
-  * Intended for runtime only
-* Worker file:
-
-  * `/lib/queue/worker.ts`
-* Guarded with `NEXT_PHASE`
+- BullMQ queues configured
+- Redis connection runtime-safe
+- Queues defined:
+  - mlsQueue
+  - mlsPageQueue
+  - alertQueue
+  - deadLetterQueue
 
 ---
 
 ### Frontend (UI / Pages)
-
-* Next.js 16 (App Router)
-* Pages:
-
-  * Listings map
-  * Home valuation
-  * Search
-* Uses API routes for data
+- Exists (Next.js)
+- Not involved in current ingestion debugging
 
 ---
 
 ### API Layer
-
-* Located in `/app/api/*`
-* Critical fixes:
-
-  * `export const dynamic = "force-dynamic"`
-  * Runtime guards inside handlers
-  * NO top-level external service imports
-  * Uses lazy loading (`await import()`)
+- `/api/search` exists
+- Dynamic import path fixed
 
 ---
 
-### Database (Prisma)
+### Database (Prisma / Supabase)
 
-* PostgreSQL via `DATABASE_URL`
-* Used for:
+Table: `Property`
 
-  * Listings
-  * Users
-  * Alerts
-* Upserts used for idempotent ingestion
+Key fields:
+- `mlsid` (TEXT, intended UNIQUE + NOT NULL)
+- Other fields: address, price, beds, baths, etc.
+
+Constraint requirement:
+- `mlsid` must be UNIQUE for upsert to work
 
 ---
 
 ## 🗂️ 3. FILES CREATED / MODIFIED
 
-### Core Worker
+### `/lib/mls/syncMLSGrid.ts`
+- Main ingestion loop
+- Handles pagination, runtime limits, env config
 
-* `/workers/main.ts`
+### `/lib/mls/fetchMLSPage.ts`
+- Calls MLS Grid API
+- Uses `$top`, `$skip`, `$filter`
 
-  * Entry point for Railway worker
+### `/lib/mls/upsertListing.ts`
+- Inserts/upserts listings into Supabase
+- Current issue: `mlsid` mapping incorrect
 
-* `/workers/mlsWorker.ts`
+### `/lib/queue/redis.ts`
+- Central Redis connection config
 
-  * Calls `syncMLSGrid` with runtime config
+### `/lib/queue/*.ts`
+- Queue definitions updated to use shared connection
 
----
+### `/dist/**`
+- Worker build output
+- Must be committed for Railway
 
-### MLS Logic
+### `/package.json`
+- Build scripts adjusted
+- Worker build separated from Next.js build
 
-* `/lib/mls/syncMLSGrid.ts`
-
-  * Core ingestion logic
-  * Handles mock + future live mode
-
-* `/lib/mls/mockListings.ts`
-
-  * Generates mock dataset (500 listings)
-
----
-
-### Queue / Redis
-
-* `/lib/queue/redis.ts`
-
-  * Prevents Redis connection during build
-
-* `/lib/queue/worker.ts`
-
-  * Guard prevents execution during build
-
----
-
-### API Fixes
-
-* `/app/api/search/route.ts`
-
-  * Removed top-level imports
-  * Added:
-
-    * runtime guard
-    * lazy import (`await import(...)`)
-    * relative path fix
-
----
-
-### Config
-
-* `/tsconfig.worker.json`
-
-  * Ensures worker compilation to `/dist`
-
-* `/package.json`
-
-  * Build script:
-
-    * `next build && tsc -p tsconfig.worker.json`
-
-* `/next.config.ts`
-
-  * `ignoreBuildErrors: true`
-
-* `/railway.json`
-
-  * Defines:
-
-    * build command
-    * start command
+### `/tsconfig.worker.json`
+- Dedicated worker TypeScript config
+- Excludes frontend / TSX
 
 ---
 
 ## 🧠 4. BUSINESS LOGIC & RULES
 
-* MLS ingestion must be:
+- MLS ingestion must be:
+  - Paginated
+  - Rate-limited
+  - Runtime-bounded
 
-  * Rate-limited
-  * Bounded (no infinite loops)
-  * Environment-controlled (mock vs live)
+- Each listing:
+  - Must have a stable unique identifier (`mlsid`)
+  - Must be upserted (not duplicated)
 
-* Worker must:
-
-  * Run independently of API layer
-  * Be idempotent
-
-* API routes:
-
-  * Must not trigger external services during build
-  * Must lazy-load heavy dependencies
+- Upsert rule:
+  - Conflict target = `mlsid`
 
 ---
 
 ## ⚙️ 5. ENVIRONMENT / CONFIG
 
-### Core Variables
+Required env vars:
 
-* `USE_MOCK=true`
-* `MLS_MAX_RUNTIME_MS=600000`
-* `MLS_RATE_DELAY_MS=900`
+- DATABASE_URL
+- MLS_GRID_BASE_URL
+- MLS_GRID_TOKEN
+- MLS_MAX_PAGES
+- MLS_MAX_RUNTIME_MS
+- MLS_RATE_DELAY_MS
+- USE_MOCK
+- NEXT_PUBLIC_SUPABASE_URL
+- SUPABASE_SERVICE_ROLE_KEY
 
-### External Services
-
-* Supabase
-* PostgreSQL
-* Resend (email)
-* Redis (planned runtime only)
-* MLS Grid API
+Platform:
+- Railway (worker deployment)
+- Supabase (database)
+- MLS Grid API
 
 ---
 
@@ -267,116 +200,91 @@ PROJECT BRAIN — CONTEXT CAPTURE
 
 ### MLS Ingestion Flow
 
-1. Railway runs worker:
-   → `node dist/workers/main.js`
-
-2. `main.ts` triggers:
-   → `mlsWorker.ts`
-
-3. Worker executes:
-   → `syncMLSGrid({ maxRuntimeMs })`
-
-4. If `USE_MOCK=true`:
-   → load mock listings
-
-5. For each listing:
-   → upsert into DB
-
-6. (Future)
-   → trigger alert queue
-
----
-
-### Build Flow (Critical)
-
-1. Railway runs:
-   → `npm run build`
-
-2. Next.js:
-   → compiles app
-
-3. Worker:
-   → compiled via `tsc`
-
-4. Guards prevent:
-
-   * Redis connection
-   * API execution
-   * external API init
+1. Worker starts (`node dist/workers/main.js`)
+2. Calls `syncMLSGrid`
+3. Load env config
+4. Get last sync timestamp
+5. Loop pages:
+   1. Fetch listings (`fetchMLSPage`)
+   2. For each listing:
+      - Call `upsertListing`
+   3. Update last sync
+6. Stop when:
+   - Max pages reached OR
+   - Max runtime reached
 
 ---
 
 ## 🚧 7. KNOWN ISSUES / RISKS
 
-* Redis not active in production
-* Search system depends on lazy imports (fragile if misused)
-* Path alias (`@/`) not usable in dynamic imports
-* API routes still vulnerable if new top-level imports added
-* No monitoring/logging system yet
+- `mlsid` is NULL → inserts fail
+- Upsert constraint exists but not being hit due to NULL values
+- MLS field mapping is incorrect or inconsistent
+- Worker may still use stale `/dist` if not rebuilt
+- No validation layer before insert
 
 ---
 
 ## 🎯 8. NEXT PRIORITIES
 
-1. Enable LIVE MLS ingestion (controlled, 1–2 pages)
-2. Add hard pagination limits in `syncMLSGrid`
-3. Reintroduce Redis safely (Railway Redis or external)
-4. Stabilize alert pipeline
-5. Add logging + observability
-6. Optimize search system (Typesense validation)
+1. Fix `mlsid` mapping in `/lib/mls/upsertListing.ts`
+2. Confirm correct MLS field (likely `ListingKey` or nested)
+3. Ensure `mlsid` is NEVER null before insert
+4. Rebuild `/dist` and redeploy
+5. Confirm rows appear in Supabase
+6. Increase `MLS_MAX_PAGES` after success
 
 ---
 
 ## 📏 9. STANDARDS & CONSTRAINTS (CRITICAL)
 
-* NEVER run unbounded MLS loops
-* ALL ingestion must be rate-limited
-* NO external services during build
-* NO top-level imports for:
+- Worker must:
+  - Run independently of Next.js
+  - Not import frontend code
+  - Use runtime-only env access
 
-  * Redis
-  * Typesense
-  * external APIs
-* Worker must run from compiled `/dist`
-* Use relative paths in dynamic imports
-* All async work → queue-based (no blocking APIs)
+- Ingestion must:
+  - Be idempotent
+  - Use upsert (no duplicates)
+  - Never use unbounded loops
+
+- Build:
+  - `/dist` must be committed for Railway
 
 ---
 
 ## 🧩 10. MISSING BUT NEEDED (GAPS)
 
-* Redis production instance
-* Alert matching engine fully wired
-* Retry / failure handling for worker
-* Observability (logs, metrics)
-* MLS live ingestion safeguards
-* Search indexing pipeline
+- Confirmed MLS schema mapping
+- Validation layer before DB insert
+- Logging for bad records
+- Search indexing (Typesense)
+- Alert triggering system
+- Email pipeline integration
 
 ---
 
 ## 🧾 11. TERMINOLOGY (NORMALIZED)
 
-* **Listing** = property from MLS
-* **Ingestion** = pulling MLS data into DB
-* **Worker** = background process (Railway)
-* **Mock Mode** = safe synthetic data mode
-* **Live Mode** = real MLS API ingestion
-* **Alert** = user-triggered notification condition
-* **Queue** = async job processing system
+- Listing = property record from MLS
+- MLS = MLS Grid API
+- Worker = background ingestion process
+- Upsert = insert or update on conflict
+- mlsid = unique listing identifier (DB key)
 
 ---
 
 ## 🧠 12. ASSUMPTIONS MADE
 
-* MLS Grid API will be used for live ingestion
-* Redis will be required for queue scaling
-* Typesense is intended for search (not yet fully validated)
-* Railway will host worker long-term
-* Build-time execution must always be isolated from runtime
+- `ListingKey` is intended unique MLS identifier
+- MLS API returns consistent structure per listing
+- Supabase `Property` table is correct schema
+- Worker runs exclusively from `/dist`
+- Railway deploy uses latest committed build
 
+```
 ---
-
-**END OF CONTEXT CAPTURE**
+END OF CONTEXT
 
 ````
 
