@@ -5,20 +5,22 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.fetchMLSPage = fetchMLSPage;
 const axios_1 = __importDefault(require("axios"));
-async function fetchMLSPage({ page, pageSize, lastSync }) {
-    const url = `${process.env.MLS_GRID_BASE_URL}/Property`;
-    const params = {
-        $top: pageSize,
-        $skip: page * pageSize,
-    };
-    if (lastSync) {
-        params.$filter = `ModificationTimestamp gt ${new Date(lastSync).toISOString()}`;
+async function fetchMLSPage({ top, skip, lastSync, }) {
+    // 🔥 HARD GUARD (THIS FIXES YOUR BUG)
+    const safeSkip = isNaN(skip) ? 0 : Number(skip);
+    if (isNaN(skip)) {
+        console.error("❌ skip was NaN — forcing to 0");
     }
-    const res = await axios_1.default.get(url, {
+    const url = `${process.env.MLS_GRID_BASE_URL}/Property`;
+    const response = await axios_1.default.get(url, {
         headers: {
             Authorization: `Bearer ${process.env.MLS_GRID_TOKEN}`,
         },
-        params,
+        params: {
+            $top: top,
+            $skip: safeSkip,
+            $filter: `ModificationTimestamp gt ${lastSync}`,
+        },
     });
-    return res.data;
+    return response.data?.value || [];
 }

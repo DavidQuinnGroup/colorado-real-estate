@@ -1,23 +1,49 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const syncMLSGrid_1 = require("../lib/mls/syncMLSGrid");
-const MAX_RUNTIME_MS = 10 * 60 * 1000; // 10 minutes
-async function main() {
-    const start = Date.now();
-    console.log("🚀 MLS Worker started");
-    try {
-        await (0, syncMLSGrid_1.syncMLSGrid)({
-            maxRuntimeMs: MAX_RUNTIME_MS,
-        });
-        console.log("✅ MLS sync completed safely");
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
     }
-    catch (err) {
-        console.error("❌ MLS sync failed:", err);
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
+async function start() {
+    // 🚨 HARD BUILD GUARD
+    if (process.env.NEXT_PHASE === "phase-production-build") {
+        console.log("⛔ Skipping worker during build phase");
+        return;
     }
-    finally {
-        const duration = ((Date.now() - start) / 1000).toFixed(2);
-        console.log(`⏱ Worker finished in ${duration}s`);
-        process.exit(0);
-    }
+    console.log("🚀 Worker starting...");
+    const { syncMLSGrid } = await Promise.resolve().then(() => __importStar(require("../lib/mls/syncMLSGrid")));
+    const maxRuntimeMs = Number(process.env.MLS_MAX_RUNTIME_MS || 600000);
+    await syncMLSGrid({ maxRuntimeMs });
+    console.log("🏁 Worker finished");
 }
-main();
+start().catch((err) => {
+    console.error("❌ Worker crashed", err);
+    process.exit(1);
+});
