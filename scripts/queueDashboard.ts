@@ -399,6 +399,24 @@ function getQueueHealth(counts: QueueCounts) {
   return 'healthy';
 }
 
+function getFailedReason(job: unknown) {
+  if (!job || typeof job !== 'object') return '';
+  const failedReason = (job as { failedReason?: unknown }).failedReason;
+  return typeof failedReason === 'string' ? failedReason : '';
+}
+
+function hasDatabaseConnectionFailure(queue: QueueInspectionResult) {
+  return (queue.failed || []).some((job) => {
+    const failedReason = getFailedReason(job).toLowerCase();
+    return (
+      failedReason.includes('prisma.') ||
+      failedReason.includes('error querying the database') ||
+      failedReason.includes('tenant/user postgres.') ||
+      failedReason.includes('supabase')
+    );
+  });
+}
+
 function buildDryRunRetryCommand(queueName: string, limit = 10) {
   const params = new URLSearchParams({
     queue: queueName,
@@ -609,6 +627,17 @@ function buildRecoveryPlan(queues: QueueInspectionResult[], diagnostics: Array<{
   }
 
   if (firstFailedQueue) {
+    if (hasDatabaseConnectionFailure(firstFailedQueue)) {
+      return {
+        level: 'blocked',
+        summary: `${firstFailedQueue.name} has failed jobs from database connectivity; resolve Supabase before retrying.`,
+        nextAction: 'Run the Supabase preflight and follow the recovery runbook before queue retry.',
+        terminal: 'Terminal 5',
+        nextCommand: 'npm run supabase:check',
+        gates,
+      };
+    }
+
     return {
       level: 'caution',
       summary: `${firstFailedQueue.name} has failed jobs available for dry-run recovery.`,

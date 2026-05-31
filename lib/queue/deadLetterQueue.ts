@@ -181,7 +181,7 @@ function getDeadLetterJobId(data: DeadLetterJobData) {
   const sourceJobId = data.sourceJobId || 'unknown';
   const failedAt = data.failedAt || data.capturedAt || new Date().toISOString();
 
-  return `dead-letter:${sourceQueue}:${sourceJobId}:${failedAt}`.replace(/[^\w:.-]/g, '-').slice(0, 180);
+  return `dead-letter-${sourceQueue}-${sourceJobId}-${failedAt}`.replace(/[^\w.-]/g, '-').slice(0, 180);
 }
 
 export async function enqueueDeadLetter(data: DeadLetterJobData, options: JobsOptions = {}) {
