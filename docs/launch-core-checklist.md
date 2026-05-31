@@ -12,6 +12,10 @@ Primary plan:
 
 - `REAL ESTATE INTELLIGENCE ENGINE-MASTER V 7.0`
 
+Supabase recovery runbook:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/supabase-recovery-runbook.md`
+
 Traceability control:
 
 - `/Users/davidquinn/david-quinn-group/colorado-real-estate/REIE_MASTER_V7_TRACEABILITY.md`

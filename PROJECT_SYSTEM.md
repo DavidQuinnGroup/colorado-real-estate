@@ -31,6 +31,7 @@ Primary goal:
 - `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/production-architecture.md`
 - `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/production-scheduler-plan.md`
 - `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/launch-core-checklist.md`
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/supabase-recovery-runbook.md`
 - `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/legacy-mls-cleanup-plan.md`
 - `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/mls-ingestion.md`
 - `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/alert-architecture.md`
@@ -852,6 +853,10 @@ Known current blocker:
 DNS lookup failed: ENOTFOUND otmkoqvmhthitldlnjdk.supabase.co
 FATAL: (ENOTFOUND) tenant/user postgres.otmkoqvmhthitldlnjdk not found
 ```
+
+Recovery runbook:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/supabase-recovery-runbook.md`
 
 ## Current Near-Term Priorities
 
