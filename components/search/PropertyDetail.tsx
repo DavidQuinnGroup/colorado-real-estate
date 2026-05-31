@@ -1,9 +1,9 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
-import { ArrowRight, BarChart3, ChevronLeft, Clock, Construction, Hammer, Lock, ShieldCheck, X, Zap } from 'lucide-react';
+import { ArrowRight, BarChart3, ChevronLeft, Clock, Construction, Hammer, Lock, MapPin, ShieldCheck, X, Zap } from 'lucide-react';
 
 import NorthStarManager from '@/components/settings/NorthStarManager';
 import { LISTING_IMAGE_FALLBACK } from '@/lib/listingVisuals';
@@ -40,6 +40,20 @@ type PropertyDetailProps = {
   userTier?: UserTier;
 };
 
+type LogisticsTime = {
+  label?: string;
+  minutes: number | null;
+  icon?: string;
+  source?: 'mapbox' | 'estimated';
+};
+
+type LogisticsState = {
+  status: 'idle' | 'loading' | 'ready' | 'error';
+  times: LogisticsTime[];
+  source?: 'mapbox' | 'estimated';
+  message?: string;
+};
+
 const TABS: Array<{
   id: ActiveTab;
   label: string;
@@ -48,6 +62,12 @@ const TABS: Array<{
   { id: 'intel', label: 'Estate Intel', icon: <BarChart3 size={14} /> },
   { id: 'efficiency', label: 'Life ROI', icon: <Clock size={14} /> },
   { id: 'strategy', label: 'GC Strategy', icon: <Hammer size={14} /> },
+];
+
+const DEFAULT_NORTH_STARS = [
+  { label: 'DQG HQ', icon: 'authority', lat: 40.0174, lng: -105.276 },
+  { label: 'Downtown Boulder', icon: 'downtown', lat: 40.0191, lng: -105.2817 },
+  { label: 'Denver Core', icon: 'market', lat: 39.7392, lng: -104.9903 },
 ];
 
 function getNumber(value: number | null | undefined, fallback = 0) {
@@ -71,6 +91,7 @@ export default function PropertyDetail({ property, onClose, userTier = 'Public' 
   const [activeTab, setActiveTab] = useState<ActiveTab>('intel');
   const [showManager, setShowManager] = useState(false);
   const [failedImageSrc, setFailedImageSrc] = useState<string | null>(null);
+  const [logistics, setLogistics] = useState<LogisticsState>({ status: 'idle', times: [] });
 
   const originalImageSrc = property.mainPhoto || property.image || LISTING_IMAGE_FALLBACK;
   const imageSrc = failedImageSrc === originalImageSrc ? LISTING_IMAGE_FALLBACK : originalImageSrc;
@@ -85,6 +106,56 @@ export default function PropertyDetail({ property, onClose, userTier = 'Public' 
   const resilienceScore = getNumber(property.resilienceScore, 85);
   const reviewSignal = getReviewSignal(property);
   const narrative = getTravelNarrative(efficiencyScore);
+
+  useEffect(() => {
+    if (activeTab !== 'efficiency') return;
+
+    const controller = new AbortController();
+
+    async function loadLogistics() {
+      try {
+        setLogistics((current) => ({ ...current, status: current.times.length > 0 ? 'ready' : 'loading' }));
+
+        const response = await fetch('/api/logistics', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            homeCoords: { lat, lng },
+            northStars: DEFAULT_NORTH_STARS,
+          }),
+          signal: controller.signal,
+        });
+        const data = (await response.json()) as {
+          times?: LogisticsTime[];
+          source?: 'mapbox' | 'estimated';
+          message?: string;
+          error?: string;
+        };
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Logistics request failed.');
+        }
+
+        setLogistics({
+          status: 'ready',
+          times: Array.isArray(data.times) ? data.times : [],
+          source: data.source,
+          message: data.message,
+        });
+      } catch (error) {
+        if (controller.signal.aborted) return;
+        setLogistics({
+          status: 'error',
+          times: [],
+          message: error instanceof Error ? error.message : 'Logistics request failed.',
+        });
+      }
+    }
+
+    void loadLogistics();
+
+    return () => controller.abort();
+  }, [activeTab, lat, lng]);
 
   return (
     <div className="relative flex h-full w-full flex-col overflow-hidden bg-[#050505] animate-in fade-in duration-500">
@@ -188,12 +259,52 @@ export default function PropertyDetail({ property, onClose, userTier = 'Public' 
           ) : null}
 
           {activeTab === 'efficiency' ? (
-            <div className="mx-auto max-w-3xl space-y-16 text-center animate-in zoom-in-95 duration-500">
+            <div className="mx-auto max-w-4xl space-y-16 text-center animate-in zoom-in-95 duration-500">
               <div className="space-y-4">
                 <div className="text-[11px] font-black uppercase tracking-[0.6em] text-[#00ff80]">North Star Alignment</div>
                 <div className="text-9xl font-black italic leading-none tracking-tight text-white">{efficiencyScore}</div>
               </div>
               <p className="px-12 text-2xl font-light italic leading-relaxed text-white/70">{narrative}</p>
+              <div className="border border-white/10 bg-white/[0.02] p-8 text-left">
+                <div className="mb-8 flex flex-col gap-3 border-b border-white/10 pb-6 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-[0.36em] text-white/35">Pulse Preview</p>
+                    <h4 className="mt-2 text-2xl font-black uppercase italic tracking-tight text-white">Default North Stars</h4>
+                  </div>
+                  <span className="w-fit border border-[#00ff80]/30 px-3 py-2 text-[9px] font-black uppercase tracking-[0.24em] text-[#00ff80]">
+                    {logistics.source === 'mapbox' ? 'Live Matrix' : 'REIE Estimate'}
+                  </span>
+                </div>
+
+                {logistics.status === 'loading' ? (
+                  <p className="text-center text-[10px] font-black uppercase tracking-[0.3em] text-white/35">Calculating Pulse...</p>
+                ) : null}
+
+                {logistics.status === 'error' ? (
+                  <p className="text-center text-[10px] font-black uppercase tracking-[0.3em] text-red-300">{logistics.message}</p>
+                ) : null}
+
+                {logistics.status === 'ready' ? (
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                    {logistics.times.map((time) => (
+                      <div key={time.label} className="border border-white/10 bg-black/60 p-5">
+                        <div className="mb-5 flex items-center gap-3 text-[#00ff80]">
+                          <MapPin size={15} />
+                          <span className="truncate text-[9px] font-black uppercase tracking-[0.24em] text-white/40">{time.label}</span>
+                        </div>
+                        <p className="text-4xl font-black italic tracking-tight text-white">
+                          {typeof time.minutes === 'number' ? time.minutes : '--'}
+                          <span className="ml-2 text-xs font-black uppercase tracking-widest text-white/30">Min</span>
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                ) : null}
+
+                {logistics.message ? (
+                  <p className="mt-6 text-[9px] font-bold uppercase leading-relaxed tracking-[0.22em] text-white/25">{logistics.message}</p>
+                ) : null}
+              </div>
               <button
                 type="button"
                 onClick={() => setShowManager(true)}

@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 
+import { calculateRitualPulse } from "@/lib/utils/geo-logic";
+
 type Coordinate = {
   lat: number;
   lng: number;
@@ -18,6 +20,13 @@ type LogisticsRequestBody = {
 type MatrixResponse = {
   durations?: Array<Array<number | null> | null>;
   message?: string;
+};
+
+type TravelTime = {
+  label: string | undefined;
+  minutes: number | null;
+  icon?: string;
+  source: "mapbox" | "estimated";
 };
 
 const maxMatrixDestinations = 24;
@@ -94,7 +103,20 @@ function buildMapboxMatrixUrl(homeCoords: Coordinate, northStars: NorthStarInput
   return `https://api.mapbox.com/directions-matrix/v1/mapbox/driving/${coordinates}?${params.toString()}`;
 }
 
-function getTravelTimes(data: MatrixResponse, northStars: NorthStarInput[]) {
+function getEstimatedTravelTimes(homeCoords: Coordinate, northStars: NorthStarInput[]): TravelTime[] {
+  return northStars.map((northStar) => {
+    const pulse = calculateRitualPulse(homeCoords, northStar);
+
+    return {
+      label: northStar.label,
+      minutes: pulse.time,
+      icon: northStar.icon,
+      source: "estimated",
+    };
+  });
+}
+
+function getTravelTimes(data: MatrixResponse, northStars: NorthStarInput[]): TravelTime[] {
   const sourceDurations = data.durations?.[0];
 
   if (!Array.isArray(sourceDurations)) {
@@ -108,6 +130,7 @@ function getTravelTimes(data: MatrixResponse, northStars: NorthStarInput[]) {
       label: northStar.label,
       minutes: typeof seconds === "number" && Number.isFinite(seconds) ? Math.ceil(seconds / 60) : null,
       icon: northStar.icon,
+      source: "mapbox",
     };
   });
 }
@@ -126,13 +149,15 @@ export async function POST(request: Request) {
       return NextResponse.json({ times: [] });
     }
 
-    const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
+    const mapboxToken = process.env.MAPBOX_ACCESS_TOKEN || process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
 
     if (!mapboxToken) {
-      return NextResponse.json(
-        { error: "Mapbox access token is not configured." },
-        { status: 503 }
-      );
+      return NextResponse.json({
+        times: getEstimatedTravelTimes(body.homeCoords, northStars),
+        source: "estimated",
+        health: "fallback",
+        message: "Mapbox access token is not configured; returned REIE estimated travel times.",
+      });
     }
 
     const response = await fetch(buildMapboxMatrixUrl(body.homeCoords, northStars, mapboxToken), {
@@ -147,7 +172,7 @@ export async function POST(request: Request) {
       );
     }
 
-    return NextResponse.json({ times: getTravelTimes(data, northStars) });
+    return NextResponse.json({ times: getTravelTimes(data, northStars), source: "mapbox", health: "live" });
   } catch (error) {
     console.error("[LOGISTICS] Pulse calculation failed:", error);
     return NextResponse.json({ error: "Failed to calculate pulse." }, { status: 500 });
