@@ -34,6 +34,15 @@ type AlertReadiness = {
   signals: string[];
 };
 
+type SavedNorthStar = {
+  name: string;
+  address: string;
+  type: string;
+  frequency: number;
+  lat: number | null;
+  lng: number | null;
+};
+
 const VALID_STRATEGIC_GOALS = new Set(['retirement-income', 'equity-growth', 'lifestyle-optimization']);
 
 const VALID_REIE_GOALS = new Set<ReieGoal>(['sell-optimize', 'buy-strategy', 'relocation-fit', 'portfolio-review']);
@@ -71,6 +80,10 @@ const MAX_TYPE_LENGTH = 80;
 const MAX_MARKET_SCOPE_LENGTH = 120;
 const MAX_AUTHORITY_SIGNAL_LENGTH = 60;
 const MAX_AUTHORITY_SIGNALS = 8;
+const MAX_NORTH_STAR_NAME_LENGTH = 80;
+const MAX_NORTH_STAR_ADDRESS_LENGTH = 160;
+const MAX_NORTH_STAR_TYPE_LENGTH = 40;
+const MAX_NORTH_STARS = 12;
 const LOCAL_BASE_URL = 'http://localhost:3000';
 let intakeSchemaReady = false;
 
@@ -192,6 +205,33 @@ function getAuthoritySignals(body: SaveSearchBody) {
     .map((signal) => getBoundedString(signal, MAX_AUTHORITY_SIGNAL_LENGTH))
     .filter((signal): signal is string => Boolean(signal))
     .slice(0, MAX_AUTHORITY_SIGNALS);
+}
+
+function getNorthStars(body: SaveSearchBody): SavedNorthStar[] {
+  const value = body.filters?.northStars;
+  if (!Array.isArray(value)) return [];
+
+  return value
+    .map((item): SavedNorthStar | null => {
+      if (!isRecord(item)) return null;
+
+      const name = getBoundedString(item.name ?? item.label, MAX_NORTH_STAR_NAME_LENGTH);
+      if (!name) return null;
+
+      const lat = getBoundedCoordinate(item.lat, -90, 90);
+      const lng = getBoundedCoordinate(item.lng, -180, 180);
+
+      return {
+        name,
+        address: getBoundedString(item.address, MAX_NORTH_STAR_ADDRESS_LENGTH) || '',
+        type: getBoundedString(item.type ?? item.icon, MAX_NORTH_STAR_TYPE_LENGTH) || 'lifestyle',
+        frequency: Math.max(1, Math.min(7, getInteger(item.frequency) || 3)),
+        lat,
+        lng,
+      };
+    })
+    .filter((northStar): northStar is SavedNorthStar => northStar !== null)
+    .slice(0, MAX_NORTH_STARS);
 }
 
 function isValidEmail(email: string) {
@@ -322,6 +362,8 @@ async function ensureIntakeSchema() {
   await prisma.$executeRawUnsafe('ALTER TABLE "SavedSearch" ADD COLUMN IF NOT EXISTS "south" DOUBLE PRECISION');
   await prisma.$executeRawUnsafe('ALTER TABLE "SavedSearch" ADD COLUMN IF NOT EXISTS "east" DOUBLE PRECISION');
   await prisma.$executeRawUnsafe('ALTER TABLE "SavedSearch" ADD COLUMN IF NOT EXISTS "west" DOUBLE PRECISION');
+  await prisma.$executeRawUnsafe('ALTER TABLE "NorthStar" ADD COLUMN IF NOT EXISTS "lat" DOUBLE PRECISION');
+  await prisma.$executeRawUnsafe('ALTER TABLE "NorthStar" ADD COLUMN IF NOT EXISTS "lng" DOUBLE PRECISION');
   await prisma.$executeRawUnsafe(`
     CREATE TABLE IF NOT EXISTS "CRMTask" (
       "id" TEXT NOT NULL DEFAULT gen_random_uuid()::TEXT,
@@ -403,6 +445,7 @@ export async function POST(req: NextRequest) {
     const heatScoreIncrement = getHeatScoreIncrement(timeline, notes, leadTemperature);
     const marketScope = getMarketScope(body, city);
     const authoritySignals = getAuthoritySignals(body);
+    const northStars = getNorthStars(body);
     const clientReieGoalLabel = getClientLabel(body, 'reieGoalLabel');
     const clientTimelineLabel = getClientLabel(body, 'timelineLabel');
     const minPrice = getInteger(getBodyValue(body, 'minPrice'));
@@ -454,6 +497,26 @@ export async function POST(req: NextRequest) {
         },
       });
 
+      if (northStars.length > 0) {
+        await tx.$executeRaw`DELETE FROM "NorthStar" WHERE "userId" = ${user.id}`;
+
+        for (const northStar of northStars) {
+          await tx.$executeRaw`
+            INSERT INTO "NorthStar" ("id", "userId", "name", "address", "type", "frequency", "lat", "lng")
+            VALUES (
+              gen_random_uuid()::text,
+              ${user.id},
+              ${northStar.name},
+              ${northStar.address},
+              ${northStar.type},
+              ${northStar.frequency},
+              ${northStar.lat},
+              ${northStar.lng}
+            )
+          `;
+        }
+      }
+
       const metadata = {
         schemaVersion: 'reie-save-search-v2',
         capturedAt: new Date().toISOString(),
@@ -470,6 +533,9 @@ export async function POST(req: NextRequest) {
         heatScoreIncrement,
         marketScope,
         authoritySignals,
+        northStars,
+        northStarCount: northStars.length,
+        primaryNorthStar: northStars[0]?.name ?? null,
         notes,
         searchType,
         minPrice,
@@ -546,6 +612,8 @@ export async function POST(req: NextRequest) {
         leadTemperature,
         heatScoreIncrement,
         authoritySignals,
+        northStarCount: northStars.length,
+        primaryNorthStar: northStars[0]?.name ?? null,
       },
       alertReadiness: buildAlertReadiness({
         city,

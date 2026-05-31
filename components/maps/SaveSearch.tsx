@@ -4,6 +4,8 @@ import { useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Bell, Check, ChevronDown, Loader2 } from 'lucide-react';
 
+import { getSavedNorthStarAnchors } from '@/components/settings/NorthStarManager';
+
 type SaveSearchProps = {
   city: string;
 };
@@ -148,6 +150,7 @@ export default function SaveSearch({ city }: SaveSearchProps) {
     setSubmitState('saving');
     setError(null);
     setSaveResult(null);
+    const northStars = getSavedNorthStarAnchors();
 
     const payload = {
       email: normalizedEmail,
@@ -163,6 +166,7 @@ export default function SaveSearch({ city }: SaveSearchProps) {
         intakeSource: 'search-map',
         reieGoal: goal,
         timeline,
+        northStars,
         notes: normalizedNotes || null,
       },
     };

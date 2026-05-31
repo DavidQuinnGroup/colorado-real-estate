@@ -4,6 +4,8 @@ import type { FormEvent, ReactNode } from 'react';
 import { useMemo, useState } from 'react';
 import { CheckCircle2, ChevronRight, CircleDollarSign, Compass, Hammer, Lock, ShieldCheck, Target } from 'lucide-react';
 
+import { getSavedNorthStarAnchors } from '@/components/settings/NorthStarManager';
+
 type LeadCaptureProps = {
   city: string;
 };
@@ -183,6 +185,7 @@ export default function LeadCapture({ city }: LeadCaptureProps) {
     setSaveResult(null);
 
     try {
+      const northStars = getSavedNorthStarAnchors();
       const response = await fetch('/api/save-search', {
         method: 'POST',
         headers: {
@@ -202,6 +205,7 @@ export default function LeadCapture({ city }: LeadCaptureProps) {
             leadTemperature: getLeadTemperature(selectedTimeline),
             marketScope: `${cityName}, Colorado`,
             authoritySignals: INTAKE_SIGNALS.map((signal) => signal.label),
+            northStars,
             notes: notes.trim(),
           },
         }),
