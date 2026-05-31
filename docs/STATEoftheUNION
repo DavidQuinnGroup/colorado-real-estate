@@ -311,9 +311,10 @@ Supabase connectivity:
 
 ```text
 DNS lookup failed: ENOTFOUND otmkoqvmhthitldlnjdk.supabase.co
+FATAL: (ENOTFOUND) tenant/user postgres.otmkoqvmhthitldlnjdk not found
 ```
 
-`npm run supabase:check` verifies Supabase env presence, project DNS, Postgres pooler DNS, and REST reachability without printing secrets. This currently blocks alert, digest, CRM, MLS, seed, and reindex dry-runs/reporting while the configured project API host is unreachable.
+`npm run supabase:check` verifies Supabase env presence, project DNS, Postgres pooler DNS, Postgres TCP, Prisma query readiness, and REST reachability without printing secrets. This currently blocks alert, digest, CRM, MLS, seed, and reindex dry-runs/reporting while the configured project API host is unreachable and the configured Postgres tenant/user is not accepted.
 
 Typesense local schema:
 

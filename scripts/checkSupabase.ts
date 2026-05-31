@@ -1,4 +1,5 @@
 import dns from 'node:dns/promises';
+import net from 'node:net';
 
 import dotenv from 'dotenv';
 
@@ -11,6 +12,7 @@ type CheckResult = {
 };
 
 const REST_TIMEOUT_MS = 8000;
+const POSTGRES_TIMEOUT_MS = 8000;
 
 dotenv.config({ path: '.env.local' });
 dotenv.config();
@@ -40,6 +42,20 @@ function parsePostgresHost(value: string) {
   }
 }
 
+function parsePostgresEndpoint(value: string) {
+  if (!value) return null;
+
+  try {
+    const url = new URL(value);
+    return {
+      host: url.hostname,
+      port: url.port ? Number(url.port) : 5432,
+    };
+  } catch {
+    return null;
+  }
+}
+
 function formatError(error: unknown) {
   if (error instanceof Error) {
     const candidate = error as Error & { cause?: unknown };
@@ -50,6 +66,10 @@ function formatError(error: unknown) {
   }
 
   return String(error);
+}
+
+function hasFailed(results: CheckResult[], name: string) {
+  return results.some((result) => result.name === name && result.status === 'fail');
 }
 
 function logResult(result: CheckResult) {
@@ -126,6 +146,85 @@ async function checkSupabaseRest(url: string, serviceRoleKey: string): Promise<C
   }
 }
 
+async function checkPostgresTcp(databaseUrl: string): Promise<CheckResult> {
+  const endpoint = parsePostgresEndpoint(databaseUrl);
+
+  if (!endpoint) {
+    return {
+      name: 'Supabase Postgres TCP',
+      status: 'skip',
+      detail: databaseUrl ? 'DATABASE_URL is not a valid URL.' : 'DATABASE_URL is missing.',
+    };
+  }
+
+  return new Promise((resolve) => {
+    const socket = net.createConnection(endpoint);
+    const timeout = setTimeout(() => {
+      socket.destroy();
+      resolve({
+        name: 'Supabase Postgres TCP',
+        status: 'fail',
+        detail: `${endpoint.host}:${endpoint.port} timed out after ${POSTGRES_TIMEOUT_MS}ms.`,
+      });
+    }, POSTGRES_TIMEOUT_MS);
+
+    socket.once('connect', () => {
+      clearTimeout(timeout);
+      socket.end();
+      resolve({
+        name: 'Supabase Postgres TCP',
+        status: 'pass',
+        detail: `${endpoint.host}:${endpoint.port} accepted a TCP connection.`,
+      });
+    });
+
+    socket.once('error', (error) => {
+      clearTimeout(timeout);
+      resolve({
+        name: 'Supabase Postgres TCP',
+        status: 'fail',
+        detail: `${endpoint.host}:${endpoint.port} connection failed. ${formatError(error)}`,
+      });
+    });
+  });
+}
+
+async function checkPrismaDatabase(databaseUrl: string, skip: boolean): Promise<CheckResult> {
+  if (!databaseUrl) {
+    return {
+      name: 'Prisma database',
+      status: 'skip',
+      detail: 'DATABASE_URL is missing.',
+    };
+  }
+
+  if (skip) {
+    return {
+      name: 'Prisma database',
+      status: 'skip',
+      detail: 'Skipped because Postgres DNS or TCP failed.',
+    };
+  }
+
+  try {
+    const { prisma } = await import('../lib/prisma.js');
+    await prisma.$queryRaw`SELECT 1`;
+    await prisma.$disconnect();
+
+    return {
+      name: 'Prisma database',
+      status: 'pass',
+      detail: 'SELECT 1 succeeded.',
+    };
+  } catch (error) {
+    return {
+      name: 'Prisma database',
+      status: 'fail',
+      detail: formatError(error),
+    };
+  }
+}
+
 async function main() {
   const supabaseUrl = getEnv('NEXT_PUBLIC_SUPABASE_URL');
   const serviceRoleKey = getEnv('SUPABASE_SERVICE_ROLE_KEY');
@@ -148,10 +247,18 @@ async function main() {
       status: databaseUrl ? 'pass' : 'warn',
       detail: databaseUrl ? `Configured host: ${databaseHost || 'invalid URL'}.` : 'Missing; REST checks can still run.',
     },
-    await checkDns('Supabase project DNS', supabaseHost),
-    await checkDns('Supabase Postgres DNS', databaseHost),
-    await checkSupabaseRest(supabaseUrl, serviceRoleKey),
   ];
+
+  results.push(await checkDns('Supabase project DNS', supabaseHost));
+  results.push(await checkDns('Supabase Postgres DNS', databaseHost));
+  results.push(await checkPostgresTcp(databaseUrl));
+  results.push(
+    await checkPrismaDatabase(
+      databaseUrl,
+      hasFailed(results, 'Supabase Postgres DNS') || hasFailed(results, 'Supabase Postgres TCP'),
+    ),
+  );
+  results.push(await checkSupabaseRest(supabaseUrl, serviceRoleKey));
 
   console.log('Supabase connectivity preflight starting.');
   for (const result of results) {

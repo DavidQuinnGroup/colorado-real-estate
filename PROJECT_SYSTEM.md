@@ -846,10 +846,11 @@ Known current non-blocking warnings:
 
 Known current blocker:
 
-- Supabase connectivity currently blocks database-dependent dry-runs and Typesense reindexing. On May 31, 2026, `npm run supabase:check` showed the Postgres pooler host resolving but the configured Supabase project API host failing DNS:
+- Supabase connectivity currently blocks database-dependent dry-runs and Typesense reindexing. On May 31, 2026, `npm run supabase:check` showed the Postgres pooler host resolving and accepting TCP connections, but Prisma authentication and the configured Supabase project API host still fail:
 
 ```text
 DNS lookup failed: ENOTFOUND otmkoqvmhthitldlnjdk.supabase.co
+FATAL: (ENOTFOUND) tenant/user postgres.otmkoqvmhthitldlnjdk not found
 ```
 
 ## Current Near-Term Priorities
