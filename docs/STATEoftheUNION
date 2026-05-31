@@ -1,0 +1,488 @@
+# State Of The Union
+
+Date: May 30, 2026
+
+Project: David Quinn Group Real Estate Intelligence Engine
+
+Working path:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Primary plan:
+
+- `REAL ESTATE INTELLIGENCE ENGINE-MASTER V 7.0`
+
+Traceability control:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/REIE_MASTER_V7_TRACEABILITY.md`
+
+Authoritative Master V7 source PDF:
+
+- `/Users/davidquinn/Library/Mobile Documents/com~apple~CloudDocs/BUSINESS/DAVID QUINN GROUP/MEDIA & MARKETING/REAL ESTATE INTELLIGENCE ENGINE/REAL ESTATE INTELLIGENCE ENGINE-MASTER V 7.0.pdf`
+
+## Current Summary
+
+The Real Estate Intelligence Engine is a working Next.js platform with a premium search/map surface, MLS Grid ingestion pipeline, Typesense indexing layer, saved-search alert flow, digest email flow, click tracking, CRM active-queue reporting, admin CRM review actions, note-backed CRM completion and dismissal, CRM closure-audit coverage, CRM readiness verdicts, CRM scheduler-safe JSON reporting, CRM admin API inspection metadata for list and detail routes with API-provided `inspectionSource` labels on success and error responses, smaller-screen-readable admin CRM command panels, admin operations hub, dead-letter inspection, timeout-bounded queue diagnostics, explicit seed data workflows, production scheduler planning, completed legacy MLS helper cleanup, protected operational APIs, bounded page-timeout sync controls, MLS-to-search index diagnostics, search/map metadata diagnostics, content authority architecture, ingestion-volume gates, scheduler cadence and MLS-volume gates, recurring scheduler activation and recurring email traffic gates, MLS-backed public expansion gates, large programmatic content batch publication gates, Terminal 5 smoke scripts, status API command metadata, dry-run-first operating commands, current lint/type/worker/build verification, and aligned operating documentation.
+
+The project direction remains unchanged: REIE should become David Quinn Group's public intelligence layer for Colorado real estate, with strong local authority signals for Colorado, Boulder, Denver, and the greater Front Range.
+
+## Current Stack
+
+Frontend:
+
+- Next.js App Router
+- React
+- Tailwind CSS
+- Leaflet map surfaces
+
+Database:
+
+- Supabase PostgreSQL
+- Prisma Client
+
+Search:
+
+- Typesense
+- `properties` collection
+- `listings` collection
+- Canonical schema validation in `/Users/davidquinn/david-quinn-group/colorado-real-estate/lib/typesense/schema.ts`
+
+Queues and workers:
+
+- Redis
+- BullMQ
+- Compiled worker output in `dist/workers`
+- Compiled script output in `dist/scripts`
+- `mls-sync`
+- `mls-page`
+- `reie-alerts`
+- `reie-dead-letter`
+
+Email:
+
+- Resend
+- Alert and digest rendering through `/Users/davidquinn/david-quinn-group/colorado-real-estate/lib/email/sendEmail.ts`
+- `EmailLog` records in Postgres
+
+CRM:
+
+- Click tracking through `/api/track-click`
+- Preference learning through `UserPreference`
+- Lead scoring through heat score and engagement records
+- `PRE_DISCOVERY_BRIEF` CRM task creation
+- `strategy_intake` CRM task creation from saved-search intake
+- Admin review, note-backed completion/dismissal, and closure audit coverage
+- CLI reporting with closure audit counts and CRM readiness gates through `/Users/davidquinn/david-quinn-group/colorado-real-estate/scripts/runCRM.ts` and `/Users/davidquinn/david-quinn-group/colorado-real-estate/workers/runCRMTasks.ts`
+- Scheduler-safe CRM JSON reporting through `npm run run:crm:scheduler`
+- Protected CRM admin API inspection metadata, including API-provided `inspectionSource` on success and error responses, through `/api/admin/crm-tasks` and `/api/admin/crm-tasks/[id]`
+- `/admin` CRM API Inspection and Terminal 5 CRM Scheduler command panels
+- `/admin` CRM API Inspection Source values rendered from API-provided `inspectionSource`, with `List Route` metadata shown by default, `Detail Route` metadata shown after Review, Complete, or Dismiss actions, failed detail-route inspection metadata preserved when requests fail, and active-list refresh returning the main panel to `List Route`
+
+Seed data:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/scripts/quickSeed.ts`
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/scripts/seedTestProperties.ts`
+- Explicit npm commands for dry-run, indexed write, and no-index write modes
+
+## Current Product State
+
+Search/map:
+
+- `/search` is the primary public search surface.
+- Map and sidebar interaction is smooth.
+- Sidebar listing selection recenters the map and can open property previews.
+- Premium terrain styling, contour treatment, and electric blue water are established design targets.
+- `/api/search` returns source, `meta.source`, health, access level, active filters, bounds status, duration, returned count, mapped count, coordinate-filtered count, `meta.smoke`, and Typesense collection/query/filter/sort context.
+- `meta.smoke` reports Terminal 5 `npm run smoke:search` readiness with command, terminal, ready, blockers, and structured checks.
+- The homepage map carries normalized `/api/search` metadata and fallback smoke diagnostics through `app/page.tsx`, `MapInner`, and `SearchMap`.
+- The `/search` route carries server-side database search metadata through `searchPropertiesWithMeta()`, `app/search/page.tsx`, `SearchInterface`, `MapInner`, and `SearchMap`.
+- `SearchInterface` keeps sidebar listings, map listings, selection state, hover state, public/contracted access filtering, and metadata aligned.
+- `MapInner` normalizes metadata after visibility filtering before passing it to `SearchMap`.
+- `SearchMap` exposes search metadata through canvas `data-search-*` and `data-search-smoke-*` attributes and a compact diagnostic overlay when metadata exists or coordinate filtering occurs.
+- Remaining map work should preserve speed while improving selected-listing reliability and media quality.
+
+MLS ingestion:
+
+- MLS Grid sync is bounded by page size, page count, runtime, page timeout, and rate delay.
+- MLS route-triggered sync validation should use `dryRun=true` first.
+- MLS route-triggered live sync requires `execute=true` or `dryRun=false`.
+- MLS forced live sync requires `force=true` and should only follow status, retry, failed-job, and dead-letter inspection.
+- Direct script sync defaults to dry-run unless `--execute` or `--live` is passed.
+- Direct script sync supports structured JSON output through `--json`.
+- Page fetch timeout is controlled by `pageTimeoutMs`, `--page-timeout-ms`, or `MLS_PAGE_TIMEOUT_MS`.
+- Sync summaries include normalized options, duration, and stale-lock recovery state.
+- MLS listing processing is routed through dedicated modules.
+- `scripts/fetchMLS.ts` is a compatibility wrapper around the active `syncMLSGrid()` path.
+- `upsertListing()` writes active REIE intelligence fields: `gcForensics`, `efficiencyScore`, `resilienceScore`, `altitude`, `soilType`, and `hasPolybutyleneRisk`.
+- `processPhotos()` preserves existing photos when MLS returns no usable media.
+- `processListing()` now updates Typesense through `updateSearchIndex()` immediately after `upsertListing()`.
+- Single listing jobs, page-worker jobs, batch processing, and direct MLS sync summaries report search index attempts, successes, and failures.
+- Failed BullMQ jobs are mirrored into `reie-dead-letter` after final retry exhaustion with bounded and redacted payload snapshots.
+- Legacy IRES/helper cleanup is complete, including old root-level demo MLS helpers.
+- Large production syncs still need controlled load testing.
+
+Search indexing:
+
+- Typesense schema supports compatible `properties` and `listings` collections.
+- Typesense schema validation checks required fields, required facets, expected field types, sortable fields, and default sorting field.
+- `scripts/initTypesense.ts`, `scripts/index.ts`, `scripts/createTypesenseCollection.ts`, and `scripts/createCollection.js` use the canonical schema validation path.
+- `lib/typesense/indexListing.ts` indexes single listings into both `properties` and `listings`.
+- `lib/typesense/indexProperties.ts` reuses the same document mapper for bulk reindexing.
+- `lib/mls/updateSearchIndex.ts` delegates to the canonical listing indexer and returns per-collection status.
+- `/api/mls/status` exposes a first-class `searchIndex` block with checked jobs, attempts, successes, failures, unattempted jobs, unknown jobs, health, diagnostics, and recent completed job details.
+- `/api/mls/status` raises diagnostics when `indexFailed > 0`, `searchIndexIndexed` is false, or completed jobs with processed listings did not attempt indexing.
+- `/admin` shows search-index health and recent MLS completion details, including search index attempts, successes, failures, and per-listing index errors when job return values include them.
+- `indexFailed > 0` should be treated as degraded search freshness even if Postgres upserts succeeded.
+- Local Typesense still needs collection repair so `listings` includes the current fields and facets, including faceted `neighborhood`.
+- Reindexing from Supabase should run after local schema repair when Supabase connectivity is available.
+
+Seed data:
+
+- `quickSeed.ts` writes a small David Quinn Group authority seed.
+- `seedTestProperties.ts` writes broader Boulder/Louisville test inventory.
+- Both seed scripts create or update `Property` rows.
+- Both seed scripts replace existing seeded `PropertyPhoto` rows for their own properties.
+- Both seed scripts report database, photo, and per-collection Typesense status.
+- Seed commands are explicit Terminal 5 tools, not app startup behavior, API behavior, recurring scheduler behavior, or production inventory strategy.
+- Real MLS media remains the production source for live listing imagery.
+
+Alerts and digest email:
+
+- Saved-search matching can create `AlertEvent` and `AlertQueue` records.
+- Alert and digest dry-runs are read-only.
+- The base alert script is dry-run by default.
+- Live alert sends must use `npm run run:alerts:live`, `npm run run:worker:alerts:once:live`, continuous worker queue consumption, or an explicitly live protected API request.
+- Live alert sends claim work with `pending -> processing -> sent`.
+- Unsubscribe behavior is idempotent.
+- Click tracking redirects safely and can update user engagement records.
+- Recurring email traffic, including recurring alert or digest sends, should wait until sender domain, unsubscribe, click tracking, internal live-send tests, `npm run smoke:mls-status` search-index health, `npm run smoke:search` Search Smoke Readiness, and timeout-bounded queue diagnostics are verified.
+- Degraded search-index health, `meta.smoke.ready=false`, public search smoke blockers, or unacceptable timeout-bounded queue diagnostics should block recurring email traffic, including recurring alert or digest sends, because email click traffic lands back on search and property pages.
+
+CRM intelligence:
+
+- Clicks can update `UserInteraction`, `AlertQueue.clickedAt`, `User.heatScore`, and `UserPreference`.
+- Hot lead scoring exists.
+- `createTask()` creates `PRE_DISCOVERY_BRIEF` tasks through `prisma.cRMTask`.
+- Saved-search intake creates `strategy_intake` CRM tasks with alert-readiness metadata.
+- CRM task reporting exists through Terminal 5, `/api/admin/crm-tasks`, and `/admin`.
+- Terminal 5 CRM reports are read-only and include closure audit counts plus the same CRM readiness gates used by `/api/admin/crm-tasks`.
+- Scheduled CRM reporting should use `npm run run:crm:scheduler` so provider logs receive one machine-readable payload with `success`, `mode: "scheduler"`, `schemaVersion: 1`, `generatedAt`, `command`, `report.audit`, `report.readiness`, and `tasks`.
+- Before enabling the first recurring CRM provider schedule, follow the CRM first-live scheduler test in `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/production-scheduler-plan.md`.
+- `/api/admin/crm-tasks` returns `generatedAt`, `terminal`, `inspectionSource: "List Route"`, `route`, and `command` on success and error responses; successful responses also return closure-audit counts for completed/dismissed tasks, reviewed closures, missing review notes, and closure review coverage.
+- `/api/admin/crm-tasks` returns a `readiness` block with `level`, `summary`, `nextAction`, `terminal`, `nextCommand`, and gates for Closure Audit, Active Review, and Alert Criteria.
+- `/api/admin/crm-tasks/[id]` can update bounded review metadata and returns `generatedAt`, `terminal`, `inspectionSource: "Detail Route"`, `route`, and `command` inspection metadata on success and error responses.
+- `/api/admin/crm-tasks/[id]` requires a non-empty review note before a CRM task can be marked `completed` or `dismissed`.
+- `/api/admin/crm-tasks/[id]` records completion and dismissal timestamps in CRM task review metadata.
+- `/admin` can mark CRM tasks as reviewing, complete tasks with notes, dismiss tasks with notes, and surface CRM readiness gates, closure audit coverage, missing-note counts, CRM API Inspection metadata with a visible Source field rendered from API-provided `inspectionSource`, preserved failed detail-route inspection metadata, and the visible `npm run run:crm:scheduler` command.
+- `/admin` CRM API Inspection shows API-provided `List Route` metadata for `/api/admin/crm-tasks` by default and briefly shows API-provided `Detail Route` metadata for `/api/admin/crm-tasks/[id]` after Review, Complete, or Dismiss actions before the active-task list refresh returns `List Route` metadata.
+- `/admin` CRM command panels are structured to remain readable on smaller screens.
+- CRM readiness levels are `ready`, `watch`, and `blocked`; `blocked` means closed tasks are missing review notes.
+
+Admin and operations:
+
+- `/admin` is the operations entry point.
+- `/admin` shows the current MLS sync envelope, including page size, page count, runtime, page timeout, and worker/check terminals.
+- `/admin` surfaces Terminal 5 smoke checks for MLS status, Search Smoke Readiness, and combined operational readiness.
+- `/admin` states that Search Smoke Readiness requires `meta.smoke.ready=true` with no blockers before raising MLS volume, recurring email traffic, alert or digest traffic, or scheduler cadence.
+- `/admin/dead-letter` provides dead-letter inspection.
+- `/admin/dead-letter` shows active filter summary and inspection terminal context.
+- `/api/mls/status` provides status diagnostics and returns `commands.smokeOps`, `commands.smokeMlsStatus`, and `commands.smokeSearch` for first-class smoke-script guidance.
+- `/api/mls/status` preserves raw API command compatibility through `commands.rawStatus` and `commands.rawSearchCheck`.
+- `/api/mls/retry` provides dry-run and live retry for failed BullMQ jobs.
+- Targeted retry should use a specific queue and job id when possible.
+- Broad live retry across queues requires `allowAllLive=true` and should remain exceptional.
+- `/api/mls/sync` and `/api/mls-sync` expose bounded protected sync entrypoints.
+- `/api/process-alerts` exposes bounded protected alert processing.
+- `/api/admin/dead-letter` provides bounded dead-letter inspection.
+- `/api/admin/crm-tasks` provides bounded CRM task reporting, closure-audit coverage, and CRM readiness verdicts.
+- `/api/admin/crm-tasks/[id]` provides bounded CRM task review updates.
+- `scripts/queueDashboard.ts` provides timeout-bounded Terminal 5 queue diagnostics for MLS, page-worker, alert, and dead-letter queues through `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000`.
+
+Generated output:
+
+- `dist/` is generated worker and script output.
+- `dist/` may contain stale JavaScript for deleted source files until generated output is cleaned or regenerated.
+- Source scans are authoritative unless a runtime command directly executes stale generated files.
+
+## Protected Operational APIs
+
+These routes require `REIE_ADMIN_API_KEY` or `ADMIN_API_KEY` in production:
+
+- `GET /api/mls/status`
+- `GET /api/mls/retry`
+- `POST /api/mls/retry`
+- `GET /api/mls/sync`
+- `POST /api/mls/sync`
+- `GET /api/mls-sync`
+- `POST /api/mls-sync`
+- `GET /api/admin/dead-letter`
+- `GET /api/admin/crm-tasks`
+- `GET /api/admin/crm-tasks/[id]`
+- `PATCH /api/admin/crm-tasks/[id]`
+- `GET /api/process-alerts`
+- `POST /api/process-alerts`
+
+Accepted auth forms:
+
+- Header: `x-admin-key: <key>`
+- Header: `Authorization: Bearer <key>`
+- Query string for local/manual testing: `?adminKey=<key>`
+- POST JSON `adminKey` for route handlers that explicitly support body-based local/manual testing.
+
+Local development can bypass the key only when neither admin key environment variable is configured.
+
+## Terminal Map
+
+| Terminal | Purpose | Primary command |
+| --- | --- | --- |
+| Terminal 1 | Next.js app | `npm run dev` |
+| Terminal 2 | MLS Page Worker | `npm run run:worker:mls-page` |
+| Terminal 3 | Coordinator | `npm run run:worker:mls` |
+| Terminal 4 | Docker / Typesense | `npm run infra:up` |
+| Terminal 5 | Scripts / curl testing | `npm run worker:build`, `npm run run:mls-sync:dry`, `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000`, smoke scripts, bounded live syncs, seed commands, CRM help, curl checks, Typesense repair |
+
+## Current Verification Baseline
+
+Run from **Terminal 5: Scripts / curl testing** after meaningful changes:
+
+```bash
+npm run worker:build
+npm run run:mls-sync:dry
+npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000
+npm run typecheck
+npm run lint
+npm run run:seed:quick:dry
+npm run run:seed:test:dry
+npm run build
+```
+
+Run script help checks after alert, digest, CRM, or worker script changes:
+
+```bash
+npm run worker:build
+npm run run:alerts -- --help
+npm run run:digest -- --help
+npm run run:crm -- --help
+npm run run:crm:active
+npm run run:crm:scheduler
+node dist/workers/runCRMTasks.js --help
+```
+
+Run operational smoke checks from **Terminal 5: Scripts / curl testing** while Terminal 1 is running:
+
+```bash
+npm run smoke:mls-status
+npm run smoke:search
+npm run smoke:ops
+```
+
+Equivalent raw curl checks:
+
+```bash
+curl --max-time 8 -s -w "\nHTTP_STATUS:%{http_code}\n" "http://localhost:3000/api/mls/status"
+curl --max-time 8 -s -w "\nHTTP_STATUS:%{http_code}\n" "http://localhost:3000/api/search?limit=5"
+curl --max-time 8 -s -w "\nHTTP_STATUS:%{http_code}\n" "http://localhost:3000/api/mls/retry"
+curl --max-time 8 -X POST -s -w "\nHTTP_STATUS:%{http_code}\n" "http://localhost:3000/api/mls/retry?queue=all&dryRun=true&limit=25"
+curl --max-time 8 -s -w "\nHTTP_STATUS:%{http_code}\n" "http://localhost:3000/api/admin/dead-letter?limit=5"
+curl --max-time 8 -s -w "\nHTTP_STATUS:%{http_code}\n" "http://localhost:3000/api/admin/dead-letter?states=waiting,delayed,failed&limit=25"
+curl --max-time 20 -s -X POST -w "\nHTTP_STATUS:%{http_code}\n" "http://localhost:3000/api/process-alerts?dryRun=true&limit=5"
+curl --max-time 8 -s -w "\nHTTP_STATUS:%{http_code}\n" "http://localhost:3000/api/admin/crm-tasks?status=active&limit=6" -H "x-admin-key: $REIE_ADMIN_API_KEY"
+curl --max-time 8 -s -w "\nHTTP_STATUS:%{http_code}\n" "http://localhost:3000/api/admin/crm-tasks?status=all&limit=20" -H "x-admin-key: $REIE_ADMIN_API_KEY"
+curl --max-time 8 -s -w "\nHTTP_STATUS:%{http_code}\n" "http://localhost:3000/api/admin/crm-tasks/<task-id-from-list-response>" -H "x-admin-key: $REIE_ADMIN_API_KEY"
+```
+
+Use the `x-admin-key` header for the same checks when an admin key is configured:
+
+```bash
+curl --max-time 8 -s -H "x-admin-key: $REIE_ADMIN_API_KEY" -w "\nHTTP_STATUS:%{http_code}\n" "http://localhost:3000/api/mls/status"
+curl --max-time 8 -s -w "\nHTTP_STATUS:%{http_code}\n" "http://localhost:3000/api/search?limit=5"
+```
+
+Expected current warnings:
+
+- Node `url.parse()` deprecation warnings appear during `next build`.
+- Local Typesense may log that the `listings` collection is stale until local collections are repaired.
+- Current stale Typesense warning includes missing required fields/facets, `price` type mismatch, and default sort mismatch.
+- Production smoke verification still needs `npm run smoke:mls-status`, `npm run smoke:search`, timeout-bounded queue diagnostics, and one internal tracked email click before recurring scheduler activation or recurring email traffic.
+- `dist/` may contain stale generated JavaScript for deleted source files until generated output is cleaned.
+
+## Current Blockers
+
+Supabase connectivity:
+
+```text
+Can't reach database server at aws-0-us-west-2.pooler.supabase.com:6543
+```
+
+This can block alert, digest, CRM, MLS, seed, and reindex dry-runs/reporting when the pooler is unreachable.
+
+Typesense local schema:
+
+- Local collection repair is needed so `properties` and `listings` match the canonical schema from `/Users/davidquinn/david-quinn-group/colorado-real-estate/lib/typesense/schema.ts`.
+- Repair starts with **Terminal 4: Docker / Typesense** running `npm run infra:up`.
+- Repair continues from **Terminal 5: Scripts / curl testing** with `npm run worker:build`, then `npm run typesense:init`.
+- Reindex from **Terminal 5: Scripts / curl testing** with `npm run typesense:reindex` when Supabase is reachable.
+
+Production decisions:
+
+- Managed Redis provider.
+- Managed Typesense provider.
+- Production worker host.
+- Production scheduler provider.
+- MLS sync cadence.
+- Alert cadence.
+- Digest cadence.
+- CRM reporting cadence.
+- Email domain authentication and final live-send rules.
+
+## Current Near-Term Work Sequence
+
+1. Repair local Typesense collections so `properties` and `listings` both include the current schema.
+2. Reindex Typesense from Supabase when Supabase connectivity is available.
+3. Verify search-index health with `npm run smoke:mls-status` and Search Smoke Readiness source, `meta.source`, health, access level, filters, bounds, returned, mapped, coordinate-filtered, duration, and `meta.smoke.ready=true` with no blockers through `npm run smoke:search` after collection repair and reindex.
+4. Confirm Supabase connectivity and rerun alert, digest, CRM, MLS, and seed dry-runs/reporting as needed.
+5. Clean or regenerate stale `dist/` artifacts if generated output is being used directly.
+6. Continue MLS ingestion hardening and media replacement.
+7. Expand timeout-bounded admin queue, sync, alert, digest, and CRM visibility.
+8. Continue public search/map/listing polish.
+9. Strengthen city, neighborhood, property, article, guide, tool, and market authority surfaces using `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/content-architecture.md` as the control document, with MLS-backed public expansion and large programmatic content batch publication gated by data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics.
+10. Choose production schedulers for MLS sync, alerts, digests, and CRM reporting.
+11. Decide production Redis and Typesense providers.
+12. Load-test production-size MLS ingestion before increasing sync volume.
+
+## Production Scheduler Status
+
+The production scheduler plan is staged and intentionally conservative.
+
+Rollout order:
+
+1. MLS sync dry-run or smallest bounded live sync: `npm run run:mls-sync -- --execute --json --max-pages=1 --page-size=25 --start-page=0 --page-timeout-ms=30000`.
+2. Search-index result review from sync output, worker results, `npm run smoke:mls-status`, and `/admin`.
+3. `npm run smoke:search` Search Smoke Readiness verification for source, `meta.source`, health, access level, filters, bounds, returned count, mapped count, coordinate-filtered count, duration, and `meta.smoke.ready=true` with no blockers.
+4. Timeout-bounded queue diagnostics through `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000`.
+5. Large programmatic content batch publication gate verification for data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics before MLS-backed public expansion.
+6. MLS sync recurring schedule.
+7. CRM reporting.
+8. Alert dry-run.
+9. Internal alert live test.
+10. Alert live schedule.
+11. Digest dry-run.
+12. Internal digest live test.
+13. Digest live schedule.
+14. Manual Typesense repair and reindex only when required.
+
+Current schedule recommendation:
+
+| Job | Cadence | Command |
+| --- | --- | --- |
+| MLS sync dry-run | hourly during validation | `npm run run:mls-sync -- --json --max-pages=1 --page-size=5 --start-page=0 --page-timeout-ms=30000` |
+| MLS sync live | hourly after approval | `npm run run:mls-sync -- --execute --json --max-pages=1 --page-size=25 --start-page=0 --page-timeout-ms=30000` |
+| Alert processing dry-run | every 30 minutes during validation | `npm run run:alerts:dry -- --limit 50` |
+| Alert processing live | every 30 minutes after approval | `npm run run:alerts:live -- --limit 50` |
+| Digest processing | daily or weekly after approval | `npm run run:digest -- --limit 50` |
+| CRM reporting | daily business morning | `npm run run:crm:scheduler` |
+| Typesense schema repair | manual only | `npm run typesense:init` |
+| Typesense reindex | manual only | `npm run typesense:reindex` |
+| Seed scripts | not scheduled | manual controlled use only |
+
+## Seed Workflow Status
+
+Completed seed files:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/scripts/quickSeed.ts`
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/scripts/seedTestProperties.ts`
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/package.json`
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/tsconfig.worker.json`
+
+Seed commands:
+
+```bash
+npm run run:seed:quick:dry
+npm run run:seed:test:dry
+npm run run:seed:quick
+npm run run:seed:test
+npm run run:seed:quick:no-index
+npm run run:seed:test:no-index
+```
+
+Seed rules:
+
+- Dry-runs are safe verification checks.
+- Live seed commands require database connectivity.
+- Indexed seed commands require Typesense to be running with canonical `properties` and `listings` schemas.
+- No-index commands write database and photo rows without indexing.
+- Seed scripts should not be scheduled or run from public app code.
+
+## Legacy MLS Cleanup Status
+
+The legacy MLS helper cleanup pass is complete:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/scripts/fetchMLS.ts` wraps `syncMLSGrid()` as a compatibility entrypoint.
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/lib/mls/upsertListing.ts` owns useful GC-forensics mapping from the old normalizer.
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/legacy-mls-cleanup-plan.md` is the cleanup completion record.
+
+Deleted legacy files:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/lib/mls/fetchIRESListings.ts`
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/lib/mls/normalizeIRESListing.ts`
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/lib/mls/normalizeListing.ts`
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/lib/mls/fetchMLS.ts`
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/lib/mls/mockListings.ts`
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/lib/mls/enqueueListings.ts`
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/lib/mls/parseMLS.ts`
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/lib/mls/scheduleJobs.ts`
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/lib/mlsImporter.ts`
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/lib/mlsSync.ts`
+
+Current deletion candidates:
+
+- None in the confirmed dead-helper pass.
+
+## Current Documentation State
+
+Current operating docs:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/README.md`
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/PROJECT_SYSTEM.md`
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/atlas-platform-plan.md`
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/platform-architecture.md`
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/production-architecture.md`
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/production-scheduler-plan.md`
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/launch-core-checklist.md`
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/legacy-mls-cleanup-plan.md`
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/mls-ingestion.md`
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/alert-architecture.md`
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/email-system.md`
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/content-architecture.md`
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/CHAT_START.md`
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/STATEoftheUNION`
+
+Recently aligned with protected routes, dry-run-first operations, explicitly bounded live MLS scheduling, page-timeout bounded MLS sync, timeout-bounded queue diagnostics, diagnostic-only queue-dashboard wording, restart rules, authority guidance, seed workflow, MLS-to-search index diagnostics, search/map metadata diagnostics, `/api/search` smoke readiness metadata, `/api/mls/status` smoke command metadata, `/admin` smoke readiness labels, `/admin` CRM API Inspection and scheduler command panels, failed detail-route inspection preservation, note-backed CRM completion/dismissal, smoke scripts, cleanup status, verification baseline, launch-core gates, ingestion-volume gates, scheduler cadence and MLS-volume gates, recurring scheduler activation gates, recurring email traffic gates with alert or digest sends as examples, unacceptable queue diagnostics as recurring email traffic blockers, MLS-backed public expansion gates, large programmatic content batch publication gates, CRM scheduler-readiness payloads, CRM admin API metadata, content authority planning gates, and scheduler state:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/README.md`
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/PROJECT_SYSTEM.md`
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/CHAT_START.md`
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/platform-architecture.md`
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/production-architecture.md`
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/production-scheduler-plan.md`
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/launch-core-checklist.md`
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/mls-ingestion.md`
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/alert-architecture.md`
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/email-system.md`
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/content-architecture.md`
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/legacy-mls-cleanup-plan.md`
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/STATEoftheUNION`
+
+## Working Standard
+
+- Replace full files when editing.
+- Provide the full path of each file being created or replaced.
+- Add the file path comment at the bottom of code files when file syntax allows comments.
+- Keep changes scoped to the current module.
+- Avoid unrelated refactors.
+- Do not delete files unless cleanup is specifically identified.
+- Preserve existing user work and unrelated changes.
+- Verify from Terminal 5 before closing the task.
+- State the next file to work on.
+
+<!-- /Users/davidquinn/david-quinn-group/colorado-real-estate/docs/STATEoftheUNION -->
