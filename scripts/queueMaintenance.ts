@@ -4,6 +4,7 @@ import { ALERT_QUEUE_NAME, alertQueue } from '../lib/queue/alertQueue.js';
 import { LISTING_QUEUE_NAME, listingQueue } from '../lib/queue/listingQueue.js';
 import { MLS_PAGE_QUEUE_NAME, mlsPageQueue } from '../lib/queue/mlsPageQueue.js';
 import { MLS_SYNC_QUEUE_NAME, mlsQueue } from '../lib/queue/mlsQueue.js';
+import { enqueueDeadLetterFromJob } from '../lib/queue/deadLetterQueue.js';
 import { closeRedisConnections, getRedisConnection } from '../lib/queue/redis.js';
 
 type QueueDefinition = {
@@ -13,7 +14,7 @@ type QueueDefinition = {
 };
 
 type MaintenanceOptions = {
-  action: 'stale-recovery' | 'retry-failed';
+  action: 'capture-dead-letter' | 'stale-recovery' | 'retry-failed';
   execute: boolean;
   jobId: string;
   limit: number;
@@ -44,7 +45,7 @@ Usage:
   node dist/scripts/queueMaintenance.js [options]
 
 Options:
-  --action=<name>           stale-recovery or retry-failed. Default: stale-recovery.
+  --action=<name>           stale-recovery, retry-failed, or capture-dead-letter. Default: stale-recovery.
   --queue=<name>            Queue to inspect. Default: mls-page.
   --job-id=<id>             Target job id for live stale recovery or targeted failed retry.
   --limit=<number>          Failed retry scan limit. Default: 10.
@@ -63,6 +64,12 @@ Dry-run failed retry:
 
 Live failed retry:
   npm run run:queue-maintenance -- --action=retry-failed --queue=mls-sync --job-id=<jobId> --execute
+
+Dry-run dead-letter capture:
+  npm run run:queue-maintenance -- --action=capture-dead-letter --queue=mls-sync --limit=10
+
+Live dead-letter capture:
+  npm run run:queue-maintenance -- --action=capture-dead-letter --queue=mls-sync --job-id=<jobId> --execute
 `;
 
 function readFlagValue(arg: string) {
@@ -104,7 +111,9 @@ function parseOptions(argv: string[]): MaintenanceOptions {
 
     if (arg.startsWith('--action=')) {
       const action = readFlagValue(arg);
-      if (action !== 'stale-recovery' && action !== 'retry-failed') throw new Error(`Unsupported action: ${action}`);
+      if (action !== 'stale-recovery' && action !== 'retry-failed' && action !== 'capture-dead-letter') {
+        throw new Error(`Unsupported action: ${action}`);
+      }
       options.action = action;
       continue;
     }
@@ -286,6 +295,43 @@ async function retryFailedJobs(definition: QueueDefinition, options: Maintenance
   };
 }
 
+function validateLiveDeadLetterCapture(options: MaintenanceOptions, report: Awaited<ReturnType<typeof inspectFailedRetry>>) {
+  if (!options.execute) return null;
+  if (!options.jobId) return 'Live dead-letter capture requires --job-id=<id>.';
+  if (report.missingTarget) return `Target job ${options.jobId} was not found in ${report.name}.`;
+  if (report.retryable < 1) return `Target job ${options.jobId} is not currently failed and eligible for dead-letter capture.`;
+  return null;
+}
+
+async function captureDeadLetter(definition: QueueDefinition, options: MaintenanceOptions, report: Awaited<ReturnType<typeof inspectFailedRetry>>) {
+  if (!options.execute) return { attempted: false, captured: 0, errors: [] as Array<{ jobId?: string; error: string }> };
+
+  let captured = 0;
+  const errors: Array<{ jobId?: string; error: string }> = [];
+  const candidateJobs = await getFailedRetryCandidates(definition, options);
+  const retryableIds = new Set(report.jobs.filter((job) => job.retryable).map((job) => job.id));
+
+  for (const job of candidateJobs) {
+    if (!job.id || !retryableIds.has(job.id)) continue;
+
+    try {
+      await enqueueDeadLetterFromJob(definition.name, job, new Error(job.failedReason || 'Captured failed queue job for operator review.'));
+      captured++;
+    } catch (error) {
+      errors.push({
+        jobId: job.id,
+        error: error instanceof Error ? error.message : String(error || 'Unknown dead-letter capture error.'),
+      });
+    }
+  }
+
+  return {
+    attempted: true,
+    captured,
+    errors,
+  };
+}
+
 async function runStalledRecoveryPass(definition: QueueDefinition) {
   const worker = new Worker(
     definition.name,
@@ -333,14 +379,22 @@ async function main() {
     throw new Error(`Unsupported queue "${options.queueName}". Supported queues: ${QUEUES.map((queue) => queue.name).join(', ')}`);
   }
 
-  if (options.action === 'retry-failed') {
+  if (options.action === 'retry-failed' || options.action === 'capture-dead-letter') {
     const before = await inspectFailedRetry(definition, options);
-    const blocker = validateLiveFailedRetry(options, before);
+    const blocker =
+      options.action === 'retry-failed'
+        ? validateLiveFailedRetry(options, before)
+        : validateLiveDeadLetterCapture(options, before);
     let retryResult = { attempted: false, retried: 0, errors: [] as Array<{ jobId?: string; error: string }> };
+    let deadLetterResult = { attempted: false, captured: 0, errors: [] as Array<{ jobId?: string; error: string }> };
     let after = before;
 
     if (blocker) {
       process.exitCode = 1;
+    } else if (options.action === 'capture-dead-letter') {
+      deadLetterResult = await captureDeadLetter(definition, options, before);
+      after = await inspectFailedRetry(definition, options);
+      if (deadLetterResult.errors.length > 0) process.exitCode = 1;
     } else {
       retryResult = await retryFailedJobs(definition, options, before);
       after = await inspectFailedRetry(definition, options);
@@ -350,24 +404,29 @@ async function main() {
     console.log(
       JSON.stringify(
         {
-          success: !blocker && retryResult.errors.length === 0,
+          success: !blocker && retryResult.errors.length === 0 && deadLetterResult.errors.length === 0,
           module: 'queue-maintenance',
           generatedAt: new Date().toISOString(),
           mode: options.execute ? 'execute' : 'dry-run',
           options,
           safety: {
-            liveRetryRequiresExecute: true,
-            liveRetryRequiresTargetJobId: true,
+            liveRetryRequiresExecute: options.action === 'retry-failed',
+            liveRetryRequiresTargetJobId: options.action === 'retry-failed',
+            liveDeadLetterCaptureRequiresExecute: options.action === 'capture-dead-letter',
+            liveDeadLetterCaptureRequiresTargetJobId: options.action === 'capture-dead-letter',
             blocker,
           },
           retry: retryResult,
+          deadLetterCapture: deadLetterResult,
           commands: {
             dryRunCurrentScope: options.jobId
-              ? `npm run run:queue-maintenance -- --action=retry-failed --queue=${definition.name} --job-id=${options.jobId}`
-              : `npm run run:queue-maintenance -- --action=retry-failed --queue=${definition.name} --limit=${options.limit}`,
+              ? `npm run run:queue-maintenance -- --action=${options.action} --queue=${definition.name} --job-id=${options.jobId}`
+              : `npm run run:queue-maintenance -- --action=${options.action} --queue=${definition.name} --limit=${options.limit}`,
             liveCurrentTarget: options.jobId
-              ? `npm run run:queue-maintenance -- --action=retry-failed --queue=${definition.name} --job-id=${options.jobId} --execute`
-              : 'Live failed retry requires --job-id=<id>.',
+              ? `npm run run:queue-maintenance -- --action=${options.action} --queue=${definition.name} --job-id=${options.jobId} --execute`
+              : options.action === 'retry-failed'
+                ? 'Live failed retry requires --job-id=<id>.'
+                : 'Live dead-letter capture requires --job-id=<id>.',
             queueDashboard: 'npm run run:queue-dashboard -- --failed --sample --limit=5 --timeout-ms=3000',
           },
           before,

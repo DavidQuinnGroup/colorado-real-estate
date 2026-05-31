@@ -202,7 +202,7 @@ Admin and operations:
 - Queue dashboard database-connectivity failures point to `npm run supabase:check` before retry guidance.
 - MLS sync and MLS page workers run a database preflight before consuming queue jobs; when Supabase is unavailable, they exit before draining jobs into failures.
 - Stale active queue jobs block launch, retry, scheduler, email, and ingestion-volume decisions until retry state, source-queue dead letters, and worker process health are inspected.
-- `scripts/queueMaintenance.ts` provides dry-run-first stale active job inspection, guarded BullMQ stalled-job recovery, and direct failed-job retry through `npm run run:queue-maintenance -- --queue=mls-page --job-id=<jobId>` and `npm run run:queue-maintenance -- --action=retry-failed --queue=mls-sync --limit=10`.
+- `scripts/queueMaintenance.ts` provides dry-run-first stale active job inspection, guarded BullMQ stalled-job recovery, direct failed-job retry, and targeted dead-letter capture through `npm run run:queue-maintenance -- --queue=mls-page --job-id=<jobId>`, `npm run run:queue-maintenance -- --action=retry-failed --queue=mls-sync --limit=10`, and `npm run run:queue-maintenance -- --action=capture-dead-letter --queue=mls-sync --job-id=<jobId>`.
 
 Generated output:
 
