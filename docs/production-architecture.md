@@ -811,8 +811,8 @@ If any curl returns `HTTP_STATUS:000`, start or restart **Terminal 1: Next.js ap
 - Recurring email traffic, recurring alert or digest scheduling, and CRM scheduling need production workflow decisions.
 - Email domain authentication should be confirmed before recurring alert or digest sends.
 - Production smoke verification still needs `npm run smoke:mls-status`, `npm run smoke:search`, timeout-bounded queue diagnostics, and one internal tracked email click before recurring scheduler activation or recurring email traffic.
-- Typesense collection repair and reindex should be run locally until `npm run build` no longer reports the stale `listings` collection.
-- Supabase connectivity from local scripts is currently a blocker when `aws-0-us-west-2.pooler.supabase.com:6543` is unreachable.
+- Local Typesense `properties` and `listings` collections are schema-ready; reindex should run after Supabase recovery.
+- Supabase connectivity from local scripts is currently a blocker until `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/supabase-recovery-runbook.md` is completed and `npm run supabase:check` passes.
 - Timeout-bounded queue diagnostics exist through the Terminal 5 dashboard and admin/dead-letter UI, and they gate live-inventory claims, scheduler cadence, recurring scheduler activation, MLS-volume decisions, recurring email traffic, MLS-backed public expansion, and large programmatic content batch publication; broader operational controls are still pending.
 - CRM closure audit controls, note-backed completion/dismissal, CRM API Inspection metadata, and failed detail-route preservation are implemented locally; production admin smoke verification still needs to run after Terminal 1 and Supabase are reachable.
 - Legacy MLS helper cleanup is complete and recorded in `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/legacy-mls-cleanup-plan.md`.

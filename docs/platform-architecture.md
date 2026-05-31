@@ -806,18 +806,17 @@ If any curl returns `HTTP_STATUS:000`, start or restart **Terminal 1: Next.js ap
 Known current non-blocking warnings:
 
 - Node `url.parse()` deprecation warnings appear during `next build`.
-- Local Typesense may log that the `listings` collection is stale until local collections are repaired.
-- Current stale Typesense warning includes missing required fields/facets, `price` type mismatch, and default sort mismatch.
+- Local Typesense `properties` and `listings` collections were verified ready with `npm run typesense:collections:check` on May 31, 2026.
 - `dist/` may contain stale generated JavaScript for deleted source files until generated output is cleaned.
 
 Known current blocker:
 
-- Supabase connectivity can block database-dependent dry-runs when `aws-0-us-west-2.pooler.supabase.com:6543` is unreachable.
+- Supabase connectivity can block database-dependent dry-runs until `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/supabase-recovery-runbook.md` is completed and `npm run supabase:check` passes.
 
 ## Current Known Gaps
 
-- Local Typesense collection repair is needed until `npm run build` no longer reports the stale `listings` collection.
-- Supabase connectivity from local scripts is currently a blocker when `aws-0-us-west-2.pooler.supabase.com:6543` is unreachable.
+- Local Typesense `properties` and `listings` collections are schema-ready.
+- Supabase connectivity from local scripts is currently a blocker until `npm run supabase:check` passes.
 - `dist/` may contain stale generated JavaScript for deleted source files until generated output is cleaned.
 - Production Redis provider decision is still open.
 - Production Typesense provider decision is still open.

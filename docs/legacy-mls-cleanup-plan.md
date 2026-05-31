@@ -193,7 +193,7 @@ Current cleanup state:
 - Search indexing uses the canonical Typesense schema and validation path from `/Users/davidquinn/david-quinn-group/colorado-real-estate/lib/typesense/schema.ts`.
 - `npm run smoke:mls-status`, `/admin`, `npm run smoke:search`, `/search`, `/`, and `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000` now expose or preserve search-index health, Search Smoke Readiness, indexing behavior, and bounded queue diagnostics for launch readiness, recurring email traffic, live-inventory claims, MLS-backed public expansion, MLS-volume decisions, scheduler cadence, and large programmatic content batch publication gates.
 - `/api/admin/crm-tasks`, `/api/admin/crm-tasks/[id]`, and `/admin` now expose CRM inspection metadata on success and error responses, preserve failed detail-route inspection metadata, and keep CRM closure audit coverage visible for recurring email traffic and engagement handoff.
-- Local Typesense may still report the stale `listings` collection warning until the local collection is rebuilt and reindexed.
+- Local Typesense `properties` and `listings` collections were verified ready with `npm run typesense:collections:check` on May 31, 2026.
 
 Required verification from **Terminal 5: Scripts / curl testing**:
 
@@ -231,8 +231,7 @@ Only delete future MLS or demo listing files after all of these are true:
 ## Known Non-Blocking Warnings
 
 - Node `url.parse()` deprecation warnings appear during `npm run build`.
-- Local Typesense may log that the `listings` collection is stale until local collections are repaired.
-- Current stale Typesense warning includes missing required fields/facets, `price` type mismatch, and default sort mismatch.
+- Local Typesense `properties` and `listings` collections were verified ready with `npm run typesense:collections:check` on May 31, 2026.
 
 ## Terminal Guidance
 

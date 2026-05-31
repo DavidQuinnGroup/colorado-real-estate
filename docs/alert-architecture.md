@@ -764,7 +764,7 @@ npm run typesense:reindex
 
 ## Current Known Gaps
 
-- Supabase connectivity can block alert, digest, CRM, MLS, seed, and Typesense reindex dry-runs/reporting when the database pooler is unreachable.
+- Supabase connectivity can block alert, digest, CRM, MLS, seed, and Typesense reindex dry-runs/reporting until `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/supabase-recovery-runbook.md` is completed and `npm run supabase:check` passes.
 - Email domain authentication should be confirmed before production alert or digest sends.
 - Production smoke verification still needs `npm run smoke:mls-status`, `npm run smoke:search`, timeout-bounded queue diagnostics, and one internal tracked email click before recurring scheduler activation or recurring email traffic.
 - Saved-search alert frequency controls are not yet implemented.
@@ -772,7 +772,7 @@ npm run typesense:reindex
 - CRM closure audit controls, note-backed completion/dismissal, CRM API Inspection metadata, and failed detail-route preservation are implemented locally; production admin smoke verification still needs to run after Terminal 1 and Supabase are reachable.
 - `sendAlertEmail.ts` and older email templates should be reviewed before production cleanup.
 - Admin dead-letter inspection and timeout-bounded Terminal 5 queue diagnostics exist; live retry controls should remain separate until audit and confirmation flows are designed.
-- Local Typesense repair is still needed until `npm run build` no longer reports the stale `listings` collection.
+- Local Typesense `properties` and `listings` collections were verified ready with `npm run typesense:collections:check` on May 31, 2026.
 - Node `url.parse()` deprecation warnings still appear during `npm run build`.
 
 <!-- /Users/davidquinn/david-quinn-group/colorado-real-estate/docs/alert-architecture.md -->

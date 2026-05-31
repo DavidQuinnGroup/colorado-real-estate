@@ -265,18 +265,18 @@ curl --max-time 8 -s -w "\nHTTP_STATUS:%{http_code}\n" "http://localhost:3000/ap
 Expected current non-blocking warnings:
 
 - Node `url.parse()` deprecation warnings appear during build.
-- Local Typesense may log that the `listings` collection is stale until local collections are repaired.
-- Current stale Typesense warning includes missing required fields/facets, `price` type mismatch, and default sort mismatch.
-- Search metadata now exists with source, health, access level, filters, bounds, returned, mapped, coordinate-filtered, and duration fields, but full Typesense result verification should wait until local collection repair and reindex are complete.
+- Local Typesense `properties` and `listings` collections were verified ready with `npm run typesense:collections:check` on May 31, 2026.
+- Search metadata now exists with source, health, access level, filters, bounds, returned, mapped, coordinate-filtered, and duration fields, but full Typesense result verification should wait until Supabase connectivity and reindex are complete.
 - `dist/` may contain stale generated JavaScript for deleted source files until generated output is cleaned.
 
 Known current blocker:
 
 ```text
-Can't reach database server at aws-0-us-west-2.pooler.supabase.com:6543
+DNS lookup failed: ENOTFOUND otmkoqvmhthitldlnjdk.supabase.co
+FATAL: (ENOTFOUND) tenant/user postgres.otmkoqvmhthitldlnjdk not found
 ```
 
-This can block alert, digest, CRM, MLS, seed, and reindex commands that depend on Supabase.
+This can block alert, digest, CRM, MLS, seed, and reindex commands that depend on Supabase. Follow `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/supabase-recovery-runbook.md`.
 
 ## Roadmap Sequence
 
@@ -292,7 +292,7 @@ Work:
 - Build worker output from **Terminal 5: Scripts / curl testing**.
 - Repair Typesense collections with `npm run typesense:init`.
 - Reindex Typesense with `npm run typesense:reindex` when Supabase is reachable.
-- Confirm build no longer logs the stale `listings` collection warning.
+- Confirm local Typesense collections remain schema-ready with `npm run typesense:collections:check`.
 - Confirm `npm run smoke:mls-status` reports `searchIndex.failed=0`.
 - Confirm `npm run smoke:search` reports Search Smoke Readiness with `meta.smoke.ready=true` and no blockers.
 
@@ -570,8 +570,8 @@ Success criteria:
 
 ## Current Known Gaps
 
-- Local Typesense collection repair is still needed until `npm run build` no longer reports the stale `listings` collection.
-- Supabase connectivity can block alert, digest, CRM, MLS, seed, and reindex dry-runs/reporting when the pooler is unreachable.
+- Local Typesense `properties` and `listings` collections are schema-ready.
+- Supabase connectivity can block alert, digest, CRM, MLS, seed, and reindex dry-runs/reporting until `npm run supabase:check` passes.
 - Production smoke verification still needs `npm run smoke:mls-status`, `npm run smoke:search`, timeout-bounded queue diagnostics, and an internal tracked email click before recurring scheduler activation or recurring email traffic.
 - Production Redis and Typesense provider decisions are still open.
 - Production worker host and scheduler provider decisions are still open.

@@ -730,17 +730,18 @@ If market pages log that the local Typesense `listings` collection is stale:
 4. Run `npm run typesense:reindex` from Terminal 5 when Supabase is reachable.
 5. Run `npm run build` from Terminal 5.
 
-If database-dependent scripts fail with Supabase pooler errors:
+If database-dependent scripts fail with Supabase connectivity errors:
 
-1. Confirm local `.env` and `.env.local` database values.
-2. Confirm the Supabase pooler is reachable.
+1. Follow `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/supabase-recovery-runbook.md`.
+2. Confirm `npm run supabase:check` passes.
 3. Retry only bounded dry-runs first.
 4. Do not run large MLS syncs or live seed commands until connectivity is stable.
 
-Known error:
+Current known errors:
 
 ```text
-Can't reach database server at aws-0-us-west-2.pooler.supabase.com:6543
+DNS lookup failed: ENOTFOUND otmkoqvmhthitldlnjdk.supabase.co
+FATAL: (ENOTFOUND) tenant/user postgres.otmkoqvmhthitldlnjdk not found
 ```
 
 ## Verification
@@ -813,8 +814,8 @@ npm run build
 
 ## Known Gaps
 
-- Local Typesense collection repair is still needed until `npm run build` no longer reports the stale `listings` collection.
-- Supabase connectivity can block alert, digest, CRM, MLS, seed, and reindex dry-runs/reporting when the pooler is unreachable.
+- Local Typesense `properties` and `listings` collections were verified ready with `npm run typesense:collections:check` on May 31, 2026.
+- Supabase connectivity can block alert, digest, CRM, MLS, seed, and reindex dry-runs/reporting until `npm run supabase:check` passes.
 - `dist/` may contain stale generated JavaScript for deleted source files until generated output is cleaned.
 - Production scheduling needs a final host-level cron or scheduler.
 - Recurring email traffic, recurring alert or digest scheduling, and CRM scheduling need production workflow decisions.

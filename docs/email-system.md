@@ -561,9 +561,9 @@ Before live user email:
 - Reply handling exists as an API route, but full CRM reply workflow needs validation.
 - Visual QA for major email clients has not been completed.
 - Live send testing should wait until Supabase connectivity and Resend credentials are both confirmed.
-- Alert and digest dry-runs currently fail while Supabase pooler connectivity is unavailable.
+- Alert and digest dry-runs currently fail while Supabase recovery is blocked.
 - Timeout-bounded queue diagnostics exist through Terminal 5, but broader admin queue controls are still pending.
-- Local Typesense repair is still needed until `npm run build` no longer reports the stale `listings` collection.
+- Local Typesense `properties` and `listings` collections were verified ready with `npm run typesense:collections:check` on May 31, 2026.
 - Recurring email traffic readiness still needs a production smoke pass through `npm run smoke:mls-status`, `npm run smoke:search`, timeout-bounded queue diagnostics, and one internal tracked email click before recurring scheduler activation.
 - Node `url.parse()` deprecation warnings still appear during `npm run build`.
 

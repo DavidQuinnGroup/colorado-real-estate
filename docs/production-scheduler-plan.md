@@ -652,10 +652,10 @@ rg -n "fetchIRESListings|normalizeIRESListing|normalizeListing|lib/mls/fetchMLS|
 - Production worker host decision is still open.
 - Production scheduler provider decision is still open.
 - Resend sender domain authentication needs confirmation before recurring alert or digest sends.
-- Supabase connectivity from local scripts is currently a blocker when `aws-0-us-west-2.pooler.supabase.com:6543` is unreachable.
-- Local Typesense collection repair is still needed until `npm run build` no longer reports the stale `listings` collection.
+- Supabase connectivity from local scripts is currently a blocker until `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/supabase-recovery-runbook.md` is completed and `npm run supabase:check` passes.
+- Local Typesense `properties` and `listings` collections were verified ready with `npm run typesense:collections:check` on May 31, 2026.
 - Search-index failure reporting now exists; production rollout still needs live-provider verification that the counters appear in scheduler logs, worker results, `npm run smoke:mls-status`, and `/admin`.
-- `/api/search` metadata now exists; production rollout still needs live verification through `npm run smoke:search` for source, `meta.source`, health, access level, filters, bounds state, returned count, mapped count, coordinate filtering, duration, `meta.smoke.ready=true`, empty `meta.smoke.blockers`, and Typesense query/filter context after Typesense provider selection and collection repair.
+- `/api/search` metadata now exists; production rollout still needs live verification through `npm run smoke:search` for source, `meta.source`, health, access level, filters, bounds state, returned count, mapped count, coordinate filtering, duration, `meta.smoke.ready=true`, empty `meta.smoke.blockers`, and Typesense query/filter context after Supabase connectivity and provider selection are confirmed.
 - Production smoke verification still needs `npm run smoke:mls-status`, `npm run smoke:search`, timeout-bounded queue diagnostics, and one internal tracked email click before recurring scheduler activation or recurring email traffic.
 - Unacceptable timeout-bounded queue diagnostics should block recurring email traffic, including recurring alert or digest sends, until queue health is understood.
 - Large programmatic content batch publication should wait for verified data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics.
