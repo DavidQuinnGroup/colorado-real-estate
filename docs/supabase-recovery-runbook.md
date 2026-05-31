@@ -53,6 +53,10 @@ DATABASE_URL
 
 Do not mix keys or database URLs from different Supabase projects.
 
+Use the local template for the expected variable names:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/.env.example`
+
 ## Validation Sequence
 
 Run from **Terminal 5: Scripts / curl testing**:

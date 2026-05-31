@@ -61,6 +61,12 @@ Build worker and script files after TypeScript changes from **Terminal 5: Script
 npm run worker:build
 ```
 
+Use `.env.example` as the non-secret local environment template. Copy it to `.env.local`, replace placeholders with active provider values, and verify Supabase before database-backed work:
+
+```bash
+npm run supabase:check
+```
+
 Start workers in **Terminal 3: Coordinator**:
 
 ```bash
