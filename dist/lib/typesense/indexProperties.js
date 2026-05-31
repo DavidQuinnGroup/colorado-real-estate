@@ -24,8 +24,51 @@ function toPositiveInteger(value, fallback, min, max) {
         return fallback;
     return Math.min(Math.max(Math.floor(value), min), max);
 }
+function toSingleLine(value) {
+    return value.replace(/\s+/g, ' ').trim();
+}
+function compactNetworkError(value) {
+    const dnsFailure = value.match(/getaddrinfo\s+(ENOTFOUND|EAI_AGAIN)\s+([^\s)]+)/);
+    if (dnsFailure) {
+        return `DNS lookup failed: ${dnsFailure[1]} ${dnsFailure[2]}`;
+    }
+    return value;
+}
 function errorMessage(error) {
-    return error instanceof Error ? error.message : String(error);
+    if (error instanceof Error)
+        return compactNetworkError(toSingleLine(error.message));
+    if (error && typeof error === 'object') {
+        const candidate = error;
+        const parts = [candidate.message, candidate.error_description, candidate.details, candidate.hint]
+            .filter((part) => typeof part === 'string' && part.trim().length > 0)
+            .map((part) => compactNetworkError(toSingleLine(part)));
+        if (parts.length)
+            return parts.join(' ');
+        try {
+            return toSingleLine(JSON.stringify(error));
+        }
+        catch {
+            return toSingleLine(String(error));
+        }
+    }
+    return toSingleLine(String(error));
+}
+function getSupabaseHost() {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    if (!supabaseUrl)
+        return 'unknown Supabase host';
+    try {
+        return new URL(supabaseUrl).host;
+    }
+    catch {
+        return supabaseUrl;
+    }
+}
+function getSupabaseFetchFailureMessage(error) {
+    return [
+        `Failed to fetch properties for Typesense indexing from ${getSupabaseHost()}: ${errorMessage(error)}`,
+        'Verify NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, DNS, and project status before rerunning npm run typesense:reindex.',
+    ].join(' ');
 }
 function getDocumentId(document) {
     return typeof document.id === 'string' ? document.id : 'unknown';
@@ -106,13 +149,20 @@ function logImportErrors(summary) {
     }
 }
 async function fetchPropertyBatch(from, to) {
-    const { data, error } = await getSupabaseClient()
-        .from('Property')
-        .select('*')
-        .order('updatedAt', { ascending: true })
-        .range(from, to);
+    let response;
+    try {
+        response = await getSupabaseClient()
+            .from('Property')
+            .select('*')
+            .order('updatedAt', { ascending: true })
+            .range(from, to);
+    }
+    catch (error) {
+        throw new Error(getSupabaseFetchFailureMessage(error));
+    }
+    const { data, error } = response;
     if (error) {
-        throw new Error(`Failed to fetch properties for Typesense indexing: ${error.message}`);
+        throw new Error(getSupabaseFetchFailureMessage(error));
     }
     return (data || []);
 }
