@@ -77,9 +77,11 @@ type QueueInspectionResult = {
   health: 'healthy' | 'busy' | 'degraded';
   policy: QueuePolicy | null;
   commands: {
+    retryStatus: string;
     dryRunRetry: string;
     liveRetry: string;
     deadLetterBySourceQueue: string;
+    workerProcessInspection: string;
   };
   sample?: {
     waiting: unknown[];
@@ -397,6 +399,15 @@ function buildDryRunRetryCommand(queueName: string, limit = 10) {
   return `curl -s -X POST "http://localhost:3000/api/mls/retry?${params.toString()}"`;
 }
 
+function buildRetryStatusCommand(queueName: string, limit = 10) {
+  const params = new URLSearchParams({
+    queue: queueName,
+    limit: String(limit),
+  });
+
+  return `curl -s "http://localhost:3000/api/mls/retry?${params.toString()}"`;
+}
+
 function buildLiveRetryCommand(queueName: string, limit = 10) {
   const params = new URLSearchParams({
     queue: queueName,
@@ -406,6 +417,10 @@ function buildLiveRetryCommand(queueName: string, limit = 10) {
   });
 
   return `curl -s -X POST "http://localhost:3000/api/mls/retry?${params.toString()}"`;
+}
+
+function buildWorkerProcessInspectionCommand() {
+  return 'ps -ax -o pid,command | rg "worker|queue|bull|mls"';
 }
 
 function buildDeadLetterBySourceQueueCommand(queueName: string, limit = 25) {
@@ -432,9 +447,11 @@ async function inspectQueue(definition: QueueDefinition, options: DashboardOptio
     health: getQueueHealth(counts),
     policy: definition.policy ?? null,
     commands: {
+      retryStatus: buildRetryStatusCommand(definition.name),
       dryRunRetry: buildDryRunRetryCommand(definition.name),
       liveRetry: buildLiveRetryCommand(definition.name),
       deadLetterBySourceQueue: buildDeadLetterBySourceQueueCommand(definition.name),
+      workerProcessInspection: buildWorkerProcessInspectionCommand(),
     },
   };
 
@@ -540,9 +557,9 @@ function buildRecoveryPlan(queues: QueueInspectionResult[], diagnostics: Array<{
     return {
       level: 'blocked',
       summary: `${firstStaleActiveQueue.name} has stale active jobs; inspect workers before adding more work.`,
-      nextAction: 'Inspect worker process health and queue state before retrying.',
+      nextAction: 'Inspect retry state, dead letters for the source queue, and worker process health before retrying or adding work.',
       terminal: 'Terminal 5',
-      nextCommand: 'npm run run:queue-dashboard -- --failed --sample --limit=5 --timeout-ms=3000',
+      nextCommand: firstStaleActiveQueue.commands.retryStatus,
       gates,
     };
   }
@@ -620,6 +637,9 @@ async function main() {
           retryStatus: 'curl -s "http://localhost:3000/api/mls/retry"',
           deadLetter: 'curl -s "http://localhost:3000/api/admin/dead-letter?limit=25"',
           deadLetterOpen: 'curl -s "http://localhost:3000/api/admin/dead-letter?states=waiting,delayed,failed&limit=25"',
+          workerProcessInspection: buildWorkerProcessInspectionCommand(),
+          staleActiveMlsSyncInspection: buildRetryStatusCommand(MLS_SYNC_QUEUE_NAME),
+          staleActiveMlsPageInspection: buildRetryStatusCommand(MLS_PAGE_QUEUE_NAME),
           dryRunRetryMlsSync: buildDryRunRetryCommand(MLS_SYNC_QUEUE_NAME),
           dryRunRetryMlsPage: buildDryRunRetryCommand(MLS_PAGE_QUEUE_NAME),
           dryRunRetryListings: buildDryRunRetryCommand(LISTING_QUEUE_NAME),

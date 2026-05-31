@@ -197,6 +197,7 @@ Admin and operations:
 - `/api/admin/crm-tasks` provides bounded CRM task reporting, closure-audit coverage, and CRM readiness verdicts.
 - `/api/admin/crm-tasks/[id]` provides bounded CRM task review updates.
 - `scripts/queueDashboard.ts` provides timeout-bounded Terminal 5 queue diagnostics for MLS, page-worker, alert, and dead-letter queues through `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000`.
+- Stale active queue jobs block launch, retry, scheduler, email, and ingestion-volume decisions until retry state, source-queue dead letters, and worker process health are inspected.
 
 Generated output:
 

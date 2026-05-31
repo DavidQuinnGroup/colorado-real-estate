@@ -198,6 +198,7 @@ Live MLS sync gate:
 - `npm run smoke:search` reports healthy Search Smoke Readiness for source, `meta.source`, access level, filters, bounds, mapped count, coordinate filtering, response duration, and `meta.smoke.ready=true` with no blockers.
 - Search-index health and indexing behavior are acceptable before live-inventory claims or MLS-backed public expansion.
 - `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000` reports acceptable queue diagnostics before recurring email traffic, live-inventory claims, MLS-backed public expansion, MLS-volume decisions, scheduler cadence increases, or large programmatic content batch publication.
+- Stale active queue jobs are not acceptable diagnostics; inspect retry state, source-queue dead letters, and worker process health before retrying or adding work.
 
 Live alert gate:
 
