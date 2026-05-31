@@ -7,6 +7,7 @@ import { closeRedisConnections } from '../lib/queue/redis.js';
 const DEFAULT_LIMIT = 5;
 const DEFAULT_TIMEOUT_MS = 8000;
 const MAX_PAYLOAD_STRING_LENGTH = 500;
+const STALE_ACTIVE_JOB_MS = 30 * 60 * 1000;
 const REDACTED_KEYS = new Set(['authorization', 'cookie', 'email', 'password', 'phone', 'token', 'x-admin-key']);
 const queueErrorMessages = new Map();
 const HELP_TEXT = `
@@ -181,6 +182,11 @@ function summarizeJob(job) {
         data: redactPayload(job?.data),
     };
 }
+function getJobProcessedAgeMs(job) {
+    if (!job?.processedOn)
+        return 0;
+    return Math.max(Date.now() - Number(job.processedOn), 0);
+}
 function isSensitiveKey(key) {
     const normalized = key.toLowerCase();
     return REDACTED_KEYS.has(normalized) || normalized.includes('secret') || normalized.includes('api_key') || normalized.includes('apikey');
@@ -311,6 +317,11 @@ async function inspectQueue(definition, options) {
             active: active.map(summarizeJob),
             delayed: delayed.map(summarizeJob),
         };
+        result.staleActive = active.filter((job) => getJobProcessedAgeMs(job) > STALE_ACTIVE_JOB_MS).map(summarizeJob);
+    }
+    else if ((counts.active || 0) > 0) {
+        const active = await withTimeout(`${definition.name} active stale check`, options.timeoutMs, definition.queue.getJobs(['active'], 0, Math.min(options.limit, 5) - 1));
+        result.staleActive = active.filter((job) => getJobProcessedAgeMs(job) > STALE_ACTIVE_JOB_MS).map(summarizeJob);
     }
     if (options.includeFailed) {
         const failed = await withTimeout(`${definition.name} failed jobs`, options.timeoutMs, definition.queue.getJobs(['failed'], 0, options.limit - 1));
@@ -320,10 +331,12 @@ async function inspectQueue(definition, options) {
 }
 function buildRecoveryPlan(queues, diagnostics) {
     const failedQueues = queues.filter((queue) => (queue.counts.failed || 0) > 0);
+    const staleActiveQueues = queues.filter((queue) => (queue.staleActive?.length || 0) > 0);
     const busyQueues = queues.filter((queue) => (queue.counts.active || 0) > 0 || (queue.counts.waiting || 0) > 0 || (queue.counts.delayed || 0) > 0);
     const deadLetter = queues.find((queue) => queue.name === DEAD_LETTER_QUEUE_NAME);
     const deadLetterOpen = deadLetter ? (deadLetter.counts.waiting || 0) + (deadLetter.counts.active || 0) + (deadLetter.counts.delayed || 0) + (deadLetter.counts.failed || 0) : 0;
     const firstFailedQueue = failedQueues.find((queue) => queue.name !== DEAD_LETTER_QUEUE_NAME) || failedQueues[0] || null;
+    const firstStaleActiveQueue = staleActiveQueues.find((queue) => queue.name !== DEAD_LETTER_QUEUE_NAME) || staleActiveQueues[0] || null;
     const gates = [
         {
             label: 'Diagnostics',
@@ -339,6 +352,13 @@ function buildRecoveryPlan(queues, diagnostics) {
             label: 'Dead Letter',
             status: deadLetterOpen > 0 ? 'fail' : 'pass',
             detail: deadLetterOpen > 0 ? `${deadLetterOpen} open dead-letter job(s).` : 'No open dead-letter queue jobs reported.',
+        },
+        {
+            label: 'Stale Active Jobs',
+            status: staleActiveQueues.length > 0 ? 'fail' : 'pass',
+            detail: staleActiveQueues.length > 0
+                ? `${staleActiveQueues.length} queue(s) have active jobs older than ${Math.round(STALE_ACTIVE_JOB_MS / 60000)} minutes.`
+                : 'No stale active jobs detected.',
         },
         {
             label: 'Active Work',
@@ -363,6 +383,16 @@ function buildRecoveryPlan(queues, diagnostics) {
             nextAction: 'Inspect open dead-letter records.',
             terminal: 'Terminal 5',
             nextCommand: 'curl -s "http://localhost:3000/api/admin/dead-letter?states=waiting,delayed,failed&limit=25"',
+            gates,
+        };
+    }
+    if (firstStaleActiveQueue) {
+        return {
+            level: 'blocked',
+            summary: `${firstStaleActiveQueue.name} has stale active jobs; inspect workers before adding more work.`,
+            nextAction: 'Inspect worker process health and queue state before retrying.',
+            terminal: 'Terminal 5',
+            nextCommand: 'npm run run:queue-dashboard -- --failed --sample --limit=5 --timeout-ms=3000',
             gates,
         };
     }
