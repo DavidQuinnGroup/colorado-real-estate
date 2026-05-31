@@ -268,6 +268,31 @@ function getHeatScoreIncrement(timeline: Timeline | null, notes: string | null, 
   return 6;
 }
 
+function buildNextAction(options: {
+  primaryNorthStar: string | null;
+  alertReadiness: AlertReadiness;
+  leadTemperature: LeadTemperature;
+  timeline: Timeline | null;
+}) {
+  if (options.alertReadiness.level === 'incomplete') {
+    return 'Strengthen saved-search criteria before relying on automated alert matching.';
+  }
+
+  if (options.primaryNorthStar) {
+    if (options.leadTemperature === 'hot' || options.timeline === 'now') {
+      return `Prepare direct outreach around ${options.primaryNorthStar} fit, saved-search criteria, and one property-specific advisory point.`;
+    }
+
+    return `Review inventory and market context through the client's ${options.primaryNorthStar} North Star before outreach.`;
+  }
+
+  if (options.alertReadiness.level === 'ready') {
+    return 'Review saved-search criteria and connect matching inventory to the client goal.';
+  }
+
+  return 'Review the saved-search intake and continue intelligence capture before outreach.';
+}
+
 function shouldCreateCrmTask(intakeSource: IntakeSource, reieGoal: ReieGoal | null, timeline: Timeline | null, notes: string | null) {
   return intakeSource !== 'unknown' || Boolean(reieGoal || timeline || notes);
 }
@@ -517,6 +542,24 @@ export async function POST(req: NextRequest) {
         }
       }
 
+      const alertReadiness = buildAlertReadiness({
+        city,
+        searchType,
+        minPrice,
+        beds,
+        bounds: {
+          north,
+          south,
+          east,
+          west,
+        },
+        reieGoal,
+        timeline,
+        notes,
+        authoritySignals,
+      });
+      const primaryNorthStar = northStars[0]?.name ?? null;
+
       const metadata = {
         schemaVersion: 'reie-save-search-v2',
         capturedAt: new Date().toISOString(),
@@ -535,7 +578,7 @@ export async function POST(req: NextRequest) {
         authoritySignals,
         northStars,
         northStarCount: northStars.length,
-        primaryNorthStar: northStars[0]?.name ?? null,
+        primaryNorthStar,
         notes,
         searchType,
         minPrice,
@@ -548,21 +591,12 @@ export async function POST(req: NextRequest) {
         },
         source: intakeSource,
         sourceLabel: INTAKE_SOURCE_LABELS[intakeSource],
-        alertReadiness: buildAlertReadiness({
-          city,
-          searchType,
-          minPrice,
-          beds,
-          bounds: {
-            north,
-            south,
-            east,
-            west,
-          },
-          reieGoal,
+        alertReadiness,
+        nextAction: buildNextAction({
+          primaryNorthStar,
+          alertReadiness,
+          leadTemperature,
           timeline,
-          notes,
-          authoritySignals,
         }),
       };
 

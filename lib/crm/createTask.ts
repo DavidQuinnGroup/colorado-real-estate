@@ -22,6 +22,8 @@ type InteractionMetadata = {
   leadTemperature?: unknown;
   sourceLabel?: unknown;
   authoritySignals?: unknown;
+  primaryNorthStar?: unknown;
+  northStarCount?: unknown;
   notes?: unknown;
   alertReadiness?: unknown;
   capturedAt?: unknown;
@@ -66,6 +68,8 @@ type SavedSearchIntake = {
   source: string | null;
   sourceLabel: string | null;
   authoritySignals: string[];
+  primaryNorthStar: string | null;
+  northStarCount: number;
   hasNotes: boolean;
   alertReadiness: AlertReadiness;
 };
@@ -178,6 +182,8 @@ function getLatestSavedSearchIntake(interactions: LeadInteraction[]): SavedSearc
     source: normalizeText(metadata.source) || null,
     sourceLabel: normalizeText(metadata.sourceLabel) || null,
     authoritySignals: getStringArray(metadata.authoritySignals),
+    primaryNorthStar: normalizeText(metadata.primaryNorthStar) || null,
+    northStarCount: normalizeNumber(metadata.northStarCount) || 0,
     hasNotes: Boolean(normalizeText(metadata.notes)),
     alertReadiness: getAlertReadiness(metadata.alertReadiness),
   };
@@ -254,9 +260,24 @@ function getTacticalLevers(heatScore: number, clickedListingCount: number) {
   return 'Continue intelligence capture. Use saved-search and clicked-property patterns to clarify fit before initiating a high-pressure sales motion.';
 }
 
-function getNextAction(heatScore: number, clickedListingCount: number, savedSearchIntake: SavedSearchIntake | null) {
+function getNextAction(
+  heatScore: number,
+  clickedListingCount: number,
+  savedSearchIntake: SavedSearchIntake | null,
+  primaryAnchorName: string | null,
+) {
   if (savedSearchIntake?.alertReadiness.level === 'incomplete') {
     return 'Strengthen saved-search criteria before relying on automated alert matching or direct outreach.';
+  }
+
+  const northStar = savedSearchIntake?.primaryNorthStar || primaryAnchorName;
+
+  if (northStar && (savedSearchIntake?.leadTemperature === 'hot' || heatScore >= URGENT_HEAT_THRESHOLD)) {
+    return `Create a same-day advisory brief around ${northStar} fit, matching inventory, and one property-specific strategy point.`;
+  }
+
+  if (northStar) {
+    return `Review saved-search criteria through the client's ${northStar} North Star and connect matching inventory to the lifestyle fit.`;
   }
 
   if (savedSearchIntake?.alertReadiness.level === 'ready' && savedSearchIntake.leadTemperature === 'hot') {
@@ -365,6 +386,7 @@ export async function createTask(leadId: string, triggerType: CRMTaskTrigger): P
     const clickedListings = getClickedListings(lead.alertQueue);
     const latestSavedSearchIntake = getLatestSavedSearchIntake(lead.interactions);
     const primaryAnchor = lead.northStars[0] || null;
+    const primaryAnchorName = primaryAnchor?.name || latestSavedSearchIntake?.primaryNorthStar || null;
     const priority = getPriority(triggerType, heatScore);
 
     const metadata: Prisma.InputJsonObject = {
@@ -398,7 +420,7 @@ export async function createTask(leadId: string, triggerType: CRMTaskTrigger): P
       latestSavedSearchIntake,
       alertReadiness: latestSavedSearchIntake?.alertReadiness ?? getAlertReadiness(null),
       tacticalLevers: getTacticalLevers(heatScore, clickedListings.length),
-      nextAction: getNextAction(heatScore, clickedListings.length, latestSavedSearchIntake),
+      nextAction: getNextAction(heatScore, clickedListings.length, latestSavedSearchIntake, primaryAnchorName),
       operations: {
         terminal: 'Terminal 5',
         reviewCommand: 'npm run run:crm -- --limit 20 --status pending',

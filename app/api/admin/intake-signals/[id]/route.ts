@@ -215,6 +215,9 @@ function getName(row: IntakeSignalRow, metadata: Record<string, unknown>) {
 }
 
 function getNextAction(row: IntakeSignalRow, metadata: Record<string, unknown>, priority: IntakePriority) {
+  const metadataNextAction = cleanString(metadata.nextAction, '');
+  if (metadataNextAction) return metadataNextAction;
+
   const leadTemperature = cleanString(metadata.leadTemperature, '').toLowerCase();
   const alertReadiness = getAlertReadiness(metadata);
 
