@@ -90,6 +90,8 @@ type CRMTask = {
     leadTemperature: string | null;
     sourceLabel: string | null;
     authoritySignals: string[];
+    primaryNorthStar: string | null;
+    northStarCount: number;
     hasNotes: boolean;
   } | null;
   alertReadiness: {
@@ -229,7 +231,8 @@ function getAlertReadiness(metadata: Record<string, unknown>): CRMTask['alertRea
 }
 
 function getLatestSavedSearchIntake(metadata: Record<string, unknown>): CRMTask['latestSavedSearchIntake'] {
-  const intake = asRecord(metadata.latestSavedSearchIntake);
+  const nestedIntake = asRecord(metadata.latestSavedSearchIntake);
+  const intake = Object.keys(nestedIntake).length ? nestedIntake : metadata;
 
   if (!Object.keys(intake).length) return null;
 
@@ -244,6 +247,8 @@ function getLatestSavedSearchIntake(metadata: Record<string, unknown>): CRMTask[
     leadTemperature: cleanString(intake.leadTemperature) || null,
     sourceLabel: cleanString(intake.sourceLabel) || null,
     authoritySignals: getStringArray(intake.authoritySignals),
+    primaryNorthStar: cleanString(intake.primaryNorthStar) || null,
+    northStarCount: getNumber(intake.northStarCount),
     hasNotes: Boolean(intake.hasNotes),
   };
 }

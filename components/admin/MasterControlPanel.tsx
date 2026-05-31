@@ -43,6 +43,8 @@ type IntakeSignal = {
   leadTemperature: string;
   heatScoreIncrement: number;
   authoritySignals: string[];
+  primaryNorthStar: string | null;
+  northStarCount: number;
   alertReadiness: {
     level: 'ready' | 'watch' | 'incomplete' | 'unknown';
     summary: string;
@@ -348,6 +350,8 @@ type CRMTask = {
     leadTemperature: string | null;
     sourceLabel: string | null;
     authoritySignals: string[];
+    primaryNorthStar: string | null;
+    northStarCount: number;
     hasNotes: boolean;
   } | null;
   alertReadiness: {
@@ -1520,6 +1524,11 @@ export default function MasterControlPanel() {
                         <span>Delta +{signal.heatScoreIncrement}</span>
                         <span>{signal.kind === 'crm_task' ? 'CRM Task' : 'Interaction'}</span>
                       </div>
+                      {signal.primaryNorthStar || signal.northStarCount > 0 ? (
+                        <p className="mt-2 text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/70">
+                          North Star: {signal.primaryNorthStar || 'Captured'} ({signal.northStarCount})
+                        </p>
+                      ) : null}
                       {signal.authoritySignals.length ? (
                         <div className="mt-3 flex flex-wrap gap-2">
                           {signal.authoritySignals.map((authoritySignal) => (
@@ -1776,6 +1785,13 @@ export default function MasterControlPanel() {
                             <p className="mt-2 text-xs leading-5 text-slate-500">
                               {task.latestSavedSearchIntake.marketScope || task.latestSavedSearchIntake.city}
                             </p>
+                          ) : null}
+                          {task.latestSavedSearchIntake ? (
+                            task.latestSavedSearchIntake.primaryNorthStar || task.latestSavedSearchIntake.northStarCount > 0 ? (
+                            <p className="mt-2 text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/70">
+                              North Star: {task.latestSavedSearchIntake.primaryNorthStar || 'Captured'} ({task.latestSavedSearchIntake.northStarCount})
+                            </p>
+                            ) : null
                           ) : null}
                           {task.alertReadiness.summary ? (
                             <p className="mt-2 text-xs leading-5 text-slate-600">{task.alertReadiness.summary}</p>

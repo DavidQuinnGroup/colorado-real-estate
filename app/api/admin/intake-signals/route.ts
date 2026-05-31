@@ -26,6 +26,8 @@ type IntakeSignal = {
   leadTemperature: string;
   heatScoreIncrement: number;
   authoritySignals: string[];
+  primaryNorthStar: string | null;
+  northStarCount: number;
   alertReadiness: {
     level: 'ready' | 'watch' | 'incomplete' | 'unknown';
     summary: string;
@@ -252,6 +254,8 @@ function normalizeSignal(row: IntakeSignalRow): IntakeSignal {
     leadTemperature: cleanString(metadata.leadTemperature, priority === 'High' ? 'hot' : priority === 'Medium' ? 'warm' : 'nurture'),
     heatScoreIncrement: getNumber(metadata.heatScoreIncrement),
     authoritySignals: getStringArray(metadata.authoritySignals),
+    primaryNorthStar: cleanString(metadata.primaryNorthStar, '') || null,
+    northStarCount: getNumber(metadata.northStarCount),
     alertReadiness,
     hasNotes: Boolean(notes),
     nextAction: getNextAction(row, metadata, priority),
