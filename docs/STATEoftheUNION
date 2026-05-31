@@ -199,6 +199,7 @@ Admin and operations:
 - `scripts/queueDashboard.ts` provides timeout-bounded Terminal 5 queue diagnostics for MLS, page-worker, alert, and dead-letter queues through `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000`.
 - Queue dashboard output includes direct source-queue dead-letter summaries so Terminal 5 can inspect queue blockers even when the local Next server is not running.
 - Stale active queue jobs block launch, retry, scheduler, email, and ingestion-volume decisions until retry state, source-queue dead letters, and worker process health are inspected.
+- `scripts/queueMaintenance.ts` provides dry-run-first stale active job inspection and guarded BullMQ stalled-job recovery through `npm run run:queue-maintenance -- --queue=mls-page --job-id=<jobId>`.
 
 Generated output:
 
