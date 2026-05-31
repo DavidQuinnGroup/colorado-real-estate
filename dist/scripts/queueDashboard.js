@@ -182,6 +182,10 @@ function summarizeJob(job) {
         data: redactPayload(job?.data),
     };
 }
+function getJobSourceQueue(job) {
+    const sourceQueue = job?.data?.sourceQueue;
+    return typeof sourceQueue === 'string' ? sourceQueue : '';
+}
 function getJobProcessedAgeMs(job) {
     if (!job?.processedOn)
         return 0;
@@ -318,6 +322,16 @@ async function inspectQueue(definition, options) {
             workerProcessInspection: buildWorkerProcessInspectionCommand(),
         },
     };
+    if (definition.name !== DEAD_LETTER_QUEUE_NAME) {
+        const scanLimit = Math.max(options.limit * 10, 25);
+        const openDeadLetters = await withTimeout(`${definition.name} source dead-letter sample`, options.timeoutMs, deadLetterQueue.getJobs(['waiting', 'delayed', 'failed'], 0, scanLimit - 1));
+        const sourceDeadLetters = openDeadLetters.filter((job) => getJobSourceQueue(job) === definition.name);
+        result.deadLettersBySourceQueue = {
+            open: sourceDeadLetters.length,
+            scanLimit,
+            jobs: sourceDeadLetters.slice(0, options.limit).map(summarizeJob),
+        };
+    }
     if (options.includeSample) {
         const [waiting, active, delayed] = await Promise.all([
             withTimeout(`${definition.name} waiting sample`, options.timeoutMs, definition.queue.getJobs(['waiting'], 0, options.limit - 1)),

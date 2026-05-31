@@ -88,6 +88,11 @@ type QueueInspectionResult = {
     active: unknown[];
     delayed: unknown[];
   };
+  deadLettersBySourceQueue?: {
+    open: number;
+    scanLimit: number;
+    jobs: unknown[];
+  };
   staleActive?: unknown[];
   failed?: unknown[];
 };
@@ -298,6 +303,11 @@ function summarizeJob(job: any) {
   };
 }
 
+function getJobSourceQueue(job: any) {
+  const sourceQueue = job?.data?.sourceQueue;
+  return typeof sourceQueue === 'string' ? sourceQueue : '';
+}
+
 function getJobProcessedAgeMs(job: any) {
   if (!job?.processedOn) return 0;
   return Math.max(Date.now() - Number(job.processedOn), 0);
@@ -454,6 +464,22 @@ async function inspectQueue(definition: QueueDefinition, options: DashboardOptio
       workerProcessInspection: buildWorkerProcessInspectionCommand(),
     },
   };
+
+  if (definition.name !== DEAD_LETTER_QUEUE_NAME) {
+    const scanLimit = Math.max(options.limit * 10, 25);
+    const openDeadLetters = await withTimeout(
+      `${definition.name} source dead-letter sample`,
+      options.timeoutMs,
+      deadLetterQueue.getJobs(['waiting', 'delayed', 'failed'], 0, scanLimit - 1),
+    );
+    const sourceDeadLetters = openDeadLetters.filter((job) => getJobSourceQueue(job) === definition.name);
+
+    result.deadLettersBySourceQueue = {
+      open: sourceDeadLetters.length,
+      scanLimit,
+      jobs: sourceDeadLetters.slice(0, options.limit).map(summarizeJob),
+    };
+  }
 
   if (options.includeSample) {
     const [waiting, active, delayed] = await Promise.all([
