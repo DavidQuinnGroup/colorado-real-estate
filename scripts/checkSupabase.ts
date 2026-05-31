@@ -13,6 +13,14 @@ type CheckResult = {
 
 const REST_TIMEOUT_MS = 8000;
 const POSTGRES_TIMEOUT_MS = 8000;
+const RECOVERY_RUNBOOK_PATH = 'docs/supabase-recovery-runbook.md';
+const SUPABASE_ENV_NAMES = [
+  'NEXT_PUBLIC_SUPABASE_URL',
+  'NEXT_PUBLIC_SUPABASE_ANON_KEY',
+  'NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY',
+  'SUPABASE_SERVICE_ROLE_KEY',
+  'DATABASE_URL',
+];
 
 dotenv.config({ path: '.env.local' });
 dotenv.config();
@@ -168,6 +176,17 @@ function hasFailed(results: CheckResult[], name: string) {
 
 function logResult(result: CheckResult) {
   console.log(`${result.status.toUpperCase()} ${result.name}: ${result.detail}`);
+}
+
+function getRecoveryHint(failed: CheckResult[]) {
+  const failedNames = failed.map((result) => result.name);
+
+  return [
+    `Supabase recovery runbook: ${RECOVERY_RUNBOOK_PATH}`,
+    `Replace these values together after confirming the active Supabase project: ${SUPABASE_ENV_NAMES.join(', ')}`,
+    `Failed checks: ${failedNames.join(', ')}`,
+    'Do not retry MLS, alert, digest, CRM, seed, or Typesense reindex jobs until this preflight passes.',
+  ].join('\n');
 }
 
 async function checkDns(name: string, host: string): Promise<CheckResult> {
@@ -412,6 +431,7 @@ async function main() {
 
   const failed = results.filter((result) => result.status === 'fail');
   if (failed.length) {
+    console.log(getRecoveryHint(failed));
     throw new Error(
       `Supabase preflight failed: ${failed.map((result) => result.name).join(', ')}. Verify Supabase project status, endpoint values, DNS, and local network access.`,
     );
