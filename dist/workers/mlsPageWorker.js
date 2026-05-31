@@ -2,6 +2,7 @@ import 'dotenv/config';
 import { Worker } from 'bullmq';
 import { fetchMLSGridListings } from '../lib/mls/mlsGridClient.js';
 import { processListingsBatch, } from '../lib/mls/processListingsBatch.js';
+import { assertWorkerDatabaseReady } from '../lib/queue/databasePreflight.js';
 import { enqueueDeadLetterFromJob } from '../lib/queue/deadLetterQueue.js';
 import { MLS_PAGE_QUEUE_NAME, normalizeMlsPageJobData } from '../lib/queue/mlsPageQueue.js';
 import { getRedisConnection } from '../lib/queue/redis.js';
@@ -184,7 +185,6 @@ function createMlsPageWorker(config) {
 }
 async function start() {
     const config = getConfig();
-    const worker = createMlsPageWorker(config);
     const startupContext = {
         ...config,
         terminal: TERMINAL_2,
@@ -197,6 +197,13 @@ async function start() {
         dryRunRetryCommand: buildRetryCommand({ limit: 10 }),
         liveRetryCommand: buildRetryCommand({ execute: true, limit: 10 }),
     };
+    console.log(`REIE MLS page worker starting on queue "${MLS_PAGE_QUEUE_NAME}":`, startupContext);
+    await assertWorkerDatabaseReady({
+        queue: MLS_PAGE_QUEUE_NAME,
+        recoveryCommand: 'npm run supabase:check',
+        worker: 'MLS page worker',
+    });
+    const worker = createMlsPageWorker(config);
     async function shutdown(signal) {
         console.log(`REIE MLS page worker received ${signal}. Shutting down.`);
         await worker.close();

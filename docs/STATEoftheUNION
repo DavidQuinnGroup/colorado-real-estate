@@ -200,6 +200,7 @@ Admin and operations:
 - Queue dashboard output includes direct source-queue dead-letter summaries so Terminal 5 can inspect queue blockers even when the local Next server is not running.
 - Queue dashboard busy-queue guidance points to the relevant worker start command before falling back to API-only status checks.
 - Queue dashboard database-connectivity failures point to `npm run supabase:check` before retry guidance.
+- MLS sync and MLS page workers run a database preflight before consuming queue jobs; when Supabase is unavailable, they exit before draining jobs into failures.
 - Stale active queue jobs block launch, retry, scheduler, email, and ingestion-volume decisions until retry state, source-queue dead letters, and worker process health are inspected.
 - `scripts/queueMaintenance.ts` provides dry-run-first stale active job inspection, guarded BullMQ stalled-job recovery, and direct failed-job retry through `npm run run:queue-maintenance -- --queue=mls-page --job-id=<jobId>` and `npm run run:queue-maintenance -- --action=retry-failed --queue=mls-sync --limit=10`.
 

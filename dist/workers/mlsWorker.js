@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import { Worker } from 'bullmq';
 import { syncMLSGrid } from '../lib/mls/syncMLSGrid.js';
+import { assertWorkerDatabaseReady } from '../lib/queue/databasePreflight.js';
 import { enqueueDeadLetter, enqueueDeadLetterFromJob } from '../lib/queue/deadLetterQueue.js';
 import { connection, MLS_SYNC_DEFAULT_MAX_PAGES, MLS_SYNC_DEFAULT_MAX_RUNTIME_MS, MLS_SYNC_DEFAULT_PAGE_TIMEOUT_MS, MLS_SYNC_DEFAULT_PAGE_SIZE, MLS_SYNC_DEFAULT_RATE_DELAY_MS, MLS_SYNC_JOB_NAME, MLS_SYNC_MAX_PAGES, MLS_SYNC_MAX_PAGE_TIMEOUT_MS, MLS_SYNC_MAX_PAGE_SIZE, MLS_SYNC_MAX_RATE_DELAY_MS, MLS_SYNC_MAX_RUNTIME_MS, MLS_SYNC_MAX_START_PAGE, MLS_SYNC_QUEUE_NAME, normalizeMlsSyncJobData, } from '../lib/queue/mlsQueue.js';
 const LOCAL_BASE_URL = 'http://localhost:3000';
@@ -287,6 +288,11 @@ async function start() {
         liveRetryCommand: buildRetryCommand({ execute: true, limit: 10 }),
         oneShotCommand: 'MLS_WORKER_ONCE=true npm run run:worker:mls',
         deadLetterCommand: buildDeadLetterCommand(),
+    });
+    await assertWorkerDatabaseReady({
+        queue: MLS_SYNC_QUEUE_NAME,
+        recoveryCommand: 'npm run supabase:check',
+        worker: 'MLS sync worker',
     });
     if (config.once) {
         process.exit(await runOneShot());
