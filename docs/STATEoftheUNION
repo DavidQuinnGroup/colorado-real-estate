@@ -310,16 +310,16 @@ Expected current warnings:
 Supabase connectivity:
 
 ```text
-Can't reach database server at aws-0-us-west-2.pooler.supabase.com:6543
+DNS lookup failed: ENOTFOUND otmkoqvmhthitldlnjdk.supabase.co
 ```
 
-This can block alert, digest, CRM, MLS, seed, and reindex dry-runs/reporting when the pooler is unreachable.
+`npm run supabase:check` verifies Supabase env presence, project DNS, Postgres pooler DNS, and REST reachability without printing secrets. This currently blocks alert, digest, CRM, MLS, seed, and reindex dry-runs/reporting while the configured project API host is unreachable.
 
 Typesense local schema:
 
-- Local collection repair is needed so `properties` and `listings` match the canonical schema from `/Users/davidquinn/david-quinn-group/colorado-real-estate/lib/typesense/schema.ts`.
+- Local `properties` and `listings` collections match the canonical schema from `/Users/davidquinn/david-quinn-group/colorado-real-estate/lib/typesense/schema.ts`.
 - Repair starts with **Terminal 4: Docker / Typesense** running `npm run infra:up`.
-- Repair continues from **Terminal 5: Scripts / curl testing** with `npm run worker:build`, then `npm run typesense:init`.
+- Repair, when needed after future schema changes, continues from **Terminal 5: Scripts / curl testing** with `npm run worker:build`, then `npm run typesense:init`.
 - Reindex from **Terminal 5: Scripts / curl testing** with `npm run typesense:reindex` when Supabase is reachable.
 
 Production decisions:
@@ -337,15 +337,16 @@ Production decisions:
 ## Current Near-Term Work Sequence
 
 1. Restore or replace the configured Supabase endpoint so database-backed dry-runs and Typesense reindexing can fetch records.
-2. Reindex Typesense from Supabase when Supabase connectivity is available.
-3. Verify search-index health with `npm run smoke:mls-status` and Search Smoke Readiness source, `meta.source`, health, access level, filters, bounds, returned, mapped, coordinate-filtered, duration, and `meta.smoke.ready=true` with no blockers through `npm run smoke:search` after reindex.
-4. Confirm Supabase connectivity and rerun alert, digest, CRM, MLS, and seed dry-runs/reporting as needed.
-5. Clean or regenerate stale `dist/` artifacts if generated output is being used directly.
-6. Continue MLS ingestion hardening and media replacement.
-7. Expand timeout-bounded admin queue, sync, alert, digest, and CRM visibility.
-8. Continue public search/map/listing polish.
-9. Strengthen city, neighborhood, property, article, guide, tool, and market authority surfaces using `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/content-architecture.md` as the control document, with MLS-backed public expansion and large programmatic content batch publication gated by data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics.
-10. Choose production schedulers for MLS sync, alerts, digests, and CRM reporting.
+2. Confirm Supabase readiness with `npm run supabase:check`.
+3. Reindex Typesense from Supabase when Supabase connectivity is available.
+4. Verify search-index health with `npm run smoke:mls-status` and Search Smoke Readiness source, `meta.source`, health, access level, filters, bounds, returned, mapped, coordinate-filtered, duration, and `meta.smoke.ready=true` with no blockers through `npm run smoke:search` after reindex.
+5. Confirm Supabase connectivity and rerun alert, digest, CRM, MLS, and seed dry-runs/reporting as needed.
+6. Clean or regenerate stale `dist/` artifacts if generated output is being used directly.
+7. Continue MLS ingestion hardening and media replacement.
+8. Expand timeout-bounded admin queue, sync, alert, digest, and CRM visibility.
+9. Continue public search/map/listing polish.
+10. Strengthen city, neighborhood, property, article, guide, tool, and market authority surfaces using `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/content-architecture.md` as the control document, with MLS-backed public expansion and large programmatic content batch publication gated by data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics.
+11. Choose production schedulers for MLS sync, alerts, digests, and CRM reporting.
 11. Decide production Redis and Typesense providers.
 12. Load-test production-size MLS ingestion before increasing sync volume.
 

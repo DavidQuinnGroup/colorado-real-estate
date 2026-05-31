@@ -451,6 +451,7 @@ Compile worker/script output and recreate canonical collections from **Terminal 
 
 ```bash
 npm run worker:build
+npm run supabase:check
 npm run typesense:init
 ```
 
@@ -845,25 +846,26 @@ Known current non-blocking warnings:
 
 Known current blocker:
 
-- Supabase connectivity currently blocks database-dependent dry-runs and Typesense reindexing. On May 31, 2026, `npm run typesense:reindex` reached local Typesense successfully, then failed while fetching Supabase records; a redacted public URL probe returned:
+- Supabase connectivity currently blocks database-dependent dry-runs and Typesense reindexing. On May 31, 2026, `npm run supabase:check` showed the Postgres pooler host resolving but the configured Supabase project API host failing DNS:
 
 ```text
-curl: (6) Could not resolve host: otmkoqvmhthitldlnjdk.supabase.co
+DNS lookup failed: ENOTFOUND otmkoqvmhthitldlnjdk.supabase.co
 ```
 
 ## Current Near-Term Priorities
 
 1. Restore or replace the configured Supabase project/database endpoint so local scripts can resolve and reach Supabase.
-2. Reindex Typesense from Supabase with `npm run typesense:reindex` after Supabase connectivity is available.
-3. Verify search-index health with `npm run smoke:mls-status` and Search Smoke Readiness source, `meta.source`, health, access level, filters, bounds, returned, mapped, coordinate-filtered, duration, and `meta.smoke.ready=true` with no blockers through `npm run smoke:search` after reindex.
-4. Rerun alert, digest, CRM, MLS, seed, and reindex dry-runs/reporting after Supabase connectivity is restored.
-5. Clean or regenerate stale `dist/` artifacts if generated output is being used directly.
-6. Continue MLS ingestion hardening and media replacement.
-7. Expand timeout-bounded admin queue, sync, alert, digest, and CRM visibility.
-8. Continue public search/map/listing polish.
-9. Strengthen city, neighborhood, property, article, and market authority surfaces through large programmatic content batch publication gated by data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics.
-10. Finalize the production scheduler host using `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/production-scheduler-plan.md`.
-11. Decide production Redis and Typesense providers.
-12. Load-test production-size MLS ingestion before increasing sync volume.
+2. Confirm Supabase readiness with `npm run supabase:check`.
+3. Reindex Typesense from Supabase with `npm run typesense:reindex` after Supabase connectivity is available.
+4. Verify search-index health with `npm run smoke:mls-status` and Search Smoke Readiness source, `meta.source`, health, access level, filters, bounds, returned, mapped, coordinate-filtered, duration, and `meta.smoke.ready=true` with no blockers through `npm run smoke:search` after reindex.
+5. Rerun alert, digest, CRM, MLS, seed, and reindex dry-runs/reporting after Supabase connectivity is restored.
+6. Clean or regenerate stale `dist/` artifacts if generated output is being used directly.
+7. Continue MLS ingestion hardening and media replacement.
+8. Expand timeout-bounded admin queue, sync, alert, digest, and CRM visibility.
+9. Continue public search/map/listing polish.
+10. Strengthen city, neighborhood, property, article, and market authority surfaces through large programmatic content batch publication gated by data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics.
+11. Finalize the production scheduler host using `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/production-scheduler-plan.md`.
+12. Decide production Redis and Typesense providers.
+13. Load-test production-size MLS ingestion before increasing sync volume.
 
 <!-- /Users/davidquinn/david-quinn-group/colorado-real-estate/PROJECT_SYSTEM.md -->

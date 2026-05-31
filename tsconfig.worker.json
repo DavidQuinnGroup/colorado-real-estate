@@ -22,6 +22,7 @@
     "lib/email/sendEmail.ts",
     "lib/prisma.ts",
     "lib/typesense/**/*.ts",
+    "scripts/checkSupabase.ts",
     "scripts/createTypesenseCollection.ts",
     "scripts/fetchMLS.ts",
     "scripts/index.ts",

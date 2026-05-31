@@ -30,6 +30,7 @@
     "run:mls-sync:live": "node dist/scripts/mlsSync.js --execute --json --max-pages=1 --page-size=25 --start-page=0 --page-timeout-ms=30000",
     "run:mls-sync:help": "node dist/scripts/mlsSync.js --help",
     "run:queue-dashboard": "node dist/scripts/queueDashboard.js",
+    "supabase:check": "node dist/scripts/checkSupabase.js",
     "typesense:init": "node dist/scripts/initTypesense.js",
     "typesense:check": "node dist/scripts/initTypesense.js --check",
     "typesense:reset": "node dist/scripts/initTypesense.js --reset",
