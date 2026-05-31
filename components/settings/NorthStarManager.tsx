@@ -10,6 +10,7 @@ import {
   Navigation,
   Plane,
   Plus,
+  Search,
   Trash2,
   X,
   Zap,
@@ -33,6 +34,25 @@ type NorthStarManagerProps = {
   onClose: () => void;
   initialAnchors?: NorthStarAnchor[];
   onSave?: (anchors: NorthStarAnchor[]) => void;
+};
+
+type GeocodeStatus = {
+  anchorId: string;
+  state: 'loading' | 'ready' | 'error';
+  message: string;
+};
+
+type GeocodeResponse = {
+  result?: {
+    label?: string;
+    address?: string;
+    lat?: number;
+    lng?: number;
+    source?: string;
+    confidence?: string;
+  };
+  message?: string;
+  error?: string;
 };
 
 const anchorTypes: AnchorType[] = ['work', 'fbo', 'school', 'ritual', 'lifestyle'];
@@ -137,6 +157,7 @@ export function saveNorthStarAnchors(anchors: NorthStarAnchor[]) {
 
 export default function NorthStarManager({ isOpen, onClose, initialAnchors, onSave }: NorthStarManagerProps) {
   const [anchors, setAnchors] = useState<NorthStarAnchor[]>(() => initialAnchors || getSavedNorthStarAnchors());
+  const [geocodeStatus, setGeocodeStatus] = useState<GeocodeStatus | null>(null);
 
   const addAnchor = () => {
     setAnchors((currentAnchors) => [...currentAnchors, createAnchor()]);
@@ -156,6 +177,54 @@ export default function NorthStarManager({ isOpen, onClose, initialAnchors, onSa
     saveNorthStarAnchors(anchors);
     onSave?.(anchors);
     onClose();
+  };
+
+  const geocodeAnchor = async (anchor: NorthStarAnchor) => {
+    const query = anchor.address.trim() || anchor.name.trim();
+
+    if (!query) {
+      setGeocodeStatus({ anchorId: anchor.id, state: 'error', message: 'Enter an address or anchor name first.' });
+      return;
+    }
+
+    try {
+      setGeocodeStatus({ anchorId: anchor.id, state: 'loading', message: 'Locating anchor...' });
+
+      const response = await fetch('/api/geocode', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ address: query }),
+      });
+      const data = (await response.json()) as GeocodeResponse;
+
+      if (!response.ok || !data.result || typeof data.result.lat !== 'number' || typeof data.result.lng !== 'number') {
+        throw new Error(data.error || 'No coordinates found.');
+      }
+
+      setAnchors((currentAnchors) =>
+        currentAnchors.map((currentAnchor) =>
+          currentAnchor.id === anchor.id
+            ? {
+                ...currentAnchor,
+                address: data.result?.address || currentAnchor.address,
+                lat: data.result?.lat,
+                lng: data.result?.lng,
+              }
+            : currentAnchor,
+        ),
+      );
+      setGeocodeStatus({
+        anchorId: anchor.id,
+        state: 'ready',
+        message: data.message || `${data.result.source === 'mapbox' ? 'Live' : 'Local'} geocode applied.`,
+      });
+    } catch (error) {
+      setGeocodeStatus({
+        anchorId: anchor.id,
+        state: 'error',
+        message: error instanceof Error ? error.message : 'Geocode failed.',
+      });
+    }
   };
 
   return (
@@ -308,6 +377,25 @@ export default function NorthStarManager({ isOpen, onClose, initialAnchors, onSa
                             placeholder="INITIALIZE ADDRESS..."
                             className="w-full border-b border-white/5 bg-transparent pb-2 pl-8 text-[11px] font-bold uppercase tracking-[0.2em] text-white/70 outline-none transition-colors placeholder:text-white/10 focus:border-[#00ff80]"
                           />
+                        </div>
+                        <div className="flex flex-wrap items-center gap-3">
+                          <button
+                            type="button"
+                            onClick={() => void geocodeAnchor(anchor)}
+                            className="inline-flex items-center gap-2 border border-[#00ff80]/30 px-4 py-2 text-[9px] font-black uppercase tracking-[0.2em] text-[#00ff80] transition-all hover:bg-[#00ff80] hover:text-black"
+                          >
+                            <Search className="h-3 w-3" />
+                            Locate
+                          </button>
+                          {geocodeStatus?.anchorId === anchor.id ? (
+                            <span
+                              className={`text-[9px] font-black uppercase tracking-[0.2em] ${
+                                geocodeStatus.state === 'error' ? 'text-red-300' : 'text-white/35'
+                              }`}
+                            >
+                              {geocodeStatus.message}
+                            </span>
+                          ) : null}
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                           <input
