@@ -206,6 +206,7 @@ Live MLS sync gate:
 - Stale active recovery uses a dry run first: `npm run run:queue-maintenance -- --queue=mls-page --job-id=<jobId>`. Live recovery requires the same command with `--execute` only after the target job is stale and unlocked.
 - Failed-job retry uses a dry run first: `npm run run:queue-maintenance -- --action=retry-failed --queue=mls-sync --limit=10`. Live retry requires a target `--job-id=<jobId>` plus `--execute`.
 - Existing failed jobs can be captured for review with `npm run run:queue-maintenance -- --action=capture-dead-letter --queue=mls-sync --job-id=<jobId> --execute` after a dry run.
+- Reviewed dead-letter records can be resolved with `npm run run:queue-maintenance -- --action=resolve-dead-letter --queue=reie-dead-letter --job-id=<jobId> --execute` after a dry run; this does not retry or remove the original source job.
 
 Live alert gate:
 

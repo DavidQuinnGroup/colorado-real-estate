@@ -4,7 +4,7 @@ import { ALERT_QUEUE_NAME, alertQueue } from '../lib/queue/alertQueue.js';
 import { LISTING_QUEUE_NAME, listingQueue } from '../lib/queue/listingQueue.js';
 import { MLS_PAGE_QUEUE_NAME, mlsPageQueue } from '../lib/queue/mlsPageQueue.js';
 import { MLS_SYNC_QUEUE_NAME, mlsQueue } from '../lib/queue/mlsQueue.js';
-import { enqueueDeadLetterFromJob } from '../lib/queue/deadLetterQueue.js';
+import { DEAD_LETTER_QUEUE_NAME, deadLetterQueue, enqueueDeadLetterFromJob } from '../lib/queue/deadLetterQueue.js';
 import { closeRedisConnections, getRedisConnection } from '../lib/queue/redis.js';
 
 type QueueDefinition = {
@@ -14,7 +14,7 @@ type QueueDefinition = {
 };
 
 type MaintenanceOptions = {
-  action: 'capture-dead-letter' | 'stale-recovery' | 'retry-failed';
+  action: 'capture-dead-letter' | 'resolve-dead-letter' | 'stale-recovery' | 'retry-failed';
   execute: boolean;
   jobId: string;
   limit: number;
@@ -36,6 +36,7 @@ const QUEUES: QueueDefinition[] = [
   { label: 'MLS sync', name: MLS_SYNC_QUEUE_NAME, queue: mlsQueue as Queue },
   { label: 'Listings', name: LISTING_QUEUE_NAME, queue: listingQueue as Queue },
   { label: 'Alerts', name: ALERT_QUEUE_NAME, queue: alertQueue as Queue },
+  { label: 'Dead letter', name: DEAD_LETTER_QUEUE_NAME, queue: deadLetterQueue as Queue },
 ];
 
 const HELP_TEXT = `
@@ -45,12 +46,12 @@ Usage:
   node dist/scripts/queueMaintenance.js [options]
 
 Options:
-  --action=<name>           stale-recovery, retry-failed, or capture-dead-letter. Default: stale-recovery.
+  --action=<name>           stale-recovery, retry-failed, capture-dead-letter, or resolve-dead-letter. Default: stale-recovery.
   --queue=<name>            Queue to inspect. Default: mls-page.
   --job-id=<id>             Target job id for live stale recovery or targeted failed retry.
   --limit=<number>          Failed retry scan limit. Default: 10.
   --stale-minutes=<number>  Active job age threshold. Default: 30.
-  --execute                 Run BullMQ stalled-job recovery or failed-job retry after safety checks.
+  --execute                 Run the selected live action after safety checks.
   --help                    Show this help text.
 
 Dry-run inspection:
@@ -70,6 +71,12 @@ Dry-run dead-letter capture:
 
 Live dead-letter capture:
   npm run run:queue-maintenance -- --action=capture-dead-letter --queue=mls-sync --job-id=<jobId> --execute
+
+Dry-run dead-letter resolution:
+  npm run run:queue-maintenance -- --action=resolve-dead-letter --queue=reie-dead-letter --job-id=<jobId>
+
+Live dead-letter resolution:
+  npm run run:queue-maintenance -- --action=resolve-dead-letter --queue=reie-dead-letter --job-id=<jobId> --execute
 `;
 
 function readFlagValue(arg: string) {
@@ -111,7 +118,7 @@ function parseOptions(argv: string[]): MaintenanceOptions {
 
     if (arg.startsWith('--action=')) {
       const action = readFlagValue(arg);
-      if (action !== 'stale-recovery' && action !== 'retry-failed' && action !== 'capture-dead-letter') {
+      if (action !== 'stale-recovery' && action !== 'retry-failed' && action !== 'capture-dead-letter' && action !== 'resolve-dead-letter') {
         throw new Error(`Unsupported action: ${action}`);
       }
       options.action = action;
@@ -249,6 +256,48 @@ async function inspectFailedRetry(definition: QueueDefinition, options: Maintena
   };
 }
 
+async function summarizeDeadLetterJob(job: any) {
+  const state = await job.getState().catch(() => 'unknown');
+
+  return {
+    id: job.id,
+    name: job.name,
+    state,
+    attemptsMade: job.attemptsMade,
+    failedReason: job.data?.failedReason || null,
+    sourceQueue: job.data?.sourceQueue || null,
+    sourceJobId: job.data?.sourceJobId || null,
+    sourceJobName: job.data?.sourceJobName || null,
+    failedAt: job.data?.failedAt || null,
+    capturedAt: job.data?.capturedAt || null,
+    capturedBy: job.data?.capturedBy || null,
+    timestamp: toIsoDate(job.timestamp),
+    processedOn: toIsoDate(job.processedOn),
+    finishedOn: toIsoDate(job.finishedOn),
+    resolvable: ['waiting', 'delayed', 'failed'].includes(state),
+    data: job.data,
+  };
+}
+
+async function inspectDeadLetterResolution(definition: QueueDefinition, options: MaintenanceOptions) {
+  const counts = await definition.queue.getJobCounts('waiting', 'active', 'delayed', 'completed', 'failed', 'paused');
+  const job = options.jobId ? await definition.queue.getJob(options.jobId) : null;
+  const jobs = job ? [await summarizeDeadLetterJob(job)] : [];
+
+  return {
+    label: definition.label,
+    name: definition.name,
+    counts,
+    dryRun: !options.execute,
+    targeted: Boolean(options.jobId),
+    inspected: jobs.length,
+    resolvable: jobs.filter((item) => item.resolvable).length,
+    skipped: jobs.filter((item) => !item.resolvable).length,
+    missingTarget: Boolean(options.jobId) && jobs.length === 0,
+    jobs,
+  };
+}
+
 function validateLiveRecovery(options: MaintenanceOptions, report: Awaited<ReturnType<typeof inspectQueue>>['report']) {
   if (!options.execute) return null;
   if (!options.jobId) return 'Live stale recovery requires --job-id=<id>.';
@@ -303,6 +352,15 @@ function validateLiveDeadLetterCapture(options: MaintenanceOptions, report: Awai
   return null;
 }
 
+function validateLiveDeadLetterResolution(options: MaintenanceOptions, report: Awaited<ReturnType<typeof inspectDeadLetterResolution>>) {
+  if (!options.execute) return null;
+  if (options.queueName !== DEAD_LETTER_QUEUE_NAME) return `Dead-letter resolution must target --queue=${DEAD_LETTER_QUEUE_NAME}.`;
+  if (!options.jobId) return 'Live dead-letter resolution requires --job-id=<id>.';
+  if (report.missingTarget) return `Target dead-letter job ${options.jobId} was not found in ${report.name}.`;
+  if (report.resolvable < 1) return `Target dead-letter job ${options.jobId} is not waiting, delayed, or failed.`;
+  return null;
+}
+
 async function captureDeadLetter(definition: QueueDefinition, options: MaintenanceOptions, report: Awaited<ReturnType<typeof inspectFailedRetry>>) {
   if (!options.execute) return { attempted: false, captured: 0, errors: [] as Array<{ jobId?: string; error: string }> };
 
@@ -328,6 +386,33 @@ async function captureDeadLetter(definition: QueueDefinition, options: Maintenan
   return {
     attempted: true,
     captured,
+    errors,
+  };
+}
+
+async function resolveDeadLetter(definition: QueueDefinition, options: MaintenanceOptions, report: Awaited<ReturnType<typeof inspectDeadLetterResolution>>) {
+  if (!options.execute) return { attempted: false, resolved: 0, errors: [] as Array<{ jobId?: string; error: string }> };
+
+  let resolved = 0;
+  const errors: Array<{ jobId?: string; error: string }> = [];
+  const resolvableIds = new Set(report.jobs.filter((job) => job.resolvable).map((job) => job.id));
+  const job = options.jobId ? await definition.queue.getJob(options.jobId) : null;
+
+  if (job?.id && resolvableIds.has(job.id)) {
+    try {
+      await job.remove();
+      resolved++;
+    } catch (error) {
+      errors.push({
+        jobId: job.id,
+        error: error instanceof Error ? error.message : String(error || 'Unknown dead-letter resolution error.'),
+      });
+    }
+  }
+
+  return {
+    attempted: true,
+    resolved,
     errors,
   };
 }
@@ -377,6 +462,55 @@ async function main() {
 
   if (!definition) {
     throw new Error(`Unsupported queue "${options.queueName}". Supported queues: ${QUEUES.map((queue) => queue.name).join(', ')}`);
+  }
+
+  if (options.action === 'resolve-dead-letter') {
+    const before = await inspectDeadLetterResolution(definition, options);
+    const blocker = validateLiveDeadLetterResolution(options, before);
+    let resolutionResult = { attempted: false, resolved: 0, errors: [] as Array<{ jobId?: string; error: string }> };
+    let after = before;
+
+    if (blocker) {
+      process.exitCode = 1;
+    } else {
+      resolutionResult = await resolveDeadLetter(definition, options, before);
+      after = await inspectDeadLetterResolution(definition, options);
+      if (resolutionResult.errors.length > 0) process.exitCode = 1;
+    }
+
+    console.log(
+      JSON.stringify(
+        {
+          success: !blocker && resolutionResult.errors.length === 0,
+          module: 'queue-maintenance',
+          generatedAt: new Date().toISOString(),
+          mode: options.execute ? 'execute' : 'dry-run',
+          options,
+          safety: {
+            liveDeadLetterResolutionRequiresExecute: true,
+            liveDeadLetterResolutionRequiresTargetJobId: true,
+            liveDeadLetterResolutionRequiresDeadLetterQueue: true,
+            originalSourceJobIsNotRetriedOrRemoved: true,
+            blocker,
+          },
+          deadLetterResolution: resolutionResult,
+          commands: {
+            dryRunCurrentTarget: options.jobId
+              ? `npm run run:queue-maintenance -- --action=resolve-dead-letter --queue=${DEAD_LETTER_QUEUE_NAME} --job-id=${options.jobId}`
+              : 'Dead-letter resolution dry run requires --job-id=<id>.',
+            liveCurrentTarget: options.jobId
+              ? `npm run run:queue-maintenance -- --action=resolve-dead-letter --queue=${DEAD_LETTER_QUEUE_NAME} --job-id=${options.jobId} --execute`
+              : 'Live dead-letter resolution requires --job-id=<id>.',
+            queueDashboard: 'npm run run:queue-dashboard -- --failed --sample --limit=5 --timeout-ms=3000',
+          },
+          before,
+          after,
+        },
+        null,
+        2,
+      ),
+    );
+    return;
   }
 
   if (options.action === 'retry-failed' || options.action === 'capture-dead-letter') {
