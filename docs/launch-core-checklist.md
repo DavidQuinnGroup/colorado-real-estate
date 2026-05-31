@@ -283,18 +283,19 @@ npm run smoke:ops
 ## Known Non-Blocking Warnings
 
 - `npm run build` may show Node `url.parse()` deprecation warnings.
-- Local Typesense may report a stale `listings` collection until it is rebuilt and reindexed.
+- Local Typesense `properties` and `listings` schemas were verified ready with `npm run typesense:collections:check` on May 31, 2026; reindexing still depends on Supabase connectivity.
 - Generated `dist/` output can contain stale JavaScript for deleted source files until `npm run worker:build` is rerun from a clean output state.
 
 ## Immediate Next Work
 
 The next high-value work after this checklist is to tighten the launch path around actual local validation:
 
-1. Repair and reindex local Typesense.
-2. Verify `/search` against the repaired index.
-3. Verify `npm run smoke:search` Search Smoke Readiness shows expected source, `meta.source`, health, access level, filters, bounds, mapped count, coordinate-filtered count, duration, and `meta.smoke.ready=true` with no blockers.
-4. Validate protected MLS dry-run routes.
-5. Validate protected alert dry-run route.
-6. Confirm map/sidebar selected-listing popup reliability with real indexed data.
+1. Restore or replace the configured Supabase endpoint so database-backed dry-runs and Typesense reindexing can fetch records.
+2. Reindex local Typesense with `npm run typesense:reindex`.
+3. Verify `/search` against the reindexed data.
+4. Verify `npm run smoke:search` Search Smoke Readiness shows expected source, `meta.source`, health, access level, filters, bounds, mapped count, coordinate-filtered count, duration, and `meta.smoke.ready=true` with no blockers.
+5. Validate protected MLS dry-run routes.
+6. Validate protected alert dry-run route.
+7. Confirm map/sidebar selected-listing popup reliability with real indexed data.
 
 <!-- /Users/davidquinn/david-quinn-group/colorado-real-estate/docs/launch-core-checklist.md -->

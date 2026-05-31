@@ -133,8 +133,8 @@ Search indexing:
 - `/api/mls/status` raises diagnostics when `indexFailed > 0`, `searchIndexIndexed` is false, or completed jobs with processed listings did not attempt indexing.
 - `/admin` shows search-index health and recent MLS completion details, including search index attempts, successes, failures, and per-listing index errors when job return values include them.
 - `indexFailed > 0` should be treated as degraded search freshness even if Postgres upserts succeeded.
-- Local Typesense still needs collection repair so `listings` includes the current fields and facets, including faceted `neighborhood`.
-- Reindexing from Supabase should run after local schema repair when Supabase connectivity is available.
+- Local Typesense `properties` and `listings` schemas were verified ready with `npm run typesense:collections:check` on May 31, 2026.
+- Reindexing from Supabase should run after Supabase connectivity is restored.
 
 Seed data:
 
@@ -301,8 +301,7 @@ curl --max-time 8 -s -w "\nHTTP_STATUS:%{http_code}\n" "http://localhost:3000/ap
 Expected current warnings:
 
 - Node `url.parse()` deprecation warnings appear during `next build`.
-- Local Typesense may log that the `listings` collection is stale until local collections are repaired.
-- Current stale Typesense warning includes missing required fields/facets, `price` type mismatch, and default sort mismatch.
+- Local Typesense `properties` and `listings` collections are currently schema-ready.
 - Production smoke verification still needs `npm run smoke:mls-status`, `npm run smoke:search`, timeout-bounded queue diagnostics, and one internal tracked email click before recurring scheduler activation or recurring email traffic.
 - `dist/` may contain stale generated JavaScript for deleted source files until generated output is cleaned.
 
@@ -337,9 +336,9 @@ Production decisions:
 
 ## Current Near-Term Work Sequence
 
-1. Repair local Typesense collections so `properties` and `listings` both include the current schema.
+1. Restore or replace the configured Supabase endpoint so database-backed dry-runs and Typesense reindexing can fetch records.
 2. Reindex Typesense from Supabase when Supabase connectivity is available.
-3. Verify search-index health with `npm run smoke:mls-status` and Search Smoke Readiness source, `meta.source`, health, access level, filters, bounds, returned, mapped, coordinate-filtered, duration, and `meta.smoke.ready=true` with no blockers through `npm run smoke:search` after collection repair and reindex.
+3. Verify search-index health with `npm run smoke:mls-status` and Search Smoke Readiness source, `meta.source`, health, access level, filters, bounds, returned, mapped, coordinate-filtered, duration, and `meta.smoke.ready=true` with no blockers through `npm run smoke:search` after reindex.
 4. Confirm Supabase connectivity and rerun alert, digest, CRM, MLS, and seed dry-runs/reporting as needed.
 5. Clean or regenerate stale `dist/` artifacts if generated output is being used directly.
 6. Continue MLS ingestion hardening and media replacement.

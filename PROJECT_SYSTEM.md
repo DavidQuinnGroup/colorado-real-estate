@@ -839,25 +839,24 @@ npm run typesense:reindex
 Known current non-blocking warnings:
 
 - Node `url.parse()` deprecation warnings appear during `next build`.
-- Local Typesense may log that the `listings` collection is stale until local collections are repaired.
-- Current stale Typesense warning includes missing required fields/facets, `price` type mismatch, and default sort mismatch.
+- Local Typesense `properties` and `listings` collections were verified ready with `npm run typesense:collections:check` on May 31, 2026.
 - Production smoke verification still needs `npm run smoke:mls-status`, `npm run smoke:search`, timeout-bounded queue diagnostics, and one internal tracked email click before recurring scheduler activation or recurring email traffic.
 - `dist/` may contain stale generated JavaScript for deleted source files until generated output is cleaned.
 
 Known current blocker:
 
-- Supabase connectivity may block database-dependent dry-runs with:
+- Supabase connectivity currently blocks database-dependent dry-runs and Typesense reindexing. On May 31, 2026, `npm run typesense:reindex` reached local Typesense successfully, then failed while fetching Supabase records; a redacted public URL probe returned:
 
 ```text
-Can't reach database server at aws-0-us-west-2.pooler.supabase.com:6543
+curl: (6) Could not resolve host: otmkoqvmhthitldlnjdk.supabase.co
 ```
 
 ## Current Near-Term Priorities
 
-1. Repair local Typesense collections so `properties` and `listings` both include the current schema.
-2. Reindex Typesense from Supabase when Supabase connectivity is available.
-3. Verify search-index health with `npm run smoke:mls-status` and Search Smoke Readiness source, `meta.source`, health, access level, filters, bounds, returned, mapped, coordinate-filtered, duration, and `meta.smoke.ready=true` with no blockers through `npm run smoke:search` after repair.
-4. Confirm Supabase connectivity and rerun alert, digest, CRM, MLS, seed, and reindex dry-runs/reporting.
+1. Restore or replace the configured Supabase project/database endpoint so local scripts can resolve and reach Supabase.
+2. Reindex Typesense from Supabase with `npm run typesense:reindex` after Supabase connectivity is available.
+3. Verify search-index health with `npm run smoke:mls-status` and Search Smoke Readiness source, `meta.source`, health, access level, filters, bounds, returned, mapped, coordinate-filtered, duration, and `meta.smoke.ready=true` with no blockers through `npm run smoke:search` after reindex.
+4. Rerun alert, digest, CRM, MLS, seed, and reindex dry-runs/reporting after Supabase connectivity is restored.
 5. Clean or regenerate stale `dist/` artifacts if generated output is being used directly.
 6. Continue MLS ingestion hardening and media replacement.
 7. Expand timeout-bounded admin queue, sync, alert, digest, and CRM visibility.
