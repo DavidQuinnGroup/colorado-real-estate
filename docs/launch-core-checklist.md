@@ -199,6 +199,7 @@ Live MLS sync gate:
 - Search-index health and indexing behavior are acceptable before live-inventory claims or MLS-backed public expansion.
 - `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000` reports acceptable queue diagnostics before recurring email traffic, live-inventory claims, MLS-backed public expansion, MLS-volume decisions, scheduler cadence increases, or large programmatic content batch publication.
 - Queue dashboard source-queue dead-letter summaries are reviewed when the local Next API is not running.
+- Busy queue dashboard output points to the relevant worker start command, and the worker is started or explicitly deferred before increasing scheduler cadence or ingestion volume.
 - Stale active queue jobs are not acceptable diagnostics; inspect retry state, source-queue dead letters, and worker process health before retrying or adding work.
 - Stale active recovery uses a dry run first: `npm run run:queue-maintenance -- --queue=mls-page --job-id=<jobId>`. Live recovery requires the same command with `--execute` only after the target job is stale and unlocked.
 - Failed-job retry uses a dry run first: `npm run run:queue-maintenance -- --action=retry-failed --queue=mls-sync --limit=10`. Live retry requires a target `--job-id=<jobId>` plus `--execute`.

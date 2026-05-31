@@ -298,6 +298,25 @@ function buildLiveRetryCommand(queueName, limit = 10) {
 function buildWorkerProcessInspectionCommand() {
     return 'ps -ax -o pid,command | rg "worker|queue|bull|mls"';
 }
+function buildWorkerStartCommand(queueName) {
+    if (queueName === MLS_SYNC_QUEUE_NAME)
+        return 'npm run run:worker:mls';
+    if (queueName === MLS_PAGE_QUEUE_NAME)
+        return 'npm run run:worker:mls-page';
+    if (queueName === ALERT_QUEUE_NAME)
+        return 'npm run run:worker:alerts';
+    return 'npm run run:worker';
+}
+function buildBusyQueueNextCommand(queues) {
+    const mlsSync = queues.find((queue) => queue.name === MLS_SYNC_QUEUE_NAME);
+    const mlsPage = queues.find((queue) => queue.name === MLS_PAGE_QUEUE_NAME);
+    if ((mlsSync?.counts.waiting || 0) > 0)
+        return buildWorkerStartCommand(MLS_SYNC_QUEUE_NAME);
+    if ((mlsPage?.counts.waiting || 0) > 0)
+        return buildWorkerStartCommand(MLS_PAGE_QUEUE_NAME);
+    const firstBusyQueue = queues.find((queue) => (queue.counts.waiting || 0) > 0 || (queue.counts.active || 0) > 0 || (queue.counts.delayed || 0) > 0);
+    return firstBusyQueue ? buildWorkerStartCommand(firstBusyQueue.name) : 'npm run run:queue-dashboard -- --failed --sample --limit=5 --timeout-ms=3000';
+}
 function buildDeadLetterBySourceQueueCommand(queueName, limit = 25) {
     const params = new URLSearchParams({
         sourceQueue: queueName,
@@ -436,9 +455,9 @@ function buildRecoveryPlan(queues, diagnostics) {
         return {
             level: 'caution',
             summary: 'Queues are processing work; monitor before launching more ingestion or retries.',
-            nextAction: 'Refresh queue dashboard or MLS status.',
+            nextAction: 'Start or inspect the worker for the first waiting queue, then refresh queue dashboard.',
             terminal: 'Terminal 5',
-            nextCommand: 'curl -s "http://localhost:3000/api/mls/status"',
+            nextCommand: buildBusyQueueNextCommand(busyQueues),
             gates,
         };
     }
@@ -488,6 +507,9 @@ async function main() {
             deadLetter: 'curl -s "http://localhost:3000/api/admin/dead-letter?limit=25"',
             deadLetterOpen: 'curl -s "http://localhost:3000/api/admin/dead-letter?states=waiting,delayed,failed&limit=25"',
             workerProcessInspection: buildWorkerProcessInspectionCommand(),
+            startMlsSyncWorker: buildWorkerStartCommand(MLS_SYNC_QUEUE_NAME),
+            startMlsPageWorker: buildWorkerStartCommand(MLS_PAGE_QUEUE_NAME),
+            startAlertWorker: buildWorkerStartCommand(ALERT_QUEUE_NAME),
             staleActiveMlsSyncInspection: buildRetryStatusCommand(MLS_SYNC_QUEUE_NAME),
             staleActiveMlsPageInspection: buildRetryStatusCommand(MLS_PAGE_QUEUE_NAME),
             dryRunRetryMlsSync: buildDryRunRetryCommand(MLS_SYNC_QUEUE_NAME),
