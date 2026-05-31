@@ -56,6 +56,48 @@ function parsePostgresEndpoint(value: string) {
   }
 }
 
+function parseSupabaseProjectRefFromUrl(value: string) {
+  const host = parseHost(value);
+  const [projectRef] = host.split('.');
+  return projectRef || '';
+}
+
+function parseSupabaseProjectRefFromDatabaseUrl(value: string) {
+  if (!value) return '';
+
+  try {
+    const url = new URL(value);
+    const username = decodeURIComponent(url.username);
+    const match = username.match(/^postgres\.([a-z0-9]+)$/i);
+    return match?.[1] || '';
+  } catch {
+    return '';
+  }
+}
+
+function decodeJwtPayload(token: string) {
+  const [, payload] = token.split('.');
+  if (!payload) return null;
+
+  try {
+    const normalized = payload.replace(/-/g, '+').replace(/_/g, '/');
+    const padded = normalized.padEnd(Math.ceil(normalized.length / 4) * 4, '=');
+    return JSON.parse(Buffer.from(padded, 'base64').toString('utf8')) as Record<string, unknown>;
+  } catch {
+    return null;
+  }
+}
+
+function parseSupabaseProjectRefFromJwt(token: string) {
+  const payload = decodeJwtPayload(token);
+  const ref = payload?.ref;
+  return typeof ref === 'string' ? ref : '';
+}
+
+function getUniqueValues(values: string[]) {
+  return [...new Set(values.filter(Boolean))];
+}
+
 function formatError(error: unknown) {
   if (error instanceof Error) {
     const candidate = error as Error & { cause?: unknown };
@@ -66,6 +108,29 @@ function formatError(error: unknown) {
   }
 
   return String(error);
+}
+
+function checkProjectRefConsistency(values: Record<string, string>): CheckResult {
+  const comparableValues = Object.fromEntries(Object.entries(values).filter(([, ref]) => ref && ref !== 'unavailable'));
+  const uniqueRefs = getUniqueValues(Object.values(comparableValues));
+
+  if (uniqueRefs.length === 0) {
+    return {
+      name: 'Supabase project ref consistency',
+      status: 'skip',
+      detail: 'No project refs could be parsed from configured Supabase values.',
+    };
+  }
+
+  const details = Object.entries(values)
+    .map(([name, ref]) => `${name}=${ref || 'unparsed'}`)
+    .join(', ');
+
+  return {
+    name: 'Supabase project ref consistency',
+    status: uniqueRefs.length === 1 ? 'pass' : 'fail',
+    detail: uniqueRefs.length === 1 ? `All parsed refs match: ${uniqueRefs[0]}. ${details}` : `Parsed refs differ. ${details}`,
+  };
 }
 
 function hasFailed(results: CheckResult[], name: string) {
@@ -227,10 +292,19 @@ async function checkPrismaDatabase(databaseUrl: string, skip: boolean): Promise<
 
 async function main() {
   const supabaseUrl = getEnv('NEXT_PUBLIC_SUPABASE_URL');
+  const anonKey = getEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY');
+  const publishableKey = getEnv('NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY');
   const serviceRoleKey = getEnv('SUPABASE_SERVICE_ROLE_KEY');
   const databaseUrl = getEnv('DATABASE_URL');
   const supabaseHost = parseHost(supabaseUrl);
   const databaseHost = parsePostgresHost(databaseUrl);
+  const projectRefs = {
+    url: parseSupabaseProjectRefFromUrl(supabaseUrl),
+    databaseUser: parseSupabaseProjectRefFromDatabaseUrl(databaseUrl),
+    anonKey: parseSupabaseProjectRefFromJwt(anonKey),
+    serviceRoleKey: parseSupabaseProjectRefFromJwt(serviceRoleKey),
+    publishableKey: publishableKey.startsWith('sb_publishable_') ? 'unavailable' : '',
+  };
   const results: CheckResult[] = [
     {
       name: 'NEXT_PUBLIC_SUPABASE_URL',
@@ -243,10 +317,21 @@ async function main() {
       detail: serviceRoleKey ? 'Configured.' : 'Missing.',
     },
     {
+      name: 'NEXT_PUBLIC_SUPABASE_ANON_KEY',
+      status: anonKey ? 'pass' : 'warn',
+      detail: anonKey ? 'Configured.' : 'Missing; server-side preflight can still run.',
+    },
+    {
+      name: 'NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY',
+      status: publishableKey ? 'pass' : 'warn',
+      detail: publishableKey ? 'Configured.' : 'Missing; legacy anon key may still support local checks.',
+    },
+    {
       name: 'DATABASE_URL',
       status: databaseUrl ? 'pass' : 'warn',
       detail: databaseUrl ? `Configured host: ${databaseHost || 'invalid URL'}.` : 'Missing; REST checks can still run.',
     },
+    checkProjectRefConsistency(projectRefs),
   ];
 
   results.push(await checkDns('Supabase project DNS', supabaseHost));
@@ -276,7 +361,7 @@ async function main() {
 }
 
 main().catch((error) => {
-  console.error(formatError(error));
+  console.log(formatError(error));
   process.exit(1);
 });
 
