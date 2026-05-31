@@ -16,9 +16,9 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 
-type AnchorType = 'work' | 'school' | 'ritual' | 'lifestyle' | 'fbo';
+export type AnchorType = 'work' | 'school' | 'ritual' | 'lifestyle' | 'fbo';
 
-type Anchor = {
+export type NorthStarAnchor = {
   id: string;
   name: string;
   address: string;
@@ -31,16 +31,44 @@ type Anchor = {
 type NorthStarManagerProps = {
   isOpen: boolean;
   onClose: () => void;
+  initialAnchors?: NorthStarAnchor[];
+  onSave?: (anchors: NorthStarAnchor[]) => void;
 };
 
 const anchorTypes: AnchorType[] = ['work', 'fbo', 'school', 'ritual', 'lifestyle'];
+export const NORTH_STAR_STORAGE_KEY = 'reie:north-stars';
 
-const defaultAnchors: Anchor[] = [
-  { id: '1', name: 'Executive HQ', address: '', type: 'work', frequency: 5 },
-  { id: '2', name: 'Private Hangar/FBO', address: '', type: 'fbo', frequency: 2 },
+export const defaultNorthStarAnchors: NorthStarAnchor[] = [
+  {
+    id: 'dqg-hq',
+    name: 'DQG HQ',
+    address: 'Boulder Authority Center',
+    lat: 40.0174,
+    lng: -105.276,
+    type: 'work',
+    frequency: 5,
+  },
+  {
+    id: 'downtown-boulder',
+    name: 'Downtown Boulder',
+    address: 'Pearl Street, Boulder, CO',
+    lat: 40.0191,
+    lng: -105.2817,
+    type: 'lifestyle',
+    frequency: 3,
+  },
+  {
+    id: 'denver-core',
+    name: 'Denver Core',
+    address: 'Downtown Denver, CO',
+    lat: 39.7392,
+    lng: -104.9903,
+    type: 'work',
+    frequency: 2,
+  },
 ];
 
-function createAnchor(): Anchor {
+function createAnchor(): NorthStarAnchor {
   return {
     id: Math.random().toString(36).slice(2, 11),
     name: 'New Lifestyle Hub',
@@ -58,8 +86,57 @@ function parseAnchorType(value: string): AnchorType {
   return isAnchorType(value) ? value : 'lifestyle';
 }
 
-export default function NorthStarManager({ isOpen, onClose }: NorthStarManagerProps) {
-  const [anchors, setAnchors] = useState<Anchor[]>(defaultAnchors);
+function parseCoordinate(value: string) {
+  const coordinate = Number(value);
+  return Number.isFinite(coordinate) ? coordinate : undefined;
+}
+
+export function getSavedNorthStarAnchors(): NorthStarAnchor[] {
+  if (typeof window === 'undefined') return defaultNorthStarAnchors;
+
+  try {
+    const rawAnchors = window.localStorage.getItem(NORTH_STAR_STORAGE_KEY);
+    if (!rawAnchors) return defaultNorthStarAnchors;
+
+    const parsed = JSON.parse(rawAnchors) as unknown;
+    if (!Array.isArray(parsed)) return defaultNorthStarAnchors;
+
+    const anchors = parsed
+      .map((anchor): NorthStarAnchor | null => {
+        if (typeof anchor !== 'object' || anchor === null) return null;
+        const candidate = anchor as Partial<NorthStarAnchor>;
+        const id = typeof candidate.id === 'string' && candidate.id.trim() ? candidate.id : Math.random().toString(36).slice(2, 11);
+        const name = typeof candidate.name === 'string' && candidate.name.trim() ? candidate.name.trim() : 'North Star';
+        const address = typeof candidate.address === 'string' ? candidate.address : '';
+        const frequency = typeof candidate.frequency === 'number' && Number.isFinite(candidate.frequency) ? candidate.frequency : 3;
+
+        return {
+          id,
+          name,
+          address,
+          lat: typeof candidate.lat === 'number' && Number.isFinite(candidate.lat) ? candidate.lat : undefined,
+          lng: typeof candidate.lng === 'number' && Number.isFinite(candidate.lng) ? candidate.lng : undefined,
+          type: parseAnchorType(typeof candidate.type === 'string' ? candidate.type : ''),
+          frequency: Math.max(1, Math.min(7, Math.round(frequency))),
+        };
+      })
+      .filter((anchor): anchor is NorthStarAnchor => anchor !== null);
+
+    return anchors.length > 0 ? anchors : defaultNorthStarAnchors;
+  } catch {
+    return defaultNorthStarAnchors;
+  }
+}
+
+export function saveNorthStarAnchors(anchors: NorthStarAnchor[]) {
+  if (typeof window === 'undefined') return;
+
+  window.localStorage.setItem(NORTH_STAR_STORAGE_KEY, JSON.stringify(anchors));
+  window.dispatchEvent(new CustomEvent('reie:north-stars-updated', { detail: { anchors } }));
+}
+
+export default function NorthStarManager({ isOpen, onClose, initialAnchors, onSave }: NorthStarManagerProps) {
+  const [anchors, setAnchors] = useState<NorthStarAnchor[]>(() => initialAnchors || getSavedNorthStarAnchors());
 
   const addAnchor = () => {
     setAnchors((currentAnchors) => [...currentAnchors, createAnchor()]);
@@ -69,10 +146,16 @@ export default function NorthStarManager({ isOpen, onClose }: NorthStarManagerPr
     setAnchors((currentAnchors) => currentAnchors.filter((anchor) => anchor.id !== id));
   };
 
-  const updateAnchor = <Field extends keyof Anchor>(id: string, field: Field, value: Anchor[Field]) => {
+  const updateAnchor = <Field extends keyof NorthStarAnchor>(id: string, field: Field, value: NorthStarAnchor[Field]) => {
     setAnchors((currentAnchors) =>
       currentAnchors.map((anchor) => (anchor.id === id ? { ...anchor, [field]: value } : anchor)),
     );
+  };
+
+  const syncAnchors = () => {
+    saveNorthStarAnchors(anchors);
+    onSave?.(anchors);
+    onClose();
   };
 
   return (
@@ -226,6 +309,22 @@ export default function NorthStarManager({ isOpen, onClose }: NorthStarManagerPr
                             className="w-full border-b border-white/5 bg-transparent pb-2 pl-8 text-[11px] font-bold uppercase tracking-[0.2em] text-white/70 outline-none transition-colors placeholder:text-white/10 focus:border-[#00ff80]"
                           />
                         </div>
+                        <div className="grid grid-cols-2 gap-4">
+                          <input
+                            type="number"
+                            value={anchor.lat ?? ''}
+                            onChange={(event) => updateAnchor(anchor.id, 'lat', parseCoordinate(event.target.value))}
+                            placeholder="LAT"
+                            className="w-full border border-white/10 bg-black px-4 py-3 text-[10px] font-black uppercase tracking-[0.18em] text-white/70 outline-none placeholder:text-white/10 focus:border-[#00ff80]"
+                          />
+                          <input
+                            type="number"
+                            value={anchor.lng ?? ''}
+                            onChange={(event) => updateAnchor(anchor.id, 'lng', parseCoordinate(event.target.value))}
+                            placeholder="LNG"
+                            className="w-full border border-white/10 bg-black px-4 py-3 text-[10px] font-black uppercase tracking-[0.18em] text-white/70 outline-none placeholder:text-white/10 focus:border-[#00ff80]"
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -236,7 +335,7 @@ export default function NorthStarManager({ isOpen, onClose }: NorthStarManagerPr
 
           <div className="border-t border-white/10 bg-[#050505] p-12">
             <button
-              onClick={onClose}
+              onClick={syncAnchors}
               className="group relative w-full overflow-hidden bg-[#00ff80] py-8 text-2xl font-black uppercase italic tracking-[0.4em] text-black shadow-[0_0_50px_rgba(0,255,128,0.2)] transition-all hover:bg-white"
               type="button"
             >

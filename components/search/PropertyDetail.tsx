@@ -5,7 +5,11 @@ import { useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
 import { ArrowRight, BarChart3, ChevronLeft, Clock, Construction, Hammer, Lock, MapPin, ShieldCheck, X, Zap } from 'lucide-react';
 
-import NorthStarManager from '@/components/settings/NorthStarManager';
+import NorthStarManager, {
+  defaultNorthStarAnchors,
+  getSavedNorthStarAnchors,
+  type NorthStarAnchor,
+} from '@/components/settings/NorthStarManager';
 import { LISTING_IMAGE_FALLBACK } from '@/lib/listingVisuals';
 import { formatLuxuryPrice } from '@/lib/utils/formatters';
 import { calculateEfficiencyScore, getTravelNarrative } from '@/lib/utils/geo-logic';
@@ -64,12 +68,6 @@ const TABS: Array<{
   { id: 'strategy', label: 'GC Strategy', icon: <Hammer size={14} /> },
 ];
 
-const DEFAULT_NORTH_STARS = [
-  { label: 'DQG HQ', icon: 'authority', lat: 40.0174, lng: -105.276 },
-  { label: 'Downtown Boulder', icon: 'downtown', lat: 40.0191, lng: -105.2817 },
-  { label: 'Denver Core', icon: 'market', lat: 39.7392, lng: -104.9903 },
-];
-
 function getNumber(value: number | null | undefined, fallback = 0) {
   return typeof value === 'number' && Number.isFinite(value) ? value : fallback;
 }
@@ -91,6 +89,7 @@ export default function PropertyDetail({ property, onClose, userTier = 'Public' 
   const [activeTab, setActiveTab] = useState<ActiveTab>('intel');
   const [showManager, setShowManager] = useState(false);
   const [failedImageSrc, setFailedImageSrc] = useState<string | null>(null);
+  const [northStarAnchors, setNorthStarAnchors] = useState<NorthStarAnchor[]>(() => getSavedNorthStarAnchors());
   const [logistics, setLogistics] = useState<LogisticsState>({ status: 'idle', times: [] });
 
   const originalImageSrc = property.mainPhoto || property.image || LISTING_IMAGE_FALLBACK;
@@ -101,11 +100,62 @@ export default function PropertyDetail({ property, onClose, userTier = 'Public' 
   const lat = getNumber(property.lat, 40.0174);
   const lng = getNumber(property.lng, -105.276);
 
-  const calculatedEfficiencyScore = useMemo(() => calculateEfficiencyScore({ lat, lng }, []), [lat, lng]);
+  const logisticsAnchors = useMemo(
+    () =>
+      northStarAnchors
+        .filter((anchor) => typeof anchor.lat === 'number' && typeof anchor.lng === 'number')
+        .map((anchor) => ({
+          label: anchor.name,
+          icon: anchor.type,
+          lat: anchor.lat as number,
+          lng: anchor.lng as number,
+        })),
+    [northStarAnchors],
+  );
+  const activeLogisticsAnchors = useMemo(
+    () =>
+      logisticsAnchors.length > 0
+        ? logisticsAnchors
+        : defaultNorthStarAnchors.map((anchor) => ({
+            label: anchor.name,
+            icon: anchor.type,
+            lat: anchor.lat || 40.0174,
+            lng: anchor.lng || -105.276,
+          })),
+    [logisticsAnchors],
+  );
+  const weightedEfficiencyAnchors = useMemo(
+    () =>
+      northStarAnchors
+        .filter((anchor) => typeof anchor.lat === 'number' && typeof anchor.lng === 'number')
+        .map((anchor) => ({
+          lat: anchor.lat as number,
+          lng: anchor.lng as number,
+          frequency: anchor.frequency,
+          label: anchor.name,
+        })),
+    [northStarAnchors],
+  );
+  const calculatedEfficiencyScore = useMemo(
+    () => calculateEfficiencyScore({ lat, lng }, weightedEfficiencyAnchors),
+    [lat, lng, weightedEfficiencyAnchors],
+  );
   const efficiencyScore = getNumber(property.efficiencyScore, calculatedEfficiencyScore);
   const resilienceScore = getNumber(property.resilienceScore, 85);
   const reviewSignal = getReviewSignal(property);
   const narrative = getTravelNarrative(efficiencyScore);
+
+  useEffect(() => {
+    function handleNorthStarUpdate(event: Event) {
+      const detail = (event as CustomEvent<{ anchors?: NorthStarAnchor[] }>).detail;
+      if (Array.isArray(detail?.anchors)) {
+        setNorthStarAnchors(detail.anchors);
+      }
+    }
+
+    window.addEventListener('reie:north-stars-updated', handleNorthStarUpdate);
+    return () => window.removeEventListener('reie:north-stars-updated', handleNorthStarUpdate);
+  }, []);
 
   useEffect(() => {
     if (activeTab !== 'efficiency') return;
@@ -121,7 +171,7 @@ export default function PropertyDetail({ property, onClose, userTier = 'Public' 
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             homeCoords: { lat, lng },
-            northStars: DEFAULT_NORTH_STARS,
+            northStars: activeLogisticsAnchors,
           }),
           signal: controller.signal,
         });
@@ -155,7 +205,7 @@ export default function PropertyDetail({ property, onClose, userTier = 'Public' 
     void loadLogistics();
 
     return () => controller.abort();
-  }, [activeTab, lat, lng]);
+  }, [activeTab, lat, lng, activeLogisticsAnchors]);
 
   return (
     <div className="relative flex h-full w-full flex-col overflow-hidden bg-[#050505] animate-in fade-in duration-500">
@@ -269,7 +319,9 @@ export default function PropertyDetail({ property, onClose, userTier = 'Public' 
                 <div className="mb-8 flex flex-col gap-3 border-b border-white/10 pb-6 sm:flex-row sm:items-center sm:justify-between">
                   <div>
                     <p className="text-[10px] font-black uppercase tracking-[0.36em] text-white/35">Pulse Preview</p>
-                    <h4 className="mt-2 text-2xl font-black uppercase italic tracking-tight text-white">Default North Stars</h4>
+                    <h4 className="mt-2 text-2xl font-black uppercase italic tracking-tight text-white">
+                      {logisticsAnchors.length > 0 ? 'Saved North Stars' : 'Default North Stars'}
+                    </h4>
                   </div>
                   <span className="w-fit border border-[#00ff80]/30 px-3 py-2 text-[9px] font-black uppercase tracking-[0.24em] text-[#00ff80]">
                     {logistics.source === 'mapbox' ? 'Live Matrix' : 'REIE Estimate'}
@@ -375,7 +427,14 @@ export default function PropertyDetail({ property, onClose, userTier = 'Public' 
         </div>
       </div>
 
-      {showManager ? <NorthStarManager isOpen={showManager} onClose={() => setShowManager(false)} /> : null}
+      {showManager ? (
+        <NorthStarManager
+          isOpen={showManager}
+          initialAnchors={northStarAnchors}
+          onSave={setNorthStarAnchors}
+          onClose={() => setShowManager(false)}
+        />
+      ) : null}
     </div>
   );
 }
