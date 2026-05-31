@@ -1,54 +1,79 @@
 import Link from "next/link";
-import { blogTopics } from "@/data/blogTopics";
 
-type Props = {
+import { getBlogLinks } from "@/lib/linking/getBlogLinks";
+
+type NeighborhoodArticlesProps = {
   city: string;
+  neighborhood?: string;
+  title?: string;
+  limit?: number;
 };
+
+function formatCityName(value: string) {
+  return value
+    .trim()
+    .split(/[\s-]+/)
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(" ");
+}
 
 export default function NeighborhoodArticles({
   city,
-}: Props) {
+  neighborhood,
+  title,
+  limit = 5,
+}: NeighborhoodArticlesProps) {
+  const articleLinks = getBlogLinks({
+    city,
+    neighborhood,
+    limit,
+  });
 
-  const cityName =
-    city.charAt(0).toUpperCase() + city.slice(1);
+  if (!articleLinks.length) {
+    return null;
+  }
+
+  const cityName = formatCityName(city);
 
   return (
+    <section className="mt-12 border border-white/10 bg-[#050505] p-6 text-white">
+      <div className="mb-6">
+        <p className="text-[10px] font-black uppercase tracking-[0.35em] text-[#00ff80]">
+          Related Content Signals
+        </p>
+        <h2 className="mt-2 text-2xl font-black uppercase italic tracking-tight">
+          {title ?? `Related ${cityName} Intelligence`}
+        </h2>
+      </div>
 
-    <section className="mt-12">
-
-      <h2 className="text-2xl mb-4">
-        Related {cityName} Articles
-      </h2>
-
-      <ul className="space-y-2">
-
-        {blogTopics.slice(0, 5).map((topic) => {
-
-          const topicName = topic
-            .split("-")
-            .map(
-              (w) => w.charAt(0).toUpperCase() + w.slice(1)
-            )
-            .join(" ");
-
-          return (
-
-            <li key={topic}>
-
-              <Link
-                href={`/blog/${city}/${topic}`}
-                className="underline hover:text-white"
-              >
-                {topicName} in {cityName}
-              </Link>
-
-            </li>
-          );
-
-        })}
-
-      </ul>
-
+      <div className="grid grid-cols-1 gap-px overflow-hidden border border-white/10 bg-white/10 md:grid-cols-2">
+        {articleLinks.map((article) => (
+          <Link
+            key={`${article.intent}-${article.href}-${article.title}`}
+            href={article.href}
+            className="group bg-black p-5 transition-colors hover:bg-white/[0.04]"
+          >
+            <span className="text-[9px] font-black uppercase tracking-[0.24em] text-[#00ff80]">
+              {article.intent}
+            </span>
+            <span className="mt-3 block text-sm font-black uppercase leading-6 tracking-tight text-white">
+              {article.title}
+            </span>
+            <span className="mt-3 line-clamp-3 block text-xs leading-6 text-white/52">
+              {article.description}
+            </span>
+            <span className="mt-4 block text-[9px] font-bold uppercase leading-5 tracking-[0.18em] text-white/30">
+              {article.neighborhood}, {article.city}
+            </span>
+            <span className="mt-3 block text-[9px] font-black uppercase tracking-[0.22em] text-[#00ff80]/70">
+              Open Brief
+            </span>
+          </Link>
+        ))}
+      </div>
     </section>
   );
 }
+
+// /Users/davidquinn/david-quinn-group/colorado-real-estate/components/NeighborhoodArticles.tsx

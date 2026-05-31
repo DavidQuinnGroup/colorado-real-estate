@@ -2,22 +2,110 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Custom price marker styling */
-.price-marker div {
-  white-space: nowrap;
-  font-family: system-ui;
+/* 🏗️ LUXURY CORE RESET */
+html, body {
+  height: 100%;
+  width: 100%;
+  background-color: #000;
+  color: #fff;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  font-family: 'Inter', sans-serif;
 }
 
-.cluster-marker {
-  background: #111;
-  color: white;
-  border-radius: 999px;
-  padding: 8px 12px;
-  font-weight: bold;
-  font-size: 12px;
+@layer utilities {
+  /* 💎 GLASS-MORPHISM: THE RITUAL PANEL */
+  .glass-panel {
+    background: rgba(5, 5, 5, 0.7);
+    backdrop-filter: blur(40px) saturate(150%);
+    -webkit-backdrop-filter: blur(40px) saturate(150%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  /* ⚡ NEON GLOWS: ELECTRIC CARIBBEAN */
+  .glow-green {
+    box-shadow: 0 0 25px rgba(0, 255, 128, 0.4);
+  }
+
+  .glow-text-green {
+    text-shadow: 0 0 15px rgba(0, 255, 128, 0.6);
+  }
+
+  /* 📏 ZERO-RADIUS LUXURY PILLS */
+  .luxury-pill {
+    border-radius: 0px;
+    text-transform: uppercase;
+    font-style: italic;
+    font-weight: 900;
+    letter-spacing: 0.1em;
+  }
+}
+
+/* 🗺️ THE SATURDAY NIGHT MAP ENGINE */
+.luxury-topo-tiles {
+  /* Inverts the standard map to deep black/neon and shifts hues to Caribbean Blue/Green */
+  filter: invert(100%) hue-rotate(198deg) brightness(1.1) contrast(1.2) saturate(3.5) !important;
 }
 
 .leaflet-container {
-  height: 100%;
-  width: 100%;
+  background: #030303 !important;
+  outline: none;
 }
+
+/* 💎 LUXURY MARKERS (PRICE TAGS) */
+.luxury-marker {
+  background: rgba(0, 0, 0, 0.95);
+  color: #fff;
+  padding: 8px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(12px);
+  font-weight: 900;
+  font-style: italic;
+  font-size: 11px;
+  box-shadow: 0 15px 45px rgba(0,0,0,0.8);
+  border-radius: 0px;
+  transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.luxury-marker:hover {
+  border-color: #00ff80;
+  color: #00ff80;
+  transform: translateY(-2px);
+}
+
+/* 🏢 THE FIXED NORTH STAR (DQG HQ) */
+.office-pulse {
+  width: 12px;
+  height: 12px;
+  background: #00ff80;
+  border-radius: 50%;
+  box-shadow: 0 0 0 rgba(0, 255, 128, 0.4);
+  animation: pulse-green 2s infinite;
+}
+
+@keyframes pulse-green {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 255, 128, 0.7); }
+  70% { transform: scale(1); box-shadow: 0 0 0 20px rgba(0, 255, 128, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 255, 128, 0); }
+}
+
+/* 🧪 SCROLLBAR DNA */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: #000;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #00ff80;
+}
+
+/* globals.css */

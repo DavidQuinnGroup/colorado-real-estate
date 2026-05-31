@@ -1,51 +1,39 @@
-"use client"
+'use client';
 
-import { MapContainer, TileLayer, Polygon, Popup } from "react-leaflet"
-import { neighborhoodPolygons } from "@/lib/neighborhoodPolygons"
-import Link from "next/link"
-import "leaflet/dist/leaflet.css"
+import Link from 'next/link';
+import { MapContainer, Polygon, Popup, TileLayer } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+
+import { neighborhoodPolygons } from '@/lib/neighborhoodPolygons';
+
+const BOULDER_CENTER: [number, number] = [40.017, -105.283];
 
 export default function NeighborhoodOverlayMap() {
-
   return (
+    <div className="h-[500px] w-full overflow-hidden">
+      <MapContainer center={BOULDER_CENTER} zoom={12} className="h-full w-full">
+        <TileLayer attribution="&copy; OpenStreetMap contributors" url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
-    <MapContainer
-  {...({
-    center: [40.017, -105.283],
-    zoom: 12,
-    style: { height: "500px", width: "100%" },
-  } as any)}
->
-
-      <TileLayer
-  {...({
-    attribution: "&copy; OpenStreetMap contributors",
-    url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-  } as any)}
-/>
-
-      {neighborhoodPolygons.map((n) => (
-
-        <Polygon
-          key={n.slug}
-          positions={n.coordinates}
-        >
-
-          <Popup>
-
-            <Link
-              href={`/neighborhood/${n.slug}`}
-            >
-              View {n.name} Neighborhood →
-            </Link>
-
-          </Popup>
-
-        </Polygon>
-
-      ))}
-
-    </MapContainer>
-
-  )
+        {neighborhoodPolygons.map((neighborhood) => (
+          <Polygon
+            key={neighborhood.slug}
+            positions={neighborhood.coordinates}
+            pathOptions={{
+              color: '#00ff80',
+              fillColor: '#00ff80',
+              fillOpacity: 0.12,
+              opacity: 0.65,
+              weight: 2,
+            }}
+          >
+            <Popup>
+              <Link href={`/market/boulder/${neighborhood.slug}`}>View {neighborhood.name} Neighborhood</Link>
+            </Popup>
+          </Polygon>
+        ))}
+      </MapContainer>
+    </div>
+  );
 }
+
+// components/NeighborhoodOverlayMap.tsx

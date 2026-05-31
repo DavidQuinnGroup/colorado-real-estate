@@ -1,313 +1,300 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
+import { useMemo, useState } from "react";
 import {
-  LineChart,
-  Line,
   Area,
+  AreaChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  CartesianGrid,
-  Legend
-} from "recharts"
+} from "recharts";
+import { BarChart3, ChevronRight, Info, ShieldAlert, Wallet } from "lucide-react";
 
-/* ----------------------------- */
-/* PRICE FORMATTER */
-/* ----------------------------- */
+type PortfolioGoal = "Retirement Income" | "College Fund" | "Steady Income";
 
-const formatPrice = (value: number) =>
-  `$${(value / 1000000).toFixed(2)}M`
+type MarketChartProps = {
+  price?: number;
+  downPayment?: number;
+  homeAge?: number;
+  monthlyRentalIncome?: number;
+  monthlyMortgageCost?: number;
+  monthlyManagementFee?: number;
+  monthlyCapexReserve?: number;
+};
 
-/* ----------------------------- */
-/* CITY COLORS */
-/* ----------------------------- */
+type ProjectionPoint = {
+  year: string;
+  equity: number;
+  valuation: number;
+};
 
-const cityColors: Record<string, string> = {
-  Boulder: "#60A5FA",
-  Louisville: "#34D399",
-  Lafayette: "#FBBF24",
-  Superior: "#F87171",
-  Broomfield: "#A78BFA",
-  Erie: "#FB923C",
-  Longmont: "#22D3EE"
+type CashFlowItem = {
+  name: string;
+  value: number;
+  color: string;
+};
+
+const portfolioGoals: PortfolioGoal[] = [
+  "Retirement Income",
+  "College Fund",
+  "Steady Income",
+];
+
+const appreciationRate = 0.052;
+
+function getPositiveNumber(value: number | undefined, fallback: number) {
+  return typeof value === "number" && Number.isFinite(value) && value > 0
+    ? value
+    : fallback;
 }
 
-/* ----------------------------- */
-/* SAMPLE DATA */
-/* ----------------------------- */
-
-const marketData: Record<string, any[]> = {
-  Boulder: [
-    { month: "Jan", price: 980000, inventory: 520, dom: 42 },
-    { month: "Feb", price: 1010000, inventory: 505, dom: 38 },
-    { month: "Mar", price: 1050000, inventory: 480, dom: 34 },
-    { month: "Apr", price: 1080000, inventory: 455, dom: 31 },
-    { month: "May", price: 1120000, inventory: 430, dom: 29 },
-    { month: "Jun", price: 1150000, inventory: 412, dom: 28 }
-  ],
-
-  Louisville: [
-    { month: "Jan", price: 820000, inventory: 180, dom: 35 },
-    { month: "Feb", price: 830000, inventory: 170, dom: 32 },
-    { month: "Mar", price: 845000, inventory: 160, dom: 29 },
-    { month: "Apr", price: 860000, inventory: 150, dom: 27 },
-    { month: "May", price: 875000, inventory: 145, dom: 26 },
-    { month: "Jun", price: 890000, inventory: 138, dom: 25 }
-  ],
-
-  Lafayette: [
-    { month: "Jan", price: 780000, inventory: 210, dom: 38 },
-    { month: "Feb", price: 790000, inventory: 200, dom: 36 },
-    { month: "Mar", price: 805000, inventory: 195, dom: 33 },
-    { month: "Apr", price: 820000, inventory: 185, dom: 31 },
-    { month: "May", price: 835000, inventory: 178, dom: 29 },
-    { month: "Jun", price: 850000, inventory: 170, dom: 27 }
-  ],
-
-  Superior: [
-    { month: "Jan", price: 920000, inventory: 90, dom: 34 },
-    { month: "Feb", price: 940000, inventory: 85, dom: 32 },
-    { month: "Mar", price: 960000, inventory: 80, dom: 29 },
-    { month: "Apr", price: 975000, inventory: 78, dom: 28 },
-    { month: "May", price: 990000, inventory: 75, dom: 26 },
-    { month: "Jun", price: 1005000, inventory: 70, dom: 24 }
-  ]
+function formatCurrency(value: number) {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 0,
+  }).format(value);
 }
 
-/* ----------------------------- */
-/* CHART COMPONENT */
-/* ----------------------------- */
+function formatCompactCurrency(value: number | string) {
+  const numericValue = Number(value);
 
-function Chart({
-  metric,
-  title,
-  selectedCities,
-  isDark
-}: {
-  metric: "price" | "inventory" | "dom"
-  title: string
-  selectedCities: string[]
-  isDark: boolean
-}) {
-
-  const gridColor = isDark ? "#374151" : "#e5e7eb"
-  const textColor = isDark ? "#d1d5db" : "#374151"
-  const tooltipBg = isDark ? "#0F172A" : "#ffffff"
-
-  const months = marketData["Boulder"].map((d) => d.month)
-
-  const combinedData = months.map((month, index) => {
-    const row: any = { month }
-
-    selectedCities.forEach((city) => {
-      if (marketData[city]) {
-        row[city] = marketData[city][index][metric]
-      }
-    })
-
-    return row
-  })
-
-  return (
-    <div className="border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 rounded-xl p-6 shadow-lg">
-
-      <h3 className="text-lg font-semibold mb-4">{title}</h3>
-
-      <div className="w-full h-[350px]">
-
-        <ResponsiveContainer width="100%" height="100%">
-
-          <LineChart data={combinedData} syncId="market">
-
-            <defs>
-              {selectedCities.map((city) => (
-                <linearGradient
-                  key={city}
-                  id={`gradient-${city}`}
-                  x1="0"
-                  y1="0"
-                  x2="0"
-                  y2="1"
-                >
-                  <stop offset="5%" stopColor={cityColors[city]} stopOpacity={0.35}/>
-                  <stop offset="95%" stopColor={cityColors[city]} stopOpacity={0}/>
-                </linearGradient>
-              ))}
-            </defs>
-
-            <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
-
-            <XAxis
-              dataKey="month"
-              stroke={textColor}
-              tickLine={false}
-              axisLine={false}
-            />
-
-            <YAxis
-              stroke={textColor}
-              tickLine={false}
-              axisLine={false}
-              tickFormatter={(value) =>
-                metric === "price" ? formatPrice(value) : value
-              }
-            />
-
-            <Tooltip
-              formatter={(value) =>
-  metric === "price" ? formatPrice(Number(value ?? 0)) : value
-}
-              cursor={{ stroke: textColor, strokeWidth: 1 }}
-              contentStyle={{
-                backgroundColor: tooltipBg,
-                border: `1px solid ${gridColor}`,
-                borderRadius: "10px",
-                color: textColor
-              }}
-            />
-
-            <Legend />
-
-            {selectedCities.map((city) =>
-              marketData[city] ? (
-                <Area
-                  key={`area-${city}`}
-                  type="monotone"
-                  dataKey={city}
-                  stroke="none"
-                  fill={`url(#gradient-${city})`}
-                />
-              ) : null
-            )}
-
-            {selectedCities.map((city) =>
-              marketData[city] ? (
-                <Line
-                  key={`line-${city}`}
-                  type="monotone"
-                  dataKey={city}
-                  stroke={cityColors[city]}
-                  strokeWidth={3}
-                  dot={false}
-                />
-              ) : null
-            )}
-
-          </LineChart>
-
-        </ResponsiveContainer>
-
-      </div>
-
-    </div>
-  )
-}
-
-/* ----------------------------- */
-/* MAIN COMPONENT */
-/* ----------------------------- */
-
-export default function MarketChart() {
-
-  const cities = [
-    "Boulder",
-    "Louisville",
-    "Lafayette",
-    "Superior",
-    "Broomfield",
-    "Erie",
-    "Longmont"
-  ]
-
-  const [selectedCities, setSelectedCities] =
-    useState<string[]>(["Boulder"])
-
-  const [isDark, setIsDark] = useState(false)
-
-  useEffect(() => {
-    setIsDark(
-      document.documentElement.classList.contains("dark")
-    )
-  }, [])
-
-  const toggleCity = (city: string) => {
-
-    if (selectedCities.includes(city)) {
-      setSelectedCities(
-        selectedCities.filter((c) => c !== city)
-      )
-    } else {
-
-      if (selectedCities.length >= 5) return
-
-      setSelectedCities([
-        ...selectedCities,
-        city
-      ])
-    }
-
+  if (!Number.isFinite(numericValue)) {
+    return "$0";
   }
 
-  return (
+  if (numericValue >= 1000000) {
+    return `$${(numericValue / 1000000).toFixed(1)}M`;
+  }
 
-    <div className="space-y-10">
-
-      <div className="flex flex-wrap justify-center gap-3">
-
-        {cities.map((city) => {
-
-          const active = selectedCities.includes(city)
-
-          return (
-
-            <button
-              key={city}
-              onClick={() => toggleCity(city)}
-              className={
-                "px-4 py-2 rounded-lg border text-sm transition " +
-                (active
-                  ? "bg-blue-600 border-blue-500 text-white"
-                  : "bg-gray-100 dark:bg-gray-900 border-gray-300 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-800")
-              }
-            >
-              {city}
-            </button>
-
-          )
-
-        })}
-
-      </div>
-
-      <Chart
-        metric="price"
-        title="Median Price Trend"
-        selectedCities={selectedCities}
-        isDark={isDark}
-      />
-
-      <div className="grid md:grid-cols-2 gap-8">
-
-        <Chart
-          metric="inventory"
-          title="Inventory Trend"
-          selectedCities={selectedCities}
-          isDark={isDark}
-        />
-
-        <Chart
-          metric="dom"
-          title="Days on Market Trend"
-          selectedCities={selectedCities}
-          isDark={isDark}
-        />
-
-      </div>
-
-    </div>
-
-  )
-
+  return `$${Math.round(numericValue / 1000)}k`;
 }
+
+export default function MarketChart({
+  price = 1200000,
+  downPayment = 240000,
+  homeAge = 12,
+  monthlyRentalIncome = 6500,
+  monthlyMortgageCost = 4200,
+  monthlyManagementFee = 650,
+  monthlyCapexReserve = 250,
+}: MarketChartProps) {
+  const [goal, setGoal] = useState<PortfolioGoal>("Retirement Income");
+
+  const normalizedPrice = getPositiveNumber(price, 1200000);
+  const normalizedDownPayment = Math.min(
+    getPositiveNumber(downPayment, 240000),
+    normalizedPrice,
+  );
+  const normalizedHomeAge = Math.max(0, Math.round(getPositiveNumber(homeAge, 12)));
+  const normalizedRentalIncome = getPositiveNumber(monthlyRentalIncome, 6500);
+  const normalizedMortgageCost = getPositiveNumber(monthlyMortgageCost, 4200);
+  const normalizedManagementFee = getPositiveNumber(monthlyManagementFee, 650);
+  const normalizedCapexReserve = getPositiveNumber(monthlyCapexReserve, 250);
+
+  const projectionData = useMemo<ProjectionPoint[]>(() => {
+    const loanAmount = normalizedPrice - normalizedDownPayment;
+
+    return Array.from({ length: 11 }, (_, index) => {
+      const year = index * 2;
+      const valuation = normalizedPrice * (1 + appreciationRate) ** year;
+      const principalPaydown = loanAmount * Math.min(year / 30, 1);
+
+      return {
+        year: `Year ${year}`,
+        equity: Math.round(normalizedDownPayment + principalPaydown + valuation - normalizedPrice),
+        valuation: Math.round(valuation),
+      };
+    });
+  }, [normalizedDownPayment, normalizedPrice]);
+
+  const cashFlowData = useMemo<CashFlowItem[]>(
+    () => [
+      { name: "Rental Income", value: normalizedRentalIncome, color: "#00ff80" },
+      { name: "PITI Mortgage", value: -normalizedMortgageCost, color: "#ff4444" },
+      { name: "Mgmt Fees (10%)", value: -normalizedManagementFee, color: "#ff4444" },
+      { name: "GC Reserve (CAPEX)", value: -normalizedCapexReserve, color: "#fbbf24" },
+    ],
+    [
+      normalizedCapexReserve,
+      normalizedManagementFee,
+      normalizedMortgageCost,
+      normalizedRentalIncome,
+    ],
+  );
+
+  const netCashFlow = cashFlowData.reduce((total, item) => total + item.value, 0);
+
+  return (
+    <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#050505] shadow-2xl">
+      <div className="flex flex-col gap-6 border-b border-white/5 bg-gradient-to-r from-emerald-900/10 to-transparent p-8 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+          <div className="mb-2 flex items-center gap-3">
+            <BarChart3 className="h-4 w-4 text-[#00ff80]" />
+            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-[#00ff80]">
+              Investment Intelligence
+            </span>
+          </div>
+          <h2 className="text-4xl font-black uppercase italic tracking-tighter text-white">
+            Portfolio Planner
+          </h2>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {portfolioGoals.map((portfolioGoal) => (
+            <button
+              key={portfolioGoal}
+              type="button"
+              onClick={() => setGoal(portfolioGoal)}
+              className={`border px-4 py-2 text-[9px] font-black uppercase tracking-widest transition-all ${
+                goal === portfolioGoal
+                  ? "border-[#00ff80] bg-[#00ff80] text-black"
+                  : "border-white/10 bg-white/5 text-white/40 hover:border-white/30 hover:text-white/70"
+              }`}
+            >
+              {portfolioGoal}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3">
+        <div className="border-white/5 p-8 lg:col-span-2 lg:border-r">
+          <h3 className="mb-8 flex items-center gap-2 text-[11px] font-black uppercase italic tracking-[0.3em] text-white/30">
+            20-Year Wealth Accumulation
+          </h3>
+          <div className="h-[350px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={projectionData}>
+                <defs>
+                  <linearGradient id="colorEquity" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#00ff80" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#00ff80" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid stroke="#1a1a1a" strokeDasharray="3 3" vertical={false} />
+                <XAxis
+                  dataKey="year"
+                  stroke="#444"
+                  fontSize={10}
+                  tickLine={false}
+                  axisLine={false}
+                />
+                <YAxis
+                  stroke="#444"
+                  fontSize={10}
+                  tickLine={false}
+                  axisLine={false}
+                  tickFormatter={formatCompactCurrency}
+                />
+                <Tooltip
+                  formatter={(value) => formatCurrency(Number(value))}
+                  contentStyle={{
+                    backgroundColor: "#000",
+                    border: "1px solid #333",
+                    borderRadius: "0px",
+                    fontSize: "12px",
+                  }}
+                  itemStyle={{ fontWeight: "bold" }}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="valuation"
+                  stroke="#333"
+                  fill="transparent"
+                  strokeDasharray="5 5"
+                  strokeWidth={1}
+                  name="Market Valuation"
+                />
+                <Area
+                  type="monotone"
+                  dataKey="equity"
+                  stroke="#00ff80"
+                  fill="url(#colorEquity)"
+                  fillOpacity={1}
+                  strokeWidth={3}
+                  name="Liquid Equity"
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        <div className="space-y-10 bg-black/40 p-8">
+          <section>
+            <h3 className="mb-6 flex items-center gap-2 text-[11px] font-black uppercase italic tracking-[0.3em] text-white/30">
+              <Wallet size={14} className="text-[#00ff80]" />
+              Monthly Cash Flow
+            </h3>
+            <div className="space-y-4">
+              {cashFlowData.map((item) => (
+                <div key={item.name} className="flex items-center justify-between text-xs">
+                  <span className="font-bold uppercase tracking-widest text-white/50">
+                    {item.name}
+                  </span>
+                  <span
+                    className="font-mono font-bold"
+                    style={{ color: item.value > 0 ? item.color : "#ffffff" }}
+                  >
+                    {item.value > 0 ? "+" : "-"}
+                    {formatCurrency(Math.abs(item.value)).replace("$", "$")}
+                  </span>
+                </div>
+              ))}
+              <div className="flex items-center justify-between border-t border-white/10 pt-4">
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white">
+                  Net Monthly Profit
+                </span>
+                <span
+                  className={`text-2xl font-black italic tracking-tighter ${
+                    netCashFlow >= 0 ? "text-[#00ff80]" : "text-red-400"
+                  }`}
+                >
+                  {formatCurrency(netCashFlow)}
+                </span>
+              </div>
+            </div>
+          </section>
+
+          <section className="rounded border border-amber-500/20 bg-amber-500/10 p-6">
+            <div className="mb-3 flex items-center gap-3 text-amber-500">
+              <ShieldAlert size={16} />
+              <span className="text-[10px] font-black uppercase italic tracking-widest">
+                Structural Reserve Warning
+              </span>
+            </div>
+            <p className="text-[10px] font-medium leading-relaxed text-amber-500/80">
+              Based on the {normalizedHomeAge}-year mechanical lifecycle, I have allocated a
+              <span className="font-bold text-amber-500">
+                {" "}
+                {formatCurrency(normalizedCapexReserve)} monthly CAPEX reserve
+              </span>
+              . This protects cash flow from sudden HVAC or roofing liabilities.
+            </p>
+          </section>
+
+          <div className="pt-6">
+            <button
+              type="button"
+              className="group flex w-full items-center justify-center gap-2 bg-white py-4 text-[10px] font-black uppercase italic tracking-[0.3em] text-black transition-colors hover:bg-[#00ff80]"
+            >
+              Unlock Private Investment Whispers
+              <ChevronRight size={14} className="transition-transform group-hover:translate-x-1" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-4 border-t border-white/5 bg-white/[0.02] px-8 py-4">
+        <Info size={14} className="shrink-0 text-[#00ff80]" />
+        <p className="text-[9px] font-bold uppercase italic tracking-[0.2em] text-white/40">
+          Strategic Note: This asset aligns with your 18-year {goal} goal. Break-even
+          analysis projects full carrying cost recovery by Year 3.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// components/MarketChart.tsx

@@ -1,41 +1,159 @@
-import Link from "next/link"
-import { neighborhoods } from "@/lib/neighborhoods"
+import Link from 'next/link';
+import type { ReactNode } from 'react';
+import { ArrowUpRight, Flame, ShieldCheck, Zap } from 'lucide-react';
 
-type Props = {
-  city: string
-  currentSlug: string
+import { getBlogLinks, type BlogLink } from '@/lib/linking/getBlogLinks';
+import { neighborhoods, type Neighborhood } from '@/lib/neighborhoods';
+
+type NearbyNeighborhoodsProps = {
+  city: string;
+  currentSlug: string;
+  limit?: number;
+  title?: string;
+};
+
+function normalizeCity(value: string) {
+  return value.trim().toLowerCase();
 }
 
-export default function NearbyNeighborhoods({ city, currentSlug }: Props) {
+function formatCityName(value: string) {
+  return value
+    .trim()
+    .split(/[\s-]+/)
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
+}
 
-  const nearby = neighborhoods
-    .filter((n) => n.city === city && n.slug !== currentSlug)
-    .slice(0, 5)
+function getNeighborhoodPath(neighborhood: Neighborhood) {
+  return `/market/${normalizeCity(neighborhood.city)}/${neighborhood.slug}`;
+}
 
-  if (nearby.length === 0) return null
+function getRelatedNeighborhoods(city: string, currentSlug: string, limit: number) {
+  const normalizedCity = normalizeCity(city);
+
+  return neighborhoods
+    .filter((neighborhood) => normalizeCity(neighborhood.city) === normalizedCity && neighborhood.slug !== currentSlug)
+    .sort((a, b) => b.resilienceScore - a.resilienceScore || b.avgEfficiencyScore - a.avgEfficiencyScore || a.name.localeCompare(b.name))
+    .slice(0, Math.max(1, limit));
+}
+
+function getFeaturedBrief(city: string, neighborhood: string): BlogLink | null {
+  return getBlogLinks({
+    city,
+    neighborhood,
+    limit: 1,
+  })[0] ?? null;
+}
+
+function getRiskTone(neighborhood: Neighborhood) {
+  if (neighborhood.fireRisk === 'High' || neighborhood.fireRisk === 'Extreme' || neighborhood.insuranceComplexity === 'Complex') {
+    return 'text-red-300';
+  }
+
+  if (neighborhood.fireRisk === 'Moderate' || neighborhood.insuranceComplexity === 'Elevated') {
+    return 'text-amber-200';
+  }
+
+  return 'text-[#00ff80]';
+}
+
+export default function NearbyNeighborhoods({ city, currentSlug, limit = 6, title }: NearbyNeighborhoodsProps) {
+  const nearbyNeighborhoods = getRelatedNeighborhoods(city, currentSlug, limit);
+
+  if (!nearbyNeighborhoods.length) {
+    return null;
+  }
+
+  const cityName = formatCityName(nearbyNeighborhoods[0]?.city ?? city);
 
   return (
-    <section className="mt-10">
+    <section className="mt-10 border border-white/10 bg-[#050505] p-6 text-white">
+      <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+        <div>
+          <p className="text-[10px] font-black uppercase tracking-[0.35em] text-[#00ff80]">Adjacent Authority Hubs</p>
+          <h2 className="mt-2 text-2xl font-black uppercase italic tracking-tight">
+            {title ?? `Nearby ${cityName} Neighborhoods`}
+          </h2>
+        </div>
+        <p className="max-w-sm text-[10px] font-bold uppercase leading-relaxed tracking-[0.18em] text-white/30">
+          Ranked by resilience, efficiency, construction context, and tactical inspection leverage.
+        </p>
+      </div>
 
-      <h2 className="text-2xl font-semibold mb-4">
-        Nearby {city.charAt(0).toUpperCase() + city.slice(1)} Neighborhoods
-      </h2>
+      <div className="grid grid-cols-1 gap-px overflow-hidden border border-white/10 bg-white/10 md:grid-cols-2 xl:grid-cols-3">
+        {nearbyNeighborhoods.map((neighborhood) => {
+          const brief = getFeaturedBrief(neighborhood.city, neighborhood.name);
 
-      <ul className="list-disc ml-6">
+          return (
+            <div key={neighborhood.slug} className="bg-black p-5">
+              <Link href={getNeighborhoodPath(neighborhood)} className="group block">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className="text-base font-black uppercase italic tracking-tight text-white">{neighborhood.name}</p>
+                    <p className="mt-2 text-[10px] font-bold uppercase tracking-[0.18em] text-white/30">{neighborhood.primaryAnchor}</p>
+                  </div>
+                  <ArrowUpRight className="h-4 w-4 shrink-0 text-[#00ff80] opacity-60 transition-opacity group-hover:opacity-100" />
+                </div>
 
-        {nearby.map((n) => (
-          <li key={n.slug}>
-            <Link
-              href={`/neighborhood/${n.slug}`}
-              className="text-blue-600 hover:underline"
-            >
-              {n.name}
-            </Link>
-          </li>
-        ))}
+                <div className="mt-5 grid grid-cols-3 gap-px bg-white/10">
+                  <Metric icon={<ShieldCheck size={13} />} label="Resilience" value={`${neighborhood.resilienceScore}`} />
+                  <Metric icon={<Zap size={13} />} label="Efficiency" value={`${neighborhood.avgEfficiencyScore}`} />
+                  <Metric icon={<Flame size={13} />} label="Risk" value={neighborhood.fireRisk} tone={getRiskTone(neighborhood)} />
+                </div>
 
-      </ul>
+                <p className="mt-5 line-clamp-2 text-[10px] italic leading-relaxed text-white/45">{neighborhood.tacticalLever}</p>
+                <p className="mt-4 border-t border-white/10 pt-4 text-[9px] font-bold uppercase tracking-[0.16em] text-white/25">
+                  {neighborhood.insuranceComplexity} insurance / {neighborhood.soilType} soil
+                </p>
+              </Link>
 
+              {brief ? (
+                <Link
+                  href={brief.href}
+                  className="group mt-4 block border-t border-white/10 pt-4 transition-colors hover:border-[#00ff80]/50"
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <p className="text-[9px] font-black uppercase tracking-[0.28em] text-[#00ff80]/80">
+                        REIE Brief
+                      </p>
+                      <p className="mt-2 text-xs font-black uppercase leading-5 tracking-[0.12em] text-white/68 transition-colors group-hover:text-white">
+                        {brief.title}
+                      </p>
+                    </div>
+                    <ArrowUpRight className="h-4 w-4 shrink-0 text-[#00ff80] opacity-60 transition-opacity group-hover:opacity-100" />
+                  </div>
+                </Link>
+              ) : null}
+            </div>
+          );
+        })}
+      </div>
     </section>
-  )
+  );
 }
+
+function Metric({
+  icon,
+  label,
+  value,
+  tone = 'text-white',
+}: {
+  icon: ReactNode;
+  label: string;
+  value: string;
+  tone?: string;
+}) {
+  return (
+    <div className="bg-[#050505] p-3">
+      <div className="mb-2 flex items-center gap-2 text-white/30">
+        {icon}
+        <span className="text-[8px] font-black uppercase tracking-[0.18em]">{label}</span>
+      </div>
+      <p className={`text-sm font-black italic uppercase ${tone}`}>{value}</p>
+    </div>
+  );
+}
+
+// /Users/davidquinn/david-quinn-group/colorado-real-estate/components/NearbyNeighborhoods.tsx

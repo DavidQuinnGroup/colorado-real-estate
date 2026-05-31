@@ -1,69 +1,96 @@
-import { prisma } from "@/lib/prisma"
+import { prisma } from '@/lib/prisma';
 
-const VARIANTS = ["A", "B"]
-const EPSILON = 0.2 // exploration rate
+type Variant = 'A' | 'B';
 
-export async function selectVariantBandit() {
+type SellerLeadRow = {
+  variant?: unknown;
+  repliedAt?: unknown;
+};
+
+type SellerLeadJsonResult = {
+  row: SellerLeadRow;
+};
+
+type VariantStats = Record<Variant, { total: number; replies: number }>;
+
+const VARIANTS: Variant[] = ['A', 'B'];
+const EPSILON = 0.2;
+
+export async function selectVariantBandit(): Promise<Variant> {
   try {
-    // 🎲 Exploration (random)
     if (Math.random() < EPSILON) {
-      return randomVariant()
+      return randomVariant();
     }
 
-    // 📊 Exploitation (best performer)
-    const stats = await getVariantStats()
+    const stats = await getVariantStats();
 
-    let bestVariant = VARIANTS[0]
-    let bestScore = -1
+    let bestVariant = VARIANTS[0];
+    let bestScore = -1;
 
-    for (const v of VARIANTS) {
-      const s = stats[v]
+    for (const variant of VARIANTS) {
+      const stat = stats[variant];
 
-      if (!s || s.total < 5) continue // avoid early bias
+      if (stat.total < 5) continue;
 
-      const replyRate = s.replies / s.total
+      const replyRate = stat.replies / stat.total;
 
       if (replyRate > bestScore) {
-        bestScore = replyRate
-        bestVariant = v
+        bestScore = replyRate;
+        bestVariant = variant;
       }
     }
 
-    return bestVariant
-  } catch (err) {
-    console.error("Bandit error:", err)
-    return randomVariant()
+    return bestVariant;
+  } catch (error) {
+    console.error('Bandit error:', error);
+    return randomVariant();
   }
 }
 
-function randomVariant() {
-  return VARIANTS[Math.floor(Math.random() * VARIANTS.length)]
+function randomVariant(): Variant {
+  return VARIANTS[Math.floor(Math.random() * VARIANTS.length)];
 }
 
-async function getVariantStats() {
-  const db = prisma as any
+function normalizeVariant(value: unknown): Variant | null {
+  return value === 'A' || value === 'B' ? value : null;
+}
 
-const leads = await db.sellerLead.findMany()
+function hasReply(value: unknown) {
+  return value !== undefined && value !== null && value !== '';
+}
 
-  const stats: Record<
-    string,
-    { total: number; replies: number }
-  > = {}
+function createEmptyStats(): VariantStats {
+  return {
+    A: { total: 0, replies: 0 },
+    B: { total: 0, replies: 0 },
+  };
+}
 
-  for (const v of VARIANTS) {
-    stats[v] = { total: 0, replies: 0 }
-  }
+async function getSellerLeadRows(): Promise<SellerLeadRow[]> {
+  const rows = await prisma.$queryRaw<SellerLeadJsonResult[]>`
+    SELECT to_jsonb("SellerLead") AS row
+    FROM "SellerLead"
+  `;
 
-  for (const l of leads) {
-    const v = l.variant
-    if (!v || !stats[v]) continue
+  return rows.map((result) => result.row);
+}
 
-    stats[v].total++
+async function getVariantStats(): Promise<VariantStats> {
+  const leads = await getSellerLeadRows();
+  const stats = createEmptyStats();
 
-    if (l.repliedAt) {
-      stats[v].replies++
+  for (const lead of leads) {
+    const variant = normalizeVariant(lead.variant);
+    if (!variant) continue;
+
+    stats[variant].total++;
+
+    if (hasReply(lead.repliedAt)) {
+      stats[variant].replies++;
     }
   }
 
-  return stats
+  return stats;
 }
+
+// /Users/davidquinn/david-quinn-group/colorado-real-estate/lib/ai/selectVariantBandit.ts

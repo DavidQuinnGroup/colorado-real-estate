@@ -1,0 +1,401 @@
+import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
+import { Hammer, ShieldCheck, Zap } from 'lucide-react';
+import type { CollectionCreateSchema } from 'typesense/lib/Typesense/Collections.js';
+
+import NearbyNeighborhoods from '@/components/NearbyNeighborhoods';
+import RelatedContent from '@/components/RelatedContent';
+import FAQSchema from '@/components/schema/FAQSchema';
+import { buildLinkGraph } from '@/lib/linking/buildLinkGraph';
+import { getResilienceAdvice, neighborhoods, type Neighborhood } from '@/lib/neighborhoods';
+import type { FAQItem } from '@/lib/schema/faqSchema';
+import { generateFAQs } from '@/lib/schema/generateFAQs';
+import { buildNeighborhoodSchema } from '@/lib/schema/neighborhoodSchema';
+import { client, formatSearchSchemaValidationError, LISTING_COLLECTION_NAME } from '@/lib/typesense/schema';
+
+type NeighborhoodPageParams = {
+  city: string;
+  slug: string;
+};
+
+type NeighborhoodPageProps = {
+  params: Promise<NeighborhoodPageParams>;
+};
+
+type SearchError = Error & {
+  httpStatus?: number;
+};
+
+type RetrievedTypesenseCollection = CollectionCreateSchema & {
+  fields?: NonNullable<CollectionCreateSchema['fields']>;
+};
+
+type InventoryState = {
+  count: number;
+  source: 'typesense' | 'fallback';
+};
+
+const SITE_URL = 'https://davidquinngroup.com';
+const TYPESENSE_REPAIR_COMMAND =
+  'Terminal 5: run npm run worker:build, then npm run typesense:init, then npm run typesense:reindex when Supabase is reachable.';
+
+let listingsCollectionValidationPromise: Promise<boolean> | null = null;
+let warnedAboutInventoryLookup = false;
+
+function normalizeRouteSegment(value: string) {
+  return value.trim().toLowerCase();
+}
+
+function findNeighborhood(city: string, slug: string) {
+  const normalizedCity = normalizeRouteSegment(city);
+  const normalizedSlug = normalizeRouteSegment(slug);
+
+  return neighborhoods.find(
+    (item) => normalizeRouteSegment(item.city) === normalizedCity && normalizeRouteSegment(item.slug) === normalizedSlug,
+  );
+}
+
+function getErrorMessage(error: unknown) {
+  if (error instanceof Error) return error.message;
+  if (typeof error === 'string') return error;
+  return 'Unknown Typesense error';
+}
+
+function getHttpStatus(error: unknown) {
+  if (typeof error !== 'object' || error === null) return undefined;
+
+  const candidate = error as { httpStatus?: unknown };
+  return typeof candidate.httpStatus === 'number' ? candidate.httpStatus : undefined;
+}
+
+function isMissingNeighborhoodFilterError(error: unknown) {
+  const message = getErrorMessage(error);
+  return message.includes('Could not find a filter field named `neighborhood`') || message.includes('Could not find a filter field named neighborhood');
+}
+
+function warnInventoryLookupOnce(message: string) {
+  if (warnedAboutInventoryLookup) return;
+
+  console.warn(message);
+  warnedAboutInventoryLookup = true;
+}
+
+function toTypesenseFilterValue(value: string) {
+  return `\`${value.replace(/`/g, '\\`')}\``;
+}
+
+function getFallbackInventoryCount(neighborhood: Neighborhood) {
+  return Math.max(1, Math.round(neighborhood.resilienceScore / 12));
+}
+
+function getCanonicalPath(neighborhood: Neighborhood) {
+  return `/market/${neighborhood.city.toLowerCase()}/${neighborhood.slug}`;
+}
+
+function getCanonicalUrl(neighborhood: Neighborhood) {
+  return `${SITE_URL}${getCanonicalPath(neighborhood)}`;
+}
+
+function getNeighborhoodDescription(neighborhood: Neighborhood) {
+  return `David Quinn Group's ${neighborhood.name}, ${neighborhood.city}, Colorado intelligence report combines local real estate inventory signals, construction forensics, resilience scoring, and lifestyle efficiency strategy.`;
+}
+
+function getNeighborhoodKeywords(neighborhood: Neighborhood) {
+  return [
+    `${neighborhood.name} real estate`,
+    `${neighborhood.name} ${neighborhood.city} homes`,
+    `${neighborhood.name} neighborhood guide`,
+    `${neighborhood.city} Colorado real estate`,
+    `${neighborhood.city} neighborhood intelligence`,
+    'Colorado real estate intelligence',
+    'construction forensics real estate',
+    'David Quinn Group',
+  ];
+}
+
+async function validateListingsCollectionSupportsNeighborhoodFacet() {
+  try {
+    const collection = (await client.collections(LISTING_COLLECTION_NAME).retrieve()) as RetrievedTypesenseCollection;
+    const schemaError = formatSearchSchemaValidationError(collection);
+
+    if (schemaError) {
+      warnInventoryLookupOnce(
+        `Neighborhood inventory lookup skipped because the local Typesense ${LISTING_COLLECTION_NAME} collection is stale: ${schemaError}. ${TYPESENSE_REPAIR_COMMAND}`,
+      );
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    const status = getHttpStatus(error);
+
+    if (status === 404) {
+      warnInventoryLookupOnce(
+        `Neighborhood inventory lookup skipped because the local Typesense ${LISTING_COLLECTION_NAME} collection does not exist. ${TYPESENSE_REPAIR_COMMAND}`,
+      );
+      return false;
+    }
+
+    warnInventoryLookupOnce(`Neighborhood inventory schema check failed${status ? ` (${status})` : ''}: ${getErrorMessage(error)}`);
+    return false;
+  }
+}
+
+async function ensureListingsCollectionSupportsNeighborhoodFacet() {
+  listingsCollectionValidationPromise ||= validateListingsCollectionSupportsNeighborhoodFacet();
+  return listingsCollectionValidationPromise;
+}
+
+export async function generateMetadata({ params }: NeighborhoodPageProps): Promise<Metadata> {
+  const { city, slug } = await params;
+  const neighborhood = findNeighborhood(city, slug);
+
+  if (!neighborhood) {
+    return {
+      title: 'Neighborhood Not Found',
+    };
+  }
+
+  const canonicalUrl = getCanonicalUrl(neighborhood);
+  const description = getNeighborhoodDescription(neighborhood);
+
+  return {
+    title: `${neighborhood.name}, ${neighborhood.city} CO Real Estate Intelligence | David Quinn Group`,
+    description,
+    keywords: getNeighborhoodKeywords(neighborhood),
+    alternates: {
+      canonical: canonicalUrl,
+    },
+    openGraph: {
+      title: `${neighborhood.name}, ${neighborhood.city} Real Estate Intelligence | David Quinn Group`,
+      description,
+      url: canonicalUrl,
+      siteName: 'David Quinn Group',
+      locale: 'en_US',
+      type: 'website',
+    },
+  };
+}
+
+export function generateStaticParams() {
+  return neighborhoods.map((neighborhood) => ({
+    city: neighborhood.city.toLowerCase(),
+    slug: neighborhood.slug,
+  }));
+}
+
+async function getNeighborhoodInventoryState(neighborhood: Neighborhood): Promise<InventoryState> {
+  const canSearchNeighborhoodFacet = await ensureListingsCollectionSupportsNeighborhoodFacet();
+
+  if (!canSearchNeighborhoodFacet) {
+    return {
+      count: getFallbackInventoryCount(neighborhood),
+      source: 'fallback',
+    };
+  }
+
+  try {
+    const searchResults = await client.collections(LISTING_COLLECTION_NAME).documents().search({
+      q: '*',
+      filter_by: `neighborhood:=${toTypesenseFilterValue(neighborhood.name)}`,
+      per_page: 0,
+    });
+
+    return {
+      count: searchResults.found || 0,
+      source: 'typesense',
+    };
+  } catch (error) {
+    if (isMissingNeighborhoodFilterError(error)) {
+      warnInventoryLookupOnce(
+        `Neighborhood inventory lookup skipped because the local Typesense ${LISTING_COLLECTION_NAME} collection is missing the faceted neighborhood field. ${TYPESENSE_REPAIR_COMMAND}`,
+      );
+
+      return {
+        count: getFallbackInventoryCount(neighborhood),
+        source: 'fallback',
+      };
+    }
+
+    const typedError = error as SearchError;
+    const status = typedError.httpStatus ? ` (${typedError.httpStatus})` : '';
+    console.warn(`Neighborhood inventory lookup failed${status}: ${getErrorMessage(error)}`);
+
+    return {
+      count: getFallbackInventoryCount(neighborhood),
+      source: 'fallback',
+    };
+  }
+}
+
+function getInventorySourceLabel(source: InventoryState['source']) {
+  return source === 'typesense' ? 'Live Indexed' : 'Model Signal';
+}
+
+function getJsonLd(neighborhood: Neighborhood) {
+  return buildNeighborhoodSchema({
+    name: neighborhood.name,
+    city: neighborhood.city,
+    slug: neighborhood.slug,
+    description: getNeighborhoodDescription(neighborhood),
+    url: getCanonicalUrl(neighborhood),
+    primaryAnchor: neighborhood.primaryAnchor,
+    resilienceScore: neighborhood.resilienceScore,
+    fireRisk: neighborhood.fireRisk,
+    insuranceComplexity: neighborhood.insuranceComplexity,
+    altitude: neighborhood.altitude,
+    soilType: neighborhood.soilType,
+  });
+}
+
+function getNeighborhoodFaqs(neighborhood: Neighborhood): FAQItem[] {
+  const cityFaqs = generateFAQs(neighborhood.city, 'neighborhood-real-estate-intelligence');
+
+  return [
+    {
+      question: `What does David Quinn Group evaluate in ${neighborhood.name}, ${neighborhood.city}?`,
+      answer: `David Quinn Group evaluates ${neighborhood.name} through the Real Estate Intelligence Engine, combining inventory state, construction diligence, resilience score, fire risk, insurance complexity, soil profile, altitude, lifestyle efficiency, and negotiation leverage.`,
+    },
+    {
+      question: `Why does construction forensics matter in ${neighborhood.name}?`,
+      answer: `Construction forensics matters in ${neighborhood.name} because visible finishes do not always explain long-term value. David Quinn Group reviews condition signals, building envelope exposure, drainage, mechanical systems, and future maintenance risk before treating comparable sales as the full answer.`,
+    },
+    {
+      question: `How does the REIE resilience score affect ${neighborhood.name} strategy?`,
+      answer: `${neighborhood.name} currently carries a resilience score of ${neighborhood.resilienceScore}/100. That score helps frame buyer diligence, seller positioning, insurance discussion, and which property risks deserve deeper review before negotiation.`,
+    },
+    {
+      question: `What lifestyle signal defines ${neighborhood.name}?`,
+      answer: `${neighborhood.name} is anchored by ${neighborhood.primaryAnchor}. David Quinn Group evaluates that lifestyle anchor alongside commute efficiency, neighborhood character, inventory depth, and the tactical lever: ${neighborhood.tacticalLever}`,
+    },
+    ...cityFaqs.slice(4, 6),
+  ];
+}
+
+export default async function NeighborhoodIntelligencePage({ params }: NeighborhoodPageProps) {
+  const { city, slug } = await params;
+  const neighborhood = findNeighborhood(city, slug);
+
+  if (!neighborhood) return notFound();
+
+  const inventoryState = await getNeighborhoodInventoryState(neighborhood);
+  const resilienceAdvice = getResilienceAdvice(neighborhood);
+  const relatedLinks = buildLinkGraph(neighborhood.slug);
+  const canonicalUrl = getCanonicalUrl(neighborhood);
+  const neighborhoodFaqs = getNeighborhoodFaqs(neighborhood);
+
+  return (
+    <main className="min-h-screen bg-[#050505] font-inter text-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(getJsonLd(neighborhood)),
+        }}
+      />
+      <FAQSchema faqs={neighborhoodFaqs} pageUrl={canonicalUrl} />
+
+      <section className="relative flex min-h-[520px] items-end border-b border-white/5 px-6 py-12 md:h-[60vh] md:px-12">
+        <div className="absolute inset-0 z-10 bg-gradient-to-t from-[#050505] via-transparent to-transparent" />
+        <div className="relative z-20 w-full max-w-7xl">
+          <div className="mb-6 flex items-center gap-4">
+            <div className="h-3 w-3 rounded-full bg-[#00ff80] shadow-[0_0_22px_rgba(0,255,128,0.65)]" />
+            <span className="text-[12px] font-black uppercase italic tracking-[0.6em] text-[#00ff80]">Market Intelligence Hub</span>
+          </div>
+          <h1 className="mb-8 text-6xl font-black uppercase italic leading-[0.82] tracking-tight md:text-[12vw]">{neighborhood.name}</h1>
+          <div className="grid gap-8 border-t border-white/10 pt-8 md:grid-cols-3">
+            <div className="flex flex-col">
+              <span className="mb-2 text-[10px] font-black uppercase tracking-widest text-white/30">Inventory State</span>
+              <span className="text-3xl font-black italic md:text-4xl">{inventoryState.count} ACTIVE</span>
+              <span className="mt-2 text-[9px] font-black uppercase tracking-[0.25em] text-[#00ff80]">
+                {getInventorySourceLabel(inventoryState.source)}
+              </span>
+            </div>
+            <div className="flex flex-col border-white/10 md:border-l md:pl-12">
+              <span className="mb-2 text-[10px] font-black uppercase tracking-widest text-white/30">City Authority</span>
+              <span className="text-3xl font-black uppercase italic md:text-4xl">{neighborhood.city}</span>
+            </div>
+            <div className="flex flex-col border-white/10 md:border-l md:pl-12">
+              <span className="mb-2 text-[10px] font-black uppercase tracking-widest text-white/30">Resilience Score</span>
+              <span className="text-3xl font-black uppercase italic md:text-4xl">{neighborhood.resilienceScore}/100</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="mx-auto grid max-w-7xl gap-8 px-6 py-12 md:grid-cols-12 md:p-12">
+        <div className="border-l-4 border-l-[#00ff80] bg-white/[0.03] p-8 md:col-span-8 md:p-12">
+          <div className="mb-8 flex items-center gap-4">
+            <Hammer className="h-6 w-6 text-[#00ff80]" />
+            <h2 className="text-2xl font-black uppercase italic tracking-tight">GC Intelligence: Construction DNA</h2>
+          </div>
+          <p className="mb-8 text-xl font-medium leading-relaxed text-white/70">{resilienceAdvice.analysis}</p>
+          <div className="border border-white/10 bg-white/5 p-6 text-sm italic text-[#00ff80]">
+            &quot;Strategy: In {neighborhood.name}, we use construction diligence to separate visible finish quality from durable value,
+            insurance exposure, and negotiation leverage.&quot; - David Quinn
+          </div>
+        </div>
+
+        <div className="flex flex-col justify-between bg-white/[0.03] p-8 md:col-span-4 md:p-12">
+          <div>
+            <div className="mb-4 flex items-center gap-3">
+              <Zap className="h-4 w-4 fill-[#00ff80] text-[#00ff80]" />
+              <span className="text-[10px] font-black uppercase tracking-widest">Efficiency Signal</span>
+            </div>
+            <div className="text-7xl font-black italic tracking-tighter text-white md:text-8xl">{neighborhood.avgEfficiencyScore}</div>
+            <p className="mt-4 text-xs font-bold uppercase tracking-widest text-white/40">Weekly Efficiency Rating</p>
+          </div>
+          <p className="mt-8 text-[11px] italic leading-relaxed text-white/60">
+            {neighborhood.lifestyleVibe} The tactical lever is direct: {neighborhood.tacticalLever}
+          </p>
+        </div>
+
+        <div className="grid gap-4 md:col-span-12 md:grid-cols-3">
+          <div className="border border-white/10 bg-white/[0.02] p-6">
+            <ShieldCheck className="mb-4 h-5 w-5 text-[#00ff80]" />
+            <p className="mb-2 text-[10px] font-black uppercase tracking-[0.3em] text-white/30">Altitude</p>
+            <p className="text-lg font-black italic">{neighborhood.altitude.toLocaleString()} FT</p>
+          </div>
+          <div className="border border-white/10 bg-white/[0.02] p-6">
+            <p className="mb-2 text-[10px] font-black uppercase tracking-[0.3em] text-white/30">Soil Profile</p>
+            <p className="text-lg font-black italic">{neighborhood.soilType}</p>
+          </div>
+          <div className="border border-white/10 bg-white/[0.02] p-6">
+            <p className="mb-2 text-[10px] font-black uppercase tracking-[0.3em] text-white/30">Insurance</p>
+            <p className="text-lg font-black italic">{neighborhood.insuranceComplexity}</p>
+          </div>
+        </div>
+
+        <div className="mt-12 md:col-span-12">
+          <h3 className="mb-8 text-[11px] font-black uppercase italic tracking-[0.4em] text-white/20">Related Hubs</h3>
+          <RelatedContent
+            nodeId={neighborhood.slug}
+            title={`${neighborhood.name} Authority Paths`}
+            items={relatedLinks}
+          />
+          <section className="my-12 border-y border-white/10 py-12">
+            <div className="mb-8 max-w-3xl">
+              <p className="mb-3 text-[10px] font-black uppercase tracking-[0.35em] text-[#00ff80]">REIE FAQ Layer</p>
+              <h2 className="text-2xl font-black italic uppercase tracking-tight text-white">
+                {neighborhood.name} Intelligence Questions
+              </h2>
+            </div>
+
+            <div className="grid gap-px overflow-hidden border border-white/10 bg-white/10 md:grid-cols-2">
+              {neighborhoodFaqs.slice(0, 4).map((faq) => (
+                <article key={faq.question} className="bg-[#050505] p-6">
+                  <h3 className="text-sm font-black uppercase leading-6 tracking-[0.12em] text-white">
+                    {faq.question}
+                  </h3>
+                  <p className="mt-4 text-sm leading-7 text-white/55">{faq.answer}</p>
+                </article>
+              ))}
+            </div>
+          </section>
+          <NearbyNeighborhoods city={neighborhood.city} currentSlug={neighborhood.slug} />
+        </div>
+      </section>
+    </main>
+  );
+}
+
+// /Users/davidquinn/david-quinn-group/colorado-real-estate/app/market/[city]/[slug]/page.tsx

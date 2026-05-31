@@ -1,75 +1,105 @@
-import { prisma } from "@/lib/prisma"
+import { prisma } from '@/lib/prisma';
 
-const VARIANTS = ["A", "B"]
-const EPSILON = 0.2
+type Variant = 'A' | 'B';
 
-export async function selectVariantContextual(contextKey: string) {
+type SellerLeadRow = {
+  contextKey?: unknown;
+  repliedAt?: unknown;
+  status?: unknown;
+  variant?: unknown;
+};
+
+type SellerLeadJsonResult = {
+  row: SellerLeadRow;
+};
+
+type ContextStats = Record<Variant, { total: number; replies: number; wins: number }>;
+
+const VARIANTS: Variant[] = ['A', 'B'];
+const EPSILON = 0.2;
+
+export async function selectVariantContextual(contextKey: string): Promise<Variant> {
   try {
-    // 🎲 Exploration
     if (Math.random() < EPSILON) {
-      return randomVariant()
+      return randomVariant();
     }
 
-    const stats = await getContextStats(contextKey)
+    const stats = await getContextStats(contextKey);
 
-    let bestVariant = VARIANTS[0]
-    let bestScore = -1
+    let bestVariant = VARIANTS[0];
+    let bestScore = -1;
 
-    for (const v of VARIANTS) {
-      const s = stats[v]
+    for (const variant of VARIANTS) {
+      const stat = stats[variant];
 
-      if (!s || s.total < 3) continue
+      if (stat.total < 3) continue;
 
-      // 🧠 MULTI-SIGNAL SCORE
-      const replyRate = s.replies / s.total
-      const winRate = s.wins / s.total
-
-      const score = replyRate * 0.7 + winRate * 0.3
+      const replyRate = stat.replies / stat.total;
+      const winRate = stat.wins / stat.total;
+      const score = replyRate * 0.7 + winRate * 0.3;
 
       if (score > bestScore) {
-        bestScore = score
-        bestVariant = v
+        bestScore = score;
+        bestVariant = variant;
       }
     }
 
-    return bestVariant
-  } catch (err) {
-    console.error("Contextual bandit error:", err)
-    return randomVariant()
+    return bestVariant;
+  } catch (error) {
+    console.error('Contextual bandit error:', error);
+    return randomVariant();
   }
 }
 
-function randomVariant() {
-  return VARIANTS[Math.floor(Math.random() * VARIANTS.length)]
+function randomVariant(): Variant {
+  return VARIANTS[Math.floor(Math.random() * VARIANTS.length)];
 }
 
-async function getContextStats(contextKey: string) {
-  const db = prisma as any
-
-const leads = await db.sellerLead.findMany({
-    where: {
-      contextKey,
-    },
-  })
-
-  const stats: Record<
-    string,
-    { total: number; replies: number; wins: number }
-  > = {}
-
-  for (const v of VARIANTS) {
-    stats[v] = { total: 0, replies: 0, wins: 0 }
-  }
-
-  for (const l of leads) {
-    const v = l.variant
-    if (!v || !stats[v]) continue
-
-    stats[v].total++
-
-    if (l.repliedAt) stats[v].replies++
-    if (l.status === "won") stats[v].wins++
-  }
-
-  return stats
+function normalizeVariant(value: unknown): Variant | null {
+  return value === 'A' || value === 'B' ? value : null;
 }
+
+function hasReply(value: unknown) {
+  return value !== undefined && value !== null && value !== '';
+}
+
+function isWon(value: unknown) {
+  return typeof value === 'string' && value.toLowerCase() === 'won';
+}
+
+function createEmptyStats(): ContextStats {
+  return {
+    A: { total: 0, replies: 0, wins: 0 },
+    B: { total: 0, replies: 0, wins: 0 },
+  };
+}
+
+async function getSellerLeadRows(): Promise<SellerLeadRow[]> {
+  const rows = await prisma.$queryRaw<SellerLeadJsonResult[]>`
+    SELECT to_jsonb("SellerLead") AS row
+    FROM "SellerLead"
+  `;
+
+  return rows.map((result) => result.row);
+}
+
+async function getContextStats(contextKey: string): Promise<ContextStats> {
+  const leads = await getSellerLeadRows();
+  const stats = createEmptyStats();
+
+  for (const lead of leads) {
+    if (lead.contextKey !== contextKey) continue;
+
+    const variant = normalizeVariant(lead.variant);
+    if (!variant) continue;
+
+    stats[variant].total++;
+
+    if (hasReply(lead.repliedAt)) stats[variant].replies++;
+    if (isWon(lead.status)) stats[variant].wins++;
+  }
+
+  return stats;
+}
+
+// /Users/davidquinn/david-quinn-group/colorado-real-estate/lib/ai/selectVariantContextual.ts

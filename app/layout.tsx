@@ -1,67 +1,36 @@
-import Navbar from "@/components/Navbar"
-import "./globals.css"
-import { Inter, Playfair_Display } from "next/font/google"
-import Footer from "@/components/Footer"
-import RealEstateAgentSchema from "@/components/schema/RealEstateAgentSchema"
-// import "leaflet/dist/leaflet.css"
-// import "react-leaflet-cluster/dist/assets/MarkerCluster.css"
-// import "react-leaflet-cluster/dist/assets/MarkerCluster.Default.css"
+import type { ReactNode } from 'react';
+import './globals.css';
+import PlatformFooter from '@/components/Footer';
+import { Lexend } from 'next/font/google';
+import { realEstateAgentSchema } from '@/lib/schema/realEstateAgentSchema';
 
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-})
+const lexend = Lexend({
+  subsets: ['latin'],
+  variable: '--font-lexend',
+});
 
-const playfair = Playfair_Display({
-  subsets: ["latin"],
-  variable: "--font-playfair",
-  display: "swap",
-})
+type RootLayoutProps = {
+  children: ReactNode;
+};
 
 export const metadata = {
-  title: {
-    default: "David Quinn Group | Boulder Luxury Real Estate",
-    template: "%s | David Quinn Group",
-  },
+  title: 'David Quinn Group | Real Estate Intelligence Engine',
   description:
-    "Luxury real estate advisory in Boulder, Colorado. Strategic representation backed by three decades of construction expertise.",
-  keywords: [
-    "Boulder real estate",
-    "Boulder luxury homes",
-    "Boulder real estate agent",
-    "Boulder County homes",
-    "Louisville Colorado real estate",
-    "Lafayette Colorado homes",
-    "Superior Colorado real estate",
-  ],
-  openGraph: {
-    title: "David Quinn Group | Boulder Luxury Real Estate",
-    description:
-      "Luxury real estate advisory in Boulder, Colorado with deep construction expertise.",
-    url: "https://davidquinngroup.com",
-    siteName: "David Quinn Group",
-    locale: "en_US",
-    type: "website",
-  },
-}
+    "Advanced structural forensics, efficiency auditing, and strategic real estate consultation for Colorado's Front Range.",
+};
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <html lang="en" className={`${inter.variable} ${playfair.variable}`}>
-      <body className="bg-[#111111] text-[#F5F3EE] font-sans antialiased">
-        <Navbar />
-
-<RealEstateAgentSchema />
-
-        <main>{children}</main>
-
-        <Footer />
+    <html lang="en" className={`${lexend.variable} h-full w-full bg-[#050505]`}>
+      <head>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(realEstateAgentSchema) }} />
+      </head>
+      <body className="flex h-full w-full flex-col font-sans antialiased">
+        <main className="flex-grow">{children}</main>
+        <PlatformFooter />
       </body>
     </html>
-  )
+  );
 }
+
+// /Users/davidquinn/david-quinn-group/colorado-real-estate/app/layout.tsx

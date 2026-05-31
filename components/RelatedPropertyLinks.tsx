@@ -1,77 +1,331 @@
-import Link from "next/link"
-import { propertySearchTypes } from "@/lib/propertySearchTypes"
+"use client";
 
-const nearbyCities = [
-  "boulder",
-  "louisville",
-  "lafayette",
-  "superior",
-  "erie",
-  "longmont"
-]
+import Link from "next/link";
+import type { ReactNode } from "react";
+import { useState } from "react";
+import {
+  ArrowRightLeft,
+  Calendar,
+  ChevronRight,
+  ClipboardCheck,
+  Hammer,
+  ShieldAlert,
+} from "lucide-react";
+
+import type { PropertyAuthorityLink } from "@/lib/linking/getPropertyLinks";
+
+type StrategyTab = "prep" | "timeline";
+
+type RelatedPropertyLinksProps = {
+  city: string;
+  authorityLinks?: PropertyAuthorityLink[];
+  neighborhood?: string | null;
+  price?: number;
+};
+
+type PrepScenario = {
+  label: string;
+  cost: number;
+  impact: number;
+  velocity: string;
+  description: string;
+};
+
+type TimelineStep = {
+  label: string;
+  date: string;
+  active?: boolean;
+  highlight?: boolean;
+};
+
+type TimelinePointProps = TimelineStep;
+
+const prepScenarios: PrepScenario[] = [
+  {
+    label: "As-Is Market Exit",
+    cost: 0,
+    impact: -10000,
+    velocity: "Slow",
+    description: "Typical price reduction for dated presentation and uncertain buyer confidence.",
+  },
+  {
+    label: "DQG Refresh",
+    cost: 5000,
+    impact: 15000,
+    velocity: "Accelerated",
+    description: "Paint, carpet, and high-friction fixes that improve perceived move-in readiness.",
+  },
+  {
+    label: "Designer-Grade Prep",
+    cost: 15000,
+    impact: 45000,
+    velocity: "Instant",
+    description: "Staging and finish-profile updates aimed at maximum equity capture.",
+  },
+];
+
+const timelineSteps: TimelineStep[] = [
+  { label: "Listing Prep", date: "Day 1-14", active: true },
+  { label: "Market Debut", date: "Day 15", active: true },
+  { label: "Contingent Offer", date: "Day 22" },
+  { label: "Due Diligence", date: "Day 35" },
+  { label: "DQG Simultaneous Close", date: "Day 45", highlight: true },
+];
+
+const currencyFormatter = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+  maximumFractionDigits: 0,
+});
+
+function formatCurrency(value: number) {
+  return currencyFormatter.format(value);
+}
+
+function getPriceBasis(price: number | undefined) {
+  return typeof price === "number" && Number.isFinite(price) && price > 0 ? price : 1200000;
+}
 
 export default function RelatedPropertyLinks({
+  authorityLinks = [],
   city,
-  type
-}: {
-  city: string
-  type: string
-}) {
-
-  const relatedTypes = propertySearchTypes.filter(
-    (t) => t.slug !== type
-  ).slice(0, 4)
-
-  const nearby = nearbyCities.filter((c) => c !== city)
+  neighborhood,
+  price = 1200000,
+}: RelatedPropertyLinksProps) {
+  const [activeTab, setActiveTab] = useState<StrategyTab>("prep");
+  const priceBasis = getPriceBasis(price);
+  const primaryHref = authorityLinks[0]?.href ?? `/search?city=${encodeURIComponent(city)}`;
+  const authorityLabel = neighborhood ? `${city} / ${neighborhood}` : city;
 
   return (
-    <section className="mt-16">
-
-      <h2 className="text-2xl font-semibold mb-4">
-        Related Home Searches
-      </h2>
-
-      <div className="grid md:grid-cols-2 gap-6">
-
-        <div>
-          <h3 className="font-semibold mb-2">More in {city}</h3>
-
-          <ul className="space-y-2">
-            {relatedTypes.map((t) => (
-              <li key={t.slug}>
-                <Link
-                  href={`/homes/${city}/${t.slug}`}
-                  className="text-blue-600 hover:underline"
-                >
-                  {t.title.replace("CITY", city)}
-                </Link>
-              </li>
-            ))}
-          </ul>
+    <section className="mt-24 overflow-hidden border border-white/10 bg-[#050505] text-white shadow-2xl">
+      <div className="border-b border-white/5 bg-gradient-to-r from-cyan-500/10 to-transparent p-8">
+        <div className="mb-2 flex items-center gap-3">
+          <ArrowRightLeft className="h-4 w-4 text-cyan-300" />
+          <span className="text-[10px] font-black uppercase tracking-[0.4em] text-cyan-300">
+            Module 08: Strategy Suite
+          </span>
         </div>
-
-        <div>
-          <h3 className="font-semibold mb-2">
-            Nearby Cities
-          </h3>
-
-          <ul className="space-y-2">
-            {nearby.slice(0, 4).map((c) => (
-              <li key={c}>
-                <Link
-                  href={`/homes/${c}/${type}`}
-                  className="text-blue-600 hover:underline"
-                >
-                  {type.replace("-", " ")} in{" "}
-                  {c.charAt(0).toUpperCase() + c.slice(1)}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-
+        <h2 className="text-4xl font-black uppercase italic tracking-tighter text-white">
+          Tactical Transition Logic
+        </h2>
+        <p className="mt-2 text-xs uppercase tracking-widest text-white/40">
+          Unified logistical operations for {authorityLabel} moves
+        </p>
       </div>
 
+      <div className="flex border-b border-white/5 bg-white/[0.02]">
+        <StrategyButton
+          icon={<Hammer size={18} />}
+          isActive={activeTab === "prep"}
+          label="Listing Prep ROI"
+          onClick={() => setActiveTab("prep")}
+        />
+        <StrategyButton
+          icon={<Calendar size={18} />}
+          isActive={activeTab === "timeline"}
+          label="Critical Path Timeline"
+          onClick={() => setActiveTab("timeline")}
+        />
+      </div>
+
+      <div className="p-8">
+        {activeTab === "prep" ? (
+          <div className="animate-in fade-in duration-700">
+            <h3 className="mb-8 text-[11px] font-black uppercase italic tracking-[0.3em] text-cyan-300">
+              The This-vs-That ROI Engine
+            </h3>
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+              {prepScenarios.map((scenario) => {
+                const liftPercent = (scenario.impact / priceBasis) * 100;
+
+                return (
+                  <div
+                    key={scenario.label}
+                    className="group border border-white/5 bg-white/[0.03] p-6 transition-all hover:border-cyan-300/50"
+                  >
+                    <div className="mb-4 text-[10px] font-black uppercase tracking-widest text-white/30">
+                      {scenario.label}
+                    </div>
+                    <div className="mb-1 text-2xl font-black italic tracking-tighter text-white">
+                      {formatCurrency(scenario.cost)}
+                    </div>
+                    <div className="mb-6 text-[9px] font-bold uppercase text-white/40">
+                      Investment Cost
+                    </div>
+
+                    <div className="space-y-4 border-t border-white/5 pt-4">
+                      <MetricRow
+                        label="Equity Lift"
+                        value={`${scenario.impact > 0 ? "+" : ""}${formatCurrency(scenario.impact)}`}
+                        isPositive={scenario.impact > 0}
+                      />
+                      <MetricRow
+                        label="Price Basis"
+                        value={`${liftPercent > 0 ? "+" : ""}${liftPercent.toFixed(1)}%`}
+                        isPositive={liftPercent > 0}
+                      />
+                      <MetricRow label="Velocity" value={scenario.velocity} />
+                    </div>
+                    <p className="mt-6 text-[9px] italic leading-relaxed text-white/40">
+                      {scenario.description}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        ) : (
+          <div className="animate-in fade-in duration-700">
+            <h3 className="mb-8 text-[11px] font-black uppercase italic tracking-[0.3em] text-cyan-300">
+              Sell-to-Buy Contingency Path
+            </h3>
+            <div className="relative overflow-x-auto pb-8 pt-12">
+              <div className="absolute left-0 top-1/2 h-px min-w-full bg-white/10" />
+              <div className="relative z-10 flex min-w-[720px] justify-between">
+                {timelineSteps.map((step) => (
+                  <TimelinePoint key={step.label} {...step} />
+                ))}
+              </div>
+            </div>
+            <div className="mt-12 flex items-start gap-4 border border-red-500/20 bg-red-500/10 p-6">
+              <ShieldAlert className="shrink-0 text-red-500" size={18} />
+              <div>
+                <p className="mb-1 text-[10px] font-black uppercase tracking-widest text-red-500">
+                  Contingency Alert
+                </p>
+                <p className="text-[10px] italic leading-relaxed text-red-500/80">
+                  Dual-mortgage risk identified for 7 days between closing dates.
+                  Recommend bridge-financing review or a post-closing occupancy agreement
+                  to protect liquidity.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className="flex flex-col items-center justify-between gap-6 border-t border-white/5 bg-black/40 p-8 md:flex-row">
+        <div className="w-full min-w-0">
+          <div className="mb-4 flex items-center gap-4">
+            <ClipboardCheck className="text-cyan-300/50" size={16} />
+            <span className="text-[9px] font-bold uppercase italic tracking-[0.3em] text-white/20">
+              Authorized for DQG Strategy Gate Unlocking
+            </span>
+          </div>
+          {authorityLinks.length ? (
+            <div className="grid gap-px overflow-hidden border border-white/10 bg-white/10 md:grid-cols-3">
+              {authorityLinks.slice(0, 3).map((link) => (
+                <Link
+                  key={`${link.status}-${link.href}`}
+                  href={link.href}
+                  className="group bg-black p-4 transition-colors hover:bg-white/[0.05]"
+                >
+                  <p className="text-[8px] font-black uppercase tracking-[0.24em] text-cyan-300">
+                    {link.status}
+                  </p>
+                  <p className="mt-2 text-[10px] font-black uppercase leading-5 tracking-[0.12em] text-white/55 transition-colors group-hover:text-white">
+                    {link.label}
+                  </p>
+                </Link>
+              ))}
+            </div>
+          ) : null}
+        </div>
+        <Link
+          href={primaryHref}
+          className="group flex shrink-0 items-center gap-2 bg-white px-8 py-3 text-[10px] font-black uppercase italic tracking-[0.3em] text-black transition-all hover:bg-cyan-300"
+        >
+          Generate Full Transition Brief
+          <ChevronRight size={14} className="transition-transform group-hover:translate-x-1" />
+        </Link>
+      </div>
     </section>
-  )
+  );
 }
+
+function StrategyButton({
+  icon,
+  isActive,
+  label,
+  onClick,
+}: {
+  icon: ReactNode;
+  isActive: boolean;
+  label: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      aria-pressed={isActive}
+      onClick={onClick}
+      className={`flex flex-1 flex-col items-center gap-2 py-6 transition-all ${
+        isActive
+          ? "border-b-2 border-cyan-300 bg-white/5 text-white"
+          : "text-white/20 hover:text-white/40"
+      }`}
+    >
+      {icon}
+      <span className="text-[10px] font-black uppercase tracking-[0.2em]">
+        {label}
+      </span>
+    </button>
+  );
+}
+
+function MetricRow({
+  label,
+  value,
+  isPositive,
+}: {
+  label: string;
+  value: string;
+  isPositive?: boolean;
+}) {
+  return (
+    <div className="flex items-center justify-between">
+      <span className="text-[9px] font-black uppercase tracking-widest text-white/20">
+        {label}
+      </span>
+      <span
+        className={`text-sm font-black italic ${
+          isPositive === undefined ? "text-white" : isPositive ? "text-[#00ff80]" : "text-red-500"
+        }`}
+      >
+        {value}
+      </span>
+    </div>
+  );
+}
+
+function TimelinePoint({
+  label,
+  date,
+  active = false,
+  highlight = false,
+}: TimelinePointProps) {
+  return (
+    <div className="flex w-32 flex-col items-center text-center">
+      <div
+        className={`mb-4 h-3 w-3 rounded-full transition-all ${
+          highlight
+            ? "scale-150 bg-cyan-300 shadow-[0_0_15px_#67e8f9]"
+            : active
+              ? "bg-[#00ff80]"
+              : "bg-white/20"
+        }`}
+      />
+      <div
+        className={`mb-1 text-[9px] font-black uppercase tracking-tighter ${
+          active || highlight ? "text-white" : "text-white/20"
+        }`}
+      >
+        {label}
+      </div>
+      <div className="text-[8px] font-bold uppercase text-white/30">{date}</div>
+    </div>
+  );
+}
+
+// /Users/davidquinn/david-quinn-group/colorado-real-estate/components/RelatedPropertyLinks.tsx

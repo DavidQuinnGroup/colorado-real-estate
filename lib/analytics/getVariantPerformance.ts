@@ -1,27 +1,61 @@
-import { prisma } from "@/lib/prisma"
+import { prisma } from '@/lib/prisma';
 
-export async function getVariantPerformance() {
-  const db = prisma as any
+type SellerLeadRow = {
+  contactedAt?: unknown;
+  convertedAt?: unknown;
+  variant?: unknown;
+};
 
-  const leads = await db.sellerLead.findMany()
+type SellerLeadJsonResult = {
+  row: SellerLeadRow;
+};
 
-  const grouped: Record<string, any> = {}
+type VariantPerformanceStats = {
+  total: number;
+  contacted: number;
+  converted: number;
+};
 
-  for (const lead of leads as any[]) {
-    const variant = lead.variant || "unknown"
+export type VariantPerformance = VariantPerformanceStats & {
+  variant: string;
+  contactRate: number;
+  conversionRate: number;
+};
 
-    if (!grouped[variant]) {
-      grouped[variant] = {
-        total: 0,
-        contacted: 0,
-        converted: 0,
-      }
-    }
+function hasValue(value: unknown) {
+  return value !== undefined && value !== null && value !== '';
+}
 
-    grouped[variant].total++
+function getVariant(value: unknown) {
+  return hasValue(value) ? String(value) : 'unknown';
+}
 
-    if (lead.contactedAt) grouped[variant].contacted++
-    if (lead.convertedAt) grouped[variant].converted++
+async function getSellerLeadRows(): Promise<SellerLeadRow[]> {
+  const rows = await prisma.$queryRaw<SellerLeadJsonResult[]>`
+    SELECT to_jsonb("SellerLead") AS row
+    FROM "SellerLead"
+  `;
+
+  return rows.map((result) => result.row);
+}
+
+export async function getVariantPerformance(): Promise<VariantPerformance[]> {
+  const leads = await getSellerLeadRows();
+  const grouped: Record<string, VariantPerformanceStats> = {};
+
+  for (const lead of leads) {
+    const variant = getVariant(lead.variant);
+
+    grouped[variant] ??= {
+      total: 0,
+      contacted: 0,
+      converted: 0,
+    };
+
+    grouped[variant].total++;
+
+    if (hasValue(lead.contactedAt)) grouped[variant].contacted++;
+    if (hasValue(lead.convertedAt)) grouped[variant].converted++;
   }
 
   return Object.entries(grouped).map(([variant, stats]) => ({
@@ -29,5 +63,7 @@ export async function getVariantPerformance() {
     ...stats,
     contactRate: stats.total ? stats.contacted / stats.total : 0,
     conversionRate: stats.total ? stats.converted / stats.total : 0,
-  }))
+  }));
 }
+
+// /Users/davidquinn/david-quinn-group/colorado-real-estate/lib/analytics/getVariantPerformance.ts
