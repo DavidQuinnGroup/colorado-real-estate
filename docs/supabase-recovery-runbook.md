@@ -39,6 +39,15 @@ Open the Supabase dashboard and confirm:
 6. The database password is current.
 7. The pooler host, port, SSL mode, and pgbouncer settings match the current Supabase connection panel.
 
+`npm run supabase:check` prints a non-secret Postgres URL fingerprint. Use it to confirm:
+
+- `host` and `port` match the Supabase pooler panel.
+- `database=postgres`.
+- `usernamePattern=postgres.<project-ref>`.
+- `projectRef` matches the active project.
+- `pgbouncer=true`.
+- `connection_limit=1` for local scripts.
+
 ## Local Env Values To Replace Together
 
 When the active Supabase project is confirmed or replaced, update these values as one set:

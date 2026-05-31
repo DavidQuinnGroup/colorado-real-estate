@@ -75,6 +75,30 @@ function parsePostgresEndpoint(value: string) {
   }
 }
 
+function parsePostgresFingerprint(value: string) {
+  if (!value) return null;
+
+  try {
+    const url = new URL(value);
+    const username = decodeURIComponent(url.username);
+    const projectRef = parseSupabaseProjectRefFromDatabaseUrl(value);
+
+    return {
+      host: url.hostname,
+      port: url.port ? Number(url.port) : 5432,
+      database: url.pathname.replace(/^\/+/, '') || 'postgres',
+      usernamePattern: projectRef ? 'postgres.<project-ref>' : username ? 'custom-or-unrecognized' : 'missing',
+      projectRef,
+      schema: url.searchParams.get('schema') || 'unset',
+      pgbouncer: url.searchParams.get('pgbouncer') || 'unset',
+      connectionLimit: url.searchParams.get('connection_limit') || 'unset',
+      sslmode: url.searchParams.get('sslmode') || 'unset',
+    };
+  } catch {
+    return null;
+  }
+}
+
 function parseSupabaseProjectRefFromUrl(value: string) {
   const host = parseHost(value);
   const [projectRef] = host.split('.');
@@ -167,6 +191,51 @@ function checkNoPlaceholders(values: Record<string, string>): CheckResult {
     name: 'Supabase placeholder values',
     status: 'fail',
     detail: `Replace placeholder value(s): ${placeholderNames.join(', ')}.`,
+  };
+}
+
+function checkPostgresUrlShape(databaseUrl: string): CheckResult {
+  const fingerprint = parsePostgresFingerprint(databaseUrl);
+
+  if (!databaseUrl) {
+    return {
+      name: 'Supabase Postgres URL shape',
+      status: 'skip',
+      detail: 'DATABASE_URL is missing.',
+    };
+  }
+
+  if (!fingerprint) {
+    return {
+      name: 'Supabase Postgres URL shape',
+      status: 'fail',
+      detail: 'DATABASE_URL is not a valid URL.',
+    };
+  }
+
+  const issues = [
+    fingerprint.projectRef ? '' : 'username should use postgres.<project-ref>',
+    fingerprint.database === 'postgres' ? '' : `database is ${fingerprint.database}, expected postgres`,
+    fingerprint.pgbouncer === 'true' ? '' : `pgbouncer is ${fingerprint.pgbouncer}, expected true`,
+    fingerprint.connectionLimit === '1' ? '' : `connection_limit is ${fingerprint.connectionLimit}, expected 1 for scripts`,
+  ].filter(Boolean);
+
+  const detail = [
+    `host=${fingerprint.host}`,
+    `port=${fingerprint.port}`,
+    `database=${fingerprint.database}`,
+    `usernamePattern=${fingerprint.usernamePattern}`,
+    `projectRef=${fingerprint.projectRef || 'unparsed'}`,
+    `schema=${fingerprint.schema}`,
+    `pgbouncer=${fingerprint.pgbouncer}`,
+    `connection_limit=${fingerprint.connectionLimit}`,
+    `sslmode=${fingerprint.sslmode}`,
+  ].join(', ');
+
+  return {
+    name: 'Supabase Postgres URL shape',
+    status: issues.length ? 'warn' : 'pass',
+    detail: issues.length ? `${detail}. Review: ${issues.join('; ')}.` : detail,
   };
 }
 
@@ -388,6 +457,7 @@ async function main() {
     },
     checkNoPlaceholders(supabaseEnvValues),
     checkProjectRefConsistency(projectRefs),
+    checkPostgresUrlShape(databaseUrl),
   ];
 
   const hasPlaceholders = hasFailed(results, 'Supabase placeholder values');
