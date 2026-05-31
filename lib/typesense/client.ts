@@ -1,13 +1,9 @@
-import Typesense from "typesense"
+import { client, typesense } from './schema.js';
 
-export const typesense = new Typesense.Client({
-  nodes: [
-    {
-      host: "localhost",
-      port: 8108,
-      protocol: "http",
-    },
-  ],
-  apiKey: "xyz",
-  connectionTimeoutSeconds: 2,
-})
+export const typesenseClient = typesense;
+
+export { client, typesense };
+
+export default typesense;
+
+// /Users/davidquinn/david-quinn-group/colorado-real-estate/lib/typesense/client.ts

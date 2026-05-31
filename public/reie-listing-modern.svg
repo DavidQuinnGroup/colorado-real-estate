@@ -1,0 +1,53 @@
+<svg width="1400" height="875" viewBox="0 0 1400 875" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1400" height="875" fill="#050607"/>
+  <rect width="1400" height="875" fill="url(#sky)"/>
+  <path d="M0 654C184 615 333 609 470 628C618 649 742 711 895 704C1050 697 1200 641 1400 631V875H0V654Z" fill="#07100B"/>
+  <path d="M158 555L468 360H1085L1258 505V666H158V555Z" fill="#101414"/>
+  <path d="M468 360L344 540H158L468 360Z" fill="#181C1A"/>
+  <path d="M515 410H1042V642H515V410Z" fill="#050606"/>
+  <path d="M515 410H1042V642H515V410Z" fill="url(#glass)"/>
+  <path d="M582 452H719V616H582V452Z" fill="url(#warm1)"/>
+  <path d="M761 452H898V616H761V452Z" fill="url(#warm2)"/>
+  <path d="M940 452H1012V616H940V452Z" fill="url(#warm3)"/>
+  <path d="M207 578H386V666H207V578Z" fill="#070808"/>
+  <path d="M235 604H357V666H235V604Z" fill="url(#low)"/>
+  <path d="M460 357H1117L1063 315H512L460 357Z" fill="#DCE2DC"/>
+  <path d="M460 357H1117" stroke="white" stroke-opacity="0.28" stroke-width="3"/>
+  <path d="M156 555H1259" stroke="white" stroke-opacity="0.12" stroke-width="2"/>
+  <path d="M0 655C148 629 305 621 470 628C628 635 755 687 900 680C1078 672 1215 638 1400 631" stroke="#00E5FF" stroke-opacity="0.2" stroke-width="3"/>
+  <circle cx="1140" cy="170" r="76" fill="white" fill-opacity="0.04"/>
+  <circle cx="1140" cy="170" r="39" fill="white" fill-opacity="0.05"/>
+  <rect width="1400" height="875" fill="url(#vignette)"/>
+  <defs>
+    <linearGradient id="sky" x1="700" y1="0" x2="700" y2="875" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#14211D"/>
+      <stop offset="0.52" stop-color="#060807"/>
+      <stop offset="1" stop-color="#000000"/>
+    </linearGradient>
+    <linearGradient id="glass" x1="515" y1="410" x2="1042" y2="642" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#15221C" stop-opacity="0.9"/>
+      <stop offset="1" stop-color="#050606" stop-opacity="0.95"/>
+    </linearGradient>
+    <linearGradient id="warm1" x1="582" y1="452" x2="719" y2="616" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#D7B46C" stop-opacity="0.82"/>
+      <stop offset="1" stop-color="#4A2E10" stop-opacity="0.72"/>
+    </linearGradient>
+    <linearGradient id="warm2" x1="761" y1="452" x2="898" y2="616" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#E7C47B" stop-opacity="0.86"/>
+      <stop offset="1" stop-color="#5B3510" stop-opacity="0.74"/>
+    </linearGradient>
+    <linearGradient id="warm3" x1="940" y1="452" x2="1012" y2="616" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#B98A49" stop-opacity="0.78"/>
+      <stop offset="1" stop-color="#3A250D" stop-opacity="0.78"/>
+    </linearGradient>
+    <linearGradient id="low" x1="235" y1="604" x2="357" y2="666" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#B98D47" stop-opacity="0.8"/>
+      <stop offset="1" stop-color="#39230D" stop-opacity="0.78"/>
+    </linearGradient>
+    <radialGradient id="vignette" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(700 438) rotate(90) scale(525 840)">
+      <stop offset="0.36" stop-color="#000000" stop-opacity="0"/>
+      <stop offset="1" stop-color="#000000" stop-opacity="0.72"/>
+    </radialGradient>
+  </defs>
+  <!-- /Users/davidquinn/david-quinn-group/colorado-real-estate/public/reie-listing-modern.svg -->
+</svg>

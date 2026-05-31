@@ -1,14 +1,9 @@
-export default function RealEstateAgentSchema() {
+import { buildRealEstateAgentSchema, realEstateAgentSchema, type RealEstateAgentSchemaOptions } from '@/lib/schema/realEstateAgentSchema';
 
-  const schema = {
-    "@context": "https://schema.org",
-    "@type": "RealEstateAgent",
-    "name": "David Quinn Real Estate",
-    "areaServed": "Boulder County, Colorado",
-    "url": "https://yourdomain.com",
-    "description":
-      "Helping buyers and sellers navigate the Boulder County real estate market including Boulder, Louisville, Lafayette, Superior, Erie, Longmont, and Broomfield.",
-  };
+type Props = RealEstateAgentSchemaOptions;
+
+export default function RealEstateAgentSchema(props: Props = {}) {
+  const schema = props.url || props.image ? buildRealEstateAgentSchema(props) : realEstateAgentSchema;
 
   return (
     <script
@@ -19,3 +14,5 @@ export default function RealEstateAgentSchema() {
     />
   );
 }
+
+// /Users/davidquinn/david-quinn-group/colorado-real-estate/components/schema/RealEstateAgentSchema.tsx

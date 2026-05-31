@@ -1,27 +1,44 @@
 {
   "compilerOptions": {
     "target": "ES2020",
-    "module": "CommonJS",
-    "moduleResolution": "Node",
-    "outDir": "dist",
-    "rootDir": ".",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "outDir": "./dist",
+    "rootDir": "./",
+    "strict": true,
     "esModuleInterop": true,
-    "resolveJsonModule": true,
-    "strict": false,
     "skipLibCheck": true,
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["./*"]
-    }
+    "forceConsistentCasingInFileNames": true,
+    "allowJs": false,
+    "resolveJsonModule": true,
+    "types": ["node"],
+    "noEmitOnError": true
   },
   "include": [
-  "workers/**/*",
-  "lib/mls/**/*",
-  "lib/queue/**/*",
-  "lib/typesense/**/*"
-],
-"exclude": [
-  "node_modules",
-  "lib/email/**/*"
-]
+    "workers/**/*.ts",
+    "lib/mls/**/*.ts",
+    "lib/queue/**/*.ts",
+    "lib/alerts/processAlertQueue.ts",
+    "lib/email/sendEmail.ts",
+    "lib/prisma.ts",
+    "lib/typesense/**/*.ts",
+    "scripts/createTypesenseCollection.ts",
+    "scripts/fetchMLS.ts",
+    "scripts/index.ts",
+    "scripts/initTypesense.ts",
+    "scripts/mlsSync.ts",
+    "scripts/quickSeed.ts",
+    "scripts/queueDashboard.ts",
+    "scripts/runAlerts.ts",
+    "scripts/runCRM.ts",
+    "scripts/seedTestProperties.ts",
+    "scripts/sendDigest.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "app",
+    "components",
+    ".next",
+    "dist"
+  ]
 }

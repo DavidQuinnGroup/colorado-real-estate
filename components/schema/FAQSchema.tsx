@@ -1,26 +1,18 @@
-type FAQ = {
-  question: string;
-  answer: string;
-};
+import { buildFAQSchema, type FAQItem } from '@/lib/schema/faqSchema';
 
 type Props = {
-  faqs: FAQ[];
+  faqs: FAQItem[];
+  pageUrl?: string;
 };
 
-export default function FAQSchema({ faqs }: Props) {
+function hasRenderableFaqs(faqs: FAQItem[]) {
+  return faqs.some((faq) => faq.question.trim().length > 0 && faq.answer.trim().length > 0);
+}
 
-  const schema = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": faqs.map((faq) => ({
-      "@type": "Question",
-      "name": faq.question,
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": faq.answer,
-      },
-    })),
-  };
+export default function FAQSchema({ faqs, pageUrl }: Props) {
+  if (!hasRenderableFaqs(faqs)) return null;
+
+  const schema = buildFAQSchema({ faqs, pageUrl });
 
   return (
     <script
@@ -31,3 +23,5 @@ export default function FAQSchema({ faqs }: Props) {
     />
   );
 }
+
+// /Users/davidquinn/david-quinn-group/colorado-real-estate/components/schema/FAQSchema.tsx

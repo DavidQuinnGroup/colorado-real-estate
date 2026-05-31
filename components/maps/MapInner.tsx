@@ -1,134 +1,112 @@
-"use client"
+'use client';
 
-import { useState, useRef, useEffect } from "react"
-import L from "leaflet"
-import { MapContainer, TileLayer, useMap } from "react-leaflet"
-import "leaflet/dist/leaflet.css"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useEffect, useMemo } from 'react';
 
-import MapEvents from "./MapEvents"
-import MapMarkers from "./MapMarkers"
+import type { MapSidebarListing } from './MapSidebar';
+import SearchMap, { type SearchMapMeta } from './SearchMap';
 
-delete (L.Icon.Default.prototype as any)._getIconUrl
+type UserTier = 'Public' | 'Contracted';
 
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: "/leaflet/marker-icon-2x.png",
-  iconUrl: "/leaflet/marker-icon.png",
-  shadowUrl: "/leaflet/marker-shadow.png"
-})
+export type MapBounds = {
+  north?: number;
+  south?: number;
+  east?: number;
+  west?: number;
+  neLat?: number;
+  swLat?: number;
+  neLng?: number;
+  swLng?: number;
+} | null;
 
-type Listing = {
-  mls_id: string
-  address: string
-  price: number
-  beds: number | null
-  baths: number | null
-  lat: number
-  lng: number
-}
+type MapInnerProps = {
+  listings?: MapSidebarListing[];
+  onBoundsChange?: (bounds: MapBounds) => void;
+  selectedId: string | null;
+  setSelectedId: (id: string) => void;
+  hoveredId?: string | null;
+  setHoveredId?: (id: string | null) => void;
+  searchMeta?: SearchMapMeta | null;
+  userTier?: UserTier;
+};
 
-function FlyToListing({ listing }: { listing: Listing | undefined }) {
-  const map = useMap()
+const BOULDER_MAP_CENTER: [number, number] = [40.0174, -105.276];
 
-  useEffect(() => {
-    if (!listing) return
-    map.flyTo([listing.lat, listing.lng], 15, { duration: 0.5 })
-  }, [listing, map])
-
-  return null
+function hasMapCoordinates(property: MapSidebarListing) {
+  return (
+    Number.isFinite(property.lat) &&
+    Number.isFinite(property.lng) &&
+    Math.abs(Number(property.lat)) <= 90 &&
+    Math.abs(Number(property.lng)) <= 180 &&
+    !(Number(property.lat) === 0 && Number(property.lng) === 0)
+  );
 }
 
 export default function MapInner({
-  city,
-  onListingsChange,
-  activeListingId,
-  setActiveListingId
-}: {
-  city: string
-  onListingsChange: (listings: any[]) => void
-  activeListingId: string | null
-  setActiveListingId: (id: string | null) => void
-}) {
+  listings = [],
+  onBoundsChange,
+  selectedId,
+  setSelectedId,
+  hoveredId = null,
+  setHoveredId = () => {},
+  searchMeta = null,
+  userTier = 'Public',
+}: MapInnerProps) {
+  const visibleListings = useMemo(() => {
+    if (userTier === 'Contracted') return listings;
+    return listings.filter((property) => !property.isPrivateExclusive);
+  }, [listings, userTier]);
 
-  const [listings, setListings] = useState<Listing[]>([])
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const effectiveSearchMeta = useMemo<SearchMapMeta | null>(() => {
+    if (!searchMeta) return null;
 
-  const router = useRouter()
-  const searchParams = useSearchParams()
+    const visibleCoordinateCount = visibleListings.filter(hasMapCoordinates).length;
+    const returned = searchMeta.returned ?? listings.length;
+    const mapped = searchMeta.mapped ?? visibleCoordinateCount;
+    const coordinateFiltered = searchMeta.coordinateFiltered ?? Math.max(0, returned - mapped);
 
-  const minPrice = searchParams.get("minPrice")
-  const beds = searchParams.get("beds")
-  const type = searchParams.get("type")
-
-  const handleBoundsChange = (map: any) => {
-    if (timeoutRef.current) clearTimeout(timeoutRef.current)
-
-    timeoutRef.current = setTimeout(async () => {
-      const bounds = map.getBounds()
-      const zoom = map.getZoom()
-      const center = map.getCenter()
-
-      const newParams = new URLSearchParams(searchParams.toString())
-      newParams.set("lat", center.lat.toString())
-      newParams.set("lng", center.lng.toString())
-      newParams.set("zoom", zoom.toString())
-
-      router.replace(`?${newParams.toString()}`, { scroll: false })
-
-      const queryParams = new URLSearchParams()
-      queryParams.set("minLat", bounds.getSouth().toString())
-      queryParams.set("maxLat", bounds.getNorth().toString())
-      queryParams.set("minLng", bounds.getWest().toString())
-      queryParams.set("maxLng", bounds.getEast().toString())
-
-      if (minPrice) queryParams.set("minPrice", minPrice)
-      if (beds) queryParams.set("beds", beds)
-      if (type) queryParams.set("type", type)
-
-      try {
-        const res = await fetch(`/api/map-listings?${queryParams}`)
-        const data = await res.json()
-
-        setListings(data)
-        onListingsChange(data)
-      } catch (err) {
-        console.error("Listings fetch error:", err)
-      }
-    }, 150)
-  }
-
-  const activeListing = listings.find(
-    (l) => l.mls_id === activeListingId
-  )
+    return {
+      ...searchMeta,
+      accessLevel: searchMeta.accessLevel || (userTier === 'Contracted' ? 'contracted' : 'public'),
+      returned,
+      mapped,
+      coordinateFiltered,
+      smoke: searchMeta.smoke
+        ? {
+            ...searchMeta.smoke,
+            checks: {
+              ...searchMeta.smoke.checks,
+              accessLevel: searchMeta.accessLevel || (userTier === 'Contracted' ? 'contracted' : 'public'),
+              coordinateFiltered,
+              mapped,
+              returned,
+            },
+          }
+        : undefined,
+    };
+  }, [listings.length, searchMeta, userTier, visibleListings]);
 
   useEffect(() => {
-  // 🔥 Fix "Map container is already initialized"
-  const container = document.querySelector(".leaflet-container")
-  if (container && (container as any)._leaflet_id) {
-    ;(container as any)._leaflet_id = null
-  }
-}, [])
+    if (!selectedId) return;
+    if (visibleListings.some((property) => property.id === selectedId)) return;
+
+    setSelectedId('');
+  }, [selectedId, setSelectedId, visibleListings]);
 
   return (
-    <MapContainer
-  center={[40.0176, -105.2797]}
-  zoom={13}
-  style={{ height: "100%", width: "100%" }}
->
-      <TileLayer
-        attribution="© OpenStreetMap"
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+    <div className="relative h-full w-full overflow-hidden bg-[#030303]">
+      <SearchMap
+        listings={visibleListings}
+        onBoundsChange={onBoundsChange}
+        selectedId={selectedId}
+        setSelectedId={setSelectedId}
+        hoveredId={hoveredId}
+        setHoveredId={setHoveredId}
+        center={BOULDER_MAP_CENTER}
+        searchMeta={effectiveSearchMeta}
+        userTier={userTier}
       />
-
-      <MapEvents onBoundsChange={handleBoundsChange} />
-
-      <MapMarkers
-        listings={listings}
-        activeListingId={activeListingId}
-        setActiveListingId={setActiveListingId}
-      />
-
-      <FlyToListing listing={activeListing} />
-    </MapContainer>
-  )
+    </div>
+  );
 }
+
+// /Users/davidquinn/david-quinn-group/colorado-real-estate/components/maps/MapInner.tsx

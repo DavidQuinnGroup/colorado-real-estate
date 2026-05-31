@@ -1,0 +1,39 @@
+<svg width="1400" height="875" viewBox="0 0 1400 875" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1400" height="875" fill="#040506"/>
+  <rect width="1400" height="875" fill="url(#sky)"/>
+  <path d="M0 700H1400V875H0V700Z" fill="#050706"/>
+  <path d="M244 304H514V700H244V304Z" fill="#101414"/>
+  <path d="M563 226H878V700H563V226Z" fill="#0D1112"/>
+  <path d="M928 354H1166V700H928V354Z" fill="#111516"/>
+  <path d="M286 352H470V664H286V352Z" fill="url(#glass1)"/>
+  <path d="M612 284H829V664H612V284Z" fill="url(#glass2)"/>
+  <path d="M967 400H1127V664H967V400Z" fill="url(#glass3)"/>
+  <path d="M0 701H1400" stroke="#00E5FF" stroke-opacity="0.22" stroke-width="3"/>
+  <path d="M170 740C414 708 669 701 936 718C1102 729 1257 723 1400 700" stroke="#00FF80" stroke-opacity="0.13" stroke-width="4"/>
+  <circle cx="1140" cy="172" r="75" fill="#00E5FF" fill-opacity="0.045"/>
+  <rect width="1400" height="875" fill="url(#vignette)"/>
+  <defs>
+    <linearGradient id="sky" x1="700" y1="0" x2="700" y2="875" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#101B1B"/>
+      <stop offset="0.58" stop-color="#050607"/>
+      <stop offset="1" stop-color="#000000"/>
+    </linearGradient>
+    <linearGradient id="glass1" x1="286" y1="352" x2="470" y2="664" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1D3B3E" stop-opacity="0.8"/>
+      <stop offset="1" stop-color="#071011" stop-opacity="0.9"/>
+    </linearGradient>
+    <linearGradient id="glass2" x1="612" y1="284" x2="829" y2="664" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#244245" stop-opacity="0.78"/>
+      <stop offset="1" stop-color="#071011" stop-opacity="0.94"/>
+    </linearGradient>
+    <linearGradient id="glass3" x1="967" y1="400" x2="1127" y2="664" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1C3437" stop-opacity="0.76"/>
+      <stop offset="1" stop-color="#060B0C" stop-opacity="0.94"/>
+    </linearGradient>
+    <radialGradient id="vignette" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(700 438) rotate(90) scale(525 840)">
+      <stop offset="0.35" stop-color="#000000" stop-opacity="0"/>
+      <stop offset="1" stop-color="#000000" stop-opacity="0.76"/>
+    </radialGradient>
+  </defs>
+  <!-- /Users/davidquinn/david-quinn-group/colorado-real-estate/public/reie-listing-commercial.svg -->
+</svg>

@@ -1,0 +1,25 @@
+<svg width="1400" height="875" viewBox="0 0 1400 875" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1400" height="875" fill="#020303"/>
+  <rect width="1400" height="875" fill="url(#sky)"/>
+  <path d="M0 612C182 544 335 521 458 544C593 568 674 656 815 653C987 650 1157 560 1400 532V875H0V612Z" fill="#07150A"/>
+  <path d="M0 690C180 625 339 606 478 633C622 661 728 731 873 721C1035 710 1198 651 1400 631V875H0V690Z" fill="#040905"/>
+  <path d="M95 604C219 562 348 548 483 561" stroke="#00FF80" stroke-opacity="0.26" stroke-width="4"/>
+  <path d="M650 603C782 572 916 561 1052 572" stroke="#00E5FF" stroke-opacity="0.2" stroke-width="4"/>
+  <path d="M0 615C190 553 343 532 458 544C602 559 682 632 816 625C1000 615 1165 554 1400 532" stroke="#D77A38" stroke-opacity="0.42" stroke-width="3"/>
+  <path d="M0 692C173 639 331 619 478 633C621 646 728 704 872 695C1037 685 1203 646 1400 631" stroke="#00E5FF" stroke-opacity="0.16" stroke-width="3"/>
+  <circle cx="1120" cy="180" r="86" fill="#00E5FF" fill-opacity="0.055"/>
+  <circle cx="1120" cy="180" r="38" fill="white" fill-opacity="0.045"/>
+  <rect width="1400" height="875" fill="url(#vignette)"/>
+  <defs>
+    <linearGradient id="sky" x1="700" y1="0" x2="700" y2="875" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#13231E"/>
+      <stop offset="0.55" stop-color="#040706"/>
+      <stop offset="1" stop-color="#000000"/>
+    </linearGradient>
+    <radialGradient id="vignette" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(700 438) rotate(90) scale(525 840)">
+      <stop offset="0.36" stop-color="#000000" stop-opacity="0"/>
+      <stop offset="1" stop-color="#000000" stop-opacity="0.78"/>
+    </radialGradient>
+  </defs>
+  <!-- /Users/davidquinn/david-quinn-group/colorado-real-estate/public/reie-listing-land.svg -->
+</svg>
