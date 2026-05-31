@@ -6,6 +6,7 @@ import { MLS_SYNC_QUEUE_NAME, mlsQueue } from '../lib/queue/mlsQueue.js';
 import { closeRedisConnections, getRedisConnection } from '../lib/queue/redis.js';
 const DEFAULT_STALE_MINUTES = 30;
 const DEFAULT_QUEUE = MLS_PAGE_QUEUE_NAME;
+const DEFAULT_RETRY_LIMIT = 10;
 const STALLED_RECOVERY_PASS_DELAY_MS = 10;
 const QUEUES = [
     { label: 'MLS page', name: MLS_PAGE_QUEUE_NAME, queue: mlsPageQueue },
@@ -20,10 +21,12 @@ Usage:
   node dist/scripts/queueMaintenance.js [options]
 
 Options:
+  --action=<name>           stale-recovery or retry-failed. Default: stale-recovery.
   --queue=<name>            Queue to inspect. Default: mls-page.
-  --job-id=<id>             Target job id required for live stale recovery.
+  --job-id=<id>             Target job id for live stale recovery or targeted failed retry.
+  --limit=<number>          Failed retry scan limit. Default: 10.
   --stale-minutes=<number>  Active job age threshold. Default: 30.
-  --execute                 Run BullMQ stalled-job recovery after safety checks.
+  --execute                 Run BullMQ stalled-job recovery or failed-job retry after safety checks.
   --help                    Show this help text.
 
 Dry-run inspection:
@@ -31,6 +34,12 @@ Dry-run inspection:
 
 Live stale recovery:
   npm run run:queue-maintenance -- --queue=mls-page --job-id=<jobId> --execute
+
+Dry-run failed retry:
+  npm run run:queue-maintenance -- --action=retry-failed --queue=mls-sync --limit=10
+
+Live failed retry:
+  npm run run:queue-maintenance -- --action=retry-failed --queue=mls-sync --job-id=<jobId> --execute
 `;
 function readFlagValue(arg) {
     const [, value] = arg.split('=');
@@ -44,8 +53,10 @@ function getSafeNumber(value, fallback, min, max) {
 }
 function parseOptions(argv) {
     const options = {
+        action: 'stale-recovery',
         execute: false,
         jobId: '',
+        limit: DEFAULT_RETRY_LIMIT,
         queueName: DEFAULT_QUEUE,
         staleMinutes: DEFAULT_STALE_MINUTES,
     };
@@ -62,8 +73,19 @@ function parseOptions(argv) {
             options.queueName = readFlagValue(arg);
             continue;
         }
+        if (arg.startsWith('--action=')) {
+            const action = readFlagValue(arg);
+            if (action !== 'stale-recovery' && action !== 'retry-failed')
+                throw new Error(`Unsupported action: ${action}`);
+            options.action = action;
+            continue;
+        }
         if (arg.startsWith('--job-id=')) {
             options.jobId = readFlagValue(arg);
+            continue;
+        }
+        if (arg.startsWith('--limit=')) {
+            options.limit = getSafeNumber(readFlagValue(arg), DEFAULT_RETRY_LIMIT, 1, 100);
             continue;
         }
         if (arg.startsWith('--stale-minutes=')) {
@@ -112,6 +134,21 @@ async function summarizeJob(queue, job, staleMinutes) {
         data: job.data,
     };
 }
+async function summarizeFailedJob(job) {
+    const state = await job.getState().catch(() => 'unknown');
+    return {
+        id: job.id,
+        name: job.name,
+        state,
+        attemptsMade: job.attemptsMade,
+        failedReason: job.failedReason || null,
+        timestamp: toIsoDate(job.timestamp),
+        processedOn: toIsoDate(job.processedOn),
+        finishedOn: toIsoDate(job.finishedOn),
+        retryable: state === 'failed',
+        data: job.data,
+    };
+}
 async function inspectQueue(definition, options) {
     const counts = await definition.queue.getJobCounts('waiting', 'active', 'delayed', 'completed', 'failed', 'paused');
     const activeJobs = await definition.queue.getJobs(['active'], 0, 49);
@@ -131,6 +168,30 @@ async function inspectQueue(definition, options) {
         },
     };
 }
+async function getFailedRetryCandidates(definition, options) {
+    if (options.jobId) {
+        const job = await definition.queue.getJob(options.jobId);
+        return job ? [job] : [];
+    }
+    return definition.queue.getFailed(0, options.limit - 1);
+}
+async function inspectFailedRetry(definition, options) {
+    const counts = await definition.queue.getJobCounts('waiting', 'active', 'delayed', 'completed', 'failed', 'paused');
+    const candidateJobs = await getFailedRetryCandidates(definition, options);
+    const jobs = await Promise.all(candidateJobs.map(summarizeFailedJob));
+    return {
+        label: definition.label,
+        name: definition.name,
+        counts,
+        dryRun: !options.execute,
+        targeted: Boolean(options.jobId),
+        inspected: jobs.length,
+        retryable: jobs.filter((job) => job.retryable).length,
+        skipped: jobs.filter((job) => !job.retryable).length,
+        missingTarget: Boolean(options.jobId) && jobs.length === 0,
+        jobs,
+    };
+}
 function validateLiveRecovery(options, report) {
     if (!options.execute)
         return null;
@@ -143,6 +204,44 @@ function validateLiveRecovery(options, report) {
     if (report.target.lock.exists)
         return `Target job ${options.jobId} still has an active lock; wait for the worker or inspect the process before recovery.`;
     return null;
+}
+function validateLiveFailedRetry(options, report) {
+    if (!options.execute)
+        return null;
+    if (!options.jobId)
+        return 'Live failed retry requires --job-id=<id>.';
+    if (report.missingTarget)
+        return `Target job ${options.jobId} was not found in ${report.name}.`;
+    if (report.retryable < 1)
+        return `Target job ${options.jobId} is not currently failed and retryable.`;
+    return null;
+}
+async function retryFailedJobs(definition, options, report) {
+    if (!options.execute)
+        return { attempted: false, retried: 0, errors: [] };
+    let retried = 0;
+    const errors = [];
+    const candidateJobs = await getFailedRetryCandidates(definition, options);
+    const retryableIds = new Set(report.jobs.filter((job) => job.retryable).map((job) => job.id));
+    for (const job of candidateJobs) {
+        if (!job.id || !retryableIds.has(job.id))
+            continue;
+        try {
+            await job.retry();
+            retried++;
+        }
+        catch (error) {
+            errors.push({
+                jobId: job.id,
+                error: error instanceof Error ? error.message : String(error || 'Unknown retry error.'),
+            });
+        }
+    }
+    return {
+        attempted: true,
+        retried,
+        errors,
+    };
 }
 async function runStalledRecoveryPass(definition) {
     const worker = new Worker(definition.name, async () => null, {
@@ -179,6 +278,46 @@ async function main() {
     const definition = findQueue(options.queueName);
     if (!definition) {
         throw new Error(`Unsupported queue "${options.queueName}". Supported queues: ${QUEUES.map((queue) => queue.name).join(', ')}`);
+    }
+    if (options.action === 'retry-failed') {
+        const before = await inspectFailedRetry(definition, options);
+        const blocker = validateLiveFailedRetry(options, before);
+        let retryResult = { attempted: false, retried: 0, errors: [] };
+        let after = before;
+        if (blocker) {
+            process.exitCode = 1;
+        }
+        else {
+            retryResult = await retryFailedJobs(definition, options, before);
+            after = await inspectFailedRetry(definition, options);
+            if (retryResult.errors.length > 0)
+                process.exitCode = 1;
+        }
+        console.log(JSON.stringify({
+            success: !blocker && retryResult.errors.length === 0,
+            module: 'queue-maintenance',
+            generatedAt: new Date().toISOString(),
+            mode: options.execute ? 'execute' : 'dry-run',
+            options,
+            safety: {
+                liveRetryRequiresExecute: true,
+                liveRetryRequiresTargetJobId: true,
+                blocker,
+            },
+            retry: retryResult,
+            commands: {
+                dryRunCurrentScope: options.jobId
+                    ? `npm run run:queue-maintenance -- --action=retry-failed --queue=${definition.name} --job-id=${options.jobId}`
+                    : `npm run run:queue-maintenance -- --action=retry-failed --queue=${definition.name} --limit=${options.limit}`,
+                liveCurrentTarget: options.jobId
+                    ? `npm run run:queue-maintenance -- --action=retry-failed --queue=${definition.name} --job-id=${options.jobId} --execute`
+                    : 'Live failed retry requires --job-id=<id>.',
+                queueDashboard: 'npm run run:queue-dashboard -- --failed --sample --limit=5 --timeout-ms=3000',
+            },
+            before,
+            after,
+        }, null, 2));
+        return;
     }
     const before = await inspectQueue(definition, options);
     const blocker = validateLiveRecovery(options, before.report);

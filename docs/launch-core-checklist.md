@@ -201,6 +201,7 @@ Live MLS sync gate:
 - Queue dashboard source-queue dead-letter summaries are reviewed when the local Next API is not running.
 - Stale active queue jobs are not acceptable diagnostics; inspect retry state, source-queue dead letters, and worker process health before retrying or adding work.
 - Stale active recovery uses a dry run first: `npm run run:queue-maintenance -- --queue=mls-page --job-id=<jobId>`. Live recovery requires the same command with `--execute` only after the target job is stale and unlocked.
+- Failed-job retry uses a dry run first: `npm run run:queue-maintenance -- --action=retry-failed --queue=mls-sync --limit=10`. Live retry requires a target `--job-id=<jobId>` plus `--execute`.
 
 Live alert gate:
 
