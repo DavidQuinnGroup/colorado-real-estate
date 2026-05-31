@@ -1,31 +1,3 @@
-import { fetchMLSListings } from "@/lib/mls/fetchMLS"
-import { processListing } from "@/lib/mls/processListing"
+export { dynamic, GET, POST } from '@/app/api/mls/sync/route';
 
-export async function GET() {
-
-  try {
-
-    const listings = await fetchMLSListings()
-
-    for (const listing of listings) {
-
-      await processListing(listing)
-
-    }
-
-    return Response.json({
-      success: true,
-      processed: listings.length
-    })
-
-  } catch (error) {
-
-    console.error(error)
-
-    return Response.json({
-      success: false
-    })
-
-  }
-
-}
+// /Users/davidquinn/david-quinn-group/colorado-real-estate/app/api/mls-sync/route.ts

@@ -1,7 +1,9 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.normalizeListing = normalizeListing;
-function normalizeListing(raw) {
+/**
+ * IRES SPECIFIC NORMALIZER
+ * Maps IRES-specific keys to the REIE Forensic Schema (Module 15.2).
+ */
+export function normalizeListing(raw) {
+    const description = (raw.PublicRemarks || "").toLowerCase();
     return {
         listing_id: raw.ListingKey,
         mls_id: raw.ListingId,
@@ -14,6 +16,14 @@ function normalizeListing(raw) {
         baths: raw.BathroomsTotalInteger,
         sqft: raw.LivingArea,
         photos: raw.Media?.map((m) => m.MediaURL) || [],
-        raw_json: raw, // 🔥 always keep raw for debugging
+        // Module 15.2 Forensics: Colorado Acclimation Protocol
+        forensics: {
+            altitude: raw.Elevation || 5280,
+            isHighAltitudeRisk: (raw.Elevation || 0) > 6500,
+            roofType: description.includes("metal") ? "Metal" : "Standard",
+            soilType: "Bentonite/Expansive Risk" // Default for Front Range
+        },
+        raw_json: raw, // Always keep raw for debugging
     };
 }
+// ./lib/mls/normalizeIRESListing.ts

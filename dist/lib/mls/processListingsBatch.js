@@ -1,52 +1,117 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.processListingsBatch = processListingsBatch;
-const dotenv_1 = __importDefault(require("dotenv"));
-dotenv_1.default.config({ path: ".env.local" });
-const supabase_js_1 = require("@supabase/supabase-js");
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const supabase = (0, supabase_js_1.createClient)(supabaseUrl, supabaseKey);
-function getLatLng(listing) {
-    return {
-        lat: listing.Latitude ||
-            listing.lat ||
-            listing.latitude ||
-            listing?.PropertyLocation?.Latitude ||
-            null,
-        lng: listing.Longitude ||
-            listing.lng ||
-            listing.longitude ||
-            listing?.PropertyLocation?.Longitude ||
-            null,
-    };
+import { processListing } from "./processListing.js";
+const defaultMaxListings = 100;
+const defaultMaxFailures = 25;
+const maxFailureRecords = 100;
+function getSafeMaxListings(value) {
+    if (value === undefined || !Number.isFinite(value))
+        return defaultMaxListings;
+    return Math.max(1, Math.min(Math.floor(value), defaultMaxListings));
 }
-async function processListingsBatch(listings) {
-    if (!listings.length)
-        return;
-    const formatted = listings.map((listing) => {
-        const { lat, lng } = getLatLng(listing);
-        return {
-            mls_id: listing.ListingId,
-            address: listing.UnparsedAddress,
-            price: listing.ListPrice,
-            beds: listing.BedroomsTotal ?? null,
-            baths: listing.BathroomsTotal ?? null,
-            lat,
-            lng,
-            updated_at: listing.ModificationTimestamp,
-            raw: listing,
-        };
-    });
-    const { error } = await supabase
-        .from("listings")
-        .upsert(formatted, { onConflict: "mls_id" });
-    if (error) {
-        console.error("❌ Supabase batch upsert failed:", error);
-        throw error;
+function getSafeMaxFailures(value) {
+    if (value === undefined || !Number.isFinite(value))
+        return defaultMaxFailures;
+    return Math.max(0, Math.min(Math.floor(value), maxFailureRecords));
+}
+function getListingValue(listing, fields) {
+    for (const field of fields) {
+        const value = listing[field];
+        if (value !== undefined && value !== null && String(value).trim()) {
+            return value;
+        }
     }
-    console.log(`💾 Batch upserted ${formatted.length} listings`);
+    return "unknown";
 }
+function getListingLabel(listing) {
+    return String(getListingValue(listing, [
+        "ListingKey",
+        "ListingId",
+        "MLSNumber",
+        "ListingNumber",
+        "Id",
+        "mlsid",
+        "UnparsedAddress",
+    ]));
+}
+function getErrorMessage(error) {
+    return error instanceof Error ? error.message : String(error);
+}
+function pushFailure(summary, failure, maxFailures) {
+    if (summary.failures.length >= maxFailures)
+        return;
+    summary.failures.push(failure);
+}
+function pushWarnings(summary, result) {
+    if (result.warnings.length === 0)
+        return;
+    summary.warnings.push({
+        listingLabel: result.listingLabel,
+        warnings: result.warnings,
+    });
+}
+function applySearchIndexResult(summary, result) {
+    if (!result.searchIndex.attempted)
+        return;
+    summary.indexAttempted += 1;
+    if (result.searchIndex.indexed) {
+        summary.indexSucceeded += 1;
+    }
+    else {
+        summary.indexFailed += 1;
+    }
+}
+export async function processListingsBatch(listings, options = {}) {
+    const startedAt = new Date().toISOString();
+    const startedMs = Date.now();
+    const maxListings = getSafeMaxListings(options.maxListings);
+    const maxFailures = getSafeMaxFailures(options.maxFailures);
+    const boundedListings = listings.slice(0, maxListings);
+    const summary = {
+        startedAt,
+        durationMs: 0,
+        received: listings.length,
+        processed: 0,
+        skipped: Math.max(0, listings.length - boundedListings.length),
+        succeeded: 0,
+        failed: 0,
+        failures: [],
+        indexAttempted: 0,
+        indexFailed: 0,
+        indexSucceeded: 0,
+        warnings: [],
+    };
+    for (const listing of boundedListings) {
+        const listingStartedMs = Date.now();
+        const listingLabel = getListingLabel(listing);
+        try {
+            const result = await processListing(listing);
+            summary.processed += 1;
+            if (result) {
+                summary.succeeded += 1;
+                applySearchIndexResult(summary, result);
+                pushWarnings(summary, result);
+            }
+            else {
+                summary.failed += 1;
+                pushFailure(summary, {
+                    durationMs: Date.now() - listingStartedMs,
+                    errorMessage: "Listing processor returned no property record.",
+                    listingLabel,
+                }, maxFailures);
+            }
+        }
+        catch (error) {
+            summary.processed += 1;
+            summary.failed += 1;
+            pushFailure(summary, {
+                durationMs: Date.now() - listingStartedMs,
+                errorMessage: getErrorMessage(error),
+                listingLabel,
+            }, maxFailures);
+            console.error(`MLS batch listing failed for ${listingLabel}:`, getErrorMessage(error));
+        }
+    }
+    summary.durationMs = Date.now() - startedMs;
+    console.log("MLS batch processing summary:", summary);
+    return summary;
+}
+// /Users/davidquinn/david-quinn-group/colorado-real-estate/lib/mls/processListingsBatch.ts

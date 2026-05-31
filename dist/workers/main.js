@@ -1,52 +1,121 @@
-"use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
-Object.defineProperty(exports, "__esModule", { value: true });
-require("dotenv/config");
-async function start() {
-    // 🚨 HARD BUILD GUARD
-    if (process.env.NEXT_PHASE === "phase-production-build") {
-        console.log("⛔ Skipping worker during build phase");
-        return;
-    }
-    console.log("🚀 Worker starting...");
-    const { syncMLSGrid } = await Promise.resolve().then(() => __importStar(require("../lib/mls/syncMLSGrid")));
-    const maxRuntimeMs = Number(process.env.MLS_MAX_RUNTIME_MS || 600000);
-    await syncMLSGrid({ maxRuntimeMs });
-    console.log("🏁 Worker finished");
+import 'dotenv/config';
+import { spawn } from 'node:child_process';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+const WORKER_NAMES = ['mls', 'mls-page', 'alert'];
+const HELP_TEXT = `
+REIE worker coordinator
+
+Usage:
+  node dist/workers/main.js [options]
+
+Options:
+  --workers=<list>   Comma-separated workers to run: mls,mls-page,alert.
+  --help             Show this help text.
+
+Environment:
+  REIE_WORKERS       Fallback worker list when --workers is omitted.
+
+Examples:
+  node dist/workers/main.js
+  node dist/workers/main.js --workers=mls,mls-page
+  REIE_WORKERS=alert node dist/workers/main.js
+`;
+function printHelp() {
+    console.log(HELP_TEXT.trim());
 }
-start().catch((err) => {
-    console.error("❌ Worker crashed", err);
+function getWorkerListArg(argv) {
+    const arg = argv.find((value) => value.startsWith('--workers='));
+    if (!arg)
+        return process.env.REIE_WORKERS;
+    return arg.split('=')[1];
+}
+function parseWorkerNames(argv) {
+    if (argv.includes('--help') || argv.includes('-h')) {
+        printHelp();
+        return null;
+    }
+    const requested = getWorkerListArg(argv);
+    if (!requested)
+        return WORKER_NAMES;
+    const names = requested
+        .split(',')
+        .map((name) => name.trim())
+        .filter(Boolean);
+    const unknown = names.filter((name) => !WORKER_NAMES.includes(name));
+    if (unknown.length) {
+        throw new Error(`Unknown worker name(s): ${unknown.join(', ')}.`);
+    }
+    return names;
+}
+function buildWorkerDefinitions(baseDir) {
+    return [
+        {
+            name: 'mls',
+            label: 'MLS Sync Worker',
+            script: join(baseDir, 'mlsWorker.js'),
+        },
+        {
+            name: 'mls-page',
+            label: 'MLS Page Worker',
+            script: join(baseDir, 'mlsPageWorker.js'),
+        },
+        {
+            name: 'alert',
+            label: 'Alert Worker',
+            script: join(baseDir, 'alertWorker.js'),
+        },
+    ];
+}
+function startWorker(definition) {
+    const child = spawn(process.execPath, [definition.script], {
+        env: {
+            ...process.env,
+            ...definition.env,
+        },
+        stdio: 'inherit',
+    });
+    child.on('exit', (code, signal) => {
+        const reason = signal ? `signal ${signal}` : `code ${code}`;
+        console.log(`${definition.label} exited with ${reason}.`);
+    });
+    child.on('error', (error) => {
+        console.error(`${definition.label} failed to start:`, error);
+    });
+    console.log(`${definition.label} started with pid ${child.pid}.`);
+    return child;
+}
+async function stopWorkers(children, signal) {
+    console.log(`REIE worker coordinator received ${signal}. Stopping ${children.length} worker(s).`);
+    for (const child of children) {
+        if (!child.killed) {
+            child.kill(signal);
+        }
+    }
+    await new Promise((resolve) => {
+        setTimeout(resolve, 1000);
+    });
+    process.exit(0);
+}
+async function main() {
+    const selectedWorkers = parseWorkerNames(process.argv.slice(2));
+    if (!selectedWorkers)
+        return;
+    const baseDir = dirname(fileURLToPath(import.meta.url));
+    const definitions = buildWorkerDefinitions(baseDir).filter((definition) => selectedWorkers.includes(definition.name));
+    const children = definitions.map(startWorker);
+    process.on('SIGINT', (signal) => {
+        void stopWorkers(children, signal);
+    });
+    process.on('SIGTERM', (signal) => {
+        void stopWorkers(children, signal);
+    });
+    console.log('REIE worker coordinator online:', {
+        workers: definitions.map((definition) => definition.name),
+    });
+}
+main().catch((error) => {
+    console.error('REIE worker coordinator failed:', error);
     process.exit(1);
 });
+// workers/main.ts

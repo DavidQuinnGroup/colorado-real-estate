@@ -1,37 +1,50 @@
-import { prisma } from "@/lib/prisma"
+import { prisma } from '@/lib/prisma';
 
-export async function matchSavedSearches(listing: any) {
-  const db = prisma as any
+type ListingForSearchMatch = {
+  city?: string | null;
+  price?: number | null;
+  beds?: number | null;
+  propertyType?: string | null;
+  lat?: number | null;
+  lng?: number | null;
+};
 
-const searches = await db.savedSearch.findMany({
+function normalize(value: unknown) {
+  return String(value || '').trim().toLowerCase();
+}
+
+function hasBounds(search: { north: number | null; south: number | null; east: number | null; west: number | null }) {
+  return search.north !== null && search.south !== null && search.east !== null && search.west !== null;
+}
+
+function matchesBounds(
+  search: { north: number | null; south: number | null; east: number | null; west: number | null },
+  listing: ListingForSearchMatch,
+) {
+  if (!hasBounds(search)) return true;
+  if (listing.lat === null || listing.lng === null || listing.lat === undefined || listing.lng === undefined) return false;
+
+  return listing.lat <= search.north! && listing.lat >= search.south! && listing.lng <= search.east! && listing.lng >= search.west!;
+}
+
+export async function matchSavedSearches(listing: ListingForSearchMatch) {
+  const searches = await prisma.savedSearch.findMany({
     where: {
       isActive: true,
-      city: listing.city,
     },
-  })
+    include: {
+      user: true,
+    },
+  });
 
-  return searches.filter((search: any) => {
-    if (search.minPrice && listing.price < search.minPrice) return false
-    if (search.beds && listing.beds < search.beds) return false
-    if (search.type && listing.propertyType !== search.type) return false
+  return searches.filter((search) => {
+    if (normalize(search.city) !== normalize(listing.city)) return false;
+    if (search.minPrice && Number(listing.price || 0) < search.minPrice) return false;
+    if (search.beds && Number(listing.beds || 0) < search.beds) return false;
+    if (search.type && normalize(listing.propertyType) !== normalize(search.type)) return false;
 
-    // Bounding box filter
-    if (
-      search.north &&
-      search.south &&
-      search.east &&
-      search.west
-    ) {
-      if (
-        listing.lat > search.north ||
-        listing.lat < search.south ||
-        listing.lng > search.east ||
-        listing.lng < search.west
-      ) {
-        return false
-      }
-    }
-
-    return true
-  })
+    return matchesBounds(search, listing);
+  });
 }
+
+// lib/alerts/matchSavedSearches.ts

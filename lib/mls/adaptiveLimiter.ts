@@ -1,36 +1,98 @@
-let currentDelay = 600 // start safe
-const MIN_DELAY = 400  // fastest (~2.5 RPS ceiling buffer)
-const MAX_DELAY = 5000 // slowest fallback
+const DEFAULT_INITIAL_DELAY_MS = 600;
+const DEFAULT_MIN_DELAY_MS = 400;
+const DEFAULT_MAX_DELAY_MS = 5000;
+const DEFAULT_SUCCESS_THRESHOLD = 5;
+const DEFAULT_STEP_MS = 50;
+const DEFAULT_FAILURE_STEP_MS = 200;
 
-let successStreak = 0
+let currentDelayMs = readBoundedInteger('MLS_ADAPTIVE_INITIAL_DELAY_MS', DEFAULT_INITIAL_DELAY_MS, 0, 60_000);
+let successStreak = 0;
+
+function readBoundedInteger(key: string, fallback: number, min: number, max: number) {
+  const parsed = Number(process.env[key]);
+  if (!Number.isFinite(parsed)) return fallback;
+
+  return Math.max(min, Math.min(Math.floor(parsed), max));
+}
+
+function getMinDelayMs() {
+  return readBoundedInteger('MLS_ADAPTIVE_MIN_DELAY_MS', DEFAULT_MIN_DELAY_MS, 0, 60_000);
+}
+
+function getMaxDelayMs() {
+  return readBoundedInteger('MLS_ADAPTIVE_MAX_DELAY_MS', DEFAULT_MAX_DELAY_MS, getMinDelayMs(), 60_000);
+}
+
+function getSuccessThreshold() {
+  return readBoundedInteger('MLS_ADAPTIVE_SUCCESS_THRESHOLD', DEFAULT_SUCCESS_THRESHOLD, 1, 100);
+}
+
+function getStepMs() {
+  return readBoundedInteger('MLS_ADAPTIVE_STEP_MS', DEFAULT_STEP_MS, 1, 10_000);
+}
+
+function getFailureStepMs() {
+  return readBoundedInteger('MLS_ADAPTIVE_FAILURE_STEP_MS', DEFAULT_FAILURE_STEP_MS, 1, 10_000);
+}
+
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function clampDelay(value: number) {
+  return Math.max(getMinDelayMs(), Math.min(Math.floor(value), getMaxDelayMs()));
+}
 
 export async function adaptiveDelay() {
-  await new Promise((r) => setTimeout(r, currentDelay))
+  if (currentDelayMs > 0) {
+    await sleep(currentDelayMs);
+  }
 }
 
 export function recordSuccess() {
-  successStreak++
+  successStreak += 1;
 
-  // gradually speed up after 5 successes
-  if (successStreak >= 5) {
-    currentDelay = Math.max(MIN_DELAY, currentDelay - 50)
-    successStreak = 0
-    console.log(`⚡ Speeding up: ${currentDelay}ms`)
+  if (successStreak < getSuccessThreshold()) {
+    return getAdaptiveLimiterState();
   }
+
+  currentDelayMs = clampDelay(currentDelayMs - getStepMs());
+  successStreak = 0;
+
+  return getAdaptiveLimiterState();
 }
 
 export function recordFailure(status?: number) {
-  successStreak = 0
+  successStreak = 0;
 
   if (status === 429) {
-    currentDelay = Math.min(MAX_DELAY, currentDelay * 2)
-    console.log(`🚨 429 detected — backing off HARD: ${currentDelay}ms`)
+    currentDelayMs = clampDelay(currentDelayMs * 2);
   } else {
-    currentDelay = Math.min(MAX_DELAY, currentDelay + 200)
-    console.log(`⚠️ Error detected — slowing: ${currentDelay}ms`)
+    currentDelayMs = clampDelay(currentDelayMs + getFailureStepMs());
   }
+
+  return getAdaptiveLimiterState();
+}
+
+export function resetAdaptiveLimiter(delayMs = DEFAULT_INITIAL_DELAY_MS) {
+  currentDelayMs = clampDelay(delayMs);
+  successStreak = 0;
+
+  return getAdaptiveLimiterState();
 }
 
 export function getCurrentDelay() {
-  return currentDelay
+  return currentDelayMs;
 }
+
+export function getAdaptiveLimiterState() {
+  return {
+    currentDelayMs,
+    maxDelayMs: getMaxDelayMs(),
+    minDelayMs: getMinDelayMs(),
+    successStreak,
+    successThreshold: getSuccessThreshold(),
+  };
+}
+
+// lib/mls/adaptiveLimiter.ts
