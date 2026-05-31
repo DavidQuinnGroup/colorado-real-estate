@@ -3,6 +3,7 @@ import { deadLetterQueue, DEAD_LETTER_QUEUE_NAME } from '../lib/queue/deadLetter
 import { LISTING_JOB_ATTEMPTS, LISTING_JOB_BACKOFF_DELAY_MS, LISTING_QUEUE_NAME, LISTING_REMOVE_ON_COMPLETE, LISTING_REMOVE_ON_FAIL, listingQueue, } from '../lib/queue/listingQueue.js';
 import { MLS_PAGE_JOB_ATTEMPTS, MLS_PAGE_JOB_BACKOFF_DELAY_MS, MLS_PAGE_QUEUE_NAME, MLS_PAGE_REMOVE_ON_COMPLETE_AGE_SECONDS, MLS_PAGE_REMOVE_ON_COMPLETE_COUNT, MLS_PAGE_REMOVE_ON_FAIL_AGE_SECONDS, MLS_PAGE_REMOVE_ON_FAIL_COUNT, mlsPageQueue, } from '../lib/queue/mlsPageQueue.js';
 import { MLS_SYNC_JOB_ATTEMPTS, MLS_SYNC_JOB_BACKOFF_DELAY_MS, MLS_SYNC_QUEUE_NAME, MLS_SYNC_REMOVE_ON_COMPLETE_AGE_SECONDS, MLS_SYNC_REMOVE_ON_COMPLETE_COUNT, MLS_SYNC_REMOVE_ON_FAIL_AGE_SECONDS, MLS_SYNC_REMOVE_ON_FAIL_COUNT, mlsQueue, } from '../lib/queue/mlsQueue.js';
+import { closeRedisConnections } from '../lib/queue/redis.js';
 const DEFAULT_LIMIT = 5;
 const DEFAULT_TIMEOUT_MS = 8000;
 const MAX_PAYLOAD_STRING_LENGTH = 500;
@@ -396,6 +397,7 @@ function buildRecoveryPlan(queues, diagnostics) {
 }
 async function closeQueues() {
     await Promise.allSettled(QUEUES.map((definition) => definition.queue.close()));
+    await closeRedisConnections();
 }
 async function main() {
     const options = parseCliOptions(process.argv.slice(2));
@@ -447,6 +449,6 @@ main()
     process.exitCode = 1;
 })
     .finally(() => {
-    void closeQueues();
+    return closeQueues();
 });
 // /Users/davidquinn/david-quinn-group/colorado-real-estate/scripts/queueDashboard.ts

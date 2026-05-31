@@ -5,6 +5,7 @@ const MAX_RECONNECT_DELAY_MS = 30_000;
 const ONE_SHOT_RECONNECT_ATTEMPTS = 2;
 const ONE_SHOT_COMMAND_NAMES = new Set(['run:queue-dashboard', 'run:mls-sync', 'run:mls-sync:dry', 'run:mls-sync:live']);
 const redisErrorLogState = new Map<string, { count: number; lastMessage: string }>();
+const redisConnections = new Set<Redis>();
 
 function getRetryDelay(attempt: number) {
   return Math.min(attempt * 500, MAX_RECONNECT_DELAY_MS);
@@ -79,9 +80,20 @@ export function getRedisUrl() {
 }
 
 export function getRedisConnection(connectionName = 'reie-bullmq') {
-  return attachRedisDiagnostics(new Redis(REDIS_URL, buildRedisOptions(connectionName)), connectionName);
+  const connection = attachRedisDiagnostics(new Redis(REDIS_URL, buildRedisOptions(connectionName)), connectionName);
+  redisConnections.add(connection);
+  return connection;
 }
 
 export const redis = getRedisConnection('reie-shared');
+
+export async function closeRedisConnections() {
+  await Promise.allSettled(
+    [...redisConnections].map(async (connection) => {
+      redisConnections.delete(connection);
+      connection.disconnect(false);
+    }),
+  );
+}
 
 // /Users/davidquinn/david-quinn-group/colorado-real-estate/lib/queue/redis.ts

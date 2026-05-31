@@ -38,6 +38,7 @@ import {
   MLS_SYNC_REMOVE_ON_FAIL_COUNT,
   mlsQueue,
 } from '../lib/queue/mlsQueue.js';
+import { closeRedisConnections } from '../lib/queue/redis.js';
 
 type DashboardOptions = {
   includeFailed: boolean;
@@ -542,6 +543,7 @@ function buildRecoveryPlan(queues: QueueInspectionResult[], diagnostics: Array<{
 
 async function closeQueues() {
   await Promise.allSettled(QUEUES.map((definition) => definition.queue.close()));
+  await closeRedisConnections();
 }
 
 async function main() {
@@ -604,7 +606,7 @@ main()
     process.exitCode = 1;
   })
   .finally(() => {
-    void closeQueues();
+    return closeQueues();
   });
 
 // /Users/davidquinn/david-quinn-group/colorado-real-estate/scripts/queueDashboard.ts
