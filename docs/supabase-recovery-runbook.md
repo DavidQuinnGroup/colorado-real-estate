@@ -86,6 +86,7 @@ npm run run:digest:dry -- --limit 50
 
 `npm run supabase:check` should report:
 
+- Supabase placeholder values: pass.
 - Supabase project ref consistency: pass.
 - Supabase project DNS: pass.
 - Supabase Postgres DNS: pass.

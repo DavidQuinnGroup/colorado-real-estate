@@ -9,6 +9,16 @@ function getEnv(name) {
     const value = process.env[name];
     return typeof value === 'string' && value.trim() ? value.trim() : '';
 }
+function isPlaceholderValue(value) {
+    if (!value)
+        return false;
+    return /<[^>]+>/.test(value) || value.includes('example.com');
+}
+function getPlaceholderNames(values) {
+    return Object.entries(values)
+        .filter(([, value]) => isPlaceholderValue(value))
+        .map(([name]) => name);
+}
 function parseHost(value) {
     if (!value)
         return '';
@@ -109,6 +119,21 @@ function checkProjectRefConsistency(values) {
         name: 'Supabase project ref consistency',
         status: uniqueRefs.length === 1 ? 'pass' : 'fail',
         detail: uniqueRefs.length === 1 ? `All parsed refs match: ${uniqueRefs[0]}. ${details}` : `Parsed refs differ. ${details}`,
+    };
+}
+function checkNoPlaceholders(values) {
+    const placeholderNames = getPlaceholderNames(values);
+    if (!placeholderNames.length) {
+        return {
+            name: 'Supabase placeholder values',
+            status: 'pass',
+            detail: 'No placeholder Supabase values detected.',
+        };
+    }
+    return {
+        name: 'Supabase placeholder values',
+        status: 'fail',
+        detail: `Replace placeholder value(s): ${placeholderNames.join(', ')}.`,
     };
 }
 function hasFailed(results, name) {
@@ -260,6 +285,13 @@ async function main() {
     const publishableKey = getEnv('NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY');
     const serviceRoleKey = getEnv('SUPABASE_SERVICE_ROLE_KEY');
     const databaseUrl = getEnv('DATABASE_URL');
+    const supabaseEnvValues = {
+        NEXT_PUBLIC_SUPABASE_URL: supabaseUrl,
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: anonKey,
+        NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: publishableKey,
+        SUPABASE_SERVICE_ROLE_KEY: serviceRoleKey,
+        DATABASE_URL: databaseUrl,
+    };
     const supabaseHost = parseHost(supabaseUrl);
     const databaseHost = parsePostgresHost(databaseUrl);
     const projectRefs = {
@@ -295,13 +327,33 @@ async function main() {
             status: databaseUrl ? 'pass' : 'warn',
             detail: databaseUrl ? `Configured host: ${databaseHost || 'invalid URL'}.` : 'Missing; REST checks can still run.',
         },
+        checkNoPlaceholders(supabaseEnvValues),
         checkProjectRefConsistency(projectRefs),
     ];
+    const hasPlaceholders = hasFailed(results, 'Supabase placeholder values');
     results.push(await checkDns('Supabase project DNS', supabaseHost));
     results.push(await checkDns('Supabase Postgres DNS', databaseHost));
-    results.push(await checkPostgresTcp(databaseUrl));
-    results.push(await checkPrismaDatabase(databaseUrl, hasFailed(results, 'Supabase Postgres DNS') || hasFailed(results, 'Supabase Postgres TCP')));
-    results.push(await checkSupabaseRest(supabaseUrl, serviceRoleKey));
+    results.push(hasPlaceholders
+        ? {
+            name: 'Supabase Postgres TCP',
+            status: 'skip',
+            detail: 'Skipped because Supabase placeholder values are still configured.',
+        }
+        : await checkPostgresTcp(databaseUrl));
+    results.push(hasPlaceholders
+        ? {
+            name: 'Prisma database',
+            status: 'skip',
+            detail: 'Skipped because Supabase placeholder values are still configured.',
+        }
+        : await checkPrismaDatabase(databaseUrl, hasFailed(results, 'Supabase Postgres DNS') || hasFailed(results, 'Supabase Postgres TCP')));
+    results.push(hasPlaceholders
+        ? {
+            name: 'Supabase REST',
+            status: 'skip',
+            detail: 'Skipped because Supabase placeholder values are still configured.',
+        }
+        : await checkSupabaseRest(supabaseUrl, serviceRoleKey));
     console.log('Supabase connectivity preflight starting.');
     for (const result of results) {
         logResult(result);
