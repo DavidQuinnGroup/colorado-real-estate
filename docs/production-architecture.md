@@ -200,6 +200,7 @@ Optional controls:
 Production requirements:
 
 - `REIE_ADMIN_API_KEY` or `ADMIN_API_KEY` must be configured for protected admin endpoints.
+- `npm run supabase:check:json` must report readiness before database-backed dry-runs, live seed writes, reindexing, scheduled work, or recurring email traffic.
 - Resend sender domain must be verified before recurring alert or digest sends.
 - Public site URL variables must point to the canonical production domain.
 - Search-index health through `npm run smoke:mls-status`, Search Smoke Readiness through `npm run smoke:search`, and timeout-bounded queue diagnostics through `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000` must be verified before recurring email traffic, including recurring alert or digest sends.
@@ -329,7 +330,7 @@ Compatibility and seed helpers:
 Rules:
 
 - Schema changes require collection repair, migration, or reset.
-- Reindex after schema repair when Supabase is reachable.
+- Reindex after schema repair when `npm run supabase:check:json` reports readiness.
 - Treat Typesense as disposable infrastructure rebuilt from Postgres.
 - Keep `properties` and `listings` compatible.
 - `/Users/davidquinn/david-quinn-group/colorado-real-estate/lib/typesense/schema.ts` is the canonical schema source.
@@ -357,9 +358,10 @@ npm run worker:build
 npm run typesense:init
 ```
 
-Reindex when Supabase is reachable:
+Reindex after `npm run supabase:check:json` reports readiness:
 
 ```bash
+npm run supabase:check:json
 npm run typesense:reindex
 ```
 
@@ -413,7 +415,7 @@ Rules:
 - Do not run seed scripts from app startup, public API routes, page rendering, or scheduled production jobs.
 - Do not use local seed records as production inventory strategy.
 - Dry-run seed commands are safe verification checks.
-- Live seed commands require database connectivity.
+- Live seed commands require `npm run supabase:check:json` readiness before any database rows are written.
 - Indexed seed commands require Typesense to be running with canonical `properties` and `listings` schemas.
 - Seed scripts create or update bounded `Property` rows and replace their own `PropertyPhoto` rows.
 - Seed scripts report database, photo, and per-collection Typesense status.
@@ -449,7 +451,7 @@ Production rules:
 - Resend domain authentication must be verified before recurring email traffic.
 - Unsubscribe behavior must remain idempotent.
 - Tracked redirects must be constrained to safe destinations.
-- Recurring email traffic, including recurring alert or digest sends, must wait for healthy `npm run smoke:mls-status` search-index diagnostics, healthy `npm run smoke:search` Search Smoke Readiness, and acceptable timeout-bounded queue diagnostics.
+- Recurring email traffic, including recurring alert or digest sends, must wait for `npm run supabase:check:json`, healthy `npm run smoke:mls-status` search-index diagnostics, healthy `npm run smoke:search` Search Smoke Readiness, and acceptable timeout-bounded queue diagnostics.
 
 Commands from **Terminal 5: Scripts / curl testing**:
 
@@ -620,6 +622,7 @@ Production still needs explicit scheduler decisions for:
 Scheduler rules:
 
 - Schedules must use bounded command arguments.
+- Database-backed schedules must not run unless `npm run supabase:check:json` reports readiness.
 - MLS dry-run schedules should prefer structured JSON output.
 - Recurring email traffic jobs must be intentional and observable.
 - Recurring email traffic jobs should remain disabled when search-index health is degraded, `meta.smoke.ready=false`, public search smoke blockers are present, or timeout-bounded queue diagnostics are unacceptable.
@@ -725,6 +728,7 @@ Run required checks from **Terminal 5: Scripts / curl testing** before consideri
 
 ```bash
 npm run worker:build
+npm run supabase:check:json
 npm run run:mls-sync:dry
 npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000
 npm run typecheck
@@ -811,7 +815,7 @@ If any curl returns `HTTP_STATUS:000`, start or restart **Terminal 1: Next.js ap
 - Recurring email traffic, recurring alert or digest scheduling, and CRM scheduling need production workflow decisions.
 - Email domain authentication should be confirmed before recurring alert or digest sends.
 - Production smoke verification still needs `npm run smoke:mls-status`, `npm run smoke:search`, timeout-bounded queue diagnostics, and one internal tracked email click before recurring scheduler activation or recurring email traffic.
-- Local Typesense `properties` and `listings` collections are schema-ready; reindex should run after Supabase recovery.
+- Local Typesense `properties` and `listings` collections are schema-ready; reindex should run after `npm run supabase:check:json` reports readiness.
 - Supabase connectivity from local scripts is currently a blocker until `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/supabase-recovery-runbook.md` is completed and `npm run supabase:check:json` reports readiness.
 - Timeout-bounded queue diagnostics exist through the Terminal 5 dashboard and admin/dead-letter UI, and they gate live-inventory claims, scheduler cadence, recurring scheduler activation, MLS-volume decisions, recurring email traffic, MLS-backed public expansion, and large programmatic content batch publication; broader operational controls are still pending.
 - CRM closure audit controls, note-backed completion/dismissal, CRM API Inspection metadata, and failed detail-route preservation are implemented locally; production admin smoke verification still needs to run after Terminal 1 and Supabase are reachable.
