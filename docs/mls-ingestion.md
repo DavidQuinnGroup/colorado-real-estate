@@ -365,13 +365,14 @@ npm run worker:build
 npm run typesense:init
 ```
 
-Reindex Supabase properties into both collections from **Terminal 5: Scripts / curl testing** when Supabase is reachable:
+Reindex Supabase properties into both collections from **Terminal 5: Scripts / curl testing** after `npm run supabase:check:json` reports readiness:
 
 ```bash
+npm run supabase:check:json
 npm run typesense:reindex
 ```
 
-If Supabase is not reachable and only schema repair is needed, stop after `npm run typesense:init` and rerun `npm run build`.
+If `npm run supabase:check:json` reports blocked and only schema repair is needed, stop after `npm run typesense:init` and rerun `npm run build`.
 
 Inspection and compatibility commands from **Terminal 5: Scripts / curl testing**:
 
@@ -387,7 +388,7 @@ Expected stale-collection warning shape:
 Neighborhood inventory lookup skipped because the local Typesense listings collection is stale: Typesense schema listings is invalid: ...
 ```
 
-Current stale warning includes missing required fields/facets, `price` type mismatch, and default sort mismatch. That warning means code schema validation is working. The live local Typesense collection still needs repair and, when Supabase is reachable, reindexing.
+Current stale warning includes missing required fields/facets, `price` type mismatch, and default sort mismatch. That warning means code schema validation is working. The live local Typesense collection still needs repair and, after `npm run supabase:check:json` reports readiness, reindexing.
 
 ## Seed Data
 
@@ -728,7 +729,7 @@ If market pages log that the local Typesense `listings` collection is stale:
 1. Confirm Terminal 4 is running `npm run infra:up`.
 2. Run `npm run worker:build` from Terminal 5.
 3. Run `npm run typesense:init` from Terminal 5.
-4. Run `npm run typesense:reindex` from Terminal 5 when Supabase is reachable.
+4. Run `npm run supabase:check:json` from Terminal 5, then run `npm run typesense:reindex` only after it reports readiness.
 5. Run `npm run build` from Terminal 5.
 
 If database-dependent scripts fail with Supabase connectivity errors:
