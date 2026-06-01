@@ -1,5 +1,6 @@
 import { pathToFileURL } from 'node:url';
 import { prisma } from '../lib/prisma.js';
+import { assertDatabaseReady } from '../lib/queue/databasePreflight.js';
 const DEFAULT_LIMIT = 20;
 const MAX_LIMIT = 100;
 const DEFAULT_STATUS = 'pending';
@@ -17,14 +18,23 @@ const emptyCRMTaskAuditSummary = {
     closureReviewMissing: 0,
     closureReviewCoveragePercent: 100,
 };
-const emptyCRMTaskReadiness = {
-    level: 'ready',
-    summary: 'CRM readiness has not been calculated.',
-    nextAction: 'Run CRM reporting from Terminal 5.',
-    terminal: 'Terminal 5',
-    nextCommand: 'npm run run:crm:active',
-    gates: [],
-};
+function getCRMTaskFailureReadiness(error) {
+    const message = error instanceof Error ? error.message : String(error || 'Unknown CRM task scan failure.');
+    return {
+        level: 'blocked',
+        summary: `CRM task scan failed before readiness could be calculated. ${message}`,
+        nextAction: 'Run the Supabase preflight and resolve database connectivity before CRM reporting.',
+        terminal: 'Terminal 5',
+        nextCommand: 'npm run supabase:check',
+        gates: [
+            {
+                label: 'Database',
+                status: 'fail',
+                detail: 'CRM reporting requires a passing database preflight.',
+            },
+        ],
+    };
+}
 const HELP_TEXT = `
 REIE CRM task worker
 
@@ -387,6 +397,10 @@ export async function runCRMTasks(options = {}) {
     try {
         if (!quiet)
             console.log('REIE CRM task worker starting:', { limit, status });
+        await assertDatabaseReady({
+            operation: 'CRM task reporting',
+            recoveryCommand: 'npm run supabase:check',
+        });
         const tasks = await fetchTasks(limit, status);
         const audit = await fetchAuditSummary();
         const taskSummaries = tasks.map(toTaskSummary);
@@ -429,7 +443,7 @@ export async function runCRMTasks(options = {}) {
             alertWatch: 0,
             alertIncomplete: 0,
             audit: emptyCRMTaskAuditSummary,
-            readiness: emptyCRMTaskReadiness,
+            readiness: getCRMTaskFailureReadiness(error),
             tasks: [],
         };
     }

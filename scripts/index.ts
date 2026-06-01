@@ -1,6 +1,8 @@
 import dotenv from 'dotenv';
 import type { CollectionCreateSchema } from 'typesense/lib/Typesense/Collections.js';
 
+import { assertDatabaseReady } from '../lib/queue/databasePreflight.js';
+
 type ReindexOptions = {
   reset: boolean;
   check: boolean;
@@ -432,6 +434,10 @@ async function main() {
   }
 
   assertSupabaseEnvReady();
+  await assertDatabaseReady({
+    operation: 'Typesense reindex Supabase fetch',
+    recoveryCommand: 'npm run supabase:check',
+  });
 
   const { indexProperties } = await import('../lib/typesense/indexProperties.js');
   const summary = await indexProperties({

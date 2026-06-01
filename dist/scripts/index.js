@@ -1,4 +1,5 @@
 import dotenv from 'dotenv';
+import { assertDatabaseReady } from '../lib/queue/databasePreflight.js';
 const DEFAULT_BATCH_SIZE = 500;
 const MAX_BATCH_SIZE = 1000;
 const MAX_RECORDS_LIMIT = 1000000;
@@ -299,6 +300,10 @@ async function main() {
         return;
     }
     assertSupabaseEnvReady();
+    await assertDatabaseReady({
+        operation: 'Typesense reindex Supabase fetch',
+        recoveryCommand: 'npm run supabase:check',
+    });
     const { indexProperties } = await import('../lib/typesense/indexProperties.js');
     const summary = await indexProperties({
         batchSize: options.batchSize,

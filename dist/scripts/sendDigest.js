@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { sendEmail } from '../lib/email/sendEmail.js';
 import { prisma } from '../lib/prisma.js';
+import { assertDatabaseReady } from '../lib/queue/databasePreflight.js';
 const DEFAULT_LIMIT = 50;
 const MAX_LIMIT = 500;
 const HELP_TEXT = `
@@ -283,6 +284,10 @@ async function runDigest() {
     if (!options)
         return;
     console.log('REIE digest run starting:', options);
+    await assertDatabaseReady({
+        operation: 'digest sender',
+        recoveryCommand: 'npm run supabase:check',
+    });
     const users = await prisma.user.findMany({
         where: {
             isUnsubscribed: false,

@@ -1,5 +1,6 @@
 import { processAlertQueue } from '../lib/alerts/processAlertQueue.js';
 import { prisma } from '../lib/prisma.js';
+import { assertDatabaseReady } from '../lib/queue/databasePreflight.js';
 const DEFAULT_LIMIT = 50;
 const MAX_LIMIT = 200;
 const EMAIL_VISIBLE_PREFIX = 2;
@@ -238,6 +239,10 @@ async function runAlerts() {
     console.log('REIE saved-search alert run starting:', {
         ...options,
         mode: options.dryRun ? 'preview' : 'live',
+    });
+    await assertDatabaseReady({
+        operation: 'saved-search alert runner',
+        recoveryCommand: 'npm run supabase:check',
     });
     const result = await processAlertQueue({
         limit: options.limit,

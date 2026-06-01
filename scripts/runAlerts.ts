@@ -1,5 +1,6 @@
 import { processAlertQueue } from '../lib/alerts/processAlertQueue.js';
 import { prisma } from '../lib/prisma.js';
+import { assertDatabaseReady } from '../lib/queue/databasePreflight.js';
 
 type RunAlertsOptions = {
   limit: number;
@@ -271,6 +272,11 @@ async function runAlerts() {
   console.log('REIE saved-search alert run starting:', {
     ...options,
     mode: options.dryRun ? 'preview' : 'live',
+  });
+
+  await assertDatabaseReady({
+    operation: 'saved-search alert runner',
+    recoveryCommand: 'npm run supabase:check',
   });
 
   const result = await processAlertQueue({

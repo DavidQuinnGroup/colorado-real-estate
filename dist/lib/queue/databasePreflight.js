@@ -13,15 +13,25 @@ export async function assertWorkerDatabaseReady(context) {
         console.warn(`REIE ${context.worker} database preflight skipped by REIE_WORKER_SKIP_DATABASE_PREFLIGHT.`);
         return;
     }
+    await assertDatabaseReady({
+        operation: `${context.worker} before consuming ${context.queue} jobs`,
+        recoveryCommand: context.recoveryCommand,
+    });
+}
+export async function assertDatabaseReady(context) {
+    if (shouldSkipDatabasePreflight()) {
+        console.warn(`REIE database preflight skipped for ${context.operation} by REIE_WORKER_SKIP_DATABASE_PREFLIGHT.`);
+        return;
+    }
     try {
         await prisma.$queryRaw `SELECT 1`;
     }
     catch (error) {
         await prisma.$disconnect().catch(() => undefined);
         throw new Error([
-            `Database preflight failed for ${context.worker} before consuming ${context.queue} jobs.`,
+            `Database preflight failed for ${context.operation}.`,
             getErrorMessage(error),
-            `Run ${context.recoveryCommand || 'npm run supabase:check'} and resolve Supabase before starting this worker.`,
+            `Run ${context.recoveryCommand || 'npm run supabase:check'} and resolve Supabase before continuing.`,
         ].join(' '));
     }
 }

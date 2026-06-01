@@ -3,8 +3,8 @@ import { Job, Worker } from 'bullmq';
 
 import { processAlertById, processAlertQueue } from '../lib/alerts/processAlertQueue.js';
 import { prisma } from '../lib/prisma.js';
-import { ALERT_QUEUE_NAME, type AlertJobData } from '../lib/queue/alertQueue.js';
-import { enqueueDeadLetterFromJob } from '../lib/queue/deadLetterQueue.js';
+import type { AlertJobData } from '../lib/queue/alertQueue.js';
+import { assertDatabaseReady } from '../lib/queue/databasePreflight.js';
 import { getRedisConnection } from '../lib/queue/redis.js';
 
 type AlertWorkerMode = 'queue' | 'batch' | 'hybrid';
@@ -23,6 +23,7 @@ type AlertBatchResult = Awaited<ReturnType<typeof processAlertQueue>>;
 const DEFAULT_BATCH_SIZE = 50;
 const DEFAULT_INTERVAL_MS = 60_000;
 const DEFAULT_CONCURRENCY = 2;
+const ALERT_QUEUE_NAME = 'reie-alerts';
 const LOCAL_BASE_URL = 'http://localhost:3000';
 const TERMINAL_3 = 'Terminal 3';
 const TERMINAL_5 = 'Terminal 5';
@@ -222,9 +223,11 @@ async function startQueueWorker(config: AlertWorkerConfig) {
       return;
     }
 
-    void enqueueDeadLetterFromJob(ALERT_QUEUE_NAME, job, error).catch((deadLetterError) => {
-      console.error('Failed to enqueue alert dead-letter job:', getErrorMessage(deadLetterError));
-    });
+    void import('../lib/queue/deadLetterQueue.js')
+      .then(({ enqueueDeadLetterFromJob }) => enqueueDeadLetterFromJob(ALERT_QUEUE_NAME, job, error))
+      .catch((deadLetterError) => {
+        console.error('Failed to enqueue alert dead-letter job:', getErrorMessage(deadLetterError));
+      });
   });
 
   worker.on('error', (error) => {
@@ -283,6 +286,10 @@ async function startPollingLoop(config: AlertWorkerConfig) {
 async function startAlertWorker() {
   const config = getConfig();
   validateConfig(config);
+  await assertDatabaseReady({
+    operation: 'alert worker startup',
+    recoveryCommand: 'npm run supabase:check',
+  });
 
   const workers: Worker[] = [];
 
