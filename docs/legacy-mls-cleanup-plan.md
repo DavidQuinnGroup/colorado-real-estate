@@ -164,7 +164,7 @@ Expected readiness signals:
 - `/api/mls/status` includes `commands.smokeOps`, `commands.smokeMlsStatus`, `commands.smokeSearch`, `commands.rawStatus`, and `commands.rawSearchCheck` for admin and operator guidance.
 - `searchIndex.failed` should be `0` before recurring scheduler activation, scheduler cadence increases, or MLS-volume increases.
 - `npm run smoke:search` Search Smoke Readiness includes metadata for `source`, `meta.source`, `health`, `accessLevel`, `filtersApplied`, `boundsApplied`, `returned`, `mapped`, `coordinateFiltered`, `durationMs`, `meta.smoke.ready`, and `meta.smoke.blockers`.
-- `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000` should report acceptable queue diagnostics before recurring email traffic, live-inventory claims, MLS-backed public expansion, MLS-volume increases, scheduler cadence increases, or large programmatic content batch publication.
+- `npm run supabase:check:json` should report readiness and `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000` should report acceptable queue diagnostics before recurring email traffic, live-inventory claims, MLS-backed public expansion, MLS-volume increases, scheduler cadence increases, or large programmatic content batch publication.
 - Degraded search metadata, `meta.smoke.ready=false`, or non-empty smoke blockers are repair/readiness issues, not reasons to restore removed legacy ingestion helpers.
 
 Use **Terminal 4: Docker / Typesense**:
