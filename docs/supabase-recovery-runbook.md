@@ -114,7 +114,7 @@ npm run supabase:check
 
 The JSON report includes `schemaVersion: 1`, `readiness.level`, `readiness.summary`, `readiness.nextAction`, `readiness.nextCommand`, and per-check `readiness.gates` for automation and scheduler gating.
 
-The JSON readiness gate must report ready before database-backed dry-runs can be trusted.
+The JSON readiness gate must report ready before database-backed dry-runs, Typesense reindexing, queue retry, recurring scheduler activation, recurring email traffic, live-inventory claims, MLS-backed public expansion, large programmatic content batch publication, or live database work can be trusted.
 
 After `npm run supabase:check:json` reports readiness, continue:
 
