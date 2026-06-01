@@ -27,6 +27,13 @@ Current verified non-failure:
 aws-0-us-west-2.pooler.supabase.com:6543 accepted a TCP connection
 ```
 
+June 1, 2026 recheck:
+
+- `npm run supabase:check` still fails on Supabase project DNS, Prisma database, and Supabase REST.
+- `npm run typesense:collections:check` passes for both canonical Typesense collections.
+- `npm run run:queue-dashboard -- --failed --sample --limit=5 --timeout-ms=3000` reports no open dead-letter jobs and no stale active jobs, but keeps recovery blocked because `mls-sync` failed jobs are database-connectivity failures.
+- Supabase's public status page did not show a broad platform incident for June 1, 2026 during this check. Treat the failure as project status, project ref, credentials, connection-string, account, or local-network specific until the dashboard proves otherwise.
+
 ## What To Verify In Supabase
 
 Open the Supabase dashboard and confirm:
