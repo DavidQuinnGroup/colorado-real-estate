@@ -772,7 +772,7 @@ npm run typesense:reindex
 - Production smoke verification still needs `npm run smoke:mls-status`, `npm run smoke:search`, timeout-bounded queue diagnostics, and one internal tracked email click before recurring scheduler activation or recurring email traffic.
 - Saved-search alert frequency controls are not yet implemented.
 - Digest grouping rules need final product decisions.
-- CRM closure audit controls, note-backed completion/dismissal, CRM API Inspection metadata, and failed detail-route preservation are implemented locally; production admin smoke verification still needs to run after Terminal 1 and Supabase are reachable.
+- CRM closure audit controls, note-backed completion/dismissal, CRM API Inspection metadata, and failed detail-route preservation are implemented locally; production admin smoke verification still needs to run after Terminal 1 is running and `npm run supabase:check:json` reports readiness.
 - `sendAlertEmail.ts` and older email templates should be reviewed before production cleanup.
 - Admin dead-letter inspection and timeout-bounded Terminal 5 queue diagnostics exist; live retry controls should remain separate until audit and confirmation flows are designed.
 - Local Typesense `properties` and `listings` collections were verified ready with `npm run typesense:collections:check` on May 31, 2026.
