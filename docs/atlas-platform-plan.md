@@ -93,7 +93,7 @@ Search indexing:
 - Supabase-backed reindexing should run after collection repair when `npm run supabase:check:json` reports readiness.
 - `/api/mls/status` exposes first-class `searchIndex` health.
 - `/api/mls/status` exposes first-class smoke command guidance through `commands.smokeOps`, `commands.smokeMlsStatus`, and `commands.smokeSearch`, while preserving raw API inspection commands through `commands.rawStatus` and `commands.rawSearchCheck`.
-- `npm run smoke:search` is the Search Smoke Readiness check before raising MLS volume, recurring email traffic, alert or digest traffic, or scheduler cadence.
+- `npm run supabase:check:json` and `npm run smoke:search` are readiness checks before raising MLS volume, recurring email traffic, alert or digest traffic, or scheduler cadence.
 
 Seed data:
 
@@ -194,7 +194,7 @@ Local development can bypass the key only when neither admin key environment var
 - Inspect timeout-bounded queue dashboard and dead-letter diagnostics before live retry.
 - Use dry-run mode before live email sends.
 - Treat failed `npm run supabase:check:json`, degraded search-index health, `meta.smoke.ready=false`, public search smoke blockers, or unacceptable timeout-bounded queue diagnostics as blockers before recurring email traffic, including recurring alert or digest sends.
-- Keep alert, digest, and seed dry-runs read-only.
+- Keep alert, digest, and seed dry-runs read-only, and run Supabase-backed dry-runs only after `npm run supabase:check:json` reports readiness.
 - Keep unsubscribe behavior idempotent.
 - Keep tracked redirects constrained to safe destinations.
 - Keep CRM task completion and dismissal human-reviewed through the admin review flow.
@@ -395,7 +395,7 @@ Work:
 - Confirm Typesense reindex reflects current Postgres listings.
 - Confirm live or dry-run sync summaries report `indexFailed=0` before increasing MLS volume.
 - Treat `indexFailed > 0` as degraded search freshness even when the Postgres upsert succeeds.
-- Confirm `npm run smoke:mls-status` search-index health, `npm run smoke:search` Search Smoke Readiness, indexing behavior, and timeout-bounded queue diagnostics through `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000` before increasing ingestion volume, MLS volume, scheduler cadence, recurring scheduler activation, recurring email traffic, live-inventory claims, or MLS-backed public expansion.
+- Confirm `npm run supabase:check:json`, `npm run smoke:mls-status` search-index health, `npm run smoke:search` Search Smoke Readiness, indexing behavior, and timeout-bounded queue diagnostics through `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000` before increasing ingestion volume, MLS volume, scheduler cadence, recurring scheduler activation, recurring email traffic, live-inventory claims, or MLS-backed public expansion.
 - Inspect failed jobs through `/admin/dead-letter`.
 - Use `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/legacy-mls-cleanup-plan.md` as the completion record for removed legacy MLS helpers.
 
@@ -451,7 +451,7 @@ Work:
 - Use fresh MLS-backed inventory as supporting evidence only where stable.
 - Do not treat local seed content as production authority content.
 - Use CRM engagement signals for content prioritization only after protected CRM readiness, closure audit coverage, failed detail-route inspection preservation, and API Inspection metadata are visible.
-- Use live-inventory claims only after search-index health, Search Smoke Readiness, indexing behavior, and timeout-bounded queue diagnostics are acceptable.
+- Use live-inventory claims only after `npm run supabase:check:json` reports readiness and search-index health, Search Smoke Readiness, indexing behavior, and timeout-bounded queue diagnostics are acceptable.
 - Allow large programmatic content batch publication only after `npm run supabase:check:json`, data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics are verified.
 
 Authority signals to reinforce:
@@ -474,6 +474,7 @@ Work:
 - Confirm unsubscribe behavior.
 - Confirm click tracking redirects safely.
 - Run alert and digest dry-runs before intentional live sends.
+- Confirm `npm run supabase:check:json` readiness before recurring email traffic.
 - Confirm `npm run smoke:mls-status` search-index health before recurring email traffic.
 - Confirm `npm run smoke:search` Search Smoke Readiness before recurring email traffic.
 - Send controlled internal tests before user-facing sends.
@@ -487,7 +488,7 @@ Success criteria:
 - No email sends from page rendering.
 - Dry-runs do not mutate state.
 - Live sends are intentional, explicit, bounded, logged, and reversible at the user preference level.
-- Email click destinations are healthy before recurring email traffic, including recurring alert or digest sends, is enabled.
+- `npm run supabase:check:json` readiness, Search Smoke Readiness, timeout-bounded queue diagnostics, and email click destinations are healthy before recurring email traffic, including recurring alert or digest sends, is enabled.
 - CRM tasks are useful enough for human review, and completed/dismissed CRM tasks retain review notes.
 
 ### Phase 8. Admin Operations Expansion
