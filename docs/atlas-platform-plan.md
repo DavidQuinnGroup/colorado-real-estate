@@ -452,7 +452,7 @@ Work:
 - Do not treat local seed content as production authority content.
 - Use CRM engagement signals for content prioritization only after protected CRM readiness, closure audit coverage, failed detail-route inspection preservation, and API Inspection metadata are visible.
 - Use live-inventory claims only after search-index health, Search Smoke Readiness, indexing behavior, and timeout-bounded queue diagnostics are acceptable.
-- Allow large programmatic content batch publication only after data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics are verified.
+- Allow large programmatic content batch publication only after `npm run supabase:check:json`, data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics are verified.
 
 Authority signals to reinforce:
 
@@ -536,7 +536,7 @@ Rollout order:
 3. Search-index diagnostics review through `npm run smoke:mls-status`.
 4. Search Smoke Readiness verification through `npm run smoke:search`, including `meta.smoke.ready=true` and no blockers.
 5. Timeout-bounded queue diagnostics through `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000`.
-6. Large programmatic content batch publication gate verification for data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics before MLS-backed public expansion.
+6. Large programmatic content batch publication gate verification for `npm run supabase:check:json`, data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics before MLS-backed public expansion.
 7. MLS sync recurring schedule.
 8. CRM reporting.
 9. Alert dry-run.
@@ -558,7 +558,7 @@ Conservative starting schedule:
 | Digest processing | daily or weekly after approval | `npm run run:digest -- --limit 50` |
 | CRM reporting | daily business morning | `npm run run:crm:scheduler` |
 | Typesense schema repair | manual only | `npm run typesense:init` |
-| Typesense reindex | manual only | `npm run typesense:reindex` |
+| Typesense reindex | manual only after `npm run supabase:check:json` readiness | `npm run typesense:reindex` |
 | Seed scripts | not scheduled | manual controlled use only |
 
 Success criteria:
@@ -570,14 +570,14 @@ Success criteria:
 - Email sends are bounded and auditable.
 - Queue diagnostics are timeout-bounded before retry, ingestion volume, scheduler cadence, recurring scheduler activation, recurring email traffic, alert, digest, live-inventory, MLS-volume, MLS-backed public expansion, or large programmatic content batch publication decisions.
 - `npm run supabase:check:json`, search-index health, Search Smoke Readiness, and timeout-bounded queue diagnostics pass before email traffic is sent into the search experience.
-- Large programmatic content batch publication waits for verified data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics.
+- Large programmatic content batch publication waits for `npm run supabase:check:json`, verified data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics.
 - Seed scripts remain controlled manual tools.
 
 ## Current Known Gaps
 
 - Local Typesense `properties` and `listings` collections are schema-ready.
 - Supabase connectivity can block alert, digest, CRM, MLS, seed, and reindex dry-runs/reporting until `npm run supabase:check:json` reports readiness. Use `npm run supabase:check` for a human-readable check.
-- Production smoke verification still needs `npm run smoke:mls-status`, `npm run smoke:search`, timeout-bounded queue diagnostics, and an internal tracked email click before recurring scheduler activation or recurring email traffic.
+- Production smoke verification still needs `npm run supabase:check:json`, `npm run smoke:mls-status`, `npm run smoke:search`, timeout-bounded queue diagnostics, and an internal tracked email click before recurring scheduler activation or recurring email traffic.
 - Production Redis and Typesense provider decisions are still open.
 - Production worker host and scheduler provider decisions are still open.
 - Email domain authentication needs confirmation before recurring email traffic.
@@ -599,7 +599,7 @@ For each implementation step:
 - Avoid unrelated refactors.
 - Do not delete files unless cleanup is specifically identified.
 - Preserve existing user work and unrelated changes.
-- Verify with worker build, `npm run supabase:check:json`, MLS dry-run, queue dashboard, TypeScript, lint, seed dry-runs when relevant, and production build checks.
+- Verify with worker build, `npm run supabase:check:json`, and stop before MLS dry-runs, seed dry-runs, queue actions, scheduler reporting, reindexing, or live database work if the Supabase JSON gate reports blocked.
 - State which terminal should run user-facing commands.
 - State the next file to work on.
 
