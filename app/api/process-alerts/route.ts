@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { processAlertQueue } from '@/lib/alerts/processAlertQueue';
 import { prisma } from '@/lib/prisma';
+import { assertAppDatabaseReady } from '@/lib/appDatabasePreflight';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -441,6 +442,11 @@ function buildExecutionPlan(options: {
 
 async function processAlerts(request: NextRequest, body: ProcessAlertsBody = {}) {
   const options = readRequestOptions(request, body);
+  await assertAppDatabaseReady({
+    operation: options.dryRun ? 'alert API dry-run processing' : 'alert API live processing',
+    recoveryCommand: 'npm run supabase:check',
+  });
+
   const alertResult = await withTimeout(
     options.dryRun ? 'alerts:preview' : 'alerts:process',
     getFallbackAlertResult(options.dryRun),
@@ -493,7 +499,7 @@ export async function GET(request: NextRequest) {
     const options = readRequestOptions(request);
 
     if (options.run || options.dryRunExplicit) {
-      return processAlerts(request, {
+      return await processAlerts(request, {
         dryRun: options.dryRun || !options.run,
         limit: options.limit,
       });
@@ -555,7 +561,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await readJsonBody(request);
-    return processAlerts(request, body);
+    return await processAlerts(request, body);
   } catch (error) {
     console.error('Process alerts error:', error);
 

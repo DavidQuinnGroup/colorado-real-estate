@@ -19,6 +19,7 @@ import {
   normalizeMlsSyncJobData,
   type MlsSyncJobData,
 } from '@/lib/queue/mlsQueue';
+import { assertAppDatabaseReady } from '@/lib/appDatabasePreflight';
 
 export const dynamic = 'force-dynamic';
 
@@ -475,6 +476,11 @@ export async function POST(request: NextRequest) {
         { status: 409 },
       );
     }
+
+    await assertAppDatabaseReady({
+      operation: 'MLS sync live enqueue',
+      recoveryCommand: 'npm run supabase:check',
+    });
 
     const job = await withTimeout('mls-sync enqueue', enqueueMlsSync(data));
     const status = await withTimeout('mls-sync queue status', getSyncQueueStatus());

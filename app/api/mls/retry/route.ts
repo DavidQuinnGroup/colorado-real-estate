@@ -6,6 +6,7 @@ import { DEAD_LETTER_QUEUE_NAME, deadLetterQueue } from '@/lib/queue/deadLetterQ
 import { LISTING_QUEUE_NAME, listingQueue } from '@/lib/queue/listingQueue';
 import { MLS_PAGE_QUEUE_NAME, mlsPageQueue } from '@/lib/queue/mlsPageQueue';
 import { MLS_SYNC_QUEUE_NAME, mlsQueue } from '@/lib/queue/mlsQueue';
+import { assertAppDatabaseReady } from '@/lib/appDatabasePreflight';
 import { getRedisUrl } from '@/lib/queue/redis';
 
 export const dynamic = 'force-dynamic';
@@ -895,6 +896,13 @@ export async function POST(request: NextRequest) {
 
     if (liveRetryRequested && requestedQueues.length > 1 && !allowAllLive) {
       throw new RetryRequestError('Broad live retry across all queues requires a single queue value or allowAllLive=true.');
+    }
+
+    if (!dryRun) {
+      await assertAppDatabaseReady({
+        operation: 'queue live retry API',
+        recoveryCommand: 'npm run supabase:check',
+      });
     }
 
     for (const queue of requestedQueues) {

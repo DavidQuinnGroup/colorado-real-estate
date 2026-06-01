@@ -5,6 +5,8 @@ const nextConfig: NextConfig = {
     turbo: {
       resolveAlias: {
         './redis.js': './lib/queue/redis.ts',
+        '../email/sendEmail.js': './lib/email/sendEmail.ts',
+        '../prisma.js': './lib/prisma.ts',
       },
       resolveExtensions: ['.tsx', '.ts', '.jsx', '.js', '.mjs', '.json'],
     },
