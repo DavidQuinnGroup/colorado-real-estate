@@ -15,6 +15,8 @@ type CheckSupabaseOptions = {
   json: boolean;
 };
 
+type ReadinessGateStatus = 'pass' | 'watch' | 'fail';
+
 const REST_TIMEOUT_MS = 8000;
 const POSTGRES_TIMEOUT_MS = 8000;
 const NETWORK_CHECK_ATTEMPTS = 3;
@@ -337,6 +339,33 @@ function getFailureClassification(results: CheckResult[]) {
   return [];
 }
 
+function toReadinessGateStatus(status: CheckStatus): ReadinessGateStatus {
+  if (status === 'pass') return 'pass';
+  if (status === 'fail') return 'fail';
+  return 'watch';
+}
+
+function buildReadiness(results: CheckResult[], failed: CheckResult[], classification: string[]) {
+  const success = failed.length === 0;
+
+  return {
+    level: success ? 'ready' : 'blocked',
+    summary: success
+      ? 'Supabase connectivity preflight passed.'
+      : `Supabase connectivity preflight failed: ${failed.map((result) => result.name).join(', ')}.`,
+    nextAction: success
+      ? 'Continue with Typesense reindex and database-backed dry-runs.'
+      : classification[1] || classification[0] || 'Run the Supabase recovery runbook and replace matched env values if needed.',
+    terminal: TERMINAL,
+    nextCommand: success ? 'npm run typesense:reindex' : 'npm run supabase:check',
+    gates: results.map((result) => ({
+      label: result.name,
+      status: toReadinessGateStatus(result.status),
+      detail: result.detail,
+    })),
+  };
+}
+
 function getRecoveryHint(results: CheckResult[], failed: CheckResult[]) {
   const failedNames = failed.map((result) => result.name);
   const projectRef = getProjectRef(results);
@@ -364,6 +393,7 @@ function buildReport(results: CheckResult[], options: CheckSupabaseOptions) {
   return {
     success: failed.length === 0,
     module: 'supabase-check',
+    schemaVersion: 1,
     generatedAt: new Date().toISOString(),
     terminal: TERMINAL,
     command: options.json ? 'npm run supabase:check:json' : 'npm run supabase:check',
@@ -372,6 +402,7 @@ function buildReport(results: CheckResult[], options: CheckSupabaseOptions) {
     projectRef: projectRef || null,
     failedChecks: failed.map((result) => result.name),
     classification,
+    readiness: buildReadiness(results, failed, classification),
     blockedUntilPasses: [
       'MLS sync dry-run or live sync',
       'Queue retry of database-connectivity failures',

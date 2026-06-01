@@ -112,6 +112,8 @@ For a machine-readable, non-secret report:
 npm run supabase:check:json
 ```
 
+The JSON report includes `schemaVersion: 1`, `readiness.level`, `readiness.summary`, `readiness.nextAction`, `readiness.nextCommand`, and per-check `readiness.gates` for automation and scheduler gating.
+
 The preflight must pass before database-backed dry-runs can be trusted.
 
 After `npm run supabase:check` passes, continue:
