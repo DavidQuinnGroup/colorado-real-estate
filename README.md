@@ -64,8 +64,8 @@ npm run worker:build
 Use `.env.example` as the non-secret local environment template. Copy it to `.env.local`, replace placeholders with active provider values, and verify Supabase before database-backed work:
 
 ```bash
-npm run supabase:check
 npm run supabase:check:json
+npm run supabase:check
 ```
 
 Start workers in **Terminal 3: Coordinator**:
@@ -200,7 +200,7 @@ MLS intelligence behavior:
 - `/api/mls/status` preserves raw status/search API command compatibility through `commands.rawStatus` and `commands.rawSearchCheck`.
 - `/admin` labels Terminal 5 public search verification as Search Smoke Readiness and expects `meta.smoke.ready=true` with no blockers.
 - Treat `indexFailed > 0` as degraded search freshness even when Postgres upserts succeed.
-- Treat `npm run smoke:mls-status`, `npm run smoke:search`, and timeout-bounded queue diagnostics as production-readiness gates before increasing ingestion volume, MLS volume, scheduler cadence, recurring scheduler activation, live-inventory claims, MLS-backed public expansion, or recurring email traffic.
+- Treat `npm run supabase:check:json`, `npm run smoke:mls-status`, `npm run smoke:search`, and timeout-bounded queue diagnostics as production-readiness gates before increasing ingestion volume, MLS volume, scheduler cadence, recurring scheduler activation, live-inventory claims, MLS-backed public expansion, or recurring email traffic.
 - `processPhotos.ts` preserves existing photos when MLS returns no usable media.
 - Legacy IRES/helper cleanup is complete, including deleted root-level demo MLS helpers.
 
@@ -336,6 +336,7 @@ Primary local repair sequence:
 ```bash
 npm run worker:build
 npm run typesense:init
+npm run supabase:check:json
 npm run typesense:reindex
 ```
 
@@ -384,6 +385,7 @@ If `npm run build` logs that the local Typesense `listings` collection is stale 
 ```bash
 npm run worker:build
 npm run typesense:init
+npm run supabase:check:json
 npm run typesense:reindex
 ```
 
@@ -424,7 +426,7 @@ Seed command behavior:
 - Both scripts replace existing seeded `PropertyPhoto` rows for their own properties.
 - Both scripts report database, photo, and per-collection Typesense index status.
 - Dry-runs are safe verification checks.
-- Live seed commands require the configured Supabase database.
+- Live seed commands require `npm run supabase:check:json` readiness.
 - Indexed seed commands also require Typesense to be running and collections to match the canonical schema.
 - Seed scripts must not run from app startup, API routes, page rendering, or scheduled production jobs.
 
@@ -466,7 +468,7 @@ Run the alert worker continuously from **Terminal 3: Coordinator**:
 npm run run:worker:alerts
 ```
 
-Continuous alert worker mode consumes queue jobs live. Use it only after recurring email traffic readiness is verified through alert send behavior, sender domain, unsubscribe, click tracking, internal live-send tests, search-index health, Search Smoke Readiness, and timeout-bounded queue diagnostics.
+Continuous alert worker mode consumes queue jobs live. Use it only after recurring email traffic readiness is verified through `npm run supabase:check:json`, alert send behavior, sender domain, unsubscribe, click tracking, internal live-send tests, search-index health, Search Smoke Readiness, and timeout-bounded queue diagnostics.
 
 Process alerts through the protected API in dry-run mode:
 
@@ -501,8 +503,8 @@ Email behavior:
 - Unsubscribe links route through `/api/unsubscribe`.
 - Listing links can route through `/api/track-click` when user context is available.
 - `EmailLog` records send metadata.
-- Recurring email traffic, including recurring alert or digest sends, should wait until sender domain, unsubscribe, click tracking, internal live-send tests, `npm run smoke:mls-status` search-index health, `npm run smoke:search` Search Smoke Readiness, and timeout-bounded queue diagnostics are verified.
-- Treat degraded search-index health, `meta.smoke.ready=false`, public search smoke blockers, or unacceptable timeout-bounded queue diagnostics as live-send blockers for recurring email traffic because alert and digest clicks land back on search and property pages.
+- Recurring email traffic, including recurring alert or digest sends, should wait until `npm run supabase:check:json`, sender domain, unsubscribe, click tracking, internal live-send tests, `npm run smoke:mls-status` search-index health, `npm run smoke:search` Search Smoke Readiness, and timeout-bounded queue diagnostics are verified.
+- Treat failed `npm run supabase:check:json`, degraded search-index health, `meta.smoke.ready=false`, public search smoke blockers, or unacceptable timeout-bounded queue diagnostics as live-send blockers for recurring email traffic because alert and digest clicks land back on search and property pages.
 
 ## CRM Intelligence
 
@@ -575,20 +577,21 @@ The scheduler plan is staged and conservative. Full details live in:
 
 Rollout order:
 
-1. MLS sync dry-run or smallest bounded live sync: `npm run run:mls-sync -- --execute --json --max-pages=1 --page-size=25 --start-page=0 --page-timeout-ms=30000`.
-2. Search-index diagnostics review through `npm run smoke:mls-status`.
-3. Search Smoke Readiness verification through `npm run smoke:search`, including `meta.smoke.ready=true` and no blockers.
-4. Timeout-bounded queue diagnostics through `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000`.
-5. Large programmatic content batch publication gate verification for data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics before MLS-backed public expansion.
-6. MLS sync recurring schedule.
-7. CRM reporting.
-8. Alert dry-run.
-9. Internal alert live test.
-10. Alert live schedule.
-11. Digest dry-run.
-12. Internal digest live test.
-13. Digest live schedule.
-14. Manual Typesense repair and reindex only when required.
+1. Supabase JSON readiness gate: `npm run supabase:check:json`.
+2. MLS sync dry-run or smallest bounded live sync: `npm run run:mls-sync -- --execute --json --max-pages=1 --page-size=25 --start-page=0 --page-timeout-ms=30000`.
+3. Search-index diagnostics review through `npm run smoke:mls-status`.
+4. Search Smoke Readiness verification through `npm run smoke:search`, including `meta.smoke.ready=true` and no blockers.
+5. Timeout-bounded queue diagnostics through `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000`.
+6. Large programmatic content batch publication gate verification for data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics before MLS-backed public expansion.
+7. MLS sync recurring schedule.
+8. CRM reporting.
+9. Alert dry-run.
+10. Internal alert live test.
+11. Alert live schedule.
+12. Digest dry-run.
+13. Internal digest live test.
+14. Digest live schedule.
+15. Manual Typesense repair and reindex only when required.
 
 Conservative starting schedule:
 
@@ -645,6 +648,7 @@ Run required checks from **Terminal 5: Scripts / curl testing**:
 
 ```bash
 npm run worker:build
+npm run supabase:check:json
 npm run run:mls-sync:dry
 npm run typecheck
 npm run lint
@@ -703,6 +707,7 @@ node dist/workers/runCRMTasks.js --help
 Database-dependent checks from **Terminal 5: Scripts / curl testing**:
 
 ```bash
+npm run supabase:check:json
 npm run run:alerts:dry
 npm run run:worker:alerts:dry
 npm run run:digest:dry -- --limit 1
@@ -730,6 +735,7 @@ Terminal 5:
 ```bash
 npm run worker:build
 npm run typesense:init
+npm run supabase:check:json
 npm run typesense:reindex
 ```
 
@@ -786,7 +792,7 @@ The product goal is not just search. It is a public intelligence layer that help
 - Recurring email traffic, recurring alert or digest scheduling, and CRM scheduling need final production cadence decisions.
 - Email domain authentication must be confirmed before recurring email traffic.
 - Email client visual QA has not been completed.
-- CRM closure audit controls, note-backed completion/dismissal, CRM API Inspection metadata, and failed detail-route preservation are implemented locally; production workflow still needs live admin smoke verification once Terminal 1 and Supabase are reachable.
+- CRM closure audit controls, note-backed completion/dismissal, CRM API Inspection metadata, and failed detail-route preservation are implemented locally; production workflow still needs live admin smoke verification once Terminal 1 is running and `npm run supabase:check:json` reports readiness.
 - Large programmatic content batch publication should wait for verified data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics.
 
 <!-- /Users/davidquinn/david-quinn-group/colorado-real-estate/README.md -->
