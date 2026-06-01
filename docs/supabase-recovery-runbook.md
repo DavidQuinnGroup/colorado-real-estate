@@ -30,9 +30,32 @@ aws-0-us-west-2.pooler.supabase.com:6543 accepted a TCP connection
 June 1, 2026 recheck:
 
 - `npm run supabase:check` still fails on Supabase project DNS, Prisma database, and Supabase REST.
+- Current preflight dashboard hint: `https://supabase.com/dashboard/project/otmkoqvmhthitldlnjdk`.
+- Current preflight likely diagnosis: the configured project ref is not reachable as an active Supabase API host, while the regional pooler host itself is reachable.
 - `npm run typesense:collections:check` passes for both canonical Typesense collections.
 - `npm run run:queue-dashboard -- --failed --sample --limit=5 --timeout-ms=3000` reports no open dead-letter jobs and no stale active jobs, but keeps recovery blocked because `mls-sync` failed jobs are database-connectivity failures.
 - Supabase's public status page did not show a broad platform incident for June 1, 2026 during this check. Treat the failure as project status, project ref, credentials, connection-string, account, or local-network specific until the dashboard proves otherwise.
+
+## Terminal 5 Failure Interpretation
+
+When `npm run supabase:check` reports this combination:
+
+```text
+FAIL Supabase project DNS
+PASS Supabase Postgres DNS
+PASS Supabase Postgres TCP
+FAIL Prisma database
+FAIL Supabase REST
+```
+
+Interpret it as:
+
+- The regional pooler host is reachable from this machine.
+- The configured project API host is not resolving.
+- The configured pooler tenant/user is not accepted.
+- The next action is dashboard/env recovery, not queue retry, worker restart, reindex, seed, CRM, alert, or digest execution.
+
+Open the dashboard URL printed by the preflight, then confirm whether the project exists and is active. If the dashboard does not show the project, switch to the active Supabase project and replace every Supabase env value listed below as a single matched set.
 
 ## What To Verify In Supabase
 
