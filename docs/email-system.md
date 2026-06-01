@@ -247,20 +247,21 @@ Production alert and digest scheduling follows:
 
 Relevant rollout order:
 
-1. MLS sync dry-run or smallest bounded live sync: `npm run run:mls-sync -- --execute --json --max-pages=1 --page-size=25 --start-page=0 --page-timeout-ms=30000`.
-2. Search-index diagnostics review through `npm run smoke:mls-status`.
-3. Search Smoke Readiness verification through `npm run smoke:search`, including `meta.smoke.ready=true` and no blockers.
-4. Timeout-bounded queue diagnostics through `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000`.
-5. Large programmatic content batch publication gate verification for data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics before MLS-backed public expansion.
-6. MLS sync recurring schedule.
-7. CRM reporting.
-8. Alert dry-run.
-9. Internal alert live test.
-10. Alert live schedule.
-11. Digest dry-run.
-12. Internal digest live test.
-13. Digest live schedule.
-14. Manual Typesense repair and reindex only when required.
+1. Supabase JSON readiness gate: `npm run supabase:check:json`.
+2. MLS sync dry-run or smallest bounded live sync: `npm run run:mls-sync -- --execute --json --max-pages=1 --page-size=25 --start-page=0 --page-timeout-ms=30000`.
+3. Search-index diagnostics review through `npm run smoke:mls-status`.
+4. Search Smoke Readiness verification through `npm run smoke:search`, including `meta.smoke.ready=true` and no blockers.
+5. Timeout-bounded queue diagnostics through `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000`.
+6. Large programmatic content batch publication gate verification after `npm run supabase:check:json` reports readiness for data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics before MLS-backed public expansion.
+7. MLS sync recurring schedule.
+8. CRM reporting.
+9. Alert dry-run.
+10. Internal alert live test.
+11. Alert live schedule.
+12. Digest dry-run.
+13. Internal digest live test.
+14. Digest live schedule.
+15. Manual Typesense repair and reindex only when required.
 
 Conservative starting schedule:
 
@@ -275,12 +276,13 @@ Production scheduling rules:
 
 - Do not enable all live schedules at once.
 - Dry-run manually before first production live send.
+- Verify `npm run supabase:check:json` reports readiness before recurring email traffic, including recurring alert or digest scheduling.
 - Verify `npm run smoke:mls-status` reports non-degraded search-index health before recurring email traffic, including recurring alert or digest scheduling.
 - Verify `npm run smoke:search` returns expected metadata: `source`, `meta.source`, `health`, `accessLevel`, `filtersApplied`, `boundsApplied`, `returned`, `mapped`, `coordinateFiltered`, `durationMs`, `meta.smoke.ready=true`, and empty `meta.smoke.blockers`.
 - Verify timeout-bounded queue diagnostics with `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000` before recurring email traffic, including recurring alert or digest sends.
 - Run `npm run smoke:ops` from Terminal 5 before recurring email traffic, including recurring alert or digest sends.
 - Run internal live-send tests before recurring email traffic.
-- Keep recurring email traffic, including recurring alert or digest sends, disabled until sender domain, unsubscribe, click tracking, internal live-send tests, search-index health, Search Smoke Readiness is verified with `meta.smoke.ready=true` and no blockers, and timeout-bounded queue diagnostics are acceptable.
+- Keep recurring email traffic, including recurring alert or digest sends, disabled until `npm run supabase:check:json` reports readiness, sender domain, unsubscribe, click tracking, internal live-send tests, search-index health, Search Smoke Readiness is verified with `meta.smoke.ready=true` and no blockers, and timeout-bounded queue diagnostics are acceptable.
 - Scheduled CRM reporting should use `npm run run:crm:scheduler` so provider logs receive one machine-readable readiness payload.
 - Scheduler output must be visible in provider logs.
 - Failed scheduled jobs must surface through provider logs, queue state, timeout-bounded queue dashboard output, admin diagnostics, or dead-letter inspection.
@@ -477,7 +479,7 @@ Expected readiness signals:
 
 - `/api/mls/status` exposes a `searchIndex` block with `attempted`, `succeeded`, `failed`, `unknown`, `health`, `diagnostics`, and `recent`.
 - `/api/mls/status` exposes `commands.smokeOps`, `commands.smokeMlsStatus`, `commands.smokeSearch`, `commands.rawStatus`, and `commands.rawSearchCheck` for admin and operator guidance.
-- `searchIndex.failed` should be `0` before recurring email traffic, including recurring alert or digest sends.
+- `npm run supabase:check:json` should report readiness and `searchIndex.failed` should be `0` before recurring email traffic, including recurring alert or digest sends.
 - `/api/search?limit=5` exposes metadata for `source`, `meta.source`, `health`, `accessLevel`, `filtersApplied`, `boundsApplied`, `returned`, `mapped`, `coordinateFiltered`, `durationMs`, `meta.smoke.ready`, and `meta.smoke.blockers`.
 - `meta.health` should be `healthy` and `meta.smoke.ready` should be `true` unless a known bounded fallback is being intentionally tested.
 - Returned listings should include usable coordinates and public-safe media before email campaigns drive traffic into the search experience.
@@ -548,7 +550,7 @@ Before live user email:
 - Do not allow arbitrary external click-tracking redirects.
 - Treat `npm run supabase:check:json` readiness as required for alert and digest dry-runs.
 - Inspect queue and dead-letter diagnostics before live retry or recurring send enablement.
-- Treat degraded search-index health, degraded Search Smoke Readiness, public search smoke blockers, or unacceptable timeout-bounded queue diagnostics as live-send blockers for recurring email traffic because email click traffic depends on those pages.
+- Treat failed `npm run supabase:check:json` readiness, degraded search-index health, degraded Search Smoke Readiness, public search smoke blockers, or unacceptable timeout-bounded queue diagnostics as live-send blockers for recurring email traffic because email click traffic depends on those pages.
 - Keep CRM task completion and dismissal human-reviewed through the admin review flow.
 - Require review notes for CRM task completion and dismissal.
 - Treat CRM `readiness.level=blocked` as an email engagement handoff blocker until review-note coverage is restored.
