@@ -202,7 +202,7 @@ Live MLS sync gate:
 - Busy queue dashboard output points to the relevant worker start command, and the worker is started or explicitly deferred before increasing scheduler cadence or ingestion volume.
 - Database-connectivity queue failures route to `npm run supabase:check:json` from queue dashboard, MLS status, and MLS retry plans before live retry.
 - MLS workers must pass their startup database preflight before consuming queued MLS sync or page jobs.
-- Alert worker startup, alert dry-runs, digest dry-runs, CRM scheduler reporting, Typesense reindexing, live seed writes, live MLS sync enqueue, live queue retry, and alert API processing must stop at their database preflight while `npm run supabase:check` is failing.
+- Alert worker startup, alert dry-runs, digest dry-runs, CRM scheduler reporting, Typesense reindexing, live seed writes, live MLS sync enqueue, live queue retry, and alert API processing must stop at their database preflight while `npm run supabase:check:json` is failing.
 - Stale active queue jobs are not acceptable diagnostics; inspect retry state, source-queue dead letters, and worker process health before retrying or adding work.
 - Stale active recovery uses a dry run first: `npm run run:queue-maintenance -- --queue=mls-page --job-id=<jobId>`. Live recovery requires the same command with `--execute` only after the target job is stale and unlocked.
 - Failed-job retry uses a dry run first: `npm run run:queue-maintenance -- --action=retry-failed --queue=mls-sync --limit=10`. Live retry requires a target `--job-id=<jobId>` plus `--execute`.
@@ -306,7 +306,7 @@ npm run smoke:ops
 The next high-value work after this checklist is to tighten the launch path around actual local validation:
 
 1. Restore or replace the configured Supabase endpoint so database-backed dry-runs and Typesense reindexing can fetch records.
-2. Confirm Supabase readiness with `npm run supabase:check`, or `npm run supabase:check:json` for automation.
+2. Confirm Supabase readiness with `npm run supabase:check:json`, or `npm run supabase:check` for a human-readable check.
 3. Reindex local Typesense with `npm run typesense:reindex`.
 4. Verify `/search` against the reindexed data.
 5. Verify `npm run smoke:search` Search Smoke Readiness shows expected source, `meta.source`, health, access level, filters, bounds, mapped count, coordinate-filtered count, duration, and `meta.smoke.ready=true` with no blockers.

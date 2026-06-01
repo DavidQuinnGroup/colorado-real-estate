@@ -764,7 +764,7 @@ npm run typesense:reindex
 
 ## Current Known Gaps
 
-- Supabase connectivity can block alert, digest, CRM, MLS, seed, and Typesense reindex dry-runs/reporting until `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/supabase-recovery-runbook.md` is completed and `npm run supabase:check` passes.
+- Supabase connectivity can block alert, digest, CRM, MLS, seed, and Typesense reindex dry-runs/reporting until `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/supabase-recovery-runbook.md` is completed and `npm run supabase:check:json` reports readiness.
 - Email domain authentication should be confirmed before production alert or digest sends.
 - Production smoke verification still needs `npm run smoke:mls-status`, `npm run smoke:search`, timeout-bounded queue diagnostics, and one internal tracked email click before recurring scheduler activation or recurring email traffic.
 - Saved-search alert frequency controls are not yet implemented.

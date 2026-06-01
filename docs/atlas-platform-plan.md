@@ -571,7 +571,7 @@ Success criteria:
 ## Current Known Gaps
 
 - Local Typesense `properties` and `listings` collections are schema-ready.
-- Supabase connectivity can block alert, digest, CRM, MLS, seed, and reindex dry-runs/reporting until `npm run supabase:check` passes.
+- Supabase connectivity can block alert, digest, CRM, MLS, seed, and reindex dry-runs/reporting until `npm run supabase:check:json` reports readiness. Use `npm run supabase:check` for a human-readable check.
 - Production smoke verification still needs `npm run smoke:mls-status`, `npm run smoke:search`, timeout-bounded queue diagnostics, and an internal tracked email click before recurring scheduler activation or recurring email traffic.
 - Production Redis and Typesense provider decisions are still open.
 - Production worker host and scheduler provider decisions are still open.

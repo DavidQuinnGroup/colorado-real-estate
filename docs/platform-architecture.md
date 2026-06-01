@@ -811,12 +811,12 @@ Known current non-blocking warnings:
 
 Known current blocker:
 
-- Supabase connectivity can block database-dependent dry-runs until `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/supabase-recovery-runbook.md` is completed and `npm run supabase:check` passes.
+- Supabase connectivity can block database-dependent dry-runs until `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/supabase-recovery-runbook.md` is completed and `npm run supabase:check:json` reports readiness.
 
 ## Current Known Gaps
 
 - Local Typesense `properties` and `listings` collections are schema-ready.
-- Supabase connectivity from local scripts is currently a blocker until `npm run supabase:check` passes.
+- Supabase connectivity from local scripts is currently a blocker until `npm run supabase:check:json` reports readiness. Use `npm run supabase:check` for a human-readable check.
 - `dist/` may contain stale generated JavaScript for deleted source files until generated output is cleaned.
 - Production Redis provider decision is still open.
 - Production Typesense provider decision is still open.

@@ -848,7 +848,7 @@ Known current non-blocking warnings:
 
 Known current blocker:
 
-- Supabase connectivity currently blocks database-dependent dry-runs and Typesense reindexing. On May 31, 2026, `npm run supabase:check` showed the configured Supabase values consistently point to project ref `otmkoqvmhthitldlnjdk`, and the Postgres pooler host resolves and accepts TCP connections. Prisma authentication and the configured Supabase project API host still fail:
+- Supabase connectivity currently blocks database-dependent dry-runs and Typesense reindexing. On May 31, 2026, `npm run supabase:check` showed the configured Supabase values consistently point to project ref `otmkoqvmhthitldlnjdk`, and the Postgres pooler host resolves and accepts TCP connections. The current machine-readable recovery gate is `npm run supabase:check:json`. Prisma authentication and the configured Supabase project API host still fail:
 
 ```text
 DNS lookup failed: ENOTFOUND otmkoqvmhthitldlnjdk.supabase.co
@@ -862,7 +862,7 @@ Recovery runbook:
 ## Current Near-Term Priorities
 
 1. Restore or replace the configured Supabase project/database endpoint so local scripts can resolve and reach Supabase.
-2. Confirm Supabase readiness with `npm run supabase:check`, or `npm run supabase:check:json` for automation.
+2. Confirm Supabase readiness with `npm run supabase:check:json`, or `npm run supabase:check` for a human-readable check.
 3. Reindex Typesense from Supabase with `npm run typesense:reindex` after Supabase connectivity is available.
 4. Verify search-index health with `npm run smoke:mls-status` and Search Smoke Readiness source, `meta.source`, health, access level, filters, bounds, returned, mapped, coordinate-filtered, duration, and `meta.smoke.ready=true` with no blockers through `npm run smoke:search` after reindex.
 5. Rerun alert, digest, CRM, MLS, seed, and reindex dry-runs/reporting after Supabase connectivity is restored.

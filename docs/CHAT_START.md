@@ -604,7 +604,7 @@ Current deletion candidates:
 ## Current Near-Term Sequence
 
 1. Restore or replace the configured Supabase project/database endpoint using `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/supabase-recovery-runbook.md`.
-2. Confirm Supabase readiness with `npm run supabase:check`, or `npm run supabase:check:json` for automation.
+2. Confirm Supabase readiness with `npm run supabase:check:json`, or `npm run supabase:check` for a human-readable check.
 3. Reindex Typesense from Supabase when Supabase connectivity is available.
 4. Verify search-index health with `npm run smoke:mls-status` and Search Smoke Readiness source, `meta.source`, health, access level, filters, bounds, returned, mapped, coordinate-filtered, duration, and `meta.smoke.ready=true` with no blockers through `npm run smoke:search` after reindex.
 5. Rerun alert, digest, CRM, MLS, seed, and reindex dry-runs/reporting after Supabase connectivity is restored.

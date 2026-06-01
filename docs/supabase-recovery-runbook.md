@@ -116,7 +116,7 @@ The JSON report includes `schemaVersion: 1`, `readiness.level`, `readiness.summa
 
 The preflight must pass before database-backed dry-runs can be trusted.
 
-After `npm run supabase:check` passes, continue:
+After `npm run supabase:check:json` reports readiness, continue:
 
 ```bash
 npm run typesense:reindex

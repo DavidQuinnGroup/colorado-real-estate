@@ -733,7 +733,7 @@ If market pages log that the local Typesense `listings` collection is stale:
 If database-dependent scripts fail with Supabase connectivity errors:
 
 1. Follow `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/supabase-recovery-runbook.md`.
-2. Confirm `npm run supabase:check` passes.
+2. Run `npm run supabase:check:json` from **Terminal 5: Scripts / curl testing** and use the non-secret report as the recovery gate.
 3. Retry only bounded dry-runs first.
 4. Do not run large MLS syncs or live seed commands until connectivity is stable.
 
@@ -815,7 +815,7 @@ npm run build
 ## Known Gaps
 
 - Local Typesense `properties` and `listings` collections were verified ready with `npm run typesense:collections:check` on May 31, 2026.
-- Supabase connectivity can block alert, digest, CRM, MLS, seed, and reindex dry-runs/reporting until `npm run supabase:check` passes.
+- Supabase connectivity can block alert, digest, CRM, MLS, seed, and reindex dry-runs/reporting until `npm run supabase:check:json` reports readiness. Use `npm run supabase:check` for a human-readable check.
 - `dist/` may contain stale generated JavaScript for deleted source files until generated output is cleaned.
 - Production scheduling needs a final host-level cron or scheduler.
 - Recurring email traffic, recurring alert or digest scheduling, and CRM scheduling need production workflow decisions.
