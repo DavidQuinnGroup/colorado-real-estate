@@ -106,6 +106,12 @@ npm run worker:build
 npm run supabase:check
 ```
 
+For a machine-readable, non-secret report:
+
+```bash
+node dist/scripts/checkSupabase.js --json
+```
+
 The preflight must pass before database-backed dry-runs can be trusted.
 
 After `npm run supabase:check` passes, continue:

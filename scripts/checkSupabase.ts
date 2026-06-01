@@ -11,10 +11,17 @@ type CheckResult = {
   detail: string;
 };
 
+type CheckSupabaseOptions = {
+  json: boolean;
+};
+
 const REST_TIMEOUT_MS = 8000;
 const POSTGRES_TIMEOUT_MS = 8000;
+const NETWORK_CHECK_ATTEMPTS = 3;
+const NETWORK_CHECK_RETRY_DELAY_MS = 250;
 const RECOVERY_RUNBOOK_PATH = 'docs/supabase-recovery-runbook.md';
 const SUPABASE_DASHBOARD_PROJECT_BASE_URL = 'https://supabase.com/dashboard/project';
+const TERMINAL = 'Terminal 5';
 const SUPABASE_ENV_NAMES = [
   'NEXT_PUBLIC_SUPABASE_URL',
   'NEXT_PUBLIC_SUPABASE_ANON_KEY',
@@ -23,8 +30,45 @@ const SUPABASE_ENV_NAMES = [
   'DATABASE_URL',
 ];
 
-dotenv.config({ path: '.env.local' });
-dotenv.config();
+const HELP_TEXT = `
+Supabase connectivity preflight
+
+Usage:
+  node dist/scripts/checkSupabase.js [options]
+
+Options:
+  --json   Print a machine-readable, non-secret JSON report.
+  --help   Show this help text.
+
+Terminal 5 examples:
+  npm run supabase:check
+  node dist/scripts/checkSupabase.js --json
+`;
+
+dotenv.config({ path: '.env.local', quiet: true });
+dotenv.config({ quiet: true });
+
+function parseArgs(argv: string[]): CheckSupabaseOptions | null {
+  const options: CheckSupabaseOptions = {
+    json: false,
+  };
+
+  for (const arg of argv) {
+    if (arg === '--help' || arg === '-h') {
+      console.log(HELP_TEXT.trim());
+      return null;
+    }
+
+    if (arg === '--json') {
+      options.json = true;
+      continue;
+    }
+
+    throw new Error(`Unknown option: ${arg}`);
+  }
+
+  return options;
+}
 
 function getEnv(name: string) {
   const value = process.env[name];
@@ -152,6 +196,10 @@ function formatError(error: unknown) {
   }
 
   return String(error);
+}
+
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 function checkProjectRefConsistency(values: Record<string, string>): CheckResult {
@@ -307,6 +355,38 @@ function getRecoveryHint(results: CheckResult[], failed: CheckResult[]) {
     .join('\n');
 }
 
+function buildReport(results: CheckResult[], options: CheckSupabaseOptions) {
+  const failed = results.filter((result) => result.status === 'fail');
+  const projectRef = getProjectRef(results);
+  const dashboardProjectUrl = projectRef ? `${SUPABASE_DASHBOARD_PROJECT_BASE_URL}/${projectRef}` : null;
+  const classification = getFailureClassification(results);
+
+  return {
+    success: failed.length === 0,
+    module: 'supabase-check',
+    generatedAt: new Date().toISOString(),
+    terminal: TERMINAL,
+    command: options.json ? 'node dist/scripts/checkSupabase.js --json' : 'npm run supabase:check',
+    recoveryRunbook: RECOVERY_RUNBOOK_PATH,
+    dashboardProjectUrl,
+    projectRef: projectRef || null,
+    failedChecks: failed.map((result) => result.name),
+    classification,
+    blockedUntilPasses: [
+      'MLS sync dry-run or live sync',
+      'Queue retry of database-connectivity failures',
+      'Alert dry-run or live send',
+      'Digest dry-run or live send',
+      'CRM scheduler reporting',
+      'Seed dry-runs that touch Supabase',
+      'Typesense reindex from Supabase',
+      'Recurring scheduler activation',
+    ],
+    replaceTogether: SUPABASE_ENV_NAMES,
+    results,
+  };
+}
+
 async function checkDns(name: string, host: string): Promise<CheckResult> {
   if (!host) {
     return {
@@ -316,20 +396,31 @@ async function checkDns(name: string, host: string): Promise<CheckResult> {
     };
   }
 
-  try {
-    const addresses = await dns.lookup(host, { all: true });
-    return {
-      name,
-      status: 'pass',
-      detail: `${host} resolved to ${addresses.map((address) => address.address).join(', ') || 'no addresses'}.`,
-    };
-  } catch (error) {
-    return {
-      name,
-      status: 'fail',
-      detail: `${host} did not resolve. ${formatError(error)}`,
-    };
+  let lastError: unknown;
+
+  for (let attempt = 1; attempt <= NETWORK_CHECK_ATTEMPTS; attempt++) {
+    try {
+      const addresses = await dns.lookup(host, { all: true });
+      const attemptDetail = attempt > 1 ? ` after ${attempt} attempts` : '';
+
+      return {
+        name,
+        status: 'pass',
+        detail: `${host} resolved${attemptDetail} to ${addresses.map((address) => address.address).join(', ') || 'no addresses'}.`,
+      };
+    } catch (error) {
+      lastError = error;
+      if (attempt < NETWORK_CHECK_ATTEMPTS) {
+        await sleep(NETWORK_CHECK_RETRY_DELAY_MS);
+      }
+    }
   }
+
+  return {
+    name,
+    status: 'fail',
+    detail: `${host} did not resolve after ${NETWORK_CHECK_ATTEMPTS} attempts. ${formatError(lastError)}`,
+  };
 }
 
 async function checkSupabaseRest(url: string, serviceRoleKey: string): Promise<CheckResult> {
@@ -388,36 +479,55 @@ async function checkPostgresTcp(databaseUrl: string): Promise<CheckResult> {
     };
   }
 
-  return new Promise((resolve) => {
-    const socket = net.createConnection(endpoint);
-    const timeout = setTimeout(() => {
-      socket.destroy();
-      resolve({
-        name: 'Supabase Postgres TCP',
-        status: 'fail',
-        detail: `${endpoint.host}:${endpoint.port} timed out after ${POSTGRES_TIMEOUT_MS}ms.`,
-      });
-    }, POSTGRES_TIMEOUT_MS);
+  let lastFailure = '';
 
-    socket.once('connect', () => {
-      clearTimeout(timeout);
-      socket.end();
-      resolve({
-        name: 'Supabase Postgres TCP',
-        status: 'pass',
-        detail: `${endpoint.host}:${endpoint.port} accepted a TCP connection.`,
+  for (let attempt = 1; attempt <= NETWORK_CHECK_ATTEMPTS; attempt++) {
+    const result = await new Promise<CheckResult>((resolve) => {
+      const socket = net.createConnection(endpoint);
+      const timeout = setTimeout(() => {
+        socket.destroy();
+        resolve({
+          name: 'Supabase Postgres TCP',
+          status: 'fail',
+          detail: `${endpoint.host}:${endpoint.port} timed out after ${POSTGRES_TIMEOUT_MS}ms.`,
+        });
+      }, POSTGRES_TIMEOUT_MS);
+
+      socket.once('connect', () => {
+        clearTimeout(timeout);
+        socket.end();
+        const attemptDetail = attempt > 1 ? ` after ${attempt} attempts` : '';
+
+        resolve({
+          name: 'Supabase Postgres TCP',
+          status: 'pass',
+          detail: `${endpoint.host}:${endpoint.port} accepted a TCP connection${attemptDetail}.`,
+        });
+      });
+
+      socket.once('error', (error) => {
+        clearTimeout(timeout);
+        resolve({
+          name: 'Supabase Postgres TCP',
+          status: 'fail',
+          detail: `${endpoint.host}:${endpoint.port} connection failed. ${formatError(error)}`,
+        });
       });
     });
 
-    socket.once('error', (error) => {
-      clearTimeout(timeout);
-      resolve({
-        name: 'Supabase Postgres TCP',
-        status: 'fail',
-        detail: `${endpoint.host}:${endpoint.port} connection failed. ${formatError(error)}`,
-      });
-    });
-  });
+    if (result.status === 'pass') return result;
+    lastFailure = result.detail;
+
+    if (attempt < NETWORK_CHECK_ATTEMPTS) {
+      await sleep(NETWORK_CHECK_RETRY_DELAY_MS);
+    }
+  }
+
+  return {
+    name: 'Supabase Postgres TCP',
+    status: 'fail',
+    detail: `${lastFailure} Retried ${NETWORK_CHECK_ATTEMPTS} times.`,
+  };
 }
 
 async function checkPrismaDatabase(databaseUrl: string, skip: boolean): Promise<CheckResult> {
@@ -457,6 +567,9 @@ async function checkPrismaDatabase(databaseUrl: string, skip: boolean): Promise<
 }
 
 async function main() {
+  const options = parseArgs(process.argv.slice(2));
+  if (!options) return;
+
   const supabaseUrl = getEnv('NEXT_PUBLIC_SUPABASE_URL');
   const anonKey = getEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY');
   const publishableKey = getEnv('NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY');
@@ -543,12 +656,20 @@ async function main() {
       : await checkSupabaseRest(supabaseUrl, serviceRoleKey),
   );
 
+  const report = buildReport(results, options);
+  const failed = results.filter((result) => result.status === 'fail');
+
+  if (options.json) {
+    console.log(JSON.stringify(report, null, 2));
+    if (failed.length) process.exit(1);
+    return;
+  }
+
   console.log('Supabase connectivity preflight starting.');
   for (const result of results) {
     logResult(result);
   }
 
-  const failed = results.filter((result) => result.status === 'fail');
   if (failed.length) {
     console.log(getRecoveryHint(results, failed));
     throw new Error(
