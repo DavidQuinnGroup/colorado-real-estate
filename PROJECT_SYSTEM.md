@@ -481,7 +481,7 @@ Core files:
 - `/Users/davidquinn/david-quinn-group/colorado-real-estate/package.json`
 - `/Users/davidquinn/david-quinn-group/colorado-real-estate/tsconfig.worker.json`
 
-Commands from **Terminal 5: Scripts / curl testing** after `npm run worker:build`:
+Commands from **Terminal 5: Scripts / curl testing** after `npm run worker:build` and `npm run supabase:check:json` report readiness:
 
 ```bash
 npm run run:seed:quick:dry
@@ -499,8 +499,8 @@ Rules:
 - Seed scripts create or update `Property` rows.
 - Seed scripts replace existing seeded `PropertyPhoto` rows for their own properties.
 - Seed scripts report database, photo, and per-collection Typesense status.
-- Dry-runs are safe verification checks.
-- Live seed commands require `npm run supabase:check:json` readiness.
+- Dry-runs are read-only, but they still require `npm run supabase:check:json` readiness because seed inventory checks touch Supabase.
+- Live and no-index seed write commands require `npm run supabase:check:json` readiness before any database rows are written.
 - Indexed seed commands require Typesense to be running with canonical `properties` and `listings` schemas.
 - No-index commands write database and photo rows without updating Typesense.
 - Seed scripts must not run from app startup, API routes, page rendering, or recurring production schedulers.
@@ -719,7 +719,7 @@ Conservative starting schedule:
 | Digest processing | daily or weekly after approval | `npm run run:digest -- --limit 50` |
 | CRM reporting | daily business morning | `npm run run:crm:scheduler` |
 | Typesense schema repair | manual only | `npm run typesense:init` |
-| Typesense reindex | manual only | `npm run typesense:reindex` |
+| Typesense reindex | manual only after `npm run supabase:check:json` readiness | `npm run typesense:reindex` |
 | Seed scripts | not scheduled | manual controlled use only |
 
 Rules:
@@ -749,7 +749,7 @@ Rules:
 - Do not treat local seed content as production authority content.
 - Use CRM engagement signals for content prioritization only after protected CRM readiness, closure audit coverage, failed detail-route inspection preservation, and API Inspection metadata are visible.
 - Use live-inventory claims and MLS-backed public expansion in public authority content only after search-index health, Search Smoke Readiness, indexing behavior, and timeout-bounded queue diagnostics are acceptable.
-- Allow large programmatic content batch publication only after data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics are verified.
+- Allow large programmatic content batch publication only after `npm run supabase:check:json`, data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics are verified.
 
 Authority targets:
 
@@ -785,6 +785,8 @@ npm run run:seed:quick:dry
 npm run run:seed:test:dry
 npm run build
 ```
+
+If `npm run supabase:check:json` reports blocked, stop before Supabase-backed dry-runs, seed checks, scheduler reporting, reindexing, or live database work.
 
 Run CLI help checks after alert, digest, CRM, or worker script changes:
 
@@ -847,12 +849,12 @@ Known current non-blocking warnings:
 
 - Node `url.parse()` deprecation warnings appear during `next build`.
 - Local Typesense `properties` and `listings` collections were verified ready with `npm run typesense:collections:check` on May 31, 2026.
-- Production smoke verification still needs `npm run smoke:mls-status`, `npm run smoke:search`, timeout-bounded queue diagnostics, and one internal tracked email click before recurring scheduler activation or recurring email traffic.
+- Production smoke verification still needs `npm run supabase:check:json`, `npm run smoke:mls-status`, `npm run smoke:search`, timeout-bounded queue diagnostics, and one internal tracked email click before recurring scheduler activation or recurring email traffic.
 - `dist/` may contain stale generated JavaScript for deleted source files until generated output is cleaned.
 
 Known current blocker:
 
-- Supabase connectivity currently blocks database-dependent dry-runs and Typesense reindexing. On May 31, 2026, `npm run supabase:check` showed the configured Supabase values consistently point to project ref `otmkoqvmhthitldlnjdk`, and the Postgres pooler host resolves and accepts TCP connections. The current machine-readable recovery gate is `npm run supabase:check:json`. Prisma authentication and the configured Supabase project API host still fail:
+- Supabase connectivity currently blocks alert, digest, CRM, MLS, seed, and reindex dry-runs/reporting. On June 1, 2026, `npm run supabase:check:json` remained the machine-readable recovery gate and `npm run supabase:check` remained the human-readable companion check. The configured Supabase values consistently point to project ref `otmkoqvmhthitldlnjdk`, the Postgres pooler host resolves and accepts TCP connections, but Prisma authentication and the configured Supabase project API host still fail:
 
 ```text
 DNS lookup failed: ENOTFOUND otmkoqvmhthitldlnjdk.supabase.co
@@ -874,7 +876,7 @@ Recovery runbook:
 7. Continue MLS ingestion hardening and media replacement.
 8. Expand timeout-bounded admin queue, sync, alert, digest, and CRM visibility.
 9. Continue public search/map/listing polish.
-10. Strengthen city, neighborhood, property, article, and market authority surfaces through large programmatic content batch publication gated by data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics.
+10. Strengthen city, neighborhood, property, article, and market authority surfaces through large programmatic content batch publication gated by `npm run supabase:check:json`, data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics.
 11. Finalize the production scheduler host using `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/production-scheduler-plan.md`.
 12. Decide production Redis and Typesense providers.
 13. Load-test production-size MLS ingestion before increasing sync volume.
