@@ -285,7 +285,7 @@ Rules:
 - Do not send exploratory MLS ingestion emails unless delivery is intentional.
 - Confirm Resend credentials and sender domain authentication before production live sends.
 - Run dry-runs before intentional live sends.
-- Keep recurring email traffic, including recurring alert or digest sends, disabled until sender domain, unsubscribe, click tracking, internal live-send tests, `npm run smoke:mls-status` search-index health, `npm run smoke:search` Search Smoke Readiness is verified with `meta.smoke.ready=true` and no blockers, and timeout-bounded queue diagnostics are acceptable.
+- Keep recurring email traffic, including recurring alert or digest sends, disabled until `npm run supabase:check:json` reports readiness, sender domain, unsubscribe, click tracking, internal live-send tests, `npm run smoke:mls-status` search-index health, `npm run smoke:search` Search Smoke Readiness is verified with `meta.smoke.ready=true` and no blockers, and timeout-bounded queue diagnostics are acceptable.
 
 ## Digest Delivery
 
@@ -317,7 +317,7 @@ Digest rules:
 - Preserve unsubscribe links.
 - Preserve tracked click destinations.
 - Record successful sends in `EmailLog`.
-- Do not enable recurring email traffic, including recurring digest sends, until alert delivery behavior, search-index health, Search Smoke Readiness is stable with `meta.smoke.ready=true` and no blockers, and timeout-bounded queue diagnostics are acceptable.
+- Do not enable recurring email traffic, including recurring digest sends, until `npm run supabase:check:json` reports readiness, alert delivery behavior, search-index health, Search Smoke Readiness is stable with `meta.smoke.ready=true` and no blockers, and timeout-bounded queue diagnostics are acceptable.
 
 ## Production Scheduling
 
@@ -331,7 +331,7 @@ Relevant rollout order:
 2. Search-index result review from sync output, worker results, `npm run smoke:mls-status`, and `/admin`.
 3. `npm run smoke:search` metadata verification for source, `meta.source`, health, access level, filters, bounds state, returned count, mapped count, coordinate-filtered count, duration, and `meta.smoke.ready=true` with no blockers.
 4. Timeout-bounded queue diagnostics through `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000`.
-5. Large programmatic content batch publication gate verification for data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics before MLS-backed public expansion.
+5. Large programmatic content batch publication gate verification after `npm run supabase:check:json` reports readiness for data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics before MLS-backed public expansion.
 6. MLS sync recurring schedule.
 7. CRM reporting.
 8. Alert dry-run.
@@ -558,7 +558,7 @@ Search metadata check from **Terminal 5: Scripts / curl testing** while **Termin
 npm run smoke:search
 ```
 
-The search smoke response should include `meta.smoke.ready=true` and no `meta.smoke.blockers`, and timeout-bounded queue diagnostics should be acceptable before recurring email traffic, including recurring alert or digest sends.
+After `npm run supabase:check:json` reports readiness, the search smoke response should include `meta.smoke.ready=true` and no `meta.smoke.blockers`, and timeout-bounded queue diagnostics should be acceptable before recurring email traffic, including recurring alert or digest sends.
 
 Expected metadata should expose source, health, access level, filters, bounds state, duration, returned count, mapped count, coordinate-filtered count, and Typesense query/filter context when Typesense is active.
 
@@ -674,13 +674,13 @@ curl --max-time 8 -s -w "\nHTTP_STATUS:%{http_code}\n" "http://localhost:3000/ap
 - Keep tracked redirect destinations constrained.
 - Keep unsubscribe idempotent.
 - Do not use Typesense as the source of truth for alert eligibility.
-- Keep alert, digest, and seed dry-runs read-only.
+- Keep alert, digest, and seed dry-runs read-only, and run Supabase-backed dry-runs only after `npm run supabase:check:json` reports readiness.
 - Treat CRM `readiness.level=blocked` as a CRM handoff blocker until review-note coverage is restored.
 - Keep seed scripts explicit, bounded, terminal-run, and out of production schedules.
 - Inspect queue and dead-letter diagnostics before live retry.
-- Inspect `npm run smoke:mls-status` search-index diagnostics, `npm run smoke:search` Search Smoke Readiness, and timeout-bounded queue diagnostics before enabling recurring email traffic, including recurring alert or digest sends. Public search should report `meta.smoke.ready=true` with no blockers, and queue diagnostics should be acceptable.
+- Inspect `npm run supabase:check:json`, `npm run smoke:mls-status` search-index diagnostics, `npm run smoke:search` Search Smoke Readiness, and timeout-bounded queue diagnostics before enabling recurring email traffic, including recurring alert or digest sends. Public search should report `meta.smoke.ready=true` with no blockers, and queue diagnostics should be acceptable.
 - Keep `/api/mls/status` command metadata stable for `commands.smokeOps`, `commands.smokeMlsStatus`, `commands.smokeSearch`, `commands.rawStatus`, and `commands.rawSearchCheck`.
-- Treat degraded search-index health, `meta.smoke.ready=false`, non-empty public search smoke blockers, or unacceptable timeout-bounded queue diagnostics as live-send blockers for recurring email traffic because alert and digest clicks land back on search and property pages.
+- Treat `npm run supabase:check:json` readiness failure, degraded search-index health, `meta.smoke.ready=false`, non-empty public search smoke blockers, or unacceptable timeout-bounded queue diagnostics as live-send blockers for recurring email traffic because alert and digest clicks land back on search and property pages.
 
 ## Verification
 
@@ -769,7 +769,7 @@ npm run typesense:reindex
 
 - Supabase connectivity can block alert, digest, CRM, MLS, seed, and Typesense reindex dry-runs/reporting until `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/supabase-recovery-runbook.md` is completed and `npm run supabase:check:json` reports readiness.
 - Email domain authentication should be confirmed before production alert or digest sends.
-- Production smoke verification still needs `npm run smoke:mls-status`, `npm run smoke:search`, timeout-bounded queue diagnostics, and one internal tracked email click before recurring scheduler activation or recurring email traffic.
+- Production smoke verification still needs `npm run supabase:check:json` readiness, `npm run smoke:mls-status`, `npm run smoke:search`, timeout-bounded queue diagnostics, and one internal tracked email click before recurring scheduler activation or recurring email traffic.
 - Saved-search alert frequency controls are not yet implemented.
 - Digest grouping rules need final product decisions.
 - CRM closure audit controls, note-backed completion/dismissal, CRM API Inspection metadata, and failed detail-route preservation are implemented locally; production admin smoke verification still needs to run after Terminal 1 is running and `npm run supabase:check:json` reports readiness.
