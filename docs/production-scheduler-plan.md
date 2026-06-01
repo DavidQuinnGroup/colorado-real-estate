@@ -662,7 +662,7 @@ rg -n "fetchIRESListings|normalizeIRESListing|normalizeListing|lib/mls/fetchMLS|
 - Unacceptable timeout-bounded queue diagnostics should block recurring email traffic, including recurring alert or digest sends, until queue health is understood.
 - Large programmatic content batch publication should wait for `npm run supabase:check:json`, verified data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics.
 - `npm run build` currently logs Node `[DEP0169]` warnings from `url.parse()` usage during static generation.
-- CRM closure audit controls, CRM API inspection metadata, failed detail-route preservation, and note-backed completion/dismissal are implemented locally; production admin smoke verification still needs to run after Terminal 1 and Supabase are reachable.
+- CRM closure audit controls, CRM API inspection metadata, failed detail-route preservation, and note-backed completion/dismissal are implemented locally; production admin smoke verification still needs to run after Terminal 1 is running and `npm run supabase:check:json` reports readiness.
 - Alert frequency and digest grouping rules need final business approval.
 - Seed scripts now create local photo rows, but real MLS media remains the production source of truth.
 
