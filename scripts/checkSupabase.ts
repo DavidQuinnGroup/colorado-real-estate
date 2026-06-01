@@ -44,7 +44,7 @@ Options:
 
 Terminal 5 examples:
   npm run supabase:check
-  node dist/scripts/checkSupabase.js --json
+  npm run supabase:check:json
 `;
 
 dotenv.config({ path: '.env.local', quiet: true });
