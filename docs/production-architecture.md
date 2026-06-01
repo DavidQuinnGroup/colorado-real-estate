@@ -51,7 +51,7 @@ Production rules:
 - API routes must not run seed scripts.
 - Operational API routes must require `REIE_ADMIN_API_KEY` or `ADMIN_API_KEY` in production.
 - API routes should return structured JSON diagnostics when Redis, Typesense, queue, or database dependencies are slow.
-- `npm run smoke:mls-status`, `npm run smoke:search`, and timeout-bounded queue diagnostics are the first local production-readiness checks before increasing ingestion volume, MLS volume, scheduler cadence, recurring scheduler activation, live-inventory claims, MLS-backed public expansion, or recurring email traffic.
+- `npm run supabase:check:json`, `npm run smoke:mls-status`, `npm run smoke:search`, and timeout-bounded queue diagnostics are the first local production-readiness checks before increasing ingestion volume, MLS volume, scheduler cadence, recurring scheduler activation, live-inventory claims, MLS-backed public expansion, large programmatic content batch publication, or recurring email traffic.
 
 ### Supabase PostgreSQL
 
@@ -388,10 +388,11 @@ Primary files:
 - `/Users/davidquinn/david-quinn-group/colorado-real-estate/scripts/quickSeed.ts`
 - `/Users/davidquinn/david-quinn-group/colorado-real-estate/scripts/seedTestProperties.ts`
 
-Local and controlled-use commands from **Terminal 5: Scripts / curl testing**:
+Local and controlled-use commands from **Terminal 5: Scripts / curl testing** after `npm run supabase:check:json` reports readiness:
 
 ```bash
 npm run worker:build
+npm run supabase:check:json
 npm run run:seed:quick:dry
 npm run run:seed:test:dry
 ```
@@ -414,8 +415,8 @@ Rules:
 
 - Do not run seed scripts from app startup, public API routes, page rendering, or scheduled production jobs.
 - Do not use local seed records as production inventory strategy.
-- Dry-run seed commands are safe verification checks.
-- Live seed commands require `npm run supabase:check:json` readiness before any database rows are written.
+- Dry-run seed commands are read-only verification checks, but they still require `npm run supabase:check:json` readiness because seed inventory checks touch Supabase.
+- Live and no-index seed write commands require `npm run supabase:check:json` readiness before any database rows are written.
 - Indexed seed commands require Typesense to be running with canonical `properties` and `listings` schemas.
 - Seed scripts create or update bounded `Property` rows and replace their own `PropertyPhoto` rows.
 - Seed scripts report database, photo, and per-collection Typesense status.
@@ -708,9 +709,10 @@ npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000
 npm run smoke:ops
 ```
 
-Run seed dry-runs from **Terminal 5: Scripts / curl testing**:
+Run seed dry-runs from **Terminal 5: Scripts / curl testing** after `npm run supabase:check:json` reports readiness:
 
 ```bash
+npm run supabase:check:json
 npm run run:seed:quick:dry
 npm run run:seed:test:dry
 ```
@@ -737,6 +739,8 @@ npm run run:seed:quick:dry
 npm run run:seed:test:dry
 npm run build
 ```
+
+If `npm run supabase:check:json` reports blocked, stop before Supabase-backed dry-runs, seed checks, CRM scheduler reporting, reindexing, queue retry, or live database work.
 
 Run after Docker or Typesense config changes from **Terminal 4: Docker / Typesense**:
 
@@ -814,14 +818,14 @@ If any curl returns `HTTP_STATUS:000`, start or restart **Terminal 1: Next.js ap
 - MLS sync scheduling needs a production scheduler.
 - Recurring email traffic, recurring alert or digest scheduling, and CRM scheduling need production workflow decisions.
 - Email domain authentication should be confirmed before recurring alert or digest sends.
-- Production smoke verification still needs `npm run smoke:mls-status`, `npm run smoke:search`, timeout-bounded queue diagnostics, and one internal tracked email click before recurring scheduler activation or recurring email traffic.
+- Production smoke verification still needs `npm run supabase:check:json`, `npm run smoke:mls-status`, `npm run smoke:search`, timeout-bounded queue diagnostics, and one internal tracked email click before recurring scheduler activation or recurring email traffic.
 - Local Typesense `properties` and `listings` collections are schema-ready; reindex should run after `npm run supabase:check:json` reports readiness.
 - Supabase connectivity from local scripts is currently a blocker until `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/supabase-recovery-runbook.md` is completed and `npm run supabase:check:json` reports readiness.
 - Timeout-bounded queue diagnostics exist through the Terminal 5 dashboard and admin/dead-letter UI, and they gate live-inventory claims, scheduler cadence, recurring scheduler activation, MLS-volume decisions, recurring email traffic, MLS-backed public expansion, and large programmatic content batch publication; broader operational controls are still pending.
-- CRM closure audit controls, note-backed completion/dismissal, CRM API Inspection metadata, and failed detail-route preservation are implemented locally; production admin smoke verification still needs to run after Terminal 1 and Supabase are reachable.
+- CRM closure audit controls, note-backed completion/dismissal, CRM API Inspection metadata, and failed detail-route preservation are implemented locally; production admin smoke verification still needs to run after Terminal 1 is running and `npm run supabase:check:json` reports readiness.
 - Legacy MLS helper cleanup is complete and recorded in `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/legacy-mls-cleanup-plan.md`.
 - Large sync throughput should be load-tested before production-size ingestion.
-- Large programmatic content batch publication should wait for verified data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics.
+- Large programmatic content batch publication should wait for `npm run supabase:check:json`, verified data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics.
 - Placeholder property media should continue being replaced by reliable MLS/media handling.
 - Seed scripts now create local photo rows, but real MLS media remains the production source of truth.
 
