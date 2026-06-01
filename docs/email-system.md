@@ -489,9 +489,10 @@ npm run worker:build
 npm run typesense:init
 ```
 
-Reindex from **Terminal 5: Scripts / curl testing** when Supabase is reachable:
+Reindex from **Terminal 5: Scripts / curl testing** after `npm run supabase:check:json` reports readiness:
 
 ```bash
+npm run supabase:check:json
 npm run typesense:reindex
 ```
 
@@ -507,7 +508,7 @@ Expected warning shape:
 Neighborhood inventory lookup skipped because the local Typesense listings collection is stale: Typesense schema listings is invalid: ...
 ```
 
-That warning means schema validation is working and the live local collection still needs repair. It should not block email eligibility, but it does affect public search and market inventory accuracy until the collection is rebuilt and reindexed.
+That warning means schema validation is working and the live local collection still needs repair. It should not block email eligibility, but it does affect public search and market inventory accuracy until the collection is rebuilt and reindexed after `npm run supabase:check:json` reports readiness.
 
 ## Production Requirements
 
