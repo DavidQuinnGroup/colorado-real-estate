@@ -200,7 +200,7 @@ MLS intelligence behavior:
 - `/api/mls/status` preserves raw status/search API command compatibility through `commands.rawStatus` and `commands.rawSearchCheck`.
 - `/admin` labels Terminal 5 public search verification as Search Smoke Readiness and expects `meta.smoke.ready=true` with no blockers.
 - Treat `indexFailed > 0` as degraded search freshness even when Postgres upserts succeed.
-- Treat `npm run supabase:check:json`, `npm run smoke:mls-status`, `npm run smoke:search`, and timeout-bounded queue diagnostics as production-readiness gates before increasing ingestion volume, MLS volume, scheduler cadence, recurring scheduler activation, live-inventory claims, MLS-backed public expansion, or recurring email traffic.
+- Treat `npm run supabase:check:json`, `npm run smoke:mls-status`, `npm run smoke:search`, and timeout-bounded queue diagnostics as production-readiness gates before increasing ingestion volume, MLS volume, scheduler cadence, recurring scheduler activation, live-inventory claims, MLS-backed public expansion, large programmatic content batch publication, or recurring email traffic.
 - `processPhotos.ts` preserves existing photos when MLS returns no usable media.
 - Legacy IRES/helper cleanup is complete, including deleted root-level demo MLS helpers.
 
@@ -391,7 +391,7 @@ npm run typesense:reindex
 
 ## Seed Data
 
-Run seed commands in **Terminal 5: Scripts / curl testing** after `npm run worker:build`.
+Run seed commands in **Terminal 5: Scripts / curl testing** after `npm run worker:build` and `npm run supabase:check:json` report readiness.
 
 Use dry-runs first:
 
@@ -425,8 +425,8 @@ Seed command behavior:
 - `seedTestProperties.ts` writes broader Boulder/Louisville test inventory.
 - Both scripts replace existing seeded `PropertyPhoto` rows for their own properties.
 - Both scripts report database, photo, and per-collection Typesense index status.
-- Dry-runs are safe verification checks.
-- Live seed commands require `npm run supabase:check:json` readiness.
+- Dry-runs are read-only, but they still require `npm run supabase:check:json` readiness because seed inventory checks touch Supabase.
+- Live and no-index seed write commands require `npm run supabase:check:json` readiness before any database rows are written.
 - Indexed seed commands also require Typesense to be running and collections to match the canonical schema.
 - Seed scripts must not run from app startup, API routes, page rendering, or scheduled production jobs.
 
@@ -582,7 +582,7 @@ Rollout order:
 3. Search-index diagnostics review through `npm run smoke:mls-status`.
 4. Search Smoke Readiness verification through `npm run smoke:search`, including `meta.smoke.ready=true` and no blockers.
 5. Timeout-bounded queue diagnostics through `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000`.
-6. Large programmatic content batch publication gate verification for data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics before MLS-backed public expansion.
+6. Large programmatic content batch publication gate verification for `npm run supabase:check:json`, data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics before MLS-backed public expansion.
 7. MLS sync recurring schedule.
 8. CRM reporting.
 9. Alert dry-run.
@@ -604,7 +604,7 @@ Conservative starting schedule:
 | Digest processing | daily or weekly after approval | `npm run run:digest -- --limit 50` |
 | CRM reporting | daily business morning | `npm run run:crm:scheduler` |
 | Typesense schema repair | manual only | `npm run typesense:init` |
-| Typesense reindex | manual only | `npm run typesense:reindex` |
+| Typesense reindex | manual only after `npm run supabase:check:json` readiness | `npm run typesense:reindex` |
 | Seed scripts | not scheduled | manual controlled use only |
 
 ## API Surfaces
@@ -776,7 +776,7 @@ REIE should strengthen David Quinn Group's topical authority by combining:
 - Consistent David Quinn Group entity signals across public pages, schema, email, and admin/CRM surfaces.
 - CRM engagement signals for content planning only after protected CRM readiness, closure audit coverage, failed detail-route inspection preservation, and API Inspection metadata are visible.
 - Live-inventory claims and MLS-backed public expansion only after search-index health, Search Smoke Readiness, indexing behavior, and timeout-bounded queue diagnostics are acceptable.
-- Large programmatic content batch publication only after data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics are verified.
+- Large programmatic content batch publication only after `npm run supabase:check:json`, data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics are verified.
 
 The product goal is not just search. It is a public intelligence layer that helps Google and clients understand David Quinn Group as a trusted Colorado authority.
 
@@ -784,7 +784,7 @@ The product goal is not just search. It is a public intelligence layer that help
 
 - Local Typesense `properties` and `listings` collections were verified ready with `npm run typesense:collections:check` on May 31, 2026.
 - Supabase connectivity currently blocks alert, digest, CRM, MLS, seed, and reindex dry-run/reporting commands until `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/supabase-recovery-runbook.md` is completed and `npm run supabase:check:json` reports readiness. Use `npm run supabase:check` for a human-readable check.
-- Production smoke verification still needs `npm run smoke:mls-status`, `npm run smoke:search`, timeout-bounded queue diagnostics, and one internal tracked email click before recurring scheduler activation or recurring email traffic.
+- Production smoke verification still needs `npm run supabase:check:json`, `npm run smoke:mls-status`, `npm run smoke:search`, timeout-bounded queue diagnostics, and one internal tracked email click before recurring scheduler activation or recurring email traffic.
 - `dist/` may contain stale generated JavaScript for deleted source files until generated output is cleaned.
 - Production Redis provider decision is open.
 - Production Typesense provider decision is open.
@@ -793,6 +793,6 @@ The product goal is not just search. It is a public intelligence layer that help
 - Email domain authentication must be confirmed before recurring email traffic.
 - Email client visual QA has not been completed.
 - CRM closure audit controls, note-backed completion/dismissal, CRM API Inspection metadata, and failed detail-route preservation are implemented locally; production workflow still needs live admin smoke verification once Terminal 1 is running and `npm run supabase:check:json` reports readiness.
-- Large programmatic content batch publication should wait for verified data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics.
+- Large programmatic content batch publication should wait for `npm run supabase:check:json`, verified data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics.
 
 <!-- /Users/davidquinn/david-quinn-group/colorado-real-estate/README.md -->
