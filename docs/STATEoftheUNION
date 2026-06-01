@@ -149,7 +149,7 @@ Seed data:
 Alerts and digest email:
 
 - Saved-search matching can create `AlertEvent` and `AlertQueue` records.
-- Alert and digest dry-runs are read-only.
+- Alert and digest dry-runs are read-only, and Supabase-backed alert or digest dry-runs should run only after `npm run supabase:check:json` reports readiness.
 - The base alert script is dry-run by default.
 - Live alert sends must use `npm run run:alerts:live`, `npm run run:worker:alerts:once:live`, continuous worker queue consumption, or an explicitly live protected API request.
 - Live alert sends claim work with `pending -> processing -> sent`.
@@ -183,7 +183,7 @@ Admin and operations:
 - `/admin` is the operations entry point.
 - `/admin` shows the current MLS sync envelope, including page size, page count, runtime, page timeout, and worker/check terminals.
 - `/admin` surfaces Terminal 5 smoke checks for MLS status, Search Smoke Readiness, and combined operational readiness.
-- `/admin` states that Search Smoke Readiness requires `meta.smoke.ready=true` with no blockers before raising MLS volume, recurring email traffic, alert or digest traffic, or scheduler cadence.
+- `/admin` states that Supabase JSON readiness and Search Smoke Readiness with `meta.smoke.ready=true` and no blockers are required before raising MLS volume, recurring email traffic, alert or digest traffic, or scheduler cadence.
 - `/admin/dead-letter` provides dead-letter inspection.
 - `/admin/dead-letter` shows active filter summary and inspection terminal context.
 - `/api/mls/status` provides status diagnostics and returns `commands.smokeOps`, `commands.smokeMlsStatus`, `commands.smokeSearch`, `commands.supabaseCheck`, and `commands.supabaseCheckJson` for first-class smoke and Supabase preflight guidance.
@@ -357,7 +357,7 @@ Production decisions:
 7. Continue MLS ingestion hardening and media replacement.
 8. Expand timeout-bounded admin queue, sync, alert, digest, and CRM visibility.
 9. Continue public search/map/listing polish.
-10. Strengthen city, neighborhood, property, article, guide, tool, and market authority surfaces using `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/content-architecture.md` as the control document, with MLS-backed public expansion and large programmatic content batch publication gated by data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics.
+10. Strengthen city, neighborhood, property, article, guide, tool, and market authority surfaces using `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/content-architecture.md` as the control document, with MLS-backed public expansion and large programmatic content batch publication gated by `npm run supabase:check:json`, data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics.
 11. Choose production schedulers for MLS sync, alerts, digests, and CRM reporting.
 11. Decide production Redis and Typesense providers.
 12. Load-test production-size MLS ingestion before increasing sync volume.
@@ -372,7 +372,7 @@ Rollout order:
 2. Search-index result review from sync output, worker results, `npm run smoke:mls-status`, and `/admin`.
 3. `npm run supabase:check:json`, then `npm run smoke:search` Search Smoke Readiness verification for source, `meta.source`, health, access level, filters, bounds, returned count, mapped count, coordinate-filtered count, duration, and `meta.smoke.ready=true` with no blockers.
 4. Timeout-bounded queue diagnostics through `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000`.
-5. Large programmatic content batch publication gate verification for data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics before MLS-backed public expansion.
+5. Large programmatic content batch publication gate verification after `npm run supabase:check:json` reports readiness for data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics before MLS-backed public expansion.
 6. MLS sync recurring schedule.
 7. CRM reporting.
 8. Alert dry-run.
