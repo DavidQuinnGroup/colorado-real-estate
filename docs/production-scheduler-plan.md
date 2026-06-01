@@ -111,7 +111,7 @@ Enable recurring production work in this order:
 3. Search-index result review from sync output, worker result payloads, `npm run smoke:mls-status`, and `/admin`.
 4. `npm run smoke:search` Search Smoke Readiness verification for source, `meta.source`, health, access level, filters, bounds state, returned count, mapped count, coordinate-filtered count, duration, and `meta.smoke.ready=true` with no blockers.
 5. Timeout-bounded queue diagnostics through `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000`.
-6. Large programmatic content batch publication gate verification for data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics before MLS-backed public expansion.
+6. Large programmatic content batch publication gate verification for `npm run supabase:check:json`, data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics before MLS-backed public expansion.
 7. MLS sync recurring schedule.
 8. CRM reporting.
 9. Alert dry-run.
@@ -515,9 +515,8 @@ Rules:
 - Do not schedule seed scripts as recurring production jobs.
 - Do not run seed scripts from app startup, API routes, or page rendering.
 - Do not treat local seed records as production inventory strategy.
-- Use dry-runs as verification checks.
-- Live seed commands require database connectivity.
-- Run `npm run supabase:check:json` before live seed write commands.
+- Use dry-runs as read-only verification checks, but only after `npm run supabase:check:json` reports readiness because seed inventory checks touch Supabase.
+- Live and no-index seed write commands require `npm run supabase:check:json` readiness before any database rows are written.
 - Indexed seed commands require Typesense to be running with canonical `properties` and `listings` schemas.
 - Seed scripts create or update bounded `Property` rows and replace their own `PropertyPhoto` rows.
 - Seed scripts report database, photo, and per-collection Typesense status.
@@ -536,7 +535,7 @@ Conservative starting schedule:
 | Digest processing | daily or weekly after approval | `npm run run:digest -- --limit 50` |
 | CRM reporting | daily business morning | `npm run run:crm:scheduler` |
 | Typesense schema repair | manual only | `npm run typesense:init` |
-| Typesense reindex | manual only | `npm run typesense:reindex` |
+| Typesense reindex | manual only after `npm run supabase:check:json` readiness | `npm run typesense:reindex` |
 | Seed scripts | not scheduled | manual controlled use only |
 
 ## Monitoring Checklist
@@ -659,9 +658,9 @@ rg -n "fetchIRESListings|normalizeIRESListing|normalizeListing|lib/mls/fetchMLS|
 - Local Typesense `properties` and `listings` collections were verified ready with `npm run typesense:collections:check` on May 31, 2026.
 - Search-index failure reporting now exists; production rollout still needs live-provider verification that the counters appear in scheduler logs, worker results, `npm run smoke:mls-status`, and `/admin`.
 - `/api/search` metadata now exists; production rollout still needs live verification through `npm run smoke:search` for source, `meta.source`, health, access level, filters, bounds state, returned count, mapped count, coordinate filtering, duration, `meta.smoke.ready=true`, empty `meta.smoke.blockers`, and Typesense query/filter context after Supabase connectivity and provider selection are confirmed.
-- Production smoke verification still needs `npm run smoke:mls-status`, `npm run smoke:search`, timeout-bounded queue diagnostics, and one internal tracked email click before recurring scheduler activation or recurring email traffic.
+- Production smoke verification still needs `npm run supabase:check:json`, `npm run smoke:mls-status`, `npm run smoke:search`, timeout-bounded queue diagnostics, and one internal tracked email click before recurring scheduler activation or recurring email traffic.
 - Unacceptable timeout-bounded queue diagnostics should block recurring email traffic, including recurring alert or digest sends, until queue health is understood.
-- Large programmatic content batch publication should wait for verified data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics.
+- Large programmatic content batch publication should wait for `npm run supabase:check:json`, verified data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics.
 - `npm run build` currently logs Node `[DEP0169]` warnings from `url.parse()` usage during static generation.
 - CRM closure audit controls, CRM API inspection metadata, failed detail-route preservation, and note-backed completion/dismissal are implemented locally; production admin smoke verification still needs to run after Terminal 1 and Supabase are reachable.
 - Alert frequency and digest grouping rules need final business approval.
@@ -684,6 +683,6 @@ Before enabling production schedules, decide:
 
 ## Current Status
 
-The scheduler plan is ready for provider selection and staged rollout. The first production-grade path should be a bounded MLS sync with visible search-index counters, followed by `npm run smoke:search` Search Smoke Readiness verification with `meta.smoke.ready=true` and no blockers, timeout-bounded queue diagnostics through `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000`, large programmatic content batch publication gate verification before MLS-backed public expansion, then recurring bounded MLS sync, CRM reporting with `readiness.level` not blocked and CRM API Inspection metadata verified, alert delivery, and digest delivery. Typesense repair and reindex remain manual operational actions. Seed scripts remain manual controlled setup and verification tools.
+The scheduler plan is ready for provider selection and staged rollout after `npm run supabase:check:json` reports readiness. The first production-grade path should be a bounded MLS sync with visible search-index counters, followed by `npm run smoke:search` Search Smoke Readiness verification with `meta.smoke.ready=true` and no blockers, timeout-bounded queue diagnostics through `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000`, large programmatic content batch publication gate verification before MLS-backed public expansion, then recurring bounded MLS sync, CRM reporting with `readiness.level` not blocked and CRM API Inspection metadata verified, alert delivery, and digest delivery. Typesense repair and reindex remain manual operational actions, with reindexing gated by `npm run supabase:check:json`. Seed scripts remain manual controlled setup and verification tools gated by `npm run supabase:check:json`.
 
 <!-- /Users/davidquinn/david-quinn-group/colorado-real-estate/docs/production-scheduler-plan.md -->
