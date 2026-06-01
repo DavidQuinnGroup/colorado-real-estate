@@ -46,12 +46,12 @@ The launch core is considered ready when these surfaces are working together:
 - Search/map responses expose source, health, access level, filters, bounds, returned, mapped, coordinate-filtered counts, and response duration.
 - Saved-search alerts can be previewed safely.
 - Live alert sends are explicitly gated.
-- Recurring email traffic, including live alert and digest sends, waits for healthy Search Smoke Readiness and acceptable timeout-bounded queue diagnostics because email click traffic lands on search and property pages.
+- Recurring email traffic, including live alert and digest sends, waits for `npm run supabase:check:json`, healthy Search Smoke Readiness, and acceptable timeout-bounded queue diagnostics because email click traffic lands on search and property pages.
 - CRM scheduler reporting emits a machine-readable readiness payload before recurring production schedules are enabled.
 - `/admin` surfaces CRM readiness, closure audit coverage, note-backed CRM completion/dismissal, and CRM API Inspection metadata.
 - Admin routes are protected in production.
 - Dead-letter inspection and retry flows are available.
-- Search-index health, Search Smoke Readiness, indexing behavior, and timeout-bounded queue diagnostics are available before retry, scheduler, recurring email traffic, alert, digest, live-inventory claims, MLS-backed public expansion, large programmatic content batch publication, or MLS-volume decisions.
+- `npm run supabase:check:json`, search-index health, Search Smoke Readiness, indexing behavior, and timeout-bounded queue diagnostics are available before retry, scheduler, recurring email traffic, alert, digest, live-inventory claims, MLS-backed public expansion, large programmatic content batch publication, or MLS-volume decisions.
 - Documentation matches actual commands and routes.
 
 ## Current Ready State
@@ -82,7 +82,7 @@ These areas are already part of the working launch core:
 Validate these before live production use:
 
 1. MLS Grid credentials are present in the deployment environment.
-2. Supabase production database URL is present and points to the intended database.
+2. `npm run supabase:check:json` reports that the Supabase production database URL is present and points to the intended database.
 3. Redis is reachable from worker and scheduler environments.
 4. Typesense is reachable and protected by the intended API key.
 5. Resend sender domain is verified.
@@ -121,7 +121,7 @@ Use **Terminal 5: Scripts / curl testing**:
 
 ```bash
 npm run worker:build
-npm run supabase:check
+npm run supabase:check:json
 npm run run:mls-sync:dry
 npm run run:mls-sync -- --json --max-pages=1 --page-size=5 --start-page=0 --page-timeout-ms=30000
 npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000
@@ -191,7 +191,7 @@ Live MLS sync gate:
 - Route-triggered live sync uses `execute=true` or `dryRun=false`.
 - `force=true` is used only after status, retry, failed-job, and dead-letter inspection.
 - Runtime, page, and page-timeout bounds are acceptable.
-- Database target is confirmed.
+- Database target is confirmed with `npm run supabase:check:json`.
 - Typesense target is confirmed.
 - Recent MLS/listing completions show successful search indexing or no index diagnostics.
 - `npm run smoke:mls-status` has `searchIndex.failed=0` and no unresolved search-index diagnostics.
@@ -212,6 +212,7 @@ Live MLS sync gate:
 Live alert gate:
 
 - Internal test recipient has received a valid alert.
+- `npm run supabase:check:json` reports readiness before the dry-run and live-send test.
 - Unsubscribe link works.
 - Click tracking works.
 - Sender domain is verified.
@@ -223,6 +224,7 @@ Live alert gate:
 Live scheduler gate:
 
 - Manual command works.
+- `npm run supabase:check:json` reports readiness before database-backed scheduler commands run.
 - Protected route works.
 - Timeout-bounded queue dashboard output from `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000` is visible.
 - `npm run smoke:ops` passes while Terminal 1 is running.
@@ -280,6 +282,7 @@ Run this baseline from **Terminal 5: Scripts / curl testing** before marking lau
 
 ```bash
 npm run worker:build
+npm run supabase:check:json
 npm run run:mls-sync:dry
 npm run typecheck
 npm run lint
@@ -298,7 +301,7 @@ npm run smoke:ops
 ## Known Non-Blocking Warnings
 
 - `npm run build` may show Node `url.parse()` deprecation warnings.
-- Local Typesense `properties` and `listings` schemas were verified ready with `npm run typesense:collections:check` on May 31, 2026; reindexing still depends on Supabase connectivity.
+- Local Typesense `properties` and `listings` schemas were verified ready with `npm run typesense:collections:check` on May 31, 2026; reindexing still depends on `npm run supabase:check:json` readiness.
 - Generated `dist/` output can contain stale JavaScript for deleted source files until `npm run worker:build` is rerun from a clean output state.
 
 ## Immediate Next Work
