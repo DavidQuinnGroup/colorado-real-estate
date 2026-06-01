@@ -65,6 +65,7 @@ Use `.env.example` as the non-secret local environment template. Copy it to `.en
 
 ```bash
 npm run supabase:check
+npm run supabase:check:json
 ```
 
 Start workers in **Terminal 3: Coordinator**:
@@ -776,7 +777,7 @@ The product goal is not just search. It is a public intelligence layer that help
 ## Current Known Gaps
 
 - Local Typesense `properties` and `listings` collections were verified ready with `npm run typesense:collections:check` on May 31, 2026.
-- Supabase connectivity currently blocks alert, digest, CRM, MLS, seed, and reindex dry-run/reporting commands until `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/supabase-recovery-runbook.md` is completed and `npm run supabase:check` passes.
+- Supabase connectivity currently blocks alert, digest, CRM, MLS, seed, and reindex dry-run/reporting commands until `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/supabase-recovery-runbook.md` is completed and `npm run supabase:check` passes. Use `npm run supabase:check:json` for a machine-readable non-secret report.
 - Production smoke verification still needs `npm run smoke:mls-status`, `npm run smoke:search`, timeout-bounded queue diagnostics, and one internal tracked email click before recurring scheduler activation or recurring email traffic.
 - `dist/` may contain stale generated JavaScript for deleted source files until generated output is cleaned.
 - Production Redis provider decision is open.

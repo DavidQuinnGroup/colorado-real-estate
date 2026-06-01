@@ -453,6 +453,7 @@ Compile worker/script output and recreate canonical collections from **Terminal 
 ```bash
 npm run worker:build
 npm run supabase:check
+npm run supabase:check:json
 npm run typesense:init
 ```
 
@@ -861,7 +862,7 @@ Recovery runbook:
 ## Current Near-Term Priorities
 
 1. Restore or replace the configured Supabase project/database endpoint so local scripts can resolve and reach Supabase.
-2. Confirm Supabase readiness with `npm run supabase:check`.
+2. Confirm Supabase readiness with `npm run supabase:check`, or `npm run supabase:check:json` for automation.
 3. Reindex Typesense from Supabase with `npm run typesense:reindex` after Supabase connectivity is available.
 4. Verify search-index health with `npm run smoke:mls-status` and Search Smoke Readiness source, `meta.source`, health, access level, filters, bounds, returned, mapped, coordinate-filtered, duration, and `meta.smoke.ready=true` with no blockers through `npm run smoke:search` after reindex.
 5. Rerun alert, digest, CRM, MLS, seed, and reindex dry-runs/reporting after Supabase connectivity is restored.

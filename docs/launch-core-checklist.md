@@ -306,7 +306,7 @@ npm run smoke:ops
 The next high-value work after this checklist is to tighten the launch path around actual local validation:
 
 1. Restore or replace the configured Supabase endpoint so database-backed dry-runs and Typesense reindexing can fetch records.
-2. Confirm Supabase readiness with `npm run supabase:check`.
+2. Confirm Supabase readiness with `npm run supabase:check`, or `npm run supabase:check:json` for automation.
 3. Reindex local Typesense with `npm run typesense:reindex`.
 4. Verify `/search` against the reindexed data.
 5. Verify `npm run smoke:search` Search Smoke Readiness shows expected source, `meta.source`, health, access level, filters, bounds, mapped count, coordinate-filtered count, duration, and `meta.smoke.ready=true` with no blockers.

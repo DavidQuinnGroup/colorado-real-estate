@@ -321,7 +321,7 @@ DNS lookup failed: ENOTFOUND otmkoqvmhthitldlnjdk.supabase.co
 FATAL: (ENOTFOUND) tenant/user postgres.otmkoqvmhthitldlnjdk not found
 ```
 
-`npm run supabase:check` verifies Supabase env presence, parsed project-ref consistency, project DNS, Postgres pooler DNS, Postgres TCP, Prisma query readiness, and REST reachability without printing secrets. The configured values consistently point to project ref `otmkoqvmhthitldlnjdk`, but this currently blocks alert, digest, CRM, MLS, seed, and reindex dry-runs/reporting while the configured project API host is unreachable and the configured Postgres tenant/user is not accepted.
+`npm run supabase:check` verifies Supabase env presence, parsed project-ref consistency, project DNS, Postgres pooler DNS, Postgres TCP, Prisma query readiness, and REST reachability without printing secrets. `npm run supabase:check:json` returns the same gate as a machine-readable non-secret report. The configured values consistently point to project ref `otmkoqvmhthitldlnjdk`, but this currently blocks alert, digest, CRM, MLS, seed, and reindex dry-runs/reporting while the configured project API host is unreachable and the configured Postgres tenant/user is not accepted.
 
 Recovery runbook:
 
@@ -349,7 +349,7 @@ Production decisions:
 ## Current Near-Term Work Sequence
 
 1. Restore or replace the configured Supabase endpoint so database-backed dry-runs and Typesense reindexing can fetch records.
-2. Confirm Supabase readiness with `npm run supabase:check`.
+2. Confirm Supabase readiness with `npm run supabase:check`, or `npm run supabase:check:json` for automation.
 3. Reindex Typesense from Supabase when Supabase connectivity is available.
 4. Verify search-index health with `npm run smoke:mls-status` and Search Smoke Readiness source, `meta.source`, health, access level, filters, bounds, returned, mapped, coordinate-filtered, duration, and `meta.smoke.ready=true` with no blockers through `npm run smoke:search` after reindex.
 5. Confirm Supabase connectivity and rerun alert, digest, CRM, MLS, and seed dry-runs/reporting as needed.
