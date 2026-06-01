@@ -848,7 +848,7 @@ Known current blocker:
 - Inspect dead-letter records before deciding whether a retry or code fix is appropriate.
 - Keep SEO authority surfaces crawlable, internally linked, locally specific, and tied clearly to David Quinn Group.
 - Gate CRM-informed content planning behind protected CRM readiness, closure audit coverage, API Inspection metadata, and failed detail-route preservation.
-- Gate live-inventory claims and MLS-backed public expansion behind `npm run supabase:check:json` readiness, search-index health, Search Smoke Readiness, indexing behavior, and acceptable timeout-bounded queue diagnostics.
+- Keep live-inventory claims and MLS-backed public expansion gated behind `npm run supabase:check:json` readiness, search-index health, Search Smoke Readiness, indexing behavior, and acceptable timeout-bounded queue diagnostics.
 - Keep large programmatic content batch publication gated behind `npm run supabase:check:json`, verified data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics.
 
 <!-- /Users/davidquinn/david-quinn-group/colorado-real-estate/docs/platform-architecture.md -->

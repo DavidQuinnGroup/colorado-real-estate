@@ -6,7 +6,7 @@ Email and alert processing are Postgres-driven. Help commands do not require Res
 
 Typesense does not control email eligibility or delivery. Local Typesense schema repair is still required so public search, market inventory, neighborhood pages, and property pages stay aligned with email-linked listing activity.
 
-Recurring email traffic, including recurring alert or digest sends, should wait for healthy search-index diagnostics, Search Smoke Readiness, and timeout-bounded queue diagnostics. Email links drive users back into public search and property pages, so `indexFailed > 0`, `meta.smoke.ready=false`, public search smoke blockers, stale public coordinates, missing indexed media, or unacceptable queue diagnostics are launch-readiness issues even when Postgres delivery eligibility is valid.
+Recurring email traffic, including recurring alert or digest sends, should wait for `npm run supabase:check:json` readiness, healthy search-index diagnostics, Search Smoke Readiness, and timeout-bounded queue diagnostics. Email links drive users back into public search and property pages, so failed Supabase readiness, `indexFailed > 0`, `meta.smoke.ready=false`, public search smoke blockers, stale public coordinates, missing indexed media, or unacceptable queue diagnostics are launch-readiness issues even when Postgres delivery eligibility is valid.
 
 Traceability control:
 
