@@ -1,6 +1,6 @@
 # Supabase Recovery Runbook
 
-Date: May 31, 2026
+Date: June 1, 2026
 
 Project: David Quinn Group Real Estate Intelligence Engine
 
@@ -10,7 +10,7 @@ Working path:
 
 ## Purpose
 
-This runbook defines the operator path for restoring Supabase connectivity after `npm run supabase:check` reports a stale, missing, paused, or invalid Supabase project reference.
+This runbook defines the operator path for restoring Supabase connectivity after `npm run supabase:check:json` reports a stale, missing, paused, or invalid Supabase project reference. Use `npm run supabase:check` as the human-readable companion check.
 
 The current local env set is internally consistent, but it points at project ref `otmkoqvmhthitldlnjdk`, whose project API host does not resolve and whose Postgres tenant/user is not accepted by the pooler.
 
@@ -38,7 +38,7 @@ June 1, 2026 recheck:
 
 ## Terminal 5 Failure Interpretation
 
-When `npm run supabase:check` reports this combination:
+When `npm run supabase:check:json`, or the human-readable `npm run supabase:check`, reports this combination:
 
 ```text
 FAIL Supabase project DNS
@@ -69,7 +69,7 @@ Open the Supabase dashboard and confirm:
 6. The database password is current.
 7. The pooler host, port, SSL mode, and pgbouncer settings match the current Supabase connection panel.
 
-`npm run supabase:check` prints a non-secret Postgres URL fingerprint. Use it to confirm:
+`npm run supabase:check:json` and `npm run supabase:check` print a non-secret Postgres URL fingerprint. Use it to confirm:
 
 - `host` and `port` match the Supabase pooler panel.
 - `database=postgres`.
@@ -103,18 +103,18 @@ Run from **Terminal 5: Scripts / curl testing**:
 ```bash
 cd /Users/davidquinn/david-quinn-group/colorado-real-estate
 npm run worker:build
-npm run supabase:check
+npm run supabase:check:json
 ```
 
-For a machine-readable, non-secret report:
+For the companion human-readable report:
 
 ```bash
-npm run supabase:check:json
+npm run supabase:check
 ```
 
 The JSON report includes `schemaVersion: 1`, `readiness.level`, `readiness.summary`, `readiness.nextAction`, `readiness.nextCommand`, and per-check `readiness.gates` for automation and scheduler gating.
 
-The preflight must pass before database-backed dry-runs can be trusted.
+The JSON readiness gate must report ready before database-backed dry-runs can be trusted.
 
 After `npm run supabase:check:json` reports readiness, continue:
 
@@ -131,7 +131,7 @@ npm run run:digest:dry -- --limit 50
 
 ## Pass Conditions
 
-`npm run supabase:check` should report:
+`npm run supabase:check:json` should report `readiness.level` as ready. The companion `npm run supabase:check` should report:
 
 - Supabase placeholder values: pass.
 - Supabase project ref consistency: pass.
@@ -145,7 +145,7 @@ Then Typesense reindexing should complete without Supabase fetch errors.
 
 ## Keep Blocked Until
 
-Keep these blocked until Supabase preflight passes:
+Keep these blocked until `npm run supabase:check:json` reports readiness:
 
 - Typesense reindex from Supabase.
 - MLS sync dry-run or live sync.
@@ -153,8 +153,10 @@ Keep these blocked until Supabase preflight passes:
 - Digest dry-run or live send.
 - CRM scheduler reporting.
 - Seed dry-runs that touch Supabase.
+- Live seed writes.
 - Recurring scheduler activation.
 - Recurring email traffic.
 - MLS-backed public expansion.
+- Large programmatic content batch publication.
 
 <!-- /Users/davidquinn/david-quinn-group/colorado-real-estate/docs/supabase-recovery-runbook.md -->
