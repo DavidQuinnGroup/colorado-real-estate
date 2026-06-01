@@ -2,7 +2,7 @@
 
 The email system delivers David Quinn Group property intelligence, saved-search alerts, digest summaries, valuation follow-ups, and future CRM communications. Email delivery must stay outside page rendering, respect unsubscribe state, track engagement safely, expose queue diagnostics, and produce enough database evidence to audit delivery.
 
-Email and alert processing are Postgres-driven. Help commands do not require Resend credentials. Dry-run commands do not send through Resend, but Supabase-backed dry-runs still require database connectivity because user, alert, unsubscribe, and email-log state lives in Postgres.
+Email and alert processing are Postgres-driven. Help commands do not require Resend credentials. Dry-run commands do not send through Resend, but Supabase-backed dry-runs still require database connectivity because user, alert, unsubscribe, and email-log state lives in Postgres. Use `npm run supabase:check:json` from **Terminal 5: Scripts / curl testing** as the non-secret readiness gate before alert or digest dry-runs.
 
 Typesense does not control email eligibility or delivery. Local Typesense schema repair is still required so public search, market inventory, neighborhood pages, and property pages stay aligned with email-linked listing activity.
 
@@ -519,7 +519,7 @@ Before live user email:
 - Set `RESEND_FROM_EMAIL`.
 - Set `RESEND_REPLY_TO_EMAIL` if replies should route to a controlled inbox.
 - Set `NEXT_PUBLIC_SITE_URL` or `PUBLIC_SITE_URL`.
-- Confirm Supabase connectivity.
+- Confirm Supabase connectivity with `npm run supabase:check:json`.
 - Run `npm run worker:build`.
 - Run dry-run alert processing.
 - Run dry-run digest processing.
@@ -545,7 +545,7 @@ Before live user email:
 - Render plain text as well as HTML.
 - Do not index unsubscribe URLs.
 - Do not allow arbitrary external click-tracking redirects.
-- Treat Supabase connectivity as required for alert and digest dry-runs.
+- Treat `npm run supabase:check:json` readiness as required for alert and digest dry-runs.
 - Inspect queue and dead-letter diagnostics before live retry or recurring send enablement.
 - Treat degraded search-index health, degraded Search Smoke Readiness, public search smoke blockers, or unacceptable timeout-bounded queue diagnostics as live-send blockers for recurring email traffic because email click traffic depends on those pages.
 - Keep CRM task completion and dismissal human-reviewed through the admin review flow.
@@ -560,7 +560,7 @@ Before live user email:
 - Email frequency and digest grouping rules need final business review.
 - Reply handling exists as an API route, but full CRM reply workflow needs validation.
 - Visual QA for major email clients has not been completed.
-- Live send testing should wait until Supabase connectivity and Resend credentials are both confirmed.
+- Live send testing should wait until `npm run supabase:check:json` reports readiness and Resend credentials are confirmed.
 - Alert and digest dry-runs currently fail while Supabase recovery is blocked.
 - Timeout-bounded queue diagnostics exist through Terminal 5, but broader admin queue controls are still pending.
 - Local Typesense `properties` and `listings` collections were verified ready with `npm run typesense:collections:check` on May 31, 2026.
@@ -605,9 +605,10 @@ curl --max-time 8 -s -w "\nHTTP_STATUS:%{http_code}\n" "http://localhost:3000/ap
 curl --max-time 8 -s -w "\nHTTP_STATUS:%{http_code}\n" "http://localhost:3000/api/admin/crm-tasks/<task-id-from-list-response>" -H "x-admin-key: $REIE_ADMIN_API_KEY"
 ```
 
-Run Supabase-backed dry-run checks only when Supabase is reachable:
+Run Supabase-backed dry-run checks only after the Supabase JSON readiness gate passes:
 
 ```bash
+npm run supabase:check:json
 npm run run:digest:dry -- --limit 1
 npm run run:alerts:dry
 npm run run:worker:alerts:dry
@@ -639,6 +640,6 @@ curl --max-time 8 -s -H "x-admin-key: $REIE_ADMIN_API_KEY" -w "\nHTTP_STATUS:%{h
 curl --max-time 8 -s -w "\nHTTP_STATUS:%{http_code}\n" "http://localhost:3000/api/search?limit=5"
 ```
 
-For a live send test, only use a known internal recipient and confirm `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, `RESEND_REPLY_TO_EMAIL`, public site URL, Supabase connectivity, Search Smoke Readiness, and timeout-bounded queue diagnostics first.
+For a live send test, only use a known internal recipient and confirm `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, `RESEND_REPLY_TO_EMAIL`, public site URL, `npm run supabase:check:json`, Search Smoke Readiness, and timeout-bounded queue diagnostics first.
 
 <!-- /Users/davidquinn/david-quinn-group/colorado-real-estate/docs/email-system.md -->

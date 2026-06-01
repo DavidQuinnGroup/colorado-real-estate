@@ -352,7 +352,7 @@ Production decisions:
 2. Confirm Supabase readiness with `npm run supabase:check:json`, or `npm run supabase:check` for a human-readable check.
 3. Reindex Typesense from Supabase when Supabase connectivity is available.
 4. Verify search-index health with `npm run smoke:mls-status` and Search Smoke Readiness source, `meta.source`, health, access level, filters, bounds, returned, mapped, coordinate-filtered, duration, and `meta.smoke.ready=true` with no blockers through `npm run smoke:search` after reindex.
-5. Confirm Supabase connectivity and rerun alert, digest, CRM, MLS, and seed dry-runs/reporting as needed.
+5. Confirm Supabase readiness with `npm run supabase:check:json` and rerun alert, digest, CRM, MLS, and seed dry-runs/reporting as needed.
 6. Clean or regenerate stale `dist/` artifacts if generated output is being used directly.
 7. Continue MLS ingestion hardening and media replacement.
 8. Expand timeout-bounded admin queue, sync, alert, digest, and CRM visibility.
