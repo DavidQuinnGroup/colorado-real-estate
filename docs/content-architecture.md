@@ -98,10 +98,10 @@ Schema should reinforce:
 
 - Supabase/Postgres remains the source of truth for inventory and content-linked property data.
 - Typesense is a rebuildable search index, not the content source of truth.
-- MLS-backed inventory can support authority pages, live-inventory claims, and large programmatic content batch publication only when search-index health, Search Smoke Readiness, canonical structure, metadata, indexing behavior, and timeout-bounded queue diagnostics are acceptable.
+- MLS-backed inventory can support authority pages, live-inventory claims, and large programmatic content batch publication only when `npm run supabase:check:json` reports readiness and search-index health, Search Smoke Readiness, canonical structure, metadata, indexing behavior, and timeout-bounded queue diagnostics are acceptable.
 - CRM engagement signals can inform content prioritization only after CRM readiness, closure audit coverage, note-backed completion and dismissal, failed detail-route inspection preservation, and API Inspection metadata are visible through the protected admin workflow.
 - Seed data is acceptable for local setup and visual QA, but it must not be used as production authority evidence.
-- If Supabase, Typesense, Search Smoke Readiness, indexing behavior, or timeout-bounded queue diagnostics are degraded, authority pages should avoid presenting unstable inventory claims as current market fact.
+- If `npm run supabase:check:json` reports blocked, or Typesense, Search Smoke Readiness, indexing behavior, or timeout-bounded queue diagnostics are degraded, authority pages should avoid presenting unstable inventory claims as current market fact.
 
 ## Production Gates
 
@@ -111,11 +111,12 @@ Before expanding public authority content at scale through large programmatic co
 2. Confirm the page has useful internal links into existing REIE surfaces.
 3. Confirm schema markup is appropriate and not duplicated incorrectly.
 4. Confirm inventory references are backed by healthy data or clearly framed as static guidance.
-5. Confirm `npm run smoke:search` reports `meta.smoke.ready=true` with no blockers when the page depends on live search/listing data.
-6. Confirm `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000` reports acceptable queue diagnostics before ingestion-volume increases, MLS-volume increases, scheduler cadence increases, recurring scheduler activation, recurring email traffic, live-inventory claims, MLS-backed public expansion, large programmatic content batch publication, or engagement signals are used for public planning.
-7. Confirm CRM-informed content planning is backed by visible CRM readiness, closure audit coverage, note-backed CRM review state, and API Inspection metadata when engagement signals are used.
-8. Confirm the content does not rely on local seed data as production evidence.
-9. Confirm large programmatic content batch publication has verified data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics before publication.
+5. Confirm `npm run supabase:check:json` reports readiness before relying on Supabase-backed inventory, CRM engagement signals, or live database-backed content claims.
+6. Confirm `npm run smoke:search` reports `meta.smoke.ready=true` with no blockers when the page depends on live search/listing data.
+7. Confirm `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000` reports acceptable queue diagnostics before ingestion-volume increases, MLS-volume increases, scheduler cadence increases, recurring scheduler activation, recurring email traffic, live-inventory claims, MLS-backed public expansion, large programmatic content batch publication, or engagement signals are used for public planning.
+8. Confirm CRM-informed content planning is backed by visible CRM readiness, closure audit coverage, note-backed CRM review state, and API Inspection metadata when engagement signals are used.
+9. Confirm the content does not rely on local seed data as production evidence.
+10. Confirm large programmatic content batch publication has passed `npm run supabase:check:json`, verified data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics before publication.
 
 ## Verification
 
@@ -129,12 +130,15 @@ Run broader checks before production content expansion or large programmatic con
 
 ```bash
 npm run worker:build
+npm run supabase:check:json
 npm run typecheck
 npm run lint
 npm run smoke:search
 npm run smoke:mls-status
 npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000
 ```
+
+If `npm run supabase:check:json` reports blocked, stop before Supabase-backed content expansion, CRM-informed content planning, live-inventory claims, MLS-backed public expansion, or large programmatic content batch publication.
 
 Run `npm run smoke:search` and `npm run smoke:mls-status` while **Terminal 1: Next.js app** is running.
 
@@ -151,6 +155,6 @@ curl --max-time 8 -s -w "\nHTTP_STATUS:%{http_code}\n" "http://localhost:3000/ap
 - Content expansion needs a prioritized city, neighborhood, article, guide, and tool roadmap.
 - CRM engagement signals need a formal content-prioritization report after protected CRM readiness and API Inspection metadata pass production smoke checks.
 - Property intelligence should be connected more visibly to market and neighborhood content.
-- Production content and large programmatic content batch publication should wait for stable live inventory, search-index health, Search Smoke Readiness, canonical structure, metadata, indexing behavior, and timeout-bounded queue diagnostics when inventory claims are central to the page.
+- Production content and large programmatic content batch publication should wait for `npm run supabase:check:json`, stable live inventory, search-index health, Search Smoke Readiness, canonical structure, metadata, indexing behavior, and timeout-bounded queue diagnostics when inventory claims are central to the page.
 
 <!-- /Users/davidquinn/david-quinn-group/colorado-real-estate/docs/content-architecture.md -->
