@@ -32,6 +32,7 @@
     "run:queue-dashboard": "node dist/scripts/queueDashboard.js",
     "run:queue-maintenance": "node dist/scripts/queueMaintenance.js",
     "supabase:check": "node dist/scripts/checkSupabase.js",
+    "supabase:check:json": "node dist/scripts/checkSupabase.js --json",
     "typesense:init": "node dist/scripts/initTypesense.js",
     "typesense:check": "node dist/scripts/initTypesense.js --check",
     "typesense:reset": "node dist/scripts/initTypesense.js --reset",

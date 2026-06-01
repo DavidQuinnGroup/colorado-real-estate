@@ -109,7 +109,7 @@ npm run supabase:check
 For a machine-readable, non-secret report:
 
 ```bash
-node dist/scripts/checkSupabase.js --json
+npm run supabase:check:json
 ```
 
 The preflight must pass before database-backed dry-runs can be trusted.

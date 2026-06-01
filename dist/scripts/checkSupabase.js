@@ -310,7 +310,7 @@ function buildReport(results, options) {
         module: 'supabase-check',
         generatedAt: new Date().toISOString(),
         terminal: TERMINAL,
-        command: options.json ? 'node dist/scripts/checkSupabase.js --json' : 'npm run supabase:check',
+        command: options.json ? 'npm run supabase:check:json' : 'npm run supabase:check',
         recoveryRunbook: RECOVERY_RUNBOOK_PATH,
         dashboardProjectUrl,
         projectRef: projectRef || null,
