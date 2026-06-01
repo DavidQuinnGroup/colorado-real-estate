@@ -530,7 +530,7 @@ Rules:
 - Live alert sends require `npm run run:alerts:live` or `npm run run:worker:alerts:once:live`.
 - Continuous alert worker mode consumes queued jobs live.
 - Worker dry-run mode is valid only for one-shot or batch mode, so it cannot silently consume queue jobs.
-- Keep alert and digest dry-runs read-only.
+- Keep alert and digest dry-runs read-only, and run Supabase-backed alert or digest dry-runs only after `npm run supabase:check:json` reports readiness.
 - Respect `User.isUnsubscribed`.
 - Keep unsubscribe idempotent.
 - Keep tracked redirects constrained to safe local or site destinations.
@@ -697,7 +697,7 @@ Rollout order:
 3. Search-index diagnostics review through `npm run smoke:mls-status`.
 4. Search Smoke Readiness verification through `npm run smoke:search`, including `meta.smoke.ready=true` with no blockers.
 5. Timeout-bounded queue diagnostics through `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000`.
-6. Large programmatic content batch publication gate verification for data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics before MLS-backed public expansion.
+6. Large programmatic content batch publication gate verification after `npm run supabase:check:json` reports readiness for data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics before MLS-backed public expansion.
 7. MLS sync recurring schedule.
 8. CRM reporting.
 9. Alert dry-run.
@@ -748,7 +748,7 @@ Rules:
 - Reinforce expertise through local market context, property intelligence, and useful client workflows rather than thin content.
 - Do not treat local seed content as production authority content.
 - Use CRM engagement signals for content prioritization only after protected CRM readiness, closure audit coverage, failed detail-route inspection preservation, and API Inspection metadata are visible.
-- Use live-inventory claims and MLS-backed public expansion in public authority content only after search-index health, Search Smoke Readiness, indexing behavior, and timeout-bounded queue diagnostics are acceptable.
+- Use live-inventory claims and MLS-backed public expansion in public authority content only after `npm run supabase:check:json` reports readiness and search-index health, Search Smoke Readiness, indexing behavior, and timeout-bounded queue diagnostics are acceptable.
 - Allow large programmatic content batch publication only after `npm run supabase:check:json`, data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics are verified.
 
 Authority targets:
