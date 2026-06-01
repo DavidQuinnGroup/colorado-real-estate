@@ -631,9 +631,9 @@ function buildRecoveryPlan(queues: QueueInspectionResult[], diagnostics: Array<{
       return {
         level: 'blocked',
         summary: `${firstFailedQueue.name} has failed jobs from database connectivity; resolve Supabase before retrying.`,
-        nextAction: 'Run the Supabase preflight and follow the recovery runbook before queue retry.',
+        nextAction: 'Run the Supabase preflight JSON report and follow the recovery runbook before queue retry.',
         terminal: 'Terminal 5',
-        nextCommand: 'npm run supabase:check',
+        nextCommand: 'npm run supabase:check:json',
         gates,
       };
     }
@@ -706,6 +706,8 @@ async function main() {
         commands: {
           terminal: 'Terminal 5',
           dryRunMlsSync: 'npm run run:mls-sync:dry',
+          supabaseCheck: 'npm run supabase:check',
+          supabaseCheckJson: 'npm run supabase:check:json',
           mlsStatus: 'curl -s "http://localhost:3000/api/mls/status"',
           retryStatus: 'curl -s "http://localhost:3000/api/mls/retry"',
           deadLetter: 'curl -s "http://localhost:3000/api/admin/dead-letter?limit=25"',

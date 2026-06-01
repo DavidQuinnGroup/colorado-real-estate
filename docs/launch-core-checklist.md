@@ -200,7 +200,7 @@ Live MLS sync gate:
 - `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000` reports acceptable queue diagnostics before recurring email traffic, live-inventory claims, MLS-backed public expansion, MLS-volume decisions, scheduler cadence increases, or large programmatic content batch publication.
 - Queue dashboard source-queue dead-letter summaries are reviewed when the local Next API is not running.
 - Busy queue dashboard output points to the relevant worker start command, and the worker is started or explicitly deferred before increasing scheduler cadence or ingestion volume.
-- Database-connectivity queue failures route to `npm run supabase:check` before dry-run retry or live retry.
+- Database-connectivity queue failures route to `npm run supabase:check:json` before dry-run retry or live retry.
 - MLS workers must pass their startup database preflight before consuming queued MLS sync or page jobs.
 - Alert worker startup, alert dry-runs, digest dry-runs, CRM scheduler reporting, Typesense reindexing, live seed writes, live MLS sync enqueue, live queue retry, and alert API processing must stop at their database preflight while `npm run supabase:check` is failing.
 - Stale active queue jobs are not acceptable diagnostics; inspect retry state, source-queue dead letters, and worker process health before retrying or adding work.
