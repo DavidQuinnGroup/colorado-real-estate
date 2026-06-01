@@ -822,7 +822,7 @@ npm run build
 - Production scheduling needs a final host-level cron or scheduler.
 - Recurring email traffic, recurring alert or digest scheduling, and CRM scheduling need production workflow decisions.
 - Production smoke verification still needs `npm run smoke:mls-status`, `npm run smoke:search`, timeout-bounded queue diagnostics, and one internal tracked email click before recurring scheduler activation or recurring email traffic.
-- Large programmatic content batch publication should wait for verified data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics.
+- Large programmatic content batch publication should wait for `npm run supabase:check:json`, verified data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics.
 - Dead-letter detail workflow can be expanded beyond inspection into guided retry decisions.
 - Large sync throughput should be load-tested before production-size ingestion.
 - Production Redis and Typesense providers need final decisions.
