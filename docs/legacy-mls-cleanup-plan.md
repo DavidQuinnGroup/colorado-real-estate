@@ -16,7 +16,7 @@ Authoritative Master V7 source PDF:
 
 ## Current Operational Boundary
 
-The active MLS system has one canonical production direction: MLS Grid data enters through bounded sync entrypoints, is normalized through the active listing processing pipeline, is written to Prisma, and is then reflected into Typesense through the canonical schema. Search-index health is surfaced through `npm run smoke:mls-status`; Search Smoke Readiness is surfaced through `npm run smoke:search`; queue diagnostics use `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000`; large programmatic content batch publication, recurring email traffic, live-inventory claims, MLS-backed public expansion, MLS-volume increases, and scheduler cadence increases must wait for verified data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics where applicable.
+The active MLS system has one canonical production direction: MLS Grid data enters through bounded sync entrypoints, is normalized through the active listing processing pipeline, is written to Prisma, and is then reflected into Typesense through the canonical schema. Search-index health is surfaced through `npm run smoke:mls-status`; Search Smoke Readiness is surfaced through `npm run smoke:search`; queue diagnostics use `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000`; large programmatic content batch publication, recurring email traffic, live-inventory claims, MLS-backed public expansion, MLS-volume increases, and scheduler cadence increases must wait for `npm run supabase:check:json`, verified data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics where applicable.
 
 Protected operational routes:
 
@@ -178,6 +178,7 @@ Then use **Terminal 5: Scripts / curl testing**:
 ```bash
 npm run worker:build
 npm run typesense:init
+npm run supabase:check:json
 npm run typesense:reindex
 ```
 
@@ -191,7 +192,7 @@ Current cleanup state:
 - Useful GC-forensics and resilience scoring logic was preserved in `/Users/davidquinn/david-quinn-group/colorado-real-estate/lib/mls/upsertListing.ts`.
 - Production scheduling is documented in `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/production-scheduler-plan.md`.
 - Search indexing uses the canonical Typesense schema and validation path from `/Users/davidquinn/david-quinn-group/colorado-real-estate/lib/typesense/schema.ts`.
-- `npm run smoke:mls-status`, `/admin`, `npm run smoke:search`, `/search`, `/`, and `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000` now expose or preserve search-index health, Search Smoke Readiness, indexing behavior, and bounded queue diagnostics for launch readiness, recurring email traffic, live-inventory claims, MLS-backed public expansion, MLS-volume decisions, scheduler cadence, and large programmatic content batch publication gates.
+- `npm run supabase:check:json`, `npm run smoke:mls-status`, `/admin`, `npm run smoke:search`, `/search`, `/`, and `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000` now expose or preserve Supabase readiness, search-index health, Search Smoke Readiness, indexing behavior, and bounded queue diagnostics for launch readiness, recurring email traffic, live-inventory claims, MLS-backed public expansion, MLS-volume decisions, scheduler cadence, and large programmatic content batch publication gates.
 - `/api/admin/crm-tasks`, `/api/admin/crm-tasks/[id]`, and `/admin` now expose CRM inspection metadata on success and error responses, preserve failed detail-route inspection metadata, and keep CRM closure audit coverage visible for recurring email traffic and engagement handoff.
 - Local Typesense `properties` and `listings` collections were verified ready with `npm run typesense:collections:check` on May 31, 2026.
 
@@ -200,6 +201,7 @@ Required verification from **Terminal 5: Scripts / curl testing**:
 ```bash
 npm run lint
 npm run worker:build
+npm run supabase:check:json
 npm run run:mls-sync:dry
 npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000
 npm run run:alerts -- --help
@@ -214,6 +216,8 @@ npm run smoke:ops
 curl --max-time 8 -s -w "\nHTTP_STATUS:%{http_code}\n" "http://localhost:3000/api/admin/crm-tasks?status=active&limit=6" -H "x-admin-key: $REIE_ADMIN_API_KEY"
 curl --max-time 8 -s -w "\nHTTP_STATUS:%{http_code}\n" "http://localhost:3000/api/admin/crm-tasks/<task-id-from-list-response>" -H "x-admin-key: $REIE_ADMIN_API_KEY"
 ```
+
+If `npm run supabase:check:json` reports blocked, stop before Supabase-backed dry-runs, seed checks, CRM scheduler reporting, reindexing, queue retry, or live database work.
 
 Run `npm run typecheck` after `npm run build`, not in parallel with it, because `.next/types` is generated during the build.
 
