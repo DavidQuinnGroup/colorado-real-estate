@@ -53,6 +53,8 @@ const TERMINAL_5_DEAD_LETTER_COMMAND = 'curl -s "http://localhost:3000/api/admin
 const TERMINAL_5_DEAD_LETTER_OPEN_COMMAND = 'curl -s "http://localhost:3000/api/admin/dead-letter?states=waiting,delayed,failed&limit=25"';
 const TERMINAL_5_QUEUE_DASHBOARD_COMMAND = 'npm run run:queue-dashboard';
 const TERMINAL_5_ALERT_DRY_RUN_COMMAND = 'curl -s -X POST "http://localhost:3000/api/process-alerts?dryRun=true&limit=25"';
+const TERMINAL_5_SUPABASE_CHECK_COMMAND = 'npm run supabase:check';
+const TERMINAL_5_SUPABASE_CHECK_JSON_COMMAND = 'npm run supabase:check:json';
 
 function getAdminKey() {
   return process.env.REIE_ADMIN_API_KEY || process.env.ADMIN_API_KEY || null;
@@ -311,6 +313,8 @@ function getCommandSet(data?: MlsSyncJobData) {
     deadLetterInspector: TERMINAL_5_DEAD_LETTER_COMMAND,
     deadLetterOpen: TERMINAL_5_DEAD_LETTER_OPEN_COMMAND,
     queueDashboard: TERMINAL_5_QUEUE_DASHBOARD_COMMAND,
+    supabaseCheck: TERMINAL_5_SUPABASE_CHECK_COMMAND,
+    supabaseCheckJson: TERMINAL_5_SUPABASE_CHECK_JSON_COMMAND,
     alertDryRun: TERMINAL_5_ALERT_DRY_RUN_COMMAND,
     worker: TERMINAL_3_WORKER_COMMAND,
     terminal5Status: TERMINAL_5_STATUS_COMMAND,
@@ -324,6 +328,8 @@ function getCommandSet(data?: MlsSyncJobData) {
     terminal5DeadLetter: TERMINAL_5_DEAD_LETTER_COMMAND,
     terminal5DeadLetterOpen: TERMINAL_5_DEAD_LETTER_OPEN_COMMAND,
     terminal5QueueDashboard: TERMINAL_5_QUEUE_DASHBOARD_COMMAND,
+    terminal5SupabaseCheck: TERMINAL_5_SUPABASE_CHECK_COMMAND,
+    terminal5SupabaseCheckJson: TERMINAL_5_SUPABASE_CHECK_JSON_COMMAND,
     terminal5AlertDryRun: TERMINAL_5_ALERT_DRY_RUN_COMMAND,
     terminal3Worker: TERMINAL_3_WORKER_COMMAND,
   };
@@ -479,7 +485,7 @@ export async function POST(request: NextRequest) {
 
     await assertAppDatabaseReady({
       operation: 'MLS sync live enqueue',
-      recoveryCommand: 'npm run supabase:check',
+      recoveryCommand: TERMINAL_5_SUPABASE_CHECK_JSON_COMMAND,
     });
 
     const job = await withTimeout('mls-sync enqueue', enqueueMlsSync(data));

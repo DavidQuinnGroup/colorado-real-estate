@@ -4,6 +4,7 @@ import { prisma } from '../lib/prisma.js';
 import { assertDatabaseReady } from '../lib/queue/databasePreflight.js';
 const DEFAULT_LIMIT = 50;
 const MAX_LIMIT = 500;
+const SUPABASE_CHECK_JSON_COMMAND = 'npm run supabase:check:json';
 const HELP_TEXT = `
 REIE digest sender
 
@@ -286,7 +287,7 @@ async function runDigest() {
     console.log('REIE digest run starting:', options);
     await assertDatabaseReady({
         operation: 'digest sender',
-        recoveryCommand: 'npm run supabase:check',
+        recoveryCommand: SUPABASE_CHECK_JSON_COMMAND,
     });
     const users = await prisma.user.findMany({
         where: {

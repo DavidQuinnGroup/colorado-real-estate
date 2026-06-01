@@ -54,6 +54,7 @@ type SeedSummary = {
 
 const args = new Set(process.argv.slice(2));
 const allowedArgs = new Set(['--help', '--dry-run', '--skip-index']);
+const SUPABASE_CHECK_JSON_COMMAND = 'npm run supabase:check:json';
 
 const seedListings: SeedListing[] = [
   {
@@ -248,7 +249,7 @@ async function main() {
   const skipIndex = args.has('--skip-index');
   await assertDatabaseReady({
     operation: 'quick authority seed',
-    recoveryCommand: 'npm run supabase:check',
+    recoveryCommand: SUPABASE_CHECK_JSON_COMMAND,
   });
 
   const summary: SeedSummary = {

@@ -7,6 +7,8 @@ import { connection, MLS_SYNC_DEFAULT_MAX_PAGES, MLS_SYNC_DEFAULT_MAX_RUNTIME_MS
 const LOCAL_BASE_URL = 'http://localhost:3000';
 const TERMINAL_3 = 'Terminal 3';
 const TERMINAL_5 = 'Terminal 5';
+const SUPABASE_CHECK_COMMAND = 'npm run supabase:check';
+const SUPABASE_CHECK_JSON_COMMAND = 'npm run supabase:check:json';
 function readNumber(value, fallback, min, max) {
     if (!value)
         return fallback;
@@ -169,6 +171,8 @@ function getFailureOperations(job, finalAttempt) {
         statusCommand: buildStatusCommand(),
         retryStatusCommand: buildRetryStatusCommand(),
         queueDashboardCommand: buildQueueDashboardCommand(),
+        supabaseCheckCommand: SUPABASE_CHECK_COMMAND,
+        supabaseCheckJsonCommand: SUPABASE_CHECK_JSON_COMMAND,
         deadLetterCommand: buildDeadLetterCommand(),
         dryRunRetryCommand: buildRetryCommand({
             jobId,
@@ -283,6 +287,8 @@ async function start() {
         statusCommand: buildStatusCommand(),
         retryStatusCommand: buildRetryStatusCommand(),
         queueDashboardCommand: buildQueueDashboardCommand(),
+        supabaseCheckCommand: SUPABASE_CHECK_COMMAND,
+        supabaseCheckJsonCommand: SUPABASE_CHECK_JSON_COMMAND,
         dryRunSyncCommand: buildDryRunSyncCommand(),
         dryRunRetryCommand: buildRetryCommand({ limit: 10 }),
         liveRetryCommand: buildRetryCommand({ execute: true, limit: 10 }),
@@ -291,7 +297,7 @@ async function start() {
     });
     await assertWorkerDatabaseReady({
         queue: MLS_SYNC_QUEUE_NAME,
-        recoveryCommand: 'npm run supabase:check',
+        recoveryCommand: SUPABASE_CHECK_JSON_COMMAND,
         worker: 'MLS sync worker',
     });
     if (config.once) {
@@ -309,6 +315,7 @@ async function start() {
         terminal: TERMINAL_3,
         recoveryTerminal: TERMINAL_5,
         statusCommand: buildStatusCommand(),
+        supabaseCheckJsonCommand: SUPABASE_CHECK_JSON_COMMAND,
         deadLetterCommand: buildDeadLetterCommand(),
         dryRunRetryCommand: buildRetryCommand({ limit: 10 }),
     });

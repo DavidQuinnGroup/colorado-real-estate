@@ -61,6 +61,8 @@ const DEFAULT_LIMIT = 50;
 const MAX_LIMIT = 200;
 const PROCESS_ALERTS_TIMEOUT_MS = 12_000;
 const LOCAL_BASE_URL = 'http://localhost:3000';
+const SUPABASE_CHECK_COMMAND = 'npm run supabase:check';
+const SUPABASE_CHECK_JSON_COMMAND = 'npm run supabase:check:json';
 
 function getAdminKey() {
   return process.env.REIE_ADMIN_API_KEY || process.env.ADMIN_API_KEY || null;
@@ -318,6 +320,8 @@ function buildCommands(limit: number) {
     alertWorkerDryRun: 'npm run run:worker:alerts:once',
     alertWorkerLiveOnce: 'npm run run:worker:alerts:once:live',
     queueDashboard: 'npm run run:queue-dashboard -- --failed --limit=5',
+    supabaseCheck: SUPABASE_CHECK_COMMAND,
+    supabaseCheckJson: SUPABASE_CHECK_JSON_COMMAND,
     mlsStatus: `curl -s "${LOCAL_BASE_URL}/api/mls/status"`,
     retryStatus: `curl -s "${LOCAL_BASE_URL}/api/mls/retry"`,
     deadLetter: `curl -s "${LOCAL_BASE_URL}/api/admin/dead-letter?sourceQueue=reie-alerts&limit=25"`,
@@ -444,7 +448,7 @@ async function processAlerts(request: NextRequest, body: ProcessAlertsBody = {})
   const options = readRequestOptions(request, body);
   await assertAppDatabaseReady({
     operation: options.dryRun ? 'alert API dry-run processing' : 'alert API live processing',
-    recoveryCommand: 'npm run supabase:check',
+    recoveryCommand: SUPABASE_CHECK_JSON_COMMAND,
   });
 
   const alertResult = await withTimeout(

@@ -27,6 +27,8 @@ const ALERT_QUEUE_NAME = 'reie-alerts';
 const LOCAL_BASE_URL = 'http://localhost:3000';
 const TERMINAL_3 = 'Terminal 3';
 const TERMINAL_5 = 'Terminal 5';
+const SUPABASE_CHECK_COMMAND = 'npm run supabase:check';
+const SUPABASE_CHECK_JSON_COMMAND = 'npm run supabase:check:json';
 
 function readNumber(value: string | undefined, fallback: number, min: number, max: number) {
   if (!value) return fallback;
@@ -124,6 +126,8 @@ function getFailureOperations(job: Job<AlertJobData> | undefined, finalAttempt: 
     statusCommand: buildStatusCommand(),
     retryStatusCommand: buildRetryStatusCommand(),
     queueDashboardCommand: buildQueueDashboardCommand(),
+    supabaseCheckCommand: SUPABASE_CHECK_COMMAND,
+    supabaseCheckJsonCommand: SUPABASE_CHECK_JSON_COMMAND,
     alertDryRunCommand: buildAlertDryRunCommand(),
     deadLetterCommand: buildDeadLetterCommand(),
     dryRunRetryCommand: buildRetryCommand({
@@ -288,7 +292,7 @@ async function startAlertWorker() {
   validateConfig(config);
   await assertDatabaseReady({
     operation: 'alert worker startup',
-    recoveryCommand: 'npm run supabase:check',
+    recoveryCommand: SUPABASE_CHECK_JSON_COMMAND,
   });
 
   const workers: Worker[] = [];
@@ -307,6 +311,8 @@ async function startAlertWorker() {
     statusCommand: buildStatusCommand(),
     retryStatusCommand: buildRetryStatusCommand(),
     queueDashboardCommand: buildQueueDashboardCommand(),
+    supabaseCheckCommand: SUPABASE_CHECK_COMMAND,
+    supabaseCheckJsonCommand: SUPABASE_CHECK_JSON_COMMAND,
     alertDryRunCommand: buildAlertDryRunCommand(),
     inspectorCommand: buildDeadLetterCommand(),
     dryRunRetryCommand: buildRetryCommand({ limit: 10 }),

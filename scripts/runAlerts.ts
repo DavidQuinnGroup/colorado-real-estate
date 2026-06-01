@@ -14,6 +14,8 @@ const MAX_LIMIT = 200;
 const EMAIL_VISIBLE_PREFIX = 2;
 const LOCAL_BASE_URL = 'http://localhost:3000';
 const TERMINAL_5 = 'Terminal 5';
+const SUPABASE_CHECK_COMMAND = 'npm run supabase:check';
+const SUPABASE_CHECK_JSON_COMMAND = 'npm run supabase:check:json';
 
 const HELP_TEXT = `
 REIE saved-search alert runner
@@ -150,6 +152,8 @@ function buildCommands(limit: number) {
     workerDryRun: 'npm run run:worker:alerts:once',
     workerLiveOnce: 'npm run run:worker:alerts:once:live',
     queueDashboard: 'npm run run:queue-dashboard -- --failed --limit=5',
+    supabaseCheck: SUPABASE_CHECK_COMMAND,
+    supabaseCheckJson: SUPABASE_CHECK_JSON_COMMAND,
     retryStatus: `curl -s "${LOCAL_BASE_URL}/api/mls/retry"`,
     deadLetter: `curl -s "${LOCAL_BASE_URL}/api/admin/dead-letter?sourceQueue=reie-alerts&states=waiting,delayed,failed&limit=25"`,
   };
@@ -276,7 +280,7 @@ async function runAlerts() {
 
   await assertDatabaseReady({
     operation: 'saved-search alert runner',
-    recoveryCommand: 'npm run supabase:check',
+    recoveryCommand: SUPABASE_CHECK_JSON_COMMAND,
   });
 
   const result = await processAlertQueue({

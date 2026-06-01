@@ -27,6 +27,7 @@ type CollectionInspection = {
 const DEFAULT_BATCH_SIZE = 500;
 const MAX_BATCH_SIZE = 1000;
 const MAX_RECORDS_LIMIT = 1000000;
+const SUPABASE_CHECK_JSON_COMMAND = 'npm run supabase:check:json';
 
 const HELP_TEXT = `
 Typesense property reindex runner
@@ -436,7 +437,7 @@ async function main() {
   assertSupabaseEnvReady();
   await assertDatabaseReady({
     operation: 'Typesense reindex Supabase fetch',
-    recoveryCommand: 'npm run supabase:check',
+    recoveryCommand: SUPABASE_CHECK_JSON_COMMAND,
   });
 
   const { indexProperties } = await import('../lib/typesense/indexProperties.js');

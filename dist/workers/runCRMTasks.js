@@ -6,6 +6,8 @@ const MAX_LIMIT = 100;
 const DEFAULT_STATUS = 'pending';
 const ACTIVE_STATUSES = ['pending', 'reviewing'];
 const EMAIL_VISIBLE_PREFIX = 2;
+const SUPABASE_CHECK_COMMAND = 'npm run supabase:check';
+const SUPABASE_CHECK_JSON_COMMAND = 'npm run supabase:check:json';
 const emptyCRMTaskAuditSummary = {
     closed: 0,
     completed: 0,
@@ -25,7 +27,7 @@ function getCRMTaskFailureReadiness(error) {
         summary: `CRM task scan failed before readiness could be calculated. ${message}`,
         nextAction: 'Run the Supabase preflight and resolve database connectivity before CRM reporting.',
         terminal: 'Terminal 5',
-        nextCommand: 'npm run supabase:check',
+        nextCommand: SUPABASE_CHECK_JSON_COMMAND,
         gates: [
             {
                 label: 'Database',
@@ -368,6 +370,8 @@ function printSummary(summary) {
         terminal: 'Terminal 5',
         relatedCommands: {
             crmScript: 'npm run run:crm -- --limit 20 --status active',
+            supabaseCheck: SUPABASE_CHECK_COMMAND,
+            supabaseCheckJson: SUPABASE_CHECK_JSON_COMMAND,
             intakeSignals: 'curl -s http://localhost:3000/api/admin/intake-signals',
             mlsDryRun: 'npm run run:mls-sync:dry',
         },
@@ -399,7 +403,7 @@ export async function runCRMTasks(options = {}) {
             console.log('REIE CRM task worker starting:', { limit, status });
         await assertDatabaseReady({
             operation: 'CRM task reporting',
-            recoveryCommand: 'npm run supabase:check',
+            recoveryCommand: SUPABASE_CHECK_JSON_COMMAND,
         });
         const tasks = await fetchTasks(limit, status);
         const audit = await fetchAuditSummary();
