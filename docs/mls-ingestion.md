@@ -17,7 +17,7 @@ MLS ingestion supports four product goals:
 - Keep public search and map inventory current.
 - Replace placeholder media with reliable listing media.
 - Create saved-search alert opportunities from new or changed listings.
-- Support SEO authority surfaces with stable, fresh, MLS-backed inventory only after Search Smoke Readiness, search-index health, indexing behavior, and timeout-bounded queue diagnostics pass for large programmatic content batch publication.
+- Support SEO authority surfaces with stable, fresh, MLS-backed inventory only after `npm run supabase:check:json`, Search Smoke Readiness, search-index health, indexing behavior, and timeout-bounded queue diagnostics pass for large programmatic content batch publication.
 
 No MLS operation should require a public page render to complete a long-running job. Ingestion must remain bounded, observable, idempotent, and recoverable.
 
@@ -391,10 +391,11 @@ Current stale warning includes missing required fields/facets, `price` type mism
 
 ## Seed Data
 
-Run seed commands in **Terminal 5: Scripts / curl testing** after building compiled worker/script output:
+Run seed commands in **Terminal 5: Scripts / curl testing** after building compiled worker/script output and confirming Supabase JSON readiness:
 
 ```bash
 npm run worker:build
+npm run supabase:check:json
 ```
 
 Use dry-runs first:
@@ -430,8 +431,8 @@ Seed command behavior:
 - Both scripts create or update `Property` rows.
 - Both scripts replace existing seeded `PropertyPhoto` rows for their own properties.
 - Both scripts report database, photo, and per-collection Typesense status.
-- Dry-runs are safe verification checks.
-- Live seed commands require Supabase database connectivity.
+- Dry-runs are read-only verification checks, but they still require `npm run supabase:check:json` readiness because seed inventory checks touch Supabase.
+- Live and no-index seed write commands require `npm run supabase:check:json` readiness before any database rows are written.
 - Indexed seed commands also require Typesense to be running with the canonical `properties` and `listings` schemas.
 - Seed scripts must not run from app startup, API routes, page rendering, or scheduled production jobs.
 
@@ -494,7 +495,7 @@ Search metadata check from **Terminal 5: Scripts / curl testing** while Terminal
 npm run smoke:search
 ```
 
-The search smoke response should include `meta.smoke.ready=true` and no `meta.smoke.blockers`, and timeout-bounded queue diagnostics should be acceptable, before raising ingestion volume, MLS volume, scheduler cadence, recurring scheduler activation, live-inventory claims, MLS-backed public expansion, recurring email traffic, or large programmatic content batch publication.
+The search smoke response should include `meta.smoke.ready=true` and no `meta.smoke.blockers`, `npm run supabase:check:json` should report readiness, and timeout-bounded queue diagnostics should be acceptable before raising ingestion volume, MLS volume, scheduler cadence, recurring scheduler activation, live-inventory claims, MLS-backed public expansion, recurring email traffic, or large programmatic content batch publication.
 
 ## Retry Endpoint
 
@@ -699,7 +700,7 @@ If an MLS API route returns `HTTP_STATUS:000`:
 If `/api/mls/status` or `/api/mls/retry` returns diagnostics:
 
 1. Read `diagnostics[].area`.
-2. For `database:*`, confirm Supabase database connectivity.
+2. For `database:*`, run `npm run supabase:check:json` from Terminal 5 and follow `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/supabase-recovery-runbook.md` before retrying database-backed work.
 3. For `queue:*`, `redis:*`, or `retry*`, confirm Terminal 4 is running `npm run infra:up`.
 4. Run `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000` from Terminal 5.
 5. Run `npm run worker:build`.
