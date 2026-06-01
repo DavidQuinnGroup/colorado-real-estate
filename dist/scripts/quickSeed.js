@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import { prisma } from '../lib/prisma.js';
+import { assertDatabaseReady } from '../lib/queue/databasePreflight.js';
 import { indexListing } from '../lib/typesense/indexListing.js';
 dotenv.config({ path: '.env.local' });
 dotenv.config();
@@ -178,6 +179,10 @@ async function main() {
         return;
     }
     const skipIndex = args.has('--skip-index');
+    await assertDatabaseReady({
+        operation: 'quick authority seed',
+        recoveryCommand: 'npm run supabase:check',
+    });
     const summary = {
         database: 0,
         photos: 0,
