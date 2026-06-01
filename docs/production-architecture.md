@@ -203,7 +203,7 @@ Production requirements:
 - `npm run supabase:check:json` must report readiness before database-backed dry-runs, live seed writes, reindexing, scheduled work, or recurring email traffic.
 - Resend sender domain must be verified before recurring alert or digest sends.
 - Public site URL variables must point to the canonical production domain.
-- Search-index health through `npm run smoke:mls-status`, Search Smoke Readiness through `npm run smoke:search`, and timeout-bounded queue diagnostics through `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000` must be verified before recurring email traffic, including recurring alert or digest sends.
+- `npm run supabase:check:json`, search-index health through `npm run smoke:mls-status`, Search Smoke Readiness through `npm run smoke:search`, and timeout-bounded queue diagnostics through `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000` must be verified before recurring email traffic, including recurring alert or digest sends.
 
 ## Protected Operational APIs
 
@@ -658,8 +658,8 @@ The production architecture supports search visibility through:
 - Localized Boulder, Denver, and Colorado market intelligence.
 - Consistent David Quinn Group brand signals across page metadata, schema, email, admin surfaces, CRM surfaces, and public content.
 - CRM engagement signals for content planning only after protected CRM readiness, closure audit coverage, failed detail-route inspection preservation, and API Inspection metadata are visible.
-- Live-inventory claims and MLS-backed public expansion only after search-index health, Search Smoke Readiness, indexing behavior, and timeout-bounded queue diagnostics are acceptable.
-- Large programmatic content batch publication only after data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics are verified.
+- Live-inventory claims and MLS-backed public expansion only after `npm run supabase:check:json` reports readiness and search-index health, Search Smoke Readiness, indexing behavior, and timeout-bounded queue diagnostics are acceptable.
+- Large programmatic content batch publication only after `npm run supabase:check:json`, data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics are verified.
 
 The platform should position David Quinn Group as the authoritative Colorado real estate intelligence source, not merely as a property search interface.
 
