@@ -381,7 +381,7 @@ Rules:
 - Continuous alert worker mode consumes queued jobs live.
 - Malformed alert payloads should fail explicitly.
 - Click tracking should not block safe redirects.
-- Recurring email traffic, including recurring alert sends, should wait for healthy `npm run smoke:mls-status` search-index diagnostics, `npm run smoke:search` Search Smoke Readiness, and acceptable timeout-bounded queue diagnostics.
+- Recurring email traffic, including recurring alert sends, should wait for `npm run supabase:check:json` readiness, healthy `npm run smoke:mls-status` search-index diagnostics, `npm run smoke:search` Search Smoke Readiness, and acceptable timeout-bounded queue diagnostics.
 
 ## Email, Digest, And Unsubscribe Architecture
 
@@ -423,7 +423,7 @@ Rules:
 - Keep tracked redirects constrained to safe destinations.
 - Digest dry-runs must be read-only.
 - Live digest sends should only mark usable claimed alerts as sent.
-- Recurring email traffic, including recurring digest sends, should wait for healthy search-index diagnostics, Search Smoke Readiness, and acceptable timeout-bounded queue diagnostics because email click traffic lands on search and property pages.
+- Recurring email traffic, including recurring digest sends, should wait for `npm run supabase:check:json` readiness, healthy search-index diagnostics, Search Smoke Readiness, and acceptable timeout-bounded queue diagnostics because email click traffic lands on search and property pages.
 
 ## CRM Intelligence Architecture
 
@@ -516,7 +516,7 @@ Authority rules:
 - Treat fresh MLS-backed inventory as a trust signal only when it is stable, indexed, and correctly linked.
 - Keep seed content useful for local development without treating it as a production content source.
 - Use CRM engagement signals for content prioritization only after protected CRM readiness, closure audit coverage, failed detail-route inspection preservation, and API Inspection metadata are visible.
-- Use live-inventory claims and MLS-backed public expansion only after search-index health, Search Smoke Readiness, indexing behavior, and timeout-bounded queue diagnostics are acceptable.
+- Use live-inventory claims and MLS-backed public expansion only after `npm run supabase:check:json` reports readiness and search-index health, Search Smoke Readiness, indexing behavior, and timeout-bounded queue diagnostics are acceptable.
 - Allow large programmatic content batch publication only after `npm run supabase:check:json`, data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics are verified.
 
 ## Queue Architecture
@@ -812,7 +812,7 @@ Known current non-blocking warnings:
 
 Known current blocker:
 
-- Supabase connectivity can block database-dependent dry-runs, seed checks, CRM scheduler reporting, reindexing, and live database work until `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/supabase-recovery-runbook.md` is completed and `npm run supabase:check:json` reports readiness.
+- Supabase connectivity can block database-dependent dry-runs, seed checks, CRM scheduler reporting, reindexing, queue retry, recurring scheduler activation, recurring email traffic, live-inventory claims, MLS-backed public expansion, large programmatic content batch publication, and live database work until `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/supabase-recovery-runbook.md` is completed and `npm run supabase:check:json` reports readiness.
 
 ## Current Known Gaps
 
@@ -843,12 +843,12 @@ Known current blocker:
 - Make every seed script explicit, bounded, and terminal-run.
 - Make every alert deduplicated.
 - Preview failed-job retries before live retry.
-- Keep digest and alert dry-runs read-only.
-- Keep recurring email traffic, including recurring alert or digest sends, disabled when search-index health is degraded, `meta.smoke.ready=false`, public search smoke blockers are present, or timeout-bounded queue diagnostics are unacceptable.
+- Keep digest and alert dry-runs read-only, and run Supabase-backed digest or alert dry-runs only after `npm run supabase:check:json` reports readiness.
+- Keep recurring email traffic, including recurring alert or digest sends, disabled when `npm run supabase:check:json` reports blocked, search-index health is degraded, `meta.smoke.ready=false`, public search smoke blockers are present, or timeout-bounded queue diagnostics are unacceptable.
 - Inspect dead-letter records before deciding whether a retry or code fix is appropriate.
 - Keep SEO authority surfaces crawlable, internally linked, locally specific, and tied clearly to David Quinn Group.
 - Gate CRM-informed content planning behind protected CRM readiness, closure audit coverage, API Inspection metadata, and failed detail-route preservation.
-- Gate live-inventory claims and MLS-backed public expansion behind search-index health, Search Smoke Readiness, indexing behavior, and acceptable timeout-bounded queue diagnostics.
+- Gate live-inventory claims and MLS-backed public expansion behind `npm run supabase:check:json` readiness, search-index health, Search Smoke Readiness, indexing behavior, and acceptable timeout-bounded queue diagnostics.
 - Keep large programmatic content batch publication gated behind `npm run supabase:check:json`, verified data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics.
 
 <!-- /Users/davidquinn/david-quinn-group/colorado-real-estate/docs/platform-architecture.md -->
