@@ -250,6 +250,8 @@ npm run run:seed:test:dry
 npm run build
 ```
 
+If `npm run supabase:check:json` reports blocked, stop before Supabase-backed dry-runs, seed checks, CRM scheduler reporting, reindexing, or live database work.
+
 Run script help checks after alert, digest, CRM, or worker script changes:
 
 ```bash
@@ -339,7 +341,7 @@ Use `npm run typesense:init` as the primary local schema repair command.
 
 ## Seed Commands
 
-Run seed commands from **Terminal 5: Scripts / curl testing** after `npm run worker:build`.
+Run seed commands from **Terminal 5: Scripts / curl testing** after `npm run worker:build` and `npm run supabase:check:json` report readiness.
 
 Safe dry-runs:
 
@@ -364,8 +366,8 @@ npm run run:seed:test:no-index
 
 Seed rules:
 
-- Dry-runs are safe verification checks.
-- Live seed commands require `npm run supabase:check:json` readiness.
+- Dry-runs are read-only, but they still require `npm run supabase:check:json` readiness because seed inventory checks touch Supabase.
+- Live and no-index seed write commands require `npm run supabase:check:json` readiness before any database rows are written.
 - Indexed seed commands require Typesense to be running with canonical `properties` and `listings` schemas.
 - Seed scripts create or update bounded `Property` rows and replace their own `PropertyPhoto` rows.
 - Seed scripts report database, photo, and per-collection Typesense status.
@@ -448,7 +450,7 @@ Rollout order:
 3. Search-index result review from sync output, worker results, `npm run smoke:mls-status`, and `/admin`.
 4. `npm run smoke:search` Search Smoke Readiness verification for source, `meta.source`, health, access level, filters, bounds state, returned count, mapped count, coordinate-filtered count, duration, and `meta.smoke.ready=true` with no blockers.
 5. Timeout-bounded queue diagnostics through `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000`.
-6. Large programmatic content batch publication gate verification for data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics before MLS-backed public expansion.
+6. Large programmatic content batch publication gate verification for `npm run supabase:check:json`, data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics before MLS-backed public expansion.
 7. MLS sync recurring schedule.
 8. CRM reporting.
 9. Alert dry-run.
@@ -470,7 +472,7 @@ Conservative starting schedule:
 | Digest processing | daily or weekly after approval | `npm run run:digest -- --limit 50` |
 | CRM reporting | daily business morning | `npm run run:crm:scheduler` |
 | Typesense schema repair | manual only | `npm run typesense:init` |
-| Typesense reindex | manual only | `npm run typesense:reindex` |
+| Typesense reindex | manual only after `npm run supabase:check:json` readiness | `npm run typesense:reindex` |
 | Seed scripts | not scheduled | manual controlled use only |
 
 ## Alert, Digest, And CRM Commands
@@ -591,10 +593,10 @@ Current deletion candidates:
 - Keep `properties` and `listings` Typesense schemas compatible.
 - Treat search-index failures and timeout-bounded queue diagnostics as operational diagnostics, not silent warnings.
 - Preserve existing listing photos when MLS returns no usable media.
-- Keep alert, digest, and seed dry-runs read-only.
+- Keep alert, digest, and seed dry-runs read-only, but do not run them until `npm run supabase:check:json` reports readiness.
 - Do not schedule recurring email traffic, including recurring alert or digest sends, until `npm run supabase:check:json`, sender domain, unsubscribe, tracking, internal live-send tests, `npm run smoke:mls-status` search-index health, `npm run smoke:search` Search Smoke Readiness, and timeout-bounded queue diagnostics are verified.
 - Treat failed `npm run supabase:check:json`, degraded search-index health, `meta.smoke.ready=false`, public search smoke blockers, or unacceptable timeout-bounded queue diagnostics as live-send blockers for recurring email traffic.
-- Allow large programmatic content batch publication only after data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics are verified.
+- Allow large programmatic content batch publication only after `npm run supabase:check:json`, data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics are verified.
 - Live alert sends should claim work with `pending -> processing -> sent`.
 - Keep unsubscribe idempotent.
 - Keep tracked redirects safe.
@@ -614,10 +616,10 @@ Current deletion candidates:
 6. Clean or regenerate stale `dist/` artifacts if generated output is being used directly.
 7. Continue MLS ingestion hardening and media replacement.
 8. Expand timeout-bounded admin queue, sync, alert, digest, and CRM completion workflows.
-8. Continue public search/map/listing polish and placeholder media replacement.
-9. Strengthen city, neighborhood, property, article, and market authority surfaces through large programmatic content batch publication gated by data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics.
-10. Choose production schedulers for MLS sync, alerts, digests, and CRM reporting.
-11. Decide production Redis and Typesense providers.
-12. Load-test production-size MLS ingestion before increasing sync volume.
+9. Continue public search/map/listing polish and placeholder media replacement.
+10. Strengthen city, neighborhood, property, article, and market authority surfaces through large programmatic content batch publication gated by `npm run supabase:check:json`, data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics.
+11. Choose production schedulers for MLS sync, alerts, digests, and CRM reporting.
+12. Decide production Redis and Typesense providers.
+13. Load-test production-size MLS ingestion before increasing sync volume.
 
 <!-- /Users/davidquinn/david-quinn-group/colorado-real-estate/docs/CHAT_START.md -->
