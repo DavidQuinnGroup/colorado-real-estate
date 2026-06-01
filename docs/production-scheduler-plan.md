@@ -24,11 +24,11 @@ Authoritative Master V7 source PDF:
 - Scheduler output must be visible in provider logs.
 - Failed scheduled jobs must surface through provider logs, queue state, admin diagnostics, or dead-letter inspection.
 - Queue diagnostics must use the timeout-bounded Terminal 5 command before retry, recurring email traffic, alert, digest, scheduler, live-inventory claims, large programmatic content batch publication, or MLS-volume decisions.
-- Search-index health, Search Smoke Readiness, and timeout-bounded queue diagnostics are production-readiness gates before increasing ingestion volume, MLS volume, scheduler cadence, recurring scheduler activation, live-inventory claims, MLS-backed public expansion, or recurring email traffic.
+- `npm run supabase:check:json`, search-index health, Search Smoke Readiness, and timeout-bounded queue diagnostics are production-readiness gates before increasing ingestion volume, MLS volume, scheduler cadence, recurring scheduler activation, live-inventory claims, MLS-backed public expansion, or recurring email traffic.
 - Supabase/Postgres remains the source of truth.
 - Typesense remains rebuildable search infrastructure.
 - Search-index failures during MLS processing are degraded search freshness events and must be visible before schedule volume increases.
-- Search Smoke Readiness must be checked with `npm run smoke:search` when validating public search behavior after scheduler or index changes, and `meta.smoke.ready` must be true with no blockers before MLS volume, scheduler cadence, recurring email traffic, live-inventory claims, or MLS-backed public expansion increases.
+- Supabase JSON readiness and Search Smoke Readiness must be checked with `npm run supabase:check:json` and `npm run smoke:search` when validating public search behavior after scheduler or index changes, and `meta.smoke.ready` must be true with no blockers before MLS volume, scheduler cadence, recurring email traffic, live-inventory claims, or MLS-backed public expansion increases.
 - Terminal 5 smoke scripts are the standard local shorthand for `/api/mls/status` and `/api/search?limit=5` checks.
 - `/api/mls/status` should expose `commands.smokeOps`, `commands.smokeMlsStatus`, `commands.smokeSearch`, `commands.rawStatus`, and `commands.rawSearchCheck` for admin and operator guidance.
 - Redis/BullMQ remains the queue runtime, not durable business storage.
@@ -180,7 +180,7 @@ Escalation path:
 - Increase page size or page count only after status, retry, dead-letter, `npm run supabase:check:json`, Redis, Typesense, MLS Grid behavior, Search Smoke Readiness, indexing behavior, and timeout-bounded queue diagnostics are stable.
 - Increase page size or page count only when recent MLS summaries report `indexFailed=0`.
 - Treat `indexFailed > 0` as a blocker for search-scale increases, even if Postgres upserts succeeded.
-- Confirm `npm run smoke:search` Search Smoke Readiness reports expected source, `meta.source`, health, access level, filters, bounds, returned count, mapped count, coordinate-filtered count, duration, and `meta.smoke.ready=true` with no blockers, and confirm timeout-bounded queue diagnostics are acceptable, before increasing scheduler cadence or MLS volume.
+- Confirm `npm run supabase:check:json` readiness, confirm `npm run smoke:search` Search Smoke Readiness reports expected source, `meta.source`, health, access level, filters, bounds, returned count, mapped count, coordinate-filtered count, duration, and `meta.smoke.ready=true` with no blockers, and confirm timeout-bounded queue diagnostics are acceptable, before increasing scheduler cadence or MLS volume.
 
 Preconditions:
 
@@ -262,7 +262,7 @@ npm run run:worker:alerts:once:live
 Initial cadence:
 
 - Dry-run manually before first production live send.
-- Live every 15 to 30 minutes only after sender domain, unsubscribe, tracking, internal live-send tests, search-index health, Search Smoke Readiness, and timeout-bounded queue diagnostics are verified for recurring email traffic.
+- Live every 15 to 30 minutes only after `npm run supabase:check:json` reports readiness and sender domain, unsubscribe, tracking, internal live-send tests, search-index health, Search Smoke Readiness, and timeout-bounded queue diagnostics are verified for recurring email traffic.
 
 Starting limit:
 
@@ -289,7 +289,7 @@ Rules:
 - Continuous alert worker mode consumes queued jobs live and should not be used as a dry-run substitute.
 - Live sends claim rows with `pending -> processing -> sent`.
 - Failed sends must be inspected, not silently discarded.
-- Do not schedule recurring email traffic, including live alert sends, until internal live-send tests, search-index health, Search Smoke Readiness passes with `meta.smoke.ready=true` and no blockers, and timeout-bounded queue diagnostics are acceptable.
+- Do not schedule recurring email traffic, including live alert sends, until `npm run supabase:check:json` reports readiness, internal live-send tests, search-index health, Search Smoke Readiness passes with `meta.smoke.ready=true` and no blockers, and timeout-bounded queue diagnostics are acceptable.
 
 ## Job 3: Digest Processing
 
@@ -335,7 +335,7 @@ Rules:
 - Digest dry-run must remain read-only.
 - Live digest sends should only mark usable claimed alerts as sent.
 - Malformed payloads should be marked explicitly.
-- Do not enable recurring email traffic, including recurring digest sends, until alert delivery behavior, search-index health, Search Smoke Readiness is stable with `meta.smoke.ready=true` and no blockers, and timeout-bounded queue diagnostics are acceptable.
+- Do not enable recurring email traffic, including recurring digest sends, until `npm run supabase:check:json` reports readiness, alert delivery behavior, search-index health, Search Smoke Readiness is stable with `meta.smoke.ready=true` and no blockers, and timeout-bounded queue diagnostics are acceptable.
 
 ## Job 4: CRM Reporting
 
@@ -659,7 +659,7 @@ rg -n "fetchIRESListings|normalizeIRESListing|normalizeListing|lib/mls/fetchMLS|
 - Search-index failure reporting now exists; production rollout still needs live-provider verification that the counters appear in scheduler logs, worker results, `npm run smoke:mls-status`, and `/admin`.
 - `/api/search` metadata now exists; production rollout still needs live verification through `npm run smoke:search` for source, `meta.source`, health, access level, filters, bounds state, returned count, mapped count, coordinate filtering, duration, `meta.smoke.ready=true`, empty `meta.smoke.blockers`, and Typesense query/filter context after Supabase connectivity and provider selection are confirmed.
 - Production smoke verification still needs `npm run supabase:check:json`, `npm run smoke:mls-status`, `npm run smoke:search`, timeout-bounded queue diagnostics, and one internal tracked email click before recurring scheduler activation or recurring email traffic.
-- Unacceptable timeout-bounded queue diagnostics should block recurring email traffic, including recurring alert or digest sends, until queue health is understood.
+- Failed `npm run supabase:check:json` readiness or unacceptable timeout-bounded queue diagnostics should block recurring email traffic, including recurring alert or digest sends, until database and queue health are understood.
 - Large programmatic content batch publication should wait for `npm run supabase:check:json`, verified data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics.
 - `npm run build` currently logs Node `[DEP0169]` warnings from `url.parse()` usage during static generation.
 - CRM closure audit controls, CRM API inspection metadata, failed detail-route preservation, and note-backed completion/dismissal are implemented locally; production admin smoke verification still needs to run after Terminal 1 is running and `npm run supabase:check:json` reports readiness.
@@ -683,6 +683,6 @@ Before enabling production schedules, decide:
 
 ## Current Status
 
-The scheduler plan is ready for provider selection and staged rollout after `npm run supabase:check:json` reports readiness. The first production-grade path should be a bounded MLS sync with visible search-index counters, followed by `npm run smoke:search` Search Smoke Readiness verification with `meta.smoke.ready=true` and no blockers, timeout-bounded queue diagnostics through `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000`, large programmatic content batch publication gate verification before MLS-backed public expansion, then recurring bounded MLS sync, CRM reporting with `readiness.level` not blocked and CRM API Inspection metadata verified, alert delivery, and digest delivery. Typesense repair and reindex remain manual operational actions, with reindexing gated by `npm run supabase:check:json`. Seed scripts remain manual controlled setup and verification tools gated by `npm run supabase:check:json`.
+The scheduler plan is ready for provider selection and staged rollout after `npm run supabase:check:json` reports readiness. The first production-grade path should be a bounded MLS sync with visible search-index counters, followed by `npm run smoke:search` Search Smoke Readiness verification with `meta.smoke.ready=true` and no blockers, timeout-bounded queue diagnostics through `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000`, large programmatic content batch publication gate verification after `npm run supabase:check:json` reports readiness before MLS-backed public expansion, then recurring bounded MLS sync, CRM reporting with `readiness.level` not blocked and CRM API Inspection metadata verified, alert delivery, and digest delivery. Typesense repair and reindex remain manual operational actions, with reindexing gated by `npm run supabase:check:json`. Seed scripts remain manual controlled setup and verification tools gated by `npm run supabase:check:json`.
 
 <!-- /Users/davidquinn/david-quinn-group/colorado-real-estate/docs/production-scheduler-plan.md -->
