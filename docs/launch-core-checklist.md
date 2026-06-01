@@ -1,6 +1,6 @@
 # REIE Launch Core Checklist
 
-Date: May 30, 2026
+Date: June 1, 2026
 
 Project: David Quinn Group Real Estate Intelligence Engine
 
@@ -274,7 +274,7 @@ Quality rules:
 - Prefer fewer strong pages over many weak pages.
 - Every public page should answer a real buyer, seller, relocation, or investor question.
 - Internal links should guide users by city, neighborhood, property type, and market intent.
-- Do not publish large programmatic batches until data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics are verified.
+- Do not publish large programmatic batches until `npm run supabase:check:json`, data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics are verified.
 
 ## Verification Baseline
 
@@ -298,6 +298,8 @@ npm run smoke:search
 npm run smoke:ops
 ```
 
+If `npm run supabase:check:json` reports blocked, stop before Supabase-backed dry-runs, seed checks, CRM scheduler reporting, reindexing, queue retry, or live database work.
+
 ## Known Non-Blocking Warnings
 
 - `npm run build` may show Node `url.parse()` deprecation warnings.
@@ -310,7 +312,7 @@ The next high-value work after this checklist is to tighten the launch path arou
 
 1. Restore or replace the configured Supabase endpoint so database-backed dry-runs and Typesense reindexing can fetch records.
 2. Confirm Supabase readiness with `npm run supabase:check:json`, or `npm run supabase:check` for a human-readable check.
-3. Reindex local Typesense with `npm run typesense:reindex`.
+3. Reindex local Typesense with `npm run typesense:reindex` after `npm run supabase:check:json` reports readiness.
 4. Verify `/search` against the reindexed data.
 5. Verify `npm run smoke:search` Search Smoke Readiness shows expected source, `meta.source`, health, access level, filters, bounds, mapped count, coordinate-filtered count, duration, and `meta.smoke.ready=true` with no blockers.
 6. Validate protected MLS dry-run routes.
