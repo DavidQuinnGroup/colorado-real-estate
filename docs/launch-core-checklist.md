@@ -196,8 +196,8 @@ Live MLS sync gate:
 - Recent MLS/listing completions show successful search indexing or no index diagnostics.
 - `npm run smoke:mls-status` has `searchIndex.failed=0` and no unresolved search-index diagnostics.
 - `npm run smoke:search` reports healthy Search Smoke Readiness for source, `meta.source`, access level, filters, bounds, mapped count, coordinate filtering, response duration, and `meta.smoke.ready=true` with no blockers.
-- Search-index health and indexing behavior are acceptable before live-inventory claims or MLS-backed public expansion.
-- `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000` reports acceptable queue diagnostics before recurring email traffic, live-inventory claims, MLS-backed public expansion, MLS-volume decisions, scheduler cadence increases, or large programmatic content batch publication.
+- `npm run supabase:check:json`, search-index health, and indexing behavior are acceptable before live-inventory claims or MLS-backed public expansion.
+- `npm run supabase:check:json` reports readiness and `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000` reports acceptable queue diagnostics before recurring email traffic, live-inventory claims, MLS-backed public expansion, MLS-volume decisions, scheduler cadence increases, or large programmatic content batch publication.
 - Queue dashboard source-queue dead-letter summaries are reviewed when the local Next API is not running.
 - Busy queue dashboard output points to the relevant worker start command, and the worker is started or explicitly deferred before increasing scheduler cadence or ingestion volume.
 - Database-connectivity queue failures route to `npm run supabase:check:json` from queue dashboard, MLS status, and MLS retry plans before live retry.
@@ -249,7 +249,7 @@ Keep these manual until validated:
 - Automatic retry of repeated dead-letter jobs.
 - Programmatic public SEO expansion at large scale.
 - Any command that writes to production without dry-run support.
-- Recurring email traffic, including recurring alert or digest sends, when search-index diagnostics are degraded, Search Smoke Readiness is blocked, or timeout-bounded queue diagnostics are unacceptable.
+- Recurring email traffic, including recurring alert or digest sends, when `npm run supabase:check:json` reports blocked, search-index diagnostics are degraded, Search Smoke Readiness is blocked, or timeout-bounded queue diagnostics are unacceptable.
 
 ## SEO Authority Core
 
