@@ -225,7 +225,7 @@ These are known and non-blocking:
 
 ## Current Known Blocker
 
-Supabase connectivity currently blocks alert, digest, CRM, MLS, seed, and reindex dry-runs/reporting. Use the recovery runbook:
+Supabase connectivity currently blocks alert, digest, CRM, MLS, seed, and reindex dry-runs/reporting. Use `npm run supabase:check:json` as the non-secret readiness gate and follow the recovery runbook:
 
 - `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/supabase-recovery-runbook.md`
 
@@ -240,6 +240,7 @@ Run from **Terminal 5: Scripts / curl testing** after meaningful changes:
 
 ```bash
 npm run worker:build
+npm run supabase:check:json
 npm run run:mls-sync:dry
 npm run typecheck
 npm run lint
@@ -313,9 +314,10 @@ npm run worker:build
 npm run typesense:init
 ```
 
-When Supabase is reachable, reindex from **Terminal 5: Scripts / curl testing**:
+After `npm run supabase:check:json` reports readiness, reindex from **Terminal 5: Scripts / curl testing**:
 
 ```bash
+npm run supabase:check:json
 npm run typesense:reindex
 ```
 
@@ -363,7 +365,7 @@ npm run run:seed:test:no-index
 Seed rules:
 
 - Dry-runs are safe verification checks.
-- Live seed commands require database connectivity.
+- Live seed commands require `npm run supabase:check:json` readiness.
 - Indexed seed commands require Typesense to be running with canonical `properties` and `listings` schemas.
 - Seed scripts create or update bounded `Property` rows and replace their own `PropertyPhoto` rows.
 - Seed scripts report database, photo, and per-collection Typesense status.
@@ -441,20 +443,21 @@ Use targeted queue/job retry when possible. Broad live retry across queues requi
 
 Rollout order:
 
-1. MLS sync dry-run or smallest bounded live sync: `npm run run:mls-sync -- --execute --json --max-pages=1 --page-size=25 --start-page=0 --page-timeout-ms=30000`.
-2. Search-index result review from sync output, worker results, `npm run smoke:mls-status`, and `/admin`.
-3. `npm run smoke:search` Search Smoke Readiness verification for source, `meta.source`, health, access level, filters, bounds state, returned count, mapped count, coordinate-filtered count, duration, and `meta.smoke.ready=true` with no blockers.
-4. Timeout-bounded queue diagnostics through `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000`.
-5. Large programmatic content batch publication gate verification for data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics before MLS-backed public expansion.
-6. MLS sync recurring schedule.
-7. CRM reporting.
-8. Alert dry-run.
-9. Internal alert live test.
-10. Alert live schedule.
-11. Digest dry-run.
-12. Internal digest live test.
-13. Digest live schedule.
-14. Manual Typesense repair and reindex only when required.
+1. Supabase JSON readiness gate: `npm run supabase:check:json`.
+2. MLS sync dry-run or smallest bounded live sync: `npm run run:mls-sync -- --execute --json --max-pages=1 --page-size=25 --start-page=0 --page-timeout-ms=30000`.
+3. Search-index result review from sync output, worker results, `npm run smoke:mls-status`, and `/admin`.
+4. `npm run smoke:search` Search Smoke Readiness verification for source, `meta.source`, health, access level, filters, bounds state, returned count, mapped count, coordinate-filtered count, duration, and `meta.smoke.ready=true` with no blockers.
+5. Timeout-bounded queue diagnostics through `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000`.
+6. Large programmatic content batch publication gate verification for data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics before MLS-backed public expansion.
+7. MLS sync recurring schedule.
+8. CRM reporting.
+9. Alert dry-run.
+10. Internal alert live test.
+11. Alert live schedule.
+12. Digest dry-run.
+13. Internal digest live test.
+14. Digest live schedule.
+15. Manual Typesense repair and reindex only when required.
 
 Conservative starting schedule:
 
@@ -524,7 +527,7 @@ Expected CRM readiness levels:
 - `watch`: closure audit is clean but active review work or incomplete alert criteria need attention.
 - `blocked`: closed CRM tasks are missing review notes.
 
-Only run Supabase-backed dry-runs when Supabase is reachable.
+Only run Supabase-backed dry-runs after `npm run supabase:check:json` reports readiness.
 
 ## Admin Dead-Letter Commands
 
@@ -580,7 +583,7 @@ Current deletion candidates:
 - Use `execute=true`, `dryRun=false`, `--execute`, or `--live` for intentional live MLS syncs; scheduler live commands should still include explicit page, page-size, start-page, JSON, and page-timeout bounds.
 - Keep `pageTimeoutMs` / `--page-timeout-ms` explicit for scheduled or API-triggered syncs.
 - Use `force=true` only after inspecting status, retry, failed jobs, and dead-letter records.
-- Treat search-index health, Search Smoke Readiness, and timeout-bounded queue diagnostics as production-readiness gates before increasing ingestion volume, MLS volume, scheduler cadence, recurring scheduler activation, recurring email traffic, live-inventory claims, MLS-backed public expansion, or large programmatic content batch publication.
+- Treat `npm run supabase:check:json`, search-index health, Search Smoke Readiness, and timeout-bounded queue diagnostics as production-readiness gates before increasing ingestion volume, MLS volume, scheduler cadence, recurring scheduler activation, recurring email traffic, live-inventory claims, MLS-backed public expansion, or large programmatic content batch publication.
 - Use `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000` before retry, scheduler, recurring email traffic, alert, digest, live-inventory, MLS-backed public expansion, content-planning, large programmatic content batch publication, or MLS-volume decisions.
 - Treat search-index health, Search Smoke Readiness, indexing behavior, and timeout-bounded queue diagnostics as gates before live-inventory claims, MLS-backed public expansion, or large programmatic content batch publication.
 - Treat Supabase/Postgres as the source of truth.
@@ -589,8 +592,8 @@ Current deletion candidates:
 - Treat search-index failures and timeout-bounded queue diagnostics as operational diagnostics, not silent warnings.
 - Preserve existing listing photos when MLS returns no usable media.
 - Keep alert, digest, and seed dry-runs read-only.
-- Do not schedule recurring email traffic, including recurring alert or digest sends, until sender domain, unsubscribe, tracking, internal live-send tests, `npm run smoke:mls-status` search-index health, `npm run smoke:search` Search Smoke Readiness, and timeout-bounded queue diagnostics are verified.
-- Treat degraded search-index health, `meta.smoke.ready=false`, public search smoke blockers, or unacceptable timeout-bounded queue diagnostics as live-send blockers for recurring email traffic.
+- Do not schedule recurring email traffic, including recurring alert or digest sends, until `npm run supabase:check:json`, sender domain, unsubscribe, tracking, internal live-send tests, `npm run smoke:mls-status` search-index health, `npm run smoke:search` Search Smoke Readiness, and timeout-bounded queue diagnostics are verified.
+- Treat failed `npm run supabase:check:json`, degraded search-index health, `meta.smoke.ready=false`, public search smoke blockers, or unacceptable timeout-bounded queue diagnostics as live-send blockers for recurring email traffic.
 - Allow large programmatic content batch publication only after data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics are verified.
 - Live alert sends should claim work with `pending -> processing -> sent`.
 - Keep unsubscribe idempotent.
@@ -605,9 +608,9 @@ Current deletion candidates:
 
 1. Restore or replace the configured Supabase project/database endpoint using `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/supabase-recovery-runbook.md`.
 2. Confirm Supabase readiness with `npm run supabase:check:json`, or `npm run supabase:check` for a human-readable check.
-3. Reindex Typesense from Supabase when Supabase connectivity is available.
+3. Reindex Typesense from Supabase after `npm run supabase:check:json` reports readiness.
 4. Verify search-index health with `npm run smoke:mls-status` and Search Smoke Readiness source, `meta.source`, health, access level, filters, bounds, returned, mapped, coordinate-filtered, duration, and `meta.smoke.ready=true` with no blockers through `npm run smoke:search` after reindex.
-5. Rerun alert, digest, CRM, MLS, seed, and reindex dry-runs/reporting after Supabase connectivity is restored.
+5. Rerun alert, digest, CRM, MLS, seed, and reindex dry-runs/reporting after `npm run supabase:check:json` reports readiness.
 6. Clean or regenerate stale `dist/` artifacts if generated output is being used directly.
 7. Continue MLS ingestion hardening and media replacement.
 8. Expand timeout-bounded admin queue, sync, alert, digest, and CRM completion workflows.
