@@ -419,7 +419,7 @@ npm run run:seed:test:no-index
 
 Seed rules:
 
-- Dry-runs are safe verification checks.
+- Dry-runs are read-only verification checks, but they still require `npm run supabase:check:json` readiness because seed inventory checks touch Supabase.
 - Live and no-index seed write commands require `npm run supabase:check:json` readiness and the database preflight to pass before any database rows are written.
 - Indexed seed commands require Typesense to be running with canonical `properties` and `listings` schemas.
 - No-index commands write database and photo rows without indexing.
