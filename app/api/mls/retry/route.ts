@@ -105,6 +105,8 @@ const DEAD_LETTER_COMMAND = 'curl -s "http://localhost:3000/api/admin/dead-lette
 const STATUS_COMMAND = 'curl -s "http://localhost:3000/api/mls/status"';
 const QUEUE_DASHBOARD_COMMAND = 'npm run run:queue-dashboard';
 const ALERT_DRY_RUN_COMMAND = 'curl -s -X POST "http://localhost:3000/api/process-alerts?dryRun=true"';
+const SUPABASE_CHECK_COMMAND = 'npm run supabase:check';
+const SUPABASE_CHECK_JSON_COMMAND = 'npm run supabase:check:json';
 
 const RETRY_QUEUES: QueueRegistryItem[] = [
   {
@@ -406,6 +408,8 @@ function buildRetryCommand(queue = 'mls-sync', options: { allowAllLive?: boolean
 
 function buildRetryCommandSet(queue = 'mls-sync', jobId = '<jobId>', limit?: number) {
   return {
+    supabaseCheck: SUPABASE_CHECK_COMMAND,
+    supabaseCheckJson: SUPABASE_CHECK_JSON_COMMAND,
     status: STATUS_COMMAND,
     retryStatus: `curl -s "http://localhost:3000${ROUTE_PATH}"`,
     deadLetter: DEAD_LETTER_COMMAND,
@@ -439,15 +443,36 @@ function buildRetryCommandSet(queue = 'mls-sync', jobId = '<jobId>', limit?: num
   };
 }
 
+function isDatabaseConnectivityMessage(message: string | null | undefined) {
+  const normalized = String(message || '').toLowerCase();
+  return (
+    normalized.includes('error querying the database') ||
+    normalized.includes('tenant/user') ||
+    normalized.includes('enotfound') ||
+    normalized.includes('database preflight failed')
+  );
+}
+
+function hasDatabaseConnectivityDiagnostics(diagnostics: DiagnosticIssue[]) {
+  return diagnostics.some((diagnostic) => diagnostic.area.toLowerCase().includes('database') || isDatabaseConnectivityMessage(diagnostic.message));
+}
+
+function hasDatabaseConnectivityRetryJobs(results: RetryQueueResult[]) {
+  return results.some((result) => result.jobs.some((job) => job.retryable && isDatabaseConnectivityMessage(job.failedReason)));
+}
+
 function buildStatusPlan(options: {
   diagnostics: DiagnosticIssue[];
   queues: Array<{ key: RetryQueueKey; name: string; failed: number; active: number; waiting: number; delayed: number }>;
   deadLetterOpen: number;
-  recentFailedJobs: Array<{ key: RetryQueueKey; queue: string; id?: string; name: string }>;
+  recentFailedJobs: Array<{ key: RetryQueueKey; queue: string; id?: string; name: string; failedReason?: string | null }>;
 }): RetryExecutionPlan {
   const failedQueues = options.queues.filter((queue) => queue.failed > 0);
   const busyQueues = options.queues.filter((queue) => queue.active > 0 || queue.waiting > 0 || queue.delayed > 0);
   const firstFailedQueue = failedQueues[0]?.name || options.recentFailedJobs[0]?.queue || 'mls-sync';
+  const hasDatabaseFailures =
+    hasDatabaseConnectivityDiagnostics(options.diagnostics) ||
+    options.recentFailedJobs.some((job) => isDatabaseConnectivityMessage(job.failedReason));
   const gates: RetryExecutionPlan['gates'] = [
     {
       label: 'Diagnostics',
@@ -484,6 +509,18 @@ function buildStatusPlan(options: {
   }
 
   if (options.diagnostics.length > 0) {
+    if (hasDatabaseFailures) {
+      return {
+        level: 'blocked',
+        summary: 'Retry diagnostics include database connectivity failures; resolve Supabase before retrying queue jobs.',
+        nextAction: 'Run the Supabase preflight JSON report and follow the recovery runbook.',
+        terminal: TERMINAL_5,
+        nextCommand: SUPABASE_CHECK_JSON_COMMAND,
+        liveRetryAllowed: false,
+        gates,
+      };
+    }
+
     return {
       level: 'blocked',
       summary: 'Retry diagnostics are not clean enough for live recovery.',
@@ -496,6 +533,18 @@ function buildStatusPlan(options: {
   }
 
   if (failedQueues.length > 0) {
+    if (hasDatabaseFailures) {
+      return {
+        level: 'blocked',
+        summary: 'Failed queue jobs are from database connectivity; resolve Supabase before retrying.',
+        nextAction: 'Run the Supabase preflight JSON report and follow the recovery runbook.',
+        terminal: TERMINAL_5,
+        nextCommand: SUPABASE_CHECK_JSON_COMMAND,
+        liveRetryAllowed: false,
+        gates,
+      };
+    }
+
     return {
       level: 'caution',
       summary: 'Failed jobs are available for dry-run retry inspection.',
@@ -534,6 +583,7 @@ function buildPostPlan(options: {
   const totalErrors = options.queueResults.reduce((sum, result) => sum + result.errors.length, 0);
   const totalSkipped = options.queueResults.reduce((sum, result) => sum + result.skipped, 0);
   const broadLive = options.liveRetryRequested && options.requestedQueues.length > 1;
+  const hasDatabaseFailures = hasDatabaseConnectivityDiagnostics(options.diagnostics) || hasDatabaseConnectivityRetryJobs(options.queueResults);
   const gates: RetryExecutionPlan['gates'] = [
     {
       label: 'Mode',
@@ -561,6 +611,18 @@ function buildPostPlan(options: {
   ];
 
   if (options.diagnostics.length > 0 || totalErrors > 0) {
+    if (hasDatabaseFailures) {
+      return {
+        level: 'blocked',
+        summary: 'Retry request found database connectivity failures; resolve Supabase before retrying queue jobs.',
+        nextAction: 'Run the Supabase preflight JSON report and follow the recovery runbook.',
+        terminal: TERMINAL_5,
+        nextCommand: SUPABASE_CHECK_JSON_COMMAND,
+        liveRetryAllowed: false,
+        gates,
+      };
+    }
+
     return {
       level: 'blocked',
       summary: 'Retry request completed with diagnostics or job errors.',
@@ -573,6 +635,18 @@ function buildPostPlan(options: {
   }
 
   if (options.dryRun && totalRetryable > 0) {
+    if (hasDatabaseFailures) {
+      return {
+        level: 'blocked',
+        summary: 'Dry-run found retryable jobs failed by database connectivity; do not live retry until Supabase passes.',
+        nextAction: 'Run the Supabase preflight JSON report and follow the recovery runbook.',
+        terminal: TERMINAL_5,
+        nextCommand: SUPABASE_CHECK_JSON_COMMAND,
+        liveRetryAllowed: false,
+        gates,
+      };
+    }
+
     return {
       level: 'caution',
       summary: 'Dry-run found retryable jobs; live retry can be run intentionally for the same scope.',
@@ -901,7 +975,7 @@ export async function POST(request: NextRequest) {
     if (!dryRun) {
       await assertAppDatabaseReady({
         operation: 'queue live retry API',
-        recoveryCommand: 'npm run supabase:check',
+        recoveryCommand: SUPABASE_CHECK_JSON_COMMAND,
       });
     }
 
