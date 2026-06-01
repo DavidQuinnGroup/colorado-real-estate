@@ -531,9 +531,10 @@ npm run worker:build
 npm run typesense:init
 ```
 
-When Supabase is reachable, repopulate search documents:
+After `npm run supabase:check:json` reports readiness, repopulate search documents:
 
 ```bash
+npm run supabase:check:json
 npm run typesense:reindex
 ```
 
@@ -549,7 +550,7 @@ Expected warning shape:
 Neighborhood inventory lookup skipped because the local Typesense listings collection is stale: Typesense schema listings is invalid: ...
 ```
 
-That warning means schema validation is working and the live local collection still needs repair. It should not block alert matching, but it does affect public search and market inventory accuracy until the collection is rebuilt and reindexed.
+That warning means schema validation is working and the live local collection still needs repair. It should not block alert matching, but it does affect public search and market inventory accuracy until the collection is rebuilt and reindexed after `npm run supabase:check:json` reports readiness.
 
 Search metadata check from **Terminal 5: Scripts / curl testing** while **Terminal 1: Next.js app** is running:
 
@@ -706,9 +707,10 @@ npm run run:crm -- --help
 node dist/workers/runCRMTasks.js --help
 ```
 
-Run Supabase-backed dry-runs only when Supabase is reachable:
+Run Supabase-backed dry-runs only after `npm run supabase:check:json` reports readiness:
 
 ```bash
+npm run supabase:check:json
 npm run run:alerts:dry
 npm run run:worker:alerts:dry
 npm run run:digest:dry -- --limit 25
@@ -756,9 +758,10 @@ npm run worker:build
 npm run typesense:init
 ```
 
-Then reindex when Supabase is reachable:
+Then reindex after `npm run supabase:check:json` reports readiness:
 
 ```bash
+npm run supabase:check:json
 npm run typesense:reindex
 ```
 
