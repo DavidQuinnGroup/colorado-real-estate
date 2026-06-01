@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 const REST_TIMEOUT_MS = 8000;
 const POSTGRES_TIMEOUT_MS = 8000;
 const RECOVERY_RUNBOOK_PATH = 'docs/supabase-recovery-runbook.md';
+const SUPABASE_DASHBOARD_PROJECT_BASE_URL = 'https://supabase.com/dashboard/project';
 const SUPABASE_ENV_NAMES = [
     'NEXT_PUBLIC_SUPABASE_URL',
     'NEXT_PUBLIC_SUPABASE_ANON_KEY',
@@ -209,17 +210,58 @@ function checkPostgresUrlShape(databaseUrl) {
 function hasFailed(results, name) {
     return results.some((result) => result.name === name && result.status === 'fail');
 }
+function hasPassed(results, name) {
+    return results.some((result) => result.name === name && result.status === 'pass');
+}
 function logResult(result) {
     console.log(`${result.status.toUpperCase()} ${result.name}: ${result.detail}`);
 }
-function getRecoveryHint(failed) {
+function getProjectRef(results) {
+    const consistency = results.find((result) => result.name === 'Supabase project ref consistency');
+    const match = consistency?.detail.match(/All parsed refs match:\s*([a-z0-9]+)/i);
+    return match?.[1] || '';
+}
+function getFailureClassification(results) {
+    const projectDnsFailed = hasFailed(results, 'Supabase project DNS');
+    const restFailed = hasFailed(results, 'Supabase REST');
+    const postgresDnsPassed = hasPassed(results, 'Supabase Postgres DNS');
+    const postgresTcpPassed = hasPassed(results, 'Supabase Postgres TCP');
+    const prismaFailed = hasFailed(results, 'Prisma database');
+    if (projectDnsFailed && restFailed && postgresDnsPassed && postgresTcpPassed && prismaFailed) {
+        return [
+            'Likely diagnosis: the configured project ref is not reachable as an active Supabase API host, while the regional pooler host itself is reachable.',
+            'Check whether the project is paused, deleted, transferred, renamed, migrated, or whether local env values point to an old project ref.',
+        ];
+    }
+    if (projectDnsFailed && restFailed) {
+        return [
+            'Likely diagnosis: the configured Supabase project API host is not reachable.',
+            'Confirm the project exists and the REST API URL exactly matches the dashboard project ref.',
+        ];
+    }
+    if (prismaFailed && postgresDnsPassed && postgresTcpPassed) {
+        return [
+            'Likely diagnosis: the pooler host accepts connections, but the configured database user, password, tenant, or project ref is not accepted.',
+            'Replace DATABASE_URL from the active Supabase connection panel after confirming the project ref.',
+        ];
+    }
+    return [];
+}
+function getRecoveryHint(results, failed) {
     const failedNames = failed.map((result) => result.name);
+    const projectRef = getProjectRef(results);
+    const dashboardHint = projectRef ? `Supabase dashboard project URL: ${SUPABASE_DASHBOARD_PROJECT_BASE_URL}/${projectRef}` : '';
+    const classification = getFailureClassification(results);
     return [
         `Supabase recovery runbook: ${RECOVERY_RUNBOOK_PATH}`,
+        dashboardHint,
+        ...classification,
         `Replace these values together after confirming the active Supabase project: ${SUPABASE_ENV_NAMES.join(', ')}`,
         `Failed checks: ${failedNames.join(', ')}`,
         'Do not retry MLS, alert, digest, CRM, seed, or Typesense reindex jobs until this preflight passes.',
-    ].join('\n');
+    ]
+        .filter(Boolean)
+        .join('\n');
 }
 async function checkDns(name, host) {
     if (!host) {
@@ -440,7 +482,7 @@ async function main() {
     }
     const failed = results.filter((result) => result.status === 'fail');
     if (failed.length) {
-        console.log(getRecoveryHint(failed));
+        console.log(getRecoveryHint(results, failed));
         throw new Error(`Supabase preflight failed: ${failed.map((result) => result.name).join(', ')}. Verify Supabase project status, endpoint values, DNS, and local network access.`);
     }
     console.log('Supabase connectivity preflight passed.');
