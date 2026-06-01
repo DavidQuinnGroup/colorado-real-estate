@@ -310,9 +310,10 @@ Primary seed files:
 - `/Users/davidquinn/david-quinn-group/colorado-real-estate/scripts/quickSeed.ts`
 - `/Users/davidquinn/david-quinn-group/colorado-real-estate/scripts/seedTestProperties.ts`
 
-Commands from **Terminal 5: Scripts / curl testing** after `npm run worker:build`:
+Commands from **Terminal 5: Scripts / curl testing** after `npm run worker:build` and `npm run supabase:check:json` report readiness:
 
 ```bash
+npm run supabase:check:json
 npm run run:seed:quick:dry
 npm run run:seed:test:dry
 npm run run:seed:quick
@@ -333,8 +334,8 @@ Rules:
 - Seed scripts create or update `Property` rows.
 - Seed scripts replace existing seeded `PropertyPhoto` rows for their own properties.
 - Seed scripts report database, photo, and per-collection Typesense status.
-- Dry-runs are safe verification checks.
-- Live seed commands require Supabase database connectivity.
+- Dry-runs are read-only verification checks, but they still require `npm run supabase:check:json` readiness because seed inventory checks touch Supabase.
+- Live and no-index seed write commands require `npm run supabase:check:json` readiness before any database rows are written.
 - Indexed seed commands require Typesense to be running with canonical `properties` and `listings` schemas.
 - Seed data should not run automatically during app startup, API routes, page rendering, or production schedules.
 - Real MLS media remains the production source for live listing imagery.
@@ -516,7 +517,7 @@ Authority rules:
 - Keep seed content useful for local development without treating it as a production content source.
 - Use CRM engagement signals for content prioritization only after protected CRM readiness, closure audit coverage, failed detail-route inspection preservation, and API Inspection metadata are visible.
 - Use live-inventory claims and MLS-backed public expansion only after search-index health, Search Smoke Readiness, indexing behavior, and timeout-bounded queue diagnostics are acceptable.
-- Allow large programmatic content batch publication only after data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics are verified.
+- Allow large programmatic content batch publication only after `npm run supabase:check:json`, data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics are verified.
 
 ## Queue Architecture
 
@@ -811,7 +812,7 @@ Known current non-blocking warnings:
 
 Known current blocker:
 
-- Supabase connectivity can block database-dependent dry-runs until `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/supabase-recovery-runbook.md` is completed and `npm run supabase:check:json` reports readiness.
+- Supabase connectivity can block database-dependent dry-runs, seed checks, CRM scheduler reporting, reindexing, and live database work until `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/supabase-recovery-runbook.md` is completed and `npm run supabase:check:json` reports readiness.
 
 ## Current Known Gaps
 
@@ -822,7 +823,7 @@ Known current blocker:
 - Production Typesense provider decision is still open.
 - MLS sync scheduling needs a production scheduler.
 - Recurring email traffic, recurring alert or digest scheduling, and CRM scheduling need production workflow decisions.
-- Production smoke verification still needs `npm run smoke:mls-status`, `npm run smoke:search`, timeout-bounded queue diagnostics, and one internal tracked email click before recurring scheduler activation or recurring email traffic.
+- Production smoke verification still needs `npm run supabase:check:json`, `npm run smoke:mls-status`, `npm run smoke:search`, timeout-bounded queue diagnostics, and one internal tracked email click before recurring scheduler activation or recurring email traffic.
 - Admin UI has MLS sync envelope visibility and dead-letter inspection, but broader queue controls are still pending.
 - CRM closure audit controls, note-backed completion/dismissal, CRM API Inspection metadata, and failed detail-route preservation are implemented locally; production admin smoke verification still needs to run after Terminal 1 and Supabase are reachable.
 - Production-size MLS throughput still needs load testing.
@@ -848,6 +849,6 @@ Known current blocker:
 - Keep SEO authority surfaces crawlable, internally linked, locally specific, and tied clearly to David Quinn Group.
 - Gate CRM-informed content planning behind protected CRM readiness, closure audit coverage, API Inspection metadata, and failed detail-route preservation.
 - Gate live-inventory claims and MLS-backed public expansion behind search-index health, Search Smoke Readiness, indexing behavior, and acceptable timeout-bounded queue diagnostics.
-- Keep large programmatic content batch publication gated behind verified data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics.
+- Keep large programmatic content batch publication gated behind `npm run supabase:check:json`, verified data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics.
 
 <!-- /Users/davidquinn/david-quinn-group/colorado-real-estate/docs/platform-architecture.md -->
