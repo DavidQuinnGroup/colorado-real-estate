@@ -149,13 +149,17 @@ Keep these blocked until `npm run supabase:check:json` reports readiness:
 
 - Typesense reindex from Supabase.
 - MLS sync dry-run or live sync.
+- Live MLS sync enqueue.
+- Queue retry of database-connectivity failures.
 - Alert dry-run or live send.
 - Digest dry-run or live send.
 - CRM scheduler reporting.
 - Seed dry-runs that touch Supabase.
 - Live seed writes.
+- Live database work.
 - Recurring scheduler activation.
 - Recurring email traffic.
+- Live-inventory claims.
 - MLS-backed public expansion.
 - Large programmatic content batch publication.
 
