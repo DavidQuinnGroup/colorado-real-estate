@@ -42,7 +42,7 @@ The launch core is considered ready when these surfaces are working together:
 - Typesense schema matches the current canonical listing fields.
 - Search indexing updates both `properties` and `listings` collections.
 - MLS/listing jobs expose search index attempts, successes, failures, and errors in job results and `/api/mls/status`.
-- `/api/mls/status` exposes `commands.smokeOps`, `commands.smokeMlsStatus`, `commands.smokeSearch`, `commands.rawStatus`, and `commands.rawSearchCheck` for admin and operator guidance.
+- `/api/mls/status` exposes `commands.smokeOps`, `commands.smokeMlsStatus`, `commands.smokeSearch`, `commands.supabaseCheck`, `commands.supabaseCheckJson`, `commands.rawStatus`, and `commands.rawSearchCheck` for admin and operator guidance.
 - Search/map responses expose source, health, access level, filters, bounds, returned, mapped, coordinate-filtered counts, and response duration.
 - Saved-search alerts can be previewed safely.
 - Live alert sends are explicitly gated.

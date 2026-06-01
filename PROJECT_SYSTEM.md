@@ -256,7 +256,7 @@ Rules:
 - `processListing.ts` should update Typesense through `updateSearchIndex.ts` after a successful upsert.
 - Listing jobs, page-worker jobs, batch processing, direct syncs, `/api/mls/status`, and `/admin` should surface search-index attempts, successes, failures, and errors.
 - `/api/mls/status` should expose a first-class `searchIndex` block with attempted, succeeded, failed, unknown, health, diagnostics, and recent index outcomes.
-- `/api/mls/status` should expose first-class Terminal 5 smoke commands through `commands.smokeOps`, `commands.smokeMlsStatus`, and `commands.smokeSearch`.
+- `/api/mls/status` should expose first-class Terminal 5 smoke and Supabase preflight commands through `commands.smokeOps`, `commands.smokeMlsStatus`, `commands.smokeSearch`, `commands.supabaseCheck`, and `commands.supabaseCheckJson`.
 - `/api/mls/status` should preserve raw status/search API command compatibility through `commands.rawStatus` and `commands.rawSearchCheck`.
 - Keep `scripts/fetchMLS.ts` as a compatibility wrapper around `syncMLSGrid()`.
 - Keep REIE intelligence field mapping in `upsertListing.ts`.

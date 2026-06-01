@@ -186,7 +186,7 @@ Admin and operations:
 - `/admin` states that Search Smoke Readiness requires `meta.smoke.ready=true` with no blockers before raising MLS volume, recurring email traffic, alert or digest traffic, or scheduler cadence.
 - `/admin/dead-letter` provides dead-letter inspection.
 - `/admin/dead-letter` shows active filter summary and inspection terminal context.
-- `/api/mls/status` provides status diagnostics and returns `commands.smokeOps`, `commands.smokeMlsStatus`, and `commands.smokeSearch` for first-class smoke-script guidance.
+- `/api/mls/status` provides status diagnostics and returns `commands.smokeOps`, `commands.smokeMlsStatus`, `commands.smokeSearch`, `commands.supabaseCheck`, and `commands.supabaseCheckJson` for first-class smoke and Supabase preflight guidance.
 - `/api/mls/status` preserves raw API command compatibility through `commands.rawStatus` and `commands.rawSearchCheck`.
 - `/api/mls/retry` provides dry-run and live retry for failed BullMQ jobs.
 - Targeted retry should use a specific queue and job id when possible.

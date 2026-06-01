@@ -196,7 +196,7 @@ MLS intelligence behavior:
 - `processListing.ts` updates Typesense through `updateSearchIndex.ts` after successful upsert.
 - Listing jobs, page-worker jobs, batch processing, direct syncs, `/api/mls/status`, and `/admin` can surface search-index attempts, successes, failures, and errors.
 - `/api/mls/status` exposes a first-class `searchIndex` block with attempted, succeeded, failed, unknown, health, diagnostics, and recent index outcomes.
-- `/api/mls/status` exposes first-class smoke script commands through `commands.smokeOps`, `commands.smokeMlsStatus`, and `commands.smokeSearch`.
+- `/api/mls/status` exposes first-class smoke and Supabase preflight commands through `commands.smokeOps`, `commands.smokeMlsStatus`, `commands.smokeSearch`, `commands.supabaseCheck`, and `commands.supabaseCheckJson`.
 - `/api/mls/status` preserves raw status/search API command compatibility through `commands.rawStatus` and `commands.rawSearchCheck`.
 - `/admin` labels Terminal 5 public search verification as Search Smoke Readiness and expects `meta.smoke.ready=true` with no blockers.
 - Treat `indexFailed > 0` as degraded search freshness even when Postgres upserts succeed.

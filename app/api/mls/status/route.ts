@@ -143,6 +143,8 @@ const TERMINAL_3_WORKER_COMMAND = 'npm run run:worker:mls';
 const TERMINAL_5_SMOKE_OPS_COMMAND = 'npm run smoke:ops';
 const TERMINAL_5_SMOKE_MLS_STATUS_COMMAND = 'npm run smoke:mls-status';
 const TERMINAL_5_SMOKE_SEARCH_COMMAND = 'npm run smoke:search';
+const TERMINAL_5_SUPABASE_CHECK_COMMAND = 'npm run supabase:check';
+const TERMINAL_5_SUPABASE_CHECK_JSON_COMMAND = 'npm run supabase:check:json';
 const TERMINAL_5_STATUS_COMMAND = 'curl -s "http://localhost:3000/api/mls/status"';
 const TERMINAL_5_SEARCH_CHECK_COMMAND = 'curl -s "http://localhost:3000/api/search?limit=5"';
 const TERMINAL_5_RETRY_STATUS_COMMAND = 'curl -s "http://localhost:3000/api/mls/retry"';
@@ -353,6 +355,20 @@ function getQueueHealth(counts: Pick<QueueStatusItem, 'active' | 'delayed' | 'fa
   return 'healthy';
 }
 
+function isDatabaseConnectivityMessage(message: string) {
+  const normalized = message.toLowerCase();
+  return (
+    normalized.includes('error querying the database') ||
+    normalized.includes('tenant/user') ||
+    normalized.includes('enotfound') ||
+    normalized.includes('database preflight failed')
+  );
+}
+
+function hasDatabaseConnectivityDiagnostics(diagnostics: DiagnosticIssue[]) {
+  return diagnostics.some((diagnostic) => diagnostic.area.startsWith('database:') || isDatabaseConnectivityMessage(diagnostic.message));
+}
+
 function getFallbackQueueStatus(name: string): QueueStatusItem {
   return {
     name,
@@ -502,8 +518,11 @@ function buildRecommendations(options: {
   isSyncing: boolean;
 }) {
   const recommendations: string[] = [];
+  const hasDatabaseDiagnostics = hasDatabaseConnectivityDiagnostics(options.diagnostics);
 
-  if (options.diagnostics.length > 0) {
+  if (hasDatabaseDiagnostics) {
+    recommendations.push(`Resolve Supabase connectivity before starting or retrying ingestion work: ${TERMINAL_5_SUPABASE_CHECK_JSON_COMMAND}`);
+  } else if (options.diagnostics.length > 0) {
     recommendations.push('Resolve diagnostics before starting or retrying ingestion work.');
   }
 
@@ -557,6 +576,7 @@ function buildOperationalReadiness(options: {
 }): OperationalReadiness {
   const failedQueues = options.queues.filter((queue) => queue.failed > 0);
   const busyQueues = options.queues.filter((queue) => queue.active > 0 || queue.waiting > 0 || queue.delayed > 0);
+  const hasDatabaseDiagnostics = hasDatabaseConnectivityDiagnostics(options.diagnostics);
   const staleStatus = options.propertyFreshness.stalePercent >= 25 ? 'fail' : options.propertyFreshness.stalePercent > 0 ? 'watch' : 'pass';
   const searchStatus =
     options.searchIndex.failed > 0 || options.searchIndex.unattempted > 0
@@ -615,6 +635,17 @@ function buildOperationalReadiness(options: {
   }
 
   if (failedQueues.length > 0) {
+    if (hasDatabaseDiagnostics) {
+      return {
+        level: 'blocked',
+        summary: 'Failed queue jobs and database connectivity diagnostics are present; resolve Supabase before retrying.',
+        nextAction: 'Run the Supabase preflight JSON report and follow the recovery runbook before queue retry.',
+        nextTerminal: 'Terminal 5',
+        nextCommand: TERMINAL_5_SUPABASE_CHECK_JSON_COMMAND,
+        gates,
+      };
+    }
+
     return {
       level: 'blocked',
       summary: 'Failed queue jobs are present; preview retry behavior before live retry.',
@@ -1041,6 +1072,8 @@ export async function GET(request: NextRequest) {
       smokeOps: TERMINAL_5_SMOKE_OPS_COMMAND,
       smokeMlsStatus: TERMINAL_5_SMOKE_MLS_STATUS_COMMAND,
       smokeSearch: TERMINAL_5_SMOKE_SEARCH_COMMAND,
+      supabaseCheck: TERMINAL_5_SUPABASE_CHECK_COMMAND,
+      supabaseCheckJson: TERMINAL_5_SUPABASE_CHECK_JSON_COMMAND,
       status: TERMINAL_5_STATUS_COMMAND,
       rawStatus: TERMINAL_5_STATUS_COMMAND,
       retryStatus: TERMINAL_5_RETRY_STATUS_COMMAND,

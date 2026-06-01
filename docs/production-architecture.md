@@ -265,7 +265,7 @@ Production rules:
 - Treat MLS ingestion as idempotent.
 - Treat search index failures as production diagnostics that should surface through job results, `/api/mls/status`, and `/admin`.
 - Treat degraded Search Smoke Readiness as a production readiness issue because search, property pages, alerts, digests, and CRM click paths depend on it.
-- Keep `/api/mls/status` command metadata stable so operators and `/admin` can surface `commands.smokeOps`, `commands.smokeMlsStatus`, `commands.smokeSearch`, `commands.rawStatus`, and `commands.rawSearchCheck`.
+- Keep `/api/mls/status` command metadata stable so operators and `/admin` can surface `commands.smokeOps`, `commands.smokeMlsStatus`, `commands.smokeSearch`, `commands.supabaseCheck`, `commands.supabaseCheckJson`, `commands.rawStatus`, and `commands.rawSearchCheck`.
 - Keep `scripts/fetchMLS.ts` as a compatibility wrapper around `syncMLSGrid()`, not as a separate legacy IRES production path.
 - Keep GC-forensics field mapping in `upsertListing()` so property pages, search, alerts, digest, and CRM read from the same production intelligence surface.
 - Legacy IRES/helper cleanup is complete. Current production MLS flow should stay anchored to MLS Grid, `syncMLSGrid()`, `fetchMLSPage()`, `processListing()`, `upsertListing()`, `processPhotos()`, and `updateSearchIndex()`.
