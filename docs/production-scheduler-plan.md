@@ -43,7 +43,7 @@ Before enabling production schedules:
 - Production Redis provider selected.
 - Production Typesense provider selected.
 - Scheduler provider selected.
-- Supabase connectivity verified from the worker and scheduler runtimes.
+- Supabase connectivity verified from the worker and scheduler runtimes with `npm run supabase:check:json`.
 - MLS Grid credentials verified from the worker and scheduler runtimes.
 - Resend sender domain verified.
 - `REIE_ADMIN_API_KEY` or `ADMIN_API_KEY` configured.
@@ -106,20 +106,21 @@ Protected routes relevant to scheduling and monitoring:
 
 Enable recurring production work in this order:
 
-1. MLS sync dry-run or smallest bounded live sync: `npm run run:mls-sync -- --execute --json --max-pages=1 --page-size=25 --start-page=0 --page-timeout-ms=30000`.
-2. Search-index result review from sync output, worker result payloads, `npm run smoke:mls-status`, and `/admin`.
-3. `npm run smoke:search` Search Smoke Readiness verification for source, `meta.source`, health, access level, filters, bounds state, returned count, mapped count, coordinate-filtered count, duration, and `meta.smoke.ready=true` with no blockers.
-4. Timeout-bounded queue diagnostics through `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000`.
-5. Large programmatic content batch publication gate verification for data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics before MLS-backed public expansion.
-6. MLS sync recurring schedule.
-7. CRM reporting.
-8. Alert dry-run.
-9. Internal alert live test.
-10. Alert live schedule.
-11. Digest dry-run.
-12. Internal digest live test.
-13. Digest live schedule.
-14. Manual Typesense repair and reindex only when required.
+1. Supabase JSON readiness gate: `npm run supabase:check:json`.
+2. MLS sync dry-run or smallest bounded live sync: `npm run run:mls-sync -- --execute --json --max-pages=1 --page-size=25 --start-page=0 --page-timeout-ms=30000`.
+3. Search-index result review from sync output, worker result payloads, `npm run smoke:mls-status`, and `/admin`.
+4. `npm run smoke:search` Search Smoke Readiness verification for source, `meta.source`, health, access level, filters, bounds state, returned count, mapped count, coordinate-filtered count, duration, and `meta.smoke.ready=true` with no blockers.
+5. Timeout-bounded queue diagnostics through `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000`.
+6. Large programmatic content batch publication gate verification for data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics before MLS-backed public expansion.
+7. MLS sync recurring schedule.
+8. CRM reporting.
+9. Alert dry-run.
+10. Internal alert live test.
+11. Alert live schedule.
+12. Digest dry-run.
+13. Internal digest live test.
+14. Digest live schedule.
+15. Manual Typesense repair and reindex only when required.
 
 Do not move to the next gate until logs, database state, email state, and admin diagnostics are understood for the current gate.
 
@@ -176,7 +177,7 @@ npm run run:mls-sync -- --json --max-pages=1 --page-size=5 --start-page=0 --page
 
 Escalation path:
 
-- Increase page size or page count only after status, retry, dead-letter, Supabase, Redis, Typesense, MLS Grid behavior, Search Smoke Readiness, indexing behavior, and timeout-bounded queue diagnostics are stable.
+- Increase page size or page count only after status, retry, dead-letter, `npm run supabase:check:json`, Redis, Typesense, MLS Grid behavior, Search Smoke Readiness, indexing behavior, and timeout-bounded queue diagnostics are stable.
 - Increase page size or page count only when recent MLS summaries report `indexFailed=0`.
 - Treat `indexFailed > 0` as a blocker for search-scale increases, even if Postgres upserts succeeded.
 - Confirm `npm run smoke:search` Search Smoke Readiness reports expected source, `meta.source`, health, access level, filters, bounds, returned count, mapped count, coordinate-filtered count, duration, and `meta.smoke.ready=true` with no blockers, and confirm timeout-bounded queue diagnostics are acceptable, before increasing scheduler cadence or MLS volume.
@@ -184,7 +185,7 @@ Escalation path:
 Preconditions:
 
 - Redis reachable.
-- Supabase reachable.
+- `npm run supabase:check:json` reports readiness.
 - MLS Grid reachable.
 - Typesense reachable if indexing is enabled.
 - Workers compiled with `npm run worker:build`.
@@ -269,7 +270,7 @@ Starting limit:
 
 Preconditions:
 
-- Supabase reachable.
+- `npm run supabase:check:json` reports readiness.
 - Resend configured.
 - Sender domain verified.
 - Unsubscribe verified.
@@ -321,7 +322,7 @@ Preconditions:
 
 - Digest grouping rules approved.
 - Resend sender domain verified.
-- Supabase reachable.
+- `npm run supabase:check:json` reports readiness.
 - Alert payload quality verified.
 - Unsubscribe and click tracking verified.
 - `npm run smoke:mls-status` search-index health reviewed.
@@ -379,7 +380,7 @@ Initial cadence:
 
 Preconditions:
 
-- Supabase reachable.
+- `npm run supabase:check:json` reports readiness.
 - Click tracking is producing `UserInteraction` data.
 - Preference learning is producing `UserPreference` data.
 - CRM task CLI and `/admin` CRM readiness output are useful enough for operator review.
@@ -454,7 +455,7 @@ npm run worker:build
 npm run typesense:init
 ```
 
-Manual reindex from **Terminal 5: Scripts / curl testing** when Supabase is reachable:
+Manual reindex from **Terminal 5: Scripts / curl testing** after `npm run supabase:check:json` reports readiness:
 
 ```bash
 npm run typesense:reindex
@@ -469,7 +470,7 @@ Rules:
 
 - Schema repair and data reindexing are separate steps.
 - Do not schedule destructive Typesense resets without explicit operator approval.
-- Reindex only when Supabase is reachable.
+- Reindex only when `npm run supabase:check:json` reports readiness.
 - Both `properties` and `listings` must use the canonical schema.
 - Search runners validate required fields and facets before accepting existing collections.
 - Prefer normal MLS-driven `updateSearchIndex()` writes for day-to-day freshness.
@@ -516,6 +517,7 @@ Rules:
 - Do not treat local seed records as production inventory strategy.
 - Use dry-runs as verification checks.
 - Live seed commands require database connectivity.
+- Run `npm run supabase:check:json` before live seed write commands.
 - Indexed seed commands require Typesense to be running with canonical `properties` and `listings` schemas.
 - Seed scripts create or update bounded `Property` rows and replace their own `PropertyPhoto` rows.
 - Seed scripts report database, photo, and per-collection Typesense status.
@@ -567,6 +569,7 @@ Run required checks from **Terminal 5: Scripts / curl testing**:
 
 ```bash
 npm run worker:build
+npm run supabase:check:json
 npm run run:mls-sync:dry
 npm run typecheck
 npm run lint
