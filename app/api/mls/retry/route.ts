@@ -574,6 +574,7 @@ function buildPostPlan(options: {
   requestedQueues: QueueRegistryItem[];
   queueResults: RetryQueueResult[];
   diagnostics: DiagnosticIssue[];
+  databasePreflightReady: boolean | null;
   limit: number;
   jobIds: string[];
   commandQueue: string;
@@ -584,6 +585,7 @@ function buildPostPlan(options: {
   const totalSkipped = options.queueResults.reduce((sum, result) => sum + result.skipped, 0);
   const broadLive = options.liveRetryRequested && options.requestedQueues.length > 1;
   const hasDatabaseFailures = hasDatabaseConnectivityDiagnostics(options.diagnostics) || hasDatabaseConnectivityRetryJobs(options.queueResults);
+  const currentDatabaseBlocked = hasDatabaseFailures && options.databasePreflightReady !== true;
   const gates: RetryExecutionPlan['gates'] = [
     {
       label: 'Mode',
@@ -611,7 +613,7 @@ function buildPostPlan(options: {
   ];
 
   if (options.diagnostics.length > 0 || totalErrors > 0) {
-    if (hasDatabaseFailures) {
+    if (currentDatabaseBlocked) {
       return {
         level: 'blocked',
         summary: 'Retry request found database connectivity failures; resolve Supabase before retrying queue jobs.',
@@ -635,7 +637,7 @@ function buildPostPlan(options: {
   }
 
   if (options.dryRun && totalRetryable > 0) {
-    if (hasDatabaseFailures) {
+    if (currentDatabaseBlocked) {
       return {
         level: 'blocked',
         summary: 'Dry-run found retryable jobs failed by database connectivity; do not live retry until Supabase passes.',
@@ -649,7 +651,10 @@ function buildPostPlan(options: {
 
     return {
       level: 'caution',
-      summary: 'Dry-run found retryable jobs; live retry can be run intentionally for the same scope.',
+      summary:
+        hasDatabaseFailures && options.databasePreflightReady === true
+          ? 'Dry-run found historical database-connectivity failures, and the current database preflight passed.'
+          : 'Dry-run found retryable jobs; live retry can be run intentionally for the same scope.',
       nextAction: 'Run live retry only after confirming the dry-run result.',
       terminal: TERMINAL_5,
       nextCommand: buildRetryCommand(options.commandQueue, {
@@ -963,6 +968,7 @@ export async function POST(request: NextRequest) {
     const allowAllLive = getAllowAllLiveRetry(request, body);
     const queueResults = [];
     const diagnostics = [];
+    let databasePreflightReady: boolean | null = null;
 
     if (jobIds.length > 0 && requestedQueues.length !== 1) {
       throw new RetryRequestError('Targeted jobId retry requires a single queue value.');
@@ -985,6 +991,22 @@ export async function POST(request: NextRequest) {
       diagnostics.push(...queueResult.diagnostics);
     }
 
+    if (dryRun && hasDatabaseConnectivityRetryJobs(queueResults)) {
+      try {
+        await assertAppDatabaseReady({
+          operation: 'queue retry dry-run database recovery check',
+          recoveryCommand: SUPABASE_CHECK_JSON_COMMAND,
+        });
+        databasePreflightReady = true;
+      } catch (error) {
+        databasePreflightReady = false;
+        diagnostics.push({
+          area: 'database',
+          message: getErrorMessage(error),
+        });
+      }
+    }
+
     const totalInspected = queueResults.reduce((sum, result) => sum + result.inspected, 0);
     const totalRetryable = queueResults.reduce((sum, result) => sum + result.retryable, 0);
     const totalRetried = queueResults.reduce((sum, result) => sum + result.retried, 0);
@@ -999,6 +1021,7 @@ export async function POST(request: NextRequest) {
       requestedQueues,
       queueResults,
       diagnostics,
+      databasePreflightReady,
       limit,
       jobIds,
       commandQueue,
