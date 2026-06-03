@@ -20,6 +20,7 @@
     "run:worker": "node dist/workers/main.js",
     "run:worker:mls": "node dist/workers/mlsWorker.js",
     "run:worker:mls-page": "node dist/workers/mlsPageWorker.js",
+    "run:worker:mls-page:once": "MLS_PAGE_WORKER_ONCE=true MLS_PAGE_WORKER_MAX_JOBS=1 node dist/workers/mlsPageWorker.js",
     "run:worker:alerts": "node dist/workers/alertWorker.js",
     "run:worker:alerts:dry": "ALERT_WORKER_ONCE=true ALERT_WORKER_DRY_RUN=true ALERT_WORKER_MODE=batch node dist/workers/alertWorker.js",
     "run:worker:alerts:once": "ALERT_WORKER_ONCE=true ALERT_WORKER_DRY_RUN=true ALERT_WORKER_MODE=batch node dist/workers/alertWorker.js",

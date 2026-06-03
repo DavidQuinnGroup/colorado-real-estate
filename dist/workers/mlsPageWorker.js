@@ -19,6 +19,11 @@ function readNumber(value, fallback, min, max) {
         return fallback;
     return Math.min(Math.max(Math.floor(parsed), min), max);
 }
+function readBoolean(value) {
+    if (!value)
+        return false;
+    return ['1', 'true', 'yes', 'y'].includes(value.trim().toLowerCase());
+}
 function getErrorMessage(error) {
     return error instanceof Error ? error.message : String(error || 'Unknown MLS page worker error.');
 }
@@ -60,8 +65,10 @@ function getConfig() {
         concurrency: readNumber(process.env.MLS_PAGE_WORKER_CONCURRENCY, 1, 1, 5),
         lockDurationMs: readNumber(process.env.MLS_PAGE_WORKER_LOCK_DURATION_MS, 10 * 60 * 1000, 60000, 60 * 60 * 1000),
         maxFailureDetails: readNumber(process.env.MLS_PAGE_WORKER_MAX_FAILURE_DETAILS, 25, 0, 100),
+        maxJobs: readNumber(process.env.MLS_PAGE_WORKER_MAX_JOBS, 1, 1, 100),
         maxStalledCount: readNumber(process.env.MLS_PAGE_WORKER_MAX_STALLED_COUNT, 1, 0, 5),
         maxWarningDetails: readNumber(process.env.MLS_PAGE_WORKER_MAX_WARNING_DETAILS, 25, 0, 100),
+        once: readBoolean(process.env.MLS_PAGE_WORKER_ONCE),
         stalledIntervalMs: readNumber(process.env.MLS_PAGE_WORKER_STALLED_INTERVAL_MS, 60000, 10000, 10 * 60 * 1000),
     };
 }
@@ -130,7 +137,17 @@ function getFailureOperations(job, finalAttempt) {
     };
 }
 function createMlsPageWorker(config) {
-    const worker = new Worker(MLS_PAGE_QUEUE_NAME, (job) => processPageJob(job, config), {
+    let worker;
+    worker = new Worker(MLS_PAGE_QUEUE_NAME, async (job) => {
+        try {
+            return await processPageJob(job, config);
+        }
+        finally {
+            if (config.once) {
+                await worker.pause(true);
+            }
+        }
+    }, {
         connection: getRedisConnection(),
         concurrency: config.concurrency,
         lockDuration: config.lockDurationMs,
@@ -210,13 +227,35 @@ async function start() {
         worker: 'MLS page worker',
     });
     const worker = createMlsPageWorker(config);
-    async function shutdown(signal) {
-        console.log(`REIE MLS page worker received ${signal}. Shutting down.`);
+    let settledJobs = 0;
+    let shutdownStarted = false;
+    async function shutdown(reason, exitCode = 0) {
+        if (shutdownStarted)
+            return;
+        shutdownStarted = true;
+        console.log(`REIE MLS page worker ${reason}. Shutting down.`);
         await worker.close();
-        process.exit(0);
+        process.exit(exitCode);
     }
-    process.on('SIGINT', shutdown);
-    process.on('SIGTERM', shutdown);
+    function countOneShotJob(event) {
+        if (!config.once)
+            return;
+        settledJobs += 1;
+        console.log(`REIE MLS page one-shot job ${event}:`, {
+            maxJobs: config.maxJobs,
+            settledJobs,
+        });
+        if (settledJobs >= config.maxJobs) {
+            void shutdown(`processed ${settledJobs} one-shot job(s)`);
+        }
+    }
+    worker.on('completed', () => countOneShotJob('completed'));
+    worker.on('failed', () => countOneShotJob('failed'));
+    async function shutdownForSignal(signal) {
+        await shutdown(`received ${signal}`);
+    }
+    process.on('SIGINT', shutdownForSignal);
+    process.on('SIGTERM', shutdownForSignal);
     console.log(`REIE MLS page worker listening on queue "${MLS_PAGE_QUEUE_NAME}":`, startupContext);
 }
 start().catch((error) => {
