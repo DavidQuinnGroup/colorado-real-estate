@@ -2,11 +2,16 @@
 
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { type FormEvent, useCallback, useEffect, useRef, useState } from 'react';
 
 import MapSidebar, { type MapSidebarListing } from '@/components/maps/MapSidebar';
 import type { MapBounds } from '@/components/maps/MapInner';
 import type { SearchMapMeta } from '@/components/maps/SearchMap';
+import SearchControls, {
+  buildSearchParams,
+  getInitialSearchFilters,
+  type SearchFilters,
+} from '@/components/search/SearchControls';
 import type { FAQItem } from '@/lib/schema/faqSchema';
 
 type SearchApiResponse = {
@@ -114,8 +119,9 @@ function getBoundsValue(bounds: MapBounds, primaryKey: keyof NonNullable<MapBoun
   return bounds[primaryKey] ?? bounds[fallbackKey] ?? null;
 }
 
-function buildSearchUrl(bounds: MapBounds) {
-  const params = new URLSearchParams({ limit: '250', q: '*' });
+function buildSearchUrl(bounds: MapBounds, filters: SearchFilters) {
+  const params = buildSearchParams(filters);
+  params.set('limit', '250');
   const north = getBoundsValue(bounds, 'neLat', 'north');
   const south = getBoundsValue(bounds, 'swLat', 'south');
   const east = getBoundsValue(bounds, 'neLng', 'east');
@@ -208,22 +214,29 @@ function getErrorMessage(error: unknown) {
 export default function HomeSearchExperience({ authorityLinks = [], faqItems = [] }: HomeSearchExperienceProps) {
   const [listings, setListings] = useState<MapSidebarListing[]>([]);
   const [searchMeta, setSearchMeta] = useState<SearchMapMeta | null>(null);
+  const [filters, setFilters] = useState<SearchFilters>(() => getInitialSearchFilters());
   const [selectedProperty, setSelectedProperty] = useState<MapSidebarListing | null>(null);
-  const lastBounds = useRef('');
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchError, setSearchError] = useState<string | null>(null);
+  const currentBounds = useRef<MapBounds>(DEFAULT_BOULDER_BOUNDS);
+  const lastRequestKey = useRef('');
   const requestSequence = useRef(0);
 
-  const fetchListings = useCallback(async (bounds: MapBounds) => {
+  const fetchListings = useCallback(async (bounds: MapBounds, nextFilters = filters, force = false) => {
     if (!bounds) return;
+    currentBounds.current = bounds;
 
-    const boundsKey = JSON.stringify(bounds);
-    if (boundsKey === lastBounds.current) return;
-    lastBounds.current = boundsKey;
+    const requestKey = JSON.stringify({ bounds, filters: nextFilters });
+    if (!force && requestKey === lastRequestKey.current) return;
+    lastRequestKey.current = requestKey;
 
     const requestId = requestSequence.current + 1;
     requestSequence.current = requestId;
+    setIsSearching(true);
+    setSearchError(null);
 
     try {
-      const response = await fetch(buildSearchUrl(bounds));
+      const response = await fetch(buildSearchUrl(bounds, nextFilters));
       const data = (await response.json()) as SearchApiResponse;
 
       if (requestId !== requestSequence.current) return;
@@ -235,6 +248,7 @@ export default function HomeSearchExperience({ authorityLinks = [], faqItems = [
         setSearchMeta(nextSearchMeta);
         setListings(nextListings);
         setSelectedProperty(null);
+        setSearchError(data.error || 'Inventory search is temporarily unavailable.');
         console.error('Home search error:', data.error || 'Inventory search is temporarily unavailable.');
         return;
       }
@@ -252,8 +266,11 @@ export default function HomeSearchExperience({ authorityLinks = [], faqItems = [
       setListings([]);
       setSearchMeta(null);
       setSelectedProperty(null);
+      setSearchError('Inventory search is temporarily unavailable.');
+    } finally {
+      if (requestId === requestSequence.current) setIsSearching(false);
     }
-  }, []);
+  }, [filters]);
 
   useEffect(() => {
     const initialLoadTimer = window.setTimeout(() => {
@@ -261,7 +278,33 @@ export default function HomeSearchExperience({ authorityLinks = [], faqItems = [
     }, 0);
 
     return () => window.clearTimeout(initialLoadTimer);
-  }, [fetchListings]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  function handleSearch(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    void fetchListings(currentBounds.current || DEFAULT_BOULDER_BOUNDS, filters, true);
+  }
+
+  function handleReset() {
+    const nextFilters = getInitialSearchFilters();
+
+    setFilters(nextFilters);
+    setSelectedProperty(null);
+    setSearchError(null);
+    void fetchListings(currentBounds.current || DEFAULT_BOULDER_BOUNDS, nextFilters, true);
+  }
+
+  const searchControls = (
+    <SearchControls
+      filters={filters}
+      isSearching={isSearching}
+      searchError={searchError}
+      onChange={setFilters}
+      onReset={handleReset}
+      onSubmit={handleSearch}
+    />
+  );
 
   return (
     <div className="flex h-screen w-full overflow-hidden bg-black text-white">
@@ -270,6 +313,7 @@ export default function HomeSearchExperience({ authorityLinks = [], faqItems = [
         selectedProperty={selectedProperty}
         onSelect={setSelectedProperty}
         onCloseDetail={() => setSelectedProperty(null)}
+        searchControls={searchControls}
       />
 
       <div className="relative h-full flex-1">

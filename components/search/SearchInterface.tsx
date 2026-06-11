@@ -2,10 +2,16 @@
 
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import { Loader2, RotateCcw, Search, SlidersHorizontal } from 'lucide-react';
 import { type FormEvent, useEffect, useMemo, useState } from 'react';
 
 import MapSidebar, { type MapSidebarListing } from '@/components/maps/MapSidebar';
+import SearchControls, {
+  buildSearchParams,
+  getInitialSearchFilters,
+  getSearchFiltersFromParams,
+  hasActiveSearchFilters,
+  type SearchFilters,
+} from '@/components/search/SearchControls';
 import type { SearchMapMeta } from '@/components/maps/SearchMap';
 import type { FAQItem } from '@/lib/schema/faqSchema';
 
@@ -25,16 +31,6 @@ type SearchInterfaceProps = {
   initialSearchMeta?: SearchMapMeta | null;
   authorityLinks?: SearchAuthorityLink[];
   faqItems?: FAQItem[];
-};
-
-type SearchFilters = {
-  query: string;
-  city: string;
-  minPrice: string;
-  maxPrice: string;
-  beds: string;
-  baths: string;
-  propertyType: string;
 };
 
 type SearchApiResponse = {
@@ -117,35 +113,26 @@ function normalizeListings(results: unknown): MapSidebarListing[] {
   });
 }
 
-function getInitialFilters(): SearchFilters {
-  return {
-    query: '',
-    city: '',
-    minPrice: '',
-    maxPrice: '',
-    beds: '',
-    baths: '',
-    propertyType: '',
-  };
-}
-
-function setParam(params: URLSearchParams, key: string, value: string) {
-  const trimmed = value.trim();
-  if (trimmed) params.set(key, trimmed);
-}
-
 function buildSearchUrl(filters: SearchFilters) {
-  const params = new URLSearchParams({ limit: '250' });
-
-  setParam(params, 'q', filters.query);
-  setParam(params, 'city', filters.city);
-  setParam(params, 'minPrice', filters.minPrice);
-  setParam(params, 'maxPrice', filters.maxPrice);
-  setParam(params, 'beds', filters.beds);
-  setParam(params, 'baths', filters.baths);
-  setParam(params, 'propertyType', filters.propertyType);
+  const params = buildSearchParams(filters);
+  params.set('limit', '250');
 
   return `/api/search?${params.toString()}`;
+}
+
+function getBrowserFilters() {
+  if (typeof window === 'undefined') return getInitialSearchFilters();
+  return getSearchFiltersFromParams(new URLSearchParams(window.location.search));
+}
+
+function updateBrowserSearchUrl(filters: SearchFilters, mode: 'push' | 'replace' = 'push') {
+  if (typeof window === 'undefined') return;
+
+  const params = buildSearchParams(filters);
+  const nextUrl = params.toString() ? `/search?${params.toString()}` : '/search';
+
+  if (`${window.location.pathname}${window.location.search}` === nextUrl) return;
+  window.history[mode === 'replace' ? 'replaceState' : 'pushState']({}, '', nextUrl);
 }
 
 export default function SearchInterface({
@@ -156,7 +143,7 @@ export default function SearchInterface({
 }: SearchInterfaceProps) {
   const [listings, setListings] = useState<MapSidebarListing[]>(initialListings);
   const [searchMeta, setSearchMeta] = useState<SearchMapMeta | null>(initialSearchMeta);
-  const [filters, setFilters] = useState<SearchFilters>(() => getInitialFilters());
+  const [filters, setFilters] = useState<SearchFilters>(() => getBrowserFilters());
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [userTier, setUserTier] = useState<UserTier>('Public');
@@ -191,19 +178,19 @@ export default function SearchInterface({
     return () => window.removeEventListener('DQG_STRATEGY_TOGGLE', handleToggle);
   }, []);
 
-  async function handleSearch(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  async function runSearch(nextFilters: SearchFilters, options: { updateUrl?: boolean; urlMode?: 'push' | 'replace' } = {}) {
     setIsSearching(true);
     setSearchError(null);
 
     try {
-      const response = await fetch(buildSearchUrl(filters));
+      const response = await fetch(buildSearchUrl(nextFilters));
       const data = (await response.json()) as SearchApiResponse;
       const nextListings = normalizeListings(data.results);
 
       setListings(nextListings);
       setSearchMeta(data.meta || null);
       setSelectedId((current) => (current && nextListings.some((listing) => listing.id === current) ? current : null));
+      if (options.updateUrl) updateBrowserSearchUrl(nextFilters, options.urlMode);
 
       if (!response.ok) {
         setSearchError(data.error || 'Inventory search is temporarily unavailable.');
@@ -218,127 +205,63 @@ export default function SearchInterface({
     }
   }
 
+  function handleSearch(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    void runSearch(filters, { updateUrl: true });
+  }
+
   function handleReset() {
-    setFilters(getInitialFilters());
+    const nextFilters = getInitialSearchFilters();
+
+    setFilters(nextFilters);
     setListings(initialListings);
     setSearchMeta(initialSearchMeta);
     setSelectedId(null);
     setHoveredId(null);
     setSearchError(null);
+    updateBrowserSearchUrl(nextFilters);
   }
 
+  useEffect(() => {
+    if (!hasActiveSearchFilters(filters)) return;
+
+    const initialFilterTimer = window.setTimeout(() => {
+      void runSearch(filters, { updateUrl: true, urlMode: 'replace' });
+    }, 0);
+
+    return () => window.clearTimeout(initialFilterTimer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    const handlePopState = () => {
+      const nextFilters = getBrowserFilters();
+      setFilters(nextFilters);
+      if (hasActiveSearchFilters(nextFilters)) {
+        void runSearch(nextFilters, { updateUrl: false });
+        return;
+      }
+
+      setListings(initialListings);
+      setSearchMeta(initialSearchMeta);
+      setSelectedId(null);
+      setHoveredId(null);
+      setSearchError(null);
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [initialListings, initialSearchMeta]);
+
   const searchControls = (
-    <form onSubmit={handleSearch} className="rounded-[8px] border border-white/10 bg-black/35 p-3">
-      <div className="flex items-center justify-between gap-3">
-        <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">
-          <SlidersHorizontal size={13} aria-hidden="true" />
-          Filters
-        </p>
-        <button
-          type="button"
-          onClick={handleReset}
-          className="inline-flex h-7 w-7 items-center justify-center rounded-[6px] border border-white/10 text-white/52 transition hover:border-white/25 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
-          aria-label="Reset search filters"
-        >
-          <RotateCcw size={13} aria-hidden="true" />
-        </button>
-      </div>
-
-      <label className="mt-3 block">
-        <span className="sr-only">Search city, address, ZIP, or MLS</span>
-        <input
-          value={filters.query}
-          onChange={(event) => setFilters((current) => ({ ...current, query: event.target.value }))}
-          placeholder="City, address, ZIP, MLS"
-          className="h-10 w-full rounded-[6px] border border-white/10 bg-white/[0.06] px-3 text-sm font-semibold text-white outline-none transition placeholder:text-white/30 focus:border-cyan-100/45"
-        />
-      </label>
-
-      <div className="mt-2 grid grid-cols-2 gap-2">
-        <label>
-          <span className="sr-only">Minimum price</span>
-          <input
-            inputMode="numeric"
-            value={filters.minPrice}
-            onChange={(event) => setFilters((current) => ({ ...current, minPrice: event.target.value }))}
-            placeholder="Min price"
-            className="h-10 w-full rounded-[6px] border border-white/10 bg-white/[0.06] px-3 text-xs font-bold text-white outline-none transition placeholder:text-white/30 focus:border-cyan-100/45"
-          />
-        </label>
-        <label>
-          <span className="sr-only">Maximum price</span>
-          <input
-            inputMode="numeric"
-            value={filters.maxPrice}
-            onChange={(event) => setFilters((current) => ({ ...current, maxPrice: event.target.value }))}
-            placeholder="Max price"
-            className="h-10 w-full rounded-[6px] border border-white/10 bg-white/[0.06] px-3 text-xs font-bold text-white outline-none transition placeholder:text-white/30 focus:border-cyan-100/45"
-          />
-        </label>
-      </div>
-
-      <div className="mt-2 grid grid-cols-3 gap-2">
-        <select
-          value={filters.beds}
-          onChange={(event) => setFilters((current) => ({ ...current, beds: event.target.value }))}
-          className="h-10 rounded-[6px] border border-white/10 bg-[#101720] px-2 text-xs font-black uppercase tracking-[0.04em] text-white outline-none transition focus:border-cyan-100/45"
-          aria-label="Minimum bedrooms"
-        >
-          <option value="">Beds</option>
-          <option value="1">1+</option>
-          <option value="2">2+</option>
-          <option value="3">3+</option>
-          <option value="4">4+</option>
-          <option value="5">5+</option>
-        </select>
-        <select
-          value={filters.baths}
-          onChange={(event) => setFilters((current) => ({ ...current, baths: event.target.value }))}
-          className="h-10 rounded-[6px] border border-white/10 bg-[#101720] px-2 text-xs font-black uppercase tracking-[0.04em] text-white outline-none transition focus:border-cyan-100/45"
-          aria-label="Minimum bathrooms"
-        >
-          <option value="">Baths</option>
-          <option value="1">1+</option>
-          <option value="2">2+</option>
-          <option value="3">3+</option>
-          <option value="4">4+</option>
-        </select>
-        <select
-          value={filters.propertyType}
-          onChange={(event) => setFilters((current) => ({ ...current, propertyType: event.target.value }))}
-          className="h-10 rounded-[6px] border border-white/10 bg-[#101720] px-2 text-xs font-black uppercase tracking-[0.04em] text-white outline-none transition focus:border-cyan-100/45"
-          aria-label="Property type"
-        >
-          <option value="">Type</option>
-          <option value="Residential">Res</option>
-          <option value="Land">Land</option>
-          <option value="Commercial">Comm</option>
-          <option value="Multi-Family">Multi</option>
-        </select>
-      </div>
-
-      <div className="mt-2 flex gap-2">
-        <label className="min-w-0 flex-1">
-          <span className="sr-only">City</span>
-          <input
-            value={filters.city}
-            onChange={(event) => setFilters((current) => ({ ...current, city: event.target.value }))}
-            placeholder="Exact city"
-            className="h-10 w-full rounded-[6px] border border-white/10 bg-white/[0.06] px-3 text-xs font-bold text-white outline-none transition placeholder:text-white/30 focus:border-cyan-100/45"
-          />
-        </label>
-        <button
-          type="submit"
-          disabled={isSearching}
-          className="inline-flex h-10 w-11 shrink-0 items-center justify-center rounded-[6px] bg-cyan-100 text-[#061017] transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
-          aria-label="Apply search filters"
-        >
-          {isSearching ? <Loader2 size={16} className="animate-spin" aria-hidden="true" /> : <Search size={16} aria-hidden="true" />}
-        </button>
-      </div>
-
-      {searchError ? <p className="mt-2 text-xs font-bold text-red-300">{searchError}</p> : null}
-    </form>
+    <SearchControls
+      filters={filters}
+      isSearching={isSearching}
+      searchError={searchError}
+      onChange={setFilters}
+      onReset={handleReset}
+      onSubmit={handleSearch}
+    />
   );
 
   return (
