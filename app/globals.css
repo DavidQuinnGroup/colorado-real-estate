@@ -2,11 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
-/* 🏗️ LUXURY CORE RESET */
 html, body {
   height: 100%;
   width: 100%;
-  background-color: #000;
+  background-color: #070b10;
   color: #fff;
   margin: 0;
   padding: 0;
@@ -15,97 +14,186 @@ html, body {
 }
 
 @layer utilities {
-  /* 💎 GLASS-MORPHISM: THE RITUAL PANEL */
   .glass-panel {
-    background: rgba(5, 5, 5, 0.7);
-    backdrop-filter: blur(40px) saturate(150%);
-    -webkit-backdrop-filter: blur(40px) saturate(150%);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(7, 16, 23, 0.78);
+    backdrop-filter: blur(28px) saturate(130%);
+    -webkit-backdrop-filter: blur(28px) saturate(130%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
   }
 
-  /* ⚡ NEON GLOWS: ELECTRIC CARIBBEAN */
   .glow-green {
-    box-shadow: 0 0 25px rgba(0, 255, 128, 0.4);
+    box-shadow: 0 0 25px rgba(142, 218, 232, 0.28);
   }
 
   .glow-text-green {
-    text-shadow: 0 0 15px rgba(0, 255, 128, 0.6);
+    text-shadow: 0 0 15px rgba(142, 218, 232, 0.44);
   }
 
-  /* 📏 ZERO-RADIUS LUXURY PILLS */
   .luxury-pill {
-    border-radius: 0px;
+    border-radius: 6px;
     text-transform: uppercase;
-    font-style: italic;
     font-weight: 900;
     letter-spacing: 0.1em;
   }
 }
 
-/* 🗺️ THE SATURDAY NIGHT MAP ENGINE */
 .luxury-topo-tiles {
-  /* Inverts the standard map to deep black/neon and shifts hues to Caribbean Blue/Green */
-  filter: invert(100%) hue-rotate(198deg) brightness(1.1) contrast(1.2) saturate(3.5) !important;
+  filter: invert(92%) hue-rotate(178deg) brightness(0.88) contrast(1.14) saturate(1.65) !important;
 }
 
 .leaflet-container {
-  background: #030303 !important;
+  background: #071017 !important;
   outline: none;
 }
 
-/* 💎 LUXURY MARKERS (PRICE TAGS) */
 .luxury-marker {
-  background: rgba(0, 0, 0, 0.95);
-  color: #fff;
-  padding: 8px 16px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(10, 16, 22, 0.92);
+  color: rgba(255, 255, 255, 0.94);
+  padding: 8px 13px;
+  border: 1px solid rgba(210, 231, 236, 0.22);
   backdrop-filter: blur(12px);
-  font-weight: 900;
-  font-style: italic;
+  font-weight: 800;
   font-size: 11px;
-  box-shadow: 0 15px 45px rgba(0,0,0,0.8);
-  border-radius: 0px;
+  box-shadow: 0 14px 35px rgba(0, 0, 0, 0.48);
+  border-radius: 6px;
   transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
-.luxury-marker:hover {
-  border-color: #00ff80;
-  color: #00ff80;
+.luxury-marker:hover,
+.luxury-marker.active {
+  border-color: rgba(166, 231, 242, 0.72);
+  background: rgba(215, 242, 246, 0.94);
+  color: #081117;
   transform: translateY(-2px);
 }
 
-/* 🏢 THE FIXED NORTH STAR (DQG HQ) */
 .office-pulse {
   width: 12px;
   height: 12px;
-  background: #00ff80;
+  background: #9de7f3;
   border-radius: 50%;
-  box-shadow: 0 0 0 rgba(0, 255, 128, 0.4);
+  box-shadow: 0 0 0 rgba(157, 231, 243, 0.4);
   animation: pulse-green 2s infinite;
 }
 
 @keyframes pulse-green {
-  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 255, 128, 0.7); }
-  70% { transform: scale(1); box-shadow: 0 0 0 20px rgba(0, 255, 128, 0); }
-  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 255, 128, 0); }
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(157, 231, 243, 0.62); }
+  70% { transform: scale(1); box-shadow: 0 0 0 20px rgba(157, 231, 243, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(157, 231, 243, 0); }
 }
 
-/* 🧪 SCROLLBAR DNA */
 ::-webkit-scrollbar {
   width: 4px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #000;
+  background: #070b10;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.16);
+  border-radius: 8px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #00ff80;
+  background: #9de7f3;
+}
+
+.luxury-cluster {
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
+  border: 1px solid rgba(210, 231, 236, 0.24);
+  background: rgba(8, 17, 23, 0.9);
+  color: rgba(255, 255, 255, 0.94);
+  font-size: 12px;
+  font-weight: 900;
+  box-shadow: 0 16px 38px rgba(0, 0, 0, 0.48);
+}
+
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+  border-radius: 8px !important;
+  background: #081117 !important;
+  color: #fff !important;
+  box-shadow: 0 20px 55px rgba(0, 0, 0, 0.45) !important;
+}
+
+.leaflet-popup-content {
+  width: 278px !important;
+  margin: 0 !important;
+}
+
+.reie-map-popup-card {
+  overflow: hidden;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #081117;
+}
+
+.reie-map-popup-image-wrap {
+  height: 148px;
+  overflow: hidden;
+  background: #101720;
+}
+
+.reie-map-popup-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.reie-map-popup-body {
+  padding: 14px;
+}
+
+.reie-map-popup-price {
+  font-family: Georgia, serif;
+  font-size: 21px;
+  font-weight: 900;
+  line-height: 1;
+  color: #fff;
+}
+
+.reie-map-popup-address {
+  margin-top: 10px;
+  font-size: 13px;
+  font-weight: 900;
+  line-height: 1.25;
+  text-transform: uppercase;
+}
+
+.reie-map-popup-city,
+.reie-map-popup-features {
+  margin-top: 7px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.52);
+}
+
+.reie-map-popup-intel {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.reie-map-popup-intel span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.07);
+  padding: 7px 6px;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  color: rgba(212, 246, 250, 0.88);
+  text-transform: uppercase;
 }
 
 /* globals.css */

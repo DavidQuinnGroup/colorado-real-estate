@@ -1,9 +1,24 @@
 import type { Metadata } from 'next';
 import type { Prisma } from '@prisma/client';
+import type { ReactNode } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { HardHat, Mountain, ShieldAlert, TrendingUp } from 'lucide-react';
+import {
+  ArrowLeft,
+  Bath,
+  BedDouble,
+  Camera,
+  FileText,
+  HardHat,
+  Home,
+  MapPin,
+  Mountain,
+  Ruler,
+  ShieldAlert,
+  ShieldCheck,
+  TrendingUp,
+} from 'lucide-react';
 
 import EquityVision from '@/components/EquityVision';
 import RelatedPropertyLinks from '@/components/RelatedPropertyLinks';
@@ -59,6 +74,14 @@ function formatNumber(value: number | null | undefined) {
   if (value === null || value === undefined || Number.isNaN(value)) return 'N/A';
 
   return new Intl.NumberFormat('en-US').format(value);
+}
+
+function formatCompactCurrency(value: number | null | undefined) {
+  if (!value) return 'Request';
+  if (value >= 1000000) return `$${(value / 1000000).toFixed(value >= 10000000 ? 0 : 1)}M`;
+  if (value >= 1000) return `$${Math.round(value / 1000)}K`;
+
+  return `$${value.toLocaleString()}`;
 }
 
 function getAltitudeNarrative(altitude: number) {
@@ -120,6 +143,16 @@ function getPropertyBriefHref(property: PropertyWithPhotos) {
     neighborhood: property.neighborhood || undefined,
     limit: 1,
   })[0]?.href ?? getBlogLinks({ city: property.city || undefined, limit: 1 })[0]?.href ?? null;
+}
+
+function getPrimaryStatLabel(property: PropertyWithPhotos) {
+  const pieces = [
+    property.propertyType || 'Residential',
+    property.status || null,
+    property.neighborhood || null,
+  ].filter(Boolean);
+
+  return pieces.join(' / ');
 }
 
 async function getProperty(id: string) {
@@ -227,6 +260,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
   const cityMarketHref = getCityMarketHref(property.city);
   const neighborhoodHref = getNeighborhoodHref(property);
   const briefHref = getPropertyBriefHref(property);
+  const primaryStatLabel = getPrimaryStatLabel(property);
   const propertyLinks = await getPropertyLinks({
     id: property.id,
     city: property.city,
@@ -235,166 +269,182 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
   const relatedListings = [...propertyLinks.neighborhoodHomes, ...propertyLinks.cityHomes];
 
   return (
-    <main className="min-h-screen bg-[#050505] text-white">
+    <main className="min-h-screen overflow-y-auto bg-[#070b10] text-white">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(propertySchema) }} />
       <FAQSchema faqs={propertyFaqs} pageUrl={canonicalUrl} />
-      <section className="mx-auto grid min-h-screen max-w-7xl grid-cols-1 gap-8 px-5 py-6 lg:grid-cols-[minmax(0,1fr)_380px] lg:px-8">
-        <div className="space-y-7">
-          <div className="relative aspect-[16/9] overflow-hidden border border-white/10 bg-slate-950">
-            <Image src={primaryPhoto} alt={property.address} fill priority sizes="(min-width: 1024px) 820px, 100vw" className="object-cover" />
-            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black via-black/65 to-transparent p-5 md:p-8">
-              <p className="text-[11px] font-black uppercase tracking-[0.34em] text-cyan-300">David Quinn Group Intelligence</p>
-              <div className="mt-4 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-                <div>
-                  <h1 className="max-w-4xl text-3xl font-black uppercase italic tracking-tight md:text-5xl">{property.address}</h1>
-                  <p className="mt-2 text-xs font-bold uppercase tracking-[0.28em] text-white/60">
-                    {property.city}, {property.state} {property.zip}
-                  </p>
+      <section className="relative border-b border-white/10">
+        <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(100,188,205,0.14),transparent_38%),linear-gradient(180deg,rgba(255,255,255,0.035),transparent_35%)]" />
+        <div className="relative mx-auto grid min-h-[720px] max-w-[1500px] grid-cols-1 gap-0 lg:grid-cols-[minmax(0,1fr)_420px]">
+          <div className="relative min-h-[560px] overflow-hidden bg-[#101720] lg:min-h-[720px]">
+            <Image
+              src={primaryPhoto}
+              alt={property.address}
+              fill
+              priority
+              sizes="(min-width: 1024px) calc(100vw - 420px), 100vw"
+              className="object-cover opacity-95"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#070b10] via-[#070b10]/20 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#070b10]/88 via-[#070b10]/18 to-transparent" />
+
+            <div className="absolute left-5 right-5 top-5 flex items-center justify-between gap-4 md:left-8 md:right-8">
+              <Link
+                href="/search"
+                className="inline-flex items-center gap-2 rounded-[6px] border border-white/14 bg-[#071017]/76 px-3 py-2 text-[10px] font-black uppercase tracking-[0.16em] text-white/70 backdrop-blur transition hover:border-cyan-100/40 hover:text-cyan-100"
+              >
+                <ArrowLeft size={14} aria-hidden="true" />
+                Search
+              </Link>
+              <span className="rounded-[6px] border border-white/14 bg-[#071017]/76 px-3 py-2 text-[10px] font-black uppercase tracking-[0.16em] text-cyan-100 backdrop-blur">
+                David Quinn Group Intelligence
+              </span>
+            </div>
+
+            <div className="absolute bottom-0 left-0 right-0 p-5 md:p-8 lg:p-12">
+              <div className="max-w-4xl">
+                <div className="mb-4 flex flex-wrap gap-2">
+                  <span className="rounded-[5px] border border-white/18 bg-white/12 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.14em] text-white/84 backdrop-blur">
+                    {primaryStatLabel}
+                  </span>
+                  {property.isPrivateExclusive ? (
+                    <span className="rounded-[5px] border border-cyan-100/40 bg-cyan-100/12 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100 backdrop-blur">
+                      Private
+                    </span>
+                  ) : null}
                 </div>
-                <p className="text-3xl font-black italic text-white md:text-5xl">{formatCurrency(property.price)}</p>
+                <p className="font-serif text-[42px] font-black leading-none text-white md:text-[64px]">
+                  {formatCurrency(property.price)}
+                </p>
+                <h1 className="mt-5 max-w-4xl text-3xl font-black uppercase leading-tight tracking-normal text-white md:text-5xl">
+                  {property.address}
+                </h1>
+                <p className="mt-4 flex flex-wrap items-center gap-2 text-[12px] font-black uppercase tracking-[0.16em] text-white/64">
+                  <MapPin size={15} aria-hidden="true" className="text-cyan-100/78" />
+                  {property.city}, {property.state} {property.zip}
+                </p>
               </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 border border-white/10 bg-black md:grid-cols-4">
-            <div className="border-b border-r border-white/10 p-4 md:border-b-0">
-              <p className="text-[10px] font-black uppercase tracking-[0.24em] text-white/40">Beds</p>
-              <p className="mt-2 text-2xl font-black italic">{formatNumber(property.beds)}</p>
+          <aside className="border-l border-white/10 bg-[#070b10] p-5 lg:sticky lg:top-0 lg:h-screen lg:overflow-y-auto">
+            <div className="rounded-[8px] border border-white/10 bg-[#0d141c] p-4">
+              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-white/44">REIE Scorecard</p>
+              <div className="mt-4 grid grid-cols-2 gap-3">
+                <SignalTile icon={<TrendingUp size={16} />} label="Efficiency" value={formatNumber(efficiencyScore)} tone="cyan" />
+                <SignalTile icon={<ShieldCheck size={16} />} label="Resilience" value={formatNumber(resilienceScore)} tone="white" />
+              </div>
+              <div className="mt-3 rounded-[6px] border border-white/10 bg-white/[0.045] p-3">
+                <p className="text-[10px] font-black uppercase tracking-[0.14em] text-white/40">Review Signal</p>
+                <p className="mt-2 truncate text-sm font-black uppercase tracking-[0.08em] text-cyan-100">{reviewSignal}</p>
+              </div>
             </div>
-            <div className="border-b border-white/10 p-4 md:border-b-0 md:border-r">
-              <p className="text-[10px] font-black uppercase tracking-[0.24em] text-white/40">Baths</p>
-              <p className="mt-2 text-2xl font-black italic">{formatNumber(property.baths)}</p>
-            </div>
-            <div className="border-r border-white/10 p-4">
-              <p className="text-[10px] font-black uppercase tracking-[0.24em] text-white/40">Sq Ft</p>
-              <p className="mt-2 text-2xl font-black italic">{formatNumber(property.sqft)}</p>
-            </div>
-            <div className="p-4">
-              <p className="text-[10px] font-black uppercase tracking-[0.24em] text-white/40">Status</p>
-              <p className="mt-2 text-2xl font-black italic">{property.status}</p>
-            </div>
-          </div>
 
-          <section className="border border-white/10 bg-black p-5 md:p-8">
-            <p className="text-[10px] font-black uppercase tracking-[0.32em] text-cyan-300">Property Brief</p>
-            <p className="mt-4 max-w-4xl text-base leading-8 text-white/72">
+            <div className="mt-4 grid grid-cols-3 gap-2">
+              <FactTile icon={<BedDouble size={15} />} label="Beds" value={formatNumber(property.beds)} />
+              <FactTile icon={<Bath size={15} />} label="Baths" value={formatNumber(property.baths)} />
+              <FactTile icon={<Ruler size={15} />} label="Sq Ft" value={formatNumber(property.sqft)} />
+            </div>
+
+            <section className="mt-4 rounded-[8px] border border-white/10 bg-[#0d141c] p-4">
+              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-cyan-100/76">Authority Paths</p>
+              <div className="mt-4 grid gap-2">
+                <AuthorityLink href={cityMarketHref} eyebrow="City Market" label={`${property.city || 'Colorado'} Intelligence`} />
+                {neighborhoodHref ? (
+                  <AuthorityLink href={neighborhoodHref} eyebrow="Neighborhood" label={`${property.neighborhood} Authority Hub`} />
+                ) : null}
+                {briefHref ? <AuthorityLink href={briefHref} eyebrow="REIE Brief" label="Strategy Context" /> : null}
+              </div>
+            </section>
+
+            <section className="mt-4 rounded-[8px] border border-white/10 bg-[#0d141c] p-4">
+              <h2 className="flex items-center gap-2 text-[12px] font-black uppercase tracking-[0.12em] text-white">
+                <Mountain className="text-cyan-100" size={17} /> Altitude Forensics
+              </h2>
+              <div className="mt-4 space-y-3 text-sm">
+                <div className="flex justify-between gap-4 border-b border-white/10 pb-2">
+                  <span className="text-white/45">Elevation</span>
+                  <span className="font-bold text-white">{formatNumber(altitude)} FT</span>
+                </div>
+                <div className="flex justify-between gap-4 border-b border-white/10 pb-2">
+                  <span className="text-white/45">Soil Profile</span>
+                  <span className="truncate font-bold text-white">{soilType}</span>
+                </div>
+                <p className="pt-1 text-sm leading-6 text-white/56">{getAltitudeNarrative(altitude)}</p>
+              </div>
+            </section>
+
+            <section className="mt-4 rounded-[8px] border border-amber-200/24 bg-amber-200/8 p-4">
+              <h2 className="flex items-center gap-2 text-[12px] font-black uppercase tracking-[0.12em] text-amber-100">
+                <ShieldAlert size={17} /> GC Review
+              </h2>
+              <ul className="mt-4 space-y-2 text-xs font-bold uppercase tracking-[0.12em] text-white/62">
+                {property.hasPolybutyleneRisk ? <li>Polybutylene piping risk detected</li> : null}
+                <li>Drainage and grade verification recommended</li>
+                <li>Mechanical age and electrical capacity review recommended</li>
+              </ul>
+            </section>
+
+            {!isContracted ? (
+              <div className="mt-4 rounded-[8px] border border-cyan-100/26 bg-cyan-100/10 p-4">
+                <HardHat className="text-cyan-100" size={24} />
+                <h2 className="mt-3 text-[15px] font-black uppercase tracking-[0.08em] text-white">Strategy Layer Locked</h2>
+                <p className="mt-2 text-sm leading-6 text-white/62">
+                  Contracted David Quinn Group clients unlock the full GC-forensics and negotiation layer.
+                </p>
+              </div>
+            ) : null}
+          </aside>
+        </div>
+      </section>
+
+      <section className="mx-auto grid max-w-7xl grid-cols-1 gap-6 px-5 py-10 lg:grid-cols-[minmax(0,1fr)_380px] lg:px-8">
+        <div className="space-y-6">
+          <section className="rounded-[8px] border border-white/10 bg-[#0d141c] p-5 md:p-8">
+            <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.22em] text-cyan-100/76">
+              <FileText size={14} aria-hidden="true" />
+              Property Brief
+            </p>
+            <p className="mt-5 max-w-4xl text-base leading-8 text-white/70">
               {property.description ||
                 `${property.address} is an active Colorado listing in the David Quinn Group intelligence layer. Live MLS media, location signals, and structural context are being assembled for this asset.`}
             </p>
           </section>
 
           {property.photos.length > 1 ? (
-            <section className="grid grid-cols-2 gap-3 md:grid-cols-4">
-              {property.photos.slice(1, 5).map((photo) => (
-                <div key={photo.id} className="relative aspect-[4/3] overflow-hidden border border-white/10 bg-slate-950">
-                  <Image src={photo.url} alt={`${property.address} listing photo`} fill sizes="(min-width: 768px) 25vw, 50vw" className="object-cover" />
-                </div>
-              ))}
+            <section className="rounded-[8px] border border-white/10 bg-[#0d141c] p-4">
+              <div className="mb-4 flex items-center justify-between gap-4">
+                <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.22em] text-white/50">
+                  <Camera size={14} aria-hidden="true" />
+                  Listing Media
+                </p>
+                <p className="text-[10px] font-black uppercase tracking-[0.14em] text-white/34">{property.photos.length} Photos</p>
+              </div>
+              <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+                {property.photos.slice(1, 5).map((photo) => (
+                  <div key={photo.id} className="relative aspect-[4/3] overflow-hidden rounded-[6px] border border-white/10 bg-[#101720]">
+                    <Image src={photo.url} alt={`${property.address} listing photo`} fill sizes="(min-width: 768px) 25vw, 50vw" className="object-cover" />
+                  </div>
+                ))}
+              </div>
             </section>
           ) : null}
         </div>
 
-        <aside className="space-y-5 lg:sticky lg:top-6 lg:self-start">
-          <div className="border border-white/10 bg-black p-5">
-            <p className="text-[10px] font-black uppercase tracking-[0.32em] text-white/40">REIE Scorecard</p>
-            <div className="mt-5 grid grid-cols-2 gap-3">
-              <div className="bg-white/[0.04] p-4">
-                <TrendingUp className="mb-3 text-[#00ff80]" size={18} />
-                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-white/40">Efficiency</p>
-                <p className="mt-2 text-3xl font-black italic text-[#00ff80]">{efficiencyScore}</p>
-              </div>
-              <div className="bg-white/[0.04] p-4">
-                <ShieldAlert className="mb-3 text-cyan-300" size={18} />
-                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-white/40">Resilience</p>
-                <p className="mt-2 text-3xl font-black italic text-cyan-300">{resilienceScore}</p>
-              </div>
-            </div>
-            <div className="mt-3 border border-white/10 bg-white/[0.035] p-4">
-              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-white/40">Review Signal</p>
-              <p className="mt-2 truncate text-sm font-black uppercase tracking-[0.12em] text-white">{reviewSignal}</p>
-            </div>
-          </div>
-
-          <section className="border border-white/10 bg-black p-5">
-            <p className="text-[10px] font-black uppercase tracking-[0.32em] text-cyan-300">Authority Paths</p>
-            <div className="mt-4 grid gap-px overflow-hidden border border-white/10 bg-white/10">
-              <Link
-                href={cityMarketHref}
-                className="group bg-[#050505] p-4 transition-colors hover:bg-white/[0.05]"
-              >
-                <p className="text-[9px] font-black uppercase tracking-[0.24em] text-white/30">City Market</p>
-                <p className="mt-2 text-xs font-black uppercase tracking-[0.14em] text-white/70 transition-colors group-hover:text-white">
-                  {property.city || 'Colorado'} Intelligence
-                </p>
-              </Link>
-
-              {neighborhoodHref ? (
-                <Link
-                  href={neighborhoodHref}
-                  className="group bg-[#050505] p-4 transition-colors hover:bg-white/[0.05]"
-                >
-                  <p className="text-[9px] font-black uppercase tracking-[0.24em] text-white/30">Neighborhood</p>
-                  <p className="mt-2 text-xs font-black uppercase tracking-[0.14em] text-white/70 transition-colors group-hover:text-white">
-                    {property.neighborhood} Authority Hub
-                  </p>
-                </Link>
-              ) : null}
-
-              {briefHref ? (
-                <Link
-                  href={briefHref}
-                  className="group bg-[#050505] p-4 transition-colors hover:bg-white/[0.05]"
-                >
-                  <p className="text-[9px] font-black uppercase tracking-[0.24em] text-white/30">REIE Brief</p>
-                  <p className="mt-2 text-xs font-black uppercase tracking-[0.14em] text-white/70 transition-colors group-hover:text-white">
-                    Strategy Context
-                  </p>
-                </Link>
-              ) : null}
+        <aside className="space-y-6">
+          <section className="rounded-[8px] border border-white/10 bg-[#0d141c] p-5">
+            <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.22em] text-white/46">
+              <Home size={14} aria-hidden="true" />
+              Asset Snapshot
+            </p>
+            <div className="mt-4 space-y-3">
+              <SnapshotRow label="Price" value={formatCompactCurrency(property.price)} />
+              <SnapshotRow label="Status" value={property.status || 'Active'} />
+              <SnapshotRow label="Type" value={property.propertyType || 'Residential'} />
+              <SnapshotRow label="MLS" value={property.mlsId || property.id} />
             </div>
           </section>
 
-          <div className={!isContracted ? 'space-y-5 blur-[1.5px] grayscale' : 'space-y-5'}>
-            <EquityVision property={equityProperty} />
-
-            <section className="border border-white/10 bg-slate-950 p-5">
-              <h2 className="flex items-center gap-2 text-lg font-black uppercase italic tracking-tight">
-                <Mountain className="text-cyan-300" size={20} /> Altitude Forensics
-              </h2>
-              <div className="mt-5 space-y-3 text-sm">
-                <div className="flex justify-between border-b border-white/10 pb-2">
-                  <span className="text-white/45">Elevation</span>
-                  <span className="font-mono">{formatNumber(altitude)} FT</span>
-                </div>
-                <div className="flex justify-between border-b border-white/10 pb-2">
-                  <span className="text-white/45">Soil Profile</span>
-                  <span className="font-mono">{soilType}</span>
-                </div>
-                <p className="pt-2 text-sm italic leading-6 text-white/55">{getAltitudeNarrative(altitude)}</p>
-              </div>
-            </section>
-
-            <section className="border border-red-500/30 bg-red-950/20 p-5">
-              <h2 className="flex items-center gap-2 text-lg font-black uppercase italic tracking-tight text-red-300">
-                <ShieldAlert size={20} /> GC Red Flags
-              </h2>
-              <ul className="mt-4 space-y-2 text-xs font-bold uppercase tracking-[0.16em] text-white/62">
-                {property.hasPolybutyleneRisk ? <li>Polybutylene piping risk detected</li> : null}
-                <li>Drainage and grade verification recommended</li>
-                <li>Mechanical age and electrical capacity review recommended</li>
-              </ul>
-            </section>
-          </div>
-
-          {!isContracted ? (
-            <div className="border border-cyan-300/30 bg-cyan-300/10 p-5 text-center">
-              <HardHat className="mx-auto text-cyan-300" size={28} />
-              <h2 className="mt-3 text-lg font-black uppercase italic">Strategy Layer Locked</h2>
-              <p className="mt-2 text-sm leading-6 text-white/62">
-                Contracted David Quinn Group clients unlock the full GC-forensics and negotiation layer.
-              </p>
-            </div>
-          ) : null}
+          <EquityVision property={equityProperty} />
         </aside>
       </section>
       <section className="mx-auto max-w-7xl px-5 pb-20 lg:px-8">
@@ -404,21 +454,21 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
           price={property.price ?? undefined}
           authorityLinks={propertyLinks.authorityLinks}
         />
-        <section className="my-14 border-y border-white/10 py-12">
+        <section className="my-14 rounded-[8px] border border-white/10 bg-[#0d141c] p-6 md:p-8">
           <div className="mb-8 max-w-3xl">
-            <p className="mb-3 text-[10px] font-black uppercase tracking-[0.35em] text-[#00ff80]">REIE FAQ Layer</p>
-            <h2 className="text-2xl font-black italic uppercase tracking-tight text-white">
+            <p className="mb-3 text-[10px] font-black uppercase tracking-[0.22em] text-cyan-100/76">REIE FAQ Layer</p>
+            <h2 className="text-2xl font-black uppercase tracking-tight text-white">
               Property Intelligence Questions
             </h2>
           </div>
 
-          <div className="grid gap-px overflow-hidden border border-white/10 bg-white/10 md:grid-cols-2">
+          <div className="grid gap-3 md:grid-cols-2">
             {propertyFaqs.slice(0, 4).map((faq) => (
-              <article key={faq.question} className="bg-[#050505] p-6">
-                <h3 className="text-sm font-black uppercase leading-6 tracking-[0.12em] text-white">
+              <article key={faq.question} className="rounded-[6px] border border-white/10 bg-white/[0.045] p-5">
+                <h3 className="text-sm font-black uppercase leading-6 tracking-[0.08em] text-white">
                   {faq.question}
                 </h3>
-                <p className="mt-4 text-sm leading-7 text-white/55">{faq.answer}</p>
+                <p className="mt-4 text-sm leading-7 text-white/58">{faq.answer}</p>
               </article>
             ))}
           </div>
@@ -433,6 +483,61 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
         />
       </section>
     </main>
+  );
+}
+
+function SignalTile({
+  icon,
+  label,
+  value,
+  tone,
+}: {
+  icon: ReactNode;
+  label: string;
+  value: string;
+  tone: 'cyan' | 'white';
+}) {
+  const valueClass = tone === 'cyan' ? 'text-cyan-100' : 'text-white';
+
+  return (
+    <div className="rounded-[6px] border border-white/10 bg-white/[0.045] p-3">
+      <div className="text-cyan-100/76">{icon}</div>
+      <p className="mt-3 text-[10px] font-black uppercase tracking-[0.14em] text-white/40">{label}</p>
+      <p className={`mt-2 text-3xl font-black leading-none ${valueClass}`}>{value}</p>
+    </div>
+  );
+}
+
+function FactTile({ icon, label, value }: { icon: ReactNode; label: string; value: string }) {
+  return (
+    <div className="rounded-[6px] border border-white/10 bg-white/[0.045] p-3">
+      <div className="text-cyan-100/72">{icon}</div>
+      <p className="mt-3 text-[10px] font-black uppercase tracking-[0.14em] text-white/40">{label}</p>
+      <p className="mt-1 text-xl font-black leading-none text-white">{value}</p>
+    </div>
+  );
+}
+
+function AuthorityLink({ href, eyebrow, label }: { href: string; eyebrow: string; label: string }) {
+  return (
+    <Link
+      href={href}
+      className="group rounded-[6px] border border-white/10 bg-white/[0.045] p-3 transition-colors hover:border-cyan-100/35 hover:bg-white/[0.075]"
+    >
+      <p className="text-[10px] font-black uppercase tracking-[0.14em] text-white/36">{eyebrow}</p>
+      <p className="mt-2 text-xs font-black uppercase tracking-[0.08em] text-white/68 transition-colors group-hover:text-white">
+        {label}
+      </p>
+    </Link>
+  );
+}
+
+function SnapshotRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex items-center justify-between gap-4 border-b border-white/10 pb-3 last:border-b-0 last:pb-0">
+      <p className="text-[10px] font-black uppercase tracking-[0.14em] text-white/38">{label}</p>
+      <p className="min-w-0 truncate text-sm font-bold text-white/78">{value}</p>
+    </div>
   );
 }
 

@@ -196,7 +196,7 @@ export default function SaveSearch({ city }: SaveSearchProps) {
 
   if (submitState === 'saved') {
     return (
-      <div className="border border-cyan-300/30 bg-cyan-300/10 px-4 py-3 text-cyan-100">
+    <div className="overflow-hidden rounded-[8px] border border-cyan-200/30 bg-cyan-200/10 px-4 py-3 text-cyan-100">
         <div className="flex items-start gap-3">
           <Check size={16} className="mt-0.5 shrink-0 text-cyan-300" />
           <div className="min-w-0">
@@ -215,7 +215,7 @@ export default function SaveSearch({ city }: SaveSearchProps) {
             {saveResult?.alertReadiness?.signals.length ? (
               <div className="mt-3 flex flex-wrap gap-2">
                 {saveResult.alertReadiness.signals.slice(0, 3).map((signal) => (
-                  <span key={signal} className="border border-white/10 bg-black/40 px-2 py-1 text-[9px] font-black uppercase tracking-[0.14em] text-white/45">
+                  <span key={signal} className="rounded-[4px] border border-white/10 bg-black/40 px-2 py-1 text-[9px] font-black uppercase tracking-[0.14em] text-white/45">
                     {signal}
                   </span>
                 ))}
@@ -238,12 +238,12 @@ export default function SaveSearch({ city }: SaveSearchProps) {
   }
 
   return (
-    <div className="border border-white/10 bg-black p-4">
+    <div className="overflow-hidden rounded-[8px] border border-white/10 bg-[#0d141c] p-4 shadow-[0_12px_35px_rgba(0,0,0,0.22)]">
       <div className="flex items-start justify-between gap-4">
         <div className="flex min-w-0 items-center gap-3">
           <Bell size={16} className="shrink-0 text-cyan-300" />
           <div className="min-w-0">
-            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/55">Save Search</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.22em] text-white/55">Save Search</p>
             <p className="mt-1 truncate text-[10px] font-bold uppercase tracking-[0.12em] text-white/35">{statusText}</p>
           </div>
         </div>
@@ -252,7 +252,7 @@ export default function SaveSearch({ city }: SaveSearchProps) {
       </div>
 
       <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
-        <label className="relative block">
+        <label className="relative block min-w-0">
           <span className="sr-only">REIE intent</span>
           <select
             value={goal}
@@ -261,10 +261,10 @@ export default function SaveSearch({ city }: SaveSearchProps) {
               resetErrorState();
             }}
             disabled={isSaving}
-            className="h-10 w-full appearance-none border border-white/10 bg-white/[0.04] px-3 pr-8 text-[10px] font-black uppercase tracking-[0.14em] text-white outline-none transition focus:border-cyan-300/70 disabled:cursor-not-allowed disabled:opacity-60"
+            className="h-10 w-full min-w-0 appearance-none rounded-[6px] border border-white/10 bg-white/[0.055] px-3 pr-8 text-[10px] font-black uppercase tracking-[0.08em] text-white outline-none transition focus:border-cyan-200/70 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {GOAL_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value} className="bg-black text-white">
+              <option key={option.value} value={option.value} className="bg-[#0d141c] text-white">
                 {option.label}
               </option>
             ))}
@@ -272,7 +272,7 @@ export default function SaveSearch({ city }: SaveSearchProps) {
           <ChevronDown size={14} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-white/45" />
         </label>
 
-        <label className="relative block">
+        <label className="relative block min-w-0">
           <span className="sr-only">Timeline</span>
           <select
             value={timeline}
@@ -281,10 +281,10 @@ export default function SaveSearch({ city }: SaveSearchProps) {
               resetErrorState();
             }}
             disabled={isSaving}
-            className="h-10 w-full appearance-none border border-white/10 bg-white/[0.04] px-3 pr-8 text-[10px] font-black uppercase tracking-[0.14em] text-white outline-none transition focus:border-cyan-300/70 disabled:cursor-not-allowed disabled:opacity-60"
+            className="h-10 w-full min-w-0 appearance-none rounded-[6px] border border-white/10 bg-white/[0.055] px-3 pr-8 text-[10px] font-black uppercase tracking-[0.08em] text-white outline-none transition focus:border-cyan-200/70 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {TIMELINE_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value} className="bg-black text-white">
+              <option key={option.value} value={option.value} className="bg-[#0d141c] text-white">
                 {option.label}
               </option>
             ))}
@@ -310,14 +310,14 @@ export default function SaveSearch({ city }: SaveSearchProps) {
           onKeyDown={(event) => {
             if (event.key === 'Enter') void handleSave();
           }}
-          className="min-h-11 min-w-0 flex-1 border border-white/10 bg-white/[0.04] px-3 text-sm text-white outline-none transition-colors placeholder:text-white/30 focus:border-cyan-300/70 disabled:cursor-not-allowed disabled:opacity-60"
+          className="min-h-11 min-w-0 flex-1 rounded-[6px] border border-white/10 bg-white/[0.055] px-3 text-sm text-white outline-none transition-colors placeholder:text-white/30 focus:border-cyan-200/70 disabled:cursor-not-allowed disabled:opacity-60"
         />
 
         <button
           type="button"
           onClick={handleSave}
           disabled={isSaving}
-          className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 border border-cyan-300/40 bg-cyan-300 px-4 text-[10px] font-black uppercase tracking-[0.22em] text-black transition-colors hover:bg-white disabled:cursor-not-allowed disabled:opacity-60"
+          className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-[6px] border border-cyan-100/40 bg-cyan-100 px-4 text-[10px] font-black uppercase tracking-[0.16em] text-[#071017] transition-colors hover:bg-white disabled:cursor-not-allowed disabled:opacity-60"
         >
           {isSaving ? 'Saving' : 'Save'}
         </button>
@@ -334,12 +334,12 @@ export default function SaveSearch({ city }: SaveSearchProps) {
             resetErrorState();
           }}
           placeholder="Optional notes"
-          className="min-h-16 w-full resize-none border border-white/10 bg-white/[0.04] px-3 py-2 text-xs leading-5 text-white outline-none transition-colors placeholder:text-white/25 focus:border-cyan-300/70 disabled:cursor-not-allowed disabled:opacity-60"
+          className="min-h-16 w-full resize-none rounded-[6px] border border-white/10 bg-white/[0.055] px-3 py-2 text-xs leading-5 text-white outline-none transition-colors placeholder:text-white/25 focus:border-cyan-200/70 disabled:cursor-not-allowed disabled:opacity-60"
         />
       </label>
 
       <div className="mt-2 flex min-h-5 items-center justify-between gap-3">
-        <p className={`text-xs font-bold ${error ? 'text-red-300' : 'text-white/35'}`}>{error || 'Saved searches include this map view and current filters.'}</p>
+        <p className={`min-w-0 text-xs font-bold ${error ? 'text-red-300' : 'text-white/35'}`}>{error || 'Saved searches include this map view and current filters.'}</p>
         <p className="shrink-0 text-[10px] font-bold text-white/25">{getCharacterCountLabel(notes)}</p>
       </div>
     </div>

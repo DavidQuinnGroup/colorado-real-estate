@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { ArrowUpRight, Bath, BedDouble, Gauge, MapPin, Ruler, ShieldCheck, TriangleAlert } from 'lucide-react';
 import type { KeyboardEvent } from 'react';
 import { useMemo, useState } from 'react';
 
@@ -34,18 +35,18 @@ function formatNumber(value: number | string | null | undefined) {
   return numericValue.toLocaleString();
 }
 
-function formatBedCount(value: number | string | null | undefined) {
-  const numericValue = getNumericValue(value);
-  if (numericValue === null) return '-- Beds';
-
-  return `${numericValue.toLocaleString()} ${numericValue === 1 ? 'Bed' : 'Beds'}`;
-}
-
 function formatSecondaryStats(property: MapSidebarListing) {
   const baths = formatNumber(property.baths);
   const sqft = formatNumber(property.sqft);
 
   return `${baths} Baths / ${sqft} Sq Ft`;
+}
+
+function getCompactStat(value: number | string | null | undefined, fallback: string) {
+  const numericValue = getNumericValue(value);
+  if (numericValue === null) return fallback;
+
+  return numericValue.toLocaleString();
 }
 
 function formatIntelligenceScore(value: number | null | undefined) {
@@ -91,6 +92,7 @@ export default function PropertyCard({ property, isActive, onClick }: PropertyCa
   const cardLabel = getCardLabel(property, price, address, city, state);
   const reviewSignal = getReviewSignal(property);
   const cityMarketHref = getCityMarketHref(city);
+  const hasReviewFlag = Boolean(property.hasPolybutyleneRisk);
 
   function handleImageError() {
     if (imageSrc === LISTING_IMAGE_FALLBACK) return;
@@ -113,11 +115,13 @@ export default function PropertyCard({ property, isActive, onClick }: PropertyCa
       aria-pressed={isActive}
       onClick={onClick}
       onKeyDown={handleKeyDown}
-      className={`group cursor-pointer border-b border-white/18 bg-[#050609] outline-none transition duration-200 focus-visible:bg-white/[0.07] focus-visible:shadow-[inset_3px_0_0_#00e5ff] ${
-        isActive ? 'bg-white/[0.065] shadow-[inset_3px_0_0_#00e5ff]' : 'hover:bg-white/[0.035]'
+      className={`group m-3 cursor-pointer overflow-hidden rounded-[8px] border outline-none transition duration-200 focus-visible:border-cyan-200 focus-visible:ring-2 focus-visible:ring-cyan-200/40 ${
+        isActive
+          ? 'border-cyan-200/70 bg-[#111821] shadow-[0_18px_55px_rgba(7,22,38,0.45)]'
+          : 'border-white/10 bg-[#0b0f14] shadow-[0_12px_35px_rgba(0,0,0,0.28)] hover:border-white/24 hover:bg-[#101720]'
       }`}
     >
-      <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#050505]">
+      <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#10151b]">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={imageSrc}
@@ -125,43 +129,88 @@ export default function PropertyCard({ property, isActive, onClick }: PropertyCa
           loading="lazy"
           decoding="async"
           onError={handleImageError}
-          className="h-full w-full object-cover opacity-95 saturate-[1.08] transition duration-700 group-hover:scale-[1.025] group-hover:opacity-100"
+          className="h-full w-full object-cover opacity-95 saturate-[1.02] transition duration-700 group-hover:scale-[1.025] group-hover:opacity-100"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/48 via-black/0 to-black/8" />
-        <div className="absolute bottom-0 left-0 right-0 h-px bg-white/20" />
-
-        {property.isPrivateExclusive ? (
-          <div className="absolute left-4 top-4 border border-[#00e5ff]/55 bg-black/82 px-3 py-2 text-[9px] font-black uppercase tracking-[0.24em] text-[#00e5ff]">
-            Private
-          </div>
-        ) : null}
-      </div>
-
-      <div className="px-5 py-4">
-        <div className="flex items-baseline justify-between gap-4">
-          <p className="font-serif text-[16px] font-black italic leading-none text-white">{formatLuxuryPrice(price)}</p>
-          <p className="whitespace-nowrap text-[10px] font-black uppercase tracking-[0.18em] text-white/80">{formatBedCount(property.beds)}</p>
+        <div className="absolute inset-0 bg-gradient-to-t from-[#080b0f]/78 via-[#080b0f]/10 to-transparent" />
+        <div className="absolute left-4 top-4 flex max-w-[calc(100%-2rem)] items-center gap-2">
+          <span className="rounded-[4px] border border-white/20 bg-black/58 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-white/88 backdrop-blur">
+            {propertyType}
+          </span>
+          {property.isPrivateExclusive ? (
+            <span className="rounded-[4px] border border-cyan-200/45 bg-cyan-200/12 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-cyan-100 backdrop-blur">
+              Private
+            </span>
+          ) : null}
+          {hasReviewFlag ? (
+            <span className="inline-flex items-center gap-1 rounded-[4px] border border-amber-200/45 bg-amber-200/12 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-amber-100 backdrop-blur">
+              <TriangleAlert size={12} aria-hidden="true" />
+              Review
+            </span>
+          ) : null}
         </div>
 
-        <div className="mt-5 border-t border-white/15 pt-4">
-          <h2 className="text-[14px] font-black uppercase leading-tight text-white">{address}</h2>
-          <p className="mt-4 text-[10px] font-black uppercase tracking-[0.42em] text-white">
+        <div className="absolute bottom-4 left-4 right-4">
+          <p className="font-serif text-[24px] font-black leading-none text-white drop-shadow">{formatLuxuryPrice(price)}</p>
+          <div className="mt-3 flex flex-wrap gap-2">
+            <span className="inline-flex items-center gap-1.5 rounded-[4px] bg-white/92 px-2.5 py-1 text-[11px] font-black uppercase tracking-[0.08em] text-[#111820]">
+              <BedDouble size={13} aria-hidden="true" />
+              {getCompactStat(property.beds, '--')}
+            </span>
+            <span className="inline-flex items-center gap-1.5 rounded-[4px] bg-white/92 px-2.5 py-1 text-[11px] font-black uppercase tracking-[0.08em] text-[#111820]">
+              <Bath size={13} aria-hidden="true" />
+              {getCompactStat(property.baths, '--')}
+            </span>
+            <span className="inline-flex items-center gap-1.5 rounded-[4px] bg-white/92 px-2.5 py-1 text-[11px] font-black uppercase tracking-[0.08em] text-[#111820]">
+              <Ruler size={13} aria-hidden="true" />
+              {getCompactStat(property.sqft, '--')}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div className="px-4 pb-4 pt-4">
+        <div>
+          <h2 className="text-[15px] font-black uppercase leading-snug text-white">{address}</h2>
+          <p className="mt-2 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.16em] text-white/55">
+            <MapPin size={13} aria-hidden="true" className="text-cyan-100/70" />
             {city}, {state}
           </p>
         </div>
 
-        <div className="mt-4 flex items-center justify-between gap-4">
-          <p className="min-w-0 text-[10px] font-bold uppercase tracking-[0.16em] text-white/48">{formatSecondaryStats(property)}</p>
+        <div className="mt-4 grid grid-cols-3 gap-2 text-left">
+          <div className="rounded-[6px] border border-white/10 bg-white/[0.045] px-3 py-2.5">
+            <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.12em] text-white/38">
+              <Gauge size={12} aria-hidden="true" />
+              Eff
+            </p>
+            <p className="mt-1 text-[17px] font-black leading-none text-white">{formatIntelligenceScore(property.efficiencyScore)}</p>
+          </div>
+          <div className="rounded-[6px] border border-white/10 bg-white/[0.045] px-3 py-2.5">
+            <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.12em] text-white/38">
+              <ShieldCheck size={12} aria-hidden="true" />
+              Res
+            </p>
+            <p className="mt-1 text-[17px] font-black leading-none text-white">{formatIntelligenceScore(property.resilienceScore)}</p>
+          </div>
+          <div className="min-w-0 rounded-[6px] border border-white/10 bg-white/[0.045] px-3 py-2.5">
+            <p className="text-[10px] font-black uppercase tracking-[0.12em] text-white/38">Signal</p>
+            <p className="mt-1 truncate text-[12px] font-black leading-none text-cyan-100">{reviewSignal}</p>
+          </div>
+        </div>
 
-          <div className="flex shrink-0 items-center gap-3">
+        <div className="mt-4 flex items-center justify-between gap-3 border-t border-white/10 pt-3">
+          <p className="min-w-0 truncate text-[10px] font-bold uppercase tracking-[0.14em] text-white/36">{formatSecondaryStats(property)}</p>
+
+          <div className="flex shrink-0 items-center gap-2">
             <Link
               href={cityMarketHref}
               aria-label={`View ${city} market intelligence`}
               onClick={(event) => event.stopPropagation()}
               onKeyDown={(event) => event.stopPropagation()}
-              className="text-[10px] font-black uppercase tracking-[0.18em] text-white/45 transition hover:text-[#00e5ff] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#00e5ff]"
+              className="inline-flex h-8 w-8 items-center justify-center rounded-[6px] border border-white/10 text-white/55 transition hover:border-cyan-100/45 hover:text-cyan-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-200"
+              title={`${city} market intelligence`}
             >
-              City Intel
+              <MapPin size={15} aria-hidden="true" />
             </Link>
 
             <Link
@@ -169,29 +218,13 @@ export default function PropertyCard({ property, isActive, onClick }: PropertyCa
               aria-label={`View details for ${address}`}
               onClick={(event) => event.stopPropagation()}
               onKeyDown={(event) => event.stopPropagation()}
-              className="text-[10px] font-black uppercase tracking-[0.18em] text-[#00e5ff] transition hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#00e5ff]"
+              className="inline-flex h-8 w-8 items-center justify-center rounded-[6px] border border-cyan-100/35 bg-cyan-100/10 text-cyan-100 transition hover:border-white/60 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-200"
+              title="Listing details"
             >
-              Details
+              <ArrowUpRight size={15} aria-hidden="true" />
             </Link>
           </div>
         </div>
-
-        <div className="mt-4 grid grid-cols-3 gap-2">
-          <div className="border border-white/10 bg-white/[0.035] px-2 py-2">
-            <p className="text-[8px] font-black uppercase tracking-[0.18em] text-white/28">Eff</p>
-            <p className="mt-1 text-[11px] font-black uppercase tracking-[0.1em] text-white">{formatIntelligenceScore(property.efficiencyScore)}</p>
-          </div>
-          <div className="border border-white/10 bg-white/[0.035] px-2 py-2">
-            <p className="text-[8px] font-black uppercase tracking-[0.18em] text-white/28">Res</p>
-            <p className="mt-1 text-[11px] font-black uppercase tracking-[0.1em] text-white">{formatIntelligenceScore(property.resilienceScore)}</p>
-          </div>
-          <div className="min-w-0 border border-white/10 bg-white/[0.035] px-2 py-2">
-            <p className="text-[8px] font-black uppercase tracking-[0.18em] text-white/28">Review</p>
-            <p className="mt-1 truncate text-[9px] font-black uppercase tracking-[0.08em] text-white/70">{reviewSignal}</p>
-          </div>
-        </div>
-
-        <p className="mt-4 truncate text-[9px] font-black uppercase tracking-[0.2em] text-white/28">{propertyType}</p>
       </div>
     </article>
   );

@@ -292,19 +292,19 @@ export default function HomeSearchExperience({ authorityLinks = [], faqItems = [
         {authorityLinks.length ? (
           <nav
             aria-label="David Quinn Group authority links"
-            className="pointer-events-auto absolute bottom-6 left-6 z-[700] hidden max-w-[min(620px,calc(100%-3rem))] border border-white/12 bg-black/82 p-3 shadow-2xl backdrop-blur md:block"
+            className="pointer-events-auto absolute bottom-6 left-6 z-[700] hidden max-w-[min(660px,calc(100%-3rem))] rounded-[8px] border border-white/12 bg-[#071017]/88 p-2 shadow-2xl backdrop-blur-md md:block"
           >
-            <div className="grid grid-cols-2 gap-px overflow-hidden border border-white/10 bg-white/10 lg:grid-cols-4">
+            <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
               {authorityLinks.map((link) => (
                 <Link
                   key={`${link.href}-${link.label}`}
                   href={link.href}
-                  className="group bg-[#050505] p-3 transition-colors hover:bg-white/[0.06]"
+                  className="group rounded-[6px] border border-white/10 bg-white/[0.055] p-3 transition-colors hover:border-cyan-100/35 hover:bg-white/[0.085]"
                 >
-                  <p className="text-[8px] font-black uppercase tracking-[0.22em] text-[#00ff80]/80">
+                  <p className="text-[10px] font-black uppercase tracking-[0.16em] text-cyan-100/72">
                     {link.eyebrow}
                   </p>
-                  <p className="mt-2 text-[10px] font-black uppercase leading-4 tracking-[0.12em] text-white/70 transition-colors group-hover:text-white">
+                  <p className="mt-2 text-[11px] font-black uppercase leading-4 tracking-[0.08em] text-white/68 transition-colors group-hover:text-white">
                     {link.label}
                   </p>
                 </Link>
@@ -314,17 +314,17 @@ export default function HomeSearchExperience({ authorityLinks = [], faqItems = [
         ) : null}
 
         {faqItems.length ? (
-          <details className="absolute right-6 top-6 z-[700] hidden w-[min(420px,calc(100%-3rem))] border border-white/12 bg-black/82 p-4 shadow-2xl backdrop-blur md:block">
-            <summary className="cursor-pointer list-none text-[10px] font-black uppercase tracking-[0.28em] text-[#00ff80]">
+          <details className="absolute right-6 top-6 z-[700] hidden w-[min(420px,calc(100%-3rem))] rounded-[8px] border border-white/12 bg-[#071017]/88 p-4 shadow-2xl backdrop-blur-md md:block">
+            <summary className="cursor-pointer list-none text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100">
               REIE Authority FAQ
             </summary>
             <div className="mt-4 max-h-[52vh] space-y-4 overflow-auto pr-2">
               {faqItems.slice(0, 4).map((faq) => (
                 <article key={faq.question} className="border-t border-white/10 pt-4">
-                  <h2 className="text-[10px] font-black uppercase leading-5 tracking-[0.14em] text-white/80">
+                  <h2 className="text-[11px] font-black uppercase leading-5 tracking-[0.08em] text-white/80">
                     {faq.question}
                   </h2>
-                  <p className="mt-2 text-[11px] leading-5 text-white/50">{faq.answer}</p>
+                  <p className="mt-2 text-[12px] leading-5 text-white/52">{faq.answer}</p>
                 </article>
               ))}
             </div>
