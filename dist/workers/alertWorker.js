@@ -1,4 +1,4 @@
-import 'dotenv/config';
+import '../lib/env/loadNodeEnv.js';
 import { Worker } from 'bullmq';
 import { processAlertById, processAlertQueue } from '../lib/alerts/processAlertQueue.js';
 import { prisma } from '../lib/prisma.js';

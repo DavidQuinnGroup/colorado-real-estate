@@ -1,4 +1,5 @@
-import 'dotenv/config';
+import '../lib/env/loadNodeEnv.js';
+
 import { Job, Worker } from 'bullmq';
 
 import { processAlertById, processAlertQueue } from '../lib/alerts/processAlertQueue.js';

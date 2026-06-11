@@ -1,3 +1,4 @@
+import '../lib/env/loadNodeEnv.js';
 import { processAlertQueue } from '../lib/alerts/processAlertQueue.js';
 import { prisma } from '../lib/prisma.js';
 import { assertDatabaseReady } from '../lib/queue/databasePreflight.js';

@@ -1,4 +1,5 @@
 import { randomUUID } from 'node:crypto';
+import '../lib/env/loadNodeEnv.js';
 import { sendEmail } from '../lib/email/sendEmail.js';
 import { prisma } from '../lib/prisma.js';
 import { assertDatabaseReady } from '../lib/queue/databasePreflight.js';
