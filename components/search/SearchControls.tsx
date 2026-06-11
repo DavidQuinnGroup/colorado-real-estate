@@ -19,6 +19,7 @@ type SearchControlsProps = {
   isSearching?: boolean;
   searchError?: string | null;
   onChange: (filters: SearchFilters) => void;
+  onRemoveFilter?: (filters: SearchFilters) => void;
   onReset: () => void;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
 };
@@ -110,6 +111,7 @@ export default function SearchControls({
   isSearching = false,
   searchError = null,
   onChange,
+  onRemoveFilter,
   onReset,
   onSubmit,
 }: SearchControlsProps) {
@@ -130,7 +132,10 @@ export default function SearchControls({
   }
 
   function removeFilter(key: keyof SearchFilters) {
-    onChange(updateFilter(filters, key, ''));
+    const nextFilters = updateFilter(filters, key, '');
+
+    onChange(nextFilters);
+    onRemoveFilter?.(nextFilters);
   }
 
   return (

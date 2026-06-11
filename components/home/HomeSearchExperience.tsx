@@ -10,6 +10,7 @@ import type { SearchMapMeta } from '@/components/maps/SearchMap';
 import SearchControls, {
   buildSearchParams,
   getInitialSearchFilters,
+  hasActiveSearchFilters,
   type SearchFilters,
 } from '@/components/search/SearchControls';
 import type { FAQItem } from '@/lib/schema/faqSchema';
@@ -286,6 +287,10 @@ export default function HomeSearchExperience({ authorityLinks = [], faqItems = [
     void fetchListings(currentBounds.current || DEFAULT_BOULDER_BOUNDS, filters, true);
   }
 
+  function handleRemoveFilter(nextFilters: SearchFilters) {
+    void fetchListings(currentBounds.current || DEFAULT_BOULDER_BOUNDS, nextFilters, true);
+  }
+
   function handleReset() {
     const nextFilters = getInitialSearchFilters();
 
@@ -301,22 +306,24 @@ export default function HomeSearchExperience({ authorityLinks = [], faqItems = [
       isSearching={isSearching}
       searchError={searchError}
       onChange={setFilters}
+      onRemoveFilter={handleRemoveFilter}
       onReset={handleReset}
       onSubmit={handleSearch}
     />
   );
 
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-black text-white">
+    <div className="flex h-screen w-full flex-col overflow-hidden bg-black text-white md:flex-row">
       <MapSidebar
         listings={listings}
         selectedProperty={selectedProperty}
         onSelect={setSelectedProperty}
         onCloseDetail={() => setSelectedProperty(null)}
         searchControls={searchControls}
+        hasActiveFilters={hasActiveSearchFilters(filters)}
       />
 
-      <div className="relative h-full flex-1">
+      <div className="relative min-h-0 flex-1">
         <MapInner
           listings={listings}
           onBoundsChange={fetchListings}

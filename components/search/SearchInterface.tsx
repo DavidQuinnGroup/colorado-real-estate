@@ -210,6 +210,10 @@ export default function SearchInterface({
     void runSearch(filters, { updateUrl: true });
   }
 
+  function handleRemoveFilter(nextFilters: SearchFilters) {
+    void runSearch(nextFilters, { updateUrl: true });
+  }
+
   function handleReset() {
     const nextFilters = getInitialSearchFilters();
 
@@ -259,13 +263,14 @@ export default function SearchInterface({
       isSearching={isSearching}
       searchError={searchError}
       onChange={setFilters}
+      onRemoveFilter={handleRemoveFilter}
       onReset={handleReset}
       onSubmit={handleSearch}
     />
   );
 
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-black text-white">
+    <div className="flex h-screen w-full flex-col overflow-hidden bg-black text-white md:flex-row">
       <MapSidebar
         listings={visibleListings}
         selectedId={visibleSelectedId}
@@ -273,9 +278,10 @@ export default function SearchInterface({
         onSelect={setSelectedId}
         onHover={setHoveredId}
         searchControls={searchControls}
+        hasActiveFilters={hasActiveSearchFilters(filters)}
       />
 
-      <section className="relative h-full min-w-0 flex-1 border-l border-white/15">
+      <section className="relative min-h-0 min-w-0 flex-1 border-t border-white/15 md:h-full md:border-l md:border-t-0">
         <MapInner
           listings={visibleListings}
           selectedId={visibleSelectedId}

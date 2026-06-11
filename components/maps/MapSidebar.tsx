@@ -39,6 +39,7 @@ type BaseMapSidebarProps = {
   onHover?: (id: string | null) => void;
   onCloseDetail?: () => void;
   searchControls?: ReactNode;
+  hasActiveFilters?: boolean;
 };
 
 type IdSelectSidebarProps = BaseMapSidebarProps & {
@@ -171,14 +172,23 @@ function SaveSearchFallback() {
   );
 }
 
-function EmptyInventoryState() {
+function EmptyInventoryState({ hasActiveFilters }: { hasActiveFilters?: boolean }) {
   return (
-    <div className="flex h-full items-center justify-center px-10 text-center">
-      <div>
-        <p className="text-[11px] font-black uppercase tracking-[0.28em] text-cyan-100/70">Inventory Sync Active</p>
-        <p className="mx-auto mt-4 max-w-[280px] text-sm leading-6 text-white/48">
-          Move the map or adjust the viewport to load matching Colorado listings.
+    <div className="flex h-full items-center justify-center px-5 py-8 text-center">
+      <div className="max-w-[320px] rounded-[8px] border border-white/10 bg-white/[0.035] p-5">
+        <p className="text-[11px] font-black uppercase tracking-[0.24em] text-cyan-100/75">
+          {hasActiveFilters ? 'No Matching Inventory' : 'Inventory Sync Active'}
         </p>
+        <p className="mx-auto mt-4 text-sm leading-6 text-white/52">
+          {hasActiveFilters
+            ? 'Loosen one filter chip or broaden the map area to reveal more Colorado inventory.'
+            : 'Move the map or adjust the viewport to load matching Colorado listings.'}
+        </p>
+        {hasActiveFilters ? (
+          <p className="mt-4 border-t border-white/10 pt-4 text-[10px] font-black uppercase tracking-[0.16em] text-white/34">
+            Filter reset is available above
+          </p>
+        ) : null}
       </div>
     </div>
   );
@@ -204,7 +214,7 @@ function getSelectedAddress(property: MapSidebarListing | null | undefined, list
 }
 
 export default function MapSidebar(props: MapSidebarProps) {
-  const { listings = [], selectedId, hoveredId, onHover = () => {}, onCloseDetail, searchControls } = props;
+  const { listings = [], selectedId, hoveredId, onHover = () => {}, onCloseDetail, searchControls, hasActiveFilters } = props;
   const sidebarRef = useRef<HTMLDivElement>(null);
   const activeId = selectedId ?? props.selectedProperty?.id ?? null;
   const stats = useMemo(() => getInventoryStats(listings), [listings]);
@@ -228,8 +238,8 @@ export default function MapSidebar(props: MapSidebarProps) {
   }
 
   return (
-    <aside className="relative z-20 flex h-full w-[min(440px,100vw)] min-w-0 shrink-0 flex-col border-r border-white/10 bg-[#070b10] md:w-[35vw] md:min-w-[440px] md:max-w-[560px]">
-      <header className="relative shrink-0 overflow-hidden border-b border-white/12 px-5 pb-4 pt-5">
+    <aside className="relative z-20 flex h-[62vh] w-full min-w-0 shrink-0 flex-col border-b border-white/10 bg-[#070b10] md:h-full md:w-[35vw] md:min-w-[440px] md:max-w-[560px] md:border-b-0 md:border-r">
+      <header className="relative max-h-[52vh] shrink-0 overflow-y-auto border-b border-white/12 px-4 pb-4 pt-5 md:max-h-none md:overflow-hidden md:px-5">
         <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(98,177,196,0.13),transparent_36%),linear-gradient(180deg,rgba(255,255,255,0.055),rgba(0,0,0,0))]" />
 
         <div className="relative">
@@ -361,7 +371,7 @@ export default function MapSidebar(props: MapSidebarProps) {
             </div>
           ))
         ) : (
-          <EmptyInventoryState />
+          <EmptyInventoryState hasActiveFilters={hasActiveFilters} />
         )}
       </div>
 
