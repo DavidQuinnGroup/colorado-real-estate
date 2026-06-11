@@ -1,7 +1,8 @@
 'use client';
 
-import { Loader2, RotateCcw, Search, SlidersHorizontal } from 'lucide-react';
+import { Check, Copy, Loader2, RotateCcw, Search, SlidersHorizontal, X } from 'lucide-react';
 import type { FormEvent } from 'react';
+import { useMemo, useState } from 'react';
 
 export type SearchFilters = {
   query: string;
@@ -76,6 +77,34 @@ function updateFilter(filters: SearchFilters, key: keyof SearchFilters, value: s
   };
 }
 
+function formatCurrencyFilter(value: string) {
+  const parsed = Number(value.replace(/[$,]/g, ''));
+  if (!Number.isFinite(parsed) || parsed <= 0) return value;
+  if (parsed >= 1000000) return `$${(parsed / 1000000).toFixed(parsed >= 10000000 ? 0 : 1)}M`;
+  if (parsed >= 1000) return `$${Math.round(parsed / 1000)}K`;
+
+  return `$${parsed.toLocaleString()}`;
+}
+
+function getActiveFilterChips(filters: SearchFilters) {
+  const chips: Array<{ key: keyof SearchFilters; label: string }> = [];
+
+  if (filters.query.trim()) chips.push({ key: 'query', label: `Search: ${filters.query.trim()}` });
+  if (filters.city.trim()) chips.push({ key: 'city', label: `City: ${filters.city.trim()}` });
+  if (filters.minPrice.trim()) chips.push({ key: 'minPrice', label: `Min ${formatCurrencyFilter(filters.minPrice.trim())}` });
+  if (filters.maxPrice.trim()) chips.push({ key: 'maxPrice', label: `Max ${formatCurrencyFilter(filters.maxPrice.trim())}` });
+  if (filters.beds.trim()) chips.push({ key: 'beds', label: `${filters.beds.trim()}+ beds` });
+  if (filters.baths.trim()) chips.push({ key: 'baths', label: `${filters.baths.trim()}+ baths` });
+  if (filters.propertyType.trim()) chips.push({ key: 'propertyType', label: filters.propertyType.trim() });
+
+  return chips;
+}
+
+function buildSharePath(filters: SearchFilters) {
+  const params = buildSearchParams(filters);
+  return params.toString() ? `/search?${params.toString()}` : '/search';
+}
+
 export default function SearchControls({
   filters,
   isSearching = false,
@@ -84,6 +113,26 @@ export default function SearchControls({
   onReset,
   onSubmit,
 }: SearchControlsProps) {
+  const [copied, setCopied] = useState(false);
+  const chips = useMemo(() => getActiveFilterChips(filters), [filters]);
+  const sharePath = useMemo(() => buildSharePath(filters), [filters]);
+
+  async function handleCopyShareLink() {
+    const shareUrl = typeof window === 'undefined' ? sharePath : new URL(sharePath, window.location.origin).toString();
+
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1600);
+    } catch {
+      setCopied(false);
+    }
+  }
+
+  function removeFilter(key: keyof SearchFilters) {
+    onChange(updateFilter(filters, key, ''));
+  }
+
   return (
     <form onSubmit={onSubmit} className="rounded-[8px] border border-white/10 bg-black/35 p-3">
       <div className="flex items-center justify-between gap-3">
@@ -91,14 +140,26 @@ export default function SearchControls({
           <SlidersHorizontal size={13} aria-hidden="true" />
           Filters
         </p>
-        <button
-          type="button"
-          onClick={onReset}
-          className="inline-flex h-7 w-7 items-center justify-center rounded-[6px] border border-white/10 text-white/52 transition hover:border-white/25 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
-          aria-label="Reset search filters"
-        >
-          <RotateCcw size={13} aria-hidden="true" />
-        </button>
+        <div className="flex items-center gap-1.5">
+          <button
+            type="button"
+            onClick={handleCopyShareLink}
+            className="inline-flex h-7 w-7 items-center justify-center rounded-[6px] border border-white/10 text-white/52 transition hover:border-cyan-100/35 hover:text-cyan-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
+            aria-label="Copy search link"
+            title="Copy search link"
+          >
+            {copied ? <Check size={13} aria-hidden="true" /> : <Copy size={13} aria-hidden="true" />}
+          </button>
+          <button
+            type="button"
+            onClick={onReset}
+            className="inline-flex h-7 w-7 items-center justify-center rounded-[6px] border border-white/10 text-white/52 transition hover:border-white/25 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
+            aria-label="Reset search filters"
+            title="Reset filters"
+          >
+            <RotateCcw size={13} aria-hidden="true" />
+          </button>
+        </div>
       </div>
 
       <label className="mt-3 block">
@@ -193,6 +254,23 @@ export default function SearchControls({
           {isSearching ? <Loader2 size={16} className="animate-spin" aria-hidden="true" /> : <Search size={16} aria-hidden="true" />}
         </button>
       </div>
+
+      {chips.length ? (
+        <div className="mt-3 flex flex-wrap gap-1.5" aria-label="Active search filters">
+          {chips.map((chip) => (
+            <button
+              key={chip.key}
+              type="button"
+              onClick={() => removeFilter(chip.key)}
+              className="inline-flex max-w-full items-center gap-1 rounded-[6px] border border-cyan-100/20 bg-cyan-100/[0.08] px-2 py-1 text-[10px] font-black uppercase leading-none tracking-[0.08em] text-cyan-50 transition hover:border-cyan-100/45 hover:bg-cyan-100/[0.13] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
+              title={`Remove ${chip.label}`}
+            >
+              <span className="truncate">{chip.label}</span>
+              <X size={11} aria-hidden="true" />
+            </button>
+          ))}
+        </div>
+      ) : null}
 
       {searchError ? <p className="mt-2 text-xs font-bold text-red-300">{searchError}</p> : null}
     </form>
