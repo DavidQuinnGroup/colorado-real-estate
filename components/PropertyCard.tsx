@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowUpRight, Bath, BedDouble, Gauge, ImageOff, MapPin, Ruler, ShieldCheck, TriangleAlert } from 'lucide-react';
-import type { KeyboardEvent } from 'react';
+import { ArrowUpRight, Bath, BedDouble, Gauge, ImageOff, MapPin, Ruler, ShieldCheck, Sparkles, TriangleAlert } from 'lucide-react';
+import type { CSSProperties, KeyboardEvent } from 'react';
 import { useMemo, useState } from 'react';
 
 import type { MapSidebarListing } from '@/components/maps/MapSidebar';
@@ -19,6 +19,22 @@ type PropertyCardProps = {
 type ImageFallbackState = {
   originalSrc: string;
   activeSrc: string;
+};
+
+const actionButtonStyle: CSSProperties = {
+  alignItems: 'center',
+  boxSizing: 'border-box',
+  display: 'inline-flex',
+  height: 34,
+  justifyContent: 'center',
+  width: 34,
+};
+
+const heroStatStyle: CSSProperties = {
+  alignItems: 'center',
+  boxSizing: 'border-box',
+  display: 'inline-flex',
+  minHeight: 28,
 };
 
 function getNumericValue(value: number | string | null | undefined) {
@@ -61,6 +77,27 @@ function getReviewSignal(property: MapSidebarListing) {
   }
 
   return 'REIE Verified';
+}
+
+function getDecisionLabel(property: MapSidebarListing) {
+  if (property.hasPolybutyleneRisk) return 'GC review before offer';
+  if (!isResidentialListing(property.propertyType)) return 'Special-use diligence';
+  if (typeof property.resilienceScore === 'number' && property.resilienceScore >= 80) return 'Resilience screened';
+
+  return 'REIE triage ready';
+}
+
+function isResidentialListing(value: string | null | undefined) {
+  const propertyType = value?.trim().toLowerCase() || '';
+  if (!propertyType) return true;
+
+  return (
+    propertyType.includes('residential') ||
+    propertyType.includes('single') ||
+    propertyType.includes('condo') ||
+    propertyType.includes('town') ||
+    propertyType.includes('multi')
+  );
 }
 
 function getActiveImageSrc(photoUrl: string, fallbackState: ImageFallbackState | null) {
@@ -122,8 +159,8 @@ export default function PropertyCard({ property, isActive, onClick }: PropertyCa
       onKeyDown={handleKeyDown}
       className={`group m-3 cursor-pointer overflow-hidden rounded-[8px] border outline-none transition duration-200 focus-visible:border-cyan-200 focus-visible:ring-2 focus-visible:ring-cyan-200/40 ${
         isActive
-          ? 'border-cyan-200/70 bg-[#111821] shadow-[0_18px_55px_rgba(7,22,38,0.45)]'
-          : 'border-white/10 bg-[#0b0f14] shadow-[0_12px_35px_rgba(0,0,0,0.28)] hover:border-white/24 hover:bg-[#101720]'
+          ? 'border-cyan-200/70 bg-[#101821] shadow-[0_18px_55px_rgba(7,22,38,0.55)]'
+          : 'border-white/10 bg-[#0a0f14] shadow-[0_12px_35px_rgba(0,0,0,0.28)] hover:border-white/24 hover:bg-[#101720]'
       }`}
     >
       <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#10151b]">
@@ -138,7 +175,7 @@ export default function PropertyCard({ property, isActive, onClick }: PropertyCa
             isFallbackVisual ? 'saturate-[0.82]' : 'saturate-[1.02]'
           }`}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#080b0f]/78 via-[#080b0f]/10 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#080b0f]/82 via-[#080b0f]/16 to-transparent" />
         <div className="absolute left-4 top-4 flex max-w-[calc(100%-2rem)] items-center gap-2">
           <span className="rounded-[4px] border border-white/20 bg-black/58 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-white/88 backdrop-blur">
             {propertyType}
@@ -165,15 +202,15 @@ export default function PropertyCard({ property, isActive, onClick }: PropertyCa
         <div className="absolute bottom-4 left-4 right-4">
           <p className="font-serif text-[24px] font-black leading-none text-white drop-shadow">{formatLuxuryPrice(price)}</p>
           <div className="mt-3 flex flex-wrap gap-2">
-            <span className="inline-flex items-center gap-1.5 rounded-[4px] bg-white/92 px-2.5 py-1 text-[11px] font-black uppercase tracking-[0.08em] text-[#111820]">
+            <span style={heroStatStyle} className="inline-flex items-center gap-1.5 rounded-[4px] bg-white/92 px-2.5 py-1 text-[11px] font-black uppercase tracking-[0.08em] text-[#111820]">
               <BedDouble size={13} aria-hidden="true" />
               {getCompactStat(property.beds, '--')}
             </span>
-            <span className="inline-flex items-center gap-1.5 rounded-[4px] bg-white/92 px-2.5 py-1 text-[11px] font-black uppercase tracking-[0.08em] text-[#111820]">
+            <span style={heroStatStyle} className="inline-flex items-center gap-1.5 rounded-[4px] bg-white/92 px-2.5 py-1 text-[11px] font-black uppercase tracking-[0.08em] text-[#111820]">
               <Bath size={13} aria-hidden="true" />
               {getCompactStat(property.baths, '--')}
             </span>
-            <span className="inline-flex items-center gap-1.5 rounded-[4px] bg-white/92 px-2.5 py-1 text-[11px] font-black uppercase tracking-[0.08em] text-[#111820]">
+            <span style={heroStatStyle} className="inline-flex items-center gap-1.5 rounded-[4px] bg-white/92 px-2.5 py-1 text-[11px] font-black uppercase tracking-[0.08em] text-[#111820]">
               <Ruler size={13} aria-hidden="true" />
               {getCompactStat(property.sqft, '--')}
             </span>
@@ -183,14 +220,29 @@ export default function PropertyCard({ property, isActive, onClick }: PropertyCa
 
       <div className="px-4 pb-4 pt-4">
         <div>
-          <h2 className="text-[15px] font-black uppercase leading-snug text-white">{address}</h2>
+          <div className="flex items-start justify-between gap-3">
+            <h2 className="min-w-0 text-[15px] font-black uppercase leading-snug text-white">{address}</h2>
+            {isActive ? (
+              <span className="shrink-0 rounded-[5px] border border-cyan-100/42 bg-cyan-100 px-2 py-1 text-[9px] font-black uppercase tracking-[0.12em] text-[#061017]">
+                Selected
+              </span>
+            ) : null}
+          </div>
           <p className="mt-2 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.16em] text-white/55">
             <MapPin size={13} aria-hidden="true" className="text-cyan-100/70" />
             {city}, {state}
           </p>
         </div>
 
-        <div className="mt-4 grid grid-cols-3 gap-2 text-left">
+        <div className="mt-4 rounded-[6px] border border-cyan-100/18 bg-cyan-100/[0.055] px-3 py-2.5">
+          <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100/76">
+            <Sparkles size={12} aria-hidden="true" />
+            Decision Signal
+          </p>
+          <p className="mt-1 truncate text-xs font-black uppercase tracking-[0.08em] text-white/70">{getDecisionLabel(property)}</p>
+        </div>
+
+        <div className="mt-3 grid grid-cols-3 gap-2 text-left">
           <div className="rounded-[6px] border border-white/10 bg-white/[0.045] px-3 py-2.5">
             <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.12em] text-white/38">
               <Gauge size={12} aria-hidden="true" />
@@ -220,6 +272,7 @@ export default function PropertyCard({ property, isActive, onClick }: PropertyCa
               aria-label={`View ${city} market intelligence`}
               onClick={(event) => event.stopPropagation()}
               onKeyDown={(event) => event.stopPropagation()}
+              style={actionButtonStyle}
               className="inline-flex h-8 w-8 items-center justify-center rounded-[6px] border border-white/10 text-white/55 transition hover:border-cyan-100/45 hover:text-cyan-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-200"
               title={`${city} market intelligence`}
             >
@@ -231,6 +284,7 @@ export default function PropertyCard({ property, isActive, onClick }: PropertyCa
               aria-label={`View details for ${address}`}
               onClick={(event) => event.stopPropagation()}
               onKeyDown={(event) => event.stopPropagation()}
+              style={actionButtonStyle}
               className="inline-flex h-8 w-8 items-center justify-center rounded-[6px] border border-cyan-100/35 bg-cyan-100/10 text-cyan-100 transition hover:border-white/60 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-200"
               title="Listing details"
             >
