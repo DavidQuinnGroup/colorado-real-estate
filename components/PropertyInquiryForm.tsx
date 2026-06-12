@@ -1,7 +1,7 @@
 'use client';
 
 import { type FormEvent, useState } from 'react';
-import { CheckCircle2, Loader2, Mail, MessageSquareText, Phone, UserRound } from 'lucide-react';
+import { CheckCircle2, Clock3, Loader2, Mail, MessageSquareText, Phone, ShieldCheck, UserRound } from 'lucide-react';
 
 type PropertyInquiryFormProps = {
   propertyId: string;
@@ -23,15 +23,19 @@ type PropertyInquiryResponse = {
   };
 };
 
-const TIMELINE_OPTIONS: { value: Timeline; label: string }[] = [
-  { value: 'tour', label: 'Schedule Tour' },
-  { value: 'now', label: 'Ready Now' },
-  { value: 'ninety-days', label: '90 Days' },
-  { value: 'research', label: 'Researching' },
+const TIMELINE_OPTIONS: { value: Timeline; label: string; detail: string }[] = [
+  { value: 'tour', label: 'Schedule Tour', detail: 'Showing request and property-specific prep.' },
+  { value: 'now', label: 'Ready Now', detail: 'Active buyer strategy and offer timing.' },
+  { value: 'ninety-days', label: '90 Days', detail: 'Planning window and market watch.' },
+  { value: 'research', label: 'Researching', detail: 'Early diligence and fit questions.' },
 ];
 
 function isValidEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function getTimelineDetail(timeline: Timeline) {
+  return TIMELINE_OPTIONS.find((option) => option.value === timeline)?.detail || 'Property-specific follow-up.';
 }
 
 async function readResponse(response: Response): Promise<PropertyInquiryResponse> {
@@ -127,6 +131,24 @@ export default function PropertyInquiryForm({ propertyId, address, city, state }
       <p className="mt-2 text-sm leading-6 text-white/58">
         Request a showing, risk read, or buyer strategy brief for {address}, {city}, {state}.
       </p>
+      <div className="mt-4 grid gap-2">
+        <div className="rounded-[6px] border border-white/10 bg-white/[0.045] px-3 py-2.5">
+          <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100/72">
+            <ShieldCheck size={13} aria-hidden="true" />
+            Routed To REIE CRM
+          </p>
+          <p className="mt-2 text-xs leading-5 text-white/48">
+            High-urgency inquiries are prioritized for property-specific follow-up.
+          </p>
+        </div>
+        <div className="rounded-[6px] border border-white/10 bg-white/[0.045] px-3 py-2.5">
+          <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100/72">
+            <Clock3 size={13} aria-hidden="true" />
+            Current Request
+          </p>
+          <p className="mt-2 text-xs leading-5 text-white/48">{getTimelineDetail(timeline)}</p>
+        </div>
+      </div>
 
       <form onSubmit={handleSubmit} className="mt-5 space-y-3">
         <label className="relative block">
@@ -165,22 +187,25 @@ export default function PropertyInquiryForm({ propertyId, address, city, state }
           />
         </label>
 
-        <div className="grid grid-cols-2 gap-2">
-          {TIMELINE_OPTIONS.map((option) => (
-            <button
-              key={option.value}
-              type="button"
-              aria-pressed={timeline === option.value}
-              onClick={() => setTimeline(option.value)}
-              className={`h-10 rounded-[6px] border text-[10px] font-black uppercase tracking-[0.12em] transition ${
-                timeline === option.value
-                  ? 'border-cyan-100 bg-cyan-100 text-[#061017]'
-                  : 'border-white/10 bg-white/[0.055] text-white/48 hover:border-cyan-100/35 hover:text-white'
-              }`}
-            >
-              {option.label}
-            </button>
-          ))}
+        <div>
+          <div className="mb-2 text-[10px] font-black uppercase tracking-[0.16em] text-white/38">Timing / Intent</div>
+          <div className="grid grid-cols-2 gap-2">
+            {TIMELINE_OPTIONS.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                aria-pressed={timeline === option.value}
+                onClick={() => setTimeline(option.value)}
+                className={`h-10 rounded-[6px] border text-[10px] font-black uppercase tracking-[0.12em] transition ${
+                  timeline === option.value
+                    ? 'border-cyan-100 bg-cyan-100 text-[#061017]'
+                    : 'border-white/10 bg-white/[0.055] text-white/48 hover:border-cyan-100/35 hover:text-white'
+                }`}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         <label className="relative block">
@@ -189,11 +214,15 @@ export default function PropertyInquiryForm({ propertyId, address, city, state }
           <textarea
             value={notes}
             onChange={(event) => setNotes(event.target.value)}
-            placeholder="Optional context"
+            placeholder="Questions, showing windows, financing status, or specific concerns"
             maxLength={600}
             className="min-h-24 w-full resize-none rounded-[6px] border border-white/10 bg-white/[0.055] py-3 pl-9 pr-3 text-sm leading-6 text-white outline-none transition placeholder:text-white/25 focus:border-cyan-100/55"
           />
         </label>
+        <div className="flex items-center justify-between gap-3 text-[10px] font-black uppercase tracking-[0.14em] text-white/34">
+          <span>Notes optional but helpful</span>
+          <span>{notes.length}/600</span>
+        </div>
 
         {errorMessage ? (
           <p aria-live="polite" className="rounded-[6px] border border-red-400/24 bg-red-500/10 px-3 py-2 text-xs font-bold text-red-100">
@@ -213,4 +242,3 @@ export default function PropertyInquiryForm({ propertyId, address, city, state }
     </section>
   );
 }
-
