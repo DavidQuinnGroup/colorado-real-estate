@@ -185,15 +185,19 @@ export async function POST(request: Request) {
         },
       });
 
-      const crmTask = await tx.cRMTask.create({
-        data: {
-          leadId: user.id,
-          type: 'property_inquiry',
-          priority: getPriority(timeline),
-          title: buildTaskTitle(property.address, property.city, timeline),
-          metadata,
-        },
-      });
+      const [crmTask] = await tx.$queryRaw<{ id: string }[]>`
+        INSERT INTO "CRMTask" ("leadId", "type", "priority", "title", "metadata")
+        VALUES (
+          ${user.id},
+          'property_inquiry',
+          ${getPriority(timeline)},
+          ${buildTaskTitle(property.address, property.city, timeline)},
+          ${JSON.stringify(metadata)}::jsonb
+        )
+        RETURNING "id"::text AS "id"
+      `;
+
+      if (!crmTask) throw new Error('Property inquiry CRM task could not be created.');
 
       return {
         user,

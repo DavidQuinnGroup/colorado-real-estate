@@ -12,6 +12,7 @@
     "check:fast": "npm run worker:build && npm run run:mls-sync:dry && npm run typecheck && npm run lint",
     "smoke:mls-status": "curl --max-time 8 -s -w \"\\nHTTP_STATUS:%{http_code}\\n\" \"http://localhost:3000/api/mls/status\"",
     "smoke:search": "curl --max-time 8 -s -w \"\\nHTTP_STATUS:%{http_code}\\n\" \"http://localhost:3000/api/search?limit=5\"",
+    "smoke:property-inquiry": "npm run worker:build && node dist/scripts/propertyInquirySmoke.js",
     "smoke:ops": "npm run smoke:mls-status && npm run smoke:search",
     "check:property-inquiry-notification": "npm run worker:build && node dist/scripts/propertyInquiryNotificationCheck.js",
     "worker:build": "tsc -p tsconfig.worker.json --pretty false",

@@ -32,6 +32,7 @@
     "scripts/quickSeed.ts",
     "scripts/queueDashboard.ts",
     "scripts/queueMaintenance.ts",
+    "scripts/propertyInquirySmoke.ts",
     "scripts/propertyInquiryNotificationCheck.ts",
     "scripts/runAlerts.ts",
     "scripts/runCRM.ts",
