@@ -15,6 +15,7 @@
     "smoke:property-inquiry": "npm run worker:build && node dist/scripts/propertyInquirySmoke.js",
     "smoke:ops": "npm run smoke:mls-status && npm run smoke:search",
     "check:property-inquiry-notification": "npm run worker:build && node dist/scripts/propertyInquiryNotificationCheck.js",
+    "check:property-inquiry-notification:readiness": "npm run worker:build && node dist/scripts/propertyInquiryNotificationReadiness.js",
     "worker:build": "tsc -p tsconfig.worker.json --pretty false",
     "infra:up": "docker compose up -d",
     "infra:down": "docker compose down",

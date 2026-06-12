@@ -34,6 +34,7 @@
     "scripts/queueMaintenance.ts",
     "scripts/propertyInquirySmoke.ts",
     "scripts/propertyInquiryNotificationCheck.ts",
+    "scripts/propertyInquiryNotificationReadiness.ts",
     "scripts/runAlerts.ts",
     "scripts/runCRM.ts",
     "scripts/seedTestProperties.ts",
