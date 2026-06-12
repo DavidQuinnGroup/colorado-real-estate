@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 
 import EquityVision from '@/components/EquityVision';
+import PropertyInquiryForm from '@/components/PropertyInquiryForm';
 import RelatedPropertyLinks from '@/components/RelatedPropertyLinks';
 import PropertyLinks from '@/components/internal-links/PropertyLinks';
 import FAQSchema from '@/components/schema/FAQSchema';
@@ -261,9 +262,6 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
   const cityMarketHref = getCityMarketHref(property.city);
   const neighborhoodHref = getNeighborhoodHref(property);
   const briefHref = getPropertyBriefHref(property);
-  const contactHref = `mailto:hello@davidquinngroup.com?subject=${encodeURIComponent(`Property inquiry: ${property.address}`)}&body=${encodeURIComponent(
-    `I would like to discuss ${property.address} in ${property.city}, ${property.state}.\n\nREIE listing: ${canonicalUrl}`,
-  )}`;
   const primaryStatLabel = getPrimaryStatLabel(property);
   const propertyLinks = await getPropertyLinks({
     id: property.id,
@@ -435,6 +433,13 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
         </div>
 
         <aside className="space-y-6">
+          <PropertyInquiryForm
+            propertyId={property.id}
+            address={property.address}
+            city={property.city}
+            state={property.state}
+          />
+
           <section className="rounded-[8px] border border-white/10 bg-[#0d141c] p-5">
             <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.22em] text-white/46">
               <Home size={14} aria-hidden="true" />
@@ -509,7 +514,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
             Market
           </Link>
           <Link
-            href={contactHref}
+            href="#property-contact"
             className="inline-flex h-11 items-center justify-center gap-1.5 rounded-[6px] border border-cyan-100/35 bg-cyan-100/10 text-[10px] font-black uppercase tracking-[0.12em] text-cyan-100"
             style={{ alignItems: 'center', display: 'inline-flex', height: 44, justifyContent: 'center' }}
           >
