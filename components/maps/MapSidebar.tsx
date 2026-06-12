@@ -226,6 +226,38 @@ function StatTile({ icon, label, value }: { icon: ReactNode; label: string; valu
   );
 }
 
+function SearchIntelligenceStrip({ stats }: { stats: InventoryStats }) {
+  const mappedLabel = stats.mappedCount > 0 ? `${stats.mappedCount} mappable listings` : 'Map coverage loading';
+  const resilienceLabel =
+    stats.averageResilience === null ? 'Resilience scoring pending' : `${stats.averageResilience} average resilience`;
+  const reviewLabel = stats.reviewCount > 0 ? `${stats.reviewCount} diligence flags` : 'No major review flags';
+
+  return (
+    <div className="mt-3 rounded-[8px] border border-cyan-100/18 bg-cyan-100/[0.065] p-3">
+      <div className="flex items-center justify-between gap-3">
+        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100/78">Search Intelligence</p>
+        <span className="rounded-[4px] border border-cyan-100/20 bg-black/30 px-2 py-1 text-[9px] font-black uppercase tracking-[0.12em] text-cyan-100/70">
+          REIE
+        </span>
+      </div>
+      <div className="mt-3 grid gap-2 text-[10px] font-black uppercase leading-4 tracking-[0.12em] text-white/58">
+        <div className="flex items-center gap-2">
+          <MapPinned size={12} aria-hidden="true" className="shrink-0 text-cyan-100/70" />
+          <span>{mappedLabel}</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <ShieldCheck size={12} aria-hidden="true" className="shrink-0 text-cyan-100/70" />
+          <span>{resilienceLabel}</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <Gauge size={12} aria-hidden="true" className="shrink-0 text-cyan-100/70" />
+          <span>{reviewLabel}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function getSelectedAddress(property: MapSidebarListing | null | undefined, listings: MapSidebarListing[], selectedId: string | null) {
   if (property?.address) return property.address;
   if (!selectedId) return null;
@@ -316,6 +348,8 @@ export default function MapSidebar(props: MapSidebarProps) {
             <StatTile icon={<ShieldCheck size={13} aria-hidden="true" />} label="Res" value={stats.averageResilience === null ? '--' : `${stats.averageResilience}`} />
             <StatTile icon={<Gauge size={13} aria-hidden="true" />} label="Review" value={stats.reviewCount} />
           </div>
+
+          <SearchIntelligenceStrip stats={stats} />
 
           {searchControls ? <div className="mt-3">{searchControls}</div> : null}
 
