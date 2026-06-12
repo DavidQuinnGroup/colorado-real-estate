@@ -14,7 +14,7 @@
     "smoke:search": "curl --max-time 8 -s -w \"\\nHTTP_STATUS:%{http_code}\\n\" \"http://localhost:3000/api/search?limit=5\"",
     "smoke:property-inquiry": "npm run worker:build && node dist/scripts/propertyInquirySmoke.js",
     "smoke:public-experience": "npm run worker:build && node dist/scripts/publicExperienceSmoke.js",
-    "smoke:ops": "npm run smoke:mls-status && npm run smoke:search",
+    "smoke:ops": "npm run worker:build && node dist/scripts/opsSmoke.js",
     "check:property-inquiry-notification": "npm run worker:build && node dist/scripts/propertyInquiryNotificationCheck.js",
     "check:property-inquiry-notification:readiness": "npm run worker:build && node dist/scripts/propertyInquiryNotificationReadiness.js",
     "worker:build": "tsc -p tsconfig.worker.json --pretty false",
