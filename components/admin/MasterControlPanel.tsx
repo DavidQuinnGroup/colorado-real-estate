@@ -384,6 +384,7 @@ type CRMTask = {
 };
 
 type CRMTaskReviewStatus = 'reviewing' | 'completed' | 'dismissed';
+type CRMTaskTypeFilter = 'all' | 'property' | 'strategy';
 
 type CRMTaskSummary = {
   total: number;
@@ -573,6 +574,12 @@ const emptyCRMTaskReadiness: CRMTaskReadiness = {
   nextCommand: 'npm run run:crm:active',
   gates: [],
 };
+
+const crmTaskTypeOptions: Array<{ value: CRMTaskTypeFilter; label: string; apiType: string | null }> = [
+  { value: 'all', label: 'All', apiType: null },
+  { value: 'property', label: 'Property', apiType: 'property_inquiry' },
+  { value: 'strategy', label: 'Strategy', apiType: 'strategy_intake' },
+];
 
 const commandCards = [
   {
@@ -882,6 +889,7 @@ export default function MasterControlPanel() {
   const [crmTaskApiMetadata, setCRMTaskApiMetadata] = useState<CRMTaskApiMetadata | null>(null);
   const [lastCRMTaskDetailApiMetadata, setLastCRMTaskDetailApiMetadata] = useState<CRMTaskApiMetadata | null>(null);
   const [isLoadingCRMTasks, setIsLoadingCRMTasks] = useState(true);
+  const [crmTaskTypeFilter, setCRMTaskTypeFilter] = useState<CRMTaskTypeFilter>('all');
   const [crmTaskError, setCRMTaskError] = useState<string | null>(null);
   const [reviewingCRMTaskId, setReviewingCRMTaskId] = useState<string | null>(null);
   const [crmTaskReviewNotes, setCRMTaskReviewNotes] = useState<Record<string, string>>({});
@@ -994,7 +1002,14 @@ export default function MasterControlPanel() {
     setCRMTaskError(null);
 
     try {
-      const response = await fetch('/api/admin/crm-tasks?limit=6&status=active', {
+      const params = new URLSearchParams({
+        limit: '6',
+        status: 'active',
+      });
+      const selectedType = crmTaskTypeOptions.find((option) => option.value === crmTaskTypeFilter)?.apiType;
+      if (selectedType) params.set('type', selectedType);
+
+      const response = await fetch(`/api/admin/crm-tasks?${params.toString()}`, {
         cache: 'no-store',
       });
       const payload = (await response.json()) as CRMTasksResponse;
@@ -1031,7 +1046,7 @@ export default function MasterControlPanel() {
     } finally {
       setIsLoadingCRMTasks(false);
     }
-  }, []);
+  }, [crmTaskTypeFilter]);
 
   const saveControlState = useCallback(
     async (patch: Partial<ControlState>) => {
@@ -1627,6 +1642,28 @@ export default function MasterControlPanel() {
               <span className="border border-cyan-300/30 bg-cyan-300/10 px-2 py-1 text-[10px] font-black uppercase text-cyan-100">
                 {isLoadingCRMTasks ? 'Loading' : `${crmTaskSummary.total} Active`}
               </span>
+              <div
+                className="grid grid-cols-3 overflow-hidden border border-slate-800 bg-black"
+                aria-label="CRM task type filter"
+              >
+                {crmTaskTypeOptions.map((option) => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    aria-pressed={crmTaskTypeFilter === option.value}
+                    data-testid={`reie-crm-type-${option.value}`}
+                    disabled={isLoadingCRMTasks}
+                    onClick={() => setCRMTaskTypeFilter(option.value)}
+                    className={`px-3 py-2 text-[10px] font-black uppercase transition disabled:cursor-not-allowed disabled:opacity-60 ${
+                      crmTaskTypeFilter === option.value
+                        ? 'bg-cyan-300 text-slate-950'
+                        : 'border-l border-slate-800 text-slate-500 first:border-l-0 hover:text-cyan-100'
+                    }`}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
               <button
                 type="button"
                 data-testid="reie-refresh-crm-tasks"
@@ -1793,7 +1830,7 @@ export default function MasterControlPanel() {
               <div className="bg-slate-950 p-5">
                 {crmTasks.length === 0 ? (
                   <div className="border border-slate-800 bg-black/70 p-4 text-sm leading-6 text-slate-500">
-                    No active CRM tasks are currently available.
+                    No active {crmTaskTypeFilter === 'all' ? 'CRM' : crmTaskTypeFilter} tasks are currently available.
                   </div>
                 ) : (
                   <div className="grid gap-3 lg:grid-cols-2">
