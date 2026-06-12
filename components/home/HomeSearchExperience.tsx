@@ -372,6 +372,16 @@ export default function HomeSearchExperience({ authorityLinks = [], faqItems = [
           }}
         />
 
+        <div className="pointer-events-none absolute left-6 top-6 z-[700] hidden rounded-[8px] border border-white/12 bg-[#071017]/88 px-4 py-3 shadow-2xl backdrop-blur-md md:block">
+          <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">Live REIE Map</p>
+          <p className="mt-1 text-sm font-black uppercase tracking-[0.08em] text-white">
+            {listings.length} visible listings
+          </p>
+          <p className="mt-1 text-[10px] font-black uppercase tracking-[0.12em] text-white/38">
+            {isSearching ? 'Inventory updating' : searchMeta?.source ? `${searchMeta.source} source` : 'Map ready'}
+          </p>
+        </div>
+
         {authorityLinks.length ? (
           <nav
             aria-label="David Quinn Group authority links"

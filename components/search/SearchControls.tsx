@@ -277,6 +277,13 @@ export default function SearchControls({
         </div>
       ) : null}
 
+      <div className="mt-3 flex items-center justify-between gap-3 border-t border-white/10 pt-3">
+        <p className="text-[10px] font-black uppercase tracking-[0.16em] text-white/34">
+          {isSearching ? 'Search is updating' : chips.length ? 'Filtered inventory active' : 'Ready for map search'}
+        </p>
+        {isSearching ? <Loader2 size={13} className="shrink-0 animate-spin text-cyan-100" aria-hidden="true" /> : null}
+      </div>
+
       {searchError ? <p className="mt-2 text-xs font-bold text-red-300">{searchError}</p> : null}
     </form>
   );

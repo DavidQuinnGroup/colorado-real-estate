@@ -482,6 +482,38 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
           title={`${property.city || 'Colorado'} Property Authority Links`}
         />
       </section>
+      <nav
+        className="fixed inset-x-0 bottom-0 z-[900] border-t border-white/12 bg-[#071017]/94 p-2 shadow-2xl backdrop-blur md:hidden"
+        style={{ bottom: 0, left: 0, padding: 8, position: 'fixed', right: 0, zIndex: 900 }}
+        aria-label="Property actions"
+      >
+        <div className="grid grid-cols-3 gap-2" style={{ display: 'grid', gap: 8, gridTemplateColumns: 'repeat(3, minmax(0, 1fr))' }}>
+          <Link
+            href="/search"
+            className="inline-flex h-11 items-center justify-center gap-1.5 rounded-[6px] border border-white/10 bg-white/[0.055] text-[10px] font-black uppercase tracking-[0.12em] text-white/72"
+            style={{ alignItems: 'center', display: 'inline-flex', height: 44, justifyContent: 'center' }}
+          >
+            <ArrowLeft size={13} aria-hidden="true" />
+            Search
+          </Link>
+          <Link
+            href={cityMarketHref}
+            className="inline-flex h-11 items-center justify-center gap-1.5 rounded-[6px] bg-cyan-100 text-[10px] font-black uppercase tracking-[0.12em] text-[#061017]"
+            style={{ alignItems: 'center', display: 'inline-flex', height: 44, justifyContent: 'center' }}
+          >
+            <TrendingUp size={13} aria-hidden="true" />
+            Market
+          </Link>
+          <Link
+            href={briefHref || cityMarketHref}
+            className="inline-flex h-11 items-center justify-center gap-1.5 rounded-[6px] border border-white/10 bg-white/[0.055] text-[10px] font-black uppercase tracking-[0.12em] text-white/72"
+            style={{ alignItems: 'center', display: 'inline-flex', height: 44, justifyContent: 'center' }}
+          >
+            <FileText size={13} aria-hidden="true" />
+            Brief
+          </Link>
+        </div>
+      </nav>
     </main>
   );
 }
