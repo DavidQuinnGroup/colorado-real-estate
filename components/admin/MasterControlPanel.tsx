@@ -709,6 +709,25 @@ function getCRMTaskTypeLabel(type: string) {
   return type || 'CRM Task';
 }
 
+function getCRMTaskFocus(task: CRMTask) {
+  if (task.type === 'property_inquiry') {
+    if (task.priority === 'high') return 'Confirm property intent and showing urgency.';
+    return 'Qualify property fit and buyer timeline.';
+  }
+
+  if (task.alertReadiness.level === 'incomplete') return 'Resolve missing alert criteria before automation.';
+  if (task.alertReadiness.level === 'ready') return 'Prepare one advisory point from saved-search context.';
+  if (task.alertReadiness.level === 'watch') return 'Review saved-search fit and refine criteria if needed.';
+
+  return 'Review intake context and decide the next client action.';
+}
+
+function getCRMTaskClosureHint(task: CRMTask) {
+  if (task.type === 'property_inquiry') return 'Record outreach result, buyer intent, and next property-specific step.';
+  if (task.alertReadiness.level === 'incomplete') return 'Note what criteria were missing or how they were resolved.';
+  return 'Record the decision, client-facing next step, and any follow-up owner.';
+}
+
 function hasCRMTaskApiMetadata(payload: CRMTaskApiErrorMetadata): payload is CRMTaskApiMetadata {
   return Boolean(payload.generatedAt && payload.terminal && payload.inspectionSource && payload.route && payload.command);
 }
@@ -1841,9 +1860,11 @@ export default function MasterControlPanel() {
                       const propertyInquiry = task.propertyInquiry;
                       const taskTimeline = propertyInquiry?.timelineLabel || task.latestSavedSearchIntake?.timelineLabel || task.status;
                       const taskTemperature = propertyInquiry?.leadTemperature || task.latestSavedSearchIntake?.leadTemperature || 'No Temp';
+                      const triageFocus = getCRMTaskFocus(task);
+                      const closureHint = getCRMTaskClosureHint(task);
 
                       return (
-                      <article key={task.id} className="grid gap-4 border border-slate-800 bg-black/70 p-4 sm:grid-cols-[1fr_148px]">
+                      <article key={task.id} className="grid gap-4 border border-slate-800 bg-black/70 p-4 xl:grid-cols-[minmax(0,1fr)_180px]">
                         <div className="min-w-0">
                           <div className="mb-3 flex flex-wrap items-center gap-2">
                             <span className={`border px-2 py-1 text-[10px] font-black uppercase ${getCRMTaskPriorityClass(task.priority)}`}>
@@ -1861,6 +1882,16 @@ export default function MasterControlPanel() {
                             <span>Heat {task.heatScore}</span>
                             <span>{taskTimeline}</span>
                             <span>{taskTemperature}</span>
+                          </div>
+                          <div className="mt-3 grid gap-3 border border-slate-800 bg-slate-950/80 p-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+                            <div>
+                              <div className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/60">Triage Focus</div>
+                              <p className="mt-2 text-xs leading-5 text-slate-300">{triageFocus}</p>
+                            </div>
+                            <div>
+                              <div className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">Closure Note Should Capture</div>
+                              <p className="mt-2 text-xs leading-5 text-slate-400">{closureHint}</p>
+                            </div>
                           </div>
                           <p className="mt-3 text-sm leading-6 text-slate-400">{task.nextAction}</p>
                           {propertyInquiry ? (
@@ -1911,9 +1942,18 @@ export default function MasterControlPanel() {
                           {task.alertReadiness.summary ? (
                             <p className="mt-2 text-xs leading-5 text-slate-600">{task.alertReadiness.summary}</p>
                           ) : null}
-                          <label htmlFor={`reie-crm-note-${task.id}`} className="mt-3 block text-[10px] font-black uppercase tracking-[0.18em] text-slate-600">
-                            Review Note
-                          </label>
+                          <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
+                            <label htmlFor={`reie-crm-note-${task.id}`} className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-600">
+                              Review Note
+                            </label>
+                            <span
+                              className={`text-[10px] font-black uppercase tracking-[0.18em] ${
+                                hasClosureNote ? 'text-emerald-100/70' : 'text-amber-100/70'
+                              }`}
+                            >
+                              {reviewNote.length}/500
+                            </span>
+                          </div>
                           <textarea
                             id={`reie-crm-note-${task.id}`}
                             data-testid={`reie-crm-task-note-${task.id}`}
@@ -1923,11 +1963,18 @@ export default function MasterControlPanel() {
                             disabled={isUpdatingTask}
                             onChange={(event) => updateCRMTaskReviewNote(task.id, event.target.value)}
                             className="mt-2 min-h-20 w-full resize-y border border-slate-800 bg-slate-950 px-3 py-2 text-xs leading-5 text-slate-200 outline-none transition placeholder:text-slate-700 focus:border-cyan-300 disabled:cursor-not-allowed disabled:opacity-50"
-                            placeholder="Required before completing or dismissing"
+                            placeholder={closureHint}
                           />
                         </div>
 
-                        <div className="grid content-start gap-2">
+                        <div className="grid content-start gap-3">
+                          <div className="border border-slate-800 bg-slate-950/80 p-3">
+                            <div className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">Task State</div>
+                            <div className="mt-2 text-sm font-black uppercase text-white">{task.status}</div>
+                            <div className="mt-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-600">
+                              {hasClosureNote ? 'Ready to close' : 'Needs note'}
+                            </div>
+                          </div>
                           <button
                             type="button"
                             data-testid={`reie-review-crm-task-${task.id}`}
@@ -1936,28 +1983,31 @@ export default function MasterControlPanel() {
                             className="inline-flex h-10 items-center justify-center gap-2 border border-slate-700 bg-black px-3 text-xs font-black uppercase text-slate-200 transition hover:border-cyan-300 hover:text-cyan-100 disabled:cursor-not-allowed disabled:opacity-50"
                           >
                             {isUpdatingTask ? <Loader2 size={14} className="animate-spin" /> : <Activity size={14} />}
-                            {isUpdatingTask ? 'Saving' : task.status === 'reviewing' ? 'Reviewing' : 'Review'}
+                            {isUpdatingTask ? 'Saving' : task.status === 'reviewing' ? 'In Review' : 'Start Review'}
                           </button>
-                          <button
-                            type="button"
-                            data-testid={`reie-complete-crm-task-${task.id}`}
-                            disabled={isUpdatingTask || !hasClosureNote}
-                            onClick={() => void closeCRMTask(task, 'completed')}
-                            className="inline-flex h-10 items-center justify-center gap-2 border border-emerald-300/30 bg-emerald-400/10 px-3 text-xs font-black uppercase text-emerald-100 transition hover:border-emerald-200 disabled:cursor-not-allowed disabled:opacity-40"
-                          >
-                            {isUpdatingTask ? <Loader2 size={14} className="animate-spin" /> : <CheckCircle2 size={14} />}
-                            Complete
-                          </button>
-                          <button
-                            type="button"
-                            data-testid={`reie-dismiss-crm-task-${task.id}`}
-                            disabled={isUpdatingTask || !hasClosureNote}
-                            onClick={() => void closeCRMTask(task, 'dismissed')}
-                            className="inline-flex h-10 items-center justify-center gap-2 border border-slate-700 bg-slate-950 px-3 text-xs font-black uppercase text-slate-300 transition hover:border-red-300 hover:text-red-100 disabled:cursor-not-allowed disabled:opacity-40"
-                          >
-                            {isUpdatingTask ? <Loader2 size={14} className="animate-spin" /> : <Shield size={14} />}
-                            Dismiss
-                          </button>
+                          <div className="grid gap-2 border border-slate-800 bg-black/40 p-2">
+                            <div className="px-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-600">Close Task</div>
+                            <button
+                              type="button"
+                              data-testid={`reie-complete-crm-task-${task.id}`}
+                              disabled={isUpdatingTask || !hasClosureNote}
+                              onClick={() => void closeCRMTask(task, 'completed')}
+                              className="inline-flex h-10 items-center justify-center gap-2 border border-emerald-300/30 bg-emerald-400/10 px-3 text-xs font-black uppercase text-emerald-100 transition hover:border-emerald-200 disabled:cursor-not-allowed disabled:opacity-40"
+                            >
+                              {isUpdatingTask ? <Loader2 size={14} className="animate-spin" /> : <CheckCircle2 size={14} />}
+                              Complete
+                            </button>
+                            <button
+                              type="button"
+                              data-testid={`reie-dismiss-crm-task-${task.id}`}
+                              disabled={isUpdatingTask || !hasClosureNote}
+                              onClick={() => void closeCRMTask(task, 'dismissed')}
+                              className="inline-flex h-10 items-center justify-center gap-2 border border-slate-700 bg-slate-950 px-3 text-xs font-black uppercase text-slate-300 transition hover:border-red-300 hover:text-red-100 disabled:cursor-not-allowed disabled:opacity-40"
+                            >
+                              {isUpdatingTask ? <Loader2 size={14} className="animate-spin" /> : <Shield size={14} />}
+                              Dismiss
+                            </button>
+                          </div>
                         </div>
                       </article>
                     )})}
