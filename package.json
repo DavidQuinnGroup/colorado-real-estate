@@ -13,6 +13,7 @@
     "smoke:mls-status": "curl --max-time 8 -s -w \"\\nHTTP_STATUS:%{http_code}\\n\" \"http://localhost:3000/api/mls/status\"",
     "smoke:search": "curl --max-time 8 -s -w \"\\nHTTP_STATUS:%{http_code}\\n\" \"http://localhost:3000/api/search?limit=5\"",
     "smoke:ops": "npm run smoke:mls-status && npm run smoke:search",
+    "check:property-inquiry-notification": "npm run worker:build && node dist/scripts/propertyInquiryNotificationCheck.js",
     "worker:build": "tsc -p tsconfig.worker.json --pretty false",
     "infra:up": "docker compose up -d",
     "infra:down": "docker compose down",
