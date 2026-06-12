@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 
+import { sendPropertyInquiryNotification } from '@/lib/email/sendPropertyInquiryNotification';
 import { prisma } from '@/lib/prisma';
 
 type PropertyInquiryBody = {
@@ -41,6 +42,10 @@ function getPriority(timeline: string | null) {
   if (timeline === 'now' || timeline === 'tour') return 'high';
   if (timeline === 'ninety-days') return 'medium';
   return 'low';
+}
+
+function shouldNotify(timeline: string | null) {
+  return getPriority(timeline) === 'high';
 }
 
 function getTimelineLabel(timeline: string | null) {
@@ -198,6 +203,40 @@ export async function POST(request: Request) {
       };
     });
 
+    let notification: { sent: boolean; reason?: string } = { sent: false, reason: 'not-high-priority' };
+
+    if (shouldNotify(timeline)) {
+      try {
+        const notificationResult = await sendPropertyInquiryNotification({
+          inquiryId: result.leadInteraction.id,
+          crmTaskId: result.crmTask.id,
+          leadEmail: email,
+          leadName: name,
+          leadPhone: phone,
+          timelineLabel: metadata.timelineLabel,
+          leadTemperature: metadata.leadTemperature,
+          notes,
+          property: {
+            id: property.id,
+            mlsId: property.mlsId,
+            slug: property.slug,
+            address: property.address,
+            city: property.city,
+            state: property.state,
+            zip: property.zip,
+            price: property.price,
+            propertyType: property.propertyType,
+            status: property.status,
+          },
+        });
+
+        notification = 'sent' in notificationResult ? notificationResult : { sent: true };
+      } catch (notificationError) {
+        console.error('[REIE PROPERTY INQUIRY NOTIFICATION]', notificationError);
+        notification = { sent: false, reason: 'notification-error' };
+      }
+    }
+
     return jsonResponse({
       success: true,
       userId: result.user.id,
@@ -210,10 +249,10 @@ export async function POST(request: Request) {
         timeline,
         timelineLabel: metadata.timelineLabel,
       },
+      notification,
     });
   } catch (error) {
     console.error('[REIE PROPERTY INQUIRY]', error);
     return jsonResponse({ error: 'Property inquiry could not be saved.' }, 500);
   }
 }
-
