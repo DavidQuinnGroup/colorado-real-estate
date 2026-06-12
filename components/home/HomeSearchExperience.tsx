@@ -7,6 +7,7 @@ import { type FormEvent, useCallback, useEffect, useRef, useState } from 'react'
 
 import MapSidebar, { type MapSidebarListing } from '@/components/maps/MapSidebar';
 import type { MapBounds } from '@/components/maps/MapInner';
+import SelectedPropertyDrawer from '@/components/maps/SelectedPropertyDrawer';
 import type { SearchMapMeta } from '@/components/maps/SearchMap';
 import SearchControls, {
   buildSearchParams,
@@ -381,6 +382,8 @@ export default function HomeSearchExperience({ authorityLinks = [], faqItems = [
             {isSearching ? 'Inventory updating' : searchMeta?.source ? `${searchMeta.source} source` : 'Map ready'}
           </p>
         </div>
+
+        {selectedProperty ? <SelectedPropertyDrawer property={selectedProperty} onClose={() => setSelectedProperty(null)} /> : null}
 
         {authorityLinks.length ? (
           <nav

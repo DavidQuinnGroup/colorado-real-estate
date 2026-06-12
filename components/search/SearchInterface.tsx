@@ -6,6 +6,7 @@ import { List, Map as MapIcon } from 'lucide-react';
 import { type FormEvent, useEffect, useMemo, useState } from 'react';
 
 import MapSidebar, { type MapSidebarListing } from '@/components/maps/MapSidebar';
+import SelectedPropertyDrawer from '@/components/maps/SelectedPropertyDrawer';
 import SearchControls, {
   buildSearchParams,
   getInitialSearchFilters,
@@ -170,6 +171,10 @@ export default function SearchInterface({
   const visibleIds = useMemo(() => new Set(visibleListings.map((listing) => listing.id)), [visibleListings]);
   const visibleSelectedId = selectedId && visibleIds.has(selectedId) ? selectedId : null;
   const visibleHoveredId = hoveredId && visibleIds.has(hoveredId) ? hoveredId : null;
+  const selectedProperty = useMemo(
+    () => (visibleSelectedId ? visibleListings.find((listing) => listing.id === visibleSelectedId) || null : null),
+    [visibleListings, visibleSelectedId],
+  );
 
   useEffect(() => {
     const handleToggle = (event: Event) => {
@@ -332,6 +337,8 @@ export default function SearchInterface({
             {isSearching ? 'Inventory updating' : effectiveSearchMeta?.source ? `${effectiveSearchMeta.source} source` : 'Map ready'}
           </p>
         </div>
+
+        {selectedProperty ? <SelectedPropertyDrawer property={selectedProperty} onClose={() => setSelectedId(null)} /> : null}
 
         {authorityLinks.length ? (
           <nav

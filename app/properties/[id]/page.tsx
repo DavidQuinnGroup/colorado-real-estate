@@ -12,6 +12,7 @@ import {
   FileText,
   HardHat,
   Home,
+  Mail,
   MapPin,
   Mountain,
   Ruler,
@@ -260,6 +261,9 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
   const cityMarketHref = getCityMarketHref(property.city);
   const neighborhoodHref = getNeighborhoodHref(property);
   const briefHref = getPropertyBriefHref(property);
+  const contactHref = `mailto:hello@davidquinngroup.com?subject=${encodeURIComponent(`Property inquiry: ${property.address}`)}&body=${encodeURIComponent(
+    `I would like to discuss ${property.address} in ${property.city}, ${property.state}.\n\nREIE listing: ${canonicalUrl}`,
+  )}`;
   const primaryStatLabel = getPrimaryStatLabel(property);
   const propertyLinks = await getPropertyLinks({
     id: property.id,
@@ -505,12 +509,12 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
             Market
           </Link>
           <Link
-            href={briefHref || cityMarketHref}
-            className="inline-flex h-11 items-center justify-center gap-1.5 rounded-[6px] border border-white/10 bg-white/[0.055] text-[10px] font-black uppercase tracking-[0.12em] text-white/72"
+            href={contactHref}
+            className="inline-flex h-11 items-center justify-center gap-1.5 rounded-[6px] border border-cyan-100/35 bg-cyan-100/10 text-[10px] font-black uppercase tracking-[0.12em] text-cyan-100"
             style={{ alignItems: 'center', display: 'inline-flex', height: 44, justifyContent: 'center' }}
           >
-            <FileText size={13} aria-hidden="true" />
-            Brief
+            <Mail size={13} aria-hidden="true" />
+            Contact
           </Link>
         </div>
       </nav>
