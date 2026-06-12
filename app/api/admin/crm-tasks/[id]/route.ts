@@ -57,6 +57,21 @@ type CRMTask = {
     northStarCount: number;
     hasNotes: boolean;
   } | null;
+  propertyInquiry: {
+    propertyId: string | null;
+    mlsId: string | null;
+    slug: string | null;
+    address: string | null;
+    city: string | null;
+    state: string | null;
+    price: number | null;
+    propertyType: string | null;
+    status: string | null;
+    timelineLabel: string | null;
+    leadTemperature: string | null;
+    hasPhone: boolean;
+    hasNotes: boolean;
+  } | null;
   alertReadiness: {
     level: CRMTaskAlertLevel;
     summary: string;
@@ -134,6 +149,11 @@ function getNumber(value: unknown, fallback = 0) {
   return Number.isFinite(parsed) ? parsed : fallback;
 }
 
+function getNullableNumber(value: unknown) {
+  const parsed = typeof value === 'number' ? value : Number(value);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
 function getStringArray(value: unknown) {
   if (!Array.isArray(value)) return [];
 
@@ -184,6 +204,8 @@ function getAlertReadiness(metadata: Record<string, unknown>): CRMTask['alertRea
 }
 
 function getLatestSavedSearchIntake(metadata: Record<string, unknown>): CRMTask['latestSavedSearchIntake'] {
+  if (cleanString(metadata.schemaVersion) === 'reie-property-inquiry-v1') return null;
+
   const nestedIntake = asRecord(metadata.latestSavedSearchIntake);
   const intake = Object.keys(nestedIntake).length ? nestedIntake : metadata;
 
@@ -203,6 +225,28 @@ function getLatestSavedSearchIntake(metadata: Record<string, unknown>): CRMTask[
     primaryNorthStar: cleanString(intake.primaryNorthStar) || null,
     northStarCount: getNumber(intake.northStarCount),
     hasNotes: Boolean(intake.hasNotes),
+  };
+}
+
+function getPropertyInquiry(metadata: Record<string, unknown>): CRMTask['propertyInquiry'] {
+  if (cleanString(metadata.schemaVersion) !== 'reie-property-inquiry-v1') return null;
+
+  const property = asRecord(metadata.property);
+
+  return {
+    propertyId: cleanString(property.id) || null,
+    mlsId: cleanString(property.mlsId) || null,
+    slug: cleanString(property.slug) || null,
+    address: cleanString(property.address) || null,
+    city: cleanString(property.city) || null,
+    state: cleanString(property.state) || null,
+    price: getNullableNumber(property.price),
+    propertyType: cleanString(property.propertyType) || null,
+    status: cleanString(property.status) || null,
+    timelineLabel: cleanString(metadata.timelineLabel) || null,
+    leadTemperature: cleanString(metadata.leadTemperature) || null,
+    hasPhone: Boolean(cleanString(metadata.phone)),
+    hasNotes: Boolean(cleanString(metadata.notes)),
   };
 }
 
@@ -278,6 +322,7 @@ function normalizeTask(row: CRMTaskRow): CRMTask {
     nextAction: getNextAction(row, metadata, alertReadiness),
     tacticalLevers: cleanString(metadata.tacticalLevers) || null,
     latestSavedSearchIntake: getLatestSavedSearchIntake(metadata),
+    propertyInquiry: getPropertyInquiry(metadata),
     alertReadiness,
     operations: getOperations(status),
     metadata,

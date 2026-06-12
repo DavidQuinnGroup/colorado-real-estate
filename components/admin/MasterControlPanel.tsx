@@ -354,6 +354,21 @@ type CRMTask = {
     northStarCount: number;
     hasNotes: boolean;
   } | null;
+  propertyInquiry: {
+    propertyId: string | null;
+    mlsId: string | null;
+    slug: string | null;
+    address: string | null;
+    city: string | null;
+    state: string | null;
+    price: number | null;
+    propertyType: string | null;
+    status: string | null;
+    timelineLabel: string | null;
+    leadTemperature: string | null;
+    hasPhone: boolean;
+    hasNotes: boolean;
+  } | null;
   alertReadiness: {
     level: 'ready' | 'watch' | 'incomplete' | 'unknown';
     summary: string;
@@ -381,6 +396,7 @@ type CRMTaskSummary = {
   lowPriority: number;
   preDiscoveryBriefs: number;
   strategyIntakes: number;
+  propertyInquiries: number;
   alertReady: number;
   alertWatch: number;
   alertIncomplete: number;
@@ -529,6 +545,7 @@ const emptyCRMTaskSummary: CRMTaskSummary = {
   lowPriority: 0,
   preDiscoveryBriefs: 0,
   strategyIntakes: 0,
+  propertyInquiries: 0,
   alertReady: 0,
   alertWatch: 0,
   alertIncomplete: 0,
@@ -678,6 +695,13 @@ function getCRMInspectionSourceClass(source: CRMTaskApiMetadata['inspectionSourc
   return 'border-emerald-300/30 bg-emerald-400/10 text-emerald-100';
 }
 
+function getCRMTaskTypeLabel(type: string) {
+  if (type === 'property_inquiry') return 'Property Inquiry';
+  if (type === 'strategy_intake') return 'Strategy Intake';
+  if (type === 'PRE_DISCOVERY_BRIEF') return 'Pre-Discovery';
+  return type || 'CRM Task';
+}
+
 function hasCRMTaskApiMetadata(payload: CRMTaskApiErrorMetadata): payload is CRMTaskApiMetadata {
   return Boolean(payload.generatedAt && payload.terminal && payload.inspectionSource && payload.route && payload.command);
 }
@@ -713,6 +737,16 @@ function formatMilliseconds(value: number | undefined) {
   if (value === undefined) return 'Not set';
   if (value < 1000) return `${value}ms`;
   return `${Math.round(value / 1000)}s`;
+}
+
+function formatCRMPrice(value: number | null) {
+  if (typeof value !== 'number' || !Number.isFinite(value)) return 'Price not recorded';
+
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    maximumFractionDigits: 0,
+  }).format(value);
 }
 
 function getMlsQueue(mlsStatus: MlsStatusResponse | null, name: string) {
@@ -1629,6 +1663,14 @@ export default function MasterControlPanel() {
                     <div className="mt-2 text-3xl font-black uppercase text-white">{crmTaskSummary.reviewing}</div>
                   </div>
                   <div className="border border-slate-800 bg-black/70 p-4">
+                    <div className="text-[10px] font-black uppercase text-slate-500">Property</div>
+                    <div className="mt-2 text-lg font-black uppercase text-white">{crmTaskSummary.propertyInquiries}</div>
+                  </div>
+                  <div className="border border-slate-800 bg-black/70 p-4">
+                    <div className="text-[10px] font-black uppercase text-slate-500">Strategy</div>
+                    <div className="mt-2 text-lg font-black uppercase text-white">{crmTaskSummary.strategyIntakes}</div>
+                  </div>
+                  <div className="border border-slate-800 bg-black/70 p-4">
                     <div className="text-[10px] font-black uppercase text-slate-500">Ready</div>
                     <div className="mt-2 text-lg font-black uppercase text-white">{crmTaskSummary.alertReady}</div>
                   </div>
@@ -1759,6 +1801,9 @@ export default function MasterControlPanel() {
                       const isUpdatingTask = reviewingCRMTaskId === task.id;
                       const reviewNote = crmTaskReviewNotes[task.id] || '';
                       const hasClosureNote = reviewNote.trim().length > 0;
+                      const propertyInquiry = task.propertyInquiry;
+                      const taskTimeline = propertyInquiry?.timelineLabel || task.latestSavedSearchIntake?.timelineLabel || task.status;
+                      const taskTemperature = propertyInquiry?.leadTemperature || task.latestSavedSearchIntake?.leadTemperature || 'No Temp';
 
                       return (
                       <article key={task.id} className="grid gap-4 border border-slate-800 bg-black/70 p-4 sm:grid-cols-[1fr_148px]">
@@ -1771,16 +1816,49 @@ export default function MasterControlPanel() {
                               Alert {task.alertReadiness.level}
                             </span>
                             <span className="border border-slate-800 bg-slate-950 px-2 py-1 text-[10px] font-black uppercase text-slate-400">
-                              {task.type}
+                              {getCRMTaskTypeLabel(task.type)}
                             </span>
                           </div>
                           <h3 className="text-sm font-black uppercase leading-5 text-white">{task.title}</h3>
                           <div className="mt-3 grid gap-2 text-[10px] font-black uppercase tracking-[0.18em] text-slate-600 sm:grid-cols-3">
                             <span>Heat {task.heatScore}</span>
-                            <span>{task.latestSavedSearchIntake?.timelineLabel || task.status}</span>
-                            <span>{task.latestSavedSearchIntake?.leadTemperature || 'No Temp'}</span>
+                            <span>{taskTimeline}</span>
+                            <span>{taskTemperature}</span>
                           </div>
                           <p className="mt-3 text-sm leading-6 text-slate-400">{task.nextAction}</p>
+                          {propertyInquiry ? (
+                            <div className="mt-3 border border-cyan-400/20 bg-cyan-950/10 p-3">
+                              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/70">
+                                {propertyInquiry.address || 'Property address not recorded'}
+                              </p>
+                              <p className="mt-2 text-xs leading-5 text-slate-400">
+                                {[propertyInquiry.city, propertyInquiry.state].filter(Boolean).join(', ') || 'Market not recorded'} /{' '}
+                                {formatCRMPrice(propertyInquiry.price)}
+                              </p>
+                              <div className="mt-2 flex flex-wrap gap-2">
+                                {propertyInquiry.mlsId ? (
+                                  <span className="border border-slate-800 bg-black/50 px-2 py-1 text-[9px] font-black uppercase tracking-[0.14em] text-slate-500">
+                                    MLS {propertyInquiry.mlsId}
+                                  </span>
+                                ) : null}
+                                {propertyInquiry.propertyType ? (
+                                  <span className="border border-slate-800 bg-black/50 px-2 py-1 text-[9px] font-black uppercase tracking-[0.14em] text-slate-500">
+                                    {propertyInquiry.propertyType}
+                                  </span>
+                                ) : null}
+                                {propertyInquiry.hasPhone ? (
+                                  <span className="border border-slate-800 bg-black/50 px-2 py-1 text-[9px] font-black uppercase tracking-[0.14em] text-slate-500">
+                                    Phone captured
+                                  </span>
+                                ) : null}
+                                {propertyInquiry.hasNotes ? (
+                                  <span className="border border-slate-800 bg-black/50 px-2 py-1 text-[9px] font-black uppercase tracking-[0.14em] text-slate-500">
+                                    Notes captured
+                                  </span>
+                                ) : null}
+                              </div>
+                            </div>
+                          ) : null}
                           {task.latestSavedSearchIntake?.marketScope || task.latestSavedSearchIntake?.city ? (
                             <p className="mt-2 text-xs leading-5 text-slate-500">
                               {task.latestSavedSearchIntake.marketScope || task.latestSavedSearchIntake.city}
