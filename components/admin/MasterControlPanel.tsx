@@ -842,6 +842,20 @@ function MetricCell({ metric }: { metric: ControlMetric }) {
   );
 }
 
+function StatusPill({
+  label,
+  tone,
+}: {
+  label: string;
+  tone: ControlMetric['tone'];
+}) {
+  return (
+    <span className={`inline-flex border px-2 py-1 text-[10px] font-black uppercase ${getToneClass(tone)}`}>
+      {label}
+    </span>
+  );
+}
+
 function ToggleControl({
   active,
   activeLabel,
@@ -1351,6 +1365,22 @@ export default function MasterControlPanel() {
 
   const mlsSyncQueue = getMlsQueue(mlsStatus, 'mls-sync');
   const mlsPageQueue = getMlsQueue(mlsStatus, 'mls-page');
+  const crmTone: ControlMetric['tone'] =
+    crmTaskReadiness.level === 'blocked' ? 'red' : crmTaskReadiness.level === 'ready' ? 'emerald' : 'amber';
+  const mlsTone: ControlMetric['tone'] = mlsStatus?.success
+    ? mlsStatus.status === 'healthy'
+      ? 'emerald'
+      : mlsStatus.status === 'busy'
+        ? 'amber'
+        : 'red'
+    : 'red';
+  const alertTone: ControlMetric['tone'] = alertStatus?.success
+    ? alertStatus.executionPlan?.level === 'blocked'
+      ? 'red'
+      : alertStatus.executionPlan?.level === 'caution'
+        ? 'amber'
+        : 'emerald'
+    : 'red';
 
   return (
     <section className="min-h-screen bg-[#05070a] px-5 py-6 text-slate-100 sm:px-8">
@@ -1443,6 +1473,66 @@ export default function MasterControlPanel() {
         </header>
 
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+          <section className="border border-slate-800 bg-slate-950/80 p-5 md:col-span-2 xl:col-span-4" data-testid="reie-operational-snapshot">
+            <div className="mb-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+              <div>
+                <div className="text-xs font-black uppercase tracking-[0.24em] text-cyan-300">Operational Snapshot</div>
+                <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-400">
+                  Current control posture, active CRM work, MLS health, and alert readiness in one scan.
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <StatusPill label={controlPolicy.automation} tone={controlPolicy.automation === 'paused' ? 'red' : controlPolicy.automation === 'monitor' ? 'amber' : 'emerald'} />
+                <StatusPill label={`CRM ${crmTaskReadiness.level}`} tone={crmTone} />
+                <StatusPill label={`MLS ${mlsStatus?.success ? mlsStatus.status : 'offline'}`} tone={mlsTone} />
+                <StatusPill label={`Alerts ${alertStatus?.success ? alertStatus.executionPlan?.level || 'status' : 'offline'}`} tone={alertTone} />
+              </div>
+            </div>
+
+            <div className="grid gap-px overflow-hidden border border-slate-800 bg-slate-800 md:grid-cols-2 xl:grid-cols-4">
+              <div className="bg-black/80 p-4">
+                <div className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">Control Posture</div>
+                <div className="mt-2 text-xl font-black uppercase text-white">
+                  {controlState.killSwitchActive ? 'Paused' : 'Live'}
+                </div>
+                <p className="mt-2 text-xs leading-5 text-slate-500">
+                  {controlPolicy.publicExposure} exposure / {controlPolicy.mapPrecision} map precision.
+                </p>
+              </div>
+              <div className="bg-black/80 p-4">
+                <div className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">CRM Workload</div>
+                <div className="mt-2 text-xl font-black uppercase text-white">
+                  {isLoadingCRMTasks ? 'Loading' : `${crmTaskSummary.pending + crmTaskSummary.reviewing} Active`}
+                </div>
+                <p className="mt-2 text-xs leading-5 text-slate-500">
+                  {crmTaskSummary.propertyInquiries} property, {crmTaskSummary.strategyIntakes} strategy, {crmTaskAuditSummary.closureReviewCoveragePercent}% audit coverage.
+                </p>
+              </div>
+              <div className="bg-black/80 p-4">
+                <div className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">MLS Pipeline</div>
+                <div className="mt-2 text-xl font-black uppercase text-white">
+                  {isLoadingMlsStatus ? 'Loading' : mlsStatus?.success ? mlsStatus.status : 'Offline'}
+                </div>
+                <p className="mt-2 text-xs leading-5 text-slate-500">
+                  {mlsStatus?.success
+                    ? `${mlsStatus.propertyFreshness.stalePercent}% stale / ${mlsStatus.recentFailedJobs.length} failed jobs.`
+                    : 'MLS status has not loaded.'}
+                </p>
+              </div>
+              <div className="bg-black/80 p-4">
+                <div className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">Alert Posture</div>
+                <div className="mt-2 text-xl font-black uppercase text-white">
+                  {isLoadingAlertStatus ? 'Loading' : alertStatus?.success ? alertStatus.executionPlan?.level || 'Status' : 'Offline'}
+                </div>
+                <p className="mt-2 text-xs leading-5 text-slate-500">
+                  {alertStatus?.success
+                    ? `${alertStatus.stats.pending} pending / ${alertStatus.stats.failed} failed / live ${alertStatus.executionPlan?.liveAllowed ? 'available' : 'blocked'}.`
+                    : 'Alert status has not loaded.'}
+                </p>
+              </div>
+            </div>
+          </section>
+
           {controlMetrics.map((metric) => (
             <MetricCell key={metric.label} metric={metric} />
           ))}
