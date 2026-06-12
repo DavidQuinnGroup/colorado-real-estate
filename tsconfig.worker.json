@@ -29,6 +29,7 @@
     "scripts/index.ts",
     "scripts/initTypesense.ts",
     "scripts/mlsSync.ts",
+    "scripts/publicExperienceSmoke.ts",
     "scripts/quickSeed.ts",
     "scripts/queueDashboard.ts",
     "scripts/queueMaintenance.ts",
