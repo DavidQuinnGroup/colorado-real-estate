@@ -157,6 +157,25 @@ function getPrimaryStatLabel(property: PropertyWithPhotos) {
   return pieces.join(' / ');
 }
 
+function getPricePerSquareFoot(property: PropertyWithPhotos) {
+  if (!property.price || !property.sqft) return 'Not enough data';
+  return `${formatCurrency(Math.round(property.price / property.sqft))} / SQ FT`;
+}
+
+function getDiligencePosture(property: PropertyWithPhotos) {
+  if (property.hasPolybutyleneRisk) return 'High diligence';
+  if ((property.resilienceScore || 0) < 70) return 'Resilience review';
+  if ((property.efficiencyScore || 0) >= 75 && (property.resilienceScore || 0) >= 80) return 'Strong signal';
+  return 'Standard review';
+}
+
+function getDecisionNextStep(property: PropertyWithPhotos) {
+  if (property.hasPolybutyleneRisk) return 'Review plumbing, insurance, and inspection leverage before offer timing.';
+  if (!property.sqft || !property.price) return 'Confirm core listing facts, condition, and comparable inventory.';
+  if ((property.efficiencyScore || 0) >= 75) return 'Compare against active alternatives and decide if speed is justified.';
+  return 'Use market comps and condition diligence to decide whether negotiation room exists.';
+}
+
 async function getProperty(id: string) {
   return prisma.property.findFirst({
     where: {
@@ -263,6 +282,9 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
   const neighborhoodHref = getNeighborhoodHref(property);
   const briefHref = getPropertyBriefHref(property);
   const primaryStatLabel = getPrimaryStatLabel(property);
+  const pricePerSquareFoot = getPricePerSquareFoot(property);
+  const diligencePosture = getDiligencePosture(property);
+  const decisionNextStep = getDecisionNextStep(property);
   const propertyLinks = await getPropertyLinks({
     id: property.id,
     city: property.city,
@@ -329,7 +351,17 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
           </div>
 
           <aside className="border-t border-white/10 bg-[#070b10] p-4 sm:p-5 lg:sticky lg:top-0 lg:h-screen lg:overflow-y-auto lg:border-l lg:border-t-0">
-            <div className="rounded-[8px] border border-white/10 bg-[#0d141c] p-4">
+            <section className="rounded-[8px] border border-cyan-100/22 bg-cyan-100/[0.075] p-4">
+              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-cyan-100/76">REIE Decision Snapshot</p>
+              <div className="mt-4 grid gap-3">
+                <DecisionRow label="Price Basis" value={pricePerSquareFoot} />
+                <DecisionRow label="Diligence Posture" value={diligencePosture} />
+                <DecisionRow label="Market Path" value={property.neighborhood || property.city || 'Colorado'} />
+              </div>
+              <p className="mt-4 border-t border-cyan-100/14 pt-4 text-sm leading-6 text-white/66">{decisionNextStep}</p>
+            </section>
+
+            <div className="mt-4 rounded-[8px] border border-white/10 bg-[#0d141c] p-4">
               <p className="text-[10px] font-black uppercase tracking-[0.22em] text-white/44">REIE Scorecard</p>
               <div className="mt-4 grid grid-cols-2 gap-3">
                 <SignalTile icon={<TrendingUp size={16} />} label="Efficiency" value={formatNumber(efficiencyScore)} tone="cyan" />
@@ -578,6 +610,15 @@ function SnapshotRow({ label, value }: { label: string; value: string }) {
     <div className="flex items-center justify-between gap-4 border-b border-white/10 pb-3 last:border-b-0 last:pb-0">
       <p className="text-[10px] font-black uppercase tracking-[0.14em] text-white/38">{label}</p>
       <p className="min-w-0 truncate text-sm font-bold text-white/78">{value}</p>
+    </div>
+  );
+}
+
+function DecisionRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="grid grid-cols-[112px_minmax(0,1fr)] gap-3 border-b border-cyan-100/12 pb-3 last:border-b-0 last:pb-0">
+      <p className="text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100/52">{label}</p>
+      <p className="min-w-0 text-right text-xs font-black uppercase leading-5 text-white">{value}</p>
     </div>
   );
 }
