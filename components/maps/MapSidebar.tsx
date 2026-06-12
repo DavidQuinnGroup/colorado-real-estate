@@ -40,6 +40,7 @@ type BaseMapSidebarProps = {
   onCloseDetail?: () => void;
   searchControls?: ReactNode;
   hasActiveFilters?: boolean;
+  isLoading?: boolean;
 };
 
 type IdSelectSidebarProps = BaseMapSidebarProps & {
@@ -194,6 +195,25 @@ function EmptyInventoryState({ hasActiveFilters }: { hasActiveFilters?: boolean 
   );
 }
 
+function LoadingInventorySkeleton() {
+  return (
+    <div className="space-y-3 p-3" aria-label="Loading inventory">
+      {Array.from({ length: 4 }).map((_, index) => (
+        <div key={index} className="rounded-[8px] border border-white/10 bg-white/[0.035] p-3">
+          <div className="h-40 animate-pulse rounded-[6px] bg-white/[0.06]" />
+          <div className="mt-3 h-5 w-2/3 animate-pulse rounded-[4px] bg-white/[0.08]" />
+          <div className="mt-2 h-3 w-4/5 animate-pulse rounded-[4px] bg-white/[0.05]" />
+          <div className="mt-4 grid grid-cols-3 gap-2">
+            <div className="h-12 animate-pulse rounded-[6px] bg-white/[0.05]" />
+            <div className="h-12 animate-pulse rounded-[6px] bg-white/[0.05]" />
+            <div className="h-12 animate-pulse rounded-[6px] bg-white/[0.05]" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function StatTile({ icon, label, value }: { icon: ReactNode; label: string; value: string | number }) {
   return (
     <div className="rounded-[8px] border border-white/10 bg-white/[0.045] px-3 py-3">
@@ -214,7 +234,7 @@ function getSelectedAddress(property: MapSidebarListing | null | undefined, list
 }
 
 export default function MapSidebar(props: MapSidebarProps) {
-  const { listings = [], selectedId, hoveredId, onHover = () => {}, onCloseDetail, searchControls, hasActiveFilters } = props;
+  const { listings = [], selectedId, hoveredId, onHover = () => {}, onCloseDetail, searchControls, hasActiveFilters, isLoading } = props;
   const sidebarRef = useRef<HTMLDivElement>(null);
   const activeId = selectedId ?? props.selectedProperty?.id ?? null;
   const stats = useMemo(() => getInventoryStats(listings), [listings]);
@@ -354,7 +374,9 @@ export default function MapSidebar(props: MapSidebarProps) {
       </header>
 
       <div ref={sidebarRef} className="custom-sidebar-wide flex-1 overflow-y-auto bg-[#070b10] py-1">
-        {listings.length > 0 ? (
+        {isLoading ? (
+          <LoadingInventorySkeleton />
+        ) : listings.length > 0 ? (
           listings.map((property) => (
             <div
               key={property.id}

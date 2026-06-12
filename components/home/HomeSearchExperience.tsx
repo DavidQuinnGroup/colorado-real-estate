@@ -2,6 +2,7 @@
 
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
+import { List, Map as MapIcon } from 'lucide-react';
 import { type FormEvent, useCallback, useEffect, useRef, useState } from 'react';
 
 import MapSidebar, { type MapSidebarListing } from '@/components/maps/MapSidebar';
@@ -34,6 +35,8 @@ type HomeSearchExperienceProps = {
   authorityLinks?: HomeAuthorityLink[];
   faqItems?: FAQItem[];
 };
+
+type MobileSearchView = 'list' | 'map';
 
 const MapInner = dynamic(() => import('@/components/maps/MapInner'), {
   ssr: false,
@@ -217,6 +220,7 @@ export default function HomeSearchExperience({ authorityLinks = [], faqItems = [
   const [searchMeta, setSearchMeta] = useState<SearchMapMeta | null>(null);
   const [filters, setFilters] = useState<SearchFilters>(() => getInitialSearchFilters());
   const [selectedProperty, setSelectedProperty] = useState<MapSidebarListing | null>(null);
+  const [mobileView, setMobileView] = useState<MobileSearchView>('list');
   const [isSearching, setIsSearching] = useState(false);
   const [searchError, setSearchError] = useState<string | null>(null);
   const currentBounds = useRef<MapBounds>(DEFAULT_BOULDER_BOUNDS);
@@ -313,17 +317,45 @@ export default function HomeSearchExperience({ authorityLinks = [], faqItems = [
   );
 
   return (
-    <div className="flex h-screen w-full flex-col overflow-hidden bg-black text-white md:flex-row">
-      <MapSidebar
-        listings={listings}
-        selectedProperty={selectedProperty}
-        onSelect={setSelectedProperty}
-        onCloseDetail={() => setSelectedProperty(null)}
-        searchControls={searchControls}
-        hasActiveFilters={hasActiveSearchFilters(filters)}
-      />
+    <div className="relative flex h-screen w-full flex-col overflow-hidden bg-black text-white md:flex-row">
+      <div className="absolute right-3 top-3 z-[900] grid grid-cols-2 overflow-hidden rounded-[8px] border border-white/12 bg-[#071017]/92 p-1 shadow-2xl backdrop-blur md:hidden">
+        <button
+          type="button"
+          onClick={() => setMobileView('list')}
+          className={`inline-flex h-8 items-center justify-center gap-1.5 rounded-[6px] px-3 text-[10px] font-black uppercase tracking-[0.12em] transition ${
+            mobileView === 'list' ? 'bg-cyan-100 text-[#061017]' : 'text-white/58 hover:text-white'
+          }`}
+          aria-pressed={mobileView === 'list'}
+        >
+          <List size={13} aria-hidden="true" />
+          List
+        </button>
+        <button
+          type="button"
+          onClick={() => setMobileView('map')}
+          className={`inline-flex h-8 items-center justify-center gap-1.5 rounded-[6px] px-3 text-[10px] font-black uppercase tracking-[0.12em] transition ${
+            mobileView === 'map' ? 'bg-cyan-100 text-[#061017]' : 'text-white/58 hover:text-white'
+          }`}
+          aria-pressed={mobileView === 'map'}
+        >
+          <MapIcon size={13} aria-hidden="true" />
+          Map
+        </button>
+      </div>
 
-      <div className="relative min-h-0 flex-1">
+      <div className={mobileView === 'map' ? 'hidden md:flex md:h-full md:shrink-0' : 'flex min-h-0 md:h-full md:shrink-0'}>
+        <MapSidebar
+          listings={listings}
+          selectedProperty={selectedProperty}
+          onSelect={setSelectedProperty}
+          onCloseDetail={() => setSelectedProperty(null)}
+          searchControls={searchControls}
+          hasActiveFilters={hasActiveSearchFilters(filters)}
+          isLoading={isSearching}
+        />
+      </div>
+
+      <div className={`${mobileView === 'list' ? 'hidden md:block' : 'block'} relative min-h-0 flex-1`}>
         <MapInner
           listings={listings}
           onBoundsChange={fetchListings}

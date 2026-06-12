@@ -274,8 +274,8 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
       <FAQSchema faqs={propertyFaqs} pageUrl={canonicalUrl} />
       <section className="relative border-b border-white/10">
         <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(100,188,205,0.14),transparent_38%),linear-gradient(180deg,rgba(255,255,255,0.035),transparent_35%)]" />
-        <div className="relative mx-auto grid min-h-[720px] max-w-[1500px] grid-cols-1 gap-0 lg:grid-cols-[minmax(0,1fr)_420px]">
-          <div className="relative min-h-[560px] overflow-hidden bg-[#101720] lg:min-h-[720px]">
+        <div className="relative mx-auto grid min-h-[620px] max-w-[1500px] grid-cols-1 gap-0 lg:min-h-[720px] lg:grid-cols-[minmax(0,1fr)_420px]">
+          <div className="relative min-h-[500px] overflow-hidden bg-[#101720] sm:min-h-[560px] lg:min-h-[720px]">
             <Image
               src={primaryPhoto}
               alt={property.address}
@@ -287,7 +287,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
             <div className="absolute inset-0 bg-gradient-to-t from-[#070b10] via-[#070b10]/20 to-transparent" />
             <div className="absolute inset-0 bg-gradient-to-r from-[#070b10]/88 via-[#070b10]/18 to-transparent" />
 
-            <div className="absolute left-5 right-5 top-5 flex items-center justify-between gap-4 md:left-8 md:right-8">
+            <div className="absolute left-4 right-4 top-4 flex flex-wrap items-center justify-between gap-2 md:left-8 md:right-8 md:top-5 md:gap-4">
               <Link
                 href="/search"
                 className="inline-flex items-center gap-2 rounded-[6px] border border-white/14 bg-[#071017]/76 px-3 py-2 text-[10px] font-black uppercase tracking-[0.16em] text-white/70 backdrop-blur transition hover:border-cyan-100/40 hover:text-cyan-100"
@@ -295,12 +295,12 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                 <ArrowLeft size={14} aria-hidden="true" />
                 Search
               </Link>
-              <span className="rounded-[6px] border border-white/14 bg-[#071017]/76 px-3 py-2 text-[10px] font-black uppercase tracking-[0.16em] text-cyan-100 backdrop-blur">
-                David Quinn Group Intelligence
+              <span className="max-w-[calc(100vw-2rem)] rounded-[6px] border border-white/14 bg-[#071017]/76 px-3 py-2 text-[10px] font-black uppercase tracking-[0.12em] text-cyan-100 backdrop-blur md:tracking-[0.16em]">
+                DQG Intelligence
               </span>
             </div>
 
-            <div className="absolute bottom-0 left-0 right-0 p-5 md:p-8 lg:p-12">
+            <div className="absolute bottom-0 left-0 right-0 p-4 pb-6 md:p-8 lg:p-12">
               <div className="max-w-4xl">
                 <div className="mb-4 flex flex-wrap gap-2">
                   <span className="rounded-[5px] border border-white/18 bg-white/12 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.14em] text-white/84 backdrop-blur">
@@ -312,10 +312,10 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                     </span>
                   ) : null}
                 </div>
-                <p className="font-serif text-[42px] font-black leading-none text-white md:text-[64px]">
+                <p className="font-serif text-[36px] font-black leading-none text-white sm:text-[42px] md:text-[64px]">
                   {formatCurrency(property.price)}
                 </p>
-                <h1 className="mt-5 max-w-4xl text-3xl font-black uppercase leading-tight tracking-normal text-white md:text-5xl">
+                <h1 className="mt-4 max-w-4xl text-[26px] font-black uppercase leading-tight tracking-normal text-white sm:text-3xl md:mt-5 md:text-5xl">
                   {property.address}
                 </h1>
                 <p className="mt-4 flex flex-wrap items-center gap-2 text-[12px] font-black uppercase tracking-[0.16em] text-white/64">
@@ -326,7 +326,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
             </div>
           </div>
 
-          <aside className="border-l border-white/10 bg-[#070b10] p-5 lg:sticky lg:top-0 lg:h-screen lg:overflow-y-auto">
+          <aside className="border-t border-white/10 bg-[#070b10] p-4 sm:p-5 lg:sticky lg:top-0 lg:h-screen lg:overflow-y-auto lg:border-l lg:border-t-0">
             <div className="rounded-[8px] border border-white/10 bg-[#0d141c] p-4">
               <p className="text-[10px] font-black uppercase tracking-[0.22em] text-white/44">REIE Scorecard</p>
               <div className="mt-4 grid grid-cols-2 gap-3">
