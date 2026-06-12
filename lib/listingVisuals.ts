@@ -121,4 +121,13 @@ export function getListingPhotoUrl(property: ListingVisualInput) {
   return photoPool[index] || LISTING_IMAGE_FALLBACK;
 }
 
+export function getListingFallbackPhotoUrl(property: ListingVisualInput) {
+  const category = getListingVisualCategory(property);
+  const photoPool = getFallbackPhotoPool(category);
+  const identity = `${property.id || ''}-${property.address || ''}-${property.city || ''}-${property.propertyType || ''}`;
+  const index = hashText(identity) % photoPool.length;
+
+  return photoPool[index] || LISTING_IMAGE_FALLBACK;
+}
+
 // /Users/davidquinn/david-quinn-group/colorado-real-estate/lib/listingVisuals.ts

@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import type { Prisma } from '@prisma/client';
 import type { ReactNode } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import {
@@ -24,12 +23,13 @@ import {
 import EquityVision from '@/components/EquityVision';
 import PropertyInquiryForm from '@/components/PropertyInquiryForm';
 import RelatedPropertyLinks from '@/components/RelatedPropertyLinks';
+import ResilientListingImage from '@/components/ResilientListingImage';
 import PropertyLinks from '@/components/internal-links/PropertyLinks';
 import FAQSchema from '@/components/schema/FAQSchema';
 import { getCityByName } from '@/lib/cities';
 import { getBlogLinks } from '@/lib/linking/getBlogLinks';
 import { getPropertyLinks } from '@/lib/linking/getPropertyLinks';
-import { getListingPhotoUrl } from '@/lib/listingVisuals';
+import { getListingFallbackPhotoUrl, getListingPhotoUrl } from '@/lib/listingVisuals';
 import { neighborhoods } from '@/lib/neighborhoods';
 import { prisma } from '@/lib/prisma';
 import type { FAQItem } from '@/lib/schema/faqSchema';
@@ -268,6 +268,13 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
   if (!property) notFound();
 
   const primaryPhoto = getPrimaryPhoto(property);
+  const fallbackPhoto = getListingFallbackPhotoUrl({
+    id: property.id,
+    address: property.address,
+    city: property.city,
+    propertyType: property.propertyType,
+    price: property.price,
+  });
   const isContracted = false;
   const altitude = property.altitude || 5280;
   const soilType = property.soilType || 'Front Range Mixed';
@@ -300,13 +307,14 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
         <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(100,188,205,0.14),transparent_38%),linear-gradient(180deg,rgba(255,255,255,0.035),transparent_35%)]" />
         <div className="relative mx-auto grid min-h-[620px] max-w-[1500px] grid-cols-1 gap-0 lg:min-h-[720px] lg:grid-cols-[minmax(0,1fr)_420px]">
           <div className="relative min-h-[500px] overflow-hidden bg-[#101720] sm:min-h-[560px] lg:min-h-[720px]">
-            <Image
+            <ResilientListingImage
               src={primaryPhoto}
+              fallbackSrc={fallbackPhoto}
               alt={property.address}
-              fill
-              priority
-              sizes="(min-width: 1024px) calc(100vw - 420px), 100vw"
-              className="object-cover opacity-95"
+              loading="eager"
+              fetchPriority="high"
+              fallbackLabel="REIE visual"
+              className="absolute inset-0 h-full w-full object-cover opacity-95"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[#070b10] via-[#070b10]/20 to-transparent" />
             <div className="absolute inset-0 bg-gradient-to-r from-[#070b10]/88 via-[#070b10]/18 to-transparent" />
@@ -456,7 +464,14 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
               <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
                 {property.photos.slice(1, 5).map((photo) => (
                   <div key={photo.id} className="relative aspect-[4/3] overflow-hidden rounded-[6px] border border-white/10 bg-[#101720]">
-                    <Image src={photo.url} alt={`${property.address} listing photo`} fill sizes="(min-width: 768px) 25vw, 50vw" className="object-cover" />
+                    <ResilientListingImage
+                      src={photo.url}
+                      fallbackSrc={fallbackPhoto}
+                      alt={`${property.address} listing photo`}
+                      loading="eager"
+                      fallbackLabel="Photo unavailable"
+                      className="absolute inset-0 h-full w-full object-cover"
+                    />
                   </div>
                 ))}
               </div>
