@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowUpRight, Bath, BedDouble, Gauge, MapPin, Ruler, ShieldCheck, TriangleAlert, X } from 'lucide-react';
+import { ArrowUpRight, Bath, BedDouble, Gauge, Mail, MapPin, Ruler, ShieldCheck, TriangleAlert, X } from 'lucide-react';
 import type { ReactNode } from 'react';
 
 import type { MapSidebarListing } from '@/components/maps/MapSidebar';
@@ -54,6 +54,8 @@ export default function SelectedPropertyDrawer({ property, onClose }: SelectedPr
   const state = property.state || 'CO';
   const price = getNumericValue(property.price) ?? 0;
   const hasReviewFlag = Boolean(property.hasPolybutyleneRisk);
+  const propertyHref = `/properties/${property.id}`;
+  const inquiryHref = `${propertyHref}#property-contact`;
 
   return (
     <aside className="pointer-events-auto absolute bottom-4 left-4 right-4 z-[720] rounded-[8px] border border-white/14 bg-[#071017]/94 p-4 shadow-2xl backdrop-blur-md md:bottom-6 md:left-auto md:right-6 md:w-[380px]">
@@ -100,21 +102,30 @@ export default function SelectedPropertyDrawer({ property, onClose }: SelectedPr
         </p>
       ) : null}
 
-      <div className="mt-4 grid grid-cols-2 gap-2 border-t border-white/10 pt-4">
+      <div className="mt-4 border-t border-white/10 pt-4">
         <Link
-          href={`/properties/${property.id}`}
-          className="inline-flex h-10 items-center justify-center gap-1.5 rounded-[6px] bg-cyan-100 text-[10px] font-black uppercase tracking-[0.12em] text-[#061017] transition hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
+          href={inquiryHref}
+          className="inline-flex h-11 w-full items-center justify-center gap-1.5 rounded-[6px] bg-cyan-100 text-[10px] font-black uppercase tracking-[0.14em] text-[#061017] transition hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
         >
-          Details
-          <ArrowUpRight size={13} aria-hidden="true" />
+          Inquire
+          <Mail size={13} aria-hidden="true" />
         </Link>
-        <Link
-          href={getCityMarketHref(city)}
-          className="inline-flex h-10 items-center justify-center gap-1.5 rounded-[6px] border border-white/10 bg-white/[0.055] text-[10px] font-black uppercase tracking-[0.12em] text-white/72 transition hover:border-cyan-100/35 hover:text-cyan-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
-        >
-          Market
-          <MapPin size={13} aria-hidden="true" />
-        </Link>
+        <div className="mt-2 grid grid-cols-2 gap-2">
+          <Link
+            href={propertyHref}
+            className="inline-flex h-9 items-center justify-center gap-1.5 rounded-[6px] border border-white/10 bg-white/[0.055] text-[10px] font-black uppercase tracking-[0.12em] text-white/72 transition hover:border-cyan-100/35 hover:text-cyan-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
+          >
+            Details
+            <ArrowUpRight size={13} aria-hidden="true" />
+          </Link>
+          <Link
+            href={getCityMarketHref(city)}
+            className="inline-flex h-9 items-center justify-center gap-1.5 rounded-[6px] border border-white/10 bg-white/[0.055] text-[10px] font-black uppercase tracking-[0.12em] text-white/72 transition hover:border-cyan-100/35 hover:text-cyan-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
+          >
+            Market
+            <MapPin size={13} aria-hidden="true" />
+          </Link>
+        </div>
       </div>
     </aside>
   );
