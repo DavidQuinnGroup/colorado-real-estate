@@ -1,7 +1,17 @@
 'use client';
 
-import { type FormEvent, useState } from 'react';
-import { CheckCircle2, Clock3, Loader2, Mail, MessageSquareText, Phone, ShieldCheck, UserRound } from 'lucide-react';
+import { type CSSProperties, type FormEvent, type ReactNode, useState } from 'react';
+import {
+  CheckCircle2,
+  Clock3,
+  Loader2,
+  Mail,
+  MessageSquareText,
+  Phone,
+  ShieldCheck,
+  Sparkles,
+  UserRound,
+} from 'lucide-react';
 
 type PropertyInquiryFormProps = {
   propertyId: string;
@@ -30,12 +40,47 @@ const TIMELINE_OPTIONS: { value: Timeline; label: string; detail: string }[] = [
   { value: 'research', label: 'Researching', detail: 'Early diligence and fit questions.' },
 ];
 
+const textControlStyle: CSSProperties = {
+  boxSizing: 'border-box',
+  minHeight: 44,
+  paddingBottom: 10,
+  paddingTop: 10,
+};
+
+const iconTextControlStyle: CSSProperties = {
+  ...textControlStyle,
+  paddingLeft: 36,
+  paddingRight: 12,
+};
+
+const timelineButtonStyle: CSSProperties = {
+  boxSizing: 'border-box',
+  minHeight: 44,
+  padding: '10px 8px',
+};
+
+const notesControlStyle: CSSProperties = {
+  boxSizing: 'border-box',
+  minHeight: 96,
+  padding: 12,
+};
+
+const submitButtonStyle: CSSProperties = {
+  boxSizing: 'border-box',
+  minHeight: 44,
+  padding: '12px 12px',
+};
+
 function isValidEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
 function getTimelineDetail(timeline: Timeline) {
   return TIMELINE_OPTIONS.find((option) => option.value === timeline)?.detail || 'Property-specific follow-up.';
+}
+
+function getTimelineLabel(timeline: Timeline) {
+  return TIMELINE_OPTIONS.find((option) => option.value === timeline)?.label || 'Property Inquiry';
 }
 
 async function readResponse(response: Response): Promise<PropertyInquiryResponse> {
@@ -103,92 +148,88 @@ export default function PropertyInquiryForm({ propertyId, address, city, state }
 
   if (submitState === 'success') {
     return (
-      <section id="property-contact" className="rounded-[8px] border border-cyan-100/28 bg-cyan-100/10 p-5">
-        <CheckCircle2 className="text-cyan-100" size={26} aria-hidden="true" />
-        <h2 className="mt-3 text-[15px] font-black uppercase tracking-[0.08em] text-white">Inquiry Saved</h2>
-        <p className="mt-2 text-sm leading-6 text-white/62">
-          This property inquiry is now routed into the REIE CRM queue for follow-up.
-        </p>
-        <div className="mt-4 flex flex-wrap gap-2">
-          <span className="rounded-[5px] border border-white/10 bg-white/[0.05] px-2.5 py-1.5 text-[10px] font-black uppercase tracking-[0.14em] text-white/48">
-            {result?.intake?.timelineLabel || 'Property inquiry'}
-          </span>
-          <span className="rounded-[5px] border border-cyan-100/28 bg-cyan-100/10 px-2.5 py-1.5 text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100">
-            {result?.intake?.leadTemperature || 'warm'}
-          </span>
+      <section id="property-contact" className="overflow-hidden rounded-[8px] border border-cyan-100/28 bg-[#071017]">
+        <div className="border-b border-cyan-100/14 bg-cyan-100/[0.075] p-5">
+          <CheckCircle2 className="text-cyan-100" size={26} aria-hidden="true" />
+          <h2 className="mt-3 text-[15px] font-black uppercase tracking-[0.08em] text-white">Inquiry Saved</h2>
+          <p className="mt-2 text-sm leading-6 text-white/62">
+            This property inquiry is now routed into the REIE CRM queue for follow-up.
+          </p>
+        </div>
+        <div className="grid gap-2 p-4 sm:grid-cols-2">
+          <SuccessMetric label="Request" value={result?.intake?.timelineLabel || 'Property inquiry'} />
+          <SuccessMetric label="Priority" value={result?.intake?.leadTemperature || 'warm'} tone="cyan" />
         </div>
       </section>
     );
   }
 
   return (
-    <section id="property-contact" className="rounded-[8px] border border-cyan-100/24 bg-cyan-100/[0.075] p-5">
-      <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.22em] text-cyan-100/76">
-        <Mail size={14} aria-hidden="true" />
-        Property Inquiry
-      </p>
-      <h2 className="mt-3 text-[15px] font-black uppercase tracking-[0.08em] text-white">Discuss This Asset</h2>
-      <p className="mt-2 text-sm leading-6 text-white/58">
-        Request a showing, risk read, or buyer strategy brief for {address}, {city}, {state}.
-      </p>
-      <div className="mt-4 grid gap-2">
-        <div className="rounded-[6px] border border-white/10 bg-white/[0.045] px-3 py-2.5">
-          <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100/72">
-            <ShieldCheck size={13} aria-hidden="true" />
-            Routed To REIE CRM
-          </p>
-          <p className="mt-2 text-xs leading-5 text-white/48">
-            High-urgency inquiries are prioritized for property-specific follow-up.
-          </p>
+    <section id="property-contact" className="overflow-hidden rounded-[8px] border border-cyan-100/24 bg-[#071017]">
+      <div className="border-b border-cyan-100/14 bg-cyan-100/[0.075] p-5">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.22em] text-cyan-100/76">
+              <Mail size={14} aria-hidden="true" />
+              Property Inquiry
+            </p>
+            <h2 className="mt-3 text-[18px] font-black uppercase leading-tight tracking-[0.06em] text-white">Discuss This Asset</h2>
+          </div>
+          <span className="rounded-[5px] border border-cyan-100/24 bg-black/30 px-2.5 py-1.5 text-[9px] font-black uppercase tracking-[0.14em] text-cyan-100/78">
+            REIE CRM
+          </span>
         </div>
-        <div className="rounded-[6px] border border-white/10 bg-white/[0.045] px-3 py-2.5">
-          <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100/72">
-            <Clock3 size={13} aria-hidden="true" />
-            Current Request
-          </p>
-          <p className="mt-2 text-xs leading-5 text-white/48">{getTimelineDetail(timeline)}</p>
-        </div>
+        <p className="mt-3 text-sm leading-6 text-white/62">
+          Request a showing, risk read, or buyer strategy brief for {address}, {city}, {state}.
+        </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="mt-5 space-y-3">
-        <label className="relative block">
-          <span className="sr-only">Name</span>
-          <UserRound className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-white/28" size={15} aria-hidden="true" />
-          <input
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-            placeholder="Name"
-            maxLength={120}
-            className="h-11 w-full rounded-[6px] border border-white/10 bg-white/[0.055] pl-9 pr-3 text-sm text-white outline-none transition placeholder:text-white/25 focus:border-cyan-100/55"
-          />
-        </label>
+      <div className="grid gap-2 border-b border-white/10 p-4 sm:grid-cols-2">
+        <StatusTile icon={<ShieldCheck size={13} />} label="Routed To REIE CRM" value="High-intent property follow-up" />
+        <StatusTile icon={<Clock3 size={13} />} label="Current Request" value={getTimelineDetail(timeline)} />
+      </div>
 
-        <label className="relative block">
-          <span className="sr-only">Email address</span>
-          <Mail className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-white/28" size={15} aria-hidden="true" />
+      <form onSubmit={handleSubmit} className="space-y-4 p-5">
+        <div className="grid gap-3 sm:grid-cols-2">
+          <FieldShell icon={<UserRound size={15} aria-hidden="true" />} label="Name">
+            <input
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+              placeholder="Name"
+              maxLength={120}
+              style={iconTextControlStyle}
+              className="h-11 w-full rounded-[6px] border border-white/10 bg-white/[0.055] pl-9 pr-3 text-sm text-white outline-none transition placeholder:text-white/25 focus:border-cyan-100/55"
+            />
+          </FieldShell>
+
+          <FieldShell icon={<Phone size={15} aria-hidden="true" />} label="Phone">
+            <input
+              value={phone}
+              onChange={(event) => setPhone(event.target.value)}
+              placeholder="Phone optional"
+              maxLength={40}
+              style={iconTextControlStyle}
+              className="h-11 w-full rounded-[6px] border border-white/10 bg-white/[0.055] pl-9 pr-3 text-sm text-white outline-none transition placeholder:text-white/25 focus:border-cyan-100/55"
+            />
+          </FieldShell>
+        </div>
+
+        <FieldShell icon={<Mail size={15} aria-hidden="true" />} label="Email address" required>
           <input
             type="email"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
             placeholder="Email"
+            style={iconTextControlStyle}
             className="h-11 w-full rounded-[6px] border border-white/10 bg-white/[0.055] pl-9 pr-3 text-sm text-white outline-none transition placeholder:text-white/25 focus:border-cyan-100/55"
           />
-        </label>
-
-        <label className="relative block">
-          <span className="sr-only">Phone</span>
-          <Phone className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-white/28" size={15} aria-hidden="true" />
-          <input
-            value={phone}
-            onChange={(event) => setPhone(event.target.value)}
-            placeholder="Phone optional"
-            maxLength={40}
-            className="h-11 w-full rounded-[6px] border border-white/10 bg-white/[0.055] pl-9 pr-3 text-sm text-white outline-none transition placeholder:text-white/25 focus:border-cyan-100/55"
-          />
-        </label>
+        </FieldShell>
 
         <div>
-          <div className="mb-2 text-[10px] font-black uppercase tracking-[0.16em] text-white/38">Timing / Intent</div>
+          <div className="mb-2 flex items-center justify-between gap-3">
+            <p className="text-[10px] font-black uppercase tracking-[0.16em] text-white/40">Timing / Intent</p>
+            <p className="truncate text-[10px] font-black uppercase tracking-[0.12em] text-cyan-100/70">{getTimelineLabel(timeline)}</p>
+          </div>
           <div className="grid grid-cols-2 gap-2">
             {TIMELINE_OPTIONS.map((option) => (
               <button
@@ -196,9 +237,10 @@ export default function PropertyInquiryForm({ propertyId, address, city, state }
                 type="button"
                 aria-pressed={timeline === option.value}
                 onClick={() => setTimeline(option.value)}
-                className={`h-10 rounded-[6px] border text-[10px] font-black uppercase tracking-[0.12em] transition ${
+                style={timelineButtonStyle}
+                className={`min-h-11 rounded-[6px] border px-2 text-[10px] font-black uppercase tracking-[0.12em] transition ${
                   timeline === option.value
-                    ? 'border-cyan-100 bg-cyan-100 text-[#061017]'
+                    ? 'border-cyan-100 bg-cyan-100 text-[#061017] shadow-[0_0_0_1px_rgba(207,250,254,0.22)]'
                     : 'border-white/10 bg-white/[0.055] text-white/48 hover:border-cyan-100/35 hover:text-white'
                 }`}
               >
@@ -208,21 +250,23 @@ export default function PropertyInquiryForm({ propertyId, address, city, state }
           </div>
         </div>
 
-        <label className="relative block">
-          <span className="sr-only">Notes</span>
-          <MessageSquareText className="pointer-events-none absolute left-3 top-3 text-white/28" size={15} aria-hidden="true" />
+        <label className="relative block rounded-[6px] border border-white/10 bg-white/[0.035] p-3">
+          <span className="mb-2 flex items-center justify-between gap-3 text-[10px] font-black uppercase tracking-[0.14em] text-white/40">
+            <span className="flex items-center gap-2">
+              <MessageSquareText size={13} aria-hidden="true" className="text-cyan-100/62" />
+              Notes optional but helpful
+            </span>
+            <span>{notes.length}/600</span>
+          </span>
           <textarea
             value={notes}
             onChange={(event) => setNotes(event.target.value)}
             placeholder="Questions, showing windows, financing status, or specific concerns"
             maxLength={600}
-            className="min-h-24 w-full resize-none rounded-[6px] border border-white/10 bg-white/[0.055] py-3 pl-9 pr-3 text-sm leading-6 text-white outline-none transition placeholder:text-white/25 focus:border-cyan-100/55"
+            style={notesControlStyle}
+            className="min-h-24 w-full resize-none rounded-[6px] border border-white/10 bg-[#071017]/70 px-3 py-3 text-sm leading-6 text-white outline-none transition placeholder:text-white/25 focus:border-cyan-100/55"
           />
         </label>
-        <div className="flex items-center justify-between gap-3 text-[10px] font-black uppercase tracking-[0.14em] text-white/34">
-          <span>Notes optional but helpful</span>
-          <span>{notes.length}/600</span>
-        </div>
 
         {errorMessage ? (
           <p aria-live="polite" className="rounded-[6px] border border-red-400/24 bg-red-500/10 px-3 py-2 text-xs font-bold text-red-100">
@@ -233,12 +277,64 @@ export default function PropertyInquiryForm({ propertyId, address, city, state }
         <button
           type="submit"
           disabled={submitState === 'submitting'}
-          className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-[6px] bg-cyan-100 text-[10px] font-black uppercase tracking-[0.16em] text-[#061017] transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-60"
+          style={submitButtonStyle}
+          className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-[6px] bg-cyan-100 px-3 py-3 text-[10px] font-black uppercase tracking-[0.16em] text-[#061017] transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-60"
         >
           {submitState === 'submitting' ? <Loader2 size={14} className="animate-spin" aria-hidden="true" /> : <Mail size={14} aria-hidden="true" />}
           {submitState === 'submitting' ? 'Saving' : 'Send Inquiry'}
         </button>
       </form>
     </section>
+  );
+}
+
+function FieldShell({
+  icon,
+  label,
+  required,
+  children,
+}: {
+  icon: ReactNode;
+  label: string;
+  required?: boolean;
+  children: ReactNode;
+}) {
+  return (
+    <label className="block">
+      <span className="mb-2 flex items-center justify-between gap-3 text-[10px] font-black uppercase tracking-[0.14em] text-white/38">
+        <span>{label}</span>
+        {required ? <span className="text-cyan-100/70">Required</span> : null}
+      </span>
+      <span className="relative block">
+        <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-white/28">{icon}</span>
+        {children}
+      </span>
+    </label>
+  );
+}
+
+function StatusTile({ icon, label, value }: { icon: ReactNode; label: string; value: string }) {
+  return (
+    <div className="rounded-[6px] border border-white/10 bg-white/[0.045] px-3 py-2.5">
+      <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100/72">
+        {icon}
+        {label}
+      </p>
+      <p className="mt-2 text-xs leading-5 text-white/50">{value}</p>
+    </div>
+  );
+}
+
+function SuccessMetric({ label, value, tone = 'white' }: { label: string; value: string; tone?: 'white' | 'cyan' }) {
+  const valueClass = tone === 'cyan' ? 'text-cyan-100' : 'text-white/72';
+
+  return (
+    <div className="rounded-[6px] border border-white/10 bg-white/[0.045] p-3">
+      <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.14em] text-white/38">
+        <Sparkles size={12} aria-hidden="true" className="text-cyan-100/62" />
+        {label}
+      </p>
+      <p className={`mt-2 truncate text-xs font-black uppercase tracking-[0.1em] ${valueClass}`}>{value}</p>
+    </div>
   );
 }
