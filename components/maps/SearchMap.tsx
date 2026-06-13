@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
-import { getListingPhotoUrl, LISTING_IMAGE_FALLBACK } from '@/lib/listingVisuals';
+import { getListingFallbackPhotoUrl, getListingPhotoUrl } from '@/lib/listingVisuals';
 import { formatLuxuryPrice } from '@/lib/utils/formatters';
 import type { MapSidebarListing } from './MapSidebar';
 
@@ -148,6 +148,20 @@ function getReviewSignal(property: MapSidebarListing) {
   return 'REIE Verified';
 }
 
+function getDecisionSignal(property: MapSidebarListing) {
+  if (property.hasPolybutyleneRisk) return 'GC Review';
+  if (typeof property.resilienceScore === 'number' && property.resilienceScore >= 80) return 'Resilience Screened';
+  if (typeof property.efficiencyScore === 'number' && property.efficiencyScore >= 80) return 'Efficiency Screened';
+  if (property.isPrivateExclusive) return 'Private Candidate';
+
+  return 'REIE Triage Ready';
+}
+
+function getPropertyTypeLabel(value: string | null | undefined) {
+  const cleaned = value?.trim();
+  return cleaned || 'Residential';
+}
+
 function getFallbackBounds(map: L.Map): MapBounds {
   let center = L.latLng(40.0174, -105.276);
 
@@ -183,9 +197,11 @@ function getFallbackBounds(map: L.Map): MapBounds {
 
 function buildPopupHtml(property: MapSidebarListing) {
   const photoUrl = escapeHtml(getListingPhotoUrl(property));
+  const fallbackPhotoUrl = escapeHtml(getListingFallbackPhotoUrl(property));
   const price = formatLuxuryPrice(Number(property.price));
   const address = escapeHtml(property.address || 'Address Available by Request');
   const city = escapeHtml(property.city || 'Colorado');
+  const propertyType = escapeHtml(getPropertyTypeLabel(property.propertyType));
   const beds = formatFeature(property.beds, 'BD');
   const baths = formatFeature(property.baths, 'BA');
   const sqft = formatFeature(property.sqft, 'SQ FT');
@@ -193,17 +209,28 @@ function buildPopupHtml(property: MapSidebarListing) {
   const efficiencyScore = escapeHtml(formatScore(property.efficiencyScore));
   const resilienceScore = escapeHtml(formatScore(property.resilienceScore));
   const reviewSignal = escapeHtml(getReviewSignal(property));
+  const decisionSignal = escapeHtml(getDecisionSignal(property));
+  const privateChip = property.isPrivateExclusive ? '<span class="reie-map-popup-chip reie-map-popup-chip-private">Private</span>' : '';
+  const reviewChip = property.hasPolybutyleneRisk ? '<span class="reie-map-popup-chip reie-map-popup-chip-review">Review</span>' : '';
 
   return `
     <article class="reie-map-popup-card">
       <div class="reie-map-popup-image-wrap">
-        <img src="${photoUrl}" alt="${address}" class="reie-map-popup-image" onerror="this.src='${LISTING_IMAGE_FALLBACK}'" />
+        <img src="${photoUrl}" alt="${address}" class="reie-map-popup-image" onerror="this.onerror=null;this.src='${fallbackPhotoUrl}'" />
+        <div class="reie-map-popup-image-shade"></div>
+        <div class="reie-map-popup-chips">
+          <span class="reie-map-popup-chip">${propertyType}</span>
+          ${privateChip}
+          ${reviewChip}
+        </div>
       </div>
       <div class="reie-map-popup-body">
+        <p class="reie-map-popup-kicker">Selected Signal</p>
         <p class="reie-map-popup-price">${price}</p>
         <h2 class="reie-map-popup-address">${address}</h2>
         <p class="reie-map-popup-city">${city}, CO</p>
         ${features ? `<p class="reie-map-popup-features">${escapeHtml(features)}</p>` : ''}
+        <p class="reie-map-popup-decision">${decisionSignal}</p>
         <div class="reie-map-popup-intel">
           <span>EFF ${efficiencyScore}</span>
           <span>RES ${resilienceScore}</span>
@@ -774,7 +801,8 @@ export default function SearchMap({
 
         .reie-map-popup .leaflet-popup-content {
           margin: 0;
-          width: 314px !important;
+          max-width: min(326px, calc(100vw - 44px));
+          width: 326px !important;
         }
 
         .reie-map-popup .leaflet-popup-tip-container {
@@ -782,18 +810,20 @@ export default function SearchMap({
         }
 
         .reie-map-popup-card {
-          background: rgba(0, 0, 0, 0.94);
-          border: 1px solid rgba(255, 255, 255, 0.28);
+          background: rgba(7, 16, 23, 0.97);
+          border: 1px solid rgba(255, 255, 255, 0.18);
+          border-radius: 8px;
           box-shadow: 0 28px 80px rgba(0, 0, 0, 0.72);
           color: #fff;
           overflow: hidden;
-          width: 314px;
+          width: 100%;
         }
 
         .reie-map-popup-image-wrap {
           aspect-ratio: 16 / 9;
-          background: #050505;
+          background: #10151b;
           overflow: hidden;
+          position: relative;
           width: 100%;
         }
 
@@ -801,16 +831,73 @@ export default function SearchMap({
           display: block;
           height: 100%;
           object-fit: cover;
+          opacity: 0.9;
           width: 100%;
         }
 
+        .reie-map-popup-image-shade {
+          background: linear-gradient(180deg, rgba(0, 0, 0, 0.14), rgba(7, 16, 23, 0.18) 42%, rgba(7, 16, 23, 0.82));
+          inset: 0;
+          pointer-events: none;
+          position: absolute;
+        }
+
+        .reie-map-popup-chips {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 6px;
+          left: 12px;
+          max-width: calc(100% - 24px);
+          position: absolute;
+          top: 12px;
+        }
+
+        .reie-map-popup-chip {
+          align-items: center;
+          background: rgba(0, 0, 0, 0.58);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          border-radius: 5px;
+          color: rgba(255, 255, 255, 0.84);
+          display: inline-flex;
+          font-size: 8px;
+          font-weight: 900;
+          justify-content: center;
+          letter-spacing: 0.12em;
+          line-height: 1;
+          min-height: 24px;
+          padding: 6px 8px;
+          text-transform: uppercase;
+        }
+
+        .reie-map-popup-chip-private {
+          background: rgba(8, 145, 178, 0.18);
+          border-color: rgba(207, 250, 254, 0.36);
+          color: rgb(207, 250, 254);
+        }
+
+        .reie-map-popup-chip-review {
+          background: rgba(251, 191, 36, 0.14);
+          border-color: rgba(253, 230, 138, 0.38);
+          color: rgb(254, 243, 199);
+        }
+
         .reie-map-popup-body {
-          padding: 18px 20px 20px;
+          padding: 16px 18px 18px;
+        }
+
+        .reie-map-popup-kicker {
+          color: rgba(207, 250, 254, 0.72);
+          font-size: 9px;
+          font-weight: 900;
+          letter-spacing: 0.2em;
+          line-height: 1;
+          margin: 0 0 10px;
+          text-transform: uppercase;
         }
 
         .reie-map-popup-price {
           font-family: Georgia, serif;
-          font-size: 31px;
+          font-size: 30px;
           font-style: italic;
           font-weight: 900;
           letter-spacing: 0;
@@ -822,8 +909,8 @@ export default function SearchMap({
           font-size: 12px;
           font-weight: 900;
           letter-spacing: 0.04em;
-          line-height: 1.25;
-          margin: 18px 0 0;
+          line-height: 1.32;
+          margin: 14px 0 0;
           text-transform: uppercase;
         }
 
@@ -834,15 +921,29 @@ export default function SearchMap({
           font-weight: 900;
           letter-spacing: 0.22em;
           line-height: 1.4;
-          margin: 10px 0 0;
+          margin: 9px 0 0;
+          text-transform: uppercase;
+        }
+
+        .reie-map-popup-decision {
+          background: rgba(207, 250, 254, 0.07);
+          border: 1px solid rgba(207, 250, 254, 0.16);
+          border-radius: 6px;
+          color: rgba(255, 255, 255, 0.74);
+          font-size: 9px;
+          font-weight: 900;
+          letter-spacing: 0.12em;
+          line-height: 1.35;
+          margin: 13px 0 0;
+          padding: 9px 10px;
           text-transform: uppercase;
         }
 
         .reie-map-popup-intel {
           display: grid;
           gap: 6px;
-          grid-template-columns: 0.7fr 0.7fr 1.6fr;
-          margin-top: 14px;
+          grid-template-columns: 0.75fr 0.75fr minmax(0, 1.6fr);
+          margin-top: 10px;
         }
 
         .reie-map-popup-intel span {
@@ -858,6 +959,20 @@ export default function SearchMap({
           text-overflow: ellipsis;
           text-transform: uppercase;
           white-space: nowrap;
+        }
+
+        @media (max-width: 640px) {
+          .reie-map-popup .leaflet-popup-content {
+            width: min(310px, calc(100vw - 44px)) !important;
+          }
+
+          .reie-map-popup-price {
+            font-size: 27px;
+          }
+
+          .reie-map-popup-body {
+            padding: 14px;
+          }
         }
       `}</style>
     </>
