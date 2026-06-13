@@ -175,7 +175,11 @@ export default function SearchInterface({
     () => (visibleSelectedId ? visibleListings.find((listing) => listing.id === visibleSelectedId) || null : null),
     [visibleListings, visibleSelectedId],
   );
-  const mobileStatusLabel = isSearching ? 'Updating inventory' : `${visibleListings.length} listings`;
+  const mobileStatusLabel = isSearching
+    ? 'Updating inventory'
+    : selectedProperty && mobileView === 'map'
+      ? selectedProperty.address || 'Selected listing'
+      : `${visibleListings.length} listings`;
 
   useEffect(() => {
     const handleToggle = (event: Event) => {
@@ -235,6 +239,18 @@ export default function SearchInterface({
     updateBrowserSearchUrl(nextFilters);
   }
 
+  function handleListSelect(id: string) {
+    setSelectedId(id);
+
+    if (typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches) {
+      setMobileView('map');
+    }
+  }
+
+  function handleMapSelect(id: string) {
+    setSelectedId(id);
+  }
+
   useEffect(() => {
     if (!hasActiveSearchFilters(filters)) return;
 
@@ -279,7 +295,11 @@ export default function SearchInterface({
   );
 
   return (
-    <div className="relative flex h-screen w-full flex-col overflow-hidden bg-black text-white md:flex-row">
+    <div
+      className="relative flex h-screen w-full flex-col overflow-hidden bg-black text-white md:flex-row"
+      data-mobile-view={mobileView}
+      data-selected-listing-id={visibleSelectedId || ''}
+    >
       <div className="absolute left-3 right-3 top-3 z-[900] flex items-center justify-between gap-3 md:hidden">
         <span className="min-w-0 truncate rounded-[8px] border border-white/12 bg-[#071017]/92 px-3 py-2 text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100/76 shadow-2xl backdrop-blur">
           {mobileStatusLabel}
@@ -317,7 +337,7 @@ export default function SearchInterface({
           listings={visibleListings}
           selectedId={visibleSelectedId}
           hoveredId={visibleHoveredId}
-          onSelect={setSelectedId}
+          onSelect={handleListSelect}
           onHover={setHoveredId}
           searchControls={searchControls}
           hasActiveFilters={hasActiveSearchFilters(filters)}
@@ -329,7 +349,7 @@ export default function SearchInterface({
         <MapInner
           listings={visibleListings}
           selectedId={visibleSelectedId}
-          setSelectedId={setSelectedId}
+          setSelectedId={handleMapSelect}
           hoveredId={visibleHoveredId}
           setHoveredId={setHoveredId}
           searchMeta={effectiveSearchMeta}
