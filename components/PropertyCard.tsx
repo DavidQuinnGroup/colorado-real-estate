@@ -159,10 +159,11 @@ export default function PropertyCard({ property, isActive, onClick }: PropertyCa
       onKeyDown={handleKeyDown}
       className={`group m-3 cursor-pointer overflow-hidden rounded-[8px] border outline-none transition duration-200 focus-visible:border-cyan-200 focus-visible:ring-2 focus-visible:ring-cyan-200/40 ${
         isActive
-          ? 'border-cyan-200/70 bg-[#101821] shadow-[0_18px_55px_rgba(7,22,38,0.55)]'
+          ? 'border-cyan-200/70 bg-[#101821] shadow-[0_18px_55px_rgba(7,22,38,0.55)] ring-1 ring-cyan-100/25'
           : 'border-white/10 bg-[#0a0f14] shadow-[0_12px_35px_rgba(0,0,0,0.28)] hover:border-white/24 hover:bg-[#101720]'
       }`}
     >
+      {isActive ? <div className="h-1 w-full bg-cyan-100" aria-hidden="true" /> : null}
       <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#10151b]">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -200,7 +201,12 @@ export default function PropertyCard({ property, isActive, onClick }: PropertyCa
         ) : null}
 
         <div className="absolute bottom-4 left-4 right-4">
-          <p className="font-serif text-[24px] font-black leading-none text-white drop-shadow">{formatLuxuryPrice(price)}</p>
+          <div className="flex items-end justify-between gap-3">
+            <p className="font-serif text-[24px] font-black leading-none text-white drop-shadow">{formatLuxuryPrice(price)}</p>
+            <span className="hidden rounded-[4px] border border-white/20 bg-black/50 px-2 py-1 text-[9px] font-black uppercase tracking-[0.12em] text-white/72 backdrop-blur sm:inline-flex">
+              {getDecisionLabel(property)}
+            </span>
+          </div>
           <div className="mt-3 flex flex-wrap gap-2">
             <span style={heroStatStyle} className="inline-flex items-center gap-1.5 rounded-[4px] bg-white/92 px-2.5 py-1 text-[11px] font-black uppercase tracking-[0.08em] text-[#111820]">
               <BedDouble size={13} aria-hidden="true" />

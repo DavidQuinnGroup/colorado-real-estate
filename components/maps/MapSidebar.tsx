@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Bell, FileText, Gauge, Layers3, MapPinned, ShieldCheck, X } from 'lucide-react';
+import { Bell, FileText, Gauge, Layers3, ListFilter, MapPinned, ShieldCheck, X } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { Suspense, useEffect, useMemo, useRef } from 'react';
 
@@ -258,6 +258,51 @@ function SearchIntelligenceStrip({ stats }: { stats: InventoryStats }) {
   );
 }
 
+function ResultsToolbar({
+  count,
+  stats,
+  hasActiveFilters,
+  isLoading,
+}: {
+  count: number;
+  stats: InventoryStats;
+  hasActiveFilters?: boolean;
+  isLoading?: boolean;
+}) {
+  const mapCoverage = count > 0 ? `${Math.round((stats.mappedCount / count) * 100)}% mapped` : 'Map pending';
+
+  return (
+    <div className="sticky top-0 z-10 border-b border-white/10 bg-[#070b10]/95 px-3 py-3 backdrop-blur">
+      <div className="flex items-center justify-between gap-3 rounded-[8px] border border-white/10 bg-white/[0.035] px-3 py-2.5">
+        <div className="min-w-0">
+          <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">
+            <ListFilter size={13} aria-hidden="true" />
+            Results
+          </p>
+          <p className="mt-1 truncate text-[11px] font-black uppercase tracking-[0.1em] text-white/45">
+            {isLoading ? 'Updating inventory' : `${stats.dominantCity} priority stack`}
+          </p>
+        </div>
+
+        <div className="grid shrink-0 grid-cols-3 overflow-hidden rounded-[6px] border border-white/10 bg-black/24 text-center">
+          <div className="min-w-[58px] px-2 py-1.5">
+            <p className="text-[9px] font-black uppercase tracking-[0.12em] text-white/34">Total</p>
+            <p className="mt-0.5 text-[13px] font-black leading-none text-white">{count}</p>
+          </div>
+          <div className="min-w-[58px] border-l border-white/10 px-2 py-1.5">
+            <p className="text-[9px] font-black uppercase tracking-[0.12em] text-white/34">Map</p>
+            <p className="mt-0.5 text-[11px] font-black leading-none text-cyan-100">{mapCoverage}</p>
+          </div>
+          <div className="min-w-[58px] border-l border-white/10 px-2 py-1.5">
+            <p className="text-[9px] font-black uppercase tracking-[0.12em] text-white/34">Mode</p>
+            <p className="mt-0.5 text-[11px] font-black leading-none text-white">{hasActiveFilters ? 'Filtered' : 'Live'}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function getSelectedAddress(property: MapSidebarListing | null | undefined, listings: MapSidebarListing[], selectedId: string | null) {
   if (property?.address) return property.address;
   if (!selectedId) return null;
@@ -407,7 +452,9 @@ export default function MapSidebar(props: MapSidebarProps) {
         </div>
       </header>
 
-      <div ref={sidebarRef} className="custom-sidebar-wide flex-1 overflow-y-auto bg-[#070b10] py-1">
+      <div ref={sidebarRef} className="custom-sidebar-wide flex-1 overflow-y-auto bg-[#070b10] pb-1">
+        <ResultsToolbar count={listings.length} stats={stats} hasActiveFilters={hasActiveFilters} isLoading={isLoading} />
+
         {isLoading ? (
           <LoadingInventorySkeleton />
         ) : listings.length > 0 ? (
