@@ -480,29 +480,71 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
         </div>
       </section>
 
-      <section className="mx-auto grid max-w-7xl grid-cols-1 gap-6 px-5 py-10 lg:grid-cols-[minmax(0,1fr)_380px] lg:px-8">
-        <div className="space-y-6">
-          <section className="rounded-[8px] border border-white/10 bg-[#0d141c] p-5 md:p-8">
-            <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.22em] text-cyan-100/76">
-              <FileText size={14} aria-hidden="true" />
-              Property Brief
+      <section className="mx-auto max-w-7xl px-5 py-10 lg:px-8">
+        <div className="mb-6 flex flex-col justify-between gap-4 border-b border-white/10 pb-6 md:flex-row md:items-end">
+          <div className="max-w-3xl">
+            <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.24em] text-cyan-100/76">
+              <ShieldCheck size={14} aria-hidden="true" />
+              Property Intelligence Workspace
             </p>
-            <p className="mt-5 max-w-4xl text-base leading-8 text-white/70">
-              {property.description ||
-                `${property.address} is an active Colorado listing in the David Quinn Group intelligence layer. Live MLS media, location signals, and structural context are being assembled for this asset.`}
-            </p>
-          </section>
+            <h2 className="mt-3 text-2xl font-black uppercase tracking-tight text-white md:text-4xl">
+              Decision context after the hero view
+            </h2>
+          </div>
+          <div className="grid grid-cols-3 overflow-hidden rounded-[8px] border border-white/10 bg-[#0d141c] text-center md:min-w-[380px]">
+            <SnapshotTile label="Price" value={formatCompactCurrency(property.price)} />
+            <SnapshotTile label="Basis" value={pricePerSquareFoot} />
+            <SnapshotTile label="Signal" value={decisionTone} />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
+          <div className="space-y-6">
+            <section className="overflow-hidden rounded-[8px] border border-white/10 bg-[#0d141c]">
+              <div className="border-b border-white/10 bg-white/[0.035] p-5 md:p-6">
+                <div className="flex flex-col justify-between gap-4 md:flex-row md:items-start">
+                  <div>
+                    <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.22em] text-cyan-100/76">
+                      <FileText size={14} aria-hidden="true" />
+                      Property Brief
+                    </p>
+                    <h2 className="mt-3 text-xl font-black uppercase tracking-tight text-white md:text-2xl">
+                      MLS facts translated into decision posture
+                    </h2>
+                  </div>
+                  <span className="inline-flex h-8 items-center rounded-[6px] border border-cyan-100/22 bg-cyan-100/[0.08] px-3 text-[10px] font-black uppercase tracking-[0.16em] text-cyan-100">
+                    {diligencePosture}
+                  </span>
+                </div>
+              </div>
+              <div className="p-5 md:p-8">
+                <p className="max-w-4xl text-base leading-8 text-white/70">
+                  {property.description ||
+                    `${property.address} is an active Colorado listing in the David Quinn Group intelligence layer. Live MLS media, location signals, and structural context are being assembled for this asset.`}
+                </p>
+                <div className="mt-6 grid gap-3 md:grid-cols-3">
+                  <BriefSignalTile label="Review" value={reviewSignal} />
+                  <BriefSignalTile label="Location" value={property.neighborhood || property.city || 'Colorado'} />
+                  <BriefSignalTile label="Next Step" value={decisionNextStep} />
+                </div>
+              </div>
+            </section>
 
           {property.photos.length > 1 ? (
-            <section className="rounded-[8px] border border-white/10 bg-[#0d141c] p-4">
-              <div className="mb-4 flex items-center justify-between gap-4">
-                <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.22em] text-white/50">
-                  <Camera size={14} aria-hidden="true" />
-                  Listing Media
+            <section className="overflow-hidden rounded-[8px] border border-white/10 bg-[#0d141c]">
+              <div className="flex items-center justify-between gap-4 border-b border-white/10 bg-white/[0.035] p-5">
+                <div>
+                  <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.22em] text-white/50">
+                    <Camera size={14} aria-hidden="true" />
+                    Listing Media
+                  </p>
+                  <p className="mt-2 text-sm leading-6 text-white/48">Secondary photos for condition, layout, and finish review.</p>
+                </div>
+                <p className="shrink-0 rounded-[6px] border border-white/10 bg-black/24 px-3 py-2 text-[10px] font-black uppercase tracking-[0.14em] text-white/54">
+                  {property.photos.length} Photos
                 </p>
-                <p className="text-[10px] font-black uppercase tracking-[0.14em] text-white/34">{property.photos.length} Photos</p>
               </div>
-              <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+              <div className="grid grid-cols-2 gap-3 p-4 md:grid-cols-4">
                 {property.photos.slice(1, 5).map((photo) => (
                   <div key={photo.id} className="relative aspect-[4/3] overflow-hidden rounded-[6px] border border-white/10 bg-[#101720]">
                     <ResilientListingImage
@@ -518,9 +560,9 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
               </div>
             </section>
           ) : null}
-        </div>
+          </div>
 
-        <aside className="space-y-6">
+          <aside className="space-y-6">
           <section className="rounded-[8px] border border-cyan-100/20 bg-cyan-100/[0.06] p-4">
             <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100/76">
               <ShieldCheck size={14} aria-hidden="true" />
@@ -559,7 +601,8 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
           </section>
 
           <EquityVision property={equityProperty} />
-        </aside>
+          </aside>
+        </div>
       </section>
       <section className="mx-auto max-w-7xl px-5 pb-20 lg:px-8">
         <RelatedPropertyLinks
@@ -702,6 +745,15 @@ function SnapshotTile({ label, value }: { label: string; value: string }) {
     <div className="min-w-0 rounded-[6px] border border-white/10 bg-white/[0.045] p-3">
       <p className="text-[10px] font-black uppercase tracking-[0.14em] text-white/36">{label}</p>
       <p className="mt-2 truncate text-sm font-black text-white/78">{value}</p>
+    </div>
+  );
+}
+
+function BriefSignalTile({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="min-w-0 rounded-[6px] border border-white/10 bg-white/[0.045] p-4">
+      <p className="text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100/58">{label}</p>
+      <p className="mt-2 line-clamp-3 text-sm font-bold leading-6 text-white/68">{value}</p>
     </div>
   );
 }
