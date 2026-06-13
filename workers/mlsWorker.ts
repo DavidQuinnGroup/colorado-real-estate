@@ -5,7 +5,6 @@ import { syncMLSGrid } from '../lib/mls/syncMLSGrid.js';
 import { assertWorkerDatabaseReady } from '../lib/queue/databasePreflight.js';
 import { enqueueDeadLetter, enqueueDeadLetterFromJob } from '../lib/queue/deadLetterQueue.js';
 import {
-  connection,
   MLS_SYNC_DEFAULT_MAX_PAGES,
   MLS_SYNC_DEFAULT_MAX_RUNTIME_MS,
   MLS_SYNC_DEFAULT_PAGE_TIMEOUT_MS,
@@ -22,6 +21,7 @@ import {
   type MlsSyncJobData,
   normalizeMlsSyncJobData,
 } from '../lib/queue/mlsQueue.js';
+import { getRedisConnection } from '../lib/queue/redis.js';
 
 type MlsSyncJobResult = Awaited<ReturnType<typeof syncMLSGrid>>;
 
@@ -253,7 +253,7 @@ function createMlsSyncWorker(config: MlsWorkerConfig) {
       return result;
     },
     {
-      connection,
+      connection: getRedisConnection(),
       concurrency: config.concurrency,
       lockDuration: config.lockDurationMs,
       maxStalledCount: config.maxStalledCount,

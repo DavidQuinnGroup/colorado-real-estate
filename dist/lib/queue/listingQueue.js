@@ -1,8 +1,8 @@
 import { randomUUID } from 'crypto';
 import { Queue } from 'bullmq';
+import { createLazyQueue } from './lazyQueue.js';
 import { getRedisConnection } from './redis.js';
 export const LISTING_QUEUE_NAME = 'listings';
-const connection = getRedisConnection();
 export const LISTING_JOB_NAME = 'process-listing';
 export const LISTING_JOB_ATTEMPTS = 3;
 export const LISTING_JOB_BACKOFF_DELAY_MS = 3000;
@@ -26,9 +26,12 @@ const listingIdentityFields = [
     'mlsid',
     'UnparsedAddress',
 ];
-export const listingQueue = new Queue(LISTING_QUEUE_NAME, {
-    connection,
-});
+function createListingQueue() {
+    return new Queue(LISTING_QUEUE_NAME, {
+        connection: getRedisConnection(),
+    });
+}
+export const listingQueue = createLazyQueue(createListingQueue);
 function getFirstListingValue(listing, fields) {
     for (const field of fields) {
         const value = listing[field];

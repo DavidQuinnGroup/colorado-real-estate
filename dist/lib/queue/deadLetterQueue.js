@@ -1,4 +1,5 @@
 import { Queue } from 'bullmq';
+import { createLazyQueue } from './lazyQueue.js';
 import { getRedisConnection } from './redis.js';
 export const DEAD_LETTER_QUEUE_NAME = 'reie-dead-letter';
 const MAX_TEXT_LENGTH = 6000;
@@ -10,7 +11,6 @@ const MAX_ARRAY_ITEMS = 50;
 const REDACTED_VALUE = '[REDACTED]';
 const TRUNCATED_VALUE = '[TRUNCATED]';
 const SENSITIVE_KEY_PATTERN = /(?:api[_-]?key|authorization|bearer|cookie|credential|password|secret|token|refresh[_-]?token|access[_-]?token|private[_-]?key)/i;
-const connection = getRedisConnection();
 const defaultJobOptions = {
     attempts: 1,
     removeOnComplete: {
@@ -22,10 +22,13 @@ const defaultJobOptions = {
         count: 1000,
     },
 };
-export const deadLetterQueue = new Queue(DEAD_LETTER_QUEUE_NAME, {
-    connection,
-    defaultJobOptions,
-});
+function createDeadLetterQueue() {
+    return new Queue(DEAD_LETTER_QUEUE_NAME, {
+        connection: getRedisConnection(),
+        defaultJobOptions,
+    });
+}
+export const deadLetterQueue = createLazyQueue(createDeadLetterQueue);
 function getErrorMessage(error) {
     if (error instanceof Error)
         return error.message;

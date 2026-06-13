@@ -1,5 +1,6 @@
 import { Job, Queue, type JobsOptions } from 'bullmq';
 
+import { createLazyQueue } from './lazyQueue.js';
 import { getRedisConnection } from './redis.js';
 
 export type DeadLetterJobData = {
@@ -35,8 +36,6 @@ const REDACTED_VALUE = '[REDACTED]';
 const TRUNCATED_VALUE = '[TRUNCATED]';
 const SENSITIVE_KEY_PATTERN = /(?:api[_-]?key|authorization|bearer|cookie|credential|password|secret|token|refresh[_-]?token|access[_-]?token|private[_-]?key)/i;
 
-const connection = getRedisConnection();
-
 const defaultJobOptions: JobsOptions = {
   attempts: 1,
   removeOnComplete: {
@@ -49,10 +48,14 @@ const defaultJobOptions: JobsOptions = {
   },
 };
 
-export const deadLetterQueue = new Queue<DeadLetterJobData>(DEAD_LETTER_QUEUE_NAME, {
-  connection,
-  defaultJobOptions,
-});
+function createDeadLetterQueue() {
+  return new Queue<DeadLetterJobData>(DEAD_LETTER_QUEUE_NAME, {
+    connection: getRedisConnection(),
+    defaultJobOptions,
+  });
+}
+
+export const deadLetterQueue = createLazyQueue(createDeadLetterQueue);
 
 function getErrorMessage(error: unknown) {
   if (error instanceof Error) return error.message;

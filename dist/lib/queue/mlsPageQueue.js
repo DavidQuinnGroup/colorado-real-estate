@@ -1,4 +1,5 @@
 import { Queue } from 'bullmq';
+import { createLazyQueue } from './lazyQueue.js';
 import { getRedisConnection } from './redis.js';
 export const MLS_PAGE_QUEUE_NAME = 'mls-page';
 export const MLS_PAGE_JOB_NAME = 'fetch-page';
@@ -30,11 +31,13 @@ const defaultJobOptions = {
         count: MLS_PAGE_REMOVE_ON_FAIL_COUNT,
     },
 };
-const connection = getRedisConnection();
-export const mlsPageQueue = new Queue(MLS_PAGE_QUEUE_NAME, {
-    connection,
-    defaultJobOptions,
-});
+function createMlsPageQueue() {
+    return new Queue(MLS_PAGE_QUEUE_NAME, {
+        connection: getRedisConnection(),
+        defaultJobOptions,
+    });
+}
+export const mlsPageQueue = createLazyQueue(createMlsPageQueue);
 function getSafeInteger(value, fallback, min, max) {
     if (!Number.isFinite(value) || value === undefined)
         return fallback;

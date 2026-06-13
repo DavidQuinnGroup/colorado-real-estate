@@ -34,6 +34,19 @@ function buildRedisOptions(connectionName) {
         retryStrategy: getRetryStrategy(),
     };
 }
+function parseRedisUrl(redisUrl) {
+    const url = new URL(redisUrl);
+    const db = url.pathname.replace(/^\//, '');
+    const dbNumber = db ? Number(db) : undefined;
+    return {
+        host: url.hostname || '127.0.0.1',
+        port: url.port ? Number(url.port) : 6379,
+        username: url.username ? decodeURIComponent(url.username) : undefined,
+        password: url.password ? decodeURIComponent(url.password) : undefined,
+        db: dbNumber !== undefined && Number.isFinite(dbNumber) ? dbNumber : undefined,
+        tls: url.protocol === 'rediss:' ? {} : undefined,
+    };
+}
 function attachRedisDiagnostics(client, connectionName) {
     client.on('error', (error) => {
         const state = redisErrorLogState.get(connectionName) || { count: 0, lastMessage: '' };
@@ -63,11 +76,13 @@ export function getRedisUrl() {
     return REDIS_URL;
 }
 export function getRedisConnection(connectionName = 'reie-bullmq') {
-    const connection = attachRedisDiagnostics(new Redis(REDIS_URL, buildRedisOptions(connectionName)), connectionName);
+    const connection = attachRedisDiagnostics(new Redis({ ...parseRedisUrl(REDIS_URL), ...buildRedisOptions(connectionName) }), connectionName);
     redisConnections.add(connection);
     return connection;
 }
-export const redis = getRedisConnection('reie-shared');
+export function getSharedRedisConnection() {
+    return getRedisConnection('reie-shared');
+}
 export async function closeRedisConnections() {
     await Promise.allSettled([...redisConnections].map(async (connection) => {
         redisConnections.delete(connection);

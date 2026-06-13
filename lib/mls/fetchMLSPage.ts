@@ -1,4 +1,3 @@
-import axios from 'axios';
 import dotenv from 'dotenv';
 
 import {
@@ -69,24 +68,27 @@ function trimText(value: string, maxLength = maxErrorTextLength) {
   return value.length <= maxLength ? value : `${value.slice(0, maxLength)}\n[TRUNCATED]`;
 }
 
-function getErrorDetails(data: MlsGridResponse | unknown) {
+function getErrorDetails(data: MlsGridResponse | unknown, responseText = '') {
   if (data && typeof data === 'object') {
     const response = data as MlsGridResponse;
-    return response.error || response['@odata.error'] || response.message || response;
+    return response.error || response['@odata.error'] || response.message || response || trimText(responseText);
   }
 
-  return data;
+  return data || trimText(responseText);
 }
 
-function parseRetryAfterMs(value: unknown) {
+function isAbortError(error: unknown) {
+  return error instanceof Error && error.name === 'AbortError';
+}
+
+function parseRetryAfterMs(value: string | null) {
   if (!value) return undefined;
 
-  const rawValue = Array.isArray(value) ? value[0] : String(value);
-  const seconds = Number(rawValue);
+  const seconds = Number(value);
 
   if (Number.isFinite(seconds)) return Math.max(0, Math.floor(seconds * 1000));
 
-  const dateMs = Date.parse(rawValue);
+  const dateMs = Date.parse(value);
   if (!Number.isFinite(dateMs)) return undefined;
 
   return Math.max(0, dateMs - Date.now());
@@ -116,60 +118,29 @@ function buildPropertyParams({ page, top = MLS_PAGE_DEFAULT_TOP, includeMedia = 
   return params;
 }
 
+function buildPropertyUrl(options: FetchMLSPageOptions) {
+  const baseUrl = getBaseUrl().replace(/\/+$/, '');
+
+  if (!baseUrl) {
+    throw createMlsPageError('Missing MLS_GRID_BASE_URL or MLS_API_URL.');
+  }
+
+  const url = new URL(`${baseUrl}/Property`);
+  const params = buildPropertyParams(options);
+
+  Object.entries(params).forEach(([key, value]) => {
+    url.searchParams.set(key, String(value));
+  });
+
+  return url;
+}
+
 function isMlsPageError(error: unknown): error is MlsPageError {
   return error instanceof Error;
 }
 
-function getAxiosStatus(error: unknown) {
-  if (axios.isAxiosError(error)) {
-    return error.response?.status ?? null;
-  }
-
-  return null;
-}
-
-function getAxiosDetails(error: unknown) {
-  if (axios.isAxiosError(error)) {
-    if (error.response?.data) return getErrorDetails(error.response.data);
-    if (error.response?.statusText) return error.response.statusText;
-    return trimText(error.message);
-  }
-
-  return error instanceof Error ? error.message : error;
-}
-
-function normalizeAxiosError(error: unknown): MlsPageError {
-  if (axios.isAxiosError(error)) {
-    if (error.code === 'ECONNABORTED') {
-      return createMlsPageError(`MLS Grid request timed out after ${error.config?.timeout ?? MLS_PAGE_DEFAULT_TIMEOUT_MS}ms.`, 408, {
-        timeoutMs: error.config?.timeout ?? MLS_PAGE_DEFAULT_TIMEOUT_MS,
-        params: error.config?.params,
-      });
-    }
-
-    const status = getAxiosStatus(error) ?? undefined;
-    const retryAfterMs = parseRetryAfterMs(error.response?.headers?.['retry-after']);
-
-    return createMlsPageError(
-      retryAfterMs ? `MLS Grid API error: ${status}. Retry after ${Math.ceil(retryAfterMs / 1000)}s.` : `MLS Grid API error${status ? `: ${status}` : ''}`,
-      status,
-      {
-        details: getAxiosDetails(error),
-        params: error.config?.params,
-        retryAfterMs,
-      },
-      retryAfterMs,
-    );
-  }
-
-  if (isMlsPageError(error)) return error;
-
-  return createMlsPageError(String(error || 'Unknown MLS Grid page fetch error.'));
-}
-
 function shouldRetryWithoutMedia(error: unknown) {
-  const normalizedError = normalizeAxiosError(error);
-  return normalizedError.status === 400 || normalizedError.status === 404 || normalizedError.status === 501;
+  return isMlsPageError(error) && (error.status === 400 || error.status === 404 || error.status === 501);
 }
 
 function getListingsFromResponse(data: MlsGridResponse): MlsPageListingPayload[] {
@@ -186,13 +157,28 @@ function getListingsFromResponse(data: MlsGridResponse): MlsPageListingPayload[]
   );
 }
 
-async function requestMLSPage(options: FetchMLSPageOptions): Promise<MlsPageListingPayload[]> {
-  const baseUrl = getBaseUrl().replace(/\/+$/, '');
-  const token = getToken();
+async function readJsonResponse(response: Response): Promise<{ data: MlsGridResponse; text: string }> {
+  const text = await response.text();
 
-  if (!baseUrl) {
-    throw createMlsPageError('Missing MLS_GRID_BASE_URL or MLS_API_URL.');
+  if (!text.trim()) return { data: {}, text };
+
+  try {
+    return {
+      data: JSON.parse(text) as MlsGridResponse,
+      text,
+    };
+  } catch {
+    return {
+      data: {
+        message: trimText(text),
+      },
+      text,
+    };
   }
+}
+
+async function requestMLSPage(options: FetchMLSPageOptions): Promise<MlsPageListingPayload[]> {
+  const token = getToken();
 
   if (!token) {
     throw createMlsPageError('Missing MLS_GRID_TOKEN or MLS_API_KEY.');
@@ -200,24 +186,60 @@ async function requestMLSPage(options: FetchMLSPageOptions): Promise<MlsPageList
 
   await rateLimit();
 
+  const timeoutMs = getTimeoutMs(options.timeoutMs);
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+  const requestUrl = buildPropertyUrl(options);
+  const params = buildPropertyParams(options);
+
   try {
-    const response = await axios.get<MlsGridResponse>(`${baseUrl}/Property`, {
+    const response = await fetch(requestUrl, {
       headers: {
         Accept: 'application/json',
         Authorization: `Bearer ${token}`,
       },
-      params: buildPropertyParams(options),
-      timeout: getTimeoutMs(options.timeoutMs),
+      signal: controller.signal,
     });
 
-    return getListingsFromResponse(response.data);
+    const { data, text } = await readJsonResponse(response);
+    const retryAfterMs = parseRetryAfterMs(response.headers.get('retry-after'));
+
+    if (!response.ok) {
+      throw createMlsPageError(
+        retryAfterMs
+          ? `MLS Grid API error: ${response.status}. Retry after ${Math.ceil(retryAfterMs / 1000)}s.`
+          : `MLS Grid API error: ${response.status}`,
+        response.status,
+        {
+          details: getErrorDetails(data, text),
+          params,
+          retryAfterMs,
+        },
+        retryAfterMs,
+      );
+    }
+
+    return getListingsFromResponse(data);
   } catch (error) {
-    throw normalizeAxiosError(error);
+    if (isAbortError(error)) {
+      throw createMlsPageError(`MLS Grid request timed out after ${timeoutMs}ms.`, 408, {
+        timeoutMs,
+        params,
+      });
+    }
+
+    if (isMlsPageError(error)) throw error;
+
+    throw createMlsPageError(String(error || 'Unknown MLS Grid page fetch error.'));
+  } finally {
+    clearTimeout(timeout);
   }
 }
 
 function logFetchError(prefix: string, error: unknown) {
-  const normalizedError = normalizeAxiosError(error);
+  const normalizedError = isMlsPageError(error)
+    ? error
+    : createMlsPageError(String(error || 'Unknown MLS Grid page fetch error.'));
 
   console.error(prefix, normalizedError.message);
 

@@ -1,5 +1,6 @@
 import { Queue, type JobsOptions } from 'bullmq';
 
+import { createLazyQueue } from './lazyQueue.js';
 import { getRedisConnection } from './redis.js';
 
 export type MlsPageJobSource = 'api' | 'coordinator' | 'script' | 'system';
@@ -50,12 +51,14 @@ const defaultJobOptions: JobsOptions = {
   },
 };
 
-const connection = getRedisConnection();
+function createMlsPageQueue() {
+  return new Queue<MlsPageJobData>(MLS_PAGE_QUEUE_NAME, {
+    connection: getRedisConnection(),
+    defaultJobOptions,
+  });
+}
 
-export const mlsPageQueue = new Queue<MlsPageJobData>(MLS_PAGE_QUEUE_NAME, {
-  connection,
-  defaultJobOptions,
-});
+export const mlsPageQueue = createLazyQueue(createMlsPageQueue);
 
 function getSafeInteger(value: number | undefined, fallback: number, min: number, max: number) {
   if (!Number.isFinite(value) || value === undefined) return fallback;

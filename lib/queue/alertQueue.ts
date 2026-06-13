@@ -1,5 +1,6 @@
 import { Queue, type JobsOptions } from 'bullmq';
 
+import { createLazyQueue } from './lazyQueue.js';
 import { getRedisConnection } from './redis.js';
 
 export type AlertJobData = {
@@ -37,12 +38,14 @@ const defaultJobOptions: JobsOptions = {
   },
 };
 
-const connection = getRedisConnection();
+function createAlertQueue() {
+  return new Queue<AlertJobData>(ALERT_QUEUE_NAME, {
+    connection: getRedisConnection(),
+    defaultJobOptions,
+  });
+}
 
-export const alertQueue = new Queue<AlertJobData>(ALERT_QUEUE_NAME, {
-  connection,
-  defaultJobOptions,
-});
+export const alertQueue = createLazyQueue(createAlertQueue);
 
 export function getAlertJobId(alertId: string) {
   return `alert-${alertId}`;

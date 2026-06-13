@@ -2,13 +2,13 @@ import { randomUUID } from 'crypto';
 import { Queue, type JobsOptions } from 'bullmq';
 
 import type { MlsListingPayload } from '../mls/processListing.js';
+import { createLazyQueue } from './lazyQueue.js';
 import { getRedisConnection } from './redis.js';
 
 export type ListingJobData = MlsListingPayload;
 
 export const LISTING_QUEUE_NAME = 'listings';
 
-const connection = getRedisConnection();
 export const LISTING_JOB_NAME = 'process-listing';
 export const LISTING_JOB_ATTEMPTS = 3;
 export const LISTING_JOB_BACKOFF_DELAY_MS = 3_000;
@@ -35,9 +35,13 @@ const listingIdentityFields = [
   'UnparsedAddress',
 ] as const;
 
-export const listingQueue = new Queue<ListingJobData>(LISTING_QUEUE_NAME, {
-  connection,
-});
+function createListingQueue() {
+  return new Queue<ListingJobData>(LISTING_QUEUE_NAME, {
+    connection: getRedisConnection(),
+  });
+}
+
+export const listingQueue = createLazyQueue(createListingQueue);
 
 function getFirstListingValue(listing: ListingJobData, fields: readonly string[]) {
   for (const field of fields) {

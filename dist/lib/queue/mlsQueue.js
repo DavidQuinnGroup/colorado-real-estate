@@ -1,4 +1,5 @@
 import { Queue } from 'bullmq';
+import { createLazyQueue } from './lazyQueue.js';
 import { getRedisConnection } from './redis.js';
 export const MLS_SYNC_QUEUE_NAME = 'mls-sync';
 export const MLS_SYNC_JOB_NAME = 'sync';
@@ -34,11 +35,13 @@ const defaultJobOptions = {
         count: MLS_SYNC_REMOVE_ON_FAIL_COUNT,
     },
 };
-export const connection = getRedisConnection();
-export const mlsQueue = new Queue(MLS_SYNC_QUEUE_NAME, {
-    connection,
-    defaultJobOptions,
-});
+function createMlsQueue() {
+    return new Queue(MLS_SYNC_QUEUE_NAME, {
+        connection: getRedisConnection(),
+        defaultJobOptions,
+    });
+}
+export const mlsQueue = createLazyQueue(createMlsQueue);
 function getSafeInteger(value, fallback, min, max) {
     if (!Number.isFinite(value) || value === undefined)
         return fallback;

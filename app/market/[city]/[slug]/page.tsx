@@ -11,7 +11,8 @@ import { getResilienceAdvice, neighborhoods, type Neighborhood } from '@/lib/nei
 import type { FAQItem } from '@/lib/schema/faqSchema';
 import { generateFAQs } from '@/lib/schema/generateFAQs';
 import { buildNeighborhoodSchema } from '@/lib/schema/neighborhoodSchema';
-import { client, formatSearchSchemaValidationError, LISTING_COLLECTION_NAME } from '@/lib/typesense/schema';
+import { retrieveTypesenseCollection, searchTypesenseDocuments } from '@/lib/typesense/httpClient';
+import { formatSearchSchemaValidationError, LISTING_COLLECTION_NAME } from '@/lib/typesense/schema';
 
 type NeighborhoodPageParams = {
   city: string;
@@ -33,6 +34,10 @@ type RetrievedTypesenseCollection = CollectionCreateSchema & {
 type InventoryState = {
   count: number;
   source: 'typesense' | 'fallback';
+};
+
+type TypesenseInventorySearchResponse = {
+  found?: number;
 };
 
 const SITE_URL = 'https://davidquinngroup.com';
@@ -88,6 +93,10 @@ function getFallbackInventoryCount(neighborhood: Neighborhood) {
   return Math.max(1, Math.round(neighborhood.resilienceScore / 12));
 }
 
+function shouldUseStaticInventoryFallback() {
+  return process.env.NEXT_PHASE === 'phase-production-build';
+}
+
 function getCanonicalPath(neighborhood: Neighborhood) {
   return `/market/${neighborhood.city.toLowerCase()}/${neighborhood.slug}`;
 }
@@ -115,7 +124,7 @@ function getNeighborhoodKeywords(neighborhood: Neighborhood) {
 
 async function validateListingsCollectionSupportsNeighborhoodFacet() {
   try {
-    const collection = (await client.collections(LISTING_COLLECTION_NAME).retrieve()) as RetrievedTypesenseCollection;
+    const collection = await retrieveTypesenseCollection<RetrievedTypesenseCollection>(LISTING_COLLECTION_NAME);
     const schemaError = formatSearchSchemaValidationError(collection);
 
     if (schemaError) {
@@ -185,6 +194,13 @@ export function generateStaticParams() {
 }
 
 async function getNeighborhoodInventoryState(neighborhood: Neighborhood): Promise<InventoryState> {
+  if (shouldUseStaticInventoryFallback()) {
+    return {
+      count: getFallbackInventoryCount(neighborhood),
+      source: 'fallback',
+    };
+  }
+
   const canSearchNeighborhoodFacet = await ensureListingsCollectionSupportsNeighborhoodFacet();
 
   if (!canSearchNeighborhoodFacet) {
@@ -195,7 +211,7 @@ async function getNeighborhoodInventoryState(neighborhood: Neighborhood): Promis
   }
 
   try {
-    const searchResults = await client.collections(LISTING_COLLECTION_NAME).documents().search({
+    const searchResults = await searchTypesenseDocuments<TypesenseInventorySearchResponse>(LISTING_COLLECTION_NAME, {
       q: '*',
       filter_by: `neighborhood:=${toTypesenseFilterValue(neighborhood.name)}`,
       per_page: 0,

@@ -1,4 +1,5 @@
 import { Queue } from 'bullmq';
+import { createLazyQueue } from './lazyQueue.js';
 import { getRedisConnection } from './redis.js';
 export const ALERT_QUEUE_NAME = 'reie-alerts';
 export const ALERT_JOB_NAME = 'process-alert';
@@ -23,11 +24,13 @@ const defaultJobOptions = {
         count: ALERT_REMOVE_ON_FAIL_COUNT,
     },
 };
-const connection = getRedisConnection();
-export const alertQueue = new Queue(ALERT_QUEUE_NAME, {
-    connection,
-    defaultJobOptions,
-});
+function createAlertQueue() {
+    return new Queue(ALERT_QUEUE_NAME, {
+        connection: getRedisConnection(),
+        defaultJobOptions,
+    });
+}
+export const alertQueue = createLazyQueue(createAlertQueue);
 export function getAlertJobId(alertId) {
     return `alert-${alertId}`;
 }

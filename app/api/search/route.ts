@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import type { Prisma } from '@prisma/client';
 
 import { prisma } from '@/lib/prisma';
-import { LISTING_COLLECTION_NAME, SEARCH_SCHEMA_DEFAULT_SORT_BY, SEARCH_SCHEMA_QUERY_BY, typesense } from '@/lib/typesense/schema';
+import { searchTypesenseDocuments } from '@/lib/typesense/httpClient';
+import { LISTING_COLLECTION_NAME, SEARCH_SCHEMA_DEFAULT_SORT_BY, SEARCH_SCHEMA_QUERY_BY } from '@/lib/typesense/schema';
 
 export const dynamic = 'force-dynamic';
 
@@ -555,17 +556,17 @@ function mapTypesenseDocument(document: Record<string, unknown>, photoMap: Map<s
 async function searchTypesense(params: SearchParams, accessLevel: AccessLevel) {
   const page = Math.floor(params.offset / params.limit) + 1;
   const filterBy = buildTypesenseFilters(params, accessLevel);
-  const response = (await typesense
-    .collections(LISTING_COLLECTION_NAME)
-    .documents()
-    .search({
+  const response = await searchTypesenseDocuments<TypesenseSearchResponse>(
+    LISTING_COLLECTION_NAME,
+    {
       q: params.query || '*',
       query_by: SEARCH_SCHEMA_QUERY_BY,
       filter_by: filterBy,
       sort_by: SEARCH_SCHEMA_DEFAULT_SORT_BY,
       page,
       per_page: params.limit,
-    })) as TypesenseSearchResponse;
+    },
+  );
 
   const documents = (response.hits || [])
     .map((hit) => hit.document)

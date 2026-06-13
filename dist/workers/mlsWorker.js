@@ -3,7 +3,8 @@ import { Worker } from 'bullmq';
 import { syncMLSGrid } from '../lib/mls/syncMLSGrid.js';
 import { assertWorkerDatabaseReady } from '../lib/queue/databasePreflight.js';
 import { enqueueDeadLetter, enqueueDeadLetterFromJob } from '../lib/queue/deadLetterQueue.js';
-import { connection, MLS_SYNC_DEFAULT_MAX_PAGES, MLS_SYNC_DEFAULT_MAX_RUNTIME_MS, MLS_SYNC_DEFAULT_PAGE_TIMEOUT_MS, MLS_SYNC_DEFAULT_PAGE_SIZE, MLS_SYNC_DEFAULT_RATE_DELAY_MS, MLS_SYNC_JOB_NAME, MLS_SYNC_MAX_PAGES, MLS_SYNC_MAX_PAGE_TIMEOUT_MS, MLS_SYNC_MAX_PAGE_SIZE, MLS_SYNC_MAX_RATE_DELAY_MS, MLS_SYNC_MAX_RUNTIME_MS, MLS_SYNC_MAX_START_PAGE, MLS_SYNC_QUEUE_NAME, normalizeMlsSyncJobData, } from '../lib/queue/mlsQueue.js';
+import { MLS_SYNC_DEFAULT_MAX_PAGES, MLS_SYNC_DEFAULT_MAX_RUNTIME_MS, MLS_SYNC_DEFAULT_PAGE_TIMEOUT_MS, MLS_SYNC_DEFAULT_PAGE_SIZE, MLS_SYNC_DEFAULT_RATE_DELAY_MS, MLS_SYNC_JOB_NAME, MLS_SYNC_MAX_PAGES, MLS_SYNC_MAX_PAGE_TIMEOUT_MS, MLS_SYNC_MAX_PAGE_SIZE, MLS_SYNC_MAX_RATE_DELAY_MS, MLS_SYNC_MAX_RUNTIME_MS, MLS_SYNC_MAX_START_PAGE, MLS_SYNC_QUEUE_NAME, normalizeMlsSyncJobData, } from '../lib/queue/mlsQueue.js';
+import { getRedisConnection } from '../lib/queue/redis.js';
 const LOCAL_BASE_URL = 'http://localhost:3000';
 const TERMINAL_3 = 'Terminal 3';
 const TERMINAL_5 = 'Terminal 5';
@@ -197,7 +198,7 @@ function createMlsSyncWorker(config) {
         }
         return result;
     }, {
-        connection,
+        connection: getRedisConnection(),
         concurrency: config.concurrency,
         lockDuration: config.lockDurationMs,
         maxStalledCount: config.maxStalledCount,
