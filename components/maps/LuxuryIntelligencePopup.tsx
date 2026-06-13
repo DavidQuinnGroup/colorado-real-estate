@@ -1,8 +1,7 @@
 'use client';
 
-import Image from 'next/image';
-
-import { getListingPhotoUrl } from '@/lib/listingVisuals';
+import ResilientListingImage from '@/components/ResilientListingImage';
+import { getListingFallbackPhotoUrl, getListingPhotoUrl } from '@/lib/listingVisuals';
 import { formatLuxuryPrice } from '@/lib/utils/formatters';
 
 type LuxuryPopupProperty = {
@@ -54,11 +53,24 @@ export default function LuxuryIntelligencePopup({ property }: LuxuryIntelligence
     mainPhoto: property.mainPhoto,
     image: property.image,
   });
+  const fallbackPhotoUrl = getListingFallbackPhotoUrl({
+    id: property.id,
+    address,
+    city: property.city,
+    propertyType: property.propertyType,
+    price: property.price,
+  });
 
   return (
     <div className="w-64 animate-in overflow-hidden border border-[#00ff80]/40 bg-black p-0 shadow-[0_0_40px_rgba(0,255,128,0.2)] duration-200 zoom-in">
       <div className="relative h-24 overflow-hidden bg-zinc-900">
-        <Image src={photoUrl} alt={address} fill sizes="256px" className="object-cover" />
+        <ResilientListingImage
+          src={photoUrl}
+          fallbackSrc={fallbackPhotoUrl}
+          alt={address}
+          fallbackLabel="REIE visual"
+          className="absolute inset-0 h-full w-full object-cover"
+        />
       </div>
       <div className="p-4">
         <div className="mb-2 flex items-start justify-between gap-3">

@@ -2,15 +2,15 @@
 
 import type { ReactNode } from 'react';
 import { useEffect, useMemo, useState } from 'react';
-import Image from 'next/image';
 import { ArrowRight, BarChart3, ChevronLeft, Clock, Construction, Hammer, Lock, MapPin, ShieldCheck, X, Zap } from 'lucide-react';
 
+import ResilientListingImage from '@/components/ResilientListingImage';
 import NorthStarManager, {
   defaultNorthStarAnchors,
   getSavedNorthStarAnchors,
   type NorthStarAnchor,
 } from '@/components/settings/NorthStarManager';
-import { LISTING_IMAGE_FALLBACK } from '@/lib/listingVisuals';
+import { getListingFallbackPhotoUrl } from '@/lib/listingVisuals';
 import { formatLuxuryPrice } from '@/lib/utils/formatters';
 import { calculateEfficiencyScore, getTravelNarrative } from '@/lib/utils/geo-logic';
 
@@ -30,6 +30,7 @@ type DetailProperty = {
   description?: string | null;
   mainPhoto?: string | null;
   image?: string | null;
+  propertyType?: string | null;
   isPrivateExclusive?: boolean | null;
   efficiencyScore?: number | null;
   resilienceScore?: number | null;
@@ -88,12 +89,19 @@ function getReviewSignal(property: DetailProperty) {
 export default function PropertyDetail({ property, onClose, userTier = 'Public' }: PropertyDetailProps) {
   const [activeTab, setActiveTab] = useState<ActiveTab>('intel');
   const [showManager, setShowManager] = useState(false);
-  const [failedImageSrc, setFailedImageSrc] = useState<string | null>(null);
   const [northStarAnchors, setNorthStarAnchors] = useState<NorthStarAnchor[]>(() => getSavedNorthStarAnchors());
   const [logistics, setLogistics] = useState<LogisticsState>({ status: 'idle', times: [] });
 
-  const originalImageSrc = property.mainPhoto || property.image || LISTING_IMAGE_FALLBACK;
-  const imageSrc = failedImageSrc === originalImageSrc ? LISTING_IMAGE_FALLBACK : originalImageSrc;
+  const imageSrc = property.mainPhoto || property.image || null;
+  const fallbackImageSrc = getListingFallbackPhotoUrl({
+    id: property.id,
+    address: property.address,
+    city: property.city,
+    propertyType: property.propertyType,
+    price: property.price,
+    mainPhoto: property.mainPhoto,
+    image: property.image,
+  });
   const address = property.address || 'Address Available by Request';
   const city = property.city || 'Colorado';
   const price = getNumber(property.price);
@@ -234,14 +242,14 @@ export default function PropertyDetail({ property, onClose, userTier = 'Public' 
 
       <div className="custom-scrollbar flex-1 overflow-y-auto">
         <div className="relative aspect-[21/9] w-full overflow-hidden border-b border-white/5 bg-black">
-          <Image
+          <ResilientListingImage
             src={imageSrc}
-            className="object-cover opacity-60 grayscale-[0.3]"
+            fallbackSrc={fallbackImageSrc}
             alt={address}
-            fill
-            priority
-            sizes="100vw"
-            onError={() => setFailedImageSrc(originalImageSrc)}
+            loading="eager"
+            fetchPriority="high"
+            fallbackLabel="REIE visual"
+            className="absolute inset-0 h-full w-full object-cover opacity-60 grayscale-[0.3]"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent" />
 
