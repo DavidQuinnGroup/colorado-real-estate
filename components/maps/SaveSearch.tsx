@@ -128,6 +128,10 @@ function getSavedMessage(result: SaveSearchResponse | null) {
   return result.alertReadiness.summary;
 }
 
+function getIntentSummary(goal: ReieGoal, timeline: Timeline) {
+  return `${getGoalLabel(goal)} / ${getTimelineLabel(timeline)}`;
+}
+
 async function readResponse(response: Response): Promise<SaveSearchResponse> {
   try {
     const body = (await response.json()) as SaveSearchResponse;
@@ -152,8 +156,9 @@ export default function SaveSearch({ city }: SaveSearchProps) {
     if (submitState === 'saving') return 'Saving search';
     if (submitState === 'saved') return 'Search saved';
     if (submitState === 'error') return error || 'Unable to save this search.';
-    return `${getGoalLabel(goal)} / ${getTimelineLabel(timeline)}`;
+    return getIntentSummary(goal, timeline);
   }, [error, goal, submitState, timeline]);
+  const intentSummary = useMemo(() => getIntentSummary(goal, timeline), [goal, timeline]);
 
   function resetErrorState() {
     if (submitState === 'error') {
@@ -230,7 +235,9 @@ export default function SaveSearch({ city }: SaveSearchProps) {
       <div className="overflow-hidden rounded-[8px] border border-cyan-200/30 bg-[#071017] text-cyan-100">
         <div className="border-b border-cyan-100/14 bg-cyan-100/[0.08] px-4 py-3">
           <div className="flex items-start gap-3">
-            <Check size={17} className="mt-0.5 shrink-0 text-cyan-300" />
+            <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-[6px] bg-cyan-100 text-[#071017]">
+              <Check size={16} aria-hidden="true" />
+            </span>
             <div className="min-w-0">
               <p className="text-[10px] font-black uppercase tracking-[0.26em]">Search Saved</p>
               <p className="mt-1 text-xs leading-5 text-white/58">{getSavedMessage(saveResult)}</p>
@@ -239,7 +246,7 @@ export default function SaveSearch({ city }: SaveSearchProps) {
         </div>
         <div className="px-4 py-3">
           {saveResult?.alertReadiness ? (
-            <span className={`mt-2 inline-flex border px-2 py-1 text-[9px] font-black uppercase tracking-[0.18em] ${getReadinessClass(saveResult.alertReadiness.level)}`}>
+            <span className={`inline-flex rounded-[5px] border px-2 py-1 text-[9px] font-black uppercase tracking-[0.18em] ${getReadinessClass(saveResult.alertReadiness.level)}`}>
               Alert {saveResult.alertReadiness.level}
             </span>
           ) : null}
@@ -263,7 +270,7 @@ export default function SaveSearch({ city }: SaveSearchProps) {
               setSubmitState('idle');
               setSaveResult(null);
             }}
-            className="mt-3 text-[9px] font-black uppercase tracking-[0.22em] text-cyan-200 transition hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-300"
+            className="mt-4 inline-flex h-9 items-center justify-center rounded-[6px] border border-cyan-100/28 px-3 text-[9px] font-black uppercase tracking-[0.18em] text-cyan-100 transition hover:border-white/40 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-300"
           >
             Save another
           </button>
@@ -274,7 +281,7 @@ export default function SaveSearch({ city }: SaveSearchProps) {
 
   return (
     <div className="overflow-hidden rounded-[8px] border border-white/10 bg-[#071017] shadow-[0_12px_35px_rgba(0,0,0,0.22)]">
-      <div className="border-b border-white/10 bg-white/[0.035] p-4">
+      <div className="border-b border-white/10 bg-[linear-gradient(135deg,rgba(103,232,249,0.095),rgba(255,255,255,0.028))] p-4">
         <div className="flex items-start justify-between gap-4">
           <div className="flex min-w-0 items-center gap-3">
             <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-[6px] border border-cyan-100/20 bg-cyan-100/[0.08] text-cyan-100">
@@ -291,6 +298,16 @@ export default function SaveSearch({ city }: SaveSearchProps) {
         <p className="mt-3 text-xs leading-5 text-white/48">
           Capture this market view, current filters, and REIE intent for follow-up.
         </p>
+        <div className="mt-3 grid grid-cols-2 overflow-hidden rounded-[6px] border border-white/10 bg-black/24">
+          <div className="px-3 py-2">
+            <p className="text-[9px] font-black uppercase tracking-[0.14em] text-white/32">Market</p>
+            <p className="mt-1 truncate text-[11px] font-black uppercase tracking-[0.08em] text-white/68">{city}</p>
+          </div>
+          <div className="border-l border-white/10 px-3 py-2">
+            <p className="text-[9px] font-black uppercase tracking-[0.14em] text-white/32">Intent</p>
+            <p className="mt-1 truncate text-[11px] font-black uppercase tracking-[0.08em] text-cyan-100/80">{intentSummary}</p>
+          </div>
+        </div>
       </div>
 
       <div className="space-y-3 p-4">
@@ -373,37 +390,47 @@ export default function SaveSearch({ city }: SaveSearchProps) {
             onClick={handleSave}
             disabled={isSaving}
             style={saveButtonStyle}
-            className="inline-flex min-h-11 w-full shrink-0 items-center justify-center gap-2 rounded-[6px] border border-cyan-100/40 bg-cyan-100 px-4 text-[10px] font-black uppercase tracking-[0.16em] text-[#071017] transition-colors hover:bg-white disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto sm:self-end"
+            className="inline-flex min-h-11 w-full shrink-0 items-center justify-center gap-2 rounded-[6px] border border-cyan-100/40 bg-cyan-100 px-4 text-[10px] font-black uppercase tracking-[0.16em] text-[#071017] transition-colors hover:bg-white disabled:cursor-not-allowed disabled:opacity-60 sm:w-[112px] sm:self-end"
           >
-            {isSaving ? 'Saving' : 'Save'}
+            {isSaving ? (
+              <>
+                <Loader2 size={13} className="animate-spin" aria-hidden="true" />
+                Saving
+              </>
+            ) : (
+              <>
+                <Bell size={13} aria-hidden="true" />
+                Save
+              </>
+            )}
           </button>
         </div>
 
-      <label className="block">
-        <span className="mb-2 flex items-center justify-between gap-3 text-[10px] font-black uppercase tracking-[0.14em] text-white/38">
-          <span className="flex items-center gap-1.5">
-            <MessageSquareText size={12} aria-hidden="true" className="text-cyan-100/60" />
-            Notes
+        <label className="block">
+          <span className="mb-2 flex items-center justify-between gap-3 text-[10px] font-black uppercase tracking-[0.14em] text-white/38">
+            <span className="flex items-center gap-1.5">
+              <MessageSquareText size={12} aria-hidden="true" className="text-cyan-100/60" />
+              Notes
+            </span>
+            <span>{getCharacterCountLabel(notes)}</span>
           </span>
-          <span>{getCharacterCountLabel(notes)}</span>
-        </span>
-        <textarea
-          value={notes}
-          maxLength={MAX_NOTE_LENGTH}
-          disabled={isSaving}
-          onChange={(event) => {
-            setNotes(event.target.value);
-            resetErrorState();
-          }}
-          placeholder="Optional notes"
-          style={notesControlStyle}
-          className="min-h-16 w-full resize-none rounded-[6px] border border-white/10 bg-white/[0.055] px-3 py-2 text-xs leading-5 text-white outline-none transition-colors placeholder:text-white/25 focus:border-cyan-200/70 disabled:cursor-not-allowed disabled:opacity-60"
-        />
-      </label>
+          <textarea
+            value={notes}
+            maxLength={MAX_NOTE_LENGTH}
+            disabled={isSaving}
+            onChange={(event) => {
+              setNotes(event.target.value);
+              resetErrorState();
+            }}
+            placeholder="Optional notes"
+            style={notesControlStyle}
+            className="min-h-16 w-full resize-none rounded-[6px] border border-white/10 bg-white/[0.055] px-3 py-2 text-xs leading-5 text-white outline-none transition-colors placeholder:text-white/25 focus:border-cyan-200/70 disabled:cursor-not-allowed disabled:opacity-60"
+          />
+        </label>
 
-      <div className="flex min-h-5 items-center justify-between gap-3 border-t border-white/10 pt-3">
-        <p className={`min-w-0 text-xs font-bold ${error ? 'text-red-300' : 'text-white/35'}`}>{error || 'Saved searches include this map view and current filters.'}</p>
-      </div>
+        <div className="flex min-h-5 items-center justify-between gap-3 border-t border-white/10 pt-3">
+          <p className={`min-w-0 text-xs font-bold ${error ? 'text-red-300' : 'text-white/35'}`}>{error || 'Saved searches include this map view and current filters.'}</p>
+        </div>
       </div>
     </div>
   );
