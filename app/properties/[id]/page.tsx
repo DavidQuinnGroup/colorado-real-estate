@@ -521,6 +521,20 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
         </div>
 
         <aside className="space-y-6">
+          <section className="rounded-[8px] border border-cyan-100/20 bg-cyan-100/[0.06] p-4">
+            <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100/76">
+              <ShieldCheck size={14} aria-hidden="true" />
+              REIE Action Context
+            </p>
+            <div className="mt-4 grid grid-cols-2 gap-2">
+              <ActionMetric label="Decision" value={decisionTone} />
+              <ActionMetric label="Diligence" value={diligencePosture} />
+            </div>
+            <p className="mt-4 border-t border-cyan-100/14 pt-4 text-sm leading-6 text-white/58">
+              Use the inquiry workflow to attach timing, tour intent, and property-specific questions to this asset.
+            </p>
+          </section>
+
           <PropertyInquiryForm
             propertyId={property.id}
             address={property.address}
@@ -528,16 +542,19 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
             state={property.state}
           />
 
-          <section className="rounded-[8px] border border-white/10 bg-[#0d141c] p-5">
-            <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.22em] text-white/46">
-              <Home size={14} aria-hidden="true" />
-              Asset Snapshot
-            </p>
-            <div className="mt-4 space-y-3">
-              <SnapshotRow label="Price" value={formatCompactCurrency(property.price)} />
-              <SnapshotRow label="Status" value={property.status || 'Active'} />
-              <SnapshotRow label="Type" value={property.propertyType || 'Residential'} />
-              <SnapshotRow label="MLS" value={property.mlsId || property.id} />
+          <section className="overflow-hidden rounded-[8px] border border-white/10 bg-[#0d141c]">
+            <div className="border-b border-white/10 bg-white/[0.035] p-5">
+              <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.22em] text-white/46">
+                <Home size={14} aria-hidden="true" />
+                Asset Snapshot
+              </p>
+              <p className="mt-2 text-sm leading-6 text-white/50">Core listing facts used by the inquiry and decision layers.</p>
+            </div>
+            <div className="grid grid-cols-2 gap-2 p-4">
+              <SnapshotTile label="Price" value={formatCompactCurrency(property.price)} />
+              <SnapshotTile label="Status" value={property.status || 'Active'} />
+              <SnapshotTile label="Type" value={property.propertyType || 'Residential'} />
+              <SnapshotTile label="MLS" value={property.mlsId || property.id} />
             </div>
           </section>
 
@@ -671,11 +688,20 @@ function AuthorityLink({ href, eyebrow, label }: { href: string; eyebrow: string
   );
 }
 
-function SnapshotRow({ label, value }: { label: string; value: string }) {
+function ActionMetric({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex items-center justify-between gap-4 border-b border-white/10 pb-3 last:border-b-0 last:pb-0">
-      <p className="text-[10px] font-black uppercase tracking-[0.14em] text-white/38">{label}</p>
-      <p className="min-w-0 truncate text-sm font-bold text-white/78">{value}</p>
+    <div className="min-w-0 rounded-[6px] border border-cyan-100/16 bg-black/22 p-3">
+      <p className="text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100/54">{label}</p>
+      <p className="mt-2 truncate text-xs font-black uppercase tracking-[0.08em] text-white">{value}</p>
+    </div>
+  );
+}
+
+function SnapshotTile({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="min-w-0 rounded-[6px] border border-white/10 bg-white/[0.045] p-3">
+      <p className="text-[10px] font-black uppercase tracking-[0.14em] text-white/36">{label}</p>
+      <p className="mt-2 truncate text-sm font-black text-white/78">{value}</p>
     </div>
   );
 }
