@@ -176,6 +176,13 @@ function getDecisionNextStep(property: PropertyWithPhotos) {
   return 'Use market comps and condition diligence to decide whether negotiation room exists.';
 }
 
+function getDecisionTone(property: PropertyWithPhotos) {
+  if (property.hasPolybutyleneRisk) return 'Review Required';
+  if ((property.efficiencyScore || 0) >= 75 && (property.resilienceScore || 0) >= 80) return 'Strong Signal';
+  if ((property.resilienceScore || 0) < 70) return 'Resilience Watch';
+  return 'Triage Ready';
+}
+
 async function getProperty(id: string) {
   return prisma.property.findFirst({
     where: {
@@ -292,6 +299,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
   const pricePerSquareFoot = getPricePerSquareFoot(property);
   const diligencePosture = getDiligencePosture(property);
   const decisionNextStep = getDecisionNextStep(property);
+  const decisionTone = getDecisionTone(property);
   const propertyLinks = await getPropertyLinks({
     id: property.id,
     city: property.city,
@@ -354,19 +362,52 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                   <MapPin size={15} aria-hidden="true" className="text-cyan-100/78" />
                   {property.city}, {property.state} {property.zip}
                 </p>
+                <div className="mt-6 grid max-w-2xl grid-cols-3 gap-2">
+                  <HeroFact icon={<BedDouble size={14} />} label="Beds" value={formatNumber(property.beds)} />
+                  <HeroFact icon={<Bath size={14} />} label="Baths" value={formatNumber(property.baths)} />
+                  <HeroFact icon={<Ruler size={14} />} label="Sq Ft" value={formatNumber(property.sqft)} />
+                </div>
               </div>
             </div>
           </div>
 
           <aside className="border-t border-white/10 bg-[#070b10] p-4 sm:p-5 lg:sticky lg:top-0 lg:h-screen lg:overflow-y-auto lg:border-l lg:border-t-0">
-            <section className="rounded-[8px] border border-cyan-100/22 bg-cyan-100/[0.075] p-4">
-              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-cyan-100/76">REIE Decision Snapshot</p>
-              <div className="mt-4 grid gap-3">
-                <DecisionRow label="Price Basis" value={pricePerSquareFoot} />
-                <DecisionRow label="Diligence Posture" value={diligencePosture} />
-                <DecisionRow label="Market Path" value={property.neighborhood || property.city || 'Colorado'} />
+            <section className="overflow-hidden rounded-[8px] border border-cyan-100/22 bg-cyan-100/[0.075]">
+              <div className="border-b border-cyan-100/14 bg-cyan-100/[0.07] p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-[0.22em] text-cyan-100/76">REIE Decision Snapshot</p>
+                    <p className="mt-2 text-sm font-black uppercase tracking-[0.08em] text-white">{decisionTone}</p>
+                  </div>
+                  <span className="shrink-0 rounded-[5px] border border-cyan-100/24 bg-black/24 px-2 py-1 text-[9px] font-black uppercase tracking-[0.14em] text-cyan-100/76">
+                    Live
+                  </span>
+                </div>
               </div>
-              <p className="mt-4 border-t border-cyan-100/14 pt-4 text-sm leading-6 text-white/66">{decisionNextStep}</p>
+              <div className="p-4">
+                <div className="grid gap-3">
+                  <DecisionRow label="Price Basis" value={pricePerSquareFoot} />
+                  <DecisionRow label="Diligence Posture" value={diligencePosture} />
+                  <DecisionRow label="Market Path" value={property.neighborhood || property.city || 'Colorado'} />
+                </div>
+                <p className="mt-4 border-t border-cyan-100/14 pt-4 text-sm leading-6 text-white/66">{decisionNextStep}</p>
+                <div className="mt-4 grid grid-cols-2 gap-2">
+                  <Link
+                    href="#property-contact"
+                    className="inline-flex h-10 items-center justify-center gap-1.5 rounded-[6px] bg-cyan-100 text-[10px] font-black uppercase tracking-[0.12em] text-[#061017] transition hover:bg-white"
+                  >
+                    Inquire
+                    <Mail size={13} aria-hidden="true" />
+                  </Link>
+                  <Link
+                    href={cityMarketHref}
+                    className="inline-flex h-10 items-center justify-center gap-1.5 rounded-[6px] border border-white/10 bg-white/[0.055] text-[10px] font-black uppercase tracking-[0.12em] text-white/72 transition hover:border-cyan-100/35 hover:text-cyan-100"
+                  >
+                    Market
+                    <TrendingUp size={13} aria-hidden="true" />
+                  </Link>
+                </div>
+              </div>
             </section>
 
             <div className="mt-4 rounded-[8px] border border-white/10 bg-[#0d141c] p-4">
@@ -592,6 +633,16 @@ function SignalTile({
       <div className="text-cyan-100/76">{icon}</div>
       <p className="mt-3 text-[10px] font-black uppercase tracking-[0.14em] text-white/40">{label}</p>
       <p className={`mt-2 text-3xl font-black leading-none ${valueClass}`}>{value}</p>
+    </div>
+  );
+}
+
+function HeroFact({ icon, label, value }: { icon: ReactNode; label: string; value: string }) {
+  return (
+    <div className="min-w-0 rounded-[6px] border border-white/14 bg-[#071017]/62 px-3 py-2.5 backdrop-blur">
+      <div className="flex items-center gap-1.5 text-cyan-100/76">{icon}</div>
+      <p className="mt-2 text-[9px] font-black uppercase tracking-[0.14em] text-white/40">{label}</p>
+      <p className="mt-1 truncate text-sm font-black leading-none text-white">{value}</p>
     </div>
   );
 }
