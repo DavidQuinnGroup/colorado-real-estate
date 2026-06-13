@@ -227,6 +227,7 @@ export default function HomeSearchExperience({ authorityLinks = [], faqItems = [
   const currentBounds = useRef<MapBounds>(DEFAULT_BOULDER_BOUNDS);
   const lastRequestKey = useRef('');
   const requestSequence = useRef(0);
+  const mobileStatusLabel = isSearching ? 'Updating inventory' : `${listings.length} listings`;
 
   const fetchListings = useCallback(async (bounds: MapBounds, nextFilters = filters, force = false) => {
     if (!bounds) return;
@@ -319,32 +320,39 @@ export default function HomeSearchExperience({ authorityLinks = [], faqItems = [
 
   return (
     <div className="relative flex h-screen w-full flex-col overflow-hidden bg-black text-white md:flex-row">
-      <div className="absolute right-3 top-3 z-[900] grid grid-cols-2 overflow-hidden rounded-[8px] border border-white/12 bg-[#071017]/92 p-1 shadow-2xl backdrop-blur md:hidden">
-        <button
-          type="button"
-          onClick={() => setMobileView('list')}
-          className={`inline-flex h-8 items-center justify-center gap-1.5 rounded-[6px] px-3 text-[10px] font-black uppercase tracking-[0.12em] transition ${
-            mobileView === 'list' ? 'bg-cyan-100 text-[#061017]' : 'text-white/58 hover:text-white'
-          }`}
-          aria-pressed={mobileView === 'list'}
-        >
-          <List size={13} aria-hidden="true" />
-          List
-        </button>
-        <button
-          type="button"
-          onClick={() => setMobileView('map')}
-          className={`inline-flex h-8 items-center justify-center gap-1.5 rounded-[6px] px-3 text-[10px] font-black uppercase tracking-[0.12em] transition ${
-            mobileView === 'map' ? 'bg-cyan-100 text-[#061017]' : 'text-white/58 hover:text-white'
-          }`}
-          aria-pressed={mobileView === 'map'}
-        >
-          <MapIcon size={13} aria-hidden="true" />
-          Map
-        </button>
+      <div className="absolute left-3 right-3 top-3 z-[900] flex items-center justify-between gap-3 md:hidden">
+        <span className="min-w-0 truncate rounded-[8px] border border-white/12 bg-[#071017]/92 px-3 py-2 text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100/76 shadow-2xl backdrop-blur">
+          {mobileStatusLabel}
+        </span>
+        <div className="grid shrink-0 grid-cols-2 overflow-hidden rounded-[8px] border border-white/12 bg-[#071017]/92 p-1 shadow-2xl backdrop-blur" aria-label="Search view mode">
+          <button
+            type="button"
+            onClick={() => setMobileView('list')}
+            className={`inline-flex h-8 items-center justify-center gap-1.5 rounded-[6px] px-3 text-[10px] font-black uppercase tracking-[0.12em] transition ${
+              mobileView === 'list' ? 'bg-cyan-100 text-[#061017]' : 'text-white/58 hover:text-white'
+            }`}
+            aria-label="Show listing list"
+            aria-pressed={mobileView === 'list'}
+          >
+            <List size={13} aria-hidden="true" />
+            List
+          </button>
+          <button
+            type="button"
+            onClick={() => setMobileView('map')}
+            className={`inline-flex h-8 items-center justify-center gap-1.5 rounded-[6px] px-3 text-[10px] font-black uppercase tracking-[0.12em] transition ${
+              mobileView === 'map' ? 'bg-cyan-100 text-[#061017]' : 'text-white/58 hover:text-white'
+            }`}
+            aria-label="Show search map"
+            aria-pressed={mobileView === 'map'}
+          >
+            <MapIcon size={13} aria-hidden="true" />
+            Map
+          </button>
+        </div>
       </div>
 
-      <div className={mobileView === 'map' ? 'hidden md:flex md:h-full md:shrink-0' : 'flex min-h-0 md:h-full md:shrink-0'}>
+      <div className={mobileView === 'map' ? 'hidden md:flex md:h-full md:shrink-0' : 'flex h-full min-h-0 md:h-full md:shrink-0'}>
         <MapSidebar
           listings={listings}
           selectedProperty={selectedProperty}

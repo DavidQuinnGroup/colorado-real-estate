@@ -290,8 +290,8 @@ export default function MapSidebar(props: MapSidebarProps) {
   }
 
   return (
-    <aside className="relative z-20 flex h-[62vh] w-full min-w-0 shrink-0 flex-col border-b border-white/10 bg-[#070b10] md:h-full md:w-[35vw] md:min-w-[440px] md:max-w-[560px] md:border-b-0 md:border-r">
-      <header className="relative max-h-[52vh] shrink-0 overflow-y-auto border-b border-white/12 px-4 pb-4 pt-5 md:max-h-none md:overflow-hidden md:px-5">
+    <aside className="relative z-20 flex h-full w-full min-w-0 shrink-0 flex-col border-b border-white/10 bg-[#070b10] md:w-[35vw] md:min-w-[440px] md:max-w-[560px] md:border-b-0 md:border-r">
+      <header className="relative max-h-[52vh] shrink-0 overflow-y-auto border-b border-white/12 px-4 pb-4 pt-16 md:max-h-none md:overflow-hidden md:px-5 md:pt-5">
         <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(98,177,196,0.13),transparent_36%),linear-gradient(180deg,rgba(255,255,255,0.055),rgba(0,0,0,0))]" />
 
         <div className="relative">
