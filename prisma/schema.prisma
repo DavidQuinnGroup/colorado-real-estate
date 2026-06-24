@@ -150,6 +150,10 @@ model CRMTask {
   title     String
   metadata  Json?
   createdAt DateTime @default(now())
+
+  @@index([leadId])
+  @@index([type, createdAt])
+  @@index([status, type, createdAt])
 }
 
 model UserInteraction {
@@ -160,6 +164,9 @@ model UserInteraction {
   duration  Int?
   metadata  Json?
   createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([type, createdAt])
 }
 
 model LeadInteraction {

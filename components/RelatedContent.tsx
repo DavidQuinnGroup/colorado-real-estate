@@ -115,6 +115,26 @@ function getNodeAction(node: RelatedContentItem) {
   return "Open";
 }
 
+function getNodeType(node: RelatedContentItem) {
+  return node.type;
+}
+
+function getNodeSlug(node: RelatedContentItem) {
+  if (isLinkNode(node)) {
+    return "";
+  }
+
+  return node.slug;
+}
+
+function getNodeCity(node: RelatedContentItem) {
+  if (isLinkNode(node)) {
+    return "";
+  }
+
+  return node.city ?? "";
+}
+
 function getNodeKey(node: RelatedContentItem) {
   if (isLinkNode(node)) {
     return `${node.type}-${node.href}`;
@@ -133,9 +153,17 @@ export default function RelatedContent({
   if (!related.length) {
     return null;
   }
+  const sourceKind = items ? "provided" : "knowledge-graph";
 
   return (
-    <section className="mt-16 border border-white/10 bg-[#050505] p-6 text-white">
+    <section
+      className="mt-16 border border-white/10 bg-[#050505] p-6 text-white"
+      data-testid="reie-related-content"
+      data-related-content-title={title}
+      data-related-content-node-id={nodeId}
+      data-related-content-source-kind={sourceKind}
+      data-related-content-count={related.length}
+    >
       <div className="mb-6">
         <p className="text-[10px] font-black uppercase tracking-[0.35em] text-[#00ff80]">
           Knowledge Graph Links
@@ -145,28 +173,48 @@ export default function RelatedContent({
         </h3>
       </div>
 
-      <div className="grid grid-cols-1 gap-px overflow-hidden border border-white/10 bg-white/10 md:grid-cols-2">
-        {related.map((item) => (
+      <div
+        className="grid grid-cols-1 gap-px overflow-hidden border border-white/10 bg-white/10 md:grid-cols-2"
+        data-testid="reie-related-content-list"
+        data-related-content-list-count={related.length}
+      >
+        {related.map((item, index) => {
+          const href = getNodeHref(item);
+          const nodeTitle = getNodeTitle(item);
+          const description = getNodeDescription(item);
+          const action = getNodeAction(item);
+
+          return (
           <Link
             key={getNodeKey(item)}
-            href={getNodeHref(item)}
+            href={href}
             className="group bg-black p-5 transition-colors hover:bg-white/[0.04]"
+            data-testid="reie-related-content-link"
+            data-related-content-link-index={index}
+            data-related-content-link-type={getNodeType(item)}
+            data-related-content-link-title={nodeTitle}
+            data-related-content-link-description={description}
+            data-related-content-link-action={action}
+            data-related-content-link-href={href}
+            data-related-content-link-slug={getNodeSlug(item)}
+            data-related-content-link-city={getNodeCity(item)}
           >
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-base font-black uppercase italic tracking-tight text-white">
-                  {getNodeTitle(item)}
+                  {nodeTitle}
                 </p>
                 <p className="mt-2 text-[10px] font-bold uppercase leading-5 tracking-[0.18em] text-white/30">
-                  {getNodeDescription(item)}
+                  {description}
                 </p>
               </div>
               <span className="text-[10px] font-black uppercase tracking-[0.18em] text-[#00ff80] opacity-70 transition-opacity group-hover:opacity-100">
-                {getNodeAction(item)}
+                {action}
               </span>
             </div>
           </Link>
-        ))}
+          );
+        })}
       </div>
     </section>
   );

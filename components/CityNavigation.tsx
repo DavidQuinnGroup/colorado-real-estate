@@ -19,10 +19,20 @@ export default function CityNavigation({
   title = "Explore Colorado Market Reports",
   limit = cities.length,
 }: CityNavigationProps) {
-  const cityLinks = cities.slice(0, Math.max(1, Math.min(limit, cities.length)));
+  const safeLimit = Math.max(1, Math.min(limit, cities.length));
+  const cityLinks = cities.slice(0, safeLimit);
+  const briefCount = cityLinks.filter((city) => getCityBrief(city.name)).length;
 
   return (
-    <section className="mt-12 border border-white/10 bg-[#050505] p-6 text-white">
+    <section
+      className="mt-12 border border-white/10 bg-[#050505] p-6 text-white"
+      data-testid="reie-city-navigation"
+      data-city-navigation-title={title}
+      data-city-navigation-requested-limit={limit}
+      data-city-navigation-limit={safeLimit}
+      data-city-navigation-count={cityLinks.length}
+      data-city-navigation-brief-count={briefCount}
+    >
       <div className="mb-6">
         <p className="text-[10px] font-black uppercase tracking-[0.35em] text-[#00ff80]">
           City Market Navigation
@@ -32,14 +42,37 @@ export default function CityNavigation({
         </h2>
       </div>
 
-      <ul className="grid grid-cols-1 gap-px overflow-hidden border border-white/10 bg-white/10 sm:grid-cols-2 lg:grid-cols-3">
-        {cityLinks.map((city) => {
+      <ul
+        className="grid grid-cols-1 gap-px overflow-hidden border border-white/10 bg-white/10 sm:grid-cols-2 lg:grid-cols-3"
+        data-testid="reie-city-navigation-list"
+        data-city-navigation-list-count={cityLinks.length}
+      >
+        {cityLinks.map((city, index) => {
           const brief = getCityBrief(city.name);
+          const marketHref = `/market/${city.marketSlug}`;
 
           return (
-            <li key={city.marketSlug} className="bg-black">
+            <li
+              key={city.marketSlug}
+              className="bg-black"
+              data-testid="reie-city-navigation-card"
+              data-city-navigation-card-index={index}
+              data-city-navigation-card-name={city.name}
+              data-city-navigation-card-slug={city.slug}
+              data-city-navigation-card-market-slug={city.marketSlug}
+              data-city-navigation-card-market-href={marketHref}
+              data-city-navigation-card-median-price={city.stats.medianPrice}
+              data-city-navigation-card-inventory={city.stats.inventory}
+              data-city-navigation-card-days-on-market={city.stats.daysOnMarket}
+              data-city-navigation-card-has-brief={brief ? "true" : "false"}
+            >
               <div className="h-full p-5">
-                <Link href={`/market/${city.marketSlug}`} className="group block">
+                <Link
+                  href={marketHref}
+                  className="group block"
+                  data-testid="reie-city-navigation-market-link"
+                  data-city-navigation-market-link-href={marketHref}
+                >
                   <div className="flex items-start justify-between gap-4">
                     <div>
                       <p className="text-base font-black uppercase italic tracking-tight text-white">
@@ -60,6 +93,10 @@ export default function CityNavigation({
                   <Link
                     href={brief.href}
                     className="group mt-5 block border-t border-white/10 pt-4 transition-colors hover:border-[#00ff80]/50"
+                    data-testid="reie-city-navigation-brief-link"
+                    data-city-navigation-brief-title={brief.title}
+                    data-city-navigation-brief-description={brief.description}
+                    data-city-navigation-brief-href={brief.href}
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div>

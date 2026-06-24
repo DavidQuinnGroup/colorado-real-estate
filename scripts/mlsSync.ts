@@ -1,4 +1,4 @@
-import type { SyncMLSGridOptions } from '../lib/mls/syncMLSGrid.js';
+import { getSyncMLSGridPlan, type SyncMLSGridOptions, type SyncMLSGridPlan } from '../lib/mls/syncMLSGrid.js';
 
 type CliOptions = SyncMLSGridOptions & {
   dryRun: boolean;
@@ -59,6 +59,7 @@ type RunnerOutput = {
   executed: boolean;
   terminal: 'Terminal 5';
   options: SyncMLSGridOptions;
+  plan: SyncMLSGridPlan;
   summary?: unknown;
   notes: string[];
   diagnostics: string[];
@@ -228,6 +229,7 @@ function buildOutput(
     executed: options.execute,
     terminal: 'Terminal 5',
     options: syncOptions,
+    plan: getSyncMLSGridPlan(syncOptions),
     summary,
     notes,
     diagnostics,
@@ -251,6 +253,7 @@ function writeOutput(options: CliOptions, output: RunnerOutput) {
     executed: output.executed,
     terminal: output.terminal,
     options: output.options,
+    plan: output.plan,
   });
 
   for (const diagnostic of output.diagnostics) {

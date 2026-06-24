@@ -6,6 +6,7 @@ type ToolLink = {
   label: string;
   href: string;
   description: string;
+  kind: "search" | "market" | "brief" | "home";
   status: "Live" | "Brief" | "Report";
 };
 
@@ -36,35 +37,51 @@ export default function ToolLinks({
   city,
 }: ToolLinksProps) {
   const cityName = formatCityName(city ?? "Boulder");
+  const marketSlug = buildMarketSlug(cityName);
+  const briefHref = getCityBriefHref(cityName);
   const toolLinks: ToolLink[] = [
     {
       label: "Inventory Search Map",
       href: city ? `/search?city=${encodeURIComponent(cityName)}` : "/search",
       description: "Map-based active inventory and property intelligence",
+      kind: "search",
       status: "Live",
     },
     {
       label: `${cityName} Market Report`,
-      href: `/market/${buildMarketSlug(cityName)}`,
+      href: `/market/${marketSlug}`,
       description: "Pricing, inventory, resilience, and efficiency signals",
+      kind: "market",
       status: "Report",
     },
     {
       label: `${cityName} Strategy Brief`,
-      href: getCityBriefHref(cityName),
+      href: briefHref,
       description: "Generated REIE article brief connected to city and neighborhood authority",
+      kind: "brief",
       status: "Brief",
     },
     {
       label: "Colorado REIE Home",
       href: "/",
       description: "Primary real estate intelligence engine and interactive map experience",
+      kind: "home",
       status: "Live",
     },
   ];
 
   return (
-    <section className="mt-16 border border-white/10 bg-[#050505] p-6 text-white">
+    <section
+      className="mt-16 border border-white/10 bg-[#050505] p-6 text-white"
+      data-testid="reie-tool-links"
+      data-tool-links-title={title}
+      data-tool-links-input-city={city || ""}
+      data-tool-links-city={cityName}
+      data-tool-links-uses-default-city={city ? "false" : "true"}
+      data-tool-links-market-slug={marketSlug}
+      data-tool-links-brief-href={briefHref}
+      data-tool-links-count={toolLinks.length}
+    >
       <div className="mb-6">
         <p className="text-[10px] font-black uppercase tracking-[0.35em] text-[#00ff80]">
           REIE Tool Layer
@@ -74,12 +91,23 @@ export default function ToolLinks({
         </h2>
       </div>
 
-      <div className="grid grid-cols-1 gap-px overflow-hidden border border-white/10 bg-white/10 md:grid-cols-2 xl:grid-cols-4">
-        {toolLinks.map((tool) => (
+      <div
+        className="grid grid-cols-1 gap-px overflow-hidden border border-white/10 bg-white/10 md:grid-cols-2 xl:grid-cols-4"
+        data-testid="reie-tool-links-list"
+        data-tool-links-list-count={toolLinks.length}
+      >
+        {toolLinks.map((tool, index) => (
           <Link
             key={tool.href}
             href={tool.href}
             className="group bg-black p-5 transition-colors hover:bg-white/[0.04]"
+            data-testid="reie-tool-link"
+            data-tool-link-index={index}
+            data-tool-link-kind={tool.kind}
+            data-tool-link-status={tool.status}
+            data-tool-link-label={tool.label}
+            data-tool-link-href={tool.href}
+            data-tool-link-description={tool.description}
           >
             <div className="flex items-start justify-between gap-4">
               <div>

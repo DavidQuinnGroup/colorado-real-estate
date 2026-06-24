@@ -19,6 +19,24 @@ export type FetchMLSPageOptions = {
   timeoutMs?: number;
 };
 
+export type FetchMLSPageDiagnostics = {
+  page: number;
+  top: number;
+  skip: number;
+  includeMedia: boolean;
+  timeoutMs: number;
+  mediaExpansion: 'requested' | 'disabled';
+  bounded: {
+    page: boolean;
+    top: boolean;
+    timeoutMs: boolean;
+  };
+  limits: {
+    maxTop: number;
+    maxTimeoutMs: number;
+  };
+};
+
 type MlsGridResponse = {
   value?: unknown;
   error?: unknown;
@@ -64,6 +82,35 @@ function getTimeoutMs(timeoutMs: number | undefined) {
   return Math.max(1000, Math.min(Math.floor(timeoutMs), MLS_PAGE_MAX_TIMEOUT_MS));
 }
 
+export function getFetchMLSPageDiagnostics({
+  page,
+  top = MLS_PAGE_DEFAULT_TOP,
+  includeMedia = includeMediaByDefault,
+  timeoutMs = MLS_PAGE_DEFAULT_TIMEOUT_MS,
+}: FetchMLSPageOptions): FetchMLSPageDiagnostics {
+  const safePage = getPageNumber(page);
+  const safeTop = getPageSize(top);
+  const safeTimeoutMs = getTimeoutMs(timeoutMs);
+
+  return {
+    page: safePage,
+    top: safeTop,
+    skip: safePage * safeTop,
+    includeMedia,
+    timeoutMs: safeTimeoutMs,
+    mediaExpansion: includeMedia ? 'requested' : 'disabled',
+    bounded: {
+      page: safePage !== page,
+      top: safeTop !== top,
+      timeoutMs: safeTimeoutMs !== timeoutMs,
+    },
+    limits: {
+      maxTop: MLS_PAGE_MAX_TOP,
+      maxTimeoutMs: MLS_PAGE_MAX_TIMEOUT_MS,
+    },
+  };
+}
+
 function trimText(value: string, maxLength = maxErrorTextLength) {
   return value.length <= maxLength ? value : `${value.slice(0, maxLength)}\n[TRUNCATED]`;
 }
@@ -103,15 +150,18 @@ function createMlsPageError(message: string, status?: number, details?: unknown,
 }
 
 function buildPropertyParams({ page, top = MLS_PAGE_DEFAULT_TOP, includeMedia = includeMediaByDefault }: FetchMLSPageOptions) {
-  const safeTop = getPageSize(top);
-  const safePage = getPageNumber(page);
+  const diagnostics = getFetchMLSPageDiagnostics({
+    page,
+    top,
+    includeMedia,
+  });
   const params: Record<string, string | number> = {
     $orderby: 'ModificationTimestamp desc',
-    $skip: safePage * safeTop,
-    $top: safeTop,
+    $skip: diagnostics.skip,
+    $top: diagnostics.top,
   };
 
-  if (includeMedia) {
+  if (diagnostics.includeMedia) {
     params.$expand = 'Media';
   }
 
@@ -191,6 +241,7 @@ async function requestMLSPage(options: FetchMLSPageOptions): Promise<MlsPageList
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
   const requestUrl = buildPropertyUrl(options);
   const params = buildPropertyParams(options);
+  const diagnostics = getFetchMLSPageDiagnostics(options);
 
   try {
     const response = await fetch(requestUrl, {
@@ -212,6 +263,7 @@ async function requestMLSPage(options: FetchMLSPageOptions): Promise<MlsPageList
         response.status,
         {
           details: getErrorDetails(data, text),
+          diagnostics,
           params,
           retryAfterMs,
         },
@@ -223,6 +275,7 @@ async function requestMLSPage(options: FetchMLSPageOptions): Promise<MlsPageList
   } catch (error) {
     if (isAbortError(error)) {
       throw createMlsPageError(`MLS Grid request timed out after ${timeoutMs}ms.`, 408, {
+        diagnostics,
         timeoutMs,
         params,
       });
@@ -257,6 +310,12 @@ export async function fetchMLSPage({
   const safePage = getPageNumber(page);
   const safeTop = getPageSize(top);
   const safeTimeoutMs = getTimeoutMs(timeoutMs);
+  const diagnostics = getFetchMLSPageDiagnostics({
+    page: safePage,
+    top: safeTop,
+    includeMedia,
+    timeoutMs: safeTimeoutMs,
+  });
 
   try {
     const listings = await requestMLSPage({
@@ -266,7 +325,10 @@ export async function fetchMLSPage({
       timeoutMs: safeTimeoutMs,
     });
 
-    console.log(`MLS returned ${listings.length} listings for page ${safePage}${includeMedia ? ' with media.' : '.'}`);
+    console.log(
+      `MLS returned ${listings.length} listings for page ${safePage}${includeMedia ? ' with media' : ''} ` +
+        `(top=${diagnostics.top}, skip=${diagnostics.skip}, timeoutMs=${diagnostics.timeoutMs}).`,
+    );
 
     return listings;
   } catch (error) {
@@ -281,7 +343,10 @@ export async function fetchMLSPage({
           timeoutMs: safeTimeoutMs,
         });
 
-        console.log(`MLS returned ${listings.length} listings for page ${safePage} without media.`);
+        console.log(
+          `MLS returned ${listings.length} listings for page ${safePage} without media ` +
+            `(top=${diagnostics.top}, skip=${diagnostics.skip}, timeoutMs=${diagnostics.timeoutMs}).`,
+        );
 
         return listings;
       } catch (fallbackError) {

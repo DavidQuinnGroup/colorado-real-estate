@@ -38,13 +38,25 @@ type ClusterBucket = {
   lng: number;
 };
 
+type MarkerStats = {
+  activeMarkers: number;
+  clusterMarkers: number;
+  coordinateListings: number;
+  renderedMarkers: number;
+};
+
 export type SearchMapMeta = {
   accessLevel?: string;
   boundsApplied?: boolean;
+  command?: string;
   durationMs?: number;
   filtersApplied?: string[];
+  generatedAt?: string;
   health?: 'healthy' | 'degraded' | string;
+  module?: string;
+  route?: string;
   source?: string;
+  terminal?: string;
   returned?: number;
   mapped?: number;
   coordinateFiltered?: number;
@@ -367,6 +379,7 @@ export default function SearchMap({
   setHoveredId,
   center = [40.0174, -105.276],
   searchMeta = null,
+  userTier = 'Public',
 }: SearchMapProps) {
   const mapRef = useRef<L.Map | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -375,6 +388,12 @@ export default function SearchMap({
   const boundsTimerRef = useRef<number | null>(null);
   const selectedPanIdRef = useRef<string | null>(null);
   const [mapReady, setMapReady] = useState(false);
+  const [markerStats, setMarkerStats] = useState<MarkerStats>({
+    activeMarkers: 0,
+    clusterMarkers: 0,
+    coordinateListings: 0,
+    renderedMarkers: 0,
+  });
   const [viewportVersion, setViewportVersion] = useState(0);
   const coordinateListingCount = listings.filter(hasCoordinates).length;
   const returnedCount = formatMetaCount(searchMeta?.returned, listings.length);
@@ -481,7 +500,23 @@ export default function SearchMap({
     const activeIds = new Set([selectedId, hoveredId].filter((id): id is string => Boolean(id)));
     const clusters = getClusterBuckets(map, coordinateListings, activeIds);
     const activeListings = coordinateListings.filter((property) => activeIds.has(property.id));
+    const clusterMarkerCount = clusters.filter((cluster) => cluster.listings.length > 1).length;
+    const nextMarkerStats = {
+      activeMarkers: activeListings.length,
+      clusterMarkers: clusterMarkerCount,
+      coordinateListings: coordinateListings.length,
+      renderedMarkers: clusters.length + activeListings.length,
+    };
     let selectedMarker: L.Marker | null = null;
+
+    setMarkerStats((currentStats) =>
+      currentStats.activeMarkers === nextMarkerStats.activeMarkers &&
+      currentStats.clusterMarkers === nextMarkerStats.clusterMarkers &&
+      currentStats.coordinateListings === nextMarkerStats.coordinateListings &&
+      currentStats.renderedMarkers === nextMarkerStats.renderedMarkers
+        ? currentStats
+        : nextMarkerStats,
+    );
 
     markerLayer.clearLayers();
 
@@ -599,6 +634,15 @@ export default function SearchMap({
       <div
         ref={containerRef}
         className="reie-map-canvas h-full w-full"
+        data-testid="reie-search-map-canvas"
+        data-map-ready={String(mapReady)}
+        data-map-coordinate-listing-count={markerStats.coordinateListings}
+        data-map-rendered-marker-count={markerStats.renderedMarkers}
+        data-map-cluster-count={markerStats.clusterMarkers}
+        data-map-active-marker-count={markerStats.activeMarkers}
+        data-selected-listing-id={selectedId || ''}
+        data-hovered-listing-id={hoveredId || ''}
+        data-user-tier={userTier}
         data-search-source={searchMeta?.source || 'initial'}
         data-search-health={searchMeta?.health || 'unknown'}
         data-search-access-level={searchMeta?.accessLevel || 'public'}
@@ -608,6 +652,11 @@ export default function SearchMap({
         data-search-coordinate-filtered={coordinateFilteredCount}
         data-search-duration-ms={searchMeta?.durationMs ?? ''}
         data-search-filters={(searchMeta?.filtersApplied || []).join(',')}
+        data-search-generated-at={searchMeta?.generatedAt || ''}
+        data-search-terminal={searchMeta?.terminal || ''}
+        data-search-route={searchMeta?.route || ''}
+        data-search-command={searchMeta?.command || ''}
+        data-search-module={searchMeta?.module || ''}
         data-search-smoke-ready={smokeReady === undefined ? 'unknown' : smokeReady ? 'true' : 'false'}
         data-search-smoke-command={searchMeta?.smoke?.command || ''}
         data-search-smoke-blockers={smokeBlockerCount}
@@ -620,6 +669,15 @@ export default function SearchMap({
               ? 'border-amber-300/40 bg-black/85 text-amber-100/80'
               : 'border-white/20 bg-black/80 text-white/70'
           }`}
+          data-testid="reie-search-map-diagnostics"
+          data-map-ready={String(mapReady)}
+          data-map-coordinate-listing-count={markerStats.coordinateListings}
+          data-map-rendered-marker-count={markerStats.renderedMarkers}
+          data-map-cluster-count={markerStats.clusterMarkers}
+          data-map-active-marker-count={markerStats.activeMarkers}
+          data-search-source={searchMeta?.source || 'initial'}
+          data-search-health={searchMeta?.health || 'unknown'}
+          data-search-smoke-ready={smokeReady === undefined ? 'unknown' : smokeReady ? 'true' : 'false'}
         >
           <div>
             <span className={searchMeta?.health === 'degraded' ? 'text-amber-200' : 'text-cyan-200'}>

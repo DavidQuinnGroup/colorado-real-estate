@@ -101,10 +101,11 @@ const MAX_RETRY_LIMIT = 500;
 const MAX_JOB_IDS = 50;
 const ROUTE_PATH = '/api/mls/retry';
 const TERMINAL_5 = 'Terminal 5';
-const DEAD_LETTER_COMMAND = 'curl -s "http://localhost:3000/api/admin/dead-letter?limit=25"';
-const STATUS_COMMAND = 'curl -s "http://localhost:3000/api/mls/status"';
+const LOCAL_BASE_URL = 'http://localhost:3000';
+const DEAD_LETTER_COMMAND = `curl -s "${LOCAL_BASE_URL}/api/admin/dead-letter?limit=25"`;
+const STATUS_COMMAND = `curl -s "${LOCAL_BASE_URL}/api/mls/status"`;
 const QUEUE_DASHBOARD_COMMAND = 'npm run run:queue-dashboard';
-const ALERT_DRY_RUN_COMMAND = 'curl -s -X POST "http://localhost:3000/api/process-alerts?dryRun=true"';
+const ALERT_DRY_RUN_COMMAND = `curl -s -X POST "${LOCAL_BASE_URL}/api/process-alerts?dryRun=true"`;
 const SUPABASE_CHECK_COMMAND = 'npm run supabase:check';
 const SUPABASE_CHECK_JSON_COMMAND = 'npm run supabase:check:json';
 
@@ -179,6 +180,20 @@ function json(data: unknown, init?: ResponseInit) {
       ...(init?.headers || {}),
     },
   });
+}
+
+function getInspectionCommand(request: NextRequest) {
+  const methodFlag = request.method === 'POST' ? '-X POST ' : '';
+  return `curl --max-time 8 -s ${methodFlag}"${LOCAL_BASE_URL}${ROUTE_PATH}${request.nextUrl.search || ''}" -H "x-admin-key: $REIE_ADMIN_API_KEY"`;
+}
+
+function getInspectionMetadata(request: NextRequest) {
+  return {
+    generatedAt: new Date().toISOString(),
+    terminal: TERMINAL_5,
+    route: ROUTE_PATH,
+    command: getInspectionCommand(request),
+  } as const;
 }
 
 function timeoutIssue(area: string, timeoutMs: number): DiagnosticIssue {
@@ -373,7 +388,15 @@ function getFallbackDeadLetterStatus() {
     delayed: 0,
     failed: 0,
     completed: 0,
-    recent: [],
+    recent: [] as Array<{
+      id?: string;
+      name: string;
+      failedReason: string | null;
+      sourceQueue: string | null;
+      sourceJobId: string | null;
+      failedAt: string | null;
+      attemptsMade: number | null;
+    }>,
   };
 }
 
@@ -392,6 +415,10 @@ function getFallbackRetryResult(item: QueueRegistryItem, dryRun: boolean, target
   };
 }
 
+function getFallbackQueueStatuses() {
+  return RETRY_QUEUES.map((item) => getFallbackQueueStatus(item));
+}
+
 function buildRetryCommand(queue = 'mls-sync', options: { allowAllLive?: boolean; execute?: boolean; jobId?: string; limit?: number } = {}) {
   const params = new URLSearchParams({
     queue,
@@ -403,15 +430,16 @@ function buildRetryCommand(queue = 'mls-sync', options: { allowAllLive?: boolean
   if (options.jobId) params.set('jobId', options.jobId);
   if (options.limit) params.set('limit', String(options.limit));
 
-  return `curl -s -X POST "http://localhost:3000${ROUTE_PATH}?${params.toString()}"`;
+  return `curl -s -X POST "${LOCAL_BASE_URL}${ROUTE_PATH}?${params.toString()}"`;
 }
 
 function buildRetryCommandSet(queue = 'mls-sync', jobId = '<jobId>', limit?: number) {
   return {
+    terminal: TERMINAL_5,
     supabaseCheck: SUPABASE_CHECK_COMMAND,
     supabaseCheckJson: SUPABASE_CHECK_JSON_COMMAND,
     status: STATUS_COMMAND,
-    retryStatus: `curl -s "http://localhost:3000${ROUTE_PATH}"`,
+    retryStatus: `curl -s "${LOCAL_BASE_URL}${ROUTE_PATH}"`,
     deadLetter: DEAD_LETTER_COMMAND,
     queueDashboard: QUEUE_DASHBOARD_COMMAND,
     alertDryRun: ALERT_DRY_RUN_COMMAND,
@@ -526,7 +554,7 @@ function buildStatusPlan(options: {
       summary: 'Retry diagnostics are not clean enough for live recovery.',
       nextAction: 'Refresh retry status and clear diagnostics.',
       terminal: TERMINAL_5,
-      nextCommand: `curl -s "http://localhost:3000${ROUTE_PATH}"`,
+        nextCommand: `curl -s "${LOCAL_BASE_URL}${ROUTE_PATH}"`,
       liveRetryAllowed: false,
       gates,
     };
@@ -561,7 +589,7 @@ function buildStatusPlan(options: {
     summary: busyQueues.length > 0 ? 'Retry route is available, but queues still have pending work.' : 'Retry route is ready; dry-run is the default.',
     nextAction: busyQueues.length > 0 ? 'Review queue dashboard before live retry.' : 'Use retry status or queue dashboard before live recovery.',
     terminal: TERMINAL_5,
-    nextCommand: busyQueues.length > 0 ? QUEUE_DASHBOARD_COMMAND : `curl -s "http://localhost:3000${ROUTE_PATH}"`,
+    nextCommand: busyQueues.length > 0 ? QUEUE_DASHBOARD_COMMAND : `curl -s "${LOCAL_BASE_URL}${ROUTE_PATH}"`,
     liveRetryAllowed: false,
     gates,
   };
@@ -630,7 +658,7 @@ function buildPostPlan(options: {
       summary: 'Retry request completed with diagnostics or job errors.',
       nextAction: 'Inspect retry status before another attempt.',
       terminal: TERMINAL_5,
-      nextCommand: `curl -s "http://localhost:3000${ROUTE_PATH}"`,
+        nextCommand: `curl -s "${LOCAL_BASE_URL}${ROUTE_PATH}"`,
       liveRetryAllowed: false,
       gates,
     };
@@ -883,14 +911,67 @@ async function retryQueueWithDiagnostics(item: QueueRegistryItem, limit: number,
   };
 }
 
-function unauthorizedResponse() {
+function getStatusEnvelope(
+  request: NextRequest,
+  options: {
+    queues: ReturnType<typeof getFallbackQueueStatus>[];
+    deadLetter: ReturnType<typeof getFallbackDeadLetterStatus>;
+    recentFailedJobs: Awaited<ReturnType<typeof getRecentFailedJobsStatus>>['recentFailedJobs'];
+    diagnostics: DiagnosticIssue[];
+  },
+) {
+  const deadLetterOpen = options.deadLetter.waiting + options.deadLetter.active + options.deadLetter.delayed + options.deadLetter.failed;
+
+  return {
+    module: 'REIE MLS Queue Retry',
+    ...getInspectionMetadata(request),
+    timeoutMs: RETRY_TIMEOUT_MS,
+    redis: {
+      url: redactRedisUrl(getRedisUrl()),
+    },
+    auth: {
+      configured: Boolean(getAdminKey()),
+    },
+    defaults: {
+      dryRun: true,
+      liveRetryRequires: 'POST with execute=true or dryRun=false',
+      broadLiveRetryRequires: 'A single queue is required for live retry unless allowAllLive=true is supplied.',
+      terminal: TERMINAL_5,
+    },
+    terminals: {
+      scriptsAndCurl: TERMINAL_5,
+      statusChecks: TERMINAL_5,
+    },
+    commands: {
+      ...buildRetryCommandSet(),
+    },
+    diagnostics: options.diagnostics,
+    executionPlan: buildStatusPlan({
+      diagnostics: options.diagnostics,
+      queues: options.queues,
+      deadLetterOpen,
+      recentFailedJobs: options.recentFailedJobs,
+    }),
+    supportedQueues: SUPPORTED_QUEUE_VALUES,
+    queues: options.queues,
+    deadLetter: options.deadLetter,
+    recentFailedJobs: options.recentFailedJobs,
+  } as const;
+}
+
+function unauthorizedResponse(request: NextRequest) {
+  const diagnostics: DiagnosticIssue[] = [];
+
   return json(
     {
       success: false,
       error: 'Admin access is required.',
-      auth: {
-        configured: Boolean(getAdminKey()),
-      },
+      ...getStatusEnvelope(request, {
+        queues: getFallbackQueueStatuses(),
+        deadLetter: getFallbackDeadLetterStatus(),
+        recentFailedJobs: [],
+        diagnostics,
+      }),
     },
     { status: 401 },
   );
@@ -898,64 +979,60 @@ function unauthorizedResponse() {
 
 export async function GET(request: NextRequest) {
   if (!authorizeRequest(request)) {
-    return unauthorizedResponse();
+    return unauthorizedResponse(request);
   }
 
-  const [queueStatus, deadLetterStatus, recentFailedJobsStatus] = await Promise.all([
-    getQueueStatuses(),
-    withTimeout('retryDeadLetter', getFallbackDeadLetterStatus(), getDeadLetterStatus()),
-    getRecentFailedJobsStatus(),
-  ]);
-  const diagnostics = [
-    ...queueStatus.diagnostics,
-    ...(deadLetterStatus.ok ? [] : [deadLetterStatus.issue]),
-    ...recentFailedJobsStatus.diagnostics,
-  ];
-  const deadLetterOpen = deadLetterStatus.value.waiting + deadLetterStatus.value.active + deadLetterStatus.value.delayed + deadLetterStatus.value.failed;
-
-  return json(
-    {
+  try {
+    const [queueStatus, deadLetterStatus, recentFailedJobsStatus] = await Promise.all([
+      getQueueStatuses(),
+      withTimeout('retryDeadLetter', getFallbackDeadLetterStatus(), getDeadLetterStatus()),
+      getRecentFailedJobsStatus(),
+    ]);
+    const diagnostics = [
+      ...queueStatus.diagnostics,
+      ...(deadLetterStatus.ok ? [] : [deadLetterStatus.issue]),
+      ...recentFailedJobsStatus.diagnostics,
+    ];
+    return json({
       success: true,
-      module: 'REIE MLS Queue Retry',
-      generatedAt: new Date().toISOString(),
-      timeoutMs: RETRY_TIMEOUT_MS,
-      redis: {
-        url: redactRedisUrl(getRedisUrl()),
-      },
-      auth: {
-        configured: Boolean(getAdminKey()),
-      },
-      defaults: {
-        dryRun: true,
-        liveRetryRequires: 'POST with execute=true or dryRun=false',
-        broadLiveRetryRequires: 'A single queue is required for live retry unless allowAllLive=true is supplied.',
-        terminal: TERMINAL_5,
-      },
-      terminals: {
-        scriptsAndCurl: TERMINAL_5,
-        statusChecks: TERMINAL_5,
-      },
-      commands: {
-        ...buildRetryCommandSet(),
-      },
-      diagnostics,
-      executionPlan: buildStatusPlan({
-        diagnostics,
+      ...getStatusEnvelope(request, {
         queues: queueStatus.queues,
-        deadLetterOpen,
+        deadLetter: deadLetterStatus.value,
         recentFailedJobs: recentFailedJobsStatus.recentFailedJobs,
+        diagnostics,
       }),
-      supportedQueues: SUPPORTED_QUEUE_VALUES,
-      queues: queueStatus.queues,
-      deadLetter: deadLetterStatus.value,
-      recentFailedJobs: recentFailedJobsStatus.recentFailedJobs,
-    },
-  );
+    });
+  } catch (error) {
+    const message = getErrorMessage(error);
+    const diagnostics = [
+      {
+        area: 'retryStatus',
+        message,
+      },
+    ];
+
+    console.error('MLS retry status failed:', message);
+
+    return json(
+      {
+        success: false,
+        error: 'MLS retry status could not be read.',
+        detail: message,
+        ...getStatusEnvelope(request, {
+          queues: getFallbackQueueStatuses(),
+          deadLetter: getFallbackDeadLetterStatus(),
+          recentFailedJobs: [],
+          diagnostics,
+        }),
+      },
+      { status: 500 },
+    );
+  }
 }
 
 export async function POST(request: NextRequest) {
   if (!authorizeRequest(request)) {
-    return unauthorizedResponse();
+    return unauthorizedResponse(request);
   }
 
   try {
@@ -1031,13 +1108,12 @@ export async function POST(request: NextRequest) {
       {
         success: diagnostics.length === 0 && totalErrors === 0,
         module: 'REIE MLS Queue Retry',
-        generatedAt: new Date().toISOString(),
+        ...getInspectionMetadata(request),
         dryRun,
         liveRetryRequested,
         limit,
         jobIds,
         timeoutMs: RETRY_TIMEOUT_MS,
-        terminal: TERMINAL_5,
         terminals: {
           scriptsAndCurl: TERMINAL_5,
           statusChecks: TERMINAL_5,
@@ -1076,7 +1152,13 @@ export async function POST(request: NextRequest) {
     return json(
       {
         success: false,
+        ...getInspectionMetadata(request),
+        module: 'REIE MLS Queue Retry',
         error: message,
+        timeoutMs: RETRY_TIMEOUT_MS,
+        auth: {
+          configured: Boolean(getAdminKey()),
+        },
         diagnostics: [
           {
             area: 'retry',
@@ -1084,7 +1166,31 @@ export async function POST(request: NextRequest) {
           },
         ],
         supportedQueues: SUPPORTED_QUEUE_VALUES,
+        defaults: {
+          dryRun: true,
+          liveRetryRequires: 'POST with execute=true or dryRun=false',
+          broadLiveRetryRequires: 'A single queue is required for live retry unless allowAllLive=true is supplied.',
+          terminal: TERMINAL_5,
+        },
+        terminals: {
+          scriptsAndCurl: TERMINAL_5,
+          statusChecks: TERMINAL_5,
+        },
         commands: buildRetryCommandSet(),
+        executionPlan: buildStatusPlan({
+          diagnostics: [
+            {
+              area: 'retry',
+              message,
+            },
+          ],
+          queues: getFallbackQueueStatuses(),
+          deadLetterOpen: 0,
+          recentFailedJobs: [],
+        }),
+        queues: getFallbackQueueStatuses(),
+        deadLetter: getFallbackDeadLetterStatus(),
+        recentFailedJobs: [],
       },
       { status },
     );

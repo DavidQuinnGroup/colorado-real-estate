@@ -13,4 +13,34 @@ export function createLazyQueue(factory) {
         },
     });
 }
+export function getLazyQueueDiagnostics() {
+    let factoryCalls = 0;
+    let firstInstanceLabel = null;
+    const lazyQueue = createLazyQueue(() => {
+        factoryCalls += 1;
+        const queue = {
+            label: `lazy-queue-${factoryCalls}`,
+            getLabel() {
+                return this.label;
+            },
+        };
+        firstInstanceLabel = firstInstanceLabel || queue.label;
+        return queue;
+    });
+    const factoryCallsBeforeAccess = factoryCalls;
+    const propertyValue = lazyQueue.label;
+    const factoryCallsAfterPropertyAccess = factoryCalls;
+    const methodValue = lazyQueue.getLabel();
+    const factoryCallsAfterMethodCall = factoryCalls;
+    return {
+        module: 'lazyQueue',
+        factoryCallsBeforeAccess,
+        factoryCallsAfterPropertyAccess,
+        factoryCallsAfterMethodCall,
+        propertyValue,
+        methodValue,
+        sameInstance: firstInstanceLabel === propertyValue,
+        methodBound: methodValue === propertyValue,
+    };
+}
 // /Users/davidquinn/david-quinn-group/colorado-real-estate/lib/queue/lazyQueue.ts

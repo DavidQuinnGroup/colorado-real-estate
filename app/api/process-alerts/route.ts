@@ -25,6 +25,20 @@ type AlertQueueStats = {
   terminal: number;
 };
 
+type FailedAlertRowSummary = {
+  id: string;
+  userId: string;
+  createdAt: string;
+  clickedAt: string | null;
+  payloadType: string;
+  payloadKeys: string[];
+  hasUsableProperty: boolean;
+  hasAddress: boolean;
+  hasCity: boolean;
+  hasPrice: boolean;
+  likelyTestRow: boolean;
+};
+
 type ProcessAlertQueueResult = Awaited<ReturnType<typeof processAlertQueue>>;
 
 type DiagnosticIssue = {
@@ -57,12 +71,39 @@ type AlertExecutionPlan = {
   }>;
 };
 
+type NotificationReadinessBlocker = {
+  code: string;
+  envVars: string[];
+  detail: string;
+  nextCommand: string;
+};
+
+type NotificationReadinessMetadata = {
+  level: 'ready' | 'blocked';
+  summary: string;
+  terminal: typeof TERMINAL;
+  route: typeof ROUTE;
+  nextCommand: string;
+  blockerCodes: string[];
+  blockerEnvVars: string[];
+  blockedBy: NotificationReadinessBlocker[];
+  commands: {
+    propertyInquiryReadiness: string;
+    notificationReadiness: string;
+    strictNotificationReadiness: string;
+    strictNotificationReadinessContract: string;
+    launchReadiness: string;
+  };
+};
+
 const DEFAULT_LIMIT = 50;
 const MAX_LIMIT = 200;
 const PROCESS_ALERTS_TIMEOUT_MS = 12_000;
 const LOCAL_BASE_URL = 'http://localhost:3000';
 const SUPABASE_CHECK_COMMAND = 'npm run supabase:check';
 const SUPABASE_CHECK_JSON_COMMAND = 'npm run supabase:check:json';
+const ROUTE = '/api/process-alerts';
+const TERMINAL = 'Terminal 5';
 
 function getAdminKey() {
   return process.env.REIE_ADMIN_API_KEY || process.env.ADMIN_API_KEY || null;
@@ -94,11 +135,72 @@ function json(data: unknown, init?: ResponseInit) {
   });
 }
 
-function unauthorizedResponse() {
+function getInspectionCommand(request: NextRequest) {
+  const search = request.nextUrl.search || '';
+  const methodFlag = request.method === 'POST' ? '-X POST ' : '';
+  return `curl --max-time 20 -s ${methodFlag}"${LOCAL_BASE_URL}${ROUTE}${search}" -H "x-admin-key: $REIE_ADMIN_API_KEY"`;
+}
+
+function getInspectionMetadata(request: NextRequest) {
+  return {
+    generatedAt: new Date().toISOString(),
+    terminal: TERMINAL,
+    route: ROUTE,
+    command: getInspectionCommand(request),
+  } as const;
+}
+
+function getStatusEnvelope(
+  request: NextRequest,
+  options: ReturnType<typeof readRequestOptions>,
+  stats: AlertQueueStats,
+  diagnostics: DiagnosticIssue[],
+  failedAlertRows: FailedAlertRowSummary[] = [],
+) {
+  return {
+    ...getInspectionMetadata(request),
+    mode: 'status',
+    module: 'REIE Saved Search Alerts',
+    timeoutMs: PROCESS_ALERTS_TIMEOUT_MS,
+    auth: {
+      configured: Boolean(getAdminKey()),
+    },
+    commands: buildCommands(options.limit),
+    notificationReadiness: getNotificationReadinessMetadata(),
+    diagnostics,
+    executionPlan: buildExecutionPlan({
+      dryRun: true,
+      run: false,
+      limit: options.limit,
+      stats,
+      diagnostics,
+    }),
+    recommendations: buildRecommendations({
+      dryRun: true,
+      run: false,
+      stats,
+      diagnostics,
+    }),
+    stats,
+    failedAlertRows,
+    nextRunHint: '/api/process-alerts?execute=true',
+    nextDryRunHint: '/api/process-alerts?dryRun=1',
+  } as const;
+}
+
+function unauthorizedResponse(request: NextRequest) {
+  const options = readRequestOptions(request);
+  const stats = getFallbackStats();
+  const diagnostics: DiagnosticIssue[] = [];
+
   return json(
     {
       success: false,
       error: 'Admin access is required.',
+      ...getStatusEnvelope(request, options, stats, diagnostics),
+      auth: {
+        configured: Boolean(getAdminKey()),
+      },
     },
     { status: 401 },
   );
@@ -178,6 +280,73 @@ function readBoolean(value: unknown) {
   return normalized === '1' || normalized === 'true' || normalized === 'yes';
 }
 
+function getEnv(name: string) {
+  const value = process.env[name];
+  return typeof value === 'string' ? value.trim() : '';
+}
+
+function readBooleanEnv(name: string) {
+  return readBoolean(getEnv(name));
+}
+
+function normalizeEmail(value: string) {
+  const angleMatch = value.match(/<([^<>@\s]+@[^<>@\s]+\.[^<>@\s]+)>/);
+  return angleMatch?.[1] || value;
+}
+
+function isLikelyEmail(value: string) {
+  return /^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(normalizeEmail(value));
+}
+
+function getNotificationReadinessMetadata(): NotificationReadinessMetadata {
+  const blockedBy: NotificationReadinessBlocker[] = [];
+  const propertyRecipient = getEnv('PROPERTY_INQUIRY_NOTIFY_TO');
+  const fallbackRecipient = getEnv('REIE_INTERNAL_EMAIL');
+  const recipient = propertyRecipient || fallbackRecipient;
+
+  if (!recipient || !isLikelyEmail(recipient)) {
+    blockedBy.push({
+      code: 'property_inquiry_recipient_missing',
+      envVars: ['PROPERTY_INQUIRY_NOTIFY_TO', 'REIE_INTERNAL_EMAIL'],
+      detail: !recipient ? 'Missing and REIE_INTERNAL_EMAIL fallback is not set.' : 'Recipient is configured but does not look like an email address.',
+      nextCommand: 'npm run check:property-inquiry-notification:readiness',
+    });
+  }
+
+  if (readBooleanEnv('PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN')) {
+    blockedBy.push({
+      code: 'property_inquiry_dry_run_enabled',
+      envVars: ['PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN'],
+      detail: 'Enabled; property-inquiry notification sends are suppressed.',
+      nextCommand: 'npm run check:property-inquiry-notification:readiness',
+    });
+  }
+
+  return {
+    level: blockedBy.length > 0 ? 'blocked' : 'ready',
+    summary:
+      blockedBy.length > 0
+        ? `${blockedBy.length} notification blocker${blockedBy.length === 1 ? '' : 's'} require operator action.`
+        : 'Notification routing blockers are clear.',
+    terminal: TERMINAL,
+    route: ROUTE,
+    nextCommand:
+      blockedBy.length > 0
+        ? 'npm run check:property-inquiry-notification:readiness'
+        : 'npm run check:notification-readiness',
+    blockerCodes: blockedBy.map((blocker) => blocker.code),
+    blockerEnvVars: Array.from(new Set(blockedBy.flatMap((blocker) => blocker.envVars))),
+    blockedBy,
+    commands: {
+      propertyInquiryReadiness: 'npm run check:property-inquiry-notification:readiness',
+      notificationReadiness: 'npm run check:notification-readiness',
+      strictNotificationReadiness: 'npm run check:notification-readiness:strict',
+      strictNotificationReadinessContract: 'npm run check:notification-readiness:strict-contract',
+      launchReadiness: 'npm run check:launch-readiness',
+    },
+  };
+}
+
 function hasExplicitBoolean(value: unknown) {
   if (typeof value === 'boolean' || typeof value === 'number') return true;
 
@@ -226,6 +395,65 @@ async function getStatsWithDiagnostics() {
 
   return {
     stats: result.value,
+    diagnostics: result.ok ? [] : [result.issue],
+  };
+}
+
+function summarizeFailedAlertPayload(payload: unknown) {
+  if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
+    return {
+      payloadType: Array.isArray(payload) ? 'array' : typeof payload,
+      payloadKeys: [],
+      hasUsableProperty: false,
+      hasAddress: false,
+      hasCity: false,
+      hasPrice: false,
+    };
+  }
+
+  const record = payload as Record<string, unknown>;
+  const payloadKeys = Object.keys(record).sort();
+  const identity = record.propertyId || record.id || record.slug || record.mlsId || record.address;
+
+  return {
+    payloadType: 'object',
+    payloadKeys,
+    hasUsableProperty: Boolean(identity),
+    hasAddress: typeof record.address === 'string' && record.address.trim().length > 0,
+    hasCity: typeof record.city === 'string' && record.city.trim().length > 0,
+    hasPrice: typeof record.price === 'number' && Number.isFinite(record.price),
+  };
+}
+
+async function getFailedAlertRows(limit = 10): Promise<FailedAlertRowSummary[]> {
+  const rows = await prisma.alertQueue.findMany({
+    where: { status: 'failed' },
+    orderBy: { createdAt: 'asc' },
+    take: limit,
+    select: {
+      id: true,
+      userId: true,
+      createdAt: true,
+      clickedAt: true,
+      payload: true,
+    },
+  });
+
+  return rows.map((row) => ({
+    id: row.id,
+    userId: row.userId,
+    createdAt: row.createdAt.toISOString(),
+    clickedAt: row.clickedAt ? row.clickedAt.toISOString() : null,
+    likelyTestRow: row.id.startsWith('test-'),
+    ...summarizeFailedAlertPayload(row.payload),
+  }));
+}
+
+async function getFailedAlertRowsWithDiagnostics() {
+  const result = await withTimeout('database:failedAlertRows', [], getFailedAlertRows());
+
+  return {
+    failedAlertRows: result.value,
     diagnostics: result.ok ? [] : [result.issue],
   };
 }
@@ -320,6 +548,9 @@ function buildCommands(limit: number) {
     alertWorkerDryRun: 'npm run run:worker:alerts:once',
     alertWorkerLiveOnce: 'npm run run:worker:alerts:once:live',
     queueDashboard: 'npm run run:queue-dashboard -- --failed --limit=5',
+    failedRowsInspection: `curl -s "${LOCAL_BASE_URL}${ROUTE}?limit=${limit}"`,
+    failedRowsScript: 'npm run run:alerts:failed',
+    markTestFailedRowsSkipped: 'npm run run:alerts:failed:skip-test',
     supabaseCheck: SUPABASE_CHECK_COMMAND,
     supabaseCheckJson: SUPABASE_CHECK_JSON_COMMAND,
     mlsStatus: `curl -s "${LOCAL_BASE_URL}/api/mls/status"`,
@@ -387,9 +618,9 @@ function buildExecutionPlan(options: {
     return {
       level: 'blocked',
       summary: 'Failed alert rows exist; inspect them before another live alert run.',
-      nextAction: 'Inspect alert dead letters before live processing.',
+      nextAction: 'Review failed stored AlertQueue rows before live processing.',
       terminal: 'Terminal 5',
-      nextCommand: commands.deadLetter,
+      nextCommand: commands.failedRowsInspection,
       liveAllowed: false,
       gates,
     };
@@ -460,10 +691,12 @@ async function processAlerts(request: NextRequest, body: ProcessAlertsBody = {})
     }),
   );
   const { stats, diagnostics: statsDiagnostics } = await getStatsWithDiagnostics();
-  const diagnostics = [...(alertResult.ok ? [] : [alertResult.issue]), ...statsDiagnostics];
+  const { failedAlertRows, diagnostics: failedRowDiagnostics } = await getFailedAlertRowsWithDiagnostics();
+  const diagnostics = [...(alertResult.ok ? [] : [alertResult.issue]), ...statsDiagnostics, ...failedRowDiagnostics];
 
   return json({
     success: alertResult.value.success && diagnostics.length === 0,
+    ...getInspectionMetadata(request),
     module: 'REIE Saved Search Alerts',
     mode: options.dryRun ? 'preview' : 'process',
     limit: options.limit,
@@ -473,6 +706,7 @@ async function processAlerts(request: NextRequest, body: ProcessAlertsBody = {})
       configured: Boolean(getAdminKey()),
     },
     commands: buildCommands(options.limit),
+    notificationReadiness: getNotificationReadinessMetadata(),
     diagnostics,
     executionPlan: buildExecutionPlan({
       dryRun: options.dryRun,
@@ -491,12 +725,13 @@ async function processAlerts(request: NextRequest, body: ProcessAlertsBody = {})
     }),
     result: alertResult.value,
     stats,
+    failedAlertRows,
   });
 }
 
 export async function GET(request: NextRequest) {
   if (!authorizeRequest(request)) {
-    return unauthorizedResponse();
+    return unauthorizedResponse(request);
   }
 
   try {
@@ -509,49 +744,31 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    const { stats, diagnostics } = await getStatsWithDiagnostics();
+    const { stats, diagnostics: statsDiagnostics } = await getStatsWithDiagnostics();
+    const { failedAlertRows, diagnostics: failedRowDiagnostics } = await getFailedAlertRowsWithDiagnostics();
+    const diagnostics = [...statsDiagnostics, ...failedRowDiagnostics];
 
     return json({
       success: diagnostics.length === 0,
-      mode: 'status',
-      module: 'REIE Saved Search Alerts',
-      timeoutMs: PROCESS_ALERTS_TIMEOUT_MS,
-      auth: {
-        configured: Boolean(getAdminKey()),
-      },
-      commands: buildCommands(options.limit),
-      diagnostics,
-      executionPlan: buildExecutionPlan({
-        dryRun: true,
-        run: false,
-        limit: options.limit,
-        stats,
-        diagnostics,
-      }),
-      recommendations: buildRecommendations({
-        dryRun: true,
-        run: false,
-        stats,
-        diagnostics,
-      }),
-      stats,
-      nextRunHint: '/api/process-alerts?execute=true',
-      nextDryRunHint: '/api/process-alerts?dryRun=1',
+      ...getStatusEnvelope(request, options, stats, diagnostics, failedAlertRows),
     });
   } catch (error) {
     console.error('Process alerts status error:', error);
 
+    const options = readRequestOptions(request);
+    const stats = getFallbackStats();
+    const diagnostics = [
+      {
+        area: 'process-alerts:get',
+        message: getErrorMessage(error),
+      },
+    ];
+
     return json(
       {
         success: false,
-        mode: 'status',
         error: 'Failed to read alert queue status.',
-        diagnostics: [
-          {
-            area: 'process-alerts:get',
-            message: getErrorMessage(error),
-          },
-        ],
+        ...getStatusEnvelope(request, options, stats, diagnostics),
       },
       { status: 500 },
     );
@@ -560,7 +777,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   if (!authorizeRequest(request)) {
-    return unauthorizedResponse();
+    return unauthorizedResponse(request);
   }
 
   try {
@@ -569,17 +786,38 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Process alerts error:', error);
 
+    const options = readRequestOptions(request);
+    const stats = getFallbackStats();
+    const diagnostics = [
+      {
+        area: 'process-alerts:post',
+        message: getErrorMessage(error),
+      },
+    ];
+
     return json(
       {
         success: false,
+        ...getStatusEnvelope(request, options, stats, diagnostics),
         mode: 'process',
         error: 'Failed to process alert queue.',
-        diagnostics: [
-          {
-            area: 'process-alerts:post',
-            message: getErrorMessage(error),
-          },
-        ],
+        detail: getErrorMessage(error),
+        dryRun: true,
+        limit: options.limit,
+        executionPlan: buildExecutionPlan({
+          dryRun: true,
+          run: true,
+          limit: options.limit,
+          stats,
+          diagnostics,
+        }),
+        recommendations: buildRecommendations({
+          dryRun: true,
+          run: true,
+          stats,
+          diagnostics,
+        }),
+        stats,
       },
       { status: 500 },
     );

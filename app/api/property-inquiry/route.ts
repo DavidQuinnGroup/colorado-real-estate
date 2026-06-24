@@ -18,6 +18,16 @@ const MAX_PHONE_LENGTH = 40;
 const MAX_TIMELINE_LENGTH = 40;
 const MAX_NOTES_LENGTH = 600;
 const PROPERTY_INQUIRY_HEAT_SCORE = 35;
+const PROPERTY_INQUIRY_NOTIFICATION_CHANNEL = 'property-inquiry-email';
+
+type PropertyInquiryNotificationStatus = {
+  sent: boolean;
+  reason: string;
+  attempted: boolean;
+  required: boolean;
+  priority: ReturnType<typeof getPriority>;
+  channel: typeof PROPERTY_INQUIRY_NOTIFICATION_CHANNEL;
+};
 
 function jsonResponse(body: Record<string, unknown>, status = 200) {
   return NextResponse.json(body, { status });
@@ -46,6 +56,27 @@ function getPriority(timeline: string | null) {
 
 function shouldNotify(timeline: string | null) {
   return getPriority(timeline) === 'high';
+}
+
+function buildNotificationStatus({
+  sent,
+  reason,
+  priority,
+  required,
+}: {
+  sent: boolean;
+  reason: string;
+  priority: ReturnType<typeof getPriority>;
+  required: boolean;
+}): PropertyInquiryNotificationStatus {
+  return {
+    sent,
+    reason,
+    attempted: required,
+    required,
+    priority,
+    channel: PROPERTY_INQUIRY_NOTIFICATION_CHANNEL,
+  };
 }
 
 function getTimelineLabel(timeline: string | null) {
@@ -207,9 +238,16 @@ export async function POST(request: Request) {
       };
     });
 
-    let notification: { sent: boolean; reason?: string } = { sent: false, reason: 'not-high-priority' };
+    const priority = getPriority(timeline);
+    const notificationRequired = shouldNotify(timeline);
+    let notification = buildNotificationStatus({
+      sent: false,
+      reason: 'not-high-priority',
+      priority,
+      required: notificationRequired,
+    });
 
-    if (shouldNotify(timeline)) {
+    if (notificationRequired) {
       try {
         const notificationResult = await sendPropertyInquiryNotification({
           inquiryId: result.leadInteraction.id,
@@ -234,10 +272,28 @@ export async function POST(request: Request) {
           },
         });
 
-        notification = 'sent' in notificationResult ? notificationResult : { sent: true };
+        notification =
+          'sent' in notificationResult
+            ? buildNotificationStatus({
+                sent: notificationResult.sent,
+                reason: notificationResult.reason || 'notification-skipped',
+                priority,
+                required: notificationRequired,
+              })
+            : buildNotificationStatus({
+                sent: true,
+                reason: 'sent',
+                priority,
+                required: notificationRequired,
+              });
       } catch (notificationError) {
         console.error('[REIE PROPERTY INQUIRY NOTIFICATION]', notificationError);
-        notification = { sent: false, reason: 'notification-error' };
+        notification = buildNotificationStatus({
+          sent: false,
+          reason: 'notification-error',
+          priority,
+          required: notificationRequired,
+        });
       }
     }
 

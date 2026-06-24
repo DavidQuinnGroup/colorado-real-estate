@@ -36,20 +36,35 @@ function getCityBrief(cityName: string): BlogLink | null {
 
 export default function CityHubLink({ city, label }: CityHubLinkProps) {
   const cityName = formatCityName(city);
-  const href = `/market/${getMarketSlug(cityName)}`;
+  const marketSlug = getMarketSlug(cityName);
+  const href = `/market/${marketSlug}`;
   const brief = getCityBrief(cityName);
+  const marketLabel = label ?? `Explore everything about living in ${cityName}`;
 
   return (
-    <div className="mt-16 grid gap-px overflow-hidden border border-white/10 bg-white/10 text-white md:grid-cols-[1.35fr_1fr]">
+    <div
+      className="mt-16 grid gap-px overflow-hidden border border-white/10 bg-white/10 text-white md:grid-cols-[1.35fr_1fr]"
+      data-testid="reie-city-hub-link"
+      data-city-hub-link-city={city}
+      data-city-hub-link-city-name={cityName}
+      data-city-hub-link-market-slug={marketSlug}
+      data-city-hub-link-market-href={href}
+      data-city-hub-link-label={marketLabel}
+      data-city-hub-link-has-brief={brief ? "true" : "false"}
+      data-city-hub-link-brief-href={brief?.href ?? ""}
+    >
       <Link
         href={href}
         className="group block bg-[#050505] p-5 transition-colors hover:bg-white/[0.04]"
+        data-testid="reie-city-hub-market-link"
+        data-city-hub-market-link-href={href}
+        data-city-hub-market-link-label={marketLabel}
       >
         <p className="text-[10px] font-black uppercase tracking-[0.35em] text-[#00ff80]">
           City Authority Hub
         </p>
         <p className="mt-3 text-lg font-black uppercase italic tracking-tight text-white">
-          {label ?? `Explore everything about living in ${cityName}`}
+          {marketLabel}
         </p>
         <p className="mt-3 text-[10px] font-bold uppercase tracking-[0.18em] text-white/30">
           Market report, neighborhood strategy, and local real estate intelligence
@@ -63,6 +78,10 @@ export default function CityHubLink({ city, label }: CityHubLinkProps) {
         <Link
           href={brief.href}
           className="group block bg-black p-5 transition-colors hover:bg-white/[0.04]"
+          data-testid="reie-city-hub-brief-link"
+          data-city-hub-brief-title={brief.title}
+          data-city-hub-brief-description={brief.description}
+          data-city-hub-brief-href={brief.href}
         >
           <p className="text-[10px] font-black uppercase tracking-[0.35em] text-[#00ff80]">
             REIE Strategy Brief

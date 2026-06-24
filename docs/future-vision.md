@@ -1,6 +1,6 @@
 # REIE Future Vision
 
-Last reviewed: May 31, 2026
+Last reviewed: June 16, 2026
 
 This document captures durable product direction for the Real Estate Intelligence Engine. It is intentionally strategic and should not override the current implementation gates in `docs/STATEoftheUNION`, `docs/launch-core-checklist.md`, or `REIE_MASTER_V7_TRACEABILITY.md`.
 
@@ -41,14 +41,23 @@ This document captures durable product direction for the Real Estate Intelligenc
 
 - Publish useful articles that go deeper than generic real estate copy.
 - Candidate topics include Boulder history, local architecture, why Boulder developed the way it did, real estate as an investment, loan type differences, mortgage-rate drivers, and buyer/seller risk context.
-- Scale toward large SEO coverage only when the content architecture, schema, internal linking, and generation quality gates remain intact.
+- Scale toward large SEO coverage only when the content architecture, schema, internal linking, verified data, Search Smoke Readiness, Master Control Panel policy, intake signal visibility, queue diagnostics, and generation quality gates remain intact.
 
 ## Private Platform Direction
 
 - Long-term, create a private agent-only extension connected to the public platform.
 - The private system should transform client inputs, listing intelligence, imported data, and agent criteria into operational outputs such as contract drafts, seller marketing plans, buyer offer strategies, and task workflows.
+- Automation should remain human-reviewed when it can affect outreach, CRM tasks, recurring email, public content, contract-related work, or seller/buyer strategy.
 - Keep proprietary logic server-side where practical.
 - Treat minification and obfuscation as build-layer hardening, not as a substitute for keeping sensitive logic out of the browser.
+
+## Operating Guardrails
+
+- Future public expansion should stay gated by `npm run supabase:check:json`, `npm run smoke:mls-status`, `npm run smoke:search`, `npm run smoke:ops`, and `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000`.
+- Master Control Panel policy should define when automation, public exposure, map precision, private layers, and warnings can move from protected to broader launch posture.
+- Intake signal visibility should remain required before saved-search behavior, strategy-intake tasks, OpenAI-assisted outreach, CRM automation, recurring email traffic, or content planning are allowed to scale.
+- Live-inventory claims, MLS-backed public expansion, MLS-volume increases, scheduler cadence increases, recurring email traffic, and large programmatic content batch publication should wait for verified data, healthy search, acceptable queue diagnostics, visible intake handoff, intended control posture, configured property-inquiry recipient routing, and `PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN` unset or false when live notification workflows are involved.
+- OpenAI-backed or AI-assisted workflows should stay optional, fallback-safe, and reviewed before any live outreach, CRM, email, or public-content use.
 
 ## Expansion Direction
 
@@ -60,4 +69,5 @@ This document captures durable product direction for the Real Estate Intelligenc
 - `docs/STATEoftheUNION`: current operational state and known blockers.
 - `docs/platform-architecture.md`: current technical architecture.
 - `docs/content-architecture.md`: public content and SEO architecture.
+- `docs/openai-ops.md`: OpenAI-backed outreach and AI helper operating boundary.
 - `REIE_MASTER_V7_TRACEABILITY.md`: alignment against the Master V7 source.

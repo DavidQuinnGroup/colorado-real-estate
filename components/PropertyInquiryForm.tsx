@@ -31,6 +31,14 @@ type PropertyInquiryResponse = {
     leadTemperature?: string;
     timelineLabel?: string;
   };
+  notification?: {
+    sent?: boolean;
+    reason?: string;
+    attempted?: boolean;
+    required?: boolean;
+    priority?: string;
+    channel?: string;
+  };
 };
 
 const TIMELINE_OPTIONS: { value: Timeline; label: string; detail: string }[] = [
@@ -83,6 +91,10 @@ function getTimelineLabel(timeline: Timeline) {
   return TIMELINE_OPTIONS.find((option) => option.value === timeline)?.label || 'Property Inquiry';
 }
 
+function isNotificationRequired(timeline: Timeline) {
+  return timeline === 'tour' || timeline === 'now';
+}
+
 async function readResponse(response: Response): Promise<PropertyInquiryResponse> {
   try {
     const body = (await response.json()) as PropertyInquiryResponse;
@@ -101,11 +113,23 @@ export default function PropertyInquiryForm({ propertyId, address, city, state }
   const [submitState, setSubmitState] = useState<SubmitState>('idle');
   const [errorMessage, setErrorMessage] = useState('');
   const [result, setResult] = useState<PropertyInquiryResponse | null>(null);
+  const normalizedName = name.trim();
+  const normalizedEmail = email.trim().toLowerCase();
+  const normalizedPhone = phone.trim();
+  const normalizedNotes = notes.trim();
+  const hasValidEmail = isValidEmail(normalizedEmail);
+  const timelineLabel = result?.intake?.timelineLabel || getTimelineLabel(timeline);
+  const leadTemperature = result?.intake?.leadTemperature || (timeline === 'tour' || timeline === 'now' ? 'hot' : 'warm');
+  const notification = result?.notification;
+  const notificationChannel = notification?.channel || 'property-inquiry-email';
+  const notificationRequired = notification?.required ?? isNotificationRequired(timeline);
+  const notificationAttempted = notification?.attempted ?? false;
+  const notificationSent = notification?.sent ?? false;
+  const notificationReason = notification?.reason || '';
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    const normalizedEmail = email.trim().toLowerCase();
     if (!isValidEmail(normalizedEmail)) {
       setSubmitState('error');
       setErrorMessage('Enter a valid email address.');
@@ -124,11 +148,11 @@ export default function PropertyInquiryForm({ propertyId, address, city, state }
         },
         body: JSON.stringify({
           propertyId,
-          name: name.trim() || null,
+          name: normalizedName || null,
           email: normalizedEmail,
-          phone: phone.trim() || null,
+          phone: normalizedPhone || null,
           timeline,
-          notes: notes.trim() || null,
+          notes: normalizedNotes || null,
           source: 'property-page',
         }),
       });
@@ -148,7 +172,28 @@ export default function PropertyInquiryForm({ propertyId, address, city, state }
 
   if (submitState === 'success') {
     return (
-      <section id="property-contact" className="overflow-hidden rounded-[8px] border border-cyan-100/28 bg-[#071017]">
+      <section
+        id="property-contact"
+        className="overflow-hidden rounded-[8px] border border-cyan-100/28 bg-[#071017]"
+        data-testid="reie-property-inquiry"
+        data-property-inquiry-state={submitState}
+        data-property-inquiry-property-id={propertyId}
+        data-property-inquiry-address={address}
+        data-property-inquiry-city={city}
+        data-property-inquiry-region={state}
+        data-property-inquiry-source="property-page"
+        data-property-inquiry-route="/api/property-inquiry"
+        data-property-inquiry-timeline={timeline}
+        data-property-inquiry-timeline-label={timelineLabel}
+        data-property-inquiry-lead-temperature={leadTemperature}
+        data-property-inquiry-crm-task-id={result?.crmTaskId || ''}
+        data-property-inquiry-notification-channel={notificationChannel}
+        data-property-inquiry-notification-required={notificationRequired ? 'true' : 'false'}
+        data-property-inquiry-notification-attempted={notificationAttempted ? 'true' : 'false'}
+        data-property-inquiry-notification-sent={notificationSent ? 'true' : 'false'}
+        data-property-inquiry-notification-reason={notificationReason}
+        data-property-inquiry-error=""
+      >
         <div className="border-b border-cyan-100/14 bg-cyan-100/[0.075] p-5">
           <CheckCircle2 className="text-cyan-100" size={26} aria-hidden="true" />
           <h2 className="mt-3 text-[15px] font-black uppercase tracking-[0.08em] text-white">Inquiry Saved</h2>
@@ -156,16 +201,54 @@ export default function PropertyInquiryForm({ propertyId, address, city, state }
             This property inquiry is now routed into the REIE CRM queue for follow-up.
           </p>
         </div>
-        <div className="grid gap-2 p-4 sm:grid-cols-2">
-          <SuccessMetric label="Request" value={result?.intake?.timelineLabel || 'Property inquiry'} />
-          <SuccessMetric label="Priority" value={result?.intake?.leadTemperature || 'warm'} tone="cyan" />
+        <div
+          className="grid gap-2 p-4 sm:grid-cols-2"
+          data-testid="reie-property-inquiry-success"
+          data-property-inquiry-timeline-label={timelineLabel}
+          data-property-inquiry-lead-temperature={leadTemperature}
+          data-property-inquiry-crm-task-id={result?.crmTaskId || ''}
+          data-property-inquiry-notification-channel={notificationChannel}
+          data-property-inquiry-notification-required={notificationRequired ? 'true' : 'false'}
+          data-property-inquiry-notification-attempted={notificationAttempted ? 'true' : 'false'}
+          data-property-inquiry-notification-sent={notificationSent ? 'true' : 'false'}
+          data-property-inquiry-notification-reason={notificationReason}
+        >
+          <SuccessMetric label="Request" value={timelineLabel} />
+          <SuccessMetric label="Priority" value={leadTemperature} tone="cyan" />
         </div>
       </section>
     );
   }
 
   return (
-    <section id="property-contact" className="overflow-hidden rounded-[8px] border border-cyan-100/24 bg-[#071017]">
+    <section
+      id="property-contact"
+      className="overflow-hidden rounded-[8px] border border-cyan-100/24 bg-[#071017]"
+      data-testid="reie-property-inquiry"
+      data-property-inquiry-state={submitState}
+      data-property-inquiry-property-id={propertyId}
+      data-property-inquiry-address={address}
+      data-property-inquiry-city={city}
+      data-property-inquiry-region={state}
+      data-property-inquiry-source="property-page"
+      data-property-inquiry-route="/api/property-inquiry"
+      data-property-inquiry-timeline={timeline}
+      data-property-inquiry-timeline-label={timelineLabel}
+      data-property-inquiry-lead-temperature={leadTemperature}
+      data-property-inquiry-notification-channel={notificationChannel}
+      data-property-inquiry-notification-required={notificationRequired ? 'true' : 'false'}
+      data-property-inquiry-notification-attempted={notificationAttempted ? 'true' : 'false'}
+      data-property-inquiry-notification-sent={notificationSent ? 'true' : 'false'}
+      data-property-inquiry-notification-reason={notificationReason}
+      data-property-inquiry-name-present={normalizedName ? 'true' : 'false'}
+      data-property-inquiry-phone-present={normalizedPhone ? 'true' : 'false'}
+      data-property-inquiry-email-present={normalizedEmail ? 'true' : 'false'}
+      data-property-inquiry-email-valid={hasValidEmail ? 'true' : 'false'}
+      data-property-inquiry-notes-present={normalizedNotes ? 'true' : 'false'}
+      data-property-inquiry-notes-length={notes.length}
+      data-property-inquiry-notes-max-length="600"
+      data-property-inquiry-error={errorMessage}
+    >
       <div className="border-b border-cyan-100/14 bg-cyan-100/[0.075] p-5">
         <div className="flex items-start justify-between gap-4">
           <div>
@@ -184,12 +267,24 @@ export default function PropertyInquiryForm({ propertyId, address, city, state }
         </p>
       </div>
 
-      <div className="grid gap-2 border-b border-white/10 p-4 sm:grid-cols-2">
+      <div
+        className="grid gap-2 border-b border-white/10 p-4 sm:grid-cols-2"
+        data-testid="reie-property-inquiry-status"
+        data-property-inquiry-timeline={timeline}
+        data-property-inquiry-timeline-detail={getTimelineDetail(timeline)}
+      >
         <StatusTile icon={<ShieldCheck size={13} />} label="Routed To REIE CRM" value="High-intent property follow-up" />
         <StatusTile icon={<Clock3 size={13} />} label="Current Request" value={getTimelineDetail(timeline)} />
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4 p-5">
+      <form
+        onSubmit={handleSubmit}
+        className="space-y-4 p-5"
+        data-testid="reie-property-inquiry-form"
+        data-property-inquiry-state={submitState}
+        data-property-inquiry-source="property-page"
+        data-property-inquiry-route="/api/property-inquiry"
+      >
         <div className="grid gap-3 sm:grid-cols-2">
           <FieldShell icon={<UserRound size={15} aria-hidden="true" />} label="Name">
             <input
@@ -199,6 +294,10 @@ export default function PropertyInquiryForm({ propertyId, address, city, state }
               maxLength={120}
               style={iconTextControlStyle}
               className="h-11 w-full rounded-[6px] border border-white/10 bg-white/[0.055] pl-9 pr-3 text-sm text-white outline-none transition placeholder:text-white/25 focus:border-cyan-100/55"
+              data-testid="reie-property-inquiry-name"
+              data-property-inquiry-name-present={normalizedName ? 'true' : 'false'}
+              data-property-inquiry-name-length={name.length}
+              data-property-inquiry-name-max-length="120"
             />
           </FieldShell>
 
@@ -210,6 +309,10 @@ export default function PropertyInquiryForm({ propertyId, address, city, state }
               maxLength={40}
               style={iconTextControlStyle}
               className="h-11 w-full rounded-[6px] border border-white/10 bg-white/[0.055] pl-9 pr-3 text-sm text-white outline-none transition placeholder:text-white/25 focus:border-cyan-100/55"
+              data-testid="reie-property-inquiry-phone"
+              data-property-inquiry-phone-present={normalizedPhone ? 'true' : 'false'}
+              data-property-inquiry-phone-length={phone.length}
+              data-property-inquiry-phone-max-length="40"
             />
           </FieldShell>
         </div>
@@ -222,6 +325,9 @@ export default function PropertyInquiryForm({ propertyId, address, city, state }
             placeholder="Email"
             style={iconTextControlStyle}
             className="h-11 w-full rounded-[6px] border border-white/10 bg-white/[0.055] pl-9 pr-3 text-sm text-white outline-none transition placeholder:text-white/25 focus:border-cyan-100/55"
+            data-testid="reie-property-inquiry-email"
+            data-property-inquiry-email-present={normalizedEmail ? 'true' : 'false'}
+            data-property-inquiry-email-valid={hasValidEmail ? 'true' : 'false'}
           />
         </FieldShell>
 
@@ -238,6 +344,11 @@ export default function PropertyInquiryForm({ propertyId, address, city, state }
                 aria-pressed={timeline === option.value}
                 onClick={() => setTimeline(option.value)}
                 style={timelineButtonStyle}
+                data-testid="reie-property-inquiry-timeline"
+                data-property-inquiry-timeline={option.value}
+                data-property-inquiry-timeline-label={option.label}
+                data-property-inquiry-timeline-detail={option.detail}
+                data-property-inquiry-timeline-selected={timeline === option.value ? 'true' : 'false'}
                 className={`min-h-11 rounded-[6px] border px-2 text-[10px] font-black uppercase tracking-[0.12em] transition ${
                   timeline === option.value
                     ? 'border-cyan-100 bg-cyan-100 text-[#061017] shadow-[0_0_0_1px_rgba(207,250,254,0.22)]'
@@ -265,11 +376,20 @@ export default function PropertyInquiryForm({ propertyId, address, city, state }
             maxLength={600}
             style={notesControlStyle}
             className="min-h-24 w-full resize-none rounded-[6px] border border-white/10 bg-[#071017]/70 px-3 py-3 text-sm leading-6 text-white outline-none transition placeholder:text-white/25 focus:border-cyan-100/55"
+            data-testid="reie-property-inquiry-notes"
+            data-property-inquiry-notes-present={normalizedNotes ? 'true' : 'false'}
+            data-property-inquiry-notes-length={notes.length}
+            data-property-inquiry-notes-max-length="600"
           />
         </label>
 
         {errorMessage ? (
-          <p aria-live="polite" className="rounded-[6px] border border-red-400/24 bg-red-500/10 px-3 py-2 text-xs font-bold text-red-100">
+          <p
+            aria-live="polite"
+            className="rounded-[6px] border border-red-400/24 bg-red-500/10 px-3 py-2 text-xs font-bold text-red-100"
+            data-testid="reie-property-inquiry-error"
+            data-property-inquiry-error={errorMessage}
+          >
             {errorMessage}
           </p>
         ) : null}
@@ -279,6 +399,10 @@ export default function PropertyInquiryForm({ propertyId, address, city, state }
           disabled={submitState === 'submitting'}
           style={submitButtonStyle}
           className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-[6px] bg-cyan-100 px-3 py-3 text-[10px] font-black uppercase tracking-[0.16em] text-[#061017] transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-60"
+          data-testid="reie-property-inquiry-submit"
+          data-property-inquiry-state={submitState}
+          data-property-inquiry-disabled={submitState === 'submitting' ? 'true' : 'false'}
+          data-property-inquiry-email-valid={hasValidEmail ? 'true' : 'false'}
         >
           {submitState === 'submitting' ? <Loader2 size={14} className="animate-spin" aria-hidden="true" /> : <Mail size={14} aria-hidden="true" />}
           {submitState === 'submitting' ? 'Saving' : 'Send Inquiry'}

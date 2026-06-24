@@ -16,6 +16,55 @@ export type MlsPageJobData = {
   timeoutMs?: number;
 };
 
+export type MlsPageQueuePlan = {
+  queueName: typeof MLS_PAGE_QUEUE_NAME;
+  jobName: typeof MLS_PAGE_JOB_NAME;
+  jobId: string;
+  data: MlsPageJobData;
+  terminal: 'Terminal 2';
+  recoveryTerminal: 'Terminal 5';
+  commands: {
+    startWorker: string;
+    oneShotWorker: string;
+    status: string;
+    retryDryRun: string;
+    queueDashboard: string;
+  };
+  defaultJobOptions: {
+    attempts: number;
+    backoff: {
+      type: 'exponential';
+      delay: number;
+    };
+    removeOnComplete: {
+      age: number;
+      count: number;
+    };
+    removeOnFail: {
+      age: number;
+      count: number;
+    };
+  };
+  bounded: {
+    requestedBy: boolean;
+    requestedAt: boolean;
+    source: boolean;
+    skip: boolean;
+    top: boolean;
+    lastSync: boolean;
+    timeoutMs: boolean;
+  };
+  limits: {
+    minSkip: number;
+    maxSkip: number;
+    minTop: number;
+    maxTop: number;
+    minTimeoutMs: number;
+    maxTimeoutMs: number;
+    maxRequestedByLength: number;
+  };
+};
+
 export const MLS_PAGE_QUEUE_NAME = 'mls-page';
 export const MLS_PAGE_JOB_NAME = 'fetch-page';
 
@@ -27,6 +76,7 @@ export const MLS_PAGE_DEFAULT_TIMEOUT_MS = 30_000;
 export const MLS_PAGE_MAX_SKIP = Number.MAX_SAFE_INTEGER;
 export const MLS_PAGE_MAX_TOP = 100;
 export const MLS_PAGE_MAX_TIMEOUT_MS = 120_000;
+export const MLS_PAGE_MAX_REQUESTED_BY_LENGTH = 120;
 
 export const MLS_PAGE_JOB_ATTEMPTS = 3;
 export const MLS_PAGE_JOB_BACKOFF_DELAY_MS = 2_000;
@@ -89,7 +139,7 @@ function getSafeRequestedBy(value: string | undefined) {
   const cleaned = value.trim();
   if (!cleaned) return undefined;
 
-  return cleaned.slice(0, 120);
+  return cleaned.slice(0, MLS_PAGE_MAX_REQUESTED_BY_LENGTH);
 }
 
 function getSafeSource(value: MlsPageJobSource | undefined): MlsPageJobSource {
@@ -121,15 +171,70 @@ function getJobId(data: MlsPageJobData) {
   return `mls-page-${data.skip}-${data.top}-${data.lastSync}`.replace(/[^\w:.-]/g, '-').slice(0, 180);
 }
 
-export async function enqueueMlsPage(data: Partial<MlsPageJobData>, options: JobsOptions = {}) {
+export function getMlsPageQueuePlan(data: Partial<MlsPageJobData>, sourceFallback: MlsPageJobSource = 'coordinator'): MlsPageQueuePlan {
   const normalized = normalizeMlsPageJobData({
     ...data,
-    source: data.source ?? 'coordinator',
+    source: data.source ?? sourceFallback,
   });
 
-  return mlsPageQueue.add(MLS_PAGE_JOB_NAME, normalized, {
-    ...options,
+  return {
+    queueName: MLS_PAGE_QUEUE_NAME,
+    jobName: MLS_PAGE_JOB_NAME,
     jobId: getJobId(normalized),
+    data: normalized,
+    terminal: 'Terminal 2',
+    recoveryTerminal: 'Terminal 5',
+    commands: {
+      startWorker: 'npm run run:worker:mls-page',
+      oneShotWorker: 'npm run run:worker:mls-page:once',
+      status: 'curl --max-time 8 -s -w "\\nHTTP_STATUS:%{http_code}\\n" "http://localhost:3000/api/mls/status"',
+      retryDryRun: 'curl --max-time 8 -s -X POST -w "\\nHTTP_STATUS:%{http_code}\\n" "http://localhost:3000/api/mls/retry?queue=mls-page&dryRun=true&limit=6"',
+      queueDashboard: 'npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000',
+    },
+    defaultJobOptions: {
+      attempts: MLS_PAGE_JOB_ATTEMPTS,
+      backoff: {
+        type: 'exponential',
+        delay: MLS_PAGE_JOB_BACKOFF_DELAY_MS,
+      },
+      removeOnComplete: {
+        age: MLS_PAGE_REMOVE_ON_COMPLETE_AGE_SECONDS,
+        count: MLS_PAGE_REMOVE_ON_COMPLETE_COUNT,
+      },
+      removeOnFail: {
+        age: MLS_PAGE_REMOVE_ON_FAIL_AGE_SECONDS,
+        count: MLS_PAGE_REMOVE_ON_FAIL_COUNT,
+      },
+    },
+    bounded: {
+      requestedBy:
+        data.requestedBy !== undefined &&
+        getSafeRequestedBy(data.requestedBy) !== (data.requestedBy.trim() || undefined),
+      requestedAt: data.requestedAt !== undefined && normalized.requestedAt !== data.requestedAt,
+      source: data.source !== undefined && normalized.source !== data.source,
+      skip: data.skip !== undefined && normalized.skip !== data.skip,
+      top: data.top !== undefined && normalized.top !== data.top,
+      lastSync: data.lastSync !== undefined && normalized.lastSync !== data.lastSync,
+      timeoutMs: data.timeoutMs !== undefined && normalized.timeoutMs !== data.timeoutMs,
+    },
+    limits: {
+      minSkip: 0,
+      maxSkip: MLS_PAGE_MAX_SKIP,
+      minTop: 1,
+      maxTop: MLS_PAGE_MAX_TOP,
+      minTimeoutMs: 1000,
+      maxTimeoutMs: MLS_PAGE_MAX_TIMEOUT_MS,
+      maxRequestedByLength: MLS_PAGE_MAX_REQUESTED_BY_LENGTH,
+    },
+  };
+}
+
+export async function enqueueMlsPage(data: Partial<MlsPageJobData>, options: JobsOptions = {}) {
+  const plan = getMlsPageQueuePlan(data, 'coordinator');
+
+  return mlsPageQueue.add(MLS_PAGE_JOB_NAME, plan.data, {
+    ...options,
+    jobId: plan.jobId,
     attempts: options.attempts ?? defaultJobOptions.attempts,
     backoff: options.backoff ?? defaultJobOptions.backoff,
     removeOnComplete: options.removeOnComplete ?? defaultJobOptions.removeOnComplete,

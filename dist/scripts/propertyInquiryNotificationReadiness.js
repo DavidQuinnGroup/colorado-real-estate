@@ -1,9 +1,16 @@
-import dotenv from 'dotenv';
-dotenv.config({ path: '.env.local', quiet: true });
-dotenv.config({ quiet: true });
+import '../lib/env/loadNodeEnv.js';
+const TERMINAL = 'Terminal 5';
 function getEnv(name) {
     const value = process.env[name];
     return typeof value === 'string' ? value.trim() : '';
+}
+function readBooleanEnv(name) {
+    const normalized = getEnv(name).toLowerCase();
+    if (['1', 'true', 'yes', 'y'].includes(normalized))
+        return true;
+    if (['0', 'false', 'no', 'n', ''].includes(normalized))
+        return false;
+    return false;
 }
 function normalizeEmail(value) {
     const angleMatch = value.match(/<([^<>@\s]+@[^<>@\s]+\.[^<>@\s]+)>/);
@@ -68,6 +75,20 @@ function checkRecipient() {
         detail: propertyRecipient
             ? `Property inquiry recipient is configured as ${maskEmail(propertyRecipient)}.`
             : `Using REIE_INTERNAL_EMAIL fallback ${maskEmail(fallbackRecipient)}.`,
+    };
+}
+function checkDryRunDisabled() {
+    if (readBooleanEnv('PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN')) {
+        return {
+            name: 'PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN',
+            status: 'fail',
+            detail: 'Enabled; high-priority property inquiry notifications will not send while dry-run is active.',
+        };
+    }
+    return {
+        name: 'PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN',
+        status: 'pass',
+        detail: 'Disabled or unset; helper is allowed to send when all other delivery gates pass.',
     };
 }
 function checkFromEmail() {
@@ -148,21 +169,65 @@ function getReadiness(checks) {
         summary: 'Property inquiry notification configuration is ready for high-priority sends.',
     };
 }
+function getBlockedBy(checks) {
+    return checks
+        .filter((check) => check.status === 'fail')
+        .map((check) => {
+        if (check.name === 'PROPERTY_INQUIRY_NOTIFY_TO') {
+            return {
+                code: 'property_inquiry_recipient_missing',
+                envVars: ['PROPERTY_INQUIRY_NOTIFY_TO', 'REIE_INTERNAL_EMAIL'],
+                detail: check.detail,
+                nextCommand: 'npm run check:property-inquiry-notification:readiness',
+            };
+        }
+        if (check.name === 'PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN') {
+            return {
+                code: 'property_inquiry_dry_run_enabled',
+                envVars: ['PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN'],
+                detail: check.detail,
+                nextCommand: 'npm run check:property-inquiry-notification:readiness',
+            };
+        }
+        return {
+            code: check.name.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, ''),
+            envVars: [check.name],
+            detail: check.detail,
+            nextCommand: 'npm run check:property-inquiry-notification:readiness',
+        };
+    });
+}
 function main() {
     const checks = [
         checkResendApiKey(),
         checkRecipient(),
+        checkDryRunDisabled(),
         checkFromEmail(),
         checkReplyToEmail(),
         checkPublicUrl(),
     ];
     const readiness = getReadiness(checks);
+    const blockedBy = getBlockedBy(checks);
     console.log(JSON.stringify({
         success: readiness.level !== 'blocked',
         check: 'property-inquiry-notification-readiness',
         sendsEmail: false,
+        mutatesRows: false,
+        terminal: TERMINAL,
+        generatedAt: new Date().toISOString(),
         readiness,
+        blockedBy,
         checks,
+        nextCommand: readiness.level === 'blocked'
+            ? 'npm run check:property-inquiry-notification:readiness'
+            : 'npm run check:notification-readiness',
+        commands: {
+            propertyInquiryReadiness: 'npm run check:property-inquiry-notification:readiness',
+            notificationReadiness: 'npm run check:notification-readiness',
+            strictNotificationReadiness: 'npm run check:notification-readiness:strict',
+            strictNotificationReadinessContract: 'npm run check:notification-readiness:strict-contract',
+            launchReadiness: 'npm run check:launch-readiness',
+        },
     }, null, 2));
     if (readiness.level === 'blocked')
         process.exitCode = 1;

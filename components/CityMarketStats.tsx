@@ -25,6 +25,7 @@ type ModeButtonProps = {
   isActive: boolean;
   label: string;
   onClick: () => void;
+  mode: ViewMode;
 };
 
 type StatRowProps = {
@@ -32,6 +33,13 @@ type StatRowProps = {
   label: string;
   value: string;
   note: string;
+  metric: string;
+};
+
+type CostRowProps = {
+  label: string;
+  value: string;
+  metric: string;
 };
 
 const CURRENCY_FORMATTER = new Intl.NumberFormat('en-US', {
@@ -85,7 +93,24 @@ export default function CityMarketStats({ stats, homeAge = 30 }: CityMarketStats
   }, [homeAge, stats.avgEfficiency, stats.daysOnMarket, stats.inventory, stats.marketHealthScore, stats.medianPrice]);
 
   return (
-    <div className="mt-16 overflow-hidden border border-white/10 bg-[#050505] shadow-2xl">
+    <div
+      className="mt-16 overflow-hidden border border-white/10 bg-[#050505] shadow-2xl"
+      data-testid="reie-city-market-stats"
+      data-city-market-view={view}
+      data-city-market-home-age={homeAge}
+      data-city-market-median-price={stats.medianPrice}
+      data-city-market-price-per-sqft={stats.pricePerSqFt}
+      data-city-market-days-on-market={stats.daysOnMarket}
+      data-city-market-inventory={stats.inventory}
+      data-city-market-health-score={stats.marketHealthScore}
+      data-city-market-avg-efficiency={stats.avgEfficiency}
+      data-city-market-pressure={marketModel.marketPressure}
+      data-city-market-efficiency-label={marketModel.efficiencyLabel}
+      data-city-market-monthly-carry={Math.round(marketModel.monthlyCarry)}
+      data-city-market-annual-carry={Math.round(marketModel.annualCarry)}
+      data-city-market-inspection-reserve={Math.round(marketModel.inspectionReserve)}
+      data-city-market-leverage-score={marketModel.leverageScore}
+    >
       <div className="border-b border-white/5 bg-white/[0.02] p-8">
         <div className="mb-2 flex items-center gap-3">
           <Activity className="h-4 w-4 text-[#00ff80]" />
@@ -102,47 +127,63 @@ export default function CityMarketStats({ stats, homeAge = 30 }: CityMarketStats
           icon={<BarChart3 size={18} />}
           isActive={view === 'market'}
           label="Market Pulse"
+          mode="market"
           onClick={() => setView('market')}
         />
         <ModeButton
           icon={<ShieldCheck size={18} />}
           isActive={view === 'strategy'}
           label="Offer Strategy"
+          mode="strategy"
           onClick={() => setView('strategy')}
         />
       </div>
 
-      <div className="p-8">
+      <div className="p-8" data-testid="reie-city-market-stats-body" data-city-market-active-view={view}>
         {view === 'market' ? (
-          <div className="grid grid-cols-1 gap-8 animate-in fade-in duration-500 lg:grid-cols-[1fr_0.8fr]">
+          <div
+            className="grid grid-cols-1 gap-8 animate-in fade-in duration-500 lg:grid-cols-[1fr_0.8fr]"
+            data-testid="reie-city-market-pulse"
+            data-city-market-pulse-pressure={marketModel.marketPressure}
+            data-city-market-pulse-efficiency-label={marketModel.efficiencyLabel}
+          >
             <div className="grid gap-4 sm:grid-cols-2">
               <StatRow
                 icon={<Home size={18} />}
                 label="Median Price"
+                metric="median-price"
                 value={formatCurrency(stats.medianPrice)}
                 note="Baseline city acquisition signal."
               />
               <StatRow
                 icon={<Gauge size={18} />}
                 label="Market Health"
+                metric="market-health"
                 value={`${stats.marketHealthScore}/100`}
                 note={`${marketModel.marketPressure} negotiation climate.`}
               />
               <StatRow
                 icon={<CalendarClock size={18} />}
                 label="Days on Market"
+                metric="days-on-market"
                 value={`${marketModel.daysOnMarket || stats.daysOnMarket}`}
                 note="Time pressure proxy for seller flexibility."
               />
               <StatRow
                 icon={<TrendingUp size={18} />}
                 label="Price Per Sq Ft"
+                metric="price-per-sqft"
                 value={stats.pricePerSqFt}
                 note="Useful only when paired with condition and location."
               />
             </div>
 
-            <div className="flex flex-col justify-between border border-white/10 bg-white/[0.03] p-8">
+            <div
+              className="flex flex-col justify-between border border-white/10 bg-white/[0.03] p-8"
+              data-testid="reie-city-market-efficiency"
+              data-city-market-efficiency-score={stats.avgEfficiency}
+              data-city-market-efficiency-label={marketModel.efficiencyLabel}
+            >
               <div>
                 <p className="mb-3 text-[10px] font-black uppercase tracking-[0.3em] text-white/30">Lifestyle Efficiency</p>
                 <div className="text-7xl font-black italic tracking-tighter text-white">{stats.avgEfficiency}</div>
@@ -155,12 +196,23 @@ export default function CityMarketStats({ stats, homeAge = 30 }: CityMarketStats
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-8 animate-in fade-in duration-500 lg:grid-cols-[1fr_0.8fr]">
+          <div
+            className="grid grid-cols-1 gap-8 animate-in fade-in duration-500 lg:grid-cols-[1fr_0.8fr]"
+            data-testid="reie-city-market-strategy"
+            data-city-market-strategy-leverage-score={marketModel.leverageScore}
+            data-city-market-strategy-monthly-carry={Math.round(marketModel.monthlyCarry)}
+            data-city-market-strategy-annual-carry={Math.round(marketModel.annualCarry)}
+            data-city-market-strategy-inspection-reserve={Math.round(marketModel.inspectionReserve)}
+          >
             <div className="space-y-4">
-              <CostRow label="Estimated Monthly Carry Exposure" value={formatCurrency(marketModel.monthlyCarry)} />
-              <CostRow label="Annual Ownership Friction" value={formatCurrency(marketModel.annualCarry)} />
-              <CostRow label="GC Inspection Reserve" value={formatCurrency(marketModel.inspectionReserve)} />
-              <div className="flex justify-between border-t border-white/10 pt-4 text-[#00ff80]">
+              <CostRow label="Estimated Monthly Carry Exposure" metric="monthly-carry" value={formatCurrency(marketModel.monthlyCarry)} />
+              <CostRow label="Annual Ownership Friction" metric="annual-carry" value={formatCurrency(marketModel.annualCarry)} />
+              <CostRow label="GC Inspection Reserve" metric="inspection-reserve" value={formatCurrency(marketModel.inspectionReserve)} />
+              <div
+                className="flex justify-between border-t border-white/10 pt-4 text-[#00ff80]"
+                data-testid="reie-city-market-leverage"
+                data-city-market-leverage-score={marketModel.leverageScore}
+              >
                 <span className="text-[10px] font-black uppercase tracking-widest">Buyer Leverage Model</span>
                 <span className="text-xl font-black italic">{marketModel.leverageScore}/100</span>
               </div>
@@ -177,7 +229,11 @@ export default function CityMarketStats({ stats, homeAge = 30 }: CityMarketStats
                   and envelope performance remain the leverage stack.
                 </p>
               </section>
-              <button className="flex w-full items-center justify-center gap-2 bg-[#00ff80] py-4 text-[10px] font-black uppercase italic tracking-[0.3em] text-black transition-all hover:bg-white">
+              <button
+                className="flex w-full items-center justify-center gap-2 bg-[#00ff80] py-4 text-[10px] font-black uppercase italic tracking-[0.3em] text-black transition-all hover:bg-white"
+                data-testid="reie-city-market-strategy-button"
+                data-city-market-strategy-button-label="Build Offer Strategy"
+              >
                 Build Offer Strategy
               </button>
             </div>
@@ -185,7 +241,10 @@ export default function CityMarketStats({ stats, homeAge = 30 }: CityMarketStats
         )}
       </div>
 
-      <div className="flex items-center gap-4 border-t border-white/5 bg-white/[0.02] px-8 py-4">
+      <div
+        className="flex items-center gap-4 border-t border-white/5 bg-white/[0.02] px-8 py-4"
+        data-testid="reie-city-market-methodology"
+      >
         <ShieldCheck size={14} className="shrink-0 text-[#00ff80]/50" />
         <p className="text-[9px] font-bold uppercase italic leading-relaxed tracking-[0.2em] text-white/25">
           David Quinn Group evaluates market data through construction forensics, lifestyle efficiency, and tactical negotiation context.
@@ -195,12 +254,16 @@ export default function CityMarketStats({ stats, homeAge = 30 }: CityMarketStats
   );
 }
 
-function ModeButton({ icon, isActive, label, onClick }: ModeButtonProps) {
+function ModeButton({ icon, isActive, label, mode, onClick }: ModeButtonProps) {
   return (
     <button
       type="button"
       aria-pressed={isActive}
       onClick={onClick}
+      data-testid="reie-city-market-mode"
+      data-city-market-mode={mode}
+      data-city-market-mode-active={isActive ? 'true' : 'false'}
+      data-city-market-mode-label={label}
       className={`flex min-h-24 flex-col items-center justify-center gap-2 px-4 py-6 text-center transition-all ${
         isActive ? 'border-b-2 border-[#00ff80] bg-white/5 text-white' : 'text-white/25 hover:text-white/55'
       }`}
@@ -211,9 +274,16 @@ function ModeButton({ icon, isActive, label, onClick }: ModeButtonProps) {
   );
 }
 
-function StatRow({ icon, label, value, note }: StatRowProps) {
+function StatRow({ icon, label, metric, value, note }: StatRowProps) {
   return (
-    <div className="border border-white/10 bg-white/[0.02] p-5">
+    <div
+      className="border border-white/10 bg-white/[0.02] p-5"
+      data-testid="reie-city-market-stat-row"
+      data-city-market-stat-metric={metric}
+      data-city-market-stat-label={label}
+      data-city-market-stat-value={value}
+      data-city-market-stat-note={note}
+    >
       <div className="mb-4 flex items-center justify-between gap-4">
         <span className="text-[#00ff80]/70">{icon}</span>
         <span className="text-[9px] font-black uppercase tracking-[0.25em] text-white/25">{label}</span>
@@ -224,9 +294,15 @@ function StatRow({ icon, label, value, note }: StatRowProps) {
   );
 }
 
-function CostRow({ label, value }: { label: string; value: string }) {
+function CostRow({ label, metric, value }: CostRowProps) {
   return (
-    <div className="flex items-center justify-between gap-4 border border-white/10 bg-white/[0.02] p-5">
+    <div
+      className="flex items-center justify-between gap-4 border border-white/10 bg-white/[0.02] p-5"
+      data-testid="reie-city-market-cost-row"
+      data-city-market-cost-metric={metric}
+      data-city-market-cost-label={label}
+      data-city-market-cost-value={value}
+    >
       <span className="text-[9px] font-bold uppercase tracking-widest text-white/30">{label}</span>
       <span className="shrink-0 font-mono text-sm font-bold text-white/85">{value}</span>
     </div>

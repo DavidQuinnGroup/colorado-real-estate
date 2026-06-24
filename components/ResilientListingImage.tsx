@@ -34,6 +34,7 @@ export default function ResilientListingImage({
   const [loadedSourceSrc, setLoadedSourceSrc] = useState<string | null>(null);
   const activeSrc = failedSourceSrc === sourceSrc ? fallbackSrc : sourceSrc;
   const isFallback = activeSrc === fallbackSrc;
+  const hasLoadedActiveSrc = loadedSourceSrc === activeSrc;
 
   useEffect(() => {
     if (activeSrc === fallbackSrc || loadedSourceSrc === sourceSrc) return undefined;
@@ -65,10 +66,28 @@ export default function ResilientListingImage({
         fetchPriority={fetchPriority}
         onError={handleError}
         onLoad={handleLoad}
+        data-testid="reie-resilient-listing-image"
+        data-image-source-src={sourceSrc}
+        data-image-active-src={activeSrc}
+        data-image-fallback-src={fallbackSrc}
+        data-image-is-fallback={String(isFallback)}
+        data-image-failed-source={failedSourceSrc || ''}
+        data-image-loaded-source={loadedSourceSrc || ''}
+        data-image-loaded={String(hasLoadedActiveSrc)}
+        data-image-loading={loading}
+        data-image-fetch-priority={fetchPriority}
+        data-image-timeout-ms={timeoutMs}
+        data-image-fallback-label={fallbackLabel}
         className={className}
       />
       {isFallback ? (
-        <span className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-[5px] border border-white/18 bg-black/58 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-white/76 backdrop-blur">
+        <span
+          className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-[5px] border border-white/18 bg-black/58 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-white/76 backdrop-blur"
+          data-testid="reie-resilient-listing-image-fallback"
+          data-image-fallback-src={fallbackSrc}
+          data-image-failed-source={failedSourceSrc || sourceSrc}
+          data-image-fallback-label={fallbackLabel}
+        >
           <ImageOff size={12} aria-hidden="true" />
           {fallbackLabel}
         </span>

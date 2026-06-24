@@ -1,6 +1,6 @@
 # Platform Architecture
 
-The Real Estate Intelligence Engine is David Quinn Group's Colorado property intelligence platform. It combines premium map search, MLS Grid ingestion, local market content, saved-search alerts, digest email, property intelligence, CRM lead intelligence, operational visibility, admin diagnostics, queue diagnostics, dead-letter inspection, seed data workflows, and SEO authority infrastructure.
+The Real Estate Intelligence Engine is David Quinn Group's Colorado property intelligence platform. It combines premium map search, MLS Grid ingestion, local market content, saved-search alerts, digest email, property intelligence, CRM lead intelligence, protected Master Control Panel policy, intake signal visibility, operational visibility, admin diagnostics, queue diagnostics, dead-letter inspection, seed data workflows, and SEO authority infrastructure.
 
 This document is the detailed working architecture reference for the `REAL ESTATE INTELLIGENCE ENGINE-MASTER V 7.0` implementation.
 
@@ -31,7 +31,7 @@ Primary markets:
 Operating principle:
 
 - Public pages should be fast, crawlable, and locally specific.
-- Ingestion, alerting, retries, email, indexing, seed data, CRM task generation, and operational recovery should run through bounded background systems or explicit scripts.
+- Ingestion, alerting, retries, email, indexing, seed data, CRM task generation, and operational recovery should run through bounded background systems or explicit scripts, with production-facing increases gated by control-state policy and intake-signal visibility.
 
 ## High-Level Stack
 
@@ -87,7 +87,7 @@ Generated output:
 | Terminal 2 | MLS Page Worker | `npm run run:worker:mls-page` |
 | Terminal 3 | Coordinator | `npm run run:worker:mls` |
 | Terminal 4 | Docker / Typesense | `npm run infra:up` |
-| Terminal 5 | Scripts / curl testing | `npm run worker:build`, `npm run run:mls-sync:dry`, `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000`, smoke scripts, bounded live syncs, seed commands, CRM help, curl checks, Typesense repair |
+| Terminal 5 | Scripts / curl testing | `npm run worker:build`, `npm run run:mls-sync:dry`, `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000`, smoke scripts including `npm run smoke:ops`, bounded live syncs, seed commands, CRM help, control-state and intake-signal curl checks, Typesense repair |
 
 ## Data Ownership
 
@@ -156,6 +156,9 @@ Primary files:
 - `/Users/davidquinn/david-quinn-group/colorado-real-estate/app/api/mls-sync/route.ts`
 - `/Users/davidquinn/david-quinn-group/colorado-real-estate/app/api/mls/status/route.ts`
 - `/Users/davidquinn/david-quinn-group/colorado-real-estate/app/api/mls/retry/route.ts`
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/app/api/admin/control-state/route.ts`
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/app/api/admin/intake-signals/route.ts`
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/app/api/admin/intake-signals/[id]/route.ts`
 - `/Users/davidquinn/david-quinn-group/colorado-real-estate/lib/mls/syncMLSGrid.ts`
 - `/Users/davidquinn/david-quinn-group/colorado-real-estate/lib/mls/fetchMLSPage.ts`
 - `/Users/davidquinn/david-quinn-group/colorado-real-estate/lib/mls/mlsGridClient.ts`
@@ -183,7 +186,8 @@ Rules:
 - Preserve existing real media when MLS returns empty or unusable media.
 - Treat MLS operations as idempotent.
 - Treat search index failures as operational diagnostics that should be visible in job results, `/api/mls/status`, and `/admin`.
-- Use `npm run smoke:ops` from Terminal 5 as the standard local shorthand for `/api/mls/status` and `/api/search?limit=5` readiness.
+- Use `npm run smoke:ops` from Terminal 5 as the standard local shorthand for MLS status, retry/dead-letter status, `/api/search?limit=5`, `/api/admin/control-state`, `/api/admin/intake-signals?limit=6`, alert status, consolidated notification readiness, direct saved-search alert notification readiness, direct property-inquiry notification readiness, aggregate launch readiness, and public-experience readiness.
+- Confirm Master Control Panel policy and recent intake signal visibility before increasing MLS volume, scheduler cadence, live-inventory claims, MLS-backed public expansion, recurring email traffic, or large programmatic content batch publication.
 - Expose first-class smoke command guidance from `/api/mls/status` through `commands.smokeOps`, `commands.smokeMlsStatus`, and `commands.smokeSearch`.
 - Preserve raw status/search command compatibility through `commands.rawStatus` and `commands.rawSearchCheck`.
 - Keep `scripts/fetchMLS.ts` as a compatibility wrapper around `syncMLSGrid()`, not as a separate legacy IRES ingestion path.
@@ -299,7 +303,7 @@ Expected stale collection warning shape:
 Neighborhood inventory lookup skipped because the local Typesense listings collection is stale: Typesense schema listings is invalid: ...
 ```
 
-Current stale warning includes missing required fields/facets, `price` type mismatch, and default sort mismatch. That warning means code schema validation is working. The live local Typesense collection still needs repair.
+Historical stale warnings included missing required fields/facets, `price` type mismatch, and default sort mismatch. That warning means code schema validation is working. If it returns, repair the live local Typesense collection before relying on local search/index accuracy.
 
 ## Seed Data Architecture
 
@@ -381,7 +385,7 @@ Rules:
 - Continuous alert worker mode consumes queued jobs live.
 - Malformed alert payloads should fail explicitly.
 - Click tracking should not block safe redirects.
-- Recurring email traffic, including recurring alert sends, should wait for `npm run supabase:check:json` readiness, healthy `npm run smoke:mls-status` search-index diagnostics, `npm run smoke:search` Search Smoke Readiness, and acceptable timeout-bounded queue diagnostics.
+- Recurring email traffic, including recurring alert, digest, or property-inquiry notification sends, should wait for `PROPERTY_INQUIRY_NOTIFY_TO` or fallback `REIE_INTERNAL_EMAIL`, `PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN` unset or false, non-blocked `npm run check:launch-readiness`, `npm run supabase:check:json` readiness, healthy `npm run smoke:mls-status` search-index diagnostics, `npm run smoke:search` Search Smoke Readiness, `npm run smoke:ops` control-state, intake-signal, alert-status, consolidated notification readiness, direct saved-search alert notification readiness, direct property-inquiry notification readiness, and aggregate launch-readiness checks, and acceptable timeout-bounded queue diagnostics.
 
 ## Email, Digest, And Unsubscribe Architecture
 
@@ -423,7 +427,7 @@ Rules:
 - Keep tracked redirects constrained to safe destinations.
 - Digest dry-runs must be read-only.
 - Live digest sends should only mark usable claimed alerts as sent.
-- Recurring email traffic, including recurring digest sends, should wait for `npm run supabase:check:json` readiness, healthy search-index diagnostics, Search Smoke Readiness, and acceptable timeout-bounded queue diagnostics because email click traffic lands on search and property pages.
+- Recurring email traffic, including recurring alert, digest, or property-inquiry notification sends, should wait for `PROPERTY_INQUIRY_NOTIFY_TO` or fallback `REIE_INTERNAL_EMAIL`, `PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN` unset or false, `npm run supabase:check:json` readiness, healthy search-index diagnostics, Search Smoke Readiness, Master Control Panel policy, intake signal visibility, and acceptable timeout-bounded queue diagnostics because email click traffic lands on search and property pages and CRM handoff must remain reviewable.
 
 ## CRM Intelligence Architecture
 
@@ -436,15 +440,17 @@ Primary flow:
 5. Hot lead ranking scores recent clicks, heat score, saved searches, preferences, and alert clicks.
 6. `createTask()` builds a `PRE_DISCOVERY_BRIEF` CRM task from current lead data.
 7. Saved-search intake creates `strategy_intake` CRM tasks with alert-readiness metadata.
-8. `/api/admin/crm-tasks` lists active, pending, reviewing, completed, dismissed, or all CRM queues.
-9. `/api/admin/crm-tasks` reports `generatedAt`, `terminal`, `inspectionSource: "List Route"`, `route`, and `command` on success and error responses; successful responses also report summary counts, closure-audit counts for completed/dismissed tasks, reviewed closures, missing review notes, and closure review coverage.
-10. `/api/admin/crm-tasks` reports a `readiness` block with `level`, `summary`, `nextAction`, `terminal`, `nextCommand`, and gates for Closure Audit, Active Review, and Alert Criteria.
-11. `/api/admin/crm-tasks/[id]` reads or updates one CRM task with bounded review metadata plus `generatedAt`, `terminal`, `inspectionSource: "Detail Route"`, `route`, and `command` inspection metadata on success and error responses.
-12. `/api/admin/crm-tasks/[id]` requires a non-empty review note before a CRM task can be marked `completed` or `dismissed`.
-13. `/admin` surfaces CRM task readiness gates, closure audit coverage, missing-note counts, active review, CRM API Inspection metadata with `generatedAt`, `inspectionSource`, `route`, `terminal`, and `command`, the Terminal 5 CRM scheduler command, smaller-screen-readable CRM command panels, and note-backed Review, Complete, and Dismiss actions.
-14. CRM Review, Complete, and Dismiss actions update CRM API Inspection metadata from `/api/admin/crm-tasks/[id]` before the active-task list refresh returns the panel to `/api/admin/crm-tasks` metadata, preserve failed detail-route inspection metadata when a request fails, and render the visible Source field from API-provided `inspectionSource` as it moves from `Detail Route` back to `List Route`.
-15. CRM runners list bounded active tasks with closure audit counts and CRM readiness gates for review and operational handoff.
-16. `run:crm:scheduler` emits one scheduler-safe JSON payload with `success`, `mode: "scheduler"`, `schemaVersion: 1`, `generatedAt`, `command`, `report.audit`, `report.readiness`, and `tasks`.
+8. `/api/admin/intake-signals` lists recent strategy-intake CRM tasks and saved-search interactions so increased MLS, alert, or content volume can be checked against human-review capacity.
+9. `/api/admin/intake-signals/[id]` can read one intake signal and promote a saved-search interaction into a CRM task only through explicit human-reviewed promotion.
+10. `/api/admin/crm-tasks` lists active, pending, reviewing, completed, dismissed, or all CRM queues.
+11. `/api/admin/crm-tasks` reports `generatedAt`, `terminal`, `inspectionSource: "List Route"`, `route`, and `command` on success and error responses; successful responses also report summary counts, closure-audit counts for completed/dismissed tasks, reviewed closures, missing review notes, and closure review coverage.
+12. `/api/admin/crm-tasks` reports a `readiness` block with `level`, `summary`, `nextAction`, `terminal`, `nextCommand`, and gates for Closure Audit, Active Review, and Alert Criteria.
+13. `/api/admin/crm-tasks/[id]` reads or updates one CRM task with bounded review metadata plus `generatedAt`, `terminal`, `inspectionSource: "Detail Route"`, `route`, and `command` inspection metadata on success and error responses.
+14. `/api/admin/crm-tasks/[id]` requires a non-empty review note before a CRM task can be marked `completed` or `dismissed`.
+15. `/admin` surfaces CRM task readiness gates, intake signals, closure audit coverage, missing-note counts, active review, CRM API Inspection metadata with `generatedAt`, `inspectionSource`, `route`, `terminal`, and `command`, the Terminal 5 CRM scheduler command, smaller-screen-readable CRM command panels, and note-backed Review, Complete, and Dismiss actions.
+16. CRM Review, Complete, and Dismiss actions update CRM API Inspection metadata from `/api/admin/crm-tasks/[id]` before the active-task list refresh returns the panel to `/api/admin/crm-tasks` metadata, preserve failed detail-route inspection metadata when a request fails, and render the visible Source field from API-provided `inspectionSource` as it moves from `Detail Route` back to `List Route`.
+17. CRM runners list bounded active tasks with closure audit counts and CRM readiness gates for review and operational handoff.
+18. `run:crm:scheduler` emits one scheduler-safe JSON payload with `success`, `mode: "scheduler"`, `schemaVersion: 1`, `generatedAt`, `command`, `report.audit`, `report.readiness`, and `tasks`.
 
 Primary files:
 
@@ -454,6 +460,8 @@ Primary files:
 - `/Users/davidquinn/david-quinn-group/colorado-real-estate/lib/crm/createTask.ts`
 - `/Users/davidquinn/david-quinn-group/colorado-real-estate/app/api/admin/crm-tasks/route.ts`
 - `/Users/davidquinn/david-quinn-group/colorado-real-estate/app/api/admin/crm-tasks/[id]/route.ts`
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/app/api/admin/intake-signals/route.ts`
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/app/api/admin/intake-signals/[id]/route.ts`
 - `/Users/davidquinn/david-quinn-group/colorado-real-estate/components/admin/MasterControlPanel.tsx`
 - `/Users/davidquinn/david-quinn-group/colorado-real-estate/workers/runCRMTasks.ts`
 - `/Users/davidquinn/david-quinn-group/colorado-real-estate/scripts/runCRM.ts`
@@ -480,6 +488,8 @@ CRM API checks from **Terminal 5: Scripts / curl testing** while Terminal 1 is r
 curl --max-time 8 -s -w "\nHTTP_STATUS:%{http_code}\n" "http://localhost:3000/api/admin/crm-tasks?status=active&limit=6" -H "x-admin-key: $REIE_ADMIN_API_KEY"
 curl --max-time 8 -s -w "\nHTTP_STATUS:%{http_code}\n" "http://localhost:3000/api/admin/crm-tasks?status=all&limit=20" -H "x-admin-key: $REIE_ADMIN_API_KEY"
 curl --max-time 8 -s -w "\nHTTP_STATUS:%{http_code}\n" "http://localhost:3000/api/admin/crm-tasks/<task-id-from-list-response>" -H "x-admin-key: $REIE_ADMIN_API_KEY"
+curl --max-time 8 -s -w "\nHTTP_STATUS:%{http_code}\n" "http://localhost:3000/api/admin/intake-signals?limit=6" -H "x-admin-key: $REIE_ADMIN_API_KEY"
+curl --max-time 8 -s -w "\nHTTP_STATUS:%{http_code}\n" "http://localhost:3000/api/admin/intake-signals/<signal-id-from-list-response>?kind=crm_task" -H "x-admin-key: $REIE_ADMIN_API_KEY"
 ```
 
 Rules:
@@ -491,6 +501,7 @@ Rules:
 - CRM worker output is currently a bounded task collector/reporting surface.
 - CRM closure audit coverage should remain visible in `/admin` and `/api/admin/crm-tasks`.
 - CRM `readiness.level=blocked` should block scheduler cadence or automation increases until closed tasks have review notes.
+- Hidden or unreviewed intake signal handoff should block automation, recurring email traffic, MLS-volume increases, scheduler cadence increases, and CRM-informed content planning until the handoff path is visible.
 - Scheduled CRM reporting should use `npm run run:crm:scheduler` so provider logs receive one machine-readable readiness payload.
 - Do not query obsolete fields such as `scheduledFor`.
 
@@ -515,9 +526,9 @@ Authority rules:
 - Keep David Quinn Group entity signals consistent across metadata, schema, email, admin surfaces, and content.
 - Treat fresh MLS-backed inventory as a trust signal only when it is stable, indexed, and correctly linked.
 - Keep seed content useful for local development without treating it as a production content source.
-- Use CRM engagement signals for content prioritization only after protected CRM readiness, closure audit coverage, failed detail-route inspection preservation, and API Inspection metadata are visible.
-- Use live-inventory claims and MLS-backed public expansion only after `npm run supabase:check:json` reports readiness and search-index health, Search Smoke Readiness, indexing behavior, and timeout-bounded queue diagnostics are acceptable.
-- Allow large programmatic content batch publication only after `npm run supabase:check:json`, data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics are verified.
+- Use CRM engagement signals for content prioritization only after protected CRM readiness, intake signal visibility, closure audit coverage, failed detail-route inspection preservation, and API Inspection metadata are visible.
+- Use live-inventory claims and MLS-backed public expansion only after `npm run supabase:check:json` reports readiness and search-index health, Search Smoke Readiness, indexing behavior, Master Control Panel policy, intake signal visibility, and timeout-bounded queue diagnostics are acceptable.
+- Allow large programmatic content batch publication only after `npm run supabase:check:json`, data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, Master Control Panel policy, intake signal visibility, and timeout-bounded queue diagnostics are verified.
 
 ## Queue Architecture
 
@@ -592,6 +603,11 @@ Operational APIs:
 - `GET /api/mls-sync`
 - `POST /api/mls-sync`
 - `GET /api/admin/dead-letter`
+- `GET /api/admin/control-state`
+- `PATCH /api/admin/control-state`
+- `GET /api/admin/intake-signals`
+- `GET /api/admin/intake-signals/[id]`
+- `PATCH /api/admin/intake-signals/[id]`
 - `GET /api/admin/crm-tasks`
 - `GET /api/admin/crm-tasks/[id]`
 - `PATCH /api/admin/crm-tasks/[id]`
@@ -619,8 +635,9 @@ Rules:
 - Surface recent search index failures and missing index attempts from completed MLS/listing jobs as MLS status diagnostics.
 - Keep `/api/search` metadata stable enough for Terminal 5 smoke checks, admin visibility, map diagnostics, and Search Smoke Readiness decisions.
 - Keep `/api/mls/status` command metadata stable enough for admin to show `commands.smokeOps`, `commands.smokeMlsStatus`, `commands.smokeSearch`, `commands.rawStatus`, and `commands.rawSearchCheck`.
+- Keep `/api/admin/control-state`, `/api/admin/intake-signals`, alert status, and notification readiness checks stable enough for `npm run smoke:ops`, launch readiness, scheduler cadence decisions, recurring email decisions, and MLS-volume decisions.
 - Do not fetch large MLS datasets from API handlers.
-- Prefer `npm run smoke:mls-status`, `npm run smoke:search`, and `npm run smoke:ops` for local status and Search Smoke Readiness checks; use `curl --max-time 8` for lower-level status, retry, and admin inspection checks.
+- Prefer `npm run smoke:mls-status`, `npm run smoke:search`, and `npm run smoke:ops` for local status, Search Smoke Readiness, control-state, intake-signal, alert-status, consolidated notification readiness, direct saved-search alert notification readiness, direct property-inquiry notification readiness, and aggregate launch-readiness checks; use `curl --max-time 8` for lower-level status, retry, and admin inspection checks.
 - Admin endpoints must require `REIE_ADMIN_API_KEY` or `ADMIN_API_KEY` in production.
 - `/api/track-click` should redirect safely even when tracking fails.
 
@@ -643,6 +660,10 @@ Admin files:
 - `/Users/davidquinn/david-quinn-group/colorado-real-estate/app/admin/page.tsx`
 - `/Users/davidquinn/david-quinn-group/colorado-real-estate/app/admin/dead-letter/page.tsx`
 - `/Users/davidquinn/david-quinn-group/colorado-real-estate/components/admin/DeadLetterInspector.tsx`
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/components/admin/MasterControlPanel.tsx`
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/app/api/admin/control-state/route.ts`
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/app/api/admin/intake-signals/route.ts`
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/app/api/admin/intake-signals/[id]/route.ts`
 - `/Users/davidquinn/david-quinn-group/colorado-real-estate/app/api/admin/dead-letter/route.ts`
 
 Current behavior:
@@ -652,6 +673,8 @@ Current behavior:
 - Operations landing page shows first-class search-index health from `/api/mls/status`.
 - Operations landing page recent MLS completions show search index attempts, successes, failures, and per-listing index errors when job results include them.
 - Operations landing page exposes Terminal 5 smoke checks for MLS status, Search Smoke Readiness, and combined operational readiness.
+- Operations landing page exposes Master Control Panel policy for automation, public exposure, map precision, private layer visibility, warnings, and operator launch posture.
+- Operations landing page exposes recent intake signals so saved-search interactions and strategy-intake CRM tasks are visible before automation, recurring email, MLS-volume, scheduler cadence, or content expansion decisions.
 - Operations landing page surfaces CRM task readiness gates, closure audit coverage, missing-note counts, active review, CRM API Inspection metadata with a visible Source field rendered from API-provided `inspectionSource`, preserved failed detail-route inspection metadata, the Terminal 5 CRM scheduler command, smaller-screen-readable CRM command panels, and note-backed Review, Complete, and Dismiss actions that expose `Detail Route` metadata before returning to `List Route` metadata.
 - Dead-letter inspector is available at `/admin/dead-letter`.
 - Dead-letter API supports bounded inspection by limit, source queue, and state.
@@ -681,6 +704,14 @@ Equivalent MLS status curl:
 
 ```bash
 curl --max-time 8 -s -w "\nHTTP_STATUS:%{http_code}\n" "http://localhost:3000/api/mls/status"
+```
+
+Protected control-state and intake-signal curls from **Terminal 5: Scripts / curl testing**:
+
+```bash
+curl --max-time 8 -s -w "\nHTTP_STATUS:%{http_code}\n" "http://localhost:3000/api/admin/control-state" -H "x-admin-key: $REIE_ADMIN_API_KEY"
+curl --max-time 8 -s -w "\nHTTP_STATUS:%{http_code}\n" "http://localhost:3000/api/admin/intake-signals?limit=6" -H "x-admin-key: $REIE_ADMIN_API_KEY"
+curl --max-time 8 -s -w "\nHTTP_STATUS:%{http_code}\n" "http://localhost:3000/api/admin/intake-signals/<signal-id-from-list-response>?kind=crm_task" -H "x-admin-key: $REIE_ADMIN_API_KEY"
 ```
 
 MLS sync route dry-run from **Terminal 5: Scripts / curl testing**:
@@ -789,6 +820,8 @@ curl --max-time 8 -s -w "\nHTTP_STATUS:%{http_code}\n" "http://localhost:3000/ap
 curl --max-time 8 -s -X POST -w "\nHTTP_STATUS:%{http_code}\n" "http://localhost:3000/api/mls/retry?queue=all&dryRun=true&limit=25"
 curl --max-time 8 -s -w "\nHTTP_STATUS:%{http_code}\n" "http://localhost:3000/api/admin/dead-letter?limit=5"
 curl --max-time 8 -s -w "\nHTTP_STATUS:%{http_code}\n" "http://localhost:3000/api/admin/dead-letter?states=waiting,delayed,failed&limit=25"
+curl --max-time 8 -s -w "\nHTTP_STATUS:%{http_code}\n" "http://localhost:3000/api/admin/control-state" -H "x-admin-key: $REIE_ADMIN_API_KEY"
+curl --max-time 8 -s -w "\nHTTP_STATUS:%{http_code}\n" "http://localhost:3000/api/admin/intake-signals?limit=6" -H "x-admin-key: $REIE_ADMIN_API_KEY"
 curl --max-time 20 -s -X POST -w "\nHTTP_STATUS:%{http_code}\n" "http://localhost:3000/api/process-alerts?dryRun=true&limit=5"
 curl --max-time 8 -s -w "\nHTTP_STATUS:%{http_code}\n" "http://localhost:3000/api/admin/crm-tasks?status=active&limit=6" -H "x-admin-key: $REIE_ADMIN_API_KEY"
 curl --max-time 8 -s -w "\nHTTP_STATUS:%{http_code}\n" "http://localhost:3000/api/admin/crm-tasks?status=all&limit=20" -H "x-admin-key: $REIE_ADMIN_API_KEY"
@@ -806,26 +839,27 @@ If any curl returns `HTTP_STATUS:000`, start or restart **Terminal 1: Next.js ap
 
 Known current non-blocking warnings:
 
-- Node `url.parse()` deprecation warnings appear during `next build`.
-- Local Typesense `properties` and `listings` collections were verified ready with `npm run typesense:collections:check` on May 31, 2026.
+- `npm run build` may show Node `url.parse()` deprecation warnings.
+- Local Typesense `properties` and `listings` collections were verified ready with `npm run typesense:collections:check` and refreshed with `npm run typesense:reindex` on June 16, 2026.
 - `dist/` may contain stale generated JavaScript for deleted source files until generated output is cleaned.
 
-Known current blocker:
+Conditional Supabase recovery gate:
 
-- Supabase connectivity can block database-dependent dry-runs, seed checks, CRM scheduler reporting, reindexing, queue retry, recurring scheduler activation, recurring email traffic, live-inventory claims, MLS-backed public expansion, large programmatic content batch publication, and live database work until `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/supabase-recovery-runbook.md` is completed and `npm run supabase:check:json` reports readiness.
+- Supabase connectivity can block database-dependent dry-runs, seed checks, CRM scheduler reporting, reindexing, queue retry, recurring scheduler activation, recurring email traffic, live-inventory claims, MLS-backed public expansion, large programmatic content batch publication, and live database work whenever `npm run supabase:check:json` reports blocked; use `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/supabase-recovery-runbook.md` only when that gate fails.
 
 ## Current Known Gaps
 
 - Local Typesense `properties` and `listings` collections are schema-ready.
-- Supabase connectivity from local scripts is currently a blocker until `npm run supabase:check:json` reports readiness. Use `npm run supabase:check` for a human-readable check.
+- `npm run supabase:check:json` currently reports readiness, but it remains a required gate before Supabase-backed dry-runs, reindexing, queue retry, scheduler activation, or live database work.
+- Aggregate notification launch readiness is currently blocked until property-inquiry recipient routing is configured with `PROPERTY_INQUIRY_NOTIFY_TO` or fallback `REIE_INTERNAL_EMAIL`; keep `PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN` unset or false before relying on live property-inquiry notification delivery. Inspect it with `npm run check:notification-readiness`, `npm run check:notification-readiness:strict`, `npm run check:notification-readiness:strict-contract`, `npm run check:property-inquiry-notification:readiness`, and `npm run check:launch-readiness`.
 - `dist/` may contain stale generated JavaScript for deleted source files until generated output is cleaned.
 - Production Redis provider decision is still open.
 - Production Typesense provider decision is still open.
 - MLS sync scheduling needs a production scheduler.
-- Recurring email traffic, recurring alert or digest scheduling, and CRM scheduling need production workflow decisions.
-- Production smoke verification still needs `npm run supabase:check:json`, `npm run smoke:mls-status`, `npm run smoke:search`, timeout-bounded queue diagnostics, and one internal tracked email click before recurring scheduler activation or recurring email traffic.
+- Recurring email traffic, recurring alert, digest, or property-inquiry notification scheduling, and CRM scheduling need production workflow decisions.
+- June 21 verification is current through the 08:16 MDT local runtime smoke after the 07:31 MDT Supabase refresh, 08:12 MDT fast verification, and 08:14 MDT production build: `npm run check:fast`, `npm run build`, `npm run supabase:check:json`, `npm run smoke:mls-status`, `npm run smoke:search`, and `npm run smoke:ops` passed. Current runtime posture is MLS status `busy` / `watch` with inventory freshness degraded at 100% stale by `lastIntelligenceSync`, search `typesense` healthy with `meta.smoke.ready=true`, `mls-sync`, `mls-page`, and `listings` drained, `reie-alerts` at 273 waiting, saved-search alert readiness `watch` with 197 pending / 0 failed / 0 processing, property-inquiry notification readiness `blocked`, and aggregate launch readiness `blocked`; production still needs one internal tracked email click before recurring scheduler activation or recurring email traffic.
 - Admin UI has MLS sync envelope visibility and dead-letter inspection, but broader queue controls are still pending.
-- CRM closure audit controls, note-backed completion/dismissal, CRM API Inspection metadata, and failed detail-route preservation are implemented locally; production admin smoke verification still needs to run after Terminal 1 is running and `npm run supabase:check:json` reports readiness.
+- CRM closure audit controls, note-backed completion/dismissal, CRM API Inspection metadata, failed detail-route preservation, Master Control Panel policy, and intake signal visibility are implemented locally and covered by the refreshed local `npm run smoke:ops`; production workflow still needs live environment confirmation before scheduler or recurring-email activation.
 - Production-size MLS throughput still needs load testing.
 - Placeholder property media should continue being replaced by reliable MLS/media handling.
 - Seed scripts now create local photo rows, but real MLS media remains the production source of truth.
@@ -844,11 +878,11 @@ Known current blocker:
 - Make every alert deduplicated.
 - Preview failed-job retries before live retry.
 - Keep digest and alert dry-runs read-only, and run Supabase-backed digest or alert dry-runs only after `npm run supabase:check:json` reports readiness.
-- Keep recurring email traffic, including recurring alert or digest sends, disabled when `npm run supabase:check:json` reports blocked, search-index health is degraded, `meta.smoke.ready=false`, public search smoke blockers are present, or timeout-bounded queue diagnostics are unacceptable.
+- Keep recurring email traffic, including recurring alert, digest, or property-inquiry notification sends, disabled when `npm run supabase:check:json` reports blocked, aggregate launch readiness is blocked by missing property-inquiry recipient routing or `PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN=true`, search-index health is degraded, `meta.smoke.ready=false`, public search smoke blockers are present, Master Control Panel policy is paused/protected beyond the intended launch posture, intake signal handoff is hidden or unreviewed, or timeout-bounded queue diagnostics are unacceptable.
 - Inspect dead-letter records before deciding whether a retry or code fix is appropriate.
 - Keep SEO authority surfaces crawlable, internally linked, locally specific, and tied clearly to David Quinn Group.
-- Gate CRM-informed content planning behind protected CRM readiness, closure audit coverage, API Inspection metadata, and failed detail-route preservation.
-- Keep live-inventory claims and MLS-backed public expansion gated behind `npm run supabase:check:json` readiness, search-index health, Search Smoke Readiness, indexing behavior, and acceptable timeout-bounded queue diagnostics.
-- Keep large programmatic content batch publication gated behind `npm run supabase:check:json`, verified data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics.
+- Gate CRM-informed content planning behind protected CRM readiness, intake signal visibility, closure audit coverage, API Inspection metadata, and failed detail-route preservation.
+- Keep live-inventory claims and MLS-backed public expansion gated behind `npm run supabase:check:json` readiness, search-index health, Search Smoke Readiness, indexing behavior, Master Control Panel policy, intake signal visibility, and acceptable timeout-bounded queue diagnostics.
+- Keep large programmatic content batch publication gated behind `npm run supabase:check:json`, verified data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, Master Control Panel policy, intake signal visibility, and timeout-bounded queue diagnostics.
 
 <!-- /Users/davidquinn/david-quinn-group/colorado-real-estate/docs/platform-architecture.md -->

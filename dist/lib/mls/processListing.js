@@ -1,7 +1,7 @@
 import { matchAndNotify } from '../alerts/matchSearches.js';
 import { processPhotos } from './processPhotos.js';
 import { updateSearchIndex } from './updateSearchIndex.js';
-import { upsertListing } from './upsertListing.js';
+import { getUpsertListingDiagnostics, upsertListing } from './upsertListing.js';
 const mediaArrayFields = [
     'Media',
     'media',
@@ -67,40 +67,69 @@ function isMediaRecord(value) {
 function getErrorMessage(error) {
     return error instanceof Error ? error.message : String(error || 'Unknown listing processing error.');
 }
-function pushMediaArray(target, value) {
+function appendMediaItem(target, value) {
+    if (typeof value === 'string' && value.trim()) {
+        target.push(value);
+        return true;
+    }
+    if (isMediaRecord(value)) {
+        target.push(value);
+        return true;
+    }
+    return false;
+}
+function collectMediaArray(target, value) {
     if (!Array.isArray(value))
-        return;
+        return { found: false, ignored: 0 };
+    let ignored = 0;
     for (const item of value) {
-        if (typeof item === 'string' && item.trim()) {
-            target.push(item);
-        }
-        else if (isMediaRecord(item)) {
-            target.push(item);
-        }
+        if (!appendMediaItem(target, item))
+            ignored += 1;
     }
+    return { found: true, ignored };
 }
-function pushNestedMediaArrays(target, value) {
+function collectNestedMediaArrays(target, value, parentField) {
+    const nestedFields = [];
+    let ignored = 0;
     if (!isMediaRecord(value))
-        return;
+        return { fields: nestedFields, ignored };
     for (const field of mediaArrayFields) {
-        pushMediaArray(target, value[field]);
+        const result = collectMediaArray(target, value[field]);
+        if (result.found) {
+            nestedFields.push(`${parentField}.${field}`);
+            ignored += result.ignored;
+        }
     }
+    return { fields: nestedFields, ignored };
 }
-function pushTopLevelPhoto(target, listing, field) {
+function collectTopLevelPhoto(target, listing, field) {
     const value = listing[field];
     if (typeof value !== 'string' || !value.trim()) {
-        return;
+        return false;
     }
     target.push({
-        MediaType: 'image',
         MediaURL: value,
         Order: target.length,
+        SourceField: field,
     });
+    return true;
 }
 function emptyPhotoResult(error) {
     return {
         inserted: 0,
         skipped: 0,
+        diagnostics: {
+            inputCount: 0,
+            flattenedCount: 0,
+            validCount: 0,
+            duplicateCount: 0,
+            invalidUrlCount: 0,
+            nonImageCount: 0,
+            truncatedCount: 0,
+            preservedExisting: true,
+            replacedExisting: false,
+            maxPhotos: 100,
+        },
         ...(error ? { error } : {}),
     };
 }
@@ -131,30 +160,68 @@ async function updateListingSearchIndex(property, listingLabel) {
     return result;
 }
 export function getListingMediaPayload(listing) {
+    return collectListingMediaPayload(listing).media;
+}
+export function getListingMediaDiagnostics(listing) {
+    return collectListingMediaPayload(listing).diagnostics;
+}
+function collectListingMediaPayload(listing) {
     const media = [];
+    const directMediaArrayFields = [];
+    const nestedMediaArrayFields = [];
+    const collectedTopLevelPhotoFields = [];
+    let ignoredMediaItemCount = 0;
     for (const field of mediaArrayFields) {
-        pushMediaArray(media, listing[field]);
-        pushNestedMediaArrays(media, listing[field]);
+        const directResult = collectMediaArray(media, listing[field]);
+        if (directResult.found) {
+            directMediaArrayFields.push(field);
+            ignoredMediaItemCount += directResult.ignored;
+        }
+        const nestedResult = collectNestedMediaArrays(media, listing[field], field);
+        nestedMediaArrayFields.push(...nestedResult.fields);
+        ignoredMediaItemCount += nestedResult.ignored;
     }
     for (const field of topLevelPhotoFields) {
-        pushTopLevelPhoto(media, listing, field);
+        if (collectTopLevelPhoto(media, listing, field)) {
+            collectedTopLevelPhotoFields.push(field);
+        }
     }
-    return media;
+    const stringMediaCount = media.filter((item) => typeof item === 'string').length;
+    const recordMediaCount = media.length - stringMediaCount;
+    return {
+        media,
+        diagnostics: {
+            module: 'MLS Listing Media',
+            terminal: 'Terminal 5',
+            extractedCount: media.length,
+            directMediaArrayFields,
+            nestedMediaArrayFields,
+            topLevelPhotoFields: collectedTopLevelPhotoFields,
+            stringMediaCount,
+            recordMediaCount,
+            ignoredMediaItemCount,
+            hasMediaPayload: media.length > 0,
+            hasNestedMediaPayload: nestedMediaArrayFields.length > 0,
+            hasTopLevelPhotoPayload: collectedTopLevelPhotoFields.length > 0,
+            nextCommand: 'npm run smoke:ops',
+        },
+    };
 }
 export async function processListing(listing) {
     const listingLabel = getListingLabel(listing);
     const warnings = [];
     try {
+        const upsertDiagnostics = getUpsertListingDiagnostics(listing);
         const property = await upsertListing(listing);
         if (!property?.id) {
-            const warning = `MLS listing ${listingLabel} was skipped because no property record was returned.`;
+            const warning = `MLS listing ${listingLabel} was skipped because no property record was returned${upsertDiagnostics.skipReason ? `: ${upsertDiagnostics.skipReason}` : '.'}`;
             warnings.push(warning);
             console.warn(warning);
             return null;
         }
         const processedListingLabel = getProcessedListingLabel(listingLabel, property);
         const searchIndexResult = await updateListingSearchIndex(property, processedListingLabel);
-        const rawPhotos = getListingMediaPayload(listing);
+        const { media: rawPhotos, diagnostics: mediaDiagnostics } = collectListingMediaPayload(listing);
         const photoResult = await processListingPhotos(property.id, rawPhotos, processedListingLabel);
         const alertResult = await queueSavedSearchAlerts(property, processedListingLabel);
         if (!searchIndexResult.indexed) {
@@ -170,9 +237,11 @@ export async function processListing(listing) {
             alerts: alertResult,
             listingLabel: processedListingLabel,
             mediaCount: rawPhotos.length,
+            mediaDiagnostics,
             photos: photoResult,
             property,
             searchIndex: searchIndexResult,
+            upsertDiagnostics,
             warnings,
         };
     }

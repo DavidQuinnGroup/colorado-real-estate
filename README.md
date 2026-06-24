@@ -119,17 +119,22 @@ Protected operational APIs:
 - `GET /api/mls-sync`
 - `POST /api/mls-sync`
 - `GET /api/admin/dead-letter`
+- `GET /api/admin/control-state`
+- `PATCH /api/admin/control-state`
 - `GET /api/admin/crm-tasks`
 - `GET /api/admin/crm-tasks/[id]`
 - `PATCH /api/admin/crm-tasks/[id]`
+- `GET /api/admin/intake-signals`
+- `GET /api/admin/intake-signals/[id]`
+- `PATCH /api/admin/intake-signals/[id]`
 - `GET /api/process-alerts`
 - `POST /api/process-alerts`
 
 ## Generated Output
 
 - `dist/` is generated worker and script output.
-- `dist/` may contain stale JavaScript for deleted source files until generated output is cleaned or regenerated from a clean output directory.
-- Source scans are authoritative unless a runtime command directly executes stale generated files.
+- The known stale legacy MLS generated artifacts were removed on June 21 08:28 MDT; `npm run worker:build` passed and the no-source `dist/*.js` scan returned empty.
+- Source scans remain authoritative when reviewing intended behavior.
 
 ## MLS Sync
 
@@ -194,14 +199,24 @@ MLS intelligence behavior:
 - `scripts/fetchMLS.ts` is a compatibility wrapper around the active `syncMLSGrid()` path.
 - `upsertListing.ts` writes `gcForensics`, `efficiencyScore`, `resilienceScore`, `altitude`, `soilType`, and `hasPolybutyleneRisk`.
 - `processListing.ts` updates Typesense through `updateSearchIndex.ts` after successful upsert.
+- `processListing.ts` exposes listing-level media extraction diagnostics for direct media arrays, nested media arrays, top-level photo fields, extracted media count, and ignored media item count before `processPhotos.ts` decides whether to replace `PropertyPhoto` rows.
+- `processListingsBatch.ts` aggregates those listing-level media diagnostics into batch counts for listings with media, direct arrays, nested arrays, top-level photo fields, extracted media items, ignored media items, and per-field media-shape frequency without exposing raw media URLs.
+- Page-worker completion logs, `/api/mls/status`, completed-job admin summaries, and `/api/mls/sync` dry-run metric and inspection hints surface aggregate `mediaDiagnostics` before live sync volume is increased.
 - Listing jobs, page-worker jobs, batch processing, direct syncs, `/api/mls/status`, and `/admin` can surface search-index attempts, successes, failures, and errors.
 - `/api/mls/status` exposes a first-class `searchIndex` block with attempted, succeeded, failed, unknown, health, diagnostics, and recent index outcomes.
+- `/api/mls/status` exposes a first-class `mediaDiagnostics` block with checked jobs, jobs carrying media diagnostics, listing/media extraction counts, ignored-media counts, direct/nested/top-level media shape counts, and health.
 - `/api/mls/status` exposes first-class smoke and Supabase preflight commands through `commands.smokeOps`, `commands.smokeMlsStatus`, `commands.smokeSearch`, `commands.supabaseCheck`, and `commands.supabaseCheckJson`.
 - `/api/mls/status` preserves raw status/search API command compatibility through `commands.rawStatus` and `commands.rawSearchCheck`.
 - `/admin` labels Terminal 5 public search verification as Search Smoke Readiness and expects `meta.smoke.ready=true` with no blockers.
+- `npm run smoke:ops` checks MLS status, retry/dead-letter status, public search, Master Control Panel control state, recent intake signals, alert status, consolidated notification readiness, direct saved-search alert notification readiness, direct property-inquiry notification readiness, aggregate launch readiness, and public experience assertions. It sends `x-admin-key` automatically when `REIE_ADMIN_API_KEY` or `ADMIN_API_KEY` is configured.
+- `npm run check:notification-readiness` runs the non-sending saved-search alert, property-inquiry notification, and aggregate launch notification readiness checks, treats expected blocked readiness exits as parsed readiness results, and emits one Terminal 5 JSON summary with bounded failed and warning child checks.
+- `npm run check:notification-readiness:strict` emits the same non-sending JSON but exits nonzero when aggregate notification readiness is blocked.
+- `npm run check:notification-readiness:strict-contract` verifies the strict fail-closed contract in the current environment and in a dummy-recipient dry-run environment without sending email or mutating rows.
+- `PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN=true` suppresses high-priority property-inquiry notification sends for local/staging validation; launch readiness treats that flag as a live-send blocker.
 - Treat `indexFailed > 0` as degraded search freshness even when Postgres upserts succeed.
-- Treat `npm run supabase:check:json`, `npm run smoke:mls-status`, `npm run smoke:search`, and timeout-bounded queue diagnostics as production-readiness gates before increasing ingestion volume, MLS volume, scheduler cadence, recurring scheduler activation, live-inventory claims, MLS-backed public expansion, large programmatic content batch publication, or recurring email traffic.
+- Treat `npm run supabase:check:json`, `npm run check:notification-readiness:strict`, `npm run check:launch-readiness`, `npm run smoke:mls-status`, `npm run smoke:search`, and timeout-bounded queue diagnostics as production-readiness gates before increasing ingestion volume, MLS volume, scheduler cadence, recurring scheduler activation, live-inventory claims, MLS-backed public expansion, large programmatic content batch publication, or recurring email traffic.
 - `processPhotos.ts` preserves existing photos when MLS returns no usable media.
+- Top-level listing photo URL fields are extracted without forcing `MediaType: image`, so top-level PDF URLs remain subject to the non-image media guard.
 - Legacy IRES/helper cleanup is complete, including deleted root-level demo MLS helpers.
 
 ## Legacy MLS Cleanup
@@ -444,7 +459,15 @@ Preview saved-search alert processing without sending email:
 npm run run:alerts:dry
 ```
 
-The base alert script is dry-run by default. Live sends require the explicit live script:
+Check aggregate launch readiness before live alert, digest, or recurring email work:
+
+```bash
+npm run check:launch-readiness
+```
+
+The aggregate readiness check does not send email or mutate queue rows. Treat `readiness.level="blocked"` as a live notification blocker.
+
+The base alert script is dry-run by default. Live sends require the explicit live script after dry-run and aggregate launch-readiness clearance:
 
 ```bash
 npm run run:alerts:live -- --limit 25
@@ -468,7 +491,7 @@ Run the alert worker continuously from **Terminal 3: Coordinator**:
 npm run run:worker:alerts
 ```
 
-Continuous alert worker mode consumes queue jobs live. Use it only after recurring email traffic readiness is verified through `npm run supabase:check:json`, alert send behavior, sender domain, unsubscribe, click tracking, internal live-send tests, search-index health, Search Smoke Readiness, and timeout-bounded queue diagnostics.
+Continuous alert worker mode consumes queue jobs live. Use it only after recurring email traffic readiness is verified through `npm run check:launch-readiness`, `npm run supabase:check:json`, alert send behavior, sender domain, unsubscribe, click tracking, internal live-send tests, search-index health, Search Smoke Readiness, and timeout-bounded queue diagnostics.
 
 Process alerts through the protected API in dry-run mode:
 
@@ -503,8 +526,8 @@ Email behavior:
 - Unsubscribe links route through `/api/unsubscribe`.
 - Listing links can route through `/api/track-click` when user context is available.
 - `EmailLog` records send metadata.
-- Recurring email traffic, including recurring alert or digest sends, should wait until `npm run supabase:check:json`, sender domain, unsubscribe, click tracking, internal live-send tests, `npm run smoke:mls-status` search-index health, `npm run smoke:search` Search Smoke Readiness, and timeout-bounded queue diagnostics are verified.
-- Treat failed `npm run supabase:check:json`, degraded search-index health, `meta.smoke.ready=false`, public search smoke blockers, or unacceptable timeout-bounded queue diagnostics as live-send blockers for recurring email traffic because alert and digest clicks land back on search and property pages.
+- Recurring email traffic, including recurring alert, digest, or property-inquiry notification sends, should wait until `PROPERTY_INQUIRY_NOTIFY_TO` or fallback `REIE_INTERNAL_EMAIL` is configured, `PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN` is unset or false, `npm run check:launch-readiness` is not blocked, `npm run supabase:check:json`, sender domain, unsubscribe, click tracking, internal live-send tests, `npm run smoke:mls-status` search-index health, `npm run smoke:search` Search Smoke Readiness, and timeout-bounded queue diagnostics are verified.
+- Treat blocked `npm run check:launch-readiness`, missing property-inquiry recipient routing, `PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN=true`, failed `npm run supabase:check:json`, degraded search-index health, `meta.smoke.ready=false`, public search smoke blockers, or unacceptable timeout-bounded queue diagnostics as live-send blockers for recurring email traffic because alert and digest clicks land back on search and property pages.
 
 ## CRM Intelligence
 
@@ -600,7 +623,7 @@ Conservative starting schedule:
 | MLS sync dry-run | hourly during validation | `npm run run:mls-sync -- --json --max-pages=1 --page-size=5 --start-page=0 --page-timeout-ms=30000` |
 | MLS sync live | hourly after approval | `npm run run:mls-sync -- --execute --json --max-pages=1 --page-size=25 --start-page=0 --page-timeout-ms=30000` |
 | Alert processing dry-run | every 30 minutes during validation | `npm run run:alerts:dry -- --limit 50` |
-| Alert processing live | every 30 minutes after approval | `npm run run:alerts:live -- --limit 50` |
+| Alert processing live | every 30 minutes after approval and non-blocked launch readiness | `npm run run:alerts:live -- --limit 50` |
 | Digest processing | daily or weekly after approval | `npm run run:digest -- --limit 50` |
 | CRM reporting | daily business morning | `npm run run:crm:scheduler` |
 | Typesense schema repair | manual only | `npm run typesense:init` |
@@ -782,17 +805,19 @@ The product goal is not just search. It is a public intelligence layer that help
 
 ## Current Known Gaps
 
-- Local Typesense `properties` and `listings` collections were verified ready with `npm run typesense:collections:check` on May 31, 2026.
-- Supabase connectivity currently blocks alert, digest, CRM, MLS, seed, and reindex dry-run/reporting commands until `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/supabase-recovery-runbook.md` is completed and `npm run supabase:check:json` reports readiness. Use `npm run supabase:check` for a human-readable check.
-- Production smoke verification still needs `npm run supabase:check:json`, `npm run smoke:mls-status`, `npm run smoke:search`, timeout-bounded queue diagnostics, and one internal tracked email click before recurring scheduler activation or recurring email traffic.
-- `dist/` may contain stale generated JavaScript for deleted source files until generated output is cleaned.
+- Local Typesense `properties` and `listings` collections were verified ready with `npm run typesense:collections:check` and refreshed with `npm run typesense:reindex` on June 16, 2026.
+- `npm run supabase:check:json` currently reports readiness, but it remains a required gate before Supabase-backed dry-runs, reindexing, queue retry, scheduler activation, or live database work.
+- Aggregate notification launch readiness is currently blocked until `PROPERTY_INQUIRY_NOTIFY_TO` or `REIE_INTERNAL_EMAIL` is configured for property-inquiry delivery and `PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN` is unset or false; inspect the consolidated blocker with `npm run check:notification-readiness`, the fail-closed gate with `npm run check:notification-readiness:strict`, the strict contract with `npm run check:notification-readiness:strict-contract`, and the direct blocker with `npm run check:property-inquiry-notification:readiness`.
+- June 21 verification is current through the 10:22 MDT fast verification and the 10:21 MDT MLS photo media-hardening ops smoke after the 07:31 MDT Supabase refresh and 08:14 MDT production build: `npm run check:fast`, `npm run build`, `npm run supabase:check:json`, and `npm run smoke:ops` passed. Current runtime posture is MLS status `busy` / `watch`, search `typesense` healthy with `meta.smoke.ready=true`, saved-search alert readiness `watch` with 197 pending / 0 failed / 0 processing, property-inquiry notification readiness `blocked`, and aggregate launch readiness `blocked`; production still needs one internal tracked email click before recurring scheduler activation or recurring email traffic.
+- Known stale legacy MLS generated artifacts in `dist/` were cleaned on June 21 08:28 MDT; `npm run worker:build` passed afterward and no generated JavaScript files lacked live TypeScript sources.
+- MLS photo normalization now rejects string non-image media URLs and PDF/document/brochure/video/floor-plan/virtual-tour records before replacing `PropertyPhoto` rows; `npm run smoke:ops` covers this with PDF and misleading property-media fixtures.
 - Production Redis provider decision is open.
 - Production Typesense provider decision is open.
 - Production worker host and scheduler provider decisions are open.
-- Recurring email traffic, recurring alert or digest scheduling, and CRM scheduling need final production cadence decisions.
+- Recurring email traffic, recurring alert, digest, or property-inquiry notification scheduling, and CRM scheduling need final production cadence decisions.
 - Email domain authentication must be confirmed before recurring email traffic.
 - Email client visual QA has not been completed.
-- CRM closure audit controls, note-backed completion/dismissal, CRM API Inspection metadata, and failed detail-route preservation are implemented locally; production workflow still needs live admin smoke verification once Terminal 1 is running and `npm run supabase:check:json` reports readiness.
+- CRM closure audit controls, note-backed completion/dismissal, CRM API Inspection metadata, and failed detail-route preservation are implemented locally and covered by the refreshed local `npm run smoke:ops`; production workflow still needs live environment confirmation before scheduler or recurring-email activation.
 - Large programmatic content batch publication should wait for `npm run supabase:check:json`, verified data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics.
 
 <!-- /Users/davidquinn/david-quinn-group/colorado-real-estate/README.md -->

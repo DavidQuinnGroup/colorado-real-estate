@@ -152,6 +152,22 @@ export default function SaveSearch({ city }: SaveSearchProps) {
   const searchParams = useSearchParams();
 
   const isSaving = submitState === 'saving';
+  const capturedFilters = useMemo(
+    () => ({
+      minPrice: getParam(searchParams, 'minPrice'),
+      beds: getParam(searchParams, 'beds'),
+      type: getParam(searchParams, 'type'),
+      north: getParam(searchParams, 'north'),
+      south: getParam(searchParams, 'south'),
+      east: getParam(searchParams, 'east'),
+      west: getParam(searchParams, 'west'),
+    }),
+    [searchParams],
+  );
+  const capturedFilterCount = useMemo(() => Object.values(capturedFilters).filter(Boolean).length, [capturedFilters]);
+  const normalizedEmail = email.trim().toLowerCase();
+  const hasValidEmail = isValidEmail(normalizedEmail);
+  const normalizedNotes = notes.trim();
   const statusText = useMemo(() => {
     if (submitState === 'saving') return 'Saving search';
     if (submitState === 'saved') return 'Search saved';
@@ -174,9 +190,6 @@ export default function SaveSearch({ city }: SaveSearchProps) {
   async function handleSave() {
     if (isSaving) return;
 
-    const normalizedEmail = email.trim().toLowerCase();
-    const normalizedNotes = notes.trim();
-
     if (!isValidEmail(normalizedEmail)) {
       setSubmitState('error');
       setError('Enter a valid email address.');
@@ -191,13 +204,13 @@ export default function SaveSearch({ city }: SaveSearchProps) {
     const payload = {
       email: normalizedEmail,
       city,
-      minPrice: getParam(searchParams, 'minPrice'),
-      beds: getParam(searchParams, 'beds'),
-      type: getParam(searchParams, 'type'),
-      north: getParam(searchParams, 'north'),
-      south: getParam(searchParams, 'south'),
-      east: getParam(searchParams, 'east'),
-      west: getParam(searchParams, 'west'),
+      minPrice: capturedFilters.minPrice,
+      beds: capturedFilters.beds,
+      type: capturedFilters.type,
+      north: capturedFilters.north,
+      south: capturedFilters.south,
+      east: capturedFilters.east,
+      west: capturedFilters.west,
       filters: {
         intakeSource: 'search-map',
         reieGoal: goal,
@@ -232,7 +245,22 @@ export default function SaveSearch({ city }: SaveSearchProps) {
 
   if (submitState === 'saved') {
     return (
-      <div className="overflow-hidden rounded-[8px] border border-cyan-200/30 bg-[#071017] text-cyan-100">
+      <div
+        className="overflow-hidden rounded-[8px] border border-cyan-200/30 bg-[#071017] text-cyan-100"
+        data-testid="reie-save-search"
+        data-save-search-state={submitState}
+        data-save-search-city={city}
+        data-save-search-intent={goal}
+        data-save-search-intent-label={saveResult?.intake?.reieGoalLabel || getGoalLabel(goal)}
+        data-save-search-timeline={timeline}
+        data-save-search-timeline-label={saveResult?.intake?.timelineLabel || getTimelineLabel(timeline)}
+        data-save-search-alert-readiness={saveResult?.alertReadiness?.level || ''}
+        data-save-search-signal-count={saveResult?.alertReadiness?.signals.length ?? 0}
+        data-save-search-blocker-count={saveResult?.alertReadiness?.blockers.length ?? 0}
+        data-save-search-user-id={saveResult?.userId || ''}
+        data-save-search-id={saveResult?.savedSearchId || ''}
+        data-save-search-filter-count={capturedFilterCount}
+      >
         <div className="border-b border-cyan-100/14 bg-cyan-100/[0.08] px-4 py-3">
           <div className="flex items-start gap-3">
             <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-[6px] bg-cyan-100 text-[#071017]">
@@ -246,7 +274,13 @@ export default function SaveSearch({ city }: SaveSearchProps) {
         </div>
         <div className="px-4 py-3">
           {saveResult?.alertReadiness ? (
-            <span className={`inline-flex rounded-[5px] border px-2 py-1 text-[9px] font-black uppercase tracking-[0.18em] ${getReadinessClass(saveResult.alertReadiness.level)}`}>
+            <span
+              className={`inline-flex rounded-[5px] border px-2 py-1 text-[9px] font-black uppercase tracking-[0.18em] ${getReadinessClass(saveResult.alertReadiness.level)}`}
+              data-testid="reie-save-search-readiness"
+              data-save-search-alert-readiness={saveResult.alertReadiness.level}
+              data-save-search-signal-count={saveResult.alertReadiness.signals.length}
+              data-save-search-blocker-count={saveResult.alertReadiness.blockers.length}
+            >
               Alert {saveResult.alertReadiness.level}
             </span>
           ) : null}
@@ -258,7 +292,12 @@ export default function SaveSearch({ city }: SaveSearchProps) {
           {saveResult?.alertReadiness?.signals.length ? (
             <div className="mt-3 flex flex-wrap gap-2">
               {saveResult.alertReadiness.signals.slice(0, 3).map((signal) => (
-                <span key={signal} className="rounded-[4px] border border-white/10 bg-black/40 px-2 py-1 text-[9px] font-black uppercase tracking-[0.14em] text-white/45">
+                <span
+                  key={signal}
+                  className="rounded-[4px] border border-white/10 bg-black/40 px-2 py-1 text-[9px] font-black uppercase tracking-[0.14em] text-white/45"
+                  data-testid="reie-save-search-signal"
+                  data-save-search-signal={signal}
+                >
                   {signal}
                 </span>
               ))}
@@ -271,6 +310,8 @@ export default function SaveSearch({ city }: SaveSearchProps) {
               setSaveResult(null);
             }}
             className="mt-4 inline-flex h-9 items-center justify-center rounded-[6px] border border-cyan-100/28 px-3 text-[9px] font-black uppercase tracking-[0.18em] text-cyan-100 transition hover:border-white/40 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-300"
+            data-testid="reie-save-search-reset"
+            data-save-search-next-state="idle"
           >
             Save another
           </button>
@@ -280,7 +321,27 @@ export default function SaveSearch({ city }: SaveSearchProps) {
   }
 
   return (
-    <div className="overflow-hidden rounded-[8px] border border-white/10 bg-[#071017] shadow-[0_12px_35px_rgba(0,0,0,0.22)]">
+    <div
+      className="overflow-hidden rounded-[8px] border border-white/10 bg-[#071017] shadow-[0_12px_35px_rgba(0,0,0,0.22)]"
+      data-testid="reie-save-search"
+      data-save-search-state={submitState}
+      data-save-search-city={city}
+      data-save-search-intent={goal}
+      data-save-search-intent-label={getGoalLabel(goal)}
+      data-save-search-timeline={timeline}
+      data-save-search-timeline-label={getTimelineLabel(timeline)}
+      data-save-search-email-valid={hasValidEmail ? 'true' : 'false'}
+      data-save-search-email-present={normalizedEmail ? 'true' : 'false'}
+      data-save-search-notes-present={normalizedNotes ? 'true' : 'false'}
+      data-save-search-notes-length={notes.length}
+      data-save-search-notes-max-length={MAX_NOTE_LENGTH}
+      data-save-search-filter-count={capturedFilterCount}
+      data-save-search-has-bounds={capturedFilters.north && capturedFilters.south && capturedFilters.east && capturedFilters.west ? 'true' : 'false'}
+      data-save-search-has-min-price={capturedFilters.minPrice ? 'true' : 'false'}
+      data-save-search-has-beds={capturedFilters.beds ? 'true' : 'false'}
+      data-save-search-has-type={capturedFilters.type ? 'true' : 'false'}
+      data-save-search-error={error || ''}
+    >
       <div className="border-b border-white/10 bg-[linear-gradient(135deg,rgba(103,232,249,0.095),rgba(255,255,255,0.028))] p-4">
         <div className="flex items-start justify-between gap-4">
           <div className="flex min-w-0 items-center gap-3">
@@ -298,7 +359,12 @@ export default function SaveSearch({ city }: SaveSearchProps) {
         <p className="mt-3 text-xs leading-5 text-white/48">
           Capture this market view, current filters, and REIE intent for follow-up.
         </p>
-        <div className="mt-3 grid grid-cols-2 overflow-hidden rounded-[6px] border border-white/10 bg-black/24">
+        <div
+          className="mt-3 grid grid-cols-2 overflow-hidden rounded-[6px] border border-white/10 bg-black/24"
+          data-testid="reie-save-search-summary"
+          data-save-search-city={city}
+          data-save-search-intent-summary={intentSummary}
+        >
           <div className="px-3 py-2">
             <p className="text-[9px] font-black uppercase tracking-[0.14em] text-white/32">Market</p>
             <p className="mt-1 truncate text-[11px] font-black uppercase tracking-[0.08em] text-white/68">{city}</p>
@@ -326,6 +392,9 @@ export default function SaveSearch({ city }: SaveSearchProps) {
               disabled={isSaving}
               style={selectControlStyle}
               className="h-10 w-full min-w-0 appearance-none rounded-[6px] border border-white/10 bg-white/[0.055] px-3 pr-8 text-[10px] font-black uppercase tracking-[0.08em] text-white outline-none transition focus:border-cyan-200/70 disabled:cursor-not-allowed disabled:opacity-60"
+              data-testid="reie-save-search-goal"
+              data-save-search-intent={goal}
+              data-save-search-intent-label={getGoalLabel(goal)}
             >
               {GOAL_OPTIONS.map((option) => (
                 <option key={option.value} value={option.value} className="bg-[#0d141c] text-white">
@@ -350,6 +419,9 @@ export default function SaveSearch({ city }: SaveSearchProps) {
               disabled={isSaving}
               style={selectControlStyle}
               className="h-10 w-full min-w-0 appearance-none rounded-[6px] border border-white/10 bg-white/[0.055] px-3 pr-8 text-[10px] font-black uppercase tracking-[0.08em] text-white outline-none transition focus:border-cyan-200/70 disabled:cursor-not-allowed disabled:opacity-60"
+              data-testid="reie-save-search-timeline"
+              data-save-search-timeline={timeline}
+              data-save-search-timeline-label={getTimelineLabel(timeline)}
             >
               {TIMELINE_OPTIONS.map((option) => (
                 <option key={option.value} value={option.value} className="bg-[#0d141c] text-white">
@@ -382,6 +454,9 @@ export default function SaveSearch({ city }: SaveSearchProps) {
               }}
               style={emailControlStyle}
               className="min-h-11 w-full min-w-0 flex-1 rounded-[6px] border border-white/10 bg-white/[0.055] px-3 text-sm text-white outline-none transition-colors placeholder:text-white/30 focus:border-cyan-200/70 disabled:cursor-not-allowed disabled:opacity-60"
+              data-testid="reie-save-search-email"
+              data-save-search-email-valid={hasValidEmail ? 'true' : 'false'}
+              data-save-search-email-present={normalizedEmail ? 'true' : 'false'}
             />
           </label>
 
@@ -391,6 +466,10 @@ export default function SaveSearch({ city }: SaveSearchProps) {
             disabled={isSaving}
             style={saveButtonStyle}
             className="inline-flex min-h-11 w-full shrink-0 items-center justify-center gap-2 rounded-[6px] border border-cyan-100/40 bg-cyan-100 px-4 text-[10px] font-black uppercase tracking-[0.16em] text-[#071017] transition-colors hover:bg-white disabled:cursor-not-allowed disabled:opacity-60 sm:w-[112px] sm:self-end"
+            data-testid="reie-save-search-submit"
+            data-save-search-state={submitState}
+            data-save-search-disabled={isSaving ? 'true' : 'false'}
+            data-save-search-email-valid={hasValidEmail ? 'true' : 'false'}
           >
             {isSaving ? (
               <>
@@ -425,10 +504,20 @@ export default function SaveSearch({ city }: SaveSearchProps) {
             placeholder="Optional notes"
             style={notesControlStyle}
             className="min-h-16 w-full resize-none rounded-[6px] border border-white/10 bg-white/[0.055] px-3 py-2 text-xs leading-5 text-white outline-none transition-colors placeholder:text-white/25 focus:border-cyan-200/70 disabled:cursor-not-allowed disabled:opacity-60"
+            data-testid="reie-save-search-notes"
+            data-save-search-notes-length={notes.length}
+            data-save-search-notes-max-length={MAX_NOTE_LENGTH}
+            data-save-search-notes-present={normalizedNotes ? 'true' : 'false'}
           />
         </label>
 
-        <div className="flex min-h-5 items-center justify-between gap-3 border-t border-white/10 pt-3">
+        <div
+          className="flex min-h-5 items-center justify-between gap-3 border-t border-white/10 pt-3"
+          data-testid="reie-save-search-status"
+          data-save-search-state={submitState}
+          data-save-search-error={error || ''}
+          data-save-search-status-text={error || 'Saved searches include this map view and current filters.'}
+        >
           <p className={`min-w-0 text-xs font-bold ${error ? 'text-red-300' : 'text-white/35'}`}>{error || 'Saved searches include this map view and current filters.'}</p>
         </div>
       </div>

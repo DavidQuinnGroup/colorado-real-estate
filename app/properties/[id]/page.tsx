@@ -290,6 +290,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
   const reviewSignal = getReviewSignal(property);
   const equityProperty = buildEquityVisionProperty(property);
   const propertySchema = buildPropertySchema(property);
+  const propertySchemaGraph = propertySchema['@graph'];
   const propertyFaqs = getPropertyFaqs(property);
   const canonicalUrl = getPropertyUrl(property);
   const cityMarketHref = getCityMarketHref(property.city);
@@ -309,7 +310,24 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
 
   return (
     <main className="min-h-screen overflow-y-auto bg-[#070b10] text-white">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(propertySchema) }} />
+      <script
+        type="application/ld+json"
+        data-testid="reie-property-schema"
+        data-property-schema-type="SingleFamilyResidence"
+        data-property-schema-url={canonicalUrl}
+        data-property-schema-id={property.id}
+        data-property-schema-slug={property.slug ?? ""}
+        data-property-schema-mls-id={property.mlsId ?? ""}
+        data-property-schema-address={property.address}
+        data-property-schema-city={property.city}
+        data-property-schema-neighborhood={property.neighborhood ?? ""}
+        data-property-schema-price={property.price}
+        data-property-schema-photo-count={property.photos?.length ?? 0}
+        data-property-schema-graph-count={propertySchemaGraph.length}
+        data-property-schema-has-offer="true"
+        data-property-schema-has-breadcrumb="true"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(propertySchema) }}
+      />
       <FAQSchema faqs={propertyFaqs} pageUrl={canonicalUrl} />
       <section className="relative border-b border-white/10">
         <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(100,188,205,0.14),transparent_38%),linear-gradient(180deg,rgba(255,255,255,0.035),transparent_35%)]" />

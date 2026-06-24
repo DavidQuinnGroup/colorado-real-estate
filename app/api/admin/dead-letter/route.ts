@@ -106,10 +106,24 @@ const SUPPORTED_STATES: DeadLetterState[] = ['waiting', 'active', 'delayed', 'fa
 const OPEN_STATES = new Set<DeadLetterState>(['waiting', 'active', 'delayed', 'failed']);
 const TERMINAL_5 = 'Terminal 5';
 const LOCAL_BASE_URL = 'http://localhost:3000';
+const ROUTE = '/api/admin/dead-letter';
 const STATUS_COMMAND = `curl -s "${LOCAL_BASE_URL}/api/mls/status"`;
 const RETRY_STATUS_COMMAND = `curl -s "${LOCAL_BASE_URL}/api/mls/retry"`;
 const QUEUE_DASHBOARD_COMMAND = 'npm run run:queue-dashboard';
 const ALERT_DRY_RUN_COMMAND = `curl -s -X POST "${LOCAL_BASE_URL}/api/process-alerts?dryRun=true"`;
+
+function getInspectionCommand(request?: NextRequest) {
+  return `curl --max-time 8 -s "${LOCAL_BASE_URL}${ROUTE}${request?.nextUrl.search || ''}" -H "x-admin-key: $REIE_ADMIN_API_KEY"`;
+}
+
+function getInspectionMetadata(request?: NextRequest) {
+  return {
+    generatedAt: new Date().toISOString(),
+    terminal: TERMINAL_5,
+    route: ROUTE,
+    command: getInspectionCommand(request),
+  } as const;
+}
 
 function getAdminKey() {
   return process.env.REIE_ADMIN_API_KEY || process.env.ADMIN_API_KEY || null;
@@ -631,14 +645,57 @@ function getFallbackJobs(): DeadLetterJobSummary[] {
   return [];
 }
 
-function unauthorizedResponse() {
+function getTerminalMap() {
+  return {
+    nextApp: 'Terminal 1',
+    mlsPageWorker: 'Terminal 2',
+    coordinator: 'Terminal 3',
+    dockerAndTypesense: 'Terminal 4',
+    scriptsAndCurl: TERMINAL_5,
+  };
+}
+
+function getDeadLetterEnvelope(
+  request: NextRequest,
+  summary: DeadLetterSummary,
+  jobs: DeadLetterJobSummary[],
+  diagnostics: DiagnosticIssue[],
+  recommendations?: string[],
+) {
+  const filters = getFilters(request);
+
+  return {
+    module: 'REIE Dead-Letter Inspector',
+    ...getInspectionMetadata(request),
+    timeoutMs: DEAD_LETTER_TIMEOUT_MS,
+    severity: getSummarySeverity(summary, diagnostics),
+    auth: {
+      configured: Boolean(getAdminKey()),
+    },
+    terminals: getTerminalMap(),
+    commands: getCommandTemplates(),
+    filters,
+    filterSummary: getFilterSummary(filters),
+    diagnostics,
+    recommendations: recommendations || getRecommendations(summary, jobs, diagnostics),
+    recoveryPlan: getRecoveryPlan(summary, jobs, diagnostics),
+    summary,
+    sourceQueues: summarizeSourceQueues(jobs),
+    jobs,
+    openStates: SUPPORTED_STATES.filter((state) => OPEN_STATES.has(state)),
+  };
+}
+
+function unauthorizedResponse(request: NextRequest) {
+  const summary = getFallbackSummary();
+  const jobs = getFallbackJobs();
+  const diagnostics: DiagnosticIssue[] = [];
+
   return json(
     {
       success: false,
       error: 'Admin access is required.',
-      auth: {
-        configured: Boolean(getAdminKey()),
-      },
+      ...getDeadLetterEnvelope(request, summary, jobs, diagnostics, ['Provide the configured admin key before inspecting dead-letter records.']),
     },
     { status: 401 },
   );
@@ -646,53 +703,44 @@ function unauthorizedResponse() {
 
 export async function GET(request: NextRequest) {
   if (!authorizeRequest(request)) {
-    return unauthorizedResponse();
+    return unauthorizedResponse(request);
   }
 
-  const filters = getFilters(request);
+  try {
+    const filters = getFilters(request);
 
-  const [summaryResult, jobsResult] = await Promise.all([
-    withTimeout('deadLetter:summary', getFallbackSummary(), getDeadLetterSummary()),
-    withTimeout('deadLetter:jobs', getFallbackJobs(), getDeadLetterJobs(filters)),
-  ]);
-  const diagnostics = [...(summaryResult.ok ? [] : [summaryResult.issue]), ...(jobsResult.ok ? [] : [jobsResult.issue])];
-  const summary = summaryResult.value;
-  const jobs = jobsResult.value;
-  const severity = getSummarySeverity(summary, diagnostics);
-  const sourceQueues = summarizeSourceQueues(jobs);
+    const [summaryResult, jobsResult] = await Promise.all([
+      withTimeout('deadLetter:summary', getFallbackSummary(), getDeadLetterSummary()),
+      withTimeout('deadLetter:jobs', getFallbackJobs(), getDeadLetterJobs(filters)),
+    ]);
+    const diagnostics = [...(summaryResult.ok ? [] : [summaryResult.issue]), ...(jobsResult.ok ? [] : [jobsResult.issue])];
+    const summary = summaryResult.value;
+    const jobs = jobsResult.value;
 
-  return json(
-    {
+    return json({
       success: true,
-      module: 'REIE Dead-Letter Inspector',
-      generatedAt: new Date().toISOString(),
-      timeoutMs: DEAD_LETTER_TIMEOUT_MS,
-      severity,
+      ...getDeadLetterEnvelope(request, summary, jobs, diagnostics),
       redis: {
         url: redactRedisUrl(getRedisUrl()),
       },
-      auth: {
-        configured: Boolean(getAdminKey()),
+    });
+  } catch (error) {
+    const summary = getFallbackSummary();
+    const jobs = getFallbackJobs();
+    const diagnostics = [errorIssue('deadLetter:route', error)];
+
+    console.error('[REIE DEAD LETTER] Inspection failed:', getErrorMessage(error));
+
+    return json(
+      {
+        success: false,
+        error: 'Dead-letter inspection could not be read.',
+        detail: getErrorMessage(error),
+        ...getDeadLetterEnvelope(request, summary, jobs, diagnostics),
       },
-      terminals: {
-        nextApp: 'Terminal 1',
-        mlsPageWorker: 'Terminal 2',
-        coordinator: 'Terminal 3',
-        dockerAndTypesense: 'Terminal 4',
-        scriptsAndCurl: TERMINAL_5,
-      },
-      commands: getCommandTemplates(),
-      filters,
-      filterSummary: getFilterSummary(filters),
-      diagnostics,
-      recommendations: getRecommendations(summary, jobs, diagnostics),
-      recoveryPlan: getRecoveryPlan(summary, jobs, diagnostics),
-      summary,
-      sourceQueues,
-      jobs,
-      openStates: SUPPORTED_STATES.filter((state) => OPEN_STATES.has(state)),
-    },
-  );
+      { status: 500 },
+    );
+  }
 }
 
 // /Users/davidquinn/david-quinn-group/colorado-real-estate/app/api/admin/dead-letter/route.ts

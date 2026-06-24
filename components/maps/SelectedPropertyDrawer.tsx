@@ -71,22 +71,60 @@ function getScoreToneClass(value: number | null | undefined) {
   return 'text-amber-100';
 }
 
+function hasListingPhoto(property: MapSidebarListing) {
+  return Boolean(property.mainPhoto?.trim() || property.image?.trim());
+}
+
+function hasCoordinates(property: MapSidebarListing) {
+  return Number.isFinite(property.lat) && Number.isFinite(property.lng);
+}
+
 export default function SelectedPropertyDrawer({ property, onClose }: SelectedPropertyDrawerProps) {
   const address = property.address || 'Address Available by Request';
   const city = property.city || 'Colorado';
   const state = property.state || 'CO';
   const price = getNumericValue(property.price) ?? 0;
   const hasReviewFlag = Boolean(property.hasPolybutyleneRisk);
+  const hasPhoto = hasListingPhoto(property);
+  const hasCoordinatesFlag = hasCoordinates(property);
   const propertyHref = `/properties/${property.id}`;
   const inquiryHref = `${propertyHref}#property-contact`;
+  const marketHref = getCityMarketHref(city);
   const imageSrc = getListingPhotoUrl(property);
   const fallbackImageSrc = getListingFallbackPhotoUrl(property);
   const propertyType = getPropertyTypeLabel(property.propertyType);
   const decisionSignal = getDecisionSignal(property);
+  const reviewSignal = getReviewSignal(property);
 
   return (
-    <aside className="pointer-events-auto absolute bottom-4 left-4 right-4 z-[720] max-h-[calc(100%-2rem)] overflow-hidden rounded-[8px] border border-white/14 bg-[#071017]/96 shadow-2xl backdrop-blur-md md:bottom-6 md:left-auto md:right-6 md:w-[410px]">
-      <div className="relative aspect-[16/9] overflow-hidden border-b border-white/10 bg-[#10151b]">
+    <aside
+      className="pointer-events-auto absolute bottom-4 left-4 right-4 z-[720] max-h-[calc(100%-2rem)] overflow-hidden rounded-[8px] border border-white/14 bg-[#071017]/96 shadow-2xl backdrop-blur-md md:bottom-6 md:left-auto md:right-6 md:w-[410px]"
+      data-testid="reie-selected-property-drawer"
+      data-selected-property-id={property.id}
+      data-selected-property-address={address}
+      data-selected-property-city={city}
+      data-selected-property-state={state}
+      data-selected-property-price={price}
+      data-selected-property-type={propertyType}
+      data-selected-property-private={String(Boolean(property.isPrivateExclusive))}
+      data-selected-property-review={String(hasReviewFlag)}
+      data-selected-property-mapped={String(hasCoordinatesFlag)}
+      data-selected-property-photo-available={String(hasPhoto)}
+      data-selected-property-efficiency-score={formatScore(property.efficiencyScore)}
+      data-selected-property-resilience-score={formatScore(property.resilienceScore)}
+      data-selected-property-decision-signal={decisionSignal}
+      data-selected-property-review-signal={reviewSignal}
+      data-selected-property-detail-href={propertyHref}
+      data-selected-property-inquiry-href={inquiryHref}
+      data-selected-property-market-href={marketHref}
+    >
+      <div
+        className="relative aspect-[16/9] overflow-hidden border-b border-white/10 bg-[#10151b]"
+        data-testid="reie-selected-property-media"
+        data-selected-property-photo-available={String(hasPhoto)}
+        data-selected-property-image-src={imageSrc}
+        data-selected-property-fallback-src={fallbackImageSrc}
+      >
         <ResilientListingImage
           src={imageSrc}
           fallbackSrc={fallbackImageSrc}
@@ -112,6 +150,8 @@ export default function SelectedPropertyDrawer({ property, onClose }: SelectedPr
         <button
           type="button"
           onClick={onClose}
+          data-testid="reie-selected-property-close"
+          data-selected-property-id={property.id}
           aria-label="Close selected listing"
           className="absolute right-4 top-4 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-[6px] border border-white/16 bg-black/52 text-white/72 backdrop-blur transition hover:border-white/34 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
         >
@@ -133,7 +173,12 @@ export default function SelectedPropertyDrawer({ property, onClose }: SelectedPr
           </p>
         </div>
 
-        <div className="mt-4 rounded-[6px] border border-cyan-100/18 bg-cyan-100/[0.06] p-3">
+        <div
+          className="mt-4 rounded-[6px] border border-cyan-100/18 bg-cyan-100/[0.06] p-3"
+          data-testid="reie-selected-property-decision"
+          data-selected-property-decision-signal={decisionSignal}
+          data-selected-property-review-signal={reviewSignal}
+        >
           <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.16em] text-cyan-100/76">
             <Sparkles size={13} aria-hidden="true" />
             Decision Signal
@@ -150,9 +195,13 @@ export default function SelectedPropertyDrawer({ property, onClose }: SelectedPr
         <div className="mt-3 grid grid-cols-3 gap-2">
           <SignalTile icon={<Gauge size={13} />} label="Eff" value={formatScore(property.efficiencyScore)} valueClassName={getScoreToneClass(property.efficiencyScore)} />
           <SignalTile icon={<ShieldCheck size={13} />} label="Res" value={formatScore(property.resilienceScore)} valueClassName={getScoreToneClass(property.resilienceScore)} />
-          <div className="min-w-0 rounded-[6px] border border-white/10 bg-white/[0.045] p-3">
+          <div
+            className="min-w-0 rounded-[6px] border border-white/10 bg-white/[0.045] p-3"
+            data-testid="reie-selected-property-signal"
+            data-selected-property-review-signal={reviewSignal}
+          >
             <p className="text-[10px] font-black uppercase tracking-[0.12em] text-white/36">Signal</p>
-            <p className="mt-1 truncate text-[12px] font-black uppercase leading-none text-cyan-100">{getReviewSignal(property)}</p>
+            <p className="mt-1 truncate text-[12px] font-black uppercase leading-none text-cyan-100">{reviewSignal}</p>
           </div>
         </div>
 
@@ -166,6 +215,9 @@ export default function SelectedPropertyDrawer({ property, onClose }: SelectedPr
         <div className="mt-4 border-t border-white/10 pt-4">
           <Link
             href={inquiryHref}
+            data-testid="reie-selected-property-inquiry-link"
+            data-selected-property-id={property.id}
+            data-selected-property-inquiry-href={inquiryHref}
             className="inline-flex h-11 w-full items-center justify-center gap-1.5 rounded-[6px] bg-cyan-100 text-[10px] font-black uppercase tracking-[0.14em] text-[#061017] transition hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
           >
             Inquire
@@ -175,13 +227,19 @@ export default function SelectedPropertyDrawer({ property, onClose }: SelectedPr
           <div className="mt-3 grid grid-cols-2 gap-2">
             <Link
               href={propertyHref}
+              data-testid="reie-selected-property-detail-link"
+              data-selected-property-id={property.id}
+              data-selected-property-detail-href={propertyHref}
               className="inline-flex h-9 items-center justify-center gap-1.5 rounded-[6px] border border-white/10 bg-white/[0.055] text-[10px] font-black uppercase tracking-[0.12em] text-white/72 transition hover:border-cyan-100/35 hover:text-cyan-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
             >
               Details
               <ArrowUpRight size={13} aria-hidden="true" />
             </Link>
             <Link
-              href={getCityMarketHref(city)}
+              href={marketHref}
+              data-testid="reie-selected-property-market-link"
+              data-selected-property-id={property.id}
+              data-selected-property-market-href={marketHref}
               className="inline-flex h-9 items-center justify-center gap-1.5 rounded-[6px] border border-white/10 bg-white/[0.055] text-[10px] font-black uppercase tracking-[0.12em] text-white/72 transition hover:border-cyan-100/35 hover:text-cyan-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
             >
               Market

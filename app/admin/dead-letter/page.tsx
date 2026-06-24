@@ -19,7 +19,19 @@ export const metadata: Metadata = {
 };
 
 export default function DeadLetterPage() {
-  return <DeadLetterInspector />;
+  return (
+    <div
+      data-testid="reie-dead-letter-page"
+      data-page-route="/admin/dead-letter"
+      data-page-module="dead-letter-inspector"
+      data-page-component="DeadLetterInspector"
+      data-page-terminal="Terminal 5"
+      data-page-api-route="/api/admin/dead-letter"
+      data-page-noindex="true"
+    >
+      <DeadLetterInspector />
+    </div>
+  );
 }
 
 // /Users/davidquinn/david-quinn-group/colorado-real-estate/app/admin/dead-letter/page.tsx

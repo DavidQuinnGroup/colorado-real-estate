@@ -133,6 +133,11 @@ MLS intelligence:
 - `scripts/fetchMLS.ts` is a compatibility wrapper around the active `syncMLSGrid()` path.
 - `upsertListing.ts` writes `gcForensics`, `efficiencyScore`, `resilienceScore`, `altitude`, `soilType`, and `hasPolybutyleneRisk`.
 - `processPhotos.ts` preserves existing photos when MLS returns no usable media.
+- `processPhotos.ts` rejects string non-image media URLs and PDF/document/brochure/video/floor-plan/virtual-tour records before replacing `PropertyPhoto` rows.
+- `processListing.ts` exposes listing-level media extraction diagnostics for direct media arrays, nested media arrays, top-level photo fields, extracted media count, and ignored media item count before photo replacement.
+- `processListingsBatch.ts` aggregates listing-level media diagnostics into batch/page-worker media payload shape counts without exposing raw media URLs.
+- Page-worker completion logs, `/api/mls/status`, `/admin` completed-job summaries, and `/api/mls/sync` dry-run expected metric plus inspection hints expose aggregate media diagnostics for operator review.
+- Top-level listing photo URL fields are extracted without forcing `MediaType: image`, so top-level PDF URLs remain subject to the non-image guard.
 - `processListing.ts` updates Typesense through `updateSearchIndex.ts` after successful upsert.
 - `updateSearchIndex.ts` delegates to the canonical listing indexer.
 - Listing jobs, page-worker jobs, batch processing, direct syncs, `/api/mls/status`, and `/admin` can surface search-index attempts, successes, failures, and errors.
@@ -185,8 +190,8 @@ CRM:
 Generated output:
 
 - `dist/` is generated worker and script output.
-- `dist/` may contain stale JavaScript for deleted source files until generated output is cleaned or regenerated.
-- Source scans are authoritative unless a runtime command directly executes stale generated files.
+- The known stale legacy MLS generated artifacts were removed on June 21 08:28 MDT; `npm run worker:build` passed and the no-source `dist/*.js` scan returned empty.
+- Source scans remain authoritative when reviewing intended behavior.
 
 ## Protected Operational APIs
 
@@ -200,9 +205,14 @@ These routes require `REIE_ADMIN_API_KEY` or `ADMIN_API_KEY` in production:
 - `GET /api/mls-sync`
 - `POST /api/mls-sync`
 - `GET /api/admin/dead-letter`
+- `GET /api/admin/control-state`
+- `PATCH /api/admin/control-state`
 - `GET /api/admin/crm-tasks`
 - `GET /api/admin/crm-tasks/[id]`
 - `PATCH /api/admin/crm-tasks/[id]`
+- `GET /api/admin/intake-signals`
+- `GET /api/admin/intake-signals/[id]`
+- `PATCH /api/admin/intake-signals/[id]`
 - `GET /api/process-alerts`
 - `POST /api/process-alerts`
 
@@ -219,20 +229,67 @@ Local development can bypass the key only when neither admin key environment var
 
 These are known and non-blocking:
 
-- Node `url.parse()` deprecation warnings appear during `next build`.
-- Local Typesense `properties` and `listings` collections were verified ready with `npm run typesense:collections:check` on May 31, 2026.
-- `dist/` may contain stale generated JavaScript for deleted source files until generated output is cleaned.
+- `npm run build` may show Node `url.parse()` deprecation warnings.
+- Local Typesense `properties` and `listings` collections were verified ready with `npm run typesense:collections:check` and refreshed with `npm run typesense:reindex` on June 16, 2026.
+- Known stale legacy MLS generated artifacts in `dist/` were cleaned on June 21 08:28 MDT; `npm run worker:build` passed afterward and no generated JavaScript files lacked live TypeScript sources.
+- MLS photo normalization now rejects string non-image media URLs and PDF/document/brochure/video/floor-plan/virtual-tour records before replacing `PropertyPhoto` rows; `npm run smoke:ops` covers this with PDF and misleading property-media fixtures.
 
 ## Current Known Blocker
 
-Supabase connectivity currently blocks alert, digest, CRM, MLS, seed, and reindex dry-runs/reporting. Use `npm run supabase:check:json` as the non-secret readiness gate and follow the recovery runbook:
+`npm run supabase:check:json` currently reports readiness, but aggregate notification launch readiness is blocked until property-inquiry notification routing has `PROPERTY_INQUIRY_NOTIFY_TO` or fallback `REIE_INTERNAL_EMAIL` configured. Use `npm run check:notification-readiness` for the consolidated non-sending summary, `npm run check:notification-readiness:strict` for the fail-closed gate, `npm run check:notification-readiness:strict-contract` for the strict contract wrapper, `npm run check:launch-readiness` for the combined launch gate, and `npm run check:property-inquiry-notification:readiness` for the direct non-sending diagnostic. Keep `PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN` unset or false before relying on high-priority property inquiry notification delivery. `docs/email-system.md` has the explicit production recipient checklist.
 
-- `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/supabase-recovery-runbook.md`
+Latest local validation snapshot, June 21, 2026 10:22 MDT:
 
-```text
-DNS lookup failed: ENOTFOUND otmkoqvmhthitldlnjdk.supabase.co
-FATAL: (ENOTFOUND) tenant/user postgres.otmkoqvmhthitldlnjdk not found
-```
+- June 21 10:22 MDT `npm run check:fast` passed after MLS photo media hardening: worker output rebuilt, notification readiness checks stayed non-sending/non-mutating, protected MLS sync dry-run remained non-executing with no MLS Grid request, and typecheck plus lint passed.
+- June 21 10:21 MDT `npm run smoke:ops` passed against a temporary local Next dev server after MLS photo media hardening, and the server was stopped afterward. A follow-up `lsof -nP -iTCP:3000 -sTCP:LISTEN` check confirmed `localhost:3000` was clear.
+- June 21 10:21 MDT hardened MLS photo normalization so string media URLs must look like image URLs before replacing `PropertyPhoto` rows, and record media with PDF, document, brochure, video, floor plan, or virtual-tour metadata is rejected before broader property-media category fallback.
+- June 21 08:12 MDT `npm run check:fast` passed: worker output rebuilt, property-inquiry missing-recipient and dry-run suppression checks passed, saved-search alert readiness remained `watch` with 197 pending / 0 failed / 0 processing, consolidated notification readiness remained blocked by missing property-inquiry recipient routing, strict-contract validation passed, bounded MLS sync dry-run remained non-executing with no MLS Grid request, and `npm run typecheck` plus `npm run lint` passed with no ESLint warnings or errors.
+- June 21 08:14 MDT `npm run build` passed: Next compiled successfully, completed lint/type validation inside the build pipeline, collected page data, generated 130 static pages, finalized page optimization, and collected build traces.
+- June 21 07:31 MDT `npm run supabase:check:json` passed with readiness `ready`: Supabase URL/key shape, placeholder scan, project-ref consistency, Postgres URL shape, project DNS, Postgres DNS, TCP, Prisma `SELECT 1`, and Supabase REST all passed with no failed checks.
+- June 21 08:16 MDT started a temporary local Next dev server on `http://localhost:3000`, ran `npm run smoke:mls-status`, `npm run smoke:search`, and `npm run smoke:ops`, then stopped the server. A follow-up `lsof -nP -iTCP:3000 -sTCP:LISTEN` check confirmed `localhost:3000` was clear.
+- June 20 12:31 MDT `npm run check:fast` passed: worker output rebuilt, property-inquiry missing-recipient and dry-run suppression checks passed, saved-search alert readiness remained `watch` with 197 pending / 0 failed / 0 processing, consolidated notification readiness remained blocked by missing property-inquiry recipient routing, strict-contract validation passed, bounded MLS sync dry-run remained non-executing with no MLS Grid request, and `npm run typecheck` plus `npm run lint` passed with no lint warnings or errors.
+- June 20 12:49 MDT `npm run build` passed: Next compiled successfully, completed lint/type validation inside the build pipeline, collected page data, generated 130 static pages, finalized page optimization, and collected build traces.
+- June 20 13:02 MDT `npm run supabase:check:json` passed with readiness `ready`: Supabase URL/key shape, placeholder scan, project-ref consistency, Postgres URL shape, project DNS, Postgres DNS, TCP, Prisma `SELECT 1`, and Supabase REST all passed with no failed checks.
+- June 20 13:08 MDT `npm run check:notification-readiness` remained non-sending/non-mutating, parseable, and blocked: saved-search alert notification is `watch`, property-inquiry notification is `blocked`, and aggregate launch notification readiness is `blocked`. `npm run check:launch-readiness` exited blocked as expected with Supabase connectivity `ready`, saved-search alert email `watch`, property-inquiry notification email `blocked`, 197 pending alert rows, 0 failed rows, and 0 processing rows.
+- June 20 13:11 MDT `npm run check:notification-readiness:strict` stayed non-sending/non-mutating and failed closed as expected with `strictMode=true`, `commandSuccess=true`, `success=false`, saved-search alert notification `watch`, property-inquiry notification `blocked`, and aggregate launch notification readiness `blocked`.
+- June 20 13:34 MDT `npm run check:notification-readiness:strict-contract` passed, stayed non-sending and non-mutating, confirmed the current environment exits blocked, confirmed the dummy-recipient plus `PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN=true` scenario exits blocked, confirmed both direct property-inquiry and aggregate dry-run blockers are detected, and confirmed the aggregate launch-readiness reply-to warning remains aligned.
+- June 20 13:46 MDT `npm run check:property-inquiry-notification:readiness` and `npm run check:launch-readiness` stayed non-sending and non-mutating and exited blocked as expected. Supabase connectivity is `ready`, saved-search alert email is `watch`, property-inquiry notification email is `blocked`, the queue still has 197 pending alert rows / 0 failed / 0 processing, and the only hard notification blocker remains missing `PROPERTY_INQUIRY_NOTIFY_TO` with `REIE_INTERNAL_EMAIL` unset.
+- June 20 13:48 MDT `npm run check:alert-notification-readiness` stayed non-sending and non-mutating and remained `watch` with 197 pending saved-search alert rows, 0 failed rows, 0 processing rows, built-in sender fallback in use, no explicit reply-to, `RESEND_API_KEY` present, and HTTPS public links configured. `npm run run:alerts:dry -- --limit 50` scanned 50 pending alert rows, previewed 50 ready-to-send rows, sent 0, skipped 0, failed 0, and mutated no rows.
+- June 20 13:50 MDT `npm run run:crm:pending -- --limit 20` and `npm run run:crm:all -- --limit 50` remained read-only, kept CRM readiness at `watch`, and show one pending `strategy_intake` task (`751fa51e-4a2e-411f-97df-c320e974e058`) for masked `co***@example.com`, priority `medium`, heat score 9, alert readiness `unknown`, and empty market/timeline/intent/next-action fields. CRM closure audit remains clean with 0 closed tasks and 100% closure-review coverage because no tasks are closed.
+- June 20 13:59 MDT `npm run run:mls-sync:dry` completed successfully with `dryRun=true`, `executed=false`, `maxPages=1`, `pageSize=5`, `startPage=0`, `pageTimeoutMs=30000`, and confirmed no MLS Grid request was made.
+- June 20 14:03 MDT `npm run check:notification-readiness` remained non-sending and non-mutating, returned parseable blocked readiness, summarized saved-search alert notification at `watch`, property-inquiry notification at `blocked`, and aggregate launch notification readiness at `blocked`, and surfaced the failed `PROPERTY_INQUIRY_NOTIFY_TO` check plus saved-search sender/reply-to/pending-row warnings.
+- June 20 14:09 MDT `npm run check:notification-readiness:strict` stayed non-sending and non-mutating and failed closed as expected with `strictMode=true`, `commandSuccess=true`, `success=false`, saved-search alert notification `watch`, property-inquiry notification `blocked`, and aggregate launch notification readiness `blocked`. `npm run check:notification-readiness:strict-contract` passed and confirmed the current env exits blocked, dummy-recipient plus `PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN=true` exits blocked, direct property-inquiry and aggregate dry-run blockers are detected, and the aggregate launch-readiness reply-to warning remains aligned.
+- June 20 14:14 MDT `npm run check:fast` passed: worker output rebuilt, property-inquiry missing-recipient and dry-run suppression checks passed, saved-search alert readiness remained `watch` with 197 pending / 0 failed / 0 processing, consolidated notification readiness remained blocked by missing property-inquiry recipient routing, strict-contract validation passed, bounded MLS sync dry-run remained non-executing with no MLS Grid request, and `npm run typecheck` plus `npm run lint` passed with no lint warnings or errors.
+- June 20 15:19 MDT `npm run build` passed: Next compiled successfully, completed lint/type validation inside the build pipeline, collected page data, generated 130 static pages, finalized page optimization, and collected build traces.
+- June 20 22:27 MDT `npm run supabase:check:json` passed with readiness `ready`: Supabase URL/key shape, placeholder scan, project-ref consistency, Postgres URL shape, project DNS, Postgres DNS, TCP, Prisma `SELECT 1`, and Supabase REST all passed with no failed checks.
+- June 20 15:50 MDT started a temporary local Next dev server on `http://localhost:3000`, ran `npm run smoke:mls-status`, `npm run smoke:search`, and `npm run smoke:ops`, then stopped the server. A follow-up `lsof -nP -iTCP:3000 -sTCP:LISTEN` check confirmed `localhost:3000` was clear.
+- Earlier June 20 preflight/build refreshes passed `npm run check:notification-readiness:strict-contract`, `npm run build`, `npm run supabase:check:json`, and follow-up queue-dashboard checks. The production build generated 130 static pages; no live worker was started, no email was sent, no alert rows were mutated, and no MLS Grid request was made.
+- June 20 11:35 MDT `npm run check:launch-readiness` reran the non-sending/non-mutating launch gate and exited blocked as expected: Supabase connectivity is `ready`, saved-search alert email is `watch`, property-inquiry notification email is `blocked`, there are 197 pending alert rows, 0 failed rows, and 0 processing rows, and the only hard blocker remains missing `PROPERTY_INQUIRY_NOTIFY_TO` with `REIE_INTERNAL_EMAIL` unset.
+- June 20 11:37 MDT `npm run check:notification-readiness:strict-contract` passed again without sending email or mutating rows, confirming the current env fails closed, dummy-recipient plus `PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN=true` fails closed, aggregate dry-run blockers are detected, and the aggregate reply-to warning remains aligned. `npm run check:property-inquiry-notification:readiness` exited blocked as expected because `PROPERTY_INQUIRY_NOTIFY_TO` is missing and `REIE_INTERNAL_EMAIL` is unset.
+- June 20 11:46 MDT `npm run check:alert-notification-readiness` remained `watch` with 197 pending saved-search alert rows, 0 failed rows, 0 processing rows, built-in sender fallback in use, and no explicit reply-to. `npm run run:alerts:dry -- --limit 50` scanned 50 pending alert rows, previewed 50 ready-to-send rows, sent 0, skipped 0, failed 0, and mutated no rows.
+- June 21 06:27 MDT read-only CRM refreshes with `npm run run:crm:pending -- --limit 20` and `npm run run:crm:all -- --limit 50` showed the same single pending `strategy_intake` task and a clean closure audit.
+- Earlier June 20 protected MLS dry-run refreshes also completed with `dryRun=true`, `executed=false`, and no MLS Grid request.
+- The latest full runtime smoke loop is June 21, 2026 10:21 MDT: `npm run smoke:ops` passed against a temporary local dev server after MLS photo media hardening, and the server was stopped afterward. The latest separate `npm run smoke:mls-status` and `npm run smoke:search` refresh remains June 21 08:16 MDT.
+- In that runtime loop, `npm run smoke:mls-status` returned HTTP 200 with no endpoint diagnostics, MLS status `busy`, operational readiness `watch`, search-index health `healthy`, stale inventory at 100% by `lastIntelligenceSync`, `mls-sync`, `mls-page`, and `listings` drained, and `reie-alerts` at 273 waiting jobs.
+- In that runtime loop, `npm run smoke:search` returned HTTP 200 with public search source `typesense`, health `healthy`, 5 returned / 5 mapped / 0 coordinate-filtered, `meta.smoke.ready=true`, and `found=15277`.
+- June 21 08:16 MDT runtime smoke reports no failed jobs, no open dead-letter jobs, no stale active jobs, `mls-sync` drained at 0 waiting / 637 completed, `mls-page` drained at 0 waiting / 5911 completed, `listings` drained at 0 waiting, and `reie-alerts` at 273 waiting.
+- June 20 20:57 MDT `npm run check:notification-readiness:strict-contract` passed, stayed non-sending and non-mutating, confirmed the current environment exits blocked, confirmed the dummy-recipient plus `PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN=true` scenario exits blocked, confirmed both direct property-inquiry and aggregate dry-run blockers are detected, and confirmed the aggregate launch-readiness reply-to warning remains aligned.
+- June 20 21:11 MDT `npm run check:property-inquiry-notification:readiness` stayed non-sending and non-mutating and exited blocked as expected. `PROPERTY_INQUIRY_NOTIFY_TO` is missing with fallback `REIE_INTERNAL_EMAIL` unset; `RESEND_API_KEY`, sender resolution, `NEXT_PUBLIC_SITE_URL`, and disabled/unset `PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN` checks pass, while missing `RESEND_REPLY_TO_EMAIL` remains a warning.
+- June 20 21:37 MDT `npm run check:alert-notification-readiness` stayed non-sending and non-mutating and remained `watch` with 197 pending saved-search alert rows, 0 failed rows, 0 processing rows, built-in sender fallback in use, no explicit reply-to, `RESEND_API_KEY` present, HTTPS public links configured, and sampled recipients unsubscribed=false.
+- June 20 21:48 MDT `npm run check:notification-readiness` stayed non-sending and non-mutating, returned `success=true` with parseable `readiness.level="blocked"`, and summarized saved-search alert notification at `watch`, property-inquiry notification at `blocked`, and aggregate launch notification readiness at `blocked`.
+- June 20 22:15 MDT `npm run check:notification-readiness:strict` stayed non-sending and non-mutating, failed closed as expected with `strictMode=true`, `commandSuccess=true`, `success=false`, saved-search alert notification at `watch`, property-inquiry notification at `blocked`, and aggregate launch notification readiness at `blocked`.
+- June 20 22:26 MDT `npm run check:launch-readiness` rebuilt worker output, stayed non-sending and non-mutating, and exited blocked as expected. Supabase connectivity is `ready`, saved-search alert email is `watch` with 197 pending / 0 failed / 0 processing, and property-inquiry notification email is `blocked` because `PROPERTY_INQUIRY_NOTIFY_TO` is missing with fallback `REIE_INTERNAL_EMAIL` unset.
+- June 20 22:47 MDT `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000` completed cleanly with no diagnostics, no failed jobs, no open dead-letter jobs, no stale active jobs, `mls-sync` drained at 0 waiting / 637 completed, `mls-page` drained at 0 waiting / 5911 completed, `listings` drained at 0 waiting, and `reie-alerts` busy with 273 waiting.
+- June 21 08:12 MDT `npm run check:fast` passed: worker output rebuilt, property-inquiry missing-recipient and dry-run suppression checks passed, saved-search alert readiness remained `watch` with 197 pending / 0 failed / 0 processing, consolidated notification readiness remained blocked by missing property-inquiry recipient routing, strict-contract validation passed, bounded MLS sync dry-run remained non-executing with no MLS Grid request, and `npm run typecheck` plus `npm run lint` passed with no ESLint warnings or errors.
+- June 21 08:14 MDT `npm run build` passed: Next compiled successfully, completed lint/type validation inside the build pipeline, collected page data, generated 130 static pages, finalized page optimization, and collected build traces.
+- June 21 04:08 MDT `npm run check:notification-readiness`, `npm run check:notification-readiness:strict`, `npm run check:property-inquiry-notification:readiness`, and `npm run check:notification-readiness:strict-contract` stayed non-sending and non-mutating. Consolidated readiness remained blocked with saved-search alert notification at `watch`, property-inquiry notification at `blocked`, and aggregate launch notification readiness at `blocked`; strict mode failed closed as expected; direct property-inquiry readiness stayed blocked only by missing `PROPERTY_INQUIRY_NOTIFY_TO` with fallback `REIE_INTERNAL_EMAIL` unset; strict-contract validation passed and confirmed the current env and dummy-recipient dry-run scenario both fail closed.
+- June 21 04:17 MDT `npm run check:launch-readiness` rebuilt worker output, stayed non-sending and non-mutating, and exited blocked as expected. Supabase connectivity is `ready`, saved-search alert email is `watch` with 197 pending / 0 failed / 0 processing rows, and property-inquiry notification email is `blocked` because `PROPERTY_INQUIRY_NOTIFY_TO` is missing with fallback `REIE_INTERNAL_EMAIL` unset.
+- June 21 07:31 MDT `npm run supabase:check:json` passed with readiness `ready`: Supabase URL/key shape, placeholder scan, project-ref consistency, Postgres URL shape, project DNS, Postgres DNS, TCP, Prisma `SELECT 1`, and Supabase REST all passed with no failed checks.
+- `npm run check:notification-readiness`, `npm run check:notification-readiness:strict`, `npm run check:notification-readiness:strict-contract`, `npm run check:property-inquiry-notification:readiness`, and `npm run check:launch-readiness` remain non-sending/non-mutating and blocked only by missing `PROPERTY_INQUIRY_NOTIFY_TO` with `REIE_INTERNAL_EMAIL` unset. Supabase connectivity is ready with the latest `npm run supabase:check:json` refresh at June 21 07:31 MDT, saved-search alert email is `watch`, property-inquiry notification email is `blocked`, the latest consolidated notification readiness refresh is June 21 04:08 MDT, the latest strict notification readiness refresh is June 21 04:08 MDT, the latest strict notification readiness contract refresh is June 21 04:08 MDT, the latest direct property-inquiry readiness refresh is June 21 04:08 MDT, and the latest aggregate launch readiness refresh is June 21 04:17 MDT.
+- Saved-search alert readiness remains `watch` with 197 pending saved-search alert rows, 0 failed rows, 0 processing rows, built-in sender fallback in use, no explicit reply-to, the latest readiness refresh at June 21 06:06 MDT, and the latest dry-run preview at June 21 06:06 MDT scanned 50 rows / previewed 50 ready-to-send rows / sent 0 / skipped 0 / failed 0.
+- MLS dry-run remains protected and non-executing. The latest June 21 06:50 MDT refresh used `dryRun=true`, `executed=false`, `maxPages=1`, `pageSize=5`, `startPage=0`, and `pageTimeoutMs=30000`, and confirmed no MLS Grid request was made. The latest timeout-bounded queue dashboard refresh is June 21 06:50 MDT.
+- June 21 06:27 MDT `npm run run:crm:pending -- --limit 20` and `npm run run:crm:all -- --limit 50` remained read-only, scanned one pending `strategy_intake` task (`751fa51e-4a2e-411f-97df-c320e974e058`) for masked `co***@example.com`, priority `medium`, heat score 9, alert readiness `unknown`, empty market/timeline/intent/next-action fields, readiness `watch`, and a clean closure audit with 0 closed tasks and 100% closure-review coverage.
+- `docs/email-system.md` now explicitly lists `PROPERTY_INQUIRY_NOTIFY_TO`, fallback `REIE_INTERNAL_EMAIL`, and `PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN` in the provider section, production requirements, and safety rules.
 
 ## Verification Baseline
 
@@ -270,6 +327,8 @@ npm run smoke:mls-status
 npm run smoke:search
 npm run smoke:ops
 ```
+
+`npm run smoke:ops` checks MLS status, retry/dead-letter status, public search, `/api/admin/control-state`, `/api/admin/intake-signals?limit=6`, alert status, consolidated notification readiness, direct saved-search alert notification readiness, direct property-inquiry notification readiness, aggregate launch readiness, and the public experience smoke. It sends `x-admin-key` automatically when `REIE_ADMIN_API_KEY` or `ADMIN_API_KEY` is configured.
 
 Equivalent raw curl checks:
 
@@ -592,10 +651,10 @@ Current deletion candidates:
 - Treat Typesense as a rebuildable search index.
 - Keep `properties` and `listings` Typesense schemas compatible.
 - Treat search-index failures and timeout-bounded queue diagnostics as operational diagnostics, not silent warnings.
-- Preserve existing listing photos when MLS returns no usable media.
+- Preserve existing listing photos when MLS returns no usable media, and reject non-image MLS media before replacement.
 - Keep alert, digest, and seed dry-runs read-only, but do not run them until `npm run supabase:check:json` reports readiness.
-- Do not schedule recurring email traffic, including recurring alert or digest sends, until `npm run supabase:check:json`, sender domain, unsubscribe, tracking, internal live-send tests, `npm run smoke:mls-status` search-index health, `npm run smoke:search` Search Smoke Readiness, and timeout-bounded queue diagnostics are verified.
-- Treat failed `npm run supabase:check:json`, degraded search-index health, `meta.smoke.ready=false`, public search smoke blockers, or unacceptable timeout-bounded queue diagnostics as live-send blockers for recurring email traffic.
+- Do not schedule recurring email traffic, including recurring alert, digest, or property-inquiry notification sends, until `PROPERTY_INQUIRY_NOTIFY_TO` or fallback `REIE_INTERNAL_EMAIL` is configured, `PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN` is unset or false, `npm run supabase:check:json`, sender domain, unsubscribe, tracking, internal live-send tests, `npm run smoke:mls-status` search-index health, `npm run smoke:search` Search Smoke Readiness, and timeout-bounded queue diagnostics are verified.
+- Treat failed `npm run supabase:check:json`, missing property-inquiry recipient routing, `PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN=true`, degraded search-index health, `meta.smoke.ready=false`, public search smoke blockers, or unacceptable timeout-bounded queue diagnostics as live-send blockers for recurring email traffic.
 - Allow large programmatic content batch publication only after `npm run supabase:check:json`, data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics are verified.
 - Live alert sends should claim work with `pending -> processing -> sent`.
 - Keep unsubscribe idempotent.
@@ -608,18 +667,17 @@ Current deletion candidates:
 
 ## Current Near-Term Sequence
 
-1. Restore or replace the configured Supabase project/database endpoint using `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/supabase-recovery-runbook.md`.
-2. Confirm Supabase readiness with `npm run supabase:check:json`, or `npm run supabase:check` for a human-readable check.
-3. Reindex Typesense from Supabase after `npm run supabase:check:json` reports readiness.
-4. Verify search-index health with `npm run smoke:mls-status` and Search Smoke Readiness source, `meta.source`, health, access level, filters, bounds, returned, mapped, coordinate-filtered, duration, and `meta.smoke.ready=true` with no blockers through `npm run smoke:search` after reindex.
-5. Rerun alert, digest, CRM, MLS, seed, and reindex dry-runs/reporting after `npm run supabase:check:json` reports readiness.
-6. Clean or regenerate stale `dist/` artifacts if generated output is being used directly.
-7. Continue MLS ingestion hardening and media replacement.
-8. Expand timeout-bounded admin queue, sync, alert, digest, and CRM completion workflows.
-9. Continue public search/map/listing polish and placeholder media replacement.
-10. Strengthen city, neighborhood, property, article, and market authority surfaces through large programmatic content batch publication gated by `npm run supabase:check:json`, data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics.
-11. Choose production schedulers for MLS sync, alerts, digests, and CRM reporting.
-12. Decide production Redis and Typesense providers.
-13. Load-test production-size MLS ingestion before increasing sync volume.
+1. Configure `PROPERTY_INQUIRY_NOTIFY_TO` or `REIE_INTERNAL_EMAIL`, then rerun `npm run check:alert-notification-readiness`, `npm run check:notification-readiness`, `npm run check:notification-readiness:strict`, `npm run check:notification-readiness:strict-contract`, `npm run check:property-inquiry-notification:readiness`, and `npm run check:launch-readiness`.
+2. Run one internal tracked email click before recurring scheduler activation or recurring email traffic.
+3. Review the pending active CRM `strategy_intake` task before increasing CRM scheduler cadence.
+4. Monitor or drain `reie-alerts` waiting work before increasing scheduler, retry, or live-send volume; `mls-page` is currently drained but should stay in the pre-launch queue dashboard loop.
+5. Keep Supabase readiness, search-index health, Search Smoke Readiness, combined ops smoke, `npm run check:fast`, timeout-bounded queue diagnostics, alert dry-runs, CRM readiness checks, lint, and build in the pre-launch verification loop.
+6. Continue MLS ingestion hardening by validating real MLS media payload shapes during the next bounded dry-run before increasing sync volume.
+7. Expand timeout-bounded admin queue, sync, alert, digest, and CRM completion workflows.
+8. Continue public search/map/listing polish and placeholder media replacement.
+9. Strengthen city, neighborhood, property, article, and market authority surfaces through large programmatic content batch publication gated by `npm run supabase:check:json`, data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics.
+10. Choose production schedulers for MLS sync, alerts, digests, and CRM reporting.
+11. Decide production Redis and Typesense providers.
+12. Load-test production-size MLS ingestion before increasing sync volume.
 
 <!-- /Users/davidquinn/david-quinn-group/colorado-real-estate/docs/CHAT_START.md -->

@@ -24,6 +24,42 @@ export type DeadLetterJobData = {
   sourceJobAttempts?: number;
 };
 
+export type DeadLetterQueuePlan = {
+  queueName: typeof DEAD_LETTER_QUEUE_NAME;
+  jobName: 'failed-job';
+  jobId: string;
+  data: DeadLetterJobData;
+  terminal: 'Terminal 5';
+  commands: {
+    inspect: string;
+    inspectOpen: string;
+    inspectSourceQueue: string;
+    queueDashboard: string;
+    retryStatus: string;
+    status: string;
+  };
+  defaultJobOptions: {
+    attempts: number;
+    removeOnComplete: {
+      age: number;
+      count: number;
+    };
+    removeOnFail: {
+      age: number;
+      count: number;
+    };
+  };
+  limits: {
+    maxTextLength: number;
+    maxStackLength: number;
+    maxPayloadTextLength: number;
+    maxObjectDepth: number;
+    maxObjectKeys: number;
+    maxArrayItems: number;
+    maxSourceQueueLength: number;
+  };
+};
+
 export const DEAD_LETTER_QUEUE_NAME = 'reie-dead-letter';
 
 const MAX_TEXT_LENGTH = 6_000;
@@ -32,6 +68,7 @@ const MAX_PAYLOAD_TEXT_LENGTH = 18_000;
 const MAX_OBJECT_DEPTH = 5;
 const MAX_OBJECT_KEYS = 80;
 const MAX_ARRAY_ITEMS = 50;
+const MAX_SOURCE_QUEUE_LENGTH = 120;
 const REDACTED_VALUE = '[REDACTED]';
 const TRUNCATED_VALUE = '[TRUNCATED]';
 const SENSITIVE_KEY_PATTERN = /(?:api[_-]?key|authorization|bearer|cookie|credential|password|secret|token|refresh[_-]?token|access[_-]?token|private[_-]?key)/i;
@@ -86,7 +123,7 @@ function getSafeNumber(value: number | undefined) {
 
 function getSafeSourceQueue(value: string) {
   const cleaned = value.trim();
-  return cleaned ? cleaned.slice(0, 120) : 'unknown';
+  return cleaned ? cleaned.slice(0, MAX_SOURCE_QUEUE_LENGTH) : 'unknown';
 }
 
 function getSafeString(value: string | undefined, maxLength = 240) {
@@ -187,12 +224,55 @@ function getDeadLetterJobId(data: DeadLetterJobData) {
   return `dead-letter-${sourceQueue}-${sourceJobId}-${failedAt}`.replace(/[^\w.-]/g, '-').slice(0, 180);
 }
 
-export async function enqueueDeadLetter(data: DeadLetterJobData, options: JobsOptions = {}) {
+export function getDeadLetterQueuePlan(data: DeadLetterJobData): DeadLetterQueuePlan {
   const normalizedData = normalizeDeadLetterData(data);
 
-  return deadLetterQueue.add('failed-job', normalizedData, {
+  return {
+    queueName: DEAD_LETTER_QUEUE_NAME,
+    jobName: 'failed-job',
+    jobId: getDeadLetterJobId(normalizedData),
+    data: normalizedData,
+    terminal: 'Terminal 5',
+    commands: {
+      inspect: 'curl --max-time 8 -s -w "\\nHTTP_STATUS:%{http_code}\\n" "http://localhost:3000/api/admin/dead-letter?limit=25"',
+      inspectOpen:
+        'curl --max-time 8 -s -w "\\nHTTP_STATUS:%{http_code}\\n" "http://localhost:3000/api/admin/dead-letter?states=waiting%2Cdelayed%2Cfailed&limit=25"',
+      inspectSourceQueue: `curl --max-time 8 -s -w "\\nHTTP_STATUS:%{http_code}\\n" "http://localhost:3000/api/admin/dead-letter?sourceQueue=${encodeURIComponent(
+        normalizedData.sourceQueue,
+      )}&states=waiting%2Cdelayed%2Cfailed&limit=25"`,
+      queueDashboard: 'npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000',
+      retryStatus: 'curl --max-time 8 -s -w "\\nHTTP_STATUS:%{http_code}\\n" "http://localhost:3000/api/mls/retry"',
+      status: 'curl --max-time 8 -s -w "\\nHTTP_STATUS:%{http_code}\\n" "http://localhost:3000/api/mls/status"',
+    },
+    defaultJobOptions: {
+      attempts: 1,
+      removeOnComplete: {
+        age: 30 * 24 * 60 * 60,
+        count: 500,
+      },
+      removeOnFail: {
+        age: 60 * 24 * 60 * 60,
+        count: 1000,
+      },
+    },
+    limits: {
+      maxTextLength: MAX_TEXT_LENGTH,
+      maxStackLength: MAX_STACK_LENGTH,
+      maxPayloadTextLength: MAX_PAYLOAD_TEXT_LENGTH,
+      maxObjectDepth: MAX_OBJECT_DEPTH,
+      maxObjectKeys: MAX_OBJECT_KEYS,
+      maxArrayItems: MAX_ARRAY_ITEMS,
+      maxSourceQueueLength: MAX_SOURCE_QUEUE_LENGTH,
+    },
+  };
+}
+
+export async function enqueueDeadLetter(data: DeadLetterJobData, options: JobsOptions = {}) {
+  const plan = getDeadLetterQueuePlan(data);
+
+  return deadLetterQueue.add(plan.jobName, plan.data, {
     ...options,
-    jobId: options.jobId ?? getDeadLetterJobId(normalizedData),
+    jobId: options.jobId ?? plan.jobId,
     attempts: options.attempts ?? defaultJobOptions.attempts,
     removeOnComplete: options.removeOnComplete ?? defaultJobOptions.removeOnComplete,
     removeOnFail: options.removeOnFail ?? defaultJobOptions.removeOnFail,

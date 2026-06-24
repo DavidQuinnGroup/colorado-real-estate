@@ -40,27 +40,60 @@ export default function CityNeighborhoods({ city, title }: CityNeighborhoodsProp
   }
 
   const cityName = formatCityName(cityNeighborhoods[0]?.city ?? city);
+  const sectionTitle = title ?? `Neighborhoods in ${cityName}`;
+  const briefCount = cityNeighborhoods.filter((neighborhood) => getFeaturedBrief(neighborhood.city, neighborhood.name)).length;
 
   return (
-    <section className="mt-10 border border-white/10 bg-[#050505] p-6 text-white">
+    <section
+      className="mt-10 border border-white/10 bg-[#050505] p-6 text-white"
+      data-testid="reie-city-neighborhoods"
+      data-city-neighborhoods-title={sectionTitle}
+      data-city-neighborhoods-city={city}
+      data-city-neighborhoods-city-name={cityName}
+      data-city-neighborhoods-normalized-city={normalizedCity}
+      data-city-neighborhoods-count={cityNeighborhoods.length}
+      data-city-neighborhoods-brief-count={briefCount}
+    >
       <div className="mb-6">
         <p className="text-[10px] font-black uppercase tracking-[0.35em] text-[#00ff80]">
           City Neighborhood Index
         </p>
         <h2 className="mt-2 text-2xl font-black uppercase italic tracking-tight">
-          {title ?? `Neighborhoods in ${cityName}`}
+          {sectionTitle}
         </h2>
       </div>
 
-      <ul className="grid grid-cols-1 gap-px overflow-hidden border border-white/10 bg-white/10 sm:grid-cols-2 lg:grid-cols-3">
-        {cityNeighborhoods.map((neighborhood) => {
+      <ul
+        className="grid grid-cols-1 gap-px overflow-hidden border border-white/10 bg-white/10 sm:grid-cols-2 lg:grid-cols-3"
+        data-testid="reie-city-neighborhoods-list"
+        data-city-neighborhoods-list-count={cityNeighborhoods.length}
+      >
+        {cityNeighborhoods.map((neighborhood, index) => {
           const neighborhoodHref = `/market/${normalizeCity(neighborhood.city)}/${neighborhood.slug}`;
           const brief = getFeaturedBrief(neighborhood.city, neighborhood.name);
 
           return (
-            <li key={neighborhood.slug} className="bg-black">
+            <li
+              key={neighborhood.slug}
+              className="bg-black"
+              data-testid="reie-city-neighborhood-card"
+              data-city-neighborhood-index={index}
+              data-city-neighborhood-slug={neighborhood.slug}
+              data-city-neighborhood-name={neighborhood.name}
+              data-city-neighborhood-city={neighborhood.city}
+              data-city-neighborhood-primary-anchor={neighborhood.primaryAnchor}
+              data-city-neighborhood-resilience-score={neighborhood.resilienceScore}
+              data-city-neighborhood-efficiency-score={neighborhood.avgEfficiencyScore}
+              data-city-neighborhood-href={neighborhoodHref}
+              data-city-neighborhood-has-brief={brief ? "true" : "false"}
+            >
               <div className="h-full p-5">
-                <Link href={neighborhoodHref} className="group block">
+                <Link
+                  href={neighborhoodHref}
+                  className="group block"
+                  data-testid="reie-city-neighborhood-link"
+                  data-city-neighborhood-link-href={neighborhoodHref}
+                >
                   <div className="flex items-start justify-between gap-4">
                     <div>
                       <p className="text-lg font-black uppercase italic tracking-tight text-white">
@@ -91,6 +124,9 @@ export default function CityNeighborhoods({ city, title }: CityNeighborhoodsProp
                   <Link
                     href={brief.href}
                     className="group mt-5 block border-t border-white/10 pt-4 transition-colors hover:border-[#00ff80]/50"
+                    data-testid="reie-city-neighborhood-brief-link"
+                    data-city-neighborhood-brief-title={brief.title}
+                    data-city-neighborhood-brief-href={brief.href}
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div>

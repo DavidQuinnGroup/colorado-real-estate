@@ -349,8 +349,44 @@ function getExpectedJobResultMetrics() {
   return {
     ingestion: ['fetched', 'processed', 'succeeded', 'failed', 'skipped', 'warningCount'],
     searchIndex: ['indexAttempted', 'indexSucceeded', 'indexFailed'],
+    media: [
+      'mediaDiagnostics.listingsWithMedia',
+      'mediaDiagnostics.extractedMediaCount',
+      'mediaDiagnostics.ignoredMediaItemCount',
+      'mediaDiagnostics.directMediaArrayFieldCounts',
+      'mediaDiagnostics.nestedMediaArrayFieldCounts',
+      'mediaDiagnostics.topLevelPhotoFieldCounts',
+    ],
     interpretation:
-      'indexFailed should remain 0. If listings succeed but indexFailed increases, MLS ingestion is working but search visibility needs Typesense repair or reindexing.',
+      'indexFailed should remain 0. If listings succeed but indexFailed increases, MLS ingestion is working but search visibility needs Typesense repair or reindexing. mediaDiagnostics should show which MLS media payload shapes are present before increasing sync volume.',
+  };
+}
+
+function getMediaDiagnosticsInspection(data?: MlsSyncJobData) {
+  const includeMediaRequested = data?.includeMedia === true;
+
+  return {
+    statusRoute: '/api/mls/status',
+    adminPanel: '/admin',
+    statusCommand: TERMINAL_5_STATUS_COMMAND,
+    smokeCommand: 'npm run smoke:mls-status',
+    adminPanelSection: 'MLS Media Diagnostics',
+    includeMediaRequested,
+    readinessGate: 'Inspect /api/mls/status mediaDiagnostics and the /admin MLS Media Diagnostics panel before increasing live media sync volume.',
+    requiredStatusFields: [
+      'mediaDiagnostics.health',
+      'mediaDiagnostics.checkedJobs',
+      'mediaDiagnostics.jobsWithMediaDiagnostics',
+      'mediaDiagnostics.listingsWithMedia',
+      'mediaDiagnostics.extractedMediaCount',
+      'mediaDiagnostics.ignoredMediaItemCount',
+      'mediaDiagnostics.listingsWithDirectMedia',
+      'mediaDiagnostics.listingsWithNestedMedia',
+      'mediaDiagnostics.listingsWithTopLevelPhotos',
+    ],
+    liveVolumeGuidance: includeMediaRequested
+      ? 'This request includes media; keep live maxPages small until status mediaDiagnostics confirms real MLS media payload shapes.'
+      : 'This request does not include media; run an includeMedia=true dry-run/status inspection before relying on media payload shape counters.',
   };
 }
 
@@ -399,6 +435,7 @@ export async function GET(request: NextRequest) {
         pageTimeoutMs: MLS_SYNC_DEFAULT_PAGE_TIMEOUT_MS,
       }),
       expectedJobResultMetrics: getExpectedJobResultMetrics(),
+      mediaDiagnosticsInspection: getMediaDiagnosticsInspection(),
       enqueueHint: `POST ${ROUTE_PATH}?dryRun=true&maxPages=1&pageSize=5&startPage=0&pageTimeoutMs=${MLS_SYNC_DEFAULT_PAGE_TIMEOUT_MS}`,
       liveEnqueueHint: buildLiveEnqueueHint({
         maxPages: 1,
@@ -457,6 +494,7 @@ export async function POST(request: NextRequest) {
         },
         commands: getCommandSet(data),
         expectedJobResultMetrics: getExpectedJobResultMetrics(),
+        mediaDiagnosticsInspection: getMediaDiagnosticsInspection(data),
         liveEnqueueHint: buildLiveEnqueueHint(data),
       });
     }
@@ -477,6 +515,7 @@ export async function POST(request: NextRequest) {
           },
           commands: getCommandSet(data),
           expectedJobResultMetrics: getExpectedJobResultMetrics(),
+          mediaDiagnosticsInspection: getMediaDiagnosticsInspection(data),
           dryRunRetryCommand: TERMINAL_5_DRY_RUN_RETRY_COMMAND,
         },
         { status: 409 },
@@ -509,6 +548,7 @@ export async function POST(request: NextRequest) {
       },
       commands: getCommandSet(data),
       expectedJobResultMetrics: getExpectedJobResultMetrics(),
+      mediaDiagnosticsInspection: getMediaDiagnosticsInspection(data),
     });
   } catch (error) {
     console.error('MLS sync enqueue failed:', getErrorMessage(error));

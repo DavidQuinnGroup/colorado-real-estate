@@ -169,11 +169,16 @@ export default function LeadCapture({ city }: LeadCaptureProps) {
   const [submitState, setSubmitState] = useState<SubmitState>('idle');
   const [errorMessage, setErrorMessage] = useState('');
   const [saveResult, setSaveResult] = useState<SaveSearchResponse | null>(null);
+  const normalizedEmail = email.trim().toLowerCase();
+  const normalizedNotes = notes.trim();
+  const selectedGoalLabel = getSelectedGoalLabel(selectedGoal);
+  const selectedTimelineLabel = getSelectedTimelineLabel(selectedTimeline);
+  const leadTemperature = getLeadTemperature(selectedTimeline);
+  const hasValidEmail = isValidEmail(normalizedEmail);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    const normalizedEmail = email.trim().toLowerCase();
     if (!isValidEmail(normalizedEmail)) {
       setSubmitState('error');
       setErrorMessage('Enter a valid email address to initialize the strategy brief.');
@@ -199,14 +204,14 @@ export default function LeadCapture({ city }: LeadCaptureProps) {
             intakeSource: 'city-market-page',
             strategicGoal: GOAL_TO_LEGACY_GOAL[selectedGoal],
             reieGoal: selectedGoal,
-            reieGoalLabel: getSelectedGoalLabel(selectedGoal),
+            reieGoalLabel: selectedGoalLabel,
             timeline: selectedTimeline,
-            timelineLabel: getSelectedTimelineLabel(selectedTimeline),
-            leadTemperature: getLeadTemperature(selectedTimeline),
+            timelineLabel: selectedTimelineLabel,
+            leadTemperature,
             marketScope: `${cityName}, Colorado`,
             authoritySignals: INTAKE_SIGNALS.map((signal) => signal.label),
             northStars,
-            notes: notes.trim(),
+            notes: normalizedNotes,
           },
         }),
       });
@@ -225,7 +230,30 @@ export default function LeadCapture({ city }: LeadCaptureProps) {
   }
 
   return (
-    <section className="mt-16 overflow-hidden border border-white/10 bg-[#050505] shadow-2xl">
+    <section
+      className="mt-16 overflow-hidden border border-white/10 bg-[#050505] shadow-2xl"
+      data-testid="reie-lead-capture"
+      data-lead-capture-state={submitState}
+      data-lead-capture-city={cityName}
+      data-lead-capture-goal={selectedGoal}
+      data-lead-capture-goal-label={selectedGoalLabel}
+      data-lead-capture-legacy-goal={GOAL_TO_LEGACY_GOAL[selectedGoal]}
+      data-lead-capture-timeline={selectedTimeline}
+      data-lead-capture-timeline-label={selectedTimelineLabel}
+      data-lead-capture-temperature={leadTemperature}
+      data-lead-capture-email-valid={hasValidEmail ? 'true' : 'false'}
+      data-lead-capture-email-present={normalizedEmail ? 'true' : 'false'}
+      data-lead-capture-notes-present={normalizedNotes ? 'true' : 'false'}
+      data-lead-capture-notes-length={notes.length}
+      data-lead-capture-notes-max-length="500"
+      data-lead-capture-authority-signal-count={INTAKE_SIGNALS.length}
+      data-lead-capture-alert-readiness={saveResult?.alertReadiness?.level || ''}
+      data-lead-capture-signal-count={saveResult?.alertReadiness?.signals.length ?? 0}
+      data-lead-capture-blocker-count={saveResult?.alertReadiness?.blockers.length ?? 0}
+      data-lead-capture-saved-search-id={saveResult?.savedSearchId || ''}
+      data-lead-capture-crm-task-id={saveResult?.crmTaskId || ''}
+      data-lead-capture-error={errorMessage}
+    >
       <div className="grid gap-8 border-b border-white/5 bg-white/[0.02] p-8 lg:grid-cols-[1fr_0.7fr]">
         <div>
           <div className="mb-3 flex items-center gap-3">
@@ -239,16 +267,36 @@ export default function LeadCapture({ city }: LeadCaptureProps) {
           </p>
         </div>
 
-        <div className="grid grid-cols-3 gap-px border border-white/10 bg-white/10">
+        <div
+          className="grid grid-cols-3 gap-px border border-white/10 bg-white/10"
+          data-testid="reie-lead-capture-summary"
+          data-lead-capture-city={cityName}
+          data-lead-capture-goal-label={selectedGoalLabel}
+          data-lead-capture-timeline-label={selectedTimelineLabel}
+        >
           <Signal label="Market" value={cityName} />
-          <Signal label="Mode" value={getSelectedGoalLabel(selectedGoal)} />
-          <Signal label="Timing" value={getSelectedTimelineLabel(selectedTimeline)} />
+          <Signal label="Mode" value={selectedGoalLabel} />
+          <Signal label="Timing" value={selectedTimelineLabel} />
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="p-8">
+      <form
+        onSubmit={handleSubmit}
+        className="p-8"
+        data-testid="reie-lead-capture-form"
+        data-lead-capture-state={submitState}
+        data-lead-capture-intake-source="city-market-page"
+      >
         {submitState === 'success' ? (
-          <div className="py-8 text-center animate-in fade-in slide-in-from-bottom-4">
+          <div
+            className="py-8 text-center animate-in fade-in slide-in-from-bottom-4"
+            data-testid="reie-lead-capture-success"
+            data-lead-capture-alert-readiness={saveResult?.alertReadiness?.level || ''}
+            data-lead-capture-temperature={saveResult?.intake?.leadTemperature || leadTemperature}
+            data-lead-capture-heat-score-increment={saveResult?.intake?.heatScoreIncrement ?? ''}
+            data-lead-capture-saved-search-id={saveResult?.savedSearchId || ''}
+            data-lead-capture-crm-task-id={saveResult?.crmTaskId || ''}
+          >
             <div className="mb-6 inline-flex h-16 w-16 items-center justify-center bg-[#00ff80]/15">
               <CheckCircle2 className="text-[#00ff80]" size={34} />
             </div>
@@ -259,15 +307,29 @@ export default function LeadCapture({ city }: LeadCaptureProps) {
             </p>
             <div className="mb-6 flex flex-wrap justify-center gap-2">
               {saveResult?.alertReadiness ? (
-                <span className={`border px-3 py-2 text-[10px] font-black uppercase tracking-[0.18em] ${getReadinessClass(saveResult.alertReadiness.level)}`}>
+                <span
+                  className={`border px-3 py-2 text-[10px] font-black uppercase tracking-[0.18em] ${getReadinessClass(saveResult.alertReadiness.level)}`}
+                  data-testid="reie-lead-capture-readiness"
+                  data-lead-capture-alert-readiness={saveResult.alertReadiness.level}
+                  data-lead-capture-signal-count={saveResult.alertReadiness.signals.length}
+                  data-lead-capture-blocker-count={saveResult.alertReadiness.blockers.length}
+                >
                   Alert {saveResult.alertReadiness.level}
                 </span>
               ) : null}
-              <span className={`border px-3 py-2 text-[10px] font-black uppercase tracking-[0.18em] ${getTemperatureClass(saveResult?.intake?.leadTemperature)}`}>
-                {saveResult?.intake?.leadTemperature || getLeadTemperature(selectedTimeline)}
+              <span
+                className={`border px-3 py-2 text-[10px] font-black uppercase tracking-[0.18em] ${getTemperatureClass(saveResult?.intake?.leadTemperature)}`}
+                data-testid="reie-lead-capture-temperature"
+                data-lead-capture-temperature={saveResult?.intake?.leadTemperature || leadTemperature}
+              >
+                {saveResult?.intake?.leadTemperature || leadTemperature}
               </span>
               {typeof saveResult?.intake?.heatScoreIncrement === 'number' ? (
-                <span className="border border-white/10 bg-white/[0.03] px-3 py-2 text-[10px] font-black uppercase tracking-[0.18em] text-white/50">
+                <span
+                  className="border border-white/10 bg-white/[0.03] px-3 py-2 text-[10px] font-black uppercase tracking-[0.18em] text-white/50"
+                  data-testid="reie-lead-capture-heat-score"
+                  data-lead-capture-heat-score-increment={saveResult.intake.heatScoreIncrement}
+                >
                   Heat +{saveResult.intake.heatScoreIncrement}
                 </span>
               ) : null}
@@ -280,7 +342,12 @@ export default function LeadCapture({ city }: LeadCaptureProps) {
             {saveResult?.alertReadiness?.signals.length ? (
               <div className="mx-auto mt-6 flex max-w-lg flex-wrap justify-center gap-2">
                 {saveResult.alertReadiness.signals.slice(0, 5).map((signal) => (
-                  <span key={signal} className="border border-white/10 bg-black/40 px-2 py-1 text-[9px] font-black uppercase tracking-[0.14em] text-white/40">
+                  <span
+                    key={signal}
+                    className="border border-white/10 bg-black/40 px-2 py-1 text-[9px] font-black uppercase tracking-[0.14em] text-white/40"
+                    data-testid="reie-lead-capture-signal"
+                    data-lead-capture-signal={signal}
+                  >
                     {signal}
                   </span>
                 ))}
@@ -292,7 +359,13 @@ export default function LeadCapture({ city }: LeadCaptureProps) {
             <div>
               <div className="mb-8 grid gap-px overflow-hidden border border-white/10 bg-white/10 md:grid-cols-3">
                 {INTAKE_SIGNALS.map((signal) => (
-                  <div key={signal.label} className="bg-[#050505] p-5">
+                  <div
+                    key={signal.label}
+                    className="bg-[#050505] p-5"
+                    data-testid="reie-lead-capture-authority-signal"
+                    data-lead-capture-authority-signal={signal.label}
+                    data-lead-capture-authority-value={signal.value}
+                  >
                     <p className="mb-2 text-[9px] font-black uppercase tracking-[0.28em] text-[#00ff80]">{signal.label}</p>
                     <p className="text-sm font-black uppercase tracking-[0.12em] text-white">{signal.value}</p>
                     <p className="mt-3 text-xs leading-6 text-white/42">{signal.description}</p>
@@ -308,6 +381,11 @@ export default function LeadCapture({ city }: LeadCaptureProps) {
                     type="button"
                     aria-pressed={selectedGoal === goal.id}
                     onClick={() => setSelectedGoal(goal.id)}
+                    data-testid="reie-lead-capture-goal"
+                    data-lead-capture-goal={goal.id}
+                    data-lead-capture-goal-label={goal.label}
+                    data-lead-capture-goal-selected={selectedGoal === goal.id ? 'true' : 'false'}
+                    data-lead-capture-legacy-goal={GOAL_TO_LEGACY_GOAL[goal.id]}
                     className={`group flex min-h-48 flex-col items-start border p-5 text-left transition-all ${
                       selectedGoal === goal.id
                         ? 'border-[#00ff80]/70 bg-[#00ff80]/10 text-white'
@@ -336,6 +414,11 @@ export default function LeadCapture({ city }: LeadCaptureProps) {
                       type="button"
                       aria-pressed={selectedTimeline === timeline.id}
                       onClick={() => setSelectedTimeline(timeline.id)}
+                      data-testid="reie-lead-capture-timeline"
+                      data-lead-capture-timeline={timeline.id}
+                      data-lead-capture-timeline-label={timeline.label}
+                      data-lead-capture-timeline-selected={selectedTimeline === timeline.id ? 'true' : 'false'}
+                      data-lead-capture-temperature={getLeadTemperature(timeline.id)}
                       className={`min-h-14 px-4 text-[10px] font-black uppercase tracking-[0.22em] transition-colors ${
                         selectedTimeline === timeline.id ? 'bg-[#00ff80] text-black' : 'bg-[#050505] text-white/45 hover:text-white'
                       }`}
@@ -360,6 +443,10 @@ export default function LeadCapture({ city }: LeadCaptureProps) {
                   placeholder="Optional: neighborhood, property, timing, constraints, or what you need clarity on."
                   maxLength={500}
                   className="min-h-28 w-full resize-none border border-white/10 bg-white/[0.03] p-4 text-sm text-white outline-none transition-colors placeholder:text-white/25 focus:border-[#00ff80]/60"
+                  data-testid="reie-lead-capture-notes"
+                  data-lead-capture-notes-length={notes.length}
+                  data-lead-capture-notes-max-length="500"
+                  data-lead-capture-notes-present={normalizedNotes ? 'true' : 'false'}
                 />
                 <p className="mt-2 text-right text-[9px] font-bold uppercase tracking-[0.2em] text-white/25">
                   {notes.length}/500
@@ -384,11 +471,18 @@ export default function LeadCapture({ city }: LeadCaptureProps) {
                 }}
                 placeholder="Secure email for strategy delivery"
                 className="min-h-14 w-full border border-white/10 bg-white/[0.03] px-4 font-mono text-sm text-white outline-none transition-colors placeholder:text-white/25 focus:border-[#00ff80]/60"
+                data-testid="reie-lead-capture-email"
+                data-lead-capture-email-valid={hasValidEmail ? 'true' : 'false'}
+                data-lead-capture-email-present={normalizedEmail ? 'true' : 'false'}
               />
               <button
                 type="submit"
                 disabled={submitState === 'submitting'}
                 className="flex min-h-14 items-center justify-center gap-2 bg-[#00ff80] px-8 text-xs font-black uppercase tracking-[0.24em] text-black transition-colors hover:bg-white disabled:cursor-not-allowed disabled:opacity-60"
+                data-testid="reie-lead-capture-submit"
+                data-lead-capture-state={submitState}
+                data-lead-capture-disabled={submitState === 'submitting' ? 'true' : 'false'}
+                data-lead-capture-email-valid={hasValidEmail ? 'true' : 'false'}
               >
                 {submitState === 'submitting' ? 'Saving' : 'Initialize'}
                 <ChevronRight size={18} />
@@ -399,12 +493,19 @@ export default function LeadCapture({ city }: LeadCaptureProps) {
               <p
                 aria-live="polite"
                 className="border border-red-500/20 bg-red-500/10 p-4 text-center text-xs font-bold uppercase tracking-widest text-red-200"
+                data-testid="reie-lead-capture-error"
+                data-lead-capture-error={errorMessage}
               >
                 {errorMessage}
               </p>
             ) : null}
 
-            <div className="flex items-center justify-center gap-3 border-t border-white/5 pt-6 text-center">
+            <div
+              className="flex items-center justify-center gap-3 border-t border-white/5 pt-6 text-center"
+              data-testid="reie-lead-capture-routing"
+              data-lead-capture-intake-source="city-market-page"
+              data-lead-capture-route="/api/save-search"
+            >
               <Lock className="shrink-0 text-white/20" size={14} />
               <p className="text-[10px] font-bold uppercase tracking-widest text-white/25">
                 Saves a DQG lead record and strategy task for follow-up routing.

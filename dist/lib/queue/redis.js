@@ -8,16 +8,16 @@ const redisConnections = new Set();
 function getRetryDelay(attempt) {
     return Math.min(attempt * 500, MAX_RECONNECT_DELAY_MS);
 }
-function isOneShotProcess() {
-    const lifecycleEvent = process.env.npm_lifecycle_event || '';
-    const argv = process.argv.join(' ');
-    return (process.env.REIE_REDIS_RETRY_MODE === 'bounded' ||
+function isOneShotProcess(context = {}) {
+    const lifecycleEvent = context.lifecycleEvent ?? process.env.npm_lifecycle_event ?? '';
+    const argv = (context.argv ?? process.argv).join(' ');
+    return ((context.redisRetryMode ?? process.env.REIE_REDIS_RETRY_MODE) === 'bounded' ||
         ONE_SHOT_COMMAND_NAMES.has(lifecycleEvent) ||
         argv.includes('queueDashboard') ||
         argv.includes('mlsSync'));
 }
-function getRetryStrategy() {
-    if (!isOneShotProcess())
+function getRetryStrategy(context = {}) {
+    if (!isOneShotProcess(context))
         return getRetryDelay;
     return (attempt) => {
         if (attempt > ONE_SHOT_RECONNECT_ATTEMPTS)
@@ -45,6 +45,38 @@ function parseRedisUrl(redisUrl) {
         password: url.password ? decodeURIComponent(url.password) : undefined,
         db: dbNumber !== undefined && Number.isFinite(dbNumber) ? dbNumber : undefined,
         tls: url.protocol === 'rediss:' ? {} : undefined,
+    };
+}
+export function getRedisConnectionDiagnostics(connectionName = 'reie-bullmq', context = {}) {
+    const redisUrl = context.redisUrl ?? REDIS_URL;
+    const parsed = parseRedisUrl(redisUrl);
+    const retryStrategy = getRetryStrategy(context);
+    const retryMode = isOneShotProcess(context) ? 'bounded' : 'continuous';
+    return {
+        connectionName,
+        configured: Boolean(context.redisUrl ?? process.env.REDIS_URL),
+        host: parsed.host ?? '127.0.0.1',
+        port: parsed.port ?? 6379,
+        db: parsed.db,
+        usernameConfigured: Boolean(parsed.username),
+        passwordConfigured: Boolean(parsed.password),
+        tls: Boolean(parsed.tls),
+        retryMode,
+        oneShotReconnectAttempts: ONE_SHOT_RECONNECT_ATTEMPTS,
+        maxReconnectDelayMs: MAX_RECONNECT_DELAY_MS,
+        sampleRetryDelaysMs: [1, 2, 3].map((attempt) => retryStrategy(attempt)),
+        options: {
+            enableReadyCheck: false,
+            lazyConnect: true,
+            maxRetriesPerRequest: null,
+        },
+        commands: {
+            queueDashboard: 'npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000',
+            dryRunSync: 'npm run run:mls-sync:dry',
+            startMlsWorker: 'npm run run:worker:mls',
+            startMlsPageWorker: 'npm run run:worker:mls-page',
+            infraUp: 'npm run infra:up',
+        },
     };
 }
 function attachRedisDiagnostics(client, connectionName) {

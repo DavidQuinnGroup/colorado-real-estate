@@ -299,13 +299,34 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
   const relatedLinks = buildLinkGraph(neighborhood.slug);
   const canonicalUrl = getCanonicalUrl(neighborhood);
   const neighborhoodFaqs = getNeighborhoodFaqs(neighborhood);
+  const neighborhoodSchema = getJsonLd(neighborhood);
+  const neighborhoodSchemaGraph = neighborhoodSchema['@graph'];
 
   return (
     <main className="min-h-screen bg-[#050505] font-inter text-white">
       <script
         type="application/ld+json"
+        data-testid="reie-neighborhood-schema"
+        data-neighborhood-schema-type="Place"
+        data-neighborhood-schema-url={canonicalUrl}
+        data-neighborhood-schema-name={neighborhood.name}
+        data-neighborhood-schema-city={neighborhood.city}
+        data-neighborhood-schema-slug={neighborhood.slug}
+        data-neighborhood-schema-primary-anchor={neighborhood.primaryAnchor}
+        data-neighborhood-schema-resilience-score={neighborhood.resilienceScore}
+        data-neighborhood-schema-fire-risk={neighborhood.fireRisk}
+        data-neighborhood-schema-insurance-complexity={neighborhood.insuranceComplexity}
+        data-neighborhood-schema-altitude={neighborhood.altitude}
+        data-neighborhood-schema-soil-type={neighborhood.soilType}
+        data-neighborhood-schema-inventory-count={inventoryState.count}
+        data-neighborhood-schema-inventory-source={inventoryState.source}
+        data-neighborhood-schema-related-link-count={relatedLinks.length}
+        data-neighborhood-schema-faq-count={neighborhoodFaqs.length}
+        data-neighborhood-schema-graph-count={neighborhoodSchemaGraph.length}
+        data-neighborhood-schema-has-breadcrumb="true"
+        data-neighborhood-schema-has-city="true"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(getJsonLd(neighborhood)),
+          __html: JSON.stringify(neighborhoodSchema),
         }}
       />
       <FAQSchema faqs={neighborhoodFaqs} pageUrl={canonicalUrl} />

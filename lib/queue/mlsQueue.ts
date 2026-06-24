@@ -18,6 +18,63 @@ export type MlsSyncJobData = {
   pageTimeoutMs?: number;
 };
 
+export type MlsSyncQueuePlan = {
+  queueName: typeof MLS_SYNC_QUEUE_NAME;
+  jobName: typeof MLS_SYNC_JOB_NAME;
+  data: MlsSyncJobData;
+  terminal: 'Terminal 3';
+  recoveryTerminal: 'Terminal 5';
+  commands: {
+    startWorker: string;
+    dryRunSync: string;
+    liveSync: string;
+    status: string;
+    retryDryRun: string;
+    queueDashboard: string;
+  };
+  defaultJobOptions: {
+    attempts: number;
+    backoff: {
+      type: 'exponential';
+      delay: number;
+    };
+    removeOnComplete: {
+      age: number;
+      count: number;
+    };
+    removeOnFail: {
+      age: number;
+      count: number;
+    };
+  };
+  bounded: {
+    requestedBy: boolean;
+    requestedAt: boolean;
+    source: boolean;
+    maxRuntimeMs: boolean;
+    rateDelayMs: boolean;
+    pageSize: boolean;
+    maxPages: boolean;
+    startPage: boolean;
+    pageTimeoutMs: boolean;
+  };
+  limits: {
+    minMaxRuntimeMs: number;
+    maxMaxRuntimeMs: number;
+    minRateDelayMs: number;
+    maxRateDelayMs: number;
+    minPageSize: number;
+    maxPageSize: number;
+    minMaxPages: number;
+    maxMaxPages: number;
+    minStartPage: number;
+    maxStartPage: number;
+    minPageTimeoutMs: number;
+    maxPageTimeoutMs: number;
+    maxRequestedByLength: number;
+  };
+};
+
 export const MLS_SYNC_QUEUE_NAME = 'mls-sync';
 export const MLS_SYNC_JOB_NAME = 'sync';
 
@@ -33,6 +90,7 @@ export const MLS_SYNC_MAX_PAGE_SIZE = 100;
 export const MLS_SYNC_MAX_PAGES = 100;
 export const MLS_SYNC_MAX_START_PAGE = 1_000_000;
 export const MLS_SYNC_MAX_PAGE_TIMEOUT_MS = 120_000;
+export const MLS_SYNC_MAX_REQUESTED_BY_LENGTH = 120;
 
 export const MLS_SYNC_JOB_ATTEMPTS = 3;
 export const MLS_SYNC_JOB_BACKOFF_DELAY_MS = 5_000;
@@ -86,7 +144,7 @@ function getSafeRequestedBy(value: string | undefined) {
   const cleaned = value.trim();
   if (!cleaned) return undefined;
 
-  return cleaned.slice(0, 120);
+  return cleaned.slice(0, MLS_SYNC_MAX_REQUESTED_BY_LENGTH);
 }
 
 function getSafeSource(value: MlsSyncJobSource | undefined): MlsSyncJobSource {
@@ -116,13 +174,76 @@ export function normalizeMlsSyncJobData(data: MlsSyncJobData = {}): MlsSyncJobDa
   };
 }
 
-export async function enqueueMlsSync(data: MlsSyncJobData = {}, options: JobsOptions = {}) {
-  const normalizedData = normalizeMlsSyncJobData({
+export function getMlsSyncQueuePlan(data: MlsSyncJobData = {}, sourceFallback: MlsSyncJobSource = 'api'): MlsSyncQueuePlan {
+  const normalized = normalizeMlsSyncJobData({
     ...data,
-    source: data.source ?? 'api',
+    source: data.source ?? sourceFallback,
   });
 
-  return mlsQueue.add(MLS_SYNC_JOB_NAME, normalizedData, {
+  return {
+    queueName: MLS_SYNC_QUEUE_NAME,
+    jobName: MLS_SYNC_JOB_NAME,
+    data: normalized,
+    terminal: 'Terminal 3',
+    recoveryTerminal: 'Terminal 5',
+    commands: {
+      startWorker: 'npm run run:worker:mls',
+      dryRunSync: 'npm run run:mls-sync:dry',
+      liveSync: 'npm run run:mls-sync:live',
+      status: 'curl --max-time 8 -s -w "\\nHTTP_STATUS:%{http_code}\\n" "http://localhost:3000/api/mls/status"',
+      retryDryRun: 'curl --max-time 8 -s -X POST -w "\\nHTTP_STATUS:%{http_code}\\n" "http://localhost:3000/api/mls/retry?queue=mls-sync&dryRun=true&limit=6"',
+      queueDashboard: 'npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000',
+    },
+    defaultJobOptions: {
+      attempts: MLS_SYNC_JOB_ATTEMPTS,
+      backoff: {
+        type: 'exponential',
+        delay: MLS_SYNC_JOB_BACKOFF_DELAY_MS,
+      },
+      removeOnComplete: {
+        age: MLS_SYNC_REMOVE_ON_COMPLETE_AGE_SECONDS,
+        count: MLS_SYNC_REMOVE_ON_COMPLETE_COUNT,
+      },
+      removeOnFail: {
+        age: MLS_SYNC_REMOVE_ON_FAIL_AGE_SECONDS,
+        count: MLS_SYNC_REMOVE_ON_FAIL_COUNT,
+      },
+    },
+    bounded: {
+      requestedBy:
+        data.requestedBy !== undefined &&
+        getSafeRequestedBy(data.requestedBy) !== (data.requestedBy.trim() || undefined),
+      requestedAt: data.requestedAt !== undefined && normalized.requestedAt !== data.requestedAt,
+      source: data.source !== undefined && normalized.source !== data.source,
+      maxRuntimeMs: data.maxRuntimeMs !== undefined && normalized.maxRuntimeMs !== data.maxRuntimeMs,
+      rateDelayMs: data.rateDelayMs !== undefined && normalized.rateDelayMs !== data.rateDelayMs,
+      pageSize: data.pageSize !== undefined && normalized.pageSize !== data.pageSize,
+      maxPages: data.maxPages !== undefined && normalized.maxPages !== data.maxPages,
+      startPage: data.startPage !== undefined && normalized.startPage !== data.startPage,
+      pageTimeoutMs: data.pageTimeoutMs !== undefined && normalized.pageTimeoutMs !== data.pageTimeoutMs,
+    },
+    limits: {
+      minMaxRuntimeMs: 1000,
+      maxMaxRuntimeMs: MLS_SYNC_MAX_RUNTIME_MS,
+      minRateDelayMs: 0,
+      maxRateDelayMs: MLS_SYNC_MAX_RATE_DELAY_MS,
+      minPageSize: 1,
+      maxPageSize: MLS_SYNC_MAX_PAGE_SIZE,
+      minMaxPages: 1,
+      maxMaxPages: MLS_SYNC_MAX_PAGES,
+      minStartPage: 0,
+      maxStartPage: MLS_SYNC_MAX_START_PAGE,
+      minPageTimeoutMs: 1000,
+      maxPageTimeoutMs: MLS_SYNC_MAX_PAGE_TIMEOUT_MS,
+      maxRequestedByLength: MLS_SYNC_MAX_REQUESTED_BY_LENGTH,
+    },
+  };
+}
+
+export async function enqueueMlsSync(data: MlsSyncJobData = {}, options: JobsOptions = {}) {
+  const plan = getMlsSyncQueuePlan(data, 'api');
+
+  return mlsQueue.add(MLS_SYNC_JOB_NAME, plan.data, {
     ...options,
     attempts: options.attempts ?? defaultJobOptions.attempts,
     backoff: options.backoff ?? defaultJobOptions.backoff,

@@ -27,6 +27,10 @@ type ControlPolicy = {
 
 type ControlStateResponse = {
   success: true;
+  generatedAt: string;
+  terminal: 'Terminal 5';
+  route: '/api/admin/control-state';
+  command: string;
   state: ControlState;
   policy: ControlPolicy;
   source: 'database' | 'default';
@@ -48,6 +52,9 @@ const CONTROL_STATE_KEY = 'master-control-panel';
 const MIN_STRATEGY_GATE = 0;
 const MAX_STRATEGY_GATE = 100;
 const MAX_UPDATED_BY_LENGTH = 120;
+const LOCAL_BASE_URL = 'http://localhost:3000';
+const ROUTE = '/api/admin/control-state';
+const TERMINAL = 'Terminal 5';
 
 function getAdminKey() {
   return process.env.REIE_ADMIN_API_KEY || process.env.ADMIN_API_KEY || null;
@@ -72,6 +79,26 @@ function authorizeRequest(request: NextRequest) {
 function getErrorMessage(error: unknown) {
   if (error instanceof Error) return error.message;
   return String(error || 'Unknown control-state failure.');
+}
+
+function getInspectionCommand(request: NextRequest) {
+  const method = request.method.toUpperCase();
+  const methodFlag = method === 'GET' ? '' : ` -X ${method}`;
+  const bodyHint =
+    method === 'GET'
+      ? ''
+      : ` -H "Content-Type: application/json" -d '{"mode":"paused","updatedBy":"terminal-5"}'`;
+
+  return `curl --max-time 8 -s${methodFlag} "${LOCAL_BASE_URL}${ROUTE}${request.nextUrl.search}" -H "x-admin-key: $REIE_ADMIN_API_KEY"${bodyHint}`;
+}
+
+function getInspectionMetadata(request: NextRequest) {
+  return {
+    generatedAt: new Date().toISOString(),
+    terminal: TERMINAL,
+    route: ROUTE,
+    command: getInspectionCommand(request),
+  } as const;
 }
 
 function clampNumber(value: number, min: number, max: number) {
@@ -175,6 +202,18 @@ function buildControlPolicy(state: ControlState): ControlPolicy {
   };
 }
 
+function getControlStateEnvelope(request: NextRequest, state: ControlState, source: 'database' | 'default') {
+  return {
+    ...getInspectionMetadata(request),
+    state,
+    policy: buildControlPolicy(state),
+    source,
+    auth: {
+      configured: Boolean(getAdminKey()),
+    },
+  } as const;
+}
+
 async function ensureControlStateTable() {
   await prisma.$executeRaw`
     CREATE TABLE IF NOT EXISTS "REIEControlState" (
@@ -229,14 +268,14 @@ async function saveControlState(state: ControlState) {
   });
 }
 
-function unauthorizedResponse() {
+function unauthorizedResponse(request: NextRequest) {
+  const state = getDefaultState();
+
   return NextResponse.json(
     {
       success: false,
       error: 'Admin access is required.',
-      auth: {
-        configured: Boolean(getAdminKey()),
-      },
+      ...getControlStateEnvelope(request, state, 'default'),
     },
     { status: 401 },
   );
@@ -244,7 +283,7 @@ function unauthorizedResponse() {
 
 export async function GET(request: NextRequest) {
   if (!authorizeRequest(request)) {
-    return unauthorizedResponse();
+    return unauthorizedResponse(request);
   }
 
   try {
@@ -252,22 +291,18 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      state,
-      policy: buildControlPolicy(state),
-      source,
-      auth: {
-        configured: Boolean(getAdminKey()),
-      },
+      ...getControlStateEnvelope(request, state, source),
     } satisfies ControlStateResponse);
   } catch (error) {
     console.error('[REIE CONTROL STATE] Read failed:', getErrorMessage(error));
+    const fallback = getDefaultState();
 
     return NextResponse.json(
       {
         success: false,
         error: 'Control state could not be read.',
         detail: getErrorMessage(error),
-        fallback: getDefaultState(),
+        ...getControlStateEnvelope(request, fallback, 'default'),
       },
       { status: 500 },
     );
@@ -276,7 +311,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   if (!authorizeRequest(request)) {
-    return unauthorizedResponse();
+    return unauthorizedResponse(request);
   }
 
   try {
@@ -288,21 +323,18 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      state,
-      policy: buildControlPolicy(state),
-      source: 'database',
-      auth: {
-        configured: Boolean(getAdminKey()),
-      },
+      ...getControlStateEnvelope(request, state, 'database'),
     } satisfies ControlStateResponse);
   } catch (error) {
     console.error('[REIE CONTROL STATE] Save failed:', getErrorMessage(error));
+    const fallback = getDefaultState();
 
     return NextResponse.json(
       {
         success: false,
         error: 'Control state could not be saved.',
         detail: getErrorMessage(error),
+        ...getControlStateEnvelope(request, fallback, 'default'),
       },
       { status: 500 },
     );

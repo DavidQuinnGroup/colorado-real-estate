@@ -163,6 +163,8 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
   const authoritySignals = getAuthoritySignals(cityNeighborhoods);
   const cityFaqs = getCityFaqs(cityData);
   const canonicalUrl = getCanonicalUrl(cityData);
+  const cityMarketSchema = getJsonLd(cityData, cityNeighborhoods);
+  const cityMarketSchemaGraph = cityMarketSchema['@graph'];
   const transitionStats = {
     ...cityData.stats,
     medianPrice: parseCurrency(cityData.stats.medianPrice),
@@ -172,8 +174,22 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
     <main className="min-h-screen bg-[#030303] text-white">
       <script
         type="application/ld+json"
+        data-testid="reie-city-market-schema"
+        data-city-market-schema-type="City"
+        data-city-market-schema-url={canonicalUrl}
+        data-city-market-schema-name={cityData.name}
+        data-city-market-schema-market-slug={cityData.marketSlug}
+        data-city-market-schema-neighborhood-count={cityNeighborhoods.length}
+        data-city-market-schema-featured-neighborhood={featuredNeighborhood?.name ?? ""}
+        data-city-market-schema-median-price={cityData.stats.medianPrice}
+        data-city-market-schema-inventory={cityData.stats.inventory}
+        data-city-market-schema-health-score={cityData.stats.marketHealthScore}
+        data-city-market-schema-avg-efficiency={cityData.stats.avgEfficiency}
+        data-city-market-schema-graph-count={cityMarketSchemaGraph.length}
+        data-city-market-schema-has-breadcrumb="true"
+        data-city-market-schema-has-neighborhoods={cityNeighborhoods.length > 0 ? "true" : "false"}
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(getJsonLd(cityData, cityNeighborhoods)),
+          __html: JSON.stringify(cityMarketSchema),
         }}
       />
       <FAQSchema faqs={cityFaqs} pageUrl={canonicalUrl} />

@@ -9,9 +9,16 @@ const defaultRateDelayMs = getEnvInteger('MLS_RATE_DELAY_MS', 1100);
 const defaultPageSize = getEnvInteger('MLS_PAGE_SIZE', 50);
 const defaultMaxPages = getEnvInteger('MLS_MAX_PAGES', 1);
 const maxRuntimeMs = 60 * 60 * 1000;
+const maxRateDelayMs = 60000;
 const maxPageSize = 100;
 const maxPages = 100;
 const maxStartPage = 1000000;
+const minMaxRuntimeMs = 1000;
+const minRateDelayMs = 0;
+const minPageSize = 1;
+const minMaxPages = 1;
+const minPageTimeoutMs = 1000;
+const minStartPage = 0;
 function getEnvInteger(key, fallback) {
     const parsed = Number(process.env[key]);
     if (!Number.isFinite(parsed))
@@ -73,13 +80,50 @@ function getErrorMessage(error) {
 }
 function normalizeOptions(options) {
     return {
-        maxRuntimeMs: toBoundedInteger(options.maxRuntimeMs, defaultMaxRuntimeMs, 1000, maxRuntimeMs),
-        rateDelayMs: toBoundedInteger(options.rateDelayMs, defaultRateDelayMs, 0, 60000),
-        pageSize: toBoundedInteger(options.pageSize, defaultPageSize, 1, maxPageSize),
-        maxPages: toBoundedInteger(options.maxPages, defaultMaxPages, 1, maxPages),
-        pageTimeoutMs: toBoundedInteger(options.pageTimeoutMs, MLS_PAGE_DEFAULT_TIMEOUT_MS, 1000, MLS_PAGE_MAX_TIMEOUT_MS),
+        maxRuntimeMs: toBoundedInteger(options.maxRuntimeMs, defaultMaxRuntimeMs, minMaxRuntimeMs, maxRuntimeMs),
+        rateDelayMs: toBoundedInteger(options.rateDelayMs, defaultRateDelayMs, minRateDelayMs, maxRateDelayMs),
+        pageSize: toBoundedInteger(options.pageSize, defaultPageSize, minPageSize, maxPageSize),
+        maxPages: toBoundedInteger(options.maxPages, defaultMaxPages, minMaxPages, maxPages),
+        pageTimeoutMs: toBoundedInteger(options.pageTimeoutMs, MLS_PAGE_DEFAULT_TIMEOUT_MS, minPageTimeoutMs, MLS_PAGE_MAX_TIMEOUT_MS),
         startPage: options.startPage,
         includeMedia: options.includeMedia,
+    };
+}
+export function getSyncMLSGridPlan(options = {}, stateLastPage = 0) {
+    const normalized = normalizeOptions(options);
+    const initialPage = toBoundedInteger(normalized.startPage, stateLastPage, minStartPage, maxStartPage);
+    return {
+        ...normalized,
+        startPage: initialPage,
+        includeMedia: normalized.includeMedia ?? false,
+        initialPage,
+        terminal: 'Terminal 5',
+        module: 'MLS Grid Sync',
+        dryRunCommand: 'npm run run:mls-sync:dry',
+        liveCommand: 'npm run run:mls-sync:live',
+        statusCommand: 'curl --max-time 8 -s -w "\\nHTTP_STATUS:%{http_code}\\n" "http://localhost:3000/api/mls/status"',
+        bounded: {
+            maxRuntimeMs: normalized.maxRuntimeMs !== options.maxRuntimeMs && options.maxRuntimeMs !== undefined,
+            rateDelayMs: normalized.rateDelayMs !== options.rateDelayMs && options.rateDelayMs !== undefined,
+            pageSize: normalized.pageSize !== options.pageSize && options.pageSize !== undefined,
+            maxPages: normalized.maxPages !== options.maxPages && options.maxPages !== undefined,
+            pageTimeoutMs: normalized.pageTimeoutMs !== options.pageTimeoutMs && options.pageTimeoutMs !== undefined,
+            startPage: initialPage !== options.startPage && options.startPage !== undefined,
+        },
+        limits: {
+            minMaxRuntimeMs,
+            maxMaxRuntimeMs: maxRuntimeMs,
+            minRateDelayMs,
+            maxRateDelayMs,
+            minPageSize,
+            maxPageSize,
+            minMaxPages,
+            maxMaxPages: maxPages,
+            minPageTimeoutMs,
+            maxPageTimeoutMs: MLS_PAGE_MAX_TIMEOUT_MS,
+            minStartPage,
+            maxStartPage,
+        },
     };
 }
 async function processListings(listings) {
@@ -136,6 +180,7 @@ function createSummary(startedAt, page, options) {
         indexFailed: 0,
         stoppedReason: 'complete',
         options,
+        plan: getSyncMLSGridPlan(options, page),
     };
 }
 export async function syncMLSGrid(options = {}) {

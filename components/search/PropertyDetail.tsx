@@ -86,6 +86,14 @@ function getReviewSignal(property: DetailProperty) {
   return 'REIE Verified';
 }
 
+function hasListingPhoto(property: DetailProperty) {
+  return Boolean(property.mainPhoto?.trim() || property.image?.trim());
+}
+
+function hasCoordinates(property: DetailProperty) {
+  return Number.isFinite(property.lat) && Number.isFinite(property.lng);
+}
+
 export default function PropertyDetail({ property, onClose, userTier = 'Public' }: PropertyDetailProps) {
   const [activeTab, setActiveTab] = useState<ActiveTab>('intel');
   const [showManager, setShowManager] = useState(false);
@@ -107,6 +115,11 @@ export default function PropertyDetail({ property, onClose, userTier = 'Public' 
   const price = getNumber(property.price);
   const lat = getNumber(property.lat, 40.0174);
   const lng = getNumber(property.lng, -105.276);
+  const propertyId = property.id || '';
+  const propertyType = property.propertyType || 'Residential';
+  const hasPhoto = hasListingPhoto(property);
+  const hasCoordinatesFlag = hasCoordinates(property);
+  const strategyLocked = userTier === 'Public';
 
   const logisticsAnchors = useMemo(
     () =>
@@ -216,11 +229,39 @@ export default function PropertyDetail({ property, onClose, userTier = 'Public' 
   }, [activeTab, lat, lng, activeLogisticsAnchors]);
 
   return (
-    <div className="relative flex h-full w-full flex-col overflow-hidden bg-[#050505] animate-in fade-in duration-500">
-      <div className="z-10 flex shrink-0 items-center justify-between border-b border-white/5 bg-black/80 px-14 py-8 backdrop-blur-2xl">
+    <div
+      className="relative flex h-full w-full flex-col overflow-hidden bg-[#050505] animate-in fade-in duration-500"
+      data-testid="reie-property-detail"
+      data-property-detail-id={propertyId}
+      data-property-detail-address={address}
+      data-property-detail-city={city}
+      data-property-detail-price={price}
+      data-property-detail-type={propertyType}
+      data-property-detail-user-tier={userTier}
+      data-property-detail-active-tab={activeTab}
+      data-property-detail-private={String(Boolean(property.isPrivateExclusive))}
+      data-property-detail-review={String(Boolean(property.hasPolybutyleneRisk))}
+      data-property-detail-mapped={String(hasCoordinatesFlag)}
+      data-property-detail-photo-available={String(hasPhoto)}
+      data-property-detail-efficiency-score={efficiencyScore}
+      data-property-detail-resilience-score={resilienceScore}
+      data-property-detail-review-signal={reviewSignal}
+      data-property-detail-logistics-status={logistics.status}
+      data-property-detail-logistics-source={logistics.source || ''}
+      data-property-detail-logistics-count={logistics.times.length}
+      data-property-detail-strategy-locked={String(strategyLocked)}
+    >
+      <div
+        className="z-10 flex shrink-0 items-center justify-between border-b border-white/5 bg-black/80 px-14 py-8 backdrop-blur-2xl"
+        data-testid="reie-property-detail-header"
+        data-property-detail-user-tier={userTier}
+        data-property-detail-active-tab={activeTab}
+      >
         <button
           type="button"
           onClick={onClose}
+          data-testid="reie-property-detail-return"
+          data-property-detail-id={propertyId}
           className="group flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.5em] text-white/40 transition-all hover:text-[#00ff80]"
         >
           <ChevronLeft size={16} className="transition-transform group-hover:-translate-x-1" />
@@ -234,14 +275,26 @@ export default function PropertyDetail({ property, onClose, userTier = 'Public' 
               {userTier === 'Contracted' ? 'Full Strategy Unlocked' : 'Baseline Intel Mode (40%)'}
             </span>
           </div>
-          <button type="button" onClick={onClose} className="p-2 text-white/20 transition-colors hover:text-white">
+          <button
+            type="button"
+            onClick={onClose}
+            data-testid="reie-property-detail-close"
+            data-property-detail-id={propertyId}
+            className="p-2 text-white/20 transition-colors hover:text-white"
+          >
             <X size={22} />
           </button>
         </div>
       </div>
 
       <div className="custom-scrollbar flex-1 overflow-y-auto">
-        <div className="relative aspect-[21/9] w-full overflow-hidden border-b border-white/5 bg-black">
+        <div
+          className="relative aspect-[21/9] w-full overflow-hidden border-b border-white/5 bg-black"
+          data-testid="reie-property-detail-hero"
+          data-property-detail-photo-available={String(hasPhoto)}
+          data-property-detail-image-src={imageSrc || ''}
+          data-property-detail-fallback-src={fallbackImageSrc}
+        >
           <ResilientListingImage
             src={imageSrc}
             fallbackSrc={fallbackImageSrc}
@@ -266,12 +319,19 @@ export default function PropertyDetail({ property, onClose, userTier = 'Public' 
           </div>
         </div>
 
-        <div className="sticky top-0 z-20 flex border-b border-white/5 bg-black/40 backdrop-blur-xl">
+        <div
+          className="sticky top-0 z-20 flex border-b border-white/5 bg-black/40 backdrop-blur-xl"
+          data-testid="reie-property-detail-tabs"
+          data-property-detail-active-tab={activeTab}
+        >
           {TABS.map((tab) => (
             <button
               key={tab.id}
               type="button"
               onClick={() => setActiveTab(tab.id)}
+              data-testid="reie-property-detail-tab"
+              data-property-detail-tab={tab.id}
+              data-property-detail-tab-active={String(activeTab === tab.id)}
               className={`flex flex-1 items-center justify-center gap-3 py-8 text-[10px] font-black uppercase tracking-[0.4em] transition-all ${
                 activeTab === tab.id ? 'border-b-2 border-[#00ff80] bg-[#00ff80]/5 text-[#00ff80]' : 'text-white/30 hover:text-white'
               }`}
@@ -283,7 +343,13 @@ export default function PropertyDetail({ property, onClose, userTier = 'Public' 
 
         <div className="mx-auto w-full max-w-7xl px-14 py-24">
           {activeTab === 'intel' ? (
-            <div className="grid grid-cols-1 gap-24 animate-in fade-in slide-in-from-bottom-4 duration-700 lg:grid-cols-2">
+            <div
+              className="grid grid-cols-1 gap-24 animate-in fade-in slide-in-from-bottom-4 duration-700 lg:grid-cols-2"
+              data-testid="reie-property-detail-intel"
+              data-property-detail-efficiency-score={efficiencyScore}
+              data-property-detail-resilience-score={resilienceScore}
+              data-property-detail-review-signal={reviewSignal}
+            >
               <div className="space-y-12">
                 <div className="grid grid-cols-3 gap-12 border-b border-white/5 pb-16">
                   <StatItem label="Bedrooms" value={formatStat(property.beds)} />
@@ -317,13 +383,27 @@ export default function PropertyDetail({ property, onClose, userTier = 'Public' 
           ) : null}
 
           {activeTab === 'efficiency' ? (
-            <div className="mx-auto max-w-4xl space-y-16 text-center animate-in zoom-in-95 duration-500">
+            <div
+              className="mx-auto max-w-4xl space-y-16 text-center animate-in zoom-in-95 duration-500"
+              data-testid="reie-property-detail-efficiency"
+              data-property-detail-efficiency-score={efficiencyScore}
+              data-property-detail-logistics-status={logistics.status}
+              data-property-detail-logistics-source={logistics.source || ''}
+              data-property-detail-logistics-count={logistics.times.length}
+            >
               <div className="space-y-4">
                 <div className="text-[11px] font-black uppercase tracking-[0.6em] text-[#00ff80]">North Star Alignment</div>
                 <div className="text-9xl font-black italic leading-none tracking-tight text-white">{efficiencyScore}</div>
               </div>
               <p className="px-12 text-2xl font-light italic leading-relaxed text-white/70">{narrative}</p>
-              <div className="border border-white/10 bg-white/[0.02] p-8 text-left">
+              <div
+                className="border border-white/10 bg-white/[0.02] p-8 text-left"
+                data-testid="reie-property-detail-logistics"
+                data-property-detail-logistics-status={logistics.status}
+                data-property-detail-logistics-source={logistics.source || ''}
+                data-property-detail-logistics-count={logistics.times.length}
+                data-property-detail-logistics-message={logistics.message || ''}
+              >
                 <div className="mb-8 flex flex-col gap-3 border-b border-white/10 pb-6 sm:flex-row sm:items-center sm:justify-between">
                   <div>
                     <p className="text-[10px] font-black uppercase tracking-[0.36em] text-white/35">Pulse Preview</p>
@@ -376,9 +456,18 @@ export default function PropertyDetail({ property, onClose, userTier = 'Public' 
           ) : null}
 
           {activeTab === 'strategy' ? (
-            <div className="relative animate-in fade-in duration-700">
+            <div
+              className="relative animate-in fade-in duration-700"
+              data-testid="reie-property-detail-strategy"
+              data-property-detail-strategy-locked={String(strategyLocked)}
+              data-property-detail-user-tier={userTier}
+            >
               {userTier === 'Public' ? (
-                <div className="absolute inset-0 z-10 flex flex-col items-center justify-center border border-dashed border-white/10 bg-black/40 p-20 text-center backdrop-blur-md">
+                <div
+                  className="absolute inset-0 z-10 flex flex-col items-center justify-center border border-dashed border-white/10 bg-black/40 p-20 text-center backdrop-blur-md"
+                  data-testid="reie-property-detail-strategy-lock"
+                  data-property-detail-user-tier={userTier}
+                >
                   <div className="mb-8 flex h-20 w-20 items-center justify-center rounded-full border border-[#00ff80]/20 bg-[#00ff80]/10">
                     <Lock className="text-[#00ff80]" size={32} />
                   </div>

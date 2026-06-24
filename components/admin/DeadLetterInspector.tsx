@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { AlertTriangle, ArrowLeft, CheckCircle2, Clock3, Filter, RefreshCw, Search, ShieldAlert, Terminal, Workflow } from 'lucide-react';
 
@@ -66,6 +66,9 @@ type DeadLetterResponse = {
   success: boolean;
   module: string;
   generatedAt?: string;
+  terminal?: 'Terminal 5';
+  route?: '/api/admin/dead-letter';
+  command?: string;
   timeoutMs: number;
   severity?: DeadLetterSeverity;
   auth?: {
@@ -113,6 +116,10 @@ type DeadLetterResponse = {
   sourceQueues?: SourceQueueSummary[];
   jobs: DeadLetterJob[];
   error?: string;
+  detail?: string;
+  redis?: {
+    url: string;
+  };
 };
 
 type LoadState = 'idle' | 'loading' | 'success' | 'error';
@@ -133,6 +140,7 @@ type RecoveryPlan = {
 };
 
 const STATE_OPTIONS = ['waiting', 'active', 'delayed', 'failed', 'completed'];
+const ADMIN_KEY_SESSION_STORAGE_KEY = 'reie.adminKey';
 
 function formatDate(value: string | null) {
   if (!value) return 'Not recorded';
@@ -358,7 +366,15 @@ export default function DeadLetterInspector() {
   const [limit, setLimit] = useState(25);
   const [sourceQueue, setSourceQueue] = useState('');
   const [states, setStates] = useState<string[]>(['waiting', 'delayed', 'failed']);
-  const [adminKey, setAdminKey] = useState('');
+  const [adminKey, setAdminKey] = useState(() => {
+    if (typeof window === 'undefined') return '';
+
+    try {
+      return window.sessionStorage.getItem(ADMIN_KEY_SESSION_STORAGE_KEY) || '';
+    } catch {
+      return '';
+    }
+  });
   const [loadState, setLoadState] = useState<LoadState>('idle');
   const [response, setResponse] = useState<DeadLetterResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -380,6 +396,21 @@ export default function DeadLetterInspector() {
   const activeFilterSummary = response?.filterSummary || response?.filters || null;
   const recoveryPlan = response ? response.recoveryPlan || getRecoveryPlan(response, topSourceQueue, oldestOpenJob) : null;
 
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    try {
+      const trimmedAdminKey = adminKey.trim();
+      if (trimmedAdminKey) {
+        window.sessionStorage.setItem(ADMIN_KEY_SESSION_STORAGE_KEY, trimmedAdminKey);
+      } else {
+        window.sessionStorage.removeItem(ADMIN_KEY_SESSION_STORAGE_KEY);
+      }
+    } catch {
+      // Session storage can be unavailable in private or restricted browser contexts.
+    }
+  }, [adminKey]);
+
   const loadDeadLetters = useCallback(async () => {
     setLoadState('loading');
     setError(null);
@@ -395,7 +426,11 @@ export default function DeadLetterInspector() {
       const data = (await result.json()) as DeadLetterResponse;
 
       if (!result.ok) {
-        throw new Error(data.error || `Dead-letter request failed with HTTP ${result.status}.`);
+        setResponse(data);
+        setExpandedJobId(null);
+        setLoadState('error');
+        setError(data.error || `Dead-letter request failed with HTTP ${result.status}.`);
+        return;
       }
 
       setResponse(data);
@@ -632,7 +667,16 @@ export default function DeadLetterInspector() {
                 </div>
 
                 {activeFilterSummary ? (
-                  <div className="grid gap-3 lg:grid-cols-3" data-testid="reie-dead-letter-filter-summary">
+                  <div
+                    className="grid gap-3 lg:grid-cols-3"
+                    data-testid="reie-dead-letter-filter-summary"
+                    data-api-route={response.route || '/api/admin/dead-letter'}
+                    data-api-terminal={response.filterSummary?.terminal || response.commands?.terminal || response.terminals?.scriptsAndCurl || 'Terminal 5'}
+                    data-api-source-queue={activeFilterSummary.sourceQueue || 'all'}
+                    data-api-states={activeFilterSummary.states.join(',')}
+                    data-api-limit={activeFilterSummary.limit}
+                    data-api-scan-limit={activeFilterSummary.scanLimit || activeFilterSummary.limit}
+                  >
                     <Signal
                       icon={<Filter size={16} />}
                       label="Active States"
@@ -654,8 +698,66 @@ export default function DeadLetterInspector() {
                   </div>
                 ) : null}
 
+                {response.route || response.command || response.terminal || response.generatedAt ? (
+                  <div
+                    className="border border-slate-800 bg-slate-950/70 p-4"
+                    data-testid="reie-dead-letter-api-metadata"
+                    data-api-generated-at={response.generatedAt || ''}
+                    data-api-route={response.route || '/api/admin/dead-letter'}
+                    data-api-terminal={response.terminal || response.commands?.terminal || response.terminals?.scriptsAndCurl || 'Terminal 5'}
+                    data-api-command={response.command || getOpenDeadLetterCommand(response)}
+                    data-api-source-queue={activeFilterSummary?.sourceQueue || 'all'}
+                    data-api-states={activeFilterSummary?.states.join(',') || states.join(',')}
+                    data-api-limit={activeFilterSummary?.limit || limit}
+                  >
+                    <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+                      <div className="flex items-center gap-2 text-sm font-black uppercase text-white">
+                        <Terminal size={16} className="text-cyan-300" />
+                        API Inspection
+                      </div>
+                      <span className="border border-cyan-300/30 bg-cyan-300/10 px-2 py-1 text-[10px] font-black uppercase text-cyan-100">
+                        {response.terminal || response.commands?.terminal || response.terminals?.scriptsAndCurl || 'Terminal 5'}
+                      </span>
+                    </div>
+                    <div className="grid gap-2 text-xs leading-5 text-slate-400 sm:grid-cols-3">
+                      <div className="min-w-0 border border-slate-900 bg-slate-950/80 px-3 py-2">
+                        <span className="block font-black uppercase text-slate-500">Generated</span>
+                        <span className="mt-1 block break-words text-slate-200">{response.generatedAt || 'Not recorded'}</span>
+                      </div>
+                      <div className="min-w-0 border border-slate-900 bg-slate-950/80 px-3 py-2">
+                        <span className="block font-black uppercase text-slate-500">Route</span>
+                        <span className="mt-1 block break-words text-slate-200">{response.route || '/api/admin/dead-letter'}</span>
+                      </div>
+                      <div className="min-w-0 border border-slate-900 bg-slate-950/80 px-3 py-2">
+                        <span className="block font-black uppercase text-slate-500">Filters</span>
+                        <span className="mt-1 block break-words text-slate-200">
+                          {activeFilterSummary ? `${activeFilterSummary.states.join(', ')} / limit ${activeFilterSummary.limit}` : 'Not recorded'}
+                        </span>
+                      </div>
+                    </div>
+                    <div
+                      className="mt-3 min-w-0 border border-slate-800 bg-black/70 p-3"
+                      data-testid="reie-dead-letter-api-command"
+                      data-api-terminal={response.terminal || response.commands?.terminal || response.terminals?.scriptsAndCurl || 'Terminal 5'}
+                      data-api-command={response.command || getOpenDeadLetterCommand(response)}
+                    >
+                      <div className="mb-2 text-[10px] font-black uppercase text-slate-500">Terminal 5 API Check</div>
+                      <code className="block max-w-full overflow-x-auto whitespace-nowrap text-xs text-slate-200">
+                        {response.command || getOpenDeadLetterCommand(response)}
+                      </code>
+                    </div>
+                  </div>
+                ) : null}
+
                 {recoveryPlan ? (
-                  <div className={`border p-4 ${getSeverityClass(recoveryPlan.level)}`} data-testid="reie-dead-letter-recovery-plan">
+                  <div
+                    className={`border p-4 ${getSeverityClass(recoveryPlan.level)}`}
+                    data-testid="reie-dead-letter-recovery-plan"
+                    data-recovery-level={recoveryPlan.level}
+                    data-recovery-terminal={recoveryPlan.terminal}
+                    data-recovery-command={recoveryPlan.command}
+                    data-live-retry-allowed={typeof recoveryPlan.liveRetryAllowed === 'boolean' ? String(recoveryPlan.liveRetryAllowed) : 'unknown'}
+                  >
                     <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
                       <div className="flex items-center gap-2 text-sm font-black uppercase">
                         <Workflow size={16} />
@@ -705,7 +807,15 @@ export default function DeadLetterInspector() {
                 ) : null}
 
                 {response.commands ? (
-                  <div className="border border-slate-800 bg-slate-950/70 p-4" data-testid="reie-dead-letter-command-center">
+                  <div
+                    className="border border-slate-800 bg-slate-950/70 p-4"
+                    data-testid="reie-dead-letter-command-center"
+                    data-api-route={response.route || '/api/admin/dead-letter'}
+                    data-api-terminal={response.commands.terminal || response.terminals?.scriptsAndCurl || 'Terminal 5'}
+                    data-command-status={response.commands.deadLetterStatus || response.commands.status || ''}
+                    data-command-dry-run-retry={response.commands.dryRunRetryByQueue || response.commands.targetedDryRunRetry || ''}
+                    data-command-live-retry={response.commands.liveRetryByQueue || response.commands.targetedLiveRetry || ''}
+                  >
                     <div className="mb-3 flex items-center justify-between gap-3">
                       <div className="flex items-center gap-2 text-sm font-black uppercase text-white">
                         <Terminal size={16} className="text-cyan-300" />
@@ -737,7 +847,13 @@ export default function DeadLetterInspector() {
                 ) : null}
 
                 {sourceQueueSummaries.length > 0 ? (
-                  <div className="border border-slate-800 bg-slate-950/70">
+                  <div
+                    className="border border-slate-800 bg-slate-950/70"
+                    data-testid="reie-dead-letter-source-queues"
+                    data-api-route={response.route || '/api/admin/dead-letter'}
+                    data-source-queue-count={sourceQueueSummaries.length}
+                    data-top-source-queue={topSourceQueue?.sourceQueue || 'none'}
+                  >
                     <div className="flex items-center justify-between border-b border-slate-800 px-4 py-3">
                       <h2 className="text-sm font-black uppercase text-white">Source Queues</h2>
                       <div className="text-xs font-bold uppercase text-slate-500">{sourceQueueSummaries.length} grouped</div>
@@ -747,6 +863,12 @@ export default function DeadLetterInspector() {
                         <button
                           key={queue.sourceQueue}
                           type="button"
+                          data-testid={`reie-dead-letter-source-queue-${queue.sourceQueue}`}
+                          data-source-queue={queue.sourceQueue}
+                          data-source-queue-jobs={queue.jobs}
+                          data-source-queue-severity={queue.severity || 'clear'}
+                          data-command-dry-run-retry={queue.dryRunRetryCommand || ''}
+                          data-command-live-retry={queue.liveRetryCommand || ''}
                           onClick={() => applySourceQueueFilter(queue.sourceQueue)}
                           className="bg-slate-950 p-4 text-left transition hover:bg-slate-900"
                         >
@@ -811,7 +933,18 @@ export default function DeadLetterInspector() {
                         const expanded = expandedJobId === identity;
 
                         return (
-                          <article key={identity} className="p-4">
+                          <article
+                            key={identity}
+                            className="p-4"
+                            data-job-id={job.id || 'untracked'}
+                            data-job-source-queue={job.sourceQueue || 'unknown'}
+                            data-job-state={job.state}
+                            data-job-severity={job.severity || 'clear'}
+                            data-job-terminal={job.terminal || 'Terminal 5'}
+                            data-command-status={getRetryCommand(job)}
+                            data-command-dry-run-retry={getRetryDryRunCommand(job)}
+                            data-command-live-retry={getRetryLiveCommand(job)}
+                          >
                             <button
                               type="button"
                               data-testid={`reie-dead-letter-job-${identity}`}

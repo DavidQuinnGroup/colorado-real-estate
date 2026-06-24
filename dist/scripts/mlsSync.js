@@ -1,3 +1,4 @@
+import { getSyncMLSGridPlan } from '../lib/mls/syncMLSGrid.js';
 const MLS_SYNC_DEFAULT_MAX_RUNTIME_MS = 10 * 60 * 1000;
 const MLS_SYNC_DEFAULT_RATE_DELAY_MS = 1100;
 const MLS_SYNC_DEFAULT_PAGE_SIZE = 50;
@@ -169,6 +170,7 @@ function buildOutput(options, syncOptions, notes = [], diagnostics = [], summary
         executed: options.execute,
         terminal: 'Terminal 5',
         options: syncOptions,
+        plan: getSyncMLSGridPlan(syncOptions),
         summary,
         notes,
         diagnostics,
@@ -190,6 +192,7 @@ function writeOutput(options, output) {
         executed: output.executed,
         terminal: output.terminal,
         options: output.options,
+        plan: output.plan,
     });
     for (const diagnostic of output.diagnostics) {
         console.error(`MLS Grid sync runner diagnostic: ${diagnostic}`);
@@ -229,5 +232,4 @@ main().catch((error) => {
     console.error('MLS Grid sync runner failed:', getErrorMessage(error));
     process.exitCode = 1;
 });
-export {};
 // /Users/davidquinn/david-quinn-group/colorado-real-estate/scripts/mlsSync.ts

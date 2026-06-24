@@ -92,7 +92,13 @@ async function postInquiry(propertyId: string): Promise<Record<string, unknown>>
   assert.equal(response.status, 200, `Expected HTTP 200 from property inquiry route, got ${response.status}.`);
   assert.ok(isRecord(payload), 'Expected property inquiry route to return a JSON object.');
   assert.equal(payload.success, true, 'Expected property inquiry route success=true.');
-  assert.equal(payload.notification && isRecord(payload.notification) ? payload.notification.reason : null, 'not-high-priority');
+  assert.ok(isRecord(payload.notification), 'Expected property inquiry route to return notification metadata.');
+  assert.equal(payload.notification.sent, false, 'Expected research inquiry notification to be unsent.');
+  assert.equal(payload.notification.reason, 'not-high-priority', 'Expected research inquiry notification skip reason.');
+  assert.equal(payload.notification.attempted, false, 'Expected research inquiry notification to avoid delivery attempt.');
+  assert.equal(payload.notification.required, false, 'Expected research inquiry notification to be optional.');
+  assert.equal(payload.notification.priority, 'low', 'Expected research inquiry notification priority.');
+  assert.equal(payload.notification.channel, 'property-inquiry-email', 'Expected property inquiry notification channel.');
 
   return payload;
 }

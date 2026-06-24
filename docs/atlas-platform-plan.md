@@ -116,7 +116,7 @@ Alerts, digest email, and engagement:
 - Email links use `/api/track-click` when user context exists.
 - Unsubscribe links use `/api/unsubscribe`.
 - Click tracking can update `UserInteraction`, `AlertQueue.clickedAt`, `User.heatScore`, and learned preferences.
-- Recurring email traffic, including recurring alert or digest sends, should wait for `npm run supabase:check:json`, sender domain, unsubscribe, click tracking, internal live-send validation, healthy search-index diagnostics, healthy Search Smoke Readiness, and acceptable timeout-bounded queue diagnostics.
+- Recurring email traffic, including recurring alert, digest, or property-inquiry notification sends, should wait for `PROPERTY_INQUIRY_NOTIFY_TO` or fallback `REIE_INTERNAL_EMAIL`, `PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN` unset or false, `npm run supabase:check:json`, sender domain, unsubscribe, click tracking, internal live-send validation, healthy search-index diagnostics, healthy Search Smoke Readiness, and acceptable timeout-bounded queue diagnostics.
 
 CRM intelligence:
 
@@ -149,8 +149,11 @@ Admin and operations:
 - `/api/mls/sync` documents expected job result metrics for ingestion, alerts, and search-index reporting.
 - `/api/process-alerts` exposes bounded protected alert processing.
 - `/api/admin/dead-letter` provides bounded dead-letter inspection.
+- `/api/admin/control-state` provides persistent Master Control Panel state for strategy gate, area-cloud masking, private-layer visibility, kill switch, and operations mode.
 - `/api/admin/crm-tasks` provides bounded CRM task reporting, closure-audit coverage, and CRM readiness verdicts.
 - `/api/admin/crm-tasks/[id]` provides bounded CRM task review updates with note-required completion and dismissal.
+- `/api/admin/intake-signals` provides bounded recent REIE intake signal reporting from strategy-intake CRM tasks and saved-search interactions.
+- `/api/admin/intake-signals/[id]` reads a single intake signal and can promote saved-search interaction signals into CRM review tasks.
 - `scripts/queueDashboard.ts` provides timeout-bounded Terminal 5 diagnostics for MLS, page-worker, alert, and dead-letter queues through `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000`.
 
 ## Protected Operational APIs
@@ -165,9 +168,14 @@ These routes require `REIE_ADMIN_API_KEY` or `ADMIN_API_KEY` in production:
 - `GET /api/mls-sync`
 - `POST /api/mls-sync`
 - `GET /api/admin/dead-letter`
+- `GET /api/admin/control-state`
+- `PATCH /api/admin/control-state`
 - `GET /api/admin/crm-tasks`
 - `GET /api/admin/crm-tasks/[id]`
 - `PATCH /api/admin/crm-tasks/[id]`
+- `GET /api/admin/intake-signals`
+- `GET /api/admin/intake-signals/[id]`
+- `PATCH /api/admin/intake-signals/[id]`
 - `GET /api/process-alerts`
 - `POST /api/process-alerts`
 
@@ -193,7 +201,7 @@ Local development can bypass the key only when neither admin key environment var
 - Treat broad live retry across all queues as exceptional and require `allowAllLive=true`.
 - Inspect timeout-bounded queue dashboard and dead-letter diagnostics before live retry.
 - Use dry-run mode before live email sends.
-- Treat failed `npm run supabase:check:json`, degraded search-index health, `meta.smoke.ready=false`, public search smoke blockers, or unacceptable timeout-bounded queue diagnostics as blockers before recurring email traffic, including recurring alert or digest sends.
+- Treat failed `npm run supabase:check:json`, missing property-inquiry recipient routing, `PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN=true`, degraded search-index health, `meta.smoke.ready=false`, public search smoke blockers, or unacceptable timeout-bounded queue diagnostics as blockers before recurring email traffic, including recurring alert, digest, or property-inquiry notification sends.
 - Keep alert, digest, and seed dry-runs read-only, and run Supabase-backed dry-runs only after `npm run supabase:check:json` reports readiness.
 - Keep unsubscribe behavior idempotent.
 - Keep tracked redirects constrained to safe destinations.
@@ -265,19 +273,14 @@ curl --max-time 8 -s -w "\nHTTP_STATUS:%{http_code}\n" "http://localhost:3000/ap
 
 Expected current non-blocking warnings:
 
-- Node `url.parse()` deprecation warnings appear during build.
-- Local Typesense `properties` and `listings` collections were verified ready with `npm run typesense:collections:check` on May 31, 2026.
+- `npm run build` may show Node `url.parse()` deprecation warnings.
+- Local Typesense `properties` and `listings` collections were verified ready with `npm run typesense:collections:check` and refreshed with `npm run typesense:reindex` on June 16, 2026.
 - Search metadata now exists with source, health, access level, filters, bounds, returned, mapped, coordinate-filtered, and duration fields, but full Typesense result verification should wait until `npm run supabase:check:json` reports readiness and reindex is complete.
 - `dist/` may contain stale generated JavaScript for deleted source files until generated output is cleaned.
 
 Known current blocker:
 
-```text
-DNS lookup failed: ENOTFOUND otmkoqvmhthitldlnjdk.supabase.co
-FATAL: (ENOTFOUND) tenant/user postgres.otmkoqvmhthitldlnjdk not found
-```
-
-This can block alert, digest, CRM, MLS, seed, and reindex commands that depend on Supabase. Follow `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/supabase-recovery-runbook.md` and use `npm run supabase:check:json` as the non-secret readiness gate.
+`npm run supabase:check:json` currently reports readiness, but aggregate notification launch readiness is blocked until property-inquiry notification routing has `PROPERTY_INQUIRY_NOTIFY_TO` or fallback `REIE_INTERNAL_EMAIL` configured. Keep `PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN` unset or false before relying on live property-inquiry notification delivery. Use `npm run check:notification-readiness` for the consolidated non-sending summary, `npm run check:notification-readiness:strict` for the fail-closed gate, `npm run check:notification-readiness:strict-contract` for the strict contract wrapper, `npm run check:launch-readiness` for the combined launch gate, and `npm run check:property-inquiry-notification:readiness` for the direct non-sending diagnostic.
 
 ## Roadmap Sequence
 
@@ -477,6 +480,7 @@ Work:
 - Confirm `npm run supabase:check:json` readiness before recurring email traffic.
 - Confirm `npm run smoke:mls-status` search-index health before recurring email traffic.
 - Confirm `npm run smoke:search` Search Smoke Readiness before recurring email traffic.
+- Confirm aggregate launch readiness is not blocked by missing property-inquiry recipient routing, missing `PROPERTY_INQUIRY_NOTIFY_TO` with fallback `REIE_INTERNAL_EMAIL` unset, or `PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN=true` before recurring email traffic.
 - Send controlled internal tests before user-facing sends.
 - Validate `EmailLog`, `AlertQueue`, `UserInteraction`, `UserPreference`, and CRM task records.
 - Validate CRM closure audit coverage through `/admin` and `/api/admin/crm-tasks`.
@@ -488,7 +492,7 @@ Success criteria:
 - No email sends from page rendering.
 - Dry-runs do not mutate state.
 - Live sends are intentional, explicit, bounded, logged, and reversible at the user preference level.
-- `npm run supabase:check:json` readiness, Search Smoke Readiness, timeout-bounded queue diagnostics, and email click destinations are healthy before recurring email traffic, including recurring alert or digest sends, is enabled.
+- `npm run supabase:check:json` readiness, Search Smoke Readiness, timeout-bounded queue diagnostics, configured property-inquiry recipient routing, `PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN` unset or false, and email click destinations are healthy before recurring email traffic, including recurring alert, digest, or property-inquiry notification sends, is enabled.
 - CRM tasks are useful enough for human review, and completed/dismissed CRM tasks retain review notes.
 
 ### Phase 8. Admin Operations Expansion
@@ -577,12 +581,12 @@ Success criteria:
 ## Current Known Gaps
 
 - Local Typesense `properties` and `listings` collections are schema-ready.
-- Supabase connectivity can block alert, digest, CRM, MLS, seed, and reindex dry-runs/reporting until `npm run supabase:check:json` reports readiness. Use `npm run supabase:check` for a human-readable check.
-- Production smoke verification still needs `npm run supabase:check:json`, `npm run smoke:mls-status`, `npm run smoke:search`, timeout-bounded queue diagnostics, and an internal tracked email click before recurring scheduler activation or recurring email traffic.
+- `npm run supabase:check:json` currently reports readiness, but it remains a required gate before alert, digest, CRM, MLS, seed, and reindex dry-runs/reporting.
+- June 21 verification is current through the 08:16 MDT local runtime smoke after the 07:31 MDT Supabase refresh, 08:12 MDT fast verification, and 08:14 MDT production build: `npm run check:fast`, `npm run build`, `npm run supabase:check:json`, `npm run smoke:mls-status`, `npm run smoke:search`, and `npm run smoke:ops` passed. Current runtime posture is MLS status `busy` / `watch` with inventory freshness degraded at 100% stale by `lastIntelligenceSync`, search `typesense` healthy with `meta.smoke.ready=true`, `mls-sync`, `mls-page`, and `listings` drained, `reie-alerts` at 273 waiting, saved-search alert readiness `watch` with 197 pending / 0 failed / 0 processing, property-inquiry notification readiness `blocked`, and aggregate launch readiness `blocked`; production still needs one internal tracked email click before recurring scheduler activation or recurring email traffic.
 - Production Redis and Typesense provider decisions are still open.
 - Production worker host and scheduler provider decisions are still open.
 - Email domain authentication needs confirmation before recurring email traffic.
-- CRM closure audit controls, note-backed completion/dismissal, CRM API Inspection metadata, and failed detail-route preservation are implemented locally; production admin smoke verification still needs to run after Terminal 1 is running and `npm run supabase:check:json` reports readiness.
+- CRM closure audit controls, note-backed completion/dismissal, CRM API Inspection metadata, and failed detail-route preservation are implemented locally and covered by the refreshed local `npm run smoke:ops`; production workflow still needs live environment confirmation before scheduler or recurring-email activation.
 - Placeholder property media should continue being replaced by reliable MLS/media handling.
 - Seed scripts now create local photo rows, but real MLS media remains the production source of truth.
 - Admin UI has MLS sync envelope visibility and dead-letter inspection, but broader queue, sync, alert, digest, and CRM controls are pending.

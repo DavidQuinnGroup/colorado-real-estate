@@ -16,11 +16,68 @@ function getSafeInteger(value, fallback, min = 0, max = Number.MAX_SAFE_INTEGER)
     return Math.min(Math.max(Math.floor(value), min), max);
 }
 function getSafeLastSync(lastSync) {
+    if (!lastSync)
+        return MLS_PAGE_DEFAULT_LAST_SYNC;
     const parsed = new Date(lastSync);
     if (Number.isNaN(parsed.getTime())) {
         return MLS_PAGE_DEFAULT_LAST_SYNC;
     }
     return parsed.toISOString();
+}
+export function getMlsGridRequestDiagnostics(options = {}) {
+    const skip = getSafeInteger(options.skip, 0);
+    const top = getSafeInteger(options.top, MLS_PAGE_DEFAULT_TOP, 1, MLS_PAGE_MAX_TOP);
+    const lastSync = getSafeLastSync(options.lastSync);
+    const includeMedia = options.includeMedia ?? includeMediaByDefault;
+    const timeoutMs = getSafeInteger(options.timeoutMs, MLS_PAGE_DEFAULT_TIMEOUT_MS, 1000, MLS_PAGE_MAX_TIMEOUT_MS);
+    const baseUrl = getBaseUrl().replace(/\/+$/, "");
+    const requestPath = "/Property";
+    const query = {
+        $top: top,
+        $skip: skip,
+        $filter: `ModificationTimestamp gt ${lastSync}`,
+        $orderby: "ModificationTimestamp asc",
+        ...(includeMedia ? { $expand: "Media" } : {}),
+    };
+    let requestUrl;
+    if (baseUrl) {
+        const url = new URL(`${baseUrl}${requestPath}`);
+        url.searchParams.set("$top", String(query.$top));
+        url.searchParams.set("$skip", String(query.$skip));
+        url.searchParams.set("$filter", query.$filter);
+        url.searchParams.set("$orderby", query.$orderby);
+        if (query.$expand) {
+            url.searchParams.set("$expand", query.$expand);
+        }
+        requestUrl = url.toString();
+    }
+    return {
+        skip,
+        top,
+        lastSync,
+        includeMedia,
+        mediaExpansion: includeMedia ? "requested" : "disabled",
+        timeoutMs,
+        baseUrlConfigured: Boolean(baseUrl),
+        tokenConfigured: Boolean(getToken()),
+        requestPath,
+        ...(requestUrl ? { requestUrl } : {}),
+        query,
+        bounded: {
+            skip: options.skip !== undefined && skip !== options.skip,
+            top: options.top !== undefined && top !== options.top,
+            lastSync: options.lastSync !== undefined && lastSync !== options.lastSync,
+            timeoutMs: options.timeoutMs !== undefined && timeoutMs !== options.timeoutMs,
+        },
+        limits: {
+            minSkip: 0,
+            maxSkip: Number.MAX_SAFE_INTEGER,
+            minTop: 1,
+            maxTop: MLS_PAGE_MAX_TOP,
+            minTimeoutMs: 1000,
+            maxTimeoutMs: MLS_PAGE_MAX_TIMEOUT_MS,
+        },
+    };
 }
 function trimText(value, maxLength = maxErrorTextLength) {
     return value.length <= maxLength ? value : `${value.slice(0, maxLength)}\n[TRUNCATED]`;
@@ -106,6 +163,7 @@ async function requestListings(options) {
     }
     await rateLimit();
     const timeoutMs = getSafeInteger(options.timeoutMs, MLS_PAGE_DEFAULT_TIMEOUT_MS, 1000, MLS_PAGE_MAX_TIMEOUT_MS);
+    const diagnostics = getMlsGridRequestDiagnostics(options);
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), timeoutMs);
     const requestUrl = buildPropertyUrl(options);
@@ -126,6 +184,7 @@ async function requestListings(options) {
                 : `MLS Grid API error: ${response.status}`, response.status, {
                 details: getErrorDetails(data, text),
                 request: {
+                    diagnostics,
                     includeMedia: options.includeMedia ?? includeMediaByDefault,
                     skip: requestUrl.searchParams.get("$skip"),
                     top: requestUrl.searchParams.get("$top"),
@@ -140,6 +199,7 @@ async function requestListings(options) {
             throw createMlsGridError(`MLS Grid request timed out after ${timeoutMs}ms.`, 408, {
                 timeoutMs,
                 request: {
+                    diagnostics,
                     includeMedia: options.includeMedia ?? includeMediaByDefault,
                     skip: requestUrl.searchParams.get("$skip"),
                     top: requestUrl.searchParams.get("$top"),

@@ -196,4 +196,65 @@ html, body {
   text-transform: uppercase;
 }
 
+@media (max-width: 767px) {
+  [data-testid="reie-search-interface"][data-mobile-view="list"] [data-testid="reie-search-map-pane"] {
+    display: none !important;
+  }
+
+  [data-testid="reie-search-interface"][data-mobile-view="map"] [data-testid="reie-search-list-pane"] {
+    display: none !important;
+  }
+}
+
+@media (min-width: 768px) {
+  [data-testid="reie-search-interface"] {
+    flex-direction: row !important;
+  }
+
+  [data-testid="reie-search-mobile-toolbar"] {
+    display: none !important;
+  }
+
+  [data-testid="reie-search-list-pane"] {
+    display: flex !important;
+    height: 100% !important;
+    min-width: 440px !important;
+    max-width: 560px !important;
+    width: 35vw !important;
+    flex-shrink: 0 !important;
+  }
+
+  [data-testid="reie-search-map-pane"] {
+    display: block !important;
+    height: 100% !important;
+    min-width: 0 !important;
+    flex: 1 1 0% !important;
+  }
+
+  [data-testid="reie-map-sidebar"] {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    min-height: 0 !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 0;
+  }
+
+  [data-testid="reie-sidebar-header"] {
+    max-height: 38vh !important;
+    overflow-y: auto !important;
+  }
+
+  [data-testid="reie-sidebar-list"] {
+    min-height: 0 !important;
+    flex: 1 1 auto !important;
+    overflow-y: auto !important;
+  }
+
+  [data-testid="reie-sidebar-save-search-footer"] {
+    max-height: 22vh !important;
+    overflow-y: auto !important;
+  }
+}
+
 /* globals.css */

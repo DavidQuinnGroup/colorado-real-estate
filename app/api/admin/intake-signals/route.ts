@@ -51,6 +51,21 @@ type IntakeSummary = {
   alertIncomplete: number;
 };
 
+type IntakeReadinessGate = {
+  name: string;
+  status: 'pass' | 'watch' | 'blocked';
+  detail: string;
+};
+
+type IntakeReadiness = {
+  level: 'ready' | 'watch' | 'blocked';
+  summary: string;
+  nextAction: string;
+  terminal: string;
+  nextCommand: string;
+  gates: IntakeReadinessGate[];
+};
+
 type IntakeSignalRow = {
   id: string;
   kind: IntakeKind;
@@ -73,6 +88,10 @@ type PreparedSignals = {
 
 const DEFAULT_LIMIT = 12;
 const MAX_LIMIT = 50;
+const LOCAL_BASE_URL = 'http://localhost:3000';
+const TERMINAL = 'Terminal 5';
+const ROUTE = '/api/admin/intake-signals';
+const DEFAULT_COMMAND = `curl --max-time 8 -s "${LOCAL_BASE_URL}${ROUTE}?limit=6" -H "x-admin-key: $REIE_ADMIN_API_KEY"`;
 
 function getAdminKey() {
   return process.env.REIE_ADMIN_API_KEY || process.env.ADMIN_API_KEY || null;
@@ -97,6 +116,19 @@ function authorizeRequest(request: NextRequest) {
 function getErrorMessage(error: unknown) {
   if (error instanceof Error) return error.message;
   return String(error || 'Unknown intake-signal failure.');
+}
+
+function getInspectionCommand(request: NextRequest) {
+  return `curl --max-time 8 -s "${LOCAL_BASE_URL}${ROUTE}${request.nextUrl.search}" -H "x-admin-key: $REIE_ADMIN_API_KEY"`;
+}
+
+function getInspectionMetadata(request: NextRequest) {
+  return {
+    generatedAt: new Date().toISOString(),
+    terminal: TERMINAL,
+    route: ROUTE,
+    command: getInspectionCommand(request),
+  };
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -320,6 +352,87 @@ function getSummary(signals: IntakeSignal[], hiddenPromotedInteractions: number)
   };
 }
 
+function getIntakeEnvelope(request: NextRequest, signals: IntakeSignal[], hiddenPromotedInteractions: number) {
+  const inspectionMetadata = getInspectionMetadata(request);
+  const summary = getSummary(signals, hiddenPromotedInteractions);
+
+  return {
+    ...inspectionMetadata,
+    signals,
+    summary,
+    readiness: getReadiness(summary, inspectionMetadata.command),
+    auth: {
+      configured: Boolean(getAdminKey()),
+    },
+  } as const;
+}
+
+function getReadiness(summary: IntakeSummary, nextCommand = DEFAULT_COMMAND): IntakeReadiness {
+  const promotedGateStatus = summary.hiddenPromotedInteractions > 0 ? 'watch' : 'pass';
+  const criteriaGateStatus = summary.alertIncomplete > 0 ? 'watch' : 'pass';
+  const visibilityGateStatus = summary.total > 0 ? 'pass' : 'watch';
+
+  const gates: IntakeReadinessGate[] = [
+    {
+      name: 'Signal Visibility',
+      status: visibilityGateStatus,
+      detail: `${summary.total} visible intake signal${summary.total === 1 ? '' : 's'} in this response.`,
+    },
+    {
+      name: 'Promoted Interaction Handoff',
+      status: promotedGateStatus,
+      detail: `${summary.hiddenPromotedInteractions} promoted interaction${summary.hiddenPromotedInteractions === 1 ? '' : 's'} hidden from the default response.`,
+    },
+    {
+      name: 'Alert Criteria',
+      status: criteriaGateStatus,
+      detail: `${summary.alertReady} ready, ${summary.alertWatch} watch, and ${summary.alertIncomplete} incomplete intake signal${summary.alertReady + summary.alertWatch + summary.alertIncomplete === 1 ? '' : 's'} in this response.`,
+    },
+  ];
+
+  if (summary.alertIncomplete > 0) {
+    return {
+      level: 'watch',
+      summary: 'Some intake signals need stronger saved-search criteria before automation scales.',
+      nextAction: 'Review incomplete intake signals before increasing scheduler cadence, recurring email traffic, or content planning.',
+      terminal: TERMINAL,
+      nextCommand,
+      gates,
+    };
+  }
+
+  if (summary.hiddenPromotedInteractions > 0) {
+    return {
+      level: 'watch',
+      summary: 'Some saved-search interactions are already represented by CRM tasks.',
+      nextAction: 'Review promoted CRM tasks before treating saved-search interaction volume as new handoff demand.',
+      terminal: TERMINAL,
+      nextCommand,
+      gates,
+    };
+  }
+
+  if (summary.total === 0) {
+    return {
+      level: 'watch',
+      summary: 'No recent intake signals are visible in this response.',
+      nextAction: 'Confirm intake capture before using saved-search behavior for automation or content planning.',
+      terminal: TERMINAL,
+      nextCommand,
+      gates,
+    };
+  }
+
+  return {
+    level: 'ready',
+    summary: 'Recent intake signals are visible and no intake handoff blockers were detected in this response.',
+    nextAction: 'Keep intake review on the approved cadence before scaling automation.',
+    terminal: TERMINAL,
+    nextCommand,
+    gates,
+  };
+}
+
 async function getIntakeRows(limit: number): Promise<IntakeSignalRow[]> {
   const rowLimit = limit * 3;
 
@@ -369,14 +482,12 @@ async function getIntakeRows(limit: number): Promise<IntakeSignalRow[]> {
   return [...crmTaskRows, ...interactionRows];
 }
 
-function unauthorizedResponse() {
+function unauthorizedResponse(request: NextRequest) {
   return NextResponse.json(
     {
       success: false,
       error: 'Admin access is required.',
-      auth: {
-        configured: Boolean(getAdminKey()),
-      },
+      ...getIntakeEnvelope(request, [], 0),
     },
     { status: 401 },
   );
@@ -384,7 +495,7 @@ function unauthorizedResponse() {
 
 export async function GET(request: NextRequest) {
   if (!authorizeRequest(request)) {
-    return unauthorizedResponse();
+    return unauthorizedResponse(request);
   }
 
   try {
@@ -395,11 +506,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      signals: limitedSignals,
-      summary: getSummary(limitedSignals, hiddenPromotedInteractions),
-      auth: {
-        configured: Boolean(getAdminKey()),
-      },
+      ...getIntakeEnvelope(request, limitedSignals, hiddenPromotedInteractions),
     });
   } catch (error) {
     console.error('[REIE INTAKE SIGNALS] Read failed:', getErrorMessage(error));
@@ -409,6 +516,7 @@ export async function GET(request: NextRequest) {
         success: false,
         error: 'Intake signals could not be read.',
         detail: getErrorMessage(error),
+        ...getIntakeEnvelope(request, [], 0),
       },
       { status: 500 },
     );

@@ -1,6 +1,6 @@
 # Supabase Recovery Runbook
 
-Date: June 1, 2026
+Date: June 19, 2026
 
 Project: David Quinn Group Real Estate Intelligence Engine
 
@@ -10,30 +10,30 @@ Working path:
 
 ## Purpose
 
-This runbook defines the operator path for restoring Supabase connectivity after `npm run supabase:check:json` reports a stale, missing, paused, or invalid Supabase project reference. Use `npm run supabase:check` as the human-readable companion check.
+This runbook defines the operator path for restoring Supabase connectivity after `npm run supabase:check:json` reports a stale, missing, paused, or invalid Supabase project reference. Use `npm run supabase:check` as the human-readable companion check, then use `npm run smoke:ops` to confirm protected Master Control Panel policy, recent intake signal visibility, alert status, consolidated notification readiness, direct saved-search alert notification readiness, direct property-inquiry notification readiness, and aggregate launch readiness before production-facing volume increases.
 
-The current local env set is internally consistent, but it points at project ref `otmkoqvmhthitldlnjdk`, whose project API host does not resolve and whose Postgres tenant/user is not accepted by the pooler.
+The current local env set is internally consistent, and `npm run supabase:check:json` currently reports readiness. Keep this runbook as the recovery path if that gate regresses.
 
-Current verified failures:
+Historical failure signatures handled by this runbook:
 
 ```text
 DNS lookup failed: ENOTFOUND otmkoqvmhthitldlnjdk.supabase.co
 FATAL: (ENOTFOUND) tenant/user postgres.otmkoqvmhthitldlnjdk not found
 ```
 
-Current verified non-failure:
+Historical non-failure that helped isolate those failures:
 
 ```text
 aws-0-us-west-2.pooler.supabase.com:6543 accepted a TCP connection
 ```
 
-June 1, 2026 recheck:
+June 19, 2026 status:
 
-- `npm run supabase:check` still fails on Supabase project DNS, Prisma database, and Supabase REST.
+- `npm run supabase:check:json` reports `readiness.level="ready"` with Supabase project DNS, Prisma database, and Supabase REST passing.
 - Current preflight dashboard hint: `https://supabase.com/dashboard/project/otmkoqvmhthitldlnjdk`.
-- Current preflight likely diagnosis: the configured project ref is not reachable as an active Supabase API host, while the regional pooler host itself is reachable.
+- Current launch blocker has moved to property-inquiry notification routing: `PROPERTY_INQUIRY_NOTIFY_TO` and `REIE_INTERNAL_EMAIL` are not configured locally, and `PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN` must remain unset or false for launch.
 - `npm run typesense:collections:check` passes for both canonical Typesense collections.
-- `npm run run:queue-dashboard -- --failed --sample --limit=5 --timeout-ms=3000` reports no open dead-letter jobs and no stale active jobs, but keeps recovery blocked because `mls-sync` failed jobs are database-connectivity failures.
+- `npm run run:queue-dashboard -- --failed --sample --limit=5 --timeout-ms=3000` should still be used before retry or live queue decisions.
 - Supabase's public status page did not show a broad platform incident for June 1, 2026 during this check. Treat the failure as project status, project ref, credentials, connection-string, account, or local-network specific until the dashboard proves otherwise.
 
 ## Terminal 5 Failure Interpretation
@@ -116,17 +116,29 @@ The JSON report includes `schemaVersion: 1`, `readiness.level`, `readiness.summa
 
 The JSON readiness gate must report ready before database-backed dry-runs, Typesense reindexing, queue retry, recurring scheduler activation, recurring email traffic, live-inventory claims, MLS-backed public expansion, large programmatic content batch publication, or live database work can be trusted.
 
+Supabase readiness only proves database and REST connectivity. It does not override Master Control Panel policy, intake signal visibility, notification launch readiness, Search Smoke Readiness, or timeout-bounded queue diagnostics.
+
 After `npm run supabase:check:json` reports readiness, continue:
 
 ```bash
 npm run typesense:reindex
+npm run check:launch-readiness
 npm run smoke:mls-status
 npm run smoke:search
+npm run smoke:ops
 npm run run:mls-sync:dry
 npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000
 npm run run:crm:scheduler
 npm run run:alerts:dry -- --limit 50
 npm run run:digest:dry -- --limit 50
+```
+
+When Terminal 1 is running, inspect protected control and intake APIs directly if `npm run smoke:ops` needs lower-level confirmation:
+
+```bash
+curl --max-time 8 -s -w "\nHTTP_STATUS:%{http_code}\n" "http://localhost:3000/api/admin/control-state" -H "x-admin-key: $REIE_ADMIN_API_KEY"
+curl --max-time 8 -s -w "\nHTTP_STATUS:%{http_code}\n" "http://localhost:3000/api/admin/intake-signals?limit=6" -H "x-admin-key: $REIE_ADMIN_API_KEY"
+curl --max-time 8 -s -w "\nHTTP_STATUS:%{http_code}\n" "http://localhost:3000/api/admin/intake-signals/<signal-id-from-list-response>?kind=crm_task" -H "x-admin-key: $REIE_ADMIN_API_KEY"
 ```
 
 ## Pass Conditions
@@ -142,6 +154,19 @@ npm run run:digest:dry -- --limit 50
 - Supabase REST: pass.
 
 Then Typesense reindexing should complete without Supabase fetch errors.
+
+Then `npm run smoke:ops` should confirm:
+
+- `/api/mls/status` is reachable.
+- `/api/search?limit=5` returns results with healthy search metadata.
+- `/api/admin/control-state` returns the intended launch posture.
+- `/api/admin/intake-signals?limit=6` returns recent strategy-intake or saved-search handoff visibility.
+- Alert status is inspectable and bounded.
+- Consolidated notification readiness is non-sending, mutates no rows, and summarizes saved-search alert, property-inquiry notification, and aggregate launch gates.
+- Direct saved-search alert notification readiness is non-sending and exposes queue counts plus alert email configuration checks.
+- Direct property-inquiry notification readiness is non-sending and exposes a visible recipient check.
+- Aggregate launch readiness is non-sending, mutates no rows, and exposes the saved-search and property-inquiry notification gates.
+- The public experience smoke passes.
 
 ## Keep Blocked Until
 
@@ -161,6 +186,17 @@ Keep these blocked until `npm run supabase:check:json` reports readiness:
 - Recurring email traffic.
 - Live-inventory claims.
 - MLS-backed public expansion.
+- Large programmatic content batch publication.
+
+Keep these still blocked after Supabase readiness when Master Control Panel policy is paused/protected beyond the intended launch posture, intake signal handoff is hidden or unreviewed, notification launch readiness is blocked, property-inquiry recipient routing is missing, `PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN=true`, Search Smoke Readiness is degraded, search-index health is degraded, or timeout-bounded queue diagnostics are unacceptable:
+
+- MLS-volume increases.
+- Scheduler cadence increases.
+- Recurring scheduler activation.
+- Recurring email traffic, including recurring alert, digest, or property-inquiry notification sends.
+- Live-inventory claims.
+- MLS-backed public expansion.
+- CRM-informed content planning.
 - Large programmatic content batch publication.
 
 <!-- /Users/davidquinn/david-quinn-group/colorado-real-estate/docs/supabase-recovery-runbook.md -->

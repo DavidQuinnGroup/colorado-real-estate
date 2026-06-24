@@ -48,6 +48,21 @@ type IntakeSignal = {
   metadata: Record<string, unknown>;
 };
 
+type IntakeDetailReadinessGate = {
+  name: string;
+  status: 'pass' | 'watch' | 'blocked';
+  detail: string;
+};
+
+type IntakeDetailReadiness = {
+  level: 'ready' | 'watch' | 'blocked';
+  summary: string;
+  nextAction: string;
+  terminal: string;
+  nextCommand: string;
+  gates: IntakeDetailReadinessGate[];
+};
+
 type IntakeSignalRow = {
   id: string;
   kind: IntakeKind;
@@ -75,6 +90,9 @@ type UpdateSignalBody = {
 const TASK_STATUSES = new Set<TaskStatus>(['pending', 'reviewing', 'completed', 'dismissed']);
 const TASK_PRIORITIES = new Set<TaskPriority>(['low', 'medium', 'high']);
 const MAX_NOTE_LENGTH = 500;
+const LOCAL_BASE_URL = 'http://localhost:3000';
+const TERMINAL = 'Terminal 5';
+const ROUTE_BASE = '/api/admin/intake-signals';
 
 function getAdminKey() {
   return process.env.REIE_ADMIN_API_KEY || process.env.ADMIN_API_KEY || null;
@@ -273,6 +291,147 @@ function normalizeSignal(row: IntakeSignalRow): IntakeSignal {
   };
 }
 
+function getInspectionCommand(request: NextRequest, id: string) {
+  const route = `${ROUTE_BASE}/${id}`;
+  const method = request.method.toUpperCase();
+  const methodFlag = method === 'GET' ? '' : ` -X ${method}`;
+  const bodyHint =
+    method === 'PATCH'
+      ? ` -H "Content-Type: application/json" -d '{"status":"reviewing","reviewNote":"Reviewed in Terminal 5."}'`
+      : '';
+
+  return `curl --max-time 8 -s${methodFlag} "${LOCAL_BASE_URL}${route}${request.nextUrl.search}" -H "x-admin-key: $REIE_ADMIN_API_KEY"${bodyHint}`;
+}
+
+function getRouteMetadata(request: NextRequest, id: string) {
+  const route = `${ROUTE_BASE}/${id}`;
+
+  return {
+    generatedAt: new Date().toISOString(),
+    terminal: TERMINAL,
+    inspectionSource: 'Detail Route' as const,
+    route,
+    command: getInspectionCommand(request, id),
+  };
+}
+
+function getFallbackDetailReadiness(id: string, nextCommand: string, reason: string): IntakeDetailReadiness {
+  return {
+    level: 'blocked',
+    summary: reason,
+    nextAction: 'Resolve this protected detail-route response before using the signal for CRM, alert, email, or content automation.',
+    terminal: TERMINAL,
+    nextCommand,
+    gates: [
+      {
+        name: 'Signal Visibility',
+        status: 'blocked',
+        detail: `Signal "${id}" was not exposed in this response.`,
+      },
+      {
+        name: 'Detail Route',
+        status: 'blocked',
+        detail: reason,
+      },
+      {
+        name: 'Automation Safety',
+        status: 'blocked',
+        detail: 'Automation should not scale from a detail route that did not return an authorized signal record.',
+      },
+    ],
+  };
+}
+
+function getDetailEnvelope(request: NextRequest, id: string, signal?: IntakeSignal, fallbackReason?: string) {
+  const routeMetadata = getRouteMetadata(request, id);
+  const readiness = signal
+    ? getDetailReadiness(signal, routeMetadata.command)
+    : getFallbackDetailReadiness(id, routeMetadata.command, fallbackReason || `Intake signal "${id}" was not available.`);
+
+  return {
+    ...routeMetadata,
+    ...(signal ? { signal } : {}),
+    readiness,
+    auth: {
+      configured: Boolean(getAdminKey()),
+    },
+  } as const;
+}
+
+function getDetailReadiness(signal: IntakeSignal, nextCommand: string): IntakeDetailReadiness {
+  const isInteraction = signal.kind === 'interaction';
+  const isOpenCrmTask = signal.kind === 'crm_task' && (signal.status === 'pending' || signal.status === 'reviewing');
+  const hasIncompleteCriteria = signal.alertReadiness.level === 'incomplete';
+  const gates: IntakeDetailReadinessGate[] = [
+    {
+      name: 'Signal Visibility',
+      status: 'pass',
+      detail: `${signal.kind === 'crm_task' ? 'CRM task' : 'Saved-search interaction'} signal "${signal.id}" is visible.`,
+    },
+    {
+      name: 'Promotion State',
+      status: isInteraction ? 'watch' : 'pass',
+      detail: isInteraction
+        ? 'Interaction signal still requires explicit human promotion before CRM handoff.'
+        : 'Signal is represented by a CRM task.',
+    },
+    {
+      name: 'Alert Criteria',
+      status: hasIncompleteCriteria ? 'watch' : 'pass',
+      detail: signal.alertReadiness.summary || 'Alert readiness metadata is available for this signal.',
+    },
+    {
+      name: 'Review State',
+      status: isOpenCrmTask ? 'watch' : 'pass',
+      detail: isOpenCrmTask
+        ? `CRM task is ${signal.status}; human review should complete before automation scales.`
+        : `Signal status is ${signal.status}.`,
+    },
+  ];
+
+  if (hasIncompleteCriteria) {
+    return {
+      level: 'watch',
+      summary: 'This intake signal needs stronger saved-search criteria before automation scales.',
+      nextAction: 'Review alert criteria and update the CRM task before relying on this signal for scheduler, email, or content decisions.',
+      terminal: TERMINAL,
+      nextCommand,
+      gates,
+    };
+  }
+
+  if (isInteraction) {
+    return {
+      level: 'watch',
+      summary: 'This saved-search interaction is visible but has not been promoted to CRM review.',
+      nextAction: 'Promote the signal only after confirming intent and handoff capacity.',
+      terminal: TERMINAL,
+      nextCommand,
+      gates,
+    };
+  }
+
+  if (isOpenCrmTask) {
+    return {
+      level: 'watch',
+      summary: 'This CRM task is ready for human review but should not be treated as closed handoff evidence.',
+      nextAction: 'Complete or dismiss the CRM task with review notes before scaling automation based on this signal.',
+      terminal: TERMINAL,
+      nextCommand,
+      gates,
+    };
+  }
+
+  return {
+    level: 'ready',
+    summary: 'This intake signal has no detail-level readiness blockers in the current response.',
+    nextAction: 'Keep intake review on the approved cadence before scaling automation.',
+    terminal: TERMINAL,
+    nextCommand,
+    gates,
+  };
+}
+
 async function getSignalId(context: RouteContext) {
   const params = await context.params;
   return params.id;
@@ -458,46 +617,44 @@ async function promoteInteractionSignal(row: IntakeSignalRow, body: UpdateSignal
   return createdRows[0]?.id ? getCrmTaskSignal(createdRows[0].id) : null;
 }
 
-function unauthorizedResponse() {
+function unauthorizedResponse(request: NextRequest, id: string) {
   return NextResponse.json(
     {
       success: false,
       error: 'Admin access is required.',
-      auth: {
-        configured: Boolean(getAdminKey()),
-      },
+      ...getDetailEnvelope(request, id, undefined, 'Admin access is required before this intake signal can be inspected.'),
     },
     { status: 401 },
   );
 }
 
-function notFoundResponse(id: string) {
+function notFoundResponse(request: NextRequest, id: string) {
   return NextResponse.json(
     {
       success: false,
       error: `Intake signal "${id}" was not found.`,
+      ...getDetailEnvelope(request, id, undefined, `Intake signal "${id}" was not found.`),
     },
     { status: 404 },
   );
 }
 
 export async function GET(request: NextRequest, context: RouteContext) {
+  const id = await getSignalId(context);
+
   if (!authorizeRequest(request)) {
-    return unauthorizedResponse();
+    return unauthorizedResponse(request, id);
   }
 
   try {
-    const id = await getSignalId(context);
     const row = await getSignalRow(id, getKind(request));
 
-    if (!row) return notFoundResponse(id);
+    if (!row) return notFoundResponse(request, id);
+    const signal = normalizeSignal(row);
 
     return NextResponse.json({
       success: true,
-      signal: normalizeSignal(row),
-      auth: {
-        configured: Boolean(getAdminKey()),
-      },
+      ...getDetailEnvelope(request, id, signal),
     });
   } catch (error) {
     console.error('[REIE INTAKE SIGNAL] Read failed:', getErrorMessage(error));
@@ -507,6 +664,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
         success: false,
         error: 'Intake signal could not be read.',
         detail: getErrorMessage(error),
+        ...getDetailEnvelope(request, id, undefined, 'Intake signal could not be read.'),
       },
       { status: 500 },
     );
@@ -514,39 +672,40 @@ export async function GET(request: NextRequest, context: RouteContext) {
 }
 
 export async function PATCH(request: NextRequest, context: RouteContext) {
+  const id = await getSignalId(context);
+
   if (!authorizeRequest(request)) {
-    return unauthorizedResponse();
+    return unauthorizedResponse(request, id);
   }
 
   try {
-    const id = await getSignalId(context);
     const body = (await request.json().catch(() => ({}))) as UpdateSignalBody;
     const row = await getSignalRow(id, getKind(request, body.kind));
 
-    if (!row) return notFoundResponse(id);
+    if (!row) return notFoundResponse(request, id);
 
     const updatedRow =
       row.kind === 'crm_task' ? await updateCrmTaskSignal(row, body) : getAction(body.action) === 'promote' ? await promoteInteractionSignal(row, body) : null;
 
     if (!updatedRow && row.kind === 'interaction') {
+      const signal = normalizeSignal(row);
       return NextResponse.json(
         {
           success: false,
           error: 'Interaction signals require action="promote" before they can be updated as CRM tasks.',
+          ...getDetailEnvelope(request, id, signal),
         },
         { status: 409 },
       );
     }
 
-    if (!updatedRow) return notFoundResponse(id);
+    if (!updatedRow) return notFoundResponse(request, id);
+    const signal = normalizeSignal(updatedRow);
 
     return NextResponse.json({
       success: true,
-      signal: normalizeSignal(updatedRow),
+      ...getDetailEnvelope(request, id, signal),
       promoted: row.kind === 'interaction' && updatedRow.kind === 'crm_task',
-      auth: {
-        configured: Boolean(getAdminKey()),
-      },
     });
   } catch (error) {
     console.error('[REIE INTAKE SIGNAL] Update failed:', getErrorMessage(error));
@@ -556,6 +715,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
         success: false,
         error: 'Intake signal could not be updated.',
         detail: getErrorMessage(error),
+        ...getDetailEnvelope(request, id, undefined, 'Intake signal could not be updated.'),
       },
       { status: 500 },
     );

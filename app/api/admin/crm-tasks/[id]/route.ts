@@ -99,6 +99,7 @@ const DEFAULT_LIMIT = 20;
 const MAX_NOTE_LENGTH = 500;
 const TASK_STATUSES = new Set<CRMTaskStatus>(['pending', 'reviewing', 'completed', 'dismissed']);
 const TASK_PRIORITIES = new Set<Exclude<CRMTaskPriority, 'unknown'>>(['high', 'medium', 'low']);
+const LOCAL_BASE_URL = 'http://localhost:3000';
 
 function getAdminKey() {
   return process.env.REIE_ADMIN_API_KEY || process.env.ADMIN_API_KEY || null;
@@ -279,8 +280,8 @@ function getOperations(status: string) {
   return {
     terminal: 'Terminal 5' as const,
     reviewCommand: reviewCommandByStatus[status] || `npm run run:crm -- --limit ${DEFAULT_LIMIT} --status ${status}`,
-    intakeCommand: 'curl -s http://localhost:3000/api/admin/intake-signals',
-    alertStatusCommand: 'curl -s http://localhost:3000/api/process-alerts',
+    intakeCommand: 'curl --max-time 8 -s "http://localhost:3000/api/admin/intake-signals?limit=6" -H "x-admin-key: $REIE_ADMIN_API_KEY"',
+    alertStatusCommand: 'curl --max-time 8 -s "http://localhost:3000/api/process-alerts?limit=6"',
   };
 }
 
@@ -288,18 +289,36 @@ function getRoutePath(id: string) {
   return `/api/admin/crm-tasks/${id}`;
 }
 
-function getInspectionCommand(id: string) {
-  return `curl --max-time 8 -s "http://localhost:3000${getRoutePath(id)}" -H "x-admin-key: $REIE_ADMIN_API_KEY"`;
+function getInspectionCommand(request: NextRequest, id: string) {
+  const method = request.method.toUpperCase();
+  const methodFlag = method === 'GET' ? '' : ` -X ${method}`;
+  const bodyHint =
+    method === 'PATCH'
+      ? ` -H "Content-Type: application/json" -d '{"status":"reviewing","reviewNote":"Reviewed in Terminal 5."}'`
+      : '';
+
+  return `curl --max-time 8 -s${methodFlag} "${LOCAL_BASE_URL}${getRoutePath(id)}${request.nextUrl.search}" -H "x-admin-key: $REIE_ADMIN_API_KEY"${bodyHint}`;
 }
 
-function getInspectionMetadata(id: string) {
+function getInspectionMetadata(request: NextRequest, id: string) {
   return {
     generatedAt: new Date().toISOString(),
     terminal: 'Terminal 5' as const,
     inspectionSource: 'Detail Route' as const,
     route: getRoutePath(id),
-    command: getInspectionCommand(id),
+    command: getInspectionCommand(request, id),
   };
+}
+
+function getDetailEnvelope(request: NextRequest, id: string, task?: CRMTask) {
+  return {
+    ...getInspectionMetadata(request, id),
+    ...(task ? { task } : {}),
+    operations: getOperations(task?.status || DEFAULT_STATUS),
+    auth: {
+      configured: Boolean(getAdminKey()),
+    },
+  } as const;
 }
 
 function normalizeTask(row: CRMTaskRow): CRMTask {
@@ -329,7 +348,7 @@ function normalizeTask(row: CRMTaskRow): CRMTask {
   };
 }
 
-async function getSignalId(context: RouteContext) {
+async function getTaskId(context: RouteContext) {
   const params = await context.params;
   return params.id;
 }
@@ -371,22 +390,6 @@ function taskClosureRequiresReviewNote(status: CRMTaskStatus) {
 
 function getReviewNote(body: UpdateCRMTaskBody) {
   return boundedString(body.reviewNote, MAX_NOTE_LENGTH);
-}
-
-function validationErrorResponse(id: string, error: string) {
-  return NextResponse.json(
-    {
-      success: false,
-      error,
-      ...getInspectionMetadata(id),
-      audit: {
-        required: true,
-        requiredForStatuses: ['completed', 'dismissed'],
-        reviewNoteMaxLength: MAX_NOTE_LENGTH,
-      },
-    },
-    { status: 400 },
-  );
 }
 
 function mergeReviewMetadata(
@@ -433,48 +436,43 @@ async function updateTask(row: CRMTaskRow, body: UpdateCRMTaskBody) {
   return getTaskRow(row.id);
 }
 
-function unauthorizedResponse() {
+function unauthorizedResponse(request: NextRequest, id: string) {
   return NextResponse.json(
     {
       success: false,
       error: 'Admin access is required.',
-      auth: {
-        configured: Boolean(getAdminKey()),
-      },
+      ...getDetailEnvelope(request, id),
     },
     { status: 401 },
   );
 }
 
-function notFoundResponse(id: string) {
+function notFoundResponse(request: NextRequest, id: string) {
   return NextResponse.json(
     {
       success: false,
       error: `CRM task "${id}" was not found.`,
-      ...getInspectionMetadata(id),
+      ...getDetailEnvelope(request, id),
     },
     { status: 404 },
   );
 }
 
 export async function GET(request: NextRequest, context: RouteContext) {
+  const id = await getTaskId(context);
+
   if (!authorizeRequest(request)) {
-    return unauthorizedResponse();
+    return unauthorizedResponse(request, id);
   }
 
   try {
-    const id = await getSignalId(context);
     const row = await getTaskRow(id);
 
-    if (!row) return notFoundResponse(id);
+    if (!row) return notFoundResponse(request, id);
 
     return NextResponse.json({
       success: true,
-      ...getInspectionMetadata(id),
-      task: normalizeTask(row),
-      auth: {
-        configured: Boolean(getAdminKey()),
-      },
+      ...getDetailEnvelope(request, id, normalizeTask(row)),
     });
   } catch (error) {
     console.error('[REIE CRM TASK] Read failed:', getErrorMessage(error));
@@ -484,7 +482,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
         success: false,
         error: 'CRM task could not be read.',
         detail: getErrorMessage(error),
-        ...getInspectionMetadata('unknown'),
+        ...getDetailEnvelope(request, id),
       },
       { status: 500 },
     );
@@ -492,35 +490,45 @@ export async function GET(request: NextRequest, context: RouteContext) {
 }
 
 export async function PATCH(request: NextRequest, context: RouteContext) {
+  const id = await getTaskId(context);
+
   if (!authorizeRequest(request)) {
-    return unauthorizedResponse();
+    return unauthorizedResponse(request, id);
   }
 
   try {
-    const id = await getSignalId(context);
     const body = (await request.json().catch(() => ({}))) as UpdateCRMTaskBody;
     const row = await getTaskRow(id);
 
-    if (!row) return notFoundResponse(id);
+    if (!row) return notFoundResponse(request, id);
 
     const targetStatus = parseTaskStatus(body.status, getCurrentTaskStatus(row));
     const reviewNote = getReviewNote(body);
 
     if (taskClosureRequiresReviewNote(targetStatus) && !reviewNote) {
-      return validationErrorResponse(id, 'A review note is required before completing or dismissing a CRM task.');
+      const task = normalizeTask(row);
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'A review note is required before completing or dismissing a CRM task.',
+          ...getDetailEnvelope(request, id, task),
+          audit: {
+            required: true,
+            requiredForStatuses: ['completed', 'dismissed'],
+            reviewNoteMaxLength: MAX_NOTE_LENGTH,
+          },
+        },
+        { status: 400 },
+      );
     }
 
     const updatedRow = await updateTask(row, body);
 
-    if (!updatedRow) return notFoundResponse(id);
+    if (!updatedRow) return notFoundResponse(request, id);
 
     return NextResponse.json({
       success: true,
-      ...getInspectionMetadata(id),
-      task: normalizeTask(updatedRow),
-      auth: {
-        configured: Boolean(getAdminKey()),
-      },
+      ...getDetailEnvelope(request, id, normalizeTask(updatedRow)),
     });
   } catch (error) {
     console.error('[REIE CRM TASK] Update failed:', getErrorMessage(error));
@@ -530,7 +538,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
         success: false,
         error: 'CRM task could not be updated.',
         detail: getErrorMessage(error),
-        ...getInspectionMetadata('unknown'),
+        ...getDetailEnvelope(request, id),
       },
       { status: 500 },
     );

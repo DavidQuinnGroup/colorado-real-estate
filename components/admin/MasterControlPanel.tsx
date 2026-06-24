@@ -68,11 +68,39 @@ type IntakeSummary = {
   alertIncomplete: number;
 };
 
+type IntakeReadiness = {
+  level: 'ready' | 'watch' | 'blocked';
+  summary: string;
+  nextAction: string;
+  terminal: string;
+  nextCommand: string;
+  gates: Array<{
+    name: string;
+    status: 'pass' | 'watch' | 'blocked';
+    detail: string;
+  }>;
+};
+
+type IntakeApiMetadata = {
+  generatedAt: string;
+  terminal: 'Terminal 5';
+  inspectionSource?: 'Detail Route';
+  route: string;
+  command: string;
+};
+
+type IntakeApiErrorMetadata = Partial<IntakeApiMetadata>;
+
 type IntakeSignalsResponse =
   | {
       success: true;
+      generatedAt: string;
+      terminal: 'Terminal 5';
+      route: string;
+      command: string;
       signals: IntakeSignal[];
       summary: IntakeSummary;
+      readiness: IntakeReadiness;
       auth: {
         configured: boolean;
       };
@@ -81,12 +109,28 @@ type IntakeSignalsResponse =
       success: false;
       error: string;
       detail?: string;
+      generatedAt?: string;
+      terminal?: 'Terminal 5';
+      route?: string;
+      command?: string;
+      signals?: IntakeSignal[];
+      summary?: IntakeSummary;
+      readiness?: IntakeReadiness;
+      auth?: {
+        configured: boolean;
+      };
     };
 
 type UpdateIntakeSignalResponse =
   | {
       success: true;
+      generatedAt: string;
+      terminal: 'Terminal 5';
+      inspectionSource: 'Detail Route';
+      route: string;
+      command: string;
       signal: IntakeSignal;
+      readiness: IntakeReadiness;
       promoted?: boolean;
       auth: {
         configured: boolean;
@@ -96,6 +140,16 @@ type UpdateIntakeSignalResponse =
       success: false;
       error: string;
       detail?: string;
+      generatedAt?: string;
+      terminal?: 'Terminal 5';
+      inspectionSource?: 'Detail Route';
+      route?: string;
+      command?: string;
+      signal?: IntakeSignal;
+      readiness?: IntakeReadiness;
+      auth?: {
+        configured: boolean;
+      };
     };
 
 type ControlMetric = {
@@ -125,9 +179,22 @@ type ControlPolicy = {
   warnings: string[];
 };
 
+type ControlStateApiMetadata = {
+  generatedAt: string;
+  terminal: 'Terminal 5';
+  route: '/api/admin/control-state';
+  command: string;
+};
+
+type ControlStateApiErrorMetadata = Partial<ControlStateApiMetadata>;
+
 type ControlStateResponse =
   | {
       success: true;
+      generatedAt: string;
+      terminal: 'Terminal 5';
+      route: '/api/admin/control-state';
+      command: string;
       state: ControlState;
       policy: ControlPolicy;
       source: 'database' | 'default';
@@ -139,6 +206,10 @@ type ControlStateResponse =
       success: false;
       error: string;
       detail?: string;
+      generatedAt?: string;
+      terminal?: 'Terminal 5';
+      route?: '/api/admin/control-state';
+      command?: string;
       fallback?: ControlState;
     };
 
@@ -196,6 +267,20 @@ type MlsSearchIndexStatus = {
   }>;
 };
 
+type MlsMediaDiagnosticsStatus = {
+  checkedJobs: number;
+  jobsWithMediaDiagnostics: number;
+  listingsWithMedia: number;
+  extractedMediaCount: number;
+  ignoredMediaItemCount: number;
+  listingsWithDirectMedia: number;
+  listingsWithNestedMedia: number;
+  listingsWithTopLevelPhotos: number;
+  unknown: number;
+  health: 'healthy' | 'busy' | 'degraded';
+  diagnostics: Array<{ area: string; message: string }>;
+};
+
 type MlsOperationalReadiness = {
   level: 'ready' | 'watch' | 'blocked';
   summary: string;
@@ -214,6 +299,15 @@ type MlsStatusResponse =
       success: true;
       status: 'healthy' | 'busy' | 'degraded';
       generatedAt: string;
+      terminal: 'Terminal 5';
+      route: '/api/mls/status';
+      command: string;
+      auth: {
+        configured: boolean;
+      };
+      redis?: {
+        url: string;
+      };
       diagnostics: Array<{ area: string; message: string }>;
       recommendations: string[];
       syncDefaults?: {
@@ -255,6 +349,7 @@ type MlsStatusResponse =
       propertyFreshness: MlsPropertyFreshness;
       operationalReadiness?: MlsOperationalReadiness;
       searchIndex?: MlsSearchIndexStatus;
+      mediaDiagnostics?: MlsMediaDiagnosticsStatus;
       queues: MlsQueueStatus[];
       recentFailedJobs: Array<{
         queue: string;
@@ -271,6 +366,187 @@ type MlsStatusResponse =
   | {
       success: false;
       error: string;
+      detail?: string;
+      status: 'healthy' | 'busy' | 'degraded';
+      generatedAt: string;
+      terminal: 'Terminal 5';
+      route: '/api/mls/status';
+      command: string;
+      auth: {
+        configured: boolean;
+      };
+      redis?: {
+        url: string;
+      };
+      diagnostics: Array<{ area: string; message: string }>;
+      recommendations: string[];
+      syncDefaults?: {
+        maxPages: number;
+        pageSize: number;
+        pageTimeoutMs: number;
+        startPage: number;
+      };
+      syncLimits?: {
+        pageTimeoutMs: number;
+      };
+      terminals?: {
+        nextApp?: string;
+        mlsPageWorker?: string;
+        coordinator?: string;
+        dockerAndTypesense?: string;
+        statusChecks?: string;
+        scriptsAndCurl?: string;
+      };
+      commands: {
+        smokeOps?: string;
+        smokeMlsStatus?: string;
+        smokeSearch?: string;
+        status: string;
+        rawStatus?: string;
+        searchCheck?: string;
+        rawSearchCheck?: string;
+        retryStatus: string;
+        dryRunRetry?: string;
+        dryRunRetryMlsSync: string;
+        dryRunSyncPreview: string;
+        liveSync?: string;
+        forcedLiveSync?: string;
+        deadLetter: string;
+        deadLetterInspector?: string;
+        deadLetterOpen?: string;
+        worker: string;
+      };
+      propertyFreshness: MlsPropertyFreshness;
+      operationalReadiness?: MlsOperationalReadiness;
+      searchIndex?: MlsSearchIndexStatus;
+      mediaDiagnostics?: MlsMediaDiagnosticsStatus;
+      queues: MlsQueueStatus[];
+      recentFailedJobs: Array<{
+        queue: string;
+        id?: string;
+        name: string;
+        attemptsMade: number;
+        failedReason: string | null;
+        finishedOn: string | null;
+        dryRunRetryCommand: string;
+        liveRetryCommand: string;
+      }>;
+      recentCompletedJobs?: MlsCompletedJob[];
+    };
+
+type MlsRetryExecutionPlan = {
+  level: 'safe' | 'caution' | 'blocked';
+  summary: string;
+  nextAction: string;
+  terminal: 'Terminal 5';
+  nextCommand: string;
+  liveRetryAllowed: boolean;
+  gates: Array<{
+    label: string;
+    status: 'pass' | 'watch' | 'fail';
+    detail: string;
+  }>;
+};
+
+type MlsRetryStatusResponse =
+  | {
+      success: true;
+      module: 'REIE MLS Queue Retry';
+      generatedAt: string;
+      terminal: 'Terminal 5';
+      route: '/api/mls/retry';
+      command: string;
+      timeoutMs: number;
+      defaults: {
+        dryRun: boolean;
+        liveRetryRequires: string;
+        broadLiveRetryRequires: string;
+        terminal: 'Terminal 5';
+      };
+      terminals: {
+        scriptsAndCurl: 'Terminal 5';
+        statusChecks: 'Terminal 5';
+      };
+      commands: {
+        terminal?: 'Terminal 5';
+        retryStatus: string;
+        dryRunRetry: string;
+        liveRetry: string;
+        deadLetter: string;
+        queueDashboard: string;
+      };
+      diagnostics: Array<{ area: string; message: string }>;
+      executionPlan?: MlsRetryExecutionPlan;
+      supportedQueues: string[];
+      queues: MlsQueueStatus[];
+      deadLetter: {
+        waiting: number;
+        active: number;
+        delayed: number;
+        failed: number;
+        completed: number;
+      };
+      recentFailedJobs: Array<{
+        key: string;
+        queue: string;
+        id?: string;
+        name: string;
+        failedReason: string | null;
+        finishedOn: string | null;
+      }>;
+      auth: {
+        configured: boolean;
+      };
+    }
+  | {
+      success: false;
+      error: string;
+      detail?: string;
+      generatedAt?: string;
+      terminal?: 'Terminal 5';
+      route?: '/api/mls/retry';
+      command?: string;
+      timeoutMs?: number;
+      defaults?: {
+        dryRun: boolean;
+        liveRetryRequires: string;
+        broadLiveRetryRequires: string;
+        terminal: 'Terminal 5';
+      };
+      terminals?: {
+        scriptsAndCurl: 'Terminal 5';
+        statusChecks: 'Terminal 5';
+      };
+      commands?: {
+        terminal?: 'Terminal 5';
+        retryStatus: string;
+        dryRunRetry: string;
+        liveRetry: string;
+        deadLetter: string;
+        queueDashboard: string;
+      };
+      diagnostics?: Array<{ area: string; message: string }>;
+      executionPlan?: MlsRetryExecutionPlan;
+      supportedQueues?: string[];
+      queues?: MlsQueueStatus[];
+      deadLetter?: {
+        waiting: number;
+        active: number;
+        delayed: number;
+        failed: number;
+        completed: number;
+      };
+      recentFailedJobs?: Array<{
+        key: string;
+        queue: string;
+        id?: string;
+        name: string;
+        failedReason: string | null;
+        finishedOn: string | null;
+      }>;
+      auth?: {
+        configured: boolean;
+      };
     };
 
 type AlertExecutionPlan = {
@@ -287,12 +563,282 @@ type AlertExecutionPlan = {
   }>;
 };
 
+type NotificationReadinessBlocker = {
+  code: string;
+  envVars: string[];
+  detail: string;
+  nextCommand: string;
+};
+
+const NOTIFICATION_BLOCKER_ALIGNMENT_STATUSES = ['aligned', 'display-fallback', 'mismatch'] as const;
+
+type NotificationBlockerAlignmentStatus = (typeof NOTIFICATION_BLOCKER_ALIGNMENT_STATUSES)[number];
+
+const NOTIFICATION_BLOCKER_ALIGNMENT_STATUS = {
+  aligned: 'aligned',
+  displayFallback: 'display-fallback',
+  mismatch: 'mismatch',
+} satisfies Record<string, NotificationBlockerAlignmentStatus>;
+
+const NOTIFICATION_BLOCKER_ALIGNMENT_STATUS_COUNT = NOTIFICATION_BLOCKER_ALIGNMENT_STATUSES.length;
+
+const NOTIFICATION_BLOCKER_INSPECTION_CONTRACT_STATUSES = [
+  'ready',
+  'inspection-incomplete',
+  'alignment-status-contract-incomplete',
+] as const;
+
+type NotificationBlockerInspectionContractStatus =
+  (typeof NOTIFICATION_BLOCKER_INSPECTION_CONTRACT_STATUSES)[number];
+
+const NOTIFICATION_BLOCKER_INSPECTION_CONTRACT_STATUS = {
+  ready: 'ready',
+  inspectionIncomplete: 'inspection-incomplete',
+  alignmentStatusContractIncomplete: 'alignment-status-contract-incomplete',
+} satisfies Record<string, NotificationBlockerInspectionContractStatus>;
+
+const NOTIFICATION_BLOCKER_INSPECTION_CONTRACT_STATUS_COUNT =
+  NOTIFICATION_BLOCKER_INSPECTION_CONTRACT_STATUSES.length;
+
+const NOTIFICATION_BLOCKER_CONTRACT_STATUSES = [
+  'ready',
+  'legacy-mismatch',
+  'payload-incomplete',
+  'command-incomplete',
+] as const;
+
+type NotificationBlockerContractStatus = (typeof NOTIFICATION_BLOCKER_CONTRACT_STATUSES)[number];
+
+const NOTIFICATION_BLOCKER_CONTRACT_STATUS = {
+  ready: 'ready',
+  legacyMismatch: 'legacy-mismatch',
+  payloadIncomplete: 'payload-incomplete',
+  commandIncomplete: 'command-incomplete',
+} satisfies Record<string, NotificationBlockerContractStatus>;
+
+const NOTIFICATION_BLOCKER_CONTRACT_STATUS_COUNT = NOTIFICATION_BLOCKER_CONTRACT_STATUSES.length;
+
+const NOTIFICATION_BLOCKER_COMPOSITE_STATUSES = [
+  'ready',
+  'blocker-contract-incomplete',
+  'status-contract-incomplete',
+] as const;
+
+type NotificationBlockerCompositeStatus = (typeof NOTIFICATION_BLOCKER_COMPOSITE_STATUSES)[number];
+
+const NOTIFICATION_BLOCKER_COMPOSITE_STATUS = {
+  ready: 'ready',
+  blockerContractIncomplete: 'blocker-contract-incomplete',
+  statusContractIncomplete: 'status-contract-incomplete',
+} satisfies Record<string, NotificationBlockerCompositeStatus>;
+
+const NOTIFICATION_BLOCKER_COMPOSITE_STATUS_COUNT = NOTIFICATION_BLOCKER_COMPOSITE_STATUSES.length;
+
+const NOTIFICATION_BLOCKER_LAUNCH_STATUSES = [
+  'ready',
+  'inspection-contract-incomplete',
+  'composite-contract-incomplete',
+] as const;
+
+type NotificationBlockerLaunchStatus = (typeof NOTIFICATION_BLOCKER_LAUNCH_STATUSES)[number];
+
+const NOTIFICATION_BLOCKER_LAUNCH_STATUS = {
+  ready: 'ready',
+  inspectionContractIncomplete: 'inspection-contract-incomplete',
+  compositeContractIncomplete: 'composite-contract-incomplete',
+} satisfies Record<string, NotificationBlockerLaunchStatus>;
+
+const NOTIFICATION_BLOCKER_LAUNCH_STATUS_COUNT = NOTIFICATION_BLOCKER_LAUNCH_STATUSES.length;
+
+const NOTIFICATION_BLOCKER_LAUNCH_COMPOSITE_STATUSES = [
+  'ready',
+  'launch-contract-incomplete',
+  'status-contract-incomplete',
+] as const;
+
+type NotificationBlockerLaunchCompositeStatus =
+  (typeof NOTIFICATION_BLOCKER_LAUNCH_COMPOSITE_STATUSES)[number];
+
+const NOTIFICATION_BLOCKER_LAUNCH_COMPOSITE_STATUS = {
+  ready: 'ready',
+  launchContractIncomplete: 'launch-contract-incomplete',
+  statusContractIncomplete: 'status-contract-incomplete',
+} satisfies Record<string, NotificationBlockerLaunchCompositeStatus>;
+
+const NOTIFICATION_BLOCKER_LAUNCH_COMPOSITE_STATUS_COUNT =
+  NOTIFICATION_BLOCKER_LAUNCH_COMPOSITE_STATUSES.length;
+
+const NOTIFICATION_BLOCKER_LAUNCH_READINESS_STATUSES = [
+  'ready',
+  'launch-composite-contract-incomplete',
+] as const;
+
+type NotificationBlockerLaunchReadinessStatus =
+  (typeof NOTIFICATION_BLOCKER_LAUNCH_READINESS_STATUSES)[number];
+
+const NOTIFICATION_BLOCKER_LAUNCH_READINESS_STATUS = {
+  ready: 'ready',
+  launchCompositeContractIncomplete: 'launch-composite-contract-incomplete',
+} satisfies Record<string, NotificationBlockerLaunchReadinessStatus>;
+
+const NOTIFICATION_BLOCKER_LAUNCH_READINESS_STATUS_COUNT =
+  NOTIFICATION_BLOCKER_LAUNCH_READINESS_STATUSES.length;
+
+const NOTIFICATION_BLOCKER_LAUNCH_READINESS_CONTRACT_STATUSES = [
+  'ready',
+  'launch-readiness-contract-incomplete',
+] as const;
+
+type NotificationBlockerLaunchReadinessContractStatus =
+  (typeof NOTIFICATION_BLOCKER_LAUNCH_READINESS_CONTRACT_STATUSES)[number];
+
+const NOTIFICATION_BLOCKER_LAUNCH_READINESS_CONTRACT_STATUS = {
+  ready: 'ready',
+  launchReadinessContractIncomplete: 'launch-readiness-contract-incomplete',
+} satisfies Record<string, NotificationBlockerLaunchReadinessContractStatus>;
+
+const NOTIFICATION_BLOCKER_LAUNCH_READINESS_CONTRACT_STATUS_COUNT =
+  NOTIFICATION_BLOCKER_LAUNCH_READINESS_CONTRACT_STATUSES.length;
+
+const NOTIFICATION_BLOCKER_LAUNCH_READINESS_CONTRACT_COMPOSITE_STATUSES = [
+  'ready',
+  'launch-readiness-contract-incomplete',
+  'status-contract-incomplete',
+] as const;
+
+type NotificationBlockerLaunchReadinessContractCompositeStatus =
+  (typeof NOTIFICATION_BLOCKER_LAUNCH_READINESS_CONTRACT_COMPOSITE_STATUSES)[number];
+
+const NOTIFICATION_BLOCKER_LAUNCH_READINESS_CONTRACT_COMPOSITE_STATUS = {
+  ready: 'ready',
+  launchReadinessContractIncomplete: 'launch-readiness-contract-incomplete',
+  statusContractIncomplete: 'status-contract-incomplete',
+} satisfies Record<string, NotificationBlockerLaunchReadinessContractCompositeStatus>;
+
+const NOTIFICATION_BLOCKER_LAUNCH_READINESS_CONTRACT_COMPOSITE_STATUS_COUNT =
+  NOTIFICATION_BLOCKER_LAUNCH_READINESS_CONTRACT_COMPOSITE_STATUSES.length;
+
+const NOTIFICATION_BLOCKER_LAUNCH_READINESS_CONTRACT_FINAL_STATUSES = [
+  'ready',
+  'launch-readiness-contract-composite-contract-incomplete',
+] as const;
+
+type NotificationBlockerLaunchReadinessContractFinalStatus =
+  (typeof NOTIFICATION_BLOCKER_LAUNCH_READINESS_CONTRACT_FINAL_STATUSES)[number];
+
+const NOTIFICATION_BLOCKER_LAUNCH_READINESS_CONTRACT_FINAL_STATUS = {
+  ready: 'ready',
+  compositeContractIncomplete: 'launch-readiness-contract-composite-contract-incomplete',
+} satisfies Record<string, NotificationBlockerLaunchReadinessContractFinalStatus>;
+
+const NOTIFICATION_BLOCKER_LAUNCH_READINESS_CONTRACT_FINAL_STATUS_COUNT =
+  NOTIFICATION_BLOCKER_LAUNCH_READINESS_CONTRACT_FINAL_STATUSES.length;
+
+const NOTIFICATION_BLOCKER_LAUNCH_READINESS_CONTRACT_FINAL_CONTRACT_STATUSES = [
+  'ready',
+  'final-contract-incomplete',
+] as const;
+
+type NotificationBlockerLaunchReadinessContractFinalContractStatus =
+  (typeof NOTIFICATION_BLOCKER_LAUNCH_READINESS_CONTRACT_FINAL_CONTRACT_STATUSES)[number];
+
+const NOTIFICATION_BLOCKER_LAUNCH_READINESS_CONTRACT_FINAL_CONTRACT_STATUS = {
+  ready: 'ready',
+  finalContractIncomplete: 'final-contract-incomplete',
+} satisfies Record<string, NotificationBlockerLaunchReadinessContractFinalContractStatus>;
+
+const NOTIFICATION_BLOCKER_LAUNCH_READINESS_CONTRACT_FINAL_CONTRACT_STATUS_COUNT =
+  NOTIFICATION_BLOCKER_LAUNCH_READINESS_CONTRACT_FINAL_CONTRACT_STATUSES.length;
+
+const NOTIFICATION_BLOCKER_LAUNCH_READINESS_CONTRACT_FINAL_FINAL_CONTRACT_STATUSES = [
+  'ready',
+  'final-final-contract-incomplete',
+] as const;
+
+type NotificationBlockerLaunchReadinessContractFinalFinalContractStatus =
+  (typeof NOTIFICATION_BLOCKER_LAUNCH_READINESS_CONTRACT_FINAL_FINAL_CONTRACT_STATUSES)[number];
+
+const NOTIFICATION_BLOCKER_LAUNCH_READINESS_CONTRACT_FINAL_FINAL_CONTRACT_STATUS = {
+  ready: 'ready',
+  finalFinalContractIncomplete: 'final-final-contract-incomplete',
+} satisfies Record<string, NotificationBlockerLaunchReadinessContractFinalFinalContractStatus>;
+
+const NOTIFICATION_BLOCKER_LAUNCH_READINESS_CONTRACT_FINAL_FINAL_CONTRACT_STATUS_COUNT =
+  NOTIFICATION_BLOCKER_LAUNCH_READINESS_CONTRACT_FINAL_FINAL_CONTRACT_STATUSES.length;
+
+const NOTIFICATION_BLOCKER_CONTRACT_TERMINAL_STATUSES = [
+  'ready',
+  'terminal-contract-incomplete',
+] as const;
+
+type NotificationBlockerContractTerminalStatus =
+  (typeof NOTIFICATION_BLOCKER_CONTRACT_TERMINAL_STATUSES)[number];
+
+const NOTIFICATION_BLOCKER_CONTRACT_TERMINAL_STATUS = {
+  ready: 'ready',
+  terminalContractIncomplete: 'terminal-contract-incomplete',
+} satisfies Record<string, NotificationBlockerContractTerminalStatus>;
+
+const NOTIFICATION_BLOCKER_CONTRACT_TERMINAL_STATUS_COUNT =
+  NOTIFICATION_BLOCKER_CONTRACT_TERMINAL_STATUSES.length;
+
+const NOTIFICATION_BLOCKER_CONTRACT_TERMINAL_CONTRACT_STATUSES = [
+  'ready',
+  'terminal-contract-contract-incomplete',
+] as const;
+
+type NotificationBlockerContractTerminalContractStatus =
+  (typeof NOTIFICATION_BLOCKER_CONTRACT_TERMINAL_CONTRACT_STATUSES)[number];
+
+const NOTIFICATION_BLOCKER_CONTRACT_TERMINAL_CONTRACT_STATUS = {
+  ready: 'ready',
+  terminalContractContractIncomplete: 'terminal-contract-contract-incomplete',
+} satisfies Record<string, NotificationBlockerContractTerminalContractStatus>;
+
+const NOTIFICATION_BLOCKER_CONTRACT_TERMINAL_CONTRACT_STATUS_COUNT =
+  NOTIFICATION_BLOCKER_CONTRACT_TERMINAL_CONTRACT_STATUSES.length;
+
+const NOTIFICATION_READINESS_COMMAND_KEYS = [
+  'propertyInquiryReadiness',
+  'notificationReadiness',
+  'strictNotificationReadiness',
+  'strictNotificationReadinessContract',
+  'launchReadiness',
+] as const;
+
+const NOTIFICATION_READINESS_COMMAND_COUNT = NOTIFICATION_READINESS_COMMAND_KEYS.length;
+
+type NotificationReadinessMetadata = {
+  level: 'ready' | 'blocked';
+  summary: string;
+  terminal?: string;
+  route?: string;
+  nextCommand?: string;
+  blockerCodes?: string[];
+  blockerEnvVars?: string[];
+  blockedBy: NotificationReadinessBlocker[];
+  commands: {
+    propertyInquiryReadiness: string;
+    notificationReadiness: string;
+    strictNotificationReadiness: string;
+    strictNotificationReadinessContract: string;
+    launchReadiness: string;
+  };
+};
+
 type AlertStatusResponse =
   | {
       success: true;
+      generatedAt: string;
+      terminal: 'Terminal 5';
+      route: '/api/process-alerts';
+      command: string;
       mode: 'status' | 'preview' | 'process';
       module: string;
       timeoutMs: number;
+      auth: {
+        configured: boolean;
+      };
       commands: {
         terminal: string;
         status: string;
@@ -307,9 +853,12 @@ type AlertStatusResponse =
         scriptDryRun?: string;
         scriptLive?: string;
       };
+      notificationReadiness?: NotificationReadinessMetadata;
       diagnostics: Array<{ area: string; message: string }>;
       executionPlan?: AlertExecutionPlan;
       recommendations: string[];
+      nextRunHint?: string;
+      nextDryRunHint?: string;
       stats: {
         pending: number;
         processing: number;
@@ -323,6 +872,46 @@ type AlertStatusResponse =
   | {
       success: false;
       error: string;
+      detail?: string;
+      generatedAt?: string;
+      terminal?: 'Terminal 5';
+      route?: '/api/process-alerts';
+      command?: string;
+      mode?: 'status' | 'preview' | 'process';
+      module?: string;
+      timeoutMs?: number;
+      auth?: {
+        configured: boolean;
+      };
+      commands?: {
+        terminal: string;
+        status: string;
+        dryRun: string;
+        live: string;
+        alertWorkerDryRun?: string;
+        alertWorkerLiveOnce?: string;
+        queueDashboard?: string;
+        mlsStatus?: string;
+        retryStatus?: string;
+        deadLetter: string;
+        scriptDryRun?: string;
+        scriptLive?: string;
+      };
+      notificationReadiness?: NotificationReadinessMetadata;
+      diagnostics?: Array<{ area: string; message: string }>;
+      executionPlan?: AlertExecutionPlan;
+      recommendations?: string[];
+      nextRunHint?: string;
+      nextDryRunHint?: string;
+      stats?: {
+        pending: number;
+        processing: number;
+        sent: number;
+        failed: number;
+        skipped: number;
+        actionable: number;
+        terminal: number;
+      };
     };
 
 type CRMTask = {
@@ -480,6 +1069,21 @@ type CRMTasksResponse =
       inspectionSource?: 'List Route';
       route?: string;
       command?: string;
+      tasks?: CRMTask[];
+      summary?: CRMTaskSummary;
+      audit?: CRMTaskAuditSummary;
+      readiness?: CRMTaskReadiness;
+      verdict?: string;
+      filters?: {
+        limit: number;
+        status: string;
+        effectiveStatuses: string[] | null;
+        type: string | null;
+      };
+      operations?: CRMTaskOperations;
+      auth?: {
+        configured: boolean;
+      };
     };
 
 type UpdateCRMTaskResponse =
@@ -491,6 +1095,7 @@ type UpdateCRMTaskResponse =
       route: string;
       command: string;
       task: CRMTask;
+      operations: CRMTaskOperations;
       auth: {
         configured: boolean;
       };
@@ -504,6 +1109,16 @@ type UpdateCRMTaskResponse =
       inspectionSource?: 'Detail Route';
       route?: string;
       command?: string;
+      task?: CRMTask;
+      operations?: CRMTaskOperations;
+      audit?: {
+        required: boolean;
+        requiredForStatuses: string[];
+        reviewNoteMaxLength: number;
+      };
+      auth?: {
+        configured: boolean;
+      };
     };
 
 const defaultControlState: ControlState = {
@@ -533,6 +1148,15 @@ const emptyIntakeSummary: IntakeSummary = {
   alertReady: 0,
   alertWatch: 0,
   alertIncomplete: 0,
+};
+
+const emptyIntakeReadiness: IntakeReadiness = {
+  level: 'watch',
+  summary: 'Intake readiness has not been loaded.',
+  nextAction: 'Load recent intake signals from the admin API.',
+  terminal: 'Terminal 5',
+  nextCommand: 'curl --max-time 8 -s "http://localhost:3000/api/admin/intake-signals?limit=6" -H "x-admin-key: $REIE_ADMIN_API_KEY"',
+  gates: [],
 };
 
 const emptyCRMTaskSummary: CRMTaskSummary = {
@@ -574,6 +1198,8 @@ const emptyCRMTaskReadiness: CRMTaskReadiness = {
   nextCommand: 'npm run run:crm:active',
   gates: [],
 };
+
+const ADMIN_KEY_SESSION_STORAGE_KEY = 'reie.adminKey';
 
 const crmTaskTypeOptions: Array<{ value: CRMTaskTypeFilter; label: string; apiType: string | null }> = [
   { value: 'all', label: 'All', apiType: null },
@@ -684,6 +1310,716 @@ function getAlertPlanClass(level: AlertExecutionPlan['level']) {
   return 'border-red-400/40 bg-red-500/10 text-red-100';
 }
 
+function getNotificationBlockerCodes(readiness: NotificationReadinessMetadata) {
+  if (readiness.blockerCodes?.length) return readiness.blockerCodes;
+  return readiness.blockedBy.map((blocker) => blocker.code);
+}
+
+function getNotificationBlockerEnvVars(readiness: NotificationReadinessMetadata) {
+  if (readiness.blockerEnvVars?.length) return readiness.blockerEnvVars;
+  return Array.from(new Set(readiness.blockedBy.flatMap((blocker) => blocker.envVars)));
+}
+
+function getStructuredNotificationBlockerEnvVars(readiness: NotificationReadinessMetadata) {
+  return Array.from(new Set(readiness.blockedBy.flatMap((blocker) => blocker.envVars)));
+}
+
+function getNotificationBlockerSummaryCounts(readiness: NotificationReadinessMetadata) {
+  return {
+    apiCodeCount: readiness.blockerCodes?.length ?? 0,
+    apiEnvVarCount: readiness.blockerEnvVars?.length ?? 0,
+    structuredCodeCount: readiness.blockedBy.length,
+    structuredEnvVarCount: getStructuredNotificationBlockerEnvVars(readiness).length,
+  };
+}
+
+function isNotificationBlockerSummaryAligned(readiness: NotificationReadinessMetadata) {
+  const counts = getNotificationBlockerSummaryCounts(readiness);
+  return (
+    getNotificationBlockerCodes(readiness).length === counts.structuredCodeCount &&
+    getNotificationBlockerEnvVars(readiness).length === counts.structuredEnvVarCount
+  );
+}
+
+function isNotificationBlockerApiSummaryAligned(readiness: NotificationReadinessMetadata) {
+  const structuredCodes = readiness.blockedBy.map((blocker) => blocker.code);
+  const structuredEnvVars = getStructuredNotificationBlockerEnvVars(readiness);
+  const counts = getNotificationBlockerSummaryCounts(readiness);
+  return (
+    counts.apiCodeCount === counts.structuredCodeCount &&
+    counts.apiEnvVarCount === counts.structuredEnvVarCount &&
+    structuredCodes.every((code) => readiness.blockerCodes?.includes(code)) &&
+    structuredEnvVars.every((envVar) => readiness.blockerEnvVars?.includes(envVar))
+  );
+}
+
+function getNotificationBlockerInspectionMetadata(readiness: NotificationReadinessMetadata) {
+  const blockerCodes = getNotificationBlockerCodes(readiness);
+  const blockerEnvVars = getNotificationBlockerEnvVars(readiness);
+  const counts = getNotificationBlockerSummaryCounts(readiness);
+  const blockerCount = readiness.blockedBy.length;
+  const summaryAligned = isNotificationBlockerSummaryAligned(readiness);
+  const apiSummaryAligned = isNotificationBlockerApiSummaryAligned(readiness);
+  const blockerCountAligned =
+    blockerCount === counts.apiCodeCount && blockerCount === counts.structuredCodeCount;
+  const blockerEnvVarCountAligned = counts.apiEnvVarCount === counts.structuredEnvVarCount;
+  const blockerCountsAligned = blockerCountAligned && blockerEnvVarCountAligned;
+  const blockerCountsReady = blockerCountsAligned && summaryAligned && apiSummaryAligned;
+  const firstBlocker = readiness.blockedBy[0];
+  const firstBlockerComplete = Boolean(
+    firstBlocker?.code &&
+    firstBlocker.envVars.length > 0 &&
+    firstBlocker.detail &&
+    firstBlocker.nextCommand,
+  );
+  const blockerPayloadReady = blockerCountsReady && firstBlockerComplete;
+  const commandKeys = NOTIFICATION_READINESS_COMMAND_KEYS;
+  const commandsComplete = commandKeys.every((key) => Boolean(readiness.commands[key]));
+  const commandKeyCount = commandKeys.length;
+  const commandCount = commandKeys.filter((key) => Boolean(readiness.commands[key])).length;
+  const commandKeyCountAligned = commandKeyCount === NOTIFICATION_READINESS_COMMAND_COUNT;
+  const commandCountAligned = commandCount === NOTIFICATION_READINESS_COMMAND_COUNT;
+  const commandInspectionReady = commandsComplete && commandKeyCountAligned && commandCountAligned;
+  const blockerContractReady = blockerPayloadReady && commandInspectionReady;
+  const blockerInspectionReady = apiSummaryAligned && firstBlockerComplete && commandInspectionReady;
+  const blockerContractLegacyAligned = blockerContractReady === blockerInspectionReady;
+  const blockerContractStatus: NotificationBlockerContractStatus = blockerContractReady
+    ? NOTIFICATION_BLOCKER_CONTRACT_STATUS.ready
+    : !blockerContractLegacyAligned
+      ? NOTIFICATION_BLOCKER_CONTRACT_STATUS.legacyMismatch
+      : !blockerPayloadReady
+        ? NOTIFICATION_BLOCKER_CONTRACT_STATUS.payloadIncomplete
+        : NOTIFICATION_BLOCKER_CONTRACT_STATUS.commandIncomplete;
+  const blockerContractStatusAligned =
+    (blockerContractStatus === NOTIFICATION_BLOCKER_CONTRACT_STATUS.ready) === blockerContractReady;
+  const blockerContractStatusOptionCount = NOTIFICATION_BLOCKER_CONTRACT_STATUSES.length;
+  const blockerContractStatusExpectedCount = NOTIFICATION_BLOCKER_CONTRACT_STATUS_COUNT;
+  const blockerContractStatusOptionCountAligned =
+    blockerContractStatusOptionCount === blockerContractStatusExpectedCount;
+  const blockerContractStatusKnown = NOTIFICATION_BLOCKER_CONTRACT_STATUSES.includes(blockerContractStatus);
+  const blockerContractStatusContractReady =
+    blockerContractStatusKnown && blockerContractStatusAligned && blockerContractStatusOptionCountAligned;
+  const blockerContractCompositeReady = blockerContractReady && blockerContractStatusContractReady;
+  const blockerContractCompositeStatus: NotificationBlockerCompositeStatus = blockerContractCompositeReady
+    ? NOTIFICATION_BLOCKER_COMPOSITE_STATUS.ready
+    : !blockerContractReady
+      ? NOTIFICATION_BLOCKER_COMPOSITE_STATUS.blockerContractIncomplete
+      : NOTIFICATION_BLOCKER_COMPOSITE_STATUS.statusContractIncomplete;
+  const blockerContractCompositeStatusAligned =
+    (blockerContractCompositeStatus === NOTIFICATION_BLOCKER_COMPOSITE_STATUS.ready) ===
+    blockerContractCompositeReady;
+  const blockerContractCompositeStatusOptionCount = NOTIFICATION_BLOCKER_COMPOSITE_STATUSES.length;
+  const blockerContractCompositeStatusExpectedCount = NOTIFICATION_BLOCKER_COMPOSITE_STATUS_COUNT;
+  const blockerContractCompositeStatusOptionCountAligned =
+    blockerContractCompositeStatusOptionCount === blockerContractCompositeStatusExpectedCount;
+  const blockerContractCompositeStatusKnown =
+    NOTIFICATION_BLOCKER_COMPOSITE_STATUSES.includes(blockerContractCompositeStatus);
+  const blockerContractCompositeStatusContractReady =
+    blockerContractCompositeStatusKnown &&
+    blockerContractCompositeStatusAligned &&
+    blockerContractCompositeStatusOptionCountAligned;
+  const blockerContractCompositeContractReady =
+    blockerContractCompositeReady && blockerContractCompositeStatusContractReady;
+  const alignmentStatus: NotificationBlockerAlignmentStatus = apiSummaryAligned
+    ? NOTIFICATION_BLOCKER_ALIGNMENT_STATUS.aligned
+    : summaryAligned
+      ? NOTIFICATION_BLOCKER_ALIGNMENT_STATUS.displayFallback
+      : NOTIFICATION_BLOCKER_ALIGNMENT_STATUS.mismatch;
+  const alignmentStatusAligned =
+    (alignmentStatus === NOTIFICATION_BLOCKER_ALIGNMENT_STATUS.aligned) === apiSummaryAligned;
+  const alignmentStatusOptionCount = NOTIFICATION_BLOCKER_ALIGNMENT_STATUSES.length;
+  const alignmentStatusExpectedCount = NOTIFICATION_BLOCKER_ALIGNMENT_STATUS_COUNT;
+  const alignmentStatusOptionCountAligned = alignmentStatusOptionCount === alignmentStatusExpectedCount;
+  const alignmentStatusKnown = NOTIFICATION_BLOCKER_ALIGNMENT_STATUSES.includes(alignmentStatus);
+  const alignmentStatusContractReady =
+    alignmentStatusKnown && alignmentStatusAligned && alignmentStatusOptionCountAligned;
+  const blockerInspectionContractReady = blockerInspectionReady && alignmentStatusContractReady;
+  const blockerInspectionContractStatus: NotificationBlockerInspectionContractStatus =
+    blockerInspectionContractReady
+      ? NOTIFICATION_BLOCKER_INSPECTION_CONTRACT_STATUS.ready
+      : !blockerInspectionReady
+        ? NOTIFICATION_BLOCKER_INSPECTION_CONTRACT_STATUS.inspectionIncomplete
+        : NOTIFICATION_BLOCKER_INSPECTION_CONTRACT_STATUS.alignmentStatusContractIncomplete;
+  const blockerInspectionContractStatusAligned =
+    (blockerInspectionContractStatus === NOTIFICATION_BLOCKER_INSPECTION_CONTRACT_STATUS.ready) ===
+    blockerInspectionContractReady;
+  const blockerInspectionContractStatusOptionCount =
+    NOTIFICATION_BLOCKER_INSPECTION_CONTRACT_STATUS_COUNT;
+  const blockerInspectionContractStatusExpectedCount =
+    NOTIFICATION_BLOCKER_INSPECTION_CONTRACT_STATUS_COUNT;
+  const blockerInspectionContractStatusOptionCountAligned =
+    blockerInspectionContractStatusOptionCount === blockerInspectionContractStatusExpectedCount;
+  const blockerInspectionContractStatusKnown =
+    NOTIFICATION_BLOCKER_INSPECTION_CONTRACT_STATUSES.includes(blockerInspectionContractStatus);
+  const blockerInspectionContractStatusContractReady =
+    blockerInspectionContractStatusKnown &&
+    blockerInspectionContractStatusAligned &&
+    blockerInspectionContractStatusOptionCountAligned;
+  const blockerInspectionContractContractReady =
+    blockerInspectionContractReady && blockerInspectionContractStatusContractReady;
+  const blockerLaunchContractReady =
+    blockerInspectionContractContractReady && blockerContractCompositeContractReady;
+  const blockerLaunchContractStatus: NotificationBlockerLaunchStatus = blockerLaunchContractReady
+    ? NOTIFICATION_BLOCKER_LAUNCH_STATUS.ready
+    : !blockerInspectionContractContractReady
+      ? NOTIFICATION_BLOCKER_LAUNCH_STATUS.inspectionContractIncomplete
+      : NOTIFICATION_BLOCKER_LAUNCH_STATUS.compositeContractIncomplete;
+  const blockerLaunchContractStatusAligned =
+    (blockerLaunchContractStatus === NOTIFICATION_BLOCKER_LAUNCH_STATUS.ready) === blockerLaunchContractReady;
+  const blockerLaunchContractStatusOptionCount = NOTIFICATION_BLOCKER_LAUNCH_STATUSES.length;
+  const blockerLaunchContractStatusExpectedCount = NOTIFICATION_BLOCKER_LAUNCH_STATUS_COUNT;
+  const blockerLaunchContractStatusOptionCountAligned =
+    blockerLaunchContractStatusOptionCount === blockerLaunchContractStatusExpectedCount;
+  const blockerLaunchContractStatusKnown =
+    NOTIFICATION_BLOCKER_LAUNCH_STATUSES.includes(blockerLaunchContractStatus);
+  const blockerLaunchContractStatusContractReady =
+    blockerLaunchContractStatusKnown &&
+    blockerLaunchContractStatusAligned &&
+    blockerLaunchContractStatusOptionCountAligned;
+  const blockerLaunchContractCompositeReady =
+    blockerLaunchContractReady && blockerLaunchContractStatusContractReady;
+  const blockerLaunchContractCompositeStatus: NotificationBlockerLaunchCompositeStatus =
+    blockerLaunchContractCompositeReady
+      ? NOTIFICATION_BLOCKER_LAUNCH_COMPOSITE_STATUS.ready
+      : !blockerLaunchContractReady
+        ? NOTIFICATION_BLOCKER_LAUNCH_COMPOSITE_STATUS.launchContractIncomplete
+        : NOTIFICATION_BLOCKER_LAUNCH_COMPOSITE_STATUS.statusContractIncomplete;
+  const blockerLaunchContractCompositeStatusAligned =
+    (blockerLaunchContractCompositeStatus === NOTIFICATION_BLOCKER_LAUNCH_COMPOSITE_STATUS.ready) ===
+    blockerLaunchContractCompositeReady;
+  const blockerLaunchContractCompositeStatusOptionCount =
+    NOTIFICATION_BLOCKER_LAUNCH_COMPOSITE_STATUSES.length;
+  const blockerLaunchContractCompositeStatusExpectedCount =
+    NOTIFICATION_BLOCKER_LAUNCH_COMPOSITE_STATUS_COUNT;
+  const blockerLaunchContractCompositeStatusOptionCountAligned =
+    blockerLaunchContractCompositeStatusOptionCount === blockerLaunchContractCompositeStatusExpectedCount;
+  const blockerLaunchContractCompositeStatusKnown =
+    NOTIFICATION_BLOCKER_LAUNCH_COMPOSITE_STATUSES.includes(blockerLaunchContractCompositeStatus);
+  const blockerLaunchContractCompositeStatusContractReady =
+    blockerLaunchContractCompositeStatusKnown &&
+    blockerLaunchContractCompositeStatusAligned &&
+    blockerLaunchContractCompositeStatusOptionCountAligned;
+  const blockerLaunchContractCompositeContractReady =
+    blockerLaunchContractCompositeReady && blockerLaunchContractCompositeStatusContractReady;
+  const blockerLaunchReadinessStatus: NotificationBlockerLaunchReadinessStatus =
+    blockerLaunchContractCompositeContractReady
+      ? NOTIFICATION_BLOCKER_LAUNCH_READINESS_STATUS.ready
+      : NOTIFICATION_BLOCKER_LAUNCH_READINESS_STATUS.launchCompositeContractIncomplete;
+  const blockerLaunchReadinessStatusOptionCount =
+    NOTIFICATION_BLOCKER_LAUNCH_READINESS_STATUSES.length;
+  const blockerLaunchReadinessStatusExpectedCount =
+    NOTIFICATION_BLOCKER_LAUNCH_READINESS_STATUS_COUNT;
+  const blockerLaunchReadinessStatusOptionCountAligned =
+    blockerLaunchReadinessStatusOptionCount === blockerLaunchReadinessStatusExpectedCount;
+  const blockerLaunchReadinessStatusKnown =
+    NOTIFICATION_BLOCKER_LAUNCH_READINESS_STATUSES.includes(blockerLaunchReadinessStatus);
+  const blockerLaunchReadinessStatusAligned =
+    (blockerLaunchReadinessStatus === NOTIFICATION_BLOCKER_LAUNCH_READINESS_STATUS.ready) ===
+    blockerLaunchContractCompositeContractReady;
+  const blockerLaunchReadinessStatusContractReady =
+    blockerLaunchReadinessStatusKnown &&
+    blockerLaunchReadinessStatusAligned &&
+    blockerLaunchReadinessStatusOptionCountAligned;
+  const blockerLaunchReadinessContractReady =
+    blockerLaunchContractCompositeContractReady && blockerLaunchReadinessStatusContractReady;
+  const blockerLaunchReadinessContractStatus: NotificationBlockerLaunchReadinessContractStatus =
+    blockerLaunchReadinessContractReady
+      ? NOTIFICATION_BLOCKER_LAUNCH_READINESS_CONTRACT_STATUS.ready
+      : NOTIFICATION_BLOCKER_LAUNCH_READINESS_CONTRACT_STATUS.launchReadinessContractIncomplete;
+  const blockerLaunchReadinessContractStatusOptionCount =
+    NOTIFICATION_BLOCKER_LAUNCH_READINESS_CONTRACT_STATUSES.length;
+  const blockerLaunchReadinessContractStatusExpectedCount =
+    NOTIFICATION_BLOCKER_LAUNCH_READINESS_CONTRACT_STATUS_COUNT;
+  const blockerLaunchReadinessContractStatusOptionCountAligned =
+    blockerLaunchReadinessContractStatusOptionCount ===
+    blockerLaunchReadinessContractStatusExpectedCount;
+  const blockerLaunchReadinessContractStatusKnown =
+    NOTIFICATION_BLOCKER_LAUNCH_READINESS_CONTRACT_STATUSES.includes(
+      blockerLaunchReadinessContractStatus,
+    );
+  const blockerLaunchReadinessContractStatusAligned =
+    (blockerLaunchReadinessContractStatus ===
+      NOTIFICATION_BLOCKER_LAUNCH_READINESS_CONTRACT_STATUS.ready) ===
+    blockerLaunchReadinessContractReady;
+  const blockerLaunchReadinessContractStatusContractReady =
+    blockerLaunchReadinessContractStatusKnown &&
+    blockerLaunchReadinessContractStatusAligned &&
+    blockerLaunchReadinessContractStatusOptionCountAligned;
+  const blockerLaunchReadinessContractContractReady =
+    blockerLaunchReadinessContractReady &&
+    blockerLaunchReadinessContractStatusContractReady;
+  const blockerLaunchReadinessContractCompositeStatus:
+    NotificationBlockerLaunchReadinessContractCompositeStatus =
+    blockerLaunchReadinessContractContractReady
+      ? NOTIFICATION_BLOCKER_LAUNCH_READINESS_CONTRACT_COMPOSITE_STATUS.ready
+      : !blockerLaunchReadinessContractReady
+        ? NOTIFICATION_BLOCKER_LAUNCH_READINESS_CONTRACT_COMPOSITE_STATUS.launchReadinessContractIncomplete
+        : NOTIFICATION_BLOCKER_LAUNCH_READINESS_CONTRACT_COMPOSITE_STATUS.statusContractIncomplete;
+  const blockerLaunchReadinessContractCompositeStatusOptionCount =
+    NOTIFICATION_BLOCKER_LAUNCH_READINESS_CONTRACT_COMPOSITE_STATUSES.length;
+  const blockerLaunchReadinessContractCompositeStatusExpectedCount =
+    NOTIFICATION_BLOCKER_LAUNCH_READINESS_CONTRACT_COMPOSITE_STATUS_COUNT;
+  const blockerLaunchReadinessContractCompositeStatusOptionCountAligned =
+    blockerLaunchReadinessContractCompositeStatusOptionCount ===
+    blockerLaunchReadinessContractCompositeStatusExpectedCount;
+  const blockerLaunchReadinessContractCompositeStatusKnown =
+    NOTIFICATION_BLOCKER_LAUNCH_READINESS_CONTRACT_COMPOSITE_STATUSES.includes(
+      blockerLaunchReadinessContractCompositeStatus,
+    );
+  const blockerLaunchReadinessContractCompositeStatusAligned =
+    (blockerLaunchReadinessContractCompositeStatus ===
+      NOTIFICATION_BLOCKER_LAUNCH_READINESS_CONTRACT_COMPOSITE_STATUS.ready) ===
+    blockerLaunchReadinessContractContractReady;
+  const blockerLaunchReadinessContractCompositeStatusContractReady =
+    blockerLaunchReadinessContractCompositeStatusKnown &&
+    blockerLaunchReadinessContractCompositeStatusAligned &&
+    blockerLaunchReadinessContractCompositeStatusOptionCountAligned;
+  const blockerLaunchReadinessContractCompositeContractReady =
+    blockerLaunchReadinessContractContractReady &&
+    blockerLaunchReadinessContractCompositeStatusContractReady;
+  const blockerLaunchReadinessContractFinalStatus:
+    NotificationBlockerLaunchReadinessContractFinalStatus =
+    blockerLaunchReadinessContractCompositeContractReady
+      ? NOTIFICATION_BLOCKER_LAUNCH_READINESS_CONTRACT_FINAL_STATUS.ready
+      : NOTIFICATION_BLOCKER_LAUNCH_READINESS_CONTRACT_FINAL_STATUS.compositeContractIncomplete;
+  const blockerLaunchReadinessContractFinalStatusOptionCount =
+    NOTIFICATION_BLOCKER_LAUNCH_READINESS_CONTRACT_FINAL_STATUSES.length;
+  const blockerLaunchReadinessContractFinalStatusExpectedCount =
+    NOTIFICATION_BLOCKER_LAUNCH_READINESS_CONTRACT_FINAL_STATUS_COUNT;
+  const blockerLaunchReadinessContractFinalStatusOptionCountAligned =
+    blockerLaunchReadinessContractFinalStatusOptionCount ===
+    blockerLaunchReadinessContractFinalStatusExpectedCount;
+  const blockerLaunchReadinessContractFinalStatusKnown =
+    NOTIFICATION_BLOCKER_LAUNCH_READINESS_CONTRACT_FINAL_STATUSES.includes(
+      blockerLaunchReadinessContractFinalStatus,
+    );
+  const blockerLaunchReadinessContractFinalStatusAligned =
+    (blockerLaunchReadinessContractFinalStatus ===
+      NOTIFICATION_BLOCKER_LAUNCH_READINESS_CONTRACT_FINAL_STATUS.ready) ===
+    blockerLaunchReadinessContractCompositeContractReady;
+  const blockerLaunchReadinessContractFinalStatusContractReady =
+    blockerLaunchReadinessContractFinalStatusKnown &&
+    blockerLaunchReadinessContractFinalStatusAligned &&
+    blockerLaunchReadinessContractFinalStatusOptionCountAligned;
+  const blockerLaunchReadinessContractFinalContractReady =
+    blockerLaunchReadinessContractCompositeContractReady &&
+    blockerLaunchReadinessContractFinalStatusContractReady;
+  const blockerLaunchReadinessContractFinalContractStatus:
+    NotificationBlockerLaunchReadinessContractFinalContractStatus =
+    blockerLaunchReadinessContractFinalContractReady
+      ? NOTIFICATION_BLOCKER_LAUNCH_READINESS_CONTRACT_FINAL_CONTRACT_STATUS.ready
+      : NOTIFICATION_BLOCKER_LAUNCH_READINESS_CONTRACT_FINAL_CONTRACT_STATUS.finalContractIncomplete;
+  const blockerLaunchReadinessContractFinalContractStatusOptionCount =
+    NOTIFICATION_BLOCKER_LAUNCH_READINESS_CONTRACT_FINAL_CONTRACT_STATUSES.length;
+  const blockerLaunchReadinessContractFinalContractStatusExpectedCount =
+    NOTIFICATION_BLOCKER_LAUNCH_READINESS_CONTRACT_FINAL_CONTRACT_STATUS_COUNT;
+  const blockerLaunchReadinessContractFinalContractStatusOptionCountAligned =
+    blockerLaunchReadinessContractFinalContractStatusOptionCount ===
+    blockerLaunchReadinessContractFinalContractStatusExpectedCount;
+  const blockerLaunchReadinessContractFinalContractStatusKnown =
+    NOTIFICATION_BLOCKER_LAUNCH_READINESS_CONTRACT_FINAL_CONTRACT_STATUSES.includes(
+      blockerLaunchReadinessContractFinalContractStatus,
+    );
+  const blockerLaunchReadinessContractFinalContractStatusAligned =
+    (blockerLaunchReadinessContractFinalContractStatus ===
+      NOTIFICATION_BLOCKER_LAUNCH_READINESS_CONTRACT_FINAL_CONTRACT_STATUS.ready) ===
+    blockerLaunchReadinessContractFinalContractReady;
+  const blockerLaunchReadinessContractFinalContractStatusContractReady =
+    blockerLaunchReadinessContractFinalContractStatusKnown &&
+    blockerLaunchReadinessContractFinalContractStatusAligned &&
+    blockerLaunchReadinessContractFinalContractStatusOptionCountAligned;
+  const blockerLaunchReadinessContractFinalFinalContractReady =
+    blockerLaunchReadinessContractFinalContractReady &&
+    blockerLaunchReadinessContractFinalContractStatusContractReady;
+  const blockerLaunchReadinessContractFinalFinalContractStatus:
+    NotificationBlockerLaunchReadinessContractFinalFinalContractStatus =
+    blockerLaunchReadinessContractFinalFinalContractReady
+      ? NOTIFICATION_BLOCKER_LAUNCH_READINESS_CONTRACT_FINAL_FINAL_CONTRACT_STATUS.ready
+      : NOTIFICATION_BLOCKER_LAUNCH_READINESS_CONTRACT_FINAL_FINAL_CONTRACT_STATUS.finalFinalContractIncomplete;
+  const blockerLaunchReadinessContractFinalFinalContractStatusOptionCount =
+    NOTIFICATION_BLOCKER_LAUNCH_READINESS_CONTRACT_FINAL_FINAL_CONTRACT_STATUSES.length;
+  const blockerLaunchReadinessContractFinalFinalContractStatusExpectedCount =
+    NOTIFICATION_BLOCKER_LAUNCH_READINESS_CONTRACT_FINAL_FINAL_CONTRACT_STATUS_COUNT;
+  const blockerLaunchReadinessContractFinalFinalContractStatusOptionCountAligned =
+    blockerLaunchReadinessContractFinalFinalContractStatusOptionCount ===
+    blockerLaunchReadinessContractFinalFinalContractStatusExpectedCount;
+  const blockerLaunchReadinessContractFinalFinalContractStatusKnown =
+    NOTIFICATION_BLOCKER_LAUNCH_READINESS_CONTRACT_FINAL_FINAL_CONTRACT_STATUSES.includes(
+      blockerLaunchReadinessContractFinalFinalContractStatus,
+    );
+  const blockerLaunchReadinessContractFinalFinalContractStatusAligned =
+    (blockerLaunchReadinessContractFinalFinalContractStatus ===
+      NOTIFICATION_BLOCKER_LAUNCH_READINESS_CONTRACT_FINAL_FINAL_CONTRACT_STATUS.ready) ===
+    blockerLaunchReadinessContractFinalFinalContractReady;
+  const blockerLaunchReadinessContractFinalFinalContractStatusContractReady =
+    blockerLaunchReadinessContractFinalFinalContractStatusKnown &&
+    blockerLaunchReadinessContractFinalFinalContractStatusAligned &&
+    blockerLaunchReadinessContractFinalFinalContractStatusOptionCountAligned;
+  const blockerLaunchReadinessContractFinalFinalContractContractReady =
+    blockerLaunchReadinessContractFinalFinalContractReady &&
+    blockerLaunchReadinessContractFinalFinalContractStatusContractReady;
+  const blockerContractTerminalReady =
+    blockerLaunchReadinessContractFinalFinalContractContractReady && blockerContractCompositeContractReady;
+  const blockerContractTerminalStatus: NotificationBlockerContractTerminalStatus =
+    blockerContractTerminalReady
+      ? NOTIFICATION_BLOCKER_CONTRACT_TERMINAL_STATUS.ready
+      : NOTIFICATION_BLOCKER_CONTRACT_TERMINAL_STATUS.terminalContractIncomplete;
+  const blockerContractTerminalStatusOptionCount =
+    NOTIFICATION_BLOCKER_CONTRACT_TERMINAL_STATUSES.length;
+  const blockerContractTerminalStatusExpectedCount =
+    NOTIFICATION_BLOCKER_CONTRACT_TERMINAL_STATUS_COUNT;
+  const blockerContractTerminalStatusOptionCountAligned =
+    blockerContractTerminalStatusOptionCount === blockerContractTerminalStatusExpectedCount;
+  const blockerContractTerminalStatusKnown =
+    NOTIFICATION_BLOCKER_CONTRACT_TERMINAL_STATUSES.includes(blockerContractTerminalStatus);
+  const blockerContractTerminalStatusAligned =
+    (blockerContractTerminalStatus === NOTIFICATION_BLOCKER_CONTRACT_TERMINAL_STATUS.ready) ===
+    blockerContractTerminalReady;
+  const blockerContractTerminalStatusContractReady =
+    blockerContractTerminalStatusKnown &&
+    blockerContractTerminalStatusAligned &&
+    blockerContractTerminalStatusOptionCountAligned;
+  const blockerContractTerminalContractReady =
+    blockerContractTerminalReady && blockerContractTerminalStatusContractReady;
+  const blockerContractTerminalContractStatus: NotificationBlockerContractTerminalContractStatus =
+    blockerContractTerminalContractReady
+      ? NOTIFICATION_BLOCKER_CONTRACT_TERMINAL_CONTRACT_STATUS.ready
+      : NOTIFICATION_BLOCKER_CONTRACT_TERMINAL_CONTRACT_STATUS.terminalContractContractIncomplete;
+  const blockerContractTerminalContractStatusOptionCount =
+    NOTIFICATION_BLOCKER_CONTRACT_TERMINAL_CONTRACT_STATUSES.length;
+  const blockerContractTerminalContractStatusExpectedCount =
+    NOTIFICATION_BLOCKER_CONTRACT_TERMINAL_CONTRACT_STATUS_COUNT;
+  const blockerContractTerminalContractStatusOptionCountAligned =
+    blockerContractTerminalContractStatusOptionCount ===
+    blockerContractTerminalContractStatusExpectedCount;
+  const blockerContractTerminalContractStatusKnown =
+    NOTIFICATION_BLOCKER_CONTRACT_TERMINAL_CONTRACT_STATUSES.includes(
+      blockerContractTerminalContractStatus,
+    );
+  const blockerContractTerminalContractStatusAligned =
+    (blockerContractTerminalContractStatus ===
+      NOTIFICATION_BLOCKER_CONTRACT_TERMINAL_CONTRACT_STATUS.ready) ===
+    blockerContractTerminalContractReady;
+  const blockerContractTerminalContractStatusContractReady =
+    blockerContractTerminalContractStatusKnown &&
+    blockerContractTerminalContractStatusAligned &&
+    blockerContractTerminalContractStatusOptionCountAligned;
+  const blockerContractTerminalContractContractReady =
+    blockerContractTerminalContractReady && blockerContractTerminalContractStatusContractReady;
+  const firstBlockerContractReady =
+    firstBlockerComplete && blockerContractTerminalContractContractReady;
+  const blockerPayloadContractReady = blockerPayloadReady && firstBlockerContractReady;
+  const blockerContractPayloadReady = blockerContractReady && blockerPayloadContractReady;
+  const blockerInspectionPayloadReady = blockerInspectionReady && blockerContractPayloadReady;
+  const blockerInspectionContractPayloadReady =
+    blockerInspectionContractReady && blockerInspectionPayloadReady;
+  const blockerLaunchContractPayloadReady =
+    blockerLaunchContractReady && blockerInspectionContractPayloadReady;
+  const blockerLaunchContractStatusPayloadReady =
+    blockerLaunchContractStatusContractReady && blockerLaunchContractPayloadReady;
+  const blockerLaunchContractCompositePayloadReady =
+    blockerLaunchContractCompositeReady && blockerLaunchContractStatusPayloadReady;
+  const blockerLaunchContractCompositeStatusPayloadReady =
+    blockerLaunchContractCompositeStatusContractReady && blockerLaunchContractCompositePayloadReady;
+  const blockerLaunchContractCompositeContractPayloadReady =
+    blockerLaunchContractCompositeContractReady && blockerLaunchContractCompositeStatusPayloadReady;
+  const blockerLaunchReadinessStatusPayloadReady =
+    blockerLaunchReadinessStatusContractReady && blockerLaunchContractCompositeContractPayloadReady;
+  const blockerLaunchReadinessContractPayloadReady =
+    blockerLaunchReadinessContractReady && blockerLaunchReadinessStatusPayloadReady;
+  const blockerLaunchReadinessContractStatusPayloadReady =
+    blockerLaunchReadinessContractStatusContractReady && blockerLaunchReadinessContractPayloadReady;
+  const blockerLaunchReadinessContractContractPayloadReady =
+    blockerLaunchReadinessContractContractReady && blockerLaunchReadinessContractStatusPayloadReady;
+  const blockerLaunchReadinessContractCompositeStatusPayloadReady =
+    blockerLaunchReadinessContractCompositeStatusContractReady &&
+    blockerLaunchReadinessContractContractPayloadReady;
+  const blockerLaunchReadinessContractCompositeContractPayloadReady =
+    blockerLaunchReadinessContractCompositeContractReady &&
+    blockerLaunchReadinessContractCompositeStatusPayloadReady;
+  const blockerLaunchReadinessContractFinalStatusPayloadReady =
+    blockerLaunchReadinessContractFinalStatusContractReady &&
+    blockerLaunchReadinessContractCompositeContractPayloadReady;
+  const blockerLaunchReadinessContractFinalContractPayloadReady =
+    blockerLaunchReadinessContractFinalContractReady &&
+    blockerLaunchReadinessContractFinalStatusPayloadReady;
+  const blockerLaunchReadinessContractFinalContractStatusPayloadReady =
+    blockerLaunchReadinessContractFinalContractStatusContractReady &&
+    blockerLaunchReadinessContractFinalContractPayloadReady;
+  const blockerLaunchReadinessContractFinalFinalContractPayloadReady =
+    blockerLaunchReadinessContractFinalFinalContractReady &&
+    blockerLaunchReadinessContractFinalContractStatusPayloadReady;
+  const blockerLaunchReadinessContractFinalFinalContractStatusPayloadReady =
+    blockerLaunchReadinessContractFinalFinalContractStatusContractReady &&
+    blockerLaunchReadinessContractFinalFinalContractPayloadReady;
+  const blockerLaunchReadinessContractFinalFinalContractContractPayloadReady =
+    blockerLaunchReadinessContractFinalFinalContractContractReady &&
+    blockerLaunchReadinessContractFinalFinalContractStatusPayloadReady;
+  const blockerContractTerminalPayloadReady =
+    blockerContractTerminalReady &&
+    blockerLaunchReadinessContractFinalFinalContractContractPayloadReady;
+  const blockerContractTerminalStatusPayloadReady =
+    blockerContractTerminalStatusContractReady && blockerContractTerminalPayloadReady;
+  const blockerContractTerminalContractPayloadReady =
+    blockerContractTerminalContractReady && blockerContractTerminalStatusPayloadReady;
+  const blockerContractTerminalContractStatusPayloadReady =
+    blockerContractTerminalContractStatusContractReady && blockerContractTerminalContractPayloadReady;
+  const blockerContractTerminalContractContractPayloadReady =
+    blockerContractTerminalContractContractReady &&
+    blockerContractTerminalContractStatusPayloadReady;
+  const firstBlockerContractPayloadReady =
+    firstBlockerContractReady && blockerContractTerminalContractContractPayloadReady;
+  const blockerPayloadContractPayloadReady =
+    blockerPayloadContractReady && firstBlockerContractPayloadReady;
+  const blockerContractContractPayloadReady =
+    blockerContractPayloadReady && blockerPayloadContractPayloadReady;
+  const blockerInspectionContractContractPayloadReady =
+    blockerInspectionPayloadReady && blockerContractContractPayloadReady;
+  const blockerContractLegacyPayloadReady =
+    blockerContractLegacyAligned && blockerInspectionContractContractPayloadReady;
+  const blockerContractStatusPayloadReady =
+    blockerContractStatusContractReady && blockerContractLegacyPayloadReady;
+  const blockerContractCompositePayloadReady =
+    blockerContractCompositeReady && blockerContractStatusPayloadReady;
+  const blockerContractCompositeStatusPayloadReady =
+    blockerContractCompositeStatusContractReady && blockerContractCompositePayloadReady;
+  const blockerContractCompositeContractPayloadReady =
+    blockerContractCompositeContractReady && blockerContractCompositeStatusPayloadReady;
+  const commandInspectionPayloadReady =
+    commandInspectionReady && blockerContractCompositeContractPayloadReady;
+  const commandExpectedPayloadReady =
+    commandKeyCountAligned && commandCountAligned && commandInspectionPayloadReady;
+  const firstBlockerPayloadReady =
+    firstBlockerComplete && commandExpectedPayloadReady;
+  const firstBlockerIdentityPayloadReady =
+    firstBlockerPayloadReady && firstBlockerComplete;
+  const firstBlockerActionPayloadReady =
+    firstBlockerIdentityPayloadReady && Boolean(firstBlocker?.nextCommand);
+  const firstBlockerDetailPayloadReady =
+    firstBlockerActionPayloadReady && Boolean(firstBlocker?.detail);
+  const firstBlockerEnvPayloadReady =
+    firstBlockerDetailPayloadReady && Boolean(firstBlocker?.envVars.length);
+  const firstBlockerCodePayloadReady =
+    firstBlockerEnvPayloadReady && Boolean(firstBlocker?.code);
+  const notificationBlockerPanelPayloadReady =
+    firstBlockerCodePayloadReady && commandExpectedPayloadReady;
+  const notificationCommandPanelPayloadReady =
+    notificationBlockerPanelPayloadReady && commandsComplete;
+  const propertyInquiryCommandPayloadReady =
+    notificationCommandPanelPayloadReady && Boolean(readiness.commands.propertyInquiryReadiness);
+  const notificationReadinessCommandPayloadReady =
+    propertyInquiryCommandPayloadReady && Boolean(readiness.commands.notificationReadiness);
+  const strictNotificationReadinessCommandPayloadReady =
+    notificationReadinessCommandPayloadReady && Boolean(readiness.commands.strictNotificationReadiness);
+  const strictNotificationContractCommandPayloadReady =
+    strictNotificationReadinessCommandPayloadReady &&
+    Boolean(readiness.commands.strictNotificationReadinessContract);
+  const launchReadinessCommandPayloadReady =
+    strictNotificationContractCommandPayloadReady && Boolean(readiness.commands.launchReadiness);
+  const notificationCommandChainPayloadReady = launchReadinessCommandPayloadReady;
+  const notificationLaunchPanelPayloadReady =
+    notificationBlockerPanelPayloadReady && notificationCommandChainPayloadReady;
+  const notificationLaunchTerminalPayloadReady =
+    notificationLaunchPanelPayloadReady && blockerContractTerminalContractContractPayloadReady;
+  const notificationReadinessLevelPayloadReady =
+    notificationLaunchTerminalPayloadReady && Boolean(readiness.level);
+  return {
+    blockerCodes,
+    blockerEnvVars,
+    counts,
+    blockerCountAligned,
+    blockerEnvVarCountAligned,
+    blockerCountsAligned,
+    blockerCountsReady,
+    summaryAligned,
+    apiSummaryAligned,
+    alignmentStatus,
+    alignmentStatusAligned,
+    alignmentStatusOptionCount,
+    alignmentStatusExpectedCount,
+    alignmentStatusOptionCountAligned,
+    alignmentStatusKnown,
+    alignmentStatusContractReady,
+    blockerInspectionContractReady,
+    blockerInspectionContractStatus,
+    blockerInspectionContractStatusAligned,
+    blockerInspectionContractStatusOptionCount,
+    blockerInspectionContractStatusExpectedCount,
+    blockerInspectionContractStatusOptionCountAligned,
+    blockerInspectionContractStatusKnown,
+    blockerInspectionContractStatusContractReady,
+    blockerInspectionContractContractReady,
+    blockerLaunchContractReady,
+    blockerLaunchContractStatus,
+    blockerLaunchContractStatusAligned,
+    blockerLaunchContractStatusOptionCount,
+    blockerLaunchContractStatusExpectedCount,
+    blockerLaunchContractStatusOptionCountAligned,
+    blockerLaunchContractStatusKnown,
+    blockerLaunchContractStatusContractReady,
+    blockerLaunchContractCompositeReady,
+    blockerLaunchContractCompositeStatus,
+    blockerLaunchContractCompositeStatusAligned,
+    blockerLaunchContractCompositeStatusOptionCount,
+    blockerLaunchContractCompositeStatusExpectedCount,
+    blockerLaunchContractCompositeStatusOptionCountAligned,
+    blockerLaunchContractCompositeStatusKnown,
+    blockerLaunchContractCompositeStatusContractReady,
+    blockerLaunchContractCompositeContractReady,
+    blockerLaunchReadinessStatus,
+    blockerLaunchReadinessStatusOptionCount,
+    blockerLaunchReadinessStatusExpectedCount,
+    blockerLaunchReadinessStatusOptionCountAligned,
+    blockerLaunchReadinessStatusKnown,
+    blockerLaunchReadinessStatusAligned,
+    blockerLaunchReadinessStatusContractReady,
+    blockerLaunchReadinessContractReady,
+    blockerLaunchReadinessContractStatus,
+    blockerLaunchReadinessContractStatusOptionCount,
+    blockerLaunchReadinessContractStatusExpectedCount,
+    blockerLaunchReadinessContractStatusOptionCountAligned,
+    blockerLaunchReadinessContractStatusKnown,
+    blockerLaunchReadinessContractStatusAligned,
+    blockerLaunchReadinessContractStatusContractReady,
+    blockerLaunchReadinessContractContractReady,
+    blockerLaunchReadinessContractCompositeStatus,
+    blockerLaunchReadinessContractCompositeStatusOptionCount,
+    blockerLaunchReadinessContractCompositeStatusExpectedCount,
+    blockerLaunchReadinessContractCompositeStatusOptionCountAligned,
+    blockerLaunchReadinessContractCompositeStatusKnown,
+    blockerLaunchReadinessContractCompositeStatusAligned,
+    blockerLaunchReadinessContractCompositeStatusContractReady,
+    blockerLaunchReadinessContractCompositeContractReady,
+    blockerLaunchReadinessContractFinalStatus,
+    blockerLaunchReadinessContractFinalStatusOptionCount,
+    blockerLaunchReadinessContractFinalStatusExpectedCount,
+    blockerLaunchReadinessContractFinalStatusOptionCountAligned,
+    blockerLaunchReadinessContractFinalStatusKnown,
+    blockerLaunchReadinessContractFinalStatusAligned,
+    blockerLaunchReadinessContractFinalStatusContractReady,
+    blockerLaunchReadinessContractFinalContractReady,
+    blockerLaunchReadinessContractFinalContractStatus,
+    blockerLaunchReadinessContractFinalContractStatusOptionCount,
+    blockerLaunchReadinessContractFinalContractStatusExpectedCount,
+    blockerLaunchReadinessContractFinalContractStatusOptionCountAligned,
+    blockerLaunchReadinessContractFinalContractStatusKnown,
+    blockerLaunchReadinessContractFinalContractStatusAligned,
+    blockerLaunchReadinessContractFinalContractStatusContractReady,
+    blockerLaunchReadinessContractFinalFinalContractReady,
+    blockerLaunchReadinessContractFinalFinalContractStatus,
+    blockerLaunchReadinessContractFinalFinalContractStatusOptionCount,
+    blockerLaunchReadinessContractFinalFinalContractStatusExpectedCount,
+    blockerLaunchReadinessContractFinalFinalContractStatusOptionCountAligned,
+    blockerLaunchReadinessContractFinalFinalContractStatusKnown,
+    blockerLaunchReadinessContractFinalFinalContractStatusAligned,
+    blockerLaunchReadinessContractFinalFinalContractStatusContractReady,
+    blockerLaunchReadinessContractFinalFinalContractContractReady,
+    blockerContractTerminalReady,
+    blockerContractTerminalStatus,
+    blockerContractTerminalStatusOptionCount,
+    blockerContractTerminalStatusExpectedCount,
+    blockerContractTerminalStatusOptionCountAligned,
+    blockerContractTerminalStatusKnown,
+    blockerContractTerminalStatusAligned,
+    blockerContractTerminalStatusContractReady,
+    blockerContractTerminalContractReady,
+    blockerContractTerminalContractStatus,
+    blockerContractTerminalContractStatusOptionCount,
+    blockerContractTerminalContractStatusExpectedCount,
+    blockerContractTerminalContractStatusOptionCountAligned,
+    blockerContractTerminalContractStatusKnown,
+    blockerContractTerminalContractStatusAligned,
+    blockerContractTerminalContractStatusContractReady,
+    blockerContractTerminalContractContractReady,
+    firstBlockerComplete,
+    firstBlockerContractReady,
+    blockerPayloadReady,
+    blockerPayloadContractReady,
+    blockerContractReady,
+    blockerContractPayloadReady,
+    blockerInspectionReady,
+    blockerInspectionPayloadReady,
+    blockerInspectionContractPayloadReady,
+    blockerLaunchContractPayloadReady,
+    blockerLaunchContractStatusPayloadReady,
+    blockerLaunchContractCompositePayloadReady,
+    blockerLaunchContractCompositeStatusPayloadReady,
+    blockerLaunchContractCompositeContractPayloadReady,
+    blockerLaunchReadinessStatusPayloadReady,
+    blockerLaunchReadinessContractPayloadReady,
+    blockerLaunchReadinessContractStatusPayloadReady,
+    blockerLaunchReadinessContractContractPayloadReady,
+    blockerLaunchReadinessContractCompositeStatusPayloadReady,
+    blockerLaunchReadinessContractCompositeContractPayloadReady,
+    blockerLaunchReadinessContractFinalStatusPayloadReady,
+    blockerLaunchReadinessContractFinalContractPayloadReady,
+    blockerLaunchReadinessContractFinalContractStatusPayloadReady,
+    blockerLaunchReadinessContractFinalFinalContractPayloadReady,
+    blockerLaunchReadinessContractFinalFinalContractStatusPayloadReady,
+    blockerLaunchReadinessContractFinalFinalContractContractPayloadReady,
+    blockerContractTerminalPayloadReady,
+    blockerContractTerminalStatusPayloadReady,
+    blockerContractTerminalContractPayloadReady,
+    blockerContractTerminalContractStatusPayloadReady,
+    blockerContractTerminalContractContractPayloadReady,
+    firstBlockerContractPayloadReady,
+    blockerPayloadContractPayloadReady,
+    blockerContractContractPayloadReady,
+    blockerInspectionContractContractPayloadReady,
+    blockerContractLegacyPayloadReady,
+    blockerContractStatusPayloadReady,
+    blockerContractCompositePayloadReady,
+    blockerContractCompositeStatusPayloadReady,
+    blockerContractCompositeContractPayloadReady,
+    commandInspectionPayloadReady,
+    commandExpectedPayloadReady,
+    firstBlockerPayloadReady,
+    firstBlockerIdentityPayloadReady,
+    firstBlockerActionPayloadReady,
+    firstBlockerDetailPayloadReady,
+    firstBlockerEnvPayloadReady,
+    firstBlockerCodePayloadReady,
+    notificationBlockerPanelPayloadReady,
+    notificationCommandPanelPayloadReady,
+    propertyInquiryCommandPayloadReady,
+    notificationReadinessCommandPayloadReady,
+    strictNotificationReadinessCommandPayloadReady,
+    strictNotificationContractCommandPayloadReady,
+    launchReadinessCommandPayloadReady,
+    notificationCommandChainPayloadReady,
+    notificationLaunchPanelPayloadReady,
+    notificationLaunchTerminalPayloadReady,
+    notificationReadinessLevelPayloadReady,
+    blockerContractLegacyAligned,
+    blockerContractStatus,
+    blockerContractStatusAligned,
+    blockerContractStatusOptionCount,
+    blockerContractStatusExpectedCount,
+    blockerContractStatusOptionCountAligned,
+    blockerContractStatusKnown,
+    blockerContractStatusContractReady,
+    blockerContractCompositeReady,
+    blockerContractCompositeStatus,
+    blockerContractCompositeStatusAligned,
+    blockerContractCompositeStatusOptionCount,
+    blockerContractCompositeStatusExpectedCount,
+    blockerContractCompositeStatusOptionCountAligned,
+    blockerContractCompositeStatusKnown,
+    blockerContractCompositeStatusContractReady,
+    blockerContractCompositeContractReady,
+    commandsComplete,
+    commandKeys,
+    commandKeyCount,
+    commandKeyCountAligned,
+    commandCount,
+    commandCountAligned,
+    commandInspectionReady,
+    expectedCommandCount: NOTIFICATION_READINESS_COMMAND_COUNT,
+    hasRecipientBlocker: blockerCodes.includes('property_inquiry_recipient_missing'),
+    hasDryRunBlocker: blockerCodes.includes('property_inquiry_dry_run_enabled'),
+  };
+}
+
 function getCRMTaskPriorityClass(priority: CRMTask['priority']) {
   if (priority === 'high') return 'border-red-400/40 bg-red-500/10 text-red-100';
   if (priority === 'medium') return 'border-amber-300/40 bg-amber-400/10 text-amber-100';
@@ -695,6 +2031,17 @@ function getCRMReadinessClass(level: CRMTaskReadiness['level']) {
   if (level === 'ready') return 'border-emerald-300/30 bg-emerald-400/10 text-emerald-100';
   if (level === 'watch') return 'border-amber-300/40 bg-amber-400/10 text-amber-100';
   return 'border-red-400/40 bg-red-500/10 text-red-100';
+}
+
+function getIntakeReadinessClass(level: IntakeReadiness['level']) {
+  if (level === 'ready') return 'border-emerald-300/30 bg-emerald-400/10 text-emerald-100';
+  if (level === 'watch') return 'border-amber-300/40 bg-amber-400/10 text-amber-100';
+  return 'border-red-400/40 bg-red-500/10 text-red-100';
+}
+
+function getIntakeInspectionSourceClass(source?: IntakeApiMetadata['inspectionSource']) {
+  if (source === 'Detail Route') return 'border-cyan-300/40 bg-cyan-300/10 text-cyan-100';
+  return 'border-emerald-300/30 bg-emerald-400/10 text-emerald-100';
 }
 
 function getCRMInspectionSourceClass(source: CRMTaskApiMetadata['inspectionSource']) {
@@ -732,7 +2079,15 @@ function hasCRMTaskApiMetadata(payload: CRMTaskApiErrorMetadata): payload is CRM
   return Boolean(payload.generatedAt && payload.terminal && payload.inspectionSource && payload.route && payload.command);
 }
 
-function getGateClass(status: MlsOperationalReadiness['gates'][number]['status']) {
+function hasIntakeApiMetadata(payload: IntakeApiErrorMetadata): payload is IntakeApiMetadata {
+  return Boolean(payload.generatedAt && payload.terminal && payload.route && payload.command);
+}
+
+function hasControlStateApiMetadata(payload: ControlStateApiErrorMetadata): payload is ControlStateApiMetadata {
+  return Boolean(payload.generatedAt && payload.terminal && payload.route && payload.command);
+}
+
+function getGateClass(status: MlsOperationalReadiness['gates'][number]['status'] | IntakeReadiness['gates'][number]['status']) {
   if (status === 'pass') return 'border-emerald-300/20 bg-emerald-400/5 text-emerald-100';
   if (status === 'watch') return 'border-amber-300/30 bg-amber-400/10 text-amber-100';
   return 'border-red-400/30 bg-red-500/10 text-red-100';
@@ -776,12 +2131,18 @@ function formatCRMPrice(value: number | null) {
 }
 
 function getMlsQueue(mlsStatus: MlsStatusResponse | null, name: string) {
-  return mlsStatus?.success ? mlsStatus.queues.find((queue) => queue.name === name) || null : null;
+  return mlsStatus?.queues.find((queue) => queue.name === name) || null;
 }
 
 function getRecordValue(value: unknown, key: string) {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
   return (value as Record<string, unknown>)[key] ?? null;
+}
+
+function getRecordObject(value: unknown, key: string) {
+  const nested = getRecordValue(value, key);
+  if (!nested || typeof nested !== 'object' || Array.isArray(nested)) return null;
+  return nested as Record<string, unknown>;
 }
 
 function formatBooleanStatus(value: unknown, trueLabel: string, falseLabel: string) {
@@ -804,6 +2165,13 @@ function formatJobResult(value: unknown) {
   const searchIndexError = getRecordValue(value, 'searchIndexError');
   const warningCount = getRecordValue(value, 'warningCount');
   const stoppedReason = getRecordValue(value, 'stoppedReason');
+  const mediaDiagnostics = getRecordObject(value, 'mediaDiagnostics');
+  const mediaListings = mediaDiagnostics ? getRecordValue(mediaDiagnostics, 'listingsWithMedia') : null;
+  const mediaExtracted = mediaDiagnostics ? getRecordValue(mediaDiagnostics, 'extractedMediaCount') : null;
+  const mediaIgnored = mediaDiagnostics ? getRecordValue(mediaDiagnostics, 'ignoredMediaItemCount') : null;
+  const mediaDirectArrays = mediaDiagnostics ? getRecordValue(mediaDiagnostics, 'listingsWithDirectMedia') : null;
+  const mediaNestedArrays = mediaDiagnostics ? getRecordValue(mediaDiagnostics, 'listingsWithNestedMedia') : null;
+  const mediaTopLevelPhotos = mediaDiagnostics ? getRecordValue(mediaDiagnostics, 'listingsWithTopLevelPhotos') : null;
 
   const parts = [
     fetched !== null ? `${fetched} fetched` : null,
@@ -816,6 +2184,12 @@ function formatJobResult(value: unknown) {
     searchIndexAttempted,
     searchIndexIndexed,
     searchIndexError ? `index error: ${searchIndexError}` : null,
+    mediaListings !== null ? `${mediaListings} with media` : null,
+    mediaExtracted !== null ? `${mediaExtracted} media extracted` : null,
+    mediaIgnored !== null ? `${mediaIgnored} media ignored` : null,
+    mediaDirectArrays !== null ? `${mediaDirectArrays} direct media` : null,
+    mediaNestedArrays !== null ? `${mediaNestedArrays} nested media` : null,
+    mediaTopLevelPhotos !== null ? `${mediaTopLevelPhotos} top-level photos` : null,
     warningCount !== null ? `${warningCount} warnings` : null,
     stoppedReason !== null ? `stopped: ${stoppedReason}` : null,
   ].filter(Boolean);
@@ -828,6 +2202,13 @@ function formatSearchIndexDetail(searchIndex: MlsSearchIndexStatus | undefined) 
   if (searchIndex.checkedJobs === 0) return 'No recent completed indexing jobs checked.';
 
   return `${searchIndex.attempted} attempted, ${searchIndex.succeeded} indexed, ${searchIndex.failed} failed, ${searchIndex.unknown} unknown.`;
+}
+
+function formatMediaDiagnosticsDetail(mediaDiagnostics: MlsMediaDiagnosticsStatus | undefined) {
+  if (!mediaDiagnostics) return 'Media diagnostics are unavailable.';
+  if (mediaDiagnostics.checkedJobs === 0) return 'No recent completed MLS jobs checked for media diagnostics.';
+
+  return `${mediaDiagnostics.jobsWithMediaDiagnostics} of ${mediaDiagnostics.checkedJobs} jobs exposed media diagnostics; ${mediaDiagnostics.extractedMediaCount} extracted, ${mediaDiagnostics.ignoredMediaItemCount} ignored.`;
 }
 
 function MetricCell({ metric }: { metric: ControlMetric }) {
@@ -902,14 +2283,21 @@ export default function MasterControlPanel() {
   const [isSavingState, setIsSavingState] = useState(false);
   const [controlStateError, setControlStateError] = useState<string | null>(null);
   const [stateSource, setStateSource] = useState<'database' | 'default' | 'local'>('local');
+  const [controlStateApiMetadata, setControlStateApiMetadata] = useState<ControlStateApiMetadata | null>(null);
   const [intakeSignals, setIntakeSignals] = useState<IntakeSignal[]>([]);
   const [intakeSummary, setIntakeSummary] = useState<IntakeSummary>(emptyIntakeSummary);
+  const [intakeReadiness, setIntakeReadiness] = useState<IntakeReadiness>(emptyIntakeReadiness);
+  const [intakeApiMetadata, setIntakeApiMetadata] = useState<IntakeApiMetadata | null>(null);
+  const [lastIntakeDetailApiMetadata, setLastIntakeDetailApiMetadata] = useState<IntakeApiMetadata | null>(null);
   const [isLoadingIntake, setIsLoadingIntake] = useState(true);
   const [intakeError, setIntakeError] = useState<string | null>(null);
   const [reviewingSignalId, setReviewingSignalId] = useState<string | null>(null);
   const [mlsStatus, setMlsStatus] = useState<MlsStatusResponse | null>(null);
   const [isLoadingMlsStatus, setIsLoadingMlsStatus] = useState(true);
   const [mlsStatusError, setMlsStatusError] = useState<string | null>(null);
+  const [mlsRetryStatus, setMlsRetryStatus] = useState<MlsRetryStatusResponse | null>(null);
+  const [isLoadingMlsRetryStatus, setIsLoadingMlsRetryStatus] = useState(true);
+  const [mlsRetryStatusError, setMlsRetryStatusError] = useState<string | null>(null);
   const [alertStatus, setAlertStatus] = useState<AlertStatusResponse | null>(null);
   const [isLoadingAlertStatus, setIsLoadingAlertStatus] = useState(true);
   const [alertStatusError, setAlertStatusError] = useState<string | null>(null);
@@ -926,7 +2314,44 @@ export default function MasterControlPanel() {
   const [crmTaskError, setCRMTaskError] = useState<string | null>(null);
   const [reviewingCRMTaskId, setReviewingCRMTaskId] = useState<string | null>(null);
   const [crmTaskReviewNotes, setCRMTaskReviewNotes] = useState<Record<string, string>>({});
+  const [adminKey, setAdminKey] = useState(() => {
+    if (typeof window === 'undefined') return '';
+
+    try {
+      return window.sessionStorage.getItem(ADMIN_KEY_SESSION_STORAGE_KEY) || '';
+    } catch {
+      return '';
+    }
+  });
   const controlStateRef = useRef<ControlState>(defaultControlState);
+  const adminRequestHeaders = useMemo<Record<string, string>>(() => {
+    const trimmedAdminKey = adminKey.trim();
+    const headers: Record<string, string> = {};
+    if (trimmedAdminKey) headers['x-admin-key'] = trimmedAdminKey;
+    return headers;
+  }, [adminKey]);
+  const adminJsonHeaders = useMemo<Record<string, string>>(
+    () => ({
+      ...adminRequestHeaders,
+      'Content-Type': 'application/json',
+    }),
+    [adminRequestHeaders],
+  );
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    try {
+      const trimmedAdminKey = adminKey.trim();
+      if (trimmedAdminKey) {
+        window.sessionStorage.setItem(ADMIN_KEY_SESSION_STORAGE_KEY, trimmedAdminKey);
+      } else {
+        window.sessionStorage.removeItem(ADMIN_KEY_SESSION_STORAGE_KEY);
+      }
+    } catch {
+      // Session storage can be unavailable in private or restricted browser contexts.
+    }
+  }, [adminKey]);
 
   const applyControlState = useCallback((nextState: ControlState) => {
     controlStateRef.current = nextState;
@@ -940,16 +2365,26 @@ export default function MasterControlPanel() {
     try {
       const response = await fetch('/api/admin/control-state', {
         cache: 'no-store',
+        headers: adminRequestHeaders,
       });
       const payload = (await response.json()) as ControlStateResponse;
 
       if (!response.ok || !payload.success) {
+        if (!payload.success && hasControlStateApiMetadata(payload)) {
+          setControlStateApiMetadata(payload);
+        }
         throw new Error(payload.success ? 'Control state could not be loaded.' : payload.error);
       }
 
       applyControlState(payload.state);
       setControlPolicy(payload.policy);
       setStateSource(payload.source);
+      setControlStateApiMetadata({
+        generatedAt: payload.generatedAt,
+        terminal: payload.terminal,
+        route: payload.route,
+        command: payload.command,
+      });
     } catch (error) {
       setControlStateError(error instanceof Error ? error.message : 'Control state could not be loaded.');
       setControlPolicy(defaultControlPolicy);
@@ -957,7 +2392,7 @@ export default function MasterControlPanel() {
     } finally {
       setIsLoadingState(false);
     }
-  }, [applyControlState]);
+  }, [adminRequestHeaders, applyControlState]);
 
   const loadIntakeSignals = useCallback(async () => {
     setIsLoadingIntake(true);
@@ -966,23 +2401,40 @@ export default function MasterControlPanel() {
     try {
       const response = await fetch('/api/admin/intake-signals?limit=6', {
         cache: 'no-store',
+        headers: adminRequestHeaders,
       });
       const payload = (await response.json()) as IntakeSignalsResponse;
 
       if (!response.ok || !payload.success) {
+        if (!payload.success && payload.generatedAt && payload.terminal && payload.route && payload.command) {
+          setIntakeSignals(payload.signals || []);
+          setIntakeSummary(payload.summary || emptyIntakeSummary);
+          setIntakeReadiness(payload.readiness || emptyIntakeReadiness);
+          setIntakeApiMetadata({
+            generatedAt: payload.generatedAt,
+            terminal: payload.terminal,
+            route: payload.route,
+            command: payload.command,
+          });
+        }
         throw new Error(payload.success ? 'Intake signals could not be loaded.' : payload.error);
       }
 
       setIntakeSignals(payload.signals);
       setIntakeSummary(payload.summary);
+      setIntakeReadiness(payload.readiness);
+      setIntakeApiMetadata({
+        generatedAt: payload.generatedAt,
+        terminal: payload.terminal,
+        route: payload.route,
+        command: payload.command,
+      });
     } catch (error) {
       setIntakeError(error instanceof Error ? error.message : 'Intake signals could not be loaded.');
-      setIntakeSignals([]);
-      setIntakeSummary(emptyIntakeSummary);
     } finally {
       setIsLoadingIntake(false);
     }
-  }, []);
+  }, [adminRequestHeaders]);
 
   const loadMlsStatus = useCallback(async () => {
     setIsLoadingMlsStatus(true);
@@ -991,11 +2443,14 @@ export default function MasterControlPanel() {
     try {
       const response = await fetch('/api/mls/status', {
         cache: 'no-store',
+        headers: adminRequestHeaders,
       });
       const payload = (await response.json()) as MlsStatusResponse;
 
       if (!response.ok || !payload.success) {
-        throw new Error(payload.success ? 'MLS status could not be loaded.' : payload.error);
+        setMlsStatus(payload);
+        setMlsStatusError(payload.success ? 'MLS status could not be loaded.' : payload.error);
+        return;
       }
 
       setMlsStatus(payload);
@@ -1005,7 +2460,33 @@ export default function MasterControlPanel() {
     } finally {
       setIsLoadingMlsStatus(false);
     }
-  }, []);
+  }, [adminRequestHeaders]);
+
+  const loadMlsRetryStatus = useCallback(async () => {
+    setIsLoadingMlsRetryStatus(true);
+    setMlsRetryStatusError(null);
+
+    try {
+      const response = await fetch('/api/mls/retry?queue=mls-sync&limit=6', {
+        cache: 'no-store',
+        headers: adminRequestHeaders,
+      });
+      const payload = (await response.json()) as MlsRetryStatusResponse;
+
+      if (!response.ok || !payload.success) {
+        setMlsRetryStatus(payload);
+        setMlsRetryStatusError(payload.success ? 'MLS retry status could not be loaded.' : payload.error);
+        return;
+      }
+
+      setMlsRetryStatus(payload);
+    } catch (error) {
+      setMlsRetryStatusError(error instanceof Error ? error.message : 'MLS retry status could not be loaded.');
+      setMlsRetryStatus(null);
+    } finally {
+      setIsLoadingMlsRetryStatus(false);
+    }
+  }, [adminRequestHeaders]);
 
   const loadAlertStatus = useCallback(async () => {
     setIsLoadingAlertStatus(true);
@@ -1014,11 +2495,14 @@ export default function MasterControlPanel() {
     try {
       const response = await fetch('/api/process-alerts', {
         cache: 'no-store',
+        headers: adminRequestHeaders,
       });
       const payload = (await response.json()) as AlertStatusResponse;
 
       if (!response.ok || !payload.success) {
-        throw new Error(payload.success ? 'Alert status could not be loaded.' : payload.error);
+        setAlertStatus(payload);
+        setAlertStatusError(payload.success ? 'Alert status could not be loaded.' : payload.error);
+        return;
       }
 
       setAlertStatus(payload);
@@ -1028,7 +2512,7 @@ export default function MasterControlPanel() {
     } finally {
       setIsLoadingAlertStatus(false);
     }
-  }, []);
+  }, [adminRequestHeaders]);
 
   const loadCRMTasks = useCallback(async () => {
     setIsLoadingCRMTasks(true);
@@ -1044,12 +2528,25 @@ export default function MasterControlPanel() {
 
       const response = await fetch(`/api/admin/crm-tasks?${params.toString()}`, {
         cache: 'no-store',
+        headers: adminRequestHeaders,
       });
       const payload = (await response.json()) as CRMTasksResponse;
 
       if (!response.ok || !payload.success) {
         if (!payload.success && hasCRMTaskApiMetadata(payload)) {
-          setCRMTaskApiMetadata(payload);
+          setCRMTasks(payload.tasks || []);
+          setCRMTaskSummary(payload.summary || emptyCRMTaskSummary);
+          setCRMTaskAuditSummary(payload.audit || emptyCRMTaskAuditSummary);
+          setCRMTaskReadiness(payload.readiness || emptyCRMTaskReadiness);
+          setCRMTaskVerdict(payload.verdict || '');
+          setCRMTaskOperations(payload.operations || null);
+          setCRMTaskApiMetadata({
+            generatedAt: payload.generatedAt,
+            terminal: payload.terminal,
+            inspectionSource: payload.inspectionSource,
+            route: payload.route,
+            command: payload.command,
+          });
         }
         throw new Error(payload.success ? 'CRM tasks could not be loaded.' : payload.error);
       }
@@ -1069,17 +2566,10 @@ export default function MasterControlPanel() {
       });
     } catch (error) {
       setCRMTaskError(error instanceof Error ? error.message : 'CRM tasks could not be loaded.');
-      setCRMTasks([]);
-      setCRMTaskSummary(emptyCRMTaskSummary);
-      setCRMTaskAuditSummary(emptyCRMTaskAuditSummary);
-      setCRMTaskReadiness(emptyCRMTaskReadiness);
-      setCRMTaskVerdict('');
-      setCRMTaskOperations(null);
-      setCRMTaskApiMetadata(null);
     } finally {
       setIsLoadingCRMTasks(false);
     }
-  }, [crmTaskTypeFilter]);
+  }, [adminRequestHeaders, crmTaskTypeFilter]);
 
   const saveControlState = useCallback(
     async (patch: Partial<ControlState>) => {
@@ -1097,20 +2587,27 @@ export default function MasterControlPanel() {
       try {
         const response = await fetch('/api/admin/control-state', {
           method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: adminJsonHeaders,
           body: JSON.stringify(nextState),
         });
         const payload = (await response.json()) as ControlStateResponse;
 
         if (!response.ok || !payload.success) {
+          if (!payload.success && hasControlStateApiMetadata(payload)) {
+            setControlStateApiMetadata(payload);
+          }
           throw new Error(payload.success ? 'Control state could not be saved.' : payload.error);
         }
 
         applyControlState(payload.state);
         setControlPolicy(payload.policy);
         setStateSource(payload.source);
+        setControlStateApiMetadata({
+          generatedAt: payload.generatedAt,
+          terminal: payload.terminal,
+          route: payload.route,
+          command: payload.command,
+        });
       } catch (error) {
         applyControlState(previousState);
         setControlStateError(error instanceof Error ? error.message : 'Control state could not be saved.');
@@ -1118,7 +2615,7 @@ export default function MasterControlPanel() {
         setIsSavingState(false);
       }
     },
-    [applyControlState],
+    [adminJsonHeaders, applyControlState],
   );
 
   const reviewIntakeSignal = useCallback(
@@ -1130,9 +2627,7 @@ export default function MasterControlPanel() {
         const isInteraction = signal.kind === 'interaction';
         const response = await fetch(`/api/admin/intake-signals/${encodeURIComponent(signal.id)}`, {
           method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: adminJsonHeaders,
           body: JSON.stringify({
             kind: signal.kind,
             ...(isInteraction ? { action: 'promote' } : {}),
@@ -1142,17 +2637,41 @@ export default function MasterControlPanel() {
             reviewedBy: 'admin-panel',
           }),
         });
-        const payload = (await response.json()) as UpdateIntakeSignalResponse;
+      const payload = (await response.json()) as UpdateIntakeSignalResponse;
 
-        if (!response.ok || !payload.success) {
-          throw new Error(payload.success ? 'Intake signal could not be reviewed.' : payload.error);
+      if (!response.ok || !payload.success) {
+        if (!payload.success && hasIntakeApiMetadata(payload)) {
+          const errorMetadata: IntakeApiMetadata = {
+            generatedAt: payload.generatedAt,
+            terminal: payload.terminal,
+            inspectionSource: payload.inspectionSource,
+            route: payload.route,
+            command: payload.command,
+          };
+
+          setIntakeApiMetadata(errorMetadata);
+          if (payload.inspectionSource === 'Detail Route') {
+            setLastIntakeDetailApiMetadata(errorMetadata);
+          }
         }
+        throw new Error(payload.success ? 'Intake signal could not be reviewed.' : payload.error);
+      }
 
         setIntakeSignals((currentSignals) =>
           currentSignals.map((currentSignal) =>
             currentSignal.id === signal.id || currentSignal.id === payload.signal.id ? payload.signal : currentSignal,
           ),
         );
+        const detailApiMetadata: IntakeApiMetadata = {
+          generatedAt: payload.generatedAt,
+          terminal: payload.terminal,
+          inspectionSource: payload.inspectionSource,
+          route: payload.route,
+          command: payload.command,
+        };
+
+        setIntakeApiMetadata(detailApiMetadata);
+        setLastIntakeDetailApiMetadata(detailApiMetadata);
         await loadIntakeSignals();
         await loadCRMTasks();
       } catch (error) {
@@ -1161,7 +2680,7 @@ export default function MasterControlPanel() {
         setReviewingSignalId(null);
       }
     },
-    [loadCRMTasks, loadIntakeSignals],
+    [adminJsonHeaders, loadCRMTasks, loadIntakeSignals],
   );
 
   const updateCRMTaskStatus = useCallback(
@@ -1172,9 +2691,7 @@ export default function MasterControlPanel() {
       try {
         const response = await fetch(`/api/admin/crm-tasks/${encodeURIComponent(task.id)}`, {
           method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: adminJsonHeaders,
           body: JSON.stringify({
             status,
             priority: task.priority === 'unknown' ? 'medium' : task.priority,
@@ -1186,9 +2703,24 @@ export default function MasterControlPanel() {
 
         if (!response.ok || !payload.success) {
           if (!payload.success && hasCRMTaskApiMetadata(payload)) {
-            setCRMTaskApiMetadata(payload);
+            const errorMetadata: CRMTaskApiMetadata = {
+              generatedAt: payload.generatedAt,
+              terminal: payload.terminal,
+              inspectionSource: payload.inspectionSource,
+              route: payload.route,
+              command: payload.command,
+            };
+
+            const errorTask = payload.task;
+            if (errorTask) {
+              setCRMTasks((currentTasks) => currentTasks.map((currentTask) => (currentTask.id === errorTask.id ? errorTask : currentTask)));
+            }
+            if (payload.operations) {
+              setCRMTaskOperations(payload.operations);
+            }
+            setCRMTaskApiMetadata(errorMetadata);
             if (payload.inspectionSource === 'Detail Route') {
-              setLastCRMTaskDetailApiMetadata(payload);
+              setLastCRMTaskDetailApiMetadata(errorMetadata);
             }
           }
           throw new Error(payload.success ? 'CRM task could not be reviewed.' : payload.error);
@@ -1219,7 +2751,7 @@ export default function MasterControlPanel() {
         setReviewingCRMTaskId(null);
       }
     },
-    [loadCRMTasks],
+    [adminJsonHeaders, loadCRMTasks],
   );
 
   const reviewCRMTask = useCallback(
@@ -1270,11 +2802,12 @@ export default function MasterControlPanel() {
       void loadIntakeSignals();
       void loadCRMTasks();
       void loadMlsStatus();
+      void loadMlsRetryStatus();
       void loadAlertStatus();
     }, 0);
 
     return () => window.clearTimeout(timeout);
-  }, [loadAlertStatus, loadCRMTasks, loadControlState, loadIntakeSignals, loadMlsStatus]);
+  }, [loadAlertStatus, loadCRMTasks, loadControlState, loadIntakeSignals, loadMlsRetryStatus, loadMlsStatus]);
 
   const controlMetrics = useMemo<ControlMetric[]>(
     () => [
@@ -1295,8 +2828,15 @@ export default function MasterControlPanel() {
       {
         label: 'Lead Queue',
         value: isLoadingIntake ? '...' : `${intakeSummary.total}`,
-        detail: `${intakeSummary.highPriority} high priority, ${intakeSummary.alertReady} alert-ready, ${intakeSummary.alertIncomplete} incomplete, ${intakeSummary.hiddenPromotedInteractions} already promoted.`,
-        tone: intakeSummary.highPriority > 0 ? 'red' : 'cyan',
+        detail: `${intakeReadiness.level}: ${intakeSummary.highPriority} high priority, ${intakeSummary.alertReady} alert-ready, ${intakeSummary.alertIncomplete} incomplete, ${intakeSummary.hiddenPromotedInteractions} already promoted.`,
+        tone:
+          intakeReadiness.level === 'blocked'
+            ? 'red'
+            : intakeReadiness.level === 'ready'
+              ? 'emerald'
+              : intakeSummary.highPriority > 0
+                ? 'red'
+                : 'amber',
       },
       {
         label: 'CRM Tasks',
@@ -1333,7 +2873,7 @@ export default function MasterControlPanel() {
       {
         label: 'Alert Ops',
         value: isLoadingAlertStatus ? '...' : alertStatus?.success ? alertStatus.executionPlan?.level || 'status' : 'Offline',
-        detail: alertStatus?.success
+        detail: alertStatus?.stats
           ? `${alertStatus.stats.pending} pending, ${alertStatus.stats.processing} processing, ${alertStatus.stats.failed} failed, live ${
               alertStatus.executionPlan?.liveAllowed ? 'available after dry-run' : 'blocked'
             }.`
@@ -1354,6 +2894,7 @@ export default function MasterControlPanel() {
       crmTaskAuditSummary,
       crmTaskReadiness,
       crmTaskSummary,
+      intakeReadiness.level,
       intakeSummary,
       isLoadingAlertStatus,
       isLoadingCRMTasks,
@@ -1401,6 +2942,20 @@ export default function MasterControlPanel() {
             </div>
 
             <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center">
+              <label className="min-w-0 sm:w-72">
+                <span className="mb-2 flex items-center gap-2 text-[10px] font-black uppercase text-slate-500">
+                  <Shield size={13} />
+                  Admin Key
+                </span>
+                <input
+                  type="password"
+                  data-testid="reie-master-control-admin-key"
+                  value={adminKey}
+                  onChange={(event) => setAdminKey(event.target.value)}
+                  placeholder="Required when configured"
+                  className="h-11 w-full border border-slate-800 bg-black px-3 text-sm font-semibold text-white outline-none transition placeholder:text-slate-700 focus:border-cyan-300"
+                />
+              </label>
               <div
                 data-testid="reie-control-sync-status"
                 aria-live="polite"
@@ -1441,6 +2996,9 @@ export default function MasterControlPanel() {
           </div>
 
           <div className="mt-4 flex flex-col gap-2 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between">
+            <span data-testid="reie-admin-key-mode">
+              {adminKey.trim() ? 'Admin key header enabled for protected API reads.' : 'Admin key header empty; local bypass only works when no admin key is configured.'}
+            </span>
             <span data-testid="reie-control-last-saved">
               {controlStateError || `Last saved ${formatTimestamp(controlState.updatedAt)} by ${controlState.updatedBy}`}
             </span>
@@ -1461,15 +3019,57 @@ export default function MasterControlPanel() {
                 void loadIntakeSignals();
                 void loadCRMTasks();
                 void loadMlsStatus();
+                void loadMlsRetryStatus();
                 void loadAlertStatus();
               }}
-              disabled={isLoadingState || isSavingState || isLoadingIntake || isLoadingCRMTasks || isLoadingMlsStatus || isLoadingAlertStatus}
+              disabled={
+                isLoadingState ||
+                isSavingState ||
+                isLoadingIntake ||
+                isLoadingCRMTasks ||
+                isLoadingMlsStatus ||
+                isLoadingMlsRetryStatus ||
+                isLoadingAlertStatus
+              }
               className="inline-flex self-start items-center gap-2 border border-slate-800 bg-black px-3 py-2 font-black uppercase text-slate-300 transition hover:border-cyan-300 hover:text-cyan-100 disabled:cursor-not-allowed disabled:opacity-60 sm:self-auto"
             >
               <RefreshCcw size={13} />
               Refresh State
             </button>
           </div>
+
+          {controlStateApiMetadata ? (
+            <div
+              className="mt-4 border border-slate-800 bg-black/70 p-4 text-xs leading-5 text-slate-400"
+              data-testid="reie-control-api-metadata"
+              data-api-generated-at={controlStateApiMetadata.generatedAt}
+              data-api-route={controlStateApiMetadata.route}
+              data-api-terminal={controlStateApiMetadata.terminal}
+              data-api-command={controlStateApiMetadata.command}
+            >
+              <div className="mb-3 text-[10px] font-black uppercase text-slate-500">Control API Inspection</div>
+              <div className="grid gap-2 sm:grid-cols-3">
+                <div className="min-w-0 border border-slate-900 bg-slate-950/70 px-3 py-2">
+                  <span className="block font-black uppercase text-slate-500">Generated</span>
+                  <span className="mt-1 block break-words text-slate-200">{controlStateApiMetadata.generatedAt}</span>
+                </div>
+                <div className="min-w-0 border border-slate-900 bg-slate-950/70 px-3 py-2">
+                  <span className="block font-black uppercase text-slate-500">Route</span>
+                  <span className="mt-1 block break-words text-slate-200">{controlStateApiMetadata.route}</span>
+                </div>
+                <div className="min-w-0 border border-slate-900 bg-slate-950/70 px-3 py-2">
+                  <span className="block font-black uppercase text-slate-500">Terminal</span>
+                  <span className="mt-1 block break-words text-slate-200">{controlStateApiMetadata.terminal}</span>
+                </div>
+              </div>
+              <div className="mt-3 min-w-0">
+                <div className="mb-2 text-[10px] font-black uppercase text-slate-500">Terminal 5 API Check</div>
+                <code className="block max-w-full overflow-x-auto whitespace-nowrap border border-slate-800 bg-black px-3 py-2 text-xs text-slate-200">
+                  {controlStateApiMetadata.command}
+                </code>
+              </div>
+            </div>
+          ) : null}
         </header>
 
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
@@ -1525,7 +3125,7 @@ export default function MasterControlPanel() {
                   {isLoadingAlertStatus ? 'Loading' : alertStatus?.success ? alertStatus.executionPlan?.level || 'Status' : 'Offline'}
                 </div>
                 <p className="mt-2 text-xs leading-5 text-slate-500">
-                  {alertStatus?.success
+                  {alertStatus?.stats
                     ? `${alertStatus.stats.pending} pending / ${alertStatus.stats.failed} failed / live ${alertStatus.executionPlan?.liveAllowed ? 'available' : 'blocked'}.`
                     : 'Alert status has not loaded.'}
                 </p>
@@ -1635,6 +3235,121 @@ export default function MasterControlPanel() {
                   : `${intakeSummary.total} Signals / ${intakeSummary.hiddenPromotedInteractions} Promoted Hidden`}
               </span>
             </div>
+
+            {!isLoadingIntake && !intakeError ? (
+              <div className="border-b border-slate-800 bg-black/40 px-5 py-4" data-testid="reie-intake-readiness">
+                <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+                  <div className="text-xs font-black uppercase text-slate-500">Intake Readiness</div>
+                  <span className={`border px-2 py-1 text-[10px] font-black uppercase ${getIntakeReadinessClass(intakeReadiness.level)}`}>
+                    {intakeReadiness.level}
+                  </span>
+                </div>
+                <p className="text-sm leading-6 text-slate-300">{intakeReadiness.summary}</p>
+                {intakeReadiness.gates.length ? (
+                  <div className="mt-3 grid gap-2 md:grid-cols-3">
+                    {intakeReadiness.gates.map((gate) => (
+                      <div key={gate.name} className={`border px-3 py-2 ${getGateClass(gate.status)}`}>
+                        <div className="text-[10px] font-black uppercase">{gate.name}</div>
+                        <div className="mt-1 text-xs leading-5 text-slate-400">{gate.detail}</div>
+                      </div>
+                    ))}
+                  </div>
+                ) : null}
+                <div className="mt-3 grid gap-3 lg:grid-cols-[1fr_1fr]">
+                  <div>
+                    <div className="mb-2 text-[10px] font-black uppercase text-slate-500">
+                      Next: {intakeReadiness.terminal} / {intakeReadiness.nextAction}
+                    </div>
+                    <code className="block overflow-x-auto border border-slate-800 bg-black px-3 py-2 text-xs text-slate-200">
+                      {intakeReadiness.nextCommand}
+                    </code>
+                  </div>
+                  {intakeApiMetadata ? (
+                    <div
+                      className="border border-slate-800 bg-black/70 p-3 text-xs leading-5 text-slate-500"
+                      data-testid="reie-intake-api-metadata"
+                      data-api-generated-at={intakeApiMetadata.generatedAt}
+                      data-api-route={intakeApiMetadata.route}
+                      data-api-terminal={intakeApiMetadata.terminal}
+                      data-api-source={intakeApiMetadata.inspectionSource || 'List Route'}
+                      data-api-command={intakeApiMetadata.command}
+                    >
+                      <div className="mb-2 text-[10px] font-black uppercase text-slate-500">Intake API Inspection</div>
+                      <div className="grid gap-2 sm:grid-cols-2">
+                        <div className="min-w-0">
+                          <span className="block font-black uppercase text-slate-500">Generated</span>
+                          <span className="mt-1 block break-words text-slate-200">{intakeApiMetadata.generatedAt}</span>
+                        </div>
+                        <div className="min-w-0">
+                          <span className="block font-black uppercase text-slate-500">Terminal</span>
+                          <span className="mt-1 block break-words text-slate-200">{intakeApiMetadata.terminal}</span>
+                        </div>
+                        <div className="min-w-0">
+                          <span className="block font-black uppercase text-slate-500">Route</span>
+                          <span className="mt-1 block break-words text-slate-200">{intakeApiMetadata.route}</span>
+                        </div>
+                        <div className="min-w-0">
+                          <span className="block font-black uppercase text-slate-500">Source</span>
+                          <span
+                            className={`mt-1 inline-flex border px-2 py-1 text-[10px] font-black uppercase ${getIntakeInspectionSourceClass(
+                              intakeApiMetadata.inspectionSource,
+                            )}`}
+                          >
+                            {intakeApiMetadata.inspectionSource || 'List Route'}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="mt-3 min-w-0">
+                        <div className="mb-2 text-[10px] font-black uppercase text-slate-500">Terminal 5 API Check</div>
+                        <code className="block max-w-full overflow-x-auto whitespace-nowrap border border-slate-800 bg-black px-3 py-2 text-xs text-slate-200">
+                          {intakeApiMetadata.command}
+                        </code>
+                      </div>
+                      {lastIntakeDetailApiMetadata ? (
+                        <div
+                          className="mt-3 min-w-0 border border-cyan-400/20 bg-cyan-950/10 p-3"
+                          data-testid="reie-intake-detail-api-metadata"
+                          data-api-generated-at={lastIntakeDetailApiMetadata.generatedAt}
+                          data-api-route={lastIntakeDetailApiMetadata.route}
+                          data-api-terminal={lastIntakeDetailApiMetadata.terminal}
+                          data-api-source={lastIntakeDetailApiMetadata.inspectionSource || 'Detail Route'}
+                          data-api-command={lastIntakeDetailApiMetadata.command}
+                        >
+                          <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+                            <span className="text-[10px] font-black uppercase text-slate-500">Last Detail Route</span>
+                            <span
+                              className={`border px-2 py-1 text-[10px] font-black uppercase ${getIntakeInspectionSourceClass(
+                                lastIntakeDetailApiMetadata.inspectionSource,
+                              )}`}
+                            >
+                              {lastIntakeDetailApiMetadata.inspectionSource || 'Detail Route'}
+                            </span>
+                          </div>
+                          <div className="grid gap-2 text-xs leading-5 text-slate-400 sm:grid-cols-2">
+                            <div className="min-w-0">
+                              <span className="block font-black uppercase text-slate-500">Generated</span>
+                              <span className="mt-1 block break-words text-slate-200">
+                                {lastIntakeDetailApiMetadata.generatedAt}
+                              </span>
+                            </div>
+                            <div className="min-w-0">
+                              <span className="block font-black uppercase text-slate-500">Route</span>
+                              <span className="mt-1 block break-words text-slate-200">{lastIntakeDetailApiMetadata.route}</span>
+                            </div>
+                          </div>
+                          <div className="mt-3 min-w-0">
+                            <div className="mb-2 text-[10px] font-black uppercase text-slate-500">Detail Command</div>
+                            <code className="block max-w-full overflow-x-auto whitespace-nowrap border border-slate-800 bg-black px-3 py-2 text-xs text-slate-200">
+                              {lastIntakeDetailApiMetadata.command}
+                            </code>
+                          </div>
+                        </div>
+                      ) : null}
+                    </div>
+                  ) : null}
+                </div>
+              </div>
+            ) : null}
 
             {isLoadingIntake ? (
               <div className="flex min-h-72 items-center justify-center gap-3 px-5 py-8 text-sm font-black uppercase text-slate-500">
@@ -1866,7 +3581,15 @@ export default function MasterControlPanel() {
                 </div>
                 {crmTaskVerdict ? <p className="mt-4 text-sm leading-6 text-slate-400">{crmTaskVerdict}</p> : null}
                 {crmTaskApiMetadata ? (
-                  <div className="mt-4 border border-slate-800 bg-black/70 p-4" data-testid="reie-crm-api-metadata">
+                  <div
+                    className="mt-4 border border-slate-800 bg-black/70 p-4"
+                    data-testid="reie-crm-api-metadata"
+                    data-api-generated-at={crmTaskApiMetadata.generatedAt}
+                    data-api-route={crmTaskApiMetadata.route}
+                    data-api-terminal={crmTaskApiMetadata.terminal}
+                    data-api-source={crmTaskApiMetadata.inspectionSource}
+                    data-api-command={crmTaskApiMetadata.command}
+                  >
                     <div className="mb-2 text-[10px] font-black uppercase text-slate-500">CRM API Inspection</div>
                     <div className="grid gap-2 text-xs leading-5 text-slate-400 sm:grid-cols-4">
                       <div className="min-w-0 border border-slate-900 bg-slate-950/70 px-3 py-2">
@@ -1906,7 +3629,15 @@ export default function MasterControlPanel() {
                         </code>
                       </div>
                       {lastCRMTaskDetailApiMetadata ? (
-                        <div className="min-w-0 border border-cyan-400/20 bg-cyan-950/10 p-3" data-testid="reie-crm-last-detail-route">
+                        <div
+                          className="min-w-0 border border-cyan-400/20 bg-cyan-950/10 p-3"
+                          data-testid="reie-crm-last-detail-route"
+                          data-api-generated-at={lastCRMTaskDetailApiMetadata.generatedAt}
+                          data-api-route={lastCRMTaskDetailApiMetadata.route}
+                          data-api-terminal={lastCRMTaskDetailApiMetadata.terminal}
+                          data-api-source={lastCRMTaskDetailApiMetadata.inspectionSource}
+                          data-api-command={lastCRMTaskDetailApiMetadata.command}
+                        >
                           <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
                             <span className="text-[10px] font-black uppercase text-slate-500">Last Detail Route</span>
                             <span
@@ -1928,6 +3659,12 @@ export default function MasterControlPanel() {
                               <span className="block font-black uppercase text-slate-500">Route</span>
                               <span className="mt-1 block break-words text-slate-200">{lastCRMTaskDetailApiMetadata.route}</span>
                             </div>
+                          </div>
+                          <div className="mt-3 min-w-0">
+                            <div className="mb-2 text-[10px] font-black uppercase text-slate-500">Detail Command</div>
+                            <code className="block max-w-full overflow-x-auto whitespace-nowrap border border-slate-800 bg-black px-3 py-2 text-xs text-slate-200">
+                              {lastCRMTaskDetailApiMetadata.command}
+                            </code>
                           </div>
                         </div>
                       ) : null}
@@ -2123,7 +3860,15 @@ export default function MasterControlPanel() {
           )}
         </section>
 
-        <section className="border border-slate-800 bg-slate-950/80" data-testid="reie-alert-operations">
+        <section
+          className="border border-slate-800 bg-slate-950/80"
+          data-testid="reie-alert-operations"
+          data-api-route={alertStatus?.route || '/api/process-alerts'}
+          data-api-terminal={alertStatus?.terminal || 'Terminal 5'}
+          data-api-command={alertStatus?.command || 'curl --max-time 20 -s "http://localhost:3000/api/process-alerts" -H "x-admin-key: $REIE_ADMIN_API_KEY"'}
+          data-alert-mode={alertStatus?.mode || 'status'}
+          data-alert-readiness={alertStatus?.executionPlan?.level || 'unknown'}
+        >
           <div className="flex flex-col gap-3 border-b border-slate-800 px-5 py-4 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex items-center gap-2">
               <BellRing size={16} className="text-cyan-300" />
@@ -2153,37 +3898,48 @@ export default function MasterControlPanel() {
               <Loader2 size={18} className="animate-spin text-cyan-300" />
               Loading alert operations
             </div>
-          ) : alertStatusError ? (
+          ) : alertStatusError && !alertStatus ? (
             <div className="px-5 py-6">
               <div className="border border-red-400/30 bg-red-500/10 p-4 text-sm leading-6 text-red-100">{alertStatusError}</div>
             </div>
-          ) : alertStatus?.success ? (
+          ) : alertStatus ? (
             <div className="grid gap-px bg-slate-800 xl:grid-cols-[360px_minmax(0,1fr)]">
               <div className="bg-slate-950 p-5">
                 <div className="mb-4 text-xs font-black uppercase text-slate-500">Alert Queue</div>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="border border-slate-800 bg-black/70 p-4">
                     <div className="text-[10px] font-black uppercase text-slate-500">Pending</div>
-                    <div className="mt-2 text-3xl font-black uppercase text-white">{alertStatus.stats.pending}</div>
+                    <div className="mt-2 text-3xl font-black uppercase text-white">{alertStatus.stats?.pending ?? 0}</div>
                   </div>
                   <div className="border border-slate-800 bg-black/70 p-4">
                     <div className="text-[10px] font-black uppercase text-slate-500">Processing</div>
-                    <div className="mt-2 text-3xl font-black uppercase text-white">{alertStatus.stats.processing}</div>
+                    <div className="mt-2 text-3xl font-black uppercase text-white">{alertStatus.stats?.processing ?? 0}</div>
                   </div>
                   <div className="border border-slate-800 bg-black/70 p-4">
                     <div className="text-[10px] font-black uppercase text-slate-500">Failed</div>
-                    <div className="mt-2 text-lg font-black uppercase text-white">{alertStatus.stats.failed}</div>
+                    <div className="mt-2 text-lg font-black uppercase text-white">{alertStatus.stats?.failed ?? 0}</div>
                   </div>
                   <div className="border border-slate-800 bg-black/70 p-4">
                     <div className="text-[10px] font-black uppercase text-slate-500">Terminal</div>
-                    <div className="mt-2 text-lg font-black uppercase text-white">{alertStatus.stats.terminal}</div>
+                    <div className="mt-2 text-lg font-black uppercase text-white">{alertStatus.stats?.terminal ?? 0}</div>
                   </div>
                 </div>
+                {alertStatusError ? (
+                  <div className="mt-4 border border-red-400/30 bg-red-500/10 p-3 text-xs leading-5 text-red-100">{alertStatusError}</div>
+                ) : null}
               </div>
 
               <div className="bg-slate-950 p-5">
                 {alertStatus.executionPlan ? (
-                  <div className="border border-slate-800 bg-black/70 p-4" data-testid="reie-alert-execution-plan">
+                  <div
+                    className="border border-slate-800 bg-black/70 p-4"
+                    data-testid="reie-alert-execution-plan"
+                    data-api-route={alertStatus.route || '/api/process-alerts'}
+                    data-api-terminal={alertStatus.executionPlan.terminal}
+                    data-alert-plan-level={alertStatus.executionPlan.level}
+                    data-alert-live-allowed={String(alertStatus.executionPlan.liveAllowed)}
+                    data-alert-next-command={alertStatus.executionPlan.nextCommand}
+                  >
                     <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
                       <div className="text-xs font-black uppercase text-slate-500">Execution Plan</div>
                       <div className="flex flex-wrap gap-2">
@@ -2215,29 +3971,370 @@ export default function MasterControlPanel() {
                   </div>
                 ) : null}
 
-                <div className="mt-4 grid gap-3 lg:grid-cols-2">
+                {alertStatus.notificationReadiness ? (() => {
+                  const notificationBlockerMetadata = getNotificationBlockerInspectionMetadata(alertStatus.notificationReadiness);
+                  return (
+                  <div
+                    className="mt-4 border border-slate-800 bg-black/70 p-4"
+                    data-testid="reie-notification-blockers"
+                    data-api-route={alertStatus.notificationReadiness.route || alertStatus.route || '/api/process-alerts'}
+                    data-api-terminal={alertStatus.notificationReadiness.terminal || alertStatus.terminal || 'Terminal 5'}
+                    data-notification-readiness={alertStatus.notificationReadiness.level}
+                    data-notification-next-command={alertStatus.notificationReadiness.nextCommand || alertStatus.notificationReadiness.commands.notificationReadiness}
+                    data-blocker-count={alertStatus.notificationReadiness.blockedBy.length}
+                    data-blocker-count-aligned={String(notificationBlockerMetadata.blockerCountAligned)}
+                    data-blocker-env-var-count-aligned={String(notificationBlockerMetadata.blockerEnvVarCountAligned)}
+                    data-blocker-counts-aligned={String(notificationBlockerMetadata.blockerCountsAligned)}
+                    data-blocker-counts-ready={String(notificationBlockerMetadata.blockerCountsReady)}
+                    data-has-first-blocker={String(alertStatus.notificationReadiness.blockedBy.length > 0)}
+                    data-first-blocker-complete={String(notificationBlockerMetadata.firstBlockerComplete)}
+                    data-first-blocker-contract-ready={String(notificationBlockerMetadata.firstBlockerContractReady)}
+                    data-blocker-payload-ready={String(notificationBlockerMetadata.blockerPayloadReady)}
+                    data-blocker-payload-contract-ready={String(notificationBlockerMetadata.blockerPayloadContractReady)}
+                    data-blocker-codes={notificationBlockerMetadata.blockerCodes.join(',')}
+                    data-blocker-env-vars={notificationBlockerMetadata.blockerEnvVars.join(',')}
+                    data-blocker-summary-aligned={String(notificationBlockerMetadata.summaryAligned)}
+                    data-blocker-api-summary-aligned={String(notificationBlockerMetadata.apiSummaryAligned)}
+                    data-blocker-alignment-status={notificationBlockerMetadata.alignmentStatus}
+                    data-blocker-alignment-status-aligned={String(notificationBlockerMetadata.alignmentStatusAligned)}
+                    data-blocker-alignment-options={NOTIFICATION_BLOCKER_ALIGNMENT_STATUSES.join(',')}
+                    data-blocker-alignment-option-count={notificationBlockerMetadata.alignmentStatusOptionCount}
+                    data-blocker-alignment-expected-count={notificationBlockerMetadata.alignmentStatusExpectedCount}
+                    data-blocker-alignment-option-count-aligned={String(notificationBlockerMetadata.alignmentStatusOptionCountAligned)}
+                    data-blocker-alignment-status-known={String(notificationBlockerMetadata.alignmentStatusKnown)}
+                    data-blocker-alignment-status-contract-ready={String(notificationBlockerMetadata.alignmentStatusContractReady)}
+                    data-blocker-inspection-ready={String(notificationBlockerMetadata.blockerInspectionReady)}
+                    data-blocker-inspection-payload-ready={String(notificationBlockerMetadata.blockerInspectionPayloadReady)}
+                    data-blocker-inspection-contract-ready={String(notificationBlockerMetadata.blockerInspectionContractReady)}
+                    data-blocker-inspection-contract-payload-ready={String(notificationBlockerMetadata.blockerInspectionContractPayloadReady)}
+                    data-blocker-inspection-contract-status={notificationBlockerMetadata.blockerInspectionContractStatus}
+                    data-blocker-inspection-contract-status-aligned={String(notificationBlockerMetadata.blockerInspectionContractStatusAligned)}
+                    data-blocker-inspection-contract-status-options={NOTIFICATION_BLOCKER_INSPECTION_CONTRACT_STATUSES.join(',')}
+                    data-blocker-inspection-contract-status-option-count={notificationBlockerMetadata.blockerInspectionContractStatusOptionCount}
+                    data-blocker-inspection-contract-status-expected-count={notificationBlockerMetadata.blockerInspectionContractStatusExpectedCount}
+                    data-blocker-inspection-contract-status-option-count-aligned={String(notificationBlockerMetadata.blockerInspectionContractStatusOptionCountAligned)}
+                    data-blocker-inspection-contract-status-known={String(notificationBlockerMetadata.blockerInspectionContractStatusKnown)}
+                    data-blocker-inspection-contract-status-contract-ready={String(notificationBlockerMetadata.blockerInspectionContractStatusContractReady)}
+                    data-blocker-inspection-contract-contract-ready={String(notificationBlockerMetadata.blockerInspectionContractContractReady)}
+                    data-blocker-launch-contract-ready={String(notificationBlockerMetadata.blockerLaunchContractReady)}
+                    data-blocker-launch-contract-payload-ready={String(notificationBlockerMetadata.blockerLaunchContractPayloadReady)}
+                    data-blocker-launch-contract-status={notificationBlockerMetadata.blockerLaunchContractStatus}
+                    data-blocker-launch-contract-status-aligned={String(notificationBlockerMetadata.blockerLaunchContractStatusAligned)}
+                    data-blocker-launch-contract-status-options={NOTIFICATION_BLOCKER_LAUNCH_STATUSES.join(',')}
+                    data-blocker-launch-contract-status-option-count={notificationBlockerMetadata.blockerLaunchContractStatusOptionCount}
+                    data-blocker-launch-contract-status-expected-count={notificationBlockerMetadata.blockerLaunchContractStatusExpectedCount}
+                    data-blocker-launch-contract-status-option-count-aligned={String(notificationBlockerMetadata.blockerLaunchContractStatusOptionCountAligned)}
+                    data-blocker-launch-contract-status-known={String(notificationBlockerMetadata.blockerLaunchContractStatusKnown)}
+                    data-blocker-launch-contract-status-contract-ready={String(notificationBlockerMetadata.blockerLaunchContractStatusContractReady)}
+                    data-blocker-launch-contract-status-payload-ready={String(notificationBlockerMetadata.blockerLaunchContractStatusPayloadReady)}
+                    data-blocker-launch-contract-composite-ready={String(notificationBlockerMetadata.blockerLaunchContractCompositeReady)}
+                    data-blocker-launch-contract-composite-payload-ready={String(notificationBlockerMetadata.blockerLaunchContractCompositePayloadReady)}
+                    data-blocker-launch-contract-composite-status={notificationBlockerMetadata.blockerLaunchContractCompositeStatus}
+                    data-blocker-launch-contract-composite-status-aligned={String(notificationBlockerMetadata.blockerLaunchContractCompositeStatusAligned)}
+                    data-blocker-launch-contract-composite-status-options={NOTIFICATION_BLOCKER_LAUNCH_COMPOSITE_STATUSES.join(',')}
+                    data-blocker-launch-contract-composite-status-option-count={notificationBlockerMetadata.blockerLaunchContractCompositeStatusOptionCount}
+                    data-blocker-launch-contract-composite-status-expected-count={notificationBlockerMetadata.blockerLaunchContractCompositeStatusExpectedCount}
+                    data-blocker-launch-contract-composite-status-option-count-aligned={String(notificationBlockerMetadata.blockerLaunchContractCompositeStatusOptionCountAligned)}
+                    data-blocker-launch-contract-composite-status-known={String(notificationBlockerMetadata.blockerLaunchContractCompositeStatusKnown)}
+                    data-blocker-launch-contract-composite-status-contract-ready={String(notificationBlockerMetadata.blockerLaunchContractCompositeStatusContractReady)}
+                    data-blocker-launch-contract-composite-status-payload-ready={String(notificationBlockerMetadata.blockerLaunchContractCompositeStatusPayloadReady)}
+                    data-blocker-launch-contract-composite-contract-ready={String(notificationBlockerMetadata.blockerLaunchContractCompositeContractReady)}
+                    data-blocker-launch-contract-composite-contract-payload-ready={String(notificationBlockerMetadata.blockerLaunchContractCompositeContractPayloadReady)}
+                    data-blocker-launch-readiness-status={notificationBlockerMetadata.blockerLaunchReadinessStatus}
+                    data-blocker-launch-readiness-status-options={NOTIFICATION_BLOCKER_LAUNCH_READINESS_STATUSES.join(',')}
+                    data-blocker-launch-readiness-status-option-count={notificationBlockerMetadata.blockerLaunchReadinessStatusOptionCount}
+                    data-blocker-launch-readiness-status-expected-count={notificationBlockerMetadata.blockerLaunchReadinessStatusExpectedCount}
+                    data-blocker-launch-readiness-status-option-count-aligned={String(notificationBlockerMetadata.blockerLaunchReadinessStatusOptionCountAligned)}
+                    data-blocker-launch-readiness-status-known={String(notificationBlockerMetadata.blockerLaunchReadinessStatusKnown)}
+                    data-blocker-launch-readiness-status-aligned={String(notificationBlockerMetadata.blockerLaunchReadinessStatusAligned)}
+                    data-blocker-launch-readiness-status-contract-ready={String(notificationBlockerMetadata.blockerLaunchReadinessStatusContractReady)}
+                    data-blocker-launch-readiness-status-payload-ready={String(notificationBlockerMetadata.blockerLaunchReadinessStatusPayloadReady)}
+                    data-blocker-launch-readiness-contract-ready={String(notificationBlockerMetadata.blockerLaunchReadinessContractReady)}
+                    data-blocker-launch-readiness-contract-payload-ready={String(notificationBlockerMetadata.blockerLaunchReadinessContractPayloadReady)}
+                    data-blocker-launch-readiness-contract-status={notificationBlockerMetadata.blockerLaunchReadinessContractStatus}
+                    data-blocker-launch-readiness-contract-status-options={NOTIFICATION_BLOCKER_LAUNCH_READINESS_CONTRACT_STATUSES.join(',')}
+                    data-blocker-launch-readiness-contract-status-option-count={notificationBlockerMetadata.blockerLaunchReadinessContractStatusOptionCount}
+                    data-blocker-launch-readiness-contract-status-expected-count={notificationBlockerMetadata.blockerLaunchReadinessContractStatusExpectedCount}
+                    data-blocker-launch-readiness-contract-status-option-count-aligned={String(notificationBlockerMetadata.blockerLaunchReadinessContractStatusOptionCountAligned)}
+                    data-blocker-launch-readiness-contract-status-known={String(notificationBlockerMetadata.blockerLaunchReadinessContractStatusKnown)}
+                    data-blocker-launch-readiness-contract-status-aligned={String(notificationBlockerMetadata.blockerLaunchReadinessContractStatusAligned)}
+                    data-blocker-launch-readiness-contract-status-contract-ready={String(notificationBlockerMetadata.blockerLaunchReadinessContractStatusContractReady)}
+                    data-blocker-launch-readiness-contract-status-payload-ready={String(notificationBlockerMetadata.blockerLaunchReadinessContractStatusPayloadReady)}
+                    data-blocker-launch-readiness-contract-contract-ready={String(notificationBlockerMetadata.blockerLaunchReadinessContractContractReady)}
+                    data-blocker-launch-readiness-contract-contract-payload-ready={String(notificationBlockerMetadata.blockerLaunchReadinessContractContractPayloadReady)}
+                    data-blocker-launch-readiness-contract-composite-status={notificationBlockerMetadata.blockerLaunchReadinessContractCompositeStatus}
+                    data-blocker-launch-readiness-contract-composite-status-options={NOTIFICATION_BLOCKER_LAUNCH_READINESS_CONTRACT_COMPOSITE_STATUSES.join(',')}
+                    data-blocker-launch-readiness-contract-composite-status-option-count={notificationBlockerMetadata.blockerLaunchReadinessContractCompositeStatusOptionCount}
+                    data-blocker-launch-readiness-contract-composite-status-expected-count={notificationBlockerMetadata.blockerLaunchReadinessContractCompositeStatusExpectedCount}
+                    data-blocker-launch-readiness-contract-composite-status-option-count-aligned={String(notificationBlockerMetadata.blockerLaunchReadinessContractCompositeStatusOptionCountAligned)}
+                    data-blocker-launch-readiness-contract-composite-status-known={String(notificationBlockerMetadata.blockerLaunchReadinessContractCompositeStatusKnown)}
+                    data-blocker-launch-readiness-contract-composite-status-aligned={String(notificationBlockerMetadata.blockerLaunchReadinessContractCompositeStatusAligned)}
+                    data-blocker-launch-readiness-contract-composite-status-contract-ready={String(notificationBlockerMetadata.blockerLaunchReadinessContractCompositeStatusContractReady)}
+                    data-blocker-launch-readiness-contract-composite-status-payload-ready={String(notificationBlockerMetadata.blockerLaunchReadinessContractCompositeStatusPayloadReady)}
+                    data-blocker-launch-readiness-contract-composite-contract-ready={String(notificationBlockerMetadata.blockerLaunchReadinessContractCompositeContractReady)}
+                    data-blocker-launch-readiness-contract-composite-contract-payload-ready={String(notificationBlockerMetadata.blockerLaunchReadinessContractCompositeContractPayloadReady)}
+                    data-blocker-launch-readiness-contract-final-status={notificationBlockerMetadata.blockerLaunchReadinessContractFinalStatus}
+                    data-blocker-launch-readiness-contract-final-status-options={NOTIFICATION_BLOCKER_LAUNCH_READINESS_CONTRACT_FINAL_STATUSES.join(',')}
+                    data-blocker-launch-readiness-contract-final-status-option-count={notificationBlockerMetadata.blockerLaunchReadinessContractFinalStatusOptionCount}
+                    data-blocker-launch-readiness-contract-final-status-expected-count={notificationBlockerMetadata.blockerLaunchReadinessContractFinalStatusExpectedCount}
+                    data-blocker-launch-readiness-contract-final-status-option-count-aligned={String(notificationBlockerMetadata.blockerLaunchReadinessContractFinalStatusOptionCountAligned)}
+                    data-blocker-launch-readiness-contract-final-status-known={String(notificationBlockerMetadata.blockerLaunchReadinessContractFinalStatusKnown)}
+                    data-blocker-launch-readiness-contract-final-status-aligned={String(notificationBlockerMetadata.blockerLaunchReadinessContractFinalStatusAligned)}
+                    data-blocker-launch-readiness-contract-final-status-contract-ready={String(notificationBlockerMetadata.blockerLaunchReadinessContractFinalStatusContractReady)}
+                    data-blocker-launch-readiness-contract-final-status-payload-ready={String(notificationBlockerMetadata.blockerLaunchReadinessContractFinalStatusPayloadReady)}
+                    data-blocker-launch-readiness-contract-final-contract-ready={String(notificationBlockerMetadata.blockerLaunchReadinessContractFinalContractReady)}
+                    data-blocker-launch-readiness-contract-final-contract-payload-ready={String(notificationBlockerMetadata.blockerLaunchReadinessContractFinalContractPayloadReady)}
+                    data-blocker-launch-readiness-contract-final-contract-status={notificationBlockerMetadata.blockerLaunchReadinessContractFinalContractStatus}
+                    data-blocker-launch-readiness-contract-final-contract-status-options={NOTIFICATION_BLOCKER_LAUNCH_READINESS_CONTRACT_FINAL_CONTRACT_STATUSES.join(',')}
+                    data-blocker-launch-readiness-contract-final-contract-status-option-count={notificationBlockerMetadata.blockerLaunchReadinessContractFinalContractStatusOptionCount}
+                    data-blocker-launch-readiness-contract-final-contract-status-expected-count={notificationBlockerMetadata.blockerLaunchReadinessContractFinalContractStatusExpectedCount}
+                    data-blocker-launch-readiness-contract-final-contract-status-option-count-aligned={String(notificationBlockerMetadata.blockerLaunchReadinessContractFinalContractStatusOptionCountAligned)}
+                    data-blocker-launch-readiness-contract-final-contract-status-known={String(notificationBlockerMetadata.blockerLaunchReadinessContractFinalContractStatusKnown)}
+                    data-blocker-launch-readiness-contract-final-contract-status-aligned={String(notificationBlockerMetadata.blockerLaunchReadinessContractFinalContractStatusAligned)}
+                    data-blocker-launch-readiness-contract-final-contract-status-contract-ready={String(notificationBlockerMetadata.blockerLaunchReadinessContractFinalContractStatusContractReady)}
+                    data-blocker-launch-readiness-contract-final-contract-status-payload-ready={String(notificationBlockerMetadata.blockerLaunchReadinessContractFinalContractStatusPayloadReady)}
+                    data-blocker-launch-readiness-contract-final-final-contract-ready={String(notificationBlockerMetadata.blockerLaunchReadinessContractFinalFinalContractReady)}
+                    data-blocker-launch-readiness-contract-final-final-contract-payload-ready={String(notificationBlockerMetadata.blockerLaunchReadinessContractFinalFinalContractPayloadReady)}
+                    data-blocker-launch-readiness-contract-final-final-contract-status={notificationBlockerMetadata.blockerLaunchReadinessContractFinalFinalContractStatus}
+                    data-blocker-launch-readiness-contract-final-final-contract-status-options={NOTIFICATION_BLOCKER_LAUNCH_READINESS_CONTRACT_FINAL_FINAL_CONTRACT_STATUSES.join(',')}
+                    data-blocker-launch-readiness-contract-final-final-contract-status-option-count={notificationBlockerMetadata.blockerLaunchReadinessContractFinalFinalContractStatusOptionCount}
+                    data-blocker-launch-readiness-contract-final-final-contract-status-expected-count={notificationBlockerMetadata.blockerLaunchReadinessContractFinalFinalContractStatusExpectedCount}
+                    data-blocker-launch-readiness-contract-final-final-contract-status-option-count-aligned={String(notificationBlockerMetadata.blockerLaunchReadinessContractFinalFinalContractStatusOptionCountAligned)}
+                    data-blocker-launch-readiness-contract-final-final-contract-status-known={String(notificationBlockerMetadata.blockerLaunchReadinessContractFinalFinalContractStatusKnown)}
+                    data-blocker-launch-readiness-contract-final-final-contract-status-aligned={String(notificationBlockerMetadata.blockerLaunchReadinessContractFinalFinalContractStatusAligned)}
+                    data-blocker-launch-readiness-contract-final-final-contract-status-contract-ready={String(notificationBlockerMetadata.blockerLaunchReadinessContractFinalFinalContractStatusContractReady)}
+                    data-blocker-launch-readiness-contract-final-final-contract-status-payload-ready={String(notificationBlockerMetadata.blockerLaunchReadinessContractFinalFinalContractStatusPayloadReady)}
+                    data-blocker-launch-readiness-contract-final-final-contract-contract-ready={String(notificationBlockerMetadata.blockerLaunchReadinessContractFinalFinalContractContractReady)}
+                    data-blocker-launch-readiness-contract-final-final-contract-contract-payload-ready={String(notificationBlockerMetadata.blockerLaunchReadinessContractFinalFinalContractContractPayloadReady)}
+                    data-blocker-contract-terminal-ready={String(notificationBlockerMetadata.blockerContractTerminalReady)}
+                    data-blocker-contract-terminal-payload-ready={String(notificationBlockerMetadata.blockerContractTerminalPayloadReady)}
+                    data-blocker-contract-terminal-status={notificationBlockerMetadata.blockerContractTerminalStatus}
+                    data-blocker-contract-terminal-status-options={NOTIFICATION_BLOCKER_CONTRACT_TERMINAL_STATUSES.join(',')}
+                    data-blocker-contract-terminal-status-option-count={notificationBlockerMetadata.blockerContractTerminalStatusOptionCount}
+                    data-blocker-contract-terminal-status-expected-count={notificationBlockerMetadata.blockerContractTerminalStatusExpectedCount}
+                    data-blocker-contract-terminal-status-option-count-aligned={String(notificationBlockerMetadata.blockerContractTerminalStatusOptionCountAligned)}
+                    data-blocker-contract-terminal-status-known={String(notificationBlockerMetadata.blockerContractTerminalStatusKnown)}
+                    data-blocker-contract-terminal-status-aligned={String(notificationBlockerMetadata.blockerContractTerminalStatusAligned)}
+                    data-blocker-contract-terminal-status-contract-ready={String(notificationBlockerMetadata.blockerContractTerminalStatusContractReady)}
+                    data-blocker-contract-terminal-status-payload-ready={String(notificationBlockerMetadata.blockerContractTerminalStatusPayloadReady)}
+                    data-blocker-contract-terminal-contract-ready={String(notificationBlockerMetadata.blockerContractTerminalContractReady)}
+                    data-blocker-contract-terminal-contract-payload-ready={String(notificationBlockerMetadata.blockerContractTerminalContractPayloadReady)}
+                    data-blocker-contract-terminal-contract-status={notificationBlockerMetadata.blockerContractTerminalContractStatus}
+                    data-blocker-contract-terminal-contract-status-options={NOTIFICATION_BLOCKER_CONTRACT_TERMINAL_CONTRACT_STATUSES.join(',')}
+                    data-blocker-contract-terminal-contract-status-option-count={notificationBlockerMetadata.blockerContractTerminalContractStatusOptionCount}
+                    data-blocker-contract-terminal-contract-status-expected-count={notificationBlockerMetadata.blockerContractTerminalContractStatusExpectedCount}
+                    data-blocker-contract-terminal-contract-status-option-count-aligned={String(notificationBlockerMetadata.blockerContractTerminalContractStatusOptionCountAligned)}
+                    data-blocker-contract-terminal-contract-status-known={String(notificationBlockerMetadata.blockerContractTerminalContractStatusKnown)}
+                    data-blocker-contract-terminal-contract-status-aligned={String(notificationBlockerMetadata.blockerContractTerminalContractStatusAligned)}
+                    data-blocker-contract-terminal-contract-status-contract-ready={String(notificationBlockerMetadata.blockerContractTerminalContractStatusContractReady)}
+                    data-blocker-contract-terminal-contract-status-payload-ready={String(notificationBlockerMetadata.blockerContractTerminalContractStatusPayloadReady)}
+                    data-blocker-contract-terminal-contract-contract-ready={String(notificationBlockerMetadata.blockerContractTerminalContractContractReady)}
+                    data-blocker-contract-terminal-contract-contract-payload-ready={String(notificationBlockerMetadata.blockerContractTerminalContractContractPayloadReady)}
+                    data-first-blocker-contract-payload-ready={String(notificationBlockerMetadata.firstBlockerContractPayloadReady)}
+                    data-blocker-payload-contract-payload-ready={String(notificationBlockerMetadata.blockerPayloadContractPayloadReady)}
+                    data-blocker-contract-ready={String(notificationBlockerMetadata.blockerContractReady)}
+                    data-blocker-contract-payload-ready={String(notificationBlockerMetadata.blockerContractPayloadReady)}
+                    data-blocker-contract-contract-payload-ready={String(notificationBlockerMetadata.blockerContractContractPayloadReady)}
+                    data-blocker-inspection-contract-contract-payload-ready={String(notificationBlockerMetadata.blockerInspectionContractContractPayloadReady)}
+                    data-blocker-contract-legacy-payload-ready={String(notificationBlockerMetadata.blockerContractLegacyPayloadReady)}
+                    data-blocker-contract-legacy-aligned={String(notificationBlockerMetadata.blockerContractLegacyAligned)}
+                    data-blocker-contract-status={notificationBlockerMetadata.blockerContractStatus}
+                    data-blocker-contract-status-payload-ready={String(notificationBlockerMetadata.blockerContractStatusPayloadReady)}
+                    data-blocker-contract-status-aligned={String(notificationBlockerMetadata.blockerContractStatusAligned)}
+                    data-blocker-contract-status-options={NOTIFICATION_BLOCKER_CONTRACT_STATUSES.join(',')}
+                    data-blocker-contract-status-option-count={notificationBlockerMetadata.blockerContractStatusOptionCount}
+                    data-blocker-contract-status-expected-count={notificationBlockerMetadata.blockerContractStatusExpectedCount}
+                    data-blocker-contract-status-option-count-aligned={String(notificationBlockerMetadata.blockerContractStatusOptionCountAligned)}
+                    data-blocker-contract-status-known={String(notificationBlockerMetadata.blockerContractStatusKnown)}
+                    data-blocker-contract-status-contract-ready={String(notificationBlockerMetadata.blockerContractStatusContractReady)}
+                    data-blocker-contract-composite-ready={String(notificationBlockerMetadata.blockerContractCompositeReady)}
+                    data-blocker-contract-composite-payload-ready={String(notificationBlockerMetadata.blockerContractCompositePayloadReady)}
+                    data-blocker-contract-composite-status={notificationBlockerMetadata.blockerContractCompositeStatus}
+                    data-blocker-contract-composite-status-aligned={String(notificationBlockerMetadata.blockerContractCompositeStatusAligned)}
+                    data-blocker-contract-composite-status-options={NOTIFICATION_BLOCKER_COMPOSITE_STATUSES.join(',')}
+                    data-blocker-contract-composite-status-option-count={notificationBlockerMetadata.blockerContractCompositeStatusOptionCount}
+                    data-blocker-contract-composite-status-expected-count={notificationBlockerMetadata.blockerContractCompositeStatusExpectedCount}
+                    data-blocker-contract-composite-status-option-count-aligned={String(notificationBlockerMetadata.blockerContractCompositeStatusOptionCountAligned)}
+                    data-blocker-contract-composite-status-known={String(notificationBlockerMetadata.blockerContractCompositeStatusKnown)}
+                    data-blocker-contract-composite-status-contract-ready={String(notificationBlockerMetadata.blockerContractCompositeStatusContractReady)}
+                    data-blocker-contract-composite-status-payload-ready={String(notificationBlockerMetadata.blockerContractCompositeStatusPayloadReady)}
+                    data-blocker-contract-composite-contract-ready={String(notificationBlockerMetadata.blockerContractCompositeContractReady)}
+                    data-blocker-contract-composite-contract-payload-ready={String(notificationBlockerMetadata.blockerContractCompositeContractPayloadReady)}
+                    data-api-blocker-code-count={notificationBlockerMetadata.counts.apiCodeCount}
+                    data-api-blocker-env-var-count={notificationBlockerMetadata.counts.apiEnvVarCount}
+                    data-structured-blocker-code-count={notificationBlockerMetadata.counts.structuredCodeCount}
+                    data-structured-blocker-env-var-count={notificationBlockerMetadata.counts.structuredEnvVarCount}
+                    data-has-recipient-blocker={String(notificationBlockerMetadata.hasRecipientBlocker)}
+                    data-has-dry-run-blocker={String(notificationBlockerMetadata.hasDryRunBlocker)}
+                    data-command-bundle-complete={String(notificationBlockerMetadata.commandsComplete)}
+                    data-command-keys={notificationBlockerMetadata.commandKeys.join(',')}
+                    data-command-key-count={notificationBlockerMetadata.commandKeyCount}
+                    data-command-key-count-aligned={String(notificationBlockerMetadata.commandKeyCountAligned)}
+                    data-command-count={notificationBlockerMetadata.commandCount}
+                    data-command-count-aligned={String(notificationBlockerMetadata.commandCountAligned)}
+                    data-command-inspection-ready={String(notificationBlockerMetadata.commandInspectionReady)}
+                    data-command-inspection-payload-ready={String(notificationBlockerMetadata.commandInspectionPayloadReady)}
+                    data-command-expected-count={notificationBlockerMetadata.expectedCommandCount}
+                    data-command-expected-payload-ready={String(notificationBlockerMetadata.commandExpectedPayloadReady)}
+                    data-notification-command-panel-payload-ready={String(notificationBlockerMetadata.notificationCommandPanelPayloadReady)}
+                    data-first-blocker-payload-ready={String(notificationBlockerMetadata.firstBlockerPayloadReady)}
+                    data-first-blocker-identity-payload-ready={String(notificationBlockerMetadata.firstBlockerIdentityPayloadReady)}
+                    data-first-blocker-action-payload-ready={String(notificationBlockerMetadata.firstBlockerActionPayloadReady)}
+                    data-first-blocker-detail-payload-ready={String(notificationBlockerMetadata.firstBlockerDetailPayloadReady)}
+                    data-first-blocker-env-payload-ready={String(notificationBlockerMetadata.firstBlockerEnvPayloadReady)}
+                    data-first-blocker-code-payload-ready={String(notificationBlockerMetadata.firstBlockerCodePayloadReady)}
+                    data-notification-blocker-panel-payload-ready={String(notificationBlockerMetadata.notificationBlockerPanelPayloadReady)}
+                    data-first-blocker-code={alertStatus.notificationReadiness.blockedBy[0]?.code || 'none'}
+                    data-first-blocker-env-vars={alertStatus.notificationReadiness.blockedBy[0]?.envVars.join(',') || ''}
+                    data-first-blocker-env-var-count={alertStatus.notificationReadiness.blockedBy[0]?.envVars.length || 0}
+                    data-first-blocker-detail={alertStatus.notificationReadiness.blockedBy[0]?.detail || ''}
+                    data-first-blocker-next-command={alertStatus.notificationReadiness.blockedBy[0]?.nextCommand || ''}
+                    data-property-inquiry-command-payload-ready={String(notificationBlockerMetadata.propertyInquiryCommandPayloadReady)}
+                    data-notification-readiness-command-payload-ready={String(notificationBlockerMetadata.notificationReadinessCommandPayloadReady)}
+                    data-strict-notification-readiness-command-payload-ready={String(notificationBlockerMetadata.strictNotificationReadinessCommandPayloadReady)}
+                    data-strict-notification-contract-command-payload-ready={String(notificationBlockerMetadata.strictNotificationContractCommandPayloadReady)}
+                    data-launch-readiness-command-payload-ready={String(notificationBlockerMetadata.launchReadinessCommandPayloadReady)}
+                    data-notification-command-chain-payload-ready={String(notificationBlockerMetadata.notificationCommandChainPayloadReady)}
+                    data-notification-launch-panel-payload-ready={String(notificationBlockerMetadata.notificationLaunchPanelPayloadReady)}
+                    data-notification-launch-terminal-payload-ready={String(notificationBlockerMetadata.notificationLaunchTerminalPayloadReady)}
+                    data-notification-readiness-level-payload-ready={String(notificationBlockerMetadata.notificationReadinessLevelPayloadReady)}
+                    data-command-property-inquiry-readiness={alertStatus.notificationReadiness.commands.propertyInquiryReadiness}
+                    data-command-notification-readiness={alertStatus.notificationReadiness.commands.notificationReadiness}
+                    data-command-strict-notification-readiness={alertStatus.notificationReadiness.commands.strictNotificationReadiness}
+                    data-command-strict-notification-contract={alertStatus.notificationReadiness.commands.strictNotificationReadinessContract}
+                    data-command-launch-readiness={alertStatus.notificationReadiness.commands.launchReadiness}
+                  >
+                    <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+                      <div className="text-xs font-black uppercase text-slate-500">Notification Launch Blockers</div>
+                      <span
+                        className={`border px-2 py-1 text-[10px] font-black uppercase ${
+                          alertStatus.notificationReadiness.level === 'blocked'
+                            ? 'border-red-400/40 bg-red-500/10 text-red-100'
+                            : 'border-emerald-300/30 bg-emerald-400/10 text-emerald-100'
+                        }`}
+                      >
+                        {alertStatus.notificationReadiness.level}
+                      </span>
+                    </div>
+                    <p className="text-sm leading-6 text-slate-300">{alertStatus.notificationReadiness.summary}</p>
+                    {alertStatus.notificationReadiness.blockedBy.length > 0 ? (
+                      <div className="mt-3 grid gap-2">
+                        {alertStatus.notificationReadiness.blockedBy.map((blocker) => (
+                          <div
+                            key={`${blocker.code}-${blocker.envVars.join('-')}`}
+                            className="border border-red-400/30 bg-red-500/10 px-3 py-2 text-xs leading-5 text-red-100"
+                            data-testid={`reie-notification-blocker-${blocker.code}`}
+                            data-blocker-code={blocker.code}
+                            data-blocker-env-vars={blocker.envVars.join(',')}
+                            data-blocker-next-command={blocker.nextCommand}
+                          >
+                            <div className="font-black uppercase">{blocker.code.replaceAll('_', ' ')}</div>
+                            <div className="mt-1 text-red-100/80">{blocker.detail}</div>
+                            <div className="mt-1 font-semibold text-red-100/70">{blocker.envVars.join(' or ')}</div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="mt-3 border border-emerald-300/20 bg-emerald-400/5 px-3 py-2 text-xs font-semibold text-emerald-100">
+                        No notification launch blockers reported by alert status.
+                      </div>
+                    )}
+                    <div className="mt-3">
+                      <div className="mb-2 text-[10px] font-black uppercase text-slate-500">Terminal 5 Notification Gate</div>
+                      <code className="block overflow-x-auto border border-slate-800 bg-black px-3 py-2 text-xs text-slate-200">
+                        {alertStatus.notificationReadiness.nextCommand || alertStatus.notificationReadiness.commands.notificationReadiness}
+                      </code>
+                    </div>
+                    <div className="mt-3 grid gap-2 lg:grid-cols-2">
+                      {[
+                        ['Property Inquiry', alertStatus.notificationReadiness.commands.propertyInquiryReadiness],
+                        ['Notification Summary', alertStatus.notificationReadiness.commands.notificationReadiness],
+                        ['Strict Gate', alertStatus.notificationReadiness.commands.strictNotificationReadiness],
+                        ['Strict Contract', alertStatus.notificationReadiness.commands.strictNotificationReadinessContract],
+                        ['Launch Readiness', alertStatus.notificationReadiness.commands.launchReadiness],
+                      ].map(([label, command]) => (
+                        <div key={label} className="min-w-0">
+                          <div className="mb-1 text-[10px] font-black uppercase text-slate-500">{label}</div>
+                          <code className="block overflow-x-auto border border-slate-800 bg-black px-3 py-2 text-xs text-slate-300">
+                            {command}
+                          </code>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  );
+                })() : null}
+
+                <div
+                  className="mt-4 border border-slate-800 bg-black/70 p-4"
+                  data-testid="reie-alert-api-metadata"
+                  data-api-generated-at={alertStatus.generatedAt || ''}
+                  data-api-route={alertStatus.route || '/api/process-alerts'}
+                  data-api-terminal={alertStatus.terminal || 'Terminal 5'}
+                  data-api-command={alertStatus.command || 'curl --max-time 20 -s "http://localhost:3000/api/process-alerts" -H "x-admin-key: $REIE_ADMIN_API_KEY"'}
+                  data-alert-mode={alertStatus.mode || 'status'}
+                  data-alert-pending={alertStatus.stats?.pending ?? 0}
+                  data-alert-failed={alertStatus.stats?.failed ?? 0}
+                >
+                  <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+                    <div className="text-xs font-black uppercase text-slate-500">Alert API Inspection</div>
+                    <span className="border border-cyan-300/30 bg-cyan-300/10 px-2 py-1 text-[10px] font-black uppercase text-cyan-100">
+                      {alertStatus.terminal}
+                    </span>
+                  </div>
+                  <div className="grid gap-3 text-xs text-slate-300 sm:grid-cols-3">
+                    <div>
+                      <span className="block font-black uppercase text-slate-500">Generated</span>
+                      <span className="mt-1 block break-words">{alertStatus.generatedAt || 'Not recorded'}</span>
+                    </div>
+                    <div>
+                      <span className="block font-black uppercase text-slate-500">Route</span>
+                      <span className="mt-1 block break-words">{alertStatus.route || '/api/process-alerts'}</span>
+                    </div>
+                    <div>
+                      <span className="block font-black uppercase text-slate-500">Mode</span>
+                      <span className="mt-1 block font-black uppercase text-white">{alertStatus.mode || 'status'}</span>
+                    </div>
+                  </div>
+                  <div className="mt-3">
+                    <div className="mb-2 text-[10px] font-black uppercase text-slate-500">Terminal 5 API Check</div>
+                    <code className="block overflow-x-auto border border-slate-800 bg-black px-3 py-2 text-xs text-slate-200">
+                      {alertStatus.command || 'curl --max-time 20 -s "http://localhost:3000/api/process-alerts" -H "x-admin-key: $REIE_ADMIN_API_KEY"'}
+                    </code>
+                  </div>
+                </div>
+
+                <div
+                  className="mt-4 grid gap-3 lg:grid-cols-2"
+                  data-testid="reie-alert-command-metadata"
+                  data-api-terminal={alertStatus.commands?.terminal || alertStatus.terminal || 'Terminal 5'}
+                  data-command-status={alertStatus.commands?.status || 'curl -s "http://localhost:3000/api/process-alerts?limit=50"'}
+                  data-command-dry-run={alertStatus.commands?.dryRun || 'curl -s -X POST "http://localhost:3000/api/process-alerts?dryRun=true&limit=50"'}
+                  data-command-live={alertStatus.commands?.live || ''}
+                  data-command-dead-letter={alertStatus.commands?.deadLetter || 'curl -s "http://localhost:3000/api/admin/dead-letter?sourceQueue=reie-alerts&limit=25"'}
+                >
                   <div>
                     <div className="mb-2 text-[10px] font-black uppercase text-slate-500">Terminal 5 Alert Status</div>
                     <code className="block overflow-x-auto border border-slate-800 bg-black px-3 py-2 text-xs text-slate-200">
-                      {alertStatus.commands.status}
+                      {alertStatus.commands?.status || 'curl -s "http://localhost:3000/api/process-alerts?limit=50"'}
                     </code>
                   </div>
                   <div>
                     <div className="mb-2 text-[10px] font-black uppercase text-slate-500">Terminal 5 Alert Dry-Run</div>
                     <code className="block overflow-x-auto border border-slate-800 bg-black px-3 py-2 text-xs text-slate-200">
-                      {alertStatus.commands.dryRun}
+                      {alertStatus.commands?.dryRun || 'curl -s -X POST "http://localhost:3000/api/process-alerts?dryRun=true&limit=50"'}
                     </code>
                   </div>
                   <div>
                     <div className="mb-2 text-[10px] font-black uppercase text-slate-500">Terminal 5 Dead-Letter</div>
                     <code className="block overflow-x-auto border border-slate-800 bg-black px-3 py-2 text-xs text-slate-200">
-                      {alertStatus.commands.deadLetter}
+                      {alertStatus.commands?.deadLetter || 'curl -s "http://localhost:3000/api/admin/dead-letter?sourceQueue=reie-alerts&limit=25"'}
                     </code>
                   </div>
                   <div>
                     <div className="mb-2 text-[10px] font-black uppercase text-slate-500">Terminal 5 Queue Dashboard</div>
                     <code className="block overflow-x-auto border border-slate-800 bg-black px-3 py-2 text-xs text-slate-200">
-                      {alertStatus.commands.queueDashboard || 'npm run run:queue-dashboard -- --failed --limit=5'}
+                      {alertStatus.commands?.queueDashboard || 'npm run run:queue-dashboard -- --failed --limit=5'}
                     </code>
                   </div>
                 </div>
@@ -2246,7 +4343,16 @@ export default function MasterControlPanel() {
           ) : null}
         </section>
 
-        <section className="border border-slate-800 bg-slate-950/80" data-testid="reie-mls-operations">
+        <section
+          className="border border-slate-800 bg-slate-950/80"
+          data-testid="reie-mls-operations"
+          data-api-route={mlsStatus?.route || '/api/mls/status'}
+          data-api-terminal={mlsStatus?.terminal || 'Terminal 5'}
+          data-api-command={mlsStatus?.command || 'curl --max-time 8 -s "http://localhost:3000/api/mls/status" -H "x-admin-key: $REIE_ADMIN_API_KEY"'}
+          data-mls-status={mlsStatus?.status || 'unknown'}
+          data-mls-retry-route={mlsRetryStatus?.route || '/api/mls/retry'}
+          data-mls-retry-command={mlsRetryStatus?.command || 'curl --max-time 8 -s "http://localhost:3000/api/mls/retry" -H "x-admin-key: $REIE_ADMIN_API_KEY"'}
+        >
           <div className="flex flex-col gap-3 border-b border-slate-800 px-5 py-4 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex items-center gap-2">
               <Radar size={16} className="text-cyan-300" />
@@ -2269,11 +4375,14 @@ export default function MasterControlPanel() {
               <button
                 type="button"
                 data-testid="reie-refresh-mls-status"
-                onClick={() => void loadMlsStatus()}
-                disabled={isLoadingMlsStatus}
+                onClick={() => {
+                  void loadMlsStatus();
+                  void loadMlsRetryStatus();
+                }}
+                disabled={isLoadingMlsStatus || isLoadingMlsRetryStatus}
                 className="inline-flex items-center gap-2 border border-slate-800 bg-black px-3 py-2 text-xs font-black uppercase text-slate-300 transition hover:border-cyan-300 hover:text-cyan-100 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {isLoadingMlsStatus ? <Loader2 size={13} className="animate-spin" /> : <RefreshCcw size={13} />}
+                {isLoadingMlsStatus || isLoadingMlsRetryStatus ? <Loader2 size={13} className="animate-spin" /> : <RefreshCcw size={13} />}
                 Refresh MLS
               </button>
             </div>
@@ -2284,11 +4393,11 @@ export default function MasterControlPanel() {
               <Loader2 size={18} className="animate-spin text-cyan-300" />
               Loading MLS operations
             </div>
-          ) : mlsStatusError ? (
+          ) : mlsStatusError && !mlsStatus ? (
             <div className="px-5 py-6">
               <div className="border border-red-400/30 bg-red-500/10 p-4 text-sm leading-6 text-red-100">{mlsStatusError}</div>
             </div>
-          ) : mlsStatus?.success ? (
+          ) : mlsStatus ? (
             <div className="grid gap-px bg-slate-800 xl:grid-cols-[360px_minmax(0,1fr)]">
               <div className="bg-slate-950 p-5">
                 <div className="mb-4 text-xs font-black uppercase text-slate-500">Freshness</div>
@@ -2312,6 +4421,9 @@ export default function MasterControlPanel() {
                     <div className="mt-2 text-lg font-black uppercase text-white">{mlsStatus.propertyFreshness.total}</div>
                   </div>
                 </div>
+                {mlsStatusError ? (
+                  <div className="mt-4 border border-red-400/30 bg-red-500/10 p-3 text-xs leading-5 text-red-100">{mlsStatusError}</div>
+                ) : null}
               </div>
 
               <div className="bg-slate-950 p-5">
@@ -2355,8 +4467,53 @@ export default function MasterControlPanel() {
                   </div>
                 </div>
 
+                <div
+                  className="mt-4 border border-slate-800 bg-black/70 p-4"
+                  data-testid="reie-mls-status-api-metadata"
+                  data-api-generated-at={mlsStatus.generatedAt}
+                  data-api-route={mlsStatus.route}
+                  data-api-terminal={mlsStatus.terminal}
+                  data-api-command={mlsStatus.command}
+                  data-mls-status={mlsStatus.status}
+                  data-search-index-health={mlsStatus.searchIndex?.health || 'unknown'}
+                >
+                  <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+                    <div className="text-xs font-black uppercase text-slate-500">MLS Status API Inspection</div>
+                    <span className="border border-cyan-300/30 bg-cyan-300/10 px-2 py-1 text-[10px] font-black uppercase text-cyan-100">
+                      {mlsStatus.terminal}
+                    </span>
+                  </div>
+                  <div className="grid gap-3 text-xs text-slate-300 sm:grid-cols-3">
+                    <div>
+                      <span className="block font-black uppercase text-slate-500">Generated</span>
+                      <span className="mt-1 block break-words">{mlsStatus.generatedAt}</span>
+                    </div>
+                    <div>
+                      <span className="block font-black uppercase text-slate-500">Route</span>
+                      <span className="mt-1 block break-words">{mlsStatus.route}</span>
+                    </div>
+                    <div>
+                      <span className="block font-black uppercase text-slate-500">Status</span>
+                      <span className="mt-1 block font-black uppercase text-white">{mlsStatus.status}</span>
+                    </div>
+                  </div>
+                  <div className="mt-3">
+                    <div className="mb-2 text-[10px] font-black uppercase text-slate-500">Terminal 5 API Check</div>
+                    <code className="block overflow-x-auto border border-slate-800 bg-black px-3 py-2 text-xs text-slate-200">
+                      {mlsStatus.command}
+                    </code>
+                  </div>
+                </div>
+
                 {mlsStatus.operationalReadiness ? (
-                  <div className="mt-4 border border-slate-800 bg-black/70 p-4" data-testid="reie-mls-operational-readiness">
+                  <div
+                    className="mt-4 border border-slate-800 bg-black/70 p-4"
+                    data-testid="reie-mls-operational-readiness"
+                    data-api-route={mlsStatus.route}
+                    data-api-terminal={mlsStatus.operationalReadiness.nextTerminal}
+                    data-readiness-level={mlsStatus.operationalReadiness.level}
+                    data-readiness-next-command={mlsStatus.operationalReadiness.nextCommand}
+                  >
                     <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
                       <div className="text-xs font-black uppercase text-slate-500">Operational Readiness</div>
                       <span className={`border px-2 py-1 text-[10px] font-black uppercase ${getReadinessClass(mlsStatus.operationalReadiness.level)}`}>
@@ -2383,7 +4540,91 @@ export default function MasterControlPanel() {
                   </div>
                 ) : null}
 
-                <div className="mt-4 border border-slate-800 bg-black/70 p-4" data-testid="reie-search-index-status">
+                <div
+                  className="mt-4 border border-slate-800 bg-black/70 p-4"
+                  data-testid="reie-mls-retry-api-metadata"
+                  data-api-generated-at={mlsRetryStatus?.generatedAt || ''}
+                  data-api-route={mlsRetryStatus?.route || '/api/mls/retry'}
+                  data-api-terminal={mlsRetryStatus?.terminal || 'Terminal 5'}
+                  data-api-command={mlsRetryStatus?.command || 'curl --max-time 8 -s "http://localhost:3000/api/mls/retry" -H "x-admin-key: $REIE_ADMIN_API_KEY"'}
+                  data-retry-plan-level={mlsRetryStatus?.executionPlan?.level || 'unknown'}
+                  data-retry-live-allowed={typeof mlsRetryStatus?.executionPlan?.liveRetryAllowed === 'boolean' ? String(mlsRetryStatus.executionPlan.liveRetryAllowed) : 'unknown'}
+                  data-dead-letter-open={
+                    mlsRetryStatus?.deadLetter
+                      ? mlsRetryStatus.deadLetter.waiting + mlsRetryStatus.deadLetter.active + mlsRetryStatus.deadLetter.delayed + mlsRetryStatus.deadLetter.failed
+                      : 0
+                  }
+                >
+                  <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+                    <div className="text-xs font-black uppercase text-slate-500">MLS Retry API Inspection</div>
+                    {mlsRetryStatus?.executionPlan ? (
+                      <span className={`border px-2 py-1 text-[10px] font-black uppercase ${getReadinessClass(mlsRetryStatus.executionPlan?.level === 'safe' ? 'ready' : mlsRetryStatus.executionPlan?.level === 'blocked' ? 'blocked' : 'watch')}`}>
+                        {mlsRetryStatus.executionPlan?.level || 'status'}
+                      </span>
+                    ) : (
+                      <span className="border border-slate-700 bg-slate-900 px-2 py-1 text-[10px] font-black uppercase text-slate-400">
+                        {isLoadingMlsRetryStatus ? 'loading' : 'offline'}
+                      </span>
+                    )}
+                  </div>
+
+                  {isLoadingMlsRetryStatus ? (
+                    <div className="flex items-center gap-2 text-xs font-black uppercase text-slate-500">
+                      <Loader2 size={14} className="animate-spin text-cyan-300" />
+                      Loading MLS retry inspection
+                    </div>
+                  ) : mlsRetryStatus ? (
+                    <>
+                      <div className="grid gap-3 text-xs text-slate-300 sm:grid-cols-4">
+                        <div>
+                          <span className="block font-black uppercase text-slate-500">Generated</span>
+                          <span className="mt-1 block break-words">{mlsRetryStatus.generatedAt || 'Not recorded'}</span>
+                        </div>
+                        <div>
+                          <span className="block font-black uppercase text-slate-500">Route</span>
+                          <span className="mt-1 block break-words">{mlsRetryStatus.route || '/api/mls/retry'}</span>
+                        </div>
+                        <div>
+                          <span className="block font-black uppercase text-slate-500">Terminal</span>
+                          <span className="mt-1 block font-black uppercase text-white">{mlsRetryStatus.terminal || 'Terminal 5'}</span>
+                        </div>
+                        <div>
+                          <span className="block font-black uppercase text-slate-500">Dead Letter Open</span>
+                          <span className="mt-1 block font-black uppercase text-white">
+                            {mlsRetryStatus.deadLetter
+                              ? mlsRetryStatus.deadLetter.waiting +
+                                mlsRetryStatus.deadLetter.active +
+                                mlsRetryStatus.deadLetter.delayed +
+                                mlsRetryStatus.deadLetter.failed
+                              : 0}
+                          </span>
+                        </div>
+                      </div>
+                      {mlsRetryStatusError ? (
+                        <div className="mt-3 border border-red-400/30 bg-red-500/10 p-3 text-xs leading-5 text-red-100">{mlsRetryStatusError}</div>
+                      ) : null}
+                      {mlsRetryStatus.executionPlan ? (
+                        <p className="mt-3 text-sm leading-6 text-slate-300">{mlsRetryStatus.executionPlan.summary}</p>
+                      ) : null}
+                      <div className="mt-3">
+                        <div className="mb-2 text-[10px] font-black uppercase text-slate-500">Terminal 5 API Check</div>
+                        <code className="block overflow-x-auto border border-slate-800 bg-black px-3 py-2 text-xs text-slate-200">
+                          {mlsRetryStatus.command || 'curl --max-time 8 -s "http://localhost:3000/api/mls/retry" -H "x-admin-key: $REIE_ADMIN_API_KEY"'}
+                        </code>
+                      </div>
+                    </>
+                  ) : null}
+                </div>
+
+                <div
+                  className="mt-4 border border-slate-800 bg-black/70 p-4"
+                  data-testid="reie-search-index-status"
+                  data-api-route={mlsStatus.route}
+                  data-search-index-health={mlsStatus.searchIndex?.health || 'unknown'}
+                  data-search-index-attempted={mlsStatus.searchIndex?.attempted ?? 0}
+                  data-search-index-succeeded={mlsStatus.searchIndex?.succeeded ?? 0}
+                  data-search-index-failed={mlsStatus.searchIndex?.failed ?? 0}
+                >
                   <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
                     <div className="text-xs font-black uppercase text-slate-500">Search Index</div>
                     <span className={`border px-2 py-1 text-[10px] font-black uppercase ${getHealthClass(mlsStatus.searchIndex?.health || 'degraded')}`}>
@@ -2411,8 +4652,62 @@ export default function MasterControlPanel() {
                   <p className="mt-3 text-xs leading-5 text-slate-500">{formatSearchIndexDetail(mlsStatus.searchIndex)}</p>
                 </div>
 
+                <div
+                  className="mt-4 border border-slate-800 bg-black/70 p-4"
+                  data-testid="reie-mls-media-diagnostics"
+                  data-api-route={mlsStatus.route}
+                  data-media-diagnostics-health={mlsStatus.mediaDiagnostics?.health || 'unknown'}
+                  data-media-diagnostics-jobs={mlsStatus.mediaDiagnostics?.jobsWithMediaDiagnostics ?? 0}
+                  data-media-extracted={mlsStatus.mediaDiagnostics?.extractedMediaCount ?? 0}
+                  data-media-ignored={mlsStatus.mediaDiagnostics?.ignoredMediaItemCount ?? 0}
+                >
+                  <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+                    <div className="text-xs font-black uppercase text-slate-500">Media Diagnostics</div>
+                    <span className={`border px-2 py-1 text-[10px] font-black uppercase ${getHealthClass(mlsStatus.mediaDiagnostics?.health || 'degraded')}`}>
+                      {mlsStatus.mediaDiagnostics?.health || 'unknown'}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2 text-center text-xs">
+                    <div className="border border-slate-800 bg-slate-950 p-2">
+                      <div className="font-black text-white">{mlsStatus.mediaDiagnostics?.listingsWithMedia ?? 0}</div>
+                      <div className="mt-1 uppercase text-slate-600">Listings</div>
+                    </div>
+                    <div className="border border-slate-800 bg-slate-950 p-2">
+                      <div className="font-black text-white">{mlsStatus.mediaDiagnostics?.extractedMediaCount ?? 0}</div>
+                      <div className="mt-1 uppercase text-slate-600">Extracted</div>
+                    </div>
+                    <div className="border border-slate-800 bg-slate-950 p-2">
+                      <div className="font-black text-white">{mlsStatus.mediaDiagnostics?.ignoredMediaItemCount ?? 0}</div>
+                      <div className="mt-1 uppercase text-slate-600">Ignored</div>
+                    </div>
+                  </div>
+                  <div className="mt-2 grid grid-cols-3 gap-2 text-center text-xs">
+                    <div className="border border-slate-800 bg-slate-950 p-2">
+                      <div className="font-black text-white">{mlsStatus.mediaDiagnostics?.listingsWithDirectMedia ?? 0}</div>
+                      <div className="mt-1 uppercase text-slate-600">Direct</div>
+                    </div>
+                    <div className="border border-slate-800 bg-slate-950 p-2">
+                      <div className="font-black text-white">{mlsStatus.mediaDiagnostics?.listingsWithNestedMedia ?? 0}</div>
+                      <div className="mt-1 uppercase text-slate-600">Nested</div>
+                    </div>
+                    <div className="border border-slate-800 bg-slate-950 p-2">
+                      <div className="font-black text-white">{mlsStatus.mediaDiagnostics?.listingsWithTopLevelPhotos ?? 0}</div>
+                      <div className="mt-1 uppercase text-slate-600">Top-Level</div>
+                    </div>
+                  </div>
+                  <p className="mt-3 text-xs leading-5 text-slate-500">{formatMediaDiagnosticsDetail(mlsStatus.mediaDiagnostics)}</p>
+                </div>
+
                 {mlsStatus.syncDefaults ? (
-                  <div className="mt-4 grid gap-3 md:grid-cols-3" data-testid="reie-mls-sync-envelope">
+                  <div
+                    className="mt-4 grid gap-3 md:grid-cols-3"
+                    data-testid="reie-mls-sync-envelope"
+                    data-api-route={mlsStatus.route}
+                    data-sync-page-size={mlsStatus.syncDefaults.pageSize}
+                    data-sync-page-timeout-ms={mlsStatus.syncDefaults.pageTimeoutMs}
+                    data-sync-start-page={mlsStatus.syncDefaults.startPage}
+                    data-command-sync-preview={mlsStatus.commands.dryRunSyncPreview}
+                  >
                     <div className="border border-slate-800 bg-black/70 p-3">
                       <div className="text-[10px] font-black uppercase text-slate-500">Page Timeout</div>
                       <div className="mt-2 text-lg font-black text-white">{formatMilliseconds(mlsStatus.syncDefaults.pageTimeoutMs)}</div>
@@ -2431,7 +4726,16 @@ export default function MasterControlPanel() {
                   </div>
                 ) : null}
 
-                <div className="mt-4 grid gap-3 lg:grid-cols-2">
+                <div
+                  className="mt-4 grid gap-3 lg:grid-cols-2"
+                  data-testid="reie-mls-command-metadata"
+                  data-api-terminal={mlsStatus.terminals?.scriptsAndCurl || 'Terminal 5'}
+                  data-command-smoke-ops={mlsStatus.commands.smokeOps || 'npm run smoke:ops'}
+                  data-command-status-smoke={mlsStatus.commands.smokeMlsStatus || 'npm run smoke:mls-status'}
+                  data-command-sync-preview={mlsStatus.commands.dryRunSyncPreview}
+                  data-command-dry-run-retry={mlsStatus.commands.dryRunRetry || mlsStatus.commands.dryRunRetryMlsSync}
+                  data-command-dead-letter={mlsStatus.commands.deadLetterOpen || mlsStatus.commands.deadLetterInspector || mlsStatus.commands.deadLetter}
+                >
                   <div>
                     <div className="mb-2 text-[10px] font-black uppercase text-slate-500">Terminal 5 Operational Smoke</div>
                     <code className="block overflow-x-auto border border-slate-800 bg-black px-3 py-2 text-xs text-slate-200">

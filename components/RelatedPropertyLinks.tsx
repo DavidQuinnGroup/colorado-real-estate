@@ -96,9 +96,23 @@ export default function RelatedPropertyLinks({
   const priceBasis = getPriceBasis(price);
   const primaryHref = authorityLinks[0]?.href ?? `/search?city=${encodeURIComponent(city)}`;
   const authorityLabel = neighborhood ? `${city} / ${neighborhood}` : city;
+  const visibleAuthorityLinks = authorityLinks.slice(0, 3);
 
   return (
-    <section className="mt-24 overflow-hidden border border-white/10 bg-[#050505] text-white shadow-2xl">
+    <section
+      className="mt-24 overflow-hidden border border-white/10 bg-[#050505] text-white shadow-2xl"
+      data-testid="reie-related-property-links"
+      data-related-property-city={city}
+      data-related-property-neighborhood={neighborhood || ""}
+      data-related-property-authority-label={authorityLabel}
+      data-related-property-active-tab={activeTab}
+      data-related-property-price-basis={priceBasis}
+      data-related-property-authority-link-count={authorityLinks.length}
+      data-related-property-visible-authority-link-count={visibleAuthorityLinks.length}
+      data-related-property-primary-href={primaryHref}
+      data-related-property-prep-scenario-count={prepScenarios.length}
+      data-related-property-timeline-step-count={timelineSteps.length}
+    >
       <div className="border-b border-white/5 bg-gradient-to-r from-cyan-500/10 to-transparent p-8">
         <div className="mb-2 flex items-center gap-3">
           <ArrowRightLeft className="h-4 w-4 text-cyan-300" />
@@ -120,18 +134,29 @@ export default function RelatedPropertyLinks({
           isActive={activeTab === "prep"}
           label="Listing Prep ROI"
           onClick={() => setActiveTab("prep")}
+          tab="prep"
         />
         <StrategyButton
           icon={<Calendar size={18} />}
           isActive={activeTab === "timeline"}
           label="Critical Path Timeline"
           onClick={() => setActiveTab("timeline")}
+          tab="timeline"
         />
       </div>
 
-      <div className="p-8">
+      <div
+        className="p-8"
+        data-testid="reie-related-property-active-panel"
+        data-related-property-active-tab={activeTab}
+      >
         {activeTab === "prep" ? (
-          <div className="animate-in fade-in duration-700">
+          <div
+            className="animate-in fade-in duration-700"
+            data-testid="reie-related-property-prep-panel"
+            data-related-property-price-basis={priceBasis}
+            data-related-property-prep-scenario-count={prepScenarios.length}
+          >
             <h3 className="mb-8 text-[11px] font-black uppercase italic tracking-[0.3em] text-cyan-300">
               The This-vs-That ROI Engine
             </h3>
@@ -143,6 +168,12 @@ export default function RelatedPropertyLinks({
                   <div
                     key={scenario.label}
                     className="group border border-white/5 bg-white/[0.03] p-6 transition-all hover:border-cyan-300/50"
+                    data-testid="reie-related-property-prep-scenario"
+                    data-related-property-scenario-label={scenario.label}
+                    data-related-property-scenario-cost={scenario.cost}
+                    data-related-property-scenario-impact={scenario.impact}
+                    data-related-property-scenario-velocity={scenario.velocity}
+                    data-related-property-scenario-lift-percent={liftPercent.toFixed(1)}
                   >
                     <div className="mb-4 text-[10px] font-black uppercase tracking-widest text-white/30">
                       {scenario.label}
@@ -176,7 +207,11 @@ export default function RelatedPropertyLinks({
             </div>
           </div>
         ) : (
-          <div className="animate-in fade-in duration-700">
+          <div
+            className="animate-in fade-in duration-700"
+            data-testid="reie-related-property-timeline-panel"
+            data-related-property-timeline-step-count={timelineSteps.length}
+          >
             <h3 className="mb-8 text-[11px] font-black uppercase italic tracking-[0.3em] text-cyan-300">
               Sell-to-Buy Contingency Path
             </h3>
@@ -188,7 +223,12 @@ export default function RelatedPropertyLinks({
                 ))}
               </div>
             </div>
-            <div className="mt-12 flex items-start gap-4 border border-red-500/20 bg-red-500/10 p-6">
+            <div
+              className="mt-12 flex items-start gap-4 border border-red-500/20 bg-red-500/10 p-6"
+              data-testid="reie-related-property-contingency-alert"
+              data-related-property-alert-type="dual-mortgage-risk"
+              data-related-property-risk-window-days="7"
+            >
               <ShieldAlert className="shrink-0 text-red-500" size={18} />
               <div>
                 <p className="mb-1 text-[10px] font-black uppercase tracking-widest text-red-500">
@@ -205,7 +245,13 @@ export default function RelatedPropertyLinks({
         )}
       </div>
 
-      <div className="flex flex-col items-center justify-between gap-6 border-t border-white/5 bg-black/40 p-8 md:flex-row">
+      <div
+        className="flex flex-col items-center justify-between gap-6 border-t border-white/5 bg-black/40 p-8 md:flex-row"
+        data-testid="reie-related-property-footer"
+        data-related-property-authority-link-count={authorityLinks.length}
+        data-related-property-visible-authority-link-count={visibleAuthorityLinks.length}
+        data-related-property-primary-href={primaryHref}
+      >
         <div className="w-full min-w-0">
           <div className="mb-4 flex items-center gap-4">
             <ClipboardCheck className="text-cyan-300/50" size={16} />
@@ -214,12 +260,20 @@ export default function RelatedPropertyLinks({
             </span>
           </div>
           {authorityLinks.length ? (
-            <div className="grid gap-px overflow-hidden border border-white/10 bg-white/10 md:grid-cols-3">
-              {authorityLinks.slice(0, 3).map((link) => (
+            <div
+              className="grid gap-px overflow-hidden border border-white/10 bg-white/10 md:grid-cols-3"
+              data-testid="reie-related-property-authority-links"
+              data-related-property-visible-authority-link-count={visibleAuthorityLinks.length}
+            >
+              {visibleAuthorityLinks.map((link) => (
                 <Link
                   key={`${link.status}-${link.href}`}
                   href={link.href}
                   className="group bg-black p-4 transition-colors hover:bg-white/[0.05]"
+                  data-testid="reie-related-property-authority-link"
+                  data-related-property-link-status={link.status}
+                  data-related-property-link-label={link.label}
+                  data-related-property-link-href={link.href}
                 >
                   <p className="text-[8px] font-black uppercase tracking-[0.24em] text-cyan-300">
                     {link.status}
@@ -235,6 +289,9 @@ export default function RelatedPropertyLinks({
         <Link
           href={primaryHref}
           className="group flex shrink-0 items-center gap-2 bg-white px-8 py-3 text-[10px] font-black uppercase italic tracking-[0.3em] text-black transition-all hover:bg-cyan-300"
+          data-testid="reie-related-property-primary-link"
+          data-related-property-primary-href={primaryHref}
+          data-related-property-link-source={authorityLinks[0] ? "authority-link" : "city-search-fallback"}
         >
           Generate Full Transition Brief
           <ChevronRight size={14} className="transition-transform group-hover:translate-x-1" />
@@ -249,17 +306,22 @@ function StrategyButton({
   isActive,
   label,
   onClick,
+  tab,
 }: {
   icon: ReactNode;
   isActive: boolean;
   label: string;
   onClick: () => void;
+  tab: StrategyTab;
 }) {
   return (
     <button
       type="button"
       aria-pressed={isActive}
       onClick={onClick}
+      data-testid="reie-related-property-tab"
+      data-related-property-tab={tab}
+      data-related-property-tab-active={isActive ? "true" : "false"}
       className={`flex flex-1 flex-col items-center gap-2 py-6 transition-all ${
         isActive
           ? "border-b-2 border-cyan-300 bg-white/5 text-white"
@@ -306,7 +368,14 @@ function TimelinePoint({
   highlight = false,
 }: TimelinePointProps) {
   return (
-    <div className="flex w-32 flex-col items-center text-center">
+    <div
+      className="flex w-32 flex-col items-center text-center"
+      data-testid="reie-related-property-timeline-step"
+      data-related-property-timeline-label={label}
+      data-related-property-timeline-date={date}
+      data-related-property-timeline-active={active ? "true" : "false"}
+      data-related-property-timeline-highlight={highlight ? "true" : "false"}
+    >
       <div
         className={`mb-4 h-3 w-3 rounded-full transition-all ${
           highlight

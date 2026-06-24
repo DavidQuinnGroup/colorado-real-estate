@@ -32,6 +32,17 @@ function getPropertyUrl(input) {
 function getNotificationRecipient() {
     return normalizeText(process.env.PROPERTY_INQUIRY_NOTIFY_TO || process.env.REIE_INTERNAL_EMAIL);
 }
+function readBoolean(value) {
+    const normalized = String(value || '').trim().toLowerCase();
+    if (['1', 'true', 'yes', 'y'].includes(normalized))
+        return true;
+    if (['0', 'false', 'no', 'n'].includes(normalized))
+        return false;
+    return false;
+}
+function isDryRunEnabled() {
+    return readBoolean(process.env.PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN);
+}
 function getFromEmail() {
     return normalizeText(process.env.RESEND_FROM_EMAIL, 'David Quinn Group <alerts@davidquinngroup.com>');
 }
@@ -142,6 +153,9 @@ export async function sendPropertyInquiryNotification(input) {
     const recipient = getNotificationRecipient();
     if (!recipient) {
         return { sent: false, reason: 'missing-property-inquiry-notification-recipient' };
+    }
+    if (isDryRunEnabled()) {
+        return { sent: false, reason: 'property-inquiry-notification-dry-run' };
     }
     return getResendClient().emails.send({
         from: getFromEmail(),

@@ -66,14 +66,28 @@ export default function NearbyNeighborhoods({ city, currentSlug, limit = 6, titl
   }
 
   const cityName = formatCityName(nearbyNeighborhoods[0]?.city ?? city);
+  const safeLimit = Math.max(1, limit);
+  const sectionTitle = title ?? `Nearby ${cityName} Neighborhoods`;
+  const briefCount = nearbyNeighborhoods.filter((neighborhood) => getFeaturedBrief(neighborhood.city, neighborhood.name)).length;
 
   return (
-    <section className="mt-10 border border-white/10 bg-[#050505] p-6 text-white">
+    <section
+      className="mt-10 border border-white/10 bg-[#050505] p-6 text-white"
+      data-testid="reie-nearby-neighborhoods"
+      data-nearby-neighborhoods-title={sectionTitle}
+      data-nearby-neighborhoods-city={city}
+      data-nearby-neighborhoods-city-name={cityName}
+      data-nearby-neighborhoods-current-slug={currentSlug}
+      data-nearby-neighborhoods-requested-limit={limit}
+      data-nearby-neighborhoods-limit={safeLimit}
+      data-nearby-neighborhoods-count={nearbyNeighborhoods.length}
+      data-nearby-neighborhoods-brief-count={briefCount}
+    >
       <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
         <div>
           <p className="text-[10px] font-black uppercase tracking-[0.35em] text-[#00ff80]">Adjacent Authority Hubs</p>
           <h2 className="mt-2 text-2xl font-black uppercase italic tracking-tight">
-            {title ?? `Nearby ${cityName} Neighborhoods`}
+            {sectionTitle}
           </h2>
         </div>
         <p className="max-w-sm text-[10px] font-bold uppercase leading-relaxed tracking-[0.18em] text-white/30">
@@ -81,13 +95,39 @@ export default function NearbyNeighborhoods({ city, currentSlug, limit = 6, titl
         </p>
       </div>
 
-      <div className="grid grid-cols-1 gap-px overflow-hidden border border-white/10 bg-white/10 md:grid-cols-2 xl:grid-cols-3">
-        {nearbyNeighborhoods.map((neighborhood) => {
+      <div
+        className="grid grid-cols-1 gap-px overflow-hidden border border-white/10 bg-white/10 md:grid-cols-2 xl:grid-cols-3"
+        data-testid="reie-nearby-neighborhoods-list"
+        data-nearby-neighborhoods-list-count={nearbyNeighborhoods.length}
+      >
+        {nearbyNeighborhoods.map((neighborhood, index) => {
           const brief = getFeaturedBrief(neighborhood.city, neighborhood.name);
+          const neighborhoodHref = getNeighborhoodPath(neighborhood);
 
           return (
-            <div key={neighborhood.slug} className="bg-black p-5">
-              <Link href={getNeighborhoodPath(neighborhood)} className="group block">
+            <div
+              key={neighborhood.slug}
+              className="bg-black p-5"
+              data-testid="reie-nearby-neighborhood-card"
+              data-nearby-neighborhood-index={index}
+              data-nearby-neighborhood-slug={neighborhood.slug}
+              data-nearby-neighborhood-name={neighborhood.name}
+              data-nearby-neighborhood-city={neighborhood.city}
+              data-nearby-neighborhood-primary-anchor={neighborhood.primaryAnchor}
+              data-nearby-neighborhood-resilience-score={neighborhood.resilienceScore}
+              data-nearby-neighborhood-efficiency-score={neighborhood.avgEfficiencyScore}
+              data-nearby-neighborhood-fire-risk={neighborhood.fireRisk}
+              data-nearby-neighborhood-insurance-complexity={neighborhood.insuranceComplexity}
+              data-nearby-neighborhood-soil-type={neighborhood.soilType}
+              data-nearby-neighborhood-href={neighborhoodHref}
+              data-nearby-neighborhood-has-brief={brief ? 'true' : 'false'}
+            >
+              <Link
+                href={neighborhoodHref}
+                className="group block"
+                data-testid="reie-nearby-neighborhood-link"
+                data-nearby-neighborhood-link-href={neighborhoodHref}
+              >
                 <div className="flex items-start justify-between gap-4">
                   <div>
                     <p className="text-base font-black uppercase italic tracking-tight text-white">{neighborhood.name}</p>
@@ -112,6 +152,9 @@ export default function NearbyNeighborhoods({ city, currentSlug, limit = 6, titl
                 <Link
                   href={brief.href}
                   className="group mt-4 block border-t border-white/10 pt-4 transition-colors hover:border-[#00ff80]/50"
+                  data-testid="reie-nearby-neighborhood-brief-link"
+                  data-nearby-neighborhood-brief-title={brief.title}
+                  data-nearby-neighborhood-brief-href={brief.href}
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div>

@@ -40,6 +40,11 @@ type SearchApiResponse = {
   results?: unknown;
   meta?: SearchMapMeta;
   source?: string;
+  generatedAt?: string;
+  terminal?: string;
+  route?: string;
+  command?: string;
+  module?: string;
   error?: string;
 };
 
@@ -138,6 +143,19 @@ function updateBrowserSearchUrl(filters: SearchFilters, mode: 'push' | 'replace'
   window.history[mode === 'replace' ? 'replaceState' : 'pushState']({}, '', nextUrl);
 }
 
+function normalizeSearchMeta(data: SearchApiResponse) {
+  if (!data.meta) return null;
+
+  return {
+    ...data.meta,
+    command: data.meta.command || data.command,
+    generatedAt: data.meta.generatedAt || data.generatedAt,
+    module: data.meta.module || data.module,
+    route: data.meta.route || data.route,
+    terminal: data.meta.terminal || data.terminal,
+  };
+}
+
 export default function SearchInterface({
   initialListings = [],
   initialSearchMeta = null,
@@ -180,6 +198,7 @@ export default function SearchInterface({
     : selectedProperty && mobileView === 'map'
       ? selectedProperty.address || 'Selected listing'
       : `${visibleListings.length} listings`;
+  const searchCommand = effectiveSearchMeta?.command || (hasActiveSearchFilters(filters) ? buildSearchUrl(filters) : '/api/search?limit=250');
 
   useEffect(() => {
     const handleToggle = (event: Event) => {
@@ -201,7 +220,7 @@ export default function SearchInterface({
       const nextListings = normalizeListings(data.results);
 
       setListings(nextListings);
-      setSearchMeta(data.meta || null);
+      setSearchMeta(normalizeSearchMeta(data));
       setSelectedId((current) => (current && nextListings.some((listing) => listing.id === current) ? current : null));
       if (options.updateUrl) updateBrowserSearchUrl(nextFilters, options.urlMode);
 
@@ -297,16 +316,38 @@ export default function SearchInterface({
   return (
     <div
       className="relative flex h-screen w-full flex-col overflow-hidden bg-black text-white md:flex-row"
+      data-testid="reie-search-interface"
       data-mobile-view={mobileView}
       data-selected-listing-id={visibleSelectedId || ''}
+      data-hovered-listing-id={visibleHoveredId || ''}
+      data-visible-listing-count={visibleListings.length}
+      data-user-tier={userTier}
+      data-search-generated-at={effectiveSearchMeta?.generatedAt || ''}
+      data-search-terminal={effectiveSearchMeta?.terminal || 'Terminal 5'}
+      data-search-route={effectiveSearchMeta?.route || '/api/search'}
+      data-search-command={searchCommand}
+      data-search-source={effectiveSearchMeta?.source || 'initial'}
+      data-search-access-level={effectiveSearchMeta?.accessLevel || (userTier === 'Contracted' ? 'contracted' : 'public')}
+      data-search-filters-active={String(hasActiveSearchFilters(filters))}
+      data-search-loading={String(isSearching)}
     >
-      <div className="absolute left-3 right-3 top-3 z-[900] flex items-center justify-between gap-3 md:hidden">
-        <span className="min-w-0 truncate rounded-[8px] border border-white/12 bg-[#071017]/92 px-3 py-2 text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100/76 shadow-2xl backdrop-blur">
+      <div
+        className="absolute left-3 right-3 top-3 z-[900] flex items-center justify-between gap-3 md:hidden"
+        data-testid="reie-search-mobile-toolbar"
+        data-mobile-view={mobileView}
+        data-mobile-status={mobileStatusLabel}
+        data-selected-listing-id={visibleSelectedId || ''}
+      >
+        <span
+          className="min-w-0 truncate rounded-[8px] border border-white/12 bg-[#071017]/92 px-3 py-2 text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100/76 shadow-2xl backdrop-blur"
+          data-testid="reie-search-mobile-status"
+        >
           {mobileStatusLabel}
         </span>
         <div className="grid shrink-0 grid-cols-2 overflow-hidden rounded-[8px] border border-white/12 bg-[#071017]/92 p-1 shadow-2xl backdrop-blur" aria-label="Search view mode">
           <button
             type="button"
+            data-testid="reie-search-mobile-list-toggle"
             onClick={() => setMobileView('list')}
             className={`inline-flex h-8 items-center justify-center gap-1.5 rounded-[6px] px-3 text-[10px] font-black uppercase tracking-[0.12em] transition ${
               mobileView === 'list' ? 'bg-cyan-100 text-[#061017]' : 'text-white/58 hover:text-white'
@@ -319,6 +360,7 @@ export default function SearchInterface({
           </button>
           <button
             type="button"
+            data-testid="reie-search-mobile-map-toggle"
             onClick={() => setMobileView('map')}
             className={`inline-flex h-8 items-center justify-center gap-1.5 rounded-[6px] px-3 text-[10px] font-black uppercase tracking-[0.12em] transition ${
               mobileView === 'map' ? 'bg-cyan-100 text-[#061017]' : 'text-white/58 hover:text-white'
@@ -332,7 +374,13 @@ export default function SearchInterface({
         </div>
       </div>
 
-      <div className={mobileView === 'map' ? 'hidden md:flex md:h-full md:shrink-0' : 'flex h-full min-h-0 md:h-full md:shrink-0'}>
+      <div
+        className={mobileView === 'map' ? 'hidden md:flex md:h-full md:shrink-0' : 'flex h-full min-h-0 md:h-full md:shrink-0'}
+        data-testid="reie-search-list-pane"
+        data-mobile-view={mobileView}
+        data-visible-listing-count={visibleListings.length}
+        data-selected-listing-id={visibleSelectedId || ''}
+      >
         <MapSidebar
           listings={visibleListings}
           selectedId={visibleSelectedId}
@@ -345,7 +393,14 @@ export default function SearchInterface({
         />
       </div>
 
-      <section className={`${mobileView === 'list' ? 'hidden md:block' : 'block'} relative min-h-0 min-w-0 flex-1 border-t border-white/15 md:h-full md:border-l md:border-t-0`}>
+      <section
+        className={`${mobileView === 'list' ? 'hidden md:block' : 'block'} relative min-h-0 min-w-0 flex-1 border-t border-white/15 md:h-full md:border-l md:border-t-0`}
+        data-testid="reie-search-map-pane"
+        data-mobile-view={mobileView}
+        data-selected-listing-id={visibleSelectedId || ''}
+        data-search-source={effectiveSearchMeta?.source || 'initial'}
+        data-search-command={searchCommand}
+      >
         <MapInner
           listings={visibleListings}
           selectedId={visibleSelectedId}

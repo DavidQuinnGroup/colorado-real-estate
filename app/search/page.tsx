@@ -13,6 +13,15 @@ export const dynamic = 'force-dynamic';
 
 const SITE_URL = 'https://davidquinngroup.com';
 const SEARCH_URL = `${SITE_URL}/search`;
+const searchToolSchemaKeywords = [
+  'Colorado real estate search',
+  'Boulder homes for sale',
+  'Denver homes for sale',
+  'Front Range property search',
+  'MLS search Colorado',
+  'David Quinn Group',
+  'real estate intelligence search',
+];
 
 export const metadata: Metadata = {
   title: 'Colorado Real Estate Search | David Quinn Group',
@@ -37,15 +46,7 @@ const searchToolSchema = buildToolSchema({
   description:
     'David Quinn Group live property search for Colorado homes, combining MLS inventory, map-based discovery, and real estate intelligence for Boulder, Denver, and the Front Range.',
   url: SEARCH_URL,
-  keywords: [
-    'Colorado real estate search',
-    'Boulder homes for sale',
-    'Denver homes for sale',
-    'Front Range property search',
-    'MLS search Colorado',
-    'David Quinn Group',
-    'real estate intelligence search',
-  ],
+  keywords: searchToolSchemaKeywords,
   audience: 'Colorado home buyers, sellers, relocation clients, and homeowners evaluating market options',
 });
 
@@ -123,7 +124,17 @@ export default async function SearchPage() {
 
   return (
     <main className="h-screen w-full overflow-hidden bg-black text-white">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(searchToolSchema) }} />
+      <script
+        type="application/ld+json"
+        data-testid="reie-search-tool-schema"
+        data-tool-schema-type="WebApplication"
+        data-tool-schema-name="Colorado Real Estate Search"
+        data-tool-schema-url={SEARCH_URL}
+        data-tool-schema-keyword-count={searchToolSchemaKeywords.length}
+        data-tool-schema-entrypoint="search"
+        data-tool-schema-has-graph="true"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(searchToolSchema) }}
+      />
       <FAQSchema faqs={searchFaqs} pageUrl={SEARCH_URL} />
       <SearchInterface
         initialListings={listings}

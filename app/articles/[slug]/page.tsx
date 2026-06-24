@@ -138,10 +138,29 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
   const neighborhoodHref = getNeighborhoodHref(neighborhood, article);
   const searchHref = `/search?city=${encodeURIComponent(article.city)}`;
   const articleFaqs = getArticleFaqs(article, neighborhood);
+  const articleSchemaGraph = article.schema["@graph"];
 
   return (
     <main className="min-h-screen bg-[#050505] text-white">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(article.schema) }} />
+      <script
+        type="application/ld+json"
+        data-testid="reie-article-schema"
+        data-article-schema-type="Article"
+        data-article-schema-url={article.url}
+        data-article-schema-slug={article.slug}
+        data-article-schema-title={article.title}
+        data-article-schema-intent={article.intent}
+        data-article-schema-city={article.city}
+        data-article-schema-neighborhood={article.neighborhood}
+        data-article-schema-author={article.author}
+        data-article-schema-experience-years={article.experienceYears}
+        data-article-schema-date-published={article.datePublished}
+        data-article-schema-date-modified={article.dateModified}
+        data-article-schema-graph-count={articleSchemaGraph.length}
+        data-article-schema-has-breadcrumb="true"
+        data-article-schema-has-webpage="true"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(article.schema) }}
+      />
       <FAQSchema faqs={articleFaqs} pageUrl={article.url} />
 
       <article className="mx-auto max-w-5xl px-6 py-16 md:py-24">

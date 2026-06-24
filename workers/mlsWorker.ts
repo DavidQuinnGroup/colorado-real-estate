@@ -1,4 +1,5 @@
 import 'dotenv/config';
+import { pathToFileURL } from 'node:url';
 import { Job, Worker } from 'bullmq';
 
 import { syncMLSGrid } from '../lib/mls/syncMLSGrid.js';
@@ -33,6 +34,68 @@ type MlsWorkerConfig = {
   stalledIntervalMs: number;
 };
 
+type EnvMap = Record<string, string | undefined>;
+
+export type MlsWorkerPlan = {
+  queueName: typeof MLS_SYNC_QUEUE_NAME;
+  jobName: typeof MLS_SYNC_JOB_NAME;
+  terminal: 'Terminal 3';
+  recoveryTerminal: 'Terminal 5';
+  config: MlsWorkerConfig;
+  oneShotOptions: MlsSyncJobData;
+  commands: {
+    status: string;
+    retryStatus: string;
+    queueDashboard: string;
+    supabaseCheck: string;
+    supabaseCheckJson: string;
+    dryRunSync: string;
+    dryRunRetry: string;
+    liveRetry: string;
+    oneShot: string;
+    deadLetter: string;
+  };
+  databasePreflight: {
+    queue: typeof MLS_SYNC_QUEUE_NAME;
+    worker: 'MLS sync worker';
+    recoveryCommand: typeof SUPABASE_CHECK_JSON_COMMAND;
+  };
+  bounded: {
+    concurrency: boolean;
+    lockDurationMs: boolean;
+    maxStalledCount: boolean;
+    stalledIntervalMs: boolean;
+    maxRuntimeMs: boolean;
+    rateDelayMs: boolean;
+    pageSize: boolean;
+    maxPages: boolean;
+    startPage: boolean;
+    pageTimeoutMs: boolean;
+  };
+  limits: {
+    minConcurrency: number;
+    maxConcurrency: number;
+    minLockDurationMs: number;
+    maxLockDurationMs: number;
+    minMaxStalledCount: number;
+    maxMaxStalledCount: number;
+    minStalledIntervalMs: number;
+    maxStalledIntervalMs: number;
+    minMaxRuntimeMs: number;
+    maxMaxRuntimeMs: number;
+    minRateDelayMs: number;
+    maxRateDelayMs: number;
+    minPageSize: number;
+    maxPageSize: number;
+    minMaxPages: number;
+    maxMaxPages: number;
+    minStartPage: number;
+    maxStartPage: number;
+    minPageTimeoutMs: number;
+    maxPageTimeoutMs: number;
+  };
+};
+
 const LOCAL_BASE_URL = 'http://localhost:3000';
 const TERMINAL_3 = 'Terminal 3';
 const TERMINAL_5 = 'Terminal 5';
@@ -46,6 +109,16 @@ function readNumber(value: string | undefined, fallback: number, min: number, ma
   if (!Number.isFinite(parsed)) return fallback;
 
   return Math.min(Math.max(Math.floor(parsed), min), max);
+}
+
+function isBoundedNumber(value: string | undefined, fallback: number, min: number, max: number) {
+  if (!value) return false;
+
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed)) return true;
+
+  const floored = Math.floor(parsed);
+  return readNumber(value, fallback, min, max) !== floored;
 }
 
 function readBoolean(value: string | undefined) {
@@ -148,29 +221,91 @@ function buildDryRunSyncCommand() {
   return `curl -s -X POST "${LOCAL_BASE_URL}/api/mls/sync?${params.toString()}"`;
 }
 
-function getConfig(): MlsWorkerConfig {
+function getConfig(env: EnvMap = process.env): MlsWorkerConfig {
   return {
-    concurrency: readNumber(process.env.MLS_WORKER_CONCURRENCY, 1, 1, 3),
-    lockDurationMs: readNumber(process.env.MLS_WORKER_LOCK_DURATION_MS, 15 * 60 * 1000, 60_000, 60 * 60 * 1000),
-    maxStalledCount: readNumber(process.env.MLS_WORKER_MAX_STALLED_COUNT, 1, 0, 5),
-    once: readBoolean(process.env.MLS_WORKER_ONCE),
-    stalledIntervalMs: readNumber(process.env.MLS_WORKER_STALLED_INTERVAL_MS, 60_000, 10_000, 10 * 60 * 1000),
+    concurrency: readNumber(env.MLS_WORKER_CONCURRENCY, 1, 1, 3),
+    lockDurationMs: readNumber(env.MLS_WORKER_LOCK_DURATION_MS, 15 * 60 * 1000, 60_000, 60 * 60 * 1000),
+    maxStalledCount: readNumber(env.MLS_WORKER_MAX_STALLED_COUNT, 1, 0, 5),
+    once: readBoolean(env.MLS_WORKER_ONCE),
+    stalledIntervalMs: readNumber(env.MLS_WORKER_STALLED_INTERVAL_MS, 60_000, 10_000, 10 * 60 * 1000),
   };
 }
 
-function getOneShotOptions(): MlsSyncJobData {
+function getOneShotOptions(env: EnvMap = process.env): MlsSyncJobData {
   return normalizeMlsSyncJobData({
     requestedAt: new Date().toISOString(),
     requestedBy: 'Terminal 3 one-shot worker',
     source: 'worker-once',
-    maxRuntimeMs: readNumber(process.env.MLS_MAX_RUNTIME_MS, MLS_SYNC_DEFAULT_MAX_RUNTIME_MS, 1000, MLS_SYNC_MAX_RUNTIME_MS),
-    rateDelayMs: readNumber(process.env.MLS_RATE_DELAY_MS, MLS_SYNC_DEFAULT_RATE_DELAY_MS, 0, MLS_SYNC_MAX_RATE_DELAY_MS),
-    pageSize: readNumber(process.env.MLS_PAGE_SIZE, MLS_SYNC_DEFAULT_PAGE_SIZE, 1, MLS_SYNC_MAX_PAGE_SIZE),
-    maxPages: readNumber(process.env.MLS_MAX_PAGES, MLS_SYNC_DEFAULT_MAX_PAGES, 1, MLS_SYNC_MAX_PAGES),
-    startPage: readNumber(process.env.MLS_START_PAGE, 0, 0, MLS_SYNC_MAX_START_PAGE),
-    includeMedia: readOptionalBoolean(process.env.MLS_INCLUDE_MEDIA ?? process.env.MLS_GRID_INCLUDE_MEDIA),
-    pageTimeoutMs: readNumber(process.env.MLS_PAGE_TIMEOUT_MS, MLS_SYNC_DEFAULT_PAGE_TIMEOUT_MS, 1000, MLS_SYNC_MAX_PAGE_TIMEOUT_MS),
+    maxRuntimeMs: readNumber(env.MLS_MAX_RUNTIME_MS, MLS_SYNC_DEFAULT_MAX_RUNTIME_MS, 1000, MLS_SYNC_MAX_RUNTIME_MS),
+    rateDelayMs: readNumber(env.MLS_RATE_DELAY_MS, MLS_SYNC_DEFAULT_RATE_DELAY_MS, 0, MLS_SYNC_MAX_RATE_DELAY_MS),
+    pageSize: readNumber(env.MLS_PAGE_SIZE, MLS_SYNC_DEFAULT_PAGE_SIZE, 1, MLS_SYNC_MAX_PAGE_SIZE),
+    maxPages: readNumber(env.MLS_MAX_PAGES, MLS_SYNC_DEFAULT_MAX_PAGES, 1, MLS_SYNC_MAX_PAGES),
+    startPage: readNumber(env.MLS_START_PAGE, 0, 0, MLS_SYNC_MAX_START_PAGE),
+    includeMedia: readOptionalBoolean(env.MLS_INCLUDE_MEDIA ?? env.MLS_GRID_INCLUDE_MEDIA),
+    pageTimeoutMs: readNumber(env.MLS_PAGE_TIMEOUT_MS, MLS_SYNC_DEFAULT_PAGE_TIMEOUT_MS, 1000, MLS_SYNC_MAX_PAGE_TIMEOUT_MS),
   });
+}
+
+export function getMlsWorkerPlan(env: EnvMap = process.env): MlsWorkerPlan {
+  return {
+    queueName: MLS_SYNC_QUEUE_NAME,
+    jobName: MLS_SYNC_JOB_NAME,
+    terminal: TERMINAL_3,
+    recoveryTerminal: TERMINAL_5,
+    config: getConfig(env),
+    oneShotOptions: getOneShotOptions(env),
+    commands: {
+      status: buildStatusCommand(),
+      retryStatus: buildRetryStatusCommand(),
+      queueDashboard: buildQueueDashboardCommand(),
+      supabaseCheck: SUPABASE_CHECK_COMMAND,
+      supabaseCheckJson: SUPABASE_CHECK_JSON_COMMAND,
+      dryRunSync: buildDryRunSyncCommand(),
+      dryRunRetry: buildRetryCommand({ limit: 10 }),
+      liveRetry: buildRetryCommand({ execute: true, limit: 10 }),
+      oneShot: 'MLS_WORKER_ONCE=true npm run run:worker:mls',
+      deadLetter: buildDeadLetterCommand(),
+    },
+    databasePreflight: {
+      queue: MLS_SYNC_QUEUE_NAME,
+      worker: 'MLS sync worker',
+      recoveryCommand: SUPABASE_CHECK_JSON_COMMAND,
+    },
+    bounded: {
+      concurrency: isBoundedNumber(env.MLS_WORKER_CONCURRENCY, 1, 1, 3),
+      lockDurationMs: isBoundedNumber(env.MLS_WORKER_LOCK_DURATION_MS, 15 * 60 * 1000, 60_000, 60 * 60 * 1000),
+      maxStalledCount: isBoundedNumber(env.MLS_WORKER_MAX_STALLED_COUNT, 1, 0, 5),
+      stalledIntervalMs: isBoundedNumber(env.MLS_WORKER_STALLED_INTERVAL_MS, 60_000, 10_000, 10 * 60 * 1000),
+      maxRuntimeMs: isBoundedNumber(env.MLS_MAX_RUNTIME_MS, MLS_SYNC_DEFAULT_MAX_RUNTIME_MS, 1000, MLS_SYNC_MAX_RUNTIME_MS),
+      rateDelayMs: isBoundedNumber(env.MLS_RATE_DELAY_MS, MLS_SYNC_DEFAULT_RATE_DELAY_MS, 0, MLS_SYNC_MAX_RATE_DELAY_MS),
+      pageSize: isBoundedNumber(env.MLS_PAGE_SIZE, MLS_SYNC_DEFAULT_PAGE_SIZE, 1, MLS_SYNC_MAX_PAGE_SIZE),
+      maxPages: isBoundedNumber(env.MLS_MAX_PAGES, MLS_SYNC_DEFAULT_MAX_PAGES, 1, MLS_SYNC_MAX_PAGES),
+      startPage: isBoundedNumber(env.MLS_START_PAGE, 0, 0, MLS_SYNC_MAX_START_PAGE),
+      pageTimeoutMs: isBoundedNumber(env.MLS_PAGE_TIMEOUT_MS, MLS_SYNC_DEFAULT_PAGE_TIMEOUT_MS, 1000, MLS_SYNC_MAX_PAGE_TIMEOUT_MS),
+    },
+    limits: {
+      minConcurrency: 1,
+      maxConcurrency: 3,
+      minLockDurationMs: 60_000,
+      maxLockDurationMs: 60 * 60 * 1000,
+      minMaxStalledCount: 0,
+      maxMaxStalledCount: 5,
+      minStalledIntervalMs: 10_000,
+      maxStalledIntervalMs: 10 * 60 * 1000,
+      minMaxRuntimeMs: 1000,
+      maxMaxRuntimeMs: MLS_SYNC_MAX_RUNTIME_MS,
+      minRateDelayMs: 0,
+      maxRateDelayMs: MLS_SYNC_MAX_RATE_DELAY_MS,
+      minPageSize: 1,
+      maxPageSize: MLS_SYNC_MAX_PAGE_SIZE,
+      minMaxPages: 1,
+      maxMaxPages: MLS_SYNC_MAX_PAGES,
+      minStartPage: 0,
+      maxStartPage: MLS_SYNC_MAX_START_PAGE,
+      minPageTimeoutMs: 1000,
+      maxPageTimeoutMs: MLS_SYNC_MAX_PAGE_TIMEOUT_MS,
+    },
+  };
 }
 
 function normalizeJobData(data: MlsSyncJobData = {}) {
@@ -308,7 +443,7 @@ function createMlsSyncWorker(config: MlsWorkerConfig) {
 }
 
 async function runOneShot() {
-  const options = getOneShotOptions();
+  const options = getMlsWorkerPlan().oneShotOptions;
   let result: MlsSyncJobResult;
 
   try {
@@ -351,30 +486,27 @@ async function runOneShot() {
 }
 
 async function start() {
-  const config = getConfig();
+  const plan = getMlsWorkerPlan();
+  const { config } = plan;
 
   console.log('REIE MLS sync worker started:', {
     ...config,
-    queue: MLS_SYNC_QUEUE_NAME,
-    terminal: TERMINAL_3,
-    recoveryTerminal: TERMINAL_5,
-    statusCommand: buildStatusCommand(),
-    retryStatusCommand: buildRetryStatusCommand(),
-    queueDashboardCommand: buildQueueDashboardCommand(),
-    supabaseCheckCommand: SUPABASE_CHECK_COMMAND,
-    supabaseCheckJsonCommand: SUPABASE_CHECK_JSON_COMMAND,
-    dryRunSyncCommand: buildDryRunSyncCommand(),
-    dryRunRetryCommand: buildRetryCommand({ limit: 10 }),
-    liveRetryCommand: buildRetryCommand({ execute: true, limit: 10 }),
-    oneShotCommand: 'MLS_WORKER_ONCE=true npm run run:worker:mls',
-    deadLetterCommand: buildDeadLetterCommand(),
+    queue: plan.queueName,
+    terminal: plan.terminal,
+    recoveryTerminal: plan.recoveryTerminal,
+    statusCommand: plan.commands.status,
+    retryStatusCommand: plan.commands.retryStatus,
+    queueDashboardCommand: plan.commands.queueDashboard,
+    supabaseCheckCommand: plan.commands.supabaseCheck,
+    supabaseCheckJsonCommand: plan.commands.supabaseCheckJson,
+    dryRunSyncCommand: plan.commands.dryRunSync,
+    dryRunRetryCommand: plan.commands.dryRunRetry,
+    liveRetryCommand: plan.commands.liveRetry,
+    oneShotCommand: plan.commands.oneShot,
+    deadLetterCommand: plan.commands.deadLetter,
   });
 
-  await assertWorkerDatabaseReady({
-    queue: MLS_SYNC_QUEUE_NAME,
-    recoveryCommand: SUPABASE_CHECK_JSON_COMMAND,
-    worker: 'MLS sync worker',
-  });
+  await assertWorkerDatabaseReady(plan.databasePreflight);
 
   if (config.once) {
     process.exit(await runOneShot());
@@ -392,18 +524,20 @@ async function start() {
   process.on('SIGTERM', shutdown);
 
   console.log(`REIE MLS sync worker listening on queue "${MLS_SYNC_QUEUE_NAME}":`, {
-    terminal: TERMINAL_3,
-    recoveryTerminal: TERMINAL_5,
-    statusCommand: buildStatusCommand(),
-    supabaseCheckJsonCommand: SUPABASE_CHECK_JSON_COMMAND,
-    deadLetterCommand: buildDeadLetterCommand(),
-    dryRunRetryCommand: buildRetryCommand({ limit: 10 }),
+    terminal: plan.terminal,
+    recoveryTerminal: plan.recoveryTerminal,
+    statusCommand: plan.commands.status,
+    supabaseCheckJsonCommand: plan.commands.supabaseCheckJson,
+    deadLetterCommand: plan.commands.deadLetter,
+    dryRunRetryCommand: plan.commands.dryRunRetry,
   });
 }
 
-start().catch((error) => {
-  console.error('REIE MLS sync worker failed:', getErrorMessage(error));
-  process.exit(1);
-});
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  start().catch((error) => {
+    console.error('REIE MLS sync worker failed:', getErrorMessage(error));
+    process.exit(1);
+  });
+}
 
 // /Users/davidquinn/david-quinn-group/colorado-real-estate/workers/mlsWorker.ts

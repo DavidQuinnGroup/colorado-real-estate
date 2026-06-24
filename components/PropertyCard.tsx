@@ -121,6 +121,10 @@ function getCityMarketHref(city: string) {
   return `/market/${marketSlug}`;
 }
 
+function hasCoordinates(property: MapSidebarListing) {
+  return Number.isFinite(property.lat) && Number.isFinite(property.lng);
+}
+
 export default function PropertyCard({ property, isActive, onClick }: PropertyCardProps) {
   const photoUrl = useMemo(() => getListingPhotoUrl(property), [property]);
   const [fallbackState, setFallbackState] = useState<ImageFallbackState | null>(null);
@@ -132,9 +136,12 @@ export default function PropertyCard({ property, isActive, onClick }: PropertyCa
   const propertyType = property.propertyType || 'Residential';
   const cardLabel = getCardLabel(property, price, address, city, state);
   const reviewSignal = getReviewSignal(property);
+  const decisionLabel = getDecisionLabel(property);
   const cityMarketHref = getCityMarketHref(city);
   const hasReviewFlag = Boolean(property.hasPolybutyleneRisk);
+  const hasCoordinatesFlag = hasCoordinates(property);
   const isFallbackVisual = imageSrc === LISTING_IMAGE_FALLBACK || !hasListingPhoto(property);
+  const detailHref = `/properties/${property.id}`;
 
   function handleImageError() {
     if (imageSrc === LISTING_IMAGE_FALLBACK) return;
@@ -157,6 +164,24 @@ export default function PropertyCard({ property, isActive, onClick }: PropertyCa
       aria-pressed={isActive}
       onClick={onClick}
       onKeyDown={handleKeyDown}
+      data-testid="reie-property-card"
+      data-property-card-id={property.id}
+      data-property-card-active={String(isActive)}
+      data-property-card-address={address}
+      data-property-card-city={city}
+      data-property-card-state={state}
+      data-property-card-price={price}
+      data-property-card-type={propertyType}
+      data-property-card-private={String(Boolean(property.isPrivateExclusive))}
+      data-property-card-review={String(hasReviewFlag)}
+      data-property-card-mapped={String(hasCoordinatesFlag)}
+      data-property-card-photo-fallback={String(isFallbackVisual)}
+      data-property-card-efficiency-score={formatIntelligenceScore(property.efficiencyScore)}
+      data-property-card-resilience-score={formatIntelligenceScore(property.resilienceScore)}
+      data-property-card-review-signal={reviewSignal}
+      data-property-card-decision-signal={decisionLabel}
+      data-property-card-market-href={cityMarketHref}
+      data-property-card-detail-href={detailHref}
       className={`group m-3 cursor-pointer overflow-hidden rounded-[8px] border outline-none transition duration-200 focus-visible:border-cyan-200 focus-visible:ring-2 focus-visible:ring-cyan-200/40 ${
         isActive
           ? 'border-cyan-200/70 bg-[#101821] shadow-[0_18px_55px_rgba(7,22,38,0.55)] ring-1 ring-cyan-100/25'
@@ -204,7 +229,7 @@ export default function PropertyCard({ property, isActive, onClick }: PropertyCa
           <div className="flex items-end justify-between gap-3">
             <p className="font-serif text-[24px] font-black leading-none text-white drop-shadow">{formatLuxuryPrice(price)}</p>
             <span className="hidden rounded-[4px] border border-white/20 bg-black/50 px-2 py-1 text-[9px] font-black uppercase tracking-[0.12em] text-white/72 backdrop-blur sm:inline-flex">
-              {getDecisionLabel(property)}
+              {decisionLabel}
             </span>
           </div>
           <div className="mt-3 flex flex-wrap gap-2">
@@ -240,15 +265,26 @@ export default function PropertyCard({ property, isActive, onClick }: PropertyCa
           </p>
         </div>
 
-        <div className="mt-4 rounded-[6px] border border-cyan-100/18 bg-cyan-100/[0.055] px-3 py-2.5">
+        <div
+          className="mt-4 rounded-[6px] border border-cyan-100/18 bg-cyan-100/[0.055] px-3 py-2.5"
+          data-testid="reie-property-card-decision"
+          data-property-card-decision-signal={decisionLabel}
+          data-property-card-review-signal={reviewSignal}
+        >
           <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100/76">
             <Sparkles size={12} aria-hidden="true" />
             Decision Signal
           </p>
-          <p className="mt-1 truncate text-xs font-black uppercase tracking-[0.08em] text-white/70">{getDecisionLabel(property)}</p>
+          <p className="mt-1 truncate text-xs font-black uppercase tracking-[0.08em] text-white/70">{decisionLabel}</p>
         </div>
 
-        <div className="mt-3 grid grid-cols-3 gap-2 text-left">
+        <div
+          className="mt-3 grid grid-cols-3 gap-2 text-left"
+          data-testid="reie-property-card-intelligence"
+          data-property-card-efficiency-score={formatIntelligenceScore(property.efficiencyScore)}
+          data-property-card-resilience-score={formatIntelligenceScore(property.resilienceScore)}
+          data-property-card-review-signal={reviewSignal}
+        >
           <div className="rounded-[6px] border border-white/10 bg-white/[0.045] px-3 py-2.5">
             <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.12em] text-white/38">
               <Gauge size={12} aria-hidden="true" />
@@ -275,6 +311,8 @@ export default function PropertyCard({ property, isActive, onClick }: PropertyCa
           <div className="flex shrink-0 items-center gap-2">
             <Link
               href={cityMarketHref}
+              data-testid="reie-property-card-market-link"
+              data-property-card-market-href={cityMarketHref}
               aria-label={`View ${city} market intelligence`}
               onClick={(event) => event.stopPropagation()}
               onKeyDown={(event) => event.stopPropagation()}
@@ -286,7 +324,9 @@ export default function PropertyCard({ property, isActive, onClick }: PropertyCa
             </Link>
 
             <Link
-              href={`/properties/${property.id}`}
+              href={detailHref}
+              data-testid="reie-property-card-detail-link"
+              data-property-card-detail-href={detailHref}
               aria-label={`View details for ${address}`}
               onClick={(event) => event.stopPropagation()}
               onKeyDown={(event) => event.stopPropagation()}

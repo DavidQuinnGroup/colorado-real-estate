@@ -2,7 +2,7 @@
 
 The legacy MLS helper cleanup pass is complete for the active MLS Grid ingestion path and the older root-level demo MLS helpers.
 
-The active ingestion system is centered on MLS Grid, bounded sync scripts, protected operational API routes, page-level workers, deterministic listing processing, Prisma writes, media preservation, Typesense refresh through the canonical schema, saved-search alert matching, Search Smoke Readiness, and explicit production scheduler commands. The old helper files that duplicated or conflicted with that path have been removed.
+The active ingestion system is centered on MLS Grid, bounded sync scripts, protected operational API routes, page-level workers, deterministic listing processing, Prisma writes, media preservation, Typesense refresh through the canonical schema, saved-search alert matching, Search Smoke Readiness, protected Master Control Panel policy, recent intake signal visibility, and explicit production scheduler commands. The old helper files that duplicated or conflicted with that path have been removed.
 
 This document is the cleanup completion record and the gate for future MLS-related deletes.
 
@@ -16,7 +16,7 @@ Authoritative Master V7 source PDF:
 
 ## Current Operational Boundary
 
-The active MLS system has one canonical production direction: MLS Grid data enters through bounded sync entrypoints, is normalized through the active listing processing pipeline, is written to Prisma, and is then reflected into Typesense through the canonical schema. Search-index health is surfaced through `npm run smoke:mls-status`; Search Smoke Readiness is surfaced through `npm run smoke:search`; queue diagnostics use `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000`; large programmatic content batch publication, recurring email traffic, live-inventory claims, MLS-backed public expansion, MLS-volume increases, and scheduler cadence increases must wait for `npm run supabase:check:json`, verified data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics where applicable.
+The active MLS system has one canonical production direction: MLS Grid data enters through bounded sync entrypoints, is normalized through the active listing processing pipeline, is written to Prisma, and is then reflected into Typesense through the canonical schema. Search-index health is surfaced through `npm run smoke:mls-status`; Search Smoke Readiness is surfaced through `npm run smoke:search`; protected control, intake, alert-status, consolidated notification readiness, direct saved-search alert notification readiness, direct property-inquiry notification readiness, and aggregate launch-readiness checks are surfaced through `npm run smoke:ops`; queue diagnostics use `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000`; large programmatic content batch publication, recurring email traffic, live-inventory claims, MLS-backed public expansion, MLS-volume increases, and scheduler cadence increases must wait for `npm run supabase:check:json`, verified data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, Master Control Panel policy, intake signal visibility, notification readiness, configured property-inquiry recipient routing, `PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN` unset or false, and timeout-bounded queue diagnostics where applicable.
 
 Protected operational routes:
 
@@ -26,6 +26,9 @@ Protected operational routes:
 - `/Users/davidquinn/david-quinn-group/colorado-real-estate/app/api/mls/retry/route.ts`
 - `/Users/davidquinn/david-quinn-group/colorado-real-estate/app/api/admin/dead-letter/route.ts`
 - `/Users/davidquinn/david-quinn-group/colorado-real-estate/app/api/process-alerts/route.ts`
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/app/api/admin/control-state/route.ts`
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/app/api/admin/intake-signals/route.ts`
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/app/api/admin/intake-signals/[id]/route.ts`
 - `/Users/davidquinn/david-quinn-group/colorado-real-estate/app/api/admin/crm-tasks/route.ts`
 - `/Users/davidquinn/david-quinn-group/colorado-real-estate/app/api/admin/crm-tasks/[id]/route.ts`
 
@@ -47,6 +50,9 @@ curl --max-time 8 -s -w "\nHTTP_STATUS:%{http_code}\n" "http://localhost:3000/ap
 curl --max-time 8 -s -X POST -w "\nHTTP_STATUS:%{http_code}\n" "http://localhost:3000/api/mls/sync?maxPages=1&pageSize=5&startPage=0&pageTimeoutMs=30000&dryRun=true" -H "x-admin-key: $REIE_ADMIN_API_KEY"
 curl --max-time 8 -s -X POST -w "\nHTTP_STATUS:%{http_code}\n" "http://localhost:3000/api/mls-sync?maxPages=1&pageSize=5&startPage=0&pageTimeoutMs=30000&dryRun=true" -H "x-admin-key: $REIE_ADMIN_API_KEY"
 curl --max-time 20 -s -X POST -w "\nHTTP_STATUS:%{http_code}\n" "http://localhost:3000/api/process-alerts?dryRun=true&limit=10" -H "x-admin-key: $REIE_ADMIN_API_KEY"
+curl --max-time 8 -s -w "\nHTTP_STATUS:%{http_code}\n" "http://localhost:3000/api/admin/control-state" -H "x-admin-key: $REIE_ADMIN_API_KEY"
+curl --max-time 8 -s -w "\nHTTP_STATUS:%{http_code}\n" "http://localhost:3000/api/admin/intake-signals?limit=6" -H "x-admin-key: $REIE_ADMIN_API_KEY"
+curl --max-time 8 -s -w "\nHTTP_STATUS:%{http_code}\n" "http://localhost:3000/api/admin/intake-signals/<signal-id-from-list-response>?kind=crm_task" -H "x-admin-key: $REIE_ADMIN_API_KEY"
 curl --max-time 8 -s -w "\nHTTP_STATUS:%{http_code}\n" "http://localhost:3000/api/admin/crm-tasks?status=active&limit=6" -H "x-admin-key: $REIE_ADMIN_API_KEY"
 curl --max-time 8 -s -w "\nHTTP_STATUS:%{http_code}\n" "http://localhost:3000/api/admin/crm-tasks/<task-id-from-list-response>" -H "x-admin-key: $REIE_ADMIN_API_KEY"
 ```
@@ -125,9 +131,9 @@ rg --files | rg "(fetchIRESListings|normalizeIRESListing|normalizeListing|fetchM
 
 `dist/` is generated worker and script output.
 
-- `dist/` may still contain stale JavaScript for deleted source files until generated output is cleaned or regenerated from a clean output directory.
-- Source scans are authoritative unless a runtime command directly executes stale generated files.
-- If generated output becomes operationally confusing, clean generated output and rerun `npm run worker:build`.
+- The known stale generated legacy MLS helper files were removed from `dist/lib/mls` on June 21 08:28 MDT.
+- `npm run worker:build` passed afterward and did not regenerate those files.
+- A no-source `dist/*.js` scan returned empty after the cleanup.
 - Do not delete source files just because similarly named generated files appear under `dist/`.
 
 ## Seed Workflow Boundary
@@ -164,8 +170,10 @@ Expected readiness signals:
 - `/api/mls/status` includes `commands.smokeOps`, `commands.smokeMlsStatus`, `commands.smokeSearch`, `commands.rawStatus`, and `commands.rawSearchCheck` for admin and operator guidance.
 - `searchIndex.failed` should be `0` before recurring scheduler activation, scheduler cadence increases, or MLS-volume increases.
 - `npm run smoke:search` Search Smoke Readiness includes metadata for `source`, `meta.source`, `health`, `accessLevel`, `filtersApplied`, `boundsApplied`, `returned`, `mapped`, `coordinateFiltered`, `durationMs`, `meta.smoke.ready`, and `meta.smoke.blockers`.
+- `npm run smoke:ops` should confirm `/api/admin/control-state` policy, `/api/admin/intake-signals` visibility, alert status, consolidated notification readiness, direct saved-search alert notification readiness, direct property-inquiry notification readiness, and aggregate launch readiness before recurring email traffic, live-inventory claims, MLS-backed public expansion, MLS-volume increases, scheduler cadence increases, or large programmatic content batch publication.
+- Recurring email traffic, including recurring alert, digest, or property-inquiry notification sends, must remain blocked when property-inquiry recipient routing is missing or `PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN=true`.
 - `npm run supabase:check:json` should report readiness and `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000` should report acceptable queue diagnostics before recurring email traffic, live-inventory claims, MLS-backed public expansion, MLS-volume increases, scheduler cadence increases, or large programmatic content batch publication.
-- Degraded search metadata, `meta.smoke.ready=false`, or non-empty smoke blockers are repair/readiness issues, not reasons to restore removed legacy ingestion helpers.
+- Degraded search metadata, `meta.smoke.ready=false`, non-empty smoke blockers, paused/protected Master Control Panel policy beyond the intended launch posture, hidden/unreviewed intake handoff issues, or unacceptable timeout-bounded queue diagnostics are repair/readiness issues, not reasons to restore removed legacy ingestion helpers.
 
 Use **Terminal 4: Docker / Typesense**:
 
@@ -192,9 +200,10 @@ Current cleanup state:
 - Useful GC-forensics and resilience scoring logic was preserved in `/Users/davidquinn/david-quinn-group/colorado-real-estate/lib/mls/upsertListing.ts`.
 - Production scheduling is documented in `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/production-scheduler-plan.md`.
 - Search indexing uses the canonical Typesense schema and validation path from `/Users/davidquinn/david-quinn-group/colorado-real-estate/lib/typesense/schema.ts`.
-- `npm run supabase:check:json`, `npm run smoke:mls-status`, `/admin`, `npm run smoke:search`, `/search`, `/`, and `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000` now expose or preserve Supabase readiness, search-index health, Search Smoke Readiness, indexing behavior, and bounded queue diagnostics for launch readiness, recurring email traffic, live-inventory claims, MLS-backed public expansion, MLS-volume decisions, scheduler cadence, and large programmatic content batch publication gates.
+- `npm run supabase:check:json`, `npm run smoke:mls-status`, `/admin`, `npm run smoke:search`, `/search`, `/`, `npm run smoke:ops`, `/api/admin/control-state`, `/api/admin/intake-signals`, and `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000` now expose or preserve Supabase readiness, search-index health, Search Smoke Readiness, indexing behavior, Master Control Panel policy, intake signal visibility, alert status, notification readiness, aggregate launch readiness, property-inquiry recipient routing and dry-run blockers, and bounded queue diagnostics for launch readiness, recurring email traffic, live-inventory claims, MLS-backed public expansion, MLS-volume decisions, scheduler cadence, and large programmatic content batch publication gates.
+- `/api/admin/control-state`, `/api/admin/intake-signals`, and `/api/admin/intake-signals/[id]` keep future cleanup decisions tied to human-reviewed operating posture and engagement handoff visibility before increased MLS volume or scheduler cadence can amplify downstream work.
 - `/api/admin/crm-tasks`, `/api/admin/crm-tasks/[id]`, and `/admin` now expose CRM inspection metadata on success and error responses, preserve failed detail-route inspection metadata, and keep CRM closure audit coverage visible for recurring email traffic and engagement handoff.
-- Local Typesense `properties` and `listings` collections were verified ready with `npm run typesense:collections:check` on May 31, 2026.
+- Local Typesense `properties` and `listings` collections were verified ready with `npm run typesense:collections:check` and refreshed with `npm run typesense:reindex` on June 16, 2026.
 
 Required verification from **Terminal 5: Scripts / curl testing**:
 
@@ -213,6 +222,8 @@ npm run typecheck
 npm run smoke:mls-status
 npm run smoke:search
 npm run smoke:ops
+curl --max-time 8 -s -w "\nHTTP_STATUS:%{http_code}\n" "http://localhost:3000/api/admin/control-state" -H "x-admin-key: $REIE_ADMIN_API_KEY"
+curl --max-time 8 -s -w "\nHTTP_STATUS:%{http_code}\n" "http://localhost:3000/api/admin/intake-signals?limit=6" -H "x-admin-key: $REIE_ADMIN_API_KEY"
 curl --max-time 8 -s -w "\nHTTP_STATUS:%{http_code}\n" "http://localhost:3000/api/admin/crm-tasks?status=active&limit=6" -H "x-admin-key: $REIE_ADMIN_API_KEY"
 curl --max-time 8 -s -w "\nHTTP_STATUS:%{http_code}\n" "http://localhost:3000/api/admin/crm-tasks/<task-id-from-list-response>" -H "x-admin-key: $REIE_ADMIN_API_KEY"
 ```
@@ -227,15 +238,15 @@ Only delete future MLS or demo listing files after all of these are true:
 
 1. No active imports reference the file.
 2. No worker, script, API route, page, component, data file, or queue path depends on it.
-3. No diagnostics, metadata, launch-readiness, alert, digest, public search, or large programmatic content batch publication path depends on it.
+3. No diagnostics, metadata, launch-readiness, protected control-state, intake-signal, alert, digest, public search, or large programmatic content batch publication path depends on it.
 4. Any useful business logic has been merged into the active path, moved to seed scripts, or explicitly rejected.
 5. Documentation has been updated.
 6. Verification passes from **Terminal 5: Scripts / curl testing**.
 
 ## Known Non-Blocking Warnings
 
-- Node `url.parse()` deprecation warnings appear during `npm run build`.
-- Local Typesense `properties` and `listings` collections were verified ready with `npm run typesense:collections:check` on May 31, 2026.
+- `npm run build` may show Node `url.parse()` deprecation warnings.
+- Local Typesense `properties` and `listings` collections were verified ready with `npm run typesense:collections:check` and refreshed with `npm run typesense:reindex` on June 16, 2026.
 
 ## Terminal Guidance
 

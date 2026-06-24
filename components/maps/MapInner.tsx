@@ -55,18 +55,24 @@ export default function MapInner({
     if (userTier === 'Contracted') return listings;
     return listings.filter((property) => !property.isPrivateExclusive);
   }, [listings, userTier]);
+  const visibleCoordinateCount = useMemo(() => visibleListings.filter(hasMapCoordinates).length, [visibleListings]);
+  const totalCoordinateCount = useMemo(() => listings.filter(hasMapCoordinates).length, [listings]);
+  const privateListingCount = useMemo(() => listings.filter((property) => property.isPrivateExclusive).length, [listings]);
+  const filteredPrivateCount = listings.length - visibleListings.length;
+  const selectedListingVisible = Boolean(selectedId && visibleListings.some((property) => property.id === selectedId));
+  const hoveredListingVisible = Boolean(hoveredId && visibleListings.some((property) => property.id === hoveredId));
+  const accessLevel = searchMeta?.accessLevel || (userTier === 'Contracted' ? 'contracted' : 'public');
 
   const effectiveSearchMeta = useMemo<SearchMapMeta | null>(() => {
     if (!searchMeta) return null;
 
-    const visibleCoordinateCount = visibleListings.filter(hasMapCoordinates).length;
     const returned = searchMeta.returned ?? listings.length;
     const mapped = searchMeta.mapped ?? visibleCoordinateCount;
     const coordinateFiltered = searchMeta.coordinateFiltered ?? Math.max(0, returned - mapped);
 
     return {
       ...searchMeta,
-      accessLevel: searchMeta.accessLevel || (userTier === 'Contracted' ? 'contracted' : 'public'),
+      accessLevel,
       returned,
       mapped,
       coordinateFiltered,
@@ -75,7 +81,7 @@ export default function MapInner({
             ...searchMeta.smoke,
             checks: {
               ...searchMeta.smoke.checks,
-              accessLevel: searchMeta.accessLevel || (userTier === 'Contracted' ? 'contracted' : 'public'),
+              accessLevel,
               coordinateFiltered,
               mapped,
               returned,
@@ -83,7 +89,7 @@ export default function MapInner({
           }
         : undefined,
     };
-  }, [listings.length, searchMeta, userTier, visibleListings]);
+  }, [accessLevel, listings.length, searchMeta, visibleCoordinateCount]);
 
   useEffect(() => {
     if (!selectedId) return;
@@ -93,7 +99,30 @@ export default function MapInner({
   }, [selectedId, setSelectedId, visibleListings]);
 
   return (
-    <div className="relative h-full w-full overflow-hidden bg-[#030303]">
+    <div
+      className="relative h-full w-full overflow-hidden bg-[#030303]"
+      data-testid="reie-map-inner"
+      data-map-inner-user-tier={userTier}
+      data-map-inner-access-level={accessLevel}
+      data-map-inner-total-listing-count={listings.length}
+      data-map-inner-visible-listing-count={visibleListings.length}
+      data-map-inner-private-listing-count={privateListingCount}
+      data-map-inner-filtered-private-count={filteredPrivateCount}
+      data-map-inner-total-coordinate-count={totalCoordinateCount}
+      data-map-inner-visible-coordinate-count={visibleCoordinateCount}
+      data-map-inner-selected-listing-id={selectedId || ''}
+      data-map-inner-selected-visible={selectedListingVisible ? 'true' : 'false'}
+      data-map-inner-hovered-listing-id={hoveredId || ''}
+      data-map-inner-hovered-visible={hoveredListingVisible ? 'true' : 'false'}
+      data-map-inner-center={BOULDER_MAP_CENTER.join(',')}
+      data-map-inner-has-search-meta={effectiveSearchMeta ? 'true' : 'false'}
+      data-map-inner-search-returned={effectiveSearchMeta?.returned ?? ''}
+      data-map-inner-search-mapped={effectiveSearchMeta?.mapped ?? ''}
+      data-map-inner-search-coordinate-filtered={effectiveSearchMeta?.coordinateFiltered ?? ''}
+      data-map-inner-search-terminal={effectiveSearchMeta?.terminal ?? ''}
+      data-map-inner-search-route={effectiveSearchMeta?.route ?? ''}
+      data-map-inner-search-source={effectiveSearchMeta?.source ?? ''}
+    >
       <SearchMap
         listings={visibleListings}
         onBoundsChange={onBoundsChange}

@@ -24,6 +24,40 @@ export type FetchMLSGridListingsOptions = {
   timeoutMs?: number;
 };
 
+export type MlsGridRequestDiagnostics = {
+  skip: number;
+  top: number;
+  lastSync: string;
+  includeMedia: boolean;
+  mediaExpansion: "requested" | "disabled";
+  timeoutMs: number;
+  baseUrlConfigured: boolean;
+  tokenConfigured: boolean;
+  requestPath: string;
+  requestUrl?: string;
+  query: {
+    $top: number;
+    $skip: number;
+    $filter: string;
+    $orderby: "ModificationTimestamp asc";
+    $expand?: "Media";
+  };
+  bounded: {
+    skip: boolean;
+    top: boolean;
+    lastSync: boolean;
+    timeoutMs: boolean;
+  };
+  limits: {
+    minSkip: number;
+    maxSkip: number;
+    minTop: number;
+    maxTop: number;
+    minTimeoutMs: number;
+    maxTimeoutMs: number;
+  };
+};
+
 type MlsGridResponse = {
   value?: unknown;
   error?: unknown;
@@ -55,7 +89,9 @@ function getSafeInteger(
   return Math.min(Math.max(Math.floor(value), min), max);
 }
 
-function getSafeLastSync(lastSync: string) {
+function getSafeLastSync(lastSync: string | undefined) {
+  if (!lastSync) return MLS_PAGE_DEFAULT_LAST_SYNC;
+
   const parsed = new Date(lastSync);
 
   if (Number.isNaN(parsed.getTime())) {
@@ -63,6 +99,68 @@ function getSafeLastSync(lastSync: string) {
   }
 
   return parsed.toISOString();
+}
+
+export function getMlsGridRequestDiagnostics(
+  options: Partial<FetchMLSGridListingsOptions> = {}
+): MlsGridRequestDiagnostics {
+  const skip = getSafeInteger(options.skip, 0);
+  const top = getSafeInteger(options.top, MLS_PAGE_DEFAULT_TOP, 1, MLS_PAGE_MAX_TOP);
+  const lastSync = getSafeLastSync(options.lastSync);
+  const includeMedia = options.includeMedia ?? includeMediaByDefault;
+  const timeoutMs = getSafeInteger(options.timeoutMs, MLS_PAGE_DEFAULT_TIMEOUT_MS, 1000, MLS_PAGE_MAX_TIMEOUT_MS);
+  const baseUrl = getBaseUrl().replace(/\/+$/, "");
+  const requestPath = "/Property";
+  const query: MlsGridRequestDiagnostics["query"] = {
+    $top: top,
+    $skip: skip,
+    $filter: `ModificationTimestamp gt ${lastSync}`,
+    $orderby: "ModificationTimestamp asc",
+    ...(includeMedia ? { $expand: "Media" as const } : {}),
+  };
+  let requestUrl: string | undefined;
+
+  if (baseUrl) {
+    const url = new URL(`${baseUrl}${requestPath}`);
+    url.searchParams.set("$top", String(query.$top));
+    url.searchParams.set("$skip", String(query.$skip));
+    url.searchParams.set("$filter", query.$filter);
+    url.searchParams.set("$orderby", query.$orderby);
+
+    if (query.$expand) {
+      url.searchParams.set("$expand", query.$expand);
+    }
+
+    requestUrl = url.toString();
+  }
+
+  return {
+    skip,
+    top,
+    lastSync,
+    includeMedia,
+    mediaExpansion: includeMedia ? "requested" : "disabled",
+    timeoutMs,
+    baseUrlConfigured: Boolean(baseUrl),
+    tokenConfigured: Boolean(getToken()),
+    requestPath,
+    ...(requestUrl ? { requestUrl } : {}),
+    query,
+    bounded: {
+      skip: options.skip !== undefined && skip !== options.skip,
+      top: options.top !== undefined && top !== options.top,
+      lastSync: options.lastSync !== undefined && lastSync !== options.lastSync,
+      timeoutMs: options.timeoutMs !== undefined && timeoutMs !== options.timeoutMs,
+    },
+    limits: {
+      minSkip: 0,
+      maxSkip: Number.MAX_SAFE_INTEGER,
+      minTop: 1,
+      maxTop: MLS_PAGE_MAX_TOP,
+      minTimeoutMs: 1000,
+      maxTimeoutMs: MLS_PAGE_MAX_TIMEOUT_MS,
+    },
+  };
 }
 
 function trimText(value: string, maxLength = maxErrorTextLength) {
@@ -180,6 +278,7 @@ async function requestListings(
   await rateLimit();
 
   const timeoutMs = getSafeInteger(options.timeoutMs, MLS_PAGE_DEFAULT_TIMEOUT_MS, 1000, MLS_PAGE_MAX_TIMEOUT_MS);
+  const diagnostics = getMlsGridRequestDiagnostics(options);
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
   const requestUrl = buildPropertyUrl(options);
@@ -206,6 +305,7 @@ async function requestListings(
         {
           details: getErrorDetails(data, text),
           request: {
+            diagnostics,
             includeMedia: options.includeMedia ?? includeMediaByDefault,
             skip: requestUrl.searchParams.get("$skip"),
             top: requestUrl.searchParams.get("$top"),
@@ -222,6 +322,7 @@ async function requestListings(
       throw createMlsGridError(`MLS Grid request timed out after ${timeoutMs}ms.`, 408, {
         timeoutMs,
         request: {
+          diagnostics,
           includeMedia: options.includeMedia ?? includeMediaByDefault,
           skip: requestUrl.searchParams.get("$skip"),
           top: requestUrl.searchParams.get("$top"),

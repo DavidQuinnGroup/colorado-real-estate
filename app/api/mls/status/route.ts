@@ -101,6 +101,13 @@ type PropertyFreshness = {
   freshnessField: 'lastIntelligenceSync' | 'updatedAt';
 };
 
+type PropertyFreshnessCounts = {
+  total: number | bigint;
+  active: number | bigint;
+  stale: number | bigint;
+  privateExclusive: number | bigint;
+};
+
 type SearchIndexStatus = {
   checkedJobs: number;
   attempted: number;
@@ -121,6 +128,32 @@ type SearchIndexStatus = {
     processed: number | null;
     indexed: boolean | null;
     error: string | null;
+  }>;
+};
+
+type MediaDiagnosticsStatus = {
+  checkedJobs: number;
+  jobsWithMediaDiagnostics: number;
+  listingsWithMedia: number;
+  extractedMediaCount: number;
+  ignoredMediaItemCount: number;
+  listingsWithDirectMedia: number;
+  listingsWithNestedMedia: number;
+  listingsWithTopLevelPhotos: number;
+  unknown: number;
+  health: Health;
+  diagnostics: DiagnosticIssue[];
+  recent: Array<{
+    queue: string;
+    id?: string;
+    name: string;
+    finishedOn: string | null;
+    listingsWithMedia: number | null;
+    extractedMediaCount: number | null;
+    ignoredMediaItemCount: number | null;
+    listingsWithDirectMedia: number | null;
+    listingsWithNestedMedia: number | null;
+    listingsWithTopLevelPhotos: number | null;
   }>;
 };
 
@@ -145,7 +178,8 @@ const TERMINAL_5_SMOKE_MLS_STATUS_COMMAND = 'npm run smoke:mls-status';
 const TERMINAL_5_SMOKE_SEARCH_COMMAND = 'npm run smoke:search';
 const TERMINAL_5_SUPABASE_CHECK_COMMAND = 'npm run supabase:check';
 const TERMINAL_5_SUPABASE_CHECK_JSON_COMMAND = 'npm run supabase:check:json';
-const TERMINAL_5_STATUS_COMMAND = 'curl -s "http://localhost:3000/api/mls/status"';
+const LOCAL_BASE_URL = 'http://localhost:3000';
+const TERMINAL_5_STATUS_COMMAND = `curl -s "${LOCAL_BASE_URL}/api/mls/status"`;
 const TERMINAL_5_SEARCH_CHECK_COMMAND = 'curl -s "http://localhost:3000/api/search?limit=5"';
 const TERMINAL_5_RETRY_STATUS_COMMAND = 'curl -s "http://localhost:3000/api/mls/retry"';
 const TERMINAL_5_DEAD_LETTER_COMMAND = 'curl -s "http://localhost:3000/api/admin/dead-letter?limit=25"';
@@ -153,6 +187,10 @@ const TERMINAL_5_DEAD_LETTER_OPEN_COMMAND = 'curl -s "http://localhost:3000/api/
 const TERMINAL_5_DEAD_LETTER_FAILED_COMMAND = 'curl -s "http://localhost:3000/api/admin/dead-letter?state=failed&limit=25"';
 const TERMINAL_5_QUEUE_DASHBOARD_COMMAND = 'npm run run:queue-dashboard';
 const TERMINAL_5_ALERT_DRY_RUN_COMMAND = 'curl -s -X POST "http://localhost:3000/api/process-alerts?dryRun=true&limit=25"';
+const STATUS_ROUTE = '/api/mls/status';
+const TERMINAL_5 = 'Terminal 5';
+
+const columnPresenceCache = new Map<string, Promise<boolean>>();
 
 const STATUS_QUEUES: Array<{ name: string; queue: Queue }> = [
   { name: MLS_SYNC_QUEUE_NAME, queue: mlsQueue },
@@ -266,6 +304,19 @@ function getErrorMessage(error: unknown) {
   return String(error || 'Unknown status read failure.');
 }
 
+function getInspectionCommand(request?: NextRequest) {
+  return `curl --max-time 8 -s "${LOCAL_BASE_URL}${STATUS_ROUTE}${request?.nextUrl.search || ''}" -H "x-admin-key: $REIE_ADMIN_API_KEY"`;
+}
+
+function getInspectionMetadata(request?: NextRequest) {
+  return {
+    generatedAt: new Date().toISOString(),
+    terminal: TERMINAL_5,
+    route: STATUS_ROUTE,
+    command: getInspectionCommand(request),
+  } as const;
+}
+
 function timeoutIssue(area: string, timeoutMs: number): DiagnosticIssue {
   return {
     area,
@@ -328,11 +379,22 @@ function json(data: unknown, init?: ResponseInit) {
   });
 }
 
-function unauthorizedResponse() {
+function unauthorizedResponse(request: NextRequest) {
   return json(
     {
       success: false,
       error: 'Admin access is required.',
+      ...getStatusEnvelope(request, {
+        syncState: null,
+        propertyFreshness: getFallbackPropertyFreshness(),
+        queues: getFallbackQueueStatuses(),
+        deadLetter: getFallbackDeadLetterStatus(),
+        searchIndex: getFallbackSearchIndexStatus(),
+        mediaDiagnostics: getFallbackMediaDiagnosticsStatus(),
+        recentFailedJobs: [],
+        recentCompletedJobs: [],
+        diagnostics: [],
+      }),
     },
     { status: 401 },
   );
@@ -382,6 +444,10 @@ function getFallbackQueueStatus(name: string): QueueStatusItem {
   };
 }
 
+function getFallbackQueueStatuses() {
+  return STATUS_QUEUES.map(({ name }) => getFallbackQueueStatus(name));
+}
+
 function getFallbackDeadLetterStatus() {
   return {
     name: DEAD_LETTER_QUEUE_NAME,
@@ -392,6 +458,45 @@ function getFallbackDeadLetterStatus() {
     completed: 0,
     paused: false,
     totalOpen: 0,
+    recent: [] as Array<{
+      id?: string;
+      name: string;
+      failedReason: string | null;
+      sourceQueue: string | null;
+      sourceJobId: string | null;
+      failedAt: string | null;
+      attemptsMade: number | null;
+    }>,
+  };
+}
+
+function getFallbackSearchIndexStatus(): SearchIndexStatus {
+  return {
+    checkedJobs: 0,
+    attempted: 0,
+    succeeded: 0,
+    failed: 0,
+    unattempted: 0,
+    unknown: 0,
+    health: 'degraded',
+    diagnostics: [],
+    recent: [],
+  };
+}
+
+function getFallbackMediaDiagnosticsStatus(): MediaDiagnosticsStatus {
+  return {
+    checkedJobs: 0,
+    jobsWithMediaDiagnostics: 0,
+    listingsWithMedia: 0,
+    extractedMediaCount: 0,
+    ignoredMediaItemCount: 0,
+    listingsWithDirectMedia: 0,
+    listingsWithNestedMedia: 0,
+    listingsWithTopLevelPhotos: 0,
+    unknown: 0,
+    health: 'degraded',
+    diagnostics: [],
     recent: [],
   };
 }
@@ -421,6 +526,12 @@ function getOverallHealth(queues: QueueStatusItem[], deadLetterOpen: number, isS
 function getReturnValueField(returnvalue: unknown, key: string) {
   if (!returnvalue || typeof returnvalue !== 'object' || Array.isArray(returnvalue)) return undefined;
   return (returnvalue as Record<string, unknown>)[key];
+}
+
+function getReturnValueObject(returnvalue: unknown, key: string) {
+  const value = getReturnValueField(returnvalue, key);
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+  return value as Record<string, unknown>;
 }
 
 function getOptionalReturnValueNumber(returnvalue: unknown, key: string) {
@@ -509,12 +620,58 @@ function getCompletedJobIndexStatus(jobs: RecentCompletedJob[]): SearchIndexStat
   };
 }
 
+function getCompletedJobMediaDiagnosticsStatus(jobs: RecentCompletedJob[]): MediaDiagnosticsStatus {
+  const recent = jobs.map((job) => {
+    const mediaDiagnostics = getReturnValueObject(job.returnvalue, 'mediaDiagnostics');
+
+    return {
+      queue: job.queue,
+      id: job.id,
+      name: job.name,
+      finishedOn: job.finishedOn,
+      listingsWithMedia: mediaDiagnostics ? getOptionalReturnValueNumber(mediaDiagnostics, 'listingsWithMedia') : null,
+      extractedMediaCount: mediaDiagnostics ? getOptionalReturnValueNumber(mediaDiagnostics, 'extractedMediaCount') : null,
+      ignoredMediaItemCount: mediaDiagnostics ? getOptionalReturnValueNumber(mediaDiagnostics, 'ignoredMediaItemCount') : null,
+      listingsWithDirectMedia: mediaDiagnostics ? getOptionalReturnValueNumber(mediaDiagnostics, 'listingsWithDirectMedia') : null,
+      listingsWithNestedMedia: mediaDiagnostics ? getOptionalReturnValueNumber(mediaDiagnostics, 'listingsWithNestedMedia') : null,
+      listingsWithTopLevelPhotos: mediaDiagnostics ? getOptionalReturnValueNumber(mediaDiagnostics, 'listingsWithTopLevelPhotos') : null,
+    };
+  });
+
+  const jobsWithMediaDiagnostics = recent.filter(
+    (job) =>
+      job.listingsWithMedia !== null ||
+      job.extractedMediaCount !== null ||
+      job.ignoredMediaItemCount !== null ||
+      job.listingsWithDirectMedia !== null ||
+      job.listingsWithNestedMedia !== null ||
+      job.listingsWithTopLevelPhotos !== null,
+  ).length;
+  const unknown = recent.length - jobsWithMediaDiagnostics;
+
+  return {
+    checkedJobs: recent.length,
+    jobsWithMediaDiagnostics,
+    listingsWithMedia: recent.reduce((total, job) => total + (job.listingsWithMedia ?? 0), 0),
+    extractedMediaCount: recent.reduce((total, job) => total + (job.extractedMediaCount ?? 0), 0),
+    ignoredMediaItemCount: recent.reduce((total, job) => total + (job.ignoredMediaItemCount ?? 0), 0),
+    listingsWithDirectMedia: recent.reduce((total, job) => total + (job.listingsWithDirectMedia ?? 0), 0),
+    listingsWithNestedMedia: recent.reduce((total, job) => total + (job.listingsWithNestedMedia ?? 0), 0),
+    listingsWithTopLevelPhotos: recent.reduce((total, job) => total + (job.listingsWithTopLevelPhotos ?? 0), 0),
+    unknown,
+    health: unknown === recent.length && recent.length > 0 ? 'busy' : 'healthy',
+    diagnostics: [],
+    recent,
+  };
+}
+
 function buildRecommendations(options: {
   queues: QueueStatusItem[];
   deadLetterOpen: number;
   diagnostics: DiagnosticIssue[];
   propertyFreshness: PropertyFreshness;
   searchIndex: SearchIndexStatus;
+  mediaDiagnostics: MediaDiagnosticsStatus;
   isSyncing: boolean;
 }) {
   const recommendations: string[] = [];
@@ -555,6 +712,10 @@ function buildRecommendations(options: {
     recommendations.push('Recent completed jobs do not expose search-index counters yet; confirm worker output is rebuilt and current.');
   }
 
+  if (options.mediaDiagnostics.checkedJobs > 0 && options.mediaDiagnostics.jobsWithMediaDiagnostics === 0) {
+    recommendations.push('Recent completed jobs do not expose mediaDiagnostics yet; confirm page-worker output is rebuilt before increasing media sync volume.');
+  }
+
   if (options.isSyncing) {
     recommendations.push(`MLS sync is active; avoid launching overlapping broad sync jobs. Terminal 3 worker command: ${TERMINAL_3_WORKER_COMMAND}`);
   }
@@ -572,6 +733,7 @@ function buildOperationalReadiness(options: {
   diagnostics: DiagnosticIssue[];
   propertyFreshness: PropertyFreshness;
   searchIndex: SearchIndexStatus;
+  mediaDiagnostics: MediaDiagnosticsStatus;
   isSyncing: boolean;
 }): OperationalReadiness {
   const failedQueues = options.queues.filter((queue) => queue.failed > 0);
@@ -584,6 +746,10 @@ function buildOperationalReadiness(options: {
       : options.searchIndex.unknown > 0
         ? 'watch'
         : 'pass';
+  const mediaStatus =
+    options.mediaDiagnostics.checkedJobs > 0 && options.mediaDiagnostics.jobsWithMediaDiagnostics === 0
+      ? 'watch'
+      : 'pass';
   const queueStatus = failedQueues.length > 0 ? 'fail' : busyQueues.length > 0 || options.isSyncing ? 'watch' : 'pass';
   const diagnosticStatus = options.diagnostics.length > 0 ? 'fail' : 'pass';
   const deadLetterStatus = options.deadLetterOpen > 0 ? 'fail' : 'pass';
@@ -617,6 +783,14 @@ function buildOperationalReadiness(options: {
       label: 'Search Index',
       status: searchStatus,
       detail: `${options.searchIndex.succeeded} indexed, ${options.searchIndex.failed} failed, ${options.searchIndex.unknown} unknown across recent completions.`,
+    },
+    {
+      label: 'Media Diagnostics',
+      status: mediaStatus,
+      detail:
+        mediaStatus === 'pass'
+          ? `${options.mediaDiagnostics.jobsWithMediaDiagnostics} completed job(s) expose media diagnostics; ${options.mediaDiagnostics.extractedMediaCount} media item(s) extracted.`
+          : 'Recent completed jobs do not expose mediaDiagnostics yet; rebuild workers before increasing media sync volume.',
     },
   ];
 
@@ -711,6 +885,21 @@ function buildOperationalReadiness(options: {
 }
 
 async function hasColumn(tableName: string, columnName: string) {
+  const cacheKey = `${tableName}.${columnName}`;
+  const cached = columnPresenceCache.get(cacheKey);
+
+  if (cached) return cached;
+
+  const lookup = readColumnPresence(tableName, columnName).catch((error) => {
+    columnPresenceCache.delete(cacheKey);
+    throw error;
+  });
+
+  columnPresenceCache.set(cacheKey, lookup);
+  return lookup;
+}
+
+async function readColumnPresence(tableName: string, columnName: string) {
   const rows = await prisma.$queryRaw<Array<{ exists: boolean }>>`
     SELECT EXISTS (
       SELECT 1
@@ -885,31 +1074,24 @@ async function getPropertyFreshness(): Promise<PropertyFreshness> {
   const hasLastIntelligenceSync = await hasColumn('Property', 'lastIntelligenceSync');
   const freshnessField = hasLastIntelligenceSync ? 'lastIntelligenceSync' : 'updatedAt';
 
-  const [total, active, staleRows, privateExclusive, latestRows, newestRows] = await Promise.all([
-    prisma.property.count(),
-    prisma.property.count({
-      where: {
-        status: {
-          in: ['Active', 'ACTIVE', 'Active Under Contract', 'Coming Soon'],
-        },
-      },
-    }),
+  const [countRows, latestRows, newestRows] = await Promise.all([
     hasLastIntelligenceSync
-      ? prisma.$queryRaw<Array<{ count: bigint }>>`
-          SELECT COUNT(*)::bigint AS "count"
+      ? prisma.$queryRaw<PropertyFreshnessCounts[]>`
+          SELECT
+            COUNT(*)::int AS "total",
+            COUNT(*) FILTER (WHERE "status" IN ('Active', 'ACTIVE', 'Active Under Contract', 'Coming Soon'))::int AS "active",
+            COUNT(*) FILTER (WHERE "lastIntelligenceSync" IS NULL OR "lastIntelligenceSync" < ${staleCutoff})::int AS "stale",
+            COUNT(*) FILTER (WHERE "isPrivateExclusive" = true)::int AS "privateExclusive"
           FROM "Property"
-          WHERE "lastIntelligenceSync" IS NULL OR "lastIntelligenceSync" < ${staleCutoff}
         `
-      : prisma.$queryRaw<Array<{ count: bigint }>>`
-          SELECT COUNT(*)::bigint AS "count"
+      : prisma.$queryRaw<PropertyFreshnessCounts[]>`
+          SELECT
+            COUNT(*)::int AS "total",
+            COUNT(*) FILTER (WHERE "status" IN ('Active', 'ACTIVE', 'Active Under Contract', 'Coming Soon'))::int AS "active",
+            COUNT(*) FILTER (WHERE "updatedAt" < ${staleCutoff})::int AS "stale",
+            COUNT(*) FILTER (WHERE "isPrivateExclusive" = true)::int AS "privateExclusive"
           FROM "Property"
-          WHERE "updatedAt" < ${staleCutoff}
         `,
-    prisma.property.count({
-      where: {
-        isPrivateExclusive: true,
-      },
-    }),
     hasLastIntelligenceSync
       ? prisma.$queryRaw<PropertyFreshness['latest'][]>`
           SELECT
@@ -952,7 +1134,16 @@ async function getPropertyFreshness(): Promise<PropertyFreshness> {
       },
     }),
   ]);
-  const stale = Number(staleRows[0]?.count || 0);
+  const counts = countRows[0] || {
+    total: 0,
+    active: 0,
+    stale: 0,
+    privateExclusive: 0,
+  };
+  const total = Number(counts.total || 0);
+  const active = Number(counts.active || 0);
+  const stale = Number(counts.stale || 0);
+  const privateExclusive = Number(counts.privateExclusive || 0);
   const latest = latestRows[0] || null;
   const newest = newestRows || null;
 
@@ -1005,44 +1196,57 @@ function isNotFoundError(error: unknown) {
   return error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025';
 }
 
-export async function GET(request: NextRequest) {
-  if (!authorizeRequest(request)) {
-    return unauthorizedResponse();
-  }
+function getStatusCommands() {
+  return {
+    smokeOps: TERMINAL_5_SMOKE_OPS_COMMAND,
+    smokeMlsStatus: TERMINAL_5_SMOKE_MLS_STATUS_COMMAND,
+    smokeSearch: TERMINAL_5_SMOKE_SEARCH_COMMAND,
+    supabaseCheck: TERMINAL_5_SUPABASE_CHECK_COMMAND,
+    supabaseCheckJson: TERMINAL_5_SUPABASE_CHECK_JSON_COMMAND,
+    status: TERMINAL_5_STATUS_COMMAND,
+    rawStatus: TERMINAL_5_STATUS_COMMAND,
+    retryStatus: TERMINAL_5_RETRY_STATUS_COMMAND,
+    searchCheck: TERMINAL_5_SEARCH_CHECK_COMMAND,
+    rawSearchCheck: TERMINAL_5_SEARCH_CHECK_COMMAND,
+    dryRunRetry: buildRetryCommand(MLS_SYNC_QUEUE_NAME),
+    dryRunRetryMlsSync: buildRetryCommand(MLS_SYNC_QUEUE_NAME),
+    liveRetryMlsSync: buildRetryCommand(MLS_SYNC_QUEUE_NAME, { execute: true }),
+    dryRunSync: buildSyncDryRunCommand(),
+    dryRunSyncPreview: buildSyncDryRunCommand(),
+    liveSync: buildSyncLiveCommand(),
+    forcedLiveSync: buildSyncLiveCommand(true),
+    deadLetter: TERMINAL_5_DEAD_LETTER_COMMAND,
+    deadLetterInspector: TERMINAL_5_DEAD_LETTER_COMMAND,
+    deadLetterOpen: TERMINAL_5_DEAD_LETTER_OPEN_COMMAND,
+    deadLetterFailed: TERMINAL_5_DEAD_LETTER_FAILED_COMMAND,
+    deadLetterByMlsSync: buildDeadLetterSourceQueueCommand(MLS_SYNC_QUEUE_NAME),
+    queueDashboard: TERMINAL_5_QUEUE_DASHBOARD_COMMAND,
+    alertDryRun: TERMINAL_5_ALERT_DRY_RUN_COMMAND,
+    worker: TERMINAL_3_WORKER_COMMAND,
+  };
+}
 
-  const [syncStateResult, propertyFreshnessResult, queueStatusResult, deadLetterResult, recentFailedJobsResult, recentCompletedJobsResult] = await Promise.all([
-    withTimeout('database:syncState', null, getMlsSyncState()),
-    withTimeout('database:propertyFreshness', getFallbackPropertyFreshness(), getPropertyFreshness()),
-    getQueueStatuses(),
-    withTimeout('redis:deadLetter', getFallbackDeadLetterStatus(), getDeadLetterStatus()),
-    getRecentFailedJobsStatus(),
-    getRecentCompletedJobsStatus(),
-  ]);
+function getStatusEnvelope(
+  request: NextRequest,
+  options: {
+    syncState: MlsSyncStateStatus | null;
+    propertyFreshness: PropertyFreshness;
+    queues: QueueStatusItem[];
+    deadLetter: ReturnType<typeof getFallbackDeadLetterStatus>;
+    searchIndex: SearchIndexStatus;
+    mediaDiagnostics: MediaDiagnosticsStatus;
+    recentFailedJobs: Awaited<ReturnType<typeof getRecentFailedJobsStatus>>['recentFailedJobs'];
+    recentCompletedJobs: RecentCompletedJob[];
+    diagnostics: DiagnosticIssue[];
+  },
+) {
+  const health = getOverallHealth(options.queues, options.deadLetter.totalOpen, Boolean(options.syncState?.isSyncing), options.diagnostics);
 
-  const syncState = syncStateResult.value;
-  const propertyFreshness = propertyFreshnessResult.value;
-  const queues = queueStatusResult.queues;
-  const deadLetter = deadLetterResult.value;
-  const recentFailedJobs = recentFailedJobsResult.recentFailedJobs;
-  const recentCompletedJobs = recentCompletedJobsResult.recentCompletedJobs;
-  const searchIndex = getCompletedJobIndexStatus(recentCompletedJobs);
-  const diagnostics = [
-    ...(syncStateResult.ok ? [] : [syncStateResult.issue]),
-    ...(propertyFreshnessResult.ok ? [] : [propertyFreshnessResult.issue]),
-    ...queueStatusResult.issues,
-    ...(deadLetterResult.ok ? [] : [deadLetterResult.issue]),
-    ...recentFailedJobsResult.issues,
-    ...recentCompletedJobsResult.issues,
-    ...searchIndex.diagnostics,
-  ];
-  const health = getOverallHealth(queues, deadLetter.totalOpen, Boolean(syncState?.isSyncing), diagnostics);
-
-  return json({
-    success: true,
+  return {
     status: health,
     engine: 'REIE V 7.0',
     module: 'MLS Operations Status',
-    generatedAt: new Date().toISOString(),
+    ...getInspectionMetadata(request),
     timeoutMs: STATUS_TIMEOUT_MS,
     auth: {
       configured: Boolean(getAdminKey()),
@@ -1068,69 +1272,126 @@ export async function GET(request: NextRequest) {
       statusChecks: 'Terminal 5',
       scriptsAndCurl: 'Terminal 5',
     },
-    commands: {
-      smokeOps: TERMINAL_5_SMOKE_OPS_COMMAND,
-      smokeMlsStatus: TERMINAL_5_SMOKE_MLS_STATUS_COMMAND,
-      smokeSearch: TERMINAL_5_SMOKE_SEARCH_COMMAND,
-      supabaseCheck: TERMINAL_5_SUPABASE_CHECK_COMMAND,
-      supabaseCheckJson: TERMINAL_5_SUPABASE_CHECK_JSON_COMMAND,
-      status: TERMINAL_5_STATUS_COMMAND,
-      rawStatus: TERMINAL_5_STATUS_COMMAND,
-      retryStatus: TERMINAL_5_RETRY_STATUS_COMMAND,
-      searchCheck: TERMINAL_5_SEARCH_CHECK_COMMAND,
-      rawSearchCheck: TERMINAL_5_SEARCH_CHECK_COMMAND,
-      dryRunRetry: buildRetryCommand(MLS_SYNC_QUEUE_NAME),
-      dryRunRetryMlsSync: buildRetryCommand(MLS_SYNC_QUEUE_NAME),
-      liveRetryMlsSync: buildRetryCommand(MLS_SYNC_QUEUE_NAME, { execute: true }),
-      dryRunSync: buildSyncDryRunCommand(),
-      dryRunSyncPreview: buildSyncDryRunCommand(),
-      liveSync: buildSyncLiveCommand(),
-      forcedLiveSync: buildSyncLiveCommand(true),
-      deadLetter: TERMINAL_5_DEAD_LETTER_COMMAND,
-      deadLetterInspector: TERMINAL_5_DEAD_LETTER_COMMAND,
-      deadLetterOpen: TERMINAL_5_DEAD_LETTER_OPEN_COMMAND,
-      deadLetterFailed: TERMINAL_5_DEAD_LETTER_FAILED_COMMAND,
-      deadLetterByMlsSync: buildDeadLetterSourceQueueCommand(MLS_SYNC_QUEUE_NAME),
-      queueDashboard: TERMINAL_5_QUEUE_DASHBOARD_COMMAND,
-      alertDryRun: TERMINAL_5_ALERT_DRY_RUN_COMMAND,
-      worker: TERMINAL_3_WORKER_COMMAND,
-    },
-    diagnostics,
+    commands: getStatusCommands(),
+    diagnostics: options.diagnostics,
     recommendations: buildRecommendations({
-      queues,
-      deadLetterOpen: deadLetter.totalOpen,
-      diagnostics,
-      propertyFreshness,
-      searchIndex,
-      isSyncing: Boolean(syncState?.isSyncing),
+      queues: options.queues,
+      deadLetterOpen: options.deadLetter.totalOpen,
+      diagnostics: options.diagnostics,
+      propertyFreshness: options.propertyFreshness,
+      searchIndex: options.searchIndex,
+      mediaDiagnostics: options.mediaDiagnostics,
+      isSyncing: Boolean(options.syncState?.isSyncing),
     }),
     operationalReadiness: buildOperationalReadiness({
-      queues,
-      deadLetterOpen: deadLetter.totalOpen,
-      diagnostics,
-      propertyFreshness,
-      searchIndex,
-      isSyncing: Boolean(syncState?.isSyncing),
+      queues: options.queues,
+      deadLetterOpen: options.deadLetter.totalOpen,
+      diagnostics: options.diagnostics,
+      propertyFreshness: options.propertyFreshness,
+      searchIndex: options.searchIndex,
+      mediaDiagnostics: options.mediaDiagnostics,
+      isSyncing: Boolean(options.syncState?.isSyncing),
     }),
-    syncState: syncState
+    syncState: options.syncState
       ? {
-          ...syncState,
-          lastSyncMinutesAgo: minutesSince(syncState.lastSync),
-          lastIntelligenceSyncMinutesAgo: minutesSince(syncState.lastIntelligenceSync),
+          ...options.syncState,
+          lastSyncMinutesAgo: minutesSince(options.syncState.lastSync),
+          lastIntelligenceSyncMinutesAgo: minutesSince(options.syncState.lastIntelligenceSync),
         }
       : null,
-    propertyFreshness,
-    queues,
-    deadLetter,
-    searchIndex,
-    recentFailedJobs,
-    recentCompletedJobs,
-  });
+    propertyFreshness: options.propertyFreshness,
+    queues: options.queues,
+    deadLetter: options.deadLetter,
+    searchIndex: options.searchIndex,
+    mediaDiagnostics: options.mediaDiagnostics,
+    recentFailedJobs: options.recentFailedJobs,
+    recentCompletedJobs: options.recentCompletedJobs,
+  } as const;
+}
+
+export async function GET(request: NextRequest) {
+  if (!authorizeRequest(request)) {
+    return unauthorizedResponse(request);
+  }
+
+  try {
+    const [syncStateResult, propertyFreshnessResult, queueStatusResult, deadLetterResult, recentFailedJobsResult, recentCompletedJobsResult] = await Promise.all([
+      withTimeout('database:syncState', null, getMlsSyncState()),
+      withTimeout('database:propertyFreshness', getFallbackPropertyFreshness(), getPropertyFreshness()),
+      getQueueStatuses(),
+      withTimeout('redis:deadLetter', getFallbackDeadLetterStatus(), getDeadLetterStatus()),
+      getRecentFailedJobsStatus(),
+      getRecentCompletedJobsStatus(),
+    ]);
+
+    const syncState = syncStateResult.value;
+    const propertyFreshness = propertyFreshnessResult.value;
+    const queues = queueStatusResult.queues;
+    const deadLetter = deadLetterResult.value;
+    const recentFailedJobs = recentFailedJobsResult.recentFailedJobs;
+    const recentCompletedJobs = recentCompletedJobsResult.recentCompletedJobs;
+    const searchIndex = getCompletedJobIndexStatus(recentCompletedJobs);
+    const mediaDiagnostics = getCompletedJobMediaDiagnosticsStatus(recentCompletedJobs);
+    const diagnostics = [
+      ...(syncStateResult.ok ? [] : [syncStateResult.issue]),
+      ...(propertyFreshnessResult.ok ? [] : [propertyFreshnessResult.issue]),
+      ...queueStatusResult.issues,
+      ...(deadLetterResult.ok ? [] : [deadLetterResult.issue]),
+      ...recentFailedJobsResult.issues,
+      ...recentCompletedJobsResult.issues,
+      ...searchIndex.diagnostics,
+    ];
+
+    return json({
+      success: true,
+      ...getStatusEnvelope(request, {
+        syncState,
+        propertyFreshness,
+        queues,
+        deadLetter,
+        searchIndex,
+        mediaDiagnostics,
+        recentFailedJobs,
+        recentCompletedJobs,
+        diagnostics,
+      }),
+    });
+  } catch (error) {
+    const message = getErrorMessage(error);
+    const diagnostics = [
+      {
+        area: 'mlsStatus',
+        message,
+      },
+    ];
+
+    console.error('MLS status read failed:', message);
+
+    return json(
+      {
+        success: false,
+        error: 'MLS status could not be read.',
+        detail: message,
+        ...getStatusEnvelope(request, {
+          syncState: null,
+          propertyFreshness: getFallbackPropertyFreshness(),
+          queues: getFallbackQueueStatuses(),
+          deadLetter: getFallbackDeadLetterStatus(),
+          searchIndex: getFallbackSearchIndexStatus(),
+          mediaDiagnostics: getFallbackMediaDiagnosticsStatus(),
+          recentFailedJobs: [],
+          recentCompletedJobs: [],
+          diagnostics,
+        }),
+      },
+      { status: 500 },
+    );
+  }
 }
 
 export async function POST(request: NextRequest) {
   if (!authorizeRequest(request)) {
-    return unauthorizedResponse();
+    return unauthorizedResponse(request);
   }
 
   try {

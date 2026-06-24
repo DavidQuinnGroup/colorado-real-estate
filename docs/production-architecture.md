@@ -140,7 +140,7 @@ Production rules:
 - Worker deployment must run `npm run worker:build` before starting compiled workers.
 - Worker processes should be observable and restartable.
 - Continuous alert worker mode consumes queue jobs live and should be enabled only after recurring email traffic readiness is verified.
-- Recurring email traffic readiness includes sender-domain authentication, unsubscribe, click tracking, internal live-send testing, search-index health, Search Smoke Readiness, and timeout-bounded queue diagnostics through `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000`.
+- Recurring email traffic readiness includes `PROPERTY_INQUIRY_NOTIFY_TO` or fallback `REIE_INTERNAL_EMAIL`, `PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN` unset or false, sender-domain authentication, unsubscribe, click tracking, internal live-send testing, search-index health, Search Smoke Readiness, and timeout-bounded queue diagnostics through `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000`.
 - Seed scripts are not worker daemons and should not be scheduled as recurring jobs.
 
 ## Production Deployment Shape
@@ -201,9 +201,11 @@ Production requirements:
 
 - `REIE_ADMIN_API_KEY` or `ADMIN_API_KEY` must be configured for protected admin endpoints.
 - `npm run supabase:check:json` must report readiness before database-backed dry-runs, live seed writes, reindexing, scheduled work, or recurring email traffic.
-- Resend sender domain must be verified before recurring alert or digest sends.
+- Resend sender domain must be verified before recurring alert, digest, or property-inquiry notification sends.
+- `PROPERTY_INQUIRY_NOTIFY_TO` or fallback `REIE_INTERNAL_EMAIL` must be configured before live property-inquiry notification delivery, recurring alert sends, recurring digest sends, or recurring email traffic.
+- `PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN` must be unset or false before live property-inquiry notification delivery, recurring alert sends, recurring digest sends, or recurring email traffic.
 - Public site URL variables must point to the canonical production domain.
-- `npm run supabase:check:json`, search-index health through `npm run smoke:mls-status`, Search Smoke Readiness through `npm run smoke:search`, and timeout-bounded queue diagnostics through `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000` must be verified before recurring email traffic, including recurring alert or digest sends.
+- `npm run supabase:check:json`, search-index health through `npm run smoke:mls-status`, Search Smoke Readiness through `npm run smoke:search`, and timeout-bounded queue diagnostics through `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000` must be verified before recurring email traffic, including recurring alert, digest, or property-inquiry notification sends.
 
 ## Protected Operational APIs
 
@@ -224,9 +226,14 @@ Protected operational APIs:
 - `GET /api/mls-sync`
 - `POST /api/mls-sync`
 - `GET /api/admin/dead-letter`
+- `GET /api/admin/control-state`
+- `PATCH /api/admin/control-state`
 - `GET /api/admin/crm-tasks`
 - `GET /api/admin/crm-tasks/[id]`
 - `PATCH /api/admin/crm-tasks/[id]`
+- `GET /api/admin/intake-signals`
+- `GET /api/admin/intake-signals/[id]`
+- `PATCH /api/admin/intake-signals/[id]`
 - `GET /api/process-alerts`
 - `POST /api/process-alerts`
 
@@ -373,7 +380,7 @@ npm run typesense:init
 npm run build
 ```
 
-Known local warning until repair:
+Stale local collection warning shape if repair is needed again:
 
 ```text
 Neighborhood inventory lookup skipped because the local Typesense listings collection is stale: Typesense schema listings is invalid: ...
@@ -452,7 +459,7 @@ Production rules:
 - Resend domain authentication must be verified before recurring email traffic.
 - Unsubscribe behavior must remain idempotent.
 - Tracked redirects must be constrained to safe destinations.
-- Recurring email traffic, including recurring alert or digest sends, must wait for `npm run supabase:check:json`, healthy `npm run smoke:mls-status` search-index diagnostics, healthy `npm run smoke:search` Search Smoke Readiness, and acceptable timeout-bounded queue diagnostics.
+- Recurring email traffic, including recurring alert, digest, or property-inquiry notification sends, must wait for `PROPERTY_INQUIRY_NOTIFY_TO` or fallback `REIE_INTERNAL_EMAIL`, `PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN` unset or false, `npm run supabase:check:json`, healthy `npm run smoke:mls-status` search-index diagnostics, healthy `npm run smoke:search` Search Smoke Readiness, and acceptable timeout-bounded queue diagnostics.
 
 Commands from **Terminal 5: Scripts / curl testing**:
 
@@ -607,7 +614,7 @@ curl --max-time 8 -s -X POST -w "\nHTTP_STATUS:%{http_code}\n" "http://localhost
 - Do not run seed scripts from API handlers.
 - Admin endpoints require an admin key in production.
 - `/api/track-click` should redirect safely even when tracking fails.
-- Prefer `npm run smoke:mls-status`, `npm run smoke:search`, and `npm run smoke:ops` for local readiness checks; use `curl --max-time 8` for lower-level operational checks.
+- Prefer `npm run smoke:mls-status`, `npm run smoke:search`, and `npm run smoke:ops` for local readiness checks, including notification readiness and aggregate launch readiness; use `curl --max-time 8` for lower-level operational checks.
 - Treat `meta.smoke.ready=false` or non-empty `meta.smoke.blockers` as degraded Search Smoke Readiness before raising MLS volume, recurring email traffic, alert or digest traffic, or scheduler cadence.
 
 ## Scheduler Requirements
@@ -626,7 +633,7 @@ Scheduler rules:
 - Database-backed schedules must not run unless `npm run supabase:check:json` reports readiness.
 - MLS dry-run schedules should prefer structured JSON output.
 - Recurring email traffic jobs must be intentional and observable.
-- Recurring email traffic jobs should remain disabled when search-index health is degraded, `meta.smoke.ready=false`, public search smoke blockers are present, or timeout-bounded queue diagnostics are unacceptable.
+- Recurring email traffic jobs should remain disabled when property-inquiry recipient routing is missing, `PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN=true`, search-index health is degraded, `meta.smoke.ready=false`, public search smoke blockers are present, or timeout-bounded queue diagnostics are unacceptable.
 - Scheduler output should be logged somewhere visible.
 - Failed scheduled jobs should surface through provider logs, queue state, or admin diagnostics.
 - Seed scripts should not be recurring scheduled jobs.
@@ -775,8 +782,8 @@ npm run build
 
 Current build warnings:
 
-- Node emits `[DEP0169]` warnings from `url.parse()` usage during static generation.
-- Local `npm run build` can warn that the Typesense `listings` collection is stale until local Typesense is repaired and reindexed.
+- `npm run build` may emit `[DEP0169]` warnings from `url.parse()` usage during static generation.
+- If local Typesense drifts after schema changes, `npm run build` can warn that the `listings` collection is stale until local Typesense is repaired and reindexed.
 
 Run smoke checks after status, search, retry, or admin operations route changes from **Terminal 5: Scripts / curl testing** while **Terminal 1: Next.js app** is running:
 
@@ -816,13 +823,13 @@ If any curl returns `HTTP_STATUS:000`, start or restart **Terminal 1: Next.js ap
 - Production Typesense provider decision is still open.
 - Production worker host decision is still open.
 - MLS sync scheduling needs a production scheduler.
-- Recurring email traffic, recurring alert or digest scheduling, and CRM scheduling need production workflow decisions.
-- Email domain authentication should be confirmed before recurring alert or digest sends.
-- Production smoke verification still needs `npm run supabase:check:json`, `npm run smoke:mls-status`, `npm run smoke:search`, timeout-bounded queue diagnostics, and one internal tracked email click before recurring scheduler activation or recurring email traffic.
+- Recurring email traffic, recurring alert, digest, or property-inquiry notification scheduling, and CRM scheduling need production workflow decisions.
+- Email domain authentication should be confirmed before recurring alert, digest, or property-inquiry notification sends.
+- June 21 verification is current through the 08:16 MDT local runtime smoke after the 07:31 MDT Supabase refresh, 08:12 MDT fast verification, and 08:14 MDT production build: `npm run check:fast`, `npm run build`, `npm run supabase:check:json`, `npm run smoke:mls-status`, `npm run smoke:search`, and `npm run smoke:ops` passed. Current runtime posture is MLS status `busy` / `watch` with inventory freshness degraded at 100% stale by `lastIntelligenceSync`, search `typesense` healthy with `meta.smoke.ready=true`, `mls-sync`, `mls-page`, and `listings` drained, `reie-alerts` at 273 waiting, saved-search alert readiness `watch` with 197 pending / 0 failed / 0 processing, property-inquiry notification readiness `blocked`, and aggregate launch readiness `blocked`; production still needs one internal tracked email click before recurring scheduler activation or recurring email traffic.
 - Local Typesense `properties` and `listings` collections are schema-ready; reindex should run after `npm run supabase:check:json` reports readiness.
-- Supabase connectivity from local scripts is currently a blocker until `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/supabase-recovery-runbook.md` is completed and `npm run supabase:check:json` reports readiness.
+- `npm run supabase:check:json` currently reports readiness, but it remains a required gate before Supabase-backed dry-runs, reindexing, queue retry, scheduler activation, or live database work.
 - Timeout-bounded queue diagnostics exist through the Terminal 5 dashboard and admin/dead-letter UI, and they gate live-inventory claims, scheduler cadence, recurring scheduler activation, MLS-volume decisions, recurring email traffic, MLS-backed public expansion, and large programmatic content batch publication; broader operational controls are still pending.
-- CRM closure audit controls, note-backed completion/dismissal, CRM API Inspection metadata, and failed detail-route preservation are implemented locally; production admin smoke verification still needs to run after Terminal 1 is running and `npm run supabase:check:json` reports readiness.
+- CRM closure audit controls, note-backed completion/dismissal, CRM API Inspection metadata, and failed detail-route preservation are implemented locally and covered by the refreshed local `npm run smoke:ops`; production workflow still needs live environment confirmation before scheduler or recurring-email activation.
 - Legacy MLS helper cleanup is complete and recorded in `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/legacy-mls-cleanup-plan.md`.
 - Large sync throughput should be load-tested before production-size ingestion.
 - Large programmatic content batch publication should wait for `npm run supabase:check:json`, verified data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics.

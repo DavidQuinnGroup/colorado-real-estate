@@ -324,8 +324,8 @@ function getOperations(status: string) {
   return {
     terminal: 'Terminal 5' as const,
     reviewCommand: reviewCommandByStatus[status] || `npm run run:crm -- --limit ${DEFAULT_LIMIT} --status ${status}`,
-    intakeCommand: 'curl -s http://localhost:3000/api/admin/intake-signals',
-    alertStatusCommand: 'curl -s http://localhost:3000/api/process-alerts',
+    intakeCommand: 'curl --max-time 8 -s "http://localhost:3000/api/admin/intake-signals?limit=6" -H "x-admin-key: $REIE_ADMIN_API_KEY"',
+    alertStatusCommand: 'curl --max-time 8 -s "http://localhost:3000/api/process-alerts?limit=6"',
   };
 }
 
@@ -492,6 +492,71 @@ function getReadiness(summary: CRMTaskSummary, audit: CRMTaskAuditSummary, statu
   };
 }
 
+function getFallbackReadiness(status: string, reason: string): CRMTaskReadiness {
+  return {
+    level: 'blocked',
+    summary: reason,
+    nextAction: 'Resolve this protected CRM task list response before using CRM readiness for scheduler, email, alert, or content automation.',
+    terminal: 'Terminal 5',
+    nextCommand: getOperations(status).reviewCommand,
+    gates: [
+      {
+        label: 'Task Visibility',
+        status: 'fail',
+        detail: 'No CRM task records were exposed in this response.',
+      },
+      {
+        label: 'List Route',
+        status: 'fail',
+        detail: reason,
+      },
+      {
+        label: 'Automation Safety',
+        status: 'fail',
+        detail: 'Automation should not scale from a CRM task list route that did not return authorized task records.',
+      },
+    ],
+  };
+}
+
+function getFilters(limit: number, status: string, type: string) {
+  return {
+    limit,
+    status,
+    effectiveStatuses: getStatusFilter(status),
+    type: type || null,
+  };
+}
+
+function getCRMTaskEnvelope(
+  request: NextRequest,
+  tasks: CRMTask[],
+  audit: CRMTaskAuditSummary,
+  options?: {
+    fallbackReason?: string;
+  },
+) {
+  const limit = parseLimit(request);
+  const status = parseStatus(request);
+  const type = parseType(request);
+  const summary = getSummary(tasks);
+  const readiness = options?.fallbackReason ? getFallbackReadiness(status, options.fallbackReason) : getReadiness(summary, audit, status);
+
+  return {
+    ...getInspectionMetadata(request),
+    tasks,
+    summary,
+    audit,
+    readiness,
+    verdict: options?.fallbackReason || getVerdict(summary, status),
+    filters: getFilters(limit, status, type),
+    operations: getOperations(status),
+    auth: {
+      configured: Boolean(getAdminKey()),
+    },
+  } as const;
+}
+
 async function getAuditSummary(type: string): Promise<CRMTaskAuditSummary> {
   if (type) {
     const rows = await prisma.$queryRaw<CRMTaskAuditRow[]>`
@@ -644,10 +709,9 @@ function unauthorizedResponse(request: NextRequest) {
     {
       success: false,
       error: 'Admin access is required.',
-      ...getInspectionMetadata(request),
-      auth: {
-        configured: Boolean(getAdminKey()),
-      },
+      ...getCRMTaskEnvelope(request, [], normalizeAuditSummary(undefined), {
+        fallbackReason: 'Admin access is required before CRM tasks can be inspected.',
+      }),
     },
     { status: 401 },
   );
@@ -664,28 +728,11 @@ export async function GET(request: NextRequest) {
     const type = parseType(request);
     const rows = await getTaskRows(limit, status, type);
     const tasks = rows.map((row) => normalizeTask(row, status));
-    const summary = getSummary(tasks);
     const audit = await getAuditSummary(type);
-    const readiness = getReadiness(summary, audit, status);
 
     return NextResponse.json({
       success: true,
-      ...getInspectionMetadata(request),
-      tasks,
-      summary,
-      audit,
-      readiness,
-      verdict: getVerdict(summary, status),
-      filters: {
-        limit,
-        status,
-        effectiveStatuses: getStatusFilter(status),
-        type: type || null,
-      },
-      operations: getOperations(status),
-      auth: {
-        configured: Boolean(getAdminKey()),
-      },
+      ...getCRMTaskEnvelope(request, tasks, audit),
     });
   } catch (error) {
     console.error('[REIE CRM TASKS] Read failed:', getErrorMessage(error));
@@ -695,7 +742,9 @@ export async function GET(request: NextRequest) {
         success: false,
         error: 'CRM tasks could not be read.',
         detail: getErrorMessage(error),
-        ...getInspectionMetadata(request),
+        ...getCRMTaskEnvelope(request, [], normalizeAuditSummary(undefined), {
+          fallbackReason: 'CRM tasks could not be read.',
+        }),
       },
       { status: 500 },
     );

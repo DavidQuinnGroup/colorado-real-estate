@@ -7,24 +7,58 @@ const ONE_SHOT_COMMAND_NAMES = new Set(['run:queue-dashboard', 'run:mls-sync', '
 const redisErrorLogState = new Map<string, { count: number; lastMessage: string }>();
 const redisConnections = new Set<Redis>();
 
+type RedisDiagnosticsContext = {
+  argv?: string[];
+  lifecycleEvent?: string;
+  redisRetryMode?: string;
+  redisUrl?: string;
+};
+
+export type RedisConnectionDiagnostics = {
+  connectionName: string;
+  configured: boolean;
+  host: string;
+  port: number;
+  db?: number;
+  usernameConfigured: boolean;
+  passwordConfigured: boolean;
+  tls: boolean;
+  retryMode: 'bounded' | 'continuous';
+  oneShotReconnectAttempts: number;
+  maxReconnectDelayMs: number;
+  sampleRetryDelaysMs: Array<number | null>;
+  options: {
+    enableReadyCheck: false;
+    lazyConnect: true;
+    maxRetriesPerRequest: null;
+  };
+  commands: {
+    queueDashboard: string;
+    dryRunSync: string;
+    startMlsWorker: string;
+    startMlsPageWorker: string;
+    infraUp: string;
+  };
+};
+
 function getRetryDelay(attempt: number) {
   return Math.min(attempt * 500, MAX_RECONNECT_DELAY_MS);
 }
 
-function isOneShotProcess() {
-  const lifecycleEvent = process.env.npm_lifecycle_event || '';
-  const argv = process.argv.join(' ');
+function isOneShotProcess(context: RedisDiagnosticsContext = {}) {
+  const lifecycleEvent = context.lifecycleEvent ?? process.env.npm_lifecycle_event ?? '';
+  const argv = (context.argv ?? process.argv).join(' ');
 
   return (
-    process.env.REIE_REDIS_RETRY_MODE === 'bounded' ||
+    (context.redisRetryMode ?? process.env.REIE_REDIS_RETRY_MODE) === 'bounded' ||
     ONE_SHOT_COMMAND_NAMES.has(lifecycleEvent) ||
     argv.includes('queueDashboard') ||
     argv.includes('mlsSync')
   );
 }
 
-function getRetryStrategy() {
-  if (!isOneShotProcess()) return getRetryDelay;
+function getRetryStrategy(context: RedisDiagnosticsContext = {}) {
+  if (!isOneShotProcess(context)) return getRetryDelay;
 
   return (attempt: number) => {
     if (attempt > ONE_SHOT_RECONNECT_ATTEMPTS) return null;
@@ -54,6 +88,43 @@ function parseRedisUrl(redisUrl: string): RedisOptions {
     password: url.password ? decodeURIComponent(url.password) : undefined,
     db: dbNumber !== undefined && Number.isFinite(dbNumber) ? dbNumber : undefined,
     tls: url.protocol === 'rediss:' ? {} : undefined,
+  };
+}
+
+export function getRedisConnectionDiagnostics(
+  connectionName = 'reie-bullmq',
+  context: RedisDiagnosticsContext = {},
+): RedisConnectionDiagnostics {
+  const redisUrl = context.redisUrl ?? REDIS_URL;
+  const parsed = parseRedisUrl(redisUrl);
+  const retryStrategy = getRetryStrategy(context);
+  const retryMode = isOneShotProcess(context) ? 'bounded' : 'continuous';
+
+  return {
+    connectionName,
+    configured: Boolean(context.redisUrl ?? process.env.REDIS_URL),
+    host: parsed.host ?? '127.0.0.1',
+    port: parsed.port ?? 6379,
+    db: parsed.db,
+    usernameConfigured: Boolean(parsed.username),
+    passwordConfigured: Boolean(parsed.password),
+    tls: Boolean(parsed.tls),
+    retryMode,
+    oneShotReconnectAttempts: ONE_SHOT_RECONNECT_ATTEMPTS,
+    maxReconnectDelayMs: MAX_RECONNECT_DELAY_MS,
+    sampleRetryDelaysMs: [1, 2, 3].map((attempt) => retryStrategy(attempt)),
+    options: {
+      enableReadyCheck: false,
+      lazyConnect: true,
+      maxRetriesPerRequest: null,
+    },
+    commands: {
+      queueDashboard: 'npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000',
+      dryRunSync: 'npm run run:mls-sync:dry',
+      startMlsWorker: 'npm run run:worker:mls',
+      startMlsPageWorker: 'npm run run:worker:mls-page',
+      infraUp: 'npm run infra:up',
+    },
   };
 }
 

@@ -1,4 +1,5 @@
 import 'dotenv/config';
+import { pathToFileURL } from 'node:url';
 import { Worker } from 'bullmq';
 import { fetchMLSGridListings } from '../lib/mls/mlsGridClient.js';
 import { processListingsBatch, } from '../lib/mls/processListingsBatch.js';
@@ -18,6 +19,15 @@ function readNumber(value, fallback, min, max) {
     if (!Number.isFinite(parsed))
         return fallback;
     return Math.min(Math.max(Math.floor(parsed), min), max);
+}
+function isBoundedNumber(value, fallback, min, max) {
+    if (!value)
+        return false;
+    const parsed = Number(value);
+    if (!Number.isFinite(parsed))
+        return true;
+    const floored = Math.floor(parsed);
+    return readNumber(value, fallback, min, max) !== floored;
 }
 function readBoolean(value) {
     if (!value)
@@ -60,16 +70,64 @@ function buildRetryCommand(options = {}) {
 function normalizeJobData(data) {
     return normalizeMlsPageJobData(data);
 }
-function getConfig() {
+function getConfig(env = process.env) {
     return {
-        concurrency: readNumber(process.env.MLS_PAGE_WORKER_CONCURRENCY, 1, 1, 5),
-        lockDurationMs: readNumber(process.env.MLS_PAGE_WORKER_LOCK_DURATION_MS, 10 * 60 * 1000, 60000, 60 * 60 * 1000),
-        maxFailureDetails: readNumber(process.env.MLS_PAGE_WORKER_MAX_FAILURE_DETAILS, 25, 0, 100),
-        maxJobs: readNumber(process.env.MLS_PAGE_WORKER_MAX_JOBS, 1, 1, 100),
-        maxStalledCount: readNumber(process.env.MLS_PAGE_WORKER_MAX_STALLED_COUNT, 1, 0, 5),
-        maxWarningDetails: readNumber(process.env.MLS_PAGE_WORKER_MAX_WARNING_DETAILS, 25, 0, 100),
-        once: readBoolean(process.env.MLS_PAGE_WORKER_ONCE),
-        stalledIntervalMs: readNumber(process.env.MLS_PAGE_WORKER_STALLED_INTERVAL_MS, 60000, 10000, 10 * 60 * 1000),
+        concurrency: readNumber(env.MLS_PAGE_WORKER_CONCURRENCY, 1, 1, 5),
+        lockDurationMs: readNumber(env.MLS_PAGE_WORKER_LOCK_DURATION_MS, 10 * 60 * 1000, 60000, 60 * 60 * 1000),
+        maxFailureDetails: readNumber(env.MLS_PAGE_WORKER_MAX_FAILURE_DETAILS, 25, 0, 100),
+        maxJobs: readNumber(env.MLS_PAGE_WORKER_MAX_JOBS, 1, 1, 100),
+        maxStalledCount: readNumber(env.MLS_PAGE_WORKER_MAX_STALLED_COUNT, 1, 0, 5),
+        maxWarningDetails: readNumber(env.MLS_PAGE_WORKER_MAX_WARNING_DETAILS, 25, 0, 100),
+        once: readBoolean(env.MLS_PAGE_WORKER_ONCE),
+        stalledIntervalMs: readNumber(env.MLS_PAGE_WORKER_STALLED_INTERVAL_MS, 60000, 10000, 10 * 60 * 1000),
+    };
+}
+export function getMlsPageWorkerPlan(env = process.env) {
+    return {
+        queueName: MLS_PAGE_QUEUE_NAME,
+        terminal: TERMINAL_2,
+        recoveryTerminal: TERMINAL_5,
+        config: getConfig(env),
+        commands: {
+            status: buildStatusCommand(),
+            retryStatus: buildRetryStatusCommand(),
+            queueDashboard: buildQueueDashboardCommand(),
+            supabaseCheck: SUPABASE_CHECK_COMMAND,
+            supabaseCheckJson: SUPABASE_CHECK_JSON_COMMAND,
+            deadLetter: buildDeadLetterCommand(),
+            dryRunRetry: buildRetryCommand({ limit: 10 }),
+            liveRetry: buildRetryCommand({ execute: true, limit: 10 }),
+        },
+        databasePreflight: {
+            queue: MLS_PAGE_QUEUE_NAME,
+            worker: 'MLS page worker',
+            recoveryCommand: SUPABASE_CHECK_JSON_COMMAND,
+        },
+        bounded: {
+            concurrency: isBoundedNumber(env.MLS_PAGE_WORKER_CONCURRENCY, 1, 1, 5),
+            lockDurationMs: isBoundedNumber(env.MLS_PAGE_WORKER_LOCK_DURATION_MS, 10 * 60 * 1000, 60000, 60 * 60 * 1000),
+            maxFailureDetails: isBoundedNumber(env.MLS_PAGE_WORKER_MAX_FAILURE_DETAILS, 25, 0, 100),
+            maxJobs: isBoundedNumber(env.MLS_PAGE_WORKER_MAX_JOBS, 1, 1, 100),
+            maxStalledCount: isBoundedNumber(env.MLS_PAGE_WORKER_MAX_STALLED_COUNT, 1, 0, 5),
+            maxWarningDetails: isBoundedNumber(env.MLS_PAGE_WORKER_MAX_WARNING_DETAILS, 25, 0, 100),
+            stalledIntervalMs: isBoundedNumber(env.MLS_PAGE_WORKER_STALLED_INTERVAL_MS, 60000, 10000, 10 * 60 * 1000),
+        },
+        limits: {
+            minConcurrency: 1,
+            maxConcurrency: 5,
+            minLockDurationMs: 60000,
+            maxLockDurationMs: 60 * 60 * 1000,
+            minMaxFailureDetails: 0,
+            maxMaxFailureDetails: 100,
+            minMaxJobs: 1,
+            maxMaxJobs: 100,
+            minMaxStalledCount: 0,
+            maxMaxStalledCount: 5,
+            minMaxWarningDetails: 0,
+            maxMaxWarningDetails: 100,
+            minStalledIntervalMs: 10000,
+            maxStalledIntervalMs: 10 * 60 * 1000,
+        },
     };
 }
 async function processPageJob(job, config) {
@@ -93,6 +151,7 @@ async function processPageJob(job, config) {
         lastSync: data.lastSync,
         durationMs: Date.now() - startedMs,
         fetched: listings.length,
+        plan: summary.plan,
         processed: summary.processed,
         succeeded: summary.succeeded,
         failed: summary.failed,
@@ -100,7 +159,9 @@ async function processPageJob(job, config) {
         indexAttempted: summary.indexAttempted,
         indexSucceeded: summary.indexSucceeded,
         indexFailed: summary.indexFailed,
+        mediaDiagnostics: summary.mediaDiagnostics,
         failures: summary.failures,
+        truncatedFailures: summary.truncatedFailures,
         warningCount: summary.warnings.length,
         warnings,
     };
@@ -172,6 +233,12 @@ function createMlsPageWorker(config) {
             indexAttempted: result.indexAttempted,
             indexSucceeded: result.indexSucceeded,
             indexFailed: result.indexFailed,
+            mediaListings: result.mediaDiagnostics.listingsWithMedia,
+            mediaExtracted: result.mediaDiagnostics.extractedMediaCount,
+            mediaIgnored: result.mediaDiagnostics.ignoredMediaItemCount,
+            mediaDirectArrays: result.mediaDiagnostics.listingsWithDirectMedia,
+            mediaNestedArrays: result.mediaDiagnostics.listingsWithNestedMedia,
+            mediaTopLevelPhotos: result.mediaDiagnostics.listingsWithTopLevelPhotos,
             warningCount: result.warningCount,
             failureDetails: result.failures.length,
             warningDetails: result.warnings.length,
@@ -205,27 +272,24 @@ function createMlsPageWorker(config) {
     return worker;
 }
 async function start() {
-    const config = getConfig();
+    const plan = getMlsPageWorkerPlan();
+    const { config } = plan;
     const startupContext = {
         ...config,
-        terminal: TERMINAL_2,
-        recoveryTerminal: TERMINAL_5,
-        queue: MLS_PAGE_QUEUE_NAME,
-        statusCommand: buildStatusCommand(),
-        retryStatusCommand: buildRetryStatusCommand(),
-        queueDashboardCommand: buildQueueDashboardCommand(),
-        supabaseCheckCommand: SUPABASE_CHECK_COMMAND,
-        supabaseCheckJsonCommand: SUPABASE_CHECK_JSON_COMMAND,
-        deadLetterCommand: buildDeadLetterCommand(),
-        dryRunRetryCommand: buildRetryCommand({ limit: 10 }),
-        liveRetryCommand: buildRetryCommand({ execute: true, limit: 10 }),
+        terminal: plan.terminal,
+        recoveryTerminal: plan.recoveryTerminal,
+        queue: plan.queueName,
+        statusCommand: plan.commands.status,
+        retryStatusCommand: plan.commands.retryStatus,
+        queueDashboardCommand: plan.commands.queueDashboard,
+        supabaseCheckCommand: plan.commands.supabaseCheck,
+        supabaseCheckJsonCommand: plan.commands.supabaseCheckJson,
+        deadLetterCommand: plan.commands.deadLetter,
+        dryRunRetryCommand: plan.commands.dryRunRetry,
+        liveRetryCommand: plan.commands.liveRetry,
     };
     console.log(`REIE MLS page worker starting on queue "${MLS_PAGE_QUEUE_NAME}":`, startupContext);
-    await assertWorkerDatabaseReady({
-        queue: MLS_PAGE_QUEUE_NAME,
-        recoveryCommand: SUPABASE_CHECK_JSON_COMMAND,
-        worker: 'MLS page worker',
-    });
+    await assertWorkerDatabaseReady(plan.databasePreflight);
     const worker = createMlsPageWorker(config);
     let settledJobs = 0;
     let shutdownStarted = false;
@@ -258,8 +322,10 @@ async function start() {
     process.on('SIGTERM', shutdownForSignal);
     console.log(`REIE MLS page worker listening on queue "${MLS_PAGE_QUEUE_NAME}":`, startupContext);
 }
-start().catch((error) => {
-    console.error('REIE MLS page worker failed:', getErrorMessage(error));
-    process.exit(1);
-});
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+    start().catch((error) => {
+        console.error('REIE MLS page worker failed:', getErrorMessage(error));
+        process.exit(1);
+    });
+}
 // /Users/davidquinn/david-quinn-group/colorado-real-estate/workers/mlsPageWorker.ts

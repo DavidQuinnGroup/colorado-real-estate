@@ -1,4 +1,5 @@
-import { indexListing } from '../typesense/indexListing.js';
+import { indexListing, toListingDocument } from '../typesense/indexListing.js';
+import { LISTING_COLLECTION_NAME, PROPERTY_COLLECTION_NAME, SEARCH_SCHEMA_REQUIRED_FIELD_NAMES } from '../typesense/schema.js';
 function errorMessage(error) {
     return error instanceof Error ? error.message : String(error);
 }
@@ -12,11 +13,82 @@ function getSourceId(listing) {
     }
     return 'unknown';
 }
+function getMissingRequiredFields(document) {
+    return SEARCH_SCHEMA_REQUIRED_FIELD_NAMES.filter((fieldName) => {
+        const value = document[fieldName];
+        return value === undefined || value === null || value === '';
+    });
+}
+function getSearchIndexCommands() {
+    return {
+        schemaCheck: 'npm run typesense:collections:check',
+        schemaRepair: 'npm run typesense:init',
+        reindex: 'npm run typesense:reindex',
+        searchSmoke: 'npm run smoke:search',
+    };
+}
+function baseDiagnostics(sourceId) {
+    return {
+        sourceId,
+        requiredFields: [...SEARCH_SCHEMA_REQUIRED_FIELD_NAMES],
+        collections: {
+            properties: PROPERTY_COLLECTION_NAME,
+            listings: LISTING_COLLECTION_NAME,
+        },
+        terminal: 'Terminal 5',
+        module: 'MLS Search Index',
+        commands: getSearchIndexCommands(),
+    };
+}
+export function getSearchIndexDiagnostics(listing) {
+    if (!listing) {
+        return {
+            ...baseDiagnostics('unknown'),
+            canIndex: false,
+            missingRequiredFields: [...SEARCH_SCHEMA_REQUIRED_FIELD_NAMES],
+            error: 'No listing was provided for search index update.',
+        };
+    }
+    const sourceId = getSourceId(listing);
+    try {
+        const document = toListingDocument(listing);
+        const missingRequiredFields = getMissingRequiredFields(document);
+        return {
+            ...baseDiagnostics(sourceId),
+            canIndex: missingRequiredFields.length === 0,
+            documentId: document.id,
+            missingRequiredFields,
+            document: {
+                id: document.id,
+                mlsId: document.mlsId,
+                address: document.address,
+                city: document.city,
+                price: document.price,
+                status: document.status,
+                neighborhood: document.neighborhood,
+                isPrivateExclusive: document.isPrivateExclusive,
+                efficiencyScore: document.efficiencyScore,
+                resilienceScore: document.resilienceScore,
+                hasPolybutyleneRisk: document.hasPolybutyleneRisk,
+            },
+        };
+    }
+    catch (error) {
+        return {
+            ...baseDiagnostics(sourceId),
+            canIndex: false,
+            missingRequiredFields: [],
+            error: errorMessage(error),
+        };
+    }
+}
 export async function updateSearchIndex(listing) {
+    const diagnostics = getSearchIndexDiagnostics(listing);
     if (!listing) {
         return {
             attempted: false,
             indexed: false,
+            diagnostics,
             collections: {
                 properties: false,
                 listings: false,
@@ -32,6 +104,7 @@ export async function updateSearchIndex(listing) {
             indexed: result.indexed,
             documentId: result.documentId,
             sourceId,
+            diagnostics,
             collections: result.collections,
             error: result.error,
         };
@@ -43,6 +116,11 @@ export async function updateSearchIndex(listing) {
             attempted: true,
             indexed: false,
             sourceId,
+            diagnostics: {
+                ...diagnostics,
+                canIndex: false,
+                error: message,
+            },
             collections: {
                 properties: false,
                 listings: false,

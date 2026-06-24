@@ -1,8 +1,39 @@
-import { type MlsListingPayload, type ProcessListingResult, processListing } from "./processListing.js";
+import {
+  type ListingMediaDiagnostics,
+  type MlsListingPayload,
+  type ProcessListingResult,
+  processListing,
+} from "./processListing.js";
 
 export type BatchProcessOptions = {
   maxListings?: number;
   maxFailures?: number;
+};
+
+export type BatchProcessPlan = {
+  inputCount: number;
+  maxListings: number;
+  maxFailures: number;
+  willProcess: number;
+  willSkip: number;
+  terminal: "Terminal 2";
+  module: "MLS Batch Processor";
+  commands: {
+    startWorker: string;
+    oneShotWorker: string;
+    queueDashboard: string;
+    retryStatus: string;
+  };
+  bounded: {
+    maxListings: boolean;
+    maxFailures: boolean;
+  };
+  limits: {
+    minMaxListings: number;
+    maxMaxListings: number;
+    minMaxFailures: number;
+    maxMaxFailures: number;
+  };
 };
 
 export type BatchListingFailure = {
@@ -16,10 +47,27 @@ export type BatchListingWarning = {
   warnings: string[];
 };
 
+export type BatchMediaDiagnostics = {
+  listingCount: number;
+  listingsWithMedia: number;
+  listingsWithDirectMedia: number;
+  listingsWithNestedMedia: number;
+  listingsWithTopLevelPhotos: number;
+  extractedMediaCount: number;
+  ignoredMediaItemCount: number;
+  directMediaArrayFieldCounts: Record<string, number>;
+  nestedMediaArrayFieldCounts: Record<string, number>;
+  topLevelPhotoFieldCounts: Record<string, number>;
+  terminal: "Terminal 5";
+  module: "MLS Batch Media";
+  nextCommand: "npm run smoke:ops";
+};
+
 export type BatchProcessSummary = {
   durationMs: number;
   failed: number;
   failures: BatchListingFailure[];
+  plan: BatchProcessPlan;
   indexAttempted: number;
   indexFailed: number;
   indexSucceeded: number;
@@ -28,21 +76,57 @@ export type BatchProcessSummary = {
   skipped: number;
   startedAt: string;
   succeeded: number;
+  mediaDiagnostics: BatchMediaDiagnostics;
+  truncatedFailures: number;
   warnings: BatchListingWarning[];
 };
 
 const defaultMaxListings = 100;
 const defaultMaxFailures = 25;
 const maxFailureRecords = 100;
+const minMaxListings = 1;
+const minMaxFailures = 0;
 
 function getSafeMaxListings(value: number | undefined) {
   if (value === undefined || !Number.isFinite(value)) return defaultMaxListings;
-  return Math.max(1, Math.min(Math.floor(value), defaultMaxListings));
+  return Math.max(minMaxListings, Math.min(Math.floor(value), defaultMaxListings));
 }
 
 function getSafeMaxFailures(value: number | undefined) {
   if (value === undefined || !Number.isFinite(value)) return defaultMaxFailures;
-  return Math.max(0, Math.min(Math.floor(value), maxFailureRecords));
+  return Math.max(minMaxFailures, Math.min(Math.floor(value), maxFailureRecords));
+}
+
+export function getBatchProcessPlan(inputCount: number, options: BatchProcessOptions = {}): BatchProcessPlan {
+  const safeInputCount = Number.isFinite(inputCount) ? Math.max(0, Math.floor(inputCount)) : 0;
+  const maxListings = getSafeMaxListings(options.maxListings);
+  const maxFailures = getSafeMaxFailures(options.maxFailures);
+
+  return {
+    inputCount: safeInputCount,
+    maxListings,
+    maxFailures,
+    willProcess: Math.min(safeInputCount, maxListings),
+    willSkip: Math.max(0, safeInputCount - maxListings),
+    terminal: "Terminal 2",
+    module: "MLS Batch Processor",
+    commands: {
+      startWorker: "npm run run:worker:mls-page",
+      oneShotWorker: "npm run run:worker:mls-page:once",
+      queueDashboard: "npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000",
+      retryStatus: 'curl --max-time 8 -s -w "\\nHTTP_STATUS:%{http_code}\\n" "http://localhost:3000/api/mls/retry?queue=mls-page&limit=6"',
+    },
+    bounded: {
+      maxListings: options.maxListings !== undefined && maxListings !== options.maxListings,
+      maxFailures: options.maxFailures !== undefined && maxFailures !== options.maxFailures,
+    },
+    limits: {
+      minMaxListings,
+      maxMaxListings: defaultMaxListings,
+      minMaxFailures,
+      maxMaxFailures: maxFailureRecords,
+    },
+  };
 }
 
 function getListingValue(listing: MlsListingPayload, fields: readonly string[]) {
@@ -76,7 +160,11 @@ function getErrorMessage(error: unknown) {
 }
 
 function pushFailure(summary: BatchProcessSummary, failure: BatchListingFailure, maxFailures: number) {
-  if (summary.failures.length >= maxFailures) return;
+  if (summary.failures.length >= maxFailures) {
+    summary.truncatedFailures += 1;
+    return;
+  }
+
   summary.failures.push(failure);
 }
 
@@ -101,14 +189,70 @@ function applySearchIndexResult(summary: BatchProcessSummary, result: ProcessLis
   }
 }
 
+function incrementCounter(counts: Record<string, number>, value: string) {
+  counts[value] = (counts[value] || 0) + 1;
+}
+
+function createEmptyBatchMediaDiagnostics(): BatchMediaDiagnostics {
+  return {
+    listingCount: 0,
+    listingsWithMedia: 0,
+    listingsWithDirectMedia: 0,
+    listingsWithNestedMedia: 0,
+    listingsWithTopLevelPhotos: 0,
+    extractedMediaCount: 0,
+    ignoredMediaItemCount: 0,
+    directMediaArrayFieldCounts: {},
+    nestedMediaArrayFieldCounts: {},
+    topLevelPhotoFieldCounts: {},
+    terminal: "Terminal 5",
+    module: "MLS Batch Media",
+    nextCommand: "npm run smoke:ops",
+  };
+}
+
+function applyListingMediaDiagnostics(summary: BatchMediaDiagnostics, diagnostics: ListingMediaDiagnostics) {
+  summary.listingCount += 1;
+  summary.extractedMediaCount += diagnostics.extractedCount;
+  summary.ignoredMediaItemCount += diagnostics.ignoredMediaItemCount;
+
+  if (diagnostics.hasMediaPayload) summary.listingsWithMedia += 1;
+  if (diagnostics.directMediaArrayFields.length > 0) summary.listingsWithDirectMedia += 1;
+  if (diagnostics.hasNestedMediaPayload) summary.listingsWithNestedMedia += 1;
+  if (diagnostics.hasTopLevelPhotoPayload) summary.listingsWithTopLevelPhotos += 1;
+
+  for (const field of diagnostics.directMediaArrayFields) {
+    incrementCounter(summary.directMediaArrayFieldCounts, field);
+  }
+
+  for (const field of diagnostics.nestedMediaArrayFields) {
+    incrementCounter(summary.nestedMediaArrayFieldCounts, field);
+  }
+
+  for (const field of diagnostics.topLevelPhotoFields) {
+    incrementCounter(summary.topLevelPhotoFieldCounts, field);
+  }
+}
+
+export function summarizeBatchMediaDiagnostics(diagnostics: ListingMediaDiagnostics[]): BatchMediaDiagnostics {
+  const summary = createEmptyBatchMediaDiagnostics();
+
+  for (const item of diagnostics) {
+    applyListingMediaDiagnostics(summary, item);
+  }
+
+  return summary;
+}
+
 export async function processListingsBatch(
   listings: MlsListingPayload[],
   options: BatchProcessOptions = {}
 ): Promise<BatchProcessSummary> {
   const startedAt = new Date().toISOString();
   const startedMs = Date.now();
-  const maxListings = getSafeMaxListings(options.maxListings);
-  const maxFailures = getSafeMaxFailures(options.maxFailures);
+  const plan = getBatchProcessPlan(listings.length, options);
+  const maxListings = plan.maxListings;
+  const maxFailures = plan.maxFailures;
   const boundedListings = listings.slice(0, maxListings);
 
   const summary: BatchProcessSummary = {
@@ -120,9 +264,12 @@ export async function processListingsBatch(
     succeeded: 0,
     failed: 0,
     failures: [],
+    plan,
     indexAttempted: 0,
     indexFailed: 0,
     indexSucceeded: 0,
+    mediaDiagnostics: createEmptyBatchMediaDiagnostics(),
+    truncatedFailures: 0,
     warnings: [],
   };
 
@@ -137,6 +284,7 @@ export async function processListingsBatch(
       if (result) {
         summary.succeeded += 1;
         applySearchIndexResult(summary, result);
+        applyListingMediaDiagnostics(summary.mediaDiagnostics, result.mediaDiagnostics);
         pushWarnings(summary, result);
       } else {
         summary.failed += 1;

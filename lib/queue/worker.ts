@@ -1,6 +1,7 @@
 import { Job, Worker } from 'bullmq';
 
-import { processListing, type MlsListingPayload } from '../mls/processListing.js';
+import { processListing, type MlsListingPayload, type ProcessListingResult } from '../mls/processListing.js';
+import type { ProcessPhotosDiagnostics } from '../mls/processPhotos.js';
 import { enqueueDeadLetterFromJob } from './deadLetterQueue.js';
 import { getRedisConnection } from './redis.js';
 
@@ -10,11 +11,31 @@ export type ListingJobResult = {
   propertyId?: string;
   mlsId?: string;
   photoCount?: number;
+  photoDiagnostics?: ProcessPhotosDiagnostics;
+  mediaDiagnostics?: Pick<
+    ProcessListingResult['mediaDiagnostics'],
+    | 'extractedCount'
+    | 'directMediaArrayFields'
+    | 'nestedMediaArrayFields'
+    | 'topLevelPhotoFields'
+    | 'ignoredMediaItemCount'
+    | 'hasMediaPayload'
+    | 'hasNestedMediaPayload'
+    | 'hasTopLevelPhotoPayload'
+  >;
   skippedPhotoCount?: number;
   queuedAlerts?: number;
   searchIndexAttempted?: boolean;
+  searchIndexDiagnostics?: Pick<
+    ProcessListingResult['searchIndex']['diagnostics'],
+    'canIndex' | 'documentId' | 'terminal' | 'module' | 'missingRequiredFields'
+  >;
   searchIndexError?: string;
   searchIndexIndexed?: boolean;
+  upsertDiagnostics?: Pick<
+    ProcessListingResult['upsertDiagnostics'],
+    'canUpsert' | 'coordinatesSource' | 'usedExistingCoordinates' | 'swappedCoordinates' | 'hasUsableCoordinates'
+  >;
   warningCount?: number;
 };
 
@@ -57,11 +78,36 @@ function toJobResult(result: Awaited<ReturnType<typeof processListing>>): Listin
     propertyId: result.property.id,
     mlsId: result.property.mlsId ?? undefined,
     photoCount: result.photos?.inserted ?? undefined,
+    photoDiagnostics: result.photos?.diagnostics,
+    mediaDiagnostics: {
+      extractedCount: result.mediaDiagnostics.extractedCount,
+      directMediaArrayFields: result.mediaDiagnostics.directMediaArrayFields,
+      nestedMediaArrayFields: result.mediaDiagnostics.nestedMediaArrayFields,
+      topLevelPhotoFields: result.mediaDiagnostics.topLevelPhotoFields,
+      ignoredMediaItemCount: result.mediaDiagnostics.ignoredMediaItemCount,
+      hasMediaPayload: result.mediaDiagnostics.hasMediaPayload,
+      hasNestedMediaPayload: result.mediaDiagnostics.hasNestedMediaPayload,
+      hasTopLevelPhotoPayload: result.mediaDiagnostics.hasTopLevelPhotoPayload,
+    },
     skippedPhotoCount: result.photos?.skipped ?? undefined,
     queuedAlerts: result.alerts?.queuedAlerts ?? undefined,
     searchIndexAttempted: result.searchIndex.attempted,
+    searchIndexDiagnostics: {
+      canIndex: result.searchIndex.diagnostics.canIndex,
+      documentId: result.searchIndex.diagnostics.documentId,
+      terminal: result.searchIndex.diagnostics.terminal,
+      module: result.searchIndex.diagnostics.module,
+      missingRequiredFields: result.searchIndex.diagnostics.missingRequiredFields,
+    },
     searchIndexIndexed: result.searchIndex.indexed,
     searchIndexError: result.searchIndex.error,
+    upsertDiagnostics: {
+      canUpsert: result.upsertDiagnostics.canUpsert,
+      coordinatesSource: result.upsertDiagnostics.coordinatesSource,
+      usedExistingCoordinates: result.upsertDiagnostics.usedExistingCoordinates,
+      swappedCoordinates: result.upsertDiagnostics.swappedCoordinates,
+      hasUsableCoordinates: result.upsertDiagnostics.hasUsableCoordinates,
+    },
     warningCount: result.warnings.length,
   };
 }

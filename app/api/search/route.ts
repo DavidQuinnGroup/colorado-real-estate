@@ -57,6 +57,18 @@ type SearchResponse = {
   found: number;
   accessLevel: AccessLevel;
   source: SearchSource;
+  generatedAt: string;
+  terminal: 'Terminal 5';
+  route: '/api/search';
+  command: string;
+  module: 'REIE Public Search';
+  health: SearchHealth;
+  boundsApplied: boolean;
+  filtersApplied: string[];
+  durationMs: number;
+  returned: number;
+  mapped: number;
+  coordinateFiltered: number;
   meta: SearchResponseMeta;
   fallbackReason?: string;
   error?: string;
@@ -139,6 +151,10 @@ type PropertyWithPhotos = Prisma.PropertyGetPayload<{
 const MAX_LIMIT = 250;
 const DEFAULT_LIMIT = 250;
 const MAX_OFFSET = 10_000;
+const LOCAL_BASE_URL = 'http://localhost:3000';
+const ROUTE = '/api/search';
+const TERMINAL = 'Terminal 5';
+const MODULE = 'REIE Public Search';
 
 const PROPERTY_SELECT = {
   id: true,
@@ -441,6 +457,46 @@ function getErrorMessage(error: unknown) {
   return 'Unknown search error';
 }
 
+function getInspectionCommand(request: NextRequest) {
+  const search = request.nextUrl.search || '';
+  return `curl --max-time 8 -s "${LOCAL_BASE_URL}${ROUTE}${search}"`;
+}
+
+function buildSearchResponse(
+  request: NextRequest,
+  response: Omit<
+    SearchResponse,
+    | 'generatedAt'
+    | 'terminal'
+    | 'route'
+    | 'command'
+    | 'module'
+    | 'health'
+    | 'boundsApplied'
+    | 'filtersApplied'
+    | 'durationMs'
+    | 'returned'
+    | 'mapped'
+    | 'coordinateFiltered'
+  >,
+): SearchResponse {
+  return {
+    ...response,
+    generatedAt: new Date().toISOString(),
+    terminal: TERMINAL,
+    route: ROUTE,
+    command: getInspectionCommand(request),
+    module: MODULE,
+    health: response.meta.health,
+    boundsApplied: response.meta.boundsApplied,
+    filtersApplied: response.meta.filtersApplied,
+    durationMs: response.meta.durationMs,
+    returned: response.meta.returned,
+    mapped: response.meta.mapped,
+    coordinateFiltered: response.meta.coordinateFiltered,
+  };
+}
+
 function mapProperty(property: PropertyWithPhotos): SearchResult {
   const firstPhoto = property.photos[0]?.url || null;
 
@@ -691,35 +747,39 @@ export async function GET(request: NextRequest) {
   try {
     const typesenseResult = await searchTypesense(params, accessLevel);
 
-    return jsonResponse({
-      results: typesenseResult.results,
-      found: typesenseResult.found,
-      accessLevel,
-      source: 'typesense',
-      meta: buildResponseMeta(
-        params,
-        'typesense',
+    return jsonResponse(
+      buildSearchResponse(request, {
+        results: typesenseResult.results,
+        found: typesenseResult.found,
         accessLevel,
-        typesenseResult.rawReturned,
-        typesenseResult.results.length,
-        Date.now() - startedMs,
-        typesenseResult.filterBy,
-      ),
-    });
+        source: 'typesense',
+        meta: buildResponseMeta(
+          params,
+          'typesense',
+          accessLevel,
+          typesenseResult.rawReturned,
+          typesenseResult.results.length,
+          Date.now() - startedMs,
+          typesenseResult.filterBy,
+        ),
+      }),
+    );
   } catch (typesenseError) {
     const fallbackReason = getErrorMessage(typesenseError);
 
     try {
       const databaseResult = await searchDatabase(params, accessLevel);
 
-      return jsonResponse({
-        results: databaseResult.results,
-        found: databaseResult.found,
-        accessLevel,
-        source: 'database',
-        meta: buildResponseMeta(params, 'database', accessLevel, databaseResult.rawReturned, databaseResult.results.length, Date.now() - startedMs),
-        fallbackReason,
-      });
+      return jsonResponse(
+        buildSearchResponse(request, {
+          results: databaseResult.results,
+          found: databaseResult.found,
+          accessLevel,
+          source: 'database',
+          meta: buildResponseMeta(params, 'database', accessLevel, databaseResult.rawReturned, databaseResult.results.length, Date.now() - startedMs),
+          fallbackReason,
+        }),
+      );
     } catch (databaseError) {
       console.error('REIE search failed:', {
         typesense: fallbackReason,
@@ -727,7 +787,7 @@ export async function GET(request: NextRequest) {
       });
 
       return jsonResponse(
-        {
+        buildSearchResponse(request, {
           results: [],
           found: 0,
           accessLevel,
@@ -735,7 +795,7 @@ export async function GET(request: NextRequest) {
           meta: buildResponseMeta(params, 'database', accessLevel, 0, 0, Date.now() - startedMs),
           fallbackReason,
           error: 'Inventory search is temporarily unavailable.',
-        },
+        }),
         500,
       );
     }

@@ -61,6 +61,9 @@ Tool pages:
 CRM-informed content planning:
 
 - Should use engagement and saved-search signals only as directional planning inputs, not as public claims about the market.
+- Should confirm Master Control Panel policy through `/api/admin/control-state` before using engagement signals to accelerate publication, MLS-backed public expansion, or large programmatic content batch publication.
+- Should review recent intake signal context through `/api/admin/intake-signals` before treating saved-search activity as a content-prioritization signal.
+- Should treat `/api/admin/intake-signals/[id]` promotion behavior as a human-reviewed CRM handoff path, not an automated public content trigger.
 - Should rely on protected CRM reporting through `/api/admin/crm-tasks`, `/api/admin/crm-tasks/[id]`, and `/admin` when reviewing engagement handoff quality.
 - Should treat CRM API Inspection metadata as an operational trust signal: `/api/admin/crm-tasks` reports `inspectionSource: "List Route"` and `/api/admin/crm-tasks/[id]` reports `inspectionSource: "Detail Route"` on success and error responses.
 - Should confirm `/admin` preserves failed detail-route inspection metadata, returns to `List Route` metadata after active-list refresh, and keeps closure audit coverage visible before using CRM engagement as a planning input.
@@ -99,9 +102,10 @@ Schema should reinforce:
 - Supabase/Postgres remains the source of truth for inventory and content-linked property data.
 - Typesense is a rebuildable search index, not the content source of truth.
 - MLS-backed inventory can support authority pages, live-inventory claims, and large programmatic content batch publication only when `npm run supabase:check:json` reports readiness and search-index health, Search Smoke Readiness, canonical structure, metadata, indexing behavior, and timeout-bounded queue diagnostics are acceptable.
-- CRM engagement signals can inform content prioritization only after CRM readiness, closure audit coverage, note-backed completion and dismissal, failed detail-route inspection preservation, and API Inspection metadata are visible through the protected admin workflow.
+- Recurring email traffic, including recurring alert, digest, or property-inquiry notification sends tied to content or saved-search engagement, must wait for `PROPERTY_INQUIRY_NOTIFY_TO` or fallback `REIE_INTERNAL_EMAIL`, `PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN` unset or false, approved saved-search sender/reply-to posture, search-index health, Search Smoke Readiness, and acceptable timeout-bounded queue diagnostics.
+- CRM engagement signals can inform content prioritization only after Master Control Panel policy, intake signal visibility, CRM readiness, closure audit coverage, note-backed completion and dismissal, failed detail-route inspection preservation, and API Inspection metadata are visible through the protected admin workflow.
 - Seed data is acceptable for local setup and visual QA, but it must not be used as production authority evidence.
-- If `npm run supabase:check:json` reports blocked, or Typesense, Search Smoke Readiness, indexing behavior, or timeout-bounded queue diagnostics are degraded, authority pages should avoid presenting unstable inventory claims as current market fact.
+- If `npm run supabase:check:json` reports blocked, Master Control Panel policy is paused/protected beyond the intended launch posture, property-inquiry recipient routing is missing, `PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN=true`, or Typesense, Search Smoke Readiness, indexing behavior, or timeout-bounded queue diagnostics are degraded, authority pages should avoid presenting unstable inventory claims as current market fact and content-triggered recurring email traffic should remain disabled.
 
 ## Production Gates
 
@@ -114,9 +118,13 @@ Before expanding public authority content at scale through large programmatic co
 5. Confirm `npm run supabase:check:json` reports readiness before relying on Supabase-backed inventory, CRM engagement signals, or live database-backed content claims.
 6. Confirm `npm run smoke:search` reports `meta.smoke.ready=true` with no blockers when the page depends on live search/listing data.
 7. Confirm `npm run supabase:check:json` reports readiness and `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000` reports acceptable queue diagnostics before ingestion-volume increases, MLS-volume increases, scheduler cadence increases, recurring scheduler activation, recurring email traffic, live-inventory claims, MLS-backed public expansion, large programmatic content batch publication, or engagement signals are used for public planning.
-8. Confirm CRM-informed content planning is backed by visible CRM readiness, closure audit coverage, note-backed CRM review state, and API Inspection metadata when engagement signals are used.
-9. Confirm the content does not rely on local seed data as production evidence.
-10. Confirm large programmatic content batch publication has passed `npm run supabase:check:json`, verified data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, and timeout-bounded queue diagnostics before publication.
+8. Confirm `npm run smoke:ops` verifies `/api/admin/control-state`, `/api/admin/intake-signals?limit=6`, alert status, consolidated notification readiness, direct saved-search alert notification readiness, direct property-inquiry notification readiness, and aggregate launch readiness while Terminal 1 is running before engagement signals are used for public planning.
+9. Confirm `PROPERTY_INQUIRY_NOTIFY_TO` or fallback `REIE_INTERNAL_EMAIL` is configured and `PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN` is unset or false before live property-inquiry notification delivery, recurring alert sends, recurring digest sends, or recurring email traffic tied to content planning.
+10. Confirm `/api/admin/control-state` returns a policy that matches the intended publication posture before content expansion, MLS-backed public expansion, or large programmatic content batch publication.
+11. Confirm `/api/admin/intake-signals` shows whether saved-search interaction signals are already promoted before using intake volume to prioritize content.
+12. Confirm CRM-informed content planning is backed by visible CRM readiness, closure audit coverage, note-backed CRM review state, and API Inspection metadata when engagement signals are used.
+13. Confirm the content does not rely on local seed data as production evidence.
+14. Confirm large programmatic content batch publication has passed `npm run supabase:check:json`, verified data, metadata, canonical structure, indexing behavior, Search Smoke Readiness, Master Control Panel policy, intake signal visibility, and timeout-bounded queue diagnostics before publication.
 
 ## Verification
 
@@ -133,6 +141,7 @@ npm run worker:build
 npm run supabase:check:json
 npm run typecheck
 npm run lint
+npm run smoke:ops
 npm run smoke:search
 npm run smoke:mls-status
 npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000
@@ -140,21 +149,28 @@ npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000
 
 If `npm run supabase:check:json` reports blocked, stop before Supabase-backed content expansion, CRM-informed content planning, live-inventory claims, MLS-backed public expansion, or large programmatic content batch publication.
 
-Run `npm run smoke:search` and `npm run smoke:mls-status` while **Terminal 1: Next.js app** is running.
+Run `npm run smoke:ops`, `npm run smoke:search`, and `npm run smoke:mls-status` while **Terminal 1: Next.js app** is running.
 
-Run protected CRM readiness checks from **Terminal 5: Scripts / curl testing** while **Terminal 1: Next.js app** is running before using engagement signals for public content planning:
+Run protected admin readiness checks from **Terminal 5: Scripts / curl testing** while **Terminal 1: Next.js app** is running before using engagement signals for public content planning:
 
 ```bash
+curl --max-time 8 -s -w "\nHTTP_STATUS:%{http_code}\n" "http://localhost:3000/api/admin/control-state" -H "x-admin-key: $REIE_ADMIN_API_KEY"
 curl --max-time 8 -s -w "\nHTTP_STATUS:%{http_code}\n" "http://localhost:3000/api/admin/crm-tasks?status=active&limit=6" -H "x-admin-key: $REIE_ADMIN_API_KEY"
 curl --max-time 8 -s -w "\nHTTP_STATUS:%{http_code}\n" "http://localhost:3000/api/admin/crm-tasks?status=all&limit=20" -H "x-admin-key: $REIE_ADMIN_API_KEY"
 curl --max-time 8 -s -w "\nHTTP_STATUS:%{http_code}\n" "http://localhost:3000/api/admin/crm-tasks/<task-id-from-list-response>" -H "x-admin-key: $REIE_ADMIN_API_KEY"
+curl --max-time 8 -s -w "\nHTTP_STATUS:%{http_code}\n" "http://localhost:3000/api/admin/intake-signals?limit=6" -H "x-admin-key: $REIE_ADMIN_API_KEY"
+curl --max-time 8 -s -w "\nHTTP_STATUS:%{http_code}\n" "http://localhost:3000/api/admin/intake-signals/<signal-id-from-list-response>?kind=crm_task" -H "x-admin-key: $REIE_ADMIN_API_KEY"
 ```
+
+Master Control Panel API responses should include `success`, `state`, `policy`, `source`, and `auth`. Intake signal responses should include `success`, `signals` or `signal`, `summary` for list responses, and `auth`.
 
 ## Current Known Gaps
 
 - Content expansion needs a prioritized city, neighborhood, article, guide, and tool roadmap.
-- CRM engagement signals need a formal content-prioritization report after protected CRM readiness and API Inspection metadata pass production smoke checks.
+- June 21 verification is current through the 08:16 MDT local runtime smoke after the 07:31 MDT Supabase refresh, 08:12 MDT fast verification, and 08:14 MDT production build: MLS status remains `busy` / `watch`, inventory freshness is degraded at 100% stale by `lastIntelligenceSync`, search `typesense` is healthy with `meta.smoke.ready=true`, `mls-sync`, `mls-page`, and `listings` are drained, `reie-alerts` has 273 waiting jobs, saved-search alert readiness is `watch` with 197 pending / 0 failed / 0 processing, property-inquiry notification readiness is `blocked`, and aggregate launch readiness is `blocked`.
+- Content-triggered recurring email traffic remains blocked until `PROPERTY_INQUIRY_NOTIFY_TO` or fallback `REIE_INTERNAL_EMAIL` is configured and `PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN` is unset or false.
+- CRM engagement and intake signals need a formal content-prioritization report after protected Master Control Panel policy, intake signal visibility, CRM readiness, and API Inspection metadata pass production smoke checks.
 - Property intelligence should be connected more visibly to market and neighborhood content.
-- Production content and large programmatic content batch publication should wait for `npm run supabase:check:json`, stable live inventory, search-index health, Search Smoke Readiness, canonical structure, metadata, indexing behavior, and timeout-bounded queue diagnostics when inventory claims are central to the page.
+- Production content and large programmatic content batch publication should wait for `npm run supabase:check:json`, stable live inventory, search-index health, Search Smoke Readiness, Master Control Panel policy, intake signal visibility, canonical structure, metadata, indexing behavior, and timeout-bounded queue diagnostics when inventory claims are central to the page.
 
 <!-- /Users/davidquinn/david-quinn-group/colorado-real-estate/docs/content-architecture.md -->

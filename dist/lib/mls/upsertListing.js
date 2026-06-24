@@ -115,27 +115,39 @@ function getRawCoordinates(listing) {
     const lng = toNumber(firstValue(field(listing, 'Longitude'), field(listing, 'lng'), field(listing, 'longitude'), nestedField(listing, 'PropertyLocation', 'Longitude'), nestedField(listing, 'Coordinates', 'Longitude'), nestedField(listing, 'Coordinates', 'lng')));
     return { lat, lng };
 }
-function getCoordinates(listing, existing) {
+function getCoordinateDiagnostics(listing, existing) {
     const raw = getRawCoordinates(listing);
     if (isUsableCoordinate(raw.lat, raw.lng)) {
         return {
-            lat: Number(raw.lat),
-            lng: Number(raw.lng),
+            coordinates: {
+                lat: Number(raw.lat),
+                lng: Number(raw.lng),
+            },
+            source: 'listing',
         };
     }
     if (isUsableCoordinate(raw.lng, raw.lat)) {
         return {
-            lat: Number(raw.lng),
-            lng: Number(raw.lat),
+            coordinates: {
+                lat: Number(raw.lng),
+                lng: Number(raw.lat),
+            },
+            source: 'swapped',
         };
     }
     if (existing && isUsableCoordinate(existing.lat, existing.lng)) {
         return {
-            lat: existing.lat,
-            lng: existing.lng,
+            coordinates: {
+                lat: existing.lat,
+                lng: existing.lng,
+            },
+            source: 'existing',
         };
     }
-    return null;
+    return {
+        coordinates: null,
+        source: 'missing',
+    };
 }
 function getListingAgent(listing) {
     const fullName = firstValue(field(listing, 'ListAgentFullName'), field(listing, 'ListingAgentName'), field(listing, 'AgentName'));
@@ -270,38 +282,70 @@ function normalizeStatus(listing) {
     return toCleanString(firstValue(field(listing, 'StandardStatus'), field(listing, 'MlsStatus'), field(listing, 'Status')), DEFAULT_STATUS);
 }
 function buildPropertyData(listing, existing, syncedAt) {
+    return buildPropertyRecordWithDiagnostics(listing, existing, syncedAt).propertyData;
+}
+export function buildPropertyRecordWithDiagnostics(listing, existing = null, syncedAt = new Date()) {
     const mlsId = getMlsId(listing);
-    if (!mlsId || mlsId === 'undefined') {
-        console.error('MLS listing missing unique MLS ID.');
-        return null;
-    }
     const address = getAddress(listing);
     const city = normalizeCity(firstValue(field(listing, 'City'), field(listing, 'city')));
     const state = normalizeState(firstValue(field(listing, 'StateOrProvince'), field(listing, 'State'), field(listing, 'state')));
     const zip = normalizeZip(firstValue(field(listing, 'PostalCode'), field(listing, 'Zip'), field(listing, 'zip')));
-    const coordinates = getCoordinates(listing, existing);
-    if (!coordinates) {
-        console.warn(`MLS listing ${mlsId} skipped because it has no usable coordinates.`);
-        return null;
-    }
     const description = getDescription(listing);
     const yearBuilt = toInteger(firstValue(field(listing, 'YearBuilt'), field(listing, 'EffectiveYearBuilt')));
     const intelligence = buildForensics(listing, description, yearBuilt);
-    return {
-        mlsId,
-        slug: existing?.slug || buildSlug(address, city, state, mlsId),
+    const coordinateDiagnostics = getCoordinateDiagnostics(listing, existing);
+    const coordinates = coordinateDiagnostics.coordinates;
+    const slug = mlsId && mlsId !== 'undefined' ? existing?.slug || buildSlug(address, city, state, mlsId) : null;
+    const price = toInteger(firstValue(field(listing, 'ListPrice'), field(listing, 'CurrentPrice'), field(listing, 'price'))) ?? 0;
+    const beds = toNumber(firstValue(field(listing, 'BedroomsTotal'), field(listing, 'BedsTotal'), field(listing, 'beds'))) ?? 0;
+    const baths = getBathCount(listing);
+    const sqft = toInteger(firstValue(field(listing, 'LivingArea'), field(listing, 'BuildingAreaTotal'), field(listing, 'AboveGradeFinishedArea')));
+    const propertyType = toCleanString(firstValue(field(listing, 'PropertyType'), field(listing, 'PropertySubType')), DEFAULT_PROPERTY_TYPE);
+    const status = normalizeStatus(listing);
+    const skipReason = !mlsId || mlsId === 'undefined' ? 'missing_mls_id' : !coordinates ? 'missing_coordinates' : undefined;
+    const diagnostics = {
+        canUpsert: !skipReason,
+        ...(skipReason ? { skipReason } : {}),
+        mlsId: mlsId && mlsId !== 'undefined' ? mlsId : null,
         address,
         city,
         state,
         zip,
-        price: toInteger(firstValue(field(listing, 'ListPrice'), field(listing, 'CurrentPrice'), field(listing, 'price'))) ?? 0,
-        beds: toNumber(firstValue(field(listing, 'BedroomsTotal'), field(listing, 'BedsTotal'), field(listing, 'beds'))) ?? 0,
-        baths: getBathCount(listing),
-        sqft: toInteger(firstValue(field(listing, 'LivingArea'), field(listing, 'BuildingAreaTotal'), field(listing, 'AboveGradeFinishedArea'))),
+        slug,
+        status,
+        coordinatesSource: coordinateDiagnostics.source,
+        usedExistingCoordinates: coordinateDiagnostics.source === 'existing',
+        swappedCoordinates: coordinateDiagnostics.source === 'swapped',
+        hasUsableCoordinates: Boolean(coordinates),
+        price,
+        beds,
+        baths,
+        sqft,
+        yearBuilt,
+        propertyType,
+        intelligence,
+    };
+    if (!diagnostics.canUpsert || !coordinates || !mlsId || !slug) {
+        return {
+            diagnostics,
+            propertyData: null,
+        };
+    }
+    const propertyData = {
+        mlsId,
+        slug,
+        address,
+        city,
+        state,
+        zip,
+        price,
+        beds,
+        baths,
+        sqft,
         lotSize: getLotSizeAcres(listing),
         yearBuilt,
-        propertyType: toCleanString(firstValue(field(listing, 'PropertyType'), field(listing, 'PropertySubType')), DEFAULT_PROPERTY_TYPE),
-        status: normalizeStatus(listing),
+        propertyType,
+        status,
         lat: coordinates.lat,
         lng: coordinates.lng,
         neighborhood: toCleanString(firstValue(field(listing, 'Neighborhood'), field(listing, 'MLSAreaMajor'), field(listing, 'Area')), '') || null,
@@ -317,6 +361,10 @@ function buildPropertyData(listing, existing, syncedAt) {
         soilType: intelligence.soilType,
         hasPolybutyleneRisk: intelligence.hasPolybutyleneRisk,
         lastIntelligenceSync: syncedAt,
+    };
+    return {
+        diagnostics,
+        propertyData,
     };
 }
 async function getExistingProperty(mlsId) {
@@ -335,6 +383,9 @@ async function getExistingProperty(mlsId) {
 export function buildPropertyRecord(listing, existing = null) {
     return buildPropertyData(listing, existing, new Date());
 }
+export function getUpsertListingDiagnostics(listing, existing = null) {
+    return buildPropertyRecordWithDiagnostics(listing, existing).diagnostics;
+}
 export async function upsertListing(listing) {
     const mlsId = getMlsId(listing);
     if (!mlsId || mlsId === 'undefined') {
@@ -343,9 +394,13 @@ export async function upsertListing(listing) {
     }
     const existing = await getExistingProperty(mlsId);
     const syncedAt = new Date();
-    const propertyData = buildPropertyData(listing, existing, syncedAt);
-    if (!propertyData)
+    const { diagnostics, propertyData } = buildPropertyRecordWithDiagnostics(listing, existing, syncedAt);
+    if (!propertyData) {
+        if (diagnostics.skipReason === 'missing_coordinates') {
+            console.warn(`MLS listing ${mlsId} skipped because it has no usable coordinates.`);
+        }
         return null;
+    }
     return prisma.property.upsert({
         where: {
             mlsId,

@@ -65,6 +65,12 @@ type InventoryStats = {
   priceCeiling: number | null;
 };
 
+type ListingMetadata = {
+  hasCoordinates: boolean;
+  isReviewFlagged: boolean;
+  price: number | null;
+};
+
 type SidebarAuthorityLinks = {
   marketHref: string;
   brief: BlogLink | null;
@@ -100,6 +106,14 @@ function getNumericPrice(value: number | string | null | undefined) {
   const parsed = typeof value === 'number' ? value : Number(String(value).replace(/[$,]/g, ''));
 
   return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
+}
+
+function getListingMetadata(listing: MapSidebarListing): ListingMetadata {
+  return {
+    hasCoordinates: hasCoordinates(listing),
+    isReviewFlagged: Boolean(listing.hasPolybutyleneRisk || !isResidentialType(listing.propertyType)),
+    price: getNumericPrice(listing.price),
+  };
 }
 
 function formatCompactPrice(value: number | null) {
@@ -233,7 +247,13 @@ function SearchIntelligenceStrip({ stats }: { stats: InventoryStats }) {
   const reviewLabel = stats.reviewCount > 0 ? `${stats.reviewCount} diligence flags` : 'No major review flags';
 
   return (
-    <div className="mt-3 rounded-[8px] border border-cyan-100/18 bg-cyan-100/[0.065] p-3">
+    <div
+      className="mt-3 rounded-[8px] border border-cyan-100/18 bg-cyan-100/[0.065] p-3"
+      data-testid="reie-sidebar-intelligence"
+      data-sidebar-mapped-count={stats.mappedCount}
+      data-sidebar-review-count={stats.reviewCount}
+      data-sidebar-average-resilience={stats.averageResilience ?? ''}
+    >
       <div className="flex items-center justify-between gap-3">
         <p className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100/78">Search Intelligence</p>
         <span className="rounded-[4px] border border-cyan-100/20 bg-black/30 px-2 py-1 text-[9px] font-black uppercase tracking-[0.12em] text-cyan-100/70">
@@ -272,7 +292,14 @@ function ResultsToolbar({
   const mapCoverage = count > 0 ? `${Math.round((stats.mappedCount / count) * 100)}% mapped` : 'Map pending';
 
   return (
-    <div className="sticky top-0 z-10 border-b border-white/10 bg-[#070b10]/95 px-3 py-3 backdrop-blur">
+    <div
+      className="sticky top-0 z-10 border-b border-white/10 bg-[#070b10]/95 px-3 py-3 backdrop-blur"
+      data-testid="reie-sidebar-results-toolbar"
+      data-sidebar-listing-count={count}
+      data-sidebar-mapped-count={stats.mappedCount}
+      data-sidebar-mode={hasActiveFilters ? 'filtered' : 'live'}
+      data-sidebar-loading={String(Boolean(isLoading))}
+    >
       <div className="flex items-center justify-between gap-3 rounded-[8px] border border-white/10 bg-white/[0.035] px-3 py-2.5">
         <div className="min-w-0">
           <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">
@@ -317,6 +344,8 @@ export default function MapSidebar(props: MapSidebarProps) {
   const stats = useMemo(() => getInventoryStats(listings), [listings]);
   const authorityLinks = useMemo(() => getSidebarAuthorityLinks(stats.dominantCity), [stats.dominantCity]);
   const selectedAddress = getSelectedAddress(props.selectedProperty, listings, activeId);
+  const selectedListing = activeId ? listings.find((listing) => listing.id === activeId) || null : null;
+  const hoveredListing = hoveredId ? listings.find((listing) => listing.id === hoveredId) || null : null;
 
   useEffect(() => {
     if (!activeId) return;
@@ -335,8 +364,27 @@ export default function MapSidebar(props: MapSidebarProps) {
   }
 
   return (
-    <aside className="relative z-20 flex h-full w-full min-w-0 shrink-0 flex-col border-b border-white/10 bg-[#070b10] md:w-[35vw] md:min-w-[440px] md:max-w-[560px] md:border-b-0 md:border-r">
-      <header className="relative max-h-[52vh] shrink-0 overflow-y-auto border-b border-white/12 px-4 pb-4 pt-16 md:max-h-none md:overflow-hidden md:px-5 md:pt-5">
+    <aside
+      className="relative z-20 flex h-full w-full min-w-0 shrink-0 flex-col border-b border-white/10 bg-[#070b10] md:w-[35vw] md:min-w-[440px] md:max-w-[560px] md:border-b-0 md:border-r"
+      data-testid="reie-map-sidebar"
+      data-sidebar-listing-count={listings.length}
+      data-sidebar-mapped-count={stats.mappedCount}
+      data-sidebar-private-count={stats.privateCount}
+      data-sidebar-review-count={stats.reviewCount}
+      data-sidebar-dominant-city={stats.dominantCity}
+      data-sidebar-selected-listing-id={activeId || ''}
+      data-sidebar-hovered-listing-id={hoveredId || ''}
+      data-sidebar-selected-address={selectedListing?.address || ''}
+      data-sidebar-hovered-address={hoveredListing?.address || ''}
+      data-sidebar-has-active-filters={String(Boolean(hasActiveFilters))}
+      data-sidebar-loading={String(Boolean(isLoading))}
+    >
+      <header
+        className="relative max-h-[52vh] shrink-0 overflow-y-auto border-b border-white/12 px-4 pb-4 pt-16 md:max-h-none md:overflow-hidden md:px-5 md:pt-5"
+        data-testid="reie-sidebar-header"
+        data-sidebar-dominant-city={stats.dominantCity}
+        data-sidebar-listing-count={listings.length}
+      >
         <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(98,177,196,0.13),transparent_36%),linear-gradient(180deg,rgba(255,255,255,0.055),rgba(0,0,0,0))]" />
 
         <div className="relative">
@@ -398,7 +446,12 @@ export default function MapSidebar(props: MapSidebarProps) {
 
           {searchControls ? <div className="mt-3">{searchControls}</div> : null}
 
-          <div className="mt-3 min-h-12 rounded-[8px] border border-white/10 bg-black/35 px-3 py-2.5">
+          <div
+            className="mt-3 min-h-12 rounded-[8px] border border-white/10 bg-black/35 px-3 py-2.5"
+            data-testid="reie-sidebar-selected-summary"
+            data-sidebar-selected-listing-id={activeId || ''}
+            data-sidebar-selected-address={selectedAddress || ''}
+          >
             <p className="truncate text-[10px] font-black uppercase tracking-[0.18em] text-white/36">
               {selectedAddress ? 'Selected Listing' : 'Primary Market'}
             </p>
@@ -452,15 +505,38 @@ export default function MapSidebar(props: MapSidebarProps) {
         </div>
       </header>
 
-      <div ref={sidebarRef} className="custom-sidebar-wide flex-1 overflow-y-auto bg-[#070b10] pb-1">
+      <div
+        ref={sidebarRef}
+        className="custom-sidebar-wide flex-1 overflow-y-auto bg-[#070b10] pb-1"
+        data-testid="reie-sidebar-list"
+        data-sidebar-listing-count={listings.length}
+        data-sidebar-selected-listing-id={activeId || ''}
+        data-sidebar-hovered-listing-id={hoveredId || ''}
+      >
         <ResultsToolbar count={listings.length} stats={stats} hasActiveFilters={hasActiveFilters} isLoading={isLoading} />
 
         {isLoading ? (
           <LoadingInventorySkeleton />
         ) : listings.length > 0 ? (
-          listings.map((property) => (
+          listings.map((property, index) => {
+            const listingMetadata = getListingMetadata(property);
+            const isSelected = activeId === property.id;
+            const isHovered = hoveredId === property.id;
+
+            return (
             <div
               key={property.id}
+              data-testid="reie-sidebar-listing"
+              data-sidebar-listing-id={property.id}
+              data-sidebar-listing-index={index}
+              data-sidebar-listing-address={property.address || ''}
+              data-sidebar-listing-city={property.city || ''}
+              data-sidebar-listing-price={listingMetadata.price ?? ''}
+              data-sidebar-listing-mapped={String(listingMetadata.hasCoordinates)}
+              data-sidebar-listing-private={String(Boolean(property.isPrivateExclusive))}
+              data-sidebar-listing-review={String(listingMetadata.isReviewFlagged)}
+              data-sidebar-listing-selected={String(isSelected)}
+              data-sidebar-listing-hovered={String(isHovered)}
               onFocus={() => onHover(property.id)}
               onBlur={() => onHover(null)}
               onMouseEnter={() => onHover(property.id)}
@@ -468,17 +544,18 @@ export default function MapSidebar(props: MapSidebarProps) {
             >
               <PropertyCard
                 property={property}
-                isActive={activeId === property.id || hoveredId === property.id}
+                isActive={isSelected || isHovered}
                 onClick={() => handleSelect(property)}
               />
             </div>
-          ))
+            );
+          })
         ) : (
           <EmptyInventoryState hasActiveFilters={hasActiveFilters} />
         )}
       </div>
 
-      <div className="shrink-0 border-t border-white/12 bg-[#070b10] p-4">
+      <div className="shrink-0 border-t border-white/12 bg-[#070b10] p-4" data-testid="reie-sidebar-save-search-footer">
         <Suspense fallback={<SaveSearchFallback />}>
           <SaveSearch city={stats.dominantCity} />
         </Suspense>

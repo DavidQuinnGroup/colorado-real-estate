@@ -8,6 +8,15 @@ import type { FAQItem } from '@/lib/schema/faqSchema';
 import { buildToolSchema } from '@/lib/schema/toolSchema';
 
 const SITE_URL = 'https://davidquinngroup.com';
+const homeToolSchemaKeywords = [
+  'Colorado real estate intelligence',
+  'Boulder homes for sale',
+  'Denver homes for sale',
+  'Front Range real estate',
+  'David Quinn Group',
+  'Colorado property search',
+  'real estate market intelligence',
+];
 
 export const metadata: Metadata = {
   title: 'Colorado Real Estate Intelligence Engine | David Quinn Group',
@@ -32,15 +41,7 @@ const homeToolSchema = buildToolSchema({
   description:
     'David Quinn Group interactive property search and real estate intelligence platform for Boulder, Denver, and the Colorado Front Range.',
   url: SITE_URL,
-  keywords: [
-    'Colorado real estate intelligence',
-    'Boulder homes for sale',
-    'Denver homes for sale',
-    'Front Range real estate',
-    'David Quinn Group',
-    'Colorado property search',
-    'real estate market intelligence',
-  ],
+  keywords: homeToolSchemaKeywords,
   audience: 'Colorado home buyers, sellers, homeowners, and relocation clients',
 });
 
@@ -103,7 +104,17 @@ export default function HomePage() {
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(homeToolSchema) }} />
+      <script
+        type="application/ld+json"
+        data-testid="reie-home-tool-schema"
+        data-tool-schema-type="WebApplication"
+        data-tool-schema-name="Colorado Real Estate Intelligence Engine"
+        data-tool-schema-url={SITE_URL}
+        data-tool-schema-keyword-count={homeToolSchemaKeywords.length}
+        data-tool-schema-entrypoint="home"
+        data-tool-schema-has-graph="true"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(homeToolSchema) }}
+      />
       <FAQSchema faqs={homeFaqs} pageUrl={SITE_URL} />
       <HomeSearchExperience authorityLinks={authorityLinks} faqItems={homeFaqs} />
     </>
