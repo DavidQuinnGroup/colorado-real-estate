@@ -227,7 +227,11 @@ export default function HomeSearchExperience({ authorityLinks = [], faqItems = [
   const currentBounds = useRef<MapBounds>(DEFAULT_BOULDER_BOUNDS);
   const lastRequestKey = useRef('');
   const requestSequence = useRef(0);
-  const mobileStatusLabel = isSearching ? 'Updating inventory' : `${listings.length} listings`;
+  const mobileStatusLabel = isSearching
+    ? 'Updating inventory'
+    : selectedProperty && mobileView === 'map'
+      ? selectedProperty.address || 'Selected listing'
+      : `${listings.length} listings`;
 
   const fetchListings = useCallback(async (bounds: MapBounds, nextFilters = filters, force = false) => {
     if (!bounds) return;
@@ -306,6 +310,24 @@ export default function HomeSearchExperience({ authorityLinks = [], faqItems = [
     void fetchListings(currentBounds.current || DEFAULT_BOULDER_BOUNDS, nextFilters, true);
   }
 
+  function handleListSelect(property: MapSidebarListing) {
+    setSelectedProperty(property);
+
+    if (typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches) {
+      setMobileView('map');
+    }
+  }
+
+  function handleMapSelect(id: string) {
+    if (!id) {
+      setSelectedProperty(null);
+      return;
+    }
+
+    const found = listings.find((listing) => listing.id === id);
+    if (found) setSelectedProperty(found);
+  }
+
   const searchControls = (
     <SearchControls
       filters={filters}
@@ -319,8 +341,22 @@ export default function HomeSearchExperience({ authorityLinks = [], faqItems = [
   );
 
   return (
-    <div className="relative flex h-screen w-full flex-col overflow-hidden bg-black text-white md:flex-row">
-      <div className="absolute left-3 right-3 top-3 z-[900] flex items-center justify-between gap-3 md:hidden">
+    <div
+      className="relative flex h-screen w-full flex-col overflow-hidden bg-black text-white md:flex-row"
+      data-testid="reie-home-search-experience"
+      data-mobile-view={mobileView}
+      data-selected-listing-id={selectedProperty?.id || ''}
+      data-visible-listing-count={listings.length}
+      data-search-loading={String(isSearching)}
+      data-search-source={searchMeta?.source || 'initial'}
+    >
+      <div
+        className="absolute left-3 right-3 top-3 z-[900] flex items-center justify-between gap-3 md:hidden"
+        data-testid="reie-home-search-mobile-toolbar"
+        data-mobile-view={mobileView}
+        data-mobile-status={mobileStatusLabel}
+        data-selected-listing-id={selectedProperty?.id || ''}
+      >
         <span className="min-w-0 truncate rounded-[8px] border border-white/12 bg-[#071017]/92 px-3 py-2 text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100/76 shadow-2xl backdrop-blur">
           {mobileStatusLabel}
         </span>
@@ -356,7 +392,7 @@ export default function HomeSearchExperience({ authorityLinks = [], faqItems = [
         <MapSidebar
           listings={listings}
           selectedProperty={selectedProperty}
-          onSelect={setSelectedProperty}
+          onSelect={handleListSelect}
           onCloseDetail={() => setSelectedProperty(null)}
           searchControls={searchControls}
           hasActiveFilters={hasActiveSearchFilters(filters)}
@@ -370,15 +406,7 @@ export default function HomeSearchExperience({ authorityLinks = [], faqItems = [
           onBoundsChange={fetchListings}
           searchMeta={searchMeta}
           selectedId={selectedProperty?.id ?? null}
-          setSelectedId={(id: string) => {
-            if (!id) {
-              setSelectedProperty(null);
-              return;
-            }
-
-            const found = listings.find((listing) => listing.id === id);
-            if (found) setSelectedProperty(found);
-          }}
+          setSelectedId={handleMapSelect}
         />
 
         <div className="pointer-events-none absolute left-6 top-6 z-[700] hidden rounded-[8px] border border-white/12 bg-[#071017]/88 px-4 py-3 shadow-2xl backdrop-blur-md md:block">
