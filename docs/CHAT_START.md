@@ -238,9 +238,9 @@ These are known and non-blocking:
 
 `npm run supabase:check:json` currently reports readiness, but aggregate notification launch readiness is blocked until property-inquiry notification routing has `PROPERTY_INQUIRY_NOTIFY_TO` or fallback `REIE_INTERNAL_EMAIL` configured. Use `npm run check:notification-readiness` for the consolidated non-sending summary, `npm run check:notification-readiness:strict` for the fail-closed gate, `npm run check:notification-readiness:strict-contract` for the strict contract wrapper, `npm run check:launch-readiness` for the combined launch gate, and `npm run check:property-inquiry-notification:readiness` for the direct non-sending diagnostic. Keep `PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN` unset or false before relying on high-priority property inquiry notification delivery. `docs/email-system.md` has the explicit production recipient checklist.
 
-Latest new-chat handoff, June 29, 2026 13:10 MDT:
+Latest new-chat handoff, June 29, 2026 13:15 MDT:
 
-- Continue from Checkpoint 997 in `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/launch-core-checklist.md`.
+- Continue from Checkpoint 998 in `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/launch-core-checklist.md`.
 - Checkpoint 988 was committed on `main` as `d6771ba Add notification launch blocker readiness metadata`.
 - Checkpoint 989 was committed on `main` as `e0f61b6 Document property inquiry readiness refresh`.
 - Checkpoint 990 was committed on `main` as `255d70c Document notification readiness gate refresh`.
@@ -250,7 +250,8 @@ Latest new-chat handoff, June 29, 2026 13:10 MDT:
 - Checkpoint 994 was committed on `main` as `5b29989 Document Supabase readiness refresh`.
 - Checkpoint 995 was committed on `main` as `267ed21 Document MLS and search smoke refresh`.
 - Checkpoint 996 was committed on `main` as `d8d49ad Document ops smoke readiness refresh`.
-- Checkpoint 997 ran a masked env-presence check and `npm run check:property-inquiry-notification:readiness`. The direct property-inquiry notification gate rebuilt worker output, sent no email, mutated no rows, and failed closed as expected with readiness `blocked`; `PROPERTY_INQUIRY_NOTIFY_TO` and fallback `REIE_INTERNAL_EMAIL` were unset, `PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN` was unset, and the only hard blocker remained `property_inquiry_recipient_missing`.
+- Checkpoint 997 was committed on `main` as `1bc26ba Document property inquiry recipient gate refresh`.
+- Checkpoint 998 ran `npm run check:notification-readiness`. The consolidated summary rebuilt worker output, sent no email, mutated no rows, exited successfully for inspection, and reported aggregate notification readiness `blocked`; saved-search alert notification readiness remained `watch` with 197 pending rows and warnings, while property-inquiry notification and aggregate launch readiness remained blocked by `property_inquiry_recipient_missing`.
 - Current intended dirty files are `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/email-system.md`, `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/launch-core-checklist.md`, and `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/CHAT_START.md`.
 - The known launch blocker remains unchanged: aggregate notification launch readiness is still blocked because property-inquiry notification routing needs `PROPERTY_INQUIRY_NOTIFY_TO` or fallback `REIE_INTERNAL_EMAIL`.
 - Do not run live sync, live workers, live email sends, CRM mutations, OpenAI calls, MLS Grid requests, Typesense reindexing, or queue retries unless the user explicitly asks for that production operation.
