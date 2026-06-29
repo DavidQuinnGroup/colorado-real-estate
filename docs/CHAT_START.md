@@ -238,9 +238,9 @@ These are known and non-blocking:
 
 `npm run supabase:check:json` currently reports readiness, but aggregate notification launch readiness is blocked until property-inquiry notification routing has `PROPERTY_INQUIRY_NOTIFY_TO` or fallback `REIE_INTERNAL_EMAIL` configured. Use `npm run check:notification-readiness` for the consolidated non-sending summary, `npm run check:notification-readiness:strict` for the fail-closed gate, `npm run check:notification-readiness:strict-contract` for the strict contract wrapper, `npm run check:launch-readiness` for the combined launch gate, and `npm run check:property-inquiry-notification:readiness` for the direct non-sending diagnostic. Keep `PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN` unset or false before relying on high-priority property inquiry notification delivery. `docs/email-system.md` has the explicit production recipient checklist.
 
-Latest new-chat handoff, June 29, 2026 14:43 MDT:
+Latest new-chat handoff, June 29, 2026 14:48 MDT:
 
-- Continue from Checkpoint 1006 in `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/launch-core-checklist.md`.
+- Continue from Checkpoint 1007 in `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/launch-core-checklist.md`.
 - Checkpoint 988 was committed on `main` as `d6771ba Add notification launch blocker readiness metadata`.
 - Checkpoint 989 was committed on `main` as `e0f61b6 Document property inquiry readiness refresh`.
 - Checkpoint 990 was committed on `main` as `255d70c Document notification readiness gate refresh`.
@@ -259,7 +259,8 @@ Latest new-chat handoff, June 29, 2026 14:43 MDT:
 - Checkpoint 1003 was committed on `main` as `6c451ea Document saved search alert dry run preview`.
 - Checkpoint 1004 was committed on `main` as `1a37a46 Document queue dashboard readiness refresh`.
 - Checkpoint 1005 was committed on `main` as `28e982d Document Supabase readiness refresh`.
-- Checkpoint 1006 ran `npm run typesense:collections:check`. The collections-only check passed without reset or reindex; canonical `properties` and `listings` schemas were ready with 32 fields, 23 facets, 7 sortable fields, and default sort `price`, and live collections reported 32 fields, 23 facets, 16 sortable fields, and default sort `price`.
+- Checkpoint 1006 was committed on `main` as `4170f8d Document Typesense collection readiness refresh`.
+- Checkpoint 1007 ran `npm run check:fast`. Worker output rebuilt; property-inquiry missing-recipient and dry-run suppression checks passed; saved-search alert readiness stayed `watch` with 197 pending / 0 failed / 0 processing rows; consolidated notification readiness stayed blocked by missing property-inquiry routing; strict-contract validation passed; bounded MLS sync dry-run completed with `executed=false` and no MLS Grid request; typecheck and lint passed.
 - Current intended dirty files are `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/email-system.md`, `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/launch-core-checklist.md`, and `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/CHAT_START.md`.
 - The known launch blocker remains unchanged: aggregate notification launch readiness is still blocked because property-inquiry notification routing needs `PROPERTY_INQUIRY_NOTIFY_TO` or fallback `REIE_INTERNAL_EMAIL`.
 - Do not run live sync, live workers, live email sends, CRM mutations, OpenAI calls, MLS Grid requests, Typesense reindexing, or queue retries unless the user explicitly asks for that production operation.
