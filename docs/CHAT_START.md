@@ -238,6 +238,17 @@ These are known and non-blocking:
 
 `npm run supabase:check:json` currently reports readiness, but aggregate notification launch readiness is blocked until property-inquiry notification routing has `PROPERTY_INQUIRY_NOTIFY_TO` or fallback `REIE_INTERNAL_EMAIL` configured. Use `npm run check:notification-readiness` for the consolidated non-sending summary, `npm run check:notification-readiness:strict` for the fail-closed gate, `npm run check:notification-readiness:strict-contract` for the strict contract wrapper, `npm run check:launch-readiness` for the combined launch gate, and `npm run check:property-inquiry-notification:readiness` for the direct non-sending diagnostic. Keep `PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN` unset or false before relying on high-priority property inquiry notification delivery. `docs/email-system.md` has the explicit production recipient checklist.
 
+Latest new-chat handoff, June 29, 2026 11:54 MDT:
+
+- Continue from Checkpoint 988 in `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/launch-core-checklist.md`.
+- Current intended dirty files are `/Users/davidquinn/david-quinn-group/colorado-real-estate/components/admin/MasterControlPanel.tsx`, `/Users/davidquinn/david-quinn-group/colorado-real-estate/scripts/publicExperienceSmoke.ts`, `/Users/davidquinn/david-quinn-group/colorado-real-estate/dist/scripts/publicExperienceSmoke.js`, and `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/launch-core-checklist.md`.
+- Checkpoint 988 added the final ready payload contract verification final completion final completion final completion final completion final completion final completion final completion final completion final completion readiness marker to the `/admin` `Notification Launch Blockers` card, added the matching public-experience smoke assertion, regenerated `dist/scripts/publicExperienceSmoke.js`, and documented the verification.
+- Verification passed for `npm run worker:build`, `npm run typecheck`, `npm run smoke:ops`, `npm run check:fast`, and `git diff --check`.
+- The temporary local Next dev server was stopped, `localhost:3000` was clear, and no `next dev`, Next server, `npm run smoke:ops`, or `opsSmoke` process remained running after the checkpoint.
+- The known launch blocker remains unchanged: aggregate notification launch readiness is still blocked because property-inquiry notification routing needs `PROPERTY_INQUIRY_NOTIFY_TO` or fallback `REIE_INTERNAL_EMAIL`.
+- Do not run live sync, live workers, live email sends, CRM mutations, OpenAI calls, MLS Grid requests, Typesense reindexing, or queue retries unless the user explicitly asks for that production operation.
+- The next chat should first run `git status --short`, then decide whether to continue local notification-readiness hardening, resolve the missing property-inquiry notification recipient config, or prepare a clean commit.
+
 Latest local validation snapshot, June 21, 2026 10:22 MDT:
 
 - June 21 10:22 MDT `npm run check:fast` passed after MLS photo media hardening: worker output rebuilt, notification readiness checks stayed non-sending/non-mutating, protected MLS sync dry-run remained non-executing with no MLS Grid request, and typecheck plus lint passed.
