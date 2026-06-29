@@ -4841,6 +4841,16 @@ Carry-forward launch blockers:
 - The aggregate launch-readiness contract reported readiness `blocked`, exited 1, returned `success=false`, and kept `propertyInquiryReplyToWarningAligned=true`.
 - The command left the working tree clean, and a targeted process check found no remaining `next dev`, Next server, or `npm run dev` process beyond the check itself. No live sync was started, no live worker was started, no email was sent, no alert rows were intentionally mutated, no CRM task state was mutated, no OpenAI request was made, no MLS Grid request was made, no reindex was run, and no queue retry was run.
 
+## Checkpoint 1001 - Aggregate Launch Readiness Refresh
+
+- June 29, 2026 14:03 MDT ran `npm run check:launch-readiness`.
+- The command rebuilt worker output, sent no email, mutated no rows, and exited nonzero as expected while aggregate launch readiness is blocked.
+- The launch gate reported `success=false`, `sendsEmail=false`, `mutatesRows=false`, readiness `blocked`, summary `1 launch gate blocked.`, and `nextCommand="npm run check:launch-readiness"`.
+- Supabase connectivity was `ready` after Prisma `SELECT 1` passed.
+- Saved-search alert email stayed `watch` with 197 pending alert rows, 0 failed rows, 0 processing rows, Resend API key and site URL passing, and sender/reply-to/pending-row warnings.
+- Property-inquiry notification email stayed `blocked` with `blockedBy[].code="property_inquiry_recipient_missing"` for `PROPERTY_INQUIRY_NOTIFY_TO` and `REIE_INTERNAL_EMAIL`; `PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN` was disabled or unset.
+- The command left the working tree clean, and a targeted process check found no remaining `next dev`, Next server, or `npm run dev` process beyond the check itself. No live sync was started, no live worker was started, no email was sent, no alert rows were intentionally mutated, no CRM task state was mutated, no OpenAI request was made, no MLS Grid request was made, no reindex was run, and no queue retry was run.
+
 ## Checkpoint 987 - Notification Launch Verified Launch Readiness Contract Notification Launch Verified Launch Readiness Contract Notification Blocker Gate Verified Complete Final Ready Payload Contract Verification Final Completion Final Completion Final Completion Final Completion Final Completion Final Completion Final Completion Final Completion Final Completion
 
 - June 29, 2026 11:38 MDT added `data-notification-launch-verified-launch-readiness-contract-notification-launch-verified-launch-readiness-contract-notification-blocker-gate-verified-complete-final-ready-payload-contract-verification-final-complete-final-complete-final-complete-final-complete-final-complete-final-complete-final-complete-final-complete-final-complete` to the `/admin` `Notification Launch Blockers` card so automation can verify the final ready payload contract verification final completion final completion final completion final completion final completion final completion final completion final completion final completion marker remains tied to the verified notification blocker payload chain after the previous payload-contract verification final completion final completion final completion final completion final completion final completion final completion final completion final verification marker.
