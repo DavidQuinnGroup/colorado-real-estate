@@ -4886,6 +4886,15 @@ Carry-forward launch blockers:
 - The command surfaced `npm run typesense:reindex` as the next readiness command, but Typesense reindexing was not run because live reindexing remains out of scope unless explicitly requested.
 - The command left the working tree clean, and a targeted process check found no remaining `next dev`, Next server, or `npm run dev` process beyond the check itself. No live sync was started, no live worker was started, no email was sent, no alert rows were intentionally mutated, no CRM task state was mutated, no OpenAI request was made, no MLS Grid request was made, no reindex was run, and no queue retry was run.
 
+## Checkpoint 1006 - Typesense Collection Readiness Refresh
+
+- June 29, 2026 14:43 MDT ran `npm run typesense:collections:check`.
+- The command ran in check mode with `collectionsOnly=true`, `reset=false`, and no reindex.
+- Canonical Typesense rule metadata reported 33 canonical fields, 7 required fields, 26 optional fields, 23 required facets, 7 sortable fields, 10 query fields, 10 filter fields, and 2 sort fields.
+- Canonical schema validation passed for both `properties` and `listings` with 32 fields, 23 facets, 7 sortable fields, and default sort `price`.
+- Live `properties` and `listings` collections were ready with 32 fields, 23 facets, 16 sortable fields, and default sort `price`.
+- The command left the working tree clean, and a targeted process check found no remaining `next dev`, Next server, or `npm run dev` process beyond the check itself. No live sync was started, no live worker was started, no email was sent, no alert rows were intentionally mutated, no CRM task state was mutated, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
+
 ## Checkpoint 987 - Notification Launch Verified Launch Readiness Contract Notification Launch Verified Launch Readiness Contract Notification Blocker Gate Verified Complete Final Ready Payload Contract Verification Final Completion Final Completion Final Completion Final Completion Final Completion Final Completion Final Completion Final Completion Final Completion
 
 - June 29, 2026 11:38 MDT added `data-notification-launch-verified-launch-readiness-contract-notification-launch-verified-launch-readiness-contract-notification-blocker-gate-verified-complete-final-ready-payload-contract-verification-final-complete-final-complete-final-complete-final-complete-final-complete-final-complete-final-complete-final-complete-final-complete` to the `/admin` `Notification Launch Blockers` card so automation can verify the final ready payload contract verification final completion final completion final completion final completion final completion final completion final completion final completion final completion marker remains tied to the verified notification blocker payload chain after the previous payload-contract verification final completion final completion final completion final completion final completion final completion final completion final completion final verification marker.
