@@ -4861,6 +4861,14 @@ Carry-forward launch blockers:
 - The command reported `nextCommand="npm run run:alerts:dry -- --limit 50"`, but no alert dry-run or live alert send was run in this checkpoint.
 - The command left the working tree clean, and a targeted process check found no remaining `next dev`, Next server, or `npm run dev` process beyond the check itself. No live sync was started, no live worker was started, no email was sent, no alert rows were intentionally mutated, no CRM task state was mutated, no OpenAI request was made, no MLS Grid request was made, no reindex was run, and no queue retry was run.
 
+## Checkpoint 1003 - Saved Search Alert Dry Run Preview
+
+- June 29, 2026 14:15 MDT ran `npm run run:alerts:dry -- --limit 50`.
+- The command stayed in dry-run preview mode with `dryRun=true`, sent no email, and returned `success=true`.
+- The dry-run scanned 50 pending saved-search alert rows, previewed 50 ready-to-send rows, sent 0, skipped 0, and failed 0.
+- The execution plan stayed `caution` with guidance to review preview rows before any live run; the live command was not run.
+- The command left the working tree clean, and a targeted process check found no remaining `next dev`, Next server, or `npm run dev` process beyond the check itself. No live sync was started, no live worker was started, no email was sent, no alert rows were intentionally mutated, no CRM task state was mutated, no OpenAI request was made, no MLS Grid request was made, no reindex was run, and no queue retry was run.
+
 ## Checkpoint 987 - Notification Launch Verified Launch Readiness Contract Notification Launch Verified Launch Readiness Contract Notification Blocker Gate Verified Complete Final Ready Payload Contract Verification Final Completion Final Completion Final Completion Final Completion Final Completion Final Completion Final Completion Final Completion Final Completion
 
 - June 29, 2026 11:38 MDT added `data-notification-launch-verified-launch-readiness-contract-notification-launch-verified-launch-readiness-contract-notification-blocker-gate-verified-complete-final-ready-payload-contract-verification-final-complete-final-complete-final-complete-final-complete-final-complete-final-complete-final-complete-final-complete-final-complete` to the `/admin` `Notification Launch Blockers` card so automation can verify the final ready payload contract verification final completion final completion final completion final completion final completion final completion final completion final completion final completion marker remains tied to the verified notification blocker payload chain after the previous payload-contract verification final completion final completion final completion final completion final completion final completion final completion final completion final verification marker.
