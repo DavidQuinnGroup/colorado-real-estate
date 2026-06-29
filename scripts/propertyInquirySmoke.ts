@@ -12,6 +12,14 @@ const SMOKE_SLUG = 'reie-smoke-property-inquiry';
 const SMOKE_EMAIL = 'reie-property-inquiry-smoke@example.com';
 const BASE_URL = (process.env.PROPERTY_INQUIRY_SMOKE_BASE_URL || 'http://localhost:3000').replace(/\/+$/, '');
 
+type CleanupSummary = {
+  crmTasks: number;
+  userInteractions: number;
+  leadInteractions: number;
+  users: number;
+  properties: number;
+};
+
 function errorMessage(error: unknown) {
   return error instanceof Error ? error.message : String(error);
 }
@@ -20,7 +28,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
-async function cleanup() {
+async function cleanup(): Promise<CleanupSummary> {
   const user = await prisma.user.findUnique({
     where: {
       email: SMOKE_EMAIL,
@@ -30,19 +38,67 @@ async function cleanup() {
     },
   });
 
-  if (user) {
-    await prisma.user.delete({
-      where: {
-        id: user.id,
-      },
-    });
-  }
+  const properties = await prisma.property.findMany({
+    where: {
+      mlsId: SMOKE_MLS_ID,
+    },
+    select: {
+      id: true,
+    },
+  });
 
-  await prisma.property.deleteMany({
+  const propertyIds = properties.map((property) => property.id);
+  const leadInteractionConditions = [
+    ...(user ? [{ clientId: user.id }] : []),
+    ...(propertyIds.length > 0 ? [{ propertyId: { in: propertyIds } }] : []),
+  ];
+
+  const leadInteractions =
+    leadInteractionConditions.length > 0
+      ? await prisma.leadInteraction.deleteMany({
+          where: {
+            OR: leadInteractionConditions,
+          },
+        })
+      : { count: 0 };
+
+  const crmTasks = user
+    ? await prisma.cRMTask.deleteMany({
+        where: {
+          leadId: user.id,
+        },
+      })
+    : { count: 0 };
+
+  const userInteractions = user
+    ? await prisma.userInteraction.deleteMany({
+        where: {
+          userId: user.id,
+        },
+      })
+    : { count: 0 };
+
+  const users = user
+    ? await prisma.user.deleteMany({
+        where: {
+          id: user.id,
+        },
+      })
+    : { count: 0 };
+
+  const propertiesDeleted = await prisma.property.deleteMany({
     where: {
       mlsId: SMOKE_MLS_ID,
     },
   });
+
+  return {
+    crmTasks: crmTasks.count,
+    userInteractions: userInteractions.count,
+    leadInteractions: leadInteractions.count,
+    users: users.count,
+    properties: propertiesDeleted.count,
+  };
 }
 
 async function seedProperty() {
@@ -136,7 +192,7 @@ async function assertPersistedRecords(payload: Record<string, unknown>, property
 }
 
 async function main() {
-  await cleanup();
+  const initialCleanup = await cleanup();
 
   const property = await seedProperty();
 
@@ -150,6 +206,11 @@ async function main() {
           success: true,
           check: 'property-inquiry-route-smoke',
           baseUrl: BASE_URL,
+          sendsEmail: false,
+          mutatesRows: true,
+          cleanupAttempted: true,
+          mutationScope: 'temporary smoke property, user, CRM task, user interaction, and lead interaction rows',
+          initialCleanup,
           propertyId: property.id,
           email: SMOKE_EMAIL,
           crmTaskId: payload.crmTaskId,
@@ -161,7 +222,8 @@ async function main() {
       ),
     );
   } finally {
-    await cleanup();
+    const finalCleanup = await cleanup();
+    console.error(`Property inquiry smoke cleanup: ${JSON.stringify(finalCleanup)}`);
   }
 }
 
