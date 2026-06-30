@@ -238,9 +238,9 @@ These are known and non-blocking:
 
 `npm run supabase:check:json` currently reports readiness, but aggregate notification launch readiness is blocked until property-inquiry notification routing has `PROPERTY_INQUIRY_NOTIFY_TO` or fallback `REIE_INTERNAL_EMAIL` configured. Use `npm run check:notification-readiness` for the consolidated non-sending summary, `npm run check:notification-readiness:strict` for the fail-closed gate, `npm run check:notification-readiness:strict-contract` for the strict contract wrapper, `npm run check:launch-readiness` for the combined launch gate, and `npm run check:property-inquiry-notification:readiness` for the direct non-sending diagnostic. Keep `PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN` unset or false before relying on high-priority property inquiry notification delivery. `docs/email-system.md` has the explicit production recipient checklist.
 
-Latest new-chat handoff, June 30, 2026 17:32 MDT:
+Latest new-chat handoff, June 30, 2026 17:34 MDT:
 
-- Continue from Checkpoint 1066 in `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/launch-core-checklist.md`.
+- Continue from Checkpoint 1067 in `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/launch-core-checklist.md`.
 - Checkpoint 988 was committed on `main` as `d6771ba Add notification launch blocker readiness metadata`.
 - Checkpoint 989 was committed on `main` as `e0f61b6 Document property inquiry readiness refresh`.
 - Checkpoint 990 was committed on `main` as `255d70c Document notification readiness gate refresh`.
@@ -319,7 +319,8 @@ Latest new-chat handoff, June 30, 2026 17:32 MDT:
 - Checkpoint 1063 was committed on `main` as `49c10e6 Document strict notification readiness refresh`.
 - Checkpoint 1064 was committed on `main` as `2f74840 Document strict notification contract refresh`.
 - Checkpoint 1065 was committed on `main` as `c5f7e5c Document aggregate launch readiness refresh`.
-- Checkpoint 1066 is the current `main` commit with message `Document saved search alert readiness refresh`.
+- Checkpoint 1066 was committed on `main` as `7247c8b Document saved search alert readiness refresh`.
+- Checkpoint 1067 is the current `main` commit with message `Document saved search alert dry run preview`.
 - Checkpoint 1010 ran `npm run smoke:ops` against a temporary local Next dev server. Public-experience smoke, admin/control/intake/CRM/dead-letter/retry/alert inspection metadata, public search, and notification readiness checks passed structurally; MLS status remained `busy` / `watch` with healthy search-index health and busy media diagnostics; alert status remained `caution` with 197 pending / 0 failed rows; notification readiness remained blocked by missing property-inquiry recipient routing. The temporary server was stopped after the check, and a targeted process check found no remaining Next/dev process beyond the check itself.
 - Checkpoint 1011 hardened `npm run smoke:property-inquiry` after confirming it is a mutating route smoke, not a read-only readiness gate. The earlier smoke passed and sent no email (`sent=false`, `reason="not-high-priority"`, `attempted=false`, `required=false`), but it creates temporary smoke property, user, CRM task, user interaction, and lead interaction rows before cleanup.
 - A post-run residue check found one leftover smoke `LeadInteraction` row from the earlier route smoke. It was deleted by exact ID and verified gone. The smoke script now explicitly deletes smoke lead interactions before parent smoke user/property cleanup and prints `sendsEmail=false`, `mutatesRows=true`, `cleanupAttempted=true`, `mutationScope`, and cleanup metadata. `npm run worker:build`, `npm run typecheck`, and `git diff --check` passed.
@@ -378,7 +379,8 @@ Latest new-chat handoff, June 30, 2026 17:32 MDT:
 - Checkpoint 1064 ran `npm run check:notification-readiness:strict-contract`. The command rebuilt worker output, sent no email, mutated no rows, and passed. It confirmed the current environment fails closed, the dummy-recipient plus property-inquiry dry-run scenario fails closed with direct and aggregate dry-run blockers detected, and aggregate launch-readiness reply-to warning alignment remains true.
 - Checkpoint 1065 ran `npm run check:launch-readiness`. The command rebuilt worker output, sent no email, mutated no rows, ran read-only Prisma connectivity and alert-queue count checks, and failed closed as expected with `success=false`, `readiness.level="blocked"`, and one blocked launch gate. Supabase connectivity stayed `ready`; saved-search alert email stayed `watch`; property-inquiry notification email stayed `blocked` by `property_inquiry_recipient_missing`.
 - Checkpoint 1066 ran `npm run check:alert-notification-readiness`. The command rebuilt worker output, sent no email, mutated no rows, ran read-only Prisma connectivity, alert-queue count, and sampled-recipient checks, returned `success=true`, and reported saved-search alert notification readiness at `watch`.
-- No intended dirty files remain after Checkpoint 1066.
+- Checkpoint 1067 ran `npm run run:alerts:dry -- --limit 50`. The dry-run preview completed with `dryRun=true`, `mode="preview"`, `success=true`, 50 scanned rows, 0 sent, 0 skipped, 0 failed, and 50 masked rows marked `preview` / `Ready to send.` The surfaced live alert command remains blocked by launch policy until property-inquiry recipient routing is configured and strict/aggregate readiness clears.
+- No intended dirty files remain after Checkpoint 1067.
 - The known launch blocker remains unchanged: aggregate notification launch readiness is still blocked because property-inquiry notification routing needs `PROPERTY_INQUIRY_NOTIFY_TO` or fallback `REIE_INTERNAL_EMAIL`.
 - Do not run live sync, live workers, live email sends, CRM mutations, OpenAI calls, MLS Grid requests, Typesense reindexing, or queue retries unless the user explicitly asks for that production operation.
 - Do not run `npm run smoke:property-inquiry` under a no-CRM-mutation launch constraint unless the user explicitly approves that route smoke. Use `npm run check:property-inquiry-notification:readiness` for the non-sending, non-mutating property-inquiry notification gate.
