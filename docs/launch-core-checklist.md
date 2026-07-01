@@ -5424,6 +5424,13 @@ Carry-forward launch blockers:
 - Bounded MLS sync dry-run completed with `dryRun=true`, `executed=false`, and note `No MLS Grid request was made.` `npm run typecheck` passed, and `npm run lint` passed with no ESLint warnings or errors.
 - No live sync was started, no live worker was started, no live email was sent, no CRM mutation was run, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
 
+## Checkpoint 1076 - Production Build Refresh
+
+- July 1, 2026 11:33 MDT reran `npm run build`.
+- Next.js 15.1.6 production build compiled successfully, completed lint/type validation inside the build pipeline, collected page data, generated 130 static pages, finalized page optimization, and collected build traces.
+- The route manifest included static `/`, `/_not-found`, `/admin`, and `/admin/dead-letter`; dynamic API routes including `/api/property-inquiry`, `/api/process-alerts`, `/api/mls/status`, `/api/search`, `/api/track-click`, `/api/unsubscribe`, `/api/webhooks/email-reply`, and protected admin/MLS routes; SSG article and market routes; dynamic `/properties/[id]`; and dynamic `/search`.
+- No live sync was started, no live worker was started, no live email was sent, no CRM mutation was run, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
+
 ## Checkpoint 987 - Notification Launch Verified Launch Readiness Contract Notification Launch Verified Launch Readiness Contract Notification Blocker Gate Verified Complete Final Ready Payload Contract Verification Final Completion Final Completion Final Completion Final Completion Final Completion Final Completion Final Completion Final Completion Final Completion
 
 - June 29, 2026 11:38 MDT added `data-notification-launch-verified-launch-readiness-contract-notification-launch-verified-launch-readiness-contract-notification-blocker-gate-verified-complete-final-ready-payload-contract-verification-final-complete-final-complete-final-complete-final-complete-final-complete-final-complete-final-complete-final-complete-final-complete` to the `/admin` `Notification Launch Blockers` card so automation can verify the final ready payload contract verification final completion final completion final completion final completion final completion final completion final completion final completion final completion marker remains tied to the verified notification blocker payload chain after the previous payload-contract verification final completion final completion final completion final completion final completion final completion final completion final completion final verification marker.
