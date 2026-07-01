@@ -3059,11 +3059,12 @@ async function assertPropertyInquiryNotificationReadiness() {
         assert.equal(parsed.mutatesRows, false, 'Expected property inquiry readiness to avoid row mutation.');
         assert.equal(parsed.terminal, 'Terminal 5', 'Expected property inquiry readiness terminal metadata.');
         assert.ok(typeof parsed.generatedAt === 'string', 'Expected property inquiry readiness generatedAt metadata.');
-        assert.equal(
-          parsed.nextCommand,
-          'npm run check:property-inquiry-notification:readiness',
-          'Expected blocked property inquiry readiness next command.',
-        );
+        const parsedReadiness = isRecord(parsed.readiness) ? parsed.readiness : null;
+        const expectedNextCommand =
+          parsedReadiness?.level === 'blocked'
+            ? 'npm run check:property-inquiry-notification:readiness'
+            : 'npm run check:notification-readiness';
+        assert.equal(parsed.nextCommand, expectedNextCommand, 'Expected property inquiry readiness next command.');
         assert.ok(isRecord(parsed.commands), 'Expected property inquiry readiness commands metadata.');
         assert.equal(
           isRecord(parsed.commands) ? parsed.commands.propertyInquiryReadiness : null,
@@ -3217,9 +3218,13 @@ async function assertNotificationReadinessSummary() {
   assert.ok(typeof savedSearchResult.generatedAt === 'string', 'Expected saved-search summary child generatedAt metadata.');
   assert.ok(typeof propertyInquiryResult.generatedAt === 'string', 'Expected property-inquiry summary child generatedAt metadata.');
   assert.equal(savedSearchResult.nextCommand, 'npm run run:alerts:dry -- --limit 50', 'Expected saved-search summary child next command.');
+  const expectedPropertyInquiryNextCommand =
+    propertyInquiryResult.readiness === 'blocked'
+      ? 'npm run check:property-inquiry-notification:readiness'
+      : 'npm run check:notification-readiness';
   assert.equal(
     propertyInquiryResult.nextCommand,
-    'npm run check:property-inquiry-notification:readiness',
+    expectedPropertyInquiryNextCommand,
     'Expected property-inquiry summary child next command.',
   );
   assert.ok(isRecord(savedSearchResult.commands), 'Expected saved-search summary child commands metadata.');
