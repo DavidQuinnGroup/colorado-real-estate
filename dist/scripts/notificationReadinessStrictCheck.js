@@ -87,6 +87,12 @@ function runStrictSummary(env) {
 }
 function main() {
     const currentEnvResult = runStrictSummary(process.env);
+    const missingRecipientEnvResult = runStrictSummary({
+        ...process.env,
+        PROPERTY_INQUIRY_NOTIFY_TO: '',
+        REIE_INTERNAL_EMAIL: '',
+        PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN: '',
+    });
     const dryRunEnvResult = runStrictSummary({
         ...process.env,
         PROPERTY_INQUIRY_NOTIFY_TO: 'internal-property-inquiries@example.com',
@@ -106,8 +112,8 @@ function main() {
     assert.ok(hasFailedCheck(dryRunEnvResult.propertyInquiryResult, 'PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN'), 'Expected dry-run strict property-inquiry child to expose dry-run failed check.');
     assert.ok(hasBlockedBy(dryRunEnvResult.propertyInquiryResult, 'property_inquiry_dry_run_enabled', 'PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN'), 'Expected dry-run strict property-inquiry child to expose structured dry-run blocker.');
     assert.ok(hasFailedCheck(dryRunEnvResult.aggregateResult, 'PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN'), 'Expected dry-run strict aggregate child to expose dry-run failed check.');
-    assert.ok(hasBlockedBy(currentEnvResult.propertyInquiryResult, 'property_inquiry_recipient_missing', 'PROPERTY_INQUIRY_NOTIFY_TO'), 'Expected current strict property-inquiry child to expose structured recipient blocker.');
-    assert.ok(hasBlockedBy(currentEnvResult.aggregateResult, 'property_inquiry_recipient_missing', 'REIE_INTERNAL_EMAIL'), 'Expected current strict aggregate child to expose structured fallback recipient blocker.');
+    assert.ok(hasBlockedBy(missingRecipientEnvResult.propertyInquiryResult, 'property_inquiry_recipient_missing', 'PROPERTY_INQUIRY_NOTIFY_TO'), 'Expected missing-recipient strict property-inquiry child to expose structured recipient blocker.');
+    assert.ok(hasBlockedBy(missingRecipientEnvResult.aggregateResult, 'property_inquiry_recipient_missing', 'REIE_INTERNAL_EMAIL'), 'Expected missing-recipient strict aggregate child to expose structured fallback recipient blocker.');
     assert.ok(hasCheckDetail(noReplyToLaunchResult.propertyInquiryGate, 'RESEND_REPLY_TO_EMAIL', 'warn', 'Not configured; property inquiry emails will reply directly to the lead email.'), 'Expected aggregate launch readiness to explain property-inquiry reply-to fallback behavior.');
     console.log(JSON.stringify({
         success: true,
@@ -118,6 +124,13 @@ function main() {
             readiness: currentEnvResult.readiness,
             exitCode: currentEnvResult.exitCode,
             success: currentEnvResult.success,
+        },
+        missingRecipientEnv: {
+            readiness: missingRecipientEnvResult.readiness,
+            exitCode: missingRecipientEnvResult.exitCode,
+            success: missingRecipientEnvResult.success,
+            propertyInquiryRecipientBlocked: true,
+            aggregateRecipientBlocked: true,
         },
         dryRunEnv: {
             readiness: dryRunEnvResult.readiness,

@@ -124,6 +124,12 @@ function runStrictSummary(env: NodeJS.ProcessEnv) {
 
 function main() {
   const currentEnvResult = runStrictSummary(process.env);
+  const missingRecipientEnvResult = runStrictSummary({
+    ...process.env,
+    PROPERTY_INQUIRY_NOTIFY_TO: '',
+    REIE_INTERNAL_EMAIL: '',
+    PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN: '',
+  });
   const dryRunEnvResult = runStrictSummary({
     ...process.env,
     PROPERTY_INQUIRY_NOTIFY_TO: 'internal-property-inquiries@example.com',
@@ -159,19 +165,19 @@ function main() {
   );
   assert.ok(
     hasBlockedBy(
-      currentEnvResult.propertyInquiryResult,
+      missingRecipientEnvResult.propertyInquiryResult,
       'property_inquiry_recipient_missing',
       'PROPERTY_INQUIRY_NOTIFY_TO',
     ),
-    'Expected current strict property-inquiry child to expose structured recipient blocker.',
+    'Expected missing-recipient strict property-inquiry child to expose structured recipient blocker.',
   );
   assert.ok(
     hasBlockedBy(
-      currentEnvResult.aggregateResult,
+      missingRecipientEnvResult.aggregateResult,
       'property_inquiry_recipient_missing',
       'REIE_INTERNAL_EMAIL',
     ),
-    'Expected current strict aggregate child to expose structured fallback recipient blocker.',
+    'Expected missing-recipient strict aggregate child to expose structured fallback recipient blocker.',
   );
   assert.ok(
     hasCheckDetail(
@@ -194,6 +200,13 @@ function main() {
           readiness: currentEnvResult.readiness,
           exitCode: currentEnvResult.exitCode,
           success: currentEnvResult.success,
+        },
+        missingRecipientEnv: {
+          readiness: missingRecipientEnvResult.readiness,
+          exitCode: missingRecipientEnvResult.exitCode,
+          success: missingRecipientEnvResult.success,
+          propertyInquiryRecipientBlocked: true,
+          aggregateRecipientBlocked: true,
         },
         dryRunEnv: {
           readiness: dryRunEnvResult.readiness,
