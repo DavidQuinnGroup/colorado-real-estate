@@ -496,6 +496,12 @@ Seed rules:
 
 ## Latest Local Validation Snapshot
 
+July 2, 2026 14:10 MDT:
+
+- `npm run check:alert-notification-readiness` passed after rebuilding worker output. The check sent no email, mutated no rows, and kept saved-search alert notification readiness at `watch`.
+- Sender, reply-to, public site URL, failed-row, and processing-row checks passed. `AlertQueue` still has 197 pending saved-search alert rows available for dry-run review, with 0 failed and 0 processing rows.
+- The surfaced next command remains `npm run run:alerts:dry -- --limit 50`; no live alert worker or live alert send was run.
+
 July 2, 2026 14:08 MDT:
 
 - `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000` completed cleanly with no diagnostics, no failed jobs, no open dead-letter jobs, and no stale active jobs.
