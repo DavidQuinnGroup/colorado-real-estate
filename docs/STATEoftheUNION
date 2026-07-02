@@ -494,6 +494,14 @@ Seed rules:
 - No-index commands write database and photo rows without indexing.
 - Seed scripts should not be scheduled or run from public app code.
 
+## Latest Local Validation Snapshot
+
+July 2, 2026 14:05 MDT:
+
+- `npm run supabase:check:json` passed with `success=true`, readiness `ready`, and no failed checks. URL/key checks, placeholder scan, project-ref consistency for `otmkoqvmhthitldlnjdk`, Postgres URL shape, Supabase project DNS, Supabase Postgres DNS, TCP to the pooler, Prisma `SELECT 1`, and Supabase REST HTTP 200 passed.
+- `npm run typesense:collections:check` passed in collections-only check mode. Canonical `properties` and `listings` schemas validated with 32 fields, 23 facets, 7 sortable fields, and default sort `price`; both existing collections were ready.
+- No reset, reindex, live sync, live worker, live email send, CRM mutation, OpenAI request, MLS Grid request, or queue retry was run during this refresh.
+
 ## Legacy MLS Cleanup Status
 
 The legacy MLS helper cleanup pass is complete:
