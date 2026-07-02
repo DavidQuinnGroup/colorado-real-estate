@@ -496,6 +496,14 @@ Seed rules:
 
 ## Latest Local Validation Snapshot
 
+July 2, 2026 14:28 MDT:
+
+- Started a temporary local Next dev server on `http://localhost:3000`, ran `npm run smoke:mls-status`, `npm run smoke:search`, and `npm run smoke:ops`, then stopped the server.
+- `smoke:mls-status` returned HTTP 200 with MLS status `busy`, operational readiness `watch`, healthy search-index health, no open dead-letter records, stale inventory watch/fail detail, media diagnostics watch, and `reie-alerts` at 273 waiting / 0 active / 0 failed.
+- `smoke:search` returned HTTP 200 with source `typesense`, health `healthy`, found 15277, 5 returned, 5 mapped, 0 coordinate-filtered, and `meta.smoke.ready=true`.
+- `smoke:ops` passed with public-experience smoke assertions, notification readiness `watch`, saved-search alert notification `watch`, property-inquiry notification `ready`, and alert status caution.
+- The temporary server was stopped after the smoke checks, and the process guard found no remaining REIE dev server, worker, smoke, alert, CRM, queue, or reindex process beyond the guard itself.
+
 July 2, 2026 14:23 MDT:
 
 - `npm run build` passed. Next.js 15.1.6 compiled successfully, completed lint/type validation inside the build pipeline, collected page data, generated 130 static pages, finalized page optimization, and collected build traces.
