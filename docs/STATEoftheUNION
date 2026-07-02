@@ -496,6 +496,12 @@ Seed rules:
 
 ## Latest Local Validation Snapshot
 
+July 2, 2026 14:23 MDT:
+
+- `npm run build` passed. Next.js 15.1.6 compiled successfully, completed lint/type validation inside the build pipeline, collected page data, generated 130 static pages, finalized page optimization, and collected build traces.
+- The route manifest still includes static `/`, `/admin`, `/admin/dead-letter`, dynamic protected API routes, SSG article/market routes, dynamic `/properties/[id]`, and dynamic `/search`.
+- No live worker, live email send, queue retry, reindex, CRM mutation, OpenAI request, or MLS Grid request was run.
+
 July 2, 2026 14:22 MDT:
 
 - `npm run check:fast` passed end to end. Worker output rebuilt; property-inquiry notification skip helpers passed; saved-search alert readiness stayed `watch`; consolidated notification readiness stayed `watch`; strict-contract validation passed.
