@@ -496,6 +496,12 @@ Seed rules:
 
 ## Latest Local Validation Snapshot
 
+July 2, 2026 14:16 MDT:
+
+- `npm run check:launch-readiness` passed after rebuilding worker output. The check sent no email, mutated no rows, returned `success=true`, and kept aggregate launch readiness at `watch` with no blockers.
+- Supabase connectivity was `ready`; property-inquiry notification email was `ready`; saved-search alert email stayed `watch` because 197 pending saved-search alert rows require final dry-run/operator review before live processing.
+- Queue counts stayed 197 pending / 0 failed / 0 processing saved-search alert rows.
+
 July 2, 2026 14:11 MDT:
 
 - `npm run run:alerts:dry -- --limit 50` completed in preview mode with `dryRun=true`, scanned 50 pending saved-search alert rows, previewed 50 ready-to-send rows, sent 0, skipped 0, failed 0, and returned `success=true`.
