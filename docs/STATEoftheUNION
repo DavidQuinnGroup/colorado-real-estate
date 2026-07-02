@@ -496,6 +496,12 @@ Seed rules:
 
 ## Latest Local Validation Snapshot
 
+July 2, 2026 14:20 MDT:
+
+- `npm run check:notification-readiness:strict-contract` passed after rebuilding worker output. The wrapper sent no email and mutated no rows.
+- Current env readiness stayed `watch` with exit code 0 and `success=true`; missing-recipient and property-inquiry dry-run override scenarios still failed closed with readiness `blocked`, exit code 1, and `success=false`.
+- Direct property-inquiry and aggregate blockers were detected for both negative scenarios, and aggregate launch-readiness reply-to warning alignment remained true.
+
 July 2, 2026 14:18 MDT:
 
 - `npm run check:notification-readiness:strict` passed after rebuilding worker output. The check sent no email, mutated no rows, returned `success=true`, `strictMode=true`, `commandSuccess=true`, and kept notification readiness at `watch` with no blockers.
