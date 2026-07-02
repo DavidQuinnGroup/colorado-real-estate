@@ -496,6 +496,12 @@ Seed rules:
 
 ## Latest Local Validation Snapshot
 
+July 2, 2026 14:18 MDT:
+
+- `npm run check:notification-readiness:strict` passed after rebuilding worker output. The check sent no email, mutated no rows, returned `success=true`, `strictMode=true`, `commandSuccess=true`, and kept notification readiness at `watch` with no blockers.
+- Saved-search alert notification stayed `watch` with the only warning being 197 pending saved-search alert rows available for dry-run review. Property-inquiry notification stayed `ready`, and aggregate launch notification readiness stayed `watch`.
+- The surfaced next command remains `npm run run:alerts:dry -- --limit 50`; no live alert worker or live alert send was run.
+
 July 2, 2026 14:16 MDT:
 
 - `npm run check:launch-readiness` passed after rebuilding worker output. The check sent no email, mutated no rows, returned `success=true`, and kept aggregate launch readiness at `watch` with no blockers.
