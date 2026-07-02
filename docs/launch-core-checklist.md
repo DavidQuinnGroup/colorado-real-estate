@@ -833,11 +833,11 @@ Carry-forward launch blockers:
 - Follow-up `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000` confirmed queue counts were unchanged after the dry-run preview: no failed jobs, no open dead-letter jobs, no stale active jobs, `mls-sync` remained 0 waiting / 637 completed, `mls-page` remained 0 waiting / 5911 completed, and `reie-alerts` remained 273 waiting.
 - Follow-up `npm run check:alert-notification-readiness` remained non-sending and non-mutating with saved-search alert readiness at `watch`, 197 pending rows, 0 failed rows, 0 processing rows, built-in sender fallback in use, and no explicit reply-to.
 
-Carry-forward launch blockers:
+Carry-forward launch watches:
 
-1. Configure `PROPERTY_INQUIRY_NOTIFY_TO` or fallback `REIE_INTERNAL_EMAIL`, then rerun strict notification and aggregate launch readiness.
-2. Keep `PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN` unset or false before relying on live property-inquiry notification delivery.
-3. Review the saved-search dry-run preview rows and explicitly approve sender fallback/reply-to posture before any live alert processing.
+1. Keep `PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN` unset or false before relying on live property-inquiry notification delivery.
+2. Review the latest saved-search dry-run preview rows and explicitly approve live-send policy before any live alert processing.
+3. Run one controlled internal tracked-email click before recurring scheduler activation or recurring email traffic.
 4. Review the pending `strategy_intake` CRM task before escalating CRM scheduler cadence beyond inspection/watch mode.
 
 ## Checkpoint 408 - Supabase And Fast Verification Refresh
@@ -847,11 +847,11 @@ Carry-forward launch blockers:
 - `npm run check:fast` passed. The bundle rebuilt worker output, confirmed property-inquiry missing-recipient and dry-run suppression helper behavior, confirmed saved-search alert notification readiness remained `watch` with 197 pending / 0 failed / 0 processing, confirmed consolidated and strict-contract notification readiness remain blocked in the expected fail-closed way, ran `npm run run:mls-sync:dry` without executing a sync or making an MLS Grid request, and completed `npm run typecheck` plus `npm run lint`.
 - The fast verification result keeps the same launch posture: infrastructure and code checks pass, while aggregate launch notification readiness remains blocked until property-inquiry recipient routing is configured.
 
-Carry-forward launch blockers:
+Carry-forward launch watches:
 
-1. Configure `PROPERTY_INQUIRY_NOTIFY_TO` or fallback `REIE_INTERNAL_EMAIL`, then rerun strict notification and aggregate launch readiness.
-2. Keep `PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN` unset or false before relying on live property-inquiry notification delivery.
-3. Review the saved-search dry-run preview rows and explicitly approve sender fallback/reply-to posture before any live alert processing.
+1. Keep `PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN` unset or false before relying on live property-inquiry notification delivery.
+2. Review the latest saved-search dry-run preview rows and explicitly approve live-send policy before live alert processing.
+3. Run one controlled internal tracked-email click before recurring scheduler activation or recurring email traffic.
 4. Review the pending `strategy_intake` CRM task before escalating CRM scheduler cadence beyond inspection/watch mode.
 
 ## Checkpoint 409 - Production Build Refresh
@@ -5467,6 +5467,15 @@ Carry-forward launch blockers:
 - `npm run check:fast` passed end to end: worker output rebuilt; property-inquiry missing-recipient and dry-run suppression helpers passed; saved-search alert readiness stayed `watch`; consolidated notification readiness stayed `watch`; strict-contract validation passed; bounded MLS sync dry-run completed with `executed=false` and no MLS Grid request; typecheck passed; lint passed with no ESLint warnings or errors.
 - Remaining notification watch items are saved-search alert sender fallback and 197 pending saved-search alert rows requiring dry-run review before live processing. No live sync was started, no live worker was started, no live email was sent, no CRM mutation was run, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
 
+## Checkpoint 1081 - Resend Sender Readiness Refresh
+
+- July 2, 2026 11:39 MDT the user clarified that `RESEND_FROM_EMAIL=alerts@davidquinngroup.com` was added to Vercel Production/Preview and production was redeployed. Added the same value to gitignored local `.env.local` so local readiness mirrors Vercel; `.env.local` remains ignored and was not committed.
+- `npm run check:alert-notification-readiness` passed with `sendsEmail=false`, `mutatesRows=false`, and sender/reply-to checks passing. Saved-search alert readiness remains `watch` only because 197 pending saved-search alert rows require dry-run review before live processing.
+- `npm run check:property-inquiry-notification:readiness`, `npm run check:notification-readiness`, `npm run check:launch-readiness`, `npm run check:notification-readiness:strict`, and `npm run check:notification-readiness:strict-contract` passed without sending email or mutating rows. Property-inquiry notification readiness remains `ready`; aggregate launch readiness remains `watch` with no blockers.
+- `npm run check:fast` passed end to end. Worker output rebuilt; property-inquiry missing-recipient and dry-run suppression helpers passed; saved-search alert readiness stayed `watch`; consolidated notification readiness stayed `watch`; strict-contract validation passed; bounded MLS sync dry-run completed with `executed=false` and no MLS Grid request; typecheck passed; lint passed with no ESLint warnings or errors.
+- `npm run run:alerts:dry -- --limit 50` completed in dry-run preview mode with 50 scanned rows, 50 ready-to-send preview rows, 0 sent, 0 skipped, and 0 failed. No live alert send was run and no alert rows were mutated.
+- The former sender fallback warning is cleared for local and Vercel production posture, assuming the hidden Vercel value remains `alerts@davidquinngroup.com`. Remaining notification watch item is the 197 pending saved-search alert rows plus final launch policy/internal tracked-click review before recurring or live email reliance. No live sync was started, no live worker was started, no live email was sent, no CRM mutation was run, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
+
 ## Checkpoint 987 - Notification Launch Verified Launch Readiness Contract Notification Launch Verified Launch Readiness Contract Notification Blocker Gate Verified Complete Final Ready Payload Contract Verification Final Completion Final Completion Final Completion Final Completion Final Completion Final Completion Final Completion Final Completion Final Completion
 
 - June 29, 2026 11:38 MDT added `data-notification-launch-verified-launch-readiness-contract-notification-launch-verified-launch-readiness-contract-notification-blocker-gate-verified-complete-final-ready-payload-contract-verification-final-complete-final-complete-final-complete-final-complete-final-complete-final-complete-final-complete-final-complete-final-complete` to the `/admin` `Notification Launch Blockers` card so automation can verify the final ready payload contract verification final completion final completion final completion final completion final completion final completion final completion final completion final completion marker remains tied to the verified notification blocker payload chain after the previous payload-contract verification final completion final completion final completion final completion final completion final completion final completion final completion final verification marker.
@@ -6779,11 +6788,11 @@ Carry-forward launch blockers:
 - `npm run worker:build`, `npm run typecheck`, `npm run smoke:ops`, and `npm run check:fast` passed. The passing ops smoke preserved `adminInspectionMetadata: true`, `notificationReadiness: "blocked"`, and one notification blocker in the alert status summary. The final fast check passed with no ESLint warnings or errors.
 - The temporary local Next dev server was stopped before the broader fast check. This checkpoint only added local source/DOM notification launch verified launch readiness contract notification launch verified summary payload-readiness metadata and ran local route reads, source/DOM contract smoke checks, non-sending readiness checks, bounded dry-runs, and build/lint checks. No live sync was started, no live worker was started, no email was sent, no alert rows were intentionally mutated, no CRM task state was mutated, no OpenAI request was made, no MLS Grid request was made, no reindex was run, and no queue retry was run.
 
-Carry-forward launch blockers:
+Carry-forward launch watches:
 
-1. Configure `PROPERTY_INQUIRY_NOTIFY_TO` or fallback `REIE_INTERNAL_EMAIL`, then rerun strict notification and aggregate launch readiness.
-2. Keep `PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN` unset or false before relying on live property-inquiry notification delivery.
-3. Review the saved-search dry-run preview rows and explicitly approve sender fallback/reply-to posture before any live alert processing.
+1. Keep `PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN` unset or false before relying on live property-inquiry notification delivery.
+2. Review the latest saved-search dry-run preview rows and explicitly approve live-send policy before live alert processing.
+3. Run one controlled internal tracked-email click before recurring scheduler activation or recurring email traffic.
 4. Review the pending `strategy_intake` CRM task before escalating CRM scheduler cadence beyond inspection/watch mode.
 
 <!-- /Users/davidquinn/david-quinn-group/colorado-real-estate/docs/launch-core-checklist.md -->
