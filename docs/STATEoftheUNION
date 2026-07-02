@@ -496,6 +496,12 @@ Seed rules:
 
 ## Latest Local Validation Snapshot
 
+July 2, 2026 14:08 MDT:
+
+- `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000` completed cleanly with no diagnostics, no failed jobs, no open dead-letter jobs, and no stale active jobs.
+- MLS sync, MLS page, listings, and dead-letter queues were healthy. `reie-alerts` remained `busy` with 273 waiting / 0 active / 0 failed jobs, so queue readiness remains `caution` before live alert processing or scheduler activation.
+- The surfaced `npm run run:worker:alerts` command was not run, and no live worker, live email send, queue retry, or row mutation was performed.
+
 July 2, 2026 14:05 MDT:
 
 - `npm run supabase:check:json` passed with `success=true`, readiness `ready`, and no failed checks. URL/key checks, placeholder scan, project-ref consistency for `otmkoqvmhthitldlnjdk`, Postgres URL shape, Supabase project DNS, Supabase Postgres DNS, TCP to the pooler, Prisma `SELECT 1`, and Supabase REST HTTP 200 passed.
