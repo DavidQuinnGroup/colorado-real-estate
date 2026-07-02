@@ -496,6 +496,12 @@ Seed rules:
 
 ## Latest Local Validation Snapshot
 
+July 2, 2026 14:11 MDT:
+
+- `npm run run:alerts:dry -- --limit 50` completed in preview mode with `dryRun=true`, scanned 50 pending saved-search alert rows, previewed 50 ready-to-send rows, sent 0, skipped 0, failed 0, and returned `success=true`.
+- Preview rows were masked and marked `preview` / `Ready to send.` The recommendation remained to review preview rows before any live execution.
+- The surfaced live alert command was not run, and no live worker, live email send, queue retry, or row mutation was performed.
+
 July 2, 2026 14:10 MDT:
 
 - `npm run check:alert-notification-readiness` passed after rebuilding worker output. The check sent no email, mutated no rows, and kept saved-search alert notification readiness at `watch`.
