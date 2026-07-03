@@ -6368,6 +6368,13 @@ Carry-forward launch blockers:
 - Supabase connectivity stayed `ready`; property-inquiry notification email stayed `ready` with `PROPERTY_INQUIRY_NOTIFY_TO` configured and dry-run suppression disabled; saved-search alert email stayed `watch` with 197 pending / 0 failed / 0 processing rows.
 - The surfaced next command remains the protected saved-search alert dry-run, `npm run run:alerts:dry -- --limit 50`; no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no CRM task state was changed, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
 
+## Checkpoint 1193 - Saved Search Alert Dry Run
+
+- July 3, 2026 13:23 MDT reran `npm run run:alerts:dry -- --limit 50`.
+- The protected saved-search alert preview scanned 50 pending rows, previewed 50 ready-to-send rows, sent 0 emails, skipped 0 rows, failed 0 rows, and completed with `dryRun=true`, `mode="preview"`, and `success=true`.
+- The dry-run execution plan remained `caution` because live execution is available only after reviewing the preview rows.
+- The surfaced live commands were not run; no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no CRM task state was changed, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
+
 ## Checkpoint 987 - Notification Launch Verified Launch Readiness Contract Notification Launch Verified Launch Readiness Contract Notification Blocker Gate Verified Complete Final Ready Payload Contract Verification Final Completion Final Completion Final Completion Final Completion Final Completion Final Completion Final Completion Final Completion Final Completion
 
 - June 29, 2026 11:38 MDT added `data-notification-launch-verified-launch-readiness-contract-notification-launch-verified-launch-readiness-contract-notification-blocker-gate-verified-complete-final-ready-payload-contract-verification-final-complete-final-complete-final-complete-final-complete-final-complete-final-complete-final-complete-final-complete-final-complete` to the `/admin` `Notification Launch Blockers` card so automation can verify the final ready payload contract verification final completion final completion final completion final completion final completion final completion final completion final completion final completion marker remains tied to the verified notification blocker payload chain after the previous payload-contract verification final completion final completion final completion final completion final completion final completion final completion final completion final verification marker.
