@@ -5998,6 +5998,14 @@ Carry-forward launch blockers:
 - Closure audit stayed clean with 0 closed, 0 completed, 0 dismissed, 0 missing review notes, and 100% closure-review coverage.
 - No CRM task state was mutated, no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
 
+## Checkpoint 1148 - Launch Readiness Aggregate Refresh
+
+- July 3, 2026 06:23 MDT reran `npm run check:launch-readiness`.
+- The command rebuilt worker output, completed with `success=true`, sent no email, mutated no rows, and kept aggregate launch readiness at `watch`.
+- Supabase connectivity stayed `ready`; property-inquiry notification email stayed `ready` with recipient, dry-run-disabled, sender, reply-to, and site URL checks passing.
+- Saved-search alert email stayed `watch` with 197 pending / 0 failed / 0 processing alert rows; pending rows remained the only launch gate requiring operator review, and the next surfaced command stayed `npm run run:alerts:dry -- --limit 50`.
+- No live alert command was run, no live sync was started, no live worker was started, no live email was sent, no CRM mutation was run, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
+
 ## Checkpoint 987 - Notification Launch Verified Launch Readiness Contract Notification Launch Verified Launch Readiness Contract Notification Blocker Gate Verified Complete Final Ready Payload Contract Verification Final Completion Final Completion Final Completion Final Completion Final Completion Final Completion Final Completion Final Completion Final Completion
 
 - June 29, 2026 11:38 MDT added `data-notification-launch-verified-launch-readiness-contract-notification-launch-verified-launch-readiness-contract-notification-blocker-gate-verified-complete-final-ready-payload-contract-verification-final-complete-final-complete-final-complete-final-complete-final-complete-final-complete-final-complete-final-complete-final-complete` to the `/admin` `Notification Launch Blockers` card so automation can verify the final ready payload contract verification final completion final completion final completion final completion final completion final completion final completion final completion final completion marker remains tied to the verified notification blocker payload chain after the previous payload-contract verification final completion final completion final completion final completion final completion final completion final completion final completion final verification marker.
