@@ -6538,6 +6538,16 @@ Carry-forward launch blockers:
 - The temporary server was stopped after the check; port 3000 was clear, and the process guard found no matching REIE dev server, worker, queue, CRM, digest, or reindex process.
 - No live alert command was run, no live sync was started, no live worker was started, no live email was sent, no CRM task state was changed, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
 
+## Checkpoint 1212 - Supabase and Typesense Readiness Refresh
+
+- July 3, 2026 19:51 MDT reran `npm run supabase:check:json` and `npm run typesense:collections:check`.
+- Supabase readiness returned `ready` with no failed checks.
+- Supabase URL/key checks, placeholder detection, project-ref consistency, Postgres URL shape, project DNS, Postgres DNS, Postgres TCP, Prisma `SELECT 1`, and REST checks passed.
+- Typesense canonical `properties` and `listings` collections were ready in collections-only check mode.
+- Canonical Typesense rule validation confirmed required fields, facets, sortable fields, query fields, filter fields, and default sort expectations.
+- The surfaced `npm run typesense:reindex` command was not run; no reset or reindex was run.
+- No live alert command was run, no live sync was started, no live worker was started, no live email was sent, no CRM task state was changed, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
+
 ## Checkpoint 987 - Notification Launch Verified Launch Readiness Contract Notification Launch Verified Launch Readiness Contract Notification Blocker Gate Verified Complete Final Ready Payload Contract Verification Final Completion Final Completion Final Completion Final Completion Final Completion Final Completion Final Completion Final Completion Final Completion
 
 - June 29, 2026 11:38 MDT added `data-notification-launch-verified-launch-readiness-contract-notification-launch-verified-launch-readiness-contract-notification-blocker-gate-verified-complete-final-ready-payload-contract-verification-final-complete-final-complete-final-complete-final-complete-final-complete-final-complete-final-complete-final-complete-final-complete` to the `/admin` `Notification Launch Blockers` card so automation can verify the final ready payload contract verification final completion final completion final completion final completion final completion final completion final completion final completion final completion marker remains tied to the verified notification blocker payload chain after the previous payload-contract verification final completion final completion final completion final completion final completion final completion final completion final completion final verification marker.
