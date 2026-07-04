@@ -6769,6 +6769,14 @@ Carry-forward launch blockers:
 - The temporary server was stopped after the check; port 3000 was clear, and the process guard found no matching REIE dev server, worker, queue, CRM, digest, or reindex process.
 - No live alert command was run, no live sync was started, no live worker was started, no live email was sent, no CRM task state was changed, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
 
+## Checkpoint 1236 - Queue Dashboard Refresh
+
+- July 4, 2026 11:33 MDT reran `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000`.
+- Queue inspection returned `success=true`, no diagnostics, no failed jobs, no open dead-letter jobs, and no stale active jobs.
+- Recovery stayed `caution` because `reie-alerts` remains busy with 273 waiting / 0 active / 0 delayed / 0 failed jobs.
+- MLS sync, MLS page, listings, and dead-letter queues stayed healthy/drained with 0 waiting / 0 active / 0 delayed / 0 failed jobs.
+- The surfaced alert-worker command was not run; no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no CRM task state was changed, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
+
 ## Checkpoint 987 - Notification Launch Verified Launch Readiness Contract Notification Launch Verified Launch Readiness Contract Notification Blocker Gate Verified Complete Final Ready Payload Contract Verification Final Completion Final Completion Final Completion Final Completion Final Completion Final Completion Final Completion Final Completion Final Completion
 
 - June 29, 2026 11:38 MDT added `data-notification-launch-verified-launch-readiness-contract-notification-launch-verified-launch-readiness-contract-notification-blocker-gate-verified-complete-final-ready-payload-contract-verification-final-complete-final-complete-final-complete-final-complete-final-complete-final-complete-final-complete-final-complete-final-complete` to the `/admin` `Notification Launch Blockers` card so automation can verify the final ready payload contract verification final completion final completion final completion final completion final completion final completion final completion final completion final completion marker remains tied to the verified notification blocker payload chain after the previous payload-contract verification final completion final completion final completion final completion final completion final completion final completion final completion final verification marker.
