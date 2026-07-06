@@ -7248,6 +7248,16 @@ Carry-forward launch blockers:
 - Closure-review audit stayed clean with 0 closed tasks and 100% coverage.
 - No CRM task state was changed, no scheduler cadence was escalated, no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
 
+## Checkpoint 1313 - Supabase and Typesense Readiness Refresh
+
+- July 6, 2026 06:10 MDT reran `npm run supabase:check:json`.
+- Supabase connectivity preflight passed with `success=true`, readiness `ready`, no failed checks, no placeholder Supabase values, matching project ref `otmkoqvmhthitldlnjdk`, DNS/TCP checks passing, Prisma `SELECT 1` passing, and REST returning HTTP 200.
+- July 6, 2026 06:10 MDT reran `npm run typesense:collections:check`.
+- Typesense collection check ran with `check=true`, `reset=false`, and `collectionsOnly=true`.
+- Canonical `properties` and `listings` collections were ready with 32 fields, 23 facets, 16 sortable fields, and default sort `price`.
+- The surfaced Supabase next command was `npm run typesense:reindex`, and it was not run.
+- No live alert command was run, no live sync was started, no live worker was started, no live email was sent, no CRM task state was changed, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
+
 ## Checkpoint 1312 - Queue Dashboard Refresh
 
 - July 6, 2026 06:06 MDT reran `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000`.
