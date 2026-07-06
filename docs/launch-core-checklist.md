@@ -7248,6 +7248,15 @@ Carry-forward launch blockers:
 - Closure-review audit stayed clean with 0 closed tasks and 100% coverage.
 - No CRM task state was changed, no scheduler cadence was escalated, no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
 
+## Checkpoint 1293 - Saved Search Alert Dry Run Preview
+
+- July 6, 2026 00:23 MDT reran `npm run run:alerts:dry -- --limit 50`.
+- The command ran `node dist/scripts/runAlerts.js --dry-run --limit 50`, completed with `success=true`, `dryRun=true`, and `mode="preview"`.
+- The preview scanned 50 pending saved-search alert rows and marked all 50 as ready to send.
+- It sent 0 emails, skipped 0 rows, failed 0 rows, and did not mutate alert rows.
+- The execution plan stayed `caution`: live run is available only after reviewing the preview rows, with the surfaced next live command remaining `node dist/scripts/runAlerts.js --live --limit=50`.
+- The surfaced live script, live API call, and alert worker commands were not run. No live alert command was run, no live sync was started, no live worker was started, no live email was sent, no CRM task state was changed, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
+
 ## Checkpoint 1292 - Launch Readiness Refresh
 
 - July 5, 2026 23:44 MDT reran `npm run check:launch-readiness`.
