@@ -7248,6 +7248,15 @@ Carry-forward launch blockers:
 - Closure-review audit stayed clean with 0 closed tasks and 100% coverage.
 - No CRM task state was changed, no scheduler cadence was escalated, no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
 
+## Checkpoint 1294 - Saved Search Alert Readiness Refresh
+
+- July 6, 2026 00:57 MDT reran `npm run check:alert-notification-readiness`.
+- The command rebuilt worker output, sent no email, mutated no rows, and returned `success=true`.
+- Saved-search alert notification readiness stayed `watch` only because 197 pending saved-search alert rows are available for dry-run review.
+- Sender, reply-to, and site URL checks passed; failed and processing rows stayed 0.
+- The sampled recipient audit checked 10 masked recipients and all were `isUnsubscribed=false`.
+- The surfaced next command remains `npm run run:alerts:dry -- --limit 50`; no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no CRM task state was changed, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
+
 ## Checkpoint 1293 - Saved Search Alert Dry Run Preview
 
 - July 6, 2026 00:23 MDT reran `npm run run:alerts:dry -- --limit 50`.
