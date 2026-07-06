@@ -7248,6 +7248,16 @@ Carry-forward launch blockers:
 - Closure-review audit stayed clean with 0 closed tasks and 100% coverage.
 - No CRM task state was changed, no scheduler cadence was escalated, no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
 
+## Checkpoint 1298 - Fast Verification Refresh
+
+- July 6, 2026 03:01 MDT reran `npm run check:fast`.
+- The command passed end to end: worker output rebuilt, property-inquiry notification skip helpers passed, saved-search alert readiness stayed `watch`, consolidated notification readiness stayed `watch`, strict notification contract passed, bounded MLS sync dry-run passed, typecheck passed, and lint passed with no ESLint warnings or errors.
+- Saved-search alert readiness stayed `watch` with 197 pending / 0 failed / 0 processing rows, sender/reply-to/site-url checks passing, and 10 sampled recipients unsubscribed=false.
+- Consolidated notification readiness kept property-inquiry notification `ready`, saved-search alert notification `watch`, and aggregate launch notification readiness `watch`.
+- Strict notification contract kept current env `watch` / exit 0 / success true, confirmed missing-recipient and property-inquiry dry-run override scenarios fail closed, and kept launch-readiness reply-to warning alignment true.
+- MLS sync dry-run completed with `dryRun=true`, `executed=false`, and explicit "No MLS Grid request was made."
+- No live alert command was run, no live sync was started, no live worker was started, no live email was sent, no CRM task state was changed, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
+
 ## Checkpoint 1297 - Strict Notification Contract Refresh
 
 - July 6, 2026 02:50 MDT reran `npm run check:notification-readiness:strict-contract`.
