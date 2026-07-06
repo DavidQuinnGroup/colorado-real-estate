@@ -7248,6 +7248,14 @@ Carry-forward launch blockers:
 - Closure-review audit stayed clean with 0 closed tasks and 100% coverage.
 - No CRM task state was changed, no scheduler cadence was escalated, no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
 
+## Checkpoint 1310 - Production Build Refresh
+
+- July 6, 2026 05:10 MDT reran `npm run build`.
+- Next.js 15.1.6 completed the optimized production build successfully.
+- Compilation passed, lint/type validation inside the build pipeline completed, page data was collected, 130 static pages were generated, page optimization finalized, and build traces were collected.
+- The route manifest preserved the expected static `/`, `/admin`, and `/admin/dead-letter` pages; dynamic API routes including `/api/property-inquiry`, `/api/process-alerts`, `/api/mls/status`, `/api/search`, and `/api/webhooks/email-reply`; SSG article and market routes; dynamic `/properties/[id]`; and dynamic `/search`.
+- No live alert command was run, no live sync was started, no live worker was started, no live email was sent, no CRM task state was changed, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
+
 ## Checkpoint 1309 - Fast Verification Refresh
 
 - July 6, 2026 05:07 MDT reran `npm run check:fast`.
