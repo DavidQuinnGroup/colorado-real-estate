@@ -7248,6 +7248,18 @@ Carry-forward launch blockers:
 - Closure-review audit stayed clean with 0 closed tasks and 100% coverage.
 - No CRM task state was changed, no scheduler cadence was escalated, no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
 
+## Checkpoint 1363 - Fast Verification Refresh
+
+- July 7, 2026 11:35 MDT reran `npm run check:fast`.
+- Worker output rebuilt successfully.
+- Property-inquiry notification skip helpers passed: missing-recipient and dry-run scenarios both returned `sent=false` with the expected reasons.
+- Saved-search alert readiness stayed `watch` with 197 pending / 0 failed / 0 processing rows, sender/reply-to/site-url checks passing, and 10 sampled recipients unsubscribed=false.
+- Consolidated notification readiness stayed `watch` with property-inquiry notification `ready`, saved-search alert notification `watch`, aggregate launch notification readiness `watch`, and 197 pending saved-search alert rows as the only operator-review warning.
+- Strict notification readiness contract passed; current env stayed `watch` / exit 0 / success true, missing-recipient override failed closed, property-inquiry dry-run override failed closed, and launch-readiness reply-to warning alignment stayed true.
+- Bounded MLS sync dry-run completed with `dryRun=true`, `executed=false`, `maxPages=1`, `pageSize=5`, `startPage=0`, `pageTimeoutMs=30000`, and explicit "No MLS Grid request was made."
+- Typecheck passed and lint passed with no ESLint warnings or errors.
+- No live alert command was run, no live sync was started, no live worker was started, no live email was sent, no CRM task state was changed, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
+
 ## Checkpoint 1362 - Strict Notification Contract Refresh
 
 - July 7, 2026 11:10 MDT reran `npm run check:notification-readiness:strict-contract`.
