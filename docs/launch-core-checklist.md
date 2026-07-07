@@ -7248,6 +7248,16 @@ Carry-forward launch blockers:
 - Closure-review audit stayed clean with 0 closed tasks and 100% coverage.
 - No CRM task state was changed, no scheduler cadence was escalated, no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
 
+## Checkpoint 1335 - Aggregate Launch Readiness Refresh
+
+- July 7, 2026 08:56 MDT reran `npm run check:launch-readiness`.
+- The command rebuilt worker output, sent no email, mutated no rows, returned `success=true`, and kept aggregate launch readiness at `watch` with no blockers.
+- Supabase connectivity stayed `ready` after Prisma `SELECT 1`.
+- Property-inquiry notification email stayed `ready` with recipient, sender, reply-to, dry-run-disabled, and site-url checks passing.
+- Saved-search alert email stayed `watch` only because 197 pending saved-search alert rows require final dry-run review before live processing; failed and processing rows stayed 0.
+- The surfaced saved-search alert dry-run command was not run.
+- No live alert command was run, no live sync was started, no live worker was started, no live email was sent, no CRM task state was changed, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
+
 ## Checkpoint 1334 - CRM Pending Readiness Refresh
 
 - July 7, 2026 08:52 MDT reran `npm run run:crm:pending`.
