@@ -7248,6 +7248,15 @@ Carry-forward launch blockers:
 - Closure-review audit stayed clean with 0 closed tasks and 100% coverage.
 - No CRM task state was changed, no scheduler cadence was escalated, no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
 
+## Checkpoint 1355 - Runtime Smoke Refresh
+
+- July 7, 2026 10:22 MDT started a temporary local Next dev server, then reran `npm run smoke:mls-status`, `npm run smoke:search`, and `npm run smoke:ops`.
+- MLS status returned HTTP 200 with `status="busy"`, operational readiness `watch`, healthy search-index health, media diagnostics `busy`, 100% stale inventory by `lastIntelligenceSync`, and 273 waiting `reie-alerts` jobs.
+- Search returned HTTP 200 from Typesense with `health="healthy"`, `meta.smoke.ready=true`, 5 returned / 5 mapped, and no smoke blockers.
+- Ops smoke passed with public-experience assertions true, notification readiness `watch`, property-inquiry notification `ready`, saved-search alert notification `watch`, alert status `caution`, aggregate launch readiness `watch`, and alert dry-run preview 197 / sent 0.
+- The temporary local server was stopped after the smoke pass, port 3000 was clear, and guarded process scan found no Next/dev/build/worker/live-job process.
+- No live alert command was run, no live sync was started, no live worker was started, no live email was sent, no CRM task state was changed, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
+
 ## Checkpoint 1354 - Production Build Refresh
 
 - July 7, 2026 10:18 MDT reran `npm run build`.
