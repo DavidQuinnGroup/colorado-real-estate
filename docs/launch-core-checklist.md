@@ -7248,6 +7248,13 @@ Carry-forward launch blockers:
 - Closure-review audit stayed clean with 0 closed tasks and 100% coverage.
 - No CRM task state was changed, no scheduler cadence was escalated, no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
 
+## Checkpoint 1371 - Saved Search Alert Readiness Refresh
+
+- July 7, 2026 12:13 MDT reran `npm run check:alert-notification-readiness`.
+- Worker output rebuilt, saved-search alert notification readiness returned `success=true`, `sendsEmail=false`, `mutatesRows=false`, and readiness stayed `watch`.
+- Sender, reply-to, site URL, failed-row, and processing-row checks passed; the only warning is 197 pending saved-search alert rows available for dry-run review, with 10 sampled recipients unsubscribed=false.
+- The surfaced dry-run command was not run; no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no CRM task state was changed, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
+
 ## Checkpoint 1370 - Typesense Collections Readiness Refresh
 
 - July 7, 2026 12:11 MDT reran `npm run typesense:collections:check`.
