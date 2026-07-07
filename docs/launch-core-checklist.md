@@ -7248,6 +7248,14 @@ Carry-forward launch blockers:
 - Closure-review audit stayed clean with 0 closed tasks and 100% coverage.
 - No CRM task state was changed, no scheduler cadence was escalated, no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
 
+## Checkpoint 1344 - Supabase and Typesense Readiness Refresh
+
+- July 7, 2026 09:34 MDT reran `npm run supabase:check:json` and `npm run typesense:collections:check`.
+- Supabase returned `success=true`, readiness `ready`, no failed checks, matching project ref `otmkoqvmhthitldlnjdk`, passing DNS/TCP checks, passing Prisma `SELECT 1`, and REST HTTP 200.
+- Typesense ran in `check=true` / `reset=false` / `collectionsOnly=true` mode, validated canonical `properties` and `listings` schemas, and confirmed both collections are ready with 32 fields, 23 facets, 16 sortable fields, and default sort `price`.
+- The surfaced Typesense reindex command was not run.
+- No live alert command was run, no live sync was started, no live worker was started, no live email was sent, no CRM task state was changed, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
+
 ## Checkpoint 1343 - Runtime Smoke Refresh
 
 - July 7, 2026 09:30 MDT started a temporary local Next dev server and reran `npm run smoke:mls-status`, `npm run smoke:search`, and `npm run smoke:ops`.
