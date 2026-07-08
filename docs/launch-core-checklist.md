@@ -7248,6 +7248,14 @@ Carry-forward launch blockers:
 - Closure-review audit stayed clean with 0 closed tasks and 100% coverage.
 - No CRM task state was changed, no scheduler cadence was escalated, no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
 
+## Checkpoint 1405 - Saved-Search Alert Readiness Refresh
+
+- July 8, 2026 01:38 MDT reran `npm run check:alert-notification-readiness`.
+- Worker output rebuilt, saved-search alert notification readiness returned `success=true`, `sendsEmail=false`, `mutatesRows=false`, and stayed `watch` because 197 pending saved-search alert rows remain available for dry-run/operator review.
+- Alert queue counts stayed 197 pending / 0 failed / 0 processing; sampled recipients were unsubscribed=false.
+- `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, `RESEND_REPLY_TO_EMAIL`, and `NEXT_PUBLIC_SITE_URL` checks passed, with links resolving to `https://davidquinngroup.com`.
+- The surfaced protected next command remains `npm run run:alerts:dry -- --limit 50`; it was not run. No live sync was started, no live worker was started, no live alert command was run, no live email was sent, no CRM task state was changed, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
+
 ## Checkpoint 1404 - Queue Dashboard After Runtime Smoke
 
 - July 8, 2026 01:29 MDT reran `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000` after the runtime smoke pass.
