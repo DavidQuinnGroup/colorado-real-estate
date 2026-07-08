@@ -7248,6 +7248,15 @@ Carry-forward launch blockers:
 - Closure-review audit stayed clean with 0 closed tasks and 100% coverage.
 - No CRM task state was changed, no scheduler cadence was escalated, no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
 
+## Checkpoint 1418 - Typesense Collections Readiness Refresh
+
+- July 8, 2026 03:21 MDT reran `npm run typesense:collections:check`.
+- Typesense collection readiness ran in `check=true`, `reset=false`, `collectionsOnly=true` mode.
+- Canonical rule set validation passed with 33 canonical fields, 7 required fields, 26 optional fields, 23 required facets, 7 sortable fields, 10 query fields, 10 filter fields, and 2 sort fields.
+- Canonical `properties` and `listings` schemas validated with 32 fields, 23 facets, 7 sortable fields, and default sort `price`.
+- Existing `properties` and `listings` collections stayed ready with 32 fields, 23 facets, 16 sortable fields, and default sort `price`.
+- No Supabase records were read for indexing, no reset was run, no reindex was run, no live sync was started, no live worker was started, no live alert command was run, no live email was sent, no CRM task state was changed, no OpenAI request was made, no MLS Grid request was made, and no queue retry was run.
+
 ## Checkpoint 1417 - Supabase Readiness Refresh
 
 - July 8, 2026 03:19 MDT reran `npm run supabase:check:json`.
