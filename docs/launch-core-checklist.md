@@ -7248,6 +7248,14 @@ Carry-forward launch blockers:
 - Closure-review audit stayed clean with 0 closed tasks and 100% coverage.
 - No CRM task state was changed, no scheduler cadence was escalated, no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
 
+## Checkpoint 1420 - MLS Sync Dry-Run Guard Refresh
+
+- July 8, 2026 03:35 MDT reran `npm run run:mls-sync:dry`.
+- MLS sync runner returned `success=true`, `dryRun=true`, `executed=false`, and no diagnostics.
+- The dry-run plan stayed bounded to maxPages 1, pageSize 5, startPage 0, pageTimeoutMs 30000, rateDelayMs 1100, and includeMedia false.
+- The command confirmed: `Dry-run complete. No MLS Grid request was made.`
+- The surfaced live sync command was not run. No live sync was started, no live worker was started, no live alert command was run, no live email was sent, no CRM task state was changed, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
+
 ## Checkpoint 1419 - Queue Dashboard After Typesense Collections Check
 
 - July 8, 2026 03:24 MDT reran `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000` after the Typesense collections readiness refresh.
