@@ -7248,6 +7248,15 @@ Carry-forward launch blockers:
 - Closure-review audit stayed clean with 0 closed tasks and 100% coverage.
 - No CRM task state was changed, no scheduler cadence was escalated, no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
 
+## Checkpoint 1438 - Saved-Search Alert Dry-Run Preview After CRM Refresh
+
+- July 8, 2026 05:05 MDT reran `npm run run:alerts:dry -- --limit 50`.
+- Saved-search alert processing stayed in dry-run preview mode with `dryRun=true`, `mode="preview"`, and `success=true`.
+- The preview scanned 50 pending alert rows, previewed 50 ready-to-send rows, sent 0, skipped 0, and failed 0.
+- The execution plan stayed `caution` only because dry-run found alert rows and live execution still requires operator review of the preview.
+- Process inspection hit the known sandbox restriction with `operation not permitted: ps`; no live process command was run as a fallback.
+- No live alert command was run, no live sync was started, no live worker was started, no live email was sent, no CRM task state was changed, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
+
 ## Checkpoint 1437 - CRM Pending Readiness After Queue Dashboard Refresh
 
 - July 8, 2026 04:54 MDT reran `npm run run:crm:pending`.
