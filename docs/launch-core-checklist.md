@@ -7248,6 +7248,16 @@ Carry-forward launch blockers:
 - Closure-review audit stayed clean with 0 closed tasks and 100% coverage.
 - No CRM task state was changed, no scheduler cadence was escalated, no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
 
+## Checkpoint 1491 - Strict Notification Contract After Strict Readiness Refresh
+
+- July 8, 2026 10:50 MDT reran `npm run check:notification-readiness:strict-contract`.
+- Worker output rebuilt, and the strict notification contract returned `success=true`, `sendsEmail=false`, and `mutatesRows=false`.
+- Current environment contract stayed aligned with readiness `watch`, exit code 0, and `success=true`.
+- Missing-recipient simulation stayed blocked with exit code 1, `propertyInquiryRecipientBlocked=true`, and `aggregateRecipientBlocked=true`.
+- Dry-run simulation stayed blocked with exit code 1, `propertyInquiryDryRunBlocked=true`, and `aggregateDryRunBlocked=true`.
+- Launch-readiness contract stayed blocked with exit code 1 while preserving `propertyInquiryReplyToWarningAligned=true`.
+- The surfaced saved-search alert dry-run command was not rerun. No live alert command was run, no live sync was started, no live worker was started, no live email was sent, no CRM task state was changed, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
+
 ## Checkpoint 1490 - Strict Notification Readiness After Consolidated Refresh
 
 - July 8, 2026 10:48 MDT reran `npm run check:notification-readiness:strict`.
