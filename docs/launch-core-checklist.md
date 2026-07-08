@@ -7248,6 +7248,13 @@ Carry-forward launch blockers:
 - Closure-review audit stayed clean with 0 closed tasks and 100% coverage.
 - No CRM task state was changed, no scheduler cadence was escalated, no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
 
+## Checkpoint 1401 - Fast Verification Refresh
+
+- July 7, 2026 21:55 MDT reran `npm run check:fast`.
+- Fast verification passed end to end: worker output rebuilt; property-inquiry notification skip helpers passed; saved-search alert readiness stayed `watch` with 197 pending / 0 failed / 0 processing rows, sender/reply-to/site-url checks passing, and 10 sampled recipients unsubscribed=false.
+- Consolidated notification readiness stayed `watch`; strict notification contract passed; bounded MLS sync dry-run completed with `dryRun=true`, `executed=false`, and explicit `No MLS Grid request was made`; typecheck passed; lint passed with no ESLint warnings or errors.
+- No live sync was started, no live worker was started, no live alert command was run, no live email was sent, no CRM task state was changed, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
+
 ## Checkpoint 1400 - Queue Dashboard After MLS Sync Dry Run
 
 - July 7, 2026 21:53 MDT reran `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000` after the MLS sync dry-run guard.
