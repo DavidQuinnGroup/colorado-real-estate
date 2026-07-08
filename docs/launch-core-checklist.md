@@ -7248,6 +7248,14 @@ Carry-forward launch blockers:
 - Closure-review audit stayed clean with 0 closed tasks and 100% coverage.
 - No CRM task state was changed, no scheduler cadence was escalated, no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
 
+## Checkpoint 1425 - Consolidated Notification Readiness After Alert Preview
+
+- July 8, 2026 04:19 MDT reran `npm run check:notification-readiness` after the saved-search alert dry-run preview, direct alert readiness refresh, and queue dashboard check.
+- Worker output rebuilt, consolidated notification readiness returned `success=true`, `strictMode=false`, `commandSuccess=true`, `sendsEmail=false`, and `mutatesRows=false`.
+- Overall notification readiness stayed `watch` with two operator-review checks: saved-search alert notification stayed `watch`, property-inquiry notification stayed `ready`, and aggregate launch notification readiness stayed `watch`.
+- Saved-search and aggregate warnings remained limited to the 197 pending saved-search alert rows requiring dry-run/operator review before live processing; there were no failed checks and no blockers.
+- The surfaced protected next command remains `npm run run:alerts:dry -- --limit 50`; it was not rerun in this checkpoint. No live sync was started, no live worker was started, no live alert command was run, no live email was sent, no CRM task state was changed, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
+
 ## Checkpoint 1424 - Queue Dashboard After Alert Readiness Refresh
 
 - July 8, 2026 04:18 MDT reran `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000` after the post-dry-run saved-search alert readiness refresh.
