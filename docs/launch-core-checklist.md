@@ -7248,6 +7248,14 @@ Carry-forward launch blockers:
 - Closure-review audit stayed clean with 0 closed tasks and 100% coverage.
 - No CRM task state was changed, no scheduler cadence was escalated, no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
 
+## Checkpoint 1412 - Property-Inquiry Notification Readiness Refresh
+
+- July 8, 2026 02:53 MDT reran `npm run check:property-inquiry-notification:readiness`.
+- Worker output rebuilt, property-inquiry notification readiness returned `success=true`, `sendsEmail=false`, `mutatesRows=false`, and stayed `ready`.
+- `RESEND_API_KEY`, `PROPERTY_INQUIRY_NOTIFY_TO`, `PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN`, `RESEND_FROM_EMAIL`, `RESEND_REPLY_TO_EMAIL`, and `NEXT_PUBLIC_SITE_URL` checks passed.
+- Property-inquiry recipient and fallback reply-to resolved to masked `da***@gmail.com`; sender resolved to masked `al***@davidquinngroup.com`; property links resolved to `https://davidquinngroup.com`.
+- The surfaced next command remains `npm run check:notification-readiness`; it was not run in this checkpoint. No live sync was started, no live worker was started, no live alert command was run, no live email was sent, no CRM task state was changed, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
+
 ## Checkpoint 1411 - Queue Dashboard After CRM Refresh
 
 - July 8, 2026 02:52 MDT reran `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000` after the CRM pending readiness refresh.
