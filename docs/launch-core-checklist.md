@@ -7248,6 +7248,14 @@ Carry-forward launch blockers:
 - Closure-review audit stayed clean with 0 closed tasks and 100% coverage.
 - No CRM task state was changed, no scheduler cadence was escalated, no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
 
+## Checkpoint 1446 - Property-Inquiry Notification Readiness After CRM Refresh
+
+- July 8, 2026 05:24 MDT reran `npm run check:property-inquiry-notification:readiness`.
+- Worker output rebuilt, and property-inquiry notification readiness returned `success=true`, `sendsEmail=false`, and `mutatesRows=false`.
+- Readiness stayed `ready` with summary `Property inquiry notification configuration is ready for high-priority sends.`
+- `RESEND_API_KEY`, `PROPERTY_INQUIRY_NOTIFY_TO`, `PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN`, `RESEND_FROM_EMAIL`, `RESEND_REPLY_TO_EMAIL`, and `NEXT_PUBLIC_SITE_URL` checks all passed.
+- No property-inquiry notification was sent, no CRM task state was changed, no scheduler cadence was escalated, no live alert command was run, no saved-search alert dry-run was rerun, no live sync was started, no live worker was started, no live email was sent, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
+
 ## Checkpoint 1445 - CRM Pending Readiness After Post-Preview Queue Dashboard
 
 - July 8, 2026 05:22 MDT reran `npm run run:crm:pending`.
