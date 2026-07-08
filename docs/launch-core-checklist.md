@@ -7248,6 +7248,16 @@ Carry-forward launch blockers:
 - Closure-review audit stayed clean with 0 closed tasks and 100% coverage.
 - No CRM task state was changed, no scheduler cadence was escalated, no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
 
+## Checkpoint 1436 - Queue Dashboard After Launch Readiness Refresh
+
+- July 8, 2026 04:52 MDT reran `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000`.
+- Queue inspection returned `success=true` with no diagnostics, no failed jobs, no open dead-letter jobs, and no stale active jobs.
+- Recovery stayed `caution` only because one queue has waiting work.
+- MLS sync stayed healthy/drained with 0 waiting / 0 active / 0 delayed / 0 failed and 637 completed jobs.
+- MLS page stayed healthy/drained with 0 waiting / 0 active / 0 delayed / 0 failed and 5911 completed jobs; listings and dead-letter queues also stayed healthy/drained.
+- `reie-alerts` stayed busy with 273 waiting / 0 active / 0 delayed / 0 failed jobs, and the surfaced alert worker command was not run.
+- No live alert command was run, no saved-search alert dry-run was run, no live sync was started, no live worker was started, no live email was sent, no CRM task state was changed, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
+
 ## Checkpoint 1435 - Aggregate Launch Readiness After Strict Contract
 
 - July 8, 2026 04:48 MDT reran `npm run check:launch-readiness`.
