@@ -7248,6 +7248,13 @@ Carry-forward launch blockers:
 - Closure-review audit stayed clean with 0 closed tasks and 100% coverage.
 - No CRM task state was changed, no scheduler cadence was escalated, no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
 
+## Checkpoint 1400 - Queue Dashboard After MLS Sync Dry Run
+
+- July 7, 2026 21:53 MDT reran `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000` after the MLS sync dry-run guard.
+- Queue inspection returned `success=true` with no diagnostics, no failed jobs, no open dead-letter jobs, and no stale active jobs.
+- MLS sync, MLS page, listings, and dead-letter queues stayed healthy/drained; `reie-alerts` stayed busy with 273 waiting / 0 active / 0 delayed / 0 failed jobs.
+- Recovery stayed `caution` only because one queue has waiting work. The surfaced alert worker command was not run; no live sync was started, no live worker was started, no live alert command was run, no live email was sent, no CRM task state was changed, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
+
 ## Checkpoint 1399 - MLS Sync Dry-Run Guard Refresh
 
 - July 7, 2026 21:51 MDT reran `npm run run:mls-sync:dry`.
