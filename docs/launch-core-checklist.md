@@ -7248,6 +7248,14 @@ Carry-forward launch blockers:
 - Closure-review audit stayed clean with 0 closed tasks and 100% coverage.
 - No CRM task state was changed, no scheduler cadence was escalated, no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
 
+## Checkpoint 1428 - Aggregate Launch Readiness After Alert Preview
+
+- July 8, 2026 04:34 MDT reran `npm run check:launch-readiness` after the saved-search alert preview and strict notification contract refresh.
+- Worker output rebuilt, launch readiness returned `success=true`, `sendsEmail=false`, `mutatesRows=false`, and overall readiness stayed `watch`.
+- Supabase connectivity stayed `ready`; property-inquiry notification email stayed `ready`.
+- Saved-search alert email stayed `watch` only because 197 pending saved-search alert rows require final dry-run/operator review before live processing; failed and processing alert counts stayed 0.
+- The surfaced protected next command remains `npm run run:alerts:dry -- --limit 50`; it was not rerun in this checkpoint. No live sync was started, no live worker was started, no live alert command was run, no live email was sent, no CRM task state was changed, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
+
 ## Checkpoint 1427 - Strict Notification Contract After Alert Preview
 
 - July 8, 2026 04:33 MDT reran `npm run check:notification-readiness:strict-contract` after the saved-search alert preview and strict notification readiness refresh.
