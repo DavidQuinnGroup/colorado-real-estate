@@ -7248,21 +7248,31 @@ Carry-forward launch blockers:
 - Closure-review audit stayed clean with 0 closed tasks and 100% coverage.
 - No CRM task state was changed, no scheduler cadence was escalated, no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
 
-## Checkpoint 1622 - Notification Readiness After Alert Readiness Refresh
+## Checkpoint 1624 - Strict Notification Contract After Strict Refresh
 
-- July 10, 2026 11:17 MDT reran `npm run check:notification-readiness`.
-- The command rebuilt the worker bundle, stayed non-sending and non-mutating, and returned `success=true`, `commandSuccess=true`, `strictMode=false`, and Terminal 5 metadata.
-- Overall notification readiness stayed `watch` with summary `2 notification readiness checks require operator review.`
-- Saved-search alert notification stayed `watch` with 197 pending saved-search alert rows available for dry-run review, no failed checks, and no blocked-by entries.
-- Property-inquiry notification stayed `ready` with summary `Property inquiry notification configuration is ready for high-priority sends.`
-- Aggregate launch notification readiness stayed `watch` because 197 pending saved-search alert rows require final dry-run review before live processing.
-- The surfaced `npm run run:alerts:dry -- --limit 50` next command was not run. No live alert command was run, no live sync was started, no live worker was started, no live email was sent, no CRM task was mutated, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
+- July 10, 2026 11:19 MDT reran `npm run check:notification-readiness:strict-contract`.
+- The command rebuilt the worker bundle, stayed non-sending and non-mutating, and returned `success=true` for `reie-notification-readiness-strict-contract`.
+- Current environment contract stayed aligned with readiness `watch`, exitCode 0, and success true.
+- Missing-recipient env contract stayed blocked with exitCode 1, success false, `propertyInquiryRecipientBlocked=true`, and `aggregateRecipientBlocked=true`.
+- Dry-run env contract stayed blocked with exitCode 1, success false, `propertyInquiryDryRunBlocked=true`, and `aggregateDryRunBlocked=true`.
+- Launch readiness contract stayed blocked with exitCode 1, success false, and `propertyInquiryReplyToWarningAligned=true`.
+- The surfaced dry-run command was not run. No live alert command was run, no live sync was started, no live worker was started, no live email was sent, no CRM task was mutated, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
 
 ## Checkpoint 1623 - Strict Notification Readiness After Consolidated Refresh
 
 - July 10, 2026 11:18 MDT reran `npm run check:notification-readiness:strict`.
 - The command rebuilt the worker bundle, stayed non-sending and non-mutating, and returned `success=true`, `commandSuccess=true`, `strictMode=true`, and Terminal 5 metadata.
 - Overall strict notification readiness stayed `watch` with summary `2 notification readiness checks require operator review.`
+- Saved-search alert notification stayed `watch` with 197 pending saved-search alert rows available for dry-run review, no failed checks, and no blocked-by entries.
+- Property-inquiry notification stayed `ready` with summary `Property inquiry notification configuration is ready for high-priority sends.`
+- Aggregate launch notification readiness stayed `watch` because 197 pending saved-search alert rows require final dry-run review before live processing.
+- The surfaced `npm run run:alerts:dry -- --limit 50` next command was not run. No live alert command was run, no live sync was started, no live worker was started, no live email was sent, no CRM task was mutated, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
+
+## Checkpoint 1622 - Notification Readiness After Alert Readiness Refresh
+
+- July 10, 2026 11:17 MDT reran `npm run check:notification-readiness`.
+- The command rebuilt the worker bundle, stayed non-sending and non-mutating, and returned `success=true`, `commandSuccess=true`, `strictMode=false`, and Terminal 5 metadata.
+- Overall notification readiness stayed `watch` with summary `2 notification readiness checks require operator review.`
 - Saved-search alert notification stayed `watch` with 197 pending saved-search alert rows available for dry-run review, no failed checks, and no blocked-by entries.
 - Property-inquiry notification stayed `ready` with summary `Property inquiry notification configuration is ready for high-priority sends.`
 - Aggregate launch notification readiness stayed `watch` because 197 pending saved-search alert rows require final dry-run review before live processing.
