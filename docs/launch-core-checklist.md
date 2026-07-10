@@ -7248,6 +7248,16 @@ Carry-forward launch blockers:
 - Closure-review audit stayed clean with 0 closed tasks and 100% coverage.
 - No CRM task state was changed, no scheduler cadence was escalated, no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
 
+## Checkpoint 1586 - Alert Notification Readiness After CRM Pending Refresh
+
+- July 10, 2026 06:30 MDT reran `npm run check:alert-notification-readiness`.
+- Worker output rebuilt, and saved-search alert notification readiness returned `success=true`, `sendsEmail=false`, `mutatesRows=false`, and Terminal 5 metadata.
+- Readiness stayed `watch` with summary `1 optional saved-search alert email setting should be reviewed.`
+- Sender, reply-to, site URL, failed-row, and processing-row checks all passed.
+- Queue counts stayed pending 197, failed 0, and processing 0; sampled recipients remained unsubscribed=false.
+- The only warning stayed that 197 pending saved-search alert rows are available for dry-run review.
+- The surfaced saved-search alert dry-run command was not run. No live alert command was run, no live sync was started, no live worker was started, no live email was sent, no CRM task state was changed, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
+
 ## Checkpoint 1585 - CRM Pending After Queue Dashboard Refresh
 
 - July 10, 2026 06:24 MDT reran `npm run run:crm:pending`.
