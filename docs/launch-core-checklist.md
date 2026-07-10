@@ -7248,6 +7248,16 @@ Carry-forward launch blockers:
 - Closure-review audit stayed clean with 0 closed tasks and 100% coverage.
 - No CRM task state was changed, no scheduler cadence was escalated, no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
 
+## Checkpoint 1602 - Strict Notification Readiness After Consolidated Refresh
+
+- July 10, 2026 07:13 MDT reran `npm run check:notification-readiness:strict`.
+- Worker output rebuilt, and strict notification readiness returned `success=true`, `strictMode=true`, `commandSuccess=true`, `sendsEmail=false`, and `mutatesRows=false`.
+- Overall readiness stayed `watch` with summary `2 notification readiness checks require operator review.`
+- Saved-search alert notification stayed `watch` with no failed checks and one warning for 197 pending saved-search alert rows available for dry-run review.
+- Property-inquiry notification stayed `ready` with no failed checks and no warning checks.
+- Aggregate launch notification readiness stayed `watch` with no failed checks and one warning for 197 pending saved-search alert rows requiring final dry-run review before live processing.
+- The surfaced saved-search alert dry-run command was not run. No live alert command was run, no live sync was started, no live worker was started, no live email was sent, no CRM task state was changed, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
+
 ## Checkpoint 1601 - Consolidated Notification Readiness After Alert Readiness Refresh
 
 - July 10, 2026 07:12 MDT reran `npm run check:notification-readiness`.
