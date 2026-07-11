@@ -7248,6 +7248,16 @@ Carry-forward launch blockers:
 - Closure-review audit stayed clean with 0 closed tasks and 100% coverage.
 - No CRM task state was changed, no scheduler cadence was escalated, no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
 
+## Checkpoint 1639 - Launch Readiness After Strict Contract Refresh
+
+- July 10, 2026 19:25 MDT reran `npm run check:launch-readiness`.
+- The command rebuilt the worker bundle, stayed non-sending and non-mutating, and returned `success=true` for `reie-launch-readiness` with Terminal 5 metadata.
+- Overall launch readiness stayed `watch` with summary `1 launch gate require operator review.` and next action `Review watch gates, then run final protected dry-runs before live processing.`
+- Supabase connectivity stayed `ready` with the Prisma `SELECT 1` database preflight passing.
+- Saved-search alert email stayed `watch`; email environment checks passed, failed rows stayed 0, processing rows stayed 0, and 197 pending saved-search alert rows still require final dry-run review before live processing.
+- Property-inquiry notification email stayed `ready`; `PROPERTY_INQUIRY_NOTIFY_TO` is configured, dry-run suppression is disabled or unset, and sender / reply-to / site URL checks passed.
+- The surfaced `npm run run:alerts:dry -- --limit 50` next command was not run. No live alert command was run, no live sync was started, no live worker was started, no live email was sent, no CRM task was mutated, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
+
 ## Checkpoint 1638 - Strict Notification Contract After Strict Refresh
 
 - July 10, 2026 19:22 MDT reran `npm run check:notification-readiness:strict-contract`.
