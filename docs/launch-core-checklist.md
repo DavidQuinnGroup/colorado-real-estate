@@ -7248,6 +7248,16 @@ Carry-forward launch blockers:
 - Closure-review audit stayed clean with 0 closed tasks and 100% coverage.
 - No CRM task state was changed, no scheduler cadence was escalated, no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
 
+## Checkpoint 1836 - Queue Dashboard After Alert Readiness Refresh
+
+- July 12, 2026 14:58 MDT reran `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000`.
+- The read-only queue dashboard returned `success=true` with no diagnostics, no failed jobs reported by inspected queues, no open dead-letter jobs, and no stale active jobs.
+- Recovery stayed `caution` because one queue has active, waiting, or delayed work.
+- MLS sync, MLS page, listings, and dead-letter queues stayed healthy or drained with 0 waiting, 0 active, 0 delayed, and 0 failed jobs.
+- `reie-alerts` stayed busy with 273 waiting, 0 active, 0 delayed, and 0 failed jobs.
+- The surfaced `npm run run:worker:alerts` next command was not run. No worker process was started and no retry command was run.
+- No live alert command was run, no saved-search alert dry-run was run, no live sync was started, no live worker was started, no live email was sent, no CRM task was mutated, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
+
 ## Checkpoint 1835 - Saved-Search Alert Readiness After Launch Refresh
 
 - July 12, 2026 14:54 MDT reran `npm run check:alert-notification-readiness`.
