@@ -7248,6 +7248,16 @@ Carry-forward launch blockers:
 - Closure-review audit stayed clean with 0 closed tasks and 100% coverage.
 - No CRM task state was changed, no scheduler cadence was escalated, no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
 
+## Checkpoint 1769 - Saved-Search Alert Readiness After Launch Refresh
+
+- July 12, 2026 12:06 MDT reran `npm run check:alert-notification-readiness`.
+- The command rebuilt the worker bundle, stayed non-sending and non-mutating, and returned `success=true` for `saved-search-alert-notification-readiness` with Terminal 5 metadata.
+- Saved-search alert notification readiness stayed `watch` with summary `1 optional saved-search alert email setting should be reviewed.`
+- Resend API key shape, sender, reply-to, and site URL checks passed without printing secret values.
+- AlertQueue direct readiness counts stayed pending 197, failed 0, and processing 0.
+- Sampled recipients stayed subscribed in the masked readiness sample.
+- The surfaced `npm run run:alerts:dry -- --limit 50` next command was not run. No live alert command was run, no saved-search alert dry-run was run, no live sync was started, no live worker was started, no live email was sent, no CRM task was mutated, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
+
 ## Checkpoint 1768 - Launch Readiness After Strict Contract Refresh
 
 - July 12, 2026 11:51 MDT reran `npm run check:launch-readiness`.
