@@ -7248,6 +7248,16 @@ Carry-forward launch blockers:
 - Closure-review audit stayed clean with 0 closed tasks and 100% coverage.
 - No CRM task state was changed, no scheduler cadence was escalated, no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
 
+## Checkpoint 1936 - Saved-Search Alert Readiness After Strict Contract
+
+- July 13, 2026 07:14 MDT reran `npm run check:alert-notification-readiness`.
+- Worker output rebuilt successfully before the saved-search alert notification-readiness script ran.
+- The check returned `success=true`, `sendsEmail=false`, and `mutatesRows=false`; readiness stayed `watch`.
+- AlertQueue counts stayed 197 pending, 0 failed, and 0 processing.
+- Sender, reply-to, site URL, failed-row, and processing-row checks passed; the 10 sampled recipients were unsubscribed=false.
+- The only warning remained `AlertQueue pending recipients`: 197 pending saved-search alert rows available for dry-run review.
+- The surfaced `npm run run:alerts:dry -- --limit 50` command was not run. No saved-search alert dry-run was run, no live property-inquiry smoke was run, no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no CRM task state was changed, no scheduler cadence was escalated, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
+
 ## Checkpoint 1935 - Strict Notification Contract After Strict Readiness
 
 - July 13, 2026 07:11 MDT reran `npm run check:notification-readiness:strict-contract`.
