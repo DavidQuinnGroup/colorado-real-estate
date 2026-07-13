@@ -7248,6 +7248,16 @@ Carry-forward launch blockers:
 - Closure-review audit stayed clean with 0 closed tasks and 100% coverage.
 - No CRM task state was changed, no scheduler cadence was escalated, no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
 
+## Checkpoint 1892 - Strict Notification Readiness After Launch Refresh
+
+- July 13, 2026 05:18 MDT reran `npm run check:notification-readiness:strict`.
+- Worker output rebuilt successfully before the strict notification-readiness script ran.
+- Strict notification readiness returned `success=true`, `commandSuccess=true`, `strictMode=true`, `sendsEmail=false`, and `mutatesRows=false`.
+- Overall readiness stayed `watch` because 2 notification readiness checks still require operator review, with `npm run run:alerts:dry -- --limit 50` surfaced as the next command.
+- Property-inquiry notification stayed `ready` with no failed checks, no warning checks, and high-priority send configuration ready.
+- Saved-search alert notification stayed `watch` only because 197 pending saved-search alert rows remain available for dry-run review; aggregate launch notification readiness stayed `watch` for the same 197 pending rows before live processing.
+- The surfaced saved-search alert dry-run command was not run. No live property-inquiry smoke was run, no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no CRM task state was changed, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
+
 ## Checkpoint 1891 - Launch Readiness After Saved-Search Alert Refresh
 
 - July 13, 2026 05:16 MDT reran `npm run check:launch-readiness`.
