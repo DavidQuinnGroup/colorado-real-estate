@@ -7248,6 +7248,16 @@ Carry-forward launch blockers:
 - Closure-review audit stayed clean with 0 closed tasks and 100% coverage.
 - No CRM task state was changed, no scheduler cadence was escalated, no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
 
+## Checkpoint 1854 - Property-Inquiry Notification Readiness After CRM Refresh
+
+- July 12, 2026 19:14 MDT reran `npm run check:property-inquiry-notification:readiness`.
+- Worker output rebuilt successfully before the property-inquiry notification readiness script ran.
+- The check returned `success=true`, `sendsEmail=false`, `mutatesRows=false`, and readiness stayed `ready`.
+- `RESEND_API_KEY`, `PROPERTY_INQUIRY_NOTIFY_TO`, `PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN`, `RESEND_FROM_EMAIL`, `RESEND_REPLY_TO_EMAIL`, and `NEXT_PUBLIC_SITE_URL` checks all passed.
+- Property-inquiry recipient routing stayed configured, dry-run suppression stayed disabled or unset, sender resolved to `al***@davidquinngroup.com`, reply-to resolved to `da***@gmail.com`, and property links stayed on `https://davidquinngroup.com`.
+- The surfaced consolidated notification-readiness follow-up command was not run, and `npm run smoke:property-inquiry` was not run.
+- No live property-inquiry smoke was run, no live alert command was run, no saved-search alert dry-run was run, no live sync was started, no live worker was started, no live email was sent, no CRM task state was changed, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
+
 ## Checkpoint 1853 - CRM Pending Readiness After Queue Dashboard Refresh
 
 - July 12, 2026 19:13 MDT reran `npm run run:crm:pending`.
