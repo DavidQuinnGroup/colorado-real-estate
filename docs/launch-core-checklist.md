@@ -7248,6 +7248,17 @@ Carry-forward launch blockers:
 - Closure-review audit stayed clean with 0 closed tasks and 100% coverage.
 - No CRM task state was changed, no scheduler cadence was escalated, no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
 
+## Checkpoint 2128 - CRM Pending Readiness After Queue Dashboard
+
+- July 15, 2026 10:41 MDT reran `npm run run:crm:pending`.
+- CRM reporting stayed read-only and returned `success=true`.
+- CRM readiness stayed `watch` with the summary that the closure audit is clean and active tasks are ready for human review.
+- The pending queue still contains 1 medium-priority `strategy_intake` task for masked `co***@example.com`.
+- The pending task still has alert readiness `unknown`, heat score 9, and blank market, timeline, intent summary, and next action fields.
+- CRM scan totals stayed 1 pending, 0 reviewing, 0 completed, 0 dismissed, 0 alert ready, 0 alert watch, and 0 alert incomplete.
+- Closure-review audit stayed clean with 0 closed tasks and 100% coverage.
+- No CRM task state was changed, no review note was added, no saved-search alert dry-run was run, no queue retry was run, no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no scheduler cadence was escalated, no OpenAI request was made, no MLS Grid request was made, no reset was run, and no reindex was run.
+
 ## Checkpoint 2127 - Queue Dashboard After Launch Readiness
 
 - July 15, 2026 10:39 MDT reran `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000`.
