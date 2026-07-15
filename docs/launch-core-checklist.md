@@ -7248,6 +7248,20 @@ Carry-forward launch blockers:
 - Closure-review audit stayed clean with 0 closed tasks and 100% coverage.
 - No CRM task state was changed, no scheduler cadence was escalated, no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
 
+## Checkpoint 2148 - Queue Dashboard After Launch Readiness
+
+- July 15, 2026 11:24 MDT reran `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000`.
+- Queue dashboard returned `success=true` with `includeFailed=false`, `includeSample=false`, `limit=5`, and `timeoutMs=3000`.
+- Recovery stayed `caution` only because 1 queue has active, waiting, or delayed work.
+- Diagnostics, failed jobs, dead-letter, and stale-active gates all passed; no diagnostics, failed jobs, open dead-letter jobs, or stale active jobs were reported.
+- `mls-sync` stayed healthy with 0 waiting, 0 active, 0 delayed, 637 completed, and 0 failed jobs.
+- `mls-page` stayed healthy with 0 waiting, 0 active, 0 delayed, 5911 completed, and 0 failed jobs.
+- `listings` stayed healthy with 0 waiting, 0 active, 0 delayed, 0 completed, and 0 failed jobs.
+- `reie-alerts` stayed busy with 273 waiting, 0 active, 0 delayed, 0 completed, and 0 failed jobs.
+- `reie-dead-letter` stayed healthy with 0 waiting, 0 active, 0 delayed, 0 completed, and 0 failed jobs.
+- The dashboard still surfaces `npm run run:worker:alerts` as the next worker command, but no alert worker was started.
+- No live property-inquiry smoke was run, no saved-search alert dry-run was run, no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no CRM task state was changed, no scheduler cadence was escalated, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
+
 ## Checkpoint 2147 - Launch Readiness After Saved-Search Alert Readiness
 
 - July 15, 2026 11:22 MDT reran `npm run check:launch-readiness`.
