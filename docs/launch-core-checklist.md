@@ -7324,6 +7324,18 @@ Carry-forward launch blockers:
 - Both watch checks still report `npm run run:alerts:dry -- --limit 50` as the next operator command, but no saved-search alert dry-run was run.
 - No live property-inquiry smoke was run, no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no CRM task state was changed, no scheduler cadence was escalated, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
 
+## Checkpoint 2284 - Strict Notification Readiness After Consolidated Refresh
+
+- July 16, 2026 13:20 MDT reran `npm run check:notification-readiness:strict`.
+- Worker output rebuilt successfully before the strict notification readiness summary ran.
+- Strict notification readiness returned `success=true`, `commandSuccess=true`, `sendsEmail=false`, `mutatesRows=false`, and `strictMode=true`.
+- Overall notification readiness stayed `watch` with no blockers because 2 notification readiness checks still require operator review.
+- Saved-search alert notification stayed `watch` because 197 pending saved-search alert rows remain available for dry-run review.
+- Property-inquiry notification stayed `ready` with no failed checks, no warning checks, and no blocked gates.
+- Aggregate launch notification readiness stayed `watch` because 197 pending saved-search alert rows require final dry-run review before live processing.
+- Both watch checks still report `npm run run:alerts:dry -- --limit 50` as the next operator command, but no saved-search alert dry-run was run.
+- No live property-inquiry smoke was run, no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no CRM task state was changed, no scheduler cadence was escalated, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
+
 ## Checkpoint 2276 - CRM Pending After Queue Dashboard
 
 - July 16, 2026 10:32 MDT reran `npm run run:crm:pending`.
