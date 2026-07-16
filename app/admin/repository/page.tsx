@@ -102,6 +102,18 @@ export default async function RepositoryDashboardPage() {
               Relationships
             </Link>
             <Link
+              href="/admin/repository/coverage"
+              className="inline-flex h-11 items-center justify-center rounded-full border border-white/15 px-5 text-sm font-medium transition hover:bg-white hover:text-black"
+            >
+              Coverage
+            </Link>
+            <Link
+              href="/admin/repository/recommendations"
+              className="inline-flex h-11 items-center justify-center rounded-full border border-white/15 px-5 text-sm font-medium transition hover:bg-white hover:text-black"
+            >
+              Recommendations
+            </Link>
+            <Link
               href="/admin/repository/objects"
               className="inline-flex h-11 items-center justify-center rounded-full border border-white/15 px-5 text-sm font-medium transition hover:bg-white hover:text-black"
             >

@@ -7248,6 +7248,16 @@ Carry-forward launch blockers:
 - Closure-review audit stayed clean with 0 closed tasks and 100% coverage.
 - No CRM task state was changed, no scheduler cadence was escalated, no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
 
+## Checkpoint 2277 - Repository Studio Sprint 3 Intelligence Install
+
+- July 16, 2026 12:10 MDT installed the read-only Repository Studio Sprint 3 package, adding deterministic Repository intelligence services, impact analysis, lineage, coverage, recommendations, timeline pages, and five read-only admin APIs.
+- Preserved the scoped Repository middleware for `/admin/repository/:path*` and `/api/admin/repository/:path*`; each new Sprint 3 API route also uses the existing Repository admin auth helper.
+- `npm run typecheck` passed after narrowing Supabase result casts at the new intelligence data boundaries and adjusting coverage to merge `repository_object_health` booleans with `repository_object` classification fields without changing Supabase schema or seed data.
+- Browser validation returned HTTP 200 for `/admin/repository/coverage`, `/admin/repository/recommendations`, `/admin/repository/impact/RID-PLAT-000002`, and `/admin/repository/timeline/RID-PLAT-000002`.
+- API validation returned HTTP 200 for `/api/admin/repository/coverage`, `/api/admin/repository/recommendations`, `/api/admin/repository/impact/RID-PLAT-000002`, `/api/admin/repository/lineage/RID-PLAT-000002`, and `/api/admin/repository/timeline/RID-PLAT-000002`. Coverage reported `total_objects=17`, governance 100%, stewardship 64.71%, relationship 100%, and traceability 94.12%; recommendations returned 7 deterministic governance recommendations; impact returned root `RID-PLAT-000002`, medium risk score 36, 1 direct impact, and 2 indirect impacts; lineage returned 1 upstream path and 3 downstream paths; timeline returned 5 events.
+- Repository counts stayed unchanged through validation: objects 17 before / 17 after, relationships 18 before / 18 after.
+- This checkpoint only installed local read-only Repository Studio code and ran local typecheck plus read-only page/API reads. No Supabase schema or seed data was changed, `.env.local` was not modified, no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no CRM task state was changed, no OpenAI request was made, no MLS Grid request was made, no Typesense reset or reindex was run, and no queue retry was run.
+
 ## Checkpoint 2276 - CRM Pending After Queue Dashboard
 
 - July 16, 2026 10:32 MDT reran `npm run run:crm:pending`.

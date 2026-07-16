@@ -75,6 +75,22 @@ export default async function RepositoryObjectDetailPage({
                 v{object.version_major}.{object.version_minor}.
                 {object.version_patch}
               </span>
+              <Link
+                href={`/admin/repository/impact/${encodeURIComponent(
+                  object.rid,
+                )}`}
+                className="rounded-full border border-white/10 px-3 py-1 text-xs text-white/70 transition hover:bg-white hover:text-black"
+              >
+                Impact
+              </Link>
+              <Link
+                href={`/admin/repository/timeline/${encodeURIComponent(
+                  object.rid,
+                )}`}
+                className="rounded-full border border-white/10 px-3 py-1 text-xs text-white/70 transition hover:bg-white hover:text-black"
+              >
+                Timeline
+              </Link>
             </div>
           </div>
         </div>
