@@ -7269,6 +7269,17 @@ Carry-forward launch blockers:
 - The governed SQL source record was retained under `supabase/governance/`, and the cycle record was retained at `docs/REPOSITORY_GOVERNANCE_CLOSURE_CYCLE_1.md`. No local SQL migration runner was used.
 - This checkpoint only executed the approved Repository governance closure in Supabase SQL Editor, copied governed SQL/documentation records, ran Repository Studio read-only checks, and ran local typecheck. No operational REIE table outside the Repository scope was changed, `.env.local` was not modified, no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no CRM task state was changed, no OpenAI request was made, no MLS Grid request was made, no Typesense reset or reindex was run, and no queue retry was run.
 
+## Checkpoint 2279 - Launch Readiness After Repository Closure
+
+- July 16, 2026 13:03 MDT reran `npm run check:launch-readiness` after returning focus from Repository governance closure to Phase 1 launch readiness.
+- Worker output rebuilt successfully before the launch-readiness check ran.
+- Launch readiness returned `success=true`, `sendsEmail=false`, and `mutatesRows=false`.
+- Overall launch readiness stayed `watch` with no blocked gates and 1 launch gate requiring operator review.
+- Supabase connectivity stayed `ready`; Prisma `SELECT 1` passed before launch readiness checks.
+- Saved-search alert email stayed `watch` because 197 pending saved-search alert rows require final dry-run/operator review before live processing; failed and processing alert counts stayed 0.
+- Property-inquiry notification email stayed `ready`; `PROPERTY_INQUIRY_NOTIFY_TO` is configured, `PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN` is disabled or unset, and sender, reply-to, and site URL checks passed with secret values masked.
+- The surfaced next command remains `npm run run:alerts:dry -- --limit 50`, but no saved-search alert dry-run was run. No live property-inquiry smoke was run, no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no CRM task state was changed, no scheduler cadence was escalated, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
+
 ## Checkpoint 2276 - CRM Pending After Queue Dashboard
 
 - July 16, 2026 10:32 MDT reran `npm run run:crm:pending`.
