@@ -88,12 +88,26 @@ export default async function RepositoryDashboardPage() {
             </p>
           </div>
 
-          <Link
-            href="/admin/repository/objects"
-            className="inline-flex h-11 items-center justify-center rounded-full border border-white/15 px-5 text-sm font-medium transition hover:bg-white hover:text-black"
-          >
-            Explore objects
-          </Link>
+          <div className="flex flex-wrap gap-2">
+            <Link
+              href="/admin/repository/search"
+              className="inline-flex h-11 items-center justify-center rounded-full border border-white/15 px-5 text-sm font-medium transition hover:bg-white hover:text-black"
+            >
+              Search
+            </Link>
+            <Link
+              href="/admin/repository/relationships"
+              className="inline-flex h-11 items-center justify-center rounded-full border border-white/15 px-5 text-sm font-medium transition hover:bg-white hover:text-black"
+            >
+              Relationships
+            </Link>
+            <Link
+              href="/admin/repository/objects"
+              className="inline-flex h-11 items-center justify-center rounded-full border border-white/15 px-5 text-sm font-medium transition hover:bg-white hover:text-black"
+            >
+              Explore objects
+            </Link>
+          </div>
         </div>
 
         <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">

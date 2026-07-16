@@ -13,16 +13,12 @@ if (!serviceRoleKey) {
   throw new Error("Missing SUPABASE_SERVICE_ROLE_KEY.");
 }
 
-export const repositorySupabase = createClient(
-  supabaseUrl,
-  serviceRoleKey,
-  {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false,
-    },
+export const repositorySupabase = createClient(supabaseUrl, serviceRoleKey, {
+  auth: {
+    autoRefreshToken: false,
+    persistSession: false,
   },
-);
+});
 
 export type RepositoryHealthSummary = {
   total_objects: number;
@@ -95,6 +91,43 @@ export type RepositoryRelationshipView = {
   related_family: string;
 };
 
+export type RepositoryRelationshipSummary = {
+  relationship_rid: string;
+  relationship_type_code: string;
+  status: string;
+  traceability_status: string;
+  confidence: number | null;
+  notes: string | null;
+  created_at: string;
+  source: {
+    rid: string;
+    official_name: string;
+    family: string;
+  };
+  target: {
+    rid: string;
+    official_name: string;
+    family: string;
+  };
+};
+
+export type RepositorySearchResult = {
+  result_type: "OBJECT" | "RELATIONSHIP";
+  score: number;
+  title: string;
+  subtitle: string;
+  rid: string;
+  href: string;
+  family: string | null;
+  object_type: string | null;
+  relationship_type: string | null;
+  matched_text: string | null;
+};
+
+function normalizeQuery(value: string): string {
+  return value.trim().replaceAll(",", " ").replace(/\s+/g, " ");
+}
+
 export async function getRepositoryHealth(): Promise<RepositoryHealthSummary> {
   const { data, error } = await repositorySupabase
     .from("repository_health_summary")
@@ -145,7 +178,7 @@ export async function getRepositoryObjects(params?: {
   }
 
   if (params?.query) {
-    const escaped = params.query.replaceAll(",", " ");
+    const escaped = normalizeQuery(params.query);
     query = query.or(
       `official_name.ilike.%${escaped}%,rid.ilike.%${escaped}%,cid.ilike.%${escaped}%`,
     );
@@ -263,4 +296,245 @@ export async function getRepositoryObjectByRid(
     object: object as RepositoryObjectDetail,
     relationships,
   };
+}
+
+export async function searchRepository(params: {
+  query: string;
+  family?: string;
+  limit?: number;
+}): Promise<RepositorySearchResult[]> {
+  const q = normalizeQuery(params.query);
+  const limit = Math.min(Math.max(params.limit ?? 50, 1), 100);
+
+  if (!q) {
+    return [];
+  }
+
+  let objectQuery = repositorySupabase
+    .from("repository_object")
+    .select(
+      [
+        "rid",
+        "cid",
+        "official_name",
+        "display_name",
+        "short_name",
+        "family",
+        "object_type",
+        "canonical_definition",
+        "purpose",
+        "description",
+      ].join(","),
+    )
+    .or(
+      [
+        `official_name.ilike.%${q}%`,
+        `display_name.ilike.%${q}%`,
+        `short_name.ilike.%${q}%`,
+        `rid.ilike.%${q}%`,
+        `cid.ilike.%${q}%`,
+        `canonical_definition.ilike.%${q}%`,
+        `purpose.ilike.%${q}%`,
+        `description.ilike.%${q}%`,
+      ].join(","),
+    )
+    .limit(limit);
+
+  if (params.family) {
+    objectQuery = objectQuery.eq("family", params.family);
+  }
+
+  const { data: objects, error: objectError } = await objectQuery;
+
+  if (objectError) {
+    throw new Error(`Unable to search Repository objects: ${objectError.message}`);
+  }
+
+  const { data: relationships, error: relationshipError } =
+    await repositorySupabase
+      .from("repository_relationship")
+      .select(
+        `
+          relationship_rid,
+          relationship_type_code,
+          notes,
+          source:repository_object!repository_relationship_source_object_id_fkey (
+            rid,
+            official_name,
+            family,
+            object_type
+          ),
+          target:repository_object!repository_relationship_target_object_id_fkey (
+            rid,
+            official_name,
+            family,
+            object_type
+          )
+        `,
+      )
+      .or(`relationship_type_code.ilike.%${q}%,notes.ilike.%${q}%`)
+      .limit(limit);
+
+  if (relationshipError) {
+    throw new Error(
+      `Unable to search Repository relationships: ${relationshipError.message}`,
+    );
+  }
+
+  const lower = q.toLowerCase();
+
+  const objectResults: RepositorySearchResult[] = (objects ?? []).map(
+    (row: any) => {
+      const exactRid =
+        row.rid?.toLowerCase() === lower || row.cid?.toLowerCase() === lower;
+      const exactName = row.official_name?.toLowerCase() === lower;
+      const startsWith = row.official_name?.toLowerCase().startsWith(lower);
+
+      let score = 50;
+      if (exactRid) score = 100;
+      else if (exactName) score = 95;
+      else if (startsWith) score = 80;
+
+      const matchedText =
+        row.canonical_definition ??
+        row.purpose ??
+        row.description ??
+        row.display_name ??
+        null;
+
+      return {
+        result_type: "OBJECT",
+        score,
+        title: row.official_name,
+        subtitle: `${row.family} · ${row.object_type}`,
+        rid: row.rid,
+        href: `/admin/repository/object/${encodeURIComponent(row.rid)}`,
+        family: row.family,
+        object_type: row.object_type,
+        relationship_type: null,
+        matched_text: matchedText,
+      };
+    },
+  );
+
+  const relationshipResults: RepositorySearchResult[] = (
+    relationships ?? []
+  ).map((row: any) => ({
+    result_type: "RELATIONSHIP",
+    score:
+      row.relationship_type_code?.toLowerCase() === lower
+        ? 90
+        : row.relationship_type_code?.toLowerCase().includes(lower)
+          ? 70
+          : 45,
+    title: `${row.source.official_name} → ${row.target.official_name}`,
+    subtitle: row.relationship_type_code,
+    rid: row.relationship_rid,
+    href: `/admin/repository/relationship/${encodeURIComponent(
+      row.relationship_rid,
+    )}`,
+    family: null,
+    object_type: null,
+    relationship_type: row.relationship_type_code,
+    matched_text: row.notes,
+  }));
+
+  return [...objectResults, ...relationshipResults]
+    .sort((a, b) => b.score - a.score || a.title.localeCompare(b.title))
+    .slice(0, limit);
+}
+
+export async function getRepositoryRelationships(params?: {
+  type?: string;
+  status?: string;
+  traceability?: string;
+  limit?: number;
+}): Promise<RepositoryRelationshipSummary[]> {
+  const limit = Math.min(Math.max(params?.limit ?? 100, 1), 500);
+
+  let query = repositorySupabase
+    .from("repository_relationship")
+    .select(
+      `
+        relationship_rid,
+        relationship_type_code,
+        status,
+        traceability_status,
+        confidence,
+        notes,
+        created_at,
+        source:repository_object!repository_relationship_source_object_id_fkey (
+          rid,
+          official_name,
+          family
+        ),
+        target:repository_object!repository_relationship_target_object_id_fkey (
+          rid,
+          official_name,
+          family
+        )
+      `,
+    )
+    .order("created_at", { ascending: false })
+    .limit(limit);
+
+  if (params?.type) {
+    query = query.eq("relationship_type_code", params.type);
+  }
+
+  if (params?.status) {
+    query = query.eq("status", params.status);
+  }
+
+  if (params?.traceability) {
+    query = query.eq("traceability_status", params.traceability);
+  }
+
+  const { data, error } = await query;
+
+  if (error) {
+    throw new Error(
+      `Unable to load Repository relationships: ${error.message}`,
+    );
+  }
+
+  return (data ?? []) as unknown as RepositoryRelationshipSummary[];
+}
+
+export async function getRepositoryRelationshipByRid(
+  relationshipRid: string,
+): Promise<RepositoryRelationshipSummary | null> {
+  const { data, error } = await repositorySupabase
+    .from("repository_relationship")
+    .select(
+      `
+        relationship_rid,
+        relationship_type_code,
+        status,
+        traceability_status,
+        confidence,
+        notes,
+        created_at,
+        source:repository_object!repository_relationship_source_object_id_fkey (
+          rid,
+          official_name,
+          family
+        ),
+        target:repository_object!repository_relationship_target_object_id_fkey (
+          rid,
+          official_name,
+          family
+        )
+      `,
+    )
+    .eq("relationship_rid", relationshipRid)
+    .maybeSingle();
+
+  if (error) {
+    throw new Error(
+      `Unable to load Repository relationship: ${error.message}`,
+    );
+  }
+
+  return data as unknown as RepositoryRelationshipSummary | null;
 }
