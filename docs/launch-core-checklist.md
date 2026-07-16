@@ -7336,6 +7336,17 @@ Carry-forward launch blockers:
 - Both watch checks still report `npm run run:alerts:dry -- --limit 50` as the next operator command, but no saved-search alert dry-run was run.
 - No live property-inquiry smoke was run, no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no CRM task state was changed, no scheduler cadence was escalated, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
 
+## Checkpoint 2285 - Strict Notification Contract After Strict Readiness
+
+- July 16, 2026 13:23 MDT reran `npm run check:notification-readiness:strict-contract`.
+- Worker output rebuilt successfully before the strict notification contract ran.
+- The strict notification contract returned `success=true`, `sendsEmail=false`, and `mutatesRows=false`.
+- Current environment readiness stayed `watch` with exit code 0 and `success=true`.
+- Missing-recipient override readiness stayed fail-closed `blocked` with exit code 1 and `success=false`, with both property-inquiry and aggregate recipient blockers detected.
+- Property-inquiry dry-run override readiness stayed fail-closed `blocked` with exit code 1 and `success=false`, with both property-inquiry and aggregate dry-run blockers detected.
+- Launch-readiness contract stayed fail-closed `blocked` with exit code 1 and `success=false`; property-inquiry reply-to warning alignment remained true.
+- No live property-inquiry smoke was run, no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no CRM task state was changed, no scheduler cadence was escalated, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
+
 ## Checkpoint 2276 - CRM Pending After Queue Dashboard
 
 - July 16, 2026 10:32 MDT reran `npm run run:crm:pending`.
