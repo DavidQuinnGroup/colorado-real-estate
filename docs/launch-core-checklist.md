@@ -7649,6 +7649,17 @@ Carry-forward launch blockers:
 - Aggregate launch notification readiness stayed `watch` with 197 pending saved-search alert rows requiring final dry-run review before live processing, 0 failed checks, and 1 warning check.
 - No saved-search alert dry-run was run, no property-inquiry smoke was run, no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no CRM task state was changed, no scheduler cadence was escalated, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
 
+## Checkpoint 2313 - Strict Notification Contract After Strict Readiness Refresh
+
+- July 17, 2026 02:26 MDT reran `npm run check:notification-readiness:strict-contract`.
+- Worker output rebuilt successfully before the strict notification readiness contract check ran.
+- Strict notification readiness contract returned `success=true`, `sendsEmail=false`, and `mutatesRows=false`.
+- Current environment stayed readiness `watch` with exit code 0 and success true.
+- Missing-recipient override stayed fail-closed with readiness `blocked`, exit code 1, success false, `propertyInquiryRecipientBlocked=true`, and `aggregateRecipientBlocked=true`.
+- Property-inquiry dry-run override stayed fail-closed with readiness `blocked`, exit code 1, success false, `propertyInquiryDryRunBlocked=true`, and `aggregateDryRunBlocked=true`.
+- Launch readiness contract stayed fail-closed with readiness `blocked`, exit code 1, success false, and `propertyInquiryReplyToWarningAligned=true`.
+- No saved-search alert dry-run was run, no property-inquiry smoke was run, no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no CRM task state was changed, no scheduler cadence was escalated, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
+
 ## Checkpoint 2276 - CRM Pending After Queue Dashboard
 
 - July 16, 2026 10:32 MDT reran `npm run run:crm:pending`.
