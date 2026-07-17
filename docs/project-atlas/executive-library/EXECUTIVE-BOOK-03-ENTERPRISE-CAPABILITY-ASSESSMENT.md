@@ -96,3 +96,22 @@ The queue condition is not classified as a launch blocker because static evidenc
 The CRM task condition is not an implementation gap. Static evidence shows read-only CRM reporting, authenticated task detail access, note-backed completion/dismissal, and a duplicate pending-task guard for non-manual `PRE_DISCOVERY_BRIEF` creation. It remains a controlled launch gate for scheduler cadence escalation because one pending `strategy_intake` item still requires human review.
 
 The tracked-email click gate is required before recurring scheduler/email activation. Static evidence verifies the click route and email tracking-link construction, but the successful click itself must be performed as a controlled internal prelaunch test.
+
+## Wave 3 Assessment Update
+
+Wave 3 partially executed the controlled launch-gate sequence from baseline `e50106e`.
+
+Assessment changes:
+
+- Controlled alert send: `EXECUTED_PASS`.
+- Controlled tracked click: `STOPPED`.
+- CRM strategy_intake closure: `STOPPED`.
+- Bounded readiness refresh: `PARTIAL`.
+
+The one-alert send proves the smallest approved alert-send path can move a selected row from `pending` to `sent` and create the expected EmailLog without consuming BullMQ jobs or draining `reie-alerts`. It does not prove recurring alert operations are ready.
+
+The tracked-click gate remains open. The generated tracking URL was well-formed, but the execution request failed with curl exit code 6 before HTTP response headers and no `LISTING_CLICK`, `clickedAt`, or heat-score mutation occurred.
+
+CRM remains in watch because the authorized task closure was not executed after the click stop condition.
+
+Launch recommendation: do not activate recurring email, alert workers, schedulers, or bulk saved-search processing until the tracked-click gate and CRM review are resolved and the bounded readiness refresh is completed.

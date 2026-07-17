@@ -76,3 +76,23 @@ Current classifications:
 - Alert queue: `EXPECTED_PRELAUNCH_BACKLOG`.
 - CRM task: `CONTROLLED_LAUNCH_GATE`.
 - Tracked-email click: `REQUIRED_CONTROLLED_PRELAUNCH_TEST`.
+
+## Wave 3 Controlled Execution
+
+Baseline: `e50106e`
+Verification date: 2026-07-17
+
+| Gap | Wave 3 Result | Classification | Reason |
+| --- | --- | --- | --- |
+| GAP-001 | Partially reduced, still open | Conditional launch gate | One controlled alert send passed, but tracked-click persistence failed and 196 pending alert rows still require operator review. |
+| GAP-002 | Unchanged, open | Conditional launch gate | Queue counts stayed stable, but full readiness refresh and production monitoring proof remain incomplete. |
+| GAP-004 | Unchanged, open | Controlled launch gate | CRM task closure was not executed after the tracked-click stop condition. |
+
+No gaps were closed in Wave 3. The selected alert row `cmq0wovon012dpw1p6ebtyrj9` moved from `pending` to `sent`, one controlled email was sent, and no BullMQ queue job was consumed. The tracked-click gate remains open because no click event persisted.
+
+Updated launch gate state:
+
+- Saved-search alert review: `WATCH` - 196 pending rows remain after the one controlled send.
+- Alert queue backlog: `WATCH` - `reie-alerts` remains 273 waiting, 0 active, 0 delayed, 0 failed.
+- Strategy intake CRM review: `WATCH` - one pending `strategy_intake` task remains.
+- Controlled tracked-email click: `BLOCKED` - one tracked-click attempt failed before HTTP response and persisted no evidence.

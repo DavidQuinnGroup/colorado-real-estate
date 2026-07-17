@@ -83,3 +83,19 @@ No capability status was upgraded or downgraded in Wave 2. The evidence pass red
 | EXEC-004 Enterprise Risk | `VERIFIED_PARTIAL` | `VERIFIED_PARTIAL` | Gap report and launch-risk documentation verified. | Dedicated enterprise risk workflow remains incomplete. |
 
 Command results are recorded in the JSON register under `wave2_evidence_closure.commands_executed`.
+
+## Wave 3 Controlled Execution Update
+
+Verification date: 2026-07-17
+Baseline: `e50106e`
+
+No capability status was upgraded or downgraded in Wave 3. The controlled alert send succeeded, but the tracked-click gate stopped before persistence and CRM closure was not executed.
+
+| Capability | Previous Status | Wave 3 Status | Evidence | Reason |
+| --- | --- | --- | --- | --- |
+| PROD-007 Notifications | `VERIFIED_PARTIAL` | `VERIFIED_PARTIAL` | One selected saved-search alert row was sent to the controlled internal recipient; selected row moved `pending` to `sent`; one EmailLog was created. | Tracked-click validation failed before HTTP response; 196 pending alert rows still require operator review. |
+| OPS-005 Reliability | `VERIFIED_PARTIAL` | `VERIFIED_PARTIAL` | Queue dashboard stayed stable at `reie-alerts` 273 waiting, 0 active, 0 delayed, 0 failed after the controlled alert send. | Full readiness refresh and production monitoring proof remain incomplete. |
+| COMM-001 CRM | `VERIFIED_PARTIAL` | `VERIFIED_PARTIAL` | CRM task was inspected and remained pending. | CRM closure was intentionally not executed after the tracked-click stop condition. |
+| INTEL-002 Customer Intelligence | `VERIFIED_PARTIAL` | `VERIFIED_PARTIAL` | Tracked URL was generated for the controlled email. | Click event did not persist; `clickedAt` remained null and heat score stayed unchanged. |
+
+Command and gate results are recorded in the JSON register under `wave3_controlled_execution`.

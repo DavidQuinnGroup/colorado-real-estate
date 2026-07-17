@@ -3,15 +3,15 @@
 Generated: 2026-07-17
 Baseline commit: `9aee27f`
 Branch: `main`
-Authorization state: planning only; no state-changing execution authorized
+Authorization state: controlled execution authorized and partially executed
 
 ## 1. Executive Boundary
 
 This plan prepares the smallest controlled validations for tracked-email click handling, the pending `strategy_intake` CRM task, saved-search alert readiness, and recurring scheduler/email activation readiness.
 
-No live send, queue processing, CRM mutation, scheduler activation, MLS/TitlePro247 request, OpenAI call, Typesense reset/reindex, queue retry, or saved-search dry-run was executed as part of plan creation.
+Plan creation did not execute live actions. A later executive authorization approved one controlled alert send, one tracked click, one CRM task closure, and bounded readiness refreshes in strict sequence.
 
-All gates below begin as `AWAITING_AUTHORIZATION`.
+Wave 3 execution stopped at `W3-CLICK-001` after the tracked-link request failed before returning HTTP response headers. `W3-CRM-001` and the full `W3-READINESS-001` refresh were not executed.
 
 ## 2. Preflight Evidence
 
@@ -53,7 +53,7 @@ Read-only planning refreshes:
 | Success evidence | Redirect succeeds; one new `LISTING_CLICK`; selected `AlertQueue.clickedAt` is populated; selected user heat score increases by exactly 5. |
 | Failure evidence | Redirect succeeds but no interaction; unexpected duplicate interaction; heat score changes by anything other than +5; unrelated alert rows updated. |
 | Risk level | Medium, because click tracking mutates analytics and lead score. |
-| Authorization status | `AWAITING_AUTHORIZATION` |
+| Authorization status | `STOPPED` - authorized, attempted once, failed with curl exit code 6 before HTTP response headers; no click mutation persisted. |
 
 ## 4. Gate W3-CRM-001 - Pending Strategy Intake CRM Task
 
@@ -77,7 +77,7 @@ Read-only planning refreshes:
 | Success evidence | Task transitions to `completed`; pending `strategy_intake` count becomes 0; closure audit remains 100% note-covered. |
 | Failure evidence | Task not found; route rejects review note; any additional CRM task changes; pending count remains 1. |
 | Risk level | Low to medium. The record appears synthetic/test-like from masked `co***@example.com`, but it is still a database mutation. |
-| Authorization status | `AWAITING_AUTHORIZATION` |
+| Authorization status | `STOPPED` - authorized but not executed because `W3-CLICK-001` hit its stop condition. |
 
 ## 5. Gate W3-ALERT-001 - Isolated Saved-Search Alert Send
 
@@ -101,7 +101,7 @@ Read-only planning refreshes:
 | Success evidence | One email delivered to controlled internal recipient; selected AlertQueue row `sent`; one EmailLog; queue dashboard still shows no active/delayed/failed alert jobs. |
 | Failure evidence | Send fails; selected row becomes `failed`; any non-selected AlertQueue rows change; any queue worker drains jobs. |
 | Risk level | Medium, because one live email is sent and one database row is mutated. |
-| Authorization status | `AWAITING_AUTHORIZATION` |
+| Authorization status | `EXECUTED_PASS` - one selected alert row sent to the controlled internal recipient; no BullMQ job was consumed. |
 
 ## 6. Gate W3-READINESS-001 - Bounded Readiness Refresh
 
@@ -125,7 +125,7 @@ Read-only planning refreshes:
 | Success evidence | Alert readiness remains `watch` or improves after authorized actions; queue counts show no unexpected active/delayed/failed jobs; CRM pending count reflects only authorized CRM action. |
 | Failure evidence | Unexpected mutations, queue activity, failed jobs, or blocked readiness. |
 | Risk level | Low. |
-| Authorization status | `AWAITING_AUTHORIZATION` for post-action refresh; initial planning refreshes were already executed read-only. |
+| Authorization status | `PARTIAL` - queue and selected-record evidence were refreshed after the stopped click attempt; full post-CRM readiness refresh was not executed because sequencing stopped. |
 
 ## 7. Scheduler and Recurring Activation Readiness
 
@@ -150,3 +150,50 @@ Separate executive authorization is required before any of the following:
 Suggested authorization wording:
 
 > I authorize Wave 3 Gate W3-ALERT-001 for AlertQueue `cmq0wovon012dpw1p6ebtyrj9`, W3-CLICK-001 for one click by the controlled internal recipient, W3-CRM-001 for CRMTask `751fa51e-4a2e-411f-97df-c320e974e058`, and W3-READINESS-001 post-action refreshes. Do not execute any other live action.
+
+## 9. Wave 3 Execution Record
+
+Execution date: 2026-07-17
+Baseline commit: `e50106e`
+
+| Gate | Classification | Evidence |
+| --- | --- | --- |
+| `W3-ALERT-001` | `EXECUTED_PASS` | `processAlertById("cmq0wovon012dpw1p6ebtyrj9", false)` returned `status: "sent"` for the selected row and controlled recipient. |
+| `W3-CLICK-001` | `STOPPED` | One curl request to the tracked URL failed with exit code 6 before response headers. Post-check showed `clickedAt: null`, click interaction count `0`, and heat score unchanged at `0`. |
+| `W3-CRM-001` | `STOPPED` | Not executed because `W3-CLICK-001` triggered the stop condition. CRMTask `751fa51e-4a2e-411f-97df-c320e974e058` remained `pending`. |
+| `W3-READINESS-001` | `PARTIAL` | Queue and selected-record evidence were refreshed. Full post-CRM readiness refresh was not executed. |
+
+Before `W3-ALERT-001`:
+
+- Selected AlertQueue row `cmq0wovon012dpw1p6ebtyrj9`: `pending`.
+- Selected recipient: controlled internal recipient masked as `da***@gmail.com`.
+- AlertQueue status counts: 197 pending, 83 sent, 3 skipped.
+- Selected user's `PROPERTY_ALERT` EmailLog count: 33.
+- Selected listing click interaction count: 0.
+- Selected user heat score: 0.
+- `reie-alerts`: 273 waiting, 0 active, 0 delayed, 0 failed.
+- CRMTask `751fa51e-4a2e-411f-97df-c320e974e058`: `pending`, synthetic/test-like masked `co***@example.com`, medium priority.
+
+After `W3-ALERT-001`:
+
+- Selected AlertQueue row: `sent`.
+- Email sent count: 1.
+- Recipient count: 1.
+- Jobs processed by BullMQ worker: 0.
+- AlertQueue status counts: 196 pending, 84 sent, 3 skipped.
+- Selected user's `PROPERTY_ALERT` EmailLog count: 34.
+- Unsubscribe-token count for the selected recipient increased through the approved email safety path; latest token id `cmrpbgp1n0001131seddqga0z`.
+- `reie-alerts`: 273 waiting, 0 active, 0 delayed, 0 failed.
+- No CRM state change.
+- Valid tracked URL generated for `/api/track-click`.
+
+`W3-CLICK-001` attempt:
+
+- Command: `curl --max-time 20 -s -D - -o /dev/null "<tracked-url>"`.
+- Result: curl exit code 6, no HTTP response headers returned.
+- Post-check: `AlertQueue.clickedAt` remained null; selected listing click interaction count remained 0; selected user heat score remained 0; CRM task remained pending.
+
+Unexpected effects:
+
+- No unexpected queue drain, retry, CRM mutation, scheduler activation, MLS/Grid/OpenAI/TitlePro247 call, or Typesense action occurred.
+- The email path created an unsubscribe token for the selected recipient; this is expected from `createUnsubscribeUrl()` during alert sending and stayed within the approved one-email path.

@@ -8,8 +8,19 @@
     "baseline_commit": "13e7905",
     "verification_date": "2026-07-17",
     "gaps_closed": [],
-    "gaps_reduced": ["GAP-001", "GAP-002", "GAP-003", "GAP-004", "GAP-005", "GAP-006", "GAP-009"],
-    "gaps_unchanged": ["GAP-007", "GAP-008"],
+    "gaps_reduced": [
+      "GAP-001",
+      "GAP-002",
+      "GAP-003",
+      "GAP-004",
+      "GAP-005",
+      "GAP-006",
+      "GAP-009"
+    ],
+    "gaps_unchanged": [
+      "GAP-007",
+      "GAP-008"
+    ],
     "alert_queue_classification": "EXPECTED_PRELAUNCH_BACKLOG",
     "crm_gate_classification": "CONTROLLED_LAUNCH_GATE",
     "tracked_email_click_classification": "REQUIRED_CONTROLLED_PRELAUNCH_TEST",
@@ -40,32 +51,44 @@
       "id": "GATE-001",
       "title": "Saved-search alert review",
       "status": "WATCH",
-      "capabilities": ["PROD-003", "PROD-007"],
-      "evidence": "197 pending saved-search alert rows still require dry-run/operator review before live processing.",
+      "capabilities": [
+        "PROD-003",
+        "PROD-007"
+      ],
+      "evidence": "196 pending saved-search alert rows remain after one controlled Wave 3 send; operator review is still required before broad live processing.",
       "next_safe_action": "Operator review and explicitly approved dry-run/live policy outside this Wave 1 documentation pass."
     },
     {
       "id": "GATE-002",
       "title": "Alert queue backlog",
       "status": "WATCH",
-      "capabilities": ["PROD-007", "OPS-005"],
-      "evidence": "reie-alerts remains at 273 waiting jobs in the latest handoff/checklist state.",
+      "capabilities": [
+        "PROD-007",
+        "OPS-005"
+      ],
+      "evidence": "reie-alerts remains at 273 waiting jobs after Wave 3; no active, delayed, failed, or dead-letter jobs were reported.",
       "next_safe_action": "Continue timeout-bounded queue diagnostics before any live worker or retry action."
     },
     {
       "id": "GATE-003",
       "title": "Strategy intake CRM review",
       "status": "WATCH",
-      "capabilities": ["COMM-001", "EXEC-005"],
-      "evidence": "One pending medium-priority strategy_intake task remains in watch state.",
+      "capabilities": [
+        "COMM-001",
+        "EXEC-005"
+      ],
+      "evidence": "One pending medium-priority strategy_intake task remains because Wave 3 stopped before CRM closure.",
       "next_safe_action": "Human review before scheduler cadence escalation."
     },
     {
       "id": "GATE-004",
       "title": "Controlled tracked-email click",
-      "status": "WATCH",
-      "capabilities": ["PROD-007", "INTEL-002"],
-      "evidence": "One controlled internal tracked-email click is still needed before recurring email/scheduler activation.",
+      "status": "BLOCKED",
+      "capabilities": [
+        "PROD-007",
+        "INTEL-002"
+      ],
+      "evidence": "Wave 3 tracked-click request failed with curl exit code 6 before HTTP response; no click event persisted.",
       "next_safe_action": "Perform only when explicitly approved; no live send was run in Wave 1."
     }
   ],
@@ -75,8 +98,13 @@
       "severity": "P0",
       "capability": "PROD-007",
       "title": "Saved-search alert live-readiness remains gated by operator review.",
-      "status": "OPEN",
-      "evidence": ["docs/CHAT_START.md", "docs/launch-core-checklist.md", "docs/email-system.md", "docs/alert-architecture.md"]
+      "status": "OPEN_PARTIAL_REDUCED",
+      "evidence": [
+        "docs/CHAT_START.md",
+        "docs/launch-core-checklist.md",
+        "docs/email-system.md",
+        "docs/alert-architecture.md"
+      ]
     },
     {
       "id": "GAP-002",
@@ -84,7 +112,11 @@
       "capability": "OPS-005",
       "title": "Monitoring and reliability hardening must precede recurring live operations.",
       "status": "OPEN",
-      "evidence": ["scripts/launchReadiness.ts", "scripts/queueDashboard.ts", "components/admin/DeadLetterInspector.tsx"]
+      "evidence": [
+        "scripts/launchReadiness.ts",
+        "scripts/queueDashboard.ts",
+        "components/admin/DeadLetterInspector.tsx"
+      ]
     },
     {
       "id": "GAP-003",
@@ -92,7 +124,12 @@
       "capability": "OPS-003",
       "title": "MLS freshness and long-running sync reliability remain watch items.",
       "status": "OPEN",
-      "evidence": ["docs/mls-ingestion.md", "workers/mlsWorker.ts", "workers/mlsPageWorker.ts", "app/api/mls/status/route.ts"]
+      "evidence": [
+        "docs/mls-ingestion.md",
+        "workers/mlsWorker.ts",
+        "workers/mlsPageWorker.ts",
+        "app/api/mls/status/route.ts"
+      ]
     },
     {
       "id": "GAP-004",
@@ -100,7 +137,11 @@
       "capability": "COMM-001",
       "title": "CRM strategy_intake task requires review before cadence escalation.",
       "status": "OPEN",
-      "evidence": ["docs/CHAT_START.md", "scripts/runCRM.ts", "app/api/admin/crm-tasks/route.ts"]
+      "evidence": [
+        "docs/CHAT_START.md",
+        "scripts/runCRM.ts",
+        "app/api/admin/crm-tasks/route.ts"
+      ]
     },
     {
       "id": "GAP-005",
@@ -108,7 +149,11 @@
       "capability": "INTEL-001",
       "title": "Dedicated executive dashboard is not yet complete.",
       "status": "OPEN",
-      "evidence": ["Google Docs Enterprise Capability Assessment Book 3", "app/admin/page.tsx", "scripts/launchReadiness.ts"]
+      "evidence": [
+        "Google Docs Enterprise Capability Assessment Book 3",
+        "app/admin/page.tsx",
+        "scripts/launchReadiness.ts"
+      ]
     },
     {
       "id": "GAP-006",
@@ -116,7 +161,11 @@
       "capability": "INTEL-004",
       "title": "Dedicated KPI engine remains incomplete.",
       "status": "OPEN",
-      "evidence": ["Google Docs Enterprise Capability Assessment Book 3", "scripts/launchReadiness.ts", "scripts/queueDashboard.ts"]
+      "evidence": [
+        "Google Docs Enterprise Capability Assessment Book 3",
+        "scripts/launchReadiness.ts",
+        "scripts/queueDashboard.ts"
+      ]
     },
     {
       "id": "GAP-007",
@@ -124,7 +173,9 @@
       "capability": "COMM-004",
       "title": "Partnerships capability has no verified local implementation.",
       "status": "OPEN",
-      "evidence": ["Google Docs Executive Book 2"]
+      "evidence": [
+        "Google Docs Executive Book 2"
+      ]
     },
     {
       "id": "GAP-008",
@@ -132,7 +183,9 @@
       "capability": "COMM-005",
       "title": "Customer Success capability has no verified dedicated implementation.",
       "status": "OPEN",
-      "evidence": ["Google Docs Executive Book 2"]
+      "evidence": [
+        "Google Docs Executive Book 2"
+      ]
     },
     {
       "id": "GAP-009",
@@ -140,7 +193,77 @@
       "capability": "EXEC-004",
       "title": "Enterprise risk is documented but not yet implemented as a dedicated workflow.",
       "status": "OPEN",
-      "evidence": ["docs/project-atlas/executive-library/LAUNCH-CRITICAL-CAPABILITY-GAP-REPORT.md", "docs/launch-core-checklist.md"]
+      "evidence": [
+        "docs/project-atlas/executive-library/LAUNCH-CRITICAL-CAPABILITY-GAP-REPORT.md",
+        "docs/launch-core-checklist.md"
+      ]
     }
-  ]
+  ],
+  "wave3_controlled_execution": {
+    "wave": "Wave 3 - Controlled Launch Gate Validation",
+    "baseline_commit": "e50106e",
+    "verification_date": "2026-07-17",
+    "gates": {
+      "alert_send": "EXECUTED_PASS",
+      "tracked_click": "STOPPED",
+      "crm_task": "STOPPED",
+      "readiness_refresh": "PARTIAL"
+    },
+    "gaps_closed": [],
+    "gaps_reduced": [
+      "GAP-001"
+    ],
+    "gaps_unchanged": [
+      "GAP-002",
+      "GAP-003",
+      "GAP-004",
+      "GAP-005",
+      "GAP-006",
+      "GAP-007",
+      "GAP-008",
+      "GAP-009"
+    ],
+    "alert_queue_classification": "EXPECTED_PRELAUNCH_BACKLOG_WITH_ONE_CONTROLLED_SEND_COMPLETED",
+    "crm_gate_classification": "CONTROLLED_LAUNCH_GATE_STILL_OPEN",
+    "tracked_email_click_classification": "STOPPED_NO_PERSISTED_CLICK",
+    "launch_blockers": [
+      "Tracked-email click evidence failed before persistence; do not activate recurring email or scheduler operations."
+    ],
+    "conditional_launch_gates": [
+      "196 pending saved-search alert rows still require operator review before broad live processing.",
+      "reie-alerts remains 273 waiting with no active, delayed, or failed jobs after the controlled send.",
+      "One pending strategy_intake CRM task remains in watch because CRM closure was not executed.",
+      "Tracked-click evidence remains required before recurring email/scheduler activation."
+    ],
+    "evidence": {
+      "alertQueueId": "cmq0wovon012dpw1p6ebtyrj9",
+      "emailSentCount": 1,
+      "recipientCount": 1,
+      "queueJobsProcessed": 0,
+      "queueCountsAfter": {
+        "waiting": 273,
+        "active": 0,
+        "delayed": 0,
+        "failed": 0
+      },
+      "alertQueueStatusCountsAfter": {
+        "pending": 196,
+        "sent": 84,
+        "skipped": 3
+      },
+      "clickEvidence": {
+        "httpResult": "none",
+        "curlExitCode": 6,
+        "clickedAt": null,
+        "listingClickInteractionCount": 0,
+        "heatScoreAfter": 0
+      },
+      "crm": {
+        "taskId": "751fa51e-4a2e-411f-97df-c320e974e058",
+        "beforeStatus": "pending",
+        "afterStatus": "pending",
+        "tasksChanged": 0
+      }
+    }
+  }
 }

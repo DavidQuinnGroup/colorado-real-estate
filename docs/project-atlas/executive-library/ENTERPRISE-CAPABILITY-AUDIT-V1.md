@@ -105,3 +105,16 @@ Evidence obtained:
 Audit conclusion:
 
 Wave 2 reduced evidence uncertainty but did not remove the operational launch gates. The active blockers/gates remain conditional and operational, not newly discovered missing implementation.
+
+## Wave 3 Controlled Execution Update
+
+Wave 3 executed against baseline `e50106e` with explicit executive authorization for strictly sequenced controlled validations.
+
+Results:
+
+- `W3-ALERT-001`: `EXECUTED_PASS`. One selected saved-search alert row, `cmq0wovon012dpw1p6ebtyrj9`, was sent to the controlled internal recipient masked as `da***@gmail.com`.
+- `W3-CLICK-001`: `STOPPED`. The tracked-link request failed with curl exit code 6 before HTTP response headers; no click event persisted.
+- `W3-CRM-001`: `STOPPED`. The CRM task was not mutated because the click gate stopped.
+- `W3-READINESS-001`: `PARTIAL`. Queue and selected-record evidence were refreshed, but the full post-CRM readiness refresh was not run.
+
+Capability counts remain unchanged: 4 complete, 27 partial, 5 deferred, 2 not yet verified, 0 missing. No launch gate should be treated as fully closed from Wave 3.
