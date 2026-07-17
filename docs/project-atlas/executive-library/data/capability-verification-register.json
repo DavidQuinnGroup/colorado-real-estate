@@ -1,0 +1,367 @@
+{
+  "program": "PROJECT ATLAS - Enterprise Capability Verification Program",
+  "wave": "Wave 1 - Repository-to-Code Baseline",
+  "baseline_commit": "ff590d4",
+  "generated_on": "2026-07-17",
+  "verification_statuses": [
+    "VERIFIED_COMPLETE",
+    "VERIFIED_PARTIAL",
+    "VERIFIED_MISSING",
+    "VERIFIED_DEFERRED",
+    "NOT_YET_VERIFIED",
+    "NOT_APPLICABLE"
+  ],
+  "summary": {
+    "VERIFIED_COMPLETE": 4,
+    "VERIFIED_PARTIAL": 27,
+    "VERIFIED_MISSING": 0,
+    "VERIFIED_DEFERRED": 5,
+    "NOT_YET_VERIFIED": 2,
+    "NOT_APPLICABLE": 0,
+    "total": 38
+  },
+  "register": [
+    {
+      "id": "REG-001",
+      "capability": "PROD-001",
+      "status": "VERIFIED_PARTIAL",
+      "confidence": "HIGH",
+      "evidence_type": ["app_route", "api_route", "component", "service", "search_index", "documentation"],
+      "evidence_refs": ["app/search/page.tsx", "app/api/search/route.ts", "components/search/SearchInterface.tsx", "components/maps/SearchMap.tsx", "lib/search/searchProperties.ts", "lib/typesense/*"],
+      "verification_note": "Static code verifies mature search/discovery implementation. Runtime production readiness depends on current smoke, queue, and Typesense health."
+    },
+    {
+      "id": "REG-002",
+      "capability": "PROD-002",
+      "status": "VERIFIED_PARTIAL",
+      "confidence": "HIGH",
+      "evidence_type": ["app_route", "api_route", "component", "schema"],
+      "evidence_refs": ["app/properties/[id]/page.tsx", "components/search/PropertyDetail.tsx", "components/PropertyInquiryForm.tsx", "app/api/property-inquiry/route.ts"],
+      "verification_note": "Property experience has concrete implementation evidence; launch validation remains operational."
+    },
+    {
+      "id": "REG-003",
+      "capability": "PROD-003",
+      "status": "VERIFIED_PARTIAL",
+      "confidence": "MEDIUM",
+      "evidence_type": ["api_route", "model", "service", "component"],
+      "evidence_refs": ["app/api/save-search/route.ts", "components/maps/SaveSearch.tsx", "prisma/schema.prisma", "lib/alerts/matchSavedSearches.ts"],
+      "verification_note": "Buyer saved-search flow exists, but live alert review remains gated."
+    },
+    {
+      "id": "REG-004",
+      "capability": "PROD-004",
+      "status": "VERIFIED_PARTIAL",
+      "confidence": "MEDIUM",
+      "evidence_type": ["api_route", "component", "service"],
+      "evidence_refs": ["app/api/valuation/route.ts", "components/HomeValueEstimator.tsx", "lib/seller/createSellerLead.ts"],
+      "verification_note": "Seller flow is represented, but production conversion evidence was not verified."
+    },
+    {
+      "id": "REG-005",
+      "capability": "PROD-005",
+      "status": "VERIFIED_PARTIAL",
+      "confidence": "HIGH",
+      "evidence_type": ["app_route", "content_service", "documentation"],
+      "evidence_refs": ["app/market/[city]/page.tsx", "app/articles/[slug]/page.tsx", "lib/content/*", "docs/content-architecture.md"],
+      "verification_note": "Market content exists; large-scale expansion remains gated by launch readiness."
+    },
+    {
+      "id": "REG-006",
+      "capability": "PROD-006",
+      "status": "VERIFIED_PARTIAL",
+      "confidence": "MEDIUM",
+      "evidence_type": ["model", "api_route", "component"],
+      "evidence_refs": ["prisma/schema.prisma", "app/api/unsubscribe/route.ts", "components/settings/NorthStarManager.tsx"],
+      "verification_note": "Customer state exists, but a complete authenticated account experience was not verified."
+    },
+    {
+      "id": "REG-007",
+      "capability": "PROD-007",
+      "status": "VERIFIED_PARTIAL",
+      "confidence": "HIGH",
+      "evidence_type": ["api_route", "worker", "service", "script", "documentation"],
+      "evidence_refs": ["app/api/process-alerts/route.ts", "workers/alertWorker.ts", "lib/alerts/*", "lib/email/*", "scripts/alertNotificationReadiness.ts", "docs/email-system.md"],
+      "verification_note": "Notification system is implemented but remains in launch watch until saved-search rows and tracked-click gates are cleared."
+    },
+    {
+      "id": "REG-008",
+      "capability": "PROD-008",
+      "status": "VERIFIED_PARTIAL",
+      "confidence": "HIGH",
+      "evidence_type": ["app_route", "component", "script"],
+      "evidence_refs": ["app/page.tsx", "app/search/page.tsx", "app/properties/[id]/page.tsx", "scripts/publicExperienceSmoke.ts"],
+      "verification_note": "Public site surface exists. Wave 1 did not rerun browser or runtime smoke checks."
+    },
+    {
+      "id": "REG-009",
+      "capability": "OPS-001",
+      "status": "VERIFIED_PARTIAL",
+      "confidence": "HIGH",
+      "evidence_type": ["config", "service", "documentation"],
+      "evidence_refs": ["package.json", "docker-compose.yml", "lib/prisma.ts", "lib/queue/redis.ts", "lib/typesense/client.ts"],
+      "verification_note": "Infrastructure components are present; DR/resilience was not validated."
+    },
+    {
+      "id": "REG-010",
+      "capability": "OPS-002",
+      "status": "VERIFIED_PARTIAL",
+      "confidence": "HIGH",
+      "evidence_type": ["schema", "migration", "script", "service"],
+      "evidence_refs": ["prisma/schema.prisma", "prisma/migrations/*", "scripts/checkSupabase.ts", "lib/appDatabasePreflight.ts"],
+      "verification_note": "Data platform schema and checks are present. Wave 1 did not execute live data verification."
+    },
+    {
+      "id": "REG-011",
+      "capability": "OPS-003",
+      "status": "VERIFIED_PARTIAL",
+      "confidence": "HIGH",
+      "evidence_type": ["worker", "service", "api_route", "script", "documentation"],
+      "evidence_refs": ["lib/mls/*", "workers/mlsWorker.ts", "workers/mlsPageWorker.ts", "app/api/mls/status/route.ts", "docs/mls-ingestion.md"],
+      "verification_note": "MLS operations are implemented. Freshness and long-running reliability remain watch items."
+    },
+    {
+      "id": "REG-012",
+      "capability": "OPS-004",
+      "status": "VERIFIED_PARTIAL",
+      "confidence": "MEDIUM",
+      "evidence_type": ["api_route", "auth_guard", "documentation"],
+      "evidence_refs": ["app/api/admin/repository/auth.ts", "app/api/admin/control-state/route.ts", "app/api/mls/retry/route.ts", "app/api/unsubscribe/route.ts"],
+      "verification_note": "Security controls are visible statically; security testing was outside Wave 1."
+    },
+    {
+      "id": "REG-013",
+      "capability": "OPS-005",
+      "status": "VERIFIED_PARTIAL",
+      "confidence": "HIGH",
+      "evidence_type": ["script", "api_route", "component", "documentation"],
+      "evidence_refs": ["scripts/launchReadiness.ts", "scripts/queueDashboard.ts", "components/admin/DeadLetterInspector.tsx", "docs/launch-core-checklist.md"],
+      "verification_note": "Reliability tooling is extensive; production monitoring hardening remains launch-critical."
+    },
+    {
+      "id": "REG-014",
+      "capability": "OPS-006",
+      "status": "VERIFIED_PARTIAL",
+      "confidence": "MEDIUM",
+      "evidence_type": ["script", "config"],
+      "evidence_refs": ["package.json", "tsconfig.json", "tsconfig.worker.json"],
+      "verification_note": "Local validation scripts exist; CI/CD execution was not verified."
+    },
+    {
+      "id": "REG-015",
+      "capability": "COMM-001",
+      "status": "VERIFIED_PARTIAL",
+      "confidence": "HIGH",
+      "evidence_type": ["model", "api_route", "component", "script"],
+      "evidence_refs": ["prisma/schema.prisma", "app/api/admin/crm-tasks/route.ts", "app/api/admin/intake-signals/route.ts", "scripts/runCRM.ts"],
+      "verification_note": "CRM implementation exists; one pending strategy_intake task remains in watch."
+    },
+    {
+      "id": "REG-016",
+      "capability": "COMM-002",
+      "status": "VERIFIED_PARTIAL",
+      "confidence": "MEDIUM",
+      "evidence_type": ["content_service", "email_template", "component"],
+      "evidence_refs": ["lib/content/*", "lib/email/templates/*", "components/LeadCapture.tsx"],
+      "verification_note": "Marketing surfaces exist; campaign operations were not verified."
+    },
+    {
+      "id": "REG-017",
+      "capability": "COMM-003",
+      "status": "VERIFIED_PARTIAL",
+      "confidence": "MEDIUM",
+      "evidence_type": ["api_route", "component", "service"],
+      "evidence_refs": ["components/LeadCapture.tsx", "components/PropertyInquiryForm.tsx", "app/api/valuation/route.ts"],
+      "verification_note": "Sales capture paths exist; closed-loop sales reporting was not verified."
+    },
+    {
+      "id": "REG-018",
+      "capability": "COMM-004",
+      "status": "NOT_YET_VERIFIED",
+      "confidence": "LOW",
+      "evidence_type": ["google_doc"],
+      "evidence_refs": ["Google Docs Executive Book 2"],
+      "verification_note": "No local partnership workflow evidence was found."
+    },
+    {
+      "id": "REG-019",
+      "capability": "COMM-005",
+      "status": "NOT_YET_VERIFIED",
+      "confidence": "LOW",
+      "evidence_type": ["google_doc"],
+      "evidence_refs": ["Google Docs Executive Book 2"],
+      "verification_note": "No dedicated customer-success implementation was verified."
+    },
+    {
+      "id": "REG-020",
+      "capability": "INTEL-001",
+      "status": "VERIFIED_PARTIAL",
+      "confidence": "MEDIUM",
+      "evidence_type": ["admin_surface", "script", "documentation"],
+      "evidence_refs": ["app/admin/page.tsx", "scripts/launchReadiness.ts", "docs/launch-core-checklist.md"],
+      "verification_note": "Executive visibility exists through operational admin/readiness surfaces, not a dedicated executive dashboard."
+    },
+    {
+      "id": "REG-021",
+      "capability": "INTEL-002",
+      "status": "VERIFIED_PARTIAL",
+      "confidence": "MEDIUM",
+      "evidence_type": ["analytics_service", "api_route"],
+      "evidence_refs": ["lib/analytics/*", "lib/preferences/updateUserPreferences.ts", "app/api/track-click/route.ts"],
+      "verification_note": "Customer signals exist; customer intelligence productization remains early."
+    },
+    {
+      "id": "REG-022",
+      "capability": "INTEL-003",
+      "status": "VERIFIED_PARTIAL",
+      "confidence": "MEDIUM",
+      "evidence_type": ["analytics_service", "domain_service"],
+      "evidence_refs": ["lib/marketAnalytics.ts", "lib/marketPulse.ts", "lib/forecastEngine.ts", "lib/shadowInventory.ts"],
+      "verification_note": "Market intelligence modules exist; production KPI validation is incomplete."
+    },
+    {
+      "id": "REG-023",
+      "capability": "INTEL-004",
+      "status": "VERIFIED_PARTIAL",
+      "confidence": "MEDIUM",
+      "evidence_type": ["script", "admin_surface"],
+      "evidence_refs": ["scripts/launchReadiness.ts", "scripts/queueDashboard.ts", "scripts/runCRM.ts", "app/admin/page.tsx"],
+      "verification_note": "Operational reporting exists; dedicated KPI engine remains a gap."
+    },
+    {
+      "id": "REG-024",
+      "capability": "INTEL-005",
+      "status": "VERIFIED_DEFERRED",
+      "confidence": "HIGH",
+      "evidence_type": ["google_doc", "source_stub"],
+      "evidence_refs": ["Google Docs Executive Book 3", "lib/ai/*"],
+      "verification_note": "AI decision support is intentionally deferred."
+    },
+    {
+      "id": "REG-025",
+      "capability": "GOV-001",
+      "status": "VERIFIED_COMPLETE",
+      "confidence": "HIGH",
+      "evidence_type": ["admin_surface", "api_route", "service", "documentation"],
+      "evidence_refs": ["app/admin/repository/*", "app/api/admin/repository/*", "lib/repository/server.ts", "docs/REPOSITORY_STUDIO_SPRINT_3.md"],
+      "verification_note": "Repository v1 and Studio Sprints 1-3 are locally evidenced and governance closure is complete."
+    },
+    {
+      "id": "REG-026",
+      "capability": "GOV-002",
+      "status": "VERIFIED_COMPLETE",
+      "confidence": "HIGH",
+      "evidence_type": ["documentation", "governance_sql"],
+      "evidence_refs": ["docs/REPOSITORY_GOVERNANCE_CLOSURE_CYCLE_1.md", "supabase/governance/*"],
+      "verification_note": "Canon governance boundary is documented; no Canon expansion was made."
+    },
+    {
+      "id": "REG-027",
+      "capability": "GOV-003",
+      "status": "VERIFIED_COMPLETE",
+      "confidence": "HIGH",
+      "evidence_type": ["documentation", "governance_sql"],
+      "evidence_refs": ["docs/REPOSITORY_GOVERNANCE_CLOSURE_CYCLE_1.md", "supabase/governance/202607160006_repository_governance_closure_cycle_1_validation.sql"],
+      "verification_note": "Governance closure reports 0 platform traceability gaps, 0 capability lineage gaps, and 0 governance exception candidates."
+    },
+    {
+      "id": "REG-028",
+      "capability": "GOV-004",
+      "status": "VERIFIED_PARTIAL",
+      "confidence": "MEDIUM",
+      "evidence_type": ["documentation", "governance_sql"],
+      "evidence_refs": ["docs/REPOSITORY_GOVERNANCE_CLOSURE_CYCLE_1.md", "docs/launch-core-checklist.md"],
+      "verification_note": "Repository governance is complete; wider enterprise governance cycle coverage remains partial."
+    },
+    {
+      "id": "REG-029",
+      "capability": "GOV-005",
+      "status": "VERIFIED_PARTIAL",
+      "confidence": "HIGH",
+      "evidence_type": ["documentation"],
+      "evidence_refs": ["docs/CHAT_START.md", "docs/launch-core-checklist.md", "docs/project-atlas/executive-library/*"],
+      "verification_note": "Knowledge records are strong; new Executive Library must be maintained as launch evidence changes."
+    },
+    {
+      "id": "REG-030",
+      "capability": "AI-001",
+      "status": "VERIFIED_DEFERRED",
+      "confidence": "HIGH",
+      "evidence_type": ["google_doc"],
+      "evidence_refs": ["Google Docs Executive Book 3"],
+      "verification_note": "AI Brand Brain is post-launch deferred."
+    },
+    {
+      "id": "REG-031",
+      "capability": "AI-002",
+      "status": "VERIFIED_DEFERRED",
+      "confidence": "HIGH",
+      "evidence_type": ["google_doc", "source_stub"],
+      "evidence_refs": ["Google Docs Executive Book 3", "lib/ai/*"],
+      "verification_note": "AI Customer Intelligence is post-launch deferred."
+    },
+    {
+      "id": "REG-032",
+      "capability": "AI-003",
+      "status": "VERIFIED_DEFERRED",
+      "confidence": "HIGH",
+      "evidence_type": ["google_doc", "source_stub"],
+      "evidence_refs": ["Google Docs Executive Book 3", "lib/ai/*"],
+      "verification_note": "AI Market Intelligence is post-launch deferred."
+    },
+    {
+      "id": "REG-033",
+      "capability": "AI-004",
+      "status": "VERIFIED_DEFERRED",
+      "confidence": "HIGH",
+      "evidence_type": ["google_doc"],
+      "evidence_refs": ["Google Docs Executive Book 3"],
+      "verification_note": "AI Platform Intelligence is post-launch deferred."
+    },
+    {
+      "id": "REG-034",
+      "capability": "EXEC-001",
+      "status": "VERIFIED_PARTIAL",
+      "confidence": "MEDIUM",
+      "evidence_type": ["google_doc", "documentation"],
+      "evidence_refs": ["Google Docs Executive Library hub", "docs/launch-core-checklist.md"],
+      "verification_note": "Executive portfolio is documented but not a dedicated app workflow."
+    },
+    {
+      "id": "REG-035",
+      "capability": "EXEC-002",
+      "status": "VERIFIED_COMPLETE",
+      "confidence": "HIGH",
+      "evidence_type": ["google_doc", "documentation", "json_data"],
+      "evidence_refs": ["docs/project-atlas/executive-library/*", "docs/project-atlas/executive-library/data/*"],
+      "verification_note": "Capability management baseline is complete for Wave 1."
+    },
+    {
+      "id": "REG-036",
+      "capability": "EXEC-003",
+      "status": "VERIFIED_PARTIAL",
+      "confidence": "MEDIUM",
+      "evidence_type": ["documentation", "google_doc"],
+      "evidence_refs": ["docs/CHAT_START.md", "docs/launch-core-checklist.md", "Google Docs Executive Library hub"],
+      "verification_note": "Strategic sequencing exists in docs; no dedicated planning workflow was verified."
+    },
+    {
+      "id": "REG-037",
+      "capability": "EXEC-004",
+      "status": "VERIFIED_PARTIAL",
+      "confidence": "MEDIUM",
+      "evidence_type": ["documentation"],
+      "evidence_refs": ["docs/project-atlas/executive-library/LAUNCH-CRITICAL-CAPABILITY-GAP-REPORT.md", "docs/launch-core-checklist.md"],
+      "verification_note": "Launch risk is documented; dedicated enterprise risk workflow was not verified."
+    },
+    {
+      "id": "REG-038",
+      "capability": "EXEC-005",
+      "status": "VERIFIED_PARTIAL",
+      "confidence": "MEDIUM",
+      "evidence_type": ["documentation", "script"],
+      "evidence_refs": ["docs/CHAT_START.md", "docs/launch-core-checklist.md", "scripts/launchReadiness.ts"],
+      "verification_note": "Executive ops cadence exists through handoffs and readiness checks; recurring executive operating cadence remains future work."
+    }
+  ]
+}

@@ -1,0 +1,119 @@
+{
+  "program": "PROJECT ATLAS - Enterprise Capability Verification Program",
+  "wave": "Wave 1 - Repository-to-Code Baseline",
+  "baseline_commit": "ff590d4",
+  "generated_on": "2026-07-17",
+  "summary": {
+    "new_launch_blockers_discovered": 0,
+    "existing_launch_gates_preserved": 4,
+    "capability_gaps": 9
+  },
+  "existing_launch_gates": [
+    {
+      "id": "GATE-001",
+      "title": "Saved-search alert review",
+      "status": "WATCH",
+      "capabilities": ["PROD-003", "PROD-007"],
+      "evidence": "197 pending saved-search alert rows still require dry-run/operator review before live processing.",
+      "next_safe_action": "Operator review and explicitly approved dry-run/live policy outside this Wave 1 documentation pass."
+    },
+    {
+      "id": "GATE-002",
+      "title": "Alert queue backlog",
+      "status": "WATCH",
+      "capabilities": ["PROD-007", "OPS-005"],
+      "evidence": "reie-alerts remains at 273 waiting jobs in the latest handoff/checklist state.",
+      "next_safe_action": "Continue timeout-bounded queue diagnostics before any live worker or retry action."
+    },
+    {
+      "id": "GATE-003",
+      "title": "Strategy intake CRM review",
+      "status": "WATCH",
+      "capabilities": ["COMM-001", "EXEC-005"],
+      "evidence": "One pending medium-priority strategy_intake task remains in watch state.",
+      "next_safe_action": "Human review before scheduler cadence escalation."
+    },
+    {
+      "id": "GATE-004",
+      "title": "Controlled tracked-email click",
+      "status": "WATCH",
+      "capabilities": ["PROD-007", "INTEL-002"],
+      "evidence": "One controlled internal tracked-email click is still needed before recurring email/scheduler activation.",
+      "next_safe_action": "Perform only when explicitly approved; no live send was run in Wave 1."
+    }
+  ],
+  "capability_gaps": [
+    {
+      "id": "GAP-001",
+      "severity": "P0",
+      "capability": "PROD-007",
+      "title": "Saved-search alert live-readiness remains gated by operator review.",
+      "status": "OPEN",
+      "evidence": ["docs/CHAT_START.md", "docs/launch-core-checklist.md", "docs/email-system.md", "docs/alert-architecture.md"]
+    },
+    {
+      "id": "GAP-002",
+      "severity": "P0",
+      "capability": "OPS-005",
+      "title": "Monitoring and reliability hardening must precede recurring live operations.",
+      "status": "OPEN",
+      "evidence": ["scripts/launchReadiness.ts", "scripts/queueDashboard.ts", "components/admin/DeadLetterInspector.tsx"]
+    },
+    {
+      "id": "GAP-003",
+      "severity": "P0",
+      "capability": "OPS-003",
+      "title": "MLS freshness and long-running sync reliability remain watch items.",
+      "status": "OPEN",
+      "evidence": ["docs/mls-ingestion.md", "workers/mlsWorker.ts", "workers/mlsPageWorker.ts", "app/api/mls/status/route.ts"]
+    },
+    {
+      "id": "GAP-004",
+      "severity": "P1",
+      "capability": "COMM-001",
+      "title": "CRM strategy_intake task requires review before cadence escalation.",
+      "status": "OPEN",
+      "evidence": ["docs/CHAT_START.md", "scripts/runCRM.ts", "app/api/admin/crm-tasks/route.ts"]
+    },
+    {
+      "id": "GAP-005",
+      "severity": "P1",
+      "capability": "INTEL-001",
+      "title": "Dedicated executive dashboard is not yet complete.",
+      "status": "OPEN",
+      "evidence": ["Google Docs Enterprise Capability Assessment Book 3", "app/admin/page.tsx", "scripts/launchReadiness.ts"]
+    },
+    {
+      "id": "GAP-006",
+      "severity": "P1",
+      "capability": "INTEL-004",
+      "title": "Dedicated KPI engine remains incomplete.",
+      "status": "OPEN",
+      "evidence": ["Google Docs Enterprise Capability Assessment Book 3", "scripts/launchReadiness.ts", "scripts/queueDashboard.ts"]
+    },
+    {
+      "id": "GAP-007",
+      "severity": "P2",
+      "capability": "COMM-004",
+      "title": "Partnerships capability has no verified local implementation.",
+      "status": "OPEN",
+      "evidence": ["Google Docs Executive Book 2"]
+    },
+    {
+      "id": "GAP-008",
+      "severity": "P2",
+      "capability": "COMM-005",
+      "title": "Customer Success capability has no verified dedicated implementation.",
+      "status": "OPEN",
+      "evidence": ["Google Docs Executive Book 2"]
+    },
+    {
+      "id": "GAP-009",
+      "severity": "P2",
+      "capability": "EXEC-004",
+      "title": "Enterprise risk is documented but not yet implemented as a dedicated workflow.",
+      "status": "OPEN",
+      "evidence": ["docs/project-atlas/executive-library/LAUNCH-CRITICAL-CAPABILITY-GAP-REPORT.md", "docs/launch-core-checklist.md"]
+    }
+  ]
+}
