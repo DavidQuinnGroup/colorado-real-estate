@@ -8308,6 +8308,17 @@ Carry-forward launch blockers:
 - Closure-review audit stayed clean with 0 closed tasks and 100% coverage.
 - No CRM task state was changed, no scheduler cadence was escalated, no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no saved-search alert dry-run was run, no property-inquiry smoke was run, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
 
+## Checkpoint 2373 - Saved-Search Alert Readiness After CRM Pending Refresh
+
+- July 17, 2026 11:01 MDT reran `npm run check:alert-notification-readiness`.
+- Worker output rebuilt successfully before the saved-search alert notification readiness check ran.
+- Saved-search alert readiness returned `success=true`, `sendsEmail=false`, and `mutatesRows=false`.
+- Readiness stayed `watch` because 1 optional saved-search alert email setting still needs operator review.
+- AlertQueue counts stayed 197 pending, 0 failed, and 0 processing rows.
+- Sampled recipients stayed unsubscribed=false, and Resend API key shape, sender, reply-to, and site URL checks passed with secret values masked.
+- The surfaced next command remained `npm run run:alerts:dry -- --limit 50`, and it was not run.
+- No saved-search alert dry-run was run, no property-inquiry smoke was run, no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no CRM task state was changed, no scheduler cadence was escalated, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
+
 ## Checkpoint 2276 - CRM Pending After Queue Dashboard
 
 - July 16, 2026 10:32 MDT reran `npm run run:crm:pending`.
