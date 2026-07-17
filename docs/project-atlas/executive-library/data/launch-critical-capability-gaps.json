@@ -291,7 +291,7 @@
       "reie-alerts remains 273 waiting with no active, delayed, or failed jobs after the controlled click.",
       "One pending strategy_intake CRM task remains in watch because CRM closure was not authorized.",
       "Production DNS/site URL configuration must be corrected before relying on production-domain tracked links.",
-      "UserPreference.createdAt schema/runtime drift must be resolved or explicitly accepted before recurring engagement analytics are relied on."
+      "UserPreference schema/runtime drift is resolved; DNS/site URL correction remains required before relying on production-domain tracked links."
     ],
     "evidence": {
       "method": "METHOD_B_LOCAL_ROUTE_HOST_SUBSTITUTION",
@@ -319,7 +319,7 @@
         "afterStatus": "pending",
         "pendingStrategyIntakeCount": 1
       },
-      "residualFinding": "Async updateUserPreferences logged Prisma P2022 because UserPreference.createdAt is absent in the current database."
+      "residualFinding": "Resolved in Wave 3D: updateUserPreferences revalidated without P2022 after UserPreference schema parity was applied."
     }
   },
   "wave3c_userpreference_schema_parity": {
@@ -340,11 +340,10 @@
       "GAP-008",
       "GAP-009"
     ],
-    "preference_refresh_schema_alignment": "WATCH_PENDING_AUTHORIZATION",
+    "preference_refresh_schema_alignment": "RESOLVED_IN_WAVE3D",
     "tracked_email_click_classification": "RESOLVED_WITH_FOLLOW_UP",
     "launch_blockers": [],
     "conditional_launch_gates": [
-      "Prepared UserPreference schema-parity migration must be explicitly authorized and applied before recurring engagement analytics are relied on.",
       "196 pending saved-search alert rows still require operator review before broad live processing.",
       "reie-alerts remains 273 waiting with no active, delayed, or failed jobs from latest bounded evidence.",
       "One pending strategy_intake CRM task remains in watch.",
@@ -355,7 +354,7 @@
       "operationalImpact": "NONBLOCKING_DEGRADED_ENRICHMENT",
       "migrationFilename": "prisma/migrations/20260717133000_repair_user_preference_schema_parity/migration.sql",
       "rowCount": 0,
-      "productionMigrationApplied": false,
+      "productionMigrationApplied": true,
       "databaseDifferences": [
         "createdAt missing",
         "updatedAt nullable",
@@ -364,6 +363,58 @@
         "id missing database default",
         "foreign key exists as fk_user rather than UserPreference_userId_fkey"
       ]
+    }
+  },
+  "wave3d_userpreference_schema_parity_application": {
+    "wave": "Wave 3D - UserPreference Schema Parity Application",
+    "baseline_commit": "d4a1081",
+    "verification_date": "2026-07-17",
+    "gaps_closed": [
+      "Preference-refresh schema alignment watch item"
+    ],
+    "gaps_reduced": [
+      "GAP-001"
+    ],
+    "gaps_unchanged": [
+      "GAP-002",
+      "GAP-003",
+      "GAP-004",
+      "GAP-005",
+      "GAP-006",
+      "GAP-007",
+      "GAP-008",
+      "GAP-009"
+    ],
+    "preference_refresh_schema_alignment": "RESOLVED",
+    "tracked_email_click_classification": "RESOLVED_WITH_NONBLOCKING_DNS_FOLLOW_UP",
+    "launch_blockers": [],
+    "conditional_launch_gates": [
+      "196 pending saved-search alert rows still require operator review before broad live processing.",
+      "reie-alerts remains 273 waiting with no active, delayed, or failed jobs.",
+      "One pending strategy_intake CRM task remains in watch.",
+      "Production DNS/site URL configuration remains separate.",
+      "Full launch readiness refresh remains required before recurring operations."
+    ],
+    "evidence": {
+      "authorizedMigrationsApplied": 1,
+      "unrelatedMigrationsApplied": 0,
+      "migrationFilename": "prisma/migrations/20260717133000_repair_user_preference_schema_parity/migration.sql",
+      "preMigrationRowCount": 0,
+      "postMigrationPreTestRowCount": 0,
+      "postFunctionalTestRowCount": 1,
+      "p2022Status": "not_observed",
+      "alertQueueCountsAfter": {
+        "pending": 196,
+        "sent": 84,
+        "skipped": 3
+      },
+      "queueCountsAfter": {
+        "waiting": 273,
+        "active": 0,
+        "delayed": 0,
+        "failed": 0
+      },
+      "pendingStrategyIntakeCount": 1
     }
   }
 }

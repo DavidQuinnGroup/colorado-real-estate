@@ -138,3 +138,26 @@ Updated launch gate state:
 - Alert queue backlog: `WATCH` - `reie-alerts` remains 273 waiting from the latest bounded queue evidence.
 - Strategy intake CRM review: `WATCH` - one pending `strategy_intake` task remains.
 - Hosted DNS/site URL configuration: `WATCH` - production apex host correction remains separate.
+
+## Wave 3D UserPreference Schema Parity Application
+
+Baseline: `d4a1081`
+Verification date: 2026-07-17
+
+| Gap | Wave 3D Result | Classification | Reason |
+| --- | --- | --- | --- |
+| GAP-001 | Reduced, still open | Conditional launch gate | Preference-refresh schema alignment is resolved, but 196 pending saved-search alert rows still require operator review before broad live processing. |
+| GAP-002 | Unchanged, open | Conditional launch gate | Queue/readiness remained stable but still `watch`; production monitoring proof remains incomplete. |
+| GAP-004 | Unchanged, open | Controlled launch gate | CRM task closure was not authorized and one pending `strategy_intake` task remains. |
+
+Closed watch item:
+
+- Preference-refresh schema alignment: `RESOLVED`.
+
+Updated launch gate state:
+
+- Saved-search alert review: `WATCH` - 196 pending rows remain.
+- Alert queue backlog: `WATCH` - `reie-alerts` remains 273 waiting.
+- Strategy intake CRM review: `WATCH` - one pending `strategy_intake` task remains.
+- Hosted DNS/site URL configuration: `WATCH` - production apex host correction remains separate.
+- Controlled click path: `RESOLVED_WITH_NONBLOCKING_DNS_FOLLOW_UP`.

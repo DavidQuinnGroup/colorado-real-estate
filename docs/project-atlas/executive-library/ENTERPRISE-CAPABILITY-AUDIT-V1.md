@@ -158,3 +158,23 @@ Results:
 Audit conclusion:
 
 Wave 3C prepared the smallest schema-parity correction but did not close the preference-refresh watch item. `GAP-001` remains open until the migration is explicitly applied and the preference-update path is revalidated.
+
+## Wave 3D UserPreference Schema Parity Application
+
+Wave 3D applied and verified the authorized `UserPreference` schema-parity repair from baseline `d4a1081`.
+
+Results:
+
+- Authorized migration applied: exactly 1, `20260717133000_repair_user_preference_schema_parity`.
+- Unrelated migrations applied: 0.
+- Application method: exact reviewed SQL through Prisma transaction, then migration history marked applied for that migration only.
+- Pre-test `UserPreference` row count: 0.
+- Post-test `UserPreference` row count: 1.
+- Controlled functional test: `updateUserPreferences()` returned `updated: true`.
+- `createdAt` and `updatedAt`: populated.
+- `P2022`: not observed.
+- Queue/readiness: `watch`; `reie-alerts` remained 273 waiting, 0 active, 0 delayed, 0 failed.
+
+Audit conclusion:
+
+The preference-refresh schema alignment item is resolved. Launch posture remains partial because saved-search operator review, queue/watch readiness, CRM review, DNS/site URL correction, and full launch readiness remain open.

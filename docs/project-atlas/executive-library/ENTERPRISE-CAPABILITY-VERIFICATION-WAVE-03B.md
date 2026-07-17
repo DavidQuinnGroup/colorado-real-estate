@@ -145,6 +145,8 @@ The click route calls `updateUserPreferences()` asynchronously after tracking. D
 
 The error did not prevent click tracking, `clickedAt`, heat-score, redirect, or property-page success. It should be treated as a separate launch-readiness defect for schema/runtime alignment before recurring engagement analytics are relied on.
 
+Wave 3D update: `20260717133000_repair_user_preference_schema_parity` was applied and `updateUserPreferences()` was revalidated successfully. The `P2022` preference-refresh residual is resolved. DNS/site URL correction remains separate.
+
 ## 14. Gate Result
 
 `W3-CLICK-001`: `EXECUTED_PASS_WITH_FOLLOW_UP`.
@@ -156,7 +158,7 @@ The controlled tracked-email click requirement is resolved for prelaunch evidenc
 - Saved-search alert review: `WATCH` - 196 pending rows remain for operator review before broad live processing.
 - Alert queue backlog: `WATCH` - `reie-alerts` remains 273 waiting with no active, delayed, or failed jobs.
 - Strategy intake CRM review: `WATCH` - one pending medium-priority `strategy_intake` task remains.
-- Preference-refresh schema alignment: `WATCH` - `UserPreference.createdAt` drift surfaced in the async post-click update path.
+- Preference-refresh schema alignment: `RESOLVED` - Wave 3D applied schema parity and revalidated `updateUserPreferences()` without `P2022`.
 
 ## 16. Capability Effects
 
@@ -173,9 +175,9 @@ Do not activate recurring email, alert workers, schedulers, or bulk saved-search
 
 Next recommended controlled work:
 
-1. Resolve or explicitly accept the `UserPreference.createdAt` schema/runtime mismatch.
-2. Perform human/operator review of the 196 pending saved-search alert rows.
-3. Complete or explicitly defer CRMTask `751fa51e-4a2e-411f-97df-c320e974e058`.
+1. Perform human/operator review of the 196 pending saved-search alert rows.
+2. Complete or explicitly defer CRMTask `751fa51e-4a2e-411f-97df-c320e974e058`.
+3. Correct hosted DNS/site URL configuration.
 4. Refresh full launch readiness after the remaining gates are handled.
 
 ## 18. Commands Intentionally Not Run

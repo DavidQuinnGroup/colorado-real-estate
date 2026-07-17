@@ -144,3 +144,18 @@ Assessment changes:
 - Row count: 0 connected `UserPreference` rows.
 
 The correction remains a required authorization checkpoint before recurring engagement analytics are relied on. It does not displace the remaining launch gates for alert operator review, queue readiness, CRM review, or DNS/site URL correction.
+
+## Wave 3D Assessment Update
+
+Wave 3D applied the authorized `UserPreference` schema-parity repair from baseline `d4a1081`.
+
+Assessment changes:
+
+- Authorized migration applied: `20260717133000_repair_user_preference_schema_parity`.
+- Unrelated migrations applied: 0.
+- Controlled preference update: passed.
+- P2022 status: resolved.
+- Click-path residual: `RESOLVED_WITH_NONBLOCKING_DNS_FOLLOW_UP`.
+- UserPreference row count after controlled test: 1.
+
+Launch recommendation is unchanged: do not activate recurring email, alert workers, schedulers, or bulk saved-search processing until alert operator review, CRM review, queue/readiness refresh, and DNS/site URL correction are handled.
