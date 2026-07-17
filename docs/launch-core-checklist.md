@@ -7705,6 +7705,17 @@ Carry-forward launch blockers:
 - The readiness check still reports `npm run run:alerts:dry -- --limit 50` as the next operator command, but no saved-search alert dry-run was run.
 - No live property-inquiry smoke was run, no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no CRM task state was changed, no scheduler cadence was escalated, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
 
+## Checkpoint 2318 - Consolidated Notification Readiness After Saved-Search Refresh
+
+- July 17, 2026 03:28 MDT reran `npm run check:notification-readiness`.
+- Worker output rebuilt successfully before the consolidated notification readiness summary ran.
+- Consolidated notification readiness returned `success=true`, `commandSuccess=true`, `sendsEmail=false`, `mutatesRows=false`, and `strictMode=false`.
+- Overall notification readiness stayed `watch` because 2 notification readiness checks still require operator review; the surfaced next command remained `npm run run:alerts:dry -- --limit 50`.
+- Saved-search alert notification stayed `watch` with 197 pending saved-search alert rows available for dry-run review, 0 failed checks, and 1 warning check.
+- Property-inquiry notification stayed `ready` for high-priority sends with 0 failed checks, 0 warning checks, and no blockers.
+- Aggregate launch notification readiness stayed `watch` with 197 pending saved-search alert rows requiring final dry-run review before live processing, 0 failed checks, and 1 warning check.
+- No saved-search alert dry-run was run, no property-inquiry smoke was run, no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no CRM task state was changed, no scheduler cadence was escalated, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
+
 ## Checkpoint 2276 - CRM Pending After Queue Dashboard
 
 - July 16, 2026 10:32 MDT reran `npm run run:crm:pending`.
