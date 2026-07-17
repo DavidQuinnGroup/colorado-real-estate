@@ -7981,6 +7981,17 @@ Carry-forward launch blockers:
 - The surfaced next command remained `npm run run:alerts:dry -- --limit 50`, and it was not run.
 - No saved-search alert dry-run was run, no property-inquiry smoke was run, no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no CRM task state was changed, no scheduler cadence was escalated, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
 
+## Checkpoint 2343 - Queue Dashboard After Launch Readiness Refresh
+
+- July 17, 2026 07:38 MDT reran `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000`.
+- Queue dashboard returned `success=true` with no diagnostics, no failed jobs, no open dead-letter jobs, and no stale active jobs.
+- Recovery plan stayed `caution` only because 1 queue still has waiting work; the surfaced next command remained `npm run run:worker:alerts`.
+- `reie-alerts` stayed busy with 273 waiting, 0 active, 0 delayed, 0 failed, and 0 completed jobs.
+- MLS sync stayed healthy with 0 waiting, 0 active, 0 delayed, 637 completed, 0 failed, and 0 open dead-letter jobs.
+- MLS page stayed healthy with 0 waiting, 0 active, 0 delayed, 5911 completed, 0 failed, and 0 open dead-letter jobs.
+- Listings and dead-letter queues stayed healthy/drained with 0 waiting, 0 active, 0 delayed, and 0 failed jobs.
+- No alert worker was started, no saved-search alert dry-run was run, no live retry was run, no queue retry was run, no live sync was started, no live worker was started, no live email was sent, no CRM task state was changed, no scheduler cadence was escalated, no OpenAI request was made, no MLS Grid request was made, no reset was run, and no reindex was run.
+
 ## Checkpoint 2276 - CRM Pending After Queue Dashboard
 
 - July 16, 2026 10:32 MDT reran `npm run run:crm:pending`.
