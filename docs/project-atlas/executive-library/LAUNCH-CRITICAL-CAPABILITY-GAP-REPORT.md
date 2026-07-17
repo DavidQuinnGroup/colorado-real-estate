@@ -211,3 +211,31 @@ Updated launch gate state:
 - Strategy intake CRM review: `CLOSED` - zero pending CRM tasks.
 - Hosted DNS/site URL configuration: `WATCH_REQUIRES_OWNER_ACTION`.
 - Controlled production-domain email/tracked-link validation: `PENDING_AFTER_DNS`.
+
+## Wave 4 Production Launch Validation
+
+Baseline: `eeeba7e`
+Verification date: 2026-07-17
+
+| Gap | Wave 4 Result | Classification | Reason |
+| --- | --- | --- | --- |
+| GAP-001 | Still open | Conditional launch gate | Controlled production email/click was not run because production route validation failed. |
+| GAP-002 | Still open | Conditional launch gate | Production route/search/unsubscribe validation failed. |
+| GAP-003 | Unchanged | Operational follow-up | MLS Grid was not called. |
+| GAP-004 | Closed from Wave 3F, unchanged | Closed operational gate | CRM readiness remains ready. |
+
+Closed in Wave 4:
+
+- Production root DNS.
+- Production SSL.
+- `www` to root redirect.
+
+New/remaining blockers:
+
+- Production `/search` returned 404.
+- Production `/api/search?limit=1` could not resolve Typesense host.
+- Production `/robots.txt` and `/sitemap.xml` returned 404.
+- Production invalid-token unsubscribe returned 500.
+- Vercel CLI credentials were invalid/unavailable.
+
+Certification outcome: `NOT_CERTIFIED`.

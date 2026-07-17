@@ -187,3 +187,17 @@ Assessment changes:
 - Launch readiness: still `watch`.
 
 Launch recommendation: proceed next with owner DNS/Vercel domain activation. Do not run alert dry-runs, live sends, workers, schedulers, or pilots until production-domain correction and a new controlled production-domain tracked-link test are authorized and completed.
+
+## Wave 4 Assessment Update
+
+Wave 4 validated production DNS/SSL/redirect from baseline `eeeba7e` but did not certify Internal Preview.
+
+Assessment changes:
+
+- Domain DNS/SSL/redirect: ready.
+- Production deployment route health: blocked.
+- Production search health: blocked.
+- Controlled production email: not run.
+- Certification outcome: `NOT_CERTIFIED`.
+
+Launch recommendation: restore valid Vercel credentials, deploy or realign production to current `main`, fix production search/Typesense and unsubscribe behavior, then rerun Wave 4 before attempting the controlled production email proof.

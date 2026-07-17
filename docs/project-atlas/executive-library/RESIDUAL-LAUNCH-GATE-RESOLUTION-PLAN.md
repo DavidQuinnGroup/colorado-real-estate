@@ -32,6 +32,18 @@ Wave 3F closed the first two residual operational gates:
 | reie-alerts waiting backlog | `OPEN` | 273 waiting jobs remain; no BullMQ job was processed. |
 | Final readiness refresh | `WATCH` | Launch readiness remains `watch` because saved-search alert review remains open. |
 
+## Wave 4 Production Validation Update
+
+Wave 4 closed the DNS/SSL/redirect part of the production-domain gate but did not certify Internal Preview.
+
+| Gate | Wave 4 Status | Evidence |
+| --- | --- | --- |
+| Production DNS/site URL | `PARTIAL_DNS_SSL_REDIRECT_READY` | Root resolves, HTTPS works, and `www` redirects to root. |
+| Production deployment | `BLOCKED` | Production `/search` returned 404 and Vercel CLI credentials were invalid/unavailable. |
+| Production search | `BLOCKED` | Production `/api/search?limit=1` could not resolve the configured Typesense host. |
+| Controlled production email | `NOT_RUN` | Email proof was stopped because production route validation failed. |
+| Internal Preview certification | `NOT_CERTIFIED` | See `PROJECT-ATLAS-LAUNCH-READINESS-CERTIFICATION-V1.md`. |
+
 ## Package A - Apply Admin Intake Readiness Indexes
 
 Classification: `RECOMMENDED_BEFORE_LAUNCH`.

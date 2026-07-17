@@ -212,3 +212,21 @@ Requires later controlled test email:
 - Production-domain alert email tracking.
 - Production-domain unsubscribe URL.
 - Production-domain click route redirect and persistence.
+
+## Wave 4 Validation Update
+
+Observed on 2026-07-17:
+
+- Root DNS resolves to Vercel.
+- Root HTTPS returns `HTTP/2 200`.
+- `www` resolves through a Vercel CNAME.
+- `www` HTTPS returns `HTTP/2 308` to `https://davidquinngroup.com/`.
+
+Domain activation is ready at the DNS/SSL/redirect layer.
+
+Production application activation is not certified:
+
+- `/search` returned 404.
+- `/api/search?limit=1` returned a Typesense DNS error.
+- `/robots.txt` and `/sitemap.xml` returned 404.
+- Vercel CLI credentials were invalid/unavailable, so hosted env and deployment correction could not be performed.

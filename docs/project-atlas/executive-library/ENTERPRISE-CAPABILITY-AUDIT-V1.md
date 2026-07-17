@@ -212,3 +212,21 @@ Results:
 Audit conclusion:
 
 The migration and CRM operational gates are closed. DNS/site URL correction and alert activation remain open and must not be treated as closed by Wave 3F.
+
+## Wave 4 Production Launch Validation
+
+Wave 4 validated the production domain and attempted production launch validation from baseline `eeeba7e`.
+
+Results:
+
+- DNS/SSL/redirect passed for root and `www`.
+- Production app validation failed: `/search` returned 404.
+- Production search failed: `/api/search?limit=1` returned a Typesense DNS error.
+- Robots and sitemap returned 404.
+- Invalid-token unsubscribe route returned 500.
+- Vercel CLI could not inspect or change hosted env/deployment state because credentials were invalid/unavailable.
+- No controlled email, tracked click, unsubscribe mutation, alert row processing, BullMQ job processing, or CRM mutation was executed.
+
+Audit conclusion:
+
+Project Atlas is `NOT_CERTIFIED` for Internal Preview until production deployment/search/unsubscribe health and the controlled production-hosted email proof are completed.

@@ -177,3 +177,19 @@ No capability status was upgraded or downgraded in Wave 3F. Two operational gate
 | OPS-005 Reliability | `VERIFIED_PARTIAL` | `VERIFIED_PARTIAL` | Queue dashboard stayed stable with 0 failed jobs and 0 open dead letters. | `reie-alerts` backlog and production monitoring proof remain watch items. |
 
 Command and gate results are recorded in the JSON register under `wave3f_operational_launch_gate_closure`.
+
+## Wave 4 Production Launch Validation
+
+Verification date: 2026-07-17
+Baseline: `eeeba7e`
+
+No capability status was upgraded or downgraded in Wave 4. Production DNS/SSL/redirect improved, but production app/search validation failed and Internal Preview was not certified.
+
+| Capability | Previous Status | Wave 4 Status | Evidence | Reason |
+| --- | --- | --- | --- | --- |
+| PROD-007 Notifications | `VERIFIED_PARTIAL` | `VERIFIED_PARTIAL` | No controlled production email was sent. | Email proof was stopped because production route validation failed first. |
+| PROD-008 Public Website | `VERIFIED_PARTIAL` | `VERIFIED_PARTIAL` | Root domain returns 200, but `/search` returns 404. | Production app is not aligned with expected REIE route surface. |
+| OPS-005 Reliability | `VERIFIED_PARTIAL` | `VERIFIED_PARTIAL` | Queue/dead-letter state stayed stable, but production search and unsubscribe failed. | Internal Preview cannot be certified. |
+| OPS-002 Data Platform | `VERIFIED_PARTIAL` | `VERIFIED_PARTIAL` | Migrations remain current. | Deployment/search health is still unresolved. |
+
+Command and gate results are recorded in the JSON register under `wave4_production_launch_validation`.
