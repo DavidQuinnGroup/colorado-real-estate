@@ -83,3 +83,25 @@ The canonical audit data is maintained in:
 - `docs/project-atlas/executive-library/data/enterprise-capabilities.json`
 - `docs/project-atlas/executive-library/data/capability-verification-register.json`
 - `docs/project-atlas/executive-library/data/launch-critical-capability-gaps.json`
+
+## Wave 2 Evidence Closure Update
+
+Wave 2 used bounded, non-mutating verification against baseline `13e7905`. It did not process alert rows, consume `reie-alerts` jobs, send email, mutate CRM records, call MLS Grid, call OpenAI, activate TitlePro247, reset/reindex Typesense, or retry queues.
+
+Results:
+
+- Gaps closed: none.
+- Gaps reduced but still open: GAP-001, GAP-002, GAP-003, GAP-004, GAP-005, GAP-006, GAP-009.
+- Gaps unchanged: GAP-007, GAP-008.
+- Capability counts remain unchanged: 4 complete, 27 partial, 5 deferred, 2 not yet verified, 0 missing.
+
+Evidence obtained:
+
+- `npm run worker:build` passed.
+- `npm run typecheck` passed.
+- `npm run lint` reached ESLint and failed on pre-existing Repository `no-explicit-any` violations in `lib/repository/intelligence/timeline.ts` and `lib/repository/server.ts`.
+- Static inspection verified alert queue planning, worker config validation, retry/dead-letter behavior, send boundaries, unsubscribe gates, click tracking, CRM review-note controls, queue dashboard diagnostics, and admin authorization patterns.
+
+Audit conclusion:
+
+Wave 2 reduced evidence uncertainty but did not remove the operational launch gates. The active blockers/gates remain conditional and operational, not newly discovered missing implementation.

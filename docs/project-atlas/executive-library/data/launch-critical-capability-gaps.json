@@ -3,6 +3,33 @@
   "wave": "Wave 1 - Repository-to-Code Baseline",
   "baseline_commit": "ff590d4",
   "generated_on": "2026-07-17",
+  "wave2_evidence_closure": {
+    "wave": "Wave 2 - Launch-Critical Evidence Closure",
+    "baseline_commit": "13e7905",
+    "verification_date": "2026-07-17",
+    "gaps_closed": [],
+    "gaps_reduced": ["GAP-001", "GAP-002", "GAP-003", "GAP-004", "GAP-005", "GAP-006", "GAP-009"],
+    "gaps_unchanged": ["GAP-007", "GAP-008"],
+    "alert_queue_classification": "EXPECTED_PRELAUNCH_BACKLOG",
+    "crm_gate_classification": "CONTROLLED_LAUNCH_GATE",
+    "tracked_email_click_classification": "REQUIRED_CONTROLLED_PRELAUNCH_TEST",
+    "customer_analytics_classification": "VERIFIED_PARTIAL",
+    "security_reliability_classification": "VERIFIED_PARTIAL",
+    "launch_blockers": [],
+    "conditional_launch_gates": [
+      "Saved-search alert operator review and approved live-send policy",
+      "Tracked-email click evidence before recurring scheduler/email activation",
+      "CRM strategy_intake review before scheduler cadence escalation",
+      "Queue/MLS/search/notification readiness refresh before recurring live operations"
+    ],
+    "non_blocking_post_launch_items": [
+      "Dedicated executive dashboard",
+      "Dedicated KPI engine",
+      "Partnerships workflow",
+      "Customer Success workflow",
+      "Dedicated enterprise risk workflow"
+    ]
+  },
   "summary": {
     "new_launch_blockers_discovered": 0,
     "existing_launch_gates_preserved": 4,

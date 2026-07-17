@@ -3,6 +3,97 @@
   "wave": "Wave 1 - Repository-to-Code Baseline",
   "baseline_commit": "ff590d4",
   "generated_on": "2026-07-17",
+  "wave2_evidence_closure": {
+    "wave": "Wave 2 - Launch-Critical Evidence Closure",
+    "baseline_commit": "13e7905",
+    "verification_date": "2026-07-17",
+    "status_counts_after_wave2": {
+      "VERIFIED_COMPLETE": 4,
+      "VERIFIED_PARTIAL": 27,
+      "VERIFIED_MISSING": 0,
+      "VERIFIED_DEFERRED": 5,
+      "NOT_YET_VERIFIED": 2,
+      "NOT_APPLICABLE": 0,
+      "total": 38
+    },
+    "capability_status_changes": [],
+    "commands_executed": [
+      {
+        "command": "npm run worker:build",
+        "classification": "SAFE_LOCAL",
+        "result": "passed",
+        "evidence": "Worker TypeScript compiled successfully."
+      },
+      {
+        "command": "npm run typecheck",
+        "classification": "SAFE_STATIC",
+        "result": "passed",
+        "evidence": "Application TypeScript typecheck passed."
+      },
+      {
+        "command": "npm run lint",
+        "classification": "SAFE_LOCAL",
+        "result": "failed_existing_repository_lint",
+        "evidence": "ESLint reached source validation and failed on pre-existing no-explicit-any errors in lib/repository/intelligence/timeline.ts and lib/repository/server.ts."
+      }
+    ],
+    "gap_effects": [
+      {
+        "gap": "GAP-001",
+        "capability": "PROD-007",
+        "effect": "REDUCED_STILL_OPEN",
+        "reason": "Static evidence verifies alert queue, worker, dry-run, email boundary, unsubscribe, retry, and dead-letter controls; operator review/live approval remains required."
+      },
+      {
+        "gap": "GAP-002",
+        "capability": "OPS-005",
+        "effect": "REDUCED_STILL_OPEN",
+        "reason": "Static evidence verifies queue dashboard, dead-letter inspection, retry guards, readiness scripts, and worker shutdown/recovery commands; production monitoring hardening remains required."
+      },
+      {
+        "gap": "GAP-003",
+        "capability": "OPS-003",
+        "effect": "REDUCED_STILL_OPEN",
+        "reason": "Static evidence verifies MLS worker/status/retry/runbook controls and typecheck passes; inventory freshness and long-running reliability require operational evidence."
+      },
+      {
+        "gap": "GAP-004",
+        "capability": "COMM-001",
+        "effect": "REDUCED_STILL_OPEN",
+        "reason": "Static evidence verifies read-only CRM reporting, authenticated detail route, note-backed closure, and idempotent pending-task creation guard; human review remains required."
+      },
+      {
+        "gap": "GAP-005",
+        "capability": "INTEL-001",
+        "effect": "REDUCED_STILL_OPEN",
+        "reason": "Static evidence verifies admin operational snapshot/readiness surfaces; a dedicated executive dashboard remains incomplete."
+      },
+      {
+        "gap": "GAP-006",
+        "capability": "INTEL-004",
+        "effect": "REDUCED_STILL_OPEN",
+        "reason": "Static evidence verifies queue, CRM, launch-readiness, and admin reporting; a dedicated KPI engine remains incomplete."
+      },
+      {
+        "gap": "GAP-007",
+        "capability": "COMM-004",
+        "effect": "UNCHANGED_OPEN",
+        "reason": "No local partnership workflow implementation was found."
+      },
+      {
+        "gap": "GAP-008",
+        "capability": "COMM-005",
+        "effect": "UNCHANGED_OPEN",
+        "reason": "No dedicated Customer Success implementation was found."
+      },
+      {
+        "gap": "GAP-009",
+        "capability": "EXEC-004",
+        "effect": "REDUCED_STILL_OPEN",
+        "reason": "Static evidence verifies launch-risk documentation and gap tracking; no dedicated enterprise risk workflow was found."
+      }
+    ]
+  },
   "verification_statuses": [
     "VERIFIED_COMPLETE",
     "VERIFIED_PARTIAL",

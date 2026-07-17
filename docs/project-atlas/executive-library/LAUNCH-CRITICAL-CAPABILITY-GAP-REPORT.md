@@ -51,3 +51,28 @@ The following were intentionally not run:
 ## Structured Gap Data
 
 The machine-readable gap report is `docs/project-atlas/executive-library/data/launch-critical-capability-gaps.json`.
+
+## Wave 2 Evidence Closure
+
+Baseline: `13e7905`
+Verification date: 2026-07-17
+
+| Gap | Wave 2 Result | Classification | Reason |
+| --- | --- | --- | --- |
+| GAP-001 | Reduced, still open | Conditional launch gate | Alert queue/worker/send/click/static controls exist; operator review and approved live-send policy remain required. |
+| GAP-002 | Reduced, still open | Conditional launch gate | Queue dashboard, dead-letter, retry, readiness, and recovery controls exist; production monitoring evidence remains incomplete. |
+| GAP-003 | Reduced, still open | Operational follow-up | MLS workers/status/retry/runbooks exist; freshness and long-running reliability need operational evidence. |
+| GAP-004 | Reduced, still open | Controlled launch gate | CRM review workflow exists; one pending strategy_intake task requires human review before cadence escalation. |
+| GAP-005 | Reduced, still open | Non-blocking post-launch item | Admin readiness surfaces exist; dedicated executive dashboard remains future work. |
+| GAP-006 | Reduced, still open | Non-blocking post-launch item | Operational reporting exists; dedicated KPI engine remains future work. |
+| GAP-007 | Unchanged, open | Non-blocking post-launch item | No partnership workflow implementation was found. |
+| GAP-008 | Unchanged, open | Non-blocking post-launch item | No dedicated Customer Success implementation was found. |
+| GAP-009 | Reduced, still open | Non-blocking post-launch item | Launch-risk documentation exists; dedicated enterprise risk workflow remains future work. |
+
+No gaps were closed in Wave 2. No new launch blocker was introduced.
+
+Current classifications:
+
+- Alert queue: `EXPECTED_PRELAUNCH_BACKLOG`.
+- CRM task: `CONTROLLED_LAUNCH_GATE`.
+- Tracked-email click: `REQUIRED_CONTROLLED_PRELAUNCH_TEST`.

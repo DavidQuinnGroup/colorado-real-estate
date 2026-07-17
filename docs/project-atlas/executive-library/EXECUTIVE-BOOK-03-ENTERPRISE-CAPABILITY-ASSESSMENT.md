@@ -78,3 +78,21 @@ Wave 2 should remain launch-first and should not implement remediation unless se
 3. Close or explicitly continue the CRM strategy_intake watch item.
 4. Verify tracked-click evidence before recurring email/scheduler activation.
 5. Strengthen monitoring evidence for queues, MLS freshness, notification readiness, and public search.
+
+## Wave 2 Assessment Update
+
+Wave 2 completed a bounded launch-critical evidence closure pass from baseline `13e7905`.
+
+Assessment changes:
+
+- Alert Queue Classification: `EXPECTED_PRELAUNCH_BACKLOG`.
+- CRM Gate Classification: `CONTROLLED_LAUNCH_GATE`.
+- Tracked Email Click Gate Classification: `REQUIRED_CONTROLLED_PRELAUNCH_TEST`.
+- Customer Analytics Classification: `VERIFIED_PARTIAL`.
+- Security and Reliability Classification: `VERIFIED_PARTIAL`.
+
+The queue condition is not classified as a launch blocker because static evidence shows a planned alert worker, explicit dry-run/live command separation, stable alert job IDs, bounded retry policy, final-attempt dead-letter capture, queue dashboard diagnostics, and documented preconditions. It remains a controlled launch gate because the backlog must not be processed until operator review and live-send approval are complete.
+
+The CRM task condition is not an implementation gap. Static evidence shows read-only CRM reporting, authenticated task detail access, note-backed completion/dismissal, and a duplicate pending-task guard for non-manual `PRE_DISCOVERY_BRIEF` creation. It remains a controlled launch gate for scheduler cadence escalation because one pending `strategy_intake` item still requires human review.
+
+The tracked-email click gate is required before recurring scheduler/email activation. Static evidence verifies the click route and email tracking-link construction, but the successful click itself must be performed as a controlled internal prelaunch test.

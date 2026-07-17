@@ -62,3 +62,24 @@ Generated: 2026-07-17
 ## Structured Register
 
 The canonical machine-readable register is `docs/project-atlas/executive-library/data/capability-verification-register.json`.
+
+## Wave 2 Verification Update
+
+Verification date: 2026-07-17
+Baseline: `13e7905`
+
+No capability status was upgraded or downgraded in Wave 2. The evidence pass reduced uncertainty for launch-critical partial capabilities but did not provide the live, customer, operator, or dedicated-workflow evidence required to mark them complete.
+
+| Capability | Previous Status | Wave 2 Status | Evidence | Reason |
+| --- | --- | --- | --- | --- |
+| PROD-007 Notifications | `VERIFIED_PARTIAL` | `VERIFIED_PARTIAL` | Alert queue/worker/process/send/click/unsubscribe static inspection; worker build passed. | Implementation controls exist, but operator review and controlled live evidence remain required. |
+| OPS-005 Reliability | `VERIFIED_PARTIAL` | `VERIFIED_PARTIAL` | Queue dashboard, retry, dead-letter, readiness, and recovery-command static inspection; typecheck passed. | Monitoring and live-operational evidence remain incomplete. |
+| OPS-003 MLS Operations | `VERIFIED_PARTIAL` | `VERIFIED_PARTIAL` | MLS worker/status/retry/runbook static inspection; worker build passed. | Inventory freshness and long-running sync reliability require operational proof. |
+| COMM-001 CRM | `VERIFIED_PARTIAL` | `VERIFIED_PARTIAL` | CRM reporting, detail route, note-backed closure, and scheduler-safe output static inspection. | One strategy_intake task still requires human review before cadence escalation. |
+| INTEL-001 Executive Intelligence | `VERIFIED_PARTIAL` | `VERIFIED_PARTIAL` | Admin operational snapshot and readiness surfaces verified statically. | Dedicated executive dashboard remains incomplete. |
+| INTEL-004 Business Intelligence | `VERIFIED_PARTIAL` | `VERIFIED_PARTIAL` | Launch, queue, CRM, and admin reporting paths verified statically. | Dedicated KPI engine remains incomplete. |
+| COMM-004 Partnerships | `NOT_YET_VERIFIED` | `NOT_YET_VERIFIED` | Static search found no local workflow implementation. | No evidence change. |
+| COMM-005 Customer Success | `NOT_YET_VERIFIED` | `NOT_YET_VERIFIED` | Static search found no dedicated implementation. | No evidence change. |
+| EXEC-004 Enterprise Risk | `VERIFIED_PARTIAL` | `VERIFIED_PARTIAL` | Gap report and launch-risk documentation verified. | Dedicated enterprise risk workflow remains incomplete. |
+
+Command results are recorded in the JSON register under `wave2_evidence_closure.commands_executed`.
