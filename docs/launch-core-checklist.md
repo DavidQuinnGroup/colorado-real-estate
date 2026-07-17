@@ -8223,6 +8223,15 @@ Carry-forward launch blockers:
 - Listings and dead-letter queues stayed healthy/drained with 0 waiting / 0 active / 0 delayed / 0 failed.
 - No worker command was run, no retry command was run, no saved-search alert dry-run was run, no property-inquiry smoke was run, no live alert command was run, no live sync was started, no live email was sent, no CRM task state was changed, no scheduler cadence was escalated, no OpenAI request was made, no MLS Grid request was made, no reset was run, and no reindex was run.
 
+## Checkpoint 2365 - CRM Pending After Queue Dashboard Refresh
+
+- July 17, 2026 10:25 MDT reran `npm run run:crm:pending`.
+- CRM reporting stayed read-only and returned `success=true` with readiness `watch`.
+- The scan still found one pending medium-priority `strategy_intake` task for masked contact `co***@example.com`, heat score 9, alert readiness `unknown`, and blank market / timeline / intent-summary / next-action fields.
+- Counts stayed pending 1, reviewing 0, completed 0, dismissed 0, alertReady 0, alertWatch 0, and alertIncomplete 0.
+- Closure-review audit stayed clean with 0 closed tasks and 100% coverage.
+- No CRM task state was changed, no scheduler cadence was escalated, no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no saved-search alert dry-run was run, no property-inquiry smoke was run, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
+
 ## Checkpoint 2276 - CRM Pending After Queue Dashboard
 
 - July 16, 2026 10:32 MDT reran `npm run run:crm:pending`.
