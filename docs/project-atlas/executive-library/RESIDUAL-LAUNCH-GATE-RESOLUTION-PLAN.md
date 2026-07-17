@@ -19,6 +19,19 @@ This plan packages the remaining REIE launch gates into bounded owner decisions 
 | reie-alerts waiting backlog | `WATCH` | live queue-worker activation | operator |
 | Final readiness refresh | `PENDING` | deployment and recurring operations | technical operator |
 
+## Wave 3F Closure Update
+
+Wave 3F closed the first two residual operational gates:
+
+| Gate | Wave 3F Status | Evidence |
+| --- | --- | --- |
+| Additive admin intake readiness indexes | `CLOSED` | `20260613093000_add_admin_intake_readiness_indexes` was applied by exact SQL and marked applied in Prisma migration history. |
+| Synthetic/example.com strategy_intake CRM task | `CLOSED` | CRMTask `751fa51e-4a2e-411f-97df-c320e974e058` was completed with a Wave 3F review note; CRM pending readiness is now `ready`. |
+| Production DNS/site URL | `OPEN_OWNER_ACTION_REQUIRED` | Root and `www` DNS still have no observed A/CNAME answer. |
+| AlertQueue operator review | `OPEN` | 196 pending alert rows remain; no alert dry-run or processing was run. |
+| reie-alerts waiting backlog | `OPEN` | 273 waiting jobs remain; no BullMQ job was processed. |
+| Final readiness refresh | `WATCH` | Launch readiness remains `watch` because saved-search alert review remains open. |
+
 ## Package A - Apply Admin Intake Readiness Indexes
 
 Classification: `RECOMMENDED_BEFORE_LAUNCH`.

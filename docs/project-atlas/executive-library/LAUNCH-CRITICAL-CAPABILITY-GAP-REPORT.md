@@ -187,3 +187,27 @@ Updated launch gate state:
 - Strategy intake CRM review: `WATCH_SAFE_CONTROLLED_COMPLETION` - one synthetic/example.com task remains pending until authorized.
 - Hosted DNS/site URL configuration: `WATCH_REQUIRES_OWNER_ACTION`.
 - Admin intake readiness index migration: `WATCH_RECOMMENDED_BEFORE_LAUNCH`.
+
+## Wave 3F Operational Launch-Gate Closure
+
+Baseline: `0f24ba9`
+Verification date: 2026-07-17
+
+| Gap | Wave 3F Result | Classification | Reason |
+| --- | --- | --- | --- |
+| GAP-001 | Reduced, still open | Conditional launch gate | Alert rows and queue jobs remained untouched; production DNS and operator review remain open. |
+| GAP-002 | Reduced, still open | Conditional launch gate | Migration state is clean and queue state stayed stable, but alert backlog and production monitoring proof remain open. |
+| GAP-004 | Gate closed | Closed operational gate | The only pending synthetic/example.com `strategy_intake` CRM task was completed with review metadata. |
+
+Closed operational gates:
+
+- Admin intake readiness index migration: `CLOSED`.
+- Strategy intake CRM review: `CLOSED`.
+
+Updated launch gate state:
+
+- Saved-search alert review: `WATCH` - 196 pending rows remain.
+- Alert queue backlog: `WATCH` - `reie-alerts` remains 273 waiting.
+- Strategy intake CRM review: `CLOSED` - zero pending CRM tasks.
+- Hosted DNS/site URL configuration: `WATCH_REQUIRES_OWNER_ACTION`.
+- Controlled production-domain email/tracked-link validation: `PENDING_AFTER_DNS`.

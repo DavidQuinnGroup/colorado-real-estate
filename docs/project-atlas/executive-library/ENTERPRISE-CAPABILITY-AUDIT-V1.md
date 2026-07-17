@@ -194,3 +194,21 @@ Results:
 Audit conclusion:
 
 Wave 3E did not close launch gates because it was non-mutating. It converts the residual gates into four authorization packages: additive index migration, controlled CRM completion, DNS/site URL correction, and staged alert activation.
+
+## Wave 3F Operational Launch-Gate Closure
+
+Wave 3F executed two authorized operational closure actions from baseline `0f24ba9`.
+
+Results:
+
+- Applied `20260613093000_add_admin_intake_readiness_indexes` by exact reviewed SQL in one transaction, then marked that migration applied in Prisma history.
+- Confirmed all five intended indexes exist on `CRMTask` and `UserInteraction`.
+- Completed exactly one synthetic/example.com `strategy_intake` CRM task.
+- CRM readiness moved to `ready` with zero pending tasks and 100% closure review coverage.
+- `AlertQueue` stayed 196 pending, 84 sent, 3 skipped.
+- `reie-alerts` stayed 273 waiting, 0 active, 0 delayed, 0 failed.
+- Dead-letter open count stayed 0.
+
+Audit conclusion:
+
+The migration and CRM operational gates are closed. DNS/site URL correction and alert activation remain open and must not be treated as closed by Wave 3F.

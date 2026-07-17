@@ -466,5 +466,67 @@
       },
       "deadLetterOpen": 0
     }
+  },
+  "wave3f_operational_launch_gate_closure": {
+    "wave": "Wave 3F - Operational Launch-Gate Closure",
+    "baseline_commit": "0f24ba9",
+    "verification_date": "2026-07-17",
+    "gaps_closed": [
+      "Admin intake readiness index migration gate",
+      "Pending synthetic/example.com strategy_intake CRM task gate"
+    ],
+    "gaps_reduced": [
+      "GAP-001",
+      "GAP-002",
+      "GAP-004"
+    ],
+    "gaps_unchanged": [
+      "GAP-003",
+      "GAP-005",
+      "GAP-006",
+      "GAP-007",
+      "GAP-008",
+      "GAP-009"
+    ],
+    "launch_blockers": [],
+    "conditional_launch_gates": [
+      "Correct production DNS/site URL configuration before public email and public launch.",
+      "Run a new controlled internal production-domain tracked-link validation after DNS/env/deploy correction.",
+      "Review and stage AlertQueue activation before recurring saved-search processing.",
+      "Reconcile reie-alerts waiting jobs before live queue-worker activation.",
+      "Run final readiness refresh before deployment or recurring operations."
+    ],
+    "classifications": {
+      "migration": "CLOSED",
+      "crm": "CLOSED",
+      "dns": "WATCH_REQUIRES_OWNER_ACTION",
+      "alerts": "READY_FOR_INTERNAL_PREVIEW"
+    },
+    "evidence": {
+      "authorizedMigrationsApplied": 1,
+      "unauthorizedMigrationsApplied": 0,
+      "migrationFilename": "20260613093000_add_admin_intake_readiness_indexes",
+      "businessDataRowsChangedByMigration": 0,
+      "crmTaskId": "751fa51e-4a2e-411f-97df-c320e974e058",
+      "crmTasksModified": 1,
+      "crmEmailsSent": 0,
+      "crmQueueJobsCreated": 0,
+      "alertEmailsSent": 0,
+      "alertQueueRowsProcessed": 0,
+      "bullmqJobsProcessed": 0,
+      "alertQueueCounts": {
+        "pending": 196,
+        "sent": 84,
+        "skipped": 3
+      },
+      "queueCounts": {
+        "waiting": 273,
+        "active": 0,
+        "delayed": 0,
+        "failed": 0
+      },
+      "deadLetterOpen": 0,
+      "pendingStrategyIntakeAfter": 0
+    }
   }
 }

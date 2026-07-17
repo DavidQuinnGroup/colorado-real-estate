@@ -172,3 +172,18 @@ Assessment changes:
 - Alert activation: staged authorization required before any dry-run, live send, queue consumption, or scheduler activation.
 
 Launch recommendation: obtain explicit authorization for the additive index migration and the one-record CRM completion, complete owner DNS/hosting/env correction, validate production-domain tracked links, then proceed through staged alert activation with hard caps and stop conditions.
+
+## Wave 3F Assessment Update
+
+Wave 3F completed the authorized operational closure actions from baseline `0f24ba9`.
+
+Assessment changes:
+
+- Intake-readiness index migration: `CLOSED`.
+- CRM strategy_intake task: `CLOSED`.
+- CRM readiness: `ready`.
+- Migration readiness: up to date.
+- Alert program: `READY_FOR_INTERNAL_PREVIEW` only.
+- Launch readiness: still `watch`.
+
+Launch recommendation: proceed next with owner DNS/Vercel domain activation. Do not run alert dry-runs, live sends, workers, schedulers, or pilots until production-domain correction and a new controlled production-domain tracked-link test are authorized and completed.

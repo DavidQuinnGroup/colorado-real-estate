@@ -1152,5 +1152,92 @@
         "reason": "The additive readiness-index migration was classified but not applied."
       }
     ]
+  },
+  "wave3f_operational_launch_gate_closure": {
+    "wave": "Wave 3F - Operational Launch-Gate Closure",
+    "baseline_commit": "0f24ba9",
+    "verification_date": "2026-07-17",
+    "status_counts_after_wave3f": {
+      "VERIFIED_COMPLETE": 4,
+      "VERIFIED_PARTIAL": 27,
+      "VERIFIED_MISSING": 0,
+      "VERIFIED_DEFERRED": 5,
+      "NOT_YET_VERIFIED": 2,
+      "NOT_APPLICABLE": 0,
+      "total": 38
+    },
+    "capability_status_changes": [],
+    "authorized_migrations_applied": [
+      "20260613093000_add_admin_intake_readiness_indexes"
+    ],
+    "unauthorized_migrations_applied": [],
+    "migration_application": {
+      "method": "EXACT_REVIEWED_SQL_SINGLE_TRANSACTION_THEN_PRISMA_MIGRATE_RESOLVE",
+      "statementCount": 5,
+      "businessDataRowsChanged": 0,
+      "prismaMigrateStatus": "DATABASE_SCHEMA_UP_TO_DATE"
+    },
+    "crm_completion": {
+      "taskId": "751fa51e-4a2e-411f-97df-c320e974e058",
+      "classificationBeforeMutation": "SAFE_CONTROLLED_COMPLETION",
+      "beforeStatus": "pending",
+      "afterStatus": "completed",
+      "updatedRows": 1,
+      "emailLogDelta": 0,
+      "alertQueueDelta": 0,
+      "newTasksCreated": 0,
+      "pendingStrategyIntakeAfter": 0,
+      "crmReadinessAfter": "ready"
+    },
+    "queue_readiness": {
+      "alertQueueCountsAfter": {
+        "pending": 196,
+        "sent": 84,
+        "skipped": 3
+      },
+      "reieAlerts": {
+        "waiting": 273,
+        "active": 0,
+        "delayed": 0,
+        "failed": 0
+      },
+      "deadLetterOpen": 0,
+      "launchReadiness": "watch",
+      "alertProgramClassification": "READY_FOR_INTERNAL_PREVIEW"
+    },
+    "dns": {
+      "canonicalRecommendation": "https://davidquinngroup.com",
+      "rootA": "NO_OBSERVED_ANSWER",
+      "rootAAAA": "NO_OBSERVED_ANSWER",
+      "wwwA": "NO_OBSERVED_ANSWER",
+      "wwwCNAME": "NO_OBSERVED_ANSWER",
+      "nameservers": [
+        "dns1.registrar-servers.com",
+        "dns2.registrar-servers.com"
+      ],
+      "ownerActionRequired": true
+    },
+    "capability_effects": [
+      {
+        "capability": "OPS-002",
+        "effect": "REDUCED_STILL_PARTIAL",
+        "reason": "Authorized additive readiness indexes were applied and migration status is clean."
+      },
+      {
+        "capability": "COMM-001",
+        "effect": "REDUCED_STILL_PARTIAL",
+        "reason": "The residual CRM task gate is closed and CRM pending readiness is ready."
+      },
+      {
+        "capability": "PROD-007",
+        "effect": "UNCHANGED_PARTIAL",
+        "reason": "No alert rows or emails were processed; DNS and operator review remain open."
+      },
+      {
+        "capability": "OPS-005",
+        "effect": "REDUCED_STILL_PARTIAL",
+        "reason": "Queue/dead-letter posture stayed stable, but alert backlog and monitoring proof remain open."
+      }
+    ]
   }
 }

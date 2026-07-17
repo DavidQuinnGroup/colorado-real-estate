@@ -161,3 +161,19 @@ No capability status was upgraded or downgraded in Wave 3E. The wave was plannin
 | OPS-002 Data Platform | `VERIFIED_PARTIAL` | `VERIFIED_PARTIAL` | The sole unapplied migration was classified as additive index-only and recommended before launch. | Migration application remains pending authorization. |
 
 Command and gate results are recorded in the JSON register under `wave3e_residual_launch_gate_resolution_planning`.
+
+## Wave 3F Operational Launch-Gate Closure
+
+Verification date: 2026-07-17
+Baseline: `0f24ba9`
+
+No capability status was upgraded or downgraded in Wave 3F. Two operational gates were closed, but production DNS and alert activation remain open.
+
+| Capability | Previous Status | Wave 3F Status | Evidence | Reason |
+| --- | --- | --- | --- | --- |
+| OPS-002 Data Platform | `VERIFIED_PARTIAL` | `VERIFIED_PARTIAL` | Authorized additive index migration applied and Prisma migration status is up to date. | Data platform launch friction is reduced, but broader production validation remains partial. |
+| COMM-001 CRM | `VERIFIED_PARTIAL` | `VERIFIED_PARTIAL` | The only pending synthetic/example.com `strategy_intake` task was completed; CRM pending scan is now ready. | CRM gate is closed, but the capability remains partial until broader production CRM operations are proven. |
+| PROD-007 Notifications | `VERIFIED_PARTIAL` | `VERIFIED_PARTIAL` | Alert counts stayed unchanged; no alert processing or email was run. | DNS/site URL and alert operator review remain open. |
+| OPS-005 Reliability | `VERIFIED_PARTIAL` | `VERIFIED_PARTIAL` | Queue dashboard stayed stable with 0 failed jobs and 0 open dead letters. | `reie-alerts` backlog and production monitoring proof remain watch items. |
+
+Command and gate results are recorded in the JSON register under `wave3f_operational_launch_gate_closure`.
