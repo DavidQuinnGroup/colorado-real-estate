@@ -118,3 +118,23 @@ Updated launch gate state:
 - Controlled tracked-email click: `RESOLVED_WITH_FOLLOW_UP` - one authorized local host-substituted click persisted exactly one listing-click signal, populated `clickedAt`, and increased heat score by 5.
 - Hosted DNS/site URL configuration: `WATCH` - `davidquinngroup.com` returned no A record during validation.
 - Preference-refresh schema alignment: `WATCH` - async `updateUserPreferences()` logged `UserPreference.createdAt` schema drift after tracking.
+
+## Wave 3C UserPreference Schema Parity
+
+Baseline: `c300b03`
+Verification date: 2026-07-17
+
+| Gap | Wave 3C Result | Classification | Reason |
+| --- | --- | --- | --- |
+| GAP-001 | Reduced, still open | Conditional launch gate | UserPreference schema drift was traced and a forward-only migration was prepared, but the shared database was not mutated. |
+| GAP-002 | Unchanged, open | Conditional launch gate | The correction plan improves reliability evidence but does not complete production monitoring/readiness proof. |
+
+No gaps were closed in Wave 3C. `GAP-001` must remain open until `20260717133000_repair_user_preference_schema_parity` is explicitly authorized, applied, and followed by preference-update revalidation.
+
+Updated launch gate state:
+
+- Preference-refresh schema alignment: `WATCH_PENDING_AUTHORIZATION` - migration prepared but not applied.
+- Saved-search alert review: `WATCH` - 196 pending rows remain.
+- Alert queue backlog: `WATCH` - `reie-alerts` remains 273 waiting from the latest bounded queue evidence.
+- Strategy intake CRM review: `WATCH` - one pending `strategy_intake` task remains.
+- Hosted DNS/site URL configuration: `WATCH` - production apex host correction remains separate.

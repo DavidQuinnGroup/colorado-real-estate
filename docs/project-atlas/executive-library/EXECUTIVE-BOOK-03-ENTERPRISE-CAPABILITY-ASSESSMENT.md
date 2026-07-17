@@ -130,3 +130,17 @@ Assessment changes:
 - New residual watch item: async preference refresh logged `UserPreference.createdAt` schema drift.
 
 Launch recommendation: do not activate recurring email, alert workers, schedulers, or bulk saved-search processing until alert operator review, CRM review, queue/readiness refresh, DNS/site URL correction, and preference-refresh schema alignment are handled.
+
+## Wave 3C Assessment Update
+
+Wave 3C prepared the preference-refresh schema alignment from baseline `c300b03`.
+
+Assessment changes:
+
+- Root cause: `ENVIRONMENT_DATABASE_DRIFT`.
+- Operational impact: `NONBLOCKING_DEGRADED_ENRICHMENT`.
+- Correction path: forward-only `UserPreference` schema-parity migration.
+- Production application: not authorized and not performed.
+- Row count: 0 connected `UserPreference` rows.
+
+The correction remains a required authorization checkpoint before recurring engagement analytics are relied on. It does not displace the remaining launch gates for alert operator review, queue readiness, CRM review, or DNS/site URL correction.

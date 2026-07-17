@@ -40,7 +40,7 @@ Generated: 2026-07-17
 | REG-018 | COMM-004 Partnerships | `NOT_YET_VERIFIED` | Low | No local partnership workflow evidence was found. |
 | REG-019 | COMM-005 Customer Success | `NOT_YET_VERIFIED` | Low | No dedicated customer-success implementation was verified. |
 | REG-020 | INTEL-001 Executive Intelligence | `VERIFIED_PARTIAL` | Medium | Executive visibility exists through operational admin/readiness surfaces, not a dedicated executive dashboard. |
-| REG-021 | INTEL-002 Customer Intelligence | `VERIFIED_PARTIAL` | Medium | Customer signals exist. Wave 3B persisted one controlled listing-click signal, `clickedAt`, and heat-score update; async preference-refresh schema drift remains a follow-up. |
+| REG-021 | INTEL-002 Customer Intelligence | `VERIFIED_PARTIAL` | Medium | Customer signals exist. Wave 3B persisted one controlled listing-click signal, `clickedAt`, and heat-score update; Wave 3C prepared the preference schema-parity migration, pending authorization/application. |
 | REG-022 | INTEL-003 Market Intelligence | `VERIFIED_PARTIAL` | Medium | Market intelligence modules exist; production KPI validation is incomplete. |
 | REG-023 | INTEL-004 Business Intelligence | `VERIFIED_PARTIAL` | Medium | Operational reporting exists; dedicated KPI engine remains a gap. |
 | REG-024 | INTEL-005 AI Decision Support | `VERIFIED_DEFERRED` | High | AI decision support is intentionally deferred. |
@@ -115,3 +115,18 @@ No capability status was upgraded or downgraded in Wave 3B. The controlled track
 | INTEL-002 Customer Intelligence | `VERIFIED_PARTIAL` | `VERIFIED_PARTIAL` | One `LISTING_CLICK` persisted; selected heat score increased from 0 to 5. | Async `updateUserPreferences()` logged `UserPreference.createdAt` schema drift, so customer-intelligence operations remain partial. |
 
 Command and gate results are recorded in the JSON register under `wave3b_tracked_link_resolution`.
+
+## Wave 3C UserPreference Schema Parity Update
+
+Verification date: 2026-07-17
+Baseline: `c300b03`
+
+No capability status was upgraded or downgraded in Wave 3C. The schema-parity correction was prepared but not applied to the shared database.
+
+| Capability | Previous Status | Wave 3C Status | Evidence | Reason |
+| --- | --- | --- | --- | --- |
+| PROD-007 Notifications | `VERIFIED_PARTIAL` | `VERIFIED_PARTIAL` | Click tracking remained proven from Wave 3B; no new email or queue work was run. | Recurring operations remain gated by alert review, queue readiness, and the unapplied preference schema migration. |
+| INTEL-002 Customer Intelligence | `VERIFIED_PARTIAL` | `VERIFIED_PARTIAL` | Database inspection confirmed `UserPreference` drift and row count 0; migration `20260717133000_repair_user_preference_schema_parity` was prepared. | Preference enrichment remains degraded until the migration is authorized/applied and `updateUserPreferences()` is revalidated. |
+| OPS-005 Reliability | `VERIFIED_PARTIAL` | `VERIFIED_PARTIAL` | The correction plan includes bounded preflight and validation queries. | Production monitoring/readiness proof remains incomplete. |
+
+Command and gate results are recorded in the JSON register under `wave3c_userpreference_schema_parity`.

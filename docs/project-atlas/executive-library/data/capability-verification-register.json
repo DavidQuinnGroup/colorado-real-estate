@@ -487,7 +487,7 @@
         "lib/preferences/updateUserPreferences.ts",
         "app/api/track-click/route.ts"
       ],
-      "verification_note": "Customer signals exist. Wave 3B persisted one controlled listing-click signal, clickedAt, and heat-score update; async preference-refresh schema drift remains a follow-up."
+      "verification_note": "Customer signals exist. Wave 3B persisted one controlled listing-click signal, clickedAt, and heat-score update; Wave 3C prepared the preference schema-parity migration, pending authorization/application."
     },
     {
       "id": "REG-022",
@@ -955,5 +955,56 @@
       "crmPendingStrategyIntakeCountAfter": 1,
       "residualFinding": "Async updateUserPreferences logged Prisma P2022 because UserPreference.createdAt is absent in the current database."
     }
+  },
+  "wave3c_userpreference_schema_parity": {
+    "wave": "Wave 3C - UserPreference Schema Parity Resolution",
+    "baseline_commit": "c300b03",
+    "verification_date": "2026-07-17",
+    "status_counts_after_wave3c": {
+      "VERIFIED_COMPLETE": 4,
+      "VERIFIED_PARTIAL": 27,
+      "VERIFIED_MISSING": 0,
+      "VERIFIED_DEFERRED": 5,
+      "NOT_YET_VERIFIED": 2,
+      "NOT_APPLICABLE": 0,
+      "total": 38
+    },
+    "capability_status_changes": [],
+    "root_cause_classification": "ENVIRONMENT_DATABASE_DRIFT",
+    "operational_impact": "NONBLOCKING_DEGRADED_ENRICHMENT",
+    "correction_path": "PATH_A_ADD_MISSING_COLUMN_THROUGH_MIGRATION",
+    "production_application_status": "NOT_AUTHORIZED_NOT_APPLIED",
+    "migration": {
+      "filename": "prisma/migrations/20260717133000_repair_user_preference_schema_parity/migration.sql",
+      "table": "UserPreference",
+      "rowCount": 0,
+      "durationCategory": "brief",
+      "summary": "Adds/backfills createdAt, enforces updatedAt, aligns avgBeds integer type, backfills/defaults topCities, sets id default, and normalizes the UserPreference userId foreign key name when safe."
+    },
+    "database_differences": [
+      "createdAt missing",
+      "updatedAt nullable",
+      "avgBeds double precision instead of integer",
+      "topCities nullable with no default",
+      "id missing database default",
+      "foreign key exists as fk_user rather than UserPreference_userId_fkey"
+    ],
+    "capability_effects": [
+      {
+        "capability": "PROD-007",
+        "effect": "UNCHANGED_PARTIAL",
+        "reason": "No new email, queue, or tracking action was run; recurring operations remain gated."
+      },
+      {
+        "capability": "INTEL-002",
+        "effect": "REDUCED_STILL_OPEN",
+        "reason": "Preference schema drift was traced and a migration prepared, but shared-database application and preference-update revalidation remain pending."
+      },
+      {
+        "capability": "OPS-005",
+        "effect": "UNCHANGED_PARTIAL",
+        "reason": "Schema correction planning improves readiness evidence but does not complete production monitoring proof."
+      }
+    ]
   }
 }

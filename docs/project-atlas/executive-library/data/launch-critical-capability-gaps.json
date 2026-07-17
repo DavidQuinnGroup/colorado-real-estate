@@ -321,5 +321,49 @@
       },
       "residualFinding": "Async updateUserPreferences logged Prisma P2022 because UserPreference.createdAt is absent in the current database."
     }
+  },
+  "wave3c_userpreference_schema_parity": {
+    "wave": "Wave 3C - UserPreference Schema Parity Resolution",
+    "baseline_commit": "c300b03",
+    "verification_date": "2026-07-17",
+    "gaps_closed": [],
+    "gaps_reduced": [
+      "GAP-001"
+    ],
+    "gaps_unchanged": [
+      "GAP-002",
+      "GAP-003",
+      "GAP-004",
+      "GAP-005",
+      "GAP-006",
+      "GAP-007",
+      "GAP-008",
+      "GAP-009"
+    ],
+    "preference_refresh_schema_alignment": "WATCH_PENDING_AUTHORIZATION",
+    "tracked_email_click_classification": "RESOLVED_WITH_FOLLOW_UP",
+    "launch_blockers": [],
+    "conditional_launch_gates": [
+      "Prepared UserPreference schema-parity migration must be explicitly authorized and applied before recurring engagement analytics are relied on.",
+      "196 pending saved-search alert rows still require operator review before broad live processing.",
+      "reie-alerts remains 273 waiting with no active, delayed, or failed jobs from latest bounded evidence.",
+      "One pending strategy_intake CRM task remains in watch.",
+      "Production DNS/site URL configuration remains separate."
+    ],
+    "evidence": {
+      "rootCauseClassification": "ENVIRONMENT_DATABASE_DRIFT",
+      "operationalImpact": "NONBLOCKING_DEGRADED_ENRICHMENT",
+      "migrationFilename": "prisma/migrations/20260717133000_repair_user_preference_schema_parity/migration.sql",
+      "rowCount": 0,
+      "productionMigrationApplied": false,
+      "databaseDifferences": [
+        "createdAt missing",
+        "updatedAt nullable",
+        "avgBeds double precision instead of integer",
+        "topCities nullable with no default",
+        "id missing database default",
+        "foreign key exists as fk_user rather than UserPreference_userId_fkey"
+      ]
+    }
   }
 }

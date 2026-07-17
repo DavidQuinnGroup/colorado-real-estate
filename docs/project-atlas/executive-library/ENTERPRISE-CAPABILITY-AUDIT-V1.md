@@ -140,3 +140,21 @@ Residual audit finding:
 The asynchronous `updateUserPreferences()` path logged Prisma `P2022` because the current database lacks `UserPreference.createdAt`. Click tracking and redirect behavior succeeded, but preference-refresh schema/runtime alignment should be handled before recurring engagement analytics are relied on.
 
 Capability counts remain unchanged: 4 complete, 27 partial, 5 deferred, 2 not yet verified, 0 missing.
+
+## Wave 3C UserPreference Schema Parity Update
+
+Wave 3C traced the Wave 3B async preference-refresh error to connected-database schema drift.
+
+Results:
+
+- Root cause: `ENVIRONMENT_DATABASE_DRIFT`.
+- Operational impact: `NONBLOCKING_DEGRADED_ENRICHMENT`.
+- Authoritative schema: current Prisma model plus approved `20260511102000_reie_mls_sync_intelligence` migration.
+- Connected database row count: 0.
+- Connected database differences: missing `createdAt`, nullable `updatedAt`, `avgBeds` as `double precision`, nullable/no-default `topCities`, missing `id` default, and non-canonical foreign-key name.
+- Correction prepared: forward-only migration `20260717133000_repair_user_preference_schema_parity`.
+- Production/shared database application: not authorized and not performed.
+
+Audit conclusion:
+
+Wave 3C prepared the smallest schema-parity correction but did not close the preference-refresh watch item. `GAP-001` remains open until the migration is explicitly applied and the preference-update path is revalidated.
