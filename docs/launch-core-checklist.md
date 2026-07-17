@@ -8046,6 +8046,18 @@ Carry-forward launch blockers:
 - Launch-readiness contract alignment stayed fail-closed with readiness `blocked`, `exitCode=1`, `success=false`, and `propertyInquiryReplyToWarningAligned=true`.
 - No saved-search alert dry-run was run, no property-inquiry smoke was run, no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no CRM task state was changed, no scheduler cadence was escalated, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
 
+## Checkpoint 2349 - Launch Readiness After Strict Contract Refresh
+
+- July 17, 2026 07:53 MDT reran `npm run check:launch-readiness`.
+- Worker output rebuilt successfully before the launch readiness check ran.
+- Launch readiness returned `success=true`, `sendsEmail=false`, and `mutatesRows=false`.
+- Overall launch readiness stayed `watch` with 0 blocked gates; the only watch gate remains saved-search alert email operator review.
+- Supabase connectivity stayed `ready` after the Prisma `SELECT 1` preflight passed.
+- Saved-search alert email stayed `watch` with 197 pending, 0 failed, and 0 processing alert rows; Resend key shape, sender, reply-to, and site URL checks passed with secret values masked.
+- Property-inquiry notification email stayed `ready`; the recipient, dry-run suppression, sender, reply-to, and site URL checks passed with secret values masked.
+- The surfaced next command remained `npm run run:alerts:dry -- --limit 50`, and it was not run.
+- No saved-search alert dry-run was run, no property-inquiry smoke was run, no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no CRM task state was changed, no scheduler cadence was escalated, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
+
 ## Checkpoint 2276 - CRM Pending After Queue Dashboard
 
 - July 16, 2026 10:32 MDT reran `npm run run:crm:pending`.
