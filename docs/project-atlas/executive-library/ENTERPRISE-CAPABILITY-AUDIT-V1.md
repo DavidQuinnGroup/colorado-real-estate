@@ -178,3 +178,19 @@ Results:
 Audit conclusion:
 
 The preference-refresh schema alignment item is resolved. Launch posture remains partial because saved-search operator review, queue/watch readiness, CRM review, DNS/site URL correction, and full launch readiness remain open.
+
+## Wave 3E Residual Launch Gate Planning
+
+Wave 3E inspected and packaged the remaining launch gates from baseline `b5c20f8` without changing production state.
+
+Results:
+
+- Unapplied migration review: the only remaining pending migration is additive index-only coverage for `CRMTask` and `UserInteraction`.
+- Migration classification: `RECOMMENDED_BEFORE_LAUNCH`.
+- CRM review: the one remaining `strategy_intake` task is synthetic/example.com and safe for one-record controlled completion after authorization.
+- DNS review: `davidquinngroup.com` lacked an apex answer and `www.davidquinngroup.com` returned NXDOMAIN, so production-domain email remains gated by owner DNS/hosting/env correction.
+- Queue/alert review: `AlertQueue` rows and `reie-alerts` waiting jobs remain present; live activation requires reconciliation and staged authorization.
+
+Audit conclusion:
+
+Wave 3E did not close launch gates because it was non-mutating. It converts the residual gates into four authorization packages: additive index migration, controlled CRM completion, DNS/site URL correction, and staged alert activation.

@@ -416,5 +416,55 @@
       },
       "pendingStrategyIntakeCount": 1
     }
+  },
+  "wave3e_residual_launch_gate_resolution_planning": {
+    "wave": "Wave 3E - Residual Launch Gate Resolution Planning",
+    "baseline_commit": "b5c20f8",
+    "verification_date": "2026-07-17",
+    "gaps_closed": [],
+    "gaps_reduced": [
+      "GAP-001",
+      "GAP-002",
+      "GAP-004"
+    ],
+    "gaps_unchanged": [
+      "GAP-003",
+      "GAP-005",
+      "GAP-006",
+      "GAP-007",
+      "GAP-008",
+      "GAP-009"
+    ],
+    "launch_blockers": [],
+    "conditional_launch_gates": [
+      "Apply or explicitly defer the additive admin intake readiness index migration before final launch deployment sequencing.",
+      "Complete or explicitly waive the one pending synthetic/example.com strategy_intake CRM task before scheduler cadence escalation.",
+      "Correct production DNS/site URL configuration before public email and public launch.",
+      "Review and stage AlertQueue activation before recurring saved-search processing.",
+      "Reconcile reie-alerts waiting jobs before live queue-worker activation.",
+      "Run final readiness refresh before deployment or recurring operations."
+    ],
+    "classifications": {
+      "migration": "RECOMMENDED_BEFORE_LAUNCH",
+      "crm": "SAFE_CONTROLLED_COMPLETION",
+      "dns": "REQUIRED_BEFORE_PUBLIC_EMAIL_AND_PUBLIC_LAUNCH",
+      "alerts": "STAGED_AUTHORIZATION_REQUIRED"
+    },
+    "evidence": {
+      "unappliedMigration": "20260613093000_add_admin_intake_readiness_indexes",
+      "pendingStrategyIntakeTaskId": "751fa51e-4a2e-411f-97df-c320e974e058",
+      "alertQueueCounts": {
+        "pending": 196,
+        "sent": 84,
+        "skipped": 3
+      },
+      "queueCounts": {
+        "waiting": 273,
+        "active": 0,
+        "delayed": 0,
+        "failed": 0
+      },
+      "deadLetterOpen": 0
+    }
   }
 }

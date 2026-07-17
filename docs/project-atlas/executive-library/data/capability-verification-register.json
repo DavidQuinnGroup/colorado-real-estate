@@ -1072,5 +1072,85 @@
         "reason": "Queue/readiness remained watch and production monitoring proof remains incomplete."
       }
     ]
+  },
+  "wave3e_residual_launch_gate_resolution_planning": {
+    "wave": "Wave 3E - Residual Launch Gate Resolution Planning",
+    "baseline_commit": "b5c20f8",
+    "verification_date": "2026-07-17",
+    "mode": "PLANNING_INSPECTION_NON_MUTATING_VALIDATION_ONLY",
+    "status_counts_after_wave3e": {
+      "VERIFIED_COMPLETE": 4,
+      "VERIFIED_PARTIAL": 27,
+      "VERIFIED_MISSING": 0,
+      "VERIFIED_DEFERRED": 5,
+      "NOT_YET_VERIFIED": 2,
+      "NOT_APPLICABLE": 0,
+      "total": 38
+    },
+    "capability_status_changes": [],
+    "unapplied_migration": {
+      "name": "20260613093000_add_admin_intake_readiness_indexes",
+      "classification": "RECOMMENDED_BEFORE_LAUNCH",
+      "tables": [
+        "CRMTask",
+        "UserInteraction"
+      ],
+      "dataRowsChanged": 0,
+      "applicationStatus": "NOT_APPLIED_IN_WAVE3E"
+    },
+    "crm_task": {
+      "id": "751fa51e-4a2e-411f-97df-c320e974e058",
+      "type": "strategy_intake",
+      "status": "pending",
+      "classification": "SAFE_CONTROLLED_COMPLETION",
+      "applicationStatus": "NOT_MUTATED_IN_WAVE3E"
+    },
+    "dns": {
+      "canonicalRecommendation": "https://davidquinngroup.com",
+      "classification": [
+        "REQUIRED_BEFORE_PUBLIC_EMAIL",
+        "REQUIRED_BEFORE_PUBLIC_LAUNCH",
+        "REQUIRES_OWNER_DNS_ACTION"
+      ],
+      "apexFinding": "NOERROR_WITH_ZERO_ANSWER_RECORDS",
+      "wwwFinding": "NXDOMAIN"
+    },
+    "queue_activation": {
+      "alertQueueCounts": {
+        "pending": 196,
+        "sent": 84,
+        "skipped": 3
+      },
+      "reieAlerts": {
+        "waiting": 273,
+        "active": 0,
+        "delayed": 0,
+        "failed": 0
+      },
+      "deadLetterOpen": 0,
+      "classification": "STAGED_AUTHORIZATION_REQUIRED"
+    },
+    "capability_effects": [
+      {
+        "capability": "PROD-007",
+        "effect": "UNCHANGED_PARTIAL",
+        "reason": "Alert operation remains gated by DNS/site URL correction, operator review, queue reconciliation, and explicit live authorization."
+      },
+      {
+        "capability": "OPS-005",
+        "effect": "UNCHANGED_PARTIAL",
+        "reason": "Readiness planning and command classification do not replace production monitoring proof."
+      },
+      {
+        "capability": "COMM-001",
+        "effect": "UNCHANGED_PARTIAL",
+        "reason": "The remaining CRM task was classified but not mutated."
+      },
+      {
+        "capability": "OPS-002",
+        "effect": "UNCHANGED_PARTIAL",
+        "reason": "The additive readiness-index migration was classified but not applied."
+      }
+    ]
   }
 }

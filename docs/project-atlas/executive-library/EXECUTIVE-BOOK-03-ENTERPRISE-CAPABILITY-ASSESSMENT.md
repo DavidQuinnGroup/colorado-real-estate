@@ -159,3 +159,16 @@ Assessment changes:
 - UserPreference row count after controlled test: 1.
 
 Launch recommendation is unchanged: do not activate recurring email, alert workers, schedulers, or bulk saved-search processing until alert operator review, CRM review, queue/readiness refresh, and DNS/site URL correction are handled.
+
+## Wave 3E Assessment Update
+
+Wave 3E planned the remaining residual launch gate sequence from baseline `b5c20f8` without applying migrations, mutating CRM, changing DNS/env, deploying, sending email, processing queues, activating workers/schedulers, or calling external data/AI services.
+
+Assessment changes:
+
+- Unapplied migration `20260613093000_add_admin_intake_readiness_indexes`: `RECOMMENDED_BEFORE_LAUNCH`.
+- CRM strategy_intake task: `SAFE_CONTROLLED_COMPLETION`.
+- DNS/site URL: `REQUIRED_BEFORE_PUBLIC_EMAIL` and `REQUIRED_BEFORE_PUBLIC_LAUNCH`.
+- Alert activation: staged authorization required before any dry-run, live send, queue consumption, or scheduler activation.
+
+Launch recommendation: obtain explicit authorization for the additive index migration and the one-record CRM completion, complete owner DNS/hosting/env correction, validate production-domain tracked links, then proceed through staged alert activation with hard caps and stop conditions.

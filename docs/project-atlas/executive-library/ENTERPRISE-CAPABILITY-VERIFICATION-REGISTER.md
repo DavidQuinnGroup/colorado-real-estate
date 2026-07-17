@@ -145,3 +145,19 @@ No capability status was upgraded or downgraded in Wave 3D. The preference-refre
 | OPS-005 Reliability | `VERIFIED_PARTIAL` | `VERIFIED_PARTIAL` | Queue dashboard remained stable at `reie-alerts` 273 waiting, 0 active, 0 delayed, 0 failed. | Production monitoring/readiness proof remains incomplete. |
 
 Command and gate results are recorded in the JSON register under `wave3d_userpreference_schema_parity_application`.
+
+## Wave 3E Residual Launch Gate Planning
+
+Verification date: 2026-07-17
+Baseline: `b5c20f8`
+
+No capability status was upgraded or downgraded in Wave 3E. The wave was planning, inspection, and non-mutating validation only.
+
+| Capability | Previous Status | Wave 3E Status | Evidence | Reason |
+| --- | --- | --- | --- | --- |
+| PROD-007 Notifications | `VERIFIED_PARTIAL` | `VERIFIED_PARTIAL` | Alert worker, alert queue, and processAlertQueue controls were inspected; staged activation package was documented. | Recurring alert operation remains gated by DNS/site URL correction, operator review, queue reconciliation, and explicit live authorization. |
+| OPS-005 Reliability | `VERIFIED_PARTIAL` | `VERIFIED_PARTIAL` | Remaining migration, queue backlog, dead-letter posture, and readiness command inventory were classified. | Planning does not replace production monitoring and readiness proof. |
+| COMM-001 CRM | `VERIFIED_PARTIAL` | `VERIFIED_PARTIAL` | The remaining synthetic/example.com strategy_intake task was classified as safe for controlled completion. | No CRM mutation was authorized or executed. |
+| OPS-002 Data Platform | `VERIFIED_PARTIAL` | `VERIFIED_PARTIAL` | The sole unapplied migration was classified as additive index-only and recommended before launch. | Migration application remains pending authorization. |
+
+Command and gate results are recorded in the JSON register under `wave3e_residual_launch_gate_resolution_planning`.

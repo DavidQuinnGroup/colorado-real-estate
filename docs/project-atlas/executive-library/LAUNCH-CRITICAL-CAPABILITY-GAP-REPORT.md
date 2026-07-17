@@ -161,3 +161,29 @@ Updated launch gate state:
 - Strategy intake CRM review: `WATCH` - one pending `strategy_intake` task remains.
 - Hosted DNS/site URL configuration: `WATCH` - production apex host correction remains separate.
 - Controlled click path: `RESOLVED_WITH_NONBLOCKING_DNS_FOLLOW_UP`.
+
+## Wave 3E Residual Launch Gate Resolution Plan
+
+Baseline: `b5c20f8`
+Verification date: 2026-07-17
+
+| Gap | Wave 3E Result | Classification | Reason |
+| --- | --- | --- | --- |
+| GAP-001 | Planned, still open | Conditional launch gate | Alert activation requires DNS/site URL correction, operator review, queue reconciliation, and staged authorization. |
+| GAP-002 | Planned, still open | Conditional launch gate | Queue/readiness command inventory and activation stop conditions were documented, but production monitoring proof remains incomplete. |
+| GAP-004 | Planned, still open | Controlled launch gate | The pending synthetic/example.com strategy_intake task is safe for controlled completion, but no CRM mutation was executed. |
+
+No gaps were closed in Wave 3E. The following authorization packages are now documented:
+
+- Additive admin intake readiness index migration: `RECOMMENDED_BEFORE_LAUNCH`.
+- Single CRM task completion: `SAFE_CONTROLLED_COMPLETION`.
+- DNS/site URL correction: `REQUIRED_BEFORE_PUBLIC_EMAIL` and `REQUIRED_BEFORE_PUBLIC_LAUNCH`.
+- Alert activation: staged dry-run/live authorization with hard caps and stop conditions.
+
+Updated launch gate state:
+
+- Saved-search alert review: `WATCH` - 196 pending rows remain.
+- Alert queue backlog: `WATCH` - `reie-alerts` remains 273 waiting in latest evidence.
+- Strategy intake CRM review: `WATCH_SAFE_CONTROLLED_COMPLETION` - one synthetic/example.com task remains pending until authorized.
+- Hosted DNS/site URL configuration: `WATCH_REQUIRES_OWNER_ACTION`.
+- Admin intake readiness index migration: `WATCH_RECOMMENDED_BEFORE_LAUNCH`.
