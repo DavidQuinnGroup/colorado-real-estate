@@ -124,6 +124,53 @@ export type RepositorySearchResult = {
   matched_text: string | null;
 };
 
+type RepositoryRelationshipObjectRow = {
+  rid: string;
+  official_name: string;
+  family: string;
+};
+
+type RepositoryRelationshipBaseRow = {
+  relationship_rid: string;
+  relationship_type_code: string;
+  status: string;
+  traceability_status: string;
+  confidence: number | null;
+  notes: string | null;
+};
+
+type RepositoryOutgoingRelationshipRow = RepositoryRelationshipBaseRow & {
+  target: RepositoryRelationshipObjectRow;
+};
+
+type RepositoryIncomingRelationshipRow = RepositoryRelationshipBaseRow & {
+  source: RepositoryRelationshipObjectRow;
+};
+
+type RepositorySearchObjectRow = {
+  rid: string;
+  cid: string | null;
+  family: string;
+  object_type: string;
+  official_name: string;
+  display_name: string | null;
+  canonical_definition: string | null;
+  purpose: string | null;
+  description: string | null;
+};
+
+type RepositorySearchRelationshipRow = {
+  relationship_rid: string;
+  relationship_type_code: string;
+  notes: string | null;
+  source: RepositoryRelationshipObjectRow & {
+    object_type: string;
+  };
+  target: RepositoryRelationshipObjectRow & {
+    object_type: string;
+  };
+};
+
 function normalizeQuery(value: string): string {
   return value.trim().replaceAll(",", " ").replace(/\s+/g, " ");
 }
@@ -265,8 +312,13 @@ export async function getRepositoryObjectByRid(
     );
   }
 
+  const outgoingRows =
+    (outgoing ?? []) as unknown as RepositoryOutgoingRelationshipRow[];
+  const incomingRows =
+    (incoming ?? []) as unknown as RepositoryIncomingRelationshipRow[];
+
   const relationships: RepositoryRelationshipView[] = [
-    ...(outgoing ?? []).map((row: any) => ({
+    ...outgoingRows.map((row) => ({
       relationship_rid: row.relationship_rid,
       relationship_type_code: row.relationship_type_code,
       status: row.status,
@@ -278,7 +330,7 @@ export async function getRepositoryObjectByRid(
       related_name: row.target.official_name,
       related_family: row.target.family,
     })),
-    ...(incoming ?? []).map((row: any) => ({
+    ...incomingRows.map((row) => ({
       relationship_rid: row.relationship_rid,
       relationship_type_code: row.relationship_type_code,
       status: row.status,
@@ -382,62 +434,63 @@ export async function searchRepository(params: {
   }
 
   const lower = q.toLowerCase();
+  const objectRows = (objects ?? []) as unknown as RepositorySearchObjectRow[];
+  const relationshipRows =
+    (relationships ?? []) as unknown as RepositorySearchRelationshipRow[];
 
-  const objectResults: RepositorySearchResult[] = (objects ?? []).map(
-    (row: any) => {
-      const exactRid =
-        row.rid?.toLowerCase() === lower || row.cid?.toLowerCase() === lower;
-      const exactName = row.official_name?.toLowerCase() === lower;
-      const startsWith = row.official_name?.toLowerCase().startsWith(lower);
+  const objectResults: RepositorySearchResult[] = objectRows.map((row) => {
+    const exactRid =
+      row.rid?.toLowerCase() === lower || row.cid?.toLowerCase() === lower;
+    const exactName = row.official_name?.toLowerCase() === lower;
+    const startsWith = row.official_name?.toLowerCase().startsWith(lower);
 
-      let score = 50;
-      if (exactRid) score = 100;
-      else if (exactName) score = 95;
-      else if (startsWith) score = 80;
+    let score = 50;
+    if (exactRid) score = 100;
+    else if (exactName) score = 95;
+    else if (startsWith) score = 80;
 
-      const matchedText =
-        row.canonical_definition ??
-        row.purpose ??
-        row.description ??
-        row.display_name ??
-        null;
+    const matchedText =
+      row.canonical_definition ??
+      row.purpose ??
+      row.description ??
+      row.display_name ??
+      null;
 
-      return {
-        result_type: "OBJECT",
-        score,
-        title: row.official_name,
-        subtitle: `${row.family} · ${row.object_type}`,
-        rid: row.rid,
-        href: `/admin/repository/object/${encodeURIComponent(row.rid)}`,
-        family: row.family,
-        object_type: row.object_type,
-        relationship_type: null,
-        matched_text: matchedText,
-      };
-    },
+    return {
+      result_type: "OBJECT",
+      score,
+      title: row.official_name,
+      subtitle: `${row.family} · ${row.object_type}`,
+      rid: row.rid,
+      href: `/admin/repository/object/${encodeURIComponent(row.rid)}`,
+      family: row.family,
+      object_type: row.object_type,
+      relationship_type: null,
+      matched_text: matchedText,
+    };
+  });
+
+  const relationshipResults: RepositorySearchResult[] = relationshipRows.map(
+    (row) => ({
+      result_type: "RELATIONSHIP",
+      score:
+        row.relationship_type_code?.toLowerCase() === lower
+          ? 90
+          : row.relationship_type_code?.toLowerCase().includes(lower)
+            ? 70
+            : 45,
+      title: `${row.source.official_name} → ${row.target.official_name}`,
+      subtitle: row.relationship_type_code,
+      rid: row.relationship_rid,
+      href: `/admin/repository/relationship/${encodeURIComponent(
+        row.relationship_rid,
+      )}`,
+      family: null,
+      object_type: null,
+      relationship_type: row.relationship_type_code,
+      matched_text: row.notes,
+    }),
   );
-
-  const relationshipResults: RepositorySearchResult[] = (
-    relationships ?? []
-  ).map((row: any) => ({
-    result_type: "RELATIONSHIP",
-    score:
-      row.relationship_type_code?.toLowerCase() === lower
-        ? 90
-        : row.relationship_type_code?.toLowerCase().includes(lower)
-          ? 70
-          : 45,
-    title: `${row.source.official_name} → ${row.target.official_name}`,
-    subtitle: row.relationship_type_code,
-    rid: row.relationship_rid,
-    href: `/admin/repository/relationship/${encodeURIComponent(
-      row.relationship_rid,
-    )}`,
-    family: null,
-    object_type: null,
-    relationship_type: row.relationship_type_code,
-    matched_text: row.notes,
-  }));
 
   return [...objectResults, ...relationshipResults]
     .sort((a, b) => b.score - a.score || a.title.localeCompare(b.title))

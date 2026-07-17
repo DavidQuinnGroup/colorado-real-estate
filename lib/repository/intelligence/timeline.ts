@@ -5,6 +5,57 @@ import { repositorySupabase } from "@/lib/repository/server";
 import { findRootNode, loadRepositoryGraph } from "./core";
 import type { RepositoryTimeline, TimelineEvent } from "./types";
 
+type LifecycleRow = {
+  id: string;
+  from_state: string | null;
+  to_state: string;
+  reason: string | null;
+  effective_at: string;
+  metadata: Record<string, unknown> | null;
+};
+
+type VersionRow = {
+  id: string;
+  version_major: number;
+  version_minor: number;
+  version_patch: number;
+  change_summary: string | null;
+  change_rationale: string | null;
+  created_at: string;
+};
+
+type ApprovalRow = {
+  id: string;
+  approval_rid: string;
+  approval_class: string;
+  status: string;
+  requested_at: string;
+  decided_at: string | null;
+  decision_summary: string | null;
+};
+
+type EvidenceLinkRow = {
+  relationship_type: string;
+  notes: string | null;
+  created_at: string;
+  evidence: {
+    id: string;
+    evidence_rid: string;
+    title: string;
+    description: string | null;
+    observed_at: string | null;
+    created_at: string | null;
+  };
+};
+
+type AuditRow = {
+  id: string;
+  action: string;
+  occurred_at: string;
+  rationale: string | null;
+  metadata: Record<string, unknown> | null;
+};
+
 export async function getRepositoryTimeline(
   rid: string,
 ): Promise<RepositoryTimeline> {
@@ -73,6 +124,12 @@ export async function getRepositoryTimeline(
     }
   }
 
+  const lifecycleRows = (lifecycle ?? []) as unknown as LifecycleRow[];
+  const versionRows = (versions ?? []) as unknown as VersionRow[];
+  const approvalRows = (approvals ?? []) as unknown as ApprovalRow[];
+  const evidenceRows = (evidenceLinks ?? []) as unknown as EvidenceLinkRow[];
+  const auditRows = (audit ?? []) as unknown as AuditRow[];
+
   const events: TimelineEvent[] = [
     {
       event_id: `OBJECT-${object.rid}`,
@@ -82,7 +139,7 @@ export async function getRepositoryTimeline(
       description: object.official_name,
       metadata: {},
     },
-    ...(lifecycle ?? []).map((row: any) => ({
+    ...lifecycleRows.map((row) => ({
       event_id: row.id,
       event_type: "LIFECYCLE" as const,
       occurred_at: row.effective_at,
@@ -90,7 +147,7 @@ export async function getRepositoryTimeline(
       description: row.reason,
       metadata: row.metadata ?? {},
     })),
-    ...(versions ?? []).map((row: any) => ({
+    ...versionRows.map((row) => ({
       event_id: row.id,
       event_type: "VERSION" as const,
       occurred_at: row.created_at,
@@ -100,7 +157,7 @@ export async function getRepositoryTimeline(
         rationale: row.change_rationale,
       },
     })),
-    ...(approvals ?? []).map((row: any) => ({
+    ...approvalRows.map((row) => ({
       event_id: row.id,
       event_type: "APPROVAL" as const,
       occurred_at: row.decided_at ?? row.requested_at,
@@ -110,7 +167,7 @@ export async function getRepositoryTimeline(
         approval_rid: row.approval_rid,
       },
     })),
-    ...(evidenceLinks ?? []).map((row: any) => ({
+    ...evidenceRows.map((row) => ({
       event_id: row.evidence.id,
       event_type: "EVIDENCE" as const,
       occurred_at:
@@ -122,7 +179,7 @@ export async function getRepositoryTimeline(
         relationship_type: row.relationship_type,
       },
     })),
-    ...(audit ?? []).map((row: any) => ({
+    ...auditRows.map((row) => ({
       event_id: row.id,
       event_type: "AUDIT" as const,
       occurred_at: row.occurred_at,
