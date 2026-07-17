@@ -7892,6 +7892,17 @@ Carry-forward launch blockers:
 - Launch readiness reply-to warning alignment stayed true in the blocked contract scenario.
 - No saved-search alert dry-run was run, no property-inquiry smoke was run, no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no CRM task state was changed, no scheduler cadence was escalated, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
 
+## Checkpoint 2335 - Launch Readiness After Strict Contract Refresh
+
+- July 17, 2026 06:14 MDT reran `npm run check:launch-readiness`.
+- Worker output rebuilt successfully before the aggregate launch readiness gate ran.
+- Launch readiness returned `success=true`, `sendsEmail=false`, and `mutatesRows=false`.
+- Overall launch readiness stayed `watch` with no blockers; the surfaced next command remained `npm run run:alerts:dry -- --limit 50`.
+- Supabase connectivity stayed `ready` after a Prisma `SELECT 1` preflight.
+- Saved-search alert email stayed `watch` with 197 pending saved-search alert rows requiring final dry-run review before live processing, 0 failed rows, and 0 processing rows.
+- Property-inquiry notification email stayed `ready`; `PROPERTY_INQUIRY_NOTIFICATION_DRY_RUN` remained disabled or unset, and property-inquiry sends are not suppressed by dry-run mode.
+- No saved-search alert dry-run was run, no property-inquiry smoke was run, no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no CRM task state was changed, no scheduler cadence was escalated, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
+
 ## Checkpoint 2276 - CRM Pending After Queue Dashboard
 
 - July 16, 2026 10:32 MDT reran `npm run run:crm:pending`.
