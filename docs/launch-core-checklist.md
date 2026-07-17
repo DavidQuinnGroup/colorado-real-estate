@@ -7793,6 +7793,17 @@ Carry-forward launch blockers:
 - Aggregate launch notification readiness stayed `watch` with 197 pending saved-search alert rows requiring final dry-run review before live processing, 0 failed checks, and 1 warning check.
 - No saved-search alert dry-run was run, no property-inquiry smoke was run, no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no CRM task state was changed, no scheduler cadence was escalated, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
 
+## Checkpoint 2326 - Strict Notification Readiness After Consolidated Refresh
+
+- July 17, 2026 05:23 MDT reran `npm run check:notification-readiness:strict`.
+- Worker output rebuilt successfully before the strict notification readiness summary ran.
+- Strict notification readiness returned `success=true`, `commandSuccess=true`, `sendsEmail=false`, `mutatesRows=false`, and `strictMode=true`.
+- Overall notification readiness stayed `watch` because 2 notification readiness checks still require operator review; the surfaced next command remained `npm run run:alerts:dry -- --limit 50`.
+- Saved-search alert notification stayed `watch` with 197 pending saved-search alert rows available for dry-run review, 0 failed checks, and 1 warning check.
+- Property-inquiry notification stayed `ready` for high-priority sends with 0 failed checks, 0 warning checks, and no blockers.
+- Aggregate launch notification readiness stayed `watch` with 197 pending saved-search alert rows requiring final dry-run review before live processing, 0 failed checks, and 1 warning check.
+- No saved-search alert dry-run was run, no property-inquiry smoke was run, no live alert command was run, no live sync was started, no live worker was started, no live email was sent, no CRM task state was changed, no scheduler cadence was escalated, no OpenAI request was made, no MLS Grid request was made, no reset was run, no reindex was run, and no queue retry was run.
+
 ## Checkpoint 2276 - CRM Pending After Queue Dashboard
 
 - July 16, 2026 10:32 MDT reran `npm run run:crm:pending`.
