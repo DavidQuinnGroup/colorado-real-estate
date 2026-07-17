@@ -230,3 +230,15 @@ Production application activation is not certified:
 - `/api/search?limit=1` returned a Typesense DNS error.
 - `/robots.txt` and `/sitemap.xml` returned 404.
 - Vercel CLI credentials were invalid/unavailable, so hosted env and deployment correction could not be performed.
+
+## Wave 4A Deployment Alignment Update
+
+Wave 4A confirmed the domain layer remains active but production is still serving a stale/misaligned deployment. Current main locally builds `/search`, `/robots.txt`, `/sitemap.xml`, `/api/search`, `/api/unsubscribe`, and `/api/track-click`; production still fails the same route checks before deployment.
+
+Do not proceed to controlled production email until:
+
+- Existing Vercel project `david-quinn-group-8rde` is verified.
+- Production branch `main` is verified.
+- Production environment variables are verified.
+- Current main is deployed through the existing project.
+- Root, `www`, search, search API, robots, sitemap, and unsubscribe safety pass on production.

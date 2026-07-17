@@ -239,3 +239,29 @@ New/remaining blockers:
 - Vercel CLI credentials were invalid/unavailable.
 
 Certification outcome: `NOT_CERTIFIED`.
+
+## Wave 4A Production Deployment Alignment
+
+Baseline: `5b629c8`
+Verification date: 2026-07-17
+
+| Gap | Wave 4A Result | Classification | Reason |
+| --- | --- | --- | --- |
+| GAP-001 | Reduced locally, still open | Conditional launch gate | Unsubscribe safety was locally remediated, but controlled production email/click proof remains blocked by deployment alignment. |
+| GAP-002 | Reduced locally, still open | Conditional launch gate | Local route proof passed, but production remains stale and monitoring proof is incomplete. |
+| GAP-003 | Unchanged | Operational follow-up | MLS Grid was not called. |
+| GAP-004 | Closed from Wave 3F, unchanged | Closed operational gate | No CRM mutation was run; CRM readiness remains ready from prior evidence. |
+
+Closed locally in Wave 4A:
+
+- Current-main robots route.
+- Current-main sitemap route.
+- Current-main invalid-token unsubscribe non-500 behavior.
+- Current-main search API database fallback proof.
+
+Remaining blockers:
+
+- Existing Vercel project/branch/env verification.
+- Production redeploy of current main.
+- Production route revalidation.
+- Controlled production-hosted email, tracked click, and unsubscribe proof.

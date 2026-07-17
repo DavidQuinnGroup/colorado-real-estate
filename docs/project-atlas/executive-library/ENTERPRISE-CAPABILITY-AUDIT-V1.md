@@ -230,3 +230,20 @@ Results:
 Audit conclusion:
 
 Project Atlas is `NOT_CERTIFIED` for Internal Preview until production deployment/search/unsubscribe health and the controlled production-hosted email proof are completed.
+
+## Wave 4A Production Deployment Alignment
+
+Wave 4A ran from baseline `5b629c8`.
+
+Results:
+
+- Local current-main route remediation added robots and sitemap metadata routes.
+- Unsubscribe token handling now classifies missing/malformed, unknown, already-used, and active tokens through a focused safety helper.
+- Focused unsubscribe safety checks passed.
+- Local production route proof passed for `/search`, `/robots.txt`, `/sitemap.xml`, missing unsubscribe, invalid unknown unsubscribe, and `/api/search?limit=1` database fallback.
+- Production remained stale/misaligned before deployment.
+- No deployment, email, tracked click, live unsubscribe mutation, queue processing, CRM mutation, worker, scheduler, MLS Grid, OpenAI, TitlePro247, or Typesense reset/reindex was run.
+
+Audit conclusion:
+
+Current-main source defects for robots, sitemap, and invalid-token unsubscribe safety are remediated locally. Project Atlas remains `NOT_CERTIFIED` until owner Vercel access/env verification and production deployment alignment are completed.

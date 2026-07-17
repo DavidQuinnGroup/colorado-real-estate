@@ -21,6 +21,7 @@
     "check:notification-readiness": "npm run worker:build && node dist/scripts/notificationReadinessSummary.js",
     "check:notification-readiness:strict": "npm run worker:build && node dist/scripts/notificationReadinessSummary.js --strict",
     "check:notification-readiness:strict-contract": "npm run worker:build && node dist/scripts/notificationReadinessStrictCheck.js",
+    "check:unsubscribe-safety": "npm run worker:build && node dist/scripts/checkUnsubscribeSafety.js",
     "check:launch-readiness": "npm run worker:build && node dist/scripts/launchReadiness.js",
     "worker:build": "tsc -p tsconfig.worker.json --pretty false",
     "infra:up": "docker compose up -d",

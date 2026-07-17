@@ -210,6 +210,17 @@ Readiness results:
 
 Outcome: `NOT_CERTIFIED`.
 
+## Wave 4A Remediation Update
+
+Observed on 2026-07-17 from baseline `5b629c8`:
+
+- Current main now includes local source corrections for `/robots.txt`, `/sitemap.xml`, and unsubscribe invalid-token safety.
+- Local production build passed and route proof returned `/search` 200, `/robots.txt` 200, `/sitemap.xml` 200, missing unsubscribe 400, unknown invalid unsubscribe 404, and `/api/search?limit=1` 200 through database fallback when Typesense was unavailable.
+- Production remained stale before deployment: `/search`, `/robots.txt`, and `/sitemap.xml` still returned 404; invalid unsubscribe still returned 500; `/api/search?limit=1` still returned the Typesense DNS error.
+- Deployment was not executed because hosted Vercel environment variables and existing project/branch alignment could not be authenticated and verified.
+
+Wave 4A did not certify Internal Preview. See `ENTERPRISE-CAPABILITY-VERIFICATION-WAVE-04A.md` and `PRODUCTION-DEPLOYMENT-ALIGNMENT-REPORT.md`.
+
 Reasons:
 
 - Production deployment does not expose required public REIE routes.

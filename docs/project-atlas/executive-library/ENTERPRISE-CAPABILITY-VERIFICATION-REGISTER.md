@@ -193,3 +193,19 @@ No capability status was upgraded or downgraded in Wave 4. Production DNS/SSL/re
 | OPS-002 Data Platform | `VERIFIED_PARTIAL` | `VERIFIED_PARTIAL` | Migrations remain current. | Deployment/search health is still unresolved. |
 
 Command and gate results are recorded in the JSON register under `wave4_production_launch_validation`.
+
+## Wave 4A Production Deployment Alignment
+
+Verification date: 2026-07-17
+Baseline: `5b629c8`
+
+No capability status was upgraded or downgraded in Wave 4A. Local source remediation passed, but production remained stale/misaligned and deployment was not authorized because hosted environment variables and Vercel project/branch alignment could not be verified.
+
+| Capability | Previous Status | Wave 4A Status | Evidence | Reason |
+| --- | --- | --- | --- | --- |
+| PROD-001 Search & Discovery | `VERIFIED_PARTIAL` | `VERIFIED_PARTIAL` | Local `/api/search?limit=1` returned 200 through database fallback when Typesense was unavailable. | Production still returns a raw Typesense DNS error until redeployed/configured. |
+| PROD-007 Notifications | `VERIFIED_PARTIAL` | `VERIFIED_PARTIAL` | Unsubscribe invalid-token safety was hardened and focused tests passed. | Controlled production email/click/unsubscribe proof remains unrun. |
+| PROD-008 Public Website | `VERIFIED_PARTIAL` | `VERIFIED_PARTIAL` | Local `/search`, `/robots.txt`, and `/sitemap.xml` passed. | Production still returns 404 for those routes before deployment. |
+| OPS-005 Reliability | `VERIFIED_PARTIAL` | `VERIFIED_PARTIAL` | Local validation passed without prohibited live operations. | Production deployment and monitoring proof remain incomplete. |
+
+Command and gate results are recorded in the JSON register under `wave4a_production_deployment_alignment`.

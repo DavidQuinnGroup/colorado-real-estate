@@ -201,3 +201,18 @@ Assessment changes:
 - Certification outcome: `NOT_CERTIFIED`.
 
 Launch recommendation: restore valid Vercel credentials, deploy or realign production to current `main`, fix production search/Typesense and unsubscribe behavior, then rerun Wave 4 before attempting the controlled production email proof.
+
+## Wave 4A Assessment Update
+
+Wave 4A remediated current-main route defects from baseline `5b629c8` but did not deploy.
+
+Assessment changes:
+
+- Current-main robots and sitemap routes: `LOCALLY_REMEDIATED`.
+- Current-main unsubscribe invalid-token safety: `LOCALLY_REMEDIATED`.
+- Current-main search API fallback: `LOCALLY_PROVEN`.
+- Production deployment alignment: `STALE_DEPLOYMENT`.
+- Hosted Vercel variable verification: `BLOCKED_OWNER_ACCESS_REQUIRED`.
+- Certification outcome: `NOT_CERTIFIED`.
+
+Launch recommendation: owner must restore Vercel access, verify the existing project/branch/env variables, and deploy current main once before controlled production email proof or Internal Preview certification.

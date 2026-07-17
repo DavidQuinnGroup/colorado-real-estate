@@ -1,4 +1,9 @@
 import { prisma } from '@/lib/prisma';
+import {
+  classifyUnsubscribeToken,
+  normalizeUnsubscribeToken,
+  type UnsubscribeTokenRecord,
+} from '@/lib/unsubscribe/safety';
 
 export const dynamic = 'force-dynamic';
 
@@ -98,24 +103,22 @@ function htmlResponse(title: string, message: string, status = 200) {
 
 function getToken(req: Request) {
   const { searchParams } = new URL(req.url);
-  const token = searchParams.get('token')?.trim();
-
-  if (!token || token.length < 16 || token.length > 200) return null;
-  return token;
+  return normalizeUnsubscribeToken(searchParams.get('token'));
 }
 
-async function applyUnsubscribe(token: string): Promise<UnsubscribeResult | null> {
-  const record = await prisma.unsubscribeToken.findUnique({
+async function findUnsubscribeToken(token: string): Promise<UnsubscribeTokenRecord | null> {
+  return prisma.unsubscribeToken.findUnique({
     where: { token },
     select: {
       token: true,
       userId: true,
       searchId: true,
+      usedAt: true,
     },
   });
+}
 
-  if (!record) return null;
-
+async function applyUnsubscribe(record: UnsubscribeTokenRecord): Promise<UnsubscribeResult> {
   const usedAt = new Date();
 
   if (record.searchId) {
@@ -153,36 +156,14 @@ async function applyUnsubscribe(token: string): Promise<UnsubscribeResult | null
 export async function GET(req: Request) {
   try {
     const token = getToken(req);
+    const record = token ? await findUnsubscribeToken(token) : null;
+    const classification = classifyUnsubscribeToken(token, record);
 
-    if (!token) {
-      return htmlResponse(
-        'Invalid Link',
-        'This unsubscribe link is missing or incomplete. Please contact David Quinn Group if you need help adjusting email preferences.',
-        400,
-      );
+    if (classification.status === 'active' && record) {
+      await applyUnsubscribe(record);
     }
 
-    const result = await applyUnsubscribe(token);
-
-    if (!result) {
-      return htmlResponse(
-        'Link Not Found',
-        'This unsubscribe link is no longer available. Please contact David Quinn Group if you need help adjusting email preferences.',
-        404,
-      );
-    }
-
-    if (result === 'search') {
-      return htmlResponse(
-        'You Are Unsubscribed',
-        'You will no longer receive alerts for this saved search.',
-      );
-    }
-
-    return htmlResponse(
-      'You Are Unsubscribed',
-      'You will no longer receive David Quinn Group listing alerts.',
-    );
+    return htmlResponse(classification.title, classification.message, classification.statusCode);
   } catch (error) {
     console.error('Unsubscribe error:', error);
 

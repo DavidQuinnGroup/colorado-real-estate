@@ -211,3 +211,16 @@ This plan does not authorize:
 - Deployment.
 - CRM mutation.
 - Migration application.
+
+## Wave 4A Residual Gate Update
+
+Wave 4A locally remediated current-main robots, sitemap, unsubscribe invalid-token safety, and search fallback proof. It did not deploy because existing Vercel project/branch alignment and hosted Production variables could not be verified.
+
+Updated residual gates:
+
+| Gate | Wave 4A Status | Evidence |
+| --- | --- | --- |
+| Production deployment alignment | `BLOCKED_OWNER_ACCESS_REQUIRED` | Production still serves stale route results while local current main passes route proof. |
+| Production hosted env verification | `BLOCKED_OWNER_ACCESS_REQUIRED` | Vercel Production variables remain unverified. |
+| Production route health | `PENDING_DEPLOYMENT` | Local route proof passed; production remains unchanged before deployment. |
+| Controlled production email/click | `NOT_RUN` | Still blocked until deployment and route health pass. |
