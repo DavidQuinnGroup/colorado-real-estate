@@ -26,7 +26,7 @@ Generated: 2026-07-17
 | REG-004 | PROD-004 Seller Experience | `VERIFIED_PARTIAL` | Medium | Seller flow is represented, but production conversion evidence was not verified. |
 | REG-005 | PROD-005 Market Content | `VERIFIED_PARTIAL` | High | Market content exists; large-scale expansion remains gated by launch readiness. |
 | REG-006 | PROD-006 Customer Accounts | `VERIFIED_PARTIAL` | Medium | Customer state exists, but a complete authenticated account experience was not verified. |
-| REG-007 | PROD-007 Notifications | `VERIFIED_PARTIAL` | High | Notification system is implemented but remains in launch watch until saved-search rows and tracked-click gates are cleared. |
+| REG-007 | PROD-007 Notifications | `VERIFIED_PARTIAL` | High | Notification system is implemented. Wave 3 proved one controlled send and Wave 3B proved one controlled tracked click; saved-search operator review and recurring-readiness gates remain open. |
 | REG-008 | PROD-008 Public Website | `VERIFIED_PARTIAL` | High | Public site surface exists. Wave 1 did not rerun browser or runtime smoke checks. |
 | REG-009 | OPS-001 Platform Infrastructure | `VERIFIED_PARTIAL` | High | Infrastructure components are present; DR/resilience was not validated. |
 | REG-010 | OPS-002 Data Platform | `VERIFIED_PARTIAL` | High | Data platform schema and checks are present. Wave 1 did not execute live data verification. |
@@ -40,7 +40,7 @@ Generated: 2026-07-17
 | REG-018 | COMM-004 Partnerships | `NOT_YET_VERIFIED` | Low | No local partnership workflow evidence was found. |
 | REG-019 | COMM-005 Customer Success | `NOT_YET_VERIFIED` | Low | No dedicated customer-success implementation was verified. |
 | REG-020 | INTEL-001 Executive Intelligence | `VERIFIED_PARTIAL` | Medium | Executive visibility exists through operational admin/readiness surfaces, not a dedicated executive dashboard. |
-| REG-021 | INTEL-002 Customer Intelligence | `VERIFIED_PARTIAL` | Medium | Customer signals exist; customer intelligence productization remains early. |
+| REG-021 | INTEL-002 Customer Intelligence | `VERIFIED_PARTIAL` | Medium | Customer signals exist. Wave 3B persisted one controlled listing-click signal, `clickedAt`, and heat-score update; async preference-refresh schema drift remains a follow-up. |
 | REG-022 | INTEL-003 Market Intelligence | `VERIFIED_PARTIAL` | Medium | Market intelligence modules exist; production KPI validation is incomplete. |
 | REG-023 | INTEL-004 Business Intelligence | `VERIFIED_PARTIAL` | Medium | Operational reporting exists; dedicated KPI engine remains a gap. |
 | REG-024 | INTEL-005 AI Decision Support | `VERIFIED_DEFERRED` | High | AI decision support is intentionally deferred. |
@@ -99,3 +99,19 @@ No capability status was upgraded or downgraded in Wave 3. The controlled alert 
 | INTEL-002 Customer Intelligence | `VERIFIED_PARTIAL` | `VERIFIED_PARTIAL` | Tracked URL was generated for the controlled email. | Click event did not persist; `clickedAt` remained null and heat score stayed unchanged. |
 
 Command and gate results are recorded in the JSON register under `wave3_controlled_execution`.
+
+## Wave 3B Tracked-Link Resolution Update
+
+Verification date: 2026-07-17
+Baseline: `0f75d97`
+
+No capability status was upgraded or downgraded in Wave 3B. The controlled tracked-click gate is resolved, but launch posture remains partial because saved-search operator review, queue/watch readiness, CRM review, and preference-refresh schema alignment remain open.
+
+| Capability | Previous Status | Wave 3B Status | Evidence | Reason |
+| --- | --- | --- | --- | --- |
+| PROD-007 Notifications | `VERIFIED_PARTIAL` | `VERIFIED_PARTIAL` | One authorized local host-substituted tracked click returned 307 then 200; selected `AlertQueue.clickedAt` populated; no new email was sent. | Recurring alert operation remains gated by 196 pending alert rows and queue/watch readiness. |
+| OPS-005 Reliability | `VERIFIED_PARTIAL` | `VERIFIED_PARTIAL` | Queue dashboard stayed stable at `reie-alerts` 273 waiting, 0 active, 0 delayed, 0 failed; alert readiness remained `watch`. | Production monitoring and full readiness proof remain incomplete. |
+| COMM-001 CRM | `VERIFIED_PARTIAL` | `VERIFIED_PARTIAL` | CRM task remained pending and pending `strategy_intake` count remained 1. | CRM closure was not authorized in Wave 3B. |
+| INTEL-002 Customer Intelligence | `VERIFIED_PARTIAL` | `VERIFIED_PARTIAL` | One `LISTING_CLICK` persisted; selected heat score increased from 0 to 5. | Async `updateUserPreferences()` logged `UserPreference.createdAt` schema drift, so customer-intelligence operations remain partial. |
+
+Command and gate results are recorded in the JSON register under `wave3b_tracked_link_resolution`.

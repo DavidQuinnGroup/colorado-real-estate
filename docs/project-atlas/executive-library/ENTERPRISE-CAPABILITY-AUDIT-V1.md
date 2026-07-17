@@ -118,3 +118,25 @@ Results:
 - `W3-READINESS-001`: `PARTIAL`. Queue and selected-record evidence were refreshed, but the full post-CRM readiness refresh was not run.
 
 Capability counts remain unchanged: 4 complete, 27 partial, 5 deferred, 2 not yet verified, 0 missing. No launch gate should be treated as fully closed from Wave 3.
+
+## Wave 3B Tracked-Link Resolution Update
+
+Wave 3B executed against baseline `0f75d97` and resolved the controlled tracked-click gate that stopped in Wave 3.
+
+Results:
+
+- DNS/root cause: the generated tracked URL used the production fallback host, and `davidquinngroup.com` returned no A record.
+- Method: Method B local route with host substitution.
+- Controlled click: `EXECUTED_PASS_WITH_FOLLOW_UP`.
+- Selected `AlertQueue.clickedAt`: populated at `2026-07-17T19:26:15.042Z`.
+- Selected listing click interaction count: 1.
+- Selected user heat score: 5.
+- New email sends: 0.
+- Queue state: `reie-alerts` remained 273 waiting, 0 active, 0 delayed, 0 failed.
+- CRM state: one pending `strategy_intake` task remained in watch.
+
+Residual audit finding:
+
+The asynchronous `updateUserPreferences()` path logged Prisma `P2022` because the current database lacks `UserPreference.createdAt`. Click tracking and redirect behavior succeeded, but preference-refresh schema/runtime alignment should be handled before recurring engagement analytics are relied on.
+
+Capability counts remain unchanged: 4 complete, 27 partial, 5 deferred, 2 not yet verified, 0 missing.

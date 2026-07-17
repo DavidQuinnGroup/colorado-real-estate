@@ -83,13 +83,13 @@
     {
       "id": "GATE-004",
       "title": "Controlled tracked-email click",
-      "status": "BLOCKED",
+      "status": "RESOLVED_WITH_FOLLOW_UP",
       "capabilities": [
         "PROD-007",
         "INTEL-002"
       ],
-      "evidence": "Wave 3 tracked-click request failed with curl exit code 6 before HTTP response; no click event persisted.",
-      "next_safe_action": "Perform only when explicitly approved; no live send was run in Wave 1."
+      "evidence": "Wave 3B resolved the controlled tracked-click requirement through one authorized local host-substituted request; clickedAt populated, one LISTING_CLICK persisted, and heat score increased by 5.",
+      "next_safe_action": "Correct hosted DNS/site URL configuration and address preference-refresh schema drift before recurring email/scheduler activation."
     }
   ],
   "capability_gaps": [
@@ -225,15 +225,13 @@
     ],
     "alert_queue_classification": "EXPECTED_PRELAUNCH_BACKLOG_WITH_ONE_CONTROLLED_SEND_COMPLETED",
     "crm_gate_classification": "CONTROLLED_LAUNCH_GATE_STILL_OPEN",
-    "tracked_email_click_classification": "STOPPED_NO_PERSISTED_CLICK",
-    "launch_blockers": [
-      "Tracked-email click evidence failed before persistence; do not activate recurring email or scheduler operations."
-    ],
+    "tracked_email_click_classification": "RESOLVED_IN_WAVE3B_WITH_FOLLOW_UP",
+    "launch_blockers": [],
     "conditional_launch_gates": [
       "196 pending saved-search alert rows still require operator review before broad live processing.",
       "reie-alerts remains 273 waiting with no active, delayed, or failed jobs after the controlled send.",
       "One pending strategy_intake CRM task remains in watch because CRM closure was not executed.",
-      "Tracked-click evidence remains required before recurring email/scheduler activation."
+      "Hosted DNS/site URL correction and preference-refresh schema alignment remain required before recurring email/scheduler activation."
     ],
     "evidence": {
       "alertQueueId": "cmq0wovon012dpw1p6ebtyrj9",
@@ -252,11 +250,11 @@
         "skipped": 3
       },
       "clickEvidence": {
-        "httpResult": "none",
+        "httpResult": "wave3_dns_failure_then_wave3b_local_307_to_200",
         "curlExitCode": 6,
-        "clickedAt": null,
-        "listingClickInteractionCount": 0,
-        "heatScoreAfter": 0
+        "clickedAt": "2026-07-17T19:26:15.042Z",
+        "listingClickInteractionCount": 1,
+        "heatScoreAfter": 5
       },
       "crm": {
         "taskId": "751fa51e-4a2e-411f-97df-c320e974e058",
@@ -264,6 +262,64 @@
         "afterStatus": "pending",
         "tasksChanged": 0
       }
+    }
+  },
+  "wave3b_tracked_link_resolution": {
+    "wave": "Wave 3B - Tracked-Link Environment Resolution",
+    "baseline_commit": "0f75d97",
+    "verification_date": "2026-07-17",
+    "gaps_closed": [],
+    "gaps_reduced": [
+      "GAP-001",
+      "GAP-002"
+    ],
+    "gaps_unchanged": [
+      "GAP-003",
+      "GAP-004",
+      "GAP-005",
+      "GAP-006",
+      "GAP-007",
+      "GAP-008",
+      "GAP-009"
+    ],
+    "alert_queue_classification": "EXPECTED_PRELAUNCH_BACKLOG_WITH_CONTROLLED_SEND_AND_CLICK_COMPLETED",
+    "crm_gate_classification": "CONTROLLED_LAUNCH_GATE_STILL_OPEN",
+    "tracked_email_click_classification": "RESOLVED_WITH_FOLLOW_UP",
+    "launch_blockers": [],
+    "conditional_launch_gates": [
+      "196 pending saved-search alert rows still require operator review before broad live processing.",
+      "reie-alerts remains 273 waiting with no active, delayed, or failed jobs after the controlled click.",
+      "One pending strategy_intake CRM task remains in watch because CRM closure was not authorized.",
+      "Production DNS/site URL configuration must be corrected before relying on production-domain tracked links.",
+      "UserPreference.createdAt schema/runtime drift must be resolved or explicitly accepted before recurring engagement analytics are relied on."
+    ],
+    "evidence": {
+      "method": "METHOD_B_LOCAL_ROUTE_HOST_SUBSTITUTION",
+      "dnsClassification": "NONEXISTENT_HOST",
+      "alertQueueId": "cmq0wovon012dpw1p6ebtyrj9",
+      "clickRouteStatus": 307,
+      "destinationStatus": 200,
+      "clickedAt": "2026-07-17T19:26:15.042Z",
+      "listingClickInteractionCount": 1,
+      "heatScoreAfter": 5,
+      "emailLogCountAfter": 34,
+      "queueCountsAfter": {
+        "waiting": 273,
+        "active": 0,
+        "delayed": 0,
+        "failed": 0
+      },
+      "alertQueueStatusCountsAfter": {
+        "pending": 196,
+        "sent": 84,
+        "skipped": 3
+      },
+      "crm": {
+        "taskId": "751fa51e-4a2e-411f-97df-c320e974e058",
+        "afterStatus": "pending",
+        "pendingStrategyIntakeCount": 1
+      },
+      "residualFinding": "Async updateUserPreferences logged Prisma P2022 because UserPreference.createdAt is absent in the current database."
     }
   }
 }

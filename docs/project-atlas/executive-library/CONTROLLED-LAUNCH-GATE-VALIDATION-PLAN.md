@@ -11,7 +11,7 @@ This plan prepares the smallest controlled validations for tracked-email click h
 
 Plan creation did not execute live actions. A later executive authorization approved one controlled alert send, one tracked click, one CRM task closure, and bounded readiness refreshes in strict sequence.
 
-Wave 3 execution stopped at `W3-CLICK-001` after the tracked-link request failed before returning HTTP response headers. `W3-CRM-001` and the full `W3-READINESS-001` refresh were not executed.
+Wave 3 execution stopped at `W3-CLICK-001` after the tracked-link request failed before returning HTTP response headers. Wave 3B resolved the click gate through one authorized local host-substituted route validation. `W3-CRM-001` was not executed and remains in watch.
 
 ## 2. Preflight Evidence
 
@@ -53,7 +53,7 @@ Read-only planning refreshes:
 | Success evidence | Redirect succeeds; one new `LISTING_CLICK`; selected `AlertQueue.clickedAt` is populated; selected user heat score increases by exactly 5. |
 | Failure evidence | Redirect succeeds but no interaction; unexpected duplicate interaction; heat score changes by anything other than +5; unrelated alert rows updated. |
 | Risk level | Medium, because click tracking mutates analytics and lead score. |
-| Authorization status | `STOPPED` - authorized, attempted once, failed with curl exit code 6 before HTTP response headers; no click mutation persisted. |
+| Authorization status | `EXECUTED_PASS_WITH_FOLLOW_UP` - Wave 3 stopped on DNS exit code 6; Wave 3B resolved with exactly one local host-substituted click. `clickedAt` was populated, one click interaction persisted, and heat score increased by 5. Async preference refresh logged a separate `UserPreference.createdAt` schema drift follow-up. |
 
 ## 4. Gate W3-CRM-001 - Pending Strategy Intake CRM Task
 
@@ -135,6 +135,7 @@ Recurring scheduler/email activation is not part of this execution plan. It rema
 - `W3-CRM-001` passes or is consciously deferred.
 - Queue dashboard shows no unexpected active/delayed/failed work.
 - Alert readiness remains non-blocked and operator review of pending rows is complete.
+- `UserPreference.createdAt` schema/runtime drift from the async post-click preference refresh is resolved or explicitly accepted.
 
 No recurring worker, scheduler, digest sender, live alert batch, or broad backlog processor should be started during Wave 3.
 
@@ -159,9 +160,9 @@ Baseline commit: `e50106e`
 | Gate | Classification | Evidence |
 | --- | --- | --- |
 | `W3-ALERT-001` | `EXECUTED_PASS` | `processAlertById("cmq0wovon012dpw1p6ebtyrj9", false)` returned `status: "sent"` for the selected row and controlled recipient. |
-| `W3-CLICK-001` | `STOPPED` | One curl request to the tracked URL failed with exit code 6 before response headers. Post-check showed `clickedAt: null`, click interaction count `0`, and heat score unchanged at `0`. |
+| `W3-CLICK-001` | `EXECUTED_PASS_WITH_FOLLOW_UP` | Wave 3 stopped on DNS exit code 6. Wave 3B used one authorized local host-substituted tracked-click request, returned 307 then 200, set `clickedAt`, created exactly one listing click interaction, and increased heat score from 0 to 5. |
 | `W3-CRM-001` | `STOPPED` | Not executed because `W3-CLICK-001` triggered the stop condition. CRMTask `751fa51e-4a2e-411f-97df-c320e974e058` remained `pending`. |
-| `W3-READINESS-001` | `PARTIAL` | Queue and selected-record evidence were refreshed. Full post-CRM readiness refresh was not executed. |
+| `W3-READINESS-001` | `PARTIAL` | Queue, selected-record, and alert readiness evidence were refreshed after Wave 3B. Full post-CRM readiness refresh was not executed because CRM closure remains out of scope. |
 
 Before `W3-ALERT-001`:
 
@@ -197,3 +198,37 @@ Unexpected effects:
 
 - No unexpected queue drain, retry, CRM mutation, scheduler activation, MLS/Grid/OpenAI/TitlePro247 call, or Typesense action occurred.
 - The email path created an unsubscribe token for the selected recipient; this is expected from `createUnsubscribeUrl()` during alert sending and stayed within the approved one-email path.
+
+## 10. Wave 3B Tracked-Link Resolution
+
+Execution date: 2026-07-17
+Baseline commit: `0f75d97`
+
+DNS/environment result:
+
+- The generated tracked URL used the production fallback host.
+- `davidquinngroup.com` returned no A answer and `curl` failed with host-resolution exit code 6.
+- No hosted DNS correction or replacement email send was authorized.
+
+Method:
+
+- Method B - local route with host substitution.
+- Started a local Next.js server on `localhost:3000`.
+- Verified the route with a missing-user-parameter probe that returned 307 without tracking persistence.
+- Executed exactly one controlled click request with the selected user/listing/source and localized destination host.
+
+After Wave 3B:
+
+- Route returned 307 to the localized property page.
+- Localized destination returned 200.
+- Selected `AlertQueue.clickedAt`: `2026-07-17T19:26:15.042Z`.
+- Selected listing click interaction count: 1.
+- Selected user heat score: 5.
+- Selected user's `PROPERTY_ALERT` EmailLog count: 34.
+- AlertQueue status counts: 196 pending, 84 sent, 3 skipped.
+- `reie-alerts`: 273 waiting, 0 active, 0 delayed, 0 failed.
+- Pending `strategy_intake` CRM count: 1.
+
+Follow-up:
+
+- The async `updateUserPreferences()` path logged Prisma `P2022` because the current database lacks `UserPreference.createdAt`. Tracking succeeded, but schema/runtime alignment should be addressed before relying on recurring engagement preference updates.

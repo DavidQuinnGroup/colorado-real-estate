@@ -21,7 +21,7 @@ The launch posture is not blocked by a newly discovered code absence in Wave 1. 
 - 197 pending saved-search alert rows need dry-run/operator review before live processing.
 - `reie-alerts` has 273 waiting jobs in the latest launch handoff state.
 - One pending medium-priority `strategy_intake` CRM task remains in watch state.
-- One controlled internal tracked-email click is still required before recurring email/scheduler activation.
+- One controlled internal tracked-email click was completed in Wave 3B; recurring email/scheduler activation remains gated by alert review, queue/watch readiness, CRM review, and preference-refresh schema alignment.
 
 ## Domain Assessment
 
@@ -42,7 +42,7 @@ The launch posture is not blocked by a newly discovered code absence in Wave 1. 
 | PROD-001 Search & Discovery | `VERIFIED_PARTIAL` | 5 | Implemented with search route, components, map, and Typesense services. Needs current runtime smoke and production monitoring. |
 | PROD-002 Property Experience | `VERIFIED_PARTIAL` | 5 | Implemented through property route, detail components, resilient image, schema, and inquiry API. Needs continued inquiry-path monitoring. |
 | PROD-003 Buyer Experience | `VERIFIED_PARTIAL` | 4 | Saved-search implementation exists, but pending alert rows keep it in watch. |
-| PROD-007 Notifications | `VERIFIED_PARTIAL` | 5 | Alert/email/tracking/unsubscribe system exists. Live recurring operation is gated by alert review and tracked-click proof. |
+| PROD-007 Notifications | `VERIFIED_PARTIAL` | 5 | Alert/email/tracking/unsubscribe system exists. Wave 3 proved one controlled send and Wave 3B proved one controlled tracked click. Live recurring operation is still gated by alert review and queue/readiness proof. |
 | PROD-008 Public Website | `VERIFIED_PARTIAL` | 5 | Static public routes exist. Wave 1 did not rerun browser/runtime smoke. |
 | OPS-001 Platform Infrastructure | `VERIFIED_PARTIAL` | 5 | Infrastructure stack exists. DR/resilience proof remains incomplete. |
 | OPS-002 Data Platform | `VERIFIED_PARTIAL` | 5 | Schema, migrations, and readiness scripts exist. Wave 1 did not perform live DB validation. |
@@ -110,8 +110,23 @@ Assessment changes:
 
 The one-alert send proves the smallest approved alert-send path can move a selected row from `pending` to `sent` and create the expected EmailLog without consuming BullMQ jobs or draining `reie-alerts`. It does not prove recurring alert operations are ready.
 
-The tracked-click gate remains open. The generated tracking URL was well-formed, but the execution request failed with curl exit code 6 before HTTP response headers and no `LISTING_CLICK`, `clickedAt`, or heat-score mutation occurred.
+The tracked-click gate remained open after Wave 3. The generated tracking URL was well-formed, but the execution request failed with curl exit code 6 before HTTP response headers and no `LISTING_CLICK`, `clickedAt`, or heat-score mutation occurred.
 
 CRM remains in watch because the authorized task closure was not executed after the click stop condition.
 
 Launch recommendation: do not activate recurring email, alert workers, schedulers, or bulk saved-search processing until the tracked-click gate and CRM review are resolved and the bounded readiness refresh is completed.
+
+## Wave 3B Assessment Update
+
+Wave 3B resolved the tracked-click gate from baseline `0f75d97`.
+
+Assessment changes:
+
+- Production tracked-link host: `NONEXISTENT_HOST` because `davidquinngroup.com` returned no A record.
+- Controlled tracked click: `EXECUTED_PASS_WITH_FOLLOW_UP`.
+- Customer signal persistence: one `LISTING_CLICK`, selected `clickedAt`, and heat-score +5 persisted.
+- Queue posture: unchanged at `reie-alerts` 273 waiting, 0 active, 0 delayed, 0 failed.
+- CRM posture: unchanged with one pending `strategy_intake` task.
+- New residual watch item: async preference refresh logged `UserPreference.createdAt` schema drift.
+
+Launch recommendation: do not activate recurring email, alert workers, schedulers, or bulk saved-search processing until alert operator review, CRM review, queue/readiness refresh, DNS/site URL correction, and preference-refresh schema alignment are handled.

@@ -13,7 +13,7 @@ Existing launch gates preserved:
 1. 197 pending saved-search alert rows require dry-run/operator review before live processing.
 2. `reie-alerts` has 273 waiting jobs in the latest launch handoff state.
 3. One pending medium-priority `strategy_intake` CRM task remains in watch state.
-4. One controlled internal tracked-email click is still needed before recurring email/scheduler activation.
+4. One controlled internal tracked-email click is complete as of Wave 3B; recurring email/scheduler activation remains gated by alert review, queue/watch readiness, CRM review, hosted DNS/site URL correction, and preference-refresh schema alignment.
 
 ## Launch-Critical Gaps
 
@@ -88,7 +88,7 @@ Verification date: 2026-07-17
 | GAP-002 | Unchanged, open | Conditional launch gate | Queue counts stayed stable, but full readiness refresh and production monitoring proof remain incomplete. |
 | GAP-004 | Unchanged, open | Controlled launch gate | CRM task closure was not executed after the tracked-click stop condition. |
 
-No gaps were closed in Wave 3. The selected alert row `cmq0wovon012dpw1p6ebtyrj9` moved from `pending` to `sent`, one controlled email was sent, and no BullMQ queue job was consumed. The tracked-click gate remains open because no click event persisted.
+No gaps were closed in Wave 3. The selected alert row `cmq0wovon012dpw1p6ebtyrj9` moved from `pending` to `sent`, one controlled email was sent, and no BullMQ queue job was consumed. The tracked-click gate remained open after Wave 3 because no click event persisted.
 
 Updated launch gate state:
 
@@ -96,3 +96,25 @@ Updated launch gate state:
 - Alert queue backlog: `WATCH` - `reie-alerts` remains 273 waiting, 0 active, 0 delayed, 0 failed.
 - Strategy intake CRM review: `WATCH` - one pending `strategy_intake` task remains.
 - Controlled tracked-email click: `BLOCKED` - one tracked-click attempt failed before HTTP response and persisted no evidence.
+
+## Wave 3B Tracked-Link Resolution
+
+Baseline: `0f75d97`
+Verification date: 2026-07-17
+
+| Gap | Wave 3B Result | Classification | Reason |
+| --- | --- | --- | --- |
+| GAP-001 | Reduced, still open | Conditional launch gate | One controlled alert send and one controlled tracked click passed, but 196 pending alert rows still require operator review before broad live processing. |
+| GAP-002 | Reduced, still open | Conditional launch gate | Queue counts stayed stable and alert readiness remained `watch`, but production monitoring and full readiness proof remain incomplete. |
+| GAP-004 | Unchanged, open | Controlled launch gate | CRM task closure was not authorized in Wave 3B and one pending `strategy_intake` task remains. |
+
+No capability gaps were closed in Wave 3B. The specific controlled tracked-email click gate moved from `BLOCKED` to `RESOLVED_WITH_FOLLOW_UP`.
+
+Updated launch gate state:
+
+- Saved-search alert review: `WATCH` - 196 pending rows remain after the one controlled send.
+- Alert queue backlog: `WATCH` - `reie-alerts` remains 273 waiting, 0 active, 0 delayed, 0 failed.
+- Strategy intake CRM review: `WATCH` - one pending `strategy_intake` task remains.
+- Controlled tracked-email click: `RESOLVED_WITH_FOLLOW_UP` - one authorized local host-substituted click persisted exactly one listing-click signal, populated `clickedAt`, and increased heat score by 5.
+- Hosted DNS/site URL configuration: `WATCH` - `davidquinngroup.com` returned no A record during validation.
+- Preference-refresh schema alignment: `WATCH` - async `updateUserPreferences()` logged `UserPreference.createdAt` schema drift after tracking.

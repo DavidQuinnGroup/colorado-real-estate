@@ -245,7 +245,7 @@
         "scripts/alertNotificationReadiness.ts",
         "docs/email-system.md"
       ],
-      "verification_note": "Notification system is implemented. Wave 3 proved one controlled alert send, but tracked-click persistence failed and saved-search operator review remains gated."
+      "verification_note": "Notification system is implemented. Wave 3 proved one controlled alert send and Wave 3B proved one controlled tracked click; saved-search operator review and recurring-readiness gates remain open."
     },
     {
       "id": "REG-008",
@@ -394,7 +394,7 @@
         "app/api/admin/intake-signals/route.ts",
         "scripts/runCRM.ts"
       ],
-      "verification_note": "CRM implementation exists; one pending strategy_intake task remains in watch because Wave 3 stopped before CRM closure."
+      "verification_note": "CRM implementation exists; one pending strategy_intake task remains in watch because CRM closure was not authorized in Wave 3B."
     },
     {
       "id": "REG-016",
@@ -487,7 +487,7 @@
         "lib/preferences/updateUserPreferences.ts",
         "app/api/track-click/route.ts"
       ],
-      "verification_note": "Customer signals exist, but Wave 3 tracked-click persistence did not complete; customer intelligence productization remains partial."
+      "verification_note": "Customer signals exist. Wave 3B persisted one controlled listing-click signal, clickedAt, and heat-score update; async preference-refresh schema drift remains a follow-up."
     },
     {
       "id": "REG-022",
@@ -778,12 +778,12 @@
       },
       {
         "id": "W3-CLICK-001",
-        "classification": "STOPPED",
+        "classification": "EXECUTED_PASS_WITH_FOLLOW_UP",
         "capability_refs": [
           "PROD-007",
           "INTEL-002"
         ],
-        "evidence": "Tracked URL request failed with curl exit code 6 before HTTP response headers; clickedAt remained null; click interaction count remained 0; selected user heat score remained 0.",
+        "evidence": "Wave 3 stopped on curl exit code 6. Wave 3B resolved with one authorized local host-substituted click: route returned 307, destination returned 200, clickedAt populated, click interaction count became 1, and selected user heat score became 5.",
         "confidence": "HIGH"
       },
       {
@@ -803,7 +803,7 @@
           "PROD-007",
           "COMM-001"
         ],
-        "evidence": "Queue and selected-record evidence were refreshed; full post-CRM readiness refresh was not executed.",
+        "evidence": "Queue, selected-record, and alert-readiness evidence were refreshed after Wave 3B; full post-CRM readiness refresh was not executed.",
         "confidence": "MEDIUM"
       }
     ],
@@ -817,8 +817,8 @@
       {
         "command": "curl --max-time 20 -s -D - -o /dev/null <tracked-url>",
         "classification": "AUTHORIZED_CONTROLLED_MUTATION",
-        "result": "failed_exit_code_6",
-        "evidence": "No HTTP response headers; no click mutation persisted."
+        "result": "failed_exit_code_6_then_resolved_in_wave3b",
+        "evidence": "Initial production-host request returned no HTTP response headers because the host did not resolve; Wave 3B local host substitution persisted the controlled click exactly once."
       },
       {
         "command": "npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000",
@@ -831,7 +831,7 @@
       {
         "capability": "PROD-007",
         "effect": "PARTIAL_REDUCED_STILL_OPEN",
-        "reason": "One controlled alert send succeeded, but tracked-click evidence failed and saved-search review remains open."
+        "reason": "One controlled alert send and one controlled tracked click succeeded, but saved-search review remains open."
       },
       {
         "capability": "OPS-005",
@@ -841,13 +841,119 @@
       {
         "capability": "COMM-001",
         "effect": "UNCHANGED_PARTIAL",
-        "reason": "CRM task remained pending because closure was stopped after tracked-click failure."
+        "reason": "CRM task remained pending because closure was not authorized in Wave 3B."
       },
       {
         "capability": "INTEL-002",
-        "effect": "UNCHANGED_PARTIAL",
-        "reason": "Tracked URL existed but no click event persisted."
+        "effect": "PARTIAL_REDUCED_STILL_OPEN",
+        "reason": "One controlled click event persisted, but async preference-refresh schema drift remains a follow-up."
       }
     ]
+  },
+  "wave3b_tracked_link_resolution": {
+    "wave": "Wave 3B - Tracked-Link Environment Resolution",
+    "baseline_commit": "0f75d97",
+    "verification_date": "2026-07-17",
+    "status_counts_after_wave3b": {
+      "VERIFIED_COMPLETE": 4,
+      "VERIFIED_PARTIAL": 27,
+      "VERIFIED_MISSING": 0,
+      "VERIFIED_DEFERRED": 5,
+      "NOT_YET_VERIFIED": 2,
+      "NOT_APPLICABLE": 0,
+      "total": 38
+    },
+    "capability_status_changes": [],
+    "method": "METHOD_B_LOCAL_ROUTE_HOST_SUBSTITUTION",
+    "dns_classification": "NONEXISTENT_HOST",
+    "gates": [
+      {
+        "id": "W3-CLICK-001",
+        "classification": "EXECUTED_PASS_WITH_FOLLOW_UP",
+        "capability_refs": [
+          "PROD-007",
+          "INTEL-002"
+        ],
+        "evidence": "One authorized local host-substituted tracked-click request returned 307 then 200; selected clickedAt populated; listing click interaction count became 1; heat score became 5.",
+        "confidence": "HIGH"
+      },
+      {
+        "id": "W3-CRM-001",
+        "classification": "NOT_EXECUTED_OUT_OF_SCOPE",
+        "capability_refs": [
+          "COMM-001"
+        ],
+        "evidence": "CRMTask 751fa51e-4a2e-411f-97df-c320e974e058 remained pending; pending strategy_intake count remained 1.",
+        "confidence": "HIGH"
+      },
+      {
+        "id": "W3-READINESS-001",
+        "classification": "PARTIAL",
+        "capability_refs": [
+          "OPS-005",
+          "PROD-007",
+          "COMM-001"
+        ],
+        "evidence": "Queue dashboard and alert readiness remained stable: reie-alerts 273 waiting, 0 active, 0 delayed, 0 failed; alert readiness watch with 196 pending, 0 failed, 0 processing.",
+        "confidence": "HIGH"
+      }
+    ],
+    "commands_executed": [
+      {
+        "command": "npm run dev",
+        "classification": "AUTHORIZED_LOCAL_SERVER",
+        "result": "passed",
+        "evidence": "Next.js dev server became ready on localhost:3000 and was stopped after validation."
+      },
+      {
+        "command": "curl --max-time 20 --silent --show-error --dump-header - --output /dev/null <missing-user-local-probe>",
+        "classification": "NON_MUTATING_ROUTE_PROBE",
+        "result": "passed",
+        "evidence": "Route returned 307 to the localized property destination without required user id."
+      },
+      {
+        "command": "curl --max-time 20 --location --silent --show-error --dump-header - --output /dev/null <host-substituted-controlled-url>",
+        "classification": "AUTHORIZED_CONTROLLED_MUTATION",
+        "result": "passed",
+        "evidence": "Tracking route returned 307; localized destination returned 200; exactly one selected click persisted."
+      },
+      {
+        "command": "npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000",
+        "classification": "BOUNDED_READ_ONLY",
+        "result": "passed",
+        "evidence": "reie-alerts remained 273 waiting, 0 active, 0 delayed, 0 failed."
+      },
+      {
+        "command": "npm run check:alert-notification-readiness",
+        "classification": "BOUNDED_READ_ONLY",
+        "result": "passed_watch",
+        "evidence": "Readiness remained watch with 196 pending alert rows, 0 failed, 0 processing."
+      }
+    ],
+    "evidence": {
+      "alertQueueId": "cmq0wovon012dpw1p6ebtyrj9",
+      "userId": "cmmuzx3kt00004hk64jytoihs",
+      "listingId": "cmq0wov4p0115pw1pmo2139zu",
+      "recipientMasked": "da***@gmail.com",
+      "clickedAt": "2026-07-17T19:26:15.042Z",
+      "listingClickInteractionCount": 1,
+      "heatScoreBefore": 0,
+      "heatScoreAfter": 5,
+      "propertyAlertEmailLogCountBefore": 34,
+      "propertyAlertEmailLogCountAfter": 34,
+      "alertQueueStatusCountsAfter": {
+        "pending": 196,
+        "sent": 84,
+        "skipped": 3
+      },
+      "queueCountsAfter": {
+        "waiting": 273,
+        "active": 0,
+        "delayed": 0,
+        "failed": 0
+      },
+      "crmPendingStrategyIntakeCountAfter": 1,
+      "residualFinding": "Async updateUserPreferences logged Prisma P2022 because UserPreference.createdAt is absent in the current database."
+    }
   }
 }
