@@ -159,7 +159,7 @@
       "id": "GAP-006",
       "severity": "P1",
       "capability": "INTEL-004",
-      "title": "Dedicated KPI engine has Sprint 1 measurement foundation and Sprint 2 deterministic intelligence core, but live-source adapters and executive dashboard remain incomplete.",
+      "title": "Dedicated KPI engine has Sprint 1 measurement foundation, Sprint 2 deterministic intelligence core, and Sprint 3 executive workspace, but live-source adapters and persistence remain incomplete.",
       "status": "OPEN_MATERIAL_REDUCED",
       "evidence": [
         "Google Docs Enterprise Capability Assessment Book 3",
@@ -169,8 +169,10 @@
         "app/api/admin/enterprise",
         "app/admin/repository/enterprise-kpis",
         "app/admin/repository/intelligence-core",
+        "app/admin/repository/executive-command-center",
         "docs/project-atlas/executive-library/EIF-1.0-SPRINT-1-MEASUREMENT-FOUNDATION.md",
-        "docs/project-atlas/executive-library/EIF-1.0-SPRINT-2-INTELLIGENCE-CORE.md"
+        "docs/project-atlas/executive-library/EIF-1.0-SPRINT-2-INTELLIGENCE-CORE.md",
+        "docs/project-atlas/executive-library/EIF-1.0-SPRINT-3-EXECUTIVE-WORKSPACE.md"
       ]
     },
     {

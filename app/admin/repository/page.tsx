@@ -56,6 +56,11 @@ export default async function RepositoryDashboardPage() {
       value: "Rules",
       href: "/admin/repository/intelligence-core",
     },
+    {
+      label: "Executive Command Center",
+      value: "EIF 1.0",
+      href: "/admin/repository/executive-command-center",
+    },
   ];
 
   const exceptions = [
@@ -134,6 +139,12 @@ export default async function RepositoryDashboardPage() {
               className="inline-flex h-11 items-center justify-center rounded-full border border-white/15 px-5 text-sm font-medium transition hover:bg-white hover:text-black"
             >
               Intelligence Core
+            </Link>
+            <Link
+              href="/admin/repository/executive-command-center"
+              className="inline-flex h-11 items-center justify-center rounded-full border border-white/15 px-5 text-sm font-medium transition hover:bg-white hover:text-black"
+            >
+              Command Center
             </Link>
             <Link
               href="/admin/repository/objects"
