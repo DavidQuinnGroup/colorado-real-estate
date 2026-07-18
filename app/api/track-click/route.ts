@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { prisma } from '@/lib/prisma';
 import { updateUserPreferences } from '@/lib/preferences/updateUserPreferences';
+import { trackClick } from '@/lib/tracking/store';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -65,82 +65,10 @@ function buildRedirectUrl(req: NextRequest, listingId: string | null) {
   return buildFallbackRedirectUrl(req, listingId);
 }
 
-async function getTrackableUser(userId: string) {
-  return prisma.user.findUnique({
-    where: {
-      id: userId,
-    },
-    select: {
-      id: true,
-      isUnsubscribed: true,
-    },
-  });
-}
-
-function markAlertClick(userId: string, listingId: string, clickedAt: Date) {
-  return prisma.alertQueue.updateMany({
-    where: {
-      userId,
-      status: {
-        in: ['sent', 'pending', 'processing'],
-      },
-      clickedAt: null,
-      OR: [
-        { payload: { path: ['propertyId'], equals: listingId } },
-        { payload: { path: ['id'], equals: listingId } },
-        { payload: { path: ['mlsId'], equals: listingId } },
-        { payload: { path: ['listingId'], equals: listingId } },
-        { payload: { path: ['slug'], equals: listingId } },
-      ],
-    },
-    data: {
-      clickedAt,
-    },
-  });
-}
-
-async function trackClick(userId: string, listingId: string, source: string, destination: string) {
-  const user = await getTrackableUser(userId);
-
-  if (!user || user.isUnsubscribed) {
-    return {
-      tracked: false,
-      reason: !user ? 'User not found.' : 'User is unsubscribed.',
-    };
-  }
-
-  const trackedAt = new Date();
-
-  await prisma.$transaction([
-    prisma.userInteraction.create({
-      data: {
-        userId,
-        type: 'LISTING_CLICK',
-        metadata: {
-          listingId,
-          source,
-          destination,
-          trackedAt: trackedAt.toISOString(),
-        },
-      },
-    }),
-    markAlertClick(userId, listingId, trackedAt),
-    prisma.user.update({
-      where: { id: userId },
-      data: {
-        heatScore: { increment: 5 },
-      },
-    }),
-  ]);
-
+async function updatePreferences(userId: string) {
   updateUserPreferences(userId).catch((error) => {
     console.error('[REIE CRM] Preference update failed:', error);
   });
-
-  return {
-    tracked: true,
-    reason: '',
-  };
 }
 
 export async function GET(req: NextRequest) {
@@ -159,6 +87,8 @@ export async function GET(req: NextRequest) {
 
     if (!result.tracked) {
       console.info('[REIE CRM] Click redirect without tracking:', result.reason);
+    } else {
+      await updatePreferences(userId);
     }
   } catch (error) {
     console.error('[REIE CRM] Track click error:', error);

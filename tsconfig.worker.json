@@ -32,6 +32,7 @@
     "scripts/checkPropertyRouteSafety.ts",
     "scripts/checkSearchRuntimeSafety.ts",
     "scripts/checkSupabase.ts",
+    "scripts/checkTrackClickSafety.ts",
     "scripts/checkUnsubscribeSafety.ts",
     "scripts/createTypesenseCollection.ts",
     "scripts/fetchMLS.ts",
