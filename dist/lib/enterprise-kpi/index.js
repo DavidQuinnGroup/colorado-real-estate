@@ -5,3 +5,4 @@ export * from "./health.js";
 export * from "./intelligence.js";
 export * from "./executiveWorkspace.js";
 export * from "./decisionSupport.js";
+export * from "./learningSystem.js";

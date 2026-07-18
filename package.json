@@ -30,6 +30,7 @@
     "check:enterprise-intelligence-safety": "npm run worker:build && node dist/scripts/checkEnterpriseIntelligenceSafety.js",
     "check:enterprise-executive-workspace-safety": "npm run worker:build && node dist/scripts/checkEnterpriseExecutiveWorkspaceSafety.js",
     "check:enterprise-decision-support-safety": "npm run worker:build && node dist/scripts/checkEnterpriseDecisionSupportSafety.js",
+    "check:enterprise-learning-system-safety": "npm run worker:build && node dist/scripts/checkEnterpriseLearningSystemSafety.js",
     "check:prisma-client-parity": "npm run worker:build && node dist/scripts/checkPrismaClientParity.js",
     "check:production-dependencies": "npm run worker:build && node dist/scripts/checkProductionDependencies.js",
     "check:next-security-version": "npm run worker:build && node dist/scripts/checkNextSecurityVersion.js",

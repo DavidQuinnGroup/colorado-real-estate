@@ -5,6 +5,7 @@ import {
   buildDailyExecutiveBrief,
   buildDecisionSupportSnapshot,
   buildExecutiveCommandCenterPayload,
+  buildLearningSystemSnapshot,
 } from "@/lib/enterprise-kpi";
 import type {
   DomainExecutiveSummary,
@@ -19,6 +20,7 @@ export const dynamic = "force-dynamic";
 export default function ExecutiveCommandCenterPage() {
   const commandCenter = buildExecutiveCommandCenterPayload();
   const decisionSupport = buildDecisionSupportSnapshot();
+  const learningSystem = buildLearningSystemSnapshot();
   const brief = buildDailyExecutiveBrief();
   const status = commandCenter.enterpriseStatus;
 
@@ -144,6 +146,28 @@ export default function ExecutiveCommandCenterPage() {
               className="mt-4 inline-flex border border-white/15 px-4 py-2 text-sm font-medium transition hover:bg-white hover:text-black"
             >
               Review Decision Support
+            </Link>
+          </Panel>
+
+          <Panel title="Learning System">
+            <p className="text-sm leading-6 text-white/55">
+              Fixture-backed initiative reviews connect decisions to expected
+              outcomes, observed outcomes, variances, lessons, and proposed
+              human-reviewed improvement actions.
+            </p>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              <Metric label="Under review" value={String(learningSystem.summary.initiativesUnderReview)} />
+              <Metric label="Outcomes met" value={String(learningSystem.summary.outcomesMet + learningSystem.summary.outcomesExceeded)} />
+              <Metric label="Inconclusive" value={String(learningSystem.summary.inconclusiveReviews)} />
+              <Metric label="Actions" value={String(learningSystem.summary.proposedImprovementActions)} />
+              <Metric label="Decision concerns" value={String(learningSystem.summary.decisionProcessConcerns)} />
+              <Metric label="Calibration concerns" value={String(learningSystem.summary.recommendationCalibrationConcerns)} />
+            </div>
+            <Link
+              href="/admin/repository/learning-system"
+              className="mt-4 inline-flex border border-white/15 px-4 py-2 text-sm font-medium transition hover:bg-white hover:text-black"
+            >
+              Review Learning System
             </Link>
           </Panel>
         </section>

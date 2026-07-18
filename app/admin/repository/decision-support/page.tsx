@@ -1,7 +1,10 @@
 import Link from "next/link";
 import type React from "react";
 
-import { buildDecisionSupportSnapshot } from "@/lib/enterprise-kpi";
+import {
+  buildDecisionSupportSnapshot,
+  buildLearningSystemSnapshot,
+} from "@/lib/enterprise-kpi";
 import type {
   DecisionOption,
   EnterpriseDecisionPackage,
@@ -11,6 +14,7 @@ export const dynamic = "force-dynamic";
 
 export default function DecisionSupportPage() {
   const snapshot = buildDecisionSupportSnapshot();
+  const learningSystem = buildLearningSystemSnapshot();
   const featured = snapshot.packages[0] ?? null;
 
   return (
@@ -96,7 +100,13 @@ export default function DecisionSupportPage() {
 
         <div className="mt-8 space-y-8">
           {snapshot.packages.map((decisionPackage) => (
-            <DecisionPackagePanel key={decisionPackage.packageId} decisionPackage={decisionPackage} />
+            <DecisionPackagePanel
+              key={decisionPackage.packageId}
+              decisionPackage={decisionPackage}
+              learningLink={learningSystem.lifecycles.find(
+                (lifecycle) => lifecycle.initiative.originatingDecisionPackageId === decisionPackage.packageId,
+              )?.initiative.initiativeId ?? null}
+            />
           ))}
         </div>
       </div>
@@ -104,7 +114,13 @@ export default function DecisionSupportPage() {
   );
 }
 
-function DecisionPackagePanel({ decisionPackage }: { decisionPackage: EnterpriseDecisionPackage }) {
+function DecisionPackagePanel({
+  decisionPackage,
+  learningLink,
+}: {
+  decisionPackage: EnterpriseDecisionPackage;
+  learningLink: string | null;
+}) {
   return (
     <section id={decisionPackage.packageId} className="border border-white/10 bg-white/[0.03] p-6">
       <div className="flex flex-col gap-4 border-b border-white/10 pb-5 lg:flex-row lg:items-start lg:justify-between">
@@ -119,6 +135,14 @@ function DecisionPackagePanel({ decisionPackage }: { decisionPackage: Enterprise
         </div>
         <div className="text-sm text-white/45">
           Review: {decisionPackage.reviewSchedule.reviewDate}
+          {learningLink ? (
+            <Link
+              href={`/admin/repository/learning-system#${learningLink}`}
+              className="mt-2 block text-white/70 underline decoration-white/20 underline-offset-4 hover:text-white"
+            >
+              Learning review
+            </Link>
+          ) : null}
         </div>
       </div>
 
@@ -188,6 +212,7 @@ function DecisionPackagePanel({ decisionPackage }: { decisionPackage: Enterprise
             <Trace label="KPI" value={decisionPackage.situation.relevantKpis.join(", ") || "No KPI"} />
             <Trace label="Evidence" value={String(decisionPackage.supportingEvidence.length)} />
             <Trace label="Provenance" value={decisionPackage.provenance} />
+            <Trace label="Learning" value={learningLink ? `Linked conceptually to ${learningLink}` : "No learning lifecycle"} />
           </div>
         </Panel>
       </div>
