@@ -46,6 +46,11 @@ export default async function RepositoryDashboardPage() {
       value: formatPercent(health.relationship_completeness_pct),
       href: "/admin/repository/objects",
     },
+    {
+      label: "Enterprise KPIs",
+      value: "19",
+      href: "/admin/repository/enterprise-kpis",
+    },
   ];
 
   const exceptions = [
@@ -112,6 +117,12 @@ export default async function RepositoryDashboardPage() {
               className="inline-flex h-11 items-center justify-center rounded-full border border-white/15 px-5 text-sm font-medium transition hover:bg-white hover:text-black"
             >
               Recommendations
+            </Link>
+            <Link
+              href="/admin/repository/enterprise-kpis"
+              className="inline-flex h-11 items-center justify-center rounded-full border border-white/15 px-5 text-sm font-medium transition hover:bg-white hover:text-black"
+            >
+              Enterprise KPIs
             </Link>
             <Link
               href="/admin/repository/objects"

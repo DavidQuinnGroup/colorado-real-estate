@@ -36,6 +36,8 @@
     "scripts/checkTrackClickSafety.ts",
     "scripts/checkTrackClickRuntimeSafety.ts",
     "scripts/checkUnsubscribeSafety.ts",
+    "scripts/checkEnterpriseKpiSafety.ts",
+    "lib/enterprise-kpi/**/*.ts",
     "scripts/createTypesenseCollection.ts",
     "scripts/fetchMLS.ts",
     "scripts/index.ts",
