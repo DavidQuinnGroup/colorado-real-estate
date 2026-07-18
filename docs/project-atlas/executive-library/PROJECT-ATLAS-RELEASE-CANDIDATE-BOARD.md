@@ -16,6 +16,7 @@ RC1 tracks production defects that block Internal Preview certification after th
 | `PROPERTY-001` | High | `CLOSED` | `9343f6d` | Production `/properties/[id]` failed because the property detail route still depended on Prisma while Vercel Production lacks `DATABASE_URL`; deployed fix at `def6537` adds read-only Supabase REST fallback and related-link degradation. |
 | `EMAIL-001` | High | `CLOSED` | `def6537` | Controlled one-row production alert delivery proof passed from governed source `bd4f76c`: exactly `processAlertById("cmq0zp6up010gpd4uh5anfex5", false)` sent one email to the approved internal recipient, selected alert reached `sent`, EmailLog increased by one, and BullMQ/CRM/click side effects stayed isolated. |
 | `CLICK-001` | High | `BLOCKED_RUNTIME` | `a4c2999` | The authorized controlled retry after deployed fixes reached `/api/track-click` once, redirected to the selected property URL, inserted one `LISTING_CLICK`, and increased heat score by 5, but selected `AlertQueue.clickedAt` remained null. No second retry was made. |
+| `CLICK-RUNTIME-001` | High | `READY_FOR_DEPLOYMENT_VERIFICATION` | `4e9cd1e` | Root cause verified: the Supabase fallback scanned only the first 100 unclicked alert rows, while the selected row was row 118 in the unordered eligible set. The correction pages bounded candidates, marks before enrichment, and synthetic tests prove clickedAt persistence plus repeat-request idempotency. |
 
 ## Status Definitions
 
@@ -25,6 +26,7 @@ RC1 tracks production defects that block Internal Preview certification after th
 | `ROOT_CAUSE_VERIFIED` | Evidence identifies the smallest confirmed cause. |
 | `FIX_IN_PROGRESS` | A bounded correction is being implemented. |
 | `READY_FOR_VERIFICATION` | Local validation passed and the issue is ready for production deployment verification. |
+| `READY_FOR_DEPLOYMENT_VERIFICATION` | Local validation passed and the correction has been committed or is ready to be deployed for read-only production health verification. |
 | `PRODUCTION_VERIFIED` | Production validation passed after deployment. |
 | `CLOSED` | Issue is verified and release-board closure is recorded. |
 | `BLOCKED_PRE_SEND` | Issue is intentionally stopped before sending or mutation because a prerequisite gate is not complete. |
@@ -35,4 +37,4 @@ RC1 tracks production defects that block Internal Preview certification after th
 
 `RC1_NOT_CERTIFIED`
 
-Reason: `SEARCH-001`, `UNSUBSCRIBE-001`, `PROPERTY-001`, and `EMAIL-001` are production verified and closed. `CLICK-001` is blocked at runtime because the explicitly authorized controlled retry still did not populate selected `AlertQueue.clickedAt`. RC1 remains uncertified until `CLICK-001` and the remaining valid-unsubscribe proof issue are closed.
+Reason: `SEARCH-001`, `UNSUBSCRIBE-001`, `PROPERTY-001`, and `EMAIL-001` are production verified and closed. `CLICK-RUNTIME-001` has a local correction with passing synthetic and RC1 safety checks, but `CLICK-001` remains blocked until a separately authorized final production proof verifies `clickedAt`. RC1 remains uncertified until `CLICK-001` and the remaining valid-unsubscribe proof issue are closed.

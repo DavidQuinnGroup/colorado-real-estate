@@ -1,10 +1,12 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
-import { prisma } from '../prisma';
+import { prisma } from '../prisma.js';
 
 export type TrackingStoreDependencies = {
   prismaClient?: TrackingPrismaClient;
   supabaseClient?: SupabaseClient;
+  supabaseAlertPageSize?: number;
+  supabaseAlertMaxPages?: number;
 };
 
 type TrackingPrismaClient = {
@@ -38,6 +40,8 @@ type UserRow = {
 };
 
 let cachedClient: SupabaseClient | null = null;
+const DEFAULT_ALERT_PAGE_SIZE = 100;
+const DEFAULT_ALERT_MAX_PAGES = 20;
 
 function getSupabaseTrackingClient() {
   if (cachedClient) return cachedClient;
@@ -70,6 +74,18 @@ function isPayloadMatch(payload: unknown, listingId: string) {
   return ['propertyId', 'id', 'mlsId', 'listingId', 'slug'].some((key) => record[key] === listingId);
 }
 
+function getPageSize(dependencies: TrackingStoreDependencies) {
+  const configured = dependencies.supabaseAlertPageSize;
+  if (!configured || !Number.isFinite(configured)) return DEFAULT_ALERT_PAGE_SIZE;
+  return Math.min(Math.max(Math.floor(configured), 1), DEFAULT_ALERT_PAGE_SIZE);
+}
+
+function getMaxPages(dependencies: TrackingStoreDependencies) {
+  const configured = dependencies.supabaseAlertMaxPages;
+  if (!configured || !Number.isFinite(configured)) return DEFAULT_ALERT_MAX_PAGES;
+  return Math.min(Math.max(Math.floor(configured), 1), DEFAULT_ALERT_MAX_PAGES);
+}
+
 function getPrismaClient(dependencies: TrackingStoreDependencies) {
   return dependencies.prismaClient || (prisma as unknown as TrackingPrismaClient);
 }
@@ -97,19 +113,29 @@ async function markAlertClickWithSupabase(
   dependencies: TrackingStoreDependencies,
 ) {
   const client = getSupabaseClient(dependencies);
-  const { data, error } = await client
-    .from('AlertQueue')
-    .select('id,payload')
-    .eq('userId', userId)
-    .is('clickedAt', null)
-    .in('status', ['sent', 'pending', 'processing'])
-    .limit(100);
+  const pageSize = getPageSize(dependencies);
+  const maxPages = getMaxPages(dependencies);
+  const matchingIds: string[] = [];
 
-  if (error) throw new Error('Supabase tracking alert lookup failed.');
+  for (let page = 0; page < maxPages; page++) {
+    const from = page * pageSize;
+    const to = from + pageSize - 1;
+    const { data, error } = await client
+      .from('AlertQueue')
+      .select('id,payload')
+      .eq('userId', userId)
+      .is('clickedAt', null)
+      .in('status', ['sent', 'pending', 'processing'])
+      .order('createdAt', { ascending: false })
+      .range(from, to);
 
-  const matchingIds = ((data || []) as AlertQueueRow[])
-    .filter((row) => isPayloadMatch(row.payload, listingId))
-    .map((row) => row.id);
+    if (error) throw new Error('Supabase tracking alert lookup failed.');
+
+    const rows = (data || []) as AlertQueueRow[];
+    matchingIds.push(...__test_collectMatchingAlertIds(rows, listingId));
+
+    if (rows.length < pageSize) break;
+  }
 
   if (!matchingIds.length) return { count: 0 };
 
@@ -138,6 +164,15 @@ async function trackClickWithSupabase(
   }
 
   const trackedAt = new Date();
+  const markedAlert = await markAlertClickWithSupabase(userId, listingId, trackedAt, dependencies);
+
+  if (markedAlert.count < 1) {
+    return {
+      tracked: false,
+      reason: 'No unclicked alert matched the tracked listing.',
+    };
+  }
+
   const interaction = await client.from('UserInteraction').insert({
     userId,
     type: 'LISTING_CLICK',
@@ -150,8 +185,6 @@ async function trackClickWithSupabase(
   });
 
   if (interaction.error) throw new Error('Supabase tracking interaction insert failed.');
-
-  await markAlertClickWithSupabase(userId, listingId, trackedAt, dependencies);
 
   const heatScore = Number.isFinite(user.heatScore) ? Number(user.heatScore) : 0;
   const userUpdate = await client
@@ -225,8 +258,22 @@ export async function trackClick(
     }
 
     const trackedAt = new Date();
+    let markedAlert = await markAlertClick(prismaClient, userId, listingId, trackedAt);
+    let markedAlertCount = getMarkedAlertCount(markedAlert);
 
-    const transactionResults = await prismaClient.$transaction([
+    if (markedAlertCount < 1) {
+      markedAlert = await markAlertClickWithSupabase(userId, listingId, trackedAt, dependencies);
+      markedAlertCount = getMarkedAlertCount(markedAlert);
+    }
+
+    if (markedAlertCount < 1) {
+      return {
+        tracked: false,
+        reason: 'No unclicked alert matched the tracked listing.',
+      };
+    }
+
+    await prismaClient.$transaction([
       prismaClient.userInteraction.create({
         data: {
           userId,
@@ -239,7 +286,6 @@ export async function trackClick(
           },
         },
       }),
-      markAlertClick(prismaClient, userId, listingId, trackedAt),
       prismaClient.user.update({
         where: { id: userId },
         data: {
@@ -247,12 +293,6 @@ export async function trackClick(
         },
       }),
     ]);
-
-    const markedAlertCount = getMarkedAlertCount(transactionResults[1]);
-
-    if (markedAlertCount < 1) {
-      await markAlertClickWithSupabase(userId, listingId, trackedAt, dependencies);
-    }
 
     return {
       tracked: true,
@@ -270,6 +310,10 @@ export async function trackClick(
 
 export function __test_isPayloadMatch(payload: unknown, listingId: string) {
   return isPayloadMatch(payload, listingId);
+}
+
+export function __test_collectMatchingAlertIds(rows: AlertQueueRow[], listingId: string) {
+  return rows.filter((row) => isPayloadMatch(row.payload, listingId)).map((row) => row.id);
 }
 
 // /Users/davidquinn/david-quinn-group/colorado-real-estate/lib/tracking/store.ts

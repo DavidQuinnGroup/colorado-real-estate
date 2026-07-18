@@ -38,6 +38,7 @@ async function assertSourceFallbacks() {
     assert(store.includes(".from('AlertQueue').update"), 'Expected Supabase AlertQueue clickedAt update fallback.');
     assert(store.includes(".from('User')"), 'Expected Supabase user heat-score fallback.');
     assert(store.includes('markedAlertCount < 1'), 'Expected primary tracking to backfill clickedAt when Prisma marks no rows.');
+    assert(store.includes('.range(from, to)'), 'Expected tracking fallback to page through bounded alert candidates.');
     assert(preferences.includes('Prisma preference update failed; attempting Supabase REST fallback'), 'Expected preference fallback log.');
     assert(preferences.includes(".from('UserPreference').upsert"), 'Expected Supabase UserPreference upsert fallback.');
 }

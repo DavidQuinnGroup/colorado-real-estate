@@ -184,6 +184,39 @@
         },
         "limitation": "No second retry was made. clickedAt remains null after the explicitly authorized retry."
       }
+    },
+    {
+      "id": "CLICK-RUNTIME-001",
+      "severity": "High",
+      "status": "READY_FOR_DEPLOYMENT_VERIFICATION",
+      "baseline": "4e9cd1e",
+      "parent": "CLICK-001",
+      "summary": "Root cause verified: the Supabase fallback scanned only the first 100 unclicked alert rows, while the selected controlled row was row 118 in the unordered eligible set. The correction pages bounded candidates, marks clickedAt before enrichment, and synthetic tests prove clickedAt persistence plus repeat-request idempotency. No production tracking URL was invoked.",
+      "requiresProductionVerification": true,
+      "diagnosis": {
+        "eligibleUnclickedRows": 118,
+        "routeShapeReturned": 100,
+        "selectedInRouteShape": false,
+        "selectedIndexInFullScan": 117,
+        "schema": {
+          "clickedAtColumn": "clickedAt",
+          "clickedAtType": "timestamp without time zone",
+          "payloadType": "jsonb"
+        }
+      },
+      "localValidation": {
+        "status": "passed",
+        "commands": [
+          "npm run check:track-click-runtime-safety",
+          "npm run check:track-click-safety",
+          "npm run check:unsubscribe-safety",
+          "npm run check:search-runtime-safety",
+          "npm run check:property-route-safety",
+          "npm run typecheck",
+          "npm run lint",
+          "npm run build"
+        ]
+      }
     }
   ]
 }
