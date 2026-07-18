@@ -223,3 +223,9 @@ Not run in Wave 4C remediation:
 - Typesense reset or reindex.
 - `prisma db push`.
 - Database reset.
+
+## 16. Wave 4D Follow-On
+
+The Wave 4C remediation was confirmed inside Vercel: Recharts resolved and the Next.js application build completed through static-page and serverless-function generation.
+
+The next production deployment block was Vercel's vulnerable-version rejection for `next@15.1.6`. Wave 4D updates Next.js exactly to the authorized `15.1.11` patch release and adds a local security-version guard.

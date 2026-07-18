@@ -68,3 +68,5 @@ The first Git-triggered deployment from commit `0f83ef4` failed before Ready bec
 Wave 4B classifies the failure as `PRISMA_GENERATE_NOT_RUN_IN_VERCEL` with a stale build-cache risk. The remediation is to generate Prisma Client during installation and again immediately before `next build`, then validate the generated client with `npm run check:prisma-client-parity`.
 
 The next Git-triggered deployment from commit `170cab0` confirmed the Prisma remediation in Vercel, then failed on an undeclared Recharts dependency imported by chart components. Wave 4C declares `recharts@3.9.2`, adds `npm run check:production-dependencies`, and validates a clean `npm ci` plus production build locally.
+
+The next Git-triggered deployment from commit `da816d0` confirmed Prisma and Recharts remediation in Vercel, completed the Next.js application build, then failed because Vercel blocked vulnerable `next@15.1.6`. Wave 4D updates Next.js exactly to `15.1.11`, keeps React/React DOM unchanged, adds `npm run check:next-security-version`, and validates a clean `npm ci` plus production build locally.

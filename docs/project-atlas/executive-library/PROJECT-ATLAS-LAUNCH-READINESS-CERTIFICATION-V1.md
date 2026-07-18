@@ -71,6 +71,14 @@ The Wave 4B Prisma generation correction was confirmed in Vercel, but the deploy
 
 Wave 4C remediation declares `recharts@3.9.2`, adds `npm run check:production-dependencies`, and validates a clean `npm ci` plus production build locally. Internal Preview still requires a successful production deployment and post-deploy route/readiness validation before certification can change.
 
+## Wave 4D Certification Update
+
+Wave 4D keeps the certification outcome at `NOT_CERTIFIED`.
+
+The Wave 4C Recharts dependency correction was confirmed in Vercel, and the application build completed through static-page and serverless-function generation. Vercel then blocked deployment because `next@15.1.6` was vulnerable.
+
+Wave 4D remediation updates Next.js exactly to `15.1.11`, keeps React and React DOM unchanged, adds `npm run check:next-security-version`, and validates a clean `npm ci` plus production build locally. Internal Preview still requires a successful production deployment and post-deploy route/readiness validation before certification can change.
+
 ## Required Certification Remediation
 
 1. Restore valid Vercel CLI credentials.

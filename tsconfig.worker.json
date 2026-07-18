@@ -26,6 +26,7 @@
     "lib/typesense/**/*.ts",
     "scripts/alertFailedRows.ts",
     "scripts/alertNotificationReadiness.ts",
+    "scripts/checkNextSecurityVersion.ts",
     "scripts/checkPrismaClientParity.ts",
     "scripts/checkProductionDependencies.ts",
     "scripts/checkSupabase.ts",
