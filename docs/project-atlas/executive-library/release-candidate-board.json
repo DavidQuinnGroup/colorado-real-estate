@@ -43,6 +43,198 @@
       }
     },
     {
+      "id": "UNSUBSCRIBE-002",
+      "severity": "High",
+      "status": "CLOSED",
+      "baseline": "684040f",
+      "summary": "Controlled valid unsubscribe proof used one approved internal global-token fixture. Exactly two production GETs to the same redacted valid URL returned 200 with no redirects: Request 1 completed the unsubscribe mutation, Request 2 returned the intentional already-unsubscribed idempotency response, and one bounded restoration returned the internal user subscription state to active while leaving the spent token used.",
+      "requiresProductionVerification": false,
+      "deployment": {
+        "commit": "684040f",
+        "status": "success",
+        "description": "Deployment has completed"
+      },
+      "controlledFixture": {
+        "classification": "internal_global_unsubscribe",
+        "disposition": "RESTORABLE",
+        "recipient": "da***@gmail.com",
+        "userId": "cmmuzx3kt00004hk64jytoihs",
+        "tokenRecordId": "cmrqlydky0001la97bq8yqapp",
+        "tokenFingerprint": {
+          "length": 36,
+          "prefix": "02d0",
+          "suffix": "974c"
+        },
+        "searchId": null,
+        "intendedMutationScope": [
+          "UnsubscribeToken.usedAt for the exact token",
+          "User.isUnsubscribed and User.unsubscribedAt for the exact internal user"
+        ]
+      },
+      "productionVerification": {
+        "status": "passed",
+        "preflight": {
+          "propertyStatus": 200,
+          "searchStatus": 200,
+          "missingTokenStatus": 400,
+          "unknownTokenStatus": 404
+        },
+        "before": {
+          "userIsUnsubscribed": false,
+          "userUnsubscribedAt": null,
+          "tokenUsedAt": null,
+          "activeSavedSearchesForUser": 1,
+          "totalActiveSavedSearches": 2,
+          "totalUsers": 3,
+          "emailLogTotal": 78,
+          "unsubscribeTokenTotal": 128,
+          "crmTaskTotal": 1,
+          "crmTaskForUser": 0,
+          "userInteractionTotal": 5,
+          "preferences": {
+            "avgPrice": 4625000,
+            "avgBeds": 4,
+            "topCities": [
+              "Boulder"
+            ]
+          },
+          "alertQueue": {
+            "pending": 195,
+            "sent": 85,
+            "skipped": 3,
+            "processing": 0,
+            "failed": 0
+          },
+          "bullMq": {
+            "waiting": 273,
+            "active": 0,
+            "delayed": 0,
+            "failed": 0
+          }
+        },
+        "request1": {
+          "status": 200,
+          "redirectCount": 0,
+          "responseTitle": "You Are Unsubscribed",
+          "responseClassification": "completed_global_unsubscribe",
+          "rawInternalErrorExposed": false,
+          "after": {
+            "userIsUnsubscribed": true,
+            "userUnsubscribedAt": "2026-07-18T18:15:52.946",
+            "tokenUsedAt": "2026-07-18T18:15:52.946",
+            "activeSavedSearchesForUser": 1,
+            "totalActiveSavedSearches": 2,
+            "totalUsers": 3,
+            "emailLogTotal": 78,
+            "unsubscribeTokenTotal": 128,
+            "crmTaskTotal": 1,
+            "crmTaskForUser": 0,
+            "userInteractionTotal": 5,
+            "alertQueue": {
+              "pending": 195,
+              "sent": 85,
+              "skipped": 3,
+              "processing": 0,
+              "failed": 0
+            },
+            "bullMq": {
+              "waiting": 273,
+              "active": 0,
+              "delayed": 0,
+              "failed": 0
+            }
+          }
+        },
+        "request2": {
+          "status": 200,
+          "redirectCount": 0,
+          "responseTitle": "Already Unsubscribed",
+          "responseClassification": "idempotent_already_used",
+          "rawInternalErrorExposed": false,
+          "after": {
+            "userIsUnsubscribed": true,
+            "userUnsubscribedAt": "2026-07-18T18:15:52.946",
+            "tokenUsedAt": "2026-07-18T18:15:52.946",
+            "emailLogTotal": 78,
+            "unsubscribeTokenTotal": 128,
+            "crmTaskTotal": 1,
+            "crmTaskForUser": 0,
+            "userInteractionTotal": 5,
+            "alertQueue": {
+              "pending": 195,
+              "sent": 85,
+              "skipped": 3,
+              "processing": 0,
+              "failed": 0
+            },
+            "bullMq": {
+              "waiting": 273,
+              "active": 0,
+              "delayed": 0,
+              "failed": 0
+            }
+          }
+        },
+        "restoration": {
+          "status": "passed",
+          "action": "one bounded User update for the selected internal user",
+          "after": {
+            "userIsUnsubscribed": false,
+            "userUnsubscribedAt": null,
+            "tokenUsedAt": "2026-07-18T18:15:52.946",
+            "activeSavedSearchesForUser": 1,
+            "totalActiveSavedSearches": 2,
+            "totalUsers": 3,
+            "emailLogTotal": 78,
+            "unsubscribeTokenTotal": 128,
+            "crmTaskTotal": 1,
+            "crmTaskForUser": 0,
+            "userInteractionTotal": 5,
+            "alertQueue": {
+              "pending": 195,
+              "sent": 85,
+              "skipped": 3,
+              "processing": 0,
+              "failed": 0
+            },
+            "bullMq": {
+              "waiting": 273,
+              "active": 0,
+              "delayed": 0,
+              "failed": 0
+            }
+          }
+        },
+        "isolation": {
+          "validUnsubscribeRequestCount": 2,
+          "thirdUnsubscribeRequestMade": false,
+          "otherValidUnsubscribeUrlInvoked": false,
+          "emailLogDelta": 0,
+          "alertQueueAggregateDelta": 0,
+          "bullMqDelta": 0,
+          "crmTaskDelta": 0,
+          "activeSavedSearchDelta": 0,
+          "userCountDelta": 0,
+          "unsubscribeTokenCountDelta": 0,
+          "noEmailSent": true,
+          "noWorkerSchedulerRetryOrDrain": true
+        }
+      },
+      "localValidation": {
+        "status": "passed",
+        "commands": [
+          "npm run check:unsubscribe-safety",
+          "npm run check:track-click-runtime-safety",
+          "npm run check:track-click-safety",
+          "npm run check:search-runtime-safety",
+          "npm run check:property-route-safety",
+          "npm run typecheck",
+          "npm run lint",
+          "npm run build"
+        ]
+      }
+    },
+    {
       "id": "PROPERTY-001",
       "severity": "High",
       "status": "CLOSED",
@@ -261,6 +453,22 @@
         "redirectCount": 1,
         "finalStatus": 200
       }
+    },
+    {
+      "id": "READY-001",
+      "severity": "High",
+      "status": "NEXT",
+      "baseline": "684040f",
+      "summary": "Final RC1 readiness review is next after production-proof blockers closed. This issue has not been started automatically.",
+      "requiresProductionVerification": false
+    },
+    {
+      "id": "CERT-001",
+      "severity": "High",
+      "status": "BLOCKED",
+      "baseline": "684040f",
+      "summary": "Certification remains blocked until READY-001 is explicitly authorized and completed.",
+      "requiresProductionVerification": false
     }
   ]
 }

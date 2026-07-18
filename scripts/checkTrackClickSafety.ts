@@ -83,8 +83,11 @@ async function assertSelectedAlert() {
 
   assert(row, 'Expected selected CLICK-001 AlertQueue row to exist.');
   assert.equal(row.userId, USER_ID, 'Expected selected row to belong to approved internal user.');
-  assert.equal(row.status, 'sent', 'Expected selected row to be sent before CLICK-001.');
-  assert.equal(row.clickedAt, null, 'Expected selected row clickedAt to remain null before CLICK-001.');
+  assert.equal(row.status, 'sent', 'Expected selected row to remain sent after CLICK-001.');
+  assert(
+    row.clickedAt === null || Number.isFinite(Date.parse(row.clickedAt)),
+    'Expected selected row clickedAt to be null before proof or a valid timestamp after CLICK-001 closure.',
+  );
   assert.equal(row.payload?.propertyId || row.payload?.id, PROPERTY_ID, 'Expected selected row to identify controlled property.');
   assert.equal(row.payload?.url, PROPERTY_URL, 'Expected selected row URL to match controlled property URL.');
 }
@@ -108,7 +111,7 @@ async function main() {
   await assertSelectedAlert();
   await assertTrackingUrl();
 
-  console.log('[track-click-safety] ok: fallback source guards, selected alert preflight, and tracking URL destination passed.');
+  console.log('[track-click-safety] ok: fallback source guards, selected alert state, and tracking URL destination passed.');
 }
 
 main().catch((error) => {
