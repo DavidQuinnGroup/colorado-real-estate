@@ -73,10 +73,56 @@
     {
       "id": "EMAIL-001",
       "severity": "High",
-      "status": "BLOCKED_PRE_SEND",
+      "status": "CLOSED",
       "baseline": "def6537",
-      "summary": "Controlled production alert delivery remains stopped before send until EMAIL-001 is explicitly resumed after PROPERTY-001 closure. No email was sent during PROPERTY-001.",
-      "requiresProductionVerification": true
+      "summary": "Controlled production alert delivery proof passed from governed source bd4f76c. Exactly processAlertById(\"cmq0zp6up010gpd4uh5anfex5\", false) sent one email to the approved internal recipient; EmailLog increased by one, the selected alert row moved from pending to sent, BullMQ backlog counts stayed unchanged, and CRM/click side effects stayed isolated.",
+      "requiresProductionVerification": false,
+      "deployment": {
+        "id": "5503532389",
+        "status": "success"
+      },
+      "productionVerification": {
+        "status": "passed",
+        "sentAt": "2026-07-18T16:55:30.069Z",
+        "alertId": "cmq0zp6up010gpd4uh5anfex5",
+        "recipient": "da***@gmail.com",
+        "propertyUrl": "https://davidquinngroup.com/properties/6137-baseline-rd-boulder-co-ire1349635",
+        "propertyUrlStatus": 200,
+        "before": {
+          "emailLogTotal": 77,
+          "alertQueue": {
+            "pending": 196,
+            "sent": 84,
+            "skipped": 3
+          },
+          "bullMq": {
+            "waiting": 273,
+            "active": 0,
+            "delayed": 0,
+            "failed": 0
+          },
+          "unsubscribeTokenCount": 56,
+          "crmTaskCount": 0,
+          "userInteractionCount": 1
+        },
+        "after": {
+          "emailLogTotal": 78,
+          "alertQueue": {
+            "pending": 195,
+            "sent": 85,
+            "skipped": 3
+          },
+          "bullMq": {
+            "waiting": 273,
+            "active": 0,
+            "delayed": 0,
+            "failed": 0
+          },
+          "unsubscribeTokenCount": 57,
+          "crmTaskCount": 0,
+          "userInteractionCount": 1
+        }
+      }
     }
   ]
 }
