@@ -148,36 +148,48 @@ export async function getPropertyLinks(
   const limit = Math.max(1, Math.min(take, 12));
   const baseWhere = buildBaseWhere(property);
 
-  const [neighborhoodHomes, cityHomes] = await Promise.all([
-    neighborhood
-      ? prisma.property.findMany({
-          where: {
-            ...baseWhere,
-            neighborhood,
-          },
-          select: propertyLinkSelect,
-          orderBy: [{ updatedAt: "desc" }],
-          take: limit,
-        })
-      : Promise.resolve([]),
-    city
-      ? prisma.property.findMany({
-          where: {
-            ...baseWhere,
-            city,
-          },
-          select: propertyLinkSelect,
-          orderBy: [{ updatedAt: "desc" }],
-          take: limit,
-        })
-      : Promise.resolve([]),
-  ]);
+  const authorityLinks = buildAuthorityLinks(city, neighborhood);
 
-  return {
-    neighborhoodHomes,
-    cityHomes,
-    authorityLinks: buildAuthorityLinks(city, neighborhood),
-  };
+  try {
+    const [neighborhoodHomes, cityHomes] = await Promise.all([
+      neighborhood
+        ? prisma.property.findMany({
+            where: {
+              ...baseWhere,
+              neighborhood,
+            },
+            select: propertyLinkSelect,
+            orderBy: [{ updatedAt: "desc" }],
+            take: limit,
+          })
+        : Promise.resolve([]),
+      city
+        ? prisma.property.findMany({
+            where: {
+              ...baseWhere,
+              city,
+            },
+            select: propertyLinkSelect,
+            orderBy: [{ updatedAt: "desc" }],
+            take: limit,
+          })
+        : Promise.resolve([]),
+    ]);
+
+    return {
+      neighborhoodHomes,
+      cityHomes,
+      authorityLinks,
+    };
+  } catch (error) {
+    console.error("[property-links] Prisma lookup failed; rendering authority links only:", error instanceof Error ? error.message : "unknown error");
+
+    return {
+      neighborhoodHomes: [],
+      cityHomes: [],
+      authorityLinks,
+    };
+  }
 }
 
 // /Users/davidquinn/david-quinn-group/colorado-real-estate/lib/linking/getPropertyLinks.ts
