@@ -18,7 +18,7 @@ type TrackingPrismaClient = {
   alertQueue: {
     updateMany: (args: unknown) => Promise<{ count: number }>;
   };
-  $transaction: (actions: Promise<unknown>[]) => Promise<unknown>;
+  $transaction: (actions: Promise<unknown>[]) => Promise<unknown[]>;
 };
 
 type TrackClickResult = {
@@ -191,6 +191,12 @@ function markAlertClick(prismaClient: TrackingPrismaClient, userId: string, list
   });
 }
 
+function getMarkedAlertCount(result: unknown) {
+  if (!result || typeof result !== 'object') return 0;
+  const count = (result as { count?: unknown }).count;
+  return typeof count === 'number' && Number.isFinite(count) ? count : 0;
+}
+
 export async function trackClick(
   userId: string,
   listingId: string,
@@ -220,7 +226,7 @@ export async function trackClick(
 
     const trackedAt = new Date();
 
-    await prismaClient.$transaction([
+    const transactionResults = await prismaClient.$transaction([
       prismaClient.userInteraction.create({
         data: {
           userId,
@@ -241,6 +247,12 @@ export async function trackClick(
         },
       }),
     ]);
+
+    const markedAlertCount = getMarkedAlertCount(transactionResults[1]);
+
+    if (markedAlertCount < 1) {
+      await markAlertClickWithSupabase(userId, listingId, trackedAt, dependencies);
+    }
 
     return {
       tracked: true,
