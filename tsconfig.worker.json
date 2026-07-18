@@ -39,6 +39,7 @@
     "scripts/checkEnterpriseKpiSafety.ts",
     "scripts/checkEnterpriseIntelligenceSafety.ts",
     "scripts/checkEnterpriseExecutiveWorkspaceSafety.ts",
+    "scripts/checkEnterpriseDecisionSupportSafety.ts",
     "lib/enterprise-kpi/**/*.ts",
     "scripts/createTypesenseCollection.ts",
     "scripts/fetchMLS.ts",

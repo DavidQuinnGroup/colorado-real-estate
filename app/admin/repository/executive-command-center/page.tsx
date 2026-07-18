@@ -1,7 +1,11 @@
 import Link from "next/link";
 import type React from "react";
 
-import { buildDailyExecutiveBrief, buildExecutiveCommandCenterPayload } from "@/lib/enterprise-kpi";
+import {
+  buildDailyExecutiveBrief,
+  buildDecisionSupportSnapshot,
+  buildExecutiveCommandCenterPayload,
+} from "@/lib/enterprise-kpi";
 import type {
   DomainExecutiveSummary,
   ExecutiveAttentionItem,
@@ -14,6 +18,7 @@ export const dynamic = "force-dynamic";
 
 export default function ExecutiveCommandCenterPage() {
   const commandCenter = buildExecutiveCommandCenterPayload();
+  const decisionSupport = buildDecisionSupportSnapshot();
   const brief = buildDailyExecutiveBrief();
   const status = commandCenter.enterpriseStatus;
 
@@ -123,6 +128,27 @@ export default function ExecutiveCommandCenterPage() {
             )}
           </Panel>
 
+          <Panel title="Decision Support">
+            <p className="text-sm leading-6 text-white/55">
+              Active decision situations are available for human leadership
+              review. Recommendations are deterministic and non-persistent.
+            </p>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              <Metric label="Packages" value={String(decisionSupport.summary.packageCount)} />
+              <Metric label="Human review" value={String(decisionSupport.summary.recommendationsAwaitingHumanReview)} />
+              <Metric label="More evidence" value={String(decisionSupport.summary.moreEvidenceRequired)} />
+              <Metric label="Top package" value={decisionSupport.summary.highestPriorityPackageId ?? "None"} />
+            </div>
+            <Link
+              href="/admin/repository/decision-support"
+              className="mt-4 inline-flex border border-white/15 px-4 py-2 text-sm font-medium transition hover:bg-white hover:text-black"
+            >
+              Review Decision Support
+            </Link>
+          </Panel>
+        </section>
+
+        <section className="mt-8">
           <Panel title="Daily Executive Brief">
             <div className="space-y-4">
               {brief.sections.map((section) => (

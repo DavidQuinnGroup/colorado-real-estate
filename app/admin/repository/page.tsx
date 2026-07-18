@@ -61,6 +61,11 @@ export default async function RepositoryDashboardPage() {
       value: "EIF 1.0",
       href: "/admin/repository/executive-command-center",
     },
+    {
+      label: "Decision Support",
+      value: "Sprint 4",
+      href: "/admin/repository/decision-support",
+    },
   ];
 
   const exceptions = [
@@ -145,6 +150,12 @@ export default async function RepositoryDashboardPage() {
               className="inline-flex h-11 items-center justify-center rounded-full border border-white/15 px-5 text-sm font-medium transition hover:bg-white hover:text-black"
             >
               Command Center
+            </Link>
+            <Link
+              href="/admin/repository/decision-support"
+              className="inline-flex h-11 items-center justify-center rounded-full border border-white/15 px-5 text-sm font-medium transition hover:bg-white hover:text-black"
+            >
+              Decision Support
             </Link>
             <Link
               href="/admin/repository/objects"
