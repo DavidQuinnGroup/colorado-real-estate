@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import type { Prisma } from '@prisma/client';
 
 import { prisma } from '@/lib/prisma';
+import { searchSupabasePropertiesWithMeta } from '@/lib/search/supabaseSearch';
 import { searchTypesenseDocuments } from '@/lib/typesense/httpClient';
 import { LISTING_COLLECTION_NAME, SEARCH_SCHEMA_DEFAULT_SORT_BY, SEARCH_SCHEMA_QUERY_BY } from '@/lib/typesense/schema';
 
@@ -644,25 +645,40 @@ async function searchTypesense(params: SearchParams, accessLevel: AccessLevel) {
 
 async function searchDatabase(params: SearchParams, accessLevel: AccessLevel) {
   const where = buildDatabaseWhere(params, accessLevel);
-  const [properties, found] = await Promise.all([
-    prisma.property.findMany({
-      where,
-      select: PROPERTY_SELECT,
-      orderBy: [{ price: 'desc' }, { updatedAt: 'desc' }],
-      take: params.limit,
-      skip: params.offset,
-    }),
-    prisma.property.count({ where }),
-  ]);
 
-  const mappedProperties = properties.map(mapProperty);
-  const results = mappedProperties.filter((property) => isValidCoordinate(property.lat, property.lng));
+  try {
+    const [properties, found] = await Promise.all([
+      prisma.property.findMany({
+        where,
+        select: PROPERTY_SELECT,
+        orderBy: [{ price: 'desc' }, { updatedAt: 'desc' }],
+        take: params.limit,
+        skip: params.offset,
+      }),
+      prisma.property.count({ where }),
+    ]);
 
-  return {
-    results,
-    found,
-    rawReturned: mappedProperties.length,
-  };
+    const mappedProperties = properties.map(mapProperty);
+    const results = mappedProperties.filter((property) => isValidCoordinate(property.lat, property.lng));
+
+    return {
+      results,
+      found,
+      rawReturned: mappedProperties.length,
+    };
+  } catch (error) {
+    console.error('REIE search Prisma fallback unavailable:', {
+      database: getErrorMessage(error),
+    });
+    const fallback = await searchSupabasePropertiesWithMeta(params, accessLevel);
+    const results = fallback.results.filter((property) => isValidCoordinate(property.lat, property.lng));
+
+    return {
+      results,
+      found: fallback.found,
+      rawReturned: fallback.rawReturned,
+    };
+  }
 }
 
 function buildResponseMeta(

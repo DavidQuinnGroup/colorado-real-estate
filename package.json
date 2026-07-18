@@ -26,6 +26,7 @@
     "check:prisma-client-parity": "npm run worker:build && node dist/scripts/checkPrismaClientParity.js",
     "check:production-dependencies": "npm run worker:build && node dist/scripts/checkProductionDependencies.js",
     "check:next-security-version": "npm run worker:build && node dist/scripts/checkNextSecurityVersion.js",
+    "check:search-runtime-safety": "npm run worker:build && node dist/scripts/checkSearchRuntimeSafety.js",
     "check:launch-readiness": "npm run worker:build && node dist/scripts/launchReadiness.js",
     "worker:build": "tsc -p tsconfig.worker.json --pretty false",
     "infra:up": "docker compose up -d",

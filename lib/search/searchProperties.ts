@@ -1,6 +1,7 @@
 import type { Prisma } from '@prisma/client';
 
 import { prisma } from '@/lib/prisma';
+import { searchSupabasePropertiesWithMeta } from '@/lib/search/supabaseSearch';
 
 export type SearchProperty = {
   id: string;
@@ -162,13 +163,53 @@ export async function searchPropertiesWithMeta(params: SearchParams = {}): Promi
   const limit = getSafeLimit(params.limit);
   const offset = getSafeOffset(params.offset);
   const accessLevel = getAccessLevel(params);
-  const properties = await prisma.property.findMany({
-    where: buildWhere(params),
-    select: PROPERTY_SELECT,
-    orderBy: [{ price: 'desc' }, { updatedAt: 'desc' }],
-    take: limit,
-    skip: offset,
-  });
+  let properties: Prisma.PropertyGetPayload<{ select: typeof PROPERTY_SELECT }>[];
+
+  try {
+    properties = await prisma.property.findMany({
+      where: buildWhere(params),
+      select: PROPERTY_SELECT,
+      orderBy: [{ price: 'desc' }, { updatedAt: 'desc' }],
+      take: limit,
+      skip: offset,
+    });
+  } catch (error) {
+    console.error('REIE search page Prisma fallback unavailable:', {
+      database: error instanceof Error ? error.message : 'Unknown search page database error',
+    });
+    const fallback = await searchSupabasePropertiesWithMeta(
+      {
+        city: params.city,
+        minPrice: params.minPrice,
+        maxPrice: params.maxPrice,
+        beds: params.beds,
+        baths: params.baths,
+        isPrivateExclusive: params.isPrivateExclusive,
+        limit,
+        offset,
+      },
+      accessLevel,
+    );
+    properties = fallback.results.map((property) => ({
+      id: property.id,
+      address: property.address,
+      city: property.city,
+      state: property.state,
+      price: property.price,
+      beds: property.beds,
+      baths: property.baths,
+      sqft: property.sqft,
+      lat: property.lat,
+      lng: property.lng,
+      isPrivateExclusive: property.isPrivateExclusive,
+      efficiencyScore: property.efficiencyScore,
+      resilienceScore: property.resilienceScore,
+      altitude: property.altitude,
+      soilType: property.soilType,
+      hasPolybutyleneRisk: property.hasPolybutyleneRisk,
+      photos: property.photos.slice(0, 1).map((photo) => ({ url: photo.url })),
+    }));
+  }
 
   const results = properties.map(mapSearchProperty);
   const mapped = results.filter(hasCoordinates).length;

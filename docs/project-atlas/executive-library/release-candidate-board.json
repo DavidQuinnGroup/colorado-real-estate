@@ -1,0 +1,15 @@
+{
+  "releaseCandidate": "RC1",
+  "generatedAt": "2026-07-18T00:00:00.000Z",
+  "decision": "RC1_NOT_CERTIFIED",
+  "issues": [
+    {
+      "id": "SEARCH-001",
+      "severity": "Critical",
+      "status": "READY_FOR_VERIFICATION",
+      "baseline": "27a77b4",
+      "summary": "Production search failed because Vercel Production lacked DATABASE_URL; source now falls back to existing Supabase REST read variables when Prisma cannot initialize.",
+      "requiresProductionVerification": true
+    }
+  ]
+}
