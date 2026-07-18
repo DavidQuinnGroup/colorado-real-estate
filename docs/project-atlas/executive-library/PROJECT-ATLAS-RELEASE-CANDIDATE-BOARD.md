@@ -12,7 +12,7 @@ RC1 tracks production defects that block Internal Preview certification after th
 | Issue | Severity | Status | Baseline | Summary |
 | --- | --- | --- | --- | --- |
 | `SEARCH-001` | Critical | `CLOSED` | `27a77b4` | Production `/search` and `/api/search` failed because Vercel Production lacked `DATABASE_URL`; deployed fix at `dae8f6d` now degrades safely to existing Supabase REST read variables when Prisma cannot initialize. |
-| `UNSUBSCRIBE-001` | Critical | `OPEN` | `dae8f6d` | Invalid synthetic unsubscribe token still requires bounded diagnosis; do not begin without explicit authorization in the next work package. |
+| `UNSUBSCRIBE-001` | Critical | `READY_FOR_VERIFICATION` | `dae8f6d` | Root cause verified and locally remediated: syntactically valid unknown tokens could hit Prisma lookup before client-error classification, and production missing `DATABASE_URL` collapsed that lookup failure into HTTP 500. Route now falls back to Supabase REST and keeps data-access outages controlled. |
 
 ## Status Definitions
 
@@ -29,4 +29,4 @@ RC1 tracks production defects that block Internal Preview certification after th
 
 `RC1_NOT_CERTIFIED`
 
-Reason: `SEARCH-001` is production verified and closed. RC1 remains uncertified because `UNSUBSCRIBE-001` is still open.
+Reason: `SEARCH-001` is production verified and closed. `UNSUBSCRIBE-001` has passed local validation and awaits production deployment verification.

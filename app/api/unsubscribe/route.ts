@@ -1,13 +1,10 @@
-import { prisma } from '@/lib/prisma';
 import {
   classifyUnsubscribeToken,
   normalizeUnsubscribeToken,
-  type UnsubscribeTokenRecord,
 } from '@/lib/unsubscribe/safety';
+import { applyUnsubscribe, findUnsubscribeToken, UnsubscribeStoreError } from '@/lib/unsubscribe/store';
 
 export const dynamic = 'force-dynamic';
-
-type UnsubscribeResult = 'global' | 'search';
 
 function escapeHtml(value: unknown) {
   return String(value ?? '')
@@ -106,53 +103,6 @@ function getToken(req: Request) {
   return normalizeUnsubscribeToken(searchParams.get('token'));
 }
 
-async function findUnsubscribeToken(token: string): Promise<UnsubscribeTokenRecord | null> {
-  return prisma.unsubscribeToken.findUnique({
-    where: { token },
-    select: {
-      token: true,
-      userId: true,
-      searchId: true,
-      usedAt: true,
-    },
-  });
-}
-
-async function applyUnsubscribe(record: UnsubscribeTokenRecord): Promise<UnsubscribeResult> {
-  const usedAt = new Date();
-
-  if (record.searchId) {
-    await prisma.$transaction([
-      prisma.unsubscribeToken.update({
-        where: { token: record.token },
-        data: { usedAt },
-      }),
-      prisma.savedSearch.update({
-        where: { id: record.searchId },
-        data: { isActive: false },
-      }),
-    ]);
-
-    return 'search';
-  }
-
-  await prisma.$transaction([
-    prisma.unsubscribeToken.update({
-      where: { token: record.token },
-      data: { usedAt },
-    }),
-    prisma.user.update({
-      where: { id: record.userId },
-      data: {
-        isUnsubscribed: true,
-        unsubscribedAt: usedAt,
-      },
-    }),
-  ]);
-
-  return 'global';
-}
-
 export async function GET(req: Request) {
   try {
     const token = getToken(req);
@@ -165,6 +115,16 @@ export async function GET(req: Request) {
 
     return htmlResponse(classification.title, classification.message, classification.statusCode);
   } catch (error) {
+    if (error instanceof UnsubscribeStoreError) {
+      console.error('Unsubscribe data access error:', error.message);
+
+      return htmlResponse(
+        'Temporarily Unavailable',
+        'We could not update your email preferences right now. Please try again or contact David Quinn Group directly.',
+        503,
+      );
+    }
+
     console.error('Unsubscribe error:', error);
 
     return htmlResponse(

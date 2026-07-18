@@ -18,10 +18,25 @@
     {
       "id": "UNSUBSCRIBE-001",
       "severity": "Critical",
-      "status": "OPEN",
+      "status": "READY_FOR_VERIFICATION",
       "baseline": "dae8f6d",
-      "summary": "Invalid synthetic unsubscribe token still requires bounded diagnosis; do not begin without explicit authorization in the next work package.",
-      "requiresProductionVerification": true
+      "summary": "Root cause verified and locally remediated: syntactically valid unknown tokens could hit Prisma lookup before client-error classification, and production missing DATABASE_URL collapsed that lookup failure into HTTP 500. Route now falls back to Supabase REST and keeps data-access outages controlled.",
+      "requiresProductionVerification": true,
+      "localValidation": {
+        "status": "passed",
+        "commands": [
+          "npm run check:next-security-version",
+          "npm run check:production-dependencies",
+          "npm run check:prisma-client-parity",
+          "npm run check:unsubscribe-safety",
+          "npm run check:search-runtime-safety",
+          "npx prisma validate",
+          "npm run lint",
+          "npm run typecheck",
+          "npm run worker:build",
+          "npm run build"
+        ]
+      }
     }
   ]
 }

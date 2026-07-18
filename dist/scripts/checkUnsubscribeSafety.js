@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { applyUnsubscribe, findUnsubscribeToken } from '../lib/unsubscribe/store.js';
 import { classifyUnsubscribeToken, normalizeUnsubscribeToken } from '../lib/unsubscribe/safety.js';
 const VALID_TOKEN = 'wave4a-valid-token-0001';
 function record(overrides = {}) {
@@ -56,5 +57,108 @@ assertClassification('repeated valid fixture request after use', VALID_TOKEN, re
     statusCode: 200,
     token: VALID_TOKEN,
 });
+function failingPrisma() {
+    return {
+        unsubscribeToken: {
+            findUnique: async () => {
+                throw new Error('fixture prisma lookup failure');
+            },
+            update: async () => {
+                return {};
+            },
+        },
+        savedSearch: {
+            update: async () => {
+                return {};
+            },
+        },
+        user: {
+            update: async () => {
+                return {};
+            },
+        },
+        $transaction: async () => {
+            throw new Error('fixture prisma transaction failure');
+        },
+    };
+}
+function fakeSupabase(lookupRow = null) {
+    const calls = [];
+    return {
+        calls,
+        client: {
+            from(table) {
+                const filters = [];
+                return {
+                    select() {
+                        return this;
+                    },
+                    eq(column, value) {
+                        filters.push({ column, value });
+                        return this;
+                    },
+                    async maybeSingle() {
+                        calls.push({ table, action: 'maybeSingle', filters: [...filters] });
+                        return {
+                            data: lookupRow,
+                            error: null,
+                        };
+                    },
+                    update(payload) {
+                        return {
+                            eq(column, value) {
+                                calls.push({
+                                    table,
+                                    action: 'update',
+                                    payload,
+                                    filters: [{ column, value }],
+                                });
+                                return Promise.resolve({
+                                    data: null,
+                                    error: null,
+                                });
+                            },
+                        };
+                    },
+                };
+            },
+        },
+    };
+}
+const unknownFallback = fakeSupabase(null);
+const unknownRecord = await findUnsubscribeToken(VALID_TOKEN, {
+    prismaClient: failingPrisma(),
+    supabaseClient: unknownFallback.client,
+});
+assert.equal(unknownRecord, null, 'unknown token should use Supabase fallback and return no match without throwing');
+assert.deepEqual(unknownFallback.calls[0], {
+    table: 'UnsubscribeToken',
+    action: 'maybeSingle',
+    filters: [{ column: 'token', value: VALID_TOKEN }],
+});
+const searchScopedRecord = record({ searchId: 'search-fixture' });
+const searchFallback = fakeSupabase(searchScopedRecord);
+const searchResult = await applyUnsubscribe(searchScopedRecord, {
+    prismaClient: failingPrisma(),
+    supabaseClient: searchFallback.client,
+});
+assert.equal(searchResult, 'search', 'search-scoped fallback should report search result');
+assert.equal(searchFallback.calls.length, 2, 'search-scoped fallback should update only token and saved search');
+assert.equal(searchFallback.calls[0].table, 'UnsubscribeToken');
+assert.deepEqual(searchFallback.calls[0].filters, [{ column: 'token', value: VALID_TOKEN }]);
+assert.equal(searchFallback.calls[1].table, 'SavedSearch');
+assert.deepEqual(searchFallback.calls[1].filters, [{ column: 'id', value: 'search-fixture' }]);
+const globalRecord = record();
+const globalFallback = fakeSupabase(globalRecord);
+const globalResult = await applyUnsubscribe(globalRecord, {
+    prismaClient: failingPrisma(),
+    supabaseClient: globalFallback.client,
+});
+assert.equal(globalResult, 'global', 'global fallback should report global result');
+assert.equal(globalFallback.calls.length, 2, 'global fallback should update only token and user');
+assert.equal(globalFallback.calls[0].table, 'UnsubscribeToken');
+assert.deepEqual(globalFallback.calls[0].filters, [{ column: 'token', value: VALID_TOKEN }]);
+assert.equal(globalFallback.calls[1].table, 'User');
+assert.deepEqual(globalFallback.calls[1].filters, [{ column: 'id', value: 'user-fixture' }]);
 console.log('Unsubscribe safety checks passed.');
 // /Users/davidquinn/david-quinn-group/colorado-real-estate/scripts/checkUnsubscribeSafety.ts
