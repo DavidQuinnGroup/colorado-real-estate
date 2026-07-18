@@ -30,7 +30,23 @@ export function buildKpiObservationIdempotencyKey(input) {
         input.periodStart?.toISOString() ?? "NO_PERIOD_START",
         input.periodEnd?.toISOString() ?? "NO_PERIOD_END",
         input.observedAt?.toISOString() ?? "NO_OBSERVED_AT",
+        input.sourceStateFingerprint ?? "NO_SOURCE_STATE",
         input.calculationVersion,
+    ].join("|");
+}
+export function buildKpiEvaluationIdempotencyKey(input) {
+    assertExplicitClassification(input);
+    return [
+        "EIA-KPI-EVAL",
+        input.environment,
+        input.dataOrigin,
+        input.fixtureSet ?? "NO_FIXTURE_SET",
+        input.fixtureScenario ?? "NO_FIXTURE_SCENARIO",
+        input.kpiId,
+        input.observationId,
+        input.sourceStateFingerprint ?? "NO_SOURCE_STATE",
+        input.calculationVersion,
+        input.thresholdVersion ?? "NO_THRESHOLD_VERSION",
     ].join("|");
 }
 export function createEIAPersistenceRepository(prisma) {
@@ -64,6 +80,43 @@ export function createEIAPersistenceRepository(prisma) {
                     creatingAppVersion: input.creatingAppVersion,
                     immutability: "APPEND_ONLY",
                 },
+            });
+        },
+        async upsertEvidenceReference(input) {
+            assertExplicitClassification(input);
+            return prisma.eIAEvidenceReference.upsert({
+                where: { evidenceKey: input.evidenceKey },
+                create: {
+                    evidenceKey: input.evidenceKey,
+                    evidenceType: input.evidenceType,
+                    title: input.title,
+                    sourceSystem: input.sourceSystem,
+                    sourceRecordId: input.sourceRecordId,
+                    sourceQueryRef: input.sourceQueryRef,
+                    observedAt: input.observedAt,
+                    repositoryObjectRid: input.repositoryObjectRid,
+                    contentHash: input.contentHash,
+                    provenanceId: input.provenanceId,
+                    environment: input.environment,
+                    dataOrigin: input.dataOrigin,
+                    confidence: input.confidence,
+                    freshness: input.freshness,
+                    privacy: input.privacy,
+                    sensitivity: input.sensitivity,
+                    pii: input.pii ?? "NONE",
+                    retention: input.retention,
+                    immutability: "APPEND_ONLY",
+                },
+                update: {},
+            });
+        },
+        async linkEvidence(input) {
+            return prisma.eIAEvidenceLink.upsert({
+                where: {
+                    evidenceId_entityType_entityId_relationship: input,
+                },
+                create: input,
+                update: {},
             });
         },
         async upsertKpiObservation(input) {
@@ -102,6 +155,33 @@ export function createEIAPersistenceRepository(prisma) {
                     dataOrigin: input.dataOrigin,
                     fixtureSet: input.fixtureSet,
                     fixtureScenario: input.fixtureScenario,
+                    confidence: input.confidence,
+                    freshness: input.freshness,
+                    privacy: input.privacy,
+                    sensitivity: input.sensitivity,
+                    retention: input.retention,
+                    immutability: "APPEND_ONLY",
+                },
+                update: {},
+            });
+        },
+        async upsertKpiEvaluation(input) {
+            const idempotencyKey = buildKpiEvaluationIdempotencyKey(input);
+            return prisma.eIAKpiEvaluation.upsert({
+                where: { idempotencyKey },
+                create: {
+                    kpiId: input.kpiId,
+                    observationId: input.observationId,
+                    status: input.status,
+                    includedInHealth: input.includedInHealth,
+                    exclusionReason: input.exclusionReason,
+                    calculationVersion: input.calculationVersion,
+                    thresholdVersion: input.thresholdVersion,
+                    evaluatedAt: input.evaluatedAt,
+                    idempotencyKey,
+                    provenanceId: input.provenanceId,
+                    environment: input.environment,
+                    dataOrigin: input.dataOrigin,
                     confidence: input.confidence,
                     freshness: input.freshness,
                     privacy: input.privacy,

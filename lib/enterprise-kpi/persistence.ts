@@ -63,6 +63,44 @@ export type EIAKpiObservationInput = EIAClassificationScope & {
   privacy: EIAPrivacy;
   sensitivity: EIASensitivity;
   retention: EIARetention;
+  sourceStateFingerprint?: string;
+};
+
+export type EIAEvidenceReferenceInput = EIAClassificationScope & {
+  evidenceKey: string;
+  evidenceType: string;
+  title: string;
+  sourceSystem: string;
+  sourceRecordId?: string;
+  sourceQueryRef?: string;
+  observedAt?: Date;
+  repositoryObjectRid?: string;
+  contentHash?: string;
+  provenanceId: string;
+  confidence: EIAConfidence;
+  freshness: EIAFreshness;
+  privacy: EIAPrivacy;
+  sensitivity: EIASensitivity;
+  pii?: EIAPii;
+  retention: EIARetention;
+};
+
+export type EIAKpiEvaluationInput = EIAClassificationScope & {
+  kpiId: string;
+  observationId: string;
+  status: "HEALTHY" | "WARNING" | "CRITICAL" | "UNKNOWN" | "NOT_APPLICABLE";
+  includedInHealth: boolean;
+  exclusionReason?: string;
+  calculationVersion: string;
+  thresholdVersion?: string;
+  evaluatedAt: Date;
+  provenanceId: string;
+  confidence: EIAConfidence;
+  freshness: EIAFreshness;
+  privacy: EIAPrivacy;
+  sensitivity: EIASensitivity;
+  retention: EIARetention;
+  sourceStateFingerprint?: string;
 };
 
 export function assertExplicitClassification(scope: EIAClassificationScope) {
@@ -98,7 +136,24 @@ export function buildKpiObservationIdempotencyKey(input: EIAKpiObservationInput)
     input.periodStart?.toISOString() ?? "NO_PERIOD_START",
     input.periodEnd?.toISOString() ?? "NO_PERIOD_END",
     input.observedAt?.toISOString() ?? "NO_OBSERVED_AT",
+    input.sourceStateFingerprint ?? "NO_SOURCE_STATE",
     input.calculationVersion,
+  ].join("|");
+}
+
+export function buildKpiEvaluationIdempotencyKey(input: EIAKpiEvaluationInput) {
+  assertExplicitClassification(input);
+  return [
+    "EIA-KPI-EVAL",
+    input.environment,
+    input.dataOrigin,
+    input.fixtureSet ?? "NO_FIXTURE_SET",
+    input.fixtureScenario ?? "NO_FIXTURE_SCENARIO",
+    input.kpiId,
+    input.observationId,
+    input.sourceStateFingerprint ?? "NO_SOURCE_STATE",
+    input.calculationVersion,
+    input.thresholdVersion ?? "NO_THRESHOLD_VERSION",
   ].join("|");
 }
 
@@ -133,6 +188,50 @@ export function createEIAPersistenceRepository(prisma: PrismaClient) {
           creatingAppVersion: input.creatingAppVersion,
           immutability: "APPEND_ONLY",
         },
+      });
+    },
+
+    async upsertEvidenceReference(input: EIAEvidenceReferenceInput) {
+      assertExplicitClassification(input);
+      return prisma.eIAEvidenceReference.upsert({
+        where: { evidenceKey: input.evidenceKey },
+        create: {
+          evidenceKey: input.evidenceKey,
+          evidenceType: input.evidenceType,
+          title: input.title,
+          sourceSystem: input.sourceSystem,
+          sourceRecordId: input.sourceRecordId,
+          sourceQueryRef: input.sourceQueryRef,
+          observedAt: input.observedAt,
+          repositoryObjectRid: input.repositoryObjectRid,
+          contentHash: input.contentHash,
+          provenanceId: input.provenanceId,
+          environment: input.environment,
+          dataOrigin: input.dataOrigin,
+          confidence: input.confidence,
+          freshness: input.freshness,
+          privacy: input.privacy,
+          sensitivity: input.sensitivity,
+          pii: input.pii ?? "NONE",
+          retention: input.retention,
+          immutability: "APPEND_ONLY",
+        },
+        update: {},
+      });
+    },
+
+    async linkEvidence(input: {
+      evidenceId: string;
+      entityType: string;
+      entityId: string;
+      relationship: string;
+    }) {
+      return prisma.eIAEvidenceLink.upsert({
+        where: {
+          evidenceId_entityType_entityId_relationship: input,
+        },
+        create: input,
+        update: {},
       });
     },
 
@@ -174,6 +273,34 @@ export function createEIAPersistenceRepository(prisma: PrismaClient) {
           dataOrigin: input.dataOrigin,
           fixtureSet: input.fixtureSet,
           fixtureScenario: input.fixtureScenario,
+          confidence: input.confidence,
+          freshness: input.freshness,
+          privacy: input.privacy,
+          sensitivity: input.sensitivity,
+          retention: input.retention,
+          immutability: "APPEND_ONLY",
+        },
+        update: {},
+      });
+    },
+
+    async upsertKpiEvaluation(input: EIAKpiEvaluationInput) {
+      const idempotencyKey = buildKpiEvaluationIdempotencyKey(input);
+      return prisma.eIAKpiEvaluation.upsert({
+        where: { idempotencyKey },
+        create: {
+          kpiId: input.kpiId,
+          observationId: input.observationId,
+          status: input.status,
+          includedInHealth: input.includedInHealth,
+          exclusionReason: input.exclusionReason,
+          calculationVersion: input.calculationVersion,
+          thresholdVersion: input.thresholdVersion,
+          evaluatedAt: input.evaluatedAt,
+          idempotencyKey,
+          provenanceId: input.provenanceId,
+          environment: input.environment,
+          dataOrigin: input.dataOrigin,
           confidence: input.confidence,
           freshness: input.freshness,
           privacy: input.privacy,

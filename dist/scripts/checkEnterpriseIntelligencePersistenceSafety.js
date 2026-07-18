@@ -87,7 +87,7 @@ const key = buildKpiObservationIdempotencyKey({
     sensitivity: "INTERNAL",
     retention: "HISTORICAL",
 });
-assert.equal(key, "EIA-KPI-OBS|TEST|FIXTURE|EIF-SPRINT-5|LEARNING_SYSTEM|KPI-PLAT-001|NO_PERIOD_START|NO_PERIOD_END|NO_OBSERVED_AT|EIA-1.0-test");
+assert.equal(key, "EIA-KPI-OBS|TEST|FIXTURE|EIF-SPRINT-5|LEARNING_SYSTEM|KPI-PLAT-001|NO_PERIOD_START|NO_PERIOD_END|NO_OBSERVED_AT|NO_SOURCE_STATE|EIA-1.0-test");
 for (const destructive of [
     /DROP TABLE/i,
     /DROP COLUMN/i,
