@@ -66,3 +66,5 @@ Wave 4A deployment alignment was later completed and Vercel was connected to `Da
 The first Git-triggered deployment from commit `0f83ef4` failed before Ready because Vercel compiled with a Prisma Client that did not expose `prisma.rEIEControlState`.
 
 Wave 4B classifies the failure as `PRISMA_GENERATE_NOT_RUN_IN_VERCEL` with a stale build-cache risk. The remediation is to generate Prisma Client during installation and again immediately before `next build`, then validate the generated client with `npm run check:prisma-client-parity`.
+
+The next Git-triggered deployment from commit `170cab0` confirmed the Prisma remediation in Vercel, then failed on an undeclared Recharts dependency imported by chart components. Wave 4C declares `recharts@3.9.2`, adds `npm run check:production-dependencies`, and validates a clean `npm ci` plus production build locally.

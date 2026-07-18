@@ -63,6 +63,14 @@ The source schema contains the active `REIEControlState` model, and local `npx p
 
 Internal Preview requires a successful Wave 4B production deployment and post-deploy route/readiness validation before certification can change.
 
+## Wave 4C Certification Update
+
+Wave 4C keeps the certification outcome at `NOT_CERTIFIED`.
+
+The Wave 4B Prisma generation correction was confirmed in Vercel, but the deployment then failed because `components/MarketChart.tsx` imported `recharts` while the package was not declared in `package.json` or the lockfile.
+
+Wave 4C remediation declares `recharts@3.9.2`, adds `npm run check:production-dependencies`, and validates a clean `npm ci` plus production build locally. Internal Preview still requires a successful production deployment and post-deploy route/readiness validation before certification can change.
+
 ## Required Certification Remediation
 
 1. Restore valid Vercel CLI credentials.

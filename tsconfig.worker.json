@@ -27,6 +27,7 @@
     "scripts/alertFailedRows.ts",
     "scripts/alertNotificationReadiness.ts",
     "scripts/checkPrismaClientParity.ts",
+    "scripts/checkProductionDependencies.ts",
     "scripts/checkSupabase.ts",
     "scripts/checkUnsubscribeSafety.ts",
     "scripts/createTypesenseCollection.ts",

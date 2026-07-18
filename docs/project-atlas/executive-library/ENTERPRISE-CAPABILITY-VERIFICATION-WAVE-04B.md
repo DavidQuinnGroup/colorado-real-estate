@@ -220,3 +220,9 @@ Not run in Wave 4B remediation:
 - Typesense reset or reindex.
 - `prisma db push`.
 - Database reset.
+
+## 15. Wave 4C Follow-On
+
+The Wave 4B remediation was confirmed inside Vercel: `postinstall` and `npm run build` both generated Prisma Client, and the prior `prisma.rEIEControlState` error did not recur.
+
+The next production build blocker was an undeclared `recharts` package imported by `components/MarketChart.tsx` and `components/MarketPriceChart.tsx`. Wave 4C adds Recharts as a production dependency and validates clean-install production builds.
