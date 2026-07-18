@@ -457,17 +457,112 @@
     {
       "id": "READY-001",
       "severity": "High",
-      "status": "NEXT",
-      "baseline": "684040f",
-      "summary": "Final RC1 readiness review is next after production-proof blockers closed. This issue has not been started automatically.",
-      "requiresProductionVerification": false
+      "status": "CLOSED",
+      "baseline": "2357656",
+      "summary": "Final RC1 readiness refresh passed on current production source. Root, canonical redirect, property, search, safe unsubscribe errors, schema/migrations, queue/dead-letter, CRM, typecheck, lint, and build all validated; launch readiness remains watch only for operator review of pending saved-search alerts before live processing.",
+      "requiresProductionVerification": false,
+      "deployment": {
+        "commit": "2357656",
+        "status": "success",
+        "description": "Deployment has completed"
+      },
+      "productionHealth": {
+        "status": "passed",
+        "rootStatus": 200,
+        "wwwStatus": 308,
+        "wwwRedirect": "https://davidquinngroup.com/",
+        "selectedPropertyStatus": 200,
+        "missingPropertyStatus": 404,
+        "searchPageStatus": 200,
+        "robotsStatus": 200,
+        "sitemapStatus": 200,
+        "apiSearchLimitStatus": 200,
+        "apiSearchLimitCount": 1,
+        "apiSearchBoulderStatus": 200,
+        "apiSearchBoulderCount": 2,
+        "apiSearchEmptyStatus": 200,
+        "apiSearchEmptyCount": 0,
+        "missingUnsubscribeTokenStatus": 400,
+        "syntheticUnknownUnsubscribeTokenStatus": 404,
+        "trackingUrlInvoked": false,
+        "validUnsubscribeTokenInvoked": false
+      },
+      "databaseReadiness": {
+        "status": "passed",
+        "migrationsFound": 10,
+        "schemaUpToDate": true,
+        "rolledBackMigrationCount": 0,
+        "alertQueueClickedAtColumn": "timestamp without time zone",
+        "alertQueuePayloadColumn": "jsonb",
+        "userPreferenceReadable": true,
+        "alertQueue": {
+          "pending": 195,
+          "sent": 85,
+          "skipped": 3,
+          "processing": 0,
+          "failed": 0
+        },
+        "tokens": {
+          "total": 128,
+          "unused": 127,
+          "used": 1
+        },
+        "users": {
+          "total": 3,
+          "unsubscribed": 0
+        }
+      },
+      "queueReadiness": {
+        "status": "watch",
+        "summary": "Known saved-search alert backlog remains queued for operator review before live processing.",
+        "reieAlerts": {
+          "waiting": 273,
+          "active": 0,
+          "delayed": 0,
+          "failed": 0
+        },
+        "deadLetter": {
+          "waiting": 0,
+          "active": 0,
+          "delayed": 0,
+          "failed": 0
+        }
+      },
+      "crmReadiness": {
+        "status": "ready",
+        "pending": 0,
+        "reviewing": 0,
+        "closureReviewCoveragePercent": 100
+      },
+      "localValidation": {
+        "status": "passed",
+        "commands": [
+          "npm run check:unsubscribe-safety",
+          "npm run check:track-click-runtime-safety",
+          "npm run check:track-click-safety",
+          "npm run check:search-runtime-safety",
+          "npm run check:property-route-safety",
+          "npm run check:prisma-client-parity",
+          "npx prisma validate",
+          "npx prisma migrate status",
+          "npm run check:launch-readiness",
+          "npm run supabase:check:json",
+          "npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000",
+          "npm run run:crm:scheduler",
+          "npm run typecheck",
+          "npm run lint",
+          "npm run build",
+          "git diff --check",
+          "docs/project-atlas/**/*.json parse check"
+        ]
+      }
     },
     {
       "id": "CERT-001",
       "severity": "High",
-      "status": "BLOCKED",
-      "baseline": "684040f",
-      "summary": "Certification remains blocked until READY-001 is explicitly authorized and completed.",
+      "status": "NEXT",
+      "baseline": "2357656",
+      "summary": "Certification is the next governed issue after READY-001 closure. RC1 remains not certified until CERT-001 is explicitly authorized and completed.",
       "requiresProductionVerification": false
     }
   ]

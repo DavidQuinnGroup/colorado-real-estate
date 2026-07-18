@@ -18,8 +18,8 @@ RC1 tracks production defects that block Internal Preview certification after th
 | `EMAIL-001` | High | `CLOSED` | `def6537` | Controlled one-row production alert delivery proof passed from governed source `bd4f76c`: exactly `processAlertById("cmq0zp6up010gpd4uh5anfex5", false)` sent one email to the approved internal recipient, selected alert reached `sent`, EmailLog increased by one, and BullMQ/CRM/click side effects stayed isolated. |
 | `CLICK-001` | High | `CLOSED` | `a4c2999` | Final controlled production proof after deployed correction `4c9d85c` made exactly one authorized tracked-link request, returned `307 -> 200`, persisted selected `AlertQueue.clickedAt`, added exactly one click interaction, increased heat score once, and preserved EmailLog, queue, CRM, token, saved-search, and BullMQ isolation. |
 | `CLICK-RUNTIME-001` | High | `CLOSED` | `4e9cd1e` | Root cause verified and deployed: the Supabase fallback scanned only the first 100 unclicked alert rows while the selected row was row 118. Correction `4c9d85c` pages bounded candidates, marks before enrichment, suppresses duplicate enrichment, and final production proof persisted `clickedAt`. |
-| `READY-001` | High | `NEXT` | `684040f` | Final RC1 readiness review is the next issue after closure of all production-proof blockers. Do not begin automatically. |
-| `CERT-001` | High | `BLOCKED` | `684040f` | Certification remains blocked until READY-001 is explicitly authorized and completed. |
+| `READY-001` | High | `CLOSED` | `2357656` | Final RC1 readiness refresh passed on current production source: root, canonical redirect, property, search, safe unsubscribe errors, schema/migrations, queue/dead-letter, CRM, typecheck, lint, and build all validated; launch readiness remains `watch` only for operator review of pending saved-search alerts before live processing. |
+| `CERT-001` | High | `NEXT` | `2357656` | Certification is the next governed issue after READY-001 closure. RC1 remains not certified until CERT-001 is explicitly authorized and completed. |
 
 ## Status Definitions
 
@@ -42,4 +42,4 @@ RC1 tracks production defects that block Internal Preview certification after th
 
 `RC1_NOT_CERTIFIED`
 
-Reason: `SEARCH-001`, `UNSUBSCRIBE-001`, `UNSUBSCRIBE-002`, `PROPERTY-001`, `EMAIL-001`, `CLICK-RUNTIME-001`, and `CLICK-001` are production verified and closed. RC1 remains uncertified until READY-001 is explicitly authorized, executed, and closed; CERT-001 remains blocked.
+Reason: `SEARCH-001`, `UNSUBSCRIBE-001`, `UNSUBSCRIBE-002`, `PROPERTY-001`, `EMAIL-001`, `CLICK-RUNTIME-001`, `CLICK-001`, and `READY-001` are verified and closed. RC1 remains uncertified until CERT-001 is explicitly authorized and completed.
