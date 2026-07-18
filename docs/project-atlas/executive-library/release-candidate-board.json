@@ -6,9 +6,21 @@
     {
       "id": "SEARCH-001",
       "severity": "Critical",
-      "status": "READY_FOR_VERIFICATION",
+      "status": "CLOSED",
       "baseline": "27a77b4",
-      "summary": "Production search failed because Vercel Production lacked DATABASE_URL; source now falls back to existing Supabase REST read variables when Prisma cannot initialize.",
+      "summary": "Production search failed because Vercel Production lacked DATABASE_URL; deployed fix at dae8f6d now degrades safely to existing Supabase REST read variables when Prisma cannot initialize.",
+      "requiresProductionVerification": false,
+      "deployment": {
+        "id": "dpl_4uspEJF4ftuuSeS7jWZzpqfGdXAY",
+        "status": "Ready"
+      }
+    },
+    {
+      "id": "UNSUBSCRIBE-001",
+      "severity": "Critical",
+      "status": "OPEN",
+      "baseline": "dae8f6d",
+      "summary": "Invalid synthetic unsubscribe token still requires bounded diagnosis; do not begin without explicit authorization in the next work package.",
       "requiresProductionVerification": true
     }
   ]

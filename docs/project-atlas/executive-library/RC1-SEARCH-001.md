@@ -4,7 +4,7 @@ Issue: `SEARCH-001`
 Severity: Critical  
 Baseline: `27a77b4`  
 Initial status: `OPEN`  
-Current status: `READY_FOR_VERIFICATION`
+Current status: `CLOSED`
 
 ## Status Progression
 
@@ -13,7 +13,9 @@ Current status: `READY_FOR_VERIFICATION`
 | `OPEN` | Production commit `27a77b4` deployed Ready, but `/search` returned 500 and `/api/search?limit=1` returned 500. |
 | `ROOT_CAUSE_VERIFIED` | Vercel runtime logs showed `PrismaClientInitializationError` for `/search` and `/api/search`: `Environment variable not found: DATABASE_URL`. |
 | `FIX_IN_PROGRESS` | Source correction added a direct Supabase REST read fallback for production search when Prisma cannot initialize. |
-| `READY_FOR_VERIFICATION` | `npm run check:search-runtime-safety` passed with one bounded result and verified empty-result behavior. Full validation remains required before commit. |
+| `READY_FOR_VERIFICATION` | `npm run check:search-runtime-safety` passed with one bounded result and verified empty-result behavior; full local validation passed before commit and push. |
+| `PRODUCTION_VERIFIED` | Deployment `dpl_4uspEJF4ftuuSeS7jWZzpqfGdXAY` reached Ready from commit `dae8f6d`; `/search`, `/api/search?limit=1`, a bounded city filter, and an empty-result query all returned 200. |
+| `CLOSED` | SEARCH-001 is production verified; remaining RC1 work is tracked separately and must not be handled under SEARCH-001. |
 
 ## Production Evidence
 
@@ -122,11 +124,18 @@ The check:
 
 ## Deployment
 
-Pending.
+- Commit: `dae8f6d Fix production search runtime`.
+- Deployment: `dpl_4uspEJF4ftuuSeS7jWZzpqfGdXAY`.
+- Deployment status: Ready.
 
 ## Production Evidence After Fix
 
-Pending deployment.
+- `/`: 200.
+- `/search`: 200.
+- `/api/search?limit=1`: 200, `source:"database"`, `fallbackReason:"fetch failed"`, `found:15281`, `returned:1`, `mapped:1`, `results:1`, `health:"degraded"`.
+- `/api/search?limit=2&city=Boulder`: 200, `found:540`, `returned:2`, `mapped:2`, `results:2`, filters `["city","publicAccess"]`.
+- `/api/search?limit=2&city=NoSuchCitySearch001`: 200, `found:0`, `returned:0`, `mapped:0`, `results:0`, filters `["city","publicAccess"]`.
+- Typesense provider remained unavailable with `fallbackReason:"fetch failed"`, and database/Supabase fallback degraded safely.
 
 ## Residual Risks
 
@@ -136,4 +145,4 @@ Pending deployment.
 
 ## Closure Decision
 
-Not closed. SEARCH-001 can move to `PRODUCTION_VERIFIED` and `CLOSED` only after the production deployment reaches Ready and search route validation passes.
+Closed. SEARCH-001 reached `PRODUCTION_VERIFIED` and `CLOSED` after the production deployment reached Ready and search route validation passed.
