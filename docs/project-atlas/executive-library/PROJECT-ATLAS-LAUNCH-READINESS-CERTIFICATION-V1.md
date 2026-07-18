@@ -53,6 +53,16 @@ Additional required remediation before certification:
 5. Revalidate production route health.
 6. Complete the controlled production-hosted email, tracked-click, and unsubscribe proof.
 
+## Wave 4B Certification Update
+
+Wave 4B keeps the certification outcome at `NOT_CERTIFIED`.
+
+After Vercel was reconnected to `DavidQuinnGroup/colorado-real-estate`, the first automatic production deployment from commit `0f83ef4` failed before Ready because the generated Prisma Client used by Vercel did not expose `prisma.rEIEControlState`.
+
+The source schema contains the active `REIEControlState` model, and local `npx prisma generate` produces the expected accessor. Wave 4B remediation adds explicit Prisma generation during install and immediately before `next build`, plus `npm run check:prisma-client-parity` to prevent this generated-client drift from recurring.
+
+Internal Preview requires a successful Wave 4B production deployment and post-deploy route/readiness validation before certification can change.
+
 ## Required Certification Remediation
 
 1. Restore valid Vercel CLI credentials.

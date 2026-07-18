@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "dev": "next dev --turbo",
-    "build": "next build",
+    "build": "prisma generate && next build",
+    "postinstall": "prisma generate",
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit --pretty false",
@@ -22,6 +23,7 @@
     "check:notification-readiness:strict": "npm run worker:build && node dist/scripts/notificationReadinessSummary.js --strict",
     "check:notification-readiness:strict-contract": "npm run worker:build && node dist/scripts/notificationReadinessStrictCheck.js",
     "check:unsubscribe-safety": "npm run worker:build && node dist/scripts/checkUnsubscribeSafety.js",
+    "check:prisma-client-parity": "npm run worker:build && node dist/scripts/checkPrismaClientParity.js",
     "check:launch-readiness": "npm run worker:build && node dist/scripts/launchReadiness.js",
     "worker:build": "tsc -p tsconfig.worker.json --pretty false",
     "infra:up": "docker compose up -d",

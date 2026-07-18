@@ -61,4 +61,8 @@ Do not create a new Vercel project. Do not change Preview or Development variabl
 
 ## Deployment Status
 
-Deployment was not executed in Wave 4A because hosted environment variables and the existing Vercel production target could not be verified.
+Wave 4A deployment alignment was later completed and Vercel was connected to `DavidQuinnGroup/colorado-real-estate` on production branch `main`.
+
+The first Git-triggered deployment from commit `0f83ef4` failed before Ready because Vercel compiled with a Prisma Client that did not expose `prisma.rEIEControlState`.
+
+Wave 4B classifies the failure as `PRISMA_GENERATE_NOT_RUN_IN_VERCEL` with a stale build-cache risk. The remediation is to generate Prisma Client during installation and again immediately before `next build`, then validate the generated client with `npm run check:prisma-client-parity`.

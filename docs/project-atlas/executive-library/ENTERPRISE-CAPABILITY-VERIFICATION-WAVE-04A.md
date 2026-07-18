@@ -237,3 +237,11 @@ Not run:
 - Database reset.
 - Customer pilot.
 - Recurring-alert activation.
+
+## 17. Wave 4B Follow-On
+
+After Vercel was connected to `DavidQuinnGroup/colorado-real-estate`, the first Git-triggered production deployment from commit `0f83ef4` failed during TypeScript compilation.
+
+The failure was not caused by a missing `REIEControlState` schema model. Wave 4B confirmed that local `npx prisma generate` produces the expected `prisma.rEIEControlState` accessor, then added explicit Prisma generation before Vercel/Next compilation and a non-mutating generated-client parity check.
+
+Internal Preview remains `NOT_CERTIFIED` until the Wave 4B remediation commit deploys successfully and production route/readiness validation passes.
