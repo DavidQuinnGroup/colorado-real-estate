@@ -51,6 +51,11 @@ export default async function RepositoryDashboardPage() {
       value: "19",
       href: "/admin/repository/enterprise-kpis",
     },
+    {
+      label: "Intelligence Events",
+      value: "Rules",
+      href: "/admin/repository/intelligence-core",
+    },
   ];
 
   const exceptions = [
@@ -123,6 +128,12 @@ export default async function RepositoryDashboardPage() {
               className="inline-flex h-11 items-center justify-center rounded-full border border-white/15 px-5 text-sm font-medium transition hover:bg-white hover:text-black"
             >
               Enterprise KPIs
+            </Link>
+            <Link
+              href="/admin/repository/intelligence-core"
+              className="inline-flex h-11 items-center justify-center rounded-full border border-white/15 px-5 text-sm font-medium transition hover:bg-white hover:text-black"
+            >
+              Intelligence Core
             </Link>
             <Link
               href="/admin/repository/objects"

@@ -27,6 +27,7 @@
     "check:track-click-safety": "npm run worker:build && node dist/scripts/checkTrackClickSafety.js",
     "check:track-click-runtime-safety": "npm run worker:build && node dist/scripts/checkTrackClickRuntimeSafety.js",
     "check:enterprise-kpi-safety": "npm run worker:build && node dist/scripts/checkEnterpriseKpiSafety.js",
+    "check:enterprise-intelligence-safety": "npm run worker:build && node dist/scripts/checkEnterpriseIntelligenceSafety.js",
     "check:prisma-client-parity": "npm run worker:build && node dist/scripts/checkPrismaClientParity.js",
     "check:production-dependencies": "npm run worker:build && node dist/scripts/checkProductionDependencies.js",
     "check:next-security-version": "npm run worker:build && node dist/scripts/checkNextSecurityVersion.js",

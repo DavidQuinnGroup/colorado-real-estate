@@ -13,11 +13,20 @@ export async function GET(request: NextRequest) {
     return repositoryAdminUnauthorizedResponse();
   }
 
+  const domain = request.nextUrl.searchParams.get("domain");
+  const snapshot = buildIntelligenceHealthSnapshot();
+  const domains = snapshot.domainResults.filter((item) =>
+    domain ? item.domain === domain : true,
+  );
+
   return NextResponse.json({
     success: true,
-    module: "enterprise-health",
+    module: "enterprise-domain-health",
     schemaVersion: 1,
     access: "internal_admin",
-    snapshot: buildIntelligenceHealthSnapshot(),
+    provenance: snapshot.provenance,
+    calculationVersion: snapshot.calculationVersion,
+    count: domains.length,
+    domains,
   });
 }
