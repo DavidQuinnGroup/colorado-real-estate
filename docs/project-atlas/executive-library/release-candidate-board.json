@@ -1,7 +1,7 @@
 {
   "releaseCandidate": "RC1",
   "generatedAt": "2026-07-18T00:00:00.000Z",
-  "decision": "RC1_NOT_CERTIFIED",
+  "decision": "CERTIFIED_FOR_INTERNAL_PREVIEW",
   "issues": [
     {
       "id": "SEARCH-001",
@@ -560,10 +560,80 @@
     {
       "id": "CERT-001",
       "severity": "High",
-      "status": "NEXT",
-      "baseline": "2357656",
-      "summary": "Certification is the next governed issue after READY-001 closure. RC1 remains not certified until CERT-001 is explicitly authorized and completed.",
-      "requiresProductionVerification": false
+      "status": "CLOSED",
+      "baseline": "e5394a6",
+      "summary": "Executive decision recorded: RC1 is certified for controlled Internal Preview only. Public launch, customer beta, recurring workers, alert backlog release, broad email, queue operations, live MLS, OpenAI, TitlePro247, and Typesense administrative actions remain excluded unless separately authorized.",
+      "requiresProductionVerification": false,
+      "certification": {
+        "decision": "CERTIFIED_FOR_INTERNAL_PREVIEW",
+        "certifiedAt": "2026-07-18T18:43:18Z",
+        "certifiedRuntimeCommit": "e5394a6",
+        "certifiedProductionDeployment": {
+          "commit": "e5394a6",
+          "status": "success",
+          "description": "Deployment has completed"
+        },
+        "scope": "Controlled Internal Preview for approved internal users and approved internal test accounts only.",
+        "closedIssues": [
+          "SEARCH-001",
+          "UNSUBSCRIBE-001",
+          "PROPERTY-001",
+          "EMAIL-001",
+          "CLICK-RUNTIME-001",
+          "CLICK-001",
+          "UNSUBSCRIBE-002",
+          "READY-001"
+        ],
+        "explicitExclusions": [
+          "Public launch",
+          "Customer beta",
+          "Open registration",
+          "Broad customer invitations",
+          "Public marketing announcement",
+          "Recurring alert workers",
+          "Alert schedulers",
+          "AlertQueue backlog release",
+          "BullMQ backlog processing",
+          "Queue retry or drain",
+          "Broad customer email",
+          "Automated email campaigns",
+          "New production click testing",
+          "New valid unsubscribe testing",
+          "CRM automation activation",
+          "Live MLS synchronization unless separately authorized",
+          "OpenAI production invocation",
+          "TitlePro247 activation",
+          "Typesense reset or reindex",
+          "Database reset",
+          "prisma db push",
+          "npm audit fix",
+          "Force-push",
+          "Destructive Git operations"
+        ],
+        "operatingConditions": [
+          "Recurring alert workers and schedulers remain disabled.",
+          "AlertQueue and BullMQ backlogs remain preserved.",
+          "No backlog may be released without a separate rollout authorization.",
+          "Email sends require explicit bounded authorization.",
+          "Valid unsubscribe and tracked-link production requests require explicit bounded authorization.",
+          "CRM mutations remain controlled.",
+          "MLS, OpenAI, TitlePro247, and Typesense administrative actions remain governed separately.",
+          "Any new Critical defect immediately suspends Internal Preview.",
+          "Any new High defect that threatens customer data, search usability, email safety, privacy, or operational control suspends the affected preview capability.",
+          "Rollback and stop procedures must remain immediately available.",
+          "Internal Preview feedback must be captured as governed customer evidence rather than informal feature expansion.",
+          "No architectural expansion should occur during the preview unless required to remediate a verified launch defect."
+        ],
+        "knownWatchItems": [
+          "Typesense provider remains safely degraded behind the approved database fallback.",
+          "AlertQueue pending backlog remains preserved.",
+          "BullMQ waiting backlog remains preserved.",
+          "Recurring workers and schedulers remain disabled.",
+          "TitlePro247 remains deferred.",
+          "Executive Dashboard/KPI expansion remains post-certification work.",
+          "Independent mailbox confirmation for EMAIL-001 was unavailable, while provider acceptance, EmailLog creation, controlled queue transition, production-hosted URLs, and downstream click proof were verified."
+        ]
+      }
     }
   ]
 }

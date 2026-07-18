@@ -1,7 +1,7 @@
 # RC1-UNSUBSCRIBE-001 - Invalid Token Produces HTTP 500
 
 Date opened: 2026-07-18  
-Current status: `READY_FOR_VERIFICATION`  
+Current status: `CLOSED`
 Severity: `Critical`
 
 ## Baseline
@@ -67,11 +67,11 @@ Passed:
 
 ## Production Verification
 
-Deployment ID: pending.  
-Deployment status: pending.  
-Canonical production domain validation: pending.
+Deployment ID: `5503368803`.
+Deployment status: `success`.
+Canonical production domain validation: passed.
 
-Required production checks after deployment:
+Production checks passed after deployment:
 
 - Missing token returns intentional HTTP 400.
 - Clearly malformed token returns intentional non-500 response.
@@ -92,9 +92,8 @@ The route does not process queues, send email, start workers, run schedulers, in
 ## Residual Risks
 
 - The current model has no explicit expired or revoked token fields, so those states cannot be distinguished beyond `usedAt`.
-- Production still needs deployment verification on the canonical domain.
 - Production valid-token proof must avoid real customer unsubscribe mutation unless separately authorized.
 
 ## Closure Decision
 
-`UNSUBSCRIBE-001` is not closed yet. It is `READY_FOR_VERIFICATION` after local remediation and validation, pending production deployment readiness and canonical-domain HTTP proof.
+`UNSUBSCRIBE-001` is `CLOSED`. Production deployment and canonical-domain HTTP proof passed with intentional non-500 handling for missing, malformed, synthetic unknown, and repeated synthetic unknown token states. Valid-token production proof is governed separately by `UNSUBSCRIBE-002`.

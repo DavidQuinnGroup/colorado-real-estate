@@ -19,7 +19,7 @@ RC1 tracks production defects that block Internal Preview certification after th
 | `CLICK-001` | High | `CLOSED` | `a4c2999` | Final controlled production proof after deployed correction `4c9d85c` made exactly one authorized tracked-link request, returned `307 -> 200`, persisted selected `AlertQueue.clickedAt`, added exactly one click interaction, increased heat score once, and preserved EmailLog, queue, CRM, token, saved-search, and BullMQ isolation. |
 | `CLICK-RUNTIME-001` | High | `CLOSED` | `4e9cd1e` | Root cause verified and deployed: the Supabase fallback scanned only the first 100 unclicked alert rows while the selected row was row 118. Correction `4c9d85c` pages bounded candidates, marks before enrichment, suppresses duplicate enrichment, and final production proof persisted `clickedAt`. |
 | `READY-001` | High | `CLOSED` | `2357656` | Final RC1 readiness refresh passed on current production source: root, canonical redirect, property, search, safe unsubscribe errors, schema/migrations, queue/dead-letter, CRM, typecheck, lint, and build all validated; launch readiness remains `watch` only for operator review of pending saved-search alerts before live processing. |
-| `CERT-001` | High | `NEXT` | `2357656` | Certification is the next governed issue after READY-001 closure. RC1 remains not certified until CERT-001 is explicitly authorized and completed. |
+| `CERT-001` | High | `CLOSED` | `e5394a6` | Executive decision recorded: RC1 is certified for controlled Internal Preview only, with public launch, customer beta, recurring workers, alert backlog release, broad email, queue operations, live MLS, OpenAI, TitlePro247, and Typesense administrative actions excluded unless separately authorized. |
 
 ## Status Definitions
 
@@ -40,6 +40,6 @@ RC1 tracks production defects that block Internal Preview certification after th
 
 ## Current Release Decision
 
-`RC1_NOT_CERTIFIED`
+`CERTIFIED_FOR_INTERNAL_PREVIEW`
 
-Reason: `SEARCH-001`, `UNSUBSCRIBE-001`, `UNSUBSCRIBE-002`, `PROPERTY-001`, `EMAIL-001`, `CLICK-RUNTIME-001`, `CLICK-001`, and `READY-001` are verified and closed. RC1 remains uncertified until CERT-001 is explicitly authorized and completed.
+Reason: `SEARCH-001`, `UNSUBSCRIBE-001`, `UNSUBSCRIBE-002`, `PROPERTY-001`, `EMAIL-001`, `CLICK-RUNTIME-001`, `CLICK-001`, `READY-001`, and `CERT-001` are closed. RC1 is certified only for controlled Internal Preview under the operating conditions and suspension triggers recorded in `RC1-CERT-001.md`.
