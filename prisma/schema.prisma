@@ -315,4 +315,1163 @@ model Neighborhood {
   @@index([slug])
 }
 
+enum EIAEnvironment {
+  PRODUCTION
+  PREVIEW
+  DEVELOPMENT
+  TEST
+  UNKNOWN
+}
+
+enum EIADataOrigin {
+  LIVE
+  FIXTURE
+  MANUAL
+  IMPORTED
+  UNKNOWN
+}
+
+enum EIAConfidence {
+  HIGH
+  MEDIUM
+  LOW
+  INSUFFICIENT
+}
+
+enum EIAFreshness {
+  FRESH
+  AGING
+  STALE
+  UNKNOWN
+  NOT_APPLICABLE
+}
+
+enum EIAPrivacy {
+  INTERNAL
+  EXECUTIVE
+  SYSTEM
+}
+
+enum EIASensitivity {
+  PUBLIC_SAFE
+  INTERNAL
+  CONFIDENTIAL
+  RESTRICTED
+}
+
+enum EIAPii {
+  NONE
+  PSEUDONYMOUS
+  AGGREGATED
+  PERSONAL
+}
+
+enum EIARetention {
+  HISTORICAL
+  OPERATIONAL
+  AUDIT
+  TEMPORARY
+}
+
+enum EIAImmutability {
+  APPEND_ONLY
+  IMMUTABLE_VERSIONED
+  MUTABLE_WITH_HISTORY
+  REFERENCE_DATA
+}
+
+enum EIAValueKind {
+  NUMERIC
+  TEXT
+  BOOLEAN
+  RATIO
+  DURATION
+  UNAVAILABLE
+}
+
+enum EIAKpiStatus {
+  HEALTHY
+  WARNING
+  CRITICAL
+  UNKNOWN
+  NOT_APPLICABLE
+}
+
+enum EIAHealthClassification {
+  HEALTHY
+  WATCH
+  DEGRADED
+  BLOCKED
+  UNKNOWN
+}
+
+enum EIASignalKind {
+  RISK
+  OPPORTUNITY
+}
+
+enum EIADispositionKind {
+  APPROVE
+  REJECT
+  DEFER
+  REVISE
+  REQUEST_MORE_EVIDENCE
+  OVERRIDE_RECOMMENDATION
+  NO_DECISION
+}
+
+enum EIAWorkflowState {
+  PROPOSED
+  APPROVED
+  PLANNED
+  IN_PROGRESS
+  COMPLETED
+  PAUSED
+  CANCELLED
+  UNDER_REVIEW
+  NEEDS_REVIEW
+  DEFERRED
+  REJECTED
+  ARCHIVED
+}
+
+model EIAProvenance {
+  id                    String         @id @default(cuid())
+  sourceSystem          String
+  sourceType            String
+  sourceRecordId        String?
+  sourceQueryRef        String?
+  observationAt         DateTime?
+  ingestedAt            DateTime       @default(now())
+  processedAt           DateTime?
+  environment           EIAEnvironment
+  dataOrigin            EIADataOrigin
+  fixtureSet            String?
+  fixtureScenario       String?
+  calculationVersion    String?
+  schemaVersion         String
+  domainModelVersion    String?
+  canonVersion          String?
+  repositoryVersion     String?
+  confidence            EIAConfidence
+  freshness             EIAFreshness
+  privacy               EIAPrivacy
+  sensitivity           EIASensitivity
+  pii                   EIAPii         @default(NONE)
+  retention             EIARetention
+  creatingService       String
+  creatingAppVersion    String?
+  supersedesId          String?
+  correctionOfId        String?
+  immutability          EIAImmutability @default(APPEND_ONLY)
+  createdAt             DateTime       @default(now())
+  archivedAt            DateTime?
+
+  supersedes            EIAProvenance?  @relation("EIAProvenanceSupersession", fields: [supersedesId], references: [id], onDelete: Restrict)
+  supersededBy          EIAProvenance[] @relation("EIAProvenanceSupersession")
+  correctionOf          EIAProvenance?  @relation("EIAProvenanceCorrection", fields: [correctionOfId], references: [id], onDelete: Restrict)
+  corrections           EIAProvenance[] @relation("EIAProvenanceCorrection")
+
+  evidenceReferences    EIAEvidenceReference[]
+  kpiObservations       EIAKpiObservation[]
+  kpiEvaluations        EIAKpiEvaluation[]
+  thresholdEvaluations  EIAKpiThresholdEvaluation[]
+  kpiTransitions        EIAKpiTransition[]
+  healthSnapshots       EIAEnterpriseHealthSnapshot[]
+  domainHealthSnapshots EIADomainHealthSnapshot[]
+  healthContributions   EIAHealthContribution[]
+  intelligenceEvents    EIAIntelligenceEvent[]
+  intelligenceSignals   EIAIntelligenceSignal[]
+  executiveInsights     EIAExecutiveInsight[]
+  decisionSituations    EIADecisionSituation[]
+  decisionPackages      EIADecisionPackage[]
+  decisionOptions       EIADecisionOption[]
+  decisionScores        EIADecisionScore[]
+  recommendations       EIADecisionRecommendation[]
+  dispositions          EIADecisionDisposition[]
+  initiatives           EIAEnterpriseInitiative[]
+  initiativeStatuses    EIAInitiativeStatusHistory[]
+  baselines             EIAInitiativeBaseline[]
+  expectedOutcomes      EIAExpectedOutcome[]
+  outcomeObservations   EIAOutcomeObservation[]
+  outcomeVariances      EIAOutcomeVariance[]
+  initiativeReviews     EIAInitiativeReview[]
+  decisionEvaluations   EIADecisionEvaluation[]
+  recommendationEvals   EIARecommendationEvaluation[]
+  lessons               EIALessonLearned[]
+  improvementActions    EIAImprovementAction[]
+  actionStatuses        EIAImprovementActionStatusHistory[]
+  backlogItems          EIAContinuousImprovementBacklogItem[]
+
+  @@index([sourceSystem, sourceRecordId])
+  @@index([environment, dataOrigin])
+  @@index([fixtureSet, fixtureScenario])
+  @@index([calculationVersion])
+  @@index([createdAt])
+  @@index([supersedesId])
+  @@index([correctionOfId])
+}
+
+model EIAEvidenceReference {
+  id                  String       @id @default(cuid())
+  evidenceKey          String       @unique
+  evidenceType         String
+  title                String
+  sourceSystem         String
+  sourceRecordId       String?
+  sourceQueryRef       String?
+  observedAt           DateTime?
+  repositoryObjectRid  String?
+  contentHash          String?
+  provenanceId         String
+  environment          EIAEnvironment
+  dataOrigin           EIADataOrigin
+  confidence           EIAConfidence
+  freshness            EIAFreshness
+  privacy              EIAPrivacy
+  sensitivity          EIASensitivity
+  pii                  EIAPii       @default(NONE)
+  retention            EIARetention
+  immutability         EIAImmutability @default(APPEND_ONLY)
+  createdAt            DateTime     @default(now())
+  archivedAt           DateTime?
+  supersedesId         String?
+
+  provenance           EIAProvenance @relation(fields: [provenanceId], references: [id], onDelete: Restrict)
+  supersedes           EIAEvidenceReference? @relation("EIAEvidenceSupersession", fields: [supersedesId], references: [id], onDelete: Restrict)
+  supersededBy         EIAEvidenceReference[] @relation("EIAEvidenceSupersession")
+  links                EIAEvidenceLink[]
+
+  @@index([provenanceId])
+  @@index([evidenceType])
+  @@index([repositoryObjectRid])
+  @@index([environment, dataOrigin])
+  @@index([supersedesId])
+}
+
+model EIAEvidenceLink {
+  id          String @id @default(cuid())
+  evidenceId  String
+  entityType  String
+  entityId    String
+  relationship String
+  createdAt   DateTime @default(now())
+
+  evidence    EIAEvidenceReference @relation(fields: [evidenceId], references: [id], onDelete: Restrict)
+
+  @@unique([evidenceId, entityType, entityId, relationship])
+  @@index([entityType, entityId])
+  @@index([evidenceId])
+}
+
+model EIAKpiObservation {
+  id                  String       @id @default(cuid())
+  kpiId               String
+  valueKind           EIAValueKind
+  numericValue        Decimal?
+  textValue           String?
+  booleanValue        Boolean?
+  ratioNumerator      Decimal?
+  ratioDenominator    Decimal?
+  durationMs          Int?
+  unavailableReason   String?
+  unit                String?
+  periodStart         DateTime?
+  periodEnd           DateTime?
+  observedAt          DateTime?
+  status              EIAKpiStatus
+  idempotencyKey      String       @unique
+  calculationVersion  String
+  schemaVersion       String
+  provenanceId        String
+  environment         EIAEnvironment
+  dataOrigin          EIADataOrigin
+  fixtureSet          String?
+  fixtureScenario     String?
+  confidence          EIAConfidence
+  freshness           EIAFreshness
+  privacy             EIAPrivacy
+  sensitivity         EIASensitivity
+  retention           EIARetention
+  immutability        EIAImmutability @default(APPEND_ONLY)
+  createdAt           DateTime     @default(now())
+  archivedAt          DateTime?
+  supersedesId        String?
+
+  provenance          EIAProvenance @relation(fields: [provenanceId], references: [id], onDelete: Restrict)
+  supersedes          EIAKpiObservation? @relation("EIAKpiObservationSupersession", fields: [supersedesId], references: [id], onDelete: Restrict)
+  supersededBy        EIAKpiObservation[] @relation("EIAKpiObservationSupersession")
+  evaluations         EIAKpiEvaluation[]
+  transitionsPrevious EIAKpiTransition[] @relation("EIAKpiTransitionPreviousObservation")
+  transitionsCurrent  EIAKpiTransition[] @relation("EIAKpiTransitionCurrentObservation")
+  healthContributions EIAHealthContribution[]
+  expectedOutcomes    EIAExpectedOutcome[]
+  outcomeObservations EIAOutcomeObservation[]
+
+  @@index([kpiId, observedAt])
+  @@index([periodStart, periodEnd])
+  @@index([environment, dataOrigin])
+  @@index([fixtureSet, fixtureScenario])
+  @@index([provenanceId])
+  @@index([supersedesId])
+}
+
+model EIAKpiEvaluation {
+  id                  String       @id @default(cuid())
+  kpiId               String
+  observationId       String
+  status              EIAKpiStatus
+  includedInHealth    Boolean
+  exclusionReason     String?
+  calculationVersion  String
+  thresholdVersion    String?
+  evaluatedAt         DateTime     @default(now())
+  idempotencyKey      String       @unique
+  provenanceId        String
+  environment         EIAEnvironment
+  dataOrigin          EIADataOrigin
+  confidence          EIAConfidence
+  freshness           EIAFreshness
+  privacy             EIAPrivacy
+  sensitivity         EIASensitivity
+  retention           EIARetention
+  immutability        EIAImmutability @default(APPEND_ONLY)
+  archivedAt          DateTime?
+  supersedesId        String?
+
+  observation         EIAKpiObservation @relation(fields: [observationId], references: [id], onDelete: Restrict)
+  provenance          EIAProvenance @relation(fields: [provenanceId], references: [id], onDelete: Restrict)
+  supersedes          EIAKpiEvaluation? @relation("EIAKpiEvaluationSupersession", fields: [supersedesId], references: [id], onDelete: Restrict)
+  supersededBy        EIAKpiEvaluation[] @relation("EIAKpiEvaluationSupersession")
+  thresholdEvaluations EIAKpiThresholdEvaluation[]
+  healthContributions EIAHealthContribution[]
+
+  @@index([kpiId, evaluatedAt])
+  @@index([observationId])
+  @@index([environment, dataOrigin])
+  @@index([provenanceId])
+  @@index([supersedesId])
+}
+
+model EIAKpiThresholdEvaluation {
+  id                 String       @id @default(cuid())
+  kpiEvaluationId    String
+  thresholdVersion   String
+  targetValue        Decimal?
+  warningValue       Decimal?
+  criticalValue      Decimal?
+  result             EIAKpiStatus
+  evaluatedAt        DateTime     @default(now())
+  idempotencyKey     String       @unique
+  provenanceId       String
+  immutability       EIAImmutability @default(APPEND_ONLY)
+
+  kpiEvaluation      EIAKpiEvaluation @relation(fields: [kpiEvaluationId], references: [id], onDelete: Restrict)
+  provenance         EIAProvenance @relation(fields: [provenanceId], references: [id], onDelete: Restrict)
+
+  @@index([kpiEvaluationId])
+  @@index([thresholdVersion])
+  @@index([provenanceId])
+}
+
+model EIAKpiTransition {
+  id                    String       @id @default(cuid())
+  kpiId                 String
+  previousObservationId String?
+  currentObservationId  String
+  previousStatus        EIAKpiStatus
+  currentStatus         EIAKpiStatus
+  effectiveAt           DateTime
+  transitionReason      String
+  calculationVersion    String
+  idempotencyKey        String       @unique
+  provenanceId          String
+  environment           EIAEnvironment
+  dataOrigin            EIADataOrigin
+  immutability          EIAImmutability @default(APPEND_ONLY)
+  createdAt             DateTime     @default(now())
+
+  previousObservation   EIAKpiObservation? @relation("EIAKpiTransitionPreviousObservation", fields: [previousObservationId], references: [id], onDelete: Restrict)
+  currentObservation    EIAKpiObservation @relation("EIAKpiTransitionCurrentObservation", fields: [currentObservationId], references: [id], onDelete: Restrict)
+  provenance            EIAProvenance @relation(fields: [provenanceId], references: [id], onDelete: Restrict)
+
+  @@index([kpiId, effectiveAt])
+  @@index([previousObservationId])
+  @@index([currentObservationId])
+  @@index([environment, dataOrigin])
+}
+
+model EIAEnterpriseHealthSnapshot {
+  id                    String       @id @default(cuid())
+  snapshotKey            String       @unique
+  overallClassification  EIAHealthClassification
+  overallScore           Decimal?
+  coveragePercentage     Decimal?
+  confidence             EIAConfidence
+  freshness              EIAFreshness
+  weightVersion          String
+  calculationVersion     String
+  schemaVersion          String
+  generatedAt            DateTime
+  provenanceId           String
+  environment            EIAEnvironment
+  dataOrigin             EIADataOrigin
+  fixtureSet             String?
+  fixtureScenario        String?
+  immutability           EIAImmutability @default(IMMUTABLE_VERSIONED)
+  createdAt              DateTime     @default(now())
+  archivedAt             DateTime?
+  supersedesId           String?
+
+  provenance             EIAProvenance @relation(fields: [provenanceId], references: [id], onDelete: Restrict)
+  supersedes             EIAEnterpriseHealthSnapshot? @relation("EIAHealthSnapshotSupersession", fields: [supersedesId], references: [id], onDelete: Restrict)
+  supersededBy           EIAEnterpriseHealthSnapshot[] @relation("EIAHealthSnapshotSupersession")
+  domainSnapshots        EIADomainHealthSnapshot[]
+  contributions          EIAHealthContribution[]
+  intelligenceEvents     EIAIntelligenceEvent[]
+
+  @@index([generatedAt])
+  @@index([environment, dataOrigin])
+  @@index([fixtureSet, fixtureScenario])
+  @@index([provenanceId])
+  @@index([supersedesId])
+}
+
+model EIADomainHealthSnapshot {
+  id                     String       @id @default(cuid())
+  enterpriseSnapshotId   String
+  domain                 String
+  classification         EIAHealthClassification
+  score                  Decimal?
+  coveragePercentage     Decimal?
+  confidence             EIAConfidence
+  freshness              EIAFreshness
+  weightVersion          String
+  calculationVersion     String
+  generatedAt            DateTime
+  provenanceId           String
+  environment            EIAEnvironment
+  dataOrigin             EIADataOrigin
+  immutability           EIAImmutability @default(IMMUTABLE_VERSIONED)
+
+  enterpriseSnapshot     EIAEnterpriseHealthSnapshot @relation(fields: [enterpriseSnapshotId], references: [id], onDelete: Restrict)
+  provenance             EIAProvenance @relation(fields: [provenanceId], references: [id], onDelete: Restrict)
+  contributions          EIAHealthContribution[]
+
+  @@unique([enterpriseSnapshotId, domain])
+  @@index([domain, generatedAt])
+  @@index([environment, dataOrigin])
+  @@index([provenanceId])
+}
+
+model EIAHealthContribution {
+  id                    String       @id @default(cuid())
+  enterpriseSnapshotId  String
+  domainSnapshotId      String?
+  kpiObservationId      String?
+  kpiEvaluationId       String?
+  kpiId                 String
+  contributionType      String
+  normalizedScore       Decimal?
+  weight                Decimal?
+  weightedScore         Decimal?
+  included              Boolean
+  exclusionReason       String?
+  provenanceId          String
+  immutability          EIAImmutability @default(APPEND_ONLY)
+
+  enterpriseSnapshot    EIAEnterpriseHealthSnapshot @relation(fields: [enterpriseSnapshotId], references: [id], onDelete: Restrict)
+  domainSnapshot        EIADomainHealthSnapshot? @relation(fields: [domainSnapshotId], references: [id], onDelete: Restrict)
+  kpiObservation        EIAKpiObservation? @relation(fields: [kpiObservationId], references: [id], onDelete: Restrict)
+  kpiEvaluation         EIAKpiEvaluation? @relation(fields: [kpiEvaluationId], references: [id], onDelete: Restrict)
+  provenance            EIAProvenance @relation(fields: [provenanceId], references: [id], onDelete: Restrict)
+
+  @@index([enterpriseSnapshotId])
+  @@index([domainSnapshotId])
+  @@index([kpiId])
+  @@index([kpiObservationId])
+  @@index([kpiEvaluationId])
+}
+
+model EIAIntelligenceEvent {
+  id                    String       @id @default(cuid())
+  eventKey              String       @unique
+  eventClass            String
+  title                 String
+  summary               String
+  severity              String
+  materiality           String
+  lifecycleStatus       String?
+  detectionRuleVersion  String
+  calculationVersion    String
+  detectedAt            DateTime
+  healthSnapshotId      String?
+  provenanceId          String
+  environment           EIAEnvironment
+  dataOrigin            EIADataOrigin
+  confidence            EIAConfidence
+  freshness             EIAFreshness
+  privacy               EIAPrivacy
+  sensitivity           EIASensitivity
+  retention             EIARetention
+  immutability          EIAImmutability @default(APPEND_ONLY)
+  createdAt             DateTime     @default(now())
+  archivedAt            DateTime?
+  supersedesId          String?
+
+  healthSnapshot        EIAEnterpriseHealthSnapshot? @relation(fields: [healthSnapshotId], references: [id], onDelete: Restrict)
+  provenance            EIAProvenance @relation(fields: [provenanceId], references: [id], onDelete: Restrict)
+  supersedes            EIAIntelligenceEvent? @relation("EIAIntelligenceEventSupersession", fields: [supersedesId], references: [id], onDelete: Restrict)
+  supersededBy          EIAIntelligenceEvent[] @relation("EIAIntelligenceEventSupersession")
+  signals               EIAIntelligenceSignal[]
+  insights              EIAExecutiveInsight[]
+  decisionSituations    EIADecisionSituation[]
+
+  @@index([eventClass, detectedAt])
+  @@index([severity, materiality])
+  @@index([healthSnapshotId])
+  @@index([environment, dataOrigin])
+  @@index([provenanceId])
+}
+
+model EIAIntelligenceSignal {
+  id                   String       @id @default(cuid())
+  signalKey             String       @unique
+  eventId               String
+  signalKind            EIASignalKind
+  condition             String
+  severity              String
+  materiality           String
+  suggestedReviewArea   String
+  detectionRuleVersion  String
+  provenanceId          String
+  environment           EIAEnvironment
+  dataOrigin            EIADataOrigin
+  confidence            EIAConfidence
+  freshness             EIAFreshness
+  immutability          EIAImmutability @default(APPEND_ONLY)
+  createdAt             DateTime     @default(now())
+
+  event                 EIAIntelligenceEvent @relation(fields: [eventId], references: [id], onDelete: Restrict)
+  provenance            EIAProvenance @relation(fields: [provenanceId], references: [id], onDelete: Restrict)
+
+  @@index([eventId])
+  @@index([signalKind, severity])
+  @@index([environment, dataOrigin])
+}
+
+model EIAExecutiveInsight {
+  id                  String       @id @default(cuid())
+  insightKey           String       @unique
+  eventId              String
+  title                String
+  summary              String
+  executiveAudience    String
+  severity             String
+  materiality          String
+  calculationVersion   String
+  provenanceId         String
+  environment          EIAEnvironment
+  dataOrigin           EIADataOrigin
+  confidence           EIAConfidence
+  freshness            EIAFreshness
+  privacy              EIAPrivacy   @default(EXECUTIVE)
+  sensitivity          EIASensitivity
+  retention            EIARetention
+  immutability         EIAImmutability @default(APPEND_ONLY)
+  createdAt            DateTime     @default(now())
+
+  event                EIAIntelligenceEvent @relation(fields: [eventId], references: [id], onDelete: Restrict)
+  provenance           EIAProvenance @relation(fields: [provenanceId], references: [id], onDelete: Restrict)
+
+  @@index([eventId])
+  @@index([executiveAudience])
+  @@index([environment, dataOrigin])
+}
+
+model EIADecisionSituation {
+  id                    String       @id @default(cuid())
+  situationKey           String       @unique
+  title                  String
+  executiveQuestion      String
+  summary                String
+  urgency                String
+  horizon                String
+  intelligenceEventId    String?
+  decisionCriteriaVersion String?
+  provenanceId           String
+  environment            EIAEnvironment
+  dataOrigin             EIADataOrigin
+  confidence             EIAConfidence
+  freshness              EIAFreshness
+  privacy                EIAPrivacy   @default(EXECUTIVE)
+  sensitivity            EIASensitivity
+  retention              EIARetention
+  immutability           EIAImmutability @default(APPEND_ONLY)
+  createdAt              DateTime     @default(now())
+  archivedAt             DateTime?
+
+  intelligenceEvent      EIAIntelligenceEvent? @relation(fields: [intelligenceEventId], references: [id], onDelete: Restrict)
+  provenance             EIAProvenance @relation(fields: [provenanceId], references: [id], onDelete: Restrict)
+  packages               EIADecisionPackage[]
+
+  @@index([urgency, horizon])
+  @@index([intelligenceEventId])
+  @@index([environment, dataOrigin])
+}
+
+model EIADecisionPackage {
+  id                    String       @id @default(cuid())
+  packageKey             String       @unique
+  situationId            String
+  title                  String
+  summary                String
+  calculationVersion     String
+  decisionCriteriaVersion String
+  recommendationModelVersion String?
+  provenanceId           String
+  environment            EIAEnvironment
+  dataOrigin             EIADataOrigin
+  confidence             EIAConfidence
+  freshness              EIAFreshness
+  privacy                EIAPrivacy   @default(EXECUTIVE)
+  sensitivity            EIASensitivity
+  retention              EIARetention
+  immutability           EIAImmutability @default(APPEND_ONLY)
+  createdAt              DateTime     @default(now())
+  archivedAt             DateTime?
+  supersedesId           String?
+
+  situation              EIADecisionSituation @relation(fields: [situationId], references: [id], onDelete: Restrict)
+  provenance             EIAProvenance @relation(fields: [provenanceId], references: [id], onDelete: Restrict)
+  supersedes             EIADecisionPackage? @relation("EIADecisionPackageSupersession", fields: [supersedesId], references: [id], onDelete: Restrict)
+  supersededBy           EIADecisionPackage[] @relation("EIADecisionPackageSupersession")
+  options                EIADecisionOption[]
+  scores                 EIADecisionScore[]
+  recommendations        EIADecisionRecommendation[]
+  reviewSchedules        EIADecisionReviewSchedule[]
+  dispositions           EIADecisionDisposition[]
+  overrides              EIADecisionOverride[]
+  initiatives            EIAEnterpriseInitiative[]
+  decisionEvaluations    EIADecisionEvaluation[]
+  recommendationEvals    EIARecommendationEvaluation[]
+
+  @@index([situationId])
+  @@index([environment, dataOrigin])
+  @@index([provenanceId])
+  @@index([supersedesId])
+}
+
+model EIADecisionOption {
+  id              String       @id @default(cuid())
+  optionKey       String       @unique
+  packageId       String
+  optionType      String
+  title           String
+  description     String
+  proposedAction  String
+  reversibility   String?
+  provenanceId    String
+  immutability    EIAImmutability @default(APPEND_ONLY)
+  createdAt       DateTime     @default(now())
+
+  package         EIADecisionPackage @relation(fields: [packageId], references: [id], onDelete: Restrict)
+  provenance      EIAProvenance @relation(fields: [provenanceId], references: [id], onDelete: Restrict)
+  scores          EIADecisionScore[]
+  recommendations EIADecisionRecommendation[]
+  initiatives     EIAEnterpriseInitiative[]
+
+  @@index([packageId])
+  @@index([optionType])
+}
+
+model EIADecisionCriterion {
+  id              String       @id @default(cuid())
+  criterionKey    String
+  version         String
+  label           String
+  description     String
+  weight          Decimal
+  direction       String
+  provisional     Boolean      @default(true)
+  immutability    EIAImmutability @default(REFERENCE_DATA)
+  createdAt       DateTime     @default(now())
+  archivedAt      DateTime?
+
+  scores          EIADecisionScore[]
+
+  @@unique([criterionKey, version])
+  @@index([version])
+}
+
+model EIADecisionScore {
+  id                    String       @id @default(cuid())
+  packageId              String
+  optionId               String
+  criterionId            String
+  rawAssessment          String
+  normalizedScore        Decimal?
+  weightedContribution   Decimal?
+  coveragePercentage     Decimal?
+  calculationVersion     String
+  idempotencyKey         String       @unique
+  provenanceId           String
+  confidence             EIAConfidence
+  immutability           EIAImmutability @default(APPEND_ONLY)
+  createdAt              DateTime     @default(now())
+
+  package                EIADecisionPackage @relation(fields: [packageId], references: [id], onDelete: Restrict)
+  option                 EIADecisionOption @relation(fields: [optionId], references: [id], onDelete: Restrict)
+  criterion              EIADecisionCriterion @relation(fields: [criterionId], references: [id], onDelete: Restrict)
+  provenance             EIAProvenance @relation(fields: [provenanceId], references: [id], onDelete: Restrict)
+
+  @@index([packageId])
+  @@index([optionId])
+  @@index([criterionId])
+}
+
+model EIADecisionRecommendation {
+  id                  String       @id @default(cuid())
+  recommendationKey    String       @unique
+  packageId            String
+  recommendedOptionId  String?
+  kind                 String
+  reason               String
+  calculationVersion   String
+  modelVersion         String
+  idempotencyKey       String       @unique
+  provenanceId         String
+  confidence           EIAConfidence
+  privacy              EIAPrivacy   @default(EXECUTIVE)
+  sensitivity          EIASensitivity
+  retention            EIARetention
+  immutability         EIAImmutability @default(APPEND_ONLY)
+  createdAt            DateTime     @default(now())
+  supersedesId         String?
+
+  package              EIADecisionPackage @relation(fields: [packageId], references: [id], onDelete: Restrict)
+  recommendedOption    EIADecisionOption? @relation(fields: [recommendedOptionId], references: [id], onDelete: Restrict)
+  provenance           EIAProvenance @relation(fields: [provenanceId], references: [id], onDelete: Restrict)
+  supersedes           EIADecisionRecommendation? @relation("EIARecommendationSupersession", fields: [supersedesId], references: [id], onDelete: Restrict)
+  supersededBy         EIADecisionRecommendation[] @relation("EIARecommendationSupersession")
+  recommendationEvals  EIARecommendationEvaluation[]
+
+  @@index([packageId])
+  @@index([recommendedOptionId])
+  @@index([supersedesId])
+}
+
+model EIADecisionReviewSchedule {
+  id             String       @id @default(cuid())
+  packageId      String
+  reviewAt       DateTime
+  trigger        String
+  status         String
+  ownerRole      String
+  immutability   EIAImmutability @default(APPEND_ONLY)
+  createdAt      DateTime     @default(now())
+
+  package        EIADecisionPackage @relation(fields: [packageId], references: [id], onDelete: Restrict)
+
+  @@index([packageId, reviewAt])
+  @@index([status])
+}
+
+model EIADecisionDisposition {
+  id              String       @id @default(cuid())
+  packageId       String
+  dispositionKind EIADispositionKind
+  selectedOptionId String?
+  rationale       String
+  authority       String
+  officialDecision Boolean    @default(false)
+  decidedAt       DateTime?
+  provenanceId    String
+  immutability    EIAImmutability @default(APPEND_ONLY)
+  createdAt       DateTime     @default(now())
+
+  package         EIADecisionPackage @relation(fields: [packageId], references: [id], onDelete: Restrict)
+  provenance      EIAProvenance @relation(fields: [provenanceId], references: [id], onDelete: Restrict)
+
+  @@index([packageId, createdAt])
+  @@index([dispositionKind])
+}
+
+model EIADecisionOverride {
+  id                    String       @id @default(cuid())
+  packageId              String
+  originalRecommendationId String?
+  selectedOptionId       String?
+  overrideRationale      String
+  authority              String
+  acknowledgedRisks      Json
+  reviewAt               DateTime?
+  immutability           EIAImmutability @default(APPEND_ONLY)
+  createdAt              DateTime     @default(now())
+
+  package                EIADecisionPackage @relation(fields: [packageId], references: [id], onDelete: Restrict)
+
+  @@index([packageId])
+  @@index([originalRecommendationId])
+}
+
+model EIAEnterpriseInitiative {
+  id                         String       @id @default(cuid())
+  initiativeKey               String       @unique
+  title                       String
+  description                 String
+  packageId                   String?
+  selectedOptionId            String?
+  strategicDomain             String
+  ownerRole                   String
+  lifecycleState              EIAWorkflowState
+  startAt                     DateTime?
+  plannedReviewAt             DateTime?
+  provenanceId                String
+  environment                 EIAEnvironment
+  dataOrigin                  EIADataOrigin
+  confidence                  EIAConfidence
+  freshness                   EIAFreshness
+  privacy                     EIAPrivacy   @default(EXECUTIVE)
+  sensitivity                 EIASensitivity
+  retention                   EIARetention
+  immutability                EIAImmutability @default(MUTABLE_WITH_HISTORY)
+  createdAt                   DateTime     @default(now())
+  archivedAt                  DateTime?
+
+  package                     EIADecisionPackage? @relation(fields: [packageId], references: [id], onDelete: Restrict)
+  selectedOption              EIADecisionOption? @relation(fields: [selectedOptionId], references: [id], onDelete: Restrict)
+  provenance                  EIAProvenance @relation(fields: [provenanceId], references: [id], onDelete: Restrict)
+  statusHistory               EIAInitiativeStatusHistory[]
+  baselines                   EIAInitiativeBaseline[]
+  expectedOutcomes            EIAExpectedOutcome[]
+  outcomeObservations         EIAOutcomeObservation[]
+  outcomeVariances            EIAOutcomeVariance[]
+  reviews                     EIAInitiativeReview[]
+  decisionEvaluations         EIADecisionEvaluation[]
+  recommendationEvaluations   EIARecommendationEvaluation[]
+  lessons                     EIALessonLearned[]
+  improvementActions          EIAImprovementAction[]
+
+  @@index([strategicDomain, lifecycleState])
+  @@index([packageId])
+  @@index([selectedOptionId])
+  @@index([environment, dataOrigin])
+}
+
+model EIAInitiativeStatusHistory {
+  id              String       @id @default(cuid())
+  initiativeId    String
+  fromState       EIAWorkflowState?
+  toState         EIAWorkflowState
+  changedAt       DateTime     @default(now())
+  changedBy       String
+  reason          String
+  provenanceId    String
+  immutability    EIAImmutability @default(APPEND_ONLY)
+
+  initiative      EIAEnterpriseInitiative @relation(fields: [initiativeId], references: [id], onDelete: Restrict)
+  provenance      EIAProvenance @relation(fields: [provenanceId], references: [id], onDelete: Restrict)
+
+  @@index([initiativeId, changedAt])
+  @@index([toState])
+}
+
+model EIAInitiativeBaseline {
+  id                  String       @id @default(cuid())
+  baselineKey          String       @unique
+  initiativeId         String
+  kpiId                String?
+  valueKind            EIAValueKind
+  numericValue         Decimal?
+  textValue            String?
+  unavailableReason    String?
+  measurementAt        DateTime?
+  measurementWindow    String
+  provenanceId         String
+  confidence           EIAConfidence
+  freshness            EIAFreshness
+  immutability         EIAImmutability @default(APPEND_ONLY)
+  createdAt            DateTime     @default(now())
+
+  initiative           EIAEnterpriseInitiative @relation(fields: [initiativeId], references: [id], onDelete: Restrict)
+  provenance           EIAProvenance @relation(fields: [provenanceId], references: [id], onDelete: Restrict)
+
+  @@index([initiativeId])
+  @@index([kpiId])
+}
+
+model EIAExpectedOutcome {
+  id                    String       @id @default(cuid())
+  outcomeKey             String       @unique
+  initiativeId           String?
+  packageId              String?
+  kpiObservationId       String?
+  description            String
+  targetValueKind        EIAValueKind
+  targetNumericValue     Decimal?
+  targetTextValue        String?
+  unavailableReason      String?
+  desiredDirection       String
+  timeHorizon            String
+  measurementMethod      String
+  provenanceId           String
+  confidence             EIAConfidence
+  immutability           EIAImmutability @default(APPEND_ONLY)
+  createdAt              DateTime     @default(now())
+
+  initiative             EIAEnterpriseInitiative? @relation(fields: [initiativeId], references: [id], onDelete: Restrict)
+  kpiObservation         EIAKpiObservation? @relation(fields: [kpiObservationId], references: [id], onDelete: Restrict)
+  provenance             EIAProvenance @relation(fields: [provenanceId], references: [id], onDelete: Restrict)
+  outcomeObservations    EIAOutcomeObservation[]
+  outcomeVariances       EIAOutcomeVariance[]
+
+  @@index([initiativeId])
+  @@index([packageId])
+  @@index([kpiObservationId])
+}
+
+model EIAOutcomeObservation {
+  id                  String       @id @default(cuid())
+  observationKey       String       @unique
+  initiativeId         String
+  expectedOutcomeId    String
+  kpiObservationId     String?
+  valueKind            EIAValueKind
+  numericValue         Decimal?
+  textValue            String?
+  unavailableReason    String?
+  observedAt           DateTime?
+  evaluationWindow     String
+  provenanceId         String
+  environment          EIAEnvironment
+  dataOrigin           EIADataOrigin
+  confidence           EIAConfidence
+  freshness            EIAFreshness
+  immutability         EIAImmutability @default(APPEND_ONLY)
+  createdAt            DateTime     @default(now())
+
+  initiative           EIAEnterpriseInitiative @relation(fields: [initiativeId], references: [id], onDelete: Restrict)
+  expectedOutcome      EIAExpectedOutcome @relation(fields: [expectedOutcomeId], references: [id], onDelete: Restrict)
+  kpiObservation       EIAKpiObservation? @relation(fields: [kpiObservationId], references: [id], onDelete: Restrict)
+  provenance           EIAProvenance @relation(fields: [provenanceId], references: [id], onDelete: Restrict)
+  variances            EIAOutcomeVariance[]
+
+  @@index([initiativeId, observedAt])
+  @@index([expectedOutcomeId])
+  @@index([kpiObservationId])
+  @@index([environment, dataOrigin])
+}
+
+model EIAOutcomeVariance {
+  id                  String       @id @default(cuid())
+  varianceKey          String       @unique
+  initiativeId         String
+  expectedOutcomeId    String
+  outcomeObservationId String
+  state                String
+  materiality          String
+  absoluteVariance     Decimal?
+  percentageVariance   Decimal?
+  interpretation       String
+  calculationVersion   String
+  provenanceId         String
+  confidence           EIAConfidence
+  freshness            EIAFreshness
+  immutability         EIAImmutability @default(APPEND_ONLY)
+  createdAt            DateTime     @default(now())
+
+  initiative           EIAEnterpriseInitiative @relation(fields: [initiativeId], references: [id], onDelete: Restrict)
+  expectedOutcome      EIAExpectedOutcome @relation(fields: [expectedOutcomeId], references: [id], onDelete: Restrict)
+  outcomeObservation   EIAOutcomeObservation @relation(fields: [outcomeObservationId], references: [id], onDelete: Restrict)
+  provenance           EIAProvenance @relation(fields: [provenanceId], references: [id], onDelete: Restrict)
+
+  @@index([initiativeId])
+  @@index([expectedOutcomeId])
+  @@index([outcomeObservationId])
+  @@index([state, materiality])
+}
+
+model EIAInitiativeReview {
+  id                 String       @id @default(cuid())
+  reviewKey           String       @unique
+  initiativeId        String
+  summary             String
+  reviewAt            DateTime
+  authorAuthority     String
+  calculationVersion  String
+  provenanceId        String
+  confidence          EIAConfidence
+  immutability        EIAImmutability @default(APPEND_ONLY)
+  createdAt           DateTime     @default(now())
+
+  initiative          EIAEnterpriseInitiative @relation(fields: [initiativeId], references: [id], onDelete: Restrict)
+  provenance          EIAProvenance @relation(fields: [provenanceId], references: [id], onDelete: Restrict)
+  decisionEvaluations EIADecisionEvaluation[]
+  recommendationEvals EIARecommendationEvaluation[]
+  lessons             EIALessonLearned[]
+
+  @@index([initiativeId, reviewAt])
+}
+
+model EIADecisionEvaluation {
+  id                 String       @id @default(cuid())
+  evaluationKey       String       @unique
+  initiativeId        String
+  packageId           String?
+  reviewId            String?
+  result              String
+  outcomeQuality      String
+  evidenceCoverage    Decimal?
+  explanation         String
+  authorAuthority     String
+  reviewAt            DateTime
+  provenanceId        String
+  confidence          EIAConfidence
+  immutability        EIAImmutability @default(APPEND_ONLY)
+  createdAt           DateTime     @default(now())
+
+  initiative          EIAEnterpriseInitiative @relation(fields: [initiativeId], references: [id], onDelete: Restrict)
+  package             EIADecisionPackage? @relation(fields: [packageId], references: [id], onDelete: Restrict)
+  review              EIAInitiativeReview? @relation(fields: [reviewId], references: [id], onDelete: Restrict)
+  provenance          EIAProvenance @relation(fields: [provenanceId], references: [id], onDelete: Restrict)
+
+  @@index([initiativeId])
+  @@index([packageId])
+  @@index([reviewId])
+}
+
+model EIARecommendationEvaluation {
+  id                    String       @id @default(cuid())
+  evaluationKey          String       @unique
+  initiativeId           String
+  packageId              String?
+  recommendationId       String?
+  reviewId               String?
+  calibrationFinding     String
+  outcomeAchieved        String
+  causalityClassification String
+  authorAuthority        String
+  reviewAt               DateTime
+  provenanceId           String
+  confidence             EIAConfidence
+  immutability           EIAImmutability @default(APPEND_ONLY)
+  createdAt              DateTime     @default(now())
+
+  initiative             EIAEnterpriseInitiative @relation(fields: [initiativeId], references: [id], onDelete: Restrict)
+  package                EIADecisionPackage? @relation(fields: [packageId], references: [id], onDelete: Restrict)
+  recommendation         EIADecisionRecommendation? @relation(fields: [recommendationId], references: [id], onDelete: Restrict)
+  review                 EIAInitiativeReview? @relation(fields: [reviewId], references: [id], onDelete: Restrict)
+  provenance             EIAProvenance @relation(fields: [provenanceId], references: [id], onDelete: Restrict)
+
+  @@index([initiativeId])
+  @@index([packageId])
+  @@index([recommendationId])
+  @@index([reviewId])
+}
+
+model EIALessonLearned {
+  id                    String       @id @default(cuid())
+  lessonKey              String       @unique
+  title                  String
+  summary                String
+  lessonType             String
+  initiativeId           String?
+  reviewId               String?
+  causalityClassification String
+  authorAuthority        String
+  reviewAt               DateTime
+  provenanceId           String
+  confidence             EIAConfidence
+  privacy                EIAPrivacy   @default(EXECUTIVE)
+  sensitivity            EIASensitivity
+  retention              EIARetention
+  immutability           EIAImmutability @default(APPEND_ONLY)
+  createdAt              DateTime     @default(now())
+  archivedAt             DateTime?
+  supersedesId           String?
+
+  initiative             EIAEnterpriseInitiative? @relation(fields: [initiativeId], references: [id], onDelete: Restrict)
+  review                 EIAInitiativeReview? @relation(fields: [reviewId], references: [id], onDelete: Restrict)
+  provenance             EIAProvenance @relation(fields: [provenanceId], references: [id], onDelete: Restrict)
+  supersedes             EIALessonLearned? @relation("EIALessonSupersession", fields: [supersedesId], references: [id], onDelete: Restrict)
+  supersededBy           EIALessonLearned[] @relation("EIALessonSupersession")
+  improvementActions     EIAImprovementAction[]
+
+  @@index([initiativeId])
+  @@index([reviewId])
+  @@index([lessonType])
+  @@index([supersedesId])
+}
+
+model EIAImprovementAction {
+  id              String       @id @default(cuid())
+  actionKey        String       @unique
+  title            String
+  description      String
+  lessonId         String?
+  initiativeId     String?
+  ownerRole        String?
+  priority         String
+  currentState     EIAWorkflowState
+  suggestedReviewAt DateTime?
+  provenanceId     String
+  confidence       EIAConfidence
+  privacy          EIAPrivacy   @default(EXECUTIVE)
+  sensitivity      EIASensitivity
+  retention        EIARetention
+  immutability     EIAImmutability @default(MUTABLE_WITH_HISTORY)
+  createdAt        DateTime     @default(now())
+  archivedAt       DateTime?
+
+  lesson           EIALessonLearned? @relation(fields: [lessonId], references: [id], onDelete: Restrict)
+  initiative       EIAEnterpriseInitiative? @relation(fields: [initiativeId], references: [id], onDelete: Restrict)
+  provenance       EIAProvenance @relation(fields: [provenanceId], references: [id], onDelete: Restrict)
+  statusHistory    EIAImprovementActionStatusHistory[]
+  backlogItems     EIAContinuousImprovementBacklogItem[]
+
+  @@index([lessonId])
+  @@index([initiativeId])
+  @@index([currentState, priority])
+}
+
+model EIAImprovementActionStatusHistory {
+  id              String       @id @default(cuid())
+  actionId         String
+  fromState        EIAWorkflowState?
+  toState          EIAWorkflowState
+  changedAt        DateTime     @default(now())
+  changedBy        String
+  reason           String
+  provenanceId     String
+  immutability     EIAImmutability @default(APPEND_ONLY)
+
+  action           EIAImprovementAction @relation(fields: [actionId], references: [id], onDelete: Restrict)
+  provenance       EIAProvenance @relation(fields: [provenanceId], references: [id], onDelete: Restrict)
+
+  @@index([actionId, changedAt])
+  @@index([toState])
+}
+
+model EIAContinuousImprovementBacklogItem {
+  id                String       @id @default(cuid())
+  backlogKey         String       @unique
+  actionId           String
+  rank               Int?
+  criteriaVersion    String
+  totalScore         Decimal?
+  status             EIAWorkflowState @default(NEEDS_REVIEW)
+  provenanceId       String
+  immutability       EIAImmutability @default(MUTABLE_WITH_HISTORY)
+  createdAt          DateTime     @default(now())
+  archivedAt         DateTime?
+
+  action             EIAImprovementAction @relation(fields: [actionId], references: [id], onDelete: Restrict)
+  provenance         EIAProvenance @relation(fields: [provenanceId], references: [id], onDelete: Restrict)
+
+  @@index([actionId])
+  @@index([rank])
+  @@index([status])
+}
+
 // prisma/schema.prisma
