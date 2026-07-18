@@ -127,42 +127,22 @@
     {
       "id": "CLICK-001",
       "severity": "High",
-      "status": "READY_FOR_CONTROLLED_RETRY",
+      "status": "BLOCKED_RUNTIME",
       "baseline": "a4c2999",
-      "summary": "The first controlled production tracking request reached /api/track-click exactly once, redirected to the selected property URL, inserted one LISTING_CLICK interaction, and increased heat score by 5, but clickedAt stayed null because the primary Prisma JSON-path mark matched zero rows. Runtime fixes at 3d5d7aa and 8dc4f87 added Supabase fallback tracking, preference fallback, and zero-row clickedAt backfill; deployment 5503704415 reached success. A new explicitly authorized controlled retry is required before closure.",
+      "summary": "The authorized controlled retry after deployed fixes reached /api/track-click exactly once, redirected to the selected property URL, inserted one LISTING_CLICK interaction, and increased heat score by 5, but selected AlertQueue.clickedAt remained null. No second retry was made; CLICK-001 remains blocked at runtime.",
       "requiresProductionVerification": true,
       "deployment": {
         "id": "5503704415",
         "status": "success"
       },
       "productionVerification": {
-        "status": "partial",
-        "requestAt": "2026-07-18T17:08:54.796Z",
+        "status": "failed_clickedAt",
+        "requestAt": "2026-07-18T17:23:25.738Z",
         "alertId": "cmq0zp6up010gpd4uh5anfex5",
         "propertyUrl": "https://davidquinngroup.com/properties/6137-baseline-rd-boulder-co-ire1349635",
         "trackingRouteStatus": 307,
         "finalStatus": 200,
         "before": {
-          "clickedAt": null,
-          "heatScore": 5,
-          "interactionTotal": 1,
-          "listingClickTotal": 1,
-          "propertyClickTotal": 0,
-          "alertQueue": {
-            "pending": 195,
-            "sent": 85,
-            "skipped": 3
-          },
-          "bullMq": {
-            "waiting": 273,
-            "active": 0,
-            "delayed": 0,
-            "failed": 0
-          },
-          "crmTaskCount": 0,
-          "unsubscribeTokenCount": 57
-        },
-        "after": {
           "clickedAt": null,
           "heatScore": 10,
           "interactionTotal": 2,
@@ -182,7 +162,27 @@
           "crmTaskCount": 0,
           "unsubscribeTokenCount": 57
         },
-        "limitation": "No second tracking request was made. clickedAt remains unverified until explicitly authorized retry."
+        "after": {
+          "clickedAt": null,
+          "heatScore": 15,
+          "interactionTotal": 3,
+          "listingClickTotal": 3,
+          "propertyClickTotal": 2,
+          "alertQueue": {
+            "pending": 195,
+            "sent": 85,
+            "skipped": 3
+          },
+          "bullMq": {
+            "waiting": 273,
+            "active": 0,
+            "delayed": 0,
+            "failed": 0
+          },
+          "crmTaskCount": 0,
+          "unsubscribeTokenCount": 57
+        },
+        "limitation": "No second retry was made. clickedAt remains null after the explicitly authorized retry."
       }
     }
   ]
