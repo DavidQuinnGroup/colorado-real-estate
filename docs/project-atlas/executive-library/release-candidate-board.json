@@ -18,10 +18,14 @@
     {
       "id": "UNSUBSCRIBE-001",
       "severity": "Critical",
-      "status": "READY_FOR_VERIFICATION",
+      "status": "CLOSED",
       "baseline": "dae8f6d",
-      "summary": "Root cause verified and locally remediated: syntactically valid unknown tokens could hit Prisma lookup before client-error classification, and production missing DATABASE_URL collapsed that lookup failure into HTTP 500. Route now falls back to Supabase REST and keeps data-access outages controlled.",
-      "requiresProductionVerification": true,
+      "summary": "Production safe-token validation passed after 9343f6d: missing and malformed tokens returned 400, synthetic unknown and repeated unknown tokens returned 404, and valid-token scope isolation remains fixture-backed.",
+      "requiresProductionVerification": false,
+      "deployment": {
+        "id": "5503368803",
+        "status": "success"
+      },
       "localValidation": {
         "status": "passed",
         "commands": [
@@ -37,6 +41,42 @@
           "npm run build"
         ]
       }
+    },
+    {
+      "id": "PROPERTY-001",
+      "severity": "High",
+      "status": "CLOSED",
+      "baseline": "9343f6d",
+      "summary": "Production property detail route failed because Prisma-backed property reads still required DATABASE_URL in Vercel Production. def6537 added a read-only Supabase REST fallback for property detail and graceful related-link degradation; selected and additional property routes returned 200 and nonexistent property returned 404.",
+      "requiresProductionVerification": false,
+      "deployment": {
+        "id": "5503459520",
+        "status": "success"
+      },
+      "localValidation": {
+        "status": "passed",
+        "commands": [
+          "npm run check:next-security-version",
+          "npm run check:production-dependencies",
+          "npm run check:prisma-client-parity",
+          "npm run check:unsubscribe-safety",
+          "npm run check:search-runtime-safety",
+          "npm run check:property-route-safety",
+          "npx prisma validate",
+          "npm run lint",
+          "npm run typecheck",
+          "npm run worker:build",
+          "npm run build"
+        ]
+      }
+    },
+    {
+      "id": "EMAIL-001",
+      "severity": "High",
+      "status": "BLOCKED_PRE_SEND",
+      "baseline": "def6537",
+      "summary": "Controlled production alert delivery remains stopped before send until EMAIL-001 is explicitly resumed after PROPERTY-001 closure. No email was sent during PROPERTY-001.",
+      "requiresProductionVerification": true
     }
   ]
 }

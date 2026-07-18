@@ -29,6 +29,7 @@
     "scripts/checkNextSecurityVersion.ts",
     "scripts/checkPrismaClientParity.ts",
     "scripts/checkProductionDependencies.ts",
+    "scripts/checkPropertyRouteSafety.ts",
     "scripts/checkSearchRuntimeSafety.ts",
     "scripts/checkSupabase.ts",
     "scripts/checkUnsubscribeSafety.ts",

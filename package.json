@@ -23,6 +23,7 @@
     "check:notification-readiness:strict": "npm run worker:build && node dist/scripts/notificationReadinessSummary.js --strict",
     "check:notification-readiness:strict-contract": "npm run worker:build && node dist/scripts/notificationReadinessStrictCheck.js",
     "check:unsubscribe-safety": "npm run worker:build && node dist/scripts/checkUnsubscribeSafety.js",
+    "check:property-route-safety": "npm run worker:build && node dist/scripts/checkPropertyRouteSafety.js",
     "check:prisma-client-parity": "npm run worker:build && node dist/scripts/checkPrismaClientParity.js",
     "check:production-dependencies": "npm run worker:build && node dist/scripts/checkProductionDependencies.js",
     "check:next-security-version": "npm run worker:build && node dist/scripts/checkNextSecurityVersion.js",
