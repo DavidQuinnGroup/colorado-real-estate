@@ -1,13 +1,13 @@
 # RC1-CLICK-RUNTIME-001 - AlertQueue clickedAt Persistence Diagnosis
 
 Date opened: 2026-07-18
-Current status: `READY_FOR_DEPLOYMENT_VERIFICATION`
+Current status: `CLOSED`
 Parent issue: `CLICK-001`
 Severity: `High`
 
 ## Scope
 
-`CLICK-001` remains `BLOCKED_RUNTIME`. This diagnostic issue identifies and corrects the runtime cause that prevented selected `AlertQueue.clickedAt` from persisting. No production tracking URL was invoked during this diagnostic.
+This diagnostic issue identified and corrected the runtime cause that prevented selected `AlertQueue.clickedAt` from persisting. No production tracking URL was invoked during diagnosis. The separately authorized final production proof then verified the deployed correction and closed parent issue `CLICK-001`.
 
 ## Controlled Record
 
@@ -17,6 +17,8 @@ Severity: `High`
 - Property URL: `https://davidquinngroup.com/properties/6137-baseline-rd-boulder-co-ire1349635`.
 - Starting commit: `4e9cd1e`.
 - Starting deployment: `5503812665`, status `success`.
+- Corrected commit: `4c9d85c`.
+- Corrected deployment: `5503914616`, status `success`.
 
 ## Root Cause
 
@@ -93,6 +95,48 @@ Read-only health checks passed without invoking `/api/track-click`:
 - Selected property URL: HTTP 200.
 - `/search`: HTTP 200.
 
+## Final Production Proof
+
+The refreshed `CLICK-001` assignment explicitly authorized exactly one final production `GET` request to the same controlled tracking URL after deployment `5503914616`.
+
+Final proof results:
+
+| Surface | Before | After | Delta |
+| --- | ---: | ---: | ---: |
+| Selected alert clickedAt | `null` | `2026-07-18T17:59:15.571` | populated |
+| Selected user heat score | 15 | 20 | +5 |
+| Selected user interactions | 3 | 4 | +1 |
+| Selected user `LISTING_CLICK` interactions | 3 | 4 | +1 |
+| Selected property `LISTING_CLICK` interactions | 2 | 3 | +1 |
+| EmailLog total | 78 | 78 | 0 |
+| AlertQueue pending | 195 | 195 | 0 |
+| AlertQueue sent | 85 | 85 | 0 |
+| AlertQueue skipped | 3 | 3 | 0 |
+| BullMQ `reie-alerts` waiting | 273 | 273 | 0 |
+| BullMQ `reie-alerts` active | 0 | 0 | 0 |
+| BullMQ `reie-alerts` delayed | 0 | 0 | 0 |
+| BullMQ `reie-alerts` failed | 0 | 0 | 0 |
+| CRM task count | 0 | 0 | 0 |
+| Unsubscribe-token count | 57 | 57 | 0 |
+| Active saved-search count | 1 | 1 | 0 |
+
+HTTP evidence:
+
+- Tracking route: HTTP 307.
+- Redirect count: 1.
+- Final destination: `https://davidquinngroup.com/properties/6137-baseline-rd-boulder-co-ire1349635`.
+- Final destination status: HTTP 200.
+- Vercel route evidence: `x-matched-path: /api/track-click` then `x-matched-path: /properties/[id]`.
+
+Preferences remained readable after the proof:
+
+- `avgPrice: 4625000`.
+- `avgBeds: 4`.
+- `topCities: ["Boulder"]`.
+- No P2022 or schema error was observed.
+
+No second tracking request was made.
+
 ## Files Changed
 
 - `lib/tracking/store.ts`.
@@ -113,4 +157,8 @@ No production tracking URL request, email send, unsubscribe invocation, queue re
 
 ## Closure Decision
 
-`CLICK-RUNTIME-001` is ready for deployment verification after commit/push. `CLICK-001` remains `BLOCKED_RUNTIME` until a separately authorized final production proof is approved.
+`CLICK-RUNTIME-001` is `CLOSED`.
+
+`CLICK-001` is `CLOSED`.
+
+The deployed correction persisted `AlertQueue.clickedAt` during the one separately authorized final production proof, and unrelated production surfaces stayed isolated.

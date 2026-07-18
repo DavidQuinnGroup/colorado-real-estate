@@ -15,8 +15,8 @@ RC1 tracks production defects that block Internal Preview certification after th
 | `UNSUBSCRIBE-001` | Critical | `CLOSED` | `dae8f6d` | Production safe-token validation passed after `9343f6d`: missing and malformed tokens returned 400, synthetic unknown and repeated unknown tokens returned 404, and valid-token scope isolation remains fixture-backed. |
 | `PROPERTY-001` | High | `CLOSED` | `9343f6d` | Production `/properties/[id]` failed because the property detail route still depended on Prisma while Vercel Production lacks `DATABASE_URL`; deployed fix at `def6537` adds read-only Supabase REST fallback and related-link degradation. |
 | `EMAIL-001` | High | `CLOSED` | `def6537` | Controlled one-row production alert delivery proof passed from governed source `bd4f76c`: exactly `processAlertById("cmq0zp6up010gpd4uh5anfex5", false)` sent one email to the approved internal recipient, selected alert reached `sent`, EmailLog increased by one, and BullMQ/CRM/click side effects stayed isolated. |
-| `CLICK-001` | High | `BLOCKED_RUNTIME` | `a4c2999` | The authorized controlled retry after deployed fixes reached `/api/track-click` once, redirected to the selected property URL, inserted one `LISTING_CLICK`, and increased heat score by 5, but selected `AlertQueue.clickedAt` remained null. No second retry was made. |
-| `CLICK-RUNTIME-001` | High | `READY_FOR_DEPLOYMENT_VERIFICATION` | `4e9cd1e` | Root cause verified: the Supabase fallback scanned only the first 100 unclicked alert rows, while the selected row was row 118 in the unordered eligible set. The correction pages bounded candidates, marks before enrichment, and synthetic tests prove clickedAt persistence plus repeat-request idempotency. |
+| `CLICK-001` | High | `CLOSED` | `a4c2999` | Final controlled production proof after deployed correction `4c9d85c` made exactly one authorized tracked-link request, returned `307 -> 200`, persisted selected `AlertQueue.clickedAt`, added exactly one click interaction, increased heat score once, and preserved EmailLog, queue, CRM, token, saved-search, and BullMQ isolation. |
+| `CLICK-RUNTIME-001` | High | `CLOSED` | `4e9cd1e` | Root cause verified and deployed: the Supabase fallback scanned only the first 100 unclicked alert rows while the selected row was row 118. Correction `4c9d85c` pages bounded candidates, marks before enrichment, suppresses duplicate enrichment, and final production proof persisted `clickedAt`. |
 
 ## Status Definitions
 
@@ -37,4 +37,4 @@ RC1 tracks production defects that block Internal Preview certification after th
 
 `RC1_NOT_CERTIFIED`
 
-Reason: `SEARCH-001`, `UNSUBSCRIBE-001`, `PROPERTY-001`, and `EMAIL-001` are production verified and closed. `CLICK-RUNTIME-001` has a local correction with passing synthetic and RC1 safety checks, but `CLICK-001` remains blocked until a separately authorized final production proof verifies `clickedAt`. RC1 remains uncertified until `CLICK-001` and the remaining valid-unsubscribe proof issue are closed.
+Reason: `SEARCH-001`, `UNSUBSCRIBE-001`, `PROPERTY-001`, `EMAIL-001`, `CLICK-RUNTIME-001`, and `CLICK-001` are production verified and closed. RC1 remains uncertified until the remaining valid-unsubscribe proof issue is explicitly authorized, executed, and closed.

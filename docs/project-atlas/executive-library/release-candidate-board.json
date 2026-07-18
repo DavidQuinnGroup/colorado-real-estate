@@ -127,51 +127,41 @@
     {
       "id": "CLICK-001",
       "severity": "High",
-      "status": "BLOCKED_RUNTIME",
+      "status": "CLOSED",
       "baseline": "a4c2999",
-      "summary": "The authorized controlled retry after deployed fixes reached /api/track-click exactly once, redirected to the selected property URL, inserted one LISTING_CLICK interaction, and increased heat score by 5, but selected AlertQueue.clickedAt remained null. No second retry was made; CLICK-001 remains blocked at runtime.",
-      "requiresProductionVerification": true,
+      "summary": "Final controlled production proof after deployed correction 4c9d85c made exactly one authorized tracked-link request, returned 307 then 200, persisted selected AlertQueue.clickedAt, added exactly one LISTING_CLICK interaction, increased heat score once, and preserved EmailLog, AlertQueue aggregate, BullMQ, CRM, unsubscribe-token, and saved-search isolation.",
+      "requiresProductionVerification": false,
       "deployment": {
-        "id": "5503704415",
+        "id": "5503914616",
         "status": "success"
       },
       "productionVerification": {
-        "status": "failed_clickedAt",
-        "requestAt": "2026-07-18T17:23:25.738Z",
+        "status": "passed",
+        "requestAt": "2026-07-18T17:59:15.571Z",
         "alertId": "cmq0zp6up010gpd4uh5anfex5",
         "propertyUrl": "https://davidquinngroup.com/properties/6137-baseline-rd-boulder-co-ire1349635",
         "trackingRouteStatus": 307,
+        "redirectCount": 1,
         "finalStatus": 200,
         "before": {
-          "clickedAt": null,
-          "heatScore": 10,
-          "interactionTotal": 2,
-          "listingClickTotal": 2,
-          "propertyClickTotal": 1,
-          "alertQueue": {
-            "pending": 195,
-            "sent": 85,
-            "skipped": 3
-          },
-          "bullMq": {
-            "waiting": 273,
-            "active": 0,
-            "delayed": 0,
-            "failed": 0
-          },
-          "crmTaskCount": 0,
-          "unsubscribeTokenCount": 57
-        },
-        "after": {
           "clickedAt": null,
           "heatScore": 15,
           "interactionTotal": 3,
           "listingClickTotal": 3,
           "propertyClickTotal": 2,
+          "preferences": {
+            "avgPrice": 4625000,
+            "avgBeds": 4,
+            "topCities": [
+              "Boulder"
+            ]
+          },
           "alertQueue": {
             "pending": 195,
             "sent": 85,
-            "skipped": 3
+            "skipped": 3,
+            "processing": 0,
+            "failed": 0
           },
           "bullMq": {
             "waiting": 273,
@@ -180,19 +170,64 @@
             "failed": 0
           },
           "crmTaskCount": 0,
-          "unsubscribeTokenCount": 57
+          "unsubscribeTokenCount": 57,
+          "activeSavedSearchCount": 1,
+          "emailLogTotal": 78
         },
-        "limitation": "No second retry was made. clickedAt remains null after the explicitly authorized retry."
+        "after": {
+          "clickedAt": "2026-07-18T17:59:15.571",
+          "heatScore": 20,
+          "interactionTotal": 4,
+          "listingClickTotal": 4,
+          "propertyClickTotal": 3,
+          "preferences": {
+            "avgPrice": 4625000,
+            "avgBeds": 4,
+            "topCities": [
+              "Boulder"
+            ]
+          },
+          "alertQueue": {
+            "pending": 195,
+            "sent": 85,
+            "skipped": 3,
+            "processing": 0,
+            "failed": 0
+          },
+          "bullMq": {
+            "waiting": 273,
+            "active": 0,
+            "delayed": 0,
+            "failed": 0
+          },
+          "crmTaskCount": 0,
+          "unsubscribeTokenCount": 57,
+          "activeSavedSearchCount": 1,
+          "emailLogTotal": 78
+        },
+        "isolation": {
+          "emailLogDelta": 0,
+          "alertQueueAggregateDelta": 0,
+          "bullMqDelta": 0,
+          "crmTaskDelta": 0,
+          "unsubscribeTokenDelta": 0,
+          "activeSavedSearchDelta": 0,
+          "secondTrackingRequestMade": false
+        }
       }
     },
     {
       "id": "CLICK-RUNTIME-001",
       "severity": "High",
-      "status": "READY_FOR_DEPLOYMENT_VERIFICATION",
+      "status": "CLOSED",
       "baseline": "4e9cd1e",
       "parent": "CLICK-001",
-      "summary": "Root cause verified: the Supabase fallback scanned only the first 100 unclicked alert rows, while the selected controlled row was row 118 in the unordered eligible set. The correction pages bounded candidates, marks clickedAt before enrichment, and synthetic tests prove clickedAt persistence plus repeat-request idempotency. No production tracking URL was invoked.",
-      "requiresProductionVerification": true,
+      "summary": "Root cause verified and deployed: the Supabase fallback scanned only the first 100 unclicked alert rows, while the selected controlled row was row 118 in the eligible set. Correction 4c9d85c pages bounded candidates, marks clickedAt before enrichment, suppresses duplicate enrichment, and final production proof persisted clickedAt.",
+      "requiresProductionVerification": false,
+      "deployment": {
+        "id": "5503914616",
+        "status": "success"
+      },
       "diagnosis": {
         "eligibleUnclickedRows": 118,
         "routeShapeReturned": 100,
@@ -216,6 +251,15 @@
           "npm run lint",
           "npm run build"
         ]
+      },
+      "productionVerification": {
+        "status": "passed",
+        "requestAt": "2026-07-18T17:59:15.571Z",
+        "alertId": "cmq0zp6up010gpd4uh5anfex5",
+        "clickedAtBefore": null,
+        "clickedAtAfter": "2026-07-18T17:59:15.571",
+        "redirectCount": 1,
+        "finalStatus": 200
       }
     }
   ]

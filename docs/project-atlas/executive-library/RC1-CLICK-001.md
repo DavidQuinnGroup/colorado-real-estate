@@ -1,7 +1,7 @@
 # RC1-CLICK-001 - Controlled Production Tracked-Link Proof
 
 Date opened: 2026-07-18  
-Current status: `BLOCKED_RUNTIME`
+Current status: `CLOSED`
 Severity: `High`
 
 ## Baseline
@@ -229,6 +229,130 @@ Post-retry read-only Supabase diagnostics still found the selected alert as the 
 - Matching row id: `cmq0zp6up010gpd4uh5anfex5`.
 - Selected `clickedAt`: `null`.
 
-## Closure Decision
+## Previous Runtime Blocker
 
-`CLICK-001` is not closed. It is `BLOCKED_RUNTIME`: the explicitly authorized retry verified redirect and enrichment again, but selected `AlertQueue.clickedAt` remained null. No additional tracking request is authorized without a new assignment.
+At that point, `CLICK-001` was not closed. It was `BLOCKED_RUNTIME`: the explicitly authorized retry verified redirect and enrichment again, but selected `AlertQueue.clickedAt` remained null. No additional tracking request was authorized without a new assignment.
+
+## Final Controlled Production Proof
+
+The refreshed assignment explicitly authorized exactly one final production `GET` request after deployed correction `4c9d85c` / deployment `5503914616`.
+
+### Final Proof Preflight
+
+| Surface | Before final proof |
+| --- | ---: |
+| Local HEAD | `4c9d85c` |
+| Origin `main` | `4c9d85c` |
+| Working tree | clean |
+| Selected alert status | `sent` |
+| Selected alert clickedAt | `null` |
+| EmailLog total | 78 |
+| AlertQueue pending | 195 |
+| AlertQueue sent | 85 |
+| AlertQueue skipped | 3 |
+| AlertQueue processing | 0 |
+| AlertQueue failed | 0 |
+| BullMQ `reie-alerts` waiting | 273 |
+| BullMQ `reie-alerts` active | 0 |
+| BullMQ `reie-alerts` delayed | 0 |
+| BullMQ `reie-alerts` failed | 0 |
+| Selected user heat score | 15 |
+| Selected user interactions | 3 |
+| Selected user `LISTING_CLICK` interactions | 3 |
+| Selected property `LISTING_CLICK` interactions | 2 |
+| Selected user CRM tasks | 0 |
+| Selected user unsubscribe tokens | 57 |
+| Selected user active saved searches | 1 |
+
+Preflight preference row:
+
+- `avgPrice: 4625000`.
+- `avgBeds: 4`.
+- `topCities: ["Boulder"]`.
+- `updatedAt: 2026-07-17T19:52:17.997`.
+
+Production health before final proof:
+
+- Selected property URL: HTTP 200.
+- `/search`: HTTP 200.
+
+### Final Proof Request
+
+Executed exactly one final production tracking request:
+
+```text
+GET /api/track-click?u=<selected-user>&l=cmpy48m3d047b129oeqh0r22m&src=email_alert&to=<selected-property-url>
+```
+
+No second tracking request was made.
+
+### Final HTTP Evidence
+
+| Step | Result |
+| --- | --- |
+| Tracking route | HTTP 307 |
+| Redirect location | `https://davidquinngroup.com/properties/6137-baseline-rd-boulder-co-ire1349635` |
+| Final property URL | HTTP 200 |
+| Redirect count | 1 |
+| Vercel route evidence | `x-matched-path: /api/track-click` then `x-matched-path: /properties/[id]` |
+
+### Final After State
+
+| Surface | After final proof | Delta |
+| --- | ---: | ---: |
+| Selected alert clickedAt | `2026-07-18T17:59:15.571` | populated |
+| Selected user heat score | 20 | +5 |
+| Selected user interactions | 4 | +1 |
+| Selected user `LISTING_CLICK` interactions | 4 | +1 |
+| Selected property `LISTING_CLICK` interactions | 3 | +1 |
+| EmailLog total | 78 | 0 |
+| AlertQueue pending | 195 | 0 |
+| AlertQueue sent | 85 | 0 |
+| AlertQueue skipped | 3 | 0 |
+| AlertQueue processing | 0 | 0 |
+| AlertQueue failed | 0 | 0 |
+| BullMQ `reie-alerts` waiting | 273 | 0 |
+| BullMQ `reie-alerts` active | 0 | 0 |
+| BullMQ `reie-alerts` delayed | 0 | 0 |
+| BullMQ `reie-alerts` failed | 0 | 0 |
+| Selected user CRM tasks | 0 | 0 |
+| Selected user unsubscribe tokens | 57 | 0 |
+| Selected user active saved searches | 1 | 0 |
+
+Recorded final interaction:
+
+- Type: `LISTING_CLICK`.
+- Listing id: `cmpy48m3d047b129oeqh0r22m`.
+- Source: `email_alert`.
+- Destination: selected property URL.
+- Tracked at: `2026-07-18T17:59:15.571Z`.
+
+Preference row after final proof:
+
+- `avgPrice: 4625000`.
+- `avgBeds: 4`.
+- `topCities: ["Boulder"]`.
+- `updatedAt: 2026-07-17T19:52:17.997`.
+- No P2022 or schema error was observed in post-click verification.
+
+### Final Validation
+
+Passed after final proof:
+
+- `npm run check:track-click-runtime-safety`
+- `npm run check:unsubscribe-safety`
+- `npm run check:search-runtime-safety`
+- `npm run check:property-route-safety`
+- `npm run typecheck`
+- `npm run lint`
+- `npm run build`
+
+`npm run check:track-click-safety` passed before the final proof and was not rerun afterward because it intentionally asserts the selected controlled row is still pre-click with `clickedAt: null`.
+
+### Final Closure Decision
+
+`CLICK-RUNTIME-001`: `CLOSED`.
+
+`CLICK-001`: `CLOSED`.
+
+The final proof satisfied the closure criteria: exactly one authorized tracking request occurred, the redirect chain was `307 -> 200`, selected `AlertQueue.clickedAt` changed from null to a timestamp, enrichment changed exactly once, and unrelated production surfaces stayed isolated.
