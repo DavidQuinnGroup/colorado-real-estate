@@ -75,13 +75,14 @@ export type EnterpriseAdapterLifecycleConfig<TSourceState> = {
   calculationVersion: string;
   invocationPrefix: string;
   sourceType: string;
-  sourceQueryRef: string;
+  sourceQueryRef: string | ((source: TSourceState) => string);
   evidenceType: string;
   evidenceTitle: string;
   readSourceState: () => Promise<TSourceState>;
   sourceEffectiveAt: (source: TSourceState) => Date;
   sourceStateFingerprint: (source: TSourceState) => string;
   mapObservations: (source: TSourceState, freshness: EIAFreshness, startedAt: Date) => EnterpriseAdapterObservationPlan[];
+  summarizeSourceState?: (source: TSourceState) => unknown;
   unsupportedKpis: EnterpriseAdapterUnsupportedMetric[];
 };
 
@@ -109,6 +110,7 @@ export type EnterpriseAdapterResult = {
   validationFailures: string[];
   persistenceFailures: string[];
   unsupportedKpis: EnterpriseAdapterUnsupportedMetric[];
+  sourceSummary?: unknown;
   observations: EnterpriseAdapterObservationPlan[];
 };
 
@@ -185,6 +187,8 @@ export async function invokeEnterpriseAdapter<TSourceState>(
   const effectiveAt = config.sourceEffectiveAt(source);
   const freshness = freshnessForEnterpriseAdapterSource(effectiveAt, started);
   const sourceStateFingerprint = config.sourceStateFingerprint(source);
+  const sourceQueryRef = typeof config.sourceQueryRef === "function" ? config.sourceQueryRef(source) : config.sourceQueryRef;
+  const sourceSummary = config.summarizeSourceState?.(source);
   const observations = config.mapObservations(source, freshness, started);
   const unavailable = observations.filter((item) => item.value === null).length;
 
@@ -204,7 +208,7 @@ export async function invokeEnterpriseAdapter<TSourceState>(
         sourceSystem: config.metadata.sourceSystem,
         sourceType: config.sourceType,
         sourceRecordId: invocationId,
-        sourceQueryRef: config.sourceQueryRef,
+        sourceQueryRef,
         observationAt: effectiveAt,
         processedAt: started,
         environment,
@@ -224,7 +228,7 @@ export async function invokeEnterpriseAdapter<TSourceState>(
         evidenceType: config.evidenceType,
         title: config.evidenceTitle,
         sourceSystem: config.metadata.sourceSystem,
-        sourceQueryRef: config.sourceQueryRef,
+        sourceQueryRef,
         observedAt: effectiveAt,
         contentHash: sourceStateFingerprint,
         provenanceId: provenance.id,
@@ -356,6 +360,7 @@ export async function invokeEnterpriseAdapter<TSourceState>(
     validationFailures,
     persistenceFailures,
     unsupportedKpis: config.unsupportedKpis,
+    sourceSummary,
     observations,
   };
 }

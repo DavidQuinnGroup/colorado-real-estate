@@ -67,6 +67,8 @@ export async function invokeEnterpriseAdapter(config, options) {
     const effectiveAt = config.sourceEffectiveAt(source);
     const freshness = freshnessForEnterpriseAdapterSource(effectiveAt, started);
     const sourceStateFingerprint = config.sourceStateFingerprint(source);
+    const sourceQueryRef = typeof config.sourceQueryRef === "function" ? config.sourceQueryRef(source) : config.sourceQueryRef;
+    const sourceSummary = config.summarizeSourceState?.(source);
     const observations = config.mapObservations(source, freshness, started);
     const unavailable = observations.filter((item) => item.value === null).length;
     for (const plan of observations) {
@@ -83,7 +85,7 @@ export async function invokeEnterpriseAdapter(config, options) {
                 sourceSystem: config.metadata.sourceSystem,
                 sourceType: config.sourceType,
                 sourceRecordId: invocationId,
-                sourceQueryRef: config.sourceQueryRef,
+                sourceQueryRef,
                 observationAt: effectiveAt,
                 processedAt: started,
                 environment,
@@ -102,7 +104,7 @@ export async function invokeEnterpriseAdapter(config, options) {
                 evidenceType: config.evidenceType,
                 title: config.evidenceTitle,
                 sourceSystem: config.metadata.sourceSystem,
-                sourceQueryRef: config.sourceQueryRef,
+                sourceQueryRef,
                 observedAt: effectiveAt,
                 contentHash: sourceStateFingerprint,
                 provenanceId: provenance.id,
@@ -226,6 +228,7 @@ export async function invokeEnterpriseAdapter(config, options) {
         validationFailures,
         persistenceFailures,
         unsupportedKpis: config.unsupportedKpis,
+        sourceSummary,
         observations,
     };
 }
