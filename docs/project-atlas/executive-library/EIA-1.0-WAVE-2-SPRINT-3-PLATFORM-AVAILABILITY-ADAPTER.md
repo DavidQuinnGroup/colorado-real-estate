@@ -3,15 +3,12 @@
 ## Sprint Status
 
 ```text
-IMPLEMENTED
-VALIDATED
-DEPLOYED
-ACTIVATION_PENDING
+CERTIFIED_AND_CLOSED
 ```
 
-This record does not certify or close Sprint 3. Controlled production activation and idempotency evidence must be completed before Sprint 3 can be marked `CERTIFIED_AND_CLOSED`.
+Sprint 3 is certified and closed after completed owner-run production activation, idempotency validation, inspection evidence, and executive review.
 
-Sprint 4 is not authorized by this record.
+Sprint 4, Search Runtime Adapter, is authorized for implementation by executive review after completed Sprint 3 activation evidence. Sprint 5 is not authorized by this record.
 
 ## Scope
 
@@ -370,44 +367,209 @@ This confirms route availability with explicit degraded search-source posture.
 
 ## Activation Boundary
 
-Sprint 3 is not certified or closed until owner-run production activation and idempotency evidence are complete.
+Sprint 3 production activation is complete.
 
-Codex local environment check:
-
-```text
-hasAdminKey = false
-keyName = null
-```
-
-Current activation status:
+Activation status:
 
 ```text
-IMPLEMENTED_DEPLOYED_ACTIVATION_PENDING_OWNER_ACTION
+CERTIFIED_AND_CLOSED
 ```
 
-Required owner-run sequence:
+## Executive Certification
 
-```bash
-curl --max-time 30 -s -X POST -H "x-admin-key: ${REIE_ADMIN_API_KEY}" "https://davidquinngroup.com/api/admin/enterprise/platform-availability-adapter?invocationId=PLAT-SPRINT3-DRYRUN" | jq
-curl --max-time 30 -s -X POST -H "x-admin-key: ${REIE_ADMIN_API_KEY}" "https://davidquinngroup.com/api/admin/enterprise/platform-availability-adapter?execute=true&invocationId=PLAT-SPRINT3-ACTIVATION-1" | jq
-curl --max-time 30 -s -X POST -H "x-admin-key: ${REIE_ADMIN_API_KEY}" "https://davidquinngroup.com/api/admin/enterprise/platform-availability-adapter?execute=true&invocationId=PLAT-SPRINT3-ACTIVATION-2" | jq
-curl --max-time 30 -s -H "x-admin-key: ${REIE_ADMIN_API_KEY}" "https://davidquinngroup.com/api/admin/enterprise/platform-availability-adapter" | jq
-```
+EIA 1.0 Wave 2 Sprint 3, Platform Availability Adapter, is certified and closed.
 
-The two execute invocations should be run inside the same 15-minute governed observation window for idempotency evidence.
+Certification authority: PROJECT ATLAS Executive Architecture.
 
-Expected first execute persistence, absent an existing matching live source state:
+Certification basis:
+
+- Runtime commit `52fd69307fd6249f3b87eee7c39cc416b507e824`.
+- Documentation handoff commit `e5dc522749c09ced63775614520f5660b12ca352`.
+- Adapter ID `PLATFORM_AVAILABILITY`.
+- Adapter version `1.0.0`.
+- Environment `PRODUCTION`.
+- Controlled dry-run evidence.
+- Controlled production activation evidence.
+- Same-window idempotency validation.
+- Authorized inspection evidence.
+- Security validation.
+- Production-write review.
+
+## Controlled Dry-Run Evidence
+
+Invocation:
 
 ```text
+PLAT-SPRINT3-DRYRUN
+```
+
+Verified:
+
+```text
+success = true
+mode = DRY_RUN
+writesEiaPersistence = false
+sourceStatus = SUCCESS
+validationStatus = SUCCESS
+persistenceStatus = SUCCESS
+overallStatus = SUCCESS
+observationsAttempted = 2
+observationsPersisted = 0
+observationsDeduplicated = 0
+validationFailures = 0
+persistenceFailures = 0
+```
+
+Supported KPI dry-run values:
+
+```text
+KPI-PLAT-001 Production Availability = 100%
+KPI-PLAT-002 Search API Success Rate = 100%
+```
+
+Unsupported or unavailable metrics remained explicit:
+
+| Metric | Status |
+| --- | --- |
+| Critical Route Availability | `UNSUPPORTED` |
+| Protected Route Integrity | `UNSUPPORTED` |
+| `KPI-PLAT-003` Search Response Time | `UNAVAILABLE` |
+| `KPI-PLAT-004` Application Error Rate | `UNAVAILABLE` |
+| Search Provider Quality | `UNSUPPORTED` |
+
+## Endpoint Classification Evidence
+
+Verified endpoint classifications:
+
+| Endpoint | Status | Classification |
+| --- | --- | --- |
+| `HOME` | `200` | `AVAILABLE` |
+| `SEARCH_UI` | `200` | `AVAILABLE` |
+| `SEARCH_API` | `200` | `AVAILABLE_DEGRADED` |
+| `PROPERTY_ROUTE` | `200` | `AVAILABLE` |
+| `ENTERPRISE_AUTH_BOUNDARY` | `401` | `HEALTHY_AUTH_BOUNDARY` |
+
+The Search API degradation was preserved separately from endpoint availability.
+
+The protected unauthenticated `401` was correctly treated as healthy access control.
+
+## Controlled Production Activation
+
+Invocation:
+
+```text
+PLAT-SPRINT3-ACTIVATION-1
+```
+
+Verified:
+
+```text
+success = true
+mode = EXECUTE
+writesEiaPersistence = true
+overallStatus = SUCCESS
+persistenceStatus = SUCCESS
+observationsAttempted = 2
 observationsPersisted = 2
 observationsDeduplicated = 0
+validationFailures = 0
+persistenceFailures = 0
 ```
 
-Expected identical idempotency invocation:
+## Persisted Observation Evidence
+
+Persisted live observations:
+
+| KPI | Value |
+| --- | --- |
+| `KPI-PLAT-001` | `100` |
+| `KPI-PLAT-002` | `100` |
+
+Each persisted observation was verified with:
 
 ```text
+environment = PRODUCTION
+dataOrigin = LIVE
+confidence = HIGH
+freshness = FRESH
+privacy = INTERNAL
+sensitivity = INTERNAL
+retention = HISTORICAL
+immutability = APPEND_ONLY
+```
+
+## Idempotency Validation
+
+Invocation:
+
+```text
+PLAT-SPRINT3-ACTIVATION-2
+```
+
+Verified within the same governed 15-minute observation window:
+
+```text
+overallStatus = SUCCESS
+persistenceStatus = SUCCESS
+observationsAttempted = 2
 observationsPersisted = 0
 observationsDeduplicated = 2
+validationFailures = 0
+persistenceFailures = 0
+```
+
+The original observation and evaluation records were reused. No uncontrolled duplicate history was created.
+
+## Inspection Evidence
+
+Verified:
+
+```text
+adapterId = PLATFORM_AVAILABILITY
+adapterVersion = 1.0.0
+environment = PRODUCTION
+latestLiveObservationCount = 2
+manualInvocationOnly = true
+publicExposure = false
+productionOrigin = https://davidquinngroup.com
+endpointRegistryVersion = EIA-1.0-platform-availability-registry-v1
+```
+
+Supported KPIs:
+
+```text
+KPI-PLAT-001
+KPI-PLAT-002
+```
+
+## Security Validation
+
+Confirmed:
+
+```text
+Admin authentication required
+Unauthenticated GET = 401
+Unauthenticated POST = 401
+Public-equivalent route = 404
+```
+
+## Production-Write Review
+
+Confirmed absent during Sprint 3:
+
+```text
+No customer mutation
+No CRM mutation
+No MLS mutation
+No Typesense mutation
+No Repository mutation
+No email action
+No queue release
+No worker activation
+No scheduler activation
+No cron activation
+No automatic invocation
+No fixture persistence as live evidence
 ```
 
 ## Known Limitations
@@ -417,6 +579,30 @@ observationsDeduplicated = 2
 Critical route availability and protected-route integrity remain reported as unsupported because no canonical governed KPI IDs exist in the current registry.
 
 The adapter does not measure provider-level search quality or application error rate. Those require separately governed sources.
+
+`GAP-006` remains:
+
+```text
+OPEN_MATERIAL_REDUCED
+```
+
+Sprint 5 is not authorized by this record.
+
+## Closure Determination
+
+EIA 1.0 Wave 2 Sprint 3, Platform Availability Adapter, is:
+
+```text
+CERTIFIED_AND_CLOSED
+```
+
+EIA 1.0 Wave 2 Sprint 4, Search Runtime Adapter, is:
+
+```text
+AUTHORIZED_FOR_IMPLEMENTATION
+```
+
+This Sprint 4 authorization comes from executive review after completed Sprint 3 activation evidence.
 
 `GAP-006` remains:
 
