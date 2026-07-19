@@ -5,7 +5,7 @@
 ```text
 IMPLEMENTED
 VALIDATED
-DEPLOYMENT_PENDING
+DEPLOYED
 ACTIVATION_PENDING
 ```
 
@@ -321,9 +321,69 @@ git diff --check
 
 No Prisma schema change, migration, database reset, `prisma db push`, live sync, worker activation, queue processing, email send, CRM mutation, MLS request, Typesense mutation, OpenAI call, or TitlePro247 call was performed.
 
+## Deployment
+
+Implementation commit:
+
+```text
+52fd69307fd6249f3b87eee7c39cc416b507e824
+```
+
+Git-triggered Vercel deployment completed successfully.
+
+Deployment evidence:
+
+```text
+GitHub commit status: success
+Vercel context: Vercel
+Description: Deployment has completed
+Status ID: 50719137999
+Target: https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/8DRwhyQGb551yJqm97b58ex3C6te
+```
+
+## Post-Deployment Health
+
+Unauthenticated production probes completed after deployment:
+
+| Probe | Expected | Result |
+| --- | --- | --- |
+| `/` | `200` | `200` |
+| `/search` | `200` | `200` |
+| `/api/search?limit=1` | `200` | `200` |
+| `/properties/6137-baseline-rd-boulder-co-ire1349635` | `200` | `200` |
+| `/api/admin/enterprise/health` without auth | `401` | `401` |
+| `/api/admin/enterprise/platform-availability-adapter` without auth | `401` | `401` |
+| `POST /api/admin/enterprise/platform-availability-adapter` without auth | `401` | `401` |
+| `/api/enterprise/platform-availability-adapter` | `404` | `404` |
+
+Search API bounded summary:
+
+```text
+source = database
+health = degraded
+ready = false
+blockerCount = 1
+resultCount = 1
+```
+
+This confirms route availability with explicit degraded search-source posture.
+
 ## Activation Boundary
 
 Sprint 3 is not certified or closed until owner-run production activation and idempotency evidence are complete.
+
+Codex local environment check:
+
+```text
+hasAdminKey = false
+keyName = null
+```
+
+Current activation status:
+
+```text
+IMPLEMENTED_DEPLOYED_ACTIVATION_PENDING_OWNER_ACTION
+```
 
 Required owner-run sequence:
 
