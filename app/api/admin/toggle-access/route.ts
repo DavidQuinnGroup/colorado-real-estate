@@ -1,5 +1,9 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
+import {
+  authorizeRepositoryAdminRequest,
+  repositoryAdminUnauthorizedResponse,
+} from '@/app/api/admin/repository/auth';
 import { prisma } from '@/lib/prisma';
 
 type ToggleAccessRequestBody = {
@@ -22,7 +26,11 @@ function getErrorMessage(error: unknown) {
   return error instanceof Error ? error.message : String(error);
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
+  if (!authorizeRepositoryAdminRequest(request)) {
+    return repositoryAdminUnauthorizedResponse();
+  }
+
   try {
     const body = (await request.json().catch(() => ({}))) as ToggleAccessRequestBody;
     const userId = toCleanString(body.userId);

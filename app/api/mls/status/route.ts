@@ -206,7 +206,7 @@ function getAdminKey() {
 function getRequestAdminKey(request: NextRequest) {
   const authorization = request.headers.get('authorization') || '';
   const bearerToken = authorization.toLowerCase().startsWith('bearer ') ? authorization.slice(7).trim() : '';
-  return request.headers.get('x-admin-key') || bearerToken || request.nextUrl.searchParams.get('adminKey') || '';
+  return request.headers.get('x-admin-key') || bearerToken || '';
 }
 
 function authorizeRequest(request: NextRequest) {
@@ -305,7 +305,10 @@ function getErrorMessage(error: unknown) {
 }
 
 function getInspectionCommand(request?: NextRequest) {
-  return `curl --max-time 8 -s "${LOCAL_BASE_URL}${STATUS_ROUTE}${request?.nextUrl.search || ''}" -H "x-admin-key: $REIE_ADMIN_API_KEY"`;
+  const searchParams = request ? new URLSearchParams(request.nextUrl.searchParams) : new URLSearchParams();
+  searchParams.delete('adminKey');
+  const search = searchParams.toString() ? `?${searchParams.toString()}` : '';
+  return `curl --max-time 8 -s "${LOCAL_BASE_URL}${STATUS_ROUTE}${search}" -H "x-admin-key: $REIE_ADMIN_API_KEY"`;
 }
 
 function getInspectionMetadata(request?: NextRequest) {

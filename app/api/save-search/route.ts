@@ -1,6 +1,12 @@
+import { randomUUID } from 'node:crypto';
+
 import { NextRequest, NextResponse } from 'next/server';
 
 import { prisma } from '@/lib/prisma';
+import {
+  assertPublicRuntimeSchema,
+  isPublicRuntimeSchemaUnavailableError,
+} from '@/lib/runtime/publicSchemaSafety';
 
 type SaveSearchBody = {
   email?: unknown;
@@ -370,87 +376,16 @@ function buildOperationsCommands(savedSearchId: string) {
   };
 }
 
-async function ensureIntakeSchema() {
+async function assertIntakeSchema() {
   if (intakeSchemaReady) return;
 
-  await prisma.$executeRawUnsafe('CREATE EXTENSION IF NOT EXISTS pgcrypto');
-  await prisma.$executeRawUnsafe('ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "name" TEXT');
-  await prisma.$executeRawUnsafe('ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "status" TEXT NOT NULL DEFAULT \'Lead\'');
-  await prisma.$executeRawUnsafe('ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "hasPrivateAccess" BOOLEAN NOT NULL DEFAULT false');
-  await prisma.$executeRawUnsafe('ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "heatScore" INTEGER NOT NULL DEFAULT 0');
-  await prisma.$executeRawUnsafe('ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "aestheticTag" TEXT');
-  await prisma.$executeRawUnsafe('ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "intentSchema" TEXT');
-  await prisma.$executeRawUnsafe('ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "legacyGoal" TEXT');
-  await prisma.$executeRawUnsafe('ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "unsubscribedAt" TIMESTAMP(3)');
-  await prisma.$executeRawUnsafe('ALTER TABLE "SavedSearch" ADD COLUMN IF NOT EXISTS "type" TEXT');
-  await prisma.$executeRawUnsafe('ALTER TABLE "SavedSearch" ADD COLUMN IF NOT EXISTS "north" DOUBLE PRECISION');
-  await prisma.$executeRawUnsafe('ALTER TABLE "SavedSearch" ADD COLUMN IF NOT EXISTS "south" DOUBLE PRECISION');
-  await prisma.$executeRawUnsafe('ALTER TABLE "SavedSearch" ADD COLUMN IF NOT EXISTS "east" DOUBLE PRECISION');
-  await prisma.$executeRawUnsafe('ALTER TABLE "SavedSearch" ADD COLUMN IF NOT EXISTS "west" DOUBLE PRECISION');
-  await prisma.$executeRawUnsafe('ALTER TABLE "NorthStar" ADD COLUMN IF NOT EXISTS "lat" DOUBLE PRECISION');
-  await prisma.$executeRawUnsafe('ALTER TABLE "NorthStar" ADD COLUMN IF NOT EXISTS "lng" DOUBLE PRECISION');
-  await prisma.$executeRawUnsafe(`
-    CREATE TABLE IF NOT EXISTS "CRMTask" (
-      "id" TEXT NOT NULL DEFAULT gen_random_uuid()::TEXT,
-      "leadId" TEXT NOT NULL,
-      "type" TEXT NOT NULL,
-      "status" TEXT NOT NULL DEFAULT 'pending',
-      "priority" TEXT NOT NULL DEFAULT 'medium',
-      "title" TEXT NOT NULL,
-      "metadata" JSONB,
-      "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-      CONSTRAINT "CRMTask_pkey" PRIMARY KEY ("id")
-    )
-  `);
-  await prisma.$executeRawUnsafe('ALTER TABLE "CRMTask" ADD COLUMN IF NOT EXISTS "leadId" TEXT');
-  await prisma.$executeRawUnsafe('ALTER TABLE "CRMTask" ADD COLUMN IF NOT EXISTS "type" TEXT NOT NULL DEFAULT \'strategy_intake\'');
-  await prisma.$executeRawUnsafe('ALTER TABLE "CRMTask" ADD COLUMN IF NOT EXISTS "status" TEXT NOT NULL DEFAULT \'pending\'');
-  await prisma.$executeRawUnsafe('ALTER TABLE "CRMTask" ADD COLUMN IF NOT EXISTS "priority" TEXT NOT NULL DEFAULT \'medium\'');
-  await prisma.$executeRawUnsafe('ALTER TABLE "CRMTask" ADD COLUMN IF NOT EXISTS "title" TEXT NOT NULL DEFAULT \'REIE intake\'');
-  await prisma.$executeRawUnsafe('ALTER TABLE "CRMTask" ADD COLUMN IF NOT EXISTS "metadata" JSONB');
-  await prisma.$executeRawUnsafe('ALTER TABLE "CRMTask" ADD COLUMN IF NOT EXISTS "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP');
-  await prisma.$executeRawUnsafe(`
-    CREATE TABLE IF NOT EXISTS "UserInteraction" (
-      "id" TEXT NOT NULL DEFAULT gen_random_uuid()::TEXT,
-      "userId" TEXT NOT NULL,
-      "type" TEXT NOT NULL,
-      "duration" INTEGER,
-      "metadata" JSONB,
-      "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-      CONSTRAINT "UserInteraction_pkey" PRIMARY KEY ("id")
-    )
-  `);
-  await prisma.$executeRawUnsafe('ALTER TABLE "UserInteraction" ADD COLUMN IF NOT EXISTS "userId" TEXT');
-  await prisma.$executeRawUnsafe('ALTER TABLE "UserInteraction" ADD COLUMN IF NOT EXISTS "type" TEXT NOT NULL DEFAULT \'save_search\'');
-  await prisma.$executeRawUnsafe('ALTER TABLE "UserInteraction" ADD COLUMN IF NOT EXISTS "duration" INTEGER');
-  await prisma.$executeRawUnsafe('ALTER TABLE "UserInteraction" ADD COLUMN IF NOT EXISTS "metadata" JSONB');
-  await prisma.$executeRawUnsafe('ALTER TABLE "UserInteraction" ADD COLUMN IF NOT EXISTS "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP');
-  await prisma.$executeRawUnsafe(`
-    DO $$
-    BEGIN
-      IF NOT EXISTS (
-        SELECT 1 FROM pg_constraint WHERE conname = 'CRMTask_leadId_fkey'
-      ) THEN
-        ALTER TABLE "CRMTask"
-          ADD CONSTRAINT "CRMTask_leadId_fkey"
-          FOREIGN KEY ("leadId") REFERENCES "User"("id")
-          ON DELETE CASCADE ON UPDATE CASCADE;
-      END IF;
-    END $$
-  `);
-  await prisma.$executeRawUnsafe(`
-    DO $$
-    BEGIN
-      IF NOT EXISTS (
-        SELECT 1 FROM pg_constraint WHERE conname = 'UserInteraction_userId_fkey'
-      ) THEN
-        ALTER TABLE "UserInteraction"
-          ADD CONSTRAINT "UserInteraction_userId_fkey"
-          FOREIGN KEY ("userId") REFERENCES "User"("id")
-          ON DELETE CASCADE ON UPDATE CASCADE;
-      END IF;
-    END $$
-  `);
+  await assertPublicRuntimeSchema(prisma, [
+    { tableName: 'User', columns: ['id', 'email', 'status', 'hasPrivateAccess', 'heatScore', 'intentSchema', 'legacyGoal', 'unsubscribedAt'] },
+    { tableName: 'SavedSearch', columns: ['id', 'userId', 'city', 'minPrice', 'beds', 'type', 'north', 'south', 'east', 'west', 'isActive'] },
+    { tableName: 'NorthStar', columns: ['id', 'userId', 'name', 'address', 'type', 'frequency', 'lat', 'lng'] },
+    { tableName: 'CRMTask', columns: ['id', 'leadId', 'type', 'status', 'priority', 'title', 'metadata', 'createdAt'] },
+    { tableName: 'UserInteraction', columns: ['id', 'userId', 'type', 'duration', 'metadata', 'createdAt'] },
+  ]);
 
   intakeSchemaReady = true;
 }
@@ -484,7 +419,7 @@ export async function POST(req: NextRequest) {
       return jsonResponse({ error: 'A valid email address is required.' }, 400);
     }
 
-    await ensureIntakeSchema();
+    await assertIntakeSchema();
 
     const result = await prisma.$transaction(async (tx) => {
       const user = await tx.user.upsert({
@@ -529,7 +464,7 @@ export async function POST(req: NextRequest) {
           await tx.$executeRaw`
             INSERT INTO "NorthStar" ("id", "userId", "name", "address", "type", "frequency", "lat", "lng")
             VALUES (
-              gen_random_uuid()::text,
+              ${randomUUID()},
               ${user.id},
               ${northStar.name},
               ${northStar.address},
@@ -668,6 +603,22 @@ export async function POST(req: NextRequest) {
       operations: buildOperationsCommands(result.savedSearch.id),
     });
   } catch (error) {
+    if (isPublicRuntimeSchemaUnavailableError(error)) {
+      console.error('Save search schema unavailable:', {
+        code: error.code,
+        missingTables: error.missingTables,
+        missingColumns: error.missingColumns,
+      });
+
+      return jsonResponse(
+        {
+          error: 'Saved search is temporarily unavailable.',
+          code: 'schema-unavailable',
+        },
+        503,
+      );
+    }
+
     const typedError = error as ApiError;
     console.error('Save search failed:', {
       code: typedError.code,

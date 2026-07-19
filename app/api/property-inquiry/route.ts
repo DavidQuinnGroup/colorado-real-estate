@@ -2,6 +2,10 @@ import { NextResponse } from 'next/server';
 
 import { sendPropertyInquiryNotification } from '@/lib/email/sendPropertyInquiryNotification';
 import { prisma } from '@/lib/prisma';
+import {
+  assertPublicRuntimeSchema,
+  isPublicRuntimeSchemaUnavailableError,
+} from '@/lib/runtime/publicSchemaSafety';
 
 type PropertyInquiryBody = {
   propertyId?: unknown;
@@ -92,19 +96,13 @@ function buildTaskTitle(address: string, city: string, timeline: string | null) 
   return `${prefix}: ${address}, ${city}`;
 }
 
-async function ensurePropertyInquirySchema() {
-  await prisma.$executeRawUnsafe('CREATE EXTENSION IF NOT EXISTS pgcrypto');
-  await prisma.$executeRawUnsafe(`
-    CREATE TABLE IF NOT EXISTS "LeadInteraction" (
-      "id" TEXT NOT NULL DEFAULT gen_random_uuid()::TEXT,
-      "clientId" TEXT NOT NULL,
-      "propertyId" TEXT NOT NULL,
-      "interactionType" TEXT NOT NULL,
-      "metadata" JSONB,
-      "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-      CONSTRAINT "LeadInteraction_pkey" PRIMARY KEY ("id")
-    )
-  `);
+async function assertPropertyInquirySchema() {
+  await assertPublicRuntimeSchema(prisma, [
+    { tableName: 'User', columns: ['id', 'email', 'name', 'isUnsubscribed', 'unsubscribedAt', 'heatScore', 'intentSchema', 'legacyGoal', 'status'] },
+    { tableName: 'UserInteraction', columns: ['id', 'userId', 'type', 'metadata', 'createdAt'] },
+    { tableName: 'LeadInteraction', columns: ['id', 'clientId', 'propertyId', 'interactionType', 'metadata', 'createdAt'] },
+    { tableName: 'CRMTask', columns: ['id', 'leadId', 'type', 'status', 'priority', 'title', 'metadata', 'createdAt'] },
+  ]);
 }
 
 export async function POST(request: Request) {
@@ -146,7 +144,7 @@ export async function POST(request: Request) {
       return jsonResponse({ error: 'Property could not be found.' }, 404);
     }
 
-    await ensurePropertyInquirySchema();
+    await assertPropertyInquirySchema();
 
     const metadata = {
       schemaVersion: 'reie-property-inquiry-v1',
@@ -312,6 +310,22 @@ export async function POST(request: Request) {
       notification,
     });
   } catch (error) {
+    if (isPublicRuntimeSchemaUnavailableError(error)) {
+      console.error('Property inquiry schema unavailable:', {
+        code: error.code,
+        missingTables: error.missingTables,
+        missingColumns: error.missingColumns,
+      });
+
+      return jsonResponse(
+        {
+          error: 'Property inquiry is temporarily unavailable.',
+          code: 'schema-unavailable',
+        },
+        503,
+      );
+    }
+
     console.error('[REIE PROPERTY INQUIRY]', error);
     return jsonResponse({ error: 'Property inquiry could not be saved.' }, 500);
   }

@@ -15,7 +15,6 @@ function getRequestAdminKey(request: NextRequest) {
   return (
     request.headers.get("x-admin-key") ||
     bearerToken ||
-    request.nextUrl.searchParams.get("adminKey") ||
     request.cookies.get(ADMIN_KEY_COOKIE)?.value ||
     ""
   );
@@ -36,7 +35,7 @@ export function repositoryAdminUnauthorizedResponse() {
     {
       success: false,
       error:
-        "Unauthorized. Send x-admin-key, Authorization: Bearer <key>, or adminKey when an admin key is configured.",
+        "Unauthorized. Send x-admin-key or Authorization: Bearer <key> when an admin key is configured.",
     },
     { status: 401 },
   );

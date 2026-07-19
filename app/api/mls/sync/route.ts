@@ -63,7 +63,7 @@ function getAdminKey() {
 function getRequestAdminKey(request: NextRequest) {
   const authorization = request.headers.get('authorization') || '';
   const bearerToken = authorization.toLowerCase().startsWith('bearer ') ? authorization.slice(7).trim() : '';
-  return request.headers.get('x-admin-key') || bearerToken || request.nextUrl.searchParams.get('adminKey') || '';
+  return request.headers.get('x-admin-key') || bearerToken || '';
 }
 
 function authorizeRequest(request: NextRequest) {

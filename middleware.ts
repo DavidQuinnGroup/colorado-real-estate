@@ -15,7 +15,6 @@ function getRequestAdminKey(request: NextRequest) {
   return (
     request.headers.get("x-admin-key") ||
     bearerToken ||
-    request.nextUrl.searchParams.get("adminKey") ||
     request.cookies.get(ADMIN_KEY_COOKIE)?.value ||
     ""
   );
@@ -26,7 +25,7 @@ function unauthorizedResponse() {
     {
       success: false,
       error:
-        "Unauthorized. Send x-admin-key, Authorization: Bearer <key>, or adminKey when an admin key is configured.",
+        "Unauthorized. Send x-admin-key or Authorization: Bearer <key> when an admin key is configured.",
     },
     { status: 401 },
   );
@@ -45,28 +44,9 @@ export function middleware(request: NextRequest) {
     return unauthorizedResponse();
   }
 
-  const queryAdminKey = request.nextUrl.searchParams.get("adminKey");
-  const response =
-    queryAdminKey && request.nextUrl.pathname.startsWith("/admin/repository")
-      ? (() => {
-          const redirectUrl = request.nextUrl.clone();
-          redirectUrl.searchParams.delete("adminKey");
-          return NextResponse.redirect(redirectUrl);
-        })()
-      : NextResponse.next();
-
-  if (queryAdminKey === configuredKey) {
-    response.cookies.set(ADMIN_KEY_COOKIE, configuredKey, {
-      httpOnly: true,
-      sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
-      path: "/",
-    });
-  }
-
-  return response;
+  return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/admin/repository/:path*", "/api/admin/repository/:path*", "/api/admin/enterprise/:path*"],
+  matcher: ["/admin/:path*", "/api/admin/:path*"],
 };

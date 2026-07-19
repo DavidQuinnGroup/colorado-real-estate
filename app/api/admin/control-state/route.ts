@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { Prisma } from '@prisma/client';
 
 import { prisma } from '@/lib/prisma';
+import { assertPublicRuntimeSchema } from '@/lib/runtime/publicSchemaSafety';
 
 export const dynamic = 'force-dynamic';
 
@@ -63,7 +64,7 @@ function getAdminKey() {
 function getRequestAdminKey(request: NextRequest) {
   const authorization = request.headers.get('authorization') || '';
   const bearerToken = authorization.toLowerCase().startsWith('bearer ') ? authorization.slice(7).trim() : '';
-  return request.headers.get('x-admin-key') || bearerToken || request.nextUrl.searchParams.get('adminKey') || '';
+  return request.headers.get('x-admin-key') || bearerToken || '';
 }
 
 function authorizeRequest(request: NextRequest) {
@@ -84,12 +85,15 @@ function getErrorMessage(error: unknown) {
 function getInspectionCommand(request: NextRequest) {
   const method = request.method.toUpperCase();
   const methodFlag = method === 'GET' ? '' : ` -X ${method}`;
+  const searchParams = new URLSearchParams(request.nextUrl.searchParams);
+  searchParams.delete('adminKey');
+  const search = searchParams.toString() ? `?${searchParams.toString()}` : '';
   const bodyHint =
     method === 'GET'
       ? ''
       : ` -H "Content-Type: application/json" -d '{"mode":"paused","updatedBy":"terminal-5"}'`;
 
-  return `curl --max-time 8 -s${methodFlag} "${LOCAL_BASE_URL}${ROUTE}${request.nextUrl.search}" -H "x-admin-key: $REIE_ADMIN_API_KEY"${bodyHint}`;
+  return `curl --max-time 8 -s${methodFlag} "${LOCAL_BASE_URL}${ROUTE}${search}" -H "x-admin-key: $REIE_ADMIN_API_KEY"${bodyHint}`;
 }
 
 function getInspectionMetadata(request: NextRequest) {
@@ -214,20 +218,14 @@ function getControlStateEnvelope(request: NextRequest, state: ControlState, sour
   } as const;
 }
 
-async function ensureControlStateTable() {
-  await prisma.$executeRaw`
-    CREATE TABLE IF NOT EXISTS "REIEControlState" (
-      "key" TEXT NOT NULL,
-      "state" JSONB NOT NULL,
-      "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-      "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-      CONSTRAINT "REIEControlState_pkey" PRIMARY KEY ("key")
-    )
-  `;
+async function assertControlStateSchema() {
+  await assertPublicRuntimeSchema(prisma, [
+    { tableName: 'REIEControlState', columns: ['key', 'state', 'createdAt', 'updatedAt'] },
+  ]);
 }
 
 async function readControlState() {
-  await ensureControlStateTable();
+  await assertControlStateSchema();
 
   const record = await prisma.rEIEControlState.findUnique({
     where: {
@@ -252,7 +250,7 @@ async function readControlState() {
 }
 
 async function saveControlState(state: ControlState) {
-  await ensureControlStateTable();
+  await assertControlStateSchema();
 
   await prisma.rEIEControlState.upsert({
     where: {

@@ -112,7 +112,7 @@ function getAdminKey() {
 function getRequestAdminKey(request: NextRequest) {
   const authorization = request.headers.get('authorization') || '';
   const bearerToken = authorization.toLowerCase().startsWith('bearer ') ? authorization.slice(7).trim() : '';
-  return request.headers.get('x-admin-key') || bearerToken || request.nextUrl.searchParams.get('adminKey') || '';
+  return request.headers.get('x-admin-key') || bearerToken || '';
 }
 
 function authorizeRequest(request: NextRequest) {
@@ -136,7 +136,9 @@ function json(data: unknown, init?: ResponseInit) {
 }
 
 function getInspectionCommand(request: NextRequest) {
-  const search = request.nextUrl.search || '';
+  const searchParams = new URLSearchParams(request.nextUrl.searchParams);
+  searchParams.delete('adminKey');
+  const search = searchParams.toString() ? `?${searchParams.toString()}` : '';
   const methodFlag = request.method === 'POST' ? '-X POST ' : '';
   return `curl --max-time 20 -s ${methodFlag}"${LOCAL_BASE_URL}${ROUTE}${search}" -H "x-admin-key: $REIE_ADMIN_API_KEY"`;
 }
