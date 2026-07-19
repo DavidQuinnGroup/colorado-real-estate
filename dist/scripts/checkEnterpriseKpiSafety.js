@@ -23,12 +23,13 @@ function observation(value, observedAt = "2026-07-18T18:43:18Z") {
 function assertRegistry() {
     const validation = validateEnterpriseKpiRegistry();
     assert.equal(validation.valid, true, validation.issues.join("; "));
-    assert.equal(ENTERPRISE_KPI_REGISTRY.length, 19);
-    assert.equal(new Set(ENTERPRISE_KPI_REGISTRY.map((kpi) => kpi.id)).size, 19);
+    assert.equal(ENTERPRISE_KPI_REGISTRY.length, 20);
+    assert.equal(new Set(ENTERPRISE_KPI_REGISTRY.map((kpi) => kpi.id)).size, 20);
     assert.ok(getEnterpriseKpi("KPI-PLAT-001"));
+    assert.ok(getEnterpriseKpi("KPI-SRCH-001"));
     assert.equal(getEnterpriseKpi("KPI-NOPE-001"), null);
-    assert.equal(listEnterpriseKpis({ domain: "PLATFORM" }).length, 4);
-    assert.equal(listEnterpriseKpis({ sourceAvailability: "DEFINED_BUT_UNAVAILABLE" }).length, 15);
+    assert.equal(listEnterpriseKpis({ domain: "PLATFORM" }).length, 5);
+    assert.equal(listEnterpriseKpis({ sourceAvailability: "DEFINED_BUT_UNAVAILABLE" }).length, 16);
     for (const definition of ENTERPRISE_KPI_REGISTRY) {
         assert.ok(definition.description);
         assert.ok(definition.businessPurpose);
@@ -38,6 +39,49 @@ function assertRegistry() {
         assert.ok(definition.updateFrequency);
         assert.ok(definition.governanceNotes);
     }
+}
+function assertSearchRuntimeKpiGovernance() {
+    const searchRuntime = getEnterpriseKpi("KPI-SRCH-001");
+    assert.ok(searchRuntime, "Expected KPI-SRCH-001 to be registered.");
+    assert.equal(searchRuntime.name, "Search Runtime Health Rate");
+    assert.equal(searchRuntime.domain, "PLATFORM");
+    assert.equal(searchRuntime.formula, "valid usable runtime executions / total eligible runtime executions × 100");
+    assert.equal(searchRuntime.unit, "PERCENT");
+    assert.equal(searchRuntime.aggregation, "RATE");
+    assert.equal(searchRuntime.freshnessExpectationHours, 0.25);
+    assert.deepEqual(searchRuntime.thresholds, { target: 100, warning: 100, critical: 0 });
+    assert.equal(searchRuntime.source.availability, "DEFINED_BUT_UNAVAILABLE");
+    assert.match(searchRuntime.governanceNotes, /SUCCESS, DEGRADED, FALLBACK, and EMPTY_VALID/);
+    assert.match(searchRuntime.governanceNotes, /UNKNOWN and UNAVAILABLE are excluded/);
+    assert.match(searchRuntime.governanceNotes, /source-state fingerprint/);
+    assert.match(searchRuntime.governanceNotes, /KPI-PLAT-002 remains owned by Platform Availability Adapter/);
+    const assessedAt = new Date("2026-07-18T18:43:18Z");
+    assert.equal(evaluateKpi(searchRuntime, observation(null), assessedAt).status, "UNKNOWN");
+    assert.equal(evaluateKpi(searchRuntime, observation(100), assessedAt).status, "HEALTHY");
+    assert.equal(evaluateKpi(searchRuntime, observation(50), assessedAt).status, "WARNING");
+    assert.equal(evaluateKpi(searchRuntime, observation(0), assessedAt).status, "CRITICAL");
+    const degradedFallbackEvidence = [
+        "runtimeClassification=DEGRADED",
+        "runtimeClassification=FALLBACK",
+        "providerClassification=DATABASE",
+        "fallbackUsed=true",
+        "degraded=true",
+        "blockerCount=1",
+        "sourceStateFingerprint=present",
+    ].join(";");
+    assert.match(degradedFallbackEvidence, /DEGRADED/);
+    assert.match(degradedFallbackEvidence, /FALLBACK/);
+    assert.match(searchRuntime.governanceNotes, /A value of 100/);
+}
+function assertPlatformSearchKpiUnchanged() {
+    const platformSearch = getEnterpriseKpi("KPI-PLAT-002");
+    assert.ok(platformSearch, "Expected KPI-PLAT-002 to remain registered.");
+    assert.equal(platformSearch.name, "Search API Success Rate");
+    assert.equal(platformSearch.formula, "successful /api/search checks / total /api/search checks");
+    assert.equal(platformSearch.source.system, "Manual governed search checks");
+    assert.equal(platformSearch.source.definition, "Bounded /api/search health checks");
+    assert.deepEqual(platformSearch.thresholds, { target: 99, warning: 97, critical: 95 });
+    assert.equal(platformSearch.governanceNotes, "Database fallback is valid; Typesense degradation must stay explicit.");
 }
 function assertThresholds() {
     const higher = cloneDefinition({
@@ -72,7 +116,7 @@ function assertHealth() {
     const snapshot = buildEnterpriseHealthSnapshot();
     assert.equal(snapshot.provenance, "NON_PRODUCTION_FIXTURE");
     assert.equal(snapshot.includedKpis.length, 4);
-    assert.equal(snapshot.unknownKpis.length, 15);
+    assert.equal(snapshot.unknownKpis.length, 16);
     assert.equal(snapshot.minimumDataRequirementMet, true);
     assert.equal(snapshot.overallStatus, "HEALTHY");
     assert.ok(snapshot.domainResults.find((domain) => domain.domain === "CUSTOMER"));
@@ -108,6 +152,8 @@ function assertMigrationValidity() {
     assert.ok(schema.includes("model Property"));
 }
 assertRegistry();
+assertSearchRuntimeKpiGovernance();
+assertPlatformSearchKpiUnchanged();
 assertThresholds();
 assertUnknownAndFreshness();
 assertHealth();

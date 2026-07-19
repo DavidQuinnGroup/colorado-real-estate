@@ -91,6 +91,24 @@ export const ENTERPRISE_KPI_REGISTRY = [
         governanceNotes: "Defined but unavailable until a governed monitoring source is connected.",
     }),
     kpi({
+        id: "KPI-SRCH-001",
+        name: "Search Runtime Health Rate",
+        description: "Usable deterministic bounded search runtime executions.",
+        businessPurpose: "Measure whether the search runtime executes correctly and through a valid provider path without reusing platform endpoint availability ownership.",
+        domain: "PLATFORM",
+        executiveOwnerRole: "REIE Platform",
+        formula: "valid usable runtime executions / total eligible runtime executions × 100",
+        unit: "PERCENT",
+        aggregation: "RATE",
+        desiredTrend: "HIGHER_IS_BETTER",
+        source: unavailable("Search Runtime Adapter", "Sprint 4 adapter implementation required before live source observations are available."),
+        updateFrequency: "Per governed Search Runtime Adapter observation window",
+        freshnessExpectationHours: 0.25,
+        thresholds: { target: 100, warning: 100, critical: 0 },
+        weight: null,
+        governanceNotes: "Canonical Search Runtime KPI. Eligible usable classifications are SUCCESS, DEGRADED, FALLBACK, and EMPTY_VALID. FAILED, INVALID, and TIMEOUT are unsuccessful. UNKNOWN and UNAVAILABLE are excluded from eligible observations. Confidence measures observation evidence quality, not runtime health. Evidence must preserve runtime classification, provider classification, fallback used, degraded state, ready state, blocker count, result count, response-validation state, probe registry version, and source-state fingerprint. A value of 100% must not suppress degraded or fallback evidence. KPI-PLAT-002 remains owned by Platform Availability Adapter for bounded Search API reachability and valid response availability.",
+    }),
+    kpi({
         id: "KPI-CUST-001",
         name: "Active Preview Participants",
         description: "Approved internal users active in Internal Preview.",
@@ -381,7 +399,7 @@ export function validateEnterpriseKpiRegistry() {
     const ids = new Set();
     const issues = [];
     for (const definition of ENTERPRISE_KPI_REGISTRY) {
-        if (!/^KPI-(PLAT|CUST|OPS|BUS|GROW|GOV)-\d{3}$/.test(definition.id)) {
+        if (!/^KPI-(PLAT|SRCH|CUST|OPS|BUS|GROW|GOV)-\d{3}$/.test(definition.id)) {
             issues.push(`${definition.id}: invalid identifier`);
         }
         if (ids.has(definition.id))
