@@ -1,5 +1,12 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
+import {
+  getDefaultStatusFilter,
+  getPrimarySearchPhoto,
+  normalizeSearchPhotos,
+  sortListingsForLaunchQuality,
+} from './listingQuality.js';
+
 export type SupabaseSearchParams = {
   query?: string;
   north?: number;
@@ -182,7 +189,7 @@ function applySearchFilters<TQuery extends {
   if (params.city) filtered = filtered.ilike('city', params.city);
   if (params.neighborhood) filtered = filtered.ilike('neighborhood', params.neighborhood);
   if (params.propertyType) filtered = filtered.ilike('propertyType', params.propertyType);
-  if (params.status) filtered = filtered.ilike('status', params.status);
+  filtered = filtered.ilike('status', getDefaultStatusFilter(params.status));
   if (isFiniteNumber(params.minPrice)) filtered = filtered.gte('price', params.minPrice);
   if (isFiniteNumber(params.maxPrice)) filtered = filtered.lte('price', params.maxPrice);
   if (isFiniteNumber(params.beds)) filtered = filtered.gte('beds', params.beds);
@@ -238,11 +245,12 @@ async function fetchPhotos(client: SupabaseClient, propertyIds: string[]) {
 }
 
 function mapProperty(row: SupabasePropertyRow, photos: SupabaseSearchPhoto[]): SupabaseSearchProperty {
-  const firstPhoto = photos[0]?.url || null;
+  const normalizedPhotos = normalizeSearchPhotos(photos);
+  const firstPhoto = getPrimarySearchPhoto(normalizedPhotos);
 
   return {
     ...row,
-    photos,
+    photos: normalizedPhotos,
     mainPhoto: firstPhoto,
     image: firstPhoto,
   };
@@ -259,8 +267,9 @@ export async function searchSupabasePropertiesWithMeta(
   const baseQuery = client.from('Property').select(PROPERTY_COLUMNS, { count: 'exact' });
   const filteredQuery = applySearchFilters(baseQuery, params, accessLevel);
   const { data, error, count } = await filteredQuery
-    .order('price', { ascending: false })
     .order('updatedAt', { ascending: false })
+    .order('price', { ascending: false })
+    .order('id', { ascending: true })
     .range(offset, rangeEnd);
 
   if (error) {
@@ -272,7 +281,7 @@ export async function searchSupabasePropertiesWithMeta(
     client,
     rows.map((row) => row.id),
   );
-  const results = rows.map((row) => mapProperty(row, photoMap.get(row.id) || []));
+  const results = sortListingsForLaunchQuality(rows.map((row) => mapProperty(row, photoMap.get(row.id) || [])));
 
   return {
     results,

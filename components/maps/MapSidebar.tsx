@@ -20,8 +20,10 @@ export type MapSidebarListing = {
   baths?: number | null;
   sqft?: number | null;
   propertyType?: string | null;
+  status?: string | null;
   lat?: number | null;
   lng?: number | null;
+  photos?: Array<{ url?: string | null }> | null;
   mainPhoto?: string | null;
   image?: string | null;
   isPrivateExclusive?: boolean | null;

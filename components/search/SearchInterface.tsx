@@ -81,6 +81,18 @@ function toBooleanOrNull(value: unknown) {
   return typeof value === 'boolean' ? value : null;
 }
 
+function normalizePhotoList(value: unknown) {
+  if (!Array.isArray(value)) return null;
+
+  const photos = value.flatMap((photo) => {
+    if (!isRecord(photo)) return [];
+    const url = toStringOrNull(photo.url);
+    return url ? [{ url }] : [];
+  });
+
+  return photos.length > 0 ? photos : null;
+}
+
 function normalizeListing(value: unknown): MapSidebarListing | null {
   if (!isRecord(value)) return null;
 
@@ -88,6 +100,7 @@ function normalizeListing(value: unknown): MapSidebarListing | null {
   if (!id) return null;
 
   const mainPhoto = toStringOrNull(value.mainPhoto) || toStringOrNull(value.image);
+  const photos = normalizePhotoList(value.photos);
 
   return {
     id,
@@ -99,8 +112,10 @@ function normalizeListing(value: unknown): MapSidebarListing | null {
     baths: toNumberOrNull(value.baths),
     sqft: toNumberOrNull(value.sqft),
     propertyType: toStringOrNull(value.propertyType),
+    status: toStringOrNull(value.status),
     lat: toNumberOrNull(value.lat),
     lng: toNumberOrNull(value.lng),
+    photos,
     mainPhoto,
     image: mainPhoto,
     isPrivateExclusive: toBoolean(value.isPrivateExclusive),
@@ -154,6 +169,12 @@ function normalizeSearchMeta(data: SearchApiResponse) {
     route: data.meta.route || data.route,
     terminal: data.meta.terminal || data.terminal,
   };
+}
+
+function getCustomerSearchLabel(searchMeta: SearchMapMeta | null) {
+  if (!searchMeta) return 'Map ready';
+  if (searchMeta.customerExperience?.usable === false) return 'Search review';
+  return 'Search ready';
 }
 
 export default function SearchInterface({
@@ -417,7 +438,7 @@ export default function SearchInterface({
             {visibleListings.length} visible listings
           </p>
           <p className="mt-1 text-[10px] font-black uppercase tracking-[0.12em] text-white/38">
-            {isSearching ? 'Inventory updating' : effectiveSearchMeta?.source ? `${effectiveSearchMeta.source} source` : 'Map ready'}
+            {isSearching ? 'Inventory updating' : getCustomerSearchLabel(effectiveSearchMeta)}
           </p>
         </div>
 

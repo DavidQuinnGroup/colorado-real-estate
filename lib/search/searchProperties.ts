@@ -1,6 +1,13 @@
 import type { Prisma } from '@prisma/client';
 
 import { prisma } from '@/lib/prisma';
+import {
+  getDefaultStatusFilter,
+  getPrimarySearchPhoto,
+  hasExplicitStatusFilter,
+  normalizeSearchPhotos,
+  sortListingsForLaunchQuality,
+} from '@/lib/search/listingQuality';
 import { searchSupabasePropertiesWithMeta } from '@/lib/search/supabaseSearch';
 
 export type SearchProperty = {
@@ -14,6 +21,7 @@ export type SearchProperty = {
   sqft: number | null;
   lat: number;
   lng: number;
+  status: string;
   mainPhoto: string | null;
   image: string | null;
   isPrivateExclusive: boolean;
@@ -49,6 +57,7 @@ type SearchParams = {
   beds?: number;
   baths?: number;
   minResilience?: number;
+  status?: string;
   isPrivateExclusive?: boolean;
   accessLevel?: 'public' | 'contracted';
   limit?: number;
@@ -78,6 +87,7 @@ function hasCoordinates(property: Pick<SearchProperty, 'lat' | 'lng'>) {
 function buildWhere(params: SearchParams): Prisma.PropertyWhereInput {
   return {
     city: params.city ? { equals: params.city, mode: 'insensitive' } : undefined,
+    status: { equals: getDefaultStatusFilter(params.status), mode: 'insensitive' },
     price: {
       gte: params.minPrice,
       lte: params.maxPrice,
@@ -102,6 +112,7 @@ function getAppliedFilters(params: SearchParams) {
   if (params.beds !== undefined) filters.push('beds');
   if (params.baths !== undefined) filters.push('baths');
   if (params.minResilience !== undefined) filters.push('minResilience');
+  filters.push(hasExplicitStatusFilter(params.status) ? 'status' : 'defaultStatus');
   if (params.isPrivateExclusive !== undefined) filters.push('privateExclusive');
   filters.push(getAccessLevel(params) === 'contracted' ? 'contractedAccess' : 'publicAccess');
 
@@ -109,7 +120,8 @@ function getAppliedFilters(params: SearchParams) {
 }
 
 function mapSearchProperty(property: Prisma.PropertyGetPayload<{ select: typeof PROPERTY_SELECT }>): SearchProperty {
-  const firstPhoto = property.photos[0]?.url || null;
+  const photos = normalizeSearchPhotos(property.photos);
+  const firstPhoto = getPrimarySearchPhoto(photos);
 
   return {
     id: property.id,
@@ -122,6 +134,7 @@ function mapSearchProperty(property: Prisma.PropertyGetPayload<{ select: typeof 
     sqft: property.sqft,
     lat: property.lat,
     lng: property.lng,
+    status: property.status,
     mainPhoto: firstPhoto,
     image: firstPhoto,
     isPrivateExclusive: property.isPrivateExclusive,
@@ -144,6 +157,7 @@ const PROPERTY_SELECT = {
   sqft: true,
   lat: true,
   lng: true,
+  status: true,
   isPrivateExclusive: true,
   efficiencyScore: true,
   resilienceScore: true,
@@ -169,7 +183,7 @@ export async function searchPropertiesWithMeta(params: SearchParams = {}): Promi
     properties = await prisma.property.findMany({
       where: buildWhere(params),
       select: PROPERTY_SELECT,
-      orderBy: [{ price: 'desc' }, { updatedAt: 'desc' }],
+      orderBy: [{ updatedAt: 'desc' }, { price: 'desc' }, { id: 'asc' }],
       take: limit,
       skip: offset,
     });
@@ -184,6 +198,7 @@ export async function searchPropertiesWithMeta(params: SearchParams = {}): Promi
         maxPrice: params.maxPrice,
         beds: params.beds,
         baths: params.baths,
+        status: params.status,
         isPrivateExclusive: params.isPrivateExclusive,
         limit,
         offset,
@@ -201,6 +216,7 @@ export async function searchPropertiesWithMeta(params: SearchParams = {}): Promi
       sqft: property.sqft,
       lat: property.lat,
       lng: property.lng,
+      status: property.status,
       isPrivateExclusive: property.isPrivateExclusive,
       efficiencyScore: property.efficiencyScore,
       resilienceScore: property.resilienceScore,
@@ -211,7 +227,7 @@ export async function searchPropertiesWithMeta(params: SearchParams = {}): Promi
     }));
   }
 
-  const results = properties.map(mapSearchProperty);
+  const results = sortListingsForLaunchQuality(properties.map(mapSearchProperty));
   const mapped = results.filter(hasCoordinates).length;
   const coordinateFiltered = Math.max(0, results.length - mapped);
 

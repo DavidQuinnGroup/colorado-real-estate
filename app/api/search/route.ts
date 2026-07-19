@@ -2,6 +2,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import type { Prisma } from '@prisma/client';
 
 import { prisma } from '@/lib/prisma';
+import {
+  getDefaultStatusFilter,
+  getPrimarySearchPhoto,
+  getSearchQualitySummary,
+  hasExplicitStatusFilter,
+  normalizeSearchPhotos,
+  sortListingsForLaunchQuality,
+} from '@/lib/search/listingQuality';
 import { searchSupabasePropertiesWithMeta } from '@/lib/search/supabaseSearch';
 import { searchTypesenseDocuments } from '@/lib/typesense/httpClient';
 import { LISTING_COLLECTION_NAME, SEARCH_SCHEMA_DEFAULT_SORT_BY, SEARCH_SCHEMA_QUERY_BY } from '@/lib/typesense/schema';
@@ -75,6 +83,25 @@ type SearchResponse = {
   error?: string;
 };
 
+type SearchCustomerExperienceMeta = {
+  endpointAvailable: boolean;
+  usable: boolean;
+  providerDegraded: boolean;
+  providerFallbackActive: boolean;
+  relevanceContractSatisfied: boolean;
+  dataQualityWarnings: string[];
+  contract: {
+    contractId: string;
+    defaultStatusContractApplied: boolean;
+    explicitStatus: string | null;
+    defaultStatus: string;
+    nonDefaultStatusCount: number;
+    missingPhotoCount: number;
+    resultCount: number;
+    statusContractSatisfied: boolean;
+  };
+};
+
 type SearchResponseMeta = {
   accessLevel: AccessLevel;
   boundsApplied: boolean;
@@ -88,6 +115,7 @@ type SearchResponseMeta = {
   returned: number;
   mapped: number;
   coordinateFiltered: number;
+  customerExperience: SearchCustomerExperienceMeta;
   smoke: SearchSmokeMeta;
   typesense?: {
     collection: string;
@@ -102,6 +130,7 @@ type SearchSmokeMeta = {
   terminal: 'Terminal 5';
   ready: boolean;
   blockers: string[];
+  warnings: string[];
   checks: {
     accessLevel: AccessLevel;
     boundsApplied: boolean;
@@ -114,6 +143,9 @@ type SearchSmokeMeta = {
     mapped: number;
     returned: number;
     source: SearchSource;
+    customerSearchUsable: boolean;
+    providerDegraded: boolean;
+    relevanceContractSatisfied: boolean;
   };
 };
 
@@ -335,13 +367,15 @@ function buildQueryFilter(query: string): Prisma.PropertyWhereInput {
 }
 
 function buildDatabaseWhere(params: SearchParams, accessLevel: AccessLevel): Prisma.PropertyWhereInput {
+  const statusFilter = getDefaultStatusFilter(params.status);
+
   return {
     AND: [
       buildQueryFilter(params.query),
       params.city ? { city: { equals: params.city, mode: 'insensitive' } } : {},
       params.neighborhood ? { neighborhood: { equals: params.neighborhood, mode: 'insensitive' } } : {},
       params.propertyType ? { propertyType: { equals: params.propertyType, mode: 'insensitive' } } : {},
-      params.status ? { status: { equals: params.status, mode: 'insensitive' } } : {},
+      { status: { equals: statusFilter, mode: 'insensitive' } },
       params.minPrice !== undefined || params.maxPrice !== undefined
         ? {
             price: {
@@ -398,7 +432,7 @@ function buildTypesenseFilters(params: SearchParams, accessLevel: AccessLevel) {
     exactFilter('city', params.city),
     exactFilter('neighborhood', params.neighborhood),
     exactFilter('propertyType', params.propertyType),
-    exactFilter('status', params.status),
+    exactFilter('status', getDefaultStatusFilter(params.status)),
   ].filter((filter): filter is string => Boolean(filter));
 
   filters.push(...exactFilters);
@@ -421,7 +455,7 @@ function getAppliedFilters(params: SearchParams, accessLevel: AccessLevel) {
   if (params.city) filters.push('city');
   if (params.neighborhood) filters.push('neighborhood');
   if (params.propertyType) filters.push('propertyType');
-  if (params.status) filters.push('status');
+  filters.push(hasExplicitStatusFilter(params.status) ? 'status' : 'defaultStatus');
   if (params.privateOnly) filters.push('privateOnly');
   if (accessLevel === 'public') filters.push('publicAccess');
   if (accessLevel === 'contracted') filters.push('contractedAccess');
@@ -499,7 +533,8 @@ function buildSearchResponse(
 }
 
 function mapProperty(property: PropertyWithPhotos): SearchResult {
-  const firstPhoto = property.photos[0]?.url || null;
+  const photos = normalizeSearchPhotos(property.photos);
+  const firstPhoto = getPrimarySearchPhoto(photos);
 
   return {
     id: property.id,
@@ -531,7 +566,7 @@ function mapProperty(property: PropertyWithPhotos): SearchResult {
     altitude: property.altitude,
     soilType: property.soilType,
     hasPolybutyleneRisk: property.hasPolybutyleneRisk,
-    photos: property.photos,
+    photos,
     mainPhoto: firstPhoto,
     image: firstPhoto,
   };
@@ -571,8 +606,8 @@ function mapTypesenseDocument(document: Record<string, unknown>, photoMap: Map<s
   const id = toStringValue(document.id);
   if (!id) return null;
 
-  const photos = photoMap.get(id) || [];
-  const firstPhoto = photos[0]?.url || null;
+  const photos = normalizeSearchPhotos(photoMap.get(id) || []);
+  const firstPhoto = getPrimarySearchPhoto(photos);
 
   return {
     id,
@@ -630,10 +665,12 @@ async function searchTypesense(params: SearchParams, accessLevel: AccessLevel) {
     .filter((document): document is Record<string, unknown> => Boolean(document));
   const ids = documents.map((document) => toStringValue(document.id)).filter(Boolean);
   const photoMap = await getPhotoMap(ids);
-  const results = documents.flatMap((document) => {
-    const result = mapTypesenseDocument(document, photoMap);
-    return result ? [result] : [];
-  });
+  const results = sortListingsForLaunchQuality(
+    documents.flatMap((document) => {
+      const result = mapTypesenseDocument(document, photoMap);
+      return result ? [result] : [];
+    }),
+  );
 
   return {
     results,
@@ -651,14 +688,14 @@ async function searchDatabase(params: SearchParams, accessLevel: AccessLevel) {
       prisma.property.findMany({
         where,
         select: PROPERTY_SELECT,
-        orderBy: [{ price: 'desc' }, { updatedAt: 'desc' }],
+        orderBy: [{ updatedAt: 'desc' }, { price: 'desc' }, { id: 'asc' }],
         take: params.limit,
         skip: params.offset,
       }),
       prisma.property.count({ where }),
     ]);
 
-    const mappedProperties = properties.map(mapProperty);
+    const mappedProperties = sortListingsForLaunchQuality(properties.map(mapProperty));
     const results = mappedProperties.filter((property) => isValidCoordinate(property.lat, property.lng));
 
     return {
@@ -671,7 +708,7 @@ async function searchDatabase(params: SearchParams, accessLevel: AccessLevel) {
       database: getErrorMessage(error),
     });
     const fallback = await searchSupabasePropertiesWithMeta(params, accessLevel);
-    const results = fallback.results.filter((property) => isValidCoordinate(property.lat, property.lng));
+    const results = sortListingsForLaunchQuality(fallback.results).filter((property) => isValidCoordinate(property.lat, property.lng));
 
     return {
       results,
@@ -687,19 +724,30 @@ function buildResponseMeta(
   accessLevel: AccessLevel,
   rawReturned: number,
   mapped: number,
+  results: SearchResult[],
   durationMs: number,
   filterBy?: string,
 ): SearchResponseMeta {
   const coordinateFiltered = Math.max(0, rawReturned - mapped);
   const health: SearchHealth = source === 'database' || coordinateFiltered > 0 ? 'degraded' : 'healthy';
   const hasTypesenseContext = source === 'typesense' && Boolean(filterBy);
+  const qualitySummary = getSearchQualitySummary(results, params.status);
+  const dataQualityWarnings = [
+    coordinateFiltered > 0 ? `${coordinateFiltered} result(s) were omitted from the map because coordinates were missing or invalid.` : null,
+    qualitySummary.missingPhotoCount > 0 ? `${qualitySummary.missingPhotoCount} result(s) require listing-photo placeholders.` : null,
+  ].filter((warning): warning is string => Boolean(warning));
   const blockers = [
-    source === 'database' ? 'Typesense search is unavailable; route is using database fallback.' : null,
-    coordinateFiltered > 0 ? `${coordinateFiltered} result(s) were filtered because coordinates were missing or invalid.` : null,
     rawReturned < mapped ? 'Mapped result count is greater than returned result count.' : null,
     durationMs < 0 ? 'Search duration is invalid.' : null,
-    source === 'typesense' && !hasTypesenseContext ? 'Typesense query metadata is missing.' : null,
+    source === 'typesense' && !hasTypesenseContext ? 'Search provider query metadata is missing.' : null,
+    qualitySummary.statusContractSatisfied ? null : 'Default search returned inventory outside the launch status contract.',
   ].filter((blocker): blocker is string => Boolean(blocker));
+  const customerSearchUsable = blockers.length === 0;
+  const providerDegraded = source === 'database' || coordinateFiltered > 0;
+  const warnings = [
+    source === 'database' ? 'Primary search provider is degraded; fallback search served the request.' : null,
+    ...dataQualityWarnings,
+  ].filter((warning): warning is string => Boolean(warning));
 
   return {
     accessLevel,
@@ -714,11 +762,21 @@ function buildResponseMeta(
     returned: rawReturned,
     mapped,
     coordinateFiltered,
+    customerExperience: {
+      endpointAvailable: true,
+      usable: customerSearchUsable,
+      providerDegraded,
+      providerFallbackActive: source === 'database',
+      relevanceContractSatisfied: qualitySummary.statusContractSatisfied,
+      dataQualityWarnings,
+      contract: qualitySummary,
+    },
     smoke: {
       command: 'npm run smoke:search',
       terminal: 'Terminal 5',
-      ready: blockers.length === 0,
+      ready: customerSearchUsable,
       blockers,
+      warnings,
       checks: {
         accessLevel,
         boundsApplied: hasCompleteBounds(params),
@@ -731,6 +789,9 @@ function buildResponseMeta(
         mapped,
         returned: rawReturned,
         source,
+        customerSearchUsable,
+        providerDegraded,
+        relevanceContractSatisfied: qualitySummary.statusContractSatisfied,
       },
     },
     ...(source === 'typesense'
@@ -775,6 +836,7 @@ export async function GET(request: NextRequest) {
           accessLevel,
           typesenseResult.rawReturned,
           typesenseResult.results.length,
+          typesenseResult.results,
           Date.now() - startedMs,
           typesenseResult.filterBy,
         ),
@@ -792,8 +854,16 @@ export async function GET(request: NextRequest) {
           found: databaseResult.found,
           accessLevel,
           source: 'database',
-          meta: buildResponseMeta(params, 'database', accessLevel, databaseResult.rawReturned, databaseResult.results.length, Date.now() - startedMs),
-          fallbackReason,
+          meta: buildResponseMeta(
+            params,
+            'database',
+            accessLevel,
+            databaseResult.rawReturned,
+            databaseResult.results.length,
+            databaseResult.results,
+            Date.now() - startedMs,
+          ),
+          fallbackReason: fallbackReason ? 'Search provider fallback served the request.' : undefined,
         }),
       );
     } catch (databaseError) {
@@ -808,8 +878,8 @@ export async function GET(request: NextRequest) {
           found: 0,
           accessLevel,
           source: 'database',
-          meta: buildResponseMeta(params, 'database', accessLevel, 0, 0, Date.now() - startedMs),
-          fallbackReason,
+          meta: buildResponseMeta(params, 'database', accessLevel, 0, 0, [], Date.now() - startedMs),
+          fallbackReason: fallbackReason ? 'Search provider fallback was attempted.' : undefined,
           error: 'Inventory search is temporarily unavailable.',
         }),
         500,

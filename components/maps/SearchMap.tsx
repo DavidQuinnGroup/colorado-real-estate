@@ -79,6 +79,13 @@ export type SearchMapMeta = {
       source?: string;
     };
   };
+  customerExperience?: {
+    usable?: boolean;
+    providerDegraded?: boolean;
+    providerFallbackActive?: boolean;
+    relevanceContractSatisfied?: boolean;
+    dataQualityWarnings?: string[];
+  };
 };
 
 type SearchMapProps = {
@@ -148,6 +155,12 @@ function formatMetaFilters(value: string[] | undefined) {
   if (!value || value.length === 0) return 'no filters';
   if (value.length <= 3) return value.join(' + ');
   return `${value.slice(0, 3).join(' + ')} +${value.length - 3}`;
+}
+
+function getCustomerSearchLabel(searchMeta: SearchMapMeta | null) {
+  if (!searchMeta) return 'initial';
+  if (searchMeta.customerExperience?.usable === false) return 'review';
+  return 'search ready';
 }
 
 function getReviewSignal(property: MapSidebarListing) {
@@ -404,6 +417,7 @@ export default function SearchMap({
   const smokeReady = searchMeta?.smoke?.ready;
   const smokeBlockerCount = searchMeta?.smoke?.blockers?.length ?? 0;
   const shouldShowSearchDiagnostics = Boolean(searchMeta) || coordinateFilteredCount > 0;
+  const customerSearchLabel = getCustomerSearchLabel(searchMeta);
 
   useEffect(() => {
     onBoundsChangeRef.current = onBoundsChange;
@@ -681,7 +695,7 @@ export default function SearchMap({
         >
           <div>
             <span className={searchMeta?.health === 'degraded' ? 'text-amber-200' : 'text-cyan-200'}>
-              {searchMeta?.source || 'initial'}
+              {customerSearchLabel}
             </span>
             <span className="mx-2 text-white/25">/</span>
             <span>{mappedCount} mapped</span>
