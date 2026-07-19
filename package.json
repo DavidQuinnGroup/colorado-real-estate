@@ -36,6 +36,7 @@
     "check:repository-governance-adapter-safety": "npm run worker:build && node dist/scripts/checkRepositoryGovernanceAdapterSafety.js",
     "check:platform-availability-adapter-safety": "npm run worker:build && node dist/scripts/checkPlatformAvailabilityAdapterSafety.js",
     "check:search-runtime-adapter-safety": "npm run worker:build && node dist/scripts/checkSearchRuntimeAdapterSafety.js",
+    "check:internal-preview-adapter-safety": "npm run worker:build && node dist/scripts/checkInternalPreviewAdapterSafety.js",
     "check:prisma-client-parity": "npm run worker:build && node dist/scripts/checkPrismaClientParity.js",
     "check:production-dependencies": "npm run worker:build && node dist/scripts/checkProductionDependencies.js",
     "check:next-security-version": "npm run worker:build && node dist/scripts/checkNextSecurityVersion.js",

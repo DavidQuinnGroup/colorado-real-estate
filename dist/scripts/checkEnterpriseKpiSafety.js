@@ -84,22 +84,23 @@ function assertPlatformSearchKpiUnchanged() {
     assert.equal(platformSearch.governanceNotes, "Database fallback is valid; Typesense degradation must stay explicit.");
 }
 function assertThresholds() {
+    const assessedAt = new Date("2026-07-18T18:43:18Z");
     const higher = cloneDefinition({
         desiredTrend: "HIGHER_IS_BETTER",
         thresholds: { target: 90, warning: 70, critical: 40 },
     });
-    assert.equal(evaluateKpi(higher, observation(95)).status, "HEALTHY");
-    assert.equal(evaluateKpi(higher, observation(69)).status, "WARNING");
-    assert.equal(evaluateKpi(higher, observation(40)).status, "CRITICAL");
-    assert.equal(evaluateKpi(higher, observation(70)).status, "HEALTHY");
+    assert.equal(evaluateKpi(higher, observation(95), assessedAt).status, "HEALTHY");
+    assert.equal(evaluateKpi(higher, observation(69), assessedAt).status, "WARNING");
+    assert.equal(evaluateKpi(higher, observation(40), assessedAt).status, "CRITICAL");
+    assert.equal(evaluateKpi(higher, observation(70), assessedAt).status, "HEALTHY");
     const lower = cloneDefinition({
         desiredTrend: "LOWER_IS_BETTER",
         thresholds: { target: 1, warning: 5, critical: 10 },
     });
-    assert.equal(evaluateKpi(lower, observation(1)).status, "HEALTHY");
-    assert.equal(evaluateKpi(lower, observation(6)).status, "WARNING");
-    assert.equal(evaluateKpi(lower, observation(10)).status, "CRITICAL");
-    assert.equal(evaluateKpi(lower, observation(5)).status, "HEALTHY");
+    assert.equal(evaluateKpi(lower, observation(1), assessedAt).status, "HEALTHY");
+    assert.equal(evaluateKpi(lower, observation(6), assessedAt).status, "WARNING");
+    assert.equal(evaluateKpi(lower, observation(10), assessedAt).status, "CRITICAL");
+    assert.equal(evaluateKpi(lower, observation(5), assessedAt).status, "HEALTHY");
 }
 function assertUnknownAndFreshness() {
     const definition = cloneDefinition({ freshnessExpectationHours: 24 });
