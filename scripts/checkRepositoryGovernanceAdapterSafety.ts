@@ -3,6 +3,7 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 
 const adapter = fs.readFileSync("lib/repository/governanceAdapter.ts", "utf8");
+const framework = fs.readFileSync("lib/enterprise-kpi/adapterFramework.ts", "utf8");
 const route = fs.readFileSync(
   "app/api/admin/enterprise/repository-governance-adapter/route.ts",
   "utf8",
@@ -31,6 +32,8 @@ assert.ok(adapter.includes("repository_health_summary"));
 assert.ok(adapter.includes("repository_object_health"));
 assert.ok(adapter.includes("repository_governance_exception_candidates"));
 assert.ok(adapter.includes("fingerprintRepositoryGovernanceSourceState"));
+assert.ok(adapter.includes("invokeEnterpriseAdapter"));
+assert.ok(adapter.includes("inspectEnterpriseAdapter"));
 
 for (const kpi of ["KPI-GOV-001", "KPI-GOV-002", "KPI-GOV-003"]) {
   assert.ok(adapter.includes(kpi), `Adapter missing ${kpi}`);
@@ -48,14 +51,16 @@ for (const unsupported of [
   assert.ok(adapter.includes(unsupported), `Unsupported KPI not documented: ${unsupported}`);
 }
 
-assert.ok(adapter.includes('dataOrigin: "LIVE"'));
-assert.ok(adapter.includes("createEIAPersistenceRepository"));
-assert.ok(adapter.includes("upsertKpiObservation"));
-assert.ok(adapter.includes("upsertKpiEvaluation"));
-assert.ok(adapter.includes("upsertEvidenceReference"));
-assert.ok(adapter.includes("sourceStateFingerprint"));
-assert.ok(adapter.includes("sourceStateFingerprint,"));
-assert.ok(adapter.includes("process.env.VERCEL_GIT_COMMIT_SHA"));
+assert.ok(framework.includes('dataOrigin: "LIVE"'));
+assert.ok(framework.includes("createEIAPersistenceRepository"));
+assert.ok(framework.includes("upsertKpiObservation"));
+assert.ok(framework.includes("upsertKpiEvaluation"));
+assert.ok(framework.includes("upsertEvidenceReference"));
+assert.ok(framework.includes("sourceStateFingerprint"));
+assert.ok(framework.includes("sourceStateFingerprint,"));
+assert.ok(framework.includes("process.env.VERCEL_GIT_COMMIT_SHA"));
+assert.ok(framework.includes("buildKpiObservationIdempotencyKey") === false);
+assert.ok(framework.includes("fingerprintEnterpriseAdapterSourceState"));
 
 const repositoryWritePatterns = [
   /repositorySupabase[\s\S]{0,120}\.insert\s*\(/,
@@ -83,6 +88,7 @@ for (const forbidden of [
   /mls/i,
 ]) {
   assert.equal(forbidden.test(adapter), false, `Forbidden activation/system reference detected: ${forbidden}`);
+  assert.equal(forbidden.test(framework), false, `Forbidden activation/system reference detected in framework: ${forbidden}`);
 }
 
 assert.ok(route.includes("authorizeRepositoryAdminRequest"));
@@ -127,6 +133,7 @@ for (const sensitive of ["email", "phone", "password", "secret", "token", "custo
 }
 
 assert.ok(packageJson.includes("check:repository-governance-adapter-safety"));
+assert.ok(packageJson.includes("check:enterprise-adapter-framework-safety"));
 
 console.log(
   "[repository-governance-adapter-safety] ok: contract, authoritative source reads, manual admin route, fixture/live separation, provenance, idempotency, fingerprint, no public exposure, and no source mutation passed.",
