@@ -8,13 +8,13 @@
 
 `DEPLOYED`
 
-`ACTIVATION_PENDING`
+`CERTIFIED_AND_CLOSED`
 
-Sprint 4 implements the Search Runtime Adapter as an admin-only Enterprise Adapter Framework consumer. Certification is not closed until controlled authenticated production activation, persistence, idempotency, inspection, and security evidence are complete.
+Sprint 4 implements the Search Runtime Adapter as an admin-only Enterprise Adapter Framework consumer. Controlled authenticated production activation, persistence, idempotency, inspection, and security evidence are complete.
 
-Sprint 5 is not authorized by this record.
+Wave 2 Sprint 5, Internal Preview Adapter, is authorized for implementation by executive review after Sprint 4 certification. Sprint 5 is not certified by this record.
 
-`GAP-006` remains open.
+`GAP-006` remains `OPEN_MATERIAL_REDUCED`.
 
 ## Scope
 
@@ -62,7 +62,49 @@ Search runtime public probe summary:
 
 This corresponds to a valid fallback runtime path and preserves degraded/fallback evidence rather than converting it into an undifferentiated healthy signal.
 
-Codex did not have an approved admin key in the local environment, so controlled authenticated activation remains owner-action pending.
+## Controlled Activation Evidence
+
+Dry run:
+
+- Result: `SUCCESS`
+- `writesEiaPersistence=false`
+- `observationsPersisted=0`
+- `overallStatus=SUCCESS`
+
+Execute:
+
+- Result: `SUCCESS`
+- `observationsPersisted=1`
+- `overallStatus=SUCCESS`
+
+Idempotency invocation:
+
+- Result: `SUCCESS`
+- `observationsPersisted=0`
+- `observationsDeduplicated=1`
+- `overallStatus=SUCCESS`
+
+Search runtime evidence:
+
+- `KPI-SRCH-001=100%`
+- Runtime classification: `FALLBACK`
+- Provider classification: `DATABASE`
+- Fallback used: `TRUE`
+- Degraded: `TRUE`
+- Ready: `FALSE`
+- Blocker count: `1`
+- Result count: `1`
+- Confidence: `HIGH`
+- Freshness: `FRESH`
+
+Runtime usability remained valid while provider degradation was preserved.
+
+Inspection evidence:
+
+- `latestLiveObservationCount=2`
+- `manualInvocationOnly=true`
+- `publicExposure=false`
+- Supported KPI: `KPI-SRCH-001`
 
 ## Canonical KPI
 
@@ -180,11 +222,11 @@ Live persistence occurs only when the admin-only route is invoked with `execute=
 
 - Search response timing is preserved only as bounded probe context and is not mapped to a Search Runtime KPI.
 - Fallback utilization and degraded rate are preserved as evidence under `KPI-SRCH-001`; they are not separate governed KPIs.
-- Certification remains pending until owner-approved authenticated production activation evidence is complete.
+- Certification is closed for Sprint 4 only. This record does not certify Sprint 5 or close `GAP-006`.
 
-## Owner Activation Commands
+## Historical Activation Commands
 
-Use an approved admin key in the environment. Do not paste credentials into logs.
+The controlled activation was performed by the owner using an approved admin key. These command shapes are retained for audit traceability only. Do not paste credentials into logs.
 
 Dry run:
 
