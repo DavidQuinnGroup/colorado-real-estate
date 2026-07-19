@@ -4,9 +4,9 @@
 
 `IMPLEMENTED`
 
-`VALIDATION_IN_PROGRESS`
+`VALIDATED`
 
-`DEPLOYMENT_PENDING`
+`DEPLOYED`
 
 `ACTIVATION_PENDING`
 
@@ -23,6 +23,46 @@ The adapter answers:
 Did the search runtime execute correctly, and through which provider path?
 
 It does not answer whether the search endpoint is merely reachable. That remains Platform Availability Adapter ownership through `KPI-PLAT-002`.
+
+## Deployment Evidence
+
+Implementation commit:
+
+`a19a14d58b7fb2054a1ba7796af47754427503e3`
+
+Git-triggered Vercel deployment:
+
+- GitHub commit status: `success`
+- Vercel description: `Deployment has completed`
+- Vercel status ID: `50720205387`
+- Deployment target: `CZbqYTzrQK57nNa3tvehpHZcMybi`
+
+## Post-Deployment Health
+
+Unauthenticated production probes after deployment:
+
+- `/` returned `200`
+- `/search` returned `200`
+- `/api/search?limit=1` returned `200`
+- `/api/admin/enterprise/search-runtime-adapter` GET without auth returned `401`
+- `/api/admin/enterprise/search-runtime-adapter` POST without auth returned `401`
+- `/api/enterprise/search-runtime-adapter` returned `404`
+
+Search runtime public probe summary:
+
+- `source=database`
+- `health=degraded`
+- `returned=1`
+- `mapped=1`
+- `coordinateFiltered=0`
+- `resultCount=1`
+- `ready=false`
+- `blockerCount=1`
+- `fallbackReasonPresent=true`
+
+This corresponds to a valid fallback runtime path and preserves degraded/fallback evidence rather than converting it into an undifferentiated healthy signal.
+
+Codex did not have an approved admin key in the local environment, so controlled authenticated activation remains owner-action pending.
 
 ## Canonical KPI
 
