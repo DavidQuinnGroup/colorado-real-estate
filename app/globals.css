@@ -36,6 +36,139 @@ html, body {
   }
 }
 
+@layer components {
+  .home-brand,
+  .home-nav-link,
+  .home-card-link,
+  .home-btn {
+    text-decoration: none;
+  }
+
+  .home-brand {
+    color: #ffffff;
+  }
+
+  .home-brand:hover {
+    color: #ffffff;
+  }
+
+  .home-nav-link {
+    color: rgba(255, 255, 255, 0.62);
+    transition: color 180ms ease, transform 180ms ease;
+  }
+
+  .home-nav-items {
+    display: none;
+    align-items: center;
+    gap: 28px;
+  }
+
+  .home-nav-link:hover {
+    color: #ffffff;
+  }
+
+  .home-hero-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .home-btn {
+    display: inline-flex;
+    min-height: 48px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    padding: 16px 24px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 0.14em;
+    line-height: 1;
+    text-transform: uppercase;
+    transition: background-color 180ms ease, border-color 180ms ease, color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
+  }
+
+  .home-btn:hover {
+    transform: translateY(-2px);
+  }
+
+  .home-btn:focus-visible,
+  .home-nav-link:focus-visible,
+  .home-card-link:focus-visible,
+  .home-brand:focus-visible {
+    outline: 2px solid rgba(183, 219, 226, 0.95);
+    outline-offset: 4px;
+  }
+
+  .home-btn-primary {
+    background: #ffffff;
+    color: #071017;
+    box-shadow: 0 18px 50px rgba(255, 255, 255, 0.16);
+  }
+
+  .home-btn-primary:hover {
+    background: #d9f7fb;
+    color: #071017;
+  }
+
+  .home-btn-secondary {
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    background: rgba(255, 255, 255, 0.045);
+    color: #ffffff;
+  }
+
+  .home-btn-secondary:hover {
+    border-color: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.09);
+    color: #ffffff;
+  }
+
+  .home-btn-dark {
+    background: #071017;
+    color: #ffffff;
+    box-shadow: 0 18px 45px rgba(7, 16, 23, 0.2);
+  }
+
+  .home-btn-dark:hover {
+    background: #132332;
+    color: #ffffff;
+  }
+
+  .home-btn-light {
+    border: 1px solid rgba(7, 16, 23, 0.18);
+    background: rgba(255, 255, 255, 0.42);
+    color: #071017;
+  }
+
+  .home-btn-light:hover {
+    border-color: rgba(7, 16, 23, 0.4);
+    background: #ffffff;
+    color: #071017;
+  }
+
+  .home-card-link {
+    color: inherit;
+  }
+
+  .home-card-link:hover {
+    color: inherit;
+  }
+
+  @media (min-width: 1024px) {
+    .home-nav-items {
+      display: flex;
+    }
+  }
+
+  @media (min-width: 640px) {
+    .home-hero-actions {
+      flex-direction: row;
+      align-items: center;
+    }
+  }
+}
+
 .luxury-topo-tiles {
   filter: invert(92%) hue-rotate(178deg) brightness(0.88) contrast(1.14) saturate(1.65) !important;
 }

@@ -233,6 +233,7 @@ function getErrorMessage(error: unknown) {
 }
 
 export default function HomeSearchExperience({ authorityLinks = [], faqItems = [], variant = 'fullscreen' }: HomeSearchExperienceProps) {
+  const isEmbedded = variant === 'embedded';
   const [listings, setListings] = useState<MapSidebarListing[]>([]);
   const [searchMeta, setSearchMeta] = useState<SearchMapMeta | null>(null);
   const [filters, setFilters] = useState<SearchFilters>(() => getInitialSearchFilters());
@@ -359,7 +360,7 @@ export default function HomeSearchExperience({ authorityLinks = [], faqItems = [
   return (
     <div
       className={`relative flex w-full flex-col overflow-hidden bg-black text-white md:flex-row ${
-        variant === 'embedded' ? 'h-[760px] min-h-[680px] rounded-[8px] border border-white/10 shadow-2xl' : 'h-screen'
+        isEmbedded ? 'h-[780px] min-h-[700px] rounded-[18px] shadow-[0_34px_100px_rgba(0,0,0,0.32)] ring-1 ring-white/12' : 'h-screen'
       }`}
       data-testid="reie-home-search-experience"
       data-home-search-variant={variant}
@@ -428,19 +429,23 @@ export default function HomeSearchExperience({ authorityLinks = [], faqItems = [
           setSelectedId={handleMapSelect}
         />
 
-        <div className="pointer-events-none absolute left-6 top-6 z-[700] hidden rounded-[8px] border border-white/12 bg-[#071017]/88 px-4 py-3 shadow-2xl backdrop-blur-md md:block">
-          <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">Live REIE Map</p>
+        <div className="pointer-events-none absolute left-6 top-6 z-[700] hidden rounded-[10px] bg-[#071017]/84 px-4 py-3 shadow-2xl ring-1 ring-white/10 backdrop-blur-md md:block">
+          <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">
+            {isEmbedded ? 'Colorado Map' : 'Live REIE Map'}
+          </p>
           <p className="mt-1 text-sm font-black uppercase tracking-[0.08em] text-white">
             {listings.length} visible listings
           </p>
-          <p className="mt-1 text-[10px] font-black uppercase tracking-[0.12em] text-white/38">
-            {isSearching ? 'Inventory updating' : searchMeta?.source ? `${searchMeta.source} source` : 'Map ready'}
-          </p>
+          {!isEmbedded ? (
+            <p className="mt-1 text-[10px] font-black uppercase tracking-[0.12em] text-white/38">
+              {isSearching ? 'Inventory updating' : searchMeta?.source ? `${searchMeta.source} source` : 'Map ready'}
+            </p>
+          ) : null}
         </div>
 
         {selectedProperty ? <SelectedPropertyDrawer property={selectedProperty} onClose={() => setSelectedProperty(null)} /> : null}
 
-        {authorityLinks.length ? (
+        {authorityLinks.length && !isEmbedded ? (
           <nav
             aria-label="David Quinn Group authority links"
             className="pointer-events-auto absolute bottom-6 left-6 z-[700] hidden max-w-[min(660px,calc(100%-3rem))] rounded-[8px] border border-white/12 bg-[#071017]/88 p-2 shadow-2xl backdrop-blur-md md:block"
@@ -464,7 +469,7 @@ export default function HomeSearchExperience({ authorityLinks = [], faqItems = [
           </nav>
         ) : null}
 
-        {faqItems.length ? (
+        {faqItems.length && !isEmbedded ? (
           <details className="absolute right-6 top-6 z-[700] hidden w-[min(420px,calc(100%-3rem))] rounded-[8px] border border-white/12 bg-[#071017]/88 p-4 shadow-2xl backdrop-blur-md md:block">
             <summary className="cursor-pointer list-none text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100">
               REIE Authority FAQ

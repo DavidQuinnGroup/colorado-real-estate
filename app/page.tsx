@@ -48,6 +48,20 @@ const navigationLinks = [
   { label: 'Contact', href: '/contact' },
 ];
 
+const sectionShell = 'px-7 py-28 sm:px-10 sm:py-36 lg:px-12';
+const containerShell = 'mx-auto w-full max-w-[1180px]';
+const eyebrowClass = 'text-[11px] font-black uppercase tracking-[0.28em] text-[#b7dbe2]';
+const headingClass = 'mt-5 max-w-4xl text-4xl font-black leading-[1.04] tracking-normal text-white sm:text-5xl lg:text-6xl';
+const bodyClass = 'mt-6 max-w-2xl text-base leading-8 text-white/66 sm:text-lg';
+const primaryButtonClass =
+  'home-btn home-btn-primary';
+const secondaryButtonClass =
+  'home-btn home-btn-secondary';
+const darkButtonClass =
+  'home-btn home-btn-dark';
+const lightSecondaryButtonClass =
+  'home-btn home-btn-light';
+
 const reiePillars = [
   {
     title: 'Better decisions',
@@ -69,28 +83,31 @@ const advisoryPaths = [
     body: 'Search the market with a clearer view of fit, tradeoffs, due diligence priorities, and offer strategy.',
     href: '#search',
     cta: 'Start Your Search',
+    imagePosition: 'object-left',
   },
   {
     title: 'Sell with strategy',
     body: 'Position condition, timing, preparation, and market narrative around the objections serious buyers will notice.',
     href: '/contact',
     cta: 'Plan a Sale',
+    imagePosition: 'object-center',
   },
   {
     title: 'Build Your Grand Plan™',
     body: 'Connect the property decision to renovation scope, lifestyle goals, timing, capital planning, and risk tolerance.',
     href: '/contact',
     cta: 'Build Your Grand Plan™',
+    imagePosition: 'object-right',
   },
 ];
 
 const featuredCommunities = [
-  { name: 'Boulder', href: '/market/boulder-co-housing-market', note: 'Foothills, university, tech, trails, and established neighborhoods.' },
-  { name: 'Louisville', href: '/market/louisville-co-housing-market', note: 'Small-town core, commuter access, parks, and west-metro resilience.' },
-  { name: 'Lafayette', href: '/market/lafayette-co-housing-market', note: 'Creative downtown energy, family neighborhoods, and open-space access.' },
-  { name: 'Superior', href: '/search?city=Superior', note: 'Modern inventory, Boulder-Denver access, and rebuilding-era context.' },
-  { name: 'Erie', href: '/market/erie-co-housing-market', note: 'Newer communities, larger lots, and north-metro growth patterns.' },
-  { name: 'Longmont', href: '/market/longmont-co-housing-market', note: 'Historic housing, maker economy, and access to Boulder County value.' },
+  { name: 'Boulder', href: '/market/boulder-co-housing-market', note: 'Foothills, university, tech, trails, and established neighborhoods.', imagePosition: 'object-left' },
+  { name: 'Louisville', href: '/market/louisville-co-housing-market', note: 'Small-town core, commuter access, parks, and west-metro resilience.', imagePosition: 'object-center' },
+  { name: 'Lafayette', href: '/market/lafayette-co-housing-market', note: 'Creative downtown energy, family neighborhoods, and open-space access.', imagePosition: 'object-right' },
+  { name: 'Superior', href: '/search?city=Superior', note: 'Modern inventory, Boulder-Denver access, and rebuilding-era context.', imagePosition: 'object-center' },
+  { name: 'Erie', href: '/market/erie-co-housing-market', note: 'Newer communities, larger lots, and north-metro growth patterns.', imagePosition: 'object-left' },
+  { name: 'Longmont', href: '/market/longmont-co-housing-market', note: 'Historic housing, maker economy, and access to Boulder County value.', imagePosition: 'object-right' },
 ];
 
 const davidQuinnSignals = [
@@ -185,7 +202,37 @@ export default function HomePage() {
       />
       <FAQSchema faqs={homeFaqs} pageUrl={SITE_URL} />
       <div className="bg-[#070b10] text-white">
-        <section className="relative min-h-[calc(100vh-44px)] overflow-hidden" data-testid="home-portal-hero">
+        <header className="sticky top-0 z-40 border-b border-white/10 bg-[#071017]/74 shadow-[0_16px_40px_rgba(0,0,0,0.18)] backdrop-blur-xl" data-testid="home-portal-premium-header">
+          <nav className={`${containerShell} flex items-center justify-between gap-8 px-7 py-5 sm:px-10 lg:px-12`} aria-label="Home portal navigation">
+            <Link href="/" className="home-brand group flex min-w-0 items-center gap-4">
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[10px] border border-white/16 bg-white/[0.08] text-sm font-black tracking-normal transition group-hover:border-cyan-100/40 group-hover:bg-white/[0.12]">
+                DQ
+              </span>
+              <span className="min-w-0">
+                <span className="block text-sm font-black uppercase tracking-[0.16em]">David Quinn Group</span>
+                <span className="mt-1 hidden text-[10px] font-bold uppercase tracking-[0.22em] text-white/44 sm:block">
+                  Colorado Advisory
+                </span>
+              </span>
+            </Link>
+            <div className="home-nav-items">
+              {navigationLinks.map((link) => (
+                <Link
+                  key={`${link.href}-${link.label}`}
+                  href={link.href}
+                  className="home-nav-link text-[11px] font-black uppercase tracking-[0.15em]"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+            <Link href="/contact" className={secondaryButtonClass}>
+              Contact
+            </Link>
+          </nav>
+        </header>
+
+        <section className="relative min-h-[calc(100vh-74px)] overflow-hidden" data-testid="home-portal-hero">
           <Image
             src={HERO_IMAGE}
             alt="Colorado Front Range residential landscape at golden hour"
@@ -194,55 +241,26 @@ export default function HomePage() {
             sizes="100vw"
             className="object-cover"
           />
-          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(5,7,10,0.88)_0%,rgba(5,7,10,0.62)_42%,rgba(5,7,10,0.24)_100%)]" />
-          <div className="absolute inset-x-0 top-0 z-10 border-b border-white/10 bg-[#05070a]/46 backdrop-blur-md">
-            <nav className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-5 sm:px-8" aria-label="Home portal navigation">
-              <Link href="/" className="text-sm font-black uppercase tracking-[0.22em] text-white">
-                David Quinn Group
-              </Link>
-              <div className="hidden items-center gap-5 md:flex">
-                {navigationLinks.map((link) => (
-                  <Link
-                    key={`${link.href}-${link.label}`}
-                    href={link.href}
-                    className="text-[11px] font-black uppercase tracking-[0.16em] text-white/68 transition hover:text-white"
-                  >
-                    {link.label}
-                  </Link>
-                ))}
-              </div>
-              <Link
-                href="/contact"
-                className="rounded-[6px] border border-white/16 px-4 py-2 text-[10px] font-black uppercase tracking-[0.14em] text-white transition hover:border-white/40 hover:bg-white/10"
-              >
-                Contact
-              </Link>
-            </nav>
-          </div>
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(5,7,10,0.9)_0%,rgba(5,7,10,0.66)_42%,rgba(5,7,10,0.22)_100%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_50%,rgba(183,219,226,0.16),transparent_32%)]" />
 
-          <div className="relative z-10 mx-auto flex min-h-[calc(100vh-44px)] max-w-7xl items-center px-6 pb-24 pt-32 sm:px-8">
+          <div className={`${containerShell} relative z-10 flex min-h-[calc(100vh-74px)] items-center px-7 pb-28 pt-24 sm:px-10 lg:px-12`}>
             <div className="max-w-3xl">
-              <p className="text-[11px] font-black uppercase tracking-[0.28em] text-cyan-100/82">
+              <p className={eyebrowClass}>
                 Colorado Front Range Advisory
               </p>
-              <h1 className="mt-6 max-w-4xl text-5xl font-black leading-[0.98] tracking-normal text-white sm:text-6xl lg:text-7xl">
+              <h1 className="mt-7 max-w-4xl text-5xl font-black leading-[0.96] tracking-normal text-white sm:text-6xl lg:text-7xl">
                 Real Estate Intelligence for the Colorado Front Range
               </h1>
-              <p className="mt-7 max-w-2xl text-lg leading-8 text-white/78 sm:text-xl">
+              <p className="mt-8 max-w-2xl text-lg leading-9 text-white/78 sm:text-xl">
                 Helping buyers and sellers make smarter real estate decisions through construction expertise,
                 strategic planning, and local market intelligence.
               </p>
-              <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-                <Link
-                  href="#search"
-                  className="rounded-[6px] bg-white px-6 py-4 text-center text-xs font-black uppercase tracking-[0.16em] text-[#071017] transition hover:bg-cyan-100"
-                >
+              <div className="home-hero-actions mt-12">
+                <Link href="#search" className={primaryButtonClass}>
                   Start Your Search
                 </Link>
-                <Link
-                  href="/contact"
-                  className="rounded-[6px] border border-white/24 px-6 py-4 text-center text-xs font-black uppercase tracking-[0.16em] text-white transition hover:border-white/50 hover:bg-white/10"
-                >
+                <Link href="/contact" className={secondaryButtonClass}>
                   Build Your Grand Plan™
                 </Link>
               </div>
@@ -250,47 +268,44 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="border-y border-white/10 bg-[#0b1117] px-6 py-24 sm:px-8" data-testid="home-portal-why-reie">
-          <div className="mx-auto max-w-7xl">
+        <section className={`${sectionShell} border-y border-white/10 bg-[#0b1117]`} data-testid="home-portal-why-reie">
+          <div className={containerShell}>
             <div className="max-w-3xl">
-              <p className="text-[11px] font-black uppercase tracking-[0.24em] text-cyan-100/70">Why REIE</p>
-              <h2 className="mt-4 text-4xl font-black leading-tight text-white sm:text-5xl">
+              <p className={eyebrowClass}>Why REIE</p>
+              <h2 className={headingClass}>
                 A clearer way to evaluate Colorado real estate.
               </h2>
             </div>
-            <div className="mt-12 grid gap-5 md:grid-cols-3">
+            <div className="mt-16 grid gap-6 md:grid-cols-3">
               {reiePillars.map((pillar) => (
-                <article key={pillar.title} className="rounded-[8px] border border-white/10 bg-white/[0.045] p-8">
-                  <h3 className="text-xl font-black text-white">{pillar.title}</h3>
-                  <p className="mt-5 text-sm leading-7 text-white/64">{pillar.body}</p>
+                <article key={pillar.title} className="rounded-[14px] bg-white/[0.055] p-9 shadow-[0_22px_70px_rgba(0,0,0,0.16)] ring-1 ring-white/10 transition duration-300 hover:-translate-y-1 hover:bg-white/[0.075]">
+                  <h3 className="text-2xl font-black leading-tight text-white">{pillar.title}</h3>
+                  <p className="mt-6 text-sm leading-7 text-white/64">{pillar.body}</p>
                 </article>
               ))}
             </div>
           </div>
         </section>
 
-        <section id="buy-sell-grand-plan" className="px-6 py-24 sm:px-8" data-testid="home-portal-advisory-paths">
-          <div className="mx-auto max-w-7xl">
-            <div className="grid gap-6 lg:grid-cols-3">
-              {advisoryPaths.map((path, index) => (
-                <article key={path.title} className="overflow-hidden rounded-[8px] border border-white/10 bg-[#101820]">
-                  <div className="relative h-56">
+        <section id="buy-sell-grand-plan" className={sectionShell} data-testid="home-portal-advisory-paths">
+          <div className={containerShell}>
+            <div className="grid gap-8 lg:grid-cols-3">
+              {advisoryPaths.map((path) => (
+                <article key={path.title} className="group overflow-hidden rounded-[16px] bg-[#101820] shadow-[0_28px_80px_rgba(0,0,0,0.24)] ring-1 ring-white/10">
+                  <div className="relative h-64 overflow-hidden">
                     <Image
                       src={HERO_IMAGE}
                       alt=""
                       fill
                       sizes="(min-width: 1024px) 33vw, 100vw"
-                      className={`object-cover ${index === 0 ? 'object-left' : index === 1 ? 'object-center' : 'object-right'}`}
+                      className={`object-cover transition duration-700 group-hover:scale-105 ${path.imagePosition}`}
                     />
-                    <div className="absolute inset-0 bg-black/20" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#101820] via-black/10 to-transparent" />
                   </div>
-                  <div className="p-8">
-                    <h3 className="text-2xl font-black text-white">{path.title}</h3>
-                    <p className="mt-4 min-h-24 text-sm leading-7 text-white/64">{path.body}</p>
-                    <Link
-                      href={path.href}
-                      className="mt-8 inline-flex rounded-[6px] border border-cyan-100/24 px-4 py-3 text-[11px] font-black uppercase tracking-[0.14em] text-cyan-100 transition hover:border-cyan-100/60 hover:bg-cyan-100/10"
-                    >
+                  <div className="p-9">
+                    <h3 className="text-3xl font-black leading-tight text-white">{path.title}</h3>
+                    <p className="mt-5 min-h-28 text-sm leading-7 text-white/64">{path.body}</p>
+                    <Link href={path.href} className={`${secondaryButtonClass} mt-9`}>
                       {path.cta}
                     </Link>
                   </div>
@@ -300,40 +315,52 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section id="communities" className="bg-[#e8e2d8] px-6 py-24 text-[#111820] sm:px-8" data-testid="home-portal-communities">
-          <div className="mx-auto max-w-7xl">
-            <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
+        <section id="communities" className={`${sectionShell} bg-[#e8e2d8] text-[#111820]`} data-testid="home-portal-communities">
+          <div className={containerShell}>
+            <div className="flex flex-col justify-between gap-8 md:flex-row md:items-end">
               <div>
-                <p className="text-[11px] font-black uppercase tracking-[0.24em] text-[#5c4a35]">Featured Colorado Communities</p>
-                <h2 className="mt-4 text-4xl font-black leading-tight sm:text-5xl">Start with the places that shape the decision.</h2>
+                <p className="text-[11px] font-black uppercase tracking-[0.28em] text-[#6f5b43]">Featured Colorado Communities</p>
+                <h2 className="mt-5 max-w-4xl text-4xl font-black leading-[1.04] tracking-normal sm:text-5xl lg:text-6xl">Start with the places that shape the decision.</h2>
               </div>
-              <Link href="/search" className="text-xs font-black uppercase tracking-[0.16em] text-[#5c4a35]">
+              <Link href="/search" className={lightSecondaryButtonClass}>
                 View Colorado Inventory
               </Link>
             </div>
-            <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
               {featuredCommunities.map((community) => (
                 <Link
                   key={community.name}
                   href={community.href}
-                  className="group rounded-[8px] border border-[#111820]/12 bg-white/62 p-7 transition hover:-translate-y-1 hover:bg-white"
+                  className="home-card-link group overflow-hidden rounded-[16px] bg-white shadow-[0_24px_70px_rgba(40,35,28,0.12)] transition duration-300 hover:-translate-y-1"
                 >
-                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#7b674d]">Community</p>
-                  <h3 className="mt-4 text-3xl font-black">{community.name}</h3>
-                  <p className="mt-4 text-sm leading-7 text-[#293542]/76">{community.note}</p>
-                  <p className="mt-8 text-[11px] font-black uppercase tracking-[0.14em] text-[#111820]">Explore Market</p>
+                  <div className="relative h-52 overflow-hidden">
+                    <Image
+                      src={HERO_IMAGE}
+                      alt=""
+                      fill
+                      sizes="(min-width: 1024px) 33vw, 100vw"
+                      className={`object-cover transition duration-700 group-hover:scale-105 ${community.imagePosition}`}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/45 to-transparent" />
+                  </div>
+                  <div className="p-7">
+                    <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#7b674d]">Community</p>
+                    <h3 className="mt-4 text-3xl font-black">{community.name}</h3>
+                    <p className="mt-4 min-h-20 text-sm leading-7 text-[#293542]/76">{community.note}</p>
+                    <p className="mt-8 text-[11px] font-black uppercase tracking-[0.14em] text-[#111820]">Explore</p>
+                  </div>
                 </Link>
               ))}
             </div>
           </div>
         </section>
 
-        <section id="search" className="px-4 py-24 sm:px-8" data-testid="home-portal-search-section">
-          <div className="mx-auto max-w-7xl">
-            <div className="mb-10 max-w-3xl">
-              <p className="text-[11px] font-black uppercase tracking-[0.24em] text-cyan-100/70">Search</p>
-              <h2 className="mt-4 text-4xl font-black leading-tight sm:text-5xl">Search when the strategy is clear.</h2>
-              <p className="mt-5 text-base leading-8 text-white/64">
+        <section id="search" className="px-4 py-28 sm:px-8 sm:py-36 lg:px-12" data-testid="home-portal-search-section">
+          <div className={containerShell}>
+            <div className="mb-12 max-w-3xl">
+              <p className={eyebrowClass}>Search</p>
+              <h2 className={headingClass}>Search when the strategy is clear.</h2>
+              <p className={bodyClass}>
                 Explore Colorado inventory with the existing REIE map, filters, listing cards, saved-search path, and property routes preserved.
               </p>
             </div>
@@ -341,23 +368,23 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section id="why-david-quinn" className="border-y border-white/10 bg-[#101820] px-6 py-24 sm:px-8" data-testid="home-portal-why-david-quinn">
-          <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+        <section id="why-david-quinn" className={`${sectionShell} border-y border-white/10 bg-[#101820]`} data-testid="home-portal-why-david-quinn">
+          <div className={`${containerShell} grid gap-14 lg:grid-cols-[0.9fr_1.1fr] lg:items-center`}>
             <div>
-              <p className="text-[11px] font-black uppercase tracking-[0.24em] text-cyan-100/70">Why David Quinn</p>
-              <h2 className="mt-4 text-4xl font-black leading-tight sm:text-5xl">
+              <p className={eyebrowClass}>Why David Quinn</p>
+              <h2 className={headingClass}>
                 Advisory work grounded in homes, markets, and real-world tradeoffs.
               </h2>
             </div>
-            <div className="space-y-5">
-              <p className="text-base leading-8 text-white/68">
+            <div className="rounded-[16px] bg-white/[0.055] p-8 shadow-[0_24px_80px_rgba(0,0,0,0.18)] ring-1 ring-white/10 sm:p-10">
+              <p className="text-base leading-8 text-white/70">
                 David Quinn Group helps Colorado buyers, sellers, and owners evaluate real estate with market context,
                 construction awareness, and practical planning discipline. The work is advisory first: understand the
                 property, understand the risk, then decide what to do next.
               </p>
-              <div className="grid gap-3 sm:grid-cols-3">
+              <div className="mt-8 grid gap-4 sm:grid-cols-3">
                 {davidQuinnSignals.map((signal) => (
-                  <div key={signal} className="rounded-[8px] border border-white/10 bg-white/[0.045] p-5 text-sm font-bold leading-6 text-white/76">
+                  <div key={signal} className="rounded-[12px] bg-[#071017]/72 p-5 text-sm font-bold leading-6 text-white/76 ring-1 ring-white/10">
                     {signal}
                   </div>
                 ))}
@@ -366,17 +393,17 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="px-6 py-24 sm:px-8" data-testid="home-portal-testimonials">
-          <div className="mx-auto max-w-7xl">
+        <section className={sectionShell} data-testid="home-portal-testimonials">
+          <div className={containerShell}>
             <div className="max-w-3xl">
-              <p className="text-[11px] font-black uppercase tracking-[0.24em] text-cyan-100/70">Client Perspective</p>
-              <h2 className="mt-4 text-4xl font-black leading-tight sm:text-5xl">Testimonials pending approved source.</h2>
+              <p className={eyebrowClass}>Client Perspective</p>
+              <h2 className={headingClass}>Testimonials pending approved source.</h2>
             </div>
-            <div className="mt-10 grid gap-5 md:grid-cols-2">
+            <div className="mt-14 grid gap-6 md:grid-cols-2">
               {testimonialSignals.map((signal) => (
                 <article
                   key={signal}
-                  className="rounded-[8px] border border-dashed border-white/18 bg-white/[0.035] p-7"
+                  className="rounded-[14px] bg-white/[0.045] p-8 shadow-[0_22px_70px_rgba(0,0,0,0.14)] ring-1 ring-white/10"
                   data-testimonial-source="OWNER_APPROVED_REVIEW_SOURCE_REQUIRED"
                 >
                   <p className="text-sm leading-7 text-white/64">{signal}</p>
@@ -386,17 +413,17 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="px-6 pb-28 sm:px-8" data-testid="home-portal-final-cta">
-          <div className="mx-auto max-w-7xl rounded-[8px] border border-white/10 bg-white px-8 py-14 text-[#071017] sm:px-12">
-            <h2 className="max-w-3xl text-4xl font-black leading-tight sm:text-5xl">Begin with the decision you need to make.</h2>
-            <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-              <Link href="#search" className="rounded-[6px] bg-[#071017] px-6 py-4 text-center text-xs font-black uppercase tracking-[0.16em] text-white">
+        <section className="px-7 pb-32 pt-4 sm:px-10 sm:pb-40 lg:px-12" data-testid="home-portal-final-cta">
+          <div className={`${containerShell} rounded-[18px] bg-white px-8 py-16 text-[#071017] shadow-[0_30px_90px_rgba(0,0,0,0.22)] sm:px-12 lg:px-16`}>
+            <h2 className="max-w-3xl text-4xl font-black leading-[1.05] tracking-normal sm:text-5xl">Begin with the decision you need to make.</h2>
+            <div className="mt-12 flex flex-col gap-4 sm:flex-row">
+              <Link href="#search" className={darkButtonClass}>
                 Start Your Search
               </Link>
-              <Link href="/contact" className="rounded-[6px] border border-[#071017]/16 px-6 py-4 text-center text-xs font-black uppercase tracking-[0.16em] text-[#071017]">
+              <Link href="/contact" className={lightSecondaryButtonClass}>
                 Build Your Grand Plan™
               </Link>
-              <Link href="/contact" className="rounded-[6px] border border-[#071017]/16 px-6 py-4 text-center text-xs font-black uppercase tracking-[0.16em] text-[#071017]">
+              <Link href="/contact" className={lightSecondaryButtonClass}>
                 Contact David Quinn
               </Link>
             </div>
