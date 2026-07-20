@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Bell, Check, ChevronDown, Loader2, Mail, MessageSquareText, Sparkles } from 'lucide-react';
 import type { CSSProperties } from 'react';
@@ -520,6 +521,21 @@ export default function SaveSearch({ city }: SaveSearchProps) {
         >
           <p className={`min-w-0 text-xs font-bold ${error ? 'text-red-300' : 'text-white/35'}`}>{error || 'Saved searches include this map view and current filters.'}</p>
         </div>
+        <p
+          className="text-xs leading-5 text-white/38"
+          data-testid="reie-save-search-consent-notice"
+          data-public-trust-form-notice="save-search"
+        >
+          Email is required. Search filters, timing, intent, and optional notes are used for saved-search and follow-up routing. Review the{' '}
+          <Link href="/privacy" className="font-bold text-cyan-100 underline underline-offset-4">
+            Privacy Notice
+          </Link>{' '}
+          and{' '}
+          <Link href="/terms" className="font-bold text-cyan-100 underline underline-offset-4">
+            Terms of Use
+          </Link>
+          .
+        </p>
       </div>
     </div>
   );

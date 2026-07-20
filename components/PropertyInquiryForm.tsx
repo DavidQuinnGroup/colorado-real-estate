@@ -12,6 +12,7 @@ import {
   Sparkles,
   UserRound,
 } from 'lucide-react';
+import Link from 'next/link';
 
 type PropertyInquiryFormProps = {
   propertyId: string;
@@ -393,6 +394,23 @@ export default function PropertyInquiryForm({ propertyId, address, city, state }
             {errorMessage}
           </p>
         ) : null}
+
+        <p
+          className="text-xs leading-5 text-white/40"
+          data-testid="reie-property-inquiry-consent-notice"
+          data-public-trust-form-notice="property-inquiry"
+        >
+          Email is required. Name, phone, timing, and notes are optional. This inquiry is used for property-specific follow-up routing and
+          does not automatically create a brokerage relationship. Review the{' '}
+          <Link href="/privacy" className="font-bold text-cyan-100 underline underline-offset-4">
+            Privacy Notice
+          </Link>{' '}
+          and{' '}
+          <Link href="/terms" className="font-bold text-cyan-100 underline underline-offset-4">
+            Terms of Use
+          </Link>
+          .
+        </p>
 
         <button
           type="submit"

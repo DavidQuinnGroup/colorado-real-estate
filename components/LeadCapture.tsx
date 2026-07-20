@@ -3,6 +3,7 @@
 import type { FormEvent, ReactNode } from 'react';
 import { useMemo, useState } from 'react';
 import { CheckCircle2, ChevronRight, CircleDollarSign, Compass, Hammer, Lock, ShieldCheck, Target } from 'lucide-react';
+import Link from 'next/link';
 
 import { getSavedNorthStarAnchors } from '@/components/settings/NorthStarManager';
 
@@ -511,6 +512,22 @@ export default function LeadCapture({ city }: LeadCaptureProps) {
                 Saves a DQG lead record and strategy task for follow-up routing.
               </p>
             </div>
+            <p
+              className="mx-auto max-w-3xl text-center text-xs leading-5 text-white/38"
+              data-testid="reie-lead-capture-consent-notice"
+              data-public-trust-form-notice="strategy-intake"
+            >
+              Email is required. Selected market, goal, timing, and optional notes are used for strategy-intake and follow-up routing and do
+              not automatically create a brokerage relationship. Review the{' '}
+              <Link href="/privacy" className="font-bold text-cyan-100 underline underline-offset-4">
+                Privacy Notice
+              </Link>{' '}
+              and{' '}
+              <Link href="/terms" className="font-bold text-cyan-100 underline underline-offset-4">
+                Terms of Use
+              </Link>
+              .
+            </p>
           </div>
         )}
       </form>
