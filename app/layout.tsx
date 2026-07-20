@@ -42,7 +42,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(realEstateAgentSchema) }}
         />
       </head>
-      <body className="flex h-full w-full flex-col font-sans antialiased">
+      <body className="flex min-h-full w-full flex-col font-sans antialiased">
         <BrokerageAttribution />
         <main className="flex-grow">{children}</main>
         <PlatformFooter />

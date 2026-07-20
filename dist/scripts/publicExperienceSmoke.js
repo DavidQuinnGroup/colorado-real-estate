@@ -51,6 +51,19 @@ async function assertSearchPage() {
     assert.ok(includesFoldedText(html, 'REIE Inventory'), 'Expected search sidebar inventory shell.');
     assert.ok(includesFoldedText(html, 'Filters'), 'Expected search filters shell.');
 }
+async function assertHomePortalPage() {
+    const html = await fetchHtml('/');
+    assert.ok(includesFoldedText(html, 'Real Estate Intelligence for the Colorado Front Range'), 'Expected restored Home Portal hero headline.');
+    assert.ok(includesFoldedText(html, 'Helping buyers and sellers make smarter real estate decisions'), 'Expected restored Home Portal supporting copy.');
+    assert.ok(includesFoldedText(html, 'Build Your Grand Plan'), 'Expected Home Portal Grand Plan CTA.');
+    assert.ok(includesFoldedText(html, 'Why REIE'), 'Expected Home Portal REIE introduction.');
+    assert.ok(includesFoldedText(html, 'Featured Colorado Communities'), 'Expected Home Portal community section.');
+    assert.ok(includesFoldedText(html, 'Search when the strategy is clear'), 'Expected existing search to be relocated below advisory sections.');
+    assert.ok(html.includes('data-testid="home-portal-hero"'), 'Expected Home Portal hero test handle.');
+    assert.ok(html.includes('data-testid="home-portal-search-section"'), 'Expected Home Portal search section test handle.');
+    assert.ok(html.includes('data-home-search-variant="embedded"'), 'Expected homepage search to render in embedded presentation mode.');
+    assert.ok(html.includes('<link rel="canonical" href="https://davidquinngroup.com"'), 'Expected home canonical metadata to be preserved.');
+}
 async function assertDrawerSource() {
     const [source, imageSource] = await Promise.all([
         readFile('components/maps/SelectedPropertyDrawer.tsx', 'utf8'),
@@ -1628,6 +1641,7 @@ async function assertDeadLetterInspectionMetadataSource() {
 async function main() {
     const property = await getSmokeProperty();
     const propertyPath = `/properties/${property.slug || property.id}`;
+    await assertHomePortalPage();
     await assertPropertyPage(propertyPath);
     await assertSearchPage();
     await assertDrawerSource();
@@ -1681,6 +1695,7 @@ async function main() {
             path: propertyPath,
         },
         assertions: {
+            homePortalRestoration: true,
             propertyDecisionSnapshot: true,
             propertyInquiryGuidance: true,
             searchIntelligence: true,

@@ -40,6 +40,7 @@ export type HomeAuthorityLink = {
 type HomeSearchExperienceProps = {
   authorityLinks?: HomeAuthorityLink[];
   faqItems?: FAQItem[];
+  variant?: 'fullscreen' | 'embedded';
 };
 
 type MobileSearchView = 'list' | 'map';
@@ -231,7 +232,7 @@ function getErrorMessage(error: unknown) {
   return 'Home search failed.';
 }
 
-export default function HomeSearchExperience({ authorityLinks = [], faqItems = [] }: HomeSearchExperienceProps) {
+export default function HomeSearchExperience({ authorityLinks = [], faqItems = [], variant = 'fullscreen' }: HomeSearchExperienceProps) {
   const [listings, setListings] = useState<MapSidebarListing[]>([]);
   const [searchMeta, setSearchMeta] = useState<SearchMapMeta | null>(null);
   const [filters, setFilters] = useState<SearchFilters>(() => getInitialSearchFilters());
@@ -357,8 +358,11 @@ export default function HomeSearchExperience({ authorityLinks = [], faqItems = [
 
   return (
     <div
-      className="relative flex h-screen w-full flex-col overflow-hidden bg-black text-white md:flex-row"
+      className={`relative flex w-full flex-col overflow-hidden bg-black text-white md:flex-row ${
+        variant === 'embedded' ? 'h-[760px] min-h-[680px] rounded-[8px] border border-white/10 shadow-2xl' : 'h-screen'
+      }`}
       data-testid="reie-home-search-experience"
+      data-home-search-variant={variant}
       data-mobile-view={mobileView}
       data-selected-listing-id={selectedProperty?.id || ''}
       data-visible-listing-count={listings.length}
