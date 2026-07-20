@@ -526,7 +526,8 @@ export default function LeadCapture({ city }: LeadCaptureProps) {
               <Link href="/terms" className="font-bold text-cyan-100 underline underline-offset-4">
                 Terms of Use
               </Link>
-              .
+              . Do not submit confidential negotiating positions, motivation, financial limits, or client-confidential information until the
+              applicable brokerage relationship and disclosures have been discussed.
             </p>
           </div>
         )}

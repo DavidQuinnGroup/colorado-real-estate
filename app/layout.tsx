@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import './globals.css';
+import BrokerageAttribution from '@/components/BrokerageAttribution';
 import PlatformFooter from '@/components/Footer';
 import { Lexend } from 'next/font/google';
 import { realEstateAgentSchema } from '@/lib/schema/realEstateAgentSchema';
@@ -42,6 +43,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
         />
       </head>
       <body className="flex h-full w-full flex-col font-sans antialiased">
+        <BrokerageAttribution />
         <main className="flex-grow">{children}</main>
         <PlatformFooter />
       </body>

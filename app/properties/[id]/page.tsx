@@ -33,6 +33,7 @@ import { getPropertyLinks } from '@/lib/linking/getPropertyLinks';
 import { getListingFallbackPhotoUrl, getListingPhotoUrl } from '@/lib/listingVisuals';
 import { neighborhoods } from '@/lib/neighborhoods';
 import { prisma } from '@/lib/prisma';
+import { LISTING_ADVERTISING_CLASSIFICATION } from '@/lib/publicTrust';
 import type { FAQItem } from '@/lib/schema/faqSchema';
 import { generateFAQs } from '@/lib/schema/generateFAQs';
 import { buildPropertySchema } from '@/lib/schema/propertySchema';
@@ -219,6 +220,15 @@ function formatCompactCurrency(value: number | null | undefined) {
   if (value >= 1000) return `$${Math.round(value / 1000)}K`;
 
   return `$${value.toLocaleString()}`;
+}
+
+function formatDateTime(value: Date | null | undefined) {
+  if (!value) return 'Unavailable';
+  return new Intl.DateTimeFormat('en-US', {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+    timeZone: 'America/Denver',
+  }).format(value);
 }
 
 function getAltitudeNarrative(altitude: number) {
@@ -759,6 +769,37 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
               <SnapshotTile label="Type" value={property.propertyType || 'Residential'} />
               <SnapshotTile label="MLS" value={property.mlsId || property.id} />
             </div>
+          </section>
+
+          <section
+            className="overflow-hidden rounded-[8px] border border-white/10 bg-[#0d141c]"
+            data-testid="listing-advertising-attribution"
+            data-listing-advertising-classification={LISTING_ADVERTISING_CLASSIFICATION}
+            data-listing-source-authority="MLS_PROVIDER_REVIEW_REQUIRED"
+            data-listing-compass-url-available="false"
+            data-listing-photo-rights-review="MLS_PROVIDER_REVIEW_REQUIRED"
+          >
+            <div className="border-b border-white/10 bg-white/[0.035] p-5">
+              <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.22em] text-white/46">
+                <FileText size={14} aria-hidden="true" />
+                Listing Attribution Review
+              </p>
+              <p className="mt-2 text-sm leading-6 text-white/50">
+                Property advertising attribution is displayed from stored listing fields and remains subject to MLS and Compass review.
+              </p>
+            </div>
+            <div className="grid gap-2 p-4">
+              <SnapshotTile label="MLS Source" value={property.mlsId ? `MLS ${property.mlsId}` : 'MLS review required'} />
+              <SnapshotTile label="Listing Brokerage" value={property.listingOffice || 'Unavailable'} />
+              <SnapshotTile label="Listing Broker" value={property.listingAgent || 'Unavailable'} />
+              <SnapshotTile label="Compass.com Link" value="Mapping required" />
+              <SnapshotTile label="Updated" value={formatDateTime(property.updatedAt)} />
+              <SnapshotTile label="Sync Time" value={formatDateTime(property.lastIntelligenceSync)} />
+            </div>
+            <p className="border-t border-white/10 px-4 py-3 text-xs leading-5 text-white/42">
+              Information is compiled from sources deemed reliable but may contain errors, omissions, price/status changes, sale, or
+              withdrawal. Measurements and listing facts require independent verification.
+            </p>
           </section>
 
           <EquityVision property={equityProperty} />

@@ -1,7 +1,15 @@
 import type { Metadata } from 'next';
 
 import { PublicTrustPage, StandardTrustIntro, TrustList, TrustSection } from '@/components/PublicTrustPage';
-import { PUBLIC_TRUST_REVIEW_STATUS, SITE_NAME, SITE_URL } from '@/lib/publicTrust';
+import {
+  BROKERAGE_FIRM_NAME,
+  COMPASS_BRANDING_CLASSIFICATION,
+  COMPASS_MARKETING_APPROVAL_GATE,
+  PUBLIC_TRUST_REVIEW_STATUS,
+  SITE_NAME,
+  SITE_URL,
+  ownerVerificationRegister,
+} from '@/lib/publicTrust';
 
 export const metadata: Metadata = {
   title: `Brokerage Disclosures | ${SITE_NAME}`,
@@ -14,6 +22,7 @@ const verifiedItems = [
   'Repository sources identify the public brand as David Quinn Group.',
   'Repository sources identify the public product as the Real Estate Intelligence Engine.',
   'Repository sources identify Colorado, Boulder, Denver, and the Front Range as public market context.',
+  `Owner-supplied Compass policy evidence identifies the Brokerage Firm as ${BROKERAGE_FIRM_NAME}.`,
 ];
 
 const ownerItems = [
@@ -39,8 +48,25 @@ export default function BrokerageDisclosuresPage() {
         <TrustList items={verifiedItems} />
       </TrustSection>
 
+      <TrustSection title="Compass And Brokerage Gates">
+        <p>Compass marketing approval gate: {COMPASS_MARKETING_APPROVAL_GATE}.</p>
+        <p>Compass branding status: {COMPASS_BRANDING_CLASSIFICATION}.</p>
+        <p>No Compass approval, Compass logo, Compass email address, license number, office address, or Compass.com URL is rendered as verified.</p>
+      </TrustSection>
+
       <TrustSection title="Owner Confirmation Required">
         <TrustList items={ownerItems} />
+      </TrustSection>
+
+      <TrustSection title="Verification Register">
+        <ul className="space-y-3">
+          {ownerVerificationRegister.map((item) => (
+            <li key={item.fact} className="border-l border-cyan-100/28 pl-4">
+              <span className="font-bold text-white/78">{item.fact}:</span> {item.status}
+              {item.value ? ` (${item.value})` : ''}
+            </li>
+          ))}
+        </ul>
       </TrustSection>
     </PublicTrustPage>
   );

@@ -243,6 +243,15 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
               <p className="text-2xl font-black italic">{authoritySignals.highestEfficiencyNeighborhood?.name || 'Expanding'}</p>
             </div>
           </div>
+          <p
+            className="mt-6 max-w-3xl text-xs leading-6 text-white/42"
+            data-testid="market-source-disclaimer"
+            data-market-sales-source-control="present"
+            data-market-non-participation-disclaimer="present"
+          >
+            Market statistics are market-wide REIE context from repository city data and public MLS/search signals where available. They do
+            not state or imply that David Quinn, David Quinn Group, or Compass listed, sold, or participated in every reported property.
+          </p>
         </div>
       </section>
 
@@ -324,7 +333,7 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
             <div className="mt-8 flex items-center gap-4">
               <ShieldCheck className="text-white/20" size={20} />
               <p className="text-[9px] font-bold uppercase italic leading-tight tracking-[0.2em] text-white/20">
-                Verified by David Quinn Group construction pedigree attribution.
+                Draft construction-context signal pending owner and brokerage review.
               </p>
             </div>
           </div>

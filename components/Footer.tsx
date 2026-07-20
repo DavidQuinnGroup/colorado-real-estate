@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-import { PUBLIC_TRUST_REVIEW_STATUS, publicTrustRoutes } from '@/lib/publicTrust';
+import { BROKERAGE_FIRM_NAME, PUBLIC_TRUST_REVIEW_STATUS, publicTrustRoutes } from '@/lib/publicTrust';
 
 export default function PlatformFooter() {
   return (
@@ -9,6 +9,7 @@ export default function PlatformFooter() {
         <div className="space-y-6">
           <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-gold-500">David Quinn Group</h4>
           <p className="text-sm leading-relaxed text-slate-400">Colorado real estate search, inquiry routing, and REIE strategy intake.</p>
+          <p className="text-xs font-bold leading-relaxed text-slate-400">Brokerage Firm: {BROKERAGE_FIRM_NAME}</p>
           <p className="text-xs leading-relaxed text-slate-500">
             Public trust, brokerage, privacy, and accessibility language remains under owner and counsel review before controlled beta.
           </p>

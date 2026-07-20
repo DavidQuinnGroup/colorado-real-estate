@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 
 import { PublicTrustPage, StandardTrustIntro, TrustList, TrustSection } from '@/components/PublicTrustPage';
 import {
+  PRIVACY_CLASSIFICATION,
   PUBLIC_TRUST_REVIEW_STATUS,
   SITE_NAME,
   SITE_URL,
@@ -26,6 +27,7 @@ export default function PrivacyPage() {
       <TrustSection title="Review Status">
         <StandardTrustIntro />
         <p>Classification: {PUBLIC_TRUST_REVIEW_STATUS}.</p>
+        <p>Privacy classification: {PRIVACY_CLASSIFICATION}.</p>
       </TrustSection>
 
       <TrustSection title="Information The Site Currently Collects">
@@ -53,6 +55,13 @@ export default function PrivacyPage() {
 
       <TrustSection title="Owner-Review Items">
         <TrustList items={unavailableOrUnverifiedPractices} />
+        <TrustList
+          items={[
+            'Site operator and data controller or responsible business.',
+            'Account and saved-search data retention, deletion, correction, portability, and opt-out handling.',
+            'Children data, data sale, targeted advertising, cookie, analytics, security contact, and privacy request contact practices.',
+          ]}
+        />
       </TrustSection>
     </PublicTrustPage>
   );

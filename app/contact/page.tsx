@@ -39,6 +39,10 @@ export default function ContactPage() {
           and open a listing to submit a property-specific inquiry. Submitting any inquiry is for follow-up routing only and does not
           automatically create a brokerage relationship.
         </p>
+        <p>
+          Do not submit confidential negotiating positions, personal motivation, financial limits, or other client-confidential information
+          until the applicable brokerage relationship and disclosures have been discussed.
+        </p>
       </TrustSection>
 
       <TrustSection title="Form Notice">

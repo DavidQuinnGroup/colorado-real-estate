@@ -40,6 +40,10 @@ export default function TermsPage() {
           regulatory advice. Any brokerage terms, representation duties, property condition conclusions, or transaction obligations require
           confirmed written agreements and appropriate professional review.
         </p>
+        <p>
+          Do not submit confidential negotiating positions, motivation, financial limits, or other client-confidential information through
+          public forms until the applicable brokerage relationship and disclosures have been discussed.
+        </p>
       </TrustSection>
     </PublicTrustPage>
   );

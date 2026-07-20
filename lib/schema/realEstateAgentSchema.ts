@@ -3,8 +3,12 @@ export type RealEstateAgentSchemaOptions = {
   image?: string;
 };
 
+const BROKERAGE_FIRM_NAME = "Compass Colorado, LLC, d/b/a Compass";
+const PUBLIC_TEAM_NAME = "David Quinn Group";
+
 function buildIds(siteUrl: string) {
   return {
+    brokerageId: `${siteUrl}/#brokerage-firm`,
     organizationId: `${siteUrl}/#organization`,
     agentId: `${siteUrl}/#real-estate-agent`,
     personId: `${siteUrl}/#david-quinn`,
@@ -45,16 +49,29 @@ function buildPlaceNodes() {
   ];
 }
 
-function buildOrganizationNode(siteUrl: string, logoUrl: string, organizationId: string, personId: string) {
+function buildBrokerageNode(brokerageId: string) {
+  return {
+    "@type": "RealEstateAgent",
+    "@id": brokerageId,
+    name: BROKERAGE_FIRM_NAME,
+    legalName: BROKERAGE_FIRM_NAME,
+    areaServed: buildPlaceNodes(),
+  };
+}
+
+function buildOrganizationNode(siteUrl: string, logoUrl: string, organizationId: string, brokerageId: string, personId: string) {
   return {
     "@type": "Organization",
     "@id": organizationId,
-    name: "David Quinn Group",
-    legalName: "David Quinn Group",
+    name: PUBLIC_TEAM_NAME,
+    description: `${PUBLIC_TEAM_NAME} is presented as a public-facing team or brand pending owner verification and is not a separate brokerage firm.`,
     url: siteUrl,
     logo: {
       "@type": "ImageObject",
       url: logoUrl,
+    },
+    parentOrganization: {
+      "@id": brokerageId,
     },
     founder: {
       "@id": personId,
@@ -108,6 +125,7 @@ function buildPersonNode(organizationId: string, personId: string) {
 
 function buildRealEstateAgentNode({
   agentId,
+  brokerageId,
   buyerStrategyId,
   organizationId,
   personId,
@@ -118,6 +136,7 @@ function buildRealEstateAgentNode({
   logoUrl,
 }: {
   agentId: string;
+  brokerageId: string;
   buyerStrategyId: string;
   organizationId: string;
   personId: string;
@@ -130,14 +149,16 @@ function buildRealEstateAgentNode({
   return {
     "@type": "RealEstateAgent",
     "@id": agentId,
-    name: "David Quinn Group",
-    legalName: "David Quinn Group",
+    name: PUBLIC_TEAM_NAME,
     url: siteUrl,
     image: logoUrl,
     logo: logoUrl,
     description:
-      "David Quinn Group provides Colorado real estate intelligence for Boulder, Denver, and the greater Front Range, combining property search, market context, construction forensics, neighborhood resilience, and strategic buyer and seller guidance.",
+      `${PUBLIC_TEAM_NAME} provides Colorado real estate intelligence for Boulder, Denver, and the greater Front Range under brokerage attribution to ${BROKERAGE_FIRM_NAME}.`,
     parentOrganization: {
+      "@id": brokerageId,
+    },
+    affiliation: {
       "@id": organizationId,
     },
     employee: {
@@ -261,11 +282,13 @@ export function buildRealEstateAgentSchema(options: RealEstateAgentSchemaOptions
   return {
     "@context": "https://schema.org",
     "@graph": [
-      buildOrganizationNode(siteUrl, logoUrl, ids.organizationId, ids.personId),
+      buildBrokerageNode(ids.brokerageId),
+      buildOrganizationNode(siteUrl, logoUrl, ids.organizationId, ids.brokerageId, ids.personId),
       buildWebsiteNode(siteUrl, ids.websiteId, ids.organizationId, ids.agentId),
       buildPersonNode(ids.organizationId, ids.personId),
       buildRealEstateAgentNode({
         agentId: ids.agentId,
+        brokerageId: ids.brokerageId,
         buyerStrategyId: ids.buyerStrategyId,
         organizationId: ids.organizationId,
         personId: ids.personId,

@@ -27,6 +27,7 @@ export default function FairHousingPage() {
           David Quinn Group intends the public website, property search, inquiry workflows, and follow-up routing to support equal access to
           housing information and to avoid discriminatory steering, exclusion, preference, or limitation.
         </p>
+        <p data-testid="public-fair-housing-slogan">Equal Housing Opportunity.</p>
         <p>
           This draft page does not use an Equal Housing logo or REALTOR mark because no authorized asset or required display instruction was
           verified during this package.

@@ -356,6 +356,16 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
               <span className="text-3xl font-black uppercase italic md:text-4xl">{neighborhood.resilienceScore}/100</span>
             </div>
           </div>
+          <p
+            className="mt-6 max-w-3xl text-xs leading-6 text-white/42"
+            data-testid="market-source-disclaimer"
+            data-market-sales-source-control="present"
+            data-market-non-participation-disclaimer="present"
+          >
+            Neighborhood and market signals are market-wide REIE context from repository neighborhood data and public MLS/search signals
+            where available. They do not state or imply that David Quinn, David Quinn Group, or Compass listed, sold, or participated in
+            every reported property.
+          </p>
         </div>
       </section>
 
