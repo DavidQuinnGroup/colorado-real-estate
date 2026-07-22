@@ -50,6 +50,7 @@
     "scripts/checkInternalPreviewAdapterSafety.ts",
     "scripts/checkPublicRuntimeSafety.ts",
     "scripts/checkPublicTrustReadiness.ts",
+    "scripts/checkSellerJourneySafety.ts",
     "lib/runtime/**/*.ts",
     "lib/enterprise-kpi/**/*.ts",
     "lib/platform/**/*.ts",

@@ -1,146 +1,159 @@
-import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
-import { Resend } from 'resend';
+
+import { prisma } from '@/lib/prisma';
+import {
+  assertPublicRuntimeSchema,
+  isPublicRuntimeSchemaUnavailableError,
+} from '@/lib/runtime/publicSchemaSafety';
 
 export const dynamic = 'force-dynamic';
-
-type ValuationLevels = {
-  aboveGrade: number;
-  finishedBasement: number;
-  unfinishedShell: number;
-};
 
 type ValuationRequestBody = {
   name?: unknown;
   email?: unknown;
+  phone?: unknown;
   address?: unknown;
-  levels?: unknown;
-  condition?: unknown;
-  mortgage?: unknown;
+  city?: unknown;
+  objective?: unknown;
+  timeline?: unknown;
+  notes?: unknown;
+  source?: unknown;
 };
 
 type NormalizedValuationRequest = {
   name: string;
   email: string;
+  phone: string | null;
   address: string;
-  levels: ValuationLevels;
-  condition: string;
-  mortgage: number;
+  city: string;
+  objective: string;
+  timeline: string;
+  notes: string | null;
+  source: string;
 };
 
-const MARKET_RATE_PER_SQFT = 850;
-const UNFINISHED_SHELL_RATE_PER_SQFT = 150;
-const BASEMENT_VALUE_RATIO = 0.65;
-const HIGH_INTENT_HEAT_SCORE = 85;
+const MAX_NAME_LENGTH = 120;
+const MAX_PHONE_LENGTH = 40;
+const MAX_ADDRESS_LENGTH = 180;
+const MAX_CITY_LENGTH = 80;
+const MAX_OBJECTIVE_LENGTH = 80;
+const MAX_TIMELINE_LENGTH = 40;
+const MAX_NOTES_LENGTH = 700;
+const SELLER_HEAT_SCORE = 45;
+const SELLER_NOTIFICATION_CHANNEL = 'seller-follow-up-workflow';
 
-const finishMultipliers: Record<string, number> = {
-  Original: 0.9,
-  Standard: 1,
-  Renovated: 1.15,
-  'Designer-Grade': 1.3,
-};
-
-const resend = new Resend(process.env.RESEND_API_KEY);
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-if (!supabaseUrl || !supabaseServiceRoleKey) {
-  throw new Error('Missing Supabase environment variables for valuation route.');
+function jsonResponse(body: Record<string, unknown>, status = 200) {
+  return NextResponse.json(body, { status });
 }
 
-const supabase = createClient(supabaseUrl, supabaseServiceRoleKey);
-
-function toCleanString(value: unknown, fallback = '') {
-  if (value === undefined || value === null) return fallback;
-
-  const cleaned = String(value).trim();
-  return cleaned || fallback;
+function getString(value: unknown) {
+  return typeof value === 'string' && value.trim() ? value.trim() : null;
 }
 
-function toNumber(value: unknown, fallback = 0) {
-  if (value === undefined || value === null || value === '') return fallback;
-
-  const parsed = Number(String(value).replace(/[$,]/g, ''));
-  return Number.isFinite(parsed) ? parsed : fallback;
+function getBoundedString(value: unknown, maxLength: number) {
+  const text = getString(value);
+  return text ? text.slice(0, maxLength) : null;
 }
 
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
+function isValidEmail(email: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
-function normalizeLevels(value: unknown): ValuationLevels {
-  const levels = isRecord(value) ? value : {};
+function normalizePropertyKey(address: string, email: string) {
+  const key = `${address}:${email}`
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 120);
+
+  return `seller-${key || 'request'}`;
+}
+
+function getObjectiveLabel(objective: string) {
+  if (objective === 'pricing') return 'Pricing and positioning';
+  if (objective === 'prepare') return 'Preparation priorities';
+  if (objective === 'timing') return 'Timing and market strategy';
+  if (objective === 'equity') return 'Equity and next move planning';
+  return 'Seller consultation';
+}
+
+function getTimelineLabel(timeline: string) {
+  if (timeline === 'now') return 'Ready now';
+  if (timeline === 'ninety-days') return 'Next 90 days';
+  if (timeline === 'six-months') return 'Three to six months';
+  if (timeline === 'research') return 'Researching options';
+  return 'Timeline to discuss';
+}
+
+function getPriority(timeline: string) {
+  if (timeline === 'now') return 'high';
+  if (timeline === 'ninety-days') return 'medium';
+  return 'low';
+}
+
+function normalizeRequestBody(body: ValuationRequestBody): NormalizedValuationRequest | { error: string } {
+  const name = getBoundedString(body.name, MAX_NAME_LENGTH) ?? '';
+  const email = getBoundedString(body.email, 160)?.toLowerCase() ?? '';
+  const address = getBoundedString(body.address, MAX_ADDRESS_LENGTH) ?? '';
+  const city = getBoundedString(body.city, MAX_CITY_LENGTH) ?? 'Colorado';
+  const objective = getBoundedString(body.objective, MAX_OBJECTIVE_LENGTH) ?? 'consultation';
+  const timeline = getBoundedString(body.timeline, MAX_TIMELINE_LENGTH) ?? 'research';
+
+  if (!name) return { error: 'Please enter your name.' };
+  if (!email || !isValidEmail(email)) return { error: 'Please enter a valid email address.' };
+  if (!address) return { error: 'Please enter the property address.' };
 
   return {
-    aboveGrade: toNumber(levels.aboveGrade),
-    finishedBasement: toNumber(levels.finishedBasement),
-    unfinishedShell: toNumber(levels.unfinishedShell),
+    name,
+    email,
+    phone: getBoundedString(body.phone, MAX_PHONE_LENGTH),
+    address,
+    city,
+    objective,
+    timeline,
+    notes: getBoundedString(body.notes, MAX_NOTES_LENGTH),
+    source: getBoundedString(body.source, 80) ?? 'seller-page',
   };
 }
 
-function normalizeRequestBody(body: ValuationRequestBody): NormalizedValuationRequest {
+async function assertSellerIntakeSchema() {
+  await assertPublicRuntimeSchema(prisma, [
+    { tableName: 'User', columns: ['id', 'email', 'name', 'isUnsubscribed', 'unsubscribedAt', 'heatScore', 'intentSchema', 'legacyGoal', 'status'] },
+    { tableName: 'SellerLead', columns: ['id', 'city', 'beds', 'price', 'reason', 'propertyId'] },
+    { tableName: 'UserInteraction', columns: ['id', 'userId', 'type', 'metadata', 'createdAt'] },
+    { tableName: 'CRMTask', columns: ['id', 'leadId', 'type', 'status', 'priority', 'title', 'metadata', 'createdAt'] },
+  ]);
+}
+
+function buildMetadata(input: NormalizedValuationRequest, propertyKey: string, duplicateSellerLead: boolean) {
   return {
-    name: toCleanString(body.name),
-    email: toCleanString(body.email),
-    address: toCleanString(body.address, 'Colorado property'),
-    levels: normalizeLevels(body.levels),
-    condition: toCleanString(body.condition, 'Standard'),
-    mortgage: toNumber(body.mortgage),
+    schemaVersion: 'reie-seller-intake-v1',
+    capturedAt: new Date().toISOString(),
+    source: input.source,
+    propertyKey,
+    leadType: 'seller',
+    objective: input.objective,
+    objectiveLabel: getObjectiveLabel(input.objective),
+    timeline: input.timeline,
+    timelineLabel: getTimelineLabel(input.timeline),
+    phone: input.phone,
+    notes: input.notes,
+    property: {
+      address: input.address,
+      city: input.city,
+    },
+    duplicateSellerLead,
+    notification: {
+      channel: SELLER_NOTIFICATION_CHANNEL,
+      status: 'not_sent',
+      reason: 'Seller requests are queued for advisor follow-up; live email delivery is not part of this public submission path.',
+    },
+    nextAction: 'Review seller objective, property context, preparation priorities, and pricing strategy before direct follow-up.',
   };
 }
 
-function calculateValuation(levels: ValuationLevels, condition: string, mortgage: number) {
-  const baseValue =
-    levels.aboveGrade * MARKET_RATE_PER_SQFT +
-    levels.finishedBasement * (MARKET_RATE_PER_SQFT * BASEMENT_VALUE_RATIO) +
-    levels.unfinishedShell * UNFINISHED_SHELL_RATE_PER_SQFT;
-  const optimizedValue = baseValue * (finishMultipliers[condition] ?? 1);
-  const estimatedEquity = optimizedValue - mortgage;
-
-  return {
-    baseValue,
-    optimizedValue,
-    estimatedEquity,
-  };
-}
-
-function getErrorMessage(error: unknown) {
-  return error instanceof Error ? error.message : String(error);
-}
-
-function buildDavidBriefHtml(input: NormalizedValuationRequest, optimizedValue: number, estimatedEquity: number) {
-  return `
-    <div style="font-family: monospace; background: #030303; color: #fff; padding: 20px; border-left: 4px solid #00ff80;">
-      <h2 style="color: #00ff80; text-transform: uppercase;">Pre-Discovery Brief Initialized</h2>
-      <p><strong>Target:</strong> ${input.name} (${input.email})</p>
-      <p><strong>Asset:</strong> ${input.address}</p>
-      <hr style="border: 1px solid #1a1a1a;" />
-      <h3 style="color: #00ff80;">GC FORENSICS</h3>
-      <p>Above Grade: ${input.levels.aboveGrade} sqft</p>
-      <p>Finish Grade: ${input.condition}</p>
-      <p><strong>DQG Optimized Value:</strong> $${optimizedValue.toLocaleString()}</p>
-      <p><strong>Available Equity:</strong> $${estimatedEquity.toLocaleString()}</p>
-      <hr style="border: 1px solid #1a1a1a;" />
-      <p style="font-size: 10px; color: #444;">TACTICAL LEVER: OPENNESS TO VALUE-ADD STRATEGY IDENTIFIED</p>
-    </div>
-  `;
-}
-
-function buildClientResponseHtml(input: NormalizedValuationRequest) {
-  return `
-    <div style="font-family: sans-serif; color: #333;">
-      <h2>Strategic Analysis Initiated</h2>
-      <p>Hi ${input.name},</p>
-      <p>I’ve applied my 30-year General Contractor lens to your property at <strong>${input.address}</strong>.</p>
-      <p>My preliminary analysis shows a <strong>David Quinn Optimized Value</strong> that exceeds standard portal estimates by identifying your home's structural craftsmanship.</p>
-      <p style="background: #f4f4f4; padding: 15px; border-radius: 5px; font-weight: bold;">
-        To unlock the full 60% Strategy Gate, including the Tactical Negotiation Playbook and Shadow Inventory access, let's schedule your 15-minute Discovery Call.
-      </p>
-      <p>Talk soon,</p>
-      <p><strong>David Quinn</strong><br/><em>Construction Pedigree. Real Estate Authority.</em></p>
-    </div>
-  `;
+function getTaskTitle(input: NormalizedValuationRequest) {
+  return `SELLER REQUEST: ${input.address}, ${input.city}`;
 }
 
 export async function POST(request: Request) {
@@ -148,54 +161,121 @@ export async function POST(request: Request) {
     const body = (await request.json().catch(() => ({}))) as ValuationRequestBody;
     const input = normalizeRequestBody(body);
 
-    if (!input.name || !input.email) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    if ('error' in input) {
+      return jsonResponse({ error: input.error }, 400);
     }
 
-    const valuation = calculateValuation(input.levels, input.condition, input.mortgage);
+    await assertSellerIntakeSchema();
 
-    const { error: dbError } = await supabase.from('leads').insert([
-      {
-        name: input.name,
-        email: input.email,
-        address: input.address,
-        metadata: {
-          structural_data: input.levels,
-          condition_grade: input.condition,
-          financial_intent: {
-            optimized_value: valuation.optimizedValue,
-            current_mortgage: input.mortgage,
-            estimated_equity: valuation.estimatedEquity,
+    const propertyKey = normalizePropertyKey(input.address, input.email);
+    const result = await prisma.$transaction(async (tx) => {
+      const existingSellerLead = await tx.sellerLead.findFirst({
+        where: { propertyId: propertyKey },
+      });
+
+      const metadata = buildMetadata(input, propertyKey, Boolean(existingSellerLead));
+
+      const user = await tx.user.upsert({
+        where: { email: input.email },
+        update: {
+          name: input.name,
+          isUnsubscribed: false,
+          unsubscribedAt: null,
+          heatScore: {
+            increment: existingSellerLead ? 0 : SELLER_HEAT_SCORE,
           },
-          lead_heat_score: HIGH_INTENT_HEAT_SCORE,
+          intentSchema: 'seller-intake',
+          legacyGoal: 'Seller strategy',
         },
-      },
-    ]);
+        create: {
+          email: input.email,
+          name: input.name,
+          status: 'Lead',
+          heatScore: SELLER_HEAT_SCORE,
+          intentSchema: 'seller-intake',
+          legacyGoal: 'Seller strategy',
+        },
+      });
 
-    if (dbError) throw dbError;
+      const sellerLead =
+        existingSellerLead ??
+        (await tx.sellerLead.create({
+          data: {
+            propertyId: propertyKey,
+            city: input.city,
+            beds: null,
+            price: null,
+            reason: `${getObjectiveLabel(input.objective)} | ${getTimelineLabel(input.timeline)}`,
+          },
+        }));
 
-    await resend.emails.send({
-      from: 'DQG Intelligence <onboarding@resend.dev>',
-      to: 'david@davidquinnrealestate.com',
-      subject: `INTEL BRIEF: Valuation Request - ${input.name}`,
-      html: buildDavidBriefHtml(input, valuation.optimizedValue, valuation.estimatedEquity),
+      const userInteraction = await tx.userInteraction.create({
+        data: {
+          userId: user.id,
+          type: 'seller_valuation_request',
+          metadata: {
+            ...metadata,
+            sellerLeadId: sellerLead.id,
+          },
+        },
+      });
+
+      const crmTask = existingSellerLead
+        ? null
+        : await tx.cRMTask.create({
+            data: {
+              leadId: user.id,
+              type: 'seller_intake',
+              priority: getPriority(input.timeline),
+              title: getTaskTitle(input),
+              metadata: {
+                ...metadata,
+                sellerLeadId: sellerLead.id,
+                userInteractionId: userInteraction.id,
+              },
+            },
+          });
+
+      return {
+        user,
+        sellerLead,
+        userInteraction,
+        crmTask,
+        duplicate: Boolean(existingSellerLead),
+      };
     });
 
-    await resend.emails.send({
-      from: 'David Quinn <onboarding@resend.dev>',
-      to: input.email,
-      subject: `Your ${input.address} Strategy Report is Pending`,
-      html: buildClientResponseHtml(input),
-    });
-
-    return NextResponse.json({
+    return jsonResponse({
       success: true,
-      optimizedValue: valuation.optimizedValue,
-      estimatedEquity: valuation.estimatedEquity,
+      requestId: result.userInteraction.id,
+      status: result.duplicate ? 'already-saved' : 'saved',
+      sellerLeadStatus: result.duplicate ? 'existing' : 'created',
+      followUp: {
+        channel: SELLER_NOTIFICATION_CHANNEL,
+        status: 'queued-for-advisor-review',
+        emailSent: false,
+        nextStep: 'David Quinn Group will review the property details and follow up through the submitted contact information.',
+      },
     });
   } catch (error) {
-    console.error('Valuation Engine Error:', getErrorMessage(error));
-    return NextResponse.json({ error: 'Intelligence Sync Failed' }, { status: 500 });
+    if (isPublicRuntimeSchemaUnavailableError(error)) {
+      console.error('Seller intake schema unavailable:', {
+        code: error.code,
+        missingTables: error.missingTables,
+        missingColumns: error.missingColumns,
+      });
+
+      return jsonResponse(
+        {
+          error: 'Seller requests are temporarily unavailable.',
+          code: 'schema-unavailable',
+        },
+        503,
+      );
+    }
+
+    console.error('Seller intake failed:', error instanceof Error ? error.message : String(error));
+    return jsonResponse({ error: 'Unable to save this seller request right now.' }, 500);
   }
 }
 

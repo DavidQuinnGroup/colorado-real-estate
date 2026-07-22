@@ -82,6 +82,18 @@ async function assertHomePortalPage() {
   assert.ok(html.includes('<link rel="canonical" href="https://davidquinngroup.com"'), 'Expected home canonical metadata to be preserved.');
 }
 
+async function assertSellerPage() {
+  const html = await fetchHtml('/sell');
+
+  assert.ok(includesFoldedText(html, 'Sell with preparation, pricing, and market context.'), 'Expected seller page headline.');
+  assert.ok(includesFoldedText(html, 'Seller Analysis Request'), 'Expected seller intake form.');
+  assert.ok(includesFoldedText(html, 'not an automated home-value estimate'), 'Expected seller page to avoid unsupported valuation claims.');
+  assert.ok(html.includes('data-testid="seller-page"'), 'Expected seller page shell test handle.');
+  assert.ok(html.includes('data-testid="seller-intake-form"'), 'Expected seller intake form test handle.');
+  assert.ok(!includesFoldedText(html, 'Estimated Value'), 'Expected seller page not to render fabricated instant valuation copy.');
+  assert.ok(!includesFoldedText(html, 'REIE CRM'), 'Expected seller page not to expose CRM terminology.');
+}
+
 async function assertDrawerSource() {
   const [source, imageSource] = await Promise.all([
     readFile('components/maps/SelectedPropertyDrawer.tsx', 'utf8'),
@@ -1748,6 +1760,7 @@ async function main() {
   const propertyPath = `/properties/${property.slug || property.id}`;
 
   await assertHomePortalPage();
+  await assertSellerPage();
   await assertPropertyPage(propertyPath);
   await assertSearchPage();
   await assertDrawerSource();
@@ -1805,6 +1818,7 @@ async function main() {
         },
         assertions: {
           homePortalRestoration: true,
+          sellerJourneyEntry: true,
           propertyDecisionSnapshot: true,
           propertyInquiryGuidance: true,
           searchIntelligence: true,

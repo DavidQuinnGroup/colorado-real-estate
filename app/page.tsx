@@ -42,7 +42,7 @@ export const metadata: Metadata = {
 const navigationLinks = [
   { label: 'Search', href: '#search' },
   { label: 'Communities', href: '#communities' },
-  { label: 'Sell', href: '#buy-sell-grand-plan' },
+  { label: 'Sell', href: '/sell' },
   { label: 'Grand Plan™', href: '#buy-sell-grand-plan' },
   { label: 'About', href: '#why-david-quinn' },
   { label: 'Contact', href: '/contact' },
@@ -88,8 +88,8 @@ const advisoryPaths = [
   {
     title: 'Sell with strategy',
     body: 'Position condition, timing, preparation, and market narrative around the objections serious buyers will notice.',
-    href: '/contact',
-    cta: 'Plan a Sale',
+    href: '/sell',
+    cta: 'Request Seller Review',
     imagePosition: 'object-center',
   },
   {

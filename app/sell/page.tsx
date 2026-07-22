@@ -1,0 +1,95 @@
+import type { Metadata } from 'next';
+import Link from 'next/link';
+
+import HomeValueEstimator from '@/components/HomeValueEstimator';
+import { SITE_NAME, SITE_URL } from '@/lib/publicTrust';
+
+export const metadata: Metadata = {
+  title: `Sell With Strategy | ${SITE_NAME}`,
+  description:
+    'Request a seller strategy review from David Quinn Group for property preparation, pricing, positioning, and Colorado market context.',
+  alternates: { canonical: `${SITE_URL}/sell` },
+  robots: { index: true, follow: true },
+};
+
+const sellerServices = [
+  {
+    title: 'Preparation priorities',
+    body: 'Identify the repairs, presentation issues, and property details that should be handled before launch.',
+  },
+  {
+    title: 'Pricing and positioning',
+    body: 'Frame the home against competing inventory, likely buyer objections, timing, and local demand.',
+  },
+  {
+    title: 'Construction-informed review',
+    body: 'Use David Quinn Group construction perspective to anticipate condition questions before they become negotiation friction.',
+  },
+  {
+    title: 'Market strategy',
+    body: 'Connect your timeline, equity goals, and next move to a practical listing plan.',
+  },
+];
+
+export default function SellPage() {
+  return (
+    <main className="min-h-screen bg-[#0b1117] text-white" data-testid="seller-page">
+      <section className="border-b border-white/10 px-7 py-24 sm:px-10 sm:py-28 lg:px-12">
+        <div className="mx-auto grid w-full max-w-[1180px] gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
+          <div>
+            <Link href="/" className="text-[11px] font-black uppercase tracking-[0.18em] text-cyan-100/80 transition hover:text-white">
+              David Quinn Group
+            </Link>
+            <p className="mt-12 text-[11px] font-black uppercase tracking-[0.28em] text-cyan-100">Colorado Seller Strategy</p>
+            <h1 className="mt-6 max-w-3xl text-5xl font-black leading-[0.98] tracking-normal text-white sm:text-6xl">
+              Sell with preparation, pricing, and market context.
+            </h1>
+            <p className="mt-7 max-w-2xl text-lg leading-9 text-white/70">
+              David Quinn Group helps sellers understand what buyers will notice, what should be prepared before launch, how to position
+              the property, and what the current local market is likely to reward.
+            </p>
+            <div className="mt-10 flex flex-wrap gap-3" data-testid="seller-page-primary-actions">
+              <a
+                href="#seller-intake"
+                className="inline-flex min-h-12 items-center justify-center rounded-full bg-cyan-100 px-6 py-3 text-sm font-black uppercase tracking-[0.14em] text-[#101820] transition hover:-translate-y-0.5 hover:bg-white focus:outline-none focus:ring-2 focus:ring-cyan-100 focus:ring-offset-2 focus:ring-offset-[#0b1117]"
+              >
+                Request Seller Review
+              </a>
+              <Link
+                href="/contact"
+                className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/18 px-6 py-3 text-sm font-black uppercase tracking-[0.14em] text-white transition hover:-translate-y-0.5 hover:border-white/38 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-100 focus:ring-offset-2 focus:ring-offset-[#0b1117]"
+              >
+                Contact Routing
+              </Link>
+            </div>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2" data-testid="seller-value-proposition">
+            {sellerServices.map((service) => (
+              <article key={service.title} className="rounded-[14px] bg-white/[0.06] p-6 ring-1 ring-white/10">
+                <h2 className="text-xl font-black leading-tight text-white">{service.title}</h2>
+                <p className="mt-4 text-sm leading-7 text-white/62">{service.body}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="seller-intake" className="px-7 py-20 sm:px-10 sm:py-24 lg:px-12" data-testid="seller-intake-section">
+        <div className="mx-auto grid w-full max-w-[1180px] gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
+          <div>
+            <p className="text-[11px] font-black uppercase tracking-[0.28em] text-cyan-100">Next Step</p>
+            <h2 className="mt-5 text-4xl font-black leading-tight text-white">Start with the property and the decision you are trying to make.</h2>
+            <p className="mt-6 text-base leading-8 text-white/64">
+              The request creates a seller follow-up record for advisor review. It does not publish a valuation, send an uncontrolled email,
+              or replace a direct pricing conversation.
+            </p>
+          </div>
+          <HomeValueEstimator />
+        </div>
+      </section>
+    </main>
+  );
+}
+
+// /Users/davidquinn/david-quinn-group/colorado-real-estate/app/sell/page.tsx
