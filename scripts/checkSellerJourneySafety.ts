@@ -15,7 +15,8 @@ assert.ok(sellerPage.includes('HomeValueEstimator'), 'Expected /sell to reuse th
 assert.ok(homePage.includes("{ label: 'Sell', href: '/sell' }"), 'Expected home navigation to route Sell directly to /sell.');
 assert.ok(homePage.includes("href: '/sell'"), 'Expected home seller card to route to /sell.');
 
-assert.ok(valuationRoute.includes("type: 'seller_intake'"), 'Expected seller submissions to create seller_intake CRM tasks.');
+assert.ok(valuationRoute.includes("type: 'strategy_intake'"), 'Expected seller submissions to use canonical strategy_intake CRM tasks.');
+assert.ok(!valuationRoute.includes("type: 'seller_intake'"), 'Seller submissions must not introduce a separate seller_intake CRM task type.');
 assert.ok(valuationRoute.includes("type: 'seller_valuation_request'"), 'Expected seller submissions to create seller-specific interactions.');
 assert.ok(valuationRoute.includes('tx.sellerLead'), 'Expected seller submissions to persist SellerLead records.');
 assert.ok(valuationRoute.includes('duplicate'), 'Expected seller submissions to report duplicate handling.');

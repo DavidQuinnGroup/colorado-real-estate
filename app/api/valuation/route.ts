@@ -208,7 +208,7 @@ export async function POST(request: Request) {
         include: {
           crmTasks: {
             where: {
-              type: 'seller_intake',
+              type: 'strategy_intake',
               title: getTaskTitle(input),
             },
             take: 1,
@@ -275,7 +275,7 @@ export async function POST(request: Request) {
         : await tx.cRMTask.create({
             data: {
               leadId: user.id,
-              type: 'seller_intake',
+              type: 'strategy_intake',
               priority: getPriority(input.timeline),
               title: getTaskTitle(input),
               metadata: {
