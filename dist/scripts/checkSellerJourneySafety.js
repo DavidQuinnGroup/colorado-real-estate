@@ -17,6 +17,8 @@ assert.ok(valuationRoute.includes("'seller_valuation_request'"), 'Expected selle
 assert.ok(valuationRoute.includes('tx.sellerLead'), 'Expected seller submissions to persist SellerLead records.');
 assert.ok(valuationRoute.includes('duplicate'), 'Expected seller submissions to report duplicate handling.');
 assert.ok(valuationRoute.includes('emailSent: false'), 'Expected seller submissions to expose no-email-sent status.');
+assert.ok(valuationRoute.includes("sellerLeadStatus: result.duplicate ? 'existing' : 'created'"), 'Expected SellerLead status to require a persisted SellerLead path.');
+assert.ok(!valuationRoute.includes("sellerLeadStatus: 'unavailable'"), 'Seller journey must not treat SellerLead persistence as unavailable.');
 assert.ok(!valuationRoute.includes('Resend'), 'Seller valuation route must not import or use Resend.');
 assert.ok(!valuationRoute.includes('@supabase/supabase-js'), 'Seller valuation route must not write to a parallel Supabase leads table.');
 assert.ok(!valuationRoute.includes('resend.emails.send'), 'Seller valuation route must not send live email.');

@@ -119,38 +119,16 @@ function normalizeRequestBody(body: ValuationRequestBody): NormalizedValuationRe
 async function assertSellerIntakeSchema() {
   await assertPublicRuntimeSchema(prisma, [
     { tableName: 'User', columns: ['id', 'email', 'name', 'isUnsubscribed', 'unsubscribedAt', 'heatScore', 'intentSchema', 'legacyGoal', 'status'] },
+    { tableName: 'SellerLead', columns: ['id', 'city', 'beds', 'price', 'reason', 'propertyId'] },
     { tableName: 'UserInteraction', columns: ['id', 'userId', 'type', 'metadata', 'createdAt'] },
     { tableName: 'CRMTask', columns: ['id', 'leadId', 'type', 'status', 'priority', 'title', 'metadata', 'createdAt'] },
   ]);
-}
-
-async function isSellerLeadSchemaAvailable() {
-  try {
-    await assertPublicRuntimeSchema(prisma, [
-      { tableName: 'SellerLead', columns: ['id', 'city', 'beds', 'price', 'reason', 'propertyId'] },
-    ]);
-
-    return true;
-  } catch (error) {
-    if (isPublicRuntimeSchemaUnavailableError(error)) {
-      console.error('Optional SellerLead schema unavailable for seller intake:', {
-        code: error.code,
-        missingTables: error.missingTables,
-        missingColumns: error.missingColumns,
-      });
-
-      return false;
-    }
-
-    throw error;
-  }
 }
 
 function buildMetadata(
   input: NormalizedValuationRequest,
   propertyKey: string,
   duplicateSellerRequest: boolean,
-  sellerLeadStatus: 'available' | 'unavailable',
 ) {
   return {
     schemaVersion: 'reie-seller-intake-v1',
@@ -169,7 +147,7 @@ function buildMetadata(
       city: input.city,
     },
     duplicateSellerRequest,
-    sellerLeadStatus,
+    sellerLeadStatus: 'available',
     notification: {
       channel: SELLER_NOTIFICATION_CHANNEL,
       status: 'not_sent',
@@ -193,15 +171,12 @@ export async function POST(request: Request) {
     }
 
     await assertSellerIntakeSchema();
-    const sellerLeadSchemaAvailable = await isSellerLeadSchemaAvailable();
 
     const propertyKey = normalizePropertyKey(input.address, input.email);
     const result = await prisma.$transaction(async (tx) => {
-      const existingSellerLead = sellerLeadSchemaAvailable
-        ? await tx.sellerLead.findFirst({
-            where: { propertyId: propertyKey },
-          })
-        : null;
+      const existingSellerLead = await tx.sellerLead.findFirst({
+        where: { propertyId: propertyKey },
+      });
 
       const existingUser = await tx.user.findUnique({
         where: { email: input.email },
@@ -221,7 +196,6 @@ export async function POST(request: Request) {
         input,
         propertyKey,
         duplicateSellerRequest,
-        sellerLeadSchemaAvailable ? 'available' : 'unavailable',
       );
 
       const user = await tx.user.upsert({
@@ -246,22 +220,21 @@ export async function POST(request: Request) {
         },
       });
 
-      const sellerLead = sellerLeadSchemaAvailable
-        ? existingSellerLead ??
-          (await tx.sellerLead.create({
-            data: {
-              propertyId: propertyKey,
-              city: input.city,
-              beds: null,
-              price: null,
-              reason: `${getObjectiveLabel(input.objective)} | ${getTimelineLabel(input.timeline)}`,
-            },
-          }))
-        : null;
+      const sellerLead =
+        existingSellerLead ??
+        (await tx.sellerLead.create({
+          data: {
+            propertyId: propertyKey,
+            city: input.city,
+            beds: null,
+            price: null,
+            reason: `${getObjectiveLabel(input.objective)} | ${getTimelineLabel(input.timeline)}`,
+          },
+        }));
 
       const sellerMetadata = {
         ...metadata,
-        sellerLeadId: sellerLead?.id ?? null,
+        sellerLeadId: sellerLead.id,
       };
 
       const [userInteraction] = await tx.$queryRaw<{ id: string }[]>`
@@ -294,7 +267,6 @@ export async function POST(request: Request) {
         userInteraction,
         crmTask,
         duplicate: duplicateSellerRequest,
-        sellerLeadSchemaAvailable,
       };
     });
 
@@ -302,11 +274,7 @@ export async function POST(request: Request) {
       success: true,
       requestId: result.userInteraction.id,
       status: result.duplicate ? 'already-saved' : 'saved',
-      sellerLeadStatus: result.sellerLeadSchemaAvailable
-        ? result.duplicate
-          ? 'existing'
-          : 'created'
-        : 'unavailable',
+      sellerLeadStatus: result.duplicate ? 'existing' : 'created',
       followUp: {
         channel: SELLER_NOTIFICATION_CHANNEL,
         status: 'queued-for-advisor-review',
