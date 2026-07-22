@@ -22,10 +22,6 @@ type SearchApiResponse = {
   found?: number;
   source?: string;
   generatedAt?: string;
-  terminal?: string;
-  route?: string;
-  command?: string;
-  module?: string;
   meta?: SearchMapMeta;
   fallbackReason?: string;
   error?: string;
@@ -165,11 +161,7 @@ function normalizeSearchMeta(data: SearchApiResponse, listings: MapSidebarListin
       returned,
       coordinateFiltered,
       source,
-      command: data.meta.command || data.command,
       generatedAt: data.meta.generatedAt || data.generatedAt,
-      module: data.meta.module || data.module,
-      route: data.meta.route || data.route,
-      terminal: data.meta.terminal || data.terminal,
       smoke: data.meta.smoke
         ? {
             ...data.meta.smoke,
@@ -193,21 +185,15 @@ function normalizeSearchMeta(data: SearchApiResponse, listings: MapSidebarListin
   return {
     accessLevel: 'public',
     boundsApplied: true,
-    command: data.command,
     coordinateFiltered: 0,
     durationMs: 0,
     filtersApplied: ['bounds', 'publicAccess'],
     generatedAt: data.generatedAt,
     health,
     mapped: listings.length,
-    module: data.module,
-    route: data.route,
     returned: listings.length,
     source,
-    terminal: data.terminal,
     smoke: {
-      command: 'npm run smoke:search',
-      terminal: 'Terminal 5',
       ready: false,
       blockers: ['Search API response did not include metadata.'],
       checks: {

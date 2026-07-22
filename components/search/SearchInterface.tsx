@@ -41,10 +41,6 @@ type SearchApiResponse = {
   meta?: SearchMapMeta;
   source?: string;
   generatedAt?: string;
-  terminal?: string;
-  route?: string;
-  command?: string;
-  module?: string;
   error?: string;
 };
 
@@ -163,11 +159,7 @@ function normalizeSearchMeta(data: SearchApiResponse) {
 
   return {
     ...data.meta,
-    command: data.meta.command || data.command,
     generatedAt: data.meta.generatedAt || data.generatedAt,
-    module: data.meta.module || data.module,
-    route: data.meta.route || data.route,
-    terminal: data.meta.terminal || data.terminal,
   };
 }
 
@@ -219,8 +211,6 @@ export default function SearchInterface({
     : selectedProperty && mobileView === 'map'
       ? selectedProperty.address || 'Selected listing'
       : `${visibleListings.length} listings`;
-  const searchCommand = effectiveSearchMeta?.command || (hasActiveSearchFilters(filters) ? buildSearchUrl(filters) : '/api/search?limit=250');
-
   useEffect(() => {
     const handleToggle = (event: Event) => {
       const customEvent = event as CustomEvent<StrategyToggleDetail>;
@@ -344,9 +334,6 @@ export default function SearchInterface({
       data-visible-listing-count={visibleListings.length}
       data-user-tier={userTier}
       data-search-generated-at={effectiveSearchMeta?.generatedAt || ''}
-      data-search-terminal={effectiveSearchMeta?.terminal || 'Terminal 5'}
-      data-search-route={effectiveSearchMeta?.route || '/api/search'}
-      data-search-command={searchCommand}
       data-search-source={effectiveSearchMeta?.source || 'initial'}
       data-search-access-level={effectiveSearchMeta?.accessLevel || (userTier === 'Contracted' ? 'contracted' : 'public')}
       data-search-filters-active={String(hasActiveSearchFilters(filters))}
@@ -420,7 +407,6 @@ export default function SearchInterface({
         data-mobile-view={mobileView}
         data-selected-listing-id={visibleSelectedId || ''}
         data-search-source={effectiveSearchMeta?.source || 'initial'}
-        data-search-command={searchCommand}
       >
         <MapInner
           listings={visibleListings}

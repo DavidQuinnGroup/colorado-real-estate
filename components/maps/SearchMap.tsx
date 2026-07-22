@@ -48,21 +48,15 @@ type MarkerStats = {
 export type SearchMapMeta = {
   accessLevel?: string;
   boundsApplied?: boolean;
-  command?: string;
   durationMs?: number;
   filtersApplied?: string[];
   generatedAt?: string;
   health?: 'healthy' | 'degraded' | string;
-  module?: string;
-  route?: string;
   source?: string;
-  terminal?: string;
   returned?: number;
   mapped?: number;
   coordinateFiltered?: number;
   smoke?: {
-    command?: string;
-    terminal?: string;
     ready?: boolean;
     blockers?: string[];
     checks?: {
@@ -667,12 +661,7 @@ export default function SearchMap({
         data-search-duration-ms={searchMeta?.durationMs ?? ''}
         data-search-filters={(searchMeta?.filtersApplied || []).join(',')}
         data-search-generated-at={searchMeta?.generatedAt || ''}
-        data-search-terminal={searchMeta?.terminal || ''}
-        data-search-route={searchMeta?.route || ''}
-        data-search-command={searchMeta?.command || ''}
-        data-search-module={searchMeta?.module || ''}
         data-search-smoke-ready={smokeReady === undefined ? 'unknown' : smokeReady ? 'true' : 'false'}
-        data-search-smoke-command={searchMeta?.smoke?.command || ''}
         data-search-smoke-blockers={smokeBlockerCount}
       />
 

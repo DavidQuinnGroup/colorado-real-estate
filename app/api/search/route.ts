@@ -67,10 +67,6 @@ type SearchResponse = {
   accessLevel: AccessLevel;
   source: SearchSource;
   generatedAt: string;
-  terminal: 'Terminal 5';
-  route: '/api/search';
-  command: string;
-  module: 'REIE Public Search';
   health: SearchHealth;
   boundsApplied: boolean;
   filtersApplied: string[];
@@ -126,8 +122,6 @@ type SearchResponseMeta = {
 };
 
 type SearchSmokeMeta = {
-  command: 'npm run smoke:search';
-  terminal: 'Terminal 5';
   ready: boolean;
   blockers: string[];
   warnings: string[];
@@ -184,10 +178,6 @@ type PropertyWithPhotos = Prisma.PropertyGetPayload<{
 const MAX_LIMIT = 250;
 const DEFAULT_LIMIT = 250;
 const MAX_OFFSET = 10_000;
-const LOCAL_BASE_URL = 'http://localhost:3000';
-const ROUTE = '/api/search';
-const TERMINAL = 'Terminal 5';
-const MODULE = 'REIE Public Search';
 
 const PROPERTY_SELECT = {
   id: true,
@@ -492,20 +482,11 @@ function getErrorMessage(error: unknown) {
   return 'Unknown search error';
 }
 
-function getInspectionCommand(request: NextRequest) {
-  const search = request.nextUrl.search || '';
-  return `curl --max-time 8 -s "${LOCAL_BASE_URL}${ROUTE}${search}"`;
-}
-
 function buildSearchResponse(
   request: NextRequest,
   response: Omit<
     SearchResponse,
     | 'generatedAt'
-    | 'terminal'
-    | 'route'
-    | 'command'
-    | 'module'
     | 'health'
     | 'boundsApplied'
     | 'filtersApplied'
@@ -518,10 +499,6 @@ function buildSearchResponse(
   return {
     ...response,
     generatedAt: new Date().toISOString(),
-    terminal: TERMINAL,
-    route: ROUTE,
-    command: getInspectionCommand(request),
-    module: MODULE,
     health: response.meta.health,
     boundsApplied: response.meta.boundsApplied,
     filtersApplied: response.meta.filtersApplied,
@@ -772,8 +749,6 @@ function buildResponseMeta(
       contract: qualitySummary,
     },
     smoke: {
-      command: 'npm run smoke:search',
-      terminal: 'Terminal 5',
       ready: customerSearchUsable,
       blockers,
       warnings,

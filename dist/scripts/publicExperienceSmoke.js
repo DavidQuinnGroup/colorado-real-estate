@@ -169,8 +169,8 @@ async function assertMapInnerSource() {
     assert.ok(source.includes('data-map-inner-search-returned='), 'Expected map inner to expose returned search count.');
     assert.ok(source.includes('data-map-inner-search-mapped='), 'Expected map inner to expose mapped search count.');
     assert.ok(source.includes('data-map-inner-search-coordinate-filtered='), 'Expected map inner to expose coordinate filtered search count.');
-    assert.ok(source.includes('data-map-inner-search-terminal='), 'Expected map inner to expose search terminal metadata.');
-    assert.ok(source.includes('data-map-inner-search-route='), 'Expected map inner to expose search route metadata.');
+    assert.ok(!source.includes('data-map-inner-search-terminal='), 'Expected map inner to avoid exposing search terminal metadata.');
+    assert.ok(!source.includes('data-map-inner-search-route='), 'Expected map inner to avoid exposing search route metadata.');
     assert.ok(source.includes('data-map-inner-search-source='), 'Expected map inner to expose search source metadata.');
 }
 async function assertSaveSearchSource() {
@@ -960,9 +960,11 @@ async function assertSearchMetadataSource() {
         readFile('components/search/SearchInterface.tsx', 'utf8'),
     ]);
     assert.ok(mapSource.includes('data-search-generated-at={searchMeta?.generatedAt'), 'Expected map to expose search generatedAt metadata.');
-    assert.ok(mapSource.includes('data-search-terminal={searchMeta?.terminal'), 'Expected map to expose search terminal metadata.');
-    assert.ok(mapSource.includes('data-search-route={searchMeta?.route'), 'Expected map to expose search route metadata.');
-    assert.ok(mapSource.includes('data-search-command={searchMeta?.command'), 'Expected map to expose search command metadata.');
+    assert.ok(!mapSource.includes('data-search-terminal='), 'Expected map to avoid exposing search terminal metadata.');
+    assert.ok(!mapSource.includes('data-search-route='), 'Expected map to avoid exposing search route metadata.');
+    assert.ok(!mapSource.includes('data-search-command='), 'Expected map to avoid exposing search command metadata.');
+    assert.ok(!mapSource.includes('data-search-module='), 'Expected map to avoid exposing search module metadata.');
+    assert.ok(!mapSource.includes('data-search-smoke-command='), 'Expected map to avoid exposing search smoke command metadata.');
     assert.ok(mapSource.includes('data-testid="reie-search-map-canvas"'), 'Expected map to expose a stable map canvas handle.');
     assert.ok(mapSource.includes('data-testid="reie-search-map-diagnostics"'), 'Expected map to expose a stable diagnostics handle.');
     assert.ok(mapSource.includes('data-map-ready='), 'Expected map to expose runtime readiness metadata.');
@@ -1001,16 +1003,16 @@ async function assertSearchMetadataSource() {
     assert.ok(propertyCardSource.includes('data-testid="reie-property-card-intelligence"'), 'Expected property cards to expose intelligence sections.');
     assert.ok(propertyCardSource.includes('data-testid="reie-property-card-market-link"'), 'Expected property cards to expose market link handles.');
     assert.ok(propertyCardSource.includes('data-testid="reie-property-card-detail-link"'), 'Expected property cards to expose detail link handles.');
-    assert.ok(homeSource.includes('command: data.meta.command || data.command'), 'Expected homepage search to preserve top-level command metadata.');
-    assert.ok(searchSource.includes('command: data.meta.command || data.command'), 'Expected search page to preserve top-level command metadata.');
+    assert.ok(!homeSource.includes('command: data.meta.command || data.command'), 'Expected homepage search to avoid preserving top-level command metadata.');
+    assert.ok(!searchSource.includes('command: data.meta.command || data.command'), 'Expected search page to avoid preserving top-level command metadata.');
     assert.ok(searchSource.includes('data-testid="reie-search-interface"'), 'Expected search interface to expose a stable shell.');
     assert.ok(searchSource.includes('data-testid="reie-search-mobile-toolbar"'), 'Expected search interface to expose mobile toolbar metadata.');
     assert.ok(searchSource.includes('data-testid="reie-search-list-pane"'), 'Expected search interface to expose list pane metadata.');
     assert.ok(searchSource.includes('data-testid="reie-search-map-pane"'), 'Expected search interface to expose map pane metadata.');
     assert.ok(searchSource.includes('data-search-generated-at='), 'Expected search interface to expose generatedAt metadata.');
-    assert.ok(searchSource.includes('data-search-terminal='), 'Expected search interface to expose terminal metadata.');
-    assert.ok(searchSource.includes('data-search-route='), 'Expected search interface to expose route metadata.');
-    assert.ok(searchSource.includes('data-search-command='), 'Expected search interface to expose command metadata.');
+    assert.ok(!searchSource.includes('data-search-terminal='), 'Expected search interface to avoid exposing terminal metadata.');
+    assert.ok(!searchSource.includes('data-search-route='), 'Expected search interface to avoid exposing route metadata.');
+    assert.ok(!searchSource.includes('data-search-command='), 'Expected search interface to avoid exposing command metadata.');
     assert.ok(searchSource.includes('data-search-source='), 'Expected search interface to expose source metadata.');
     assert.ok(searchSource.includes('data-search-access-level='), 'Expected search interface to expose access-level metadata.');
     assert.ok(searchSource.includes('data-mobile-view='), 'Expected search interface to expose mobile view metadata.');

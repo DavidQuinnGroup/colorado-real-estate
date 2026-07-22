@@ -119,8 +119,6 @@ export default function MapInner({
       data-map-inner-search-returned={effectiveSearchMeta?.returned ?? ''}
       data-map-inner-search-mapped={effectiveSearchMeta?.mapped ?? ''}
       data-map-inner-search-coordinate-filtered={effectiveSearchMeta?.coordinateFiltered ?? ''}
-      data-map-inner-search-terminal={effectiveSearchMeta?.terminal ?? ''}
-      data-map-inner-search-route={effectiveSearchMeta?.route ?? ''}
       data-map-inner-search-source={effectiveSearchMeta?.source ?? ''}
     >
       <SearchMap
