@@ -259,32 +259,34 @@ export async function POST(request: Request) {
           }))
         : null;
 
-      const userInteraction = await tx.userInteraction.create({
-        data: {
-          userId: user.id,
-          type: 'seller_valuation_request',
-          metadata: {
-            ...metadata,
-            sellerLeadId: sellerLead?.id ?? null,
-          },
-        },
-      });
+      const sellerMetadata = {
+        ...metadata,
+        sellerLeadId: sellerLead?.id ?? null,
+      };
+
+      const [userInteraction] = await tx.$queryRaw<{ id: string }[]>`
+        INSERT INTO "UserInteraction" ("userId", "type", "metadata")
+        VALUES (${user.id}, 'seller_valuation_request', ${JSON.stringify(sellerMetadata)}::jsonb)
+        RETURNING "id"::text AS "id"
+      `;
+
+      if (!userInteraction) throw new Error('Seller interaction could not be created.');
 
       const crmTask = duplicateSellerRequest
         ? null
-        : await tx.cRMTask.create({
-            data: {
-              leadId: user.id,
-              type: 'strategy_intake',
-              priority: getPriority(input.timeline),
-              title: getTaskTitle(input),
-              metadata: {
-                ...metadata,
-                sellerLeadId: sellerLead?.id ?? null,
-                userInteractionId: userInteraction.id,
-              },
-            },
-          });
+        : (
+            await tx.$queryRaw<{ id: string }[]>`
+              INSERT INTO "CRMTask" ("leadId", "type", "priority", "title", "metadata")
+              VALUES (
+                ${user.id},
+                'strategy_intake',
+                ${getPriority(input.timeline)},
+                ${getTaskTitle(input)},
+                ${JSON.stringify({ ...sellerMetadata, userInteractionId: userInteraction.id })}::jsonb
+              )
+              RETURNING "id"::text AS "id"
+            `
+          )[0] ?? null;
 
       return {
         user,
