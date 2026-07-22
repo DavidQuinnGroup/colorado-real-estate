@@ -345,7 +345,7 @@ export default function HomeSearchExperience({ authorityLinks = [], faqItems = [
 
   return (
     <div
-      className={`relative flex w-full flex-col overflow-hidden bg-black text-white md:flex-row ${
+      className={`reie-search-experience-shell relative flex w-full flex-col overflow-hidden bg-black text-white md:flex-row ${
         isEmbedded ? 'h-[780px] min-h-[700px] rounded-[18px] shadow-[0_34px_100px_rgba(0,0,0,0.32)] ring-1 ring-white/12' : 'h-screen'
       }`}
       data-testid="reie-home-search-experience"
@@ -357,7 +357,7 @@ export default function HomeSearchExperience({ authorityLinks = [], faqItems = [
       data-search-source={searchMeta?.source || 'initial'}
     >
       <div
-        className="absolute left-3 right-3 top-3 z-[900] flex items-center justify-between gap-3 md:hidden"
+        className="reie-search-mobile-toolbar absolute left-3 right-3 top-3 z-[900] items-center justify-between gap-3"
         data-testid="reie-home-search-mobile-toolbar"
         data-mobile-view={mobileView}
         data-mobile-status={mobileStatusLabel}
@@ -394,7 +394,7 @@ export default function HomeSearchExperience({ authorityLinks = [], faqItems = [
         </div>
       </div>
 
-      <div className={mobileView === 'map' ? 'hidden md:flex md:h-full md:shrink-0' : 'flex h-full min-h-0 md:h-full md:shrink-0'}>
+      <div className="reie-search-list-pane" data-mobile-view={mobileView}>
         <MapSidebar
           listings={listings}
           selectedProperty={selectedProperty}
@@ -406,7 +406,7 @@ export default function HomeSearchExperience({ authorityLinks = [], faqItems = [
         />
       </div>
 
-      <div className={`${mobileView === 'list' ? 'hidden md:block' : 'block'} relative min-h-0 flex-1`}>
+      <div className="reie-search-map-pane relative min-h-0 flex-1" data-mobile-view={mobileView}>
         <MapInner
           listings={listings}
           onBoundsChange={fetchListings}

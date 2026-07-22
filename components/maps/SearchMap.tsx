@@ -419,8 +419,9 @@ export default function SearchMap({
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
+    const container = containerRef.current;
 
-    const map = L.map(containerRef.current, {
+    const map = L.map(container, {
       center,
       zoom: 12,
       minZoom: 8,
@@ -474,6 +475,17 @@ export default function SearchMap({
     mapRef.current = map;
     setMapReady(true);
 
+    const resizeObserver =
+      typeof ResizeObserver === 'undefined'
+        ? null
+        : new ResizeObserver(() => {
+            window.requestAnimationFrame(() => {
+              map.invalidateSize({ animate: false, pan: false });
+              scheduleBoundsEmit(100);
+            });
+          });
+
+    resizeObserver?.observe(container);
     map.on('moveend zoomend resize', handleMapViewportChange);
     map.whenReady(() => scheduleBoundsEmit(400));
     scheduleBoundsEmit(700);
@@ -485,6 +497,7 @@ export default function SearchMap({
       }
 
       map.off('moveend zoomend resize', handleMapViewportChange);
+      resizeObserver?.disconnect();
       map.remove();
       mapRef.current = null;
       markerLayerRef.current = null;
@@ -731,33 +744,6 @@ export default function SearchMap({
           position: relative;
         }
 
-        .reie-map-canvas::after {
-          background:
-            radial-gradient(circle at 25% 49%, rgba(68, 255, 38, 0.28), transparent 32%),
-            radial-gradient(circle at 62% 30%, rgba(0, 229, 255, 0.24), transparent 18%),
-            radial-gradient(circle at 76% 48%, rgba(0, 229, 255, 0.3), transparent 26%),
-            radial-gradient(circle at 67% 82%, rgba(0, 229, 255, 0.22), transparent 20%),
-            linear-gradient(90deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.42));
-          content: '';
-          inset: 0;
-          mix-blend-mode: screen;
-          opacity: 0.88;
-          pointer-events: none;
-          position: absolute;
-          z-index: 410;
-        }
-
-        .reie-map-canvas::before {
-          background:
-            linear-gradient(90deg, rgba(0, 0, 0, 0), rgba(0, 10, 12, 0.24)),
-            rgba(0, 0, 0, 0.02);
-          content: '';
-          inset: 0;
-          pointer-events: none;
-          position: absolute;
-          z-index: 411;
-        }
-
         .leaflet-control-zoom {
           border: 1px solid rgba(255, 255, 255, 0.34) !important;
           border-radius: 0 !important;
@@ -781,12 +767,12 @@ export default function SearchMap({
         }
 
         .reie-saturday-topo-tiles {
-          filter: invert(100%) hue-rotate(190deg) saturate(5.65) brightness(0.69) contrast(2.48) !important;
+          filter: none !important;
         }
 
         .reie-mapbox-detail-tiles {
-          filter: grayscale(1) brightness(1.05) contrast(1.62) saturate(0.08) !important;
-          mix-blend-mode: luminosity;
+          filter: none !important;
+          mix-blend-mode: normal;
         }
 
         .luxury-marker-container,

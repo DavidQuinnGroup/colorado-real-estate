@@ -28,6 +28,7 @@
     "scripts/alertFailedRows.ts",
     "scripts/alertNotificationReadiness.ts",
     "scripts/checkNextSecurityVersion.ts",
+    "scripts/checkMapRenderingSafety.ts",
     "scripts/checkPrismaClientParity.ts",
     "scripts/checkProductionDependencies.ts",
     "scripts/checkPropertyRouteSafety.ts",

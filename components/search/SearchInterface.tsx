@@ -326,7 +326,7 @@ export default function SearchInterface({
 
   return (
     <div
-      className="relative flex h-screen w-full flex-col overflow-hidden bg-black text-white md:flex-row"
+      className="reie-search-experience-shell relative flex h-screen w-full flex-col overflow-hidden bg-black text-white md:flex-row"
       data-testid="reie-search-interface"
       data-mobile-view={mobileView}
       data-selected-listing-id={visibleSelectedId || ''}
@@ -340,7 +340,7 @@ export default function SearchInterface({
       data-search-loading={String(isSearching)}
     >
       <div
-        className="absolute left-3 right-3 top-3 z-[900] flex items-center justify-between gap-3 md:hidden"
+        className="reie-search-mobile-toolbar absolute left-3 right-3 top-3 z-[900] items-center justify-between gap-3"
         data-testid="reie-search-mobile-toolbar"
         data-mobile-view={mobileView}
         data-mobile-status={mobileStatusLabel}
@@ -383,7 +383,7 @@ export default function SearchInterface({
       </div>
 
       <div
-        className={mobileView === 'map' ? 'hidden md:flex md:h-full md:shrink-0' : 'flex h-full min-h-0 md:h-full md:shrink-0'}
+        className="reie-search-list-pane"
         data-testid="reie-search-list-pane"
         data-mobile-view={mobileView}
         data-visible-listing-count={visibleListings.length}
@@ -402,7 +402,7 @@ export default function SearchInterface({
       </div>
 
       <section
-        className={`${mobileView === 'list' ? 'hidden md:block' : 'block'} relative min-h-0 min-w-0 flex-1 border-t border-white/15 md:h-full md:border-l md:border-t-0`}
+        className="reie-search-map-pane relative min-h-0 min-w-0 flex-1 border-t border-white/15 md:border-l md:border-t-0"
         data-testid="reie-search-map-pane"
         data-mobile-view={mobileView}
         data-selected-listing-id={visibleSelectedId || ''}
