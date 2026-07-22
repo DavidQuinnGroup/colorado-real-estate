@@ -9,6 +9,7 @@ import {
 } from '@/lib/runtime/publicSchemaSafety';
 
 type SaveSearchBody = {
+  name?: unknown;
   email?: unknown;
   city?: unknown;
   minPrice?: unknown;
@@ -29,7 +30,7 @@ type ReieGoal = 'sell-optimize' | 'buy-strategy' | 'relocation-fit' | 'portfolio
 
 type Timeline = 'now' | 'ninety-days' | 'six-months' | 'research';
 
-type IntakeSource = 'search-map' | 'city-market-page' | 'property-detail' | 'unknown';
+type IntakeSource = 'search-map' | 'city-market-page' | 'property-detail' | 'grand-plan' | 'unknown';
 
 type LeadTemperature = 'hot' | 'warm' | 'nurture';
 
@@ -55,7 +56,7 @@ const VALID_REIE_GOALS = new Set<ReieGoal>(['sell-optimize', 'buy-strategy', 're
 
 const VALID_TIMELINES = new Set<Timeline>(['now', 'ninety-days', 'six-months', 'research']);
 
-const VALID_INTAKE_SOURCES = new Set<IntakeSource>(['search-map', 'city-market-page', 'property-detail', 'unknown']);
+const VALID_INTAKE_SOURCES = new Set<IntakeSource>(['search-map', 'city-market-page', 'property-detail', 'grand-plan', 'unknown']);
 
 const VALID_LEAD_TEMPERATURES = new Set<LeadTemperature>(['hot', 'warm', 'nurture']);
 
@@ -77,6 +78,7 @@ const INTAKE_SOURCE_LABELS: Record<IntakeSource, string> = {
   'search-map': 'Search Map',
   'city-market-page': 'City Market Page',
   'property-detail': 'Property Detail',
+  'grand-plan': 'Grand Plan',
   unknown: 'Unknown Source',
 };
 
@@ -110,6 +112,7 @@ function parseBody(value: unknown): SaveSearchBody {
 
   return {
     email: value.email,
+    name: value.name,
     city: value.city,
     minPrice: value.minPrice,
     beds: value.beds,
@@ -383,6 +386,7 @@ export async function POST(req: NextRequest) {
   try {
     const body = parseBody(await req.json().catch(() => null));
     const email = getString(body.email)?.toLowerCase();
+    const name = getBoundedString(body.name, 120);
     const city = getBoundedString(getBodyValue(body, 'city'), MAX_CITY_LENGTH) || 'Boulder';
     const searchType = getBoundedString(getBodyValue(body, 'type'), MAX_TYPE_LENGTH);
     const strategicGoal = getStrategicGoal(body);
@@ -414,6 +418,7 @@ export async function POST(req: NextRequest) {
       const user = await tx.user.upsert({
         where: { email },
         update: {
+          name: name ?? undefined,
           isUnsubscribed: false,
           unsubscribedAt: null,
           heatScore: {
@@ -424,6 +429,7 @@ export async function POST(req: NextRequest) {
         },
         create: {
           email,
+          name,
           status: 'Lead',
           heatScore: heatScoreIncrement,
           legacyGoal: strategicGoal,

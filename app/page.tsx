@@ -43,7 +43,7 @@ const navigationLinks = [
   { label: 'Search', href: '#search' },
   { label: 'Communities', href: '#communities' },
   { label: 'Sell', href: '/sell' },
-  { label: 'Grand Plan™', href: '#buy-sell-grand-plan' },
+  { label: 'Grand Plan™', href: '/grand-plan' },
   { label: 'About', href: '#why-david-quinn' },
   { label: 'Contact', href: '/contact' },
 ];
@@ -95,7 +95,7 @@ const advisoryPaths = [
   {
     title: 'Build Your Grand Plan™',
     body: 'Connect the property decision to renovation scope, lifestyle goals, timing, capital planning, and risk tolerance.',
-    href: '/contact',
+    href: '/grand-plan',
     cta: 'Build Your Grand Plan™',
     imagePosition: 'object-right',
   },
@@ -260,7 +260,7 @@ export default function HomePage() {
                 <Link href="#search" className={primaryButtonClass}>
                   Start Your Search
                 </Link>
-                <Link href="/contact" className={secondaryButtonClass}>
+                <Link href="/grand-plan" className={secondaryButtonClass}>
                   Build Your Grand Plan™
                 </Link>
               </div>
@@ -420,7 +420,7 @@ export default function HomePage() {
               <Link href="#search" className={darkButtonClass}>
                 Start Your Search
               </Link>
-              <Link href="/contact" className={lightSecondaryButtonClass}>
+              <Link href="/grand-plan" className={lightSecondaryButtonClass}>
                 Build Your Grand Plan™
               </Link>
               <Link href="/contact" className={lightSecondaryButtonClass}>
