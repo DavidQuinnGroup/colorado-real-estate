@@ -1,6 +1,6 @@
 'use client';
 
-import { type FormEvent, useMemo, useState } from 'react';
+import { type FormEvent, useId, useMemo, useState } from 'react';
 import { CheckCircle2, ChevronRight, Loader2, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
 
@@ -98,6 +98,7 @@ async function readResponse(response: Response): Promise<SaveSearchResponse> {
 }
 
 export default function GrandPlanIntake() {
+  const formId = useId();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [city, setCity] = useState('Boulder');
@@ -243,30 +244,36 @@ export default function GrandPlanIntake() {
       data-testid="grand-plan-intake"
       data-grand-plan-state={submitState}
       data-grand-plan-source="grand-plan"
+      aria-labelledby={`${formId}-title`}
+      aria-describedby={`${formId}-description ${formId}-notice`}
       noValidate
     >
       <div>
         <p className="gp-eyebrow">Initial Intake</p>
-        <h2>Start with the decision you are trying to make.</h2>
-        <p>
+        <h2 id={`${formId}-title`}>Start with the decision you are trying to make.</h2>
+        <p id={`${formId}-description`}>
           Share enough context for David Quinn Group to frame the first conversation around market fit, timing, property strategy, and the
           practical tradeoffs behind the move.
         </p>
       </div>
 
       <div className="gp-form-grid">
-        <label>
+        <label htmlFor={`${formId}-name`}>
           Name
           <input
+            id={`${formId}-name`}
+            aria-label="Name"
             value={name}
             onChange={(event) => setName(event.target.value)}
             autoComplete="name"
             required
           />
         </label>
-        <label>
+        <label htmlFor={`${formId}-email`}>
           Email
           <input
+            id={`${formId}-email`}
+            aria-label="Email"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
             autoComplete="email"
@@ -274,18 +281,22 @@ export default function GrandPlanIntake() {
             required
           />
         </label>
-        <label>
+        <label htmlFor={`${formId}-city`}>
           Primary market
           <input
+            id={`${formId}-city`}
+            aria-label="Primary market"
             value={city}
             onChange={(event) => setCity(event.target.value)}
             autoComplete="address-level2"
             placeholder="Boulder"
           />
         </label>
-        <label>
+        <label htmlFor={`${formId}-primary-anchor`}>
           Important anchor
           <input
+            id={`${formId}-primary-anchor`}
+            aria-label="Important anchor"
             value={primaryAnchor}
             onChange={(event) => setPrimaryAnchor(event.target.value)}
             placeholder="School, commute, trail access, family, renovation plan"
@@ -293,13 +304,14 @@ export default function GrandPlanIntake() {
         </label>
       </div>
 
-      <div className="gp-field-group">
-        <p className="gp-field-title">Primary goal</p>
+      <fieldset className="gp-field-group">
+        <legend className="gp-field-title">Primary goal</legend>
         <div className="gp-option-grid">
           {goals.map((item) => (
             <button
               key={item.id}
               type="button"
+              aria-label={`Primary goal: ${item.label}`}
               aria-pressed={goal === item.id}
               onClick={() => setGoal(item.id)}
               data-testid="grand-plan-goal"
@@ -311,15 +323,16 @@ export default function GrandPlanIntake() {
             </button>
           ))}
         </div>
-      </div>
+      </fieldset>
 
-      <div className="gp-field-group">
-        <p className="gp-field-title">Timeline</p>
+      <fieldset className="gp-field-group">
+        <legend className="gp-field-title">Timeline</legend>
         <div className="gp-option-grid gp-timeline-grid">
           {timelines.map((item) => (
             <button
               key={item.id}
               type="button"
+              aria-label={`Timeline: ${item.label}`}
               aria-pressed={timeline === item.id}
               onClick={() => setTimeline(item.id)}
               data-testid="grand-plan-timeline"
@@ -330,11 +343,13 @@ export default function GrandPlanIntake() {
             </button>
           ))}
         </div>
-      </div>
+      </fieldset>
 
-      <label className="gp-field-group">
+      <label className="gp-field-group" htmlFor={`${formId}-notes`}>
         What should this plan help solve?
         <textarea
+          id={`${formId}-notes`}
+          aria-label="What should this plan help solve?"
           value={notes}
           onChange={(event) => setNotes(event.target.value)}
           maxLength={500}
@@ -343,7 +358,7 @@ export default function GrandPlanIntake() {
       </label>
 
       {submitState === 'error' ? (
-        <p className="gp-error">
+        <p className="gp-error" role="alert">
           {errorMessage}
         </p>
       ) : null}
@@ -366,7 +381,7 @@ export default function GrandPlanIntake() {
         )}
       </button>
 
-      <div className="gp-notice">
+      <div id={`${formId}-notice`} className="gp-notice">
         <ShieldCheck aria-hidden="true" />
         <p>
           This form requests advisory follow-up only. Do not submit confidential negotiating positions, financial limits, or client-confidential

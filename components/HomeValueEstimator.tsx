@@ -1,6 +1,6 @@
 'use client';
 
-import { type FormEvent, useState } from 'react';
+import { type FormEvent, useId, useState } from 'react';
 import { CheckCircle2, Loader2 } from 'lucide-react';
 
 type SubmitState = 'idle' | 'submitting' | 'success' | 'error';
@@ -46,6 +46,7 @@ async function readResponse(response: Response): Promise<SellerResponse> {
 }
 
 export default function HomeValueEstimator() {
+  const formId = useId();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -146,21 +147,25 @@ export default function HomeValueEstimator() {
       onSubmit={handleSubmit}
       className="rounded-[16px] bg-white/[0.065] p-7 shadow-[0_28px_80px_rgba(0,0,0,0.22)] ring-1 ring-white/12 sm:p-8"
       data-testid="seller-intake-form"
+      aria-labelledby={`${formId}-title`}
+      aria-describedby={`${formId}-description ${formId}-notice`}
       noValidate
     >
       <div>
         <p className="text-[11px] font-black uppercase tracking-[0.22em] text-cyan-100">Seller Analysis Request</p>
-        <h2 className="mt-4 text-3xl font-black leading-tight text-white">Request a property preparation and pricing review.</h2>
-        <p className="mt-4 text-sm leading-7 text-white/62">
+        <h2 id={`${formId}-title`} className="mt-4 text-3xl font-black leading-tight text-white">Request a property preparation and pricing review.</h2>
+        <p id={`${formId}-description`} className="mt-4 text-sm leading-7 text-white/62">
           This is a consultation request, not an automated home-value estimate. Share the basics and David Quinn Group will review the
           property through local-market, preparation, and positioning context.
         </p>
       </div>
 
       <div className="mt-8 grid gap-4 sm:grid-cols-2">
-        <label className="block text-sm font-bold text-white/76">
+        <label className="block text-sm font-bold text-white/76" htmlFor={`${formId}-name`}>
           Name
           <input
+            id={`${formId}-name`}
+            aria-label="Name"
             value={name}
             onChange={(event) => setName(event.target.value)}
             className="mt-2 w-full rounded-[8px] border border-white/12 bg-black/30 px-4 py-3 text-white outline-none transition focus:border-cyan-100"
@@ -168,9 +173,11 @@ export default function HomeValueEstimator() {
             required
           />
         </label>
-        <label className="block text-sm font-bold text-white/76">
+        <label className="block text-sm font-bold text-white/76" htmlFor={`${formId}-email`}>
           Email
           <input
+            id={`${formId}-email`}
+            aria-label="Email"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
             className="mt-2 w-full rounded-[8px] border border-white/12 bg-black/30 px-4 py-3 text-white outline-none transition focus:border-cyan-100"
@@ -179,9 +186,11 @@ export default function HomeValueEstimator() {
             required
           />
         </label>
-        <label className="block text-sm font-bold text-white/76">
+        <label className="block text-sm font-bold text-white/76" htmlFor={`${formId}-phone`}>
           Phone
           <input
+            id={`${formId}-phone`}
+            aria-label="Phone"
             value={phone}
             onChange={(event) => setPhone(event.target.value)}
             className="mt-2 w-full rounded-[8px] border border-white/12 bg-black/30 px-4 py-3 text-white outline-none transition focus:border-cyan-100"
@@ -189,9 +198,11 @@ export default function HomeValueEstimator() {
             inputMode="tel"
           />
         </label>
-        <label className="block text-sm font-bold text-white/76">
+        <label className="block text-sm font-bold text-white/76" htmlFor={`${formId}-city`}>
           City
           <input
+            id={`${formId}-city`}
+            aria-label="City"
             value={city}
             onChange={(event) => setCity(event.target.value)}
             className="mt-2 w-full rounded-[8px] border border-white/12 bg-black/30 px-4 py-3 text-white outline-none transition focus:border-cyan-100"
@@ -201,9 +212,11 @@ export default function HomeValueEstimator() {
         </label>
       </div>
 
-      <label className="mt-4 block text-sm font-bold text-white/76">
+      <label className="mt-4 block text-sm font-bold text-white/76" htmlFor={`${formId}-address`}>
         Property address
         <input
+          id={`${formId}-address`}
+          aria-label="Property address"
           value={address}
           onChange={(event) => setAddress(event.target.value)}
           className="mt-2 w-full rounded-[8px] border border-white/12 bg-black/30 px-4 py-3 text-white outline-none transition focus:border-cyan-100"
@@ -213,9 +226,11 @@ export default function HomeValueEstimator() {
       </label>
 
       <div className="mt-5 grid gap-4 sm:grid-cols-2">
-        <label className="block text-sm font-bold text-white/76">
+        <label className="block text-sm font-bold text-white/76" htmlFor={`${formId}-objective`}>
           Main objective
           <select
+            id={`${formId}-objective`}
+            aria-label="Main objective"
             value={objective}
             onChange={(event) => setObjective(event.target.value)}
             className="mt-2 w-full rounded-[8px] border border-white/12 bg-black/30 px-4 py-3 text-white outline-none transition focus:border-cyan-100"
@@ -227,9 +242,11 @@ export default function HomeValueEstimator() {
             ))}
           </select>
         </label>
-        <label className="block text-sm font-bold text-white/76">
+        <label className="block text-sm font-bold text-white/76" htmlFor={`${formId}-timeline`}>
           Timeline
           <select
+            id={`${formId}-timeline`}
+            aria-label="Timeline"
             value={timeline}
             onChange={(event) => setTimeline(event.target.value)}
             className="mt-2 w-full rounded-[8px] border border-white/12 bg-black/30 px-4 py-3 text-white outline-none transition focus:border-cyan-100"
@@ -243,9 +260,11 @@ export default function HomeValueEstimator() {
         </label>
       </div>
 
-      <label className="mt-5 block text-sm font-bold text-white/76">
+      <label className="mt-5 block text-sm font-bold text-white/76" htmlFor={`${formId}-notes`}>
         Optional notes
         <textarea
+          id={`${formId}-notes`}
+          aria-label="Optional notes"
           value={notes}
           onChange={(event) => setNotes(event.target.value)}
           className="mt-2 min-h-28 w-full resize-y rounded-[8px] border border-white/12 bg-black/30 px-4 py-3 text-white outline-none transition focus:border-cyan-100"
@@ -254,7 +273,7 @@ export default function HomeValueEstimator() {
       </label>
 
       {submitState === 'error' ? (
-        <p className="mt-5 rounded-[8px] border border-amber-200/30 bg-amber-200/10 px-4 py-3 text-sm font-semibold text-amber-100">
+        <p className="mt-5 rounded-[8px] border border-amber-200/30 bg-amber-200/10 px-4 py-3 text-sm font-semibold text-amber-100" role="alert">
           {errorMessage}
         </p>
       ) : null}
@@ -273,7 +292,7 @@ export default function HomeValueEstimator() {
           'Request Seller Review'
         )}
       </button>
-      <p className="mt-5 text-xs leading-6 text-white/46">
+      <p id={`${formId}-notice`} className="mt-5 text-xs leading-6 text-white/46">
         Submitting this form requests follow-up only. Do not include confidential negotiating positions or financial limits until the
         appropriate brokerage relationship and disclosures have been discussed.
       </p>

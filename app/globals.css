@@ -901,6 +901,12 @@ html, body {
   margin-top: 28px;
 }
 
+[data-testid="grand-plan-intake"] fieldset.gp-field-group {
+  min-width: 0;
+  border: 0;
+  padding: 0;
+}
+
 [data-testid="grand-plan-intake"] .gp-field-title {
   margin: 0;
   color: rgba(255, 255, 255, 0.76);

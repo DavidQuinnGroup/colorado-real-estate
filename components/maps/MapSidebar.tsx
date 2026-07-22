@@ -393,9 +393,9 @@ export default function MapSidebar(props: MapSidebarProps) {
           <div className="flex items-start justify-between gap-4">
             <div>
               <p className="text-[10px] font-black uppercase tracking-[0.28em] text-cyan-100/72">Property Search</p>
-              <h1 className="mt-2 font-serif text-[2.15rem] font-black leading-none tracking-normal text-white">
+              <h2 className="mt-2 font-serif text-[2.15rem] font-black leading-none tracking-normal text-white">
                 Colorado Search
-              </h1>
+              </h2>
             </div>
 
             {activeId && onCloseDetail ? (

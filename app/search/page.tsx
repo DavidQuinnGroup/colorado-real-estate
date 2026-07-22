@@ -124,6 +124,7 @@ export default async function SearchPage() {
 
   return (
     <main className="h-screen w-full overflow-hidden bg-black text-white">
+      <h1 className="sr-only">Colorado Real Estate Search</h1>
       <script
         type="application/ld+json"
         data-testid="reie-search-tool-schema"

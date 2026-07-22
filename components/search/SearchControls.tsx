@@ -2,7 +2,7 @@
 
 import { Check, Copy, Loader2, RotateCcw, Search, SlidersHorizontal, Sparkles, X } from 'lucide-react';
 import type { CSSProperties, FormEvent } from 'react';
-import { useMemo, useState } from 'react';
+import { useId, useMemo, useState } from 'react';
 
 export type SearchFilters = {
   query: string;
@@ -145,6 +145,7 @@ export default function SearchControls({
   onReset,
   onSubmit,
 }: SearchControlsProps) {
+  const formId = useId();
   const [copied, setCopied] = useState(false);
   const chips = useMemo(() => getActiveFilterChips(filters), [filters]);
   const sharePath = useMemo(() => buildSharePath(filters), [filters]);
@@ -169,15 +170,20 @@ export default function SearchControls({
   }
 
   return (
-    <form onSubmit={onSubmit} className="overflow-hidden rounded-[8px] border border-white/10 bg-[#071017]/72">
+    <form
+      onSubmit={onSubmit}
+      className="overflow-hidden rounded-[8px] border border-white/10 bg-[#071017]/72"
+      aria-labelledby={`${formId}-title`}
+      aria-describedby={`${formId}-description ${formId}-status`}
+    >
       <div className="border-b border-white/10 bg-white/[0.035] p-3">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">
+            <p id={`${formId}-title`} className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">
               <SlidersHorizontal size={13} aria-hidden="true" />
               Filters
             </p>
-            <p className="mt-2 text-[11px] font-bold leading-5 text-white/48">
+            <p id={`${formId}-description`} className="mt-2 text-[11px] font-bold leading-5 text-white/48">
               Focus the map by price, market, property type, and intent.
             </p>
           </div>
@@ -217,9 +223,11 @@ export default function SearchControls({
         </div>
       </div>
 
-      <label className="mt-3 block">
+      <label className="mt-3 block" htmlFor={`${formId}-query`}>
         <span className="sr-only">Search city, address, ZIP, or MLS</span>
         <input
+          id={`${formId}-query`}
+          aria-label="Search city, address, ZIP, or MLS"
           value={filters.query}
           onChange={(event) => onChange(updateFilter(filters, 'query', event.target.value))}
           placeholder="City, address, ZIP, MLS"
@@ -229,9 +237,11 @@ export default function SearchControls({
       </label>
 
       <div className="mt-2 grid grid-cols-2 gap-2">
-        <label>
+        <label htmlFor={`${formId}-min-price`}>
           <span className="sr-only">Minimum price</span>
           <input
+            id={`${formId}-min-price`}
+            aria-label="Minimum price"
             inputMode="numeric"
             value={filters.minPrice}
             onChange={(event) => onChange(updateFilter(filters, 'minPrice', event.target.value))}
@@ -240,9 +250,11 @@ export default function SearchControls({
             className="h-10 w-full rounded-[6px] border border-white/10 bg-white/[0.06] px-3 text-xs font-bold text-white outline-none transition placeholder:text-white/30 focus:border-cyan-100/45"
           />
         </label>
-        <label>
+        <label htmlFor={`${formId}-max-price`}>
           <span className="sr-only">Maximum price</span>
           <input
+            id={`${formId}-max-price`}
+            aria-label="Maximum price"
             inputMode="numeric"
             value={filters.maxPrice}
             onChange={(event) => onChange(updateFilter(filters, 'maxPrice', event.target.value))}
@@ -255,6 +267,7 @@ export default function SearchControls({
 
       <div className="mt-2 grid grid-cols-3 gap-2">
         <select
+          id={`${formId}-beds`}
           value={filters.beds}
           onChange={(event) => onChange(updateFilter(filters, 'beds', event.target.value))}
           style={compactControlStyle}
@@ -269,6 +282,7 @@ export default function SearchControls({
           <option value="5">5+</option>
         </select>
         <select
+          id={`${formId}-baths`}
           value={filters.baths}
           onChange={(event) => onChange(updateFilter(filters, 'baths', event.target.value))}
           style={compactControlStyle}
@@ -282,6 +296,7 @@ export default function SearchControls({
           <option value="4">4+</option>
         </select>
         <select
+          id={`${formId}-property-type`}
           value={filters.propertyType}
           onChange={(event) => onChange(updateFilter(filters, 'propertyType', event.target.value))}
           style={compactControlStyle}
@@ -297,9 +312,11 @@ export default function SearchControls({
       </div>
 
       <div className="mt-2 flex gap-2">
-        <label className="min-w-0 flex-1">
+        <label className="min-w-0 flex-1" htmlFor={`${formId}-city`}>
           <span className="sr-only">City</span>
           <input
+            id={`${formId}-city`}
+            aria-label="City"
             value={filters.city}
             onChange={(event) => onChange(updateFilter(filters, 'city', event.target.value))}
             placeholder="Exact city"
@@ -336,13 +353,13 @@ export default function SearchControls({
       ) : null}
 
       <div className="mt-3 flex items-center justify-between gap-3 border-t border-white/10 pt-3">
-        <p className="text-[10px] font-black uppercase tracking-[0.16em] text-white/34">
+        <p id={`${formId}-status`} className="text-[10px] font-black uppercase tracking-[0.16em] text-white/34" aria-live="polite">
           {isSearching ? 'Search is updating' : chips.length ? 'Filtered inventory active' : 'Ready for map search'}
         </p>
         {isSearching ? <Loader2 size={13} className="shrink-0 animate-spin text-cyan-100" aria-hidden="true" /> : null}
       </div>
 
-      {searchError ? <p className="mt-2 text-xs font-bold text-red-300">{searchError}</p> : null}
+      {searchError ? <p className="mt-2 text-xs font-bold text-red-300" role="alert">{searchError}</p> : null}
       </div>
     </form>
   );

@@ -84,6 +84,7 @@ const advisoryPaths = [
     href: '#search',
     cta: 'Start Your Search',
     imagePosition: 'object-left',
+    imageAlt: 'Colorado home entry and neighborhood setting for buyer planning',
   },
   {
     title: 'Sell with strategy',
@@ -91,6 +92,7 @@ const advisoryPaths = [
     href: '/sell',
     cta: 'Request Seller Review',
     imagePosition: 'object-center',
+    imageAlt: 'Prepared Colorado home exterior for seller strategy review',
   },
   {
     title: 'Build Your Grand Plan™',
@@ -98,16 +100,17 @@ const advisoryPaths = [
     href: '/grand-plan',
     cta: 'Build Your Grand Plan™',
     imagePosition: 'object-right',
+    imageAlt: 'Colorado Front Range landscape representing long-term real estate planning',
   },
 ];
 
 const featuredCommunities = [
-  { name: 'Boulder', href: '/market/boulder-co-housing-market', note: 'Foothills, university, tech, trails, and established neighborhoods.', imagePosition: 'object-left' },
-  { name: 'Louisville', href: '/market/louisville-co-housing-market', note: 'Small-town core, commuter access, parks, and west-metro resilience.', imagePosition: 'object-center' },
-  { name: 'Lafayette', href: '/market/lafayette-co-housing-market', note: 'Creative downtown energy, family neighborhoods, and open-space access.', imagePosition: 'object-right' },
-  { name: 'Superior', href: '/search?city=Superior', note: 'Modern inventory, Boulder-Denver access, and rebuilding-era context.', imagePosition: 'object-center' },
-  { name: 'Erie', href: '/market/erie-co-housing-market', note: 'Newer communities, larger lots, and north-metro growth patterns.', imagePosition: 'object-left' },
-  { name: 'Longmont', href: '/market/longmont-co-housing-market', note: 'Historic housing, maker economy, and access to Boulder County value.', imagePosition: 'object-right' },
+  { name: 'Boulder', href: '/market/boulder-co-housing-market', note: 'Foothills, university, tech, trails, and established neighborhoods.', imagePosition: 'object-left', imageAlt: 'Boulder foothills and residential neighborhoods' },
+  { name: 'Louisville', href: '/market/louisville-co-housing-market', note: 'Small-town core, commuter access, parks, and west-metro resilience.', imagePosition: 'object-center', imageAlt: 'Louisville Colorado neighborhood and open-space setting' },
+  { name: 'Lafayette', href: '/market/lafayette-co-housing-market', note: 'Creative downtown energy, family neighborhoods, and open-space access.', imagePosition: 'object-right', imageAlt: 'Lafayette Colorado community streetscape and Front Range light' },
+  { name: 'Superior', href: '/search?city=Superior', note: 'Modern inventory, Boulder-Denver access, and rebuilding-era context.', imagePosition: 'object-center', imageAlt: 'Superior Colorado residential community near the foothills' },
+  { name: 'Erie', href: '/market/erie-co-housing-market', note: 'Newer communities, larger lots, and north-metro growth patterns.', imagePosition: 'object-left', imageAlt: 'Erie Colorado homes and north Front Range landscape' },
+  { name: 'Longmont', href: '/market/longmont-co-housing-market', note: 'Historic housing, maker economy, and access to Boulder County value.', imagePosition: 'object-right', imageAlt: 'Longmont Colorado neighborhood with mountain access' },
 ];
 
 const davidQuinnSignals = [
@@ -295,7 +298,7 @@ export default function HomePage() {
                   <div className="relative h-64 overflow-hidden">
                     <Image
                       src={HERO_IMAGE}
-                      alt=""
+                      alt={path.imageAlt}
                       fill
                       sizes="(min-width: 1024px) 33vw, 100vw"
                       className={`object-cover transition duration-700 group-hover:scale-105 ${path.imagePosition}`}
@@ -336,7 +339,7 @@ export default function HomePage() {
                   <div className="relative h-52 overflow-hidden">
                     <Image
                       src={HERO_IMAGE}
-                      alt=""
+                      alt={community.imageAlt}
                       fill
                       sizes="(min-width: 1024px) 33vw, 100vw"
                       className={`object-cover transition duration-700 group-hover:scale-105 ${community.imagePosition}`}
