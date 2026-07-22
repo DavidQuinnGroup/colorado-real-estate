@@ -119,13 +119,39 @@ function normalizeRequestBody(body: ValuationRequestBody): NormalizedValuationRe
 async function assertSellerIntakeSchema() {
   await assertPublicRuntimeSchema(prisma, [
     { tableName: 'User', columns: ['id', 'email', 'name', 'isUnsubscribed', 'unsubscribedAt', 'heatScore', 'intentSchema', 'legacyGoal', 'status'] },
-    { tableName: 'SellerLead', columns: ['id', 'city', 'beds', 'price', 'reason', 'propertyId'] },
     { tableName: 'UserInteraction', columns: ['id', 'userId', 'type', 'metadata', 'createdAt'] },
     { tableName: 'CRMTask', columns: ['id', 'leadId', 'type', 'status', 'priority', 'title', 'metadata', 'createdAt'] },
   ]);
 }
 
-function buildMetadata(input: NormalizedValuationRequest, propertyKey: string, duplicateSellerLead: boolean) {
+async function isSellerLeadSchemaAvailable() {
+  try {
+    await assertPublicRuntimeSchema(prisma, [
+      { tableName: 'SellerLead', columns: ['id', 'city', 'beds', 'price', 'reason', 'propertyId'] },
+    ]);
+
+    return true;
+  } catch (error) {
+    if (isPublicRuntimeSchemaUnavailableError(error)) {
+      console.error('Optional SellerLead schema unavailable for seller intake:', {
+        code: error.code,
+        missingTables: error.missingTables,
+        missingColumns: error.missingColumns,
+      });
+
+      return false;
+    }
+
+    throw error;
+  }
+}
+
+function buildMetadata(
+  input: NormalizedValuationRequest,
+  propertyKey: string,
+  duplicateSellerRequest: boolean,
+  sellerLeadStatus: 'available' | 'unavailable',
+) {
   return {
     schemaVersion: 'reie-seller-intake-v1',
     capturedAt: new Date().toISOString(),
@@ -142,7 +168,8 @@ function buildMetadata(input: NormalizedValuationRequest, propertyKey: string, d
       address: input.address,
       city: input.city,
     },
-    duplicateSellerLead,
+    duplicateSellerRequest,
+    sellerLeadStatus,
     notification: {
       channel: SELLER_NOTIFICATION_CHANNEL,
       status: 'not_sent',
@@ -166,14 +193,36 @@ export async function POST(request: Request) {
     }
 
     await assertSellerIntakeSchema();
+    const sellerLeadSchemaAvailable = await isSellerLeadSchemaAvailable();
 
     const propertyKey = normalizePropertyKey(input.address, input.email);
     const result = await prisma.$transaction(async (tx) => {
-      const existingSellerLead = await tx.sellerLead.findFirst({
-        where: { propertyId: propertyKey },
+      const existingSellerLead = sellerLeadSchemaAvailable
+        ? await tx.sellerLead.findFirst({
+            where: { propertyId: propertyKey },
+          })
+        : null;
+
+      const existingUser = await tx.user.findUnique({
+        where: { email: input.email },
+        include: {
+          crmTasks: {
+            where: {
+              type: 'seller_intake',
+              title: getTaskTitle(input),
+            },
+            take: 1,
+          },
+        },
       });
 
-      const metadata = buildMetadata(input, propertyKey, Boolean(existingSellerLead));
+      const duplicateSellerRequest = Boolean(existingSellerLead || existingUser?.crmTasks[0]);
+      const metadata = buildMetadata(
+        input,
+        propertyKey,
+        duplicateSellerRequest,
+        sellerLeadSchemaAvailable ? 'available' : 'unavailable',
+      );
 
       const user = await tx.user.upsert({
         where: { email: input.email },
@@ -182,7 +231,7 @@ export async function POST(request: Request) {
           isUnsubscribed: false,
           unsubscribedAt: null,
           heatScore: {
-            increment: existingSellerLead ? 0 : SELLER_HEAT_SCORE,
+            increment: duplicateSellerRequest ? 0 : SELLER_HEAT_SCORE,
           },
           intentSchema: 'seller-intake',
           legacyGoal: 'Seller strategy',
@@ -197,17 +246,18 @@ export async function POST(request: Request) {
         },
       });
 
-      const sellerLead =
-        existingSellerLead ??
-        (await tx.sellerLead.create({
-          data: {
-            propertyId: propertyKey,
-            city: input.city,
-            beds: null,
-            price: null,
-            reason: `${getObjectiveLabel(input.objective)} | ${getTimelineLabel(input.timeline)}`,
-          },
-        }));
+      const sellerLead = sellerLeadSchemaAvailable
+        ? existingSellerLead ??
+          (await tx.sellerLead.create({
+            data: {
+              propertyId: propertyKey,
+              city: input.city,
+              beds: null,
+              price: null,
+              reason: `${getObjectiveLabel(input.objective)} | ${getTimelineLabel(input.timeline)}`,
+            },
+          }))
+        : null;
 
       const userInteraction = await tx.userInteraction.create({
         data: {
@@ -215,12 +265,12 @@ export async function POST(request: Request) {
           type: 'seller_valuation_request',
           metadata: {
             ...metadata,
-            sellerLeadId: sellerLead.id,
+            sellerLeadId: sellerLead?.id ?? null,
           },
         },
       });
 
-      const crmTask = existingSellerLead
+      const crmTask = duplicateSellerRequest
         ? null
         : await tx.cRMTask.create({
             data: {
@@ -230,7 +280,7 @@ export async function POST(request: Request) {
               title: getTaskTitle(input),
               metadata: {
                 ...metadata,
-                sellerLeadId: sellerLead.id,
+                sellerLeadId: sellerLead?.id ?? null,
                 userInteractionId: userInteraction.id,
               },
             },
@@ -241,7 +291,8 @@ export async function POST(request: Request) {
         sellerLead,
         userInteraction,
         crmTask,
-        duplicate: Boolean(existingSellerLead),
+        duplicate: duplicateSellerRequest,
+        sellerLeadSchemaAvailable,
       };
     });
 
@@ -249,7 +300,11 @@ export async function POST(request: Request) {
       success: true,
       requestId: result.userInteraction.id,
       status: result.duplicate ? 'already-saved' : 'saved',
-      sellerLeadStatus: result.duplicate ? 'existing' : 'created',
+      sellerLeadStatus: result.sellerLeadSchemaAvailable
+        ? result.duplicate
+          ? 'existing'
+          : 'created'
+        : 'unavailable',
       followUp: {
         channel: SELLER_NOTIFICATION_CHANNEL,
         status: 'queued-for-advisor-review',
