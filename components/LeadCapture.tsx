@@ -200,7 +200,7 @@ export default function LeadCapture({ city }: LeadCaptureProps) {
         body: JSON.stringify({
           email: normalizedEmail,
           city: cityName,
-          type: 'REIE Strategy Intake',
+          type: 'Market Strategy Request',
           filters: {
             intakeSource: 'city-market-page',
             strategicGoal: GOAL_TO_LEGACY_GOAL[selectedGoal],
@@ -301,10 +301,10 @@ export default function LeadCapture({ city }: LeadCaptureProps) {
             <div className="mb-6 inline-flex h-16 w-16 items-center justify-center bg-[#00ff80]/15">
               <CheckCircle2 className="text-[#00ff80]" size={34} />
             </div>
-            <h3 className="mb-3 text-xl font-black italic uppercase tracking-tight text-white">Strategy Request Initialized</h3>
+            <h3 className="mb-3 text-xl font-black italic uppercase tracking-tight text-white">Strategy Request Saved</h3>
             <p className="mx-auto mb-8 max-w-md text-sm leading-relaxed text-white/50">
               {saveResult?.alertReadiness?.summary ||
-                `Your ${cityName} REIE strategy request has been saved. The intake is now staged for follow-up routing and a more specific discovery brief.`}
+                `Your ${cityName} strategy request has been saved for David Quinn Group follow-up.`}
             </p>
             <div className="mb-6 flex flex-wrap justify-center gap-2">
               {saveResult?.alertReadiness ? (
@@ -315,7 +315,11 @@ export default function LeadCapture({ city }: LeadCaptureProps) {
                   data-lead-capture-signal-count={saveResult.alertReadiness.signals.length}
                   data-lead-capture-blocker-count={saveResult.alertReadiness.blockers.length}
                 >
-                  Alert {saveResult.alertReadiness.level}
+                  {saveResult.alertReadiness.level === 'ready'
+                    ? 'Follow-up ready'
+                    : saveResult.alertReadiness.level === 'watch'
+                      ? 'Saved for review'
+                      : 'Criteria saved'}
                 </span>
               ) : null}
               <span

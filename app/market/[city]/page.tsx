@@ -284,12 +284,12 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
           <div className="absolute inset-0 z-10 flex items-center justify-center border border-white/5 bg-black/20 p-6 backdrop-blur-sm">
             <div className="max-w-md border border-white/10 bg-[#030303] p-8 text-center shadow-2xl md:p-10">
               <Lock className="mx-auto mb-6 text-[#fbbf24]" size={48} />
-              <h3 className="mb-4 text-xl font-black italic uppercase tracking-tight text-white">Unlock the Expert 60%</h3>
+              <h3 className="mb-4 text-xl font-black italic uppercase tracking-tight text-white">Request Advisor Review</h3>
               <p className="mb-8 text-xs uppercase leading-relaxed tracking-widest text-white/50">
-                Structural forensics, tactical negotiation levers, and private exclusive access are reserved for DQG contracted clients.
+                Detailed property review, negotiation planning, and private advisory context are discussed directly with David Quinn Group clients.
               </p>
               <button className="w-full bg-[#00ff80] py-4 text-xs font-black italic uppercase tracking-[0.3em] text-black transition-all hover:bg-white">
-                Access Full Strategy Brief
+                Plan Next Steps
               </button>
             </div>
           </div>
@@ -352,12 +352,12 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
         <RelatedArticles
           city={cityData.name}
           currentSlug={cityData.marketSlug}
-          title={`${cityData.name} REIE Strategy Briefs`}
+          title={`${cityData.name} Market Briefs`}
         />
 
         <section className="border-y border-white/10 py-12">
           <div className="mb-8 max-w-3xl">
-            <p className="mb-3 text-[10px] font-black uppercase tracking-[0.35em] text-[#00ff80]">REIE FAQ Layer</p>
+            <p className="mb-3 text-[10px] font-black uppercase tracking-[0.35em] text-[#00ff80]">Market FAQ</p>
             <h2 className="text-2xl font-black italic uppercase tracking-tight text-white">
               {cityData.name} Market Intelligence Questions
             </h2>

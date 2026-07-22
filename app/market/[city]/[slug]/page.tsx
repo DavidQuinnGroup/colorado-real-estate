@@ -421,7 +421,7 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
           />
           <section className="my-12 border-y border-white/10 py-12">
             <div className="mb-8 max-w-3xl">
-              <p className="mb-3 text-[10px] font-black uppercase tracking-[0.35em] text-[#00ff80]">REIE FAQ Layer</p>
+              <p className="mb-3 text-[10px] font-black uppercase tracking-[0.35em] text-[#00ff80]">Neighborhood FAQ</p>
               <h2 className="text-2xl font-black italic uppercase tracking-tight text-white">
                 {neighborhood.name} Intelligence Questions
               </h2>

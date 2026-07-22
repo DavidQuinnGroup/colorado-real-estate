@@ -190,7 +190,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
             <section className="border-l-4 border-[#00ff80] bg-white/[0.03] p-6">
               <div className="mb-4 flex items-center gap-3">
                 <Hammer className="h-5 w-5 text-[#00ff80]" />
-                <h2 className="text-xl font-black uppercase italic tracking-tight">REIE Strategy Read</h2>
+                <h2 className="text-xl font-black uppercase italic tracking-tight">Market Strategy Read</h2>
               </div>
               <p className="leading-8 text-white/68">{getStrategyParagraph(article, neighborhood)}</p>
             </section>
@@ -243,7 +243,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
 
         <section className="mb-14 border-y border-white/10 py-12">
           <div className="mb-8 max-w-3xl">
-            <p className="mb-3 text-[10px] font-black uppercase tracking-[0.35em] text-[#00ff80]">REIE FAQ Layer</p>
+            <p className="mb-3 text-[10px] font-black uppercase tracking-[0.35em] text-[#00ff80]">Market FAQ</p>
             <h2 className="text-2xl font-black italic uppercase tracking-tight text-white">
               {article.neighborhood} Strategy Questions
             </h2>

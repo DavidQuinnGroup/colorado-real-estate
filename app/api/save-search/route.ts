@@ -90,7 +90,6 @@ const MAX_NORTH_STAR_NAME_LENGTH = 80;
 const MAX_NORTH_STAR_ADDRESS_LENGTH = 160;
 const MAX_NORTH_STAR_TYPE_LENGTH = 40;
 const MAX_NORTH_STARS = 12;
-const LOCAL_BASE_URL = 'http://localhost:3000';
 let intakeSchemaReady = false;
 
 function jsonResponse(body: Record<string, unknown>, status = 200) {
@@ -360,19 +359,9 @@ function buildAlertReadiness(options: {
 
   return {
     level: 'ready',
-    summary: 'Saved search is ready for REIE matching, intake review, and alert queue monitoring.',
+    summary: 'Saved search is ready for matching inventory and advisor follow-up.',
     blockers: [],
     signals,
-  };
-}
-
-function buildOperationsCommands(savedSearchId: string) {
-  return {
-    terminal: 'Terminal 5',
-    alertStatus: `curl -s "${LOCAL_BASE_URL}/api/process-alerts?limit=25"`,
-    alertDryRun: `curl -s -X POST "${LOCAL_BASE_URL}/api/process-alerts?dryRun=true&limit=25"`,
-    intakeSignals: `curl -s "${LOCAL_BASE_URL}/api/admin/intake-signals?limit=10"`,
-    savedSearchReference: savedSearchId,
   };
 }
 
@@ -600,7 +589,6 @@ export async function POST(req: NextRequest) {
         notes,
         authoritySignals,
       }),
-      operations: buildOperationsCommands(result.savedSearch.id),
     });
   } catch (error) {
     if (isPublicRuntimeSchemaUnavailableError(error)) {

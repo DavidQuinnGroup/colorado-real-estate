@@ -124,8 +124,14 @@ function getReadinessClass(level: SaveSearchResponse['alertReadiness'] extends i
   return 'border-cyan-300/30 bg-cyan-300/10 text-cyan-100';
 }
 
+function getCustomerFollowUpLabel(level: SaveSearchResponse['alertReadiness'] extends infer Readiness ? Readiness extends { level: infer Level } ? Level : never : never) {
+  if (level === 'ready') return 'Follow-up ready';
+  if (level === 'watch') return 'Saved for review';
+  return 'Criteria saved';
+}
+
 function getSavedMessage(result: SaveSearchResponse | null) {
-  if (!result?.alertReadiness) return 'New matching inventory will feed your intelligence digest.';
+  if (!result?.alertReadiness) return 'Your search criteria were saved for inventory updates and advisor follow-up.';
   return result.alertReadiness.summary;
 }
 
@@ -282,7 +288,7 @@ export default function SaveSearch({ city }: SaveSearchProps) {
               data-save-search-signal-count={saveResult.alertReadiness.signals.length}
               data-save-search-blocker-count={saveResult.alertReadiness.blockers.length}
             >
-              Alert {saveResult.alertReadiness.level}
+              {getCustomerFollowUpLabel(saveResult.alertReadiness.level)}
             </span>
           ) : null}
           {saveResult?.intake ? (

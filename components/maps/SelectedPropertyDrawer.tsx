@@ -208,7 +208,7 @@ export default function SelectedPropertyDrawer({ property, onClose }: SelectedPr
         {hasReviewFlag ? (
           <p className="mt-3 flex items-center gap-2 rounded-[6px] border border-amber-200/24 bg-amber-200/10 px-3 py-2 text-[10px] font-black uppercase leading-4 tracking-[0.12em] text-amber-100">
             <TriangleAlert size={13} aria-hidden="true" className="shrink-0" />
-            GC review recommended before offer strategy.
+            Contractor review recommended before offer strategy.
           </p>
         ) : null}
 

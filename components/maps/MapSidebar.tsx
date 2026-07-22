@@ -257,9 +257,9 @@ function SearchIntelligenceStrip({ stats }: { stats: InventoryStats }) {
       data-sidebar-average-resilience={stats.averageResilience ?? ''}
     >
       <div className="flex items-center justify-between gap-3">
-        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100/78">Search Intelligence</p>
+        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100/78">Search Snapshot</p>
         <span className="rounded-[4px] border border-cyan-100/20 bg-black/30 px-2 py-1 text-[9px] font-black uppercase tracking-[0.12em] text-cyan-100/70">
-          REIE
+          Live
         </span>
       </div>
       <div className="mt-3 grid gap-2 text-[10px] font-black uppercase leading-4 tracking-[0.12em] text-white/58">
@@ -392,7 +392,7 @@ export default function MapSidebar(props: MapSidebarProps) {
         <div className="relative">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.28em] text-cyan-100/72">REIE Inventory</p>
+              <p className="text-[10px] font-black uppercase tracking-[0.28em] text-cyan-100/72">Property Search</p>
               <h1 className="mt-2 font-serif text-[2.15rem] font-black leading-none tracking-normal text-white">
                 Colorado Search
               </h1>
@@ -486,7 +486,7 @@ export default function MapSidebar(props: MapSidebarProps) {
                   Brief
                 </p>
                 <p className="mt-1 truncate text-[10px] font-black uppercase tracking-[0.08em] text-white/55 transition-colors group-hover:text-white">
-                  REIE Strategy
+                  Market Context
                 </p>
               </Link>
             ) : (

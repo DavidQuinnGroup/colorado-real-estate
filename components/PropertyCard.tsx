@@ -80,7 +80,7 @@ function getReviewSignal(property: MapSidebarListing) {
 }
 
 function getDecisionLabel(property: MapSidebarListing) {
-  if (property.hasPolybutyleneRisk) return 'GC review before offer';
+  if (property.hasPolybutyleneRisk) return 'Contractor review before offer';
   if (!isResidentialListing(property.propertyType)) return 'Special-use diligence';
   if (typeof property.resilienceScore === 'number' && property.resilienceScore >= 80) return 'Resilience screened';
 

@@ -199,7 +199,7 @@ export default function PropertyInquiryForm({ propertyId, address, city, state }
           <CheckCircle2 className="text-cyan-100" size={26} aria-hidden="true" />
           <h2 className="mt-3 text-[15px] font-black uppercase tracking-[0.08em] text-white">Inquiry Saved</h2>
           <p className="mt-2 text-sm leading-6 text-white/62">
-            This property inquiry is now routed into the REIE CRM queue for follow-up.
+            This property inquiry has been saved for David Quinn Group follow-up.
           </p>
         </div>
         <div
@@ -260,7 +260,7 @@ export default function PropertyInquiryForm({ propertyId, address, city, state }
             <h2 className="mt-3 text-[18px] font-black uppercase leading-tight tracking-[0.06em] text-white">Discuss This Asset</h2>
           </div>
           <span className="rounded-[5px] border border-cyan-100/24 bg-black/30 px-2.5 py-1.5 text-[9px] font-black uppercase tracking-[0.14em] text-cyan-100/78">
-            REIE CRM
+            Follow-up
           </span>
         </div>
         <p className="mt-3 text-sm leading-6 text-white/62">
@@ -274,7 +274,7 @@ export default function PropertyInquiryForm({ propertyId, address, city, state }
         data-property-inquiry-timeline={timeline}
         data-property-inquiry-timeline-detail={getTimelineDetail(timeline)}
       >
-        <StatusTile icon={<ShieldCheck size={13} />} label="Routed To REIE CRM" value="High-intent property follow-up" />
+        <StatusTile icon={<ShieldCheck size={13} />} label="Follow-up routing" value="Property-specific inquiry saved" />
         <StatusTile icon={<Clock3 size={13} />} label="Current Request" value={getTimelineDetail(timeline)} />
       </div>
 

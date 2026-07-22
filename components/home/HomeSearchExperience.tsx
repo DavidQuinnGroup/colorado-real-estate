@@ -431,7 +431,7 @@ export default function HomeSearchExperience({ authorityLinks = [], faqItems = [
 
         <div className="pointer-events-none absolute left-6 top-6 z-[700] hidden rounded-[10px] bg-[#071017]/84 px-4 py-3 shadow-2xl ring-1 ring-white/10 backdrop-blur-md md:block">
           <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">
-            {isEmbedded ? 'Colorado Map' : 'Live REIE Map'}
+            Colorado Map
           </p>
           <p className="mt-1 text-sm font-black uppercase tracking-[0.08em] text-white">
             {listings.length} visible listings

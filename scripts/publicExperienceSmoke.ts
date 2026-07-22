@@ -51,9 +51,9 @@ async function getSmokeProperty() {
 async function assertPropertyPage(path: string) {
   const html = await fetchHtml(path);
 
-  assert.ok(includesFoldedText(html, 'REIE Decision Snapshot'), 'Expected property page decision snapshot.');
+  assert.ok(includesFoldedText(html, 'Buyer Decision Snapshot'), 'Expected property page decision snapshot.');
   assert.ok(includesFoldedText(html, 'Property Inquiry'), 'Expected property inquiry form.');
-  assert.ok(includesFoldedText(html, 'Routed To REIE CRM'), 'Expected inquiry CRM routing guidance.');
+  assert.ok(includesFoldedText(html, 'Follow-up routing'), 'Expected inquiry follow-up routing guidance.');
   assert.ok(includesFoldedText(html, 'Current Request'), 'Expected inquiry request guidance.');
   assert.ok(includesFoldedText(html, 'Timing / Intent'), 'Expected inquiry timing controls.');
   assert.ok(includesFoldedText(html, 'Notes optional but helpful'), 'Expected inquiry notes guidance.');
@@ -62,8 +62,8 @@ async function assertPropertyPage(path: string) {
 async function assertSearchPage() {
   const html = await fetchHtml('/search');
 
-  assert.ok(includesFoldedText(html, 'Search Intelligence'), 'Expected search intelligence strip.');
-  assert.ok(includesFoldedText(html, 'REIE Inventory'), 'Expected search sidebar inventory shell.');
+  assert.ok(includesFoldedText(html, 'Search Snapshot'), 'Expected search snapshot strip.');
+  assert.ok(includesFoldedText(html, 'Property Search'), 'Expected search sidebar inventory shell.');
   assert.ok(includesFoldedText(html, 'Filters'), 'Expected search filters shell.');
 }
 

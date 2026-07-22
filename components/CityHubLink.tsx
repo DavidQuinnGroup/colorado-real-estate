@@ -84,7 +84,7 @@ export default function CityHubLink({ city, label }: CityHubLinkProps) {
           data-city-hub-brief-href={brief.href}
         >
           <p className="text-[10px] font-black uppercase tracking-[0.35em] text-[#00ff80]">
-            REIE Strategy Brief
+            Market Strategy Brief
           </p>
           <p className="mt-3 text-sm font-black uppercase italic leading-6 tracking-tight text-white/75 transition-colors group-hover:text-white">
             {brief.title}

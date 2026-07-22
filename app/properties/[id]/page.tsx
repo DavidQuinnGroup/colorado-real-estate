@@ -507,7 +507,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                 Search
               </Link>
               <span className="max-w-[calc(100vw-2rem)] rounded-[6px] border border-white/14 bg-[#071017]/76 px-3 py-2 text-[10px] font-black uppercase tracking-[0.12em] text-cyan-100 backdrop-blur md:tracking-[0.16em]">
-                DQG Intelligence
+                Property Preview
               </span>
             </div>
 
@@ -547,7 +547,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
               <div className="border-b border-cyan-100/14 bg-cyan-100/[0.07] p-4">
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <p className="text-[10px] font-black uppercase tracking-[0.22em] text-cyan-100/76">REIE Decision Snapshot</p>
+                    <p className="text-[10px] font-black uppercase tracking-[0.22em] text-cyan-100/76">Buyer Decision Snapshot</p>
                     <p className="mt-2 text-sm font-black uppercase tracking-[0.08em] text-white">{decisionTone}</p>
                   </div>
                   <span className="shrink-0 rounded-[5px] border border-cyan-100/24 bg-black/24 px-2 py-1 text-[9px] font-black uppercase tracking-[0.14em] text-cyan-100/76">
@@ -582,7 +582,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
             </section>
 
             <div className="mt-4 rounded-[8px] border border-white/10 bg-[#0d141c] p-4">
-              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-white/44">REIE Scorecard</p>
+              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-white/44">Property Scorecard</p>
               <div className="mt-4 grid grid-cols-2 gap-3">
                 <SignalTile icon={<TrendingUp size={16} />} label="Efficiency" value={formatNumber(efficiencyScore)} tone="cyan" />
                 <SignalTile icon={<ShieldCheck size={16} />} label="Resilience" value={formatNumber(resilienceScore)} tone="white" />
@@ -629,7 +629,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
 
             <section className="mt-4 rounded-[8px] border border-amber-200/24 bg-amber-200/8 p-4">
               <h2 className="flex items-center gap-2 text-[12px] font-black uppercase tracking-[0.12em] text-amber-100">
-                <ShieldAlert size={17} /> GC Review
+                <ShieldAlert size={17} /> Condition Review
               </h2>
               <ul className="mt-4 space-y-2 text-xs font-bold uppercase tracking-[0.12em] text-white/62">
                 {property.hasPolybutyleneRisk ? <li>Polybutylene piping risk detected</li> : null}
@@ -641,9 +641,9 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
             {!isContracted ? (
               <div className="mt-4 rounded-[8px] border border-cyan-100/26 bg-cyan-100/10 p-4">
                 <HardHat className="text-cyan-100" size={24} />
-                <h2 className="mt-3 text-[15px] font-black uppercase tracking-[0.08em] text-white">Strategy Layer Locked</h2>
+                <h2 className="mt-3 text-[15px] font-black uppercase tracking-[0.08em] text-white">Advisor Review Available</h2>
                 <p className="mt-2 text-sm leading-6 text-white/62">
-                  Contracted David Quinn Group clients unlock the full GC-forensics and negotiation layer.
+                  Detailed contractor review and negotiation planning are discussed directly with David Quinn Group clients.
                 </p>
               </div>
             ) : null}
@@ -656,7 +656,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
           <div className="max-w-3xl">
             <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.24em] text-cyan-100/76">
               <ShieldCheck size={14} aria-hidden="true" />
-              Property Intelligence Workspace
+              Property Decision Workspace
             </p>
             <h2 className="mt-3 text-2xl font-black uppercase tracking-tight text-white md:text-4xl">
               Decision context after the hero view
@@ -737,7 +737,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
           <section className="rounded-[8px] border border-cyan-100/20 bg-cyan-100/[0.06] p-4">
             <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100/76">
               <ShieldCheck size={14} aria-hidden="true" />
-              REIE Action Context
+              Buyer Action Context
             </p>
             <div className="mt-4 grid grid-cols-2 gap-2">
               <ActionMetric label="Decision" value={decisionTone} />
@@ -761,7 +761,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                 <Home size={14} aria-hidden="true" />
                 Asset Snapshot
               </p>
-              <p className="mt-2 text-sm leading-6 text-white/50">Core listing facts used by the inquiry and decision layers.</p>
+              <p className="mt-2 text-sm leading-6 text-white/50">Core listing facts used for inquiry and buyer review.</p>
             </div>
             <div className="grid grid-cols-2 gap-2 p-4">
               <SnapshotTile label="Price" value={formatCompactCurrency(property.price)} />
@@ -815,7 +815,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
         />
         <section className="my-14 rounded-[8px] border border-white/10 bg-[#0d141c] p-6 md:p-8">
           <div className="mb-8 max-w-3xl">
-            <p className="mb-3 text-[10px] font-black uppercase tracking-[0.22em] text-cyan-100/76">REIE FAQ Layer</p>
+            <p className="mb-3 text-[10px] font-black uppercase tracking-[0.22em] text-cyan-100/76">Property FAQ</p>
             <h2 className="text-2xl font-black uppercase tracking-tight text-white">
               Property Intelligence Questions
             </h2>

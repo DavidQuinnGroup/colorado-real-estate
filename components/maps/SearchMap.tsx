@@ -174,7 +174,7 @@ function getReviewSignal(property: MapSidebarListing) {
 }
 
 function getDecisionSignal(property: MapSidebarListing) {
-  if (property.hasPolybutyleneRisk) return 'GC Review';
+  if (property.hasPolybutyleneRisk) return 'Contractor Review';
   if (typeof property.resilienceScore === 'number' && property.resilienceScore >= 80) return 'Resilience Screened';
   if (typeof property.efficiencyScore === 'number' && property.efficiencyScore >= 80) return 'Efficiency Screened';
   if (property.isPrivateExclusive) return 'Private Candidate';

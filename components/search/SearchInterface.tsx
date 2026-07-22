@@ -433,7 +433,7 @@ export default function SearchInterface({
         />
 
         <div className="pointer-events-none absolute left-6 top-6 z-[700] hidden rounded-[8px] border border-white/12 bg-[#071017]/88 px-4 py-3 shadow-2xl backdrop-blur-md md:block">
-          <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">Live REIE Map</p>
+          <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">Colorado Map</p>
           <p className="mt-1 text-sm font-black uppercase tracking-[0.08em] text-white">
             {visibleListings.length} visible listings
           </p>
@@ -471,7 +471,7 @@ export default function SearchInterface({
         {faqItems.length ? (
           <details className="absolute right-6 top-6 z-[700] hidden w-[min(420px,calc(100%-3rem))] rounded-[8px] border border-white/12 bg-[#071017]/88 p-4 shadow-2xl backdrop-blur-md md:block">
             <summary className="cursor-pointer list-none text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100">
-              REIE Search FAQ
+              Search FAQ
             </summary>
             <div className="mt-4 max-h-[52vh] space-y-4 overflow-auto pr-2">
               {faqItems.slice(0, 4).map((faq) => (

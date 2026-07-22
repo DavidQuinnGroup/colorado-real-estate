@@ -64,9 +64,9 @@ const TABS: Array<{
   label: string;
   icon: ReactNode;
 }> = [
-  { id: 'intel', label: 'Estate Intel', icon: <BarChart3 size={14} /> },
+  { id: 'intel', label: 'Property Brief', icon: <BarChart3 size={14} /> },
   { id: 'efficiency', label: 'Life ROI', icon: <Clock size={14} /> },
-  { id: 'strategy', label: 'GC Strategy', icon: <Hammer size={14} /> },
+  { id: 'strategy', label: 'Advisor Review', icon: <Hammer size={14} /> },
 ];
 
 function getNumber(value: number | null | undefined, fallback = 0) {
@@ -272,7 +272,7 @@ export default function PropertyDetail({ property, onClose, userTier = 'Public' 
           <div className="flex items-center gap-3 border border-white/10 bg-white/5 px-4 py-2">
             <div className={`h-1.5 w-1.5 rounded-full ${userTier === 'Contracted' ? 'bg-[#00ff80] shadow-[0_0_10px_#00ff80]' : 'bg-white/20'}`} />
             <span className="text-[9px] font-black uppercase tracking-widest text-white/60">
-              {userTier === 'Contracted' ? 'Full Strategy Unlocked' : 'Baseline Intel Mode (40%)'}
+              {userTier === 'Contracted' ? 'Advisor Review Available' : 'Public Property Preview'}
             </span>
           </div>
           <button
@@ -362,21 +362,20 @@ export default function PropertyDetail({ property, onClose, userTier = 'Public' 
                   <IntelTile label="Review" value={reviewSignal} />
                 </div>
                 <div className="space-y-6">
-                  <h4 className="text-[11px] font-black uppercase tracking-[0.6em] text-[#00ff80]">Pedigree & Architecture</h4>
+                  <h4 className="text-[11px] font-black uppercase tracking-[0.6em] text-[#00ff80]">Property Context</h4>
                   <p className="text-xl font-medium italic leading-[1.8] text-white/60">
                     {property.description ||
-                      'A masterclass in Front Range integration. This estate leverages high-fidelity structural envelopes and modern finish logic.'}
+                      'A Colorado property preview with public listing facts, location context, and visible condition signals for initial buyer review.'}
                   </p>
                 </div>
               </div>
               <div className="space-y-8 border border-white/5 bg-white/[0.02] p-12">
-                <h4 className="text-[11px] font-black uppercase tracking-[0.4em] text-white/40">Market Velocity</h4>
+                <h4 className="text-[11px] font-black uppercase tracking-[0.4em] text-white/40">Market Context</h4>
                 <div className="relative h-1 w-full bg-white/5">
                   <div className="glow-green absolute left-0 top-0 h-full w-[75%] bg-[#00ff80]" />
                 </div>
                 <p className="text-[10px] font-bold uppercase leading-relaxed tracking-widest text-white/40">
-                  This asset is moving <span className="text-[#00ff80]">12% faster</span> than the 5-year Boulder average. High liquidity
-                  profile.
+                  Compare this listing against active alternatives, condition diligence, and timing before deciding whether to tour or inquire.
                 </p>
               </div>
             </div>
@@ -392,7 +391,7 @@ export default function PropertyDetail({ property, onClose, userTier = 'Public' 
               data-property-detail-logistics-count={logistics.times.length}
             >
               <div className="space-y-4">
-                <div className="text-[11px] font-black uppercase tracking-[0.6em] text-[#00ff80]">North Star Alignment</div>
+                <div className="text-[11px] font-black uppercase tracking-[0.6em] text-[#00ff80]">Location Fit</div>
                 <div className="text-9xl font-black italic leading-none tracking-tight text-white">{efficiencyScore}</div>
               </div>
               <p className="px-12 text-2xl font-light italic leading-relaxed text-white/70">{narrative}</p>
@@ -406,18 +405,18 @@ export default function PropertyDetail({ property, onClose, userTier = 'Public' 
               >
                 <div className="mb-8 flex flex-col gap-3 border-b border-white/10 pb-6 sm:flex-row sm:items-center sm:justify-between">
                   <div>
-                    <p className="text-[10px] font-black uppercase tracking-[0.36em] text-white/35">Pulse Preview</p>
+                    <p className="text-[10px] font-black uppercase tracking-[0.36em] text-white/35">Travel Preview</p>
                     <h4 className="mt-2 text-2xl font-black uppercase italic tracking-tight text-white">
                       {logisticsAnchors.length > 0 ? 'Saved North Stars' : 'Default North Stars'}
                     </h4>
                   </div>
                   <span className="w-fit border border-[#00ff80]/30 px-3 py-2 text-[9px] font-black uppercase tracking-[0.24em] text-[#00ff80]">
-                    {logistics.source === 'mapbox' ? 'Live Matrix' : 'REIE Estimate'}
+                    {logistics.source === 'mapbox' ? 'Travel Times' : 'Estimate'}
                   </span>
                 </div>
 
                 {logistics.status === 'loading' ? (
-                  <p className="text-center text-[10px] font-black uppercase tracking-[0.3em] text-white/35">Calculating Pulse...</p>
+                  <p className="text-center text-[10px] font-black uppercase tracking-[0.3em] text-white/35">Calculating travel times...</p>
                 ) : null}
 
                 {logistics.status === 'error' ? (
@@ -450,7 +449,7 @@ export default function PropertyDetail({ property, onClose, userTier = 'Public' 
                 onClick={() => setShowManager(true)}
                 className="inline-flex items-center gap-4 bg-white px-12 py-6 text-[11px] font-black uppercase tracking-[0.4em] text-black transition-all hover:bg-[#00ff80]"
               >
-                Re-Initialize Rituals <ArrowRight size={16} />
+                Update Key Places <ArrowRight size={16} />
               </button>
             </div>
           ) : null}
@@ -471,32 +470,32 @@ export default function PropertyDetail({ property, onClose, userTier = 'Public' 
                   <div className="mb-8 flex h-20 w-20 items-center justify-center rounded-full border border-[#00ff80]/20 bg-[#00ff80]/10">
                     <Lock className="text-[#00ff80]" size={32} />
                   </div>
-                  <h3 className="mb-6 text-3xl font-black italic uppercase tracking-tight text-white">Expert 60% Data Locked</h3>
+                  <h3 className="mb-6 text-3xl font-black italic uppercase tracking-tight text-white">Advisor Review Available</h3>
                   <p className="mb-10 max-w-md text-[12px] font-bold uppercase leading-loose tracking-[0.3em] text-white/40">
-                    GC-grade forensics, tactical negotiation levers, and shadow inventory analysis are reserved for DQG contracted clients.
+                    Detailed contractor review, negotiation planning, and private advisory context are discussed directly with David Quinn Group clients.
                   </p>
                   <button
                     type="button"
                     className="bg-[#00ff80] px-14 py-6 text-[11px] font-black uppercase tracking-[0.5em] text-black shadow-[0_0_50px_rgba(0,255,128,0.2)] transition-all hover:bg-white"
                   >
-                    Apply for Vault Access
+                    Request Advisor Review
                   </button>
                 </div>
               ) : null}
 
               <div className={`grid grid-cols-1 gap-12 md:grid-cols-2 ${userTier === 'Public' ? 'pointer-events-none select-none blur-xl grayscale' : ''}`}>
                 <StrategyCard
-                  title="Structural Forensics"
+                  title="Condition Review"
                   icon={<Zap size={18} />}
                   list={['Electrical: 200A Service', 'Plumbing: PEX Verified', 'Envelope: R-49 Insulation']}
                 />
                 <StrategyCard
-                  title="Equity Vision 2.0"
+                  title="Improvement Potential"
                   icon={<BarChart3 size={18} />}
                   list={['Unfinished Potential: $140k', 'Deferred Maint: -$12.5k', 'Finish Grade: Designer']}
                 />
                 <StrategyCard
-                  title="Tactical Levers"
+                  title="Offer Planning"
                   icon={<ShieldCheck size={18} />}
                   list={['Market Velocity: High', 'Concession Play: 2/1 Buydown', 'Risk: High Fire-Risk Zone']}
                 />
@@ -511,7 +510,7 @@ export default function PropertyDetail({ property, onClose, userTier = 'Public' 
                 <div className="mt-16 flex items-start gap-6 border border-[#00ff80]/30 bg-white/[0.02] p-10">
                   <Construction className="shrink-0 text-[#00ff80]" size={24} />
                   <div>
-                    <h4 className="mb-4 text-[11px] font-black uppercase tracking-[0.4em] text-[#00ff80]">David Quinn Strategy Summary</h4>
+                    <h4 className="mb-4 text-[11px] font-black uppercase tracking-[0.4em] text-[#00ff80]">David Quinn Review Summary</h4>
                     <p className="text-lg italic leading-relaxed text-white/60">
                       The renovation gap analysis identifies a $50k path to move this home from public baseline to optimized value.
                       Negotiation priority: focus on the roofing reserve due to aging mechanicals.
