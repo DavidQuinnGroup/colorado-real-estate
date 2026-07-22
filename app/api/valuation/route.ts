@@ -222,15 +222,21 @@ export async function POST(request: Request) {
 
       const sellerLead =
         existingSellerLead ??
-        (await tx.sellerLead.create({
-          data: {
-            propertyId: propertyKey,
-            city: input.city,
-            beds: null,
-            price: null,
-            reason: `${getObjectiveLabel(input.objective)} | ${getTimelineLabel(input.timeline)}`,
-          },
-        }));
+        (
+          await tx.$queryRaw<{ id: string }[]>`
+            INSERT INTO "SellerLead" ("propertyId", "city", "beds", "price", "reason")
+            VALUES (
+              ${propertyKey},
+              ${input.city},
+              NULL,
+              NULL,
+              ${`${getObjectiveLabel(input.objective)} | ${getTimelineLabel(input.timeline)}`}
+            )
+            RETURNING "id"::text AS "id"
+          `
+        )[0];
+
+      if (!sellerLead) throw new Error('SellerLead could not be created.');
 
       const sellerMetadata = {
         ...metadata,
