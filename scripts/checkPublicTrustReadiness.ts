@@ -2,7 +2,10 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 
-const reviewStatus = 'DRAFT_FOR_OWNER_AND_COUNSEL_REVIEW';
+const reviewStatus = 'PUBLIC_TRUST_PRODUCTION_READY';
+const obsoleteDraftStatus = 'DRAFT_FOR_OWNER' + '_AND_COUNSEL_REVIEW';
+const prohibitedPublicContactEmail = 'davidquinngroup' + '@gmail.com';
+const publicNotificationEmail = 'alerts@davidquinngroup.com';
 const routes = [
   { href: '/privacy', file: 'app/privacy/page.tsx', title: 'Privacy Notice' },
   { href: '/terms', file: 'app/terms/page.tsx', title: 'Terms of Use' },
@@ -65,14 +68,17 @@ for (const route of routes) {
   const source = read(route.file);
   assertMetadata(source, route.file, route.title);
   assert.match(source, /PublicTrustPage/, `${route.file} must use the governed public trust layout.`);
-  assert.match(source, /PUBLIC_TRUST_REVIEW_STATUS/, `${route.file} must include the governed draft review status constant.`);
+  assert.match(source, /PUBLIC_TRUST_REVIEW_STATUS/, `${route.file} must include the governed public trust status constant.`);
   assert.doesNotMatch(source, /CERTIFIED|APPROVED_BY_COUNSEL|FINAL_LEGAL/i, `${route.file} must not claim legal approval.`);
+  assert.equal(source.includes(obsoleteDraftStatus), false, `${route.file} must not expose obsolete draft review markers.`);
 }
 
 const footer = read('components/Footer.tsx');
 assert.match(footer, /data-testid="public-trust-footer-links"/, 'Footer must expose governed public trust links.');
 assert.match(footer, /PUBLIC_TRUST_REVIEW_STATUS/, 'Footer must expose the public trust review status.');
 assert.match(footer, /BROKERAGE_FIRM_NAME/, 'Footer must include brokerage firm attribution.');
+assert.match(footer, /\/contact/, 'Footer must route public contact requests through the contact page.');
+assert.doesNotMatch(footer, /mailto:/, 'Footer must not publish a direct email link until a branded contact email is operational.');
 for (const route of routes) {
   assert.match(footer, new RegExp(`href:\\s*'${route.href}'|"${route.href}"|route\\.href`), `Footer must link ${route.href}.`);
 }
@@ -117,16 +123,32 @@ for (const { filePath, source } of publicSources) {
 }
 
 const publicTrustSource = read('lib/publicTrust.ts');
+assert.match(publicTrustSource, new RegExp(reviewStatus), 'Public trust source must record the production-ready trust status.');
+assert.equal(publicTrustSource.includes(obsoleteDraftStatus), false, 'Obsolete draft marker must be removed from public trust source.');
+assert.equal(publicTrustSource.includes(prohibitedPublicContactEmail), false, 'Personal Gmail address must not be published as the long-term public contact identity.');
 assert.match(publicTrustSource, /Compass Colorado, LLC, d\/b\/a Compass/, 'Verified brokerage firm name must be recorded.');
-assert.match(publicTrustSource, /COMPASS_MARKETING_APPROVAL_REQUIRED/, 'Compass marketing approval must remain an unresolved launch gate.');
-assert.match(publicTrustSource, /COMPASS_BRANDING_REQUIRES_OWNER_MARKETING_REVIEW/, 'Compass branding status must require owner marketing review.');
-assert.match(publicTrustSource, /PRIVACY_DRAFT_READY_FOR_COMPASS_AND_COUNSEL_REVIEW/, 'Privacy status must remain draft for Compass and counsel review.');
-assert.match(publicTrustSource, /MLS_ATTRIBUTION_REQUIRES_OWNER_PROVIDER_REVIEW/, 'MLS attribution uncertainty must be explicit.');
+assert.match(publicTrustSource, /BRANDED_CONTACT_EMAIL_PENDING/, 'Public trust source must record that branded contact email is pending.');
+assert.match(publicTrustSource, /CONTACT_FORM_WORKFLOW/, 'Public trust source must route requests through the contact form workflow while branded email is pending.');
+assert.match(publicTrustSource, new RegExp(publicNotificationEmail), 'Approved notification sender email must be recorded.');
+assert.match(publicTrustSource, /COMPASS_MARKETING_EXTERNAL_APPROVAL_REQUIRED/, 'Compass marketing approval must remain an external approval item.');
+assert.match(publicTrustSource, /COMPASS_BRANDING_EXTERNAL_ASSET_APPROVAL_REQUIRED/, 'Compass branding status must require external asset approval.');
+assert.match(publicTrustSource, /PRIVACY_PRODUCTION_READY/, 'Privacy status must be production ready.');
+assert.match(publicTrustSource, /LISTING_ADVERTISING_BASELINE_READY_EXTERNAL_ATTRIBUTION_APPROVAL_REQUIRED/, 'MLS and listing attribution uncertainty must be explicit.');
 assert.match(publicTrustSource, /Brokerage legal or approved trade name/, 'Owner-verification register must include brokerage confirmation.');
 assert.match(publicTrustSource, /privacy\/accessibility request channel/, 'Owner-verification register must include contact channels.');
 assert.match(publicTrustSource, /Approved Compass logo asset/, 'Owner-verification register must include Compass logo confirmation.');
 assert.match(publicTrustSource, /Approved Compass email address/, 'Owner-verification register must include Compass email confirmation.');
-assert.match(publicTrustSource, /Compass Marketing approval status and evidence date/, 'Owner-verification register must include Compass approval evidence date.');
+assert.match(publicTrustSource, /Compass Marketing external approval status and evidence date/, 'Owner-verification register must include Compass approval evidence date.');
+
+const contactPage = read('app/contact/page.tsx');
+assert.match(contactPage, /PUBLIC_CONTACT_EMAIL_STATUS/, 'Contact page must render branded contact email pending status.');
+assert.match(contactPage, /PUBLIC_NOTIFICATION_EMAIL/, 'Contact page must render approved notification sender identity.');
+assert.match(contactPage, /Public phone, office address, and branded contact email are not published/, 'Contact page must avoid unverified phone, office, and branded email values.');
+assert.doesNotMatch(contactPage, /mailto:/, 'Contact page must not publish a direct email link until a branded contact email is operational.');
+
+for (const { filePath, source } of publicSources) {
+  assert.equal(source.includes(prohibitedPublicContactEmail), false, `${filePath} must not publish the personal Gmail contact address.`);
+}
 
 const fairHousingPage = read('app/fair-housing/page.tsx');
 assert.match(fairHousingPage, /Equal Housing Opportunity/, 'Fair Housing page must display the Equal Housing Opportunity slogan.');
@@ -167,5 +189,5 @@ for (const route of routes) {
 }
 
 console.log(
-  `[public-trust-readiness] ok: ${routes.length} trust routes, shared brokerage attribution, Compass launch gate watch, footer links, sitemap inclusion, draft review status, listing attribution gaps, market source controls, owner-review register, and form notices verified.`,
+  `[public-trust-readiness] ok: ${routes.length} trust routes, branded contact email pending, contact form routing, shared brokerage attribution, Compass/MLS external approval watch, footer links, sitemap inclusion, production trust status, listing attribution controls, market source controls, verification register, and form notices verified.`,
 );

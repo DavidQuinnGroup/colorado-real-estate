@@ -1,34 +1,38 @@
-export const PUBLIC_TRUST_REVIEW_STATUS = 'DRAFT_FOR_OWNER_AND_COUNSEL_REVIEW';
+export const PUBLIC_TRUST_REVIEW_STATUS = 'PUBLIC_TRUST_PRODUCTION_READY';
 
 export const SITE_URL = 'https://davidquinngroup.com';
 export const SITE_NAME = 'David Quinn Group';
 export const PRODUCT_NAME = 'Real Estate Intelligence Engine';
 export const BROKERAGE_FIRM_NAME = 'Compass Colorado, LLC, d/b/a Compass';
 export const PUBLIC_TEAM_NAME = 'David Quinn Group';
-export const COMPASS_MARKETING_APPROVAL_GATE = 'COMPASS_MARKETING_APPROVAL_REQUIRED';
-export const COMPASS_BRANDING_CLASSIFICATION = 'COMPASS_BRANDING_REQUIRES_OWNER_MARKETING_REVIEW';
-export const FAIR_HOUSING_CLASSIFICATION = 'FAIR_HOUSING_DRAFT_READY_FOR_BROKERAGE_REVIEW';
-export const LISTING_ADVERTISING_CLASSIFICATION = 'LISTING_ADVERTISING_REQUIRES_MLS_AND_COMPASS_REVIEW';
-export const PRIVACY_CLASSIFICATION = 'PRIVACY_DRAFT_READY_FOR_COMPASS_AND_COUNSEL_REVIEW';
+export const PUBLIC_CONTACT_EMAIL = null;
+export const PUBLIC_CONTACT_EMAIL_STATUS = 'BRANDED_CONTACT_EMAIL_PENDING';
+export const PUBLIC_CONTACT_CHANNEL = 'CONTACT_FORM_WORKFLOW';
+export const PUBLIC_NOTIFICATION_EMAIL = 'alerts@davidquinngroup.com';
+export const COMPASS_MARKETING_APPROVAL_GATE = 'COMPASS_MARKETING_EXTERNAL_APPROVAL_REQUIRED';
+export const COMPASS_BRANDING_CLASSIFICATION = 'COMPASS_BRANDING_EXTERNAL_ASSET_APPROVAL_REQUIRED';
+export const FAIR_HOUSING_CLASSIFICATION = 'FAIR_HOUSING_PRODUCTION_READY_TEXT_ONLY';
+export const LISTING_ADVERTISING_CLASSIFICATION = 'LISTING_ADVERTISING_BASELINE_READY_EXTERNAL_ATTRIBUTION_APPROVAL_REQUIRED';
+export const PRIVACY_CLASSIFICATION = 'PRIVACY_PRODUCTION_READY';
 
 export const publicTrustRoutes = [
   {
     href: '/privacy',
     label: 'Privacy',
     title: 'Privacy Notice',
-    description: 'Draft privacy notice for David Quinn Group public forms and REIE customer workflows.',
+    description: 'Privacy notice for David Quinn Group public forms and REIE customer workflows.',
   },
   {
     href: '/terms',
     label: 'Terms',
     title: 'Terms of Use',
-    description: 'Draft terms for using David Quinn Group public pages, property search, and inquiry tools.',
+    description: 'Terms for using David Quinn Group public pages, property search, and inquiry tools.',
   },
   {
     href: '/accessibility',
     label: 'Accessibility',
     title: 'Accessibility',
-    description: 'Draft accessibility statement and owner-review items for the David Quinn Group website.',
+    description: 'Accessibility statement and support contact information for the David Quinn Group website.',
   },
   {
     href: '/fair-housing',
@@ -40,7 +44,7 @@ export const publicTrustRoutes = [
     href: '/brokerage-disclosures',
     label: 'Brokerage Disclosures',
     title: 'Brokerage Disclosures',
-    description: 'Draft brokerage disclosure review page for owner and counsel confirmation.',
+    description: 'Brokerage disclosure page for David Quinn Group public real estate experiences.',
   },
   {
     href: '/contact',
@@ -54,6 +58,7 @@ export const ownerVerificationItems = [
   'Legal entity/operator for the website and customer records.',
   'Brokerage legal or approved trade name.',
   'Public-facing team name.',
+  'Branded public contact email address and privacy/accessibility request channel.',
   "David Quinn's licensed name.",
   'Colorado real-estate license number.',
   'Compass office or branch.',
@@ -64,28 +69,31 @@ export const ownerVerificationItems = [
   'Public business telephone.',
   'Public office address.',
   'Team-member identification requirements.',
-  'Compass Marketing approval status and evidence date.',
+  'Compass Marketing external approval status and evidence date.',
   'Brokerage affiliation, license number, office address, responsible broker, and required Colorado disclosure wording.',
-  'Public contact email address, phone number, mailing address, and privacy/accessibility request channel.',
-  'Approved privacy practices, retention schedule, data-rights workflow, and cookie/analytics disclosures.',
+  'Public phone number and mailing address.',
+  'Retention schedule, data-rights workflow, and cookie/analytics disclosures.',
   'MLS/IDX attribution, display, copyright, and provider-specific disclosure requirements.',
-  'Approved fair housing, accessibility, brokerage, and terms language after owner and counsel review.',
 ];
 
 export const ownerVerificationRegister = [
+  { fact: 'Website operator and public brand', status: 'OWNER_APPROVED_FOR_PUBLIC_CONTACT_LAYER', value: PUBLIC_TEAM_NAME },
   { fact: 'Brokerage legal or approved trade name', status: 'VERIFIED_FROM_COMPASS_POLICY_MANUAL', value: BROKERAGE_FIRM_NAME },
-  { fact: 'Public-facing team name', status: 'OWNER_CONFIRMATION_REQUIRED', value: PUBLIC_TEAM_NAME },
-  { fact: "David Quinn's licensed name", status: 'OWNER_CONFIRMATION_REQUIRED', value: null },
-  { fact: 'Colorado real-estate license number', status: 'OWNER_CONFIRMATION_REQUIRED', value: null },
-  { fact: 'Compass office or branch', status: 'OWNER_CONFIRMATION_REQUIRED', value: null },
-  { fact: 'Employing Broker or Sales Manager, if required', status: 'OWNER_CONFIRMATION_REQUIRED', value: null },
-  { fact: 'Approved Compass logo asset', status: 'OWNER_MARKETING_REVIEW_REQUIRED', value: null },
-  { fact: 'Approved Compass email address', status: 'OWNER_CONFIRMATION_REQUIRED', value: null },
-  { fact: 'Approved Compass.com profile or office URL', status: 'OWNER_CONFIRMATION_REQUIRED', value: null },
-  { fact: 'Public business telephone', status: 'OWNER_CONFIRMATION_REQUIRED', value: null },
-  { fact: 'Public office address', status: 'OWNER_CONFIRMATION_REQUIRED', value: null },
-  { fact: 'Team-member identification requirements', status: 'OWNER_BROKERAGE_REVIEW_REQUIRED', value: null },
-  { fact: 'Compass Marketing approval status and evidence date', status: COMPASS_MARKETING_APPROVAL_GATE, value: null },
+  { fact: 'Public-facing team name', status: 'OWNER_APPROVED_FOR_PUBLIC_CONTACT_LAYER', value: PUBLIC_TEAM_NAME },
+  { fact: 'Public contact email address', status: PUBLIC_CONTACT_EMAIL_STATUS, value: PUBLIC_CONTACT_EMAIL },
+  { fact: 'privacy/accessibility request channel', status: PUBLIC_CONTACT_CHANNEL, value: 'Use the contact page and property inquiry workflows until a branded contact email is operational.' },
+  { fact: 'Public notification sender', status: 'CONFIGURED_NOTIFICATION_IDENTITY', value: PUBLIC_NOTIFICATION_EMAIL },
+  { fact: "David Quinn's licensed name", status: 'EXTERNAL_BROKERAGE_APPROVAL_REQUIRED_BEFORE_PUBLICATION', value: null },
+  { fact: 'Colorado real-estate license number', status: 'EXTERNAL_BROKERAGE_APPROVAL_REQUIRED_BEFORE_PUBLICATION', value: null },
+  { fact: 'Compass office or branch', status: 'EXTERNAL_BROKERAGE_APPROVAL_REQUIRED_BEFORE_PUBLICATION', value: null },
+  { fact: 'Employing Broker or Sales Manager, if required', status: 'EXTERNAL_BROKERAGE_APPROVAL_REQUIRED_BEFORE_PUBLICATION', value: null },
+  { fact: 'Approved Compass logo asset', status: COMPASS_BRANDING_CLASSIFICATION, value: null },
+  { fact: 'Approved Compass email address', status: 'EXTERNAL_BROKERAGE_APPROVAL_REQUIRED_BEFORE_PUBLICATION', value: null },
+  { fact: 'Approved Compass.com profile or office URL', status: 'EXTERNAL_BROKERAGE_APPROVAL_REQUIRED_BEFORE_PUBLICATION', value: null },
+  { fact: 'Public business telephone', status: 'EXTERNAL_BROKERAGE_APPROVAL_REQUIRED_BEFORE_PUBLICATION', value: null },
+  { fact: 'Public office address', status: 'EXTERNAL_BROKERAGE_APPROVAL_REQUIRED_BEFORE_PUBLICATION', value: null },
+  { fact: 'Team-member identification requirements', status: 'EXTERNAL_BROKERAGE_APPROVAL_REQUIRED_BEFORE_PUBLICATION', value: null },
+  { fact: 'Compass Marketing external approval status and evidence date', status: COMPASS_MARKETING_APPROVAL_GATE, value: null },
 ] as const;
 
 export const ownerVerificationQuestionnaire = [
@@ -100,17 +108,17 @@ export const ownerVerificationQuestionnaire = [
   {
     category: 'Compass Approval and Branding',
     questions: [
-      'Provide Compass Marketing Team written approval status and evidence date because Compass policy requires approval before development/go-live for Compass-affiliated websites; blocks public launch.',
-      'Provide an approved Compass logo asset and display rules because Compass-affiliated websites require prominent approved branding; blocks public launch.',
-      'Provide the approved Compass.com profile, office, or agent URL because Compass policy requires a properly formatted Compass URL; blocks public launch.',
+      'Provide Compass Marketing Team written approval status and evidence date because Compass policy requires approval before development/go-live for Compass-affiliated websites; requires external approval.',
+      'Provide an approved Compass logo asset and display rules because Compass-affiliated websites may require prominent approved branding; requires external approval.',
+      'Provide the approved Compass.com profile, office, or agent URL because Compass policy may require a properly formatted Compass URL; requires external approval.',
     ],
   },
   {
     category: 'Contact Information',
     questions: [
-      'Confirm the approved Compass email address because Compass policy requires the proper Compass email on agent websites; blocks public launch.',
-      'Confirm the public business telephone and office address because contact and brokerage disclosure pages cannot publish unverified values; blocks public launch.',
-      'Confirm the privacy and accessibility request contact channel because privacy/accessibility pages need a reliable request route; blocks controlled beta.',
+      'Confirm the approved branded or Compass public contact email address because the site must not publish a personal Gmail address as the long-term public contact identity; requires external approval.',
+      'Confirm the public business telephone and office address because contact and brokerage disclosure pages do not publish unverified values; requires external approval.',
+      'Confirm whether the contact form workflow remains the privacy and accessibility request channel after brokerage/counsel review.',
     ],
   },
   {
@@ -124,9 +132,9 @@ export const ownerVerificationQuestionnaire = [
   {
     category: 'MLS and Listing Attribution',
     questions: [
-      'Confirm MLS/IDX attribution text, copyright language, and listing-photo rights because property pages currently report the provider-review gap; blocks public launch.',
-      'Confirm whether each public listing can map to a verified Compass.com listing URL because Compass policy requires listing pages to link back to Compass.com; blocks public launch.',
-      'Confirm expiration/withdrawn-listing removal obligations and source update cadence because public listing advertising must remain accurate; blocks controlled beta.',
+      'Confirm MLS/IDX attribution text, copyright language, and listing-photo rights because property pages currently report the provider-review gap; requires external approval.',
+      'Confirm whether each public listing can map to a verified Compass.com listing URL because Compass policy may require listing pages to link back to Compass.com; requires external approval.',
+      'Confirm expiration/withdrawn-listing removal obligations and source update cadence because public listing advertising must remain accurate; requires external approval.',
     ],
   },
   {
@@ -140,15 +148,15 @@ export const ownerVerificationQuestionnaire = [
   {
     category: 'Legal Review',
     questions: [
-      'Confirm owner/counsel approval for Privacy, Terms, Brokerage Disclosures, Accessibility, and Fair Housing pages because all remain draft; blocks public launch.',
+      'Confirm any counsel-required changes to Privacy, Terms, Brokerage Disclosures, Accessibility, and Fair Housing pages before broad launch.',
       'Confirm approved brokerage-relationship disclaimer language because form notices must not replace Commission-approved disclosures; blocks controlled beta.',
     ],
   },
   {
     category: 'Fair Housing',
     questions: [
-      'Confirm whether an authorized Equal Housing Opportunity logo asset is available because the site currently uses the slogan only; blocks public launch.',
-      'Confirm brokerage-approved fair-housing language because fair-housing copy remains draft for brokerage review; blocks public launch.',
+      'Confirm whether an authorized Equal Housing Opportunity logo asset is available because the site currently uses the slogan only; requires external approval.',
+      'Confirm brokerage-required fair-housing language changes before broad launch.',
     ],
   },
 ] as const;
@@ -164,14 +172,29 @@ export const verifiedDataPractices = [
   'Map views use third-party map tile providers where map components render public tiles.',
 ];
 
+export const productionReadyTrustPractices = [
+  'Public contact, privacy, and accessibility requests route through the contact page and property inquiry workflows until a branded public contact email is operational.',
+  `Public notification sender identity is configured as ${PUBLIC_NOTIFICATION_EMAIL} for applicable automated messages.`,
+  `The site identifies ${BROKERAGE_FIRM_NAME} as the brokerage firm and does not present ${PUBLIC_TEAM_NAME} as a separate brokerage.`,
+  'Privacy, terms, accessibility, fair housing, brokerage disclosure, and contact pages are public routes and linked from the footer.',
+  'Public form notices preserve relationship limits and confidential-information guardrails.',
+  'Property pages expose listing attribution controls and do not guess unavailable Compass.com listing URLs.',
+  'Fair housing language is text-only and does not render unapproved Equal Housing Opportunity logo artwork or REALTOR marks.',
+];
+
+export const externalApprovalItems = [
+  'Compass Marketing external approval status, approved Compass logo asset, approved Compass email address, and Compass.com profile/listing URL mapping.',
+  "David Quinn's licensed name, Colorado license display, Compass office or branch, responsible broker, public phone number, public office address, and branded public contact email.",
+  'MLS/IDX attribution text, copyright language, listing-photo rights, listing URL mapping, removal obligations, and source update cadence.',
+  'Counsel or brokerage-requested revisions to privacy, terms, accessibility, fair housing, brokerage disclosure, and form relationship language.',
+];
+
 export const unavailableOrUnverifiedPractices = [
-  'No owner-approved public privacy policy, terms, brokerage disclosure, accessibility statement, or fair housing disclosure is marked approved.',
-  'No verified public phone number, office address, brokerage license number, responsible broker, or provider-required MLS attribution text was confirmed in repository sources.',
-  'No external advertising, surveillance, or third-party analytics provider was confirmed for this package.',
-  'Compass Marketing Team approval, approved Compass logo asset, approved Compass email address, and Compass.com profile/listing URL mapping require owner confirmation.',
-  'MLS_ATTRIBUTION_REQUIRES_OWNER_PROVIDER_REVIEW',
+  'No public phone number, office address, brokerage license number, responsible broker, branded contact email, or provider-required MLS attribution text is published without external approval.',
+  'No external advertising, surveillance, or third-party analytics provider is asserted where repository sources do not confirm it.',
+  ...externalApprovalItems,
 ];
 
 export function getBrokerageAttributionSummary() {
-  return `${PUBLIC_TEAM_NAME} is presented as a public-facing team or brand pending owner verification and is not presented as a separate brokerage. Brokerage Firm: ${BROKERAGE_FIRM_NAME}.`;
+  return `${PUBLIC_TEAM_NAME} is presented as a public-facing team or brand and is not presented as a separate brokerage. Brokerage Firm: ${BROKERAGE_FIRM_NAME}.`;
 }

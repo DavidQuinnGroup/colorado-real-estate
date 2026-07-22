@@ -1,18 +1,21 @@
+import Link from 'next/link';
 import type { Metadata } from 'next';
 
 import { PublicTrustPage, StandardTrustIntro, TrustList, TrustSection } from '@/components/PublicTrustPage';
 import {
   PRIVACY_CLASSIFICATION,
+  PUBLIC_CONTACT_EMAIL_STATUS,
   PUBLIC_TRUST_REVIEW_STATUS,
   SITE_NAME,
   SITE_URL,
+  externalApprovalItems,
   unavailableOrUnverifiedPractices,
   verifiedDataPractices,
 } from '@/lib/publicTrust';
 
 export const metadata: Metadata = {
   title: `Privacy Notice | ${SITE_NAME}`,
-  description: 'Draft privacy notice for David Quinn Group public forms and Real Estate Intelligence Engine workflows.',
+  description: 'Privacy notice for David Quinn Group public forms and Real Estate Intelligence Engine workflows.',
   alternates: { canonical: `${SITE_URL}/privacy` },
   robots: { index: true, follow: true },
 };
@@ -22,9 +25,9 @@ export default function PrivacyPage() {
     <PublicTrustPage
       eyebrow="Public Trust"
       title="Privacy Notice"
-      summary="A draft, behavior-grounded privacy notice for the current website, property inquiry, saved-search, and strategy-intake workflows."
+      summary="A behavior-grounded privacy notice for the current website, property inquiry, saved-search, and strategy-intake workflows."
     >
-      <TrustSection title="Review Status">
+      <TrustSection title="Production Status">
         <StandardTrustIntro />
         <p>Classification: {PUBLIC_TRUST_REVIEW_STATUS}.</p>
         <p>Privacy classification: {PRIVACY_CLASSIFICATION}.</p>
@@ -53,7 +56,19 @@ export default function PrivacyPage() {
         </p>
       </TrustSection>
 
-      <TrustSection title="Owner-Review Items">
+      <TrustSection title="Privacy And Accessibility Requests">
+        <p>
+          Branded contact email status: {PUBLIC_CONTACT_EMAIL_STATUS}. Privacy and accessibility requests should route through the{' '}
+          <Link href="/contact" className="font-bold text-cyan-100 underline underline-offset-4">
+            contact page
+          </Link>{' '}
+          until a branded public contact email is operational. Include enough context to identify the request, but do not submit confidential
+          negotiating positions or sensitive financial limits through public forms.
+        </p>
+      </TrustSection>
+
+      <TrustSection title="External Approval Items">
+        <TrustList items={externalApprovalItems} />
         <TrustList items={unavailableOrUnverifiedPractices} />
         <TrustList
           items={[

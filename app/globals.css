@@ -37,6 +37,214 @@ html, body {
 }
 
 @layer components {
+  .public-trust-page {
+    min-height: 100vh;
+    background: #050505;
+    color: #ffffff;
+  }
+
+  .public-trust-hero,
+  .public-trust-body {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+
+  .public-trust-hero {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 56px;
+    padding-bottom: 56px;
+  }
+
+  .public-trust-body {
+    padding-top: 40px;
+    padding-bottom: 40px;
+  }
+
+  .public-trust-container,
+  .public-trust-grid {
+    width: 100%;
+    max-width: 1024px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .public-trust-eyebrow,
+  .public-trust-status,
+  .public-trust-aside-heading,
+  .public-trust-nav-link,
+  .public-trust-card-title {
+    text-transform: uppercase;
+    font-weight: 900;
+  }
+
+  .public-trust-eyebrow {
+    color: rgba(207, 250, 254, 0.7);
+    font-size: 10px;
+    letter-spacing: 0.32em;
+    line-height: 1.3;
+  }
+
+  .public-trust-title {
+    max-width: 768px;
+    margin-top: 16px;
+    color: #ffffff;
+    font-size: 40px;
+    font-weight: 900;
+    line-height: 1.12;
+    text-transform: uppercase;
+  }
+
+  .public-trust-summary {
+    max-width: 768px;
+    margin-top: 20px;
+    color: rgba(255, 255, 255, 0.62);
+    font-size: 16px;
+    line-height: 1.75;
+  }
+
+  .public-trust-status {
+    display: inline-flex;
+    max-width: 100%;
+    margin-top: 24px;
+    border: 1px solid rgba(207, 250, 254, 0.3);
+    border-radius: 6px;
+    background: rgba(207, 250, 254, 0.1);
+    padding: 8px 12px;
+    color: #cffafe;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    overflow-wrap: anywhere;
+  }
+
+  .public-trust-grid {
+    display: grid;
+    gap: 32px;
+  }
+
+  .public-trust-main {
+    display: grid;
+    gap: 32px;
+    min-width: 0;
+  }
+
+  .public-trust-aside,
+  .public-trust-card {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  .public-trust-aside {
+    display: grid;
+    gap: 20px;
+    align-content: start;
+    padding: 20px;
+  }
+
+  .public-trust-aside-heading {
+    color: rgba(255, 255, 255, 0.35);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+  }
+
+  .public-trust-nav {
+    display: grid;
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  .public-trust-nav-link {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    padding: 8px 12px;
+    color: rgba(255, 255, 255, 0.58);
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-decoration: none;
+    transition: border-color 180ms ease, color 180ms ease;
+  }
+
+  .public-trust-nav-link:hover {
+    border-color: rgba(207, 250, 254, 0.4);
+    color: #ffffff;
+  }
+
+  .public-trust-aside-list {
+    display: grid;
+    gap: 8px;
+    margin-top: 12px;
+    padding-left: 0;
+    color: rgba(255, 255, 255, 0.48);
+    font-size: 12px;
+    line-height: 1.65;
+    list-style-position: inside;
+  }
+
+  .public-trust-card {
+    padding: 24px;
+  }
+
+  .public-trust-card-title {
+    color: rgba(207, 250, 254, 0.78);
+    font-size: 14px;
+    letter-spacing: 0.16em;
+  }
+
+  .public-trust-card-body {
+    display: grid;
+    gap: 16px;
+    margin-top: 16px;
+    color: rgba(255, 255, 255, 0.62);
+    font-size: 14px;
+    line-height: 1.75;
+  }
+
+  .public-trust-card-body p,
+  .public-trust-list {
+    margin: 0;
+  }
+
+  .public-trust-list {
+    display: grid;
+    gap: 12px;
+    padding-left: 0;
+    list-style: none;
+  }
+
+  .public-trust-list-item {
+    border-left: 1px solid rgba(207, 250, 254, 0.28);
+    padding-left: 16px;
+  }
+
+  .public-trust-card-body a {
+    color: #cffafe;
+    font-weight: 700;
+    text-underline-offset: 4px;
+  }
+
+  @media (min-width: 640px) {
+    .public-trust-hero,
+    .public-trust-body {
+      padding-left: 32px;
+      padding-right: 32px;
+    }
+
+    .public-trust-title {
+      font-size: 48px;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .public-trust-hero,
+    .public-trust-body {
+      padding-left: 48px;
+      padding-right: 48px;
+    }
+
+    .public-trust-grid {
+      grid-template-columns: minmax(0, 1fr) 260px;
+    }
+  }
+
   .home-brand,
   .home-nav-link,
   .home-card-link,

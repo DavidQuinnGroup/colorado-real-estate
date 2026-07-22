@@ -1,20 +1,21 @@
+import Link from 'next/link';
 import type { Metadata } from 'next';
 
 import { PublicTrustPage, StandardTrustIntro, TrustList, TrustSection } from '@/components/PublicTrustPage';
-import { PUBLIC_TRUST_REVIEW_STATUS, SITE_NAME, SITE_URL } from '@/lib/publicTrust';
+import { PUBLIC_CONTACT_EMAIL_STATUS, PUBLIC_TRUST_REVIEW_STATUS, SITE_NAME, SITE_URL } from '@/lib/publicTrust';
 
 export const metadata: Metadata = {
   title: `Accessibility | ${SITE_NAME}`,
-  description: 'Draft accessibility statement and owner-review items for David Quinn Group.',
+  description: 'Accessibility statement and support contact information for David Quinn Group.',
   alternates: { canonical: `${SITE_URL}/accessibility` },
   robots: { index: true, follow: true },
 };
 
 const accessibilityItems = [
   'Public trust pages use semantic headings, readable text, keyboard-focusable links, and responsive layouts.',
-  'The repository includes interactive search, map, inquiry, and saved-search experiences that still require owner-directed accessibility review.',
-  'No completed accessibility conformance claim is made by this draft page.',
-  'A verified public accessibility contact channel still requires owner confirmation.',
+  'Interactive search, map, inquiry, and saved-search experiences remain subject to periodic accessibility review as the product changes.',
+  'No completed accessibility conformance certification is claimed.',
+  'Accessibility requests route through the contact page until a branded public contact email is operational.',
 ];
 
 export default function AccessibilityPage() {
@@ -22,9 +23,9 @@ export default function AccessibilityPage() {
     <PublicTrustPage
       eyebrow="Public Trust"
       title="Accessibility"
-      summary="A draft accessibility statement that identifies the current review posture without claiming completed conformance."
+      summary="An accessibility statement that identifies the current support channel without claiming completed third-party conformance certification."
     >
-      <TrustSection title="Review Status">
+      <TrustSection title="Production Status">
         <StandardTrustIntro />
         <p>Classification: {PUBLIC_TRUST_REVIEW_STATUS}.</p>
       </TrustSection>
@@ -35,8 +36,12 @@ export default function AccessibilityPage() {
 
       <TrustSection title="Request Channel">
         <p>
-          Until a public accessibility email or phone number is owner-confirmed, accessibility requests should be routed through the
-          owner-confirmed contact channel before customer beta. The general contact page records this as an owner-verification item.
+          Branded contact email status: {PUBLIC_CONTACT_EMAIL_STATUS}. Accessibility requests should route through the{' '}
+          <Link href="/contact" className="font-bold text-cyan-100 underline underline-offset-4">
+            contact page
+          </Link>{' '}
+          until a branded public contact email is operational. Include the page, device, browser, assistive technology when applicable, and a
+          short description of the issue.
         </p>
       </TrustSection>
     </PublicTrustPage>

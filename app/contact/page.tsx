@@ -2,7 +2,7 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 
 import { PublicTrustPage, StandardTrustIntro, TrustList, TrustSection } from '@/components/PublicTrustPage';
-import { PUBLIC_TRUST_REVIEW_STATUS, SITE_NAME, SITE_URL } from '@/lib/publicTrust';
+import { PUBLIC_CONTACT_EMAIL_STATUS, PUBLIC_NOTIFICATION_EMAIL, PUBLIC_TRUST_REVIEW_STATUS, SITE_NAME, SITE_URL } from '@/lib/publicTrust';
 
 export const metadata: Metadata = {
   title: `Contact | ${SITE_NAME}`,
@@ -14,7 +14,8 @@ export const metadata: Metadata = {
 const contactItems = [
   'Property-specific questions should use the inquiry workflow on an individual property page.',
   'Market strategy requests can use the strategy-intake forms on city market pages.',
-  'A verified public email address, phone number, office address, and privacy/accessibility contact channel still require owner confirmation.',
+  'Public contact, privacy, and accessibility requests route through the contact page and property inquiry workflows until a branded contact email is operational.',
+  'Public phone, office address, and branded contact email are not published until brokerage-approved values are confirmed.',
 ];
 
 export default function ContactPage() {
@@ -22,11 +23,22 @@ export default function ContactPage() {
     <PublicTrustPage
       eyebrow="Public Trust"
       title="Contact"
-      summary="Current contact routing for public beta without publishing unverified phone, address, brokerage, or email details."
+      summary="Production contact routing for public inquiries, privacy requests, and accessibility requests without publishing unverified phone or office details."
     >
-      <TrustSection title="Review Status">
+      <TrustSection title="Production Status">
         <StandardTrustIntro />
         <p>Classification: {PUBLIC_TRUST_REVIEW_STATUS}.</p>
+      </TrustSection>
+
+      <TrustSection title="Public Contact">
+        <p>
+          Branded contact email status: {PUBLIC_CONTACT_EMAIL_STATUS}. Use the property inquiry workflow on an individual property page or
+          the market strategy request workflow on market pages until a branded public contact email is operational.
+        </p>
+        <p>
+          Automated service notifications may be sent from {PUBLIC_NOTIFICATION_EMAIL} when configured for the applicable workflow. That
+          sender is not presented as the public contact channel.
+        </p>
       </TrustSection>
 
       <TrustSection title="Current Contact Routing">

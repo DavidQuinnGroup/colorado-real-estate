@@ -1,11 +1,11 @@
 import type { Metadata } from 'next';
 
 import { PublicTrustPage, StandardTrustIntro, TrustSection } from '@/components/PublicTrustPage';
-import { PUBLIC_TRUST_REVIEW_STATUS, SITE_NAME, SITE_URL } from '@/lib/publicTrust';
+import { FAIR_HOUSING_CLASSIFICATION, PUBLIC_TRUST_REVIEW_STATUS, SITE_NAME, SITE_URL } from '@/lib/publicTrust';
 
 export const metadata: Metadata = {
   title: `Fair Housing | ${SITE_NAME}`,
-  description: 'Draft fair housing public-trust page for David Quinn Group.',
+  description: 'Fair housing public-trust page for David Quinn Group.',
   alternates: { canonical: `${SITE_URL}/fair-housing` },
   robots: { index: true, follow: true },
 };
@@ -15,22 +15,23 @@ export default function FairHousingPage() {
     <PublicTrustPage
       eyebrow="Public Trust"
       title="Fair Housing"
-      summary="A text-only fair housing page for the controlled public beta surface, pending owner and counsel review."
+      summary="A text-only fair housing page for the public customer experience."
     >
-      <TrustSection title="Review Status">
+      <TrustSection title="Production Status">
         <StandardTrustIntro />
         <p>Classification: {PUBLIC_TRUST_REVIEW_STATUS}.</p>
+        <p>Fair housing classification: {FAIR_HOUSING_CLASSIFICATION}.</p>
       </TrustSection>
 
       <TrustSection title="Fair Housing Commitment">
         <p>
-          David Quinn Group intends the public website, property search, inquiry workflows, and follow-up routing to support equal access to
-          housing information and to avoid discriminatory steering, exclusion, preference, or limitation.
+          David Quinn Group supports equal access to housing information across the public website, property search, inquiry workflows, and
+          follow-up routing.
         </p>
         <p data-testid="public-fair-housing-slogan">Equal Housing Opportunity.</p>
         <p>
-          This draft page does not use an Equal Housing logo or REALTOR mark because no authorized asset or required display instruction was
-          verified during this package.
+          This page does not use an Equal Housing logo or REALTOR mark because no authorized asset or required display instruction is
+          published in the repository.
         </p>
       </TrustSection>
 

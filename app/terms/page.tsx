@@ -5,7 +5,7 @@ import { PUBLIC_TRUST_REVIEW_STATUS, SITE_NAME, SITE_URL } from '@/lib/publicTru
 
 export const metadata: Metadata = {
   title: `Terms of Use | ${SITE_NAME}`,
-  description: 'Draft terms for using David Quinn Group public pages, search, and inquiry tools.',
+  description: 'Terms for using David Quinn Group public pages, search, and inquiry tools.',
   alternates: { canonical: `${SITE_URL}/terms` },
   robots: { index: true, follow: true },
 };
@@ -23,14 +23,14 @@ export default function TermsPage() {
     <PublicTrustPage
       eyebrow="Public Trust"
       title="Terms of Use"
-      summary="Draft use terms for the current David Quinn Group website and Real Estate Intelligence Engine public workflows."
+      summary="Use terms for the current David Quinn Group website and Real Estate Intelligence Engine public workflows."
     >
-      <TrustSection title="Review Status">
+      <TrustSection title="Production Status">
         <StandardTrustIntro />
         <p>Classification: {PUBLIC_TRUST_REVIEW_STATUS}.</p>
       </TrustSection>
 
-      <TrustSection title="Draft Terms">
+      <TrustSection title="Terms">
         <TrustList items={termsItems} />
       </TrustSection>
 

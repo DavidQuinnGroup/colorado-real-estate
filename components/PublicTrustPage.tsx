@@ -5,7 +5,7 @@ import {
   PRODUCT_NAME,
   PUBLIC_TRUST_REVIEW_STATUS,
   SITE_NAME,
-  ownerVerificationItems,
+  externalApprovalItems,
   publicTrustRoutes,
 } from '@/lib/publicTrust';
 
@@ -18,14 +18,14 @@ type PublicTrustPageProps = {
 
 export function PublicTrustPage({ eyebrow, title, summary, children }: PublicTrustPageProps) {
   return (
-    <article className="min-h-screen bg-[#050505] text-white">
-      <section className="border-b border-white/10 px-6 py-14 sm:px-8 lg:px-12">
-        <div className="mx-auto max-w-5xl">
-          <p className="text-[10px] font-black uppercase tracking-[0.32em] text-cyan-100/70">{eyebrow}</p>
-          <h1 className="mt-4 max-w-3xl text-4xl font-black uppercase leading-tight tracking-normal text-white sm:text-5xl">{title}</h1>
-          <p className="mt-5 max-w-3xl text-base leading-7 text-white/62">{summary}</p>
+    <article className="public-trust-page min-h-screen bg-[#050505] text-white">
+      <section className="public-trust-hero border-b border-white/10 px-6 py-14 sm:px-8 lg:px-12">
+        <div className="public-trust-container mx-auto max-w-5xl">
+          <p className="public-trust-eyebrow text-[10px] font-black uppercase tracking-[0.32em] text-cyan-100/70">{eyebrow}</p>
+          <h1 className="public-trust-title mt-4 max-w-3xl text-4xl font-black uppercase leading-tight tracking-normal text-white sm:text-5xl">{title}</h1>
+          <p className="public-trust-summary mt-5 max-w-3xl text-base leading-7 text-white/62">{summary}</p>
           <div
-            className="mt-6 inline-flex max-w-full rounded-[6px] border border-amber-300/30 bg-amber-300/10 px-3 py-2 text-[10px] font-black uppercase tracking-[0.18em] text-amber-100"
+            className="public-trust-status mt-6 inline-flex max-w-full rounded-[6px] border border-cyan-100/30 bg-cyan-100/10 px-3 py-2 text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100"
             data-testid="public-trust-review-status"
             data-public-trust-review-status={PUBLIC_TRUST_REVIEW_STATUS}
           >
@@ -34,18 +34,18 @@ export function PublicTrustPage({ eyebrow, title, summary, children }: PublicTru
         </div>
       </section>
 
-      <section className="px-6 py-10 sm:px-8 lg:px-12">
-        <div className="mx-auto grid max-w-5xl gap-8 lg:grid-cols-[1fr_260px]">
-          <div className="space-y-8">{children}</div>
-          <aside className="space-y-5 border border-white/10 bg-white/[0.035] p-5">
+      <section className="public-trust-body px-6 py-10 sm:px-8 lg:px-12">
+        <div className="public-trust-grid mx-auto grid max-w-5xl gap-8 lg:grid-cols-[1fr_260px]">
+          <div className="public-trust-main space-y-8">{children}</div>
+          <aside className="public-trust-aside space-y-5 border border-white/10 bg-white/[0.035] p-5">
             <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-white/35">Trust Pages</p>
-              <nav className="mt-4 grid gap-2" aria-label="Public trust pages">
+              <p className="public-trust-aside-heading text-[10px] font-black uppercase tracking-[0.22em] text-white/35">Trust Pages</p>
+              <nav className="public-trust-nav mt-4 grid gap-2" aria-label="Public trust pages">
                 {publicTrustRoutes.map((route) => (
                   <Link
                     key={route.href}
                     href={route.href}
-                    className="rounded-[6px] border border-white/10 px-3 py-2 text-xs font-black uppercase tracking-[0.12em] text-white/58 transition hover:border-cyan-100/40 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-200"
+                    className="public-trust-nav-link rounded-[6px] border border-white/10 px-3 py-2 text-xs font-black uppercase tracking-[0.12em] text-white/58 transition hover:border-cyan-100/40 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-200"
                   >
                     {route.label}
                   </Link>
@@ -53,9 +53,9 @@ export function PublicTrustPage({ eyebrow, title, summary, children }: PublicTru
               </nav>
             </div>
             <div className="border-t border-white/10 pt-5">
-              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-white/35">Owner Review</p>
-              <ul className="mt-3 space-y-2 text-xs leading-5 text-white/48">
-                {ownerVerificationItems.slice(0, 4).map((item) => (
+              <p className="public-trust-aside-heading text-[10px] font-black uppercase tracking-[0.22em] text-white/35">External Approval</p>
+              <ul className="public-trust-aside-list mt-3 space-y-2 text-xs leading-5 text-white/48">
+                {externalApprovalItems.slice(0, 4).map((item) => (
                   <li key={item}>{item}</li>
                 ))}
               </ul>
@@ -69,18 +69,18 @@ export function PublicTrustPage({ eyebrow, title, summary, children }: PublicTru
 
 export function TrustSection({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <section className="border border-white/10 bg-white/[0.03] p-6">
-      <h2 className="text-sm font-black uppercase tracking-[0.16em] text-cyan-100/78">{title}</h2>
-      <div className="mt-4 space-y-4 text-sm leading-7 text-white/62">{children}</div>
+    <section className="public-trust-card border border-white/10 bg-white/[0.03] p-6">
+      <h2 className="public-trust-card-title text-sm font-black uppercase tracking-[0.16em] text-cyan-100/78">{title}</h2>
+      <div className="public-trust-card-body mt-4 space-y-4 text-sm leading-7 text-white/62">{children}</div>
     </section>
   );
 }
 
 export function TrustList({ items }: { items: readonly string[] }) {
   return (
-    <ul className="space-y-3">
+    <ul className="public-trust-list space-y-3">
       {items.map((item) => (
-        <li key={item} className="border-l border-cyan-100/28 pl-4">
+        <li key={item} className="public-trust-list-item border-l border-cyan-100/28 pl-4">
           {item}
         </li>
       ))}
@@ -91,8 +91,8 @@ export function TrustList({ items }: { items: readonly string[] }) {
 export function StandardTrustIntro() {
   return (
     <p>
-      This page is a draft public-trust surface for {SITE_NAME} and the {PRODUCT_NAME}. It is intended to make current website behavior
-      reviewable before controlled customer beta, not to replace owner, brokerage, MLS provider, or legal approval.
+      This page is a production public-trust surface for {SITE_NAME} and the {PRODUCT_NAME}. It describes current website behavior and
+      separates published facts from items that still require brokerage, MLS provider, Compass, or counsel approval.
     </p>
   );
 }
