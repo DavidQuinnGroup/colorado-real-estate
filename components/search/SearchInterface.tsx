@@ -163,10 +163,8 @@ function normalizeSearchMeta(data: SearchApiResponse) {
   };
 }
 
-function getCustomerSearchLabel(searchMeta: SearchMapMeta | null) {
-  if (!searchMeta) return 'Map ready';
-  if (searchMeta.customerExperience?.usable === false) return 'Search review';
-  return 'Search ready';
+function getDiscoveryFilterLabel(hasFilters: boolean) {
+  return hasFilters ? 'Focused view' : 'Open Colorado view';
 }
 
 export default function SearchInterface({
@@ -207,7 +205,7 @@ export default function SearchInterface({
     [visibleListings, visibleSelectedId],
   );
   const mobileStatusLabel = isSearching
-    ? 'Updating inventory'
+    ? 'Updating available listings'
     : selectedProperty && mobileView === 'map'
       ? selectedProperty.address || 'Selected listing'
       : `${visibleListings.length} listings`;
@@ -323,10 +321,13 @@ export default function SearchInterface({
       onSubmit={handleSearch}
     />
   );
+  const hasFilters = hasActiveSearchFilters(filters);
+  const discoveryFilterLabel = getDiscoveryFilterLabel(hasFilters);
+  const discoveryCountLabel = visibleListings.length === 1 ? '1 available listing' : `${visibleListings.length} available listings`;
 
   return (
     <div
-      className="reie-search-experience-shell relative flex h-screen w-full flex-col overflow-hidden bg-black text-white md:flex-row"
+      className="reie-search-experience-shell relative flex h-full w-full flex-col overflow-hidden bg-black text-white md:flex-row"
       data-testid="reie-search-interface"
       data-mobile-view={mobileView}
       data-selected-listing-id={visibleSelectedId || ''}
@@ -336,7 +337,7 @@ export default function SearchInterface({
       data-search-generated-at={effectiveSearchMeta?.generatedAt || ''}
       data-search-source={effectiveSearchMeta?.source || 'initial'}
       data-search-access-level={effectiveSearchMeta?.accessLevel || (userTier === 'Contracted' ? 'contracted' : 'public')}
-      data-search-filters-active={String(hasActiveSearchFilters(filters))}
+      data-search-filters-active={String(hasFilters)}
       data-search-loading={String(isSearching)}
     >
       <div
@@ -347,7 +348,7 @@ export default function SearchInterface({
         data-selected-listing-id={visibleSelectedId || ''}
       >
         <span
-          className="min-w-0 truncate rounded-[8px] border border-white/12 bg-[#071017]/92 px-3 py-2 text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100/76 shadow-2xl backdrop-blur"
+          className="min-w-0 truncate rounded-[8px] border border-white/12 bg-[#071017]/94 px-3 py-2 text-[10px] font-black uppercase tracking-[0.12em] text-cyan-100/82 shadow-2xl backdrop-blur"
           data-testid="reie-search-mobile-status"
         >
           {mobileStatusLabel}
@@ -389,6 +390,31 @@ export default function SearchInterface({
         data-visible-listing-count={visibleListings.length}
         data-selected-listing-id={visibleSelectedId || ''}
       >
+        <section
+          className="reie-search-discovery-intro"
+          data-testid="reie-search-discovery-intro"
+          data-discovery-listing-count={visibleListings.length}
+          data-discovery-filter-state={hasFilters ? 'focused' : 'open'}
+        >
+          <p className="text-[10px] font-black uppercase tracking-[0.24em] text-cyan-100/76">Guided Property Search</p>
+          <h2 className="mt-3 font-serif text-[2rem] font-black leading-[1.02] tracking-normal text-white">
+            Explore Colorado homes with fit, context, and confidence.
+          </h2>
+          <p className="mt-3 max-w-[31rem] text-sm leading-6 text-white/62">
+            Listings are the beginning of the decision. Use the filters, map, and property context to compare options before choosing what deserves a closer look.
+          </p>
+          <div className="mt-4 grid grid-cols-2 gap-2">
+            <div className="rounded-[6px] border border-white/10 bg-white/[0.045] px-3 py-2">
+              <p className="text-[9px] font-black uppercase tracking-[0.14em] text-white/38">Available Listings</p>
+              <p className="mt-1 text-sm font-black text-white">{visibleListings.length}</p>
+            </div>
+            <div className="rounded-[6px] border border-cyan-100/18 bg-cyan-100/[0.06] px-3 py-2">
+              <p className="text-[9px] font-black uppercase tracking-[0.14em] text-cyan-100/68">Discovery View</p>
+              <p className="mt-1 text-sm font-black text-white">{discoveryFilterLabel}</p>
+            </div>
+          </div>
+        </section>
+
         <MapSidebar
           listings={visibleListings}
           selectedId={visibleSelectedId}
@@ -396,7 +422,7 @@ export default function SearchInterface({
           onSelect={handleListSelect}
           onHover={setHoveredId}
           searchControls={searchControls}
-          hasActiveFilters={hasActiveSearchFilters(filters)}
+          hasActiveFilters={hasFilters}
           isLoading={isSearching}
         />
       </div>
@@ -421,10 +447,10 @@ export default function SearchInterface({
         <div className="pointer-events-none absolute left-6 top-6 z-[700] hidden rounded-[8px] border border-white/12 bg-[#071017]/88 px-4 py-3 shadow-2xl backdrop-blur-md md:block">
           <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">Colorado Map</p>
           <p className="mt-1 text-sm font-black uppercase tracking-[0.08em] text-white">
-            {visibleListings.length} visible listings
+            {discoveryCountLabel}
           </p>
           <p className="mt-1 text-[10px] font-black uppercase tracking-[0.12em] text-white/38">
-            {isSearching ? 'Inventory updating' : getCustomerSearchLabel(effectiveSearchMeta)}
+            {isSearching ? 'Updating available listings' : discoveryFilterLabel}
           </p>
         </div>
 
@@ -457,7 +483,7 @@ export default function SearchInterface({
         {faqItems.length ? (
           <details className="absolute right-6 top-6 z-[700] hidden w-[min(420px,calc(100%-3rem))] rounded-[8px] border border-white/12 bg-[#071017]/88 p-4 shadow-2xl backdrop-blur-md md:block">
             <summary className="cursor-pointer list-none text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100">
-              Search FAQ
+              Search Guidance
             </summary>
             <div className="mt-4 max-h-[52vh] space-y-4 overflow-auto pr-2">
               {faqItems.slice(0, 4).map((faq) => (

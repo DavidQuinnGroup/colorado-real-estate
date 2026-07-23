@@ -24,16 +24,16 @@ const searchToolSchemaKeywords = [
 ];
 
 export const metadata: Metadata = {
-  title: 'Colorado Real Estate Search | David Quinn Group',
+  title: 'Guided Colorado Property Search | David Quinn Group',
   description:
-    'Search Colorado real estate with David Quinn Group intelligence for Boulder, Denver, and the greater Front Range, including live inventory context and property-level signals.',
+    'Explore Colorado homes with David Quinn Group guidance for Boulder, Denver, and the greater Front Range, using listing discovery, property context, and market perspective.',
   alternates: {
     canonical: SEARCH_URL,
   },
   openGraph: {
-    title: 'Colorado Real Estate Search | David Quinn Group',
+    title: 'Guided Colorado Property Search | David Quinn Group',
     description:
-      'Live Colorado property search with David Quinn Group intelligence for Boulder, Denver, and the greater Front Range.',
+      'A guided Colorado property search experience built around fit, context, and confident next steps.',
     url: SEARCH_URL,
     siteName: 'David Quinn Group',
     locale: 'en_US',
@@ -42,9 +42,9 @@ export const metadata: Metadata = {
 };
 
 const searchToolSchema = buildToolSchema({
-  name: 'Colorado Real Estate Search',
+  name: 'Guided Colorado Property Search',
   description:
-    'David Quinn Group live property search for Colorado homes, combining MLS inventory, map-based discovery, and real estate intelligence for Boulder, Denver, and the Front Range.',
+    'David Quinn Group guided property search for Colorado homes, combining listing discovery, map-based context, and market perspective for Boulder, Denver, and the Front Range.',
   url: SEARCH_URL,
   keywords: searchToolSchemaKeywords,
   audience: 'Colorado home buyers, sellers, relocation clients, and homeowners evaluating market options',
@@ -112,9 +112,8 @@ function buildSearchFaqs(): FAQItem[] {
 }
 
 /**
- * SearchPage is the public inventory command center.
- * It loads the first MLS inventory window server-side, then hands
- * interaction state to the client map and sidebar shell.
+ * SearchPage loads the first public listing set server-side, then hands
+ * interaction state to the client map and discovery shell.
  */
 export default async function SearchPage() {
   const { results: listings, meta } = await searchPropertiesWithMeta({ limit: 250 });
@@ -123,13 +122,13 @@ export default async function SearchPage() {
   const searchFaqs = buildSearchFaqs();
 
   return (
-    <main className="h-screen w-full overflow-hidden bg-black text-white">
-      <h1 className="sr-only">Colorado Real Estate Search</h1>
+    <main className="h-[calc(100vh-64px)] w-full overflow-hidden bg-black text-white">
+      <h1 className="sr-only">Guided Colorado Property Search</h1>
       <script
         type="application/ld+json"
         data-testid="reie-search-tool-schema"
         data-tool-schema-type="WebApplication"
-        data-tool-schema-name="Colorado Real Estate Search"
+        data-tool-schema-name="Guided Colorado Property Search"
         data-tool-schema-url={SEARCH_URL}
         data-tool-schema-keyword-count={searchToolSchemaKeywords.length}
         data-tool-schema-entrypoint="search"

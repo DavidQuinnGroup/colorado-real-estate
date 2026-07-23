@@ -194,11 +194,11 @@ function EmptyInventoryState({ hasActiveFilters }: { hasActiveFilters?: boolean 
     <div className="flex h-full items-center justify-center px-5 py-8 text-center">
       <div className="max-w-[320px] rounded-[8px] border border-white/10 bg-white/[0.035] p-5">
         <p className="text-[11px] font-black uppercase tracking-[0.24em] text-cyan-100/75">
-          {hasActiveFilters ? 'No Matching Inventory' : 'Inventory Sync Active'}
+          {hasActiveFilters ? 'No Matching Listings' : 'Updating Available Listings'}
         </p>
         <p className="mx-auto mt-4 text-sm leading-6 text-white/52">
           {hasActiveFilters
-            ? 'Loosen one filter chip or broaden the map area to reveal more Colorado inventory.'
+            ? 'Loosen one filter or broaden the map area to reveal more Colorado listings.'
             : 'Move the map or adjust the viewport to load matching Colorado listings.'}
         </p>
         {hasActiveFilters ? (
@@ -213,7 +213,7 @@ function EmptyInventoryState({ hasActiveFilters }: { hasActiveFilters?: boolean 
 
 function LoadingInventorySkeleton() {
   return (
-    <div className="space-y-3 p-3" aria-label="Loading inventory">
+    <div className="space-y-3 p-3" aria-label="Loading available listings">
       {Array.from({ length: 4 }).map((_, index) => (
         <div key={index} className="rounded-[8px] border border-white/10 bg-white/[0.035] p-3">
           <div className="h-40 animate-pulse rounded-[6px] bg-white/[0.06]" />
@@ -243,10 +243,10 @@ function StatTile({ icon, label, value }: { icon: ReactNode; label: string; valu
 }
 
 function SearchIntelligenceStrip({ stats }: { stats: InventoryStats }) {
-  const mappedLabel = stats.mappedCount > 0 ? `${stats.mappedCount} mappable listings` : 'Map coverage loading';
+  const mappedLabel = stats.mappedCount > 0 ? `${stats.mappedCount} listings shown on the map` : 'Map view loading';
   const resilienceLabel =
-    stats.averageResilience === null ? 'Resilience scoring pending' : `${stats.averageResilience} average resilience`;
-  const reviewLabel = stats.reviewCount > 0 ? `${stats.reviewCount} diligence flags` : 'No major review flags';
+    stats.averageResilience === null ? 'Property context pending' : `${stats.averageResilience} property signal average`;
+  const reviewLabel = stats.reviewCount > 0 ? `${stats.reviewCount} listings need a closer look` : 'No major review prompts';
 
   return (
     <div
@@ -257,7 +257,7 @@ function SearchIntelligenceStrip({ stats }: { stats: InventoryStats }) {
       data-sidebar-average-resilience={stats.averageResilience ?? ''}
     >
       <div className="flex items-center justify-between gap-3">
-        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100/78">Search Snapshot</p>
+        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100/78">Discovery Summary</p>
         <span className="rounded-[4px] border border-cyan-100/20 bg-black/30 px-2 py-1 text-[9px] font-black uppercase tracking-[0.12em] text-cyan-100/70">
           Live
         </span>
@@ -291,7 +291,7 @@ function ResultsToolbar({
   hasActiveFilters?: boolean;
   isLoading?: boolean;
 }) {
-  const mapCoverage = count > 0 ? `${Math.round((stats.mappedCount / count) * 100)}% mapped` : 'Map pending';
+  const mapCoverage = count > 0 ? `${Math.round((stats.mappedCount / count) * 100)}% shown` : 'Map pending';
 
   return (
     <div
@@ -306,20 +306,20 @@ function ResultsToolbar({
         <div className="min-w-0">
           <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">
             <ListFilter size={13} aria-hidden="true" />
-            Results
+            Listings to Explore
           </p>
           <p className="mt-1 truncate text-[11px] font-black uppercase tracking-[0.1em] text-white/45">
-            {isLoading ? 'Updating inventory' : `${stats.dominantCity} priority stack`}
+            {isLoading ? 'Updating available listings' : `${stats.dominantCity} discovery view`}
           </p>
         </div>
 
         <div className="grid shrink-0 grid-cols-3 overflow-hidden rounded-[6px] border border-white/10 bg-black/24 text-center">
           <div className="min-w-[58px] px-2 py-1.5">
-            <p className="text-[9px] font-black uppercase tracking-[0.12em] text-white/34">Total</p>
+            <p className="text-[9px] font-black uppercase tracking-[0.12em] text-white/34">Listings</p>
             <p className="mt-0.5 text-[13px] font-black leading-none text-white">{count}</p>
           </div>
           <div className="min-w-[58px] border-l border-white/10 px-2 py-1.5">
-            <p className="text-[9px] font-black uppercase tracking-[0.12em] text-white/34">Map</p>
+            <p className="text-[9px] font-black uppercase tracking-[0.12em] text-white/34">Shown</p>
             <p className="mt-0.5 text-[11px] font-black leading-none text-cyan-100">{mapCoverage}</p>
           </div>
           <div className="min-w-[58px] border-l border-white/10 px-2 py-1.5">
@@ -392,9 +392,9 @@ export default function MapSidebar(props: MapSidebarProps) {
         <div className="relative">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.28em] text-cyan-100/72">Property Search</p>
+              <p className="text-[10px] font-black uppercase tracking-[0.28em] text-cyan-100/72">Property Context</p>
               <h2 className="mt-2 font-serif text-[2.15rem] font-black leading-none tracking-normal text-white">
-                Colorado Search
+                Available Listings
               </h2>
             </div>
 
@@ -410,6 +410,8 @@ export default function MapSidebar(props: MapSidebarProps) {
             ) : null}
           </div>
 
+          {searchControls ? <div className="mt-4">{searchControls}</div> : null}
+
           <div className="mt-5 rounded-[8px] border border-white/10 bg-black/24 p-3">
             <div className="flex items-end justify-between gap-4">
               <div>
@@ -417,7 +419,7 @@ export default function MapSidebar(props: MapSidebarProps) {
                 <p className="mt-1 text-[17px] font-black uppercase leading-none text-white">{stats.dominantCity}</p>
               </div>
               <div className="text-right">
-                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/38">Inventory</p>
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/38">Listings</p>
                 <p className="mt-1 text-[17px] font-black leading-none text-cyan-100">{listings.length}</p>
               </div>
             </div>
@@ -439,14 +441,12 @@ export default function MapSidebar(props: MapSidebarProps) {
           </div>
 
           <div className="mt-3 grid grid-cols-3 gap-2">
-            <StatTile icon={<MapPinned size={13} aria-hidden="true" />} label="Mapped" value={stats.mappedCount} />
-            <StatTile icon={<ShieldCheck size={13} aria-hidden="true" />} label="Res" value={stats.averageResilience === null ? '--' : `${stats.averageResilience}`} />
-            <StatTile icon={<Gauge size={13} aria-hidden="true" />} label="Review" value={stats.reviewCount} />
+            <StatTile icon={<MapPinned size={13} aria-hidden="true" />} label="Shown" value={stats.mappedCount} />
+            <StatTile icon={<ShieldCheck size={13} aria-hidden="true" />} label="Signal" value={stats.averageResilience === null ? '--' : `${stats.averageResilience}`} />
+            <StatTile icon={<Gauge size={13} aria-hidden="true" />} label="Context" value={stats.reviewCount} />
           </div>
 
           <SearchIntelligenceStrip stats={stats} />
-
-          {searchControls ? <div className="mt-3">{searchControls}</div> : null}
 
           <div
             className="mt-3 min-h-12 rounded-[8px] border border-white/10 bg-black/35 px-3 py-2.5"
@@ -499,7 +499,7 @@ export default function MapSidebar(props: MapSidebarProps) {
                   Search
                 </p>
                 <p className="mt-1 truncate text-[10px] font-black uppercase tracking-[0.08em] text-white/55 transition-colors group-hover:text-white">
-                  More Inventory
+                  More Listings
                 </p>
               </Link>
             )}
@@ -555,12 +555,12 @@ export default function MapSidebar(props: MapSidebarProps) {
         ) : (
           <EmptyInventoryState hasActiveFilters={hasActiveFilters} />
         )}
-      </div>
 
-      <div className="shrink-0 border-t border-white/12 bg-[#070b10] p-4" data-testid="reie-sidebar-save-search-footer">
-        <Suspense fallback={<SaveSearchFallback />}>
-          <SaveSearch city={stats.dominantCity} />
-        </Suspense>
+        <div className="border-t border-white/12 bg-[#070b10] p-4" data-testid="reie-sidebar-save-search-footer">
+          <Suspense fallback={<SaveSearchFallback />}>
+            <SaveSearch city={stats.dominantCity} />
+          </Suspense>
+        </div>
       </div>
 
       <style jsx global>{`

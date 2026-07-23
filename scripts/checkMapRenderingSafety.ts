@@ -23,6 +23,7 @@ async function main() {
   }
 
   assert(globalsCss.includes('.reie-search-experience-shell'), 'Global CSS must define public search shell layout.');
+  assert(globalsCss.includes('.reie-search-discovery-intro'), 'Global CSS must define the dedicated search discovery intro.');
   assert(globalsCss.includes('flex-direction: row;'), 'Global CSS must force desktop search shell row layout.');
   assert(globalsCss.includes('.reie-search-map-pane'), 'Global CSS must define public search map pane visibility.');
   assert(globalsCss.includes(".reie-search-map-pane[data-mobile-view='list']"), 'Global CSS must preserve mobile list/map switching.');
@@ -45,9 +46,14 @@ async function main() {
   assert(searchMap.includes('new ResizeObserver'), 'SearchMap must invalidate Leaflet size after container layout changes.');
   assert(searchMap.includes('map.invalidateSize({ animate: false, pan: false })'), 'SearchMap must explicitly recalculate Leaflet geometry.');
   assert(packageJson.includes('"check:map-rendering-safety"'), 'package.json must expose the map rendering safety check.');
+  assert(searchInterface.includes('Guided Property Search'), 'Dedicated search must present guided property discovery framing.');
+  assert(searchInterface.includes('Updating available listings'), 'Dedicated search must use customer-facing loading language.');
+  assert(searchInterface.includes("aria-pressed={mobileView === 'list'}"), 'Mobile list toggle must expose aria-pressed state.');
+  assert(searchInterface.includes("aria-pressed={mobileView === 'map'}"), 'Mobile map toggle must expose aria-pressed state.');
+  assert(!searchInterface.match(/public inventory command center|command center|internal diagnostics|smoke-ready|source-health|duration diagnostics/i), 'Dedicated search shell must avoid internal operational terminology.');
 
   console.log(
-    '[map-rendering-safety] ok: deterministic map pane visibility, native Leaflet tile reset, resize invalidation, and no decorative basemap overlays verified.',
+    '[map-rendering-safety] ok: deterministic map pane visibility, dedicated search discovery framing, native Leaflet tile reset, resize invalidation, and no decorative basemap overlays verified.',
   );
 }
 

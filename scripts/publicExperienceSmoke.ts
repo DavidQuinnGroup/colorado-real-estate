@@ -62,8 +62,9 @@ async function assertPropertyPage(path: string) {
 async function assertSearchPage() {
   const html = await fetchHtml('/search');
 
-  assert.ok(includesFoldedText(html, 'Search Snapshot'), 'Expected search snapshot strip.');
-  assert.ok(includesFoldedText(html, 'Property Search'), 'Expected search sidebar inventory shell.');
+  assert.ok(includesFoldedText(html, 'Guided Property Search'), 'Expected guided property search framing.');
+  assert.ok(includesFoldedText(html, 'Discovery Summary'), 'Expected search discovery summary strip.');
+  assert.ok(includesFoldedText(html, 'Available Listings'), 'Expected search sidebar listing shell.');
   assert.ok(includesFoldedText(html, 'Filters'), 'Expected search filters shell.');
 }
 
@@ -865,7 +866,7 @@ async function assertToolSchemaSource() {
   assert.ok(homeSource.includes('data-tool-schema-type="WebApplication"'), 'Expected home tool schema to expose schema type metadata.');
   assert.ok(searchSource.includes('data-tool-schema-type="WebApplication"'), 'Expected search tool schema to expose schema type metadata.');
   assert.ok(homeSource.includes('data-tool-schema-name="Colorado Real Estate Intelligence Engine"'), 'Expected home tool schema to expose tool names.');
-  assert.ok(searchSource.includes('data-tool-schema-name="Colorado Real Estate Search"'), 'Expected search tool schema to expose tool names.');
+  assert.ok(searchSource.includes('data-tool-schema-name="Guided Colorado Property Search"'), 'Expected search tool schema to expose tool names.');
   assert.ok(homeSource.includes('data-tool-schema-url={SITE_URL}'), 'Expected home tool schema to expose canonical URLs.');
   assert.ok(searchSource.includes('data-tool-schema-url={SEARCH_URL}'), 'Expected search tool schema to expose canonical URLs.');
   assert.ok(homeSource.includes('data-tool-schema-keyword-count={homeToolSchemaKeywords.length}'), 'Expected home tool schema to expose keyword counts.');

@@ -398,7 +398,17 @@ html, body {
 .reie-search-list-pane {
   display: flex;
   flex: 1 1 auto;
+  flex-direction: column;
   height: 100%;
+  min-height: 0;
+}
+
+.reie-search-discovery-intro {
+  display: none;
+}
+
+.reie-search-list-pane > [data-testid='reie-map-sidebar'] {
+  flex: 1 1 auto;
   min-height: 0;
 }
 
@@ -430,6 +440,7 @@ html, body {
   .reie-search-list-pane[data-mobile-view='map'] {
     display: flex;
     flex: 0 0 auto;
+    flex-direction: column;
     height: 100%;
     flex-shrink: 0;
     width: 35vw;
@@ -444,6 +455,22 @@ html, body {
     height: 100%;
     min-width: 0;
   }
+}
+
+@media (min-width: 768px) {
+  .reie-search-discovery-intro {
+    display: block;
+    flex: 0 0 auto;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    background:
+      linear-gradient(135deg, rgba(100, 188, 205, 0.13), transparent 42%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(7, 11, 16, 0));
+    padding: 20px 20px 18px;
+  }
+}
+
+[data-testid='reie-search-map-diagnostics'] {
+  display: none !important;
 }
 
 .reie-map-canvas .leaflet-pane,
