@@ -813,7 +813,6 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
         <RelatedPropertyLinks
           city={property.city || 'Colorado'}
           neighborhood={property.neighborhood}
-          price={property.price ?? undefined}
           authorityLinks={propertyLinks.authorityLinks}
         />
         <section className="my-14 rounded-[8px] border border-white/10 bg-[#0d141c] p-6 md:p-8">

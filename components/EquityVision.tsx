@@ -1,7 +1,6 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { useMemo } from 'react';
 import { Camera, ChevronRight, Hammer, Ruler, ShieldAlert } from 'lucide-react';
 
 export type EquityVisionProperty = {
@@ -17,93 +16,60 @@ type EquityVisionProps = {
   property: EquityVisionProperty;
 };
 
-type ValuationModel = {
-  aboveGrade: number;
-  finishedBasement: number;
-  unfinishedBasement: number;
-  standard: number;
-  optimized: number;
-};
-
-function formatCurrency(value: number) {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    maximumFractionDigits: 0,
-  }).format(Math.max(0, Math.round(value)));
-}
-
 function getPositiveNumber(value: number | null | undefined, fallback = 0) {
   if (typeof value !== 'number') return fallback;
   return Number.isFinite(value) && value > 0 ? value : fallback;
 }
 
-function buildValuationModel(property: EquityVisionProperty): ValuationModel {
-  const marketRate = getPositiveNumber(property.marketRate, 850);
-  const aboveGrade = getPositiveNumber(property.sqftAboveGrade) * marketRate;
-  const finishedBasement = getPositiveNumber(property.sqftBasementFinished) * marketRate * 0.6;
-  const unfinishedBasement = getPositiveNumber(property.sqftBasementUnfinished) * marketRate * 0.25;
-  const standard = aboveGrade + finishedBasement + unfinishedBasement;
-  const optimized = standard + property.gcAdjustments;
-
-  return {
-    aboveGrade,
-    finishedBasement,
-    unfinishedBasement,
-    standard,
-    optimized,
-  };
+function formatSquareFeet(value: number | null | undefined) {
+  const squareFeet = getPositiveNumber(value);
+  return squareFeet ? `${squareFeet.toLocaleString('en-US')} sq ft` : 'Review with advisor';
 }
 
 export default function EquityVision({ property }: EquityVisionProps) {
-  const valuations = useMemo(() => buildValuationModel(property), [property]);
-
   return (
     <div className="border border-[#fbbf24]/20 bg-slate-950 p-8 shadow-2xl">
       <header className="mb-8">
-        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-[#fbbf24]">Module 5: Equity Vision 2.0</p>
-        <h2 className="text-3xl font-black italic uppercase tracking-tight text-white">The GC Valuation Suite</h2>
+        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-[#fbbf24]">Construction Context</p>
+        <h2 className="text-3xl font-black italic uppercase tracking-tight text-white">Property Review Notes</h2>
+        <p className="mt-3 text-sm leading-6 text-slate-400">
+          Directional construction context only. Measurements, systems, and improvement choices should be reviewed with an advisor before decisions are made.
+        </p>
       </header>
 
       <div className="space-y-4">
-        <ValuationRow
+        <ReviewRow
           accentClassName="border-blue-500"
           icon={<Ruler className="text-blue-400" size={18} />}
-          label="Above-Grade: Tier 1"
-          value={valuations.aboveGrade}
+          label="Above-Grade Area"
+          value={formatSquareFeet(property.sqftAboveGrade)}
         />
 
-        <ValuationRow
+        <ReviewRow
           accentClassName="border-green-500"
           icon={<Hammer className="text-green-400" size={18} />}
-          label="Finished Basement: Tier 2"
-          value={valuations.finishedBasement}
+          label="Finished Basement Area"
+          value={formatSquareFeet(property.sqftBasementFinished)}
         />
 
-        <ValuationRow
+        <ReviewRow
           accentClassName="border-white/20"
           icon={<Ruler className="text-white/40" size={18} />}
-          label="Unfinished Basement: Tier 3"
-          value={valuations.unfinishedBasement}
+          label="Unfinished Basement Area"
+          value={formatSquareFeet(property.sqftBasementUnfinished)}
         />
 
         <div className="mt-10 border-t border-slate-800 pt-6">
-          <div className="flex items-end justify-between gap-6">
-            <div>
-              <p className="mb-1 text-[10px] font-black uppercase italic tracking-widest text-[#fbbf24]">David Quinn Optimized Value</p>
-              <p className="text-5xl font-black italic tracking-tight text-white">{formatCurrency(valuations.optimized)}</p>
-            </div>
-            <div className="pb-1 text-right">
-              <p className="text-[10px] font-bold uppercase text-slate-500">Standard Portal Est.</p>
-              <p className="text-xl font-bold tracking-tight text-slate-400 line-through">{formatCurrency(valuations.standard)}</p>
-            </div>
-          </div>
+          <p className="mb-2 text-[10px] font-black uppercase italic tracking-widest text-[#fbbf24]">Advisor Review</p>
+          <p className="text-sm leading-6 text-slate-400">
+            Use this section to frame questions about finish quality, basement utility, inspection scope, and improvement priorities. It is not a valuation or return estimate.
+          </p>
         </div>
 
         {property.hasPolybutyleneRisk ? (
           <div className="mt-6 flex items-center gap-3 border border-red-500/50 bg-red-950/40 p-4 text-xs font-black uppercase italic tracking-widest text-red-400">
             <ShieldAlert size={20} className="animate-pulse" />
-            GC Forensic Alert: Potential Polybutylene Risk Detected
+            Plumbing Review Suggested: Potential Polybutylene Risk Flag
           </div>
         ) : null}
 
@@ -112,14 +78,14 @@ export default function EquityVision({ property }: EquityVisionProps) {
           disabled
           className="mt-6 flex w-full cursor-not-allowed items-center justify-center gap-2 bg-white/70 py-4 text-xs font-black italic uppercase tracking-[0.3em] text-black/70"
         >
-          <Camera size={16} /> Visual Verification Pending <ChevronRight size={16} />
+          <Camera size={16} /> Photo Review Available <ChevronRight size={16} />
         </button>
       </div>
     </div>
   );
 }
 
-function ValuationRow({
+function ReviewRow({
   accentClassName,
   icon,
   label,
@@ -128,7 +94,7 @@ function ValuationRow({
   accentClassName: string;
   icon: ReactNode;
   label: string;
-  value: number;
+  value: string;
 }) {
   return (
     <div className={`flex items-center justify-between gap-4 border-l-4 bg-slate-900 p-4 ${accentClassName}`}>
@@ -136,7 +102,7 @@ function ValuationRow({
         {icon}
         <span className="text-sm font-bold uppercase text-slate-300">{label}</span>
       </div>
-      <span className="shrink-0 font-mono font-bold text-white">{formatCurrency(value)}</span>
+      <span className="shrink-0 text-right text-xs font-black uppercase tracking-[0.12em] text-white">{value}</span>
     </div>
   );
 }

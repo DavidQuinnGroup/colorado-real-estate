@@ -437,13 +437,16 @@ async function assertRelatedPropertyLinksSource() {
   assert.ok(source.includes('data-related-property-city='), 'Expected related property links to expose city metadata.');
   assert.ok(source.includes('data-related-property-neighborhood='), 'Expected related property links to expose neighborhood metadata.');
   assert.ok(source.includes('data-related-property-active-tab='), 'Expected related property links to expose active tab state.');
-  assert.ok(source.includes('data-related-property-price-basis='), 'Expected related property links to expose price basis.');
   assert.ok(source.includes('data-related-property-authority-link-count='), 'Expected related property links to expose authority link counts.');
   assert.ok(source.includes('data-related-property-visible-authority-link-count='), 'Expected related property links to expose visible authority link counts.');
   assert.ok(source.includes('data-related-property-primary-href='), 'Expected related property links to expose primary CTA href.');
   assert.ok(source.includes('data-related-property-prep-scenario-count='), 'Expected related property links to expose prep scenario counts.');
   assert.ok(source.includes('data-related-property-timeline-step-count='), 'Expected related property links to expose timeline step counts.');
-  assert.ok(source.includes('data-related-property-scenario-lift-percent='), 'Expected related property links to expose scenario lift percentages.');
+  assert.ok(source.includes('data-related-property-scenario-scope='), 'Expected related property links to expose non-financial scenario scope metadata.');
+  assert.ok(source.includes('Preparation Considerations'), 'Expected related property links to use non-ROI preparation tab language.');
+  assert.ok(source.includes('Compare Preparation Approaches'), 'Expected related property links to use non-financial comparison language.');
+  assert.ok(source.includes('Marketability Focus'), 'Expected related property links to use directional marketability language.');
+  assert.ok(!source.match(/Listing Prep ROI|ROI Engine|Equity Lift|Investment Cost|equity capture/i), 'Expected related property links to avoid unsupported public ROI/equity language.');
   assert.ok(source.includes('data-related-property-risk-window-days="7"'), 'Expected related property links to expose contingency risk window.');
   assert.ok(source.includes('data-related-property-link-source='), 'Expected related property links to expose CTA link source.');
 }

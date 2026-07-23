@@ -16,6 +16,8 @@ async function main() {
     saveSearch,
     propertyPage,
     propertyInquiryForm,
+    relatedPropertyLinks,
+    equityVision,
   ] = await Promise.all([
     readFile('app/page.tsx', 'utf8'),
     readFile('components/home/HomeSearchExperience.tsx', 'utf8'),
@@ -30,6 +32,8 @@ async function main() {
     readFile('components/maps/SaveSearch.tsx', 'utf8'),
     readFile('app/properties/[id]/page.tsx', 'utf8'),
     readFile('components/PropertyInquiryForm.tsx', 'utf8'),
+    readFile('components/RelatedPropertyLinks.tsx', 'utf8'),
+    readFile('components/EquityVision.tsx', 'utf8'),
   ]);
 
   for (const [label, source] of [
@@ -148,6 +152,14 @@ async function main() {
   assert(propertyInquiryForm.includes("fetch('/api/property-inquiry'"), 'Property inquiry form must preserve the existing inquiry API route.');
   assert(propertyInquiryForm.includes('data-property-inquiry-email-valid'), 'Property inquiry form must preserve email validation metadata.');
   assert(propertyInquiryForm.includes('data-public-trust-form-notice="property-inquiry"'), 'Property inquiry form must preserve public trust notice metadata.');
+  assert(relatedPropertyLinks.includes('Preparation Considerations'), 'Related-property planning must avoid ROI tab language.');
+  assert(relatedPropertyLinks.includes('Compare Preparation Approaches'), 'Related-property planning must use directional preparation comparison language.');
+  assert(relatedPropertyLinks.includes('Marketability Focus'), 'Related-property planning must avoid property-specific equity lift language.');
+  assert(relatedPropertyLinks.includes('Actual costs, timing, and outcomes vary.'), 'Related-property planning must qualify directional preparation guidance.');
+  assert(equityVision.includes('Construction Context'), 'Property review notes must avoid internal equity module language.');
+  assert(equityVision.includes('Property Review Notes'), 'Property review notes must avoid valuation-suite framing.');
+  assert(equityVision.includes('It is not a valuation or return estimate.'), 'Property review notes must qualify construction context as non-valuation guidance.');
+  assert(equityVision.includes('Photo Review Available'), 'Property review notes must use customer-facing photo review language.');
   for (const [label, source] of [
     ['search controls', searchControls],
     ['map sidebar', mapSidebar],
@@ -163,8 +175,21 @@ async function main() {
     ['search map popup', popupSource],
     ['selected-property drawer', selectedDrawer],
     ['property detail page', propertyPage],
+    ['related-property planning', relatedPropertyLinks],
+    ['property review notes', equityVision],
   ] as const) {
     assert(!source.match(prohibitedPublicPropertyLanguage), `${label} must not expose unsupported or operational Wave 2 property language.`);
+  }
+  for (const [label, source] of [
+    ['related-property planning', relatedPropertyLinks],
+    ['property review notes', equityVision],
+  ] as const) {
+    assert(
+      !source.match(
+        /Listing Prep ROI|ROI Engine|Equity Lift|Guaranteed return|Predictive value|Verified financial outcome|Optimized Value|Valuation Suite|Standard Portal Est\.|Investment Cost|equity capture/i,
+      ),
+      `${label} must not expose unsupported ROI, equity, or valuation outcome language.`,
+    );
   }
   assert(
     !propertyInquiryForm.match(

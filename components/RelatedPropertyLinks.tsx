@@ -20,13 +20,12 @@ type RelatedPropertyLinksProps = {
   city: string;
   authorityLinks?: PropertyAuthorityLink[];
   neighborhood?: string | null;
-  price?: number;
 };
 
 type PrepScenario = {
   label: string;
-  cost: number;
-  impact: number;
+  scope: string;
+  planningSignal: string;
   velocity: string;
   description: string;
 };
@@ -43,24 +42,24 @@ type TimelinePointProps = TimelineStep;
 const prepScenarios: PrepScenario[] = [
   {
     label: "As-Is Market Exit",
-    cost: 0,
-    impact: -10000,
+    scope: "Baseline presentation",
+    planningSignal: "Review buyer confidence",
     velocity: "Slow",
-    description: "Typical price reduction for dated presentation and uncertain buyer confidence.",
+    description: "Review current presentation, disclosure needs, and likely buyer questions before deciding whether updates are warranted.",
   },
   {
     label: "DQG Refresh",
-    cost: 5000,
-    impact: 15000,
+    scope: "Focused refresh",
+    planningSignal: "Improve showing confidence",
     velocity: "Accelerated",
-    description: "Paint, carpet, and high-friction fixes that improve perceived move-in readiness.",
+    description: "Consider paint, flooring, and high-friction fixes that may improve perceived move-in readiness.",
   },
   {
     label: "Designer-Grade Prep",
-    cost: 15000,
-    impact: 45000,
+    scope: "Expanded preparation",
+    planningSignal: "Elevate marketability",
     velocity: "Instant",
-    description: "Staging and finish-profile updates aimed at maximum equity capture.",
+    description: "Review staging and finish-profile updates when presentation quality is central to the launch plan.",
   },
 ];
 
@@ -72,28 +71,12 @@ const timelineSteps: TimelineStep[] = [
   { label: "DQG Simultaneous Close", date: "Day 45", highlight: true },
 ];
 
-const currencyFormatter = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  maximumFractionDigits: 0,
-});
-
-function formatCurrency(value: number) {
-  return currencyFormatter.format(value);
-}
-
-function getPriceBasis(price: number | undefined) {
-  return typeof price === "number" && Number.isFinite(price) && price > 0 ? price : 1200000;
-}
-
 export default function RelatedPropertyLinks({
   authorityLinks = [],
   city,
   neighborhood,
-  price = 1200000,
 }: RelatedPropertyLinksProps) {
   const [activeTab, setActiveTab] = useState<StrategyTab>("prep");
-  const priceBasis = getPriceBasis(price);
   const primaryHref = authorityLinks[0]?.href ?? `/search?city=${encodeURIComponent(city)}`;
   const authorityLabel = neighborhood ? `${city} / ${neighborhood}` : city;
   const visibleAuthorityLinks = authorityLinks.slice(0, 3);
@@ -106,7 +89,6 @@ export default function RelatedPropertyLinks({
       data-related-property-neighborhood={neighborhood || ""}
       data-related-property-authority-label={authorityLabel}
       data-related-property-active-tab={activeTab}
-      data-related-property-price-basis={priceBasis}
       data-related-property-authority-link-count={authorityLinks.length}
       data-related-property-visible-authority-link-count={visibleAuthorityLinks.length}
       data-related-property-primary-href={primaryHref}
@@ -117,14 +99,14 @@ export default function RelatedPropertyLinks({
         <div className="mb-2 flex items-center gap-3">
           <ArrowRightLeft className="h-4 w-4 text-cyan-300" />
           <span className="text-[10px] font-black uppercase tracking-[0.4em] text-cyan-300">
-            Module 08: Strategy Suite
+            Property Planning Context
           </span>
         </div>
         <h2 className="text-4xl font-black uppercase italic tracking-tighter text-white">
-          Tactical Transition Logic
+          Move Planning Considerations
         </h2>
         <p className="mt-2 text-xs uppercase tracking-widest text-white/40">
-          Unified logistical operations for {authorityLabel} moves
+          Preparation and timing context for {authorityLabel} moves
         </p>
       </div>
 
@@ -132,7 +114,7 @@ export default function RelatedPropertyLinks({
         <StrategyButton
           icon={<Hammer size={18} />}
           isActive={activeTab === "prep"}
-          label="Listing Prep ROI"
+          label="Preparation Considerations"
           onClick={() => setActiveTab("prep")}
           tab="prep"
         />
@@ -154,47 +136,35 @@ export default function RelatedPropertyLinks({
           <div
             className="animate-in fade-in duration-700"
             data-testid="reie-related-property-prep-panel"
-            data-related-property-price-basis={priceBasis}
             data-related-property-prep-scenario-count={prepScenarios.length}
           >
             <h3 className="mb-8 text-[11px] font-black uppercase italic tracking-[0.3em] text-cyan-300">
-              The This-vs-That ROI Engine
+              Compare Preparation Approaches
             </h3>
             <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-              {prepScenarios.map((scenario) => {
-                const liftPercent = (scenario.impact / priceBasis) * 100;
-
-                return (
+              {prepScenarios.map((scenario) => (
                   <div
                     key={scenario.label}
                     className="group border border-white/5 bg-white/[0.03] p-6 transition-all hover:border-cyan-300/50"
                     data-testid="reie-related-property-prep-scenario"
                     data-related-property-scenario-label={scenario.label}
-                    data-related-property-scenario-cost={scenario.cost}
-                    data-related-property-scenario-impact={scenario.impact}
                     data-related-property-scenario-velocity={scenario.velocity}
-                    data-related-property-scenario-lift-percent={liftPercent.toFixed(1)}
+                    data-related-property-scenario-scope={scenario.scope}
                   >
                     <div className="mb-4 text-[10px] font-black uppercase tracking-widest text-white/30">
                       {scenario.label}
                     </div>
                     <div className="mb-1 text-2xl font-black italic tracking-tighter text-white">
-                      {formatCurrency(scenario.cost)}
+                      {scenario.scope}
                     </div>
                     <div className="mb-6 text-[9px] font-bold uppercase text-white/40">
-                      Investment Cost
+                      Planning Scope
                     </div>
 
                     <div className="space-y-4 border-t border-white/5 pt-4">
                       <MetricRow
-                        label="Equity Lift"
-                        value={`${scenario.impact > 0 ? "+" : ""}${formatCurrency(scenario.impact)}`}
-                        isPositive={scenario.impact > 0}
-                      />
-                      <MetricRow
-                        label="Price Basis"
-                        value={`${liftPercent > 0 ? "+" : ""}${liftPercent.toFixed(1)}%`}
-                        isPositive={liftPercent > 0}
+                        label="Marketability Focus"
+                        value={scenario.planningSignal}
                       />
                       <MetricRow label="Velocity" value={scenario.velocity} />
                     </div>
@@ -202,9 +172,11 @@ export default function RelatedPropertyLinks({
                       {scenario.description}
                     </p>
                   </div>
-                );
-              })}
+                ))}
             </div>
+            <p className="mt-6 text-[10px] leading-5 text-white/38">
+              Actual costs, timing, and outcomes vary. Review improvements with an advisor before making decisions.
+            </p>
           </div>
         ) : (
           <div
@@ -236,7 +208,7 @@ export default function RelatedPropertyLinks({
                 </p>
                 <p className="text-[10px] italic leading-relaxed text-red-500/80">
                   Dual-mortgage risk identified for 7 days between closing dates.
-                  Recommend bridge-financing review or a post-closing occupancy agreement
+                  Consider reviewing bridge-financing options or a post-closing occupancy agreement
                   to protect liquidity.
                 </p>
               </div>
@@ -256,7 +228,7 @@ export default function RelatedPropertyLinks({
           <div className="mb-4 flex items-center gap-4">
             <ClipboardCheck className="text-cyan-300/50" size={16} />
             <span className="text-[9px] font-bold uppercase italic tracking-[0.3em] text-white/20">
-              Authorized for DQG Strategy Gate Unlocking
+              Advisor Planning Context
             </span>
           </div>
           {authorityLinks.length ? (
@@ -293,7 +265,7 @@ export default function RelatedPropertyLinks({
           data-related-property-primary-href={primaryHref}
           data-related-property-link-source={authorityLinks[0] ? "authority-link" : "city-search-fallback"}
         >
-          Generate Full Transition Brief
+          Review Related Market Context
           <ChevronRight size={14} className="transition-transform group-hover:translate-x-1" />
         </Link>
       </div>
