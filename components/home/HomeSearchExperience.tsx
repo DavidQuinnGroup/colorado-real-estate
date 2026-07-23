@@ -395,6 +395,19 @@ export default function HomeSearchExperience({ authorityLinks = [], faqItems = [
       </div>
 
       <div className="reie-search-list-pane" data-mobile-view={mobileView}>
+        {isEmbedded ? (
+          <div className="reie-search-discovery-intro" data-testid="reie-home-discovery-intro">
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100/70">
+              Colorado Discovery Preview
+            </p>
+            <h3 className="mt-2 text-left text-[18px] font-black leading-tight tracking-normal text-white">
+              Find the homes worth a closer look.
+            </h3>
+            <p className="mt-2 text-left text-[12px] leading-5 text-white/58">
+              Begin with a focused Colorado property preview, then continue when you want more room to compare.
+            </p>
+          </div>
+        ) : null}
         <MapSidebar
           listings={listings}
           selectedProperty={selectedProperty}

@@ -404,7 +404,13 @@ html, body {
 }
 
 .reie-search-discovery-intro {
-  display: none;
+  display: block;
+  flex: 0 0 auto;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  background:
+    linear-gradient(135deg, rgba(100, 188, 205, 0.12), transparent 46%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.048), rgba(7, 11, 16, 0));
+  padding: 14px 16px;
 }
 
 .reie-search-list-pane > [data-testid='reie-map-sidebar'] {
@@ -459,14 +465,30 @@ html, body {
 
 @media (min-width: 768px) {
   .reie-search-discovery-intro {
-    display: block;
-    flex: 0 0 auto;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-    background:
-      linear-gradient(135deg, rgba(100, 188, 205, 0.13), transparent 42%),
-      linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(7, 11, 16, 0));
-    padding: 20px 20px 18px;
+    padding: 16px 20px 14px;
   }
+}
+
+@media (min-width: 1024px) {
+  .home-discovery-container {
+    max-width: 1220px;
+  }
+}
+
+[data-home-search-variant='embedded'] [data-testid='reie-property-card'] {
+  margin: 10px;
+}
+
+[data-home-search-variant='embedded'] [data-testid='reie-property-card'] > .relative {
+  aspect-ratio: 16 / 6.5;
+}
+
+[data-home-search-variant='embedded'] [data-testid='reie-property-card-decision'] {
+  margin-top: 12px;
+}
+
+[data-home-search-variant='embedded'] [data-testid='reie-property-card-intelligence'] {
+  margin-top: 10px;
 }
 
 [data-testid='reie-search-map-diagnostics'] {

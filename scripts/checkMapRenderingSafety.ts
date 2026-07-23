@@ -2,7 +2,8 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
 async function main() {
-  const [homeSearch, searchInterface, globalsCss, searchMap, selectedDrawer, packageJson, searchControls, mapSidebar, propertyCard, saveSearch] = await Promise.all([
+  const [homePage, homeSearch, searchInterface, globalsCss, searchMap, selectedDrawer, packageJson, searchControls, mapSidebar, propertyCard, saveSearch] = await Promise.all([
+    readFile('app/page.tsx', 'utf8'),
     readFile('components/home/HomeSearchExperience.tsx', 'utf8'),
     readFile('components/search/SearchInterface.tsx', 'utf8'),
     readFile('app/globals.css', 'utf8'),
@@ -29,6 +30,7 @@ async function main() {
 
   assert(globalsCss.includes('.reie-search-experience-shell'), 'Global CSS must define public search shell layout.');
   assert(globalsCss.includes('.reie-search-discovery-intro'), 'Global CSS must define the dedicated search discovery intro.');
+  assert(globalsCss.includes('.home-discovery-container'), 'Global CSS must define the homepage discovery container refinement.');
   assert(globalsCss.includes('flex-direction: row;'), 'Global CSS must force desktop search shell row layout.');
   assert(globalsCss.includes('.reie-search-map-pane'), 'Global CSS must define public search map pane visibility.');
   assert(globalsCss.includes(".reie-search-map-pane[data-mobile-view='list']"), 'Global CSS must preserve mobile list/map switching.');
@@ -56,6 +58,20 @@ async function main() {
   assert(searchInterface.includes("aria-pressed={mobileView === 'list'}"), 'Mobile list toggle must expose aria-pressed state.');
   assert(searchInterface.includes("aria-pressed={mobileView === 'map'}"), 'Mobile map toggle must expose aria-pressed state.');
   assert(!searchInterface.match(/public inventory command center|command center|internal diagnostics|smoke-ready|source-health|duration diagnostics/i), 'Dedicated search shell must avoid internal operational terminology.');
+  assert(homePage.includes('Start with fit, context, and confidence.'), 'Homepage discovery section must use Wave 2D fit/context/confidence framing.');
+  assert(homePage.includes('Search is the beginning of the decision, not the entire decision.'), 'Homepage discovery section must explain the advisory search boundary.');
+  assert(homePage.includes('href="/search"'), 'Homepage discovery section must include a full search CTA.');
+  assert(homePage.includes('href="/grand-plan"'), 'Homepage discovery section must preserve one subordinate Grand Plan path.');
+  assert(homePage.includes('data-testid="home-discovery-principles"'), 'Homepage discovery principles must expose a stable verification handle.');
+  assert(homePage.includes('data-testid="home-discovery-continuation"'), 'Homepage discovery continuation CTA must expose a stable verification handle.');
+  assert(homeSearch.includes('Colorado Discovery Preview'), 'Embedded homepage search must include concise discovery preview framing.');
+  assert(homeSearch.includes('Colorado property preview'), 'Embedded homepage search must use geographically accurate preview language.');
+  assert(homeSearch.includes('data-testid="reie-home-discovery-intro"'), 'Embedded homepage search must expose a stable discovery intro handle.');
+  assert(!homeSearch.includes('data-testid="reie-home-discovery-full-search-link"'), 'Embedded homepage search must not duplicate the section full-search CTA.');
+  assert(!homeSearch.includes('data-testid="reie-home-discovery-grand-plan-link"'), 'Embedded homepage search must not duplicate the section Grand Plan CTA.');
+  assert(!homeSearch.includes('Boulder-area preview'), 'Embedded homepage search must not imply a geographic limitation that runtime does not enforce.');
+  assert(homeSearch.includes('onBoundsChange={fetchListings}'), 'Homepage embedded search must preserve map bounds search updates.');
+  assert(homeSearch.includes('buildSearchUrl(bounds, nextFilters)'), 'Homepage embedded search must preserve existing search URL construction.');
   assert(searchControls.includes('Refine Your Search'), 'Search controls must use customer-facing refinement language.');
   assert(searchControls.includes('Share Search'), 'Search controls must preserve share behavior with customer-facing labeling.');
   assert(searchControls.includes('Clear Filters'), 'Search controls must preserve reset behavior with customer-facing labeling.');

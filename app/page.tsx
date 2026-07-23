@@ -363,17 +363,43 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section id="search" className="px-4 py-28 sm:px-8 sm:py-36 lg:px-12" data-testid="home-portal-search-section">
-          <div className={containerShell}>
-            <div className="mb-12 max-w-3xl">
-              <p className={eyebrowClass}>Search</p>
-              <h2 className={headingClass}>Search when the strategy is clear.</h2>
-              <p className={bodyClass}>
-                Explore Colorado inventory with map-led search, focused filters, listing cards, saved-search paths,
-                and property context designed to support the next decision.
-              </p>
+        <section id="search" className="px-4 py-20 sm:px-8 sm:py-24 lg:px-12" data-testid="home-portal-search-section">
+          <div className={`${containerShell} home-discovery-container`}>
+            <div className="mb-8 flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+              <div className="max-w-3xl text-left">
+                <p className={eyebrowClass}>Guided Discovery</p>
+                <h2 className={headingClass}>Start with fit, context, and confidence.</h2>
+                <p className={bodyClass}>
+                  Explore Colorado homes through the places, routines, and priorities that shape daily life.
+                  Search is the beginning of the decision, not the entire decision.
+                </p>
+              </div>
+              <div className="flex flex-col gap-3 sm:flex-row lg:justify-end">
+                <Link href="/search" className={primaryButtonClass}>
+                  Continue to Guided Search
+                </Link>
+                <Link href="/grand-plan" className={secondaryButtonClass}>
+                  Build Your Grand Plan™
+                </Link>
+              </div>
+            </div>
+            <div className="mb-6 grid gap-4 md:grid-cols-3" data-testid="home-discovery-principles">
+              {[
+                'Compare daily-life fit, not just price and photos.',
+                'Add property and neighborhood context.',
+                'Continue into guided search when you are ready to refine.',
+              ].map((principle) => (
+                <p key={principle} className="rounded-[10px] border border-white/10 bg-white/[0.045] px-5 py-4 text-sm font-bold leading-6 text-white/66">
+                  {principle}
+                </p>
+              ))}
             </div>
             <HomeSearchExperience authorityLinks={authorityLinks} faqItems={homeFaqs} variant="embedded" />
+            <div className="mt-4 flex justify-end" data-testid="home-discovery-continuation">
+              <Link href="/search" className={secondaryButtonClass}>
+                Continue to Guided Search
+              </Link>
+            </div>
           </div>
         </section>
 
