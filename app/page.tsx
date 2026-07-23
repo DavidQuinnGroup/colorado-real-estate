@@ -22,14 +22,14 @@ const homeToolSchemaKeywords = [
 ];
 
 export const metadata: Metadata = {
-  title: 'Colorado Real Estate Intelligence Engine | David Quinn Group',
+  title: 'Colorado Real Estate Intelligence | David Quinn Group',
   description:
     'Search Colorado homes with David Quinn Group real estate intelligence for Boulder, Denver, and the Front Range, including market context, structural signals, and buyer strategy.',
   alternates: {
     canonical: SITE_URL,
   },
   openGraph: {
-    title: 'Colorado Real Estate Intelligence Engine | David Quinn Group',
+    title: 'Colorado Real Estate Intelligence | David Quinn Group',
     description:
       'Interactive Colorado property search and market intelligence for Boulder, Denver, and the Front Range.',
     url: SITE_URL,
@@ -44,7 +44,7 @@ const navigationLinks = [
   { label: 'Communities', href: '#communities' },
   { label: 'Sell', href: '/sell' },
   { label: 'Grand Plan™', href: '/grand-plan' },
-  { label: 'About', href: '#why-david-quinn' },
+  { label: 'About', href: '/about' },
   { label: 'Contact', href: '/contact' },
 ];
 
@@ -119,9 +119,9 @@ const davidQuinnSignals = [
   'Advisory planning for buyers, sellers, and owners',
 ];
 
-const testimonialSignals = [
-  'Review integration remains pending owner-approved source selection.',
-  'Public testimonials will only publish after approval, attribution, and replacement of this draft fixture.',
+const decisionSignals = [
+  'A good search should help you understand what matters before the market asks you to decide quickly.',
+  'Construction perspective, lifestyle fit, and market context work together so the next step feels deliberate.',
 ];
 
 const homeToolSchema = buildToolSchema({
@@ -164,9 +164,9 @@ function buildHomeAuthorityLinks(): HomeAuthorityLink[] {
 function buildHomeFaqs(): FAQItem[] {
   return [
     {
-      question: 'What is the David Quinn Group Real Estate Intelligence Engine?',
+      question: 'What is David Quinn Group real estate intelligence?',
       answer:
-        'The Real Estate Intelligence Engine is David Quinn Group’s Colorado property search and market intelligence platform for Boulder, Denver, and the Front Range. It combines inventory discovery, market context, neighborhood authority paths, construction awareness, and buyer or seller strategy.',
+        'David Quinn Group real estate intelligence is a Colorado property search and advisory experience for Boulder, Denver, and the Front Range. It combines inventory discovery, market context, neighborhood paths, construction awareness, and buyer or seller strategy.',
     },
     {
       question: 'How does REIE help Colorado home buyers?',
@@ -278,6 +278,11 @@ export default function HomePage() {
               <h2 className={headingClass}>
                 A clearer way to evaluate Colorado real estate.
               </h2>
+              <p className={bodyClass}>
+                REIE exists to help clients make better real estate decisions, not simply browse more listings.
+                Search is the starting point; the advisory layer adds property context, construction perspective,
+                neighborhood signals, and planning prompts so each move feels more informed.
+              </p>
             </div>
             <div className="mt-16 grid gap-6 md:grid-cols-3">
               {reiePillars.map((pillar) => (
@@ -364,7 +369,8 @@ export default function HomePage() {
               <p className={eyebrowClass}>Search</p>
               <h2 className={headingClass}>Search when the strategy is clear.</h2>
               <p className={bodyClass}>
-                Explore Colorado inventory with the existing REIE map, filters, listing cards, saved-search path, and property routes preserved.
+                Explore Colorado inventory with map-led search, focused filters, listing cards, saved-search paths,
+                and property context designed to support the next decision.
               </p>
             </div>
             <HomeSearchExperience authorityLinks={authorityLinks} faqItems={homeFaqs} variant="embedded" />
@@ -396,18 +402,18 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className={sectionShell} data-testid="home-portal-testimonials">
+        <section className={sectionShell} data-testid="home-portal-decision-confidence">
           <div className={containerShell}>
             <div className="max-w-3xl">
-              <p className={eyebrowClass}>Client Perspective</p>
-              <h2 className={headingClass}>Testimonials pending approved source.</h2>
+              <p className={eyebrowClass}>Decision Confidence</p>
+              <h2 className={headingClass}>Guidance before the pressure point.</h2>
             </div>
             <div className="mt-14 grid gap-6 md:grid-cols-2">
-              {testimonialSignals.map((signal) => (
+              {decisionSignals.map((signal) => (
                 <article
                   key={signal}
                   className="rounded-[14px] bg-white/[0.045] p-8 shadow-[0_22px_70px_rgba(0,0,0,0.14)] ring-1 ring-white/10"
-                  data-testimonial-source="OWNER_APPROVED_REVIEW_SOURCE_REQUIRED"
+                  data-advisory-signal="decision-confidence"
                 >
                   <p className="text-sm leading-7 text-white/64">{signal}</p>
                 </article>

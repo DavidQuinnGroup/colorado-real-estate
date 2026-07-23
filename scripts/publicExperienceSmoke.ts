@@ -82,6 +82,25 @@ async function assertHomePortalPage() {
   assert.ok(html.includes('<link rel="canonical" href="https://davidquinngroup.com"'), 'Expected home canonical metadata to be preserved.');
 }
 
+async function assertAboutAdvisorExperiencePage() {
+  const html = await fetchHtml('/about');
+
+  assert.ok(includesFoldedText(html, 'Advisor Experience'), 'Expected about advisor experience positioning.');
+  assert.ok(includesFoldedText(html, 'Why REIE Exists'), 'Expected about page to explain why REIE exists.');
+  assert.ok(includesFoldedText(html, 'Construction Expertise'), 'Expected about page construction expertise section.');
+  assert.ok(includesFoldedText(html, 'Advisory Philosophy'), 'Expected about page advisory philosophy section.');
+  assert.ok(includesFoldedText(html, 'How I Work With Clients'), 'Expected about page client working model.');
+  assert.ok(includesFoldedText(html, 'What Makes This Different'), 'Expected about page differentiation section.');
+  assert.ok(includesFoldedText(html, 'The Grand Plan Approach'), 'Expected about page Grand Plan section.');
+  assert.ok(includesFoldedText(html, 'What Clients Can Expect'), 'Expected about page customer expectation section.');
+  assert.ok(includesFoldedText(html, 'Begin with the question you need answered'), 'Expected about page next-step CTA.');
+  assert.ok(html.includes('data-testid="about-advisor-page"'), 'Expected about page stable shell handle.');
+  assert.ok(html.includes('data-testid="about-decision-framework"'), 'Expected about page decision framework handle.');
+  assert.ok(html.includes('<link rel="canonical" href="https://davidquinngroup.com/about"'), 'Expected about canonical metadata.');
+  assert.ok(!includesFoldedText(html, 'traditional biography'), 'Expected about page not to present itself as a traditional biography.');
+  assert.ok(!includesFoldedText(html, 'pending approved source'), 'Expected about page not to expose placeholder review language.');
+}
+
 async function assertSellerPage() {
   const html = await fetchHtml('/sell');
 
@@ -92,6 +111,67 @@ async function assertSellerPage() {
   assert.ok(html.includes('data-testid="seller-intake-form"'), 'Expected seller intake form test handle.');
   assert.ok(!includesFoldedText(html, 'Estimated Value'), 'Expected seller page not to render fabricated instant valuation copy.');
   assert.ok(!includesFoldedText(html, 'REIE CRM'), 'Expected seller page not to expose CRM terminology.');
+}
+
+async function assertPublicBrandVoiceSource() {
+  const publicFiles = [
+    'app/page.tsx',
+    'app/about/page.tsx',
+    'app/search/page.tsx',
+    'app/properties/[id]/page.tsx',
+    'app/grand-plan/page.tsx',
+    'app/sell/page.tsx',
+    'app/market/[city]/page.tsx',
+    'app/market/[city]/[slug]/page.tsx',
+    'components/home/HomeSearchExperience.tsx',
+    'components/search/SearchInterface.tsx',
+    'components/maps/SearchMap.tsx',
+    'components/maps/MapSidebar.tsx',
+    'components/settings/NorthStarManager.tsx',
+    'components/Footer.tsx',
+    'components/PropertyInquiryForm.tsx',
+    'components/LeadCapture.tsx',
+    'components/maps/SaveSearch.tsx',
+  ];
+  const flaggedTerms = [
+    'Module',
+    'Engine',
+    'Runtime',
+    'Adapter',
+    'Repository',
+    'Governance',
+    'Executive',
+    'Sprint',
+    'Internal Preview',
+    'MCP',
+    'Client DNA',
+    'Repository Studio',
+  ];
+  const obsoleteMarkers = [
+    'pending approved source',
+    'draft fixture',
+    'owner and brokerage review',
+    'OWNER_APPROVED_REVIEW_SOURCE_REQUIRED',
+    'Module 04',
+    'Encrypting Client DNA',
+  ];
+
+  for (const file of publicFiles) {
+    const rawSource = await readFile(file, 'utf8');
+    const source = rawSource
+      .split('Colorado Real Estate Intelligence Engine')
+      .join('Colorado Real Estate Intelligence')
+      .split('Real Estate Intelligence Engine')
+      .join('Real Estate Intelligence');
+
+    for (const term of flaggedTerms) {
+      assert.ok(!source.includes(term), `${file} exposes unintended public engineering language: ${term}`);
+    }
+
+    for (const marker of obsoleteMarkers) {
+      assert.ok(!rawSource.toLowerCase().includes(marker.toLowerCase()), `${file} exposes obsolete placeholder language: ${marker}`);
+    }
+  }
 }
 
 async function assertDrawerSource() {
@@ -1760,9 +1840,11 @@ async function main() {
   const propertyPath = `/properties/${property.slug || property.id}`;
 
   await assertHomePortalPage();
+  await assertAboutAdvisorExperiencePage();
   await assertSellerPage();
   await assertPropertyPage(propertyPath);
   await assertSearchPage();
+  await assertPublicBrandVoiceSource();
   await assertDrawerSource();
   await assertPropertyDetailSource();
   await assertLuxuryPopupSource();
@@ -1818,6 +1900,7 @@ async function main() {
         },
         assertions: {
           homePortalRestoration: true,
+          aboutAdvisorExperience: true,
           sellerJourneyEntry: true,
           propertyDecisionSnapshot: true,
           propertyInquiryGuidance: true,
@@ -1828,6 +1911,7 @@ async function main() {
           deadLetterPageMetadata: true,
           deadLetterInspectionMetadata: true,
           selectedDrawerInquiryTarget: true,
+          publicBrandVoiceSafety: true,
         },
       },
       null,

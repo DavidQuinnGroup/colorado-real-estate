@@ -91,7 +91,7 @@ function buildSearchFaqs(): FAQItem[] {
     {
       question: 'What does the David Quinn Group Colorado real estate search evaluate?',
       answer:
-        'The search evaluates Colorado inventory through the Real Estate Intelligence Engine, combining map-based MLS discovery, pricing context, property signals, neighborhood authority paths, and buyer or seller strategy.',
+        'The search evaluates Colorado inventory through real estate intelligence, combining map-based MLS discovery, pricing context, property signals, neighborhood paths, and buyer or seller strategy.',
     },
     {
       question: 'How is REIE search different from a standard home search?',

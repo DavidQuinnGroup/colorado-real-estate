@@ -36,6 +36,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'weekly',
       priority: 0.8,
     },
+    {
+      url: url('/about'),
+      lastModified: now,
+      changeFrequency: 'weekly',
+      priority: 0.7,
+    },
     ...publicTrustRoutes.map((route) => ({
       url: url(route.href),
       lastModified: now,

@@ -270,7 +270,7 @@ function getNeighborhoodFaqs(neighborhood: Neighborhood): FAQItem[] {
   return [
     {
       question: `What does David Quinn Group evaluate in ${neighborhood.name}, ${neighborhood.city}?`,
-      answer: `David Quinn Group evaluates ${neighborhood.name} through the Real Estate Intelligence Engine, combining inventory state, construction diligence, resilience score, fire risk, insurance complexity, soil profile, altitude, lifestyle efficiency, and negotiation leverage.`,
+      answer: `David Quinn Group evaluates ${neighborhood.name} through real estate intelligence, combining inventory state, construction diligence, resilience score, fire risk, insurance complexity, soil profile, altitude, lifestyle efficiency, and negotiation leverage.`,
     },
     {
       question: `Why does construction forensics matter in ${neighborhood.name}?`,

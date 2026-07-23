@@ -247,16 +247,16 @@ export default function NorthStarManager({ isOpen, onClose, initialAnchors, onSa
               <div className="mb-4 flex items-center gap-3">
                 <div className="h-2 w-2 animate-pulse rounded-full bg-[#00ff80] shadow-[0_0_15px_#00ff80]" />
                 <span className="text-[10px] font-black uppercase italic tracking-[0.5em] text-[#00ff80]">
-                  Module 04: Efficiency Engine
+                  North Star Efficiency
                 </span>
               </div>
               <h2 className="text-6xl font-black uppercase italic leading-[0.85] tracking-tighter text-white">
-                The Ritual
+                North Star
                 <br />
-                Manager
+                Planner
               </h2>
               <p className="mt-6 max-w-[300px] text-[10px] font-bold uppercase tracking-[0.2em] text-white/40">
-                Quantifying life ROI through spatial alignment
+                Clarify the places that shape daily life
               </p>
             </div>
             <button
@@ -271,8 +271,8 @@ export default function NorthStarManager({ isOpen, onClose, initialAnchors, onSa
           <div className="custom-scrollbar flex-1 space-y-16 overflow-y-auto p-12">
             <section>
               <div className="mb-8 flex items-center justify-between">
-                <h3 className="text-[11px] font-black uppercase italic tracking-[0.4em] text-white/30">Fixed Authority Center</h3>
-                <span className="animate-pulse text-[9px] font-black uppercase tracking-widest text-[#00ff80]">Sync Active</span>
+                <h3 className="text-[11px] font-black uppercase italic tracking-[0.4em] text-white/30">Primary Reference Point</h3>
+                <span className="animate-pulse text-[9px] font-black uppercase tracking-widest text-[#00ff80]">Ready</span>
               </div>
               <div className="group relative overflow-hidden border border-[#00ff80]/30 bg-white/[0.03] p-8">
                 <div className="absolute right-0 top-0 p-4 opacity-5 transition-opacity group-hover:opacity-20">
@@ -354,7 +354,7 @@ export default function NorthStarManager({ isOpen, onClose, initialAnchors, onSa
                             onChange={(event) => updateAnchor(anchor.id, 'type', parseAnchorType(event.target.value))}
                             className="cursor-pointer border-b border-white/10 bg-transparent pb-1 text-[10px] font-black uppercase tracking-[0.2em] text-[#00ff80] outline-none"
                           >
-                            <option value="work">Work / Executive</option>
+                            <option value="work">Work / Office</option>
                             <option value="fbo">Private Aviation / FBO</option>
                             <option value="school">Education / Legacy</option>
                             <option value="ritual">Health / Ritual</option>
@@ -374,7 +374,7 @@ export default function NorthStarManager({ isOpen, onClose, initialAnchors, onSa
                             type="text"
                             value={anchor.address}
                             onChange={(event) => updateAnchor(anchor.id, 'address', event.target.value)}
-                            placeholder="INITIALIZE ADDRESS..."
+                            placeholder="ADDRESS OR PLACE..."
                             className="w-full border-b border-white/5 bg-transparent pb-2 pl-8 text-[11px] font-bold uppercase tracking-[0.2em] text-white/70 outline-none transition-colors placeholder:text-white/10 focus:border-[#00ff80]"
                           />
                         </div>
@@ -427,12 +427,12 @@ export default function NorthStarManager({ isOpen, onClose, initialAnchors, onSa
               className="group relative w-full overflow-hidden bg-[#00ff80] py-8 text-2xl font-black uppercase italic tracking-[0.4em] text-black shadow-[0_0_50px_rgba(0,255,128,0.2)] transition-all hover:bg-white"
               type="button"
             >
-              <span className="relative z-10">Sync Efficiency</span>
+              <span className="relative z-10">Save Anchors</span>
               <div className="absolute inset-0 translate-y-full bg-white transition-transform duration-300 group-hover:translate-y-0" />
             </button>
             <div className="mt-8 flex justify-center gap-6 opacity-40">
               <p className="text-[9px] font-black uppercase italic tracking-[0.5em] text-white/50">
-                Encrypting Client DNA for Strategy Synthesis
+                Keeping planning context focused and useful
               </p>
             </div>
           </div>

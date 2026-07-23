@@ -372,7 +372,7 @@ function getPropertyFaqs(property: PropertyWithPhotos): FAQItem[] {
   return [
     {
       question: `What does David Quinn Group evaluate for ${property.address}?`,
-      answer: `David Quinn Group evaluates ${property.address}${neighborhoodContext} through the Real Estate Intelligence Engine, combining price context, MLS inventory signals, construction condition, resilience posture, location quality, and buyer or seller strategy.`,
+      answer: `David Quinn Group evaluates ${property.address}${neighborhoodContext} through real estate intelligence, combining price context, MLS inventory signals, construction condition, resilience posture, location quality, and buyer or seller strategy.`,
     },
     {
       question: `Why does construction diligence matter for ${property.address}?`,

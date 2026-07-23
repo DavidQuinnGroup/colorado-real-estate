@@ -333,7 +333,7 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
             <div className="mt-8 flex items-center gap-4">
               <ShieldCheck className="text-white/20" size={20} />
               <p className="text-[9px] font-bold uppercase italic leading-tight tracking-[0.2em] text-white/20">
-                Draft construction-context signal pending owner and brokerage review.
+                Construction context helps frame condition questions, preparation needs, and offer strategy before the next advisory conversation.
               </p>
             </div>
           </div>

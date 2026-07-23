@@ -20,9 +20,9 @@ type RootLayoutProps = {
 };
 
 export const metadata = {
-  title: 'David Quinn Group | Real Estate Intelligence Engine',
+  title: 'David Quinn Group | Colorado Real Estate Advisory',
   description:
-    "Advanced structural forensics, efficiency auditing, and strategic real estate consultation for Colorado's Front Range.",
+    "Construction-informed real estate advisory, property search, and strategic planning for Colorado's Front Range.",
 };
 
 export default function RootLayout({ children }: RootLayoutProps) {
