@@ -243,10 +243,10 @@ function StatTile({ icon, label, value }: { icon: ReactNode; label: string; valu
 }
 
 function SearchIntelligenceStrip({ stats }: { stats: InventoryStats }) {
-  const mappedLabel = stats.mappedCount > 0 ? `${stats.mappedCount} listings shown on the map` : 'Map view loading';
+  const mappedLabel = stats.mappedCount > 0 ? `${stats.mappedCount} listings placed on the map` : 'Map view loading';
   const resilienceLabel =
-    stats.averageResilience === null ? 'Property context pending' : `${stats.averageResilience} property signal average`;
-  const reviewLabel = stats.reviewCount > 0 ? `${stats.reviewCount} listings need a closer look` : 'No major review prompts';
+    stats.averageResilience === null ? 'Property context pending' : 'Property signals available';
+  const reviewLabel = stats.reviewCount > 0 ? `${stats.reviewCount} listings may need extra diligence` : 'No major diligence prompts';
 
   return (
     <div
@@ -259,7 +259,7 @@ function SearchIntelligenceStrip({ stats }: { stats: InventoryStats }) {
       <div className="flex items-center justify-between gap-3">
         <p className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100/78">Discovery Summary</p>
         <span className="rounded-[4px] border border-cyan-100/20 bg-black/30 px-2 py-1 text-[9px] font-black uppercase tracking-[0.12em] text-cyan-100/70">
-          Live
+          Helpful Context
         </span>
       </div>
       <div className="mt-3 grid gap-2 text-[10px] font-black uppercase leading-4 tracking-[0.12em] text-white/58">
@@ -309,7 +309,7 @@ function ResultsToolbar({
             Listings to Explore
           </p>
           <p className="mt-1 truncate text-[11px] font-black uppercase tracking-[0.1em] text-white/45">
-            {isLoading ? 'Updating available listings' : `${stats.dominantCity} discovery view`}
+            {isLoading ? 'Updating available listings' : hasActiveFilters ? 'Focused Results' : `${stats.dominantCity} open view`}
           </p>
         </div>
 
@@ -324,7 +324,7 @@ function ResultsToolbar({
           </div>
           <div className="min-w-[58px] border-l border-white/10 px-2 py-1.5">
             <p className="text-[9px] font-black uppercase tracking-[0.12em] text-white/34">Mode</p>
-            <p className="mt-0.5 text-[11px] font-black leading-none text-white">{hasActiveFilters ? 'Filtered' : 'Live'}</p>
+            <p className="mt-0.5 text-[11px] font-black leading-none text-white">{hasActiveFilters ? 'Focused' : 'Open'}</p>
           </div>
         </div>
       </div>
@@ -392,7 +392,7 @@ export default function MapSidebar(props: MapSidebarProps) {
         <div className="relative">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.28em] text-cyan-100/72">Property Context</p>
+              <p className="text-[10px] font-black uppercase tracking-[0.28em] text-cyan-100/72">Discovery Summary</p>
               <h2 className="mt-2 font-serif text-[2.15rem] font-black leading-none tracking-normal text-white">
                 Available Listings
               </h2>
@@ -415,7 +415,7 @@ export default function MapSidebar(props: MapSidebarProps) {
           <div className="mt-5 rounded-[8px] border border-white/10 bg-black/24 p-3">
             <div className="flex items-end justify-between gap-4">
               <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/38">Primary Market</p>
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/38">Market</p>
                 <p className="mt-1 text-[17px] font-black uppercase leading-none text-white">{stats.dominantCity}</p>
               </div>
               <div className="text-right">
@@ -426,11 +426,11 @@ export default function MapSidebar(props: MapSidebarProps) {
 
             <div className="mt-3 grid grid-cols-3 gap-2">
               <div className="rounded-[6px] bg-white/[0.055] px-3 py-2">
-                <p className="text-[10px] font-black uppercase tracking-[0.14em] text-white/34">Low</p>
+                <p className="text-[10px] font-black uppercase tracking-[0.14em] text-white/34">From</p>
                 <p className="mt-1 text-sm font-black text-white">{formatCompactPrice(stats.priceFloor)}</p>
               </div>
               <div className="rounded-[6px] bg-white/[0.055] px-3 py-2">
-                <p className="text-[10px] font-black uppercase tracking-[0.14em] text-white/34">High</p>
+                <p className="text-[10px] font-black uppercase tracking-[0.14em] text-white/34">To</p>
                 <p className="mt-1 text-sm font-black text-white">{formatCompactPrice(stats.priceCeiling)}</p>
               </div>
               <div className="rounded-[6px] bg-white/[0.055] px-3 py-2">
@@ -441,9 +441,9 @@ export default function MapSidebar(props: MapSidebarProps) {
           </div>
 
           <div className="mt-3 grid grid-cols-3 gap-2">
-            <StatTile icon={<MapPinned size={13} aria-hidden="true" />} label="Shown" value={stats.mappedCount} />
-            <StatTile icon={<ShieldCheck size={13} aria-hidden="true" />} label="Signal" value={stats.averageResilience === null ? '--' : `${stats.averageResilience}`} />
-            <StatTile icon={<Gauge size={13} aria-hidden="true" />} label="Context" value={stats.reviewCount} />
+            <StatTile icon={<MapPinned size={13} aria-hidden="true" />} label="On Map" value={stats.mappedCount} />
+            <StatTile icon={<ShieldCheck size={13} aria-hidden="true" />} label="Signals" value={stats.averageResilience === null ? '--' : 'Yes'} />
+            <StatTile icon={<Gauge size={13} aria-hidden="true" />} label="Diligence" value={stats.reviewCount} />
           </div>
 
           <SearchIntelligenceStrip stats={stats} />
@@ -496,7 +496,7 @@ export default function MapSidebar(props: MapSidebarProps) {
               >
                 <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100/72">
                   <Bell size={13} aria-hidden="true" />
-                  Search
+                  Explore
                 </p>
                 <p className="mt-1 truncate text-[10px] font-black uppercase tracking-[0.08em] text-white/55 transition-colors group-hover:text-white">
                   More Listings
@@ -560,6 +560,12 @@ export default function MapSidebar(props: MapSidebarProps) {
           <Suspense fallback={<SaveSearchFallback />}>
             <SaveSearch city={stats.dominantCity} />
           </Suspense>
+        </div>
+        <div className="border-t border-white/10 bg-[#070b10] px-4 py-5" data-testid="reie-sidebar-guidance">
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100/70">Helpful Next Steps</p>
+          <p className="mt-2 text-xs leading-5 text-white/42">
+            Compare a short list, open the details that feel promising, and save the search when you want to keep watching this market.
+          </p>
         </div>
       </div>
 

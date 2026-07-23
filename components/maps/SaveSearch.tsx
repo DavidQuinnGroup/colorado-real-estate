@@ -131,7 +131,7 @@ function getCustomerFollowUpLabel(level: SaveSearchResponse['alertReadiness'] ex
 }
 
 function getSavedMessage(result: SaveSearchResponse | null) {
-  if (!result?.alertReadiness) return 'Your search criteria were saved for inventory updates and advisor follow-up.';
+  if (!result?.alertReadiness) return 'Your search criteria were saved for relevant listing updates and advisor follow-up.';
   return result.alertReadiness.summary;
 }
 
@@ -356,7 +356,7 @@ export default function SaveSearch({ city }: SaveSearchProps) {
               <Bell size={16} aria-hidden="true" />
             </span>
             <div className="min-w-0">
-              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-white/55">Save Search</p>
+              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-white/55">Save This Search</p>
               <p className="mt-1 truncate text-[10px] font-bold uppercase tracking-[0.12em] text-white/35">{statusText}</p>
             </div>
           </div>
@@ -364,7 +364,7 @@ export default function SaveSearch({ city }: SaveSearchProps) {
           {isSaving ? <Loader2 size={16} className="mt-0.5 shrink-0 animate-spin text-cyan-300" /> : null}
         </div>
         <p className="mt-3 text-xs leading-5 text-white/48">
-          Capture this market view, current filters, and REIE intent for follow-up.
+          Keep an eye on new matches and preserve the filters that shaped this search.
         </p>
         <div
           className="mt-3 grid grid-cols-2 overflow-hidden rounded-[6px] border border-white/10 bg-black/24"
@@ -388,7 +388,7 @@ export default function SaveSearch({ city }: SaveSearchProps) {
           <label className="relative block min-w-0">
             <span className="mb-2 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.14em] text-white/38">
               <Sparkles size={12} aria-hidden="true" className="text-cyan-100/60" />
-              REIE Intent
+              Search Goal
             </span>
             <select
               value={goal}
@@ -508,7 +508,7 @@ export default function SaveSearch({ city }: SaveSearchProps) {
               setNotes(event.target.value);
               resetErrorState();
             }}
-            placeholder="Optional notes"
+            placeholder="Optional notes about what you want to compare"
             style={notesControlStyle}
             className="min-h-16 w-full resize-none rounded-[6px] border border-white/10 bg-white/[0.055] px-3 py-2 text-xs leading-5 text-white outline-none transition-colors placeholder:text-white/25 focus:border-cyan-200/70 disabled:cursor-not-allowed disabled:opacity-60"
             data-testid="reie-save-search-notes"
@@ -523,9 +523,11 @@ export default function SaveSearch({ city }: SaveSearchProps) {
           data-testid="reie-save-search-status"
           data-save-search-state={submitState}
           data-save-search-error={error || ''}
-          data-save-search-status-text={error || 'Saved searches include this map view and current filters.'}
+          data-save-search-status-text={error || 'Receive updates when relevant listings appear.'}
         >
-          <p className={`min-w-0 text-xs font-bold ${error ? 'text-red-300' : 'text-white/35'}`}>{error || 'Saved searches include this map view and current filters.'}</p>
+          <p className={`min-w-0 text-xs font-bold ${error ? 'text-red-300' : 'text-white/35'}`}>
+            {error || 'Receive updates when relevant listings appear.'}
+          </p>
         </div>
         <p
           className="text-xs leading-5 text-white/38"

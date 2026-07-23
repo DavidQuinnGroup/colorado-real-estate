@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowUpRight, Bath, BedDouble, Gauge, ImageOff, MapPin, Ruler, ShieldCheck, Sparkles, TriangleAlert } from 'lucide-react';
+import { ArrowUpRight, Bath, BedDouble, ImageOff, MapPin, Ruler, ShieldCheck, Sparkles, TriangleAlert } from 'lucide-react';
 import type { CSSProperties, KeyboardEvent } from 'react';
 import { useMemo, useState } from 'react';
 
@@ -21,15 +21,6 @@ type ImageFallbackState = {
   activeSrc: string;
 };
 
-const actionButtonStyle: CSSProperties = {
-  alignItems: 'center',
-  boxSizing: 'border-box',
-  display: 'inline-flex',
-  height: 34,
-  justifyContent: 'center',
-  width: 34,
-};
-
 const heroStatStyle: CSSProperties = {
   alignItems: 'center',
   boxSizing: 'border-box',
@@ -42,20 +33,6 @@ function getNumericValue(value: number | string | null | undefined) {
 
   const parsed = typeof value === 'number' ? value : Number(String(value).replace(/[$,]/g, ''));
   return Number.isFinite(parsed) ? parsed : null;
-}
-
-function formatNumber(value: number | string | null | undefined) {
-  const numericValue = getNumericValue(value);
-  if (numericValue === null) return '--';
-
-  return numericValue.toLocaleString();
-}
-
-function formatSecondaryStats(property: MapSidebarListing) {
-  const baths = formatNumber(property.baths);
-  const sqft = formatNumber(property.sqft);
-
-  return `${baths} Baths / ${sqft} Sq Ft`;
 }
 
 function getCompactStat(value: number | string | null | undefined, fallback: string) {
@@ -73,18 +50,18 @@ function getReviewSignal(property: MapSidebarListing) {
   if (property.hasPolybutyleneRisk) return 'Plumbing Review';
   if (property.soilType?.trim()) return property.soilType.trim();
   if (typeof property.altitude === 'number' && Number.isFinite(property.altitude)) {
-    return `${Math.round(property.altitude).toLocaleString()} Ft`;
+    return 'Elevation Context';
   }
 
-  return 'REIE Verified';
+  return 'Public Listing Context Available';
 }
 
 function getDecisionLabel(property: MapSidebarListing) {
-  if (property.hasPolybutyleneRisk) return 'Contractor review before offer';
-  if (!isResidentialListing(property.propertyType)) return 'Special-use diligence';
-  if (typeof property.resilienceScore === 'number' && property.resilienceScore >= 80) return 'Resilience screened';
+  if (property.hasPolybutyleneRisk) return 'Worth a closer plumbing review';
+  if (!isResidentialListing(property.propertyType)) return 'Special-use details deserve a closer look';
+  if (typeof property.resilienceScore === 'number' && property.resilienceScore >= 80) return 'Ready for a closer look';
 
-  return 'REIE triage ready';
+  return 'Public listing context available';
 }
 
 function isResidentialListing(value: string | null | undefined) {
@@ -134,6 +111,7 @@ export default function PropertyCard({ property, isActive, onClick }: PropertyCa
   const city = property.city || 'Colorado';
   const state = property.state || 'CO';
   const propertyType = property.propertyType || 'Residential';
+  const statusLabel = property.status?.trim() || '';
   const cardLabel = getCardLabel(property, price, address, city, state);
   const reviewSignal = getReviewSignal(property);
   const decisionLabel = getDecisionLabel(property);
@@ -214,7 +192,7 @@ export default function PropertyCard({ property, isActive, onClick }: PropertyCa
           {hasReviewFlag ? (
             <span className="inline-flex items-center gap-1 rounded-[4px] border border-amber-200/45 bg-amber-200/12 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-amber-100 backdrop-blur">
               <TriangleAlert size={12} aria-hidden="true" />
-              Review
+              Closer Look
             </span>
           ) : null}
         </div>
@@ -229,7 +207,7 @@ export default function PropertyCard({ property, isActive, onClick }: PropertyCa
           <div className="flex items-end justify-between gap-3">
             <p className="font-serif text-[24px] font-black leading-none text-white drop-shadow">{formatLuxuryPrice(price)}</p>
             <span className="hidden rounded-[4px] border border-white/20 bg-black/50 px-2 py-1 text-[9px] font-black uppercase tracking-[0.12em] text-white/72 backdrop-blur sm:inline-flex">
-              {decisionLabel}
+              {statusLabel || 'Available'}
             </span>
           </div>
           <div className="mt-3 flex flex-wrap gap-2">
@@ -273,13 +251,13 @@ export default function PropertyCard({ property, isActive, onClick }: PropertyCa
         >
           <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100/76">
             <Sparkles size={12} aria-hidden="true" />
-            Decision Signal
+            Advisory Note
           </p>
-          <p className="mt-1 truncate text-xs font-black uppercase tracking-[0.08em] text-white/70">{decisionLabel}</p>
+          <p className="mt-1 text-xs font-bold leading-5 text-white/70">{decisionLabel}</p>
         </div>
 
         <div
-          className="mt-3 grid grid-cols-3 gap-2 text-left"
+          className="mt-3 grid grid-cols-2 gap-2 text-left"
           data-testid="reie-property-card-intelligence"
           data-property-card-efficiency-score={formatIntelligenceScore(property.efficiencyScore)}
           data-property-card-resilience-score={formatIntelligenceScore(property.resilienceScore)}
@@ -287,28 +265,25 @@ export default function PropertyCard({ property, isActive, onClick }: PropertyCa
         >
           <div className="rounded-[6px] border border-white/10 bg-white/[0.045] px-3 py-2.5">
             <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.12em] text-white/38">
-              <Gauge size={12} aria-hidden="true" />
-              Eff
-            </p>
-            <p className="mt-1 text-[17px] font-black leading-none text-white">{formatIntelligenceScore(property.efficiencyScore)}</p>
-          </div>
-          <div className="rounded-[6px] border border-white/10 bg-white/[0.045] px-3 py-2.5">
-            <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.12em] text-white/38">
               <ShieldCheck size={12} aria-hidden="true" />
-              Res
+              Location Fit
             </p>
-            <p className="mt-1 text-[17px] font-black leading-none text-white">{formatIntelligenceScore(property.resilienceScore)}</p>
+            <p className="mt-1 text-[12px] font-black uppercase leading-none text-white">
+              {hasCoordinatesFlag ? 'Location Shown' : 'Location Needs Review'}
+            </p>
           </div>
           <div className="min-w-0 rounded-[6px] border border-white/10 bg-white/[0.045] px-3 py-2.5">
-            <p className="text-[10px] font-black uppercase tracking-[0.12em] text-white/38">Signal</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.12em] text-white/38">Property Signals</p>
             <p className="mt-1 truncate text-[12px] font-black leading-none text-cyan-100">{reviewSignal}</p>
           </div>
         </div>
 
-        <div className="mt-4 flex items-center justify-between gap-3 border-t border-white/10 pt-3">
-          <p className="min-w-0 truncate text-[10px] font-bold uppercase tracking-[0.14em] text-white/36">{formatSecondaryStats(property)}</p>
+        <div className="mt-4 flex flex-col items-start gap-3 border-t border-white/10 pt-3 sm:flex-row sm:items-center sm:justify-between">
+          <p className="min-w-0 text-[10px] font-bold uppercase leading-4 tracking-[0.14em] text-white/40">
+            Listing Facts: {getCompactStat(property.beds, '--')} beds / {getCompactStat(property.baths, '--')} baths / {getCompactStat(property.sqft, '--')} sq ft
+          </p>
 
-          <div className="flex shrink-0 items-center gap-2">
+          <div className="flex shrink-0 items-center gap-2 self-end sm:self-auto">
             <Link
               href={cityMarketHref}
               data-testid="reie-property-card-market-link"
@@ -316,7 +291,6 @@ export default function PropertyCard({ property, isActive, onClick }: PropertyCa
               aria-label={`View ${city} market intelligence`}
               onClick={(event) => event.stopPropagation()}
               onKeyDown={(event) => event.stopPropagation()}
-              style={actionButtonStyle}
               className="inline-flex h-8 w-8 items-center justify-center rounded-[6px] border border-white/10 text-white/55 transition hover:border-cyan-100/45 hover:text-cyan-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-200"
               title={`${city} market intelligence`}
             >
@@ -330,10 +304,10 @@ export default function PropertyCard({ property, isActive, onClick }: PropertyCa
               aria-label={`View details for ${address}`}
               onClick={(event) => event.stopPropagation()}
               onKeyDown={(event) => event.stopPropagation()}
-              style={actionButtonStyle}
-              className="inline-flex h-8 w-8 items-center justify-center rounded-[6px] border border-cyan-100/35 bg-cyan-100/10 text-cyan-100 transition hover:border-white/60 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-200"
-              title="Listing details"
+              className="inline-flex h-8 items-center justify-center gap-1.5 rounded-[6px] border border-cyan-100/35 bg-cyan-100/10 px-3 text-[10px] font-black uppercase tracking-[0.12em] text-cyan-100 transition hover:border-white/60 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-200"
+              title="View Property"
             >
+              View Property
               <ArrowUpRight size={15} aria-hidden="true" />
             </Link>
           </div>

@@ -120,7 +120,7 @@ function formatCurrencyFilter(value: string) {
 function getActiveFilterChips(filters: SearchFilters) {
   const chips: Array<{ key: keyof SearchFilters; label: string }> = [];
 
-  if (filters.query.trim()) chips.push({ key: 'query', label: `Search: ${filters.query.trim()}` });
+  if (filters.query.trim()) chips.push({ key: 'query', label: `Keyword: ${filters.query.trim()}` });
   if (filters.city.trim()) chips.push({ key: 'city', label: `City: ${filters.city.trim()}` });
   if (filters.minPrice.trim()) chips.push({ key: 'minPrice', label: `Min ${formatCurrencyFilter(filters.minPrice.trim())}` });
   if (filters.maxPrice.trim()) chips.push({ key: 'maxPrice', label: `Max ${formatCurrencyFilter(filters.maxPrice.trim())}` });
@@ -172,7 +172,7 @@ export default function SearchControls({
   return (
     <form
       onSubmit={onSubmit}
-      className="overflow-hidden rounded-[8px] border border-white/10 bg-[#071017]/72"
+      className="overflow-hidden rounded-[8px] border border-white/10 bg-[#071017]/76 shadow-[0_14px_42px_rgba(0,0,0,0.2)]"
       aria-labelledby={`${formId}-title`}
       aria-describedby={`${formId}-description ${formId}-status`}
     >
@@ -181,14 +181,14 @@ export default function SearchControls({
           <div>
             <p id={`${formId}-title`} className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">
               <SlidersHorizontal size={13} aria-hidden="true" />
-              Filters
+              Refine Your Search
             </p>
             <p id={`${formId}-description`} className="mt-2 text-[11px] font-bold leading-5 text-white/48">
-              Focus the map by price, market, property type, and intent.
+              Adjust price, place, property type, and listing facts without losing the map view.
             </p>
           </div>
           <span className="shrink-0 rounded-[5px] border border-cyan-100/20 bg-cyan-100/[0.075] px-2 py-1 text-[9px] font-black uppercase tracking-[0.12em] text-cyan-100/70">
-            {chips.length ? `${chips.length} Active` : 'Ready'}
+            {chips.length ? `${chips.length} Applied` : 'Open View'}
           </span>
         </div>
       </div>
@@ -197,7 +197,7 @@ export default function SearchControls({
       <div className="flex items-center justify-between gap-3">
         <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.16em] text-white/40">
           <Sparkles size={12} aria-hidden="true" className="text-cyan-100/62" />
-          Search Criteria
+          Search Details
         </p>
         <div className="flex items-center gap-1.5">
           <button
@@ -205,8 +205,8 @@ export default function SearchControls({
             onClick={handleCopyShareLink}
             style={iconButtonStyle}
             className="inline-flex h-7 w-7 items-center justify-center rounded-[6px] border border-white/10 text-white/52 transition hover:border-cyan-100/35 hover:text-cyan-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
-            aria-label="Copy search link"
-            title="Copy search link"
+            aria-label="Share search"
+            title="Share Search"
           >
             {copied ? <Check size={13} aria-hidden="true" /> : <Copy size={13} aria-hidden="true" />}
           </button>
@@ -215,8 +215,8 @@ export default function SearchControls({
             onClick={onReset}
             style={iconButtonStyle}
             className="inline-flex h-7 w-7 items-center justify-center rounded-[6px] border border-white/10 text-white/52 transition hover:border-white/25 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
-            aria-label="Reset search filters"
-            title="Reset filters"
+            aria-label="Clear filters"
+            title="Clear Filters"
           >
             <RotateCcw size={13} aria-hidden="true" />
           </button>
@@ -224,13 +224,13 @@ export default function SearchControls({
       </div>
 
       <label className="mt-3 block" htmlFor={`${formId}-query`}>
-        <span className="sr-only">Search city, address, ZIP, or MLS</span>
+        <span className="sr-only">Keyword, address, ZIP, or MLS number</span>
         <input
           id={`${formId}-query`}
-          aria-label="Search city, address, ZIP, or MLS"
+          aria-label="Keyword, address, ZIP, or MLS number"
           value={filters.query}
           onChange={(event) => onChange(updateFilter(filters, 'query', event.target.value))}
-          placeholder="City, address, ZIP, MLS"
+          placeholder="Keyword, address, ZIP, MLS"
           style={textControlStyle}
           className="h-10 w-full rounded-[6px] border border-white/10 bg-white/[0.06] px-3 text-sm font-semibold text-white outline-none transition placeholder:text-white/30 focus:border-cyan-100/45"
         />
@@ -304,10 +304,10 @@ export default function SearchControls({
           aria-label="Property type"
         >
           <option value="">Type</option>
-          <option value="Residential">Res</option>
+          <option value="Residential">Residential</option>
           <option value="Land">Land</option>
-          <option value="Commercial">Comm</option>
-          <option value="Multi-Family">Multi</option>
+          <option value="Commercial">Commercial</option>
+          <option value="Multi-Family">Multi-Family</option>
         </select>
       </div>
 
@@ -319,7 +319,7 @@ export default function SearchControls({
             aria-label="City"
             value={filters.city}
             onChange={(event) => onChange(updateFilter(filters, 'city', event.target.value))}
-            placeholder="Exact city"
+            placeholder="City"
             style={compactControlStyle}
             className="h-10 w-full rounded-[6px] border border-white/10 bg-white/[0.06] px-3 text-xs font-bold text-white outline-none transition placeholder:text-white/30 focus:border-cyan-100/45"
           />
@@ -336,7 +336,7 @@ export default function SearchControls({
       </div>
 
       {chips.length ? (
-        <div className="mt-3 flex flex-wrap gap-1.5" aria-label="Active search filters">
+        <div className="mt-3 flex flex-wrap gap-1.5" aria-label="Filters applied">
           {chips.map((chip) => (
             <button
               key={chip.key}
@@ -354,7 +354,7 @@ export default function SearchControls({
 
       <div className="mt-3 flex items-center justify-between gap-3 border-t border-white/10 pt-3">
         <p id={`${formId}-status`} className="text-[10px] font-black uppercase tracking-[0.16em] text-white/34" aria-live="polite">
-          {isSearching ? 'Search is updating' : chips.length ? 'Filtered inventory active' : 'Ready for map search'}
+          {isSearching ? 'Updating listings' : chips.length ? 'Filters Applied' : 'Ready for map search'}
         </p>
         {isSearching ? <Loader2 size={13} className="shrink-0 animate-spin text-cyan-100" aria-hidden="true" /> : null}
       </div>

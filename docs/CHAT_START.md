@@ -246,12 +246,11 @@ Latest new-chat handoff, July 23, 2026 REIE Master V7.1 Full Implementation Reco
 - Authorized next phase is `REAL ESTATE INTELLIGENCE ENGINE - MASTER V7.1 Full Implementation Reconciliation`: inspect the current repository, prepare a factual implementation inventory, and build a prioritized V7.1 gap matrix before any implementation work.
 - Existing architecture, security, governance, and production safeguards remain binding. Preserve the current branch, production deployment, and working implementation while reconciliation is performed.
 - Current branch is `main`.
-- Current authoritative baseline is `HEAD = origin/main = b4170e44f81346e3d824474243ad6cb20d0b7a5e`.
-- Latest commit is `b4170e4 Fix public map rendering`.
-- Working tree was clean after the emergency correction and deployment verification.
-- Git push succeeded: `82e1f9a..b4170e4 main -> main`.
-- Latest connected Vercel deployment for `b4170e44f81346e3d824474243ad6cb20d0b7a5e` completed successfully through the normal GitHub/Vercel path: GitHub commit status `success`, Vercel description `Deployment has completed`, target `EjANP6fNkTJyDoaeaFqeDVyW27G3`.
-- No separate manual production deployment was run.
+- Current authoritative production baseline before Wave 2B local commit review is `HEAD = origin/main = 22bcc5b2e612d4bf7c606185ba79a2f85b34fc2b`.
+- Latest production commit before Wave 2B local commit review is `22bcc5b Restore Wave 2A guided search experience`.
+- Working tree contains the approved Wave 2B local implementation pending local commit.
+- Wave 2A was pushed to `origin/main`, deployed successfully through GitHub/Vercel, and production-certified before Wave 2B began.
+- No Wave 2B production deployment has occurred.
 - Emergency Production Correction - Map Rendering Failure is complete. Root cause was public map layout depending on responsive Tailwind class combinations such as `hidden md:block`, `md:hidden`, and `md:flex-row` that were not reliably applied in the homepage production bundle, leaving the embedded map pane hidden or zero-sized while Leaflet initialized. A secondary visual issue came from decorative map overlays and heavy tile filters in `SearchMap`.
 - Exact correction: added deterministic scoped public search/map layout CSS (`reie-search-experience-shell`, `reie-search-mobile-toolbar`, `reie-search-list-pane`, `reie-search-map-pane`), restored desktop sidebar width bounds, added scoped Leaflet tile resets, removed decorative map pseudo-overlays and tile color distortion, and added `ResizeObserver`-driven `map.invalidateSize()` in `SearchMap`.
 - New regression guard is available as `npm run check:map-rendering-safety`.
@@ -265,10 +264,13 @@ Latest new-chat handoff, July 23, 2026 REIE Master V7.1 Full Implementation Reco
 - Launch Gate 1 public trust compliance was completed and pushed as `205bf43b8945bb01ad4af461c65853abfaf8c7d1`; the amended public trust layer does not publish `davidquinngroup@gmail.com` as a long-term public identity, uses contact form workflows, and does not introduce a direct public `mailto` link.
 - EIA 1.0 Wave 2 Sprint 4 Search Runtime Adapter remains `CERTIFIED_AND_CLOSED`; EIA 1.0 Wave 2 Sprint 5 Internal Preview Adapter was implemented earlier and must remain not certified unless separately authorized and governed.
 - `GAP-006` remains `OPEN_MATERIAL_REDUCED`; do not close it.
-- Current launch posture: feature development remains frozen unless explicitly authorized after V7.1 reconciliation. Next implementation work must come from a prioritized V7.1 gap matrix, not from isolated styling or feature requests.
-- V7.1 Wave 1 Brand & Experience Foundation implementation is completed locally and pending implementation review / commit authorization. It added the public `/about` Advisor Experience route, refreshed customer-facing brand language, replaced placeholder/review language with advisory value copy, linked `/about` from public navigation/footer/sitemap, and extended public experience safety checks for unintended engineering terminology.
-- Wave 1 local validation passed before commit review: `npm run check:public-trust-readiness`, `npm run smoke:public-experience`, `npm run typecheck`, `npm run lint`, `npm run build`, and `git diff --check`.
-- Wave 1 has not been committed, pushed, or deployed. Wave 2 Search & Discovery Restoration is not authorized until separately approved.
+- Current launch posture: implementation remains controlled by the authorized V7.1 wave sequence. Do not begin Wave 2C, Wave 2D, Wave 2E, Wave 3, Wave 4, or unrelated feature work unless separately authorized.
+- V7.1 Wave 1 Brand & Experience Foundation was completed, committed, promoted to production, and certified before Wave 2 began.
+- V7.1 Wave 2A Guided Search Experience was completed, committed as `22bcc5b2e612d4bf7c606185ba79a2f85b34fc2b`, promoted to production, and certified before Wave 2B began.
+- V7.1 Wave 2B Sidebar, Search Controls, and Listing Cards is completed locally and approved for final local commit review. It is limited to customer-facing terminology, sidebar hierarchy, listing-card presentation, save-search presentation, accessibility/mobile layout, and static safety-check coverage.
+- Wave 2B validation passed locally: `npm run check:map-rendering-safety`, `npm run check:public-trust-readiness`, `npm run smoke:public-experience`, `npm run typecheck`, `npm run lint`, `npm run build`, and `git diff --check`.
+- Wave 2B local commit is pending with message `Restore Wave 2B search controls and listing experience`; deployment has not occurred.
+- External MLS Grid image `400` responses, plus one generic image `404` console message during local visual review, remain a non-blocking watch item. These were external listing-media resource failures, not Wave 2B runtime regressions; safe listing image fallback behavior remains in place.
 - Do not modify runtime code, deploy, change database/schema/environment configuration, run live sync, run live workers, send live email, mutate CRM, call OpenAI, request MLS Grid, call TitlePro247, reset/reindex Typesense, retry/drain queues, run saved-search alert dry-runs, run `npm run smoke:property-inquiry`, reset databases, run `prisma db push`, run `npm audit fix`, force-push, certify Sprint 5, start new launch remediation packages, or begin new feature work unless explicitly authorized.
 
 Previous new-chat handoff, July 19, 2026 Sprint 2 certification reconciliation:
