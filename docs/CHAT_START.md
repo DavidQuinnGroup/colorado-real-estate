@@ -246,11 +246,11 @@ Latest new-chat handoff, July 23, 2026 REIE Master V7.1 Full Implementation Reco
 - Authorized next phase is `REAL ESTATE INTELLIGENCE ENGINE - MASTER V7.1 Full Implementation Reconciliation`: inspect the current repository, prepare a factual implementation inventory, and build a prioritized V7.1 gap matrix before any implementation work.
 - Existing architecture, security, governance, and production safeguards remain binding. Preserve the current branch, production deployment, and working implementation while reconciliation is performed.
 - Current branch is `main`.
-- Current authoritative production baseline before Wave 2B local commit review is `HEAD = origin/main = 22bcc5b2e612d4bf7c606185ba79a2f85b34fc2b`.
-- Latest production commit before Wave 2B local commit review is `22bcc5b Restore Wave 2A guided search experience`.
-- Working tree contains the approved Wave 2B local implementation pending local commit.
-- Wave 2A was pushed to `origin/main`, deployed successfully through GitHub/Vercel, and production-certified before Wave 2B began.
-- No Wave 2B production deployment has occurred.
+- Current authoritative production baseline before Wave 2C local commit review is `HEAD = origin/main = 4e000d68fd3b16edf38424c5cf88015e55823fbe`.
+- Latest production commit before Wave 2C local commit review is `4e000d6 Restore Wave 2B search controls and listing experience`.
+- Working tree contains the approved Wave 2C local implementation pending local commit.
+- Wave 2B was pushed to `origin/main`, deployed successfully through GitHub/Vercel, and production-certified before Wave 2C began.
+- No Wave 2C production deployment has occurred.
 - Emergency Production Correction - Map Rendering Failure is complete. Root cause was public map layout depending on responsive Tailwind class combinations such as `hidden md:block`, `md:hidden`, and `md:flex-row` that were not reliably applied in the homepage production bundle, leaving the embedded map pane hidden or zero-sized while Leaflet initialized. A secondary visual issue came from decorative map overlays and heavy tile filters in `SearchMap`.
 - Exact correction: added deterministic scoped public search/map layout CSS (`reie-search-experience-shell`, `reie-search-mobile-toolbar`, `reie-search-list-pane`, `reie-search-map-pane`), restored desktop sidebar width bounds, added scoped Leaflet tile resets, removed decorative map pseudo-overlays and tile color distortion, and added `ResizeObserver`-driven `map.invalidateSize()` in `SearchMap`.
 - New regression guard is available as `npm run check:map-rendering-safety`.
@@ -264,13 +264,14 @@ Latest new-chat handoff, July 23, 2026 REIE Master V7.1 Full Implementation Reco
 - Launch Gate 1 public trust compliance was completed and pushed as `205bf43b8945bb01ad4af461c65853abfaf8c7d1`; the amended public trust layer does not publish `davidquinngroup@gmail.com` as a long-term public identity, uses contact form workflows, and does not introduce a direct public `mailto` link.
 - EIA 1.0 Wave 2 Sprint 4 Search Runtime Adapter remains `CERTIFIED_AND_CLOSED`; EIA 1.0 Wave 2 Sprint 5 Internal Preview Adapter was implemented earlier and must remain not certified unless separately authorized and governed.
 - `GAP-006` remains `OPEN_MATERIAL_REDUCED`; do not close it.
-- Current launch posture: implementation remains controlled by the authorized V7.1 wave sequence. Do not begin Wave 2C, Wave 2D, Wave 2E, Wave 3, Wave 4, or unrelated feature work unless separately authorized.
+- Current launch posture: implementation remains controlled by the authorized V7.1 wave sequence. Do not begin Wave 2D, Wave 2E, Wave 3, Wave 4, or unrelated feature work unless separately authorized.
 - V7.1 Wave 1 Brand & Experience Foundation was completed, committed, promoted to production, and certified before Wave 2 began.
 - V7.1 Wave 2A Guided Search Experience was completed, committed as `22bcc5b2e612d4bf7c606185ba79a2f85b34fc2b`, promoted to production, and certified before Wave 2B began.
-- V7.1 Wave 2B Sidebar, Search Controls, and Listing Cards is completed locally and approved for final local commit review. It is limited to customer-facing terminology, sidebar hierarchy, listing-card presentation, save-search presentation, accessibility/mobile layout, and static safety-check coverage.
-- Wave 2B validation passed locally: `npm run check:map-rendering-safety`, `npm run check:public-trust-readiness`, `npm run smoke:public-experience`, `npm run typecheck`, `npm run lint`, `npm run build`, and `git diff --check`.
-- Wave 2B local commit is pending with message `Restore Wave 2B search controls and listing experience`; deployment has not occurred.
-- External MLS Grid image `400` responses, plus one generic image `404` console message during local visual review, remain a non-blocking watch item. These were external listing-media resource failures, not Wave 2B runtime regressions; safe listing image fallback behavior remains in place.
+- V7.1 Wave 2B Sidebar, Search Controls, and Listing Cards was completed, committed as `4e000d68fd3b16edf38424c5cf88015e55823fbe`, promoted to production, and certified before Wave 2C began.
+- V7.1 Wave 2C Map Popups and Selected Property Drawer is completed locally and pending final local commit review. It is limited to customer-facing popup/drawer terminology, selected-property hierarchy, drawer accessibility/mobile layout, and static safety-check coverage, plus a bounded map event-loop correction that preserves bounds updates while preventing selected-popup auto-pan from recreating markers indefinitely.
+- Wave 2C validation passed locally: `npm run check:map-rendering-safety`, `npm run check:public-trust-readiness`, `npm run smoke:public-experience`, `npm run typecheck`, `npm run lint`, `npm run build`, and `git diff --check`.
+- Wave 2C local commit is pending with proposed message `Restore Wave 2C map popup and selected drawer experience`; deployment has not occurred.
+- External MLS Grid image `400` responses, plus one generic image `404` console message during local visual review, remain a non-blocking watch item. These were external listing-media resource failures, not Wave 2C runtime regressions; safe listing image fallback behavior remains in place.
 - Do not modify runtime code, deploy, change database/schema/environment configuration, run live sync, run live workers, send live email, mutate CRM, call OpenAI, request MLS Grid, call TitlePro247, reset/reindex Typesense, retry/drain queues, run saved-search alert dry-runs, run `npm run smoke:property-inquiry`, reset databases, run `prisma db push`, run `npm audit fix`, force-push, certify Sprint 5, start new launch remediation packages, or begin new feature work unless explicitly authorized.
 
 Previous new-chat handoff, July 19, 2026 Sprint 2 certification reconciliation:

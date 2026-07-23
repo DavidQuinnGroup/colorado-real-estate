@@ -184,12 +184,17 @@ async function assertDrawerSource() {
   ]);
 
   assert.ok(source.includes('const inquiryHref = `${propertyHref}#property-contact`;'), 'Expected selected drawer inquiry hash target.');
-  assert.ok(source.includes('Inquire'), 'Expected selected drawer Inquire CTA label.');
+  assert.ok(source.includes('View Property'), 'Expected selected drawer View Property CTA label.');
+  assert.ok(source.includes('Ask About This Property'), 'Expected selected drawer inquiry action label.');
+  assert.ok(source.includes('Property Brief'), 'Expected selected drawer to use public property brief framing.');
+  assert.ok(source.includes('Advisory Note'), 'Expected selected drawer to use advisory note framing.');
+  assert.ok(source.includes('Location Fit'), 'Expected selected drawer to expose location fit context.');
+  assert.ok(source.includes('Property Signals'), 'Expected selected drawer to expose property signal context.');
   assert.ok(source.includes('data-testid="reie-selected-property-drawer"'), 'Expected selected drawer to expose a stable shell handle.');
   assert.ok(source.includes('data-testid="reie-selected-property-media"'), 'Expected selected drawer to expose media metadata.');
   assert.ok(source.includes('data-testid="reie-selected-property-close"'), 'Expected selected drawer to expose close control metadata.');
   assert.ok(source.includes('data-testid="reie-selected-property-decision"'), 'Expected selected drawer to expose decision metadata.');
-  assert.ok(source.includes('data-testid="reie-selected-property-signal"'), 'Expected selected drawer to expose review signal metadata.');
+  assert.ok(source.includes('testId="reie-selected-property-signal"'), 'Expected selected drawer to expose review signal metadata.');
   assert.ok(source.includes('data-testid="reie-selected-property-inquiry-link"'), 'Expected selected drawer to expose inquiry link metadata.');
   assert.ok(source.includes('data-testid="reie-selected-property-detail-link"'), 'Expected selected drawer to expose detail link metadata.');
   assert.ok(source.includes('data-testid="reie-selected-property-market-link"'), 'Expected selected drawer to expose market link metadata.');

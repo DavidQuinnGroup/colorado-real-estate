@@ -2,11 +2,12 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
 async function main() {
-  const [homeSearch, searchInterface, globalsCss, searchMap, packageJson, searchControls, mapSidebar, propertyCard, saveSearch] = await Promise.all([
+  const [homeSearch, searchInterface, globalsCss, searchMap, selectedDrawer, packageJson, searchControls, mapSidebar, propertyCard, saveSearch] = await Promise.all([
     readFile('components/home/HomeSearchExperience.tsx', 'utf8'),
     readFile('components/search/SearchInterface.tsx', 'utf8'),
     readFile('app/globals.css', 'utf8'),
     readFile('components/maps/SearchMap.tsx', 'utf8'),
+    readFile('components/maps/SelectedPropertyDrawer.tsx', 'utf8'),
     readFile('package.json', 'utf8'),
     readFile('components/search/SearchControls.tsx', 'utf8'),
     readFile('components/maps/MapSidebar.tsx', 'utf8'),
@@ -72,6 +73,26 @@ async function main() {
   assert(saveSearch.includes('Receive updates when relevant listings appear.'), 'Save-search UI must avoid guaranteed or instant alert claims.');
   assert(saveSearch.includes("fetch('/api/save-search'"), 'Save-search UI must preserve the existing save-search request route.');
   assert(saveSearch.includes('data-save-search-email-valid'), 'Save-search UI must preserve email validation metadata.');
+  assert(searchMap.includes('data-testid="reie-property-map-popup"'), 'Search map popups must expose stable popup metadata.');
+  assert(searchMap.includes('Advisory Note'), 'Search map popups must use advisory note framing.');
+  assert(searchMap.includes('Location Fit'), 'Search map popups must include location fit context.');
+  assert(searchMap.includes('Property Signals'), 'Search map popups must include property signal context.');
+  assert(searchMap.includes('View Property'), 'Search map popups must retain a clear property detail action.');
+  assert(searchMap.includes('href="${detailHref}"'), 'Search map popups must preserve property detail navigation.');
+  assert(searchMap.includes('marker.bindPopup(buildPopupHtml(property)'), 'Search map markers must continue to bind property popups.');
+  assert(searchMap.includes('marker.openPopup()'), 'Search map markers must continue to open popups from interaction.');
+  assert(selectedDrawer.includes('Property Brief'), 'Selected-property drawer must use customer-facing property brief framing.');
+  assert(selectedDrawer.includes('Listing Facts'), 'Selected-property drawer must expose listing facts.');
+  assert(selectedDrawer.includes('Advisory Note'), 'Selected-property drawer must use advisory note framing.');
+  assert(selectedDrawer.includes('Location Fit'), 'Selected-property drawer must expose location fit context.');
+  assert(selectedDrawer.includes('Property Signals'), 'Selected-property drawer must expose property signal context.');
+  assert(selectedDrawer.includes('View Property'), 'Selected-property drawer must retain a clear property detail action.');
+  assert(selectedDrawer.includes('data-testid="reie-selected-property-drawer"'), 'Selected-property drawer must expose a stable shell handle.');
+  assert(selectedDrawer.includes('data-testid="reie-selected-property-close"'), 'Selected-property drawer must expose a stable close control handle.');
+  assert(selectedDrawer.includes('aria-label="Close selected listing"'), 'Selected-property drawer close control must remain accessible.');
+  assert(selectedDrawer.includes('data-selected-property-detail-href='), 'Selected-property drawer must preserve detail navigation metadata.');
+  assert(selectedDrawer.includes('data-selected-property-inquiry-href='), 'Selected-property drawer must preserve inquiry metadata.');
+  assert(selectedDrawer.includes('data-selected-property-market-href='), 'Selected-property drawer must preserve market metadata.');
   for (const [label, source] of [
     ['search controls', searchControls],
     ['map sidebar', mapSidebar],
@@ -80,9 +101,21 @@ async function main() {
   ] as const) {
     assert(!source.match(/\bEFF\b|\bRES\b|\bEff\b|\bRes\b|triage|priority stack|command center|source health|AI matching|predictive|heatmap|guaranteed fit|guaranteed-fit|ROI|traffic/i), `${label} must not expose unsupported or operational Wave 2B language.`);
   }
+  const popupSource = searchMap.slice(searchMap.indexOf('function buildPopupHtml'), searchMap.indexOf('export default function SearchMap'));
+  for (const [label, source] of [
+    ['search map popup', popupSource],
+    ['selected-property drawer', selectedDrawer],
+  ] as const) {
+    assert(
+      !source.match(
+        /Selected Signal|Property Scorecard|Asset Snapshot|Authority Paths|Decision Signal|Triage|\bEFF\b|\bRES\b|\bEff\b|\bRes\b|\bDiagnostic\b|Scorecard|\bPriority\b|Operational status|Smoke ready|AI analysis|predictive|heatmap|guaranteed fit|guaranteed-fit|ROI|live traffic|commute savings/i,
+      ),
+      `${label} must not expose unsupported or operational Wave 2C language.`,
+    );
+  }
 
   console.log(
-    '[map-rendering-safety] ok: deterministic map pane visibility, dedicated search discovery framing, Wave 2B sidebar/card/control language, native Leaflet tile reset, resize invalidation, and no decorative basemap overlays verified.',
+    '[map-rendering-safety] ok: deterministic map pane visibility, dedicated search discovery framing, Wave 2B sidebar/card/control language, Wave 2C popup/drawer language, native Leaflet tile reset, resize invalidation, and no decorative basemap overlays verified.',
   );
 }
 

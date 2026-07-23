@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
-import { getListingFallbackPhotoUrl, getListingPhotoUrl } from '@/lib/listingVisuals';
 import { formatLuxuryPrice } from '@/lib/utils/formatters';
 import type { MapSidebarListing } from './MapSidebar';
 
@@ -130,11 +129,6 @@ function formatFeature(value: unknown, label: string) {
   return `${numericValue.toLocaleString()} ${label}`;
 }
 
-function formatScore(value: unknown) {
-  const numericValue = Number(value);
-  return Number.isFinite(numericValue) ? Math.round(numericValue).toString() : '--';
-}
-
 function formatMetaCount(value: number | undefined, fallback: number) {
   return Number.isFinite(value) ? Number(value) : fallback;
 }
@@ -158,22 +152,26 @@ function getCustomerSearchLabel(searchMeta: SearchMapMeta | null) {
 }
 
 function getReviewSignal(property: MapSidebarListing) {
-  if (property.hasPolybutyleneRisk) return 'Plumbing Review';
-  if (property.soilType?.trim()) return property.soilType.trim();
+  if (property.hasPolybutyleneRisk) return 'Plumbing review suggested';
+  if (property.soilType?.trim()) return 'Property signals available';
 
   const altitude = Number(property.altitude);
-  if (Number.isFinite(altitude) && altitude > 0) return `${Math.round(altitude).toLocaleString()} FT`;
+  if (Number.isFinite(altitude) && altitude > 0) return 'Elevation context available';
 
-  return 'REIE Verified';
+  return 'Public listing context';
 }
 
-function getDecisionSignal(property: MapSidebarListing) {
-  if (property.hasPolybutyleneRisk) return 'Contractor Review';
-  if (typeof property.resilienceScore === 'number' && property.resilienceScore >= 80) return 'Resilience Screened';
-  if (typeof property.efficiencyScore === 'number' && property.efficiencyScore >= 80) return 'Efficiency Screened';
-  if (property.isPrivateExclusive) return 'Private Candidate';
+function getAdvisoryNote(property: MapSidebarListing) {
+  if (property.hasPolybutyleneRisk) return 'Plumbing review suggested.';
+  if (typeof property.resilienceScore === 'number' && property.resilienceScore >= 80) return 'Worth a closer look.';
+  if (typeof property.efficiencyScore === 'number' && property.efficiencyScore >= 80) return 'Compare daily location fit.';
+  if (property.isPrivateExclusive) return 'Advisor context available.';
 
-  return 'REIE Triage Ready';
+  return 'Review facts and location.';
+}
+
+function getLocationFit(property: MapSidebarListing) {
+  return hasCoordinates(property) ? 'Shown on map' : 'Location needs review';
 }
 
 function getPropertyTypeLabel(value: string | null | undefined) {
@@ -215,46 +213,31 @@ function getFallbackBounds(map: L.Map): MapBounds {
 }
 
 function buildPopupHtml(property: MapSidebarListing) {
-  const photoUrl = escapeHtml(getListingPhotoUrl(property));
-  const fallbackPhotoUrl = escapeHtml(getListingFallbackPhotoUrl(property));
   const price = formatLuxuryPrice(Number(property.price));
   const address = escapeHtml(property.address || 'Address Available by Request');
   const city = escapeHtml(property.city || 'Colorado');
   const propertyType = escapeHtml(getPropertyTypeLabel(property.propertyType));
-  const beds = formatFeature(property.beds, 'BD');
-  const baths = formatFeature(property.baths, 'BA');
-  const sqft = formatFeature(property.sqft, 'SQ FT');
+  const beds = formatFeature(property.beds, 'Beds');
+  const baths = formatFeature(property.baths, 'Baths');
+  const sqft = formatFeature(property.sqft, 'Sq Ft');
   const features = [beds, baths, sqft].filter(Boolean).join(' / ');
-  const efficiencyScore = escapeHtml(formatScore(property.efficiencyScore));
-  const resilienceScore = escapeHtml(formatScore(property.resilienceScore));
   const reviewSignal = escapeHtml(getReviewSignal(property));
-  const decisionSignal = escapeHtml(getDecisionSignal(property));
-  const privateChip = property.isPrivateExclusive ? '<span class="reie-map-popup-chip reie-map-popup-chip-private">Private</span>' : '';
-  const reviewChip = property.hasPolybutyleneRisk ? '<span class="reie-map-popup-chip reie-map-popup-chip-review">Review</span>' : '';
+  const advisoryNote = escapeHtml(getAdvisoryNote(property));
+  const locationFit = escapeHtml(getLocationFit(property));
+  const detailHref = escapeHtml(`/properties/${property.id}`);
 
   return `
-    <article class="reie-map-popup-card">
-      <div class="reie-map-popup-image-wrap">
-        <img src="${photoUrl}" alt="${address}" class="reie-map-popup-image" onerror="this.onerror=null;this.src='${fallbackPhotoUrl}'" />
-        <div class="reie-map-popup-image-shade"></div>
-        <div class="reie-map-popup-chips">
-          <span class="reie-map-popup-chip">${propertyType}</span>
-          ${privateChip}
-          ${reviewChip}
-        </div>
-      </div>
+    <article class="reie-map-popup-card" data-testid="reie-property-map-popup" data-popup-property-id="${escapeHtml(property.id)}">
       <div class="reie-map-popup-body">
-        <p class="reie-map-popup-kicker">Selected Signal</p>
+        <p class="reie-map-popup-kicker">${propertyType}</p>
         <p class="reie-map-popup-price">${price}</p>
         <h2 class="reie-map-popup-address">${address}</h2>
         <p class="reie-map-popup-city">${city}, CO</p>
-        ${features ? `<p class="reie-map-popup-features">${escapeHtml(features)}</p>` : ''}
-        <p class="reie-map-popup-decision">${decisionSignal}</p>
-        <div class="reie-map-popup-intel">
-          <span>EFF ${efficiencyScore}</span>
-          <span>RES ${resilienceScore}</span>
-          <span>${reviewSignal}</span>
-        </div>
+        ${features ? `<p class="reie-map-popup-features"><span>Listing Facts</span> ${escapeHtml(features)}</p>` : ''}
+        <p class="reie-map-popup-note"><span>Advisory Note</span> ${advisoryNote}</p>
+        <p class="reie-map-popup-context"><span>Location Fit</span> ${locationFit}</p>
+        <p class="reie-map-popup-context"><span>Property Signals</span> ${reviewSignal}</p>
+        <a class="reie-map-popup-cta" href="${detailHref}" aria-label="View property details for ${address}">View Property</a>
       </div>
     </article>
   `;
@@ -445,6 +428,10 @@ export default function SearchMap({
       }, delay);
     };
 
+    const handleMapMove = () => {
+      scheduleBoundsEmit();
+    };
+
     const handleMapViewportChange = () => {
       scheduleBoundsEmit();
       setViewportVersion((version) => version + 1);
@@ -486,7 +473,8 @@ export default function SearchMap({
           });
 
     resizeObserver?.observe(container);
-    map.on('moveend zoomend resize', handleMapViewportChange);
+    map.on('moveend', handleMapMove);
+    map.on('zoomend resize', handleMapViewportChange);
     map.whenReady(() => scheduleBoundsEmit(400));
     scheduleBoundsEmit(700);
 
@@ -496,7 +484,8 @@ export default function SearchMap({
         boundsTimerRef.current = null;
       }
 
-      map.off('moveend zoomend resize', handleMapViewportChange);
+      map.off('moveend', handleMapMove);
+      map.off('zoomend resize', handleMapViewportChange);
       resizeObserver?.disconnect();
       map.remove();
       mapRef.current = null;
@@ -848,8 +837,8 @@ export default function SearchMap({
 
         .reie-map-popup .leaflet-popup-content {
           margin: 0;
-          max-width: min(326px, calc(100vw - 44px));
-          width: 326px !important;
+          max-width: min(300px, calc(100vw - 44px));
+          width: 300px !important;
         }
 
         .reie-map-popup .leaflet-popup-tip-container {
@@ -866,85 +855,23 @@ export default function SearchMap({
           width: 100%;
         }
 
-        .reie-map-popup-image-wrap {
-          aspect-ratio: 16 / 9;
-          background: #10151b;
-          overflow: hidden;
-          position: relative;
-          width: 100%;
-        }
-
-        .reie-map-popup-image {
-          display: block;
-          height: 100%;
-          object-fit: cover;
-          opacity: 0.9;
-          width: 100%;
-        }
-
-        .reie-map-popup-image-shade {
-          background: linear-gradient(180deg, rgba(0, 0, 0, 0.14), rgba(7, 16, 23, 0.18) 42%, rgba(7, 16, 23, 0.82));
-          inset: 0;
-          pointer-events: none;
-          position: absolute;
-        }
-
-        .reie-map-popup-chips {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 6px;
-          left: 12px;
-          max-width: calc(100% - 24px);
-          position: absolute;
-          top: 12px;
-        }
-
-        .reie-map-popup-chip {
-          align-items: center;
-          background: rgba(0, 0, 0, 0.58);
-          border: 1px solid rgba(255, 255, 255, 0.2);
-          border-radius: 5px;
-          color: rgba(255, 255, 255, 0.84);
-          display: inline-flex;
-          font-size: 8px;
-          font-weight: 900;
-          justify-content: center;
-          letter-spacing: 0.12em;
-          line-height: 1;
-          min-height: 24px;
-          padding: 6px 8px;
-          text-transform: uppercase;
-        }
-
-        .reie-map-popup-chip-private {
-          background: rgba(8, 145, 178, 0.18);
-          border-color: rgba(207, 250, 254, 0.36);
-          color: rgb(207, 250, 254);
-        }
-
-        .reie-map-popup-chip-review {
-          background: rgba(251, 191, 36, 0.14);
-          border-color: rgba(253, 230, 138, 0.38);
-          color: rgb(254, 243, 199);
-        }
-
         .reie-map-popup-body {
-          padding: 16px 18px 18px;
+          padding: 13px;
         }
 
         .reie-map-popup-kicker {
           color: rgba(207, 250, 254, 0.72);
-          font-size: 9px;
+          font-size: 8px;
           font-weight: 900;
           letter-spacing: 0.2em;
           line-height: 1;
-          margin: 0 0 10px;
+          margin: 0 0 8px;
           text-transform: uppercase;
         }
 
         .reie-map-popup-price {
           font-family: Georgia, serif;
-          font-size: 30px;
+          font-size: 24px;
           font-style: italic;
           font-weight: 900;
           letter-spacing: 0;
@@ -953,72 +880,96 @@ export default function SearchMap({
         }
 
         .reie-map-popup-address {
-          font-size: 12px;
+          font-size: 11px;
           font-weight: 900;
           letter-spacing: 0.04em;
           line-height: 1.32;
-          margin: 14px 0 0;
+          margin: 10px 0 0;
           text-transform: uppercase;
         }
 
         .reie-map-popup-city,
         .reie-map-popup-features {
           color: rgba(255, 255, 255, 0.72);
-          font-size: 9px;
+          font-size: 8px;
           font-weight: 900;
           letter-spacing: 0.22em;
           line-height: 1.4;
-          margin: 9px 0 0;
+          margin: 7px 0 0;
           text-transform: uppercase;
         }
 
-        .reie-map-popup-decision {
+        .reie-map-popup-features span {
+          color: rgba(207, 250, 254, 0.74);
+        }
+
+        .reie-map-popup-note,
+        .reie-map-popup-context {
           background: rgba(207, 250, 254, 0.07);
           border: 1px solid rgba(207, 250, 254, 0.16);
           border-radius: 6px;
           color: rgba(255, 255, 255, 0.74);
-          font-size: 9px;
-          font-weight: 900;
-          letter-spacing: 0.12em;
-          line-height: 1.35;
-          margin: 13px 0 0;
-          padding: 9px 10px;
-          text-transform: uppercase;
+          font-size: 10px;
+          font-weight: 800;
+          line-height: 1.28;
+          margin: 10px 0 0;
+          padding: 8px 9px;
         }
 
-        .reie-map-popup-intel {
-          display: grid;
-          gap: 6px;
-          grid-template-columns: 0.75fr 0.75fr minmax(0, 1.6fr);
-          margin-top: 10px;
+        .reie-map-popup-context {
+          margin-top: 6px;
         }
 
-        .reie-map-popup-intel span {
-          background: rgba(255, 255, 255, 0.08);
-          border: 1px solid rgba(255, 255, 255, 0.12);
-          color: rgba(255, 255, 255, 0.82);
-          display: block;
+        .reie-map-popup-note span,
+        .reie-map-popup-context span {
+          color: rgba(207, 250, 254, 0.74);
           font-size: 8px;
           font-weight: 900;
-          letter-spacing: 0.12em;
-          overflow: hidden;
-          padding: 7px 8px;
-          text-overflow: ellipsis;
+          letter-spacing: 0.14em;
+          margin-right: 4px;
           text-transform: uppercase;
-          white-space: nowrap;
+        }
+
+        .reie-map-popup-cta {
+          align-items: center;
+          background: rgb(207, 250, 254);
+          border-radius: 6px;
+          color: #061017 !important;
+          display: flex;
+          font-size: 10px;
+          font-weight: 900;
+          height: 34px;
+          justify-content: center;
+          letter-spacing: 0.14em;
+          margin-top: 9px;
+          text-decoration: none;
+          text-transform: uppercase;
+          transition: background 180ms ease, transform 180ms ease;
+          width: 100%;
+        }
+
+        .reie-map-popup-cta:hover,
+        .reie-map-popup-cta:focus-visible {
+          background: #fff;
+          transform: translateY(-1px);
+        }
+
+        .reie-map-popup-cta:focus-visible {
+          outline: 2px solid rgb(207, 250, 254);
+          outline-offset: 2px;
         }
 
         @media (max-width: 640px) {
           .reie-map-popup .leaflet-popup-content {
-            width: min(310px, calc(100vw - 44px)) !important;
+            width: min(286px, calc(100vw - 44px)) !important;
           }
 
           .reie-map-popup-price {
-            font-size: 27px;
+            font-size: 23px;
           }
 
           .reie-map-popup-body {
-            padding: 14px;
+            padding: 12px;
           }
         }
       `}</style>

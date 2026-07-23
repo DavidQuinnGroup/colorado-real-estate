@@ -573,38 +573,35 @@ html, body {
 .reie-map-popup-card {
   overflow: hidden;
   border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.14);
   background: #081117;
 }
 
-.reie-map-popup-image-wrap {
-  height: 148px;
-  overflow: hidden;
-  background: #101720;
-}
-
-.reie-map-popup-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
 .reie-map-popup-body {
-  padding: 14px;
+  padding: 12px;
+}
+
+.reie-map-popup-kicker {
+  color: rgba(207, 250, 254, 0.72);
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.2em;
+  line-height: 1;
+  margin: 0 0 8px;
+  text-transform: uppercase;
 }
 
 .reie-map-popup-price {
   font-family: Georgia, serif;
-  font-size: 21px;
+  font-size: 23px;
   font-weight: 900;
   line-height: 1;
   color: #fff;
 }
 
 .reie-map-popup-address {
-  margin-top: 10px;
-  font-size: 13px;
+  margin-top: 9px;
+  font-size: 11px;
   font-weight: 900;
   line-height: 1.25;
   text-transform: uppercase;
@@ -613,33 +610,73 @@ html, body {
 .reie-map-popup-city,
 .reie-map-popup-features {
   margin-top: 7px;
-  font-size: 10px;
+  font-size: 8px;
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.52);
+  color: rgba(255, 255, 255, 0.58);
 }
 
-.reie-map-popup-intel {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 6px;
-  margin-top: 12px;
+.reie-map-popup-features span {
+  color: rgba(207, 250, 254, 0.74);
 }
 
-.reie-map-popup-intel span {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.reie-map-popup-note,
+.reie-map-popup-context {
+  margin-top: 10px;
   border-radius: 6px;
-  background: rgba(255, 255, 255, 0.07);
-  padding: 7px 6px;
-  font-size: 9px;
+  border: 1px solid rgba(207, 250, 254, 0.16);
+  background: rgba(207, 250, 254, 0.07);
+  padding: 8px 9px;
+  color: rgba(255, 255, 255, 0.74);
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1.28;
+}
+
+.reie-map-popup-context {
+  margin-top: 6px;
+}
+
+.reie-map-popup-note span,
+.reie-map-popup-context span {
+  color: rgba(207, 250, 254, 0.72);
+  font-size: 8px;
   font-weight: 900;
-  letter-spacing: 0.06em;
-  color: rgba(212, 246, 250, 0.88);
+  letter-spacing: 0.14em;
+  margin-right: 4px;
   text-transform: uppercase;
+}
+
+.reie-map-popup-cta {
+  display: flex;
+  height: 34px;
+  align-items: center;
+  justify-content: center;
+  margin-top: 9px;
+  border-radius: 6px;
+  background: rgb(207, 250, 254);
+  color: #061017 !important;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.reie-selected-property-drawer {
+  bottom: 1rem;
+  left: 1rem;
+  right: 1rem;
+}
+
+@media (min-width: 768px) {
+  .reie-selected-property-drawer {
+    bottom: 1.5rem;
+    left: auto;
+    right: 1.5rem;
+    width: 410px;
+  }
 }
 
 [data-testid="grand-plan-page"] {
