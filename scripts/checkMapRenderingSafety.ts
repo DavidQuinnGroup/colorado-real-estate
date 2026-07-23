@@ -2,7 +2,21 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
 async function main() {
-  const [homePage, homeSearch, searchInterface, globalsCss, searchMap, selectedDrawer, packageJson, searchControls, mapSidebar, propertyCard, saveSearch] = await Promise.all([
+  const [
+    homePage,
+    homeSearch,
+    searchInterface,
+    globalsCss,
+    searchMap,
+    selectedDrawer,
+    packageJson,
+    searchControls,
+    mapSidebar,
+    propertyCard,
+    saveSearch,
+    propertyPage,
+    propertyInquiryForm,
+  ] = await Promise.all([
     readFile('app/page.tsx', 'utf8'),
     readFile('components/home/HomeSearchExperience.tsx', 'utf8'),
     readFile('components/search/SearchInterface.tsx', 'utf8'),
@@ -14,6 +28,8 @@ async function main() {
     readFile('components/maps/MapSidebar.tsx', 'utf8'),
     readFile('components/PropertyCard.tsx', 'utf8'),
     readFile('components/maps/SaveSearch.tsx', 'utf8'),
+    readFile('app/properties/[id]/page.tsx', 'utf8'),
+    readFile('components/PropertyInquiryForm.tsx', 'utf8'),
   ]);
 
   for (const [label, source] of [
@@ -42,6 +58,12 @@ async function main() {
   assert(globalsCss.includes('max-width: none !important;'), 'Leaflet tile reset must prevent global image max-width rules from shrinking tiles.');
   assert(globalsCss.includes('object-fit: fill !important;'), 'Leaflet tile reset must preserve native tile geometry.');
   assert(globalsCss.includes('filter: none !important;'), 'Leaflet tile reset must not distort map tiles.');
+  assert(globalsCss.includes('.reie-property-hero-grid'), 'Global CSS must define the property detail hero grid fallback.');
+  assert(globalsCss.includes('align-items: start !important;'), 'Property detail hero grid must not stretch image and advisor panel to equal height.');
+  assert(globalsCss.includes('grid-template-columns: minmax(0, 1fr) 420px !important;'), 'Property detail hero grid must preserve the desktop advisor panel column.');
+  assert(globalsCss.includes('height: calc(100vh - 64px) !important;'), 'Property advisor panel must stay within the initial desktop viewport.');
+  assert(globalsCss.includes('.reie-property-detail-grid'), 'Global CSS must define the property detail content grid fallback.');
+  assert(globalsCss.includes('.reie-property-advisor-actions a'), 'Global CSS must preserve property advisor action touch-target sizing.');
 
   assert(!searchMap.includes('.reie-map-canvas::after'), 'SearchMap must not paint decorative overlays over map tiles.');
   assert(!searchMap.includes('.reie-map-canvas::before'), 'SearchMap must not paint decorative overlays over map tiles.');
@@ -97,6 +119,8 @@ async function main() {
   assert(searchMap.includes('href="${detailHref}"'), 'Search map popups must preserve property detail navigation.');
   assert(searchMap.includes('marker.bindPopup(buildPopupHtml(property)'), 'Search map markers must continue to bind property popups.');
   assert(searchMap.includes('marker.openPopup()'), 'Search map markers must continue to open popups from interaction.');
+  assert(searchMap.includes('Map Ready'), 'Search map public status text must use customer-safe ready language.');
+  assert(searchMap.includes('Explore on Map'), 'Search map public status text must avoid testing or diagnostic language.');
   assert(selectedDrawer.includes('Property Brief'), 'Selected-property drawer must use customer-facing property brief framing.');
   assert(selectedDrawer.includes('Listing Facts'), 'Selected-property drawer must expose listing facts.');
   assert(selectedDrawer.includes('Advisory Note'), 'Selected-property drawer must use advisory note framing.');
@@ -109,6 +133,21 @@ async function main() {
   assert(selectedDrawer.includes('data-selected-property-detail-href='), 'Selected-property drawer must preserve detail navigation metadata.');
   assert(selectedDrawer.includes('data-selected-property-inquiry-href='), 'Selected-property drawer must preserve inquiry metadata.');
   assert(selectedDrawer.includes('data-selected-property-market-href='), 'Selected-property drawer must preserve market metadata.');
+  assert(propertyPage.includes('Property Brief'), 'Property detail page must use property brief framing.');
+  assert(propertyPage.includes('Listing Facts'), 'Property detail page must expose listing facts.');
+  assert(propertyPage.includes('Advisory Note'), 'Property detail page must expose advisory note framing.');
+  assert(propertyPage.includes('Construction Perspective'), 'Property detail page must use construction perspective framing.');
+  assert(propertyPage.includes('Questions Worth Asking'), 'Property detail page must present construction diligence as questions.');
+  assert(propertyPage.includes('Helpful Next Steps'), 'Property detail page must include customer-facing next steps.');
+  assert(propertyPage.includes('href="#property-contact"'), 'Property detail page must preserve inquiry hash navigation.');
+  assert(propertyPage.includes('data-testid="reie-property-schema"'), 'Property detail page must preserve property schema metadata handle.');
+  assert(propertyPage.includes('data-testid="listing-advertising-attribution"'), 'Property detail page must preserve listing attribution.');
+  assert(propertyInquiryForm.includes('id="property-contact"'), 'Property inquiry form must preserve the property-contact hash target.');
+  assert(propertyInquiryForm.includes('tabIndex={-1}'), 'Property inquiry hash target must be programmatically focusable.');
+  assert(propertyInquiryForm.includes('Ask About This Property'), 'Property inquiry form must use customer-facing CTA language.');
+  assert(propertyInquiryForm.includes("fetch('/api/property-inquiry'"), 'Property inquiry form must preserve the existing inquiry API route.');
+  assert(propertyInquiryForm.includes('data-property-inquiry-email-valid'), 'Property inquiry form must preserve email validation metadata.');
+  assert(propertyInquiryForm.includes('data-public-trust-form-notice="property-inquiry"'), 'Property inquiry form must preserve public trust notice metadata.');
   for (const [label, source] of [
     ['search controls', searchControls],
     ['map sidebar', mapSidebar],
@@ -118,17 +157,21 @@ async function main() {
     assert(!source.match(/\bEFF\b|\bRES\b|\bEff\b|\bRes\b|triage|priority stack|command center|source health|AI matching|predictive|heatmap|guaranteed fit|guaranteed-fit|ROI|traffic/i), `${label} must not expose unsupported or operational Wave 2B language.`);
   }
   const popupSource = searchMap.slice(searchMap.indexOf('function buildPopupHtml'), searchMap.indexOf('export default function SearchMap'));
+  const prohibitedPublicPropertyLanguage =
+    /Selected Signal|Property Scorecard|Asset Snapshot|Authority Paths|Decision Signal|Triage|\bEFF\b|\bRES\b|\bEff\b|\bRes\b|\bDiagnostic\b|Scorecard|\bPriority\b|Operational status|Smoke ready|Smoke review|AI analysis|AI inspection|predictive|heatmap|guaranteed fit|guaranteed-fit|guaranteed condition|guaranteed equity|ROI|live traffic|commute savings|Discuss This Asset|Altitude Forensics|Internal intelligence/i;
   for (const [label, source] of [
     ['search map popup', popupSource],
     ['selected-property drawer', selectedDrawer],
+    ['property detail page', propertyPage],
   ] as const) {
-    assert(
-      !source.match(
-        /Selected Signal|Property Scorecard|Asset Snapshot|Authority Paths|Decision Signal|Triage|\bEFF\b|\bRES\b|\bEff\b|\bRes\b|\bDiagnostic\b|Scorecard|\bPriority\b|Operational status|Smoke ready|AI analysis|predictive|heatmap|guaranteed fit|guaranteed-fit|ROI|live traffic|commute savings/i,
-      ),
-      `${label} must not expose unsupported or operational Wave 2C language.`,
-    );
+    assert(!source.match(prohibitedPublicPropertyLanguage), `${label} must not expose unsupported or operational Wave 2 property language.`);
   }
+  assert(
+    !propertyInquiryForm.match(
+      /Selected Signal|Property Scorecard|Asset Snapshot|Authority Paths|Decision Signal|Triage|\bEFF\b|\bRES\b|\bEff\b|\bRes\b|\bDiagnostic\b|Scorecard|Operational status|Smoke ready|Smoke review|AI analysis|AI inspection|predictive|heatmap|guaranteed fit|guaranteed-fit|guaranteed condition|guaranteed equity|ROI|live traffic|commute savings|Discuss This Asset|Altitude Forensics|Internal intelligence/i,
+    ),
+    'property inquiry form must not expose unsupported or operational Wave 2 property language.',
+  );
 
   console.log(
     '[map-rendering-safety] ok: deterministic map pane visibility, dedicated search discovery framing, Wave 2B sidebar/card/control language, Wave 2C popup/drawer language, native Leaflet tile reset, resize invalidation, and no decorative basemap overlays verified.',

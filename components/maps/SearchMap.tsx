@@ -710,7 +710,7 @@ export default function SearchMap({
           </div>
           {smokeReady !== undefined ? (
             <div className="mt-1 text-white/35">
-              <span className={smokeReady ? 'text-emerald-200' : 'text-amber-200'}>{smokeReady ? 'smoke ready' : 'smoke review'}</span>
+              <span className={smokeReady ? 'text-emerald-200' : 'text-cyan-200'}>{smokeReady ? 'Map Ready' : 'Explore on Map'}</span>
               {smokeBlockerCount > 0 ? (
                 <>
                   <span className="mx-2 text-white/20">/</span>

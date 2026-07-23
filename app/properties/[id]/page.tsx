@@ -240,11 +240,11 @@ function getAltitudeNarrative(altitude: number) {
 }
 
 function getReviewSignal(property: PropertyWithPhotos) {
-  if (property.hasPolybutyleneRisk) return 'Plumbing Review';
+  if (property.hasPolybutyleneRisk) return 'Plumbing Review Suggested';
   if (property.soilType?.trim()) return property.soilType.trim();
-  if (property.altitude) return `${formatNumber(property.altitude)} FT`;
+  if (property.altitude) return 'Elevation Context';
 
-  return 'REIE Verified';
+  return 'Public Listing Context';
 }
 
 function getPrimaryPhoto(property: PropertyWithPhotos) {
@@ -308,24 +308,24 @@ function getPricePerSquareFoot(property: PropertyWithPhotos) {
 }
 
 function getDiligencePosture(property: PropertyWithPhotos) {
-  if (property.hasPolybutyleneRisk) return 'High diligence';
-  if ((property.resilienceScore || 0) < 70) return 'Resilience review';
-  if ((property.efficiencyScore || 0) >= 75 && (property.resilienceScore || 0) >= 80) return 'Strong signal';
+  if (property.hasPolybutyleneRisk) return 'Advisor review recommended';
+  if ((property.resilienceScore || 0) < 70) return 'Details to review';
+  if ((property.efficiencyScore || 0) >= 75 && (property.resilienceScore || 0) >= 80) return 'Worth a closer look';
   return 'Standard review';
 }
 
 function getDecisionNextStep(property: PropertyWithPhotos) {
-  if (property.hasPolybutyleneRisk) return 'Review plumbing, insurance, and inspection leverage before offer timing.';
+  if (property.hasPolybutyleneRisk) return 'Ask about plumbing history, insurance considerations, and inspection priorities before next steps.';
   if (!property.sqft || !property.price) return 'Confirm core listing facts, condition, and comparable inventory.';
-  if ((property.efficiencyScore || 0) >= 75) return 'Compare against active alternatives and decide if speed is justified.';
-  return 'Use market comps and condition diligence to decide whether negotiation room exists.';
+  if ((property.efficiencyScore || 0) >= 75) return 'Compare daily-life fit, property condition, and active alternatives before deciding how quickly to move.';
+  return 'Use market context and condition diligence to decide what questions should be answered next.';
 }
 
 function getDecisionTone(property: PropertyWithPhotos) {
-  if (property.hasPolybutyleneRisk) return 'Review Required';
-  if ((property.efficiencyScore || 0) >= 75 && (property.resilienceScore || 0) >= 80) return 'Strong Signal';
-  if ((property.resilienceScore || 0) < 70) return 'Resilience Watch';
-  return 'Triage Ready';
+  if (property.hasPolybutyleneRisk) return 'Advisor Review Recommended';
+  if ((property.efficiencyScore || 0) >= 75 && (property.resilienceScore || 0) >= 80) return 'Worth a Closer Look';
+  if ((property.resilienceScore || 0) < 70) return 'Details to Review';
+  return 'Property Brief Ready';
 }
 
 async function getProperty(id: string) {
@@ -372,7 +372,7 @@ function getPropertyFaqs(property: PropertyWithPhotos): FAQItem[] {
   return [
     {
       question: `What does David Quinn Group evaluate for ${property.address}?`,
-      answer: `David Quinn Group evaluates ${property.address}${neighborhoodContext} through real estate intelligence, combining price context, MLS inventory signals, construction condition, resilience posture, location quality, and buyer or seller strategy.`,
+      answer: `David Quinn Group evaluates ${property.address}${neighborhoodContext} through price context, public listing facts, construction-informed questions, location fit, and market context so buyers can decide what deserves closer review.`,
     },
     {
       question: `Why does construction diligence matter for ${property.address}?`,
@@ -380,7 +380,7 @@ function getPropertyFaqs(property: PropertyWithPhotos): FAQItem[] {
     },
     {
       question: `How should buyers interpret this ${property.city} property${priceContext}?`,
-      answer: `Buyers should compare this property against live inventory, neighborhood authority paths, condition risk, resilience signals, and negotiation leverage. The REIE layer helps decide whether to move quickly, investigate further, or negotiate around specific risks.`,
+      answer: `Buyers should compare this property against active inventory, neighborhood context, condition questions, inspection priorities, and timing needs. The advisory layer helps clarify whether the home deserves a closer look before next steps.`,
     },
     {
       question: `How should sellers use property intelligence for a home like ${property.address}?`,
@@ -405,13 +405,13 @@ export async function generateMetadata({ params }: PropertyPageProps): Promise<M
 
   return {
     title: `${property.address} | ${property.city}, CO Real Estate Intelligence`,
-    description: `David Quinn Group property intelligence for ${property.address} in ${property.city}, Colorado, including price, construction context, resilience, and GC-level strategy signals.`,
+    description: `David Quinn Group property brief for ${property.address} in ${property.city}, Colorado, including price, listing facts, construction perspective, and neighborhood context.`,
     alternates: {
       canonical: canonicalUrl,
     },
     openGraph: {
       title: `${property.address} | ${property.city}, CO Real Estate Intelligence`,
-      description: `Property intelligence for ${property.address} in ${property.city}, Colorado from David Quinn Group.`,
+      description: `Property brief for ${property.address} in ${property.city}, Colorado from David Quinn Group.`,
       url: canonicalUrl,
       siteName: 'David Quinn Group',
       locale: 'en_US',
@@ -484,7 +484,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
       <FAQSchema faqs={propertyFaqs} pageUrl={canonicalUrl} />
       <section className="relative border-b border-white/10">
         <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(100,188,205,0.14),transparent_38%),linear-gradient(180deg,rgba(255,255,255,0.035),transparent_35%)]" />
-        <div className="relative mx-auto grid min-h-[620px] max-w-[1500px] grid-cols-1 gap-0 lg:min-h-[720px] lg:grid-cols-[minmax(0,1fr)_420px]">
+        <div className="reie-property-hero-grid relative mx-auto grid min-h-[620px] max-w-[1500px] grid-cols-1 gap-0 lg:min-h-[720px] lg:grid-cols-[minmax(0,1fr)_420px]">
           <div className="relative min-h-[500px] overflow-hidden bg-[#101720] sm:min-h-[560px] lg:min-h-[720px]">
             <ResilientListingImage
               src={primaryPhoto}
@@ -492,7 +492,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
               alt={property.address}
               loading="eager"
               fetchPriority="high"
-              fallbackLabel="REIE visual"
+              fallbackLabel="Property visual"
               className="absolute inset-0 h-full w-full object-cover opacity-95"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[#070b10] via-[#070b10]/20 to-transparent" />
@@ -507,7 +507,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                 Search
               </Link>
               <span className="max-w-[calc(100vw-2rem)] rounded-[6px] border border-white/14 bg-[#071017]/76 px-3 py-2 text-[10px] font-black uppercase tracking-[0.12em] text-cyan-100 backdrop-blur md:tracking-[0.16em]">
-                Property Preview
+                Property Brief
               </span>
             </div>
 
@@ -547,11 +547,11 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
               <div className="border-b border-cyan-100/14 bg-cyan-100/[0.07] p-4">
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <p className="text-[10px] font-black uppercase tracking-[0.22em] text-cyan-100/76">Buyer Decision Snapshot</p>
+                    <p className="text-[10px] font-black uppercase tracking-[0.22em] text-cyan-100/76">Property Brief</p>
                     <p className="mt-2 text-sm font-black uppercase tracking-[0.08em] text-white">{decisionTone}</p>
                   </div>
                   <span className="shrink-0 rounded-[5px] border border-cyan-100/24 bg-black/24 px-2 py-1 text-[9px] font-black uppercase tracking-[0.14em] text-cyan-100/76">
-                    Live
+                    Listing Facts
                   </span>
                 </div>
               </div>
@@ -562,19 +562,19 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                   <DecisionRow label="Market Path" value={property.neighborhood || property.city || 'Colorado'} />
                 </div>
                 <p className="mt-4 border-t border-cyan-100/14 pt-4 text-sm leading-6 text-white/66">{decisionNextStep}</p>
-                <div className="mt-4 grid grid-cols-2 gap-2">
+                <div className="reie-property-advisor-actions mt-4 grid gap-2">
                   <Link
                     href="#property-contact"
-                    className="inline-flex h-10 items-center justify-center gap-1.5 rounded-[6px] bg-cyan-100 text-[10px] font-black uppercase tracking-[0.12em] text-[#061017] transition hover:bg-white"
+                    className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-[6px] bg-cyan-100 px-3 py-3 text-[10px] font-black uppercase tracking-[0.12em] text-[#061017] transition hover:bg-white"
                   >
-                    Inquire
+                    Ask About This Property
                     <Mail size={13} aria-hidden="true" />
                   </Link>
                   <Link
                     href={cityMarketHref}
-                    className="inline-flex h-10 items-center justify-center gap-1.5 rounded-[6px] border border-white/10 bg-white/[0.055] text-[10px] font-black uppercase tracking-[0.12em] text-white/72 transition hover:border-cyan-100/35 hover:text-cyan-100"
+                    className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-[6px] border border-white/10 bg-white/[0.055] px-3 py-2.5 text-[10px] font-black uppercase tracking-[0.12em] text-white/72 transition hover:border-cyan-100/35 hover:text-cyan-100"
                   >
-                    Market
+                    Market Context
                     <TrendingUp size={13} aria-hidden="true" />
                   </Link>
                 </div>
@@ -582,15 +582,18 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
             </section>
 
             <div className="mt-4 rounded-[8px] border border-white/10 bg-[#0d141c] p-4">
-              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-white/44">Property Scorecard</p>
+              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-white/44">Property Signals</p>
               <div className="mt-4 grid grid-cols-2 gap-3">
-                <SignalTile icon={<TrendingUp size={16} />} label="Efficiency" value={formatNumber(efficiencyScore)} tone="cyan" />
-                <SignalTile icon={<ShieldCheck size={16} />} label="Resilience" value={formatNumber(resilienceScore)} tone="white" />
+                <SignalTile icon={<TrendingUp size={16} />} label="Location Fit" value={formatNumber(efficiencyScore)} tone="cyan" />
+                <SignalTile icon={<ShieldCheck size={16} />} label="Property Context" value={formatNumber(resilienceScore)} tone="white" />
               </div>
               <div className="mt-3 rounded-[6px] border border-white/10 bg-white/[0.045] p-3">
-                <p className="text-[10px] font-black uppercase tracking-[0.14em] text-white/40">Review Signal</p>
+                <p className="text-[10px] font-black uppercase tracking-[0.14em] text-white/40">Advisory Note</p>
                 <p className="mt-2 truncate text-sm font-black uppercase tracking-[0.08em] text-cyan-100">{reviewSignal}</p>
               </div>
+              <p className="mt-3 text-xs leading-5 text-white/46">
+                Directional context only. Verify property condition, systems, and location tradeoffs during inspection or advisor review.
+              </p>
             </div>
 
             <div className="mt-4 grid grid-cols-3 gap-2">
@@ -600,19 +603,19 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
             </div>
 
             <section className="mt-4 rounded-[8px] border border-white/10 bg-[#0d141c] p-4">
-              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-cyan-100/76">Authority Paths</p>
+              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-cyan-100/76">Helpful Next Steps</p>
               <div className="mt-4 grid gap-2">
-                <AuthorityLink href={cityMarketHref} eyebrow="City Market" label={`${property.city || 'Colorado'} Intelligence`} />
+                <AuthorityLink href={cityMarketHref} eyebrow="Market Context" label={`${property.city || 'Colorado'} Market Brief`} />
                 {neighborhoodHref ? (
-                  <AuthorityLink href={neighborhoodHref} eyebrow="Neighborhood" label={`${property.neighborhood} Authority Hub`} />
+                  <AuthorityLink href={neighborhoodHref} eyebrow="Neighborhood Context" label={`${property.neighborhood} Area Guide`} />
                 ) : null}
-                {briefHref ? <AuthorityLink href={briefHref} eyebrow="REIE Brief" label="Strategy Context" /> : null}
+                {briefHref ? <AuthorityLink href={briefHref} eyebrow="Property Brief" label="Additional Context" /> : null}
               </div>
             </section>
 
             <section className="mt-4 rounded-[8px] border border-white/10 bg-[#0d141c] p-4">
               <h2 className="flex items-center gap-2 text-[12px] font-black uppercase tracking-[0.12em] text-white">
-                <Mountain className="text-cyan-100" size={17} /> Altitude Forensics
+                <Mountain className="text-cyan-100" size={17} /> Construction Perspective
               </h2>
               <div className="mt-4 space-y-3 text-sm">
                 <div className="flex justify-between gap-4 border-b border-white/10 pb-2">
@@ -629,12 +632,12 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
 
             <section className="mt-4 rounded-[8px] border border-amber-200/24 bg-amber-200/8 p-4">
               <h2 className="flex items-center gap-2 text-[12px] font-black uppercase tracking-[0.12em] text-amber-100">
-                <ShieldAlert size={17} /> Condition Review
+                <ShieldAlert size={17} /> Questions Worth Asking
               </h2>
               <ul className="mt-4 space-y-2 text-xs font-bold uppercase tracking-[0.12em] text-white/62">
-                {property.hasPolybutyleneRisk ? <li>Polybutylene piping risk detected</li> : null}
-                <li>Drainage and grade verification recommended</li>
-                <li>Mechanical age and electrical capacity review recommended</li>
+                {property.hasPolybutyleneRisk ? <li>Ask about plumbing history and inspection scope</li> : null}
+                <li>Review drainage and grade during inspection</li>
+                <li>Confirm mechanical age and electrical capacity</li>
               </ul>
             </section>
 
@@ -643,7 +646,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                 <HardHat className="text-cyan-100" size={24} />
                 <h2 className="mt-3 text-[15px] font-black uppercase tracking-[0.08em] text-white">Advisor Review Available</h2>
                 <p className="mt-2 text-sm leading-6 text-white/62">
-                  Detailed contractor review and negotiation planning are discussed directly with David Quinn Group clients.
+                  Construction-informed questions and next-step planning can be reviewed directly with David Quinn Group clients.
                 </p>
               </div>
             ) : null}
@@ -656,20 +659,20 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
           <div className="max-w-3xl">
             <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.24em] text-cyan-100/76">
               <ShieldCheck size={14} aria-hidden="true" />
-              Property Decision Workspace
+              Property Detail
             </p>
             <h2 className="mt-3 text-2xl font-black uppercase tracking-tight text-white md:text-4xl">
-              Decision context after the hero view
+              Listing facts with advisory context
             </h2>
           </div>
           <div className="grid grid-cols-3 overflow-hidden rounded-[8px] border border-white/10 bg-[#0d141c] text-center md:min-w-[380px]">
             <SnapshotTile label="Price" value={formatCompactCurrency(property.price)} />
             <SnapshotTile label="Basis" value={pricePerSquareFoot} />
-            <SnapshotTile label="Signal" value={decisionTone} />
+            <SnapshotTile label="Review" value={decisionTone} />
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
+        <div className="reie-property-detail-grid grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
           <div className="space-y-6">
             <section className="overflow-hidden rounded-[8px] border border-white/10 bg-[#0d141c]">
               <div className="border-b border-white/10 bg-white/[0.035] p-5 md:p-6">
@@ -680,7 +683,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                       Property Brief
                     </p>
                     <h2 className="mt-3 text-xl font-black uppercase tracking-tight text-white md:text-2xl">
-                      MLS facts translated into decision posture
+                      Listing facts translated into next-step questions
                     </h2>
                   </div>
                   <span className="inline-flex h-8 items-center rounded-[6px] border border-cyan-100/22 bg-cyan-100/[0.08] px-3 text-[10px] font-black uppercase tracking-[0.16em] text-cyan-100">
@@ -691,7 +694,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
               <div className="p-5 md:p-8">
                 <p className="max-w-4xl text-base leading-8 text-white/70">
                   {property.description ||
-                    `${property.address} is an active Colorado listing in the David Quinn Group intelligence layer. Live MLS media, location signals, and structural context are being assembled for this asset.`}
+                    `${property.address} is an active Colorado listing with public facts, location context, and construction-informed questions available for advisor review.`}
                 </p>
                 <div className="mt-6 grid gap-3 md:grid-cols-3">
                   <BriefSignalTile label="Review" value={reviewSignal} />
@@ -737,14 +740,14 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
           <section className="rounded-[8px] border border-cyan-100/20 bg-cyan-100/[0.06] p-4">
             <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100/76">
               <ShieldCheck size={14} aria-hidden="true" />
-              Buyer Action Context
+              Helpful Next Steps
             </p>
             <div className="mt-4 grid grid-cols-2 gap-2">
-              <ActionMetric label="Decision" value={decisionTone} />
+              <ActionMetric label="Review" value={decisionTone} />
               <ActionMetric label="Diligence" value={diligencePosture} />
             </div>
             <p className="mt-4 border-t border-cyan-100/14 pt-4 text-sm leading-6 text-white/58">
-              Use the inquiry workflow to attach timing, tour intent, and property-specific questions to this asset.
+              Use the inquiry form to share timing, tour intent, and property-specific questions before a conversation.
             </p>
           </section>
 
@@ -759,7 +762,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
             <div className="border-b border-white/10 bg-white/[0.035] p-5">
               <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.22em] text-white/46">
                 <Home size={14} aria-hidden="true" />
-                Asset Snapshot
+                Listing Facts
               </p>
               <p className="mt-2 text-sm leading-6 text-white/50">Core listing facts used for inquiry and buyer review.</p>
             </div>
@@ -838,7 +841,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
           neighborhood={property.neighborhood ?? undefined}
           listings={relatedListings}
           authorityLinks={propertyLinks.authorityLinks}
-          title={`${property.city || 'Colorado'} Property Authority Links`}
+          title={`${property.city || 'Colorado'} Related Property Links`}
         />
       </section>
       <nav
@@ -869,7 +872,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
             style={{ alignItems: 'center', display: 'inline-flex', height: 44, justifyContent: 'center' }}
           >
             <Mail size={13} aria-hidden="true" />
-            Contact
+            Ask
           </Link>
         </div>
       </nav>

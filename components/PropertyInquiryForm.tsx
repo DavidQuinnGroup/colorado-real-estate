@@ -175,7 +175,10 @@ export default function PropertyInquiryForm({ propertyId, address, city, state }
     return (
       <section
         id="property-contact"
-        className="overflow-hidden rounded-[8px] border border-cyan-100/28 bg-[#071017]"
+        tabIndex={-1}
+        aria-labelledby="property-contact-heading"
+        aria-live="polite"
+        className="scroll-mt-24 overflow-hidden rounded-[8px] border border-cyan-100/28 bg-[#071017] focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-100/45"
         data-testid="reie-property-inquiry"
         data-property-inquiry-state={submitState}
         data-property-inquiry-property-id={propertyId}
@@ -197,7 +200,7 @@ export default function PropertyInquiryForm({ propertyId, address, city, state }
       >
         <div className="border-b border-cyan-100/14 bg-cyan-100/[0.075] p-5">
           <CheckCircle2 className="text-cyan-100" size={26} aria-hidden="true" />
-          <h2 className="mt-3 text-[15px] font-black uppercase tracking-[0.08em] text-white">Inquiry Saved</h2>
+          <h2 id="property-contact-heading" className="mt-3 text-[15px] font-black uppercase tracking-[0.08em] text-white">Inquiry Saved</h2>
           <p className="mt-2 text-sm leading-6 text-white/62">
             This property inquiry has been saved for David Quinn Group follow-up.
           </p>
@@ -215,7 +218,7 @@ export default function PropertyInquiryForm({ propertyId, address, city, state }
           data-property-inquiry-notification-reason={notificationReason}
         >
           <SuccessMetric label="Request" value={timelineLabel} />
-          <SuccessMetric label="Priority" value={leadTemperature} tone="cyan" />
+          <SuccessMetric label="Follow-up" value={leadTemperature} tone="cyan" />
         </div>
       </section>
     );
@@ -224,7 +227,9 @@ export default function PropertyInquiryForm({ propertyId, address, city, state }
   return (
     <section
       id="property-contact"
-      className="overflow-hidden rounded-[8px] border border-cyan-100/24 bg-[#071017]"
+      tabIndex={-1}
+      aria-labelledby="property-contact-heading"
+      className="scroll-mt-24 overflow-hidden rounded-[8px] border border-cyan-100/24 bg-[#071017] focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-100/45"
       data-testid="reie-property-inquiry"
       data-property-inquiry-state={submitState}
       data-property-inquiry-property-id={propertyId}
@@ -257,14 +262,14 @@ export default function PropertyInquiryForm({ propertyId, address, city, state }
               <Mail size={14} aria-hidden="true" />
               Property Inquiry
             </p>
-            <h2 className="mt-3 text-[18px] font-black uppercase leading-tight tracking-[0.06em] text-white">Discuss This Asset</h2>
+            <h2 id="property-contact-heading" className="mt-3 text-[18px] font-black uppercase leading-tight tracking-[0.06em] text-white">Ask About This Property</h2>
           </div>
           <span className="rounded-[5px] border border-cyan-100/24 bg-black/30 px-2.5 py-1.5 text-[9px] font-black uppercase tracking-[0.14em] text-cyan-100/78">
             Follow-up
           </span>
         </div>
         <p className="mt-3 text-sm leading-6 text-white/62">
-          Request a showing, risk read, or buyer strategy brief for {address}, {city}, {state}.
+          Share tour timing, property questions, or next-step concerns for {address}, {city}, {state}.
         </p>
       </div>
 
@@ -350,7 +355,7 @@ export default function PropertyInquiryForm({ propertyId, address, city, state }
                 data-property-inquiry-timeline-label={option.label}
                 data-property-inquiry-timeline-detail={option.detail}
                 data-property-inquiry-timeline-selected={timeline === option.value ? 'true' : 'false'}
-                className={`min-h-11 rounded-[6px] border px-2 text-[10px] font-black uppercase tracking-[0.12em] transition ${
+                className={`min-h-11 rounded-[6px] border px-2 text-[10px] font-black uppercase tracking-[0.12em] transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100 ${
                   timeline === option.value
                     ? 'border-cyan-100 bg-cyan-100 text-[#061017] shadow-[0_0_0_1px_rgba(207,250,254,0.22)]'
                     : 'border-white/10 bg-white/[0.055] text-white/48 hover:border-cyan-100/35 hover:text-white'
@@ -417,14 +422,14 @@ export default function PropertyInquiryForm({ propertyId, address, city, state }
           type="submit"
           disabled={submitState === 'submitting'}
           style={submitButtonStyle}
-          className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-[6px] bg-cyan-100 px-3 py-3 text-[10px] font-black uppercase tracking-[0.16em] text-[#061017] transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-60"
+          className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-[6px] bg-cyan-100 px-3 py-3 text-[10px] font-black uppercase tracking-[0.16em] text-[#061017] transition hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100 disabled:cursor-not-allowed disabled:opacity-60"
           data-testid="reie-property-inquiry-submit"
           data-property-inquiry-state={submitState}
           data-property-inquiry-disabled={submitState === 'submitting' ? 'true' : 'false'}
           data-property-inquiry-email-valid={hasValidEmail ? 'true' : 'false'}
         >
           {submitState === 'submitting' ? <Loader2 size={14} className="animate-spin" aria-hidden="true" /> : <Mail size={14} aria-hidden="true" />}
-          {submitState === 'submitting' ? 'Saving' : 'Send Inquiry'}
+          {submitState === 'submitting' ? 'Saving' : 'Ask About This Property'}
         </button>
       </form>
     </section>

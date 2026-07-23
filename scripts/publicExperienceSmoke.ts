@@ -51,7 +51,11 @@ async function getSmokeProperty() {
 async function assertPropertyPage(path: string) {
   const html = await fetchHtml(path);
 
-  assert.ok(includesFoldedText(html, 'Buyer Decision Snapshot'), 'Expected property page decision snapshot.');
+  assert.ok(includesFoldedText(html, 'Property Brief'), 'Expected property page brief framing.');
+  assert.ok(includesFoldedText(html, 'Listing Facts'), 'Expected property page listing facts.');
+  assert.ok(includesFoldedText(html, 'Construction Perspective'), 'Expected property page construction perspective.');
+  assert.ok(includesFoldedText(html, 'Questions Worth Asking'), 'Expected property page diligence questions.');
+  assert.ok(includesFoldedText(html, 'Ask About This Property'), 'Expected property page inquiry CTA.');
   assert.ok(includesFoldedText(html, 'Property Inquiry'), 'Expected property inquiry form.');
   assert.ok(includesFoldedText(html, 'Follow-up routing'), 'Expected inquiry follow-up routing guidance.');
   assert.ok(includesFoldedText(html, 'Current Request'), 'Expected inquiry request guidance.');
@@ -1922,7 +1926,7 @@ async function main() {
           homePortalRestoration: true,
           aboutAdvisorExperience: true,
           sellerJourneyEntry: true,
-          propertyDecisionSnapshot: true,
+          propertyDetailBridge: true,
           propertyInquiryGuidance: true,
           searchIntelligence: true,
           adminPageMetadata: true,

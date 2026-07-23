@@ -1310,6 +1310,26 @@ html, body {
 }
 
 @media (min-width: 1024px) {
+  .reie-property-hero-grid {
+    align-items: start !important;
+    grid-template-columns: minmax(0, 1fr) 420px !important;
+  }
+
+  .reie-property-hero-grid > div:first-child {
+    min-height: min(760px, calc(100vh - 64px)) !important;
+  }
+
+  .reie-property-hero-grid > aside {
+    align-self: start !important;
+    height: calc(100vh - 64px) !important;
+    max-height: calc(100vh - 64px) !important;
+    overflow-y: auto !important;
+  }
+
+  .reie-property-detail-grid {
+    grid-template-columns: minmax(0, 1fr) 380px !important;
+  }
+
   [data-testid="grand-plan-landing"],
   [data-testid="grand-plan-explanation"],
   [data-testid="grand-plan-intake-section"] {
@@ -1327,6 +1347,11 @@ html, body {
     grid-template-columns: 0.8fr 1.2fr;
     align-items: start;
   }
+}
+
+.reie-property-advisor-actions a {
+  min-height: 44px;
+  padding: 12px;
 }
 
 @media (max-width: 767px) {
