@@ -8,23 +8,23 @@ import { SITE_NAME, SITE_URL } from '@/lib/publicTrust';
 export const metadata: Metadata = {
   title: `Grand Plan | ${SITE_NAME}`,
   description:
-    'Start a David Quinn Group Grand Plan for buying, selling, relocation, or long-term Colorado real estate strategy.',
+    'Start a David Quinn Group Grand Plan for buying, selling, relocation, or long-term Colorado real estate planning.',
   alternates: { canonical: `${SITE_URL}/grand-plan` },
   robots: { index: true, follow: true },
 };
 
 const planningSteps = [
   {
-    title: 'Clarify the decision',
-    body: 'Start with the real question: buy, sell, relocate, prepare, renovate, or hold.',
+    title: 'Start with priorities',
+    body: 'Name the decision and the daily-life needs that should guide it.',
   },
   {
-    title: 'Map the constraints',
-    body: 'Connect market, timing, lifestyle anchors, property risk, and practical tradeoffs.',
+    title: 'Frame the timing',
+    body: 'Connect market focus, timing, and the practical tradeoffs around the move.',
   },
   {
-    title: 'Choose the next move',
-    body: 'David Quinn Group reviews the intake and follows up with the right advisory conversation.',
+    title: 'Prepare the conversation',
+    body: 'Create a clearer starting point for advisor follow-up.',
   },
 ];
 
@@ -49,18 +49,18 @@ export default function GrandPlanPage() {
             </Link>
             <p className="gp-eyebrow gp-hero-eyebrow">Grand Plan</p>
             <h1>
-              Build the plan before the property decision takes over.
+              Build Your Grand Plan.
             </h1>
             <p className="gp-copy">
-              The Grand Plan connects where you want life to go with the real estate decision in front of you: buying, selling, relocating,
-              preparing a property, or deciding whether to hold and improve.
+              A clearer real estate decision begins with your priorities, timing, and daily life. Start with what matters most before the
+              property search takes over.
             </p>
             <div className="mt-10 flex flex-wrap gap-3" data-testid="grand-plan-primary-actions">
               <a
                 href="#grand-plan-intake"
                 className="gp-button gp-button-primary"
               >
-                Begin Grand Plan
+                Start With What Matters Most
               </a>
               <Link
                 href="/search"
@@ -91,8 +91,8 @@ export default function GrandPlanPage() {
               A good real estate decision has to survive real life.
             </h2>
             <p className="gp-section-copy">
-              A search can show inventory. A valuation can frame one property. The Grand Plan connects the decision to timing, location,
-              preparation, construction exposure, lifestyle fit, and follow-up strategy.
+              A search can show inventory. The Grand Plan helps connect the decision to timing, location, preparation, lifestyle fit, and
+              the conversation that should happen before the next move.
             </p>
           </div>
           <div className="gp-card-grid">
@@ -120,7 +120,7 @@ export default function GrandPlanPage() {
               {[
                 'How to reach you.',
                 'The market or community you are focused on.',
-                'The life, property, or timing anchor that matters most.',
+                'The place, routine, or timing anchor that matters most.',
                 'The decision you need help making.',
               ].map((item) => (
                 <li key={item}>
@@ -130,8 +130,8 @@ export default function GrandPlanPage() {
               ))}
             </ul>
             <p>
-              The intake creates a saved strategy record and advisor follow-up task. It does not produce an automated score, public report,
-              or brokerage relationship by itself.
+              The intake creates a starting point for advisor follow-up. It does not produce automated advice or a brokerage relationship by
+              itself.
             </p>
           </aside>
           <GrandPlanIntake />
