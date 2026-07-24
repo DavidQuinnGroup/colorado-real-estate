@@ -24,6 +24,13 @@ const forbiddenPublicClaims = [
   'Construction findings',
   'Negotiation recommendations',
   'Private strategy',
+  'Proprietary Algorithm',
+  'Hidden Intelligence',
+  'Strategy Engine',
+  'Internal Report',
+  'Generated Analysis',
+  'Unlock Your Secret Report',
+  'Guaranteed results',
   'Medicare',
   'tax questions',
   'debt questions',
@@ -81,6 +88,24 @@ assert.ok(grandPlanIntake.includes('data-testid="grand-plan-result-themes"'), 'E
 assert.ok(grandPlanIntake.includes('data-testid="grand-plan-result-theme"'), 'Expected Wave 3C bounded theme cards.');
 assert.ok(grandPlanIntake.includes('data-testid="grand-plan-result-prompts"'), 'Expected Wave 3C advisor discussion prompts.');
 assert.ok(grandPlanIntake.includes('data-grand-plan-read-only="true"'), 'Expected success result to remain read-only.');
+assert.ok(grandPlanIntake.includes('data-testid="grand-plan-strategy-preview"'), 'Expected Wave 3D strategy preview to render inside success state.');
+assert.ok(grandPlanIntake.includes('data-grand-plan-preview-read-only="true"'), 'Expected Wave 3D strategy preview to remain read-only.');
+assert.ok(grandPlanIntake.includes('A Preview of Your Strategy Report'), 'Expected Wave 3D report-preview framing.');
+assert.ok(grandPlanIntake.includes('What deeper advisor review can add'), 'Expected Wave 3D advisor-review framing.');
+assert.ok(grandPlanIntake.includes('Your public result summarizes the priorities you shared.'), 'Expected Wave 3D public/protected boundary copy.');
+assert.ok(grandPlanIntake.includes('Detailed property, construction, timing, and strategy review is'), 'Expected Wave 3D advisor-involvement boundary.');
+assert.ok(grandPlanIntake.includes('Construction Perspective'), 'Expected Wave 3D Construction Perspective preview section.');
+assert.ok(grandPlanIntake.includes('Market Context'), 'Expected Wave 3D Market Context preview section.');
+assert.ok(grandPlanIntake.includes('Timing Considerations'), 'Expected Wave 3D Timing Considerations preview section.');
+assert.ok(grandPlanIntake.includes('Property Fit'), 'Expected Wave 3D Property Fit preview section.');
+assert.ok(grandPlanIntake.includes('Next-Step Planning'), 'Expected Wave 3D Next-Step Planning preview section.');
+assert.ok(grandPlanIntake.includes("status: 'Public Starting Point'"), 'Expected bounded Public Starting Point status label.');
+assert.ok(grandPlanIntake.includes("status: 'Advisor Review'"), 'Expected bounded Advisor Review status label.');
+assert.ok(grandPlanIntake.includes("status: 'Contracted-Client Deep Dive'"), 'Expected bounded Contracted-Client Deep Dive status label.');
+assert.ok(grandPlanIntake.includes('Relevant to Your Priorities'), 'Expected Wave 3D emphasis label to be bounded.');
+assert.ok(grandPlanIntake.includes('getStrategyPreviewSections'), 'Expected deterministic local preview emphasis function.');
+assert.ok(grandPlanIntake.includes("data-grand-plan-preview-section={section.id}"), 'Expected preview section metadata for inspection.');
+assert.ok(grandPlanIntake.includes("data-grand-plan-preview-relevant={section.isRelevant ? 'true' : 'false'}"), 'Expected preview emphasis metadata for inspection.');
 assert.ok(grandPlanIntake.includes('const themeLibrary: Record<PlanningThemeId, PlanningTheme>'), 'Expected bounded deterministic planning theme library.');
 assert.ok(grandPlanIntake.includes('const defaultThemeIds: PlanningThemeId[]'), 'Expected safe default planning themes.');
 assert.ok(grandPlanIntake.includes('return themeIds.slice(0, 5).map'), 'Expected planning themes to be capped at five.');
@@ -95,6 +120,15 @@ assert.ok(!grandPlanIntake.includes('Scorecard'), 'Grand Plan result must not ex
 assert.ok(!grandPlanIntake.includes('Match score'), 'Grand Plan result must not expose match-score language.');
 assert.ok(!grandPlanIntake.includes('Report generated'), 'Grand Plan result must not claim report generation.');
 assert.ok(!grandPlanIntake.includes('Recommendation engine'), 'Grand Plan result must not expose recommendation-engine language.');
+assert.ok(!grandPlanIntake.includes('download'), 'Grand Plan result must not introduce report downloads.');
+assert.ok(!grandPlanIntake.includes('pdf'), 'Grand Plan result must not introduce PDF behavior.');
+assert.ok(!grandPlanIntake.includes('Unlock Your Secret Report'), 'Grand Plan result must not introduce manipulative unlock language.');
+assert.ok(!grandPlanIntake.includes('private-access unlock'), 'Grand Plan result must not introduce private-access unlock behavior.');
+assert.ok(!grandPlanIntake.includes('account creation'), 'Grand Plan result must not introduce account creation.');
+assert.ok(!grandPlanIntake.includes('strategyGenerator'), 'Grand Plan result must not import private strategy generation code.');
+assert.ok(!grandPlanIntake.includes('Math.random'), 'Grand Plan result must not use random preview generation.');
+assert.ok(!grandPlanIntake.includes('repair-cost'), 'Grand Plan result must not expose repair-cost advice.');
+assert.ok(!grandPlanIntake.includes('Offer recommendations'), 'Grand Plan result must not expose offer recommendations.');
 assert.ok(!grandPlanIntake.includes('Executive Intelligence'), 'Grand Plan public UI must not expose Executive Intelligence terminology.');
 assert.ok(!grandPlanIntake.includes('CRM'), 'Grand Plan public UI must not expose CRM terminology.');
 assert.ok(!grandPlanIntake.includes('heatScore'), 'Grand Plan public UI must not expose scoring internals.');

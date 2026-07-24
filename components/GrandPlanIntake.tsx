@@ -1,7 +1,7 @@
 'use client';
 
 import { type FormEvent, useEffect, useId, useMemo, useRef, useState } from 'react';
-import { CheckCircle2, ChevronLeft, ChevronRight, Loader2, ShieldCheck } from 'lucide-react';
+import { CheckCircle2, ChevronLeft, ChevronRight, Loader2, LockKeyhole, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
 
 type GoalId = 'sell-optimize' | 'buy-strategy' | 'relocation-fit' | 'portfolio-review';
@@ -48,6 +48,15 @@ type PlanningTheme = {
   title: string;
   body: string;
   question: string;
+};
+
+type StrategyPreviewStatus = 'Public Starting Point' | 'Advisor Review' | 'Contracted-Client Deep Dive';
+
+type StrategyPreviewSection = {
+  id: 'construction' | 'market' | 'timing' | 'property-fit' | 'next-step';
+  title: string;
+  body: string;
+  status: StrategyPreviewStatus;
 };
 
 type SubmitState = 'idle' | 'submitting' | 'success' | 'error';
@@ -209,6 +218,39 @@ const themeLibrary: Record<PlanningThemeId, PlanningTheme> = {
 
 const defaultThemeIds: PlanningThemeId[] = ['daily-life-fit', 'timing-clarity', 'market-context'];
 
+const strategyPreviewSections: StrategyPreviewSection[] = [
+  {
+    id: 'construction',
+    title: 'Construction Perspective',
+    body: 'Questions about condition, maintenance, and improvement potential can be reviewed alongside your priorities.',
+    status: 'Advisor Review',
+  },
+  {
+    id: 'market',
+    title: 'Market Context',
+    body: 'Current inventory and local conditions help frame when and where to focus.',
+    status: 'Public Starting Point',
+  },
+  {
+    id: 'timing',
+    title: 'Timing Considerations',
+    body: 'Your timing helps determine whether the next step is exploration, preparation, or active decision-making.',
+    status: 'Public Starting Point',
+  },
+  {
+    id: 'property-fit',
+    title: 'Property Fit',
+    body: 'Location, condition, daily routines, and long-term flexibility should be considered together.',
+    status: 'Contracted-Client Deep Dive',
+  },
+  {
+    id: 'next-step',
+    title: 'Next-Step Planning',
+    body: 'A clear sequence of decisions can reduce uncertainty and make the next conversation more productive.',
+    status: 'Advisor Review',
+  },
+];
+
 const timelines: Array<{ id: TimelineId; label: string }> = [
   { id: 'now', label: 'Now' },
   { id: 'ninety-days', label: 'Next 90 days' },
@@ -354,6 +396,19 @@ function getDiscussionPrompts(goalLabel: string, timelineLabel: string, places: 
   return Array.from(new Set(prompts)).slice(0, 5);
 }
 
+function getStrategyPreviewSections(priorities: LifestylePriorityId[], selectedGoal: GoalId, selectedTimeline: TimelineId, places: ImportantPlace[]) {
+  const emphasized = new Set<StrategyPreviewSection['id']>();
+
+  if (priorities.includes('renovation-readiness')) emphasized.add('construction');
+  if (selectedGoal === 'relocation-fit' || priorities.includes('market-resilience')) emphasized.add('market');
+  if (selectedGoal === 'relocation-fit' || selectedTimeline === 'now' || selectedTimeline === 'ninety-days') emphasized.add('timing');
+  if (places.length > 1) emphasized.add('property-fit');
+
+  return [...strategyPreviewSections]
+    .sort((a, b) => Number(emphasized.has(b.id)) - Number(emphasized.has(a.id)))
+    .map((section) => ({ ...section, isRelevant: emphasized.has(section.id) }));
+}
+
 function createImportantPlace(index = 1): ImportantPlace {
   return {
     id: `anchor-${index}`,
@@ -403,6 +458,7 @@ export default function GrandPlanIntake() {
     .filter((place) => place.label);
   const planningThemes = getPlanningThemes(selectedPriorities, goal, timeline, activeImportantPlaces);
   const discussionPrompts = getDiscussionPrompts(selectedGoalLabel, selectedTimelineLabel, activeImportantPlaces, selectedPriorityLabels);
+  const strategyPreview = getStrategyPreviewSections(selectedPriorities, goal, timeline, activeImportantPlaces);
   const currentStep = steps[currentStepIndex];
   const hasValidEmail = useMemo(() => isValidEmail(normalizedEmail), [normalizedEmail]);
   const isReviewStep = currentStep.id === 'review';
@@ -696,6 +752,46 @@ export default function GrandPlanIntake() {
             ))}
           </ul>
         </div>
+
+        <section
+          className="gp-result-section gp-strategy-preview"
+          data-testid="grand-plan-strategy-preview"
+          data-grand-plan-preview-read-only="true"
+          aria-labelledby={`${formId}-strategy-preview-title`}
+        >
+          <div className="gp-strategy-preview-header">
+            <div>
+              <p className="gp-eyebrow">A Preview of Your Strategy Report</p>
+              <h3 id={`${formId}-strategy-preview-title`}>What deeper advisor review can add</h3>
+            </div>
+            <p>
+              Your public result summarizes the priorities you shared. Detailed property, construction, timing, and strategy review is
+              prepared through direct advisor work and is not generated automatically on this page.
+            </p>
+          </div>
+          <div className="gp-strategy-preview-list">
+            {strategyPreview.map((section) => (
+              <article
+                className="gp-strategy-preview-card"
+                data-testid="grand-plan-strategy-preview-section"
+                data-grand-plan-preview-section={section.id}
+                data-grand-plan-preview-status={section.status}
+                data-grand-plan-preview-relevant={section.isRelevant ? 'true' : 'false'}
+                key={section.id}
+              >
+                <div>
+                  <h4>{section.title}</h4>
+                  {section.isRelevant ? <p className="gp-preview-relevant">Relevant to Your Priorities</p> : null}
+                </div>
+                <p>{section.body}</p>
+                <span className="gp-preview-status">
+                  {section.status !== 'Public Starting Point' ? <LockKeyhole size={13} aria-hidden="true" /> : null}
+                  {section.status}
+                </span>
+              </article>
+            ))}
+          </div>
+        </section>
 
         <div className="gp-actions">
           <Link
