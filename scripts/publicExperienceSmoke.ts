@@ -79,7 +79,7 @@ async function assertSearchPage() {
   assert.ok(includesFoldedText(html, 'Map Context'), 'Expected property cards to include map context.');
   assert.ok(includesFoldedText(html, 'Open details when this listing deserves a closer look'), 'Expected property cards to frame detail navigation after comparison.');
   assert.ok(includesFoldedText(html, 'Save This Search'), 'Expected save-search opportunity to use customer-facing copy.');
-  assert.ok(includesFoldedText(html, 'save this view for listing updates and follow-up routing'), 'Expected save-search presentation to avoid recommendation claims.');
+  assert.ok(includesFoldedText(html, 'Save when this view is worth watching'), 'Expected save-search presentation to avoid recommendation claims.');
 }
 
 async function assertHomePortalPage() {

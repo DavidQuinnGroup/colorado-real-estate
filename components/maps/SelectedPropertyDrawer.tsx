@@ -54,7 +54,7 @@ function getAdvisoryNote(property: MapSidebarListing) {
   if (property.hasPolybutyleneRisk) return 'Worth a closer plumbing review before next steps.';
   if (typeof property.resilienceScore === 'number' && property.resilienceScore >= 80) return 'Worth a closer look for location and property context.';
   if (typeof property.efficiencyScore === 'number' && property.efficiencyScore >= 80) return 'Public location context may be useful for comparison.';
-  if (property.isPrivateExclusive) return 'Private listing context can be reviewed with an advisor.';
+  if (property.isPrivateExclusive) return 'Additional listing context can be discussed through inquiry.';
 
   return 'Review public facts, location, and condition details before deciding.';
 }
@@ -212,7 +212,7 @@ export default function SelectedPropertyDrawer({ property, onClose }: SelectedPr
 
         {hasReviewFlag ? (
           <p className="mt-3 rounded-[6px] border border-amber-200/24 bg-amber-200/10 px-3 py-2 text-left text-[10px] font-black uppercase leading-4 tracking-[0.12em] text-amber-100">
-            Verify plumbing and condition details during advisor review.
+            Verify plumbing and condition details before next steps.
           </p>
         ) : null}
 

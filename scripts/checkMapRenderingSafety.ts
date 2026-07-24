@@ -119,7 +119,7 @@ async function main() {
   assert(searchControls.includes('<option value="Residential">Residential</option>'), 'Search controls must preserve residential filter semantics without abbreviations.');
   assert(searchControls.includes('<option value="Commercial">Commercial</option>'), 'Search controls must preserve commercial filter semantics without abbreviations.');
   assert(searchControls.includes('<option value="Multi-Family">Multi-Family</option>'), 'Search controls must preserve multi-family filter semantics without abbreviations.');
-  assert(mapSidebar.includes('Helpful Next Steps'), 'Search sidebar must include customer-facing next-step guidance.');
+  assert(mapSidebar.includes('Completion Path'), 'Search sidebar must include customer-facing completion guidance.');
   assert(mapSidebar.includes('Properties to Explore'), 'Search sidebar must use customer-facing results language.');
   assert(mapSidebar.includes('Focused View'), 'Search sidebar must describe active filter context in customer language.');
   assert(mapSidebar.includes('No Properties Match This View'), 'Search sidebar must guide customers through empty filtered states.');
@@ -133,7 +133,7 @@ async function main() {
   assert(propertyCard.includes('View Property'), 'Property cards must retain a clear details action.');
   assert(propertyCard.includes('data-property-card-detail-href='), 'Property cards must retain detail navigation metadata.');
   assert(saveSearch.includes('Save This Search'), 'Save-search UI must use customer-facing save language.');
-  assert(saveSearch.includes('After you explore the results, save this view for listing updates and follow-up routing.'), 'Save-search UI must position saving as a continuation after exploration.');
+  assert(saveSearch.includes('Save when this view is worth watching.'), 'Save-search UI must position saving as a continuation after exploration.');
   assert(saveSearch.includes('Save this view when it reflects what you want to keep watching.'), 'Save-search UI must avoid guaranteed or instant alert claims.');
   assert(saveSearch.includes("fetch('/api/save-search'"), 'Save-search UI must preserve the existing save-search request route.');
   assert(saveSearch.includes('data-save-search-email-valid'), 'Save-search UI must preserve email validation metadata.');
@@ -169,7 +169,7 @@ async function main() {
   assert(selectedDrawer.includes('data-selected-property-market-href='), 'Selected-property drawer must preserve market metadata.');
   assert(propertyPage.includes('Property Brief'), 'Property detail page must use property brief framing.');
   assert(propertyPage.includes('Listing Facts'), 'Property detail page must expose listing facts.');
-  assert(propertyPage.includes('Advisory Note'), 'Property detail page must expose advisory note framing.');
+  assert(propertyPage.includes('Review Context'), 'Property detail page must expose review context framing.');
   assert(propertyPage.includes('Construction Perspective'), 'Property detail page must use construction perspective framing.');
   assert(propertyPage.includes('Questions Worth Asking'), 'Property detail page must present construction diligence as questions.');
   assert(propertyPage.includes('Helpful Next Steps'), 'Property detail page must include customer-facing next steps.');

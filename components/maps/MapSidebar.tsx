@@ -198,13 +198,32 @@ function EmptyInventoryState({ hasActiveFilters }: { hasActiveFilters?: boolean 
         </p>
         <p className="mx-auto mt-4 text-sm leading-6 text-white/52">
           {hasActiveFilters
-            ? 'Try clearing one criterion, widening the price range, or broadening the map area.'
+            ? 'Start by widening one refinement or moving the map area. Clear Search is available above when you want to reset the view.'
             : 'Move the map or adjust the viewport to bring Colorado properties into view.'}
         </p>
         {hasActiveFilters ? (
-          <p className="mt-4 border-t border-white/10 pt-4 text-[10px] font-black uppercase tracking-[0.16em] text-white/34">
-            Clear Search is available above
-          </p>
+          <div className="mt-4 border-t border-white/10 pt-4">
+            <p className="text-[10px] font-black uppercase tracking-[0.16em] text-white/34">Next best steps</p>
+            <ol className="mt-3 space-y-2 text-left text-[11px] font-bold leading-5 text-white/46">
+              <li>1. Adjust refinements</li>
+              <li>2. Adjust map area</li>
+              <li>3. Clear Search above</li>
+            </ol>
+            <div className="mt-4 grid gap-2">
+              <Link
+                href="/grand-plan"
+                className="inline-flex min-h-9 items-center justify-center rounded-[6px] border border-white/10 bg-white/[0.045] px-3 text-[10px] font-black uppercase tracking-[0.12em] text-white/58 transition hover:border-cyan-100/35 hover:text-cyan-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-200"
+              >
+                Create Your Grand Plan
+              </Link>
+              <Link
+                href="/contact"
+                className="inline-flex min-h-9 items-center justify-center rounded-[6px] border border-white/10 px-3 text-[10px] font-black uppercase tracking-[0.12em] text-white/46 transition hover:border-cyan-100/35 hover:text-cyan-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-200"
+              >
+                Talk Through Your Search
+              </Link>
+            </div>
+          </div>
         ) : null}
       </div>
     </div>
@@ -562,9 +581,9 @@ export default function MapSidebar(props: MapSidebarProps) {
           </Suspense>
         </div>
         <div className="border-t border-white/10 bg-[#070b10] px-4 py-5" data-testid="reie-sidebar-guidance">
-          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100/70">Helpful Next Steps</p>
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100/70">Completion Path</p>
           <p className="mt-2 text-xs leading-5 text-white/42">
-            Compare a short list, open the details that feel promising, and contact David Quinn Group when you want to talk through tradeoffs.
+            Open property details first, save the view when it is worth watching, then contact David Quinn Group when you want to talk through tradeoffs.
           </p>
           <Link
             href="/contact"

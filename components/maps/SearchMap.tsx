@@ -165,7 +165,7 @@ function getAdvisoryNote(property: MapSidebarListing) {
   if (property.hasPolybutyleneRisk) return 'Plumbing review suggested.';
   if (typeof property.resilienceScore === 'number' && property.resilienceScore >= 80) return 'Worth a closer look.';
   if (typeof property.efficiencyScore === 'number' && property.efficiencyScore >= 80) return 'Compare public location context.';
-  if (property.isPrivateExclusive) return 'Advisor context available.';
+  if (property.isPrivateExclusive) return 'Additional listing context available through inquiry.';
 
   return 'Review facts and location.';
 }

@@ -87,7 +87,7 @@ const saveButtonStyle: CSSProperties = {
 
 const notesControlStyle: CSSProperties = {
   boxSizing: 'border-box',
-  minHeight: 82,
+  minHeight: 70,
   paddingBottom: 10,
   paddingTop: 10,
 };
@@ -125,13 +125,13 @@ function getReadinessClass(level: SaveSearchResponse['alertReadiness'] extends i
 }
 
 function getCustomerFollowUpLabel(level: SaveSearchResponse['alertReadiness'] extends infer Readiness ? Readiness extends { level: infer Level } ? Level : never : never) {
-  if (level === 'ready') return 'Follow-up ready';
-  if (level === 'watch') return 'Saved for review';
+  if (level === 'ready') return 'Updates ready';
+  if (level === 'watch') return 'Saved for watching';
   return 'Criteria saved';
 }
 
 function getSavedMessage(result: SaveSearchResponse | null) {
-  if (!result?.alertReadiness) return 'Your search criteria were saved for relevant listing updates and advisor follow-up.';
+  if (!result?.alertReadiness) return 'Your search criteria were saved for listing updates and optional follow-up context.';
   return result.alertReadiness.summary;
 }
 
@@ -349,7 +349,7 @@ export default function SaveSearch({ city }: SaveSearchProps) {
       data-save-search-has-type={capturedFilters.type ? 'true' : 'false'}
       data-save-search-error={error || ''}
     >
-      <div className="border-b border-white/10 bg-[linear-gradient(135deg,rgba(103,232,249,0.095),rgba(255,255,255,0.028))] p-4">
+      <div className="border-b border-white/10 bg-[linear-gradient(135deg,rgba(103,232,249,0.095),rgba(255,255,255,0.028))] p-3">
         <div className="flex items-start justify-between gap-4">
           <div className="flex min-w-0 items-center gap-3">
             <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-[6px] border border-cyan-100/20 bg-cyan-100/[0.08] text-cyan-100">
@@ -363,11 +363,11 @@ export default function SaveSearch({ city }: SaveSearchProps) {
 
           {isSaving ? <Loader2 size={16} className="mt-0.5 shrink-0 animate-spin text-cyan-300" /> : null}
         </div>
-        <p className="mt-3 text-xs leading-5 text-white/48">
-          After you explore the results, save this view for listing updates and follow-up routing.
+        <p className="mt-2 text-xs leading-5 text-white/48">
+          Save when this view is worth watching. It keeps supported search criteria with your timing, intent, email, and optional notes.
         </p>
         <div
-          className="mt-3 grid grid-cols-2 overflow-hidden rounded-[6px] border border-white/10 bg-black/24"
+          className="mt-2 grid grid-cols-2 overflow-hidden rounded-[6px] border border-white/10 bg-black/24"
           data-testid="reie-save-search-summary"
           data-save-search-city={city}
           data-save-search-intent-summary={intentSummary}
@@ -383,7 +383,7 @@ export default function SaveSearch({ city }: SaveSearchProps) {
         </div>
       </div>
 
-      <div className="space-y-3 p-4">
+      <div className="space-y-2.5 p-3">
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
           <label className="relative block min-w-0">
             <span className="mb-2 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.14em] text-white/38">
@@ -526,15 +526,15 @@ export default function SaveSearch({ city }: SaveSearchProps) {
           data-save-search-status-text={error || 'Save this view when it reflects what you want to keep watching.'}
         >
           <p className={`min-w-0 text-xs font-bold ${error ? 'text-red-300' : 'text-white/35'}`}>
-            {error || 'Save this view when it reflects what you want to keep watching.'}
+            {error || 'Save this view when it reflects what you want to keep watching. Updates depend on available listing changes.'}
           </p>
         </div>
         <p
-          className="text-xs leading-5 text-white/38"
+          className="text-[11px] leading-4 text-white/38"
           data-testid="reie-save-search-consent-notice"
           data-public-trust-form-notice="save-search"
         >
-          Email is required. Search filters, timing, intent, and optional notes are used for saved-search and follow-up routing. Review the{' '}
+          Email is required. Supported search criteria, timing, intent, and optional notes are used for saved-search updates and follow-up context. Review the{' '}
           <Link href="/privacy" className="font-bold text-cyan-100 underline underline-offset-4">
             Privacy Notice
           </Link>{' '}

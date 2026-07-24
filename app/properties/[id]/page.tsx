@@ -308,7 +308,7 @@ function getPricePerSquareFoot(property: PropertyWithPhotos) {
 }
 
 function getDiligencePosture(property: PropertyWithPhotos) {
-  if (property.hasPolybutyleneRisk) return 'Advisor review recommended';
+  if (property.hasPolybutyleneRisk) return 'Detailed review suggested';
   if ((property.resilienceScore || 0) < 70) return 'Details to review';
   if ((property.efficiencyScore || 0) >= 75 && (property.resilienceScore || 0) >= 80) return 'Worth a closer look';
   return 'Standard review';
@@ -322,7 +322,7 @@ function getDecisionNextStep(property: PropertyWithPhotos) {
 }
 
 function getDecisionTone(property: PropertyWithPhotos) {
-  if (property.hasPolybutyleneRisk) return 'Advisor Review Recommended';
+  if (property.hasPolybutyleneRisk) return 'Detailed Review Suggested';
   if ((property.efficiencyScore || 0) >= 75 && (property.resilienceScore || 0) >= 80) return 'Worth a Closer Look';
   if ((property.resilienceScore || 0) < 70) return 'Details to Review';
   return 'Property Brief Ready';
@@ -551,7 +551,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                     <p className="mt-2 text-sm font-black uppercase tracking-[0.08em] text-white">{decisionTone}</p>
                   </div>
                   <span className="shrink-0 rounded-[5px] border border-cyan-100/24 bg-black/24 px-2 py-1 text-[9px] font-black uppercase tracking-[0.14em] text-cyan-100/76">
-                    Listing Facts
+                    Property Details
                   </span>
                 </div>
               </div>
@@ -584,15 +584,15 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
             <div className="mt-4 rounded-[8px] border border-white/10 bg-[#0d141c] p-4">
               <p className="text-[10px] font-black uppercase tracking-[0.22em] text-white/44">Property Signals</p>
               <div className="mt-4 grid grid-cols-2 gap-3">
-                <SignalTile icon={<TrendingUp size={16} />} label="Location Fit" value={formatNumber(efficiencyScore)} tone="cyan" />
+                <SignalTile icon={<TrendingUp size={16} />} label="Map Context" value={formatNumber(efficiencyScore)} tone="cyan" />
                 <SignalTile icon={<ShieldCheck size={16} />} label="Property Context" value={formatNumber(resilienceScore)} tone="white" />
               </div>
               <div className="mt-3 rounded-[6px] border border-white/10 bg-white/[0.045] p-3">
-                <p className="text-[10px] font-black uppercase tracking-[0.14em] text-white/40">Advisory Note</p>
+                <p className="text-[10px] font-black uppercase tracking-[0.14em] text-white/40">Review Context</p>
                 <p className="mt-2 truncate text-sm font-black uppercase tracking-[0.08em] text-cyan-100">{reviewSignal}</p>
               </div>
               <p className="mt-3 text-xs leading-5 text-white/46">
-                Directional context only. Verify property condition, systems, and location tradeoffs during inspection or advisor review.
+                Directional context only. Verify property condition, systems, and location tradeoffs during inspection or a direct conversation.
               </p>
             </div>
 
@@ -644,9 +644,9 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
             {!isContracted ? (
               <div className="mt-4 rounded-[8px] border border-cyan-100/26 bg-cyan-100/10 p-4">
                 <HardHat className="text-cyan-100" size={24} />
-                <h2 className="mt-3 text-[15px] font-black uppercase tracking-[0.08em] text-white">Advisor Review Available</h2>
+                <h2 className="mt-3 text-[15px] font-black uppercase tracking-[0.08em] text-white">Property Questions Welcome</h2>
                 <p className="mt-2 text-sm leading-6 text-white/62">
-                  Construction-informed questions and next-step planning can be reviewed directly with David Quinn Group clients.
+                  Construction-informed questions and next-step planning can be discussed directly with David Quinn Group.
                 </p>
               </div>
             ) : null}
@@ -694,7 +694,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
               <div className="p-5 md:p-8">
                 <p className="max-w-4xl text-base leading-8 text-white/70">
                   {property.description ||
-                    `${property.address} is an active Colorado listing with public facts, location context, and construction-informed questions available for advisor review.`}
+                    `${property.address} is an active Colorado listing with public facts, location context, and construction-informed questions to consider before next steps.`}
                 </p>
                 <div className="mt-6 grid gap-3 md:grid-cols-3">
                   <BriefSignalTile label="Review" value={reviewSignal} />
@@ -859,7 +859,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
           </Link>
           <Link
             href={cityMarketHref}
-            className="inline-flex h-11 items-center justify-center gap-1.5 rounded-[6px] bg-cyan-100 text-[10px] font-black uppercase tracking-[0.12em] text-[#061017]"
+            className="inline-flex h-11 items-center justify-center gap-1.5 rounded-[6px] border border-white/10 bg-white/[0.055] text-[10px] font-black uppercase tracking-[0.12em] text-white/72"
             style={{ alignItems: 'center', display: 'inline-flex', height: 44, justifyContent: 'center' }}
           >
             <TrendingUp size={13} aria-hidden="true" />
@@ -867,7 +867,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
           </Link>
           <Link
             href="#property-contact"
-            className="inline-flex h-11 items-center justify-center gap-1.5 rounded-[6px] border border-cyan-100/35 bg-cyan-100/10 text-[10px] font-black uppercase tracking-[0.12em] text-cyan-100"
+            className="inline-flex h-11 items-center justify-center gap-1.5 rounded-[6px] bg-cyan-100 text-[10px] font-black uppercase tracking-[0.12em] text-[#061017]"
             style={{ alignItems: 'center', display: 'inline-flex', height: 44, justifyContent: 'center' }}
           >
             <Mail size={13} aria-hidden="true" />
