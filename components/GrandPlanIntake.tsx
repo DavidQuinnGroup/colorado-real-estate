@@ -59,6 +59,12 @@ type StrategyPreviewSection = {
   status: StrategyPreviewStatus;
 };
 
+type AdvisorJourneyStage = {
+  title: string;
+  status?: 'Complete';
+  body: string;
+};
+
 type SubmitState = 'idle' | 'submitting' | 'success' | 'error';
 
 type StepId = 'priorities' | 'place' | 'timing' | 'context' | 'review';
@@ -249,6 +255,33 @@ const strategyPreviewSections: StrategyPreviewSection[] = [
     body: 'A clear sequence of decisions can reduce uncertainty and make the next conversation more productive.',
     status: 'Advisor Review',
   },
+];
+
+const advisorJourneyStages: AdvisorJourneyStage[] = [
+  {
+    title: 'Your Grand Plan',
+    status: 'Complete',
+    body: 'You shared the priorities, places, timing, and context that should shape the next conversation.',
+  },
+  {
+    title: 'Guided Property Discovery',
+    body: 'Explore homes and locations through the priorities you identified.',
+  },
+  {
+    title: 'Personalized Strategy Session',
+    body: 'Review timing, tradeoffs, questions, and possible next steps with an advisor.',
+  },
+  {
+    title: 'Confident Purchase or Sale',
+    body: 'Move forward when the decision, property, and timing feel right.',
+  },
+];
+
+const grandPlanUsePoints = [
+  'Your priorities help focus the conversation.',
+  'Important Places help us understand how location affects daily life.',
+  'Your ownership goals help frame which questions deserve attention.',
+  'Your Grand Plan can evolve as your needs, timing, and perspective change.',
 ];
 
 const timelines: Array<{ id: TimelineId; label: string }> = [
@@ -790,6 +823,74 @@ export default function GrandPlanIntake() {
                 </span>
               </article>
             ))}
+          </div>
+        </section>
+
+        <section
+          className="gp-advisor-journey"
+          data-testid="grand-plan-advisor-journey"
+          data-grand-plan-advisor-journey-read-only="true"
+          aria-labelledby={`${formId}-advisor-journey-title`}
+        >
+          <div className="gp-result-section gp-continue-forward" data-testid="grand-plan-continue-from-here">
+            <p className="gp-eyebrow">Continue From Here</p>
+            <h3 id={`${formId}-advisor-journey-title`}>You are not starting over.</h3>
+            <p>
+              Your Grand Plan becomes the foundation for future conversations, property reviews, neighborhood exploration, and timing
+              discussions. We continue building from what you have already shared, so you do not have to start over.
+            </p>
+          </div>
+
+          <div className="gp-result-section gp-journey-map" data-testid="grand-plan-journey-map">
+            <div>
+              <p className="gp-eyebrow">Your Grand Plan Journey</p>
+              <h3>An orientation map for what can come next</h3>
+            </div>
+            <ol aria-label="Grand Plan journey stages">
+              {advisorJourneyStages.map((stage, index) => (
+                <li key={stage.title}>
+                  <span className="gp-journey-number" aria-hidden="true">
+                    {index + 1}
+                  </span>
+                  <div>
+                    <h4>
+                      {stage.title}
+                      {stage.status ? <span>{stage.status}</span> : null}
+                    </h4>
+                    <p>{stage.body}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </div>
+
+          <div className="gp-result-section gp-plan-use" data-testid="grand-plan-how-we-use">
+            <p className="gp-eyebrow">How We Use Your Grand Plan</p>
+            <ul>
+              {grandPlanUsePoints.map((point) => (
+                <li key={point}>{point}</li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="gp-result-section gp-advisor-note" data-testid="grand-plan-advisor-commitment">
+            <p className="gp-eyebrow">Our Commitment</p>
+            <p>Our goal is not to convince you to move. It is to help you make the right decision when the time is right.</p>
+            <p>That may mean acting soon, continuing to explore, or deciding that no move is the right move for now.</p>
+          </div>
+
+          <div className="gp-result-section gp-advisor-note" data-testid="grand-plan-right-pace">
+            <p className="gp-eyebrow">Move at the Right Pace</p>
+            <p>
+              Some people are ready to move quickly. Others spend months refining priorities, exploring locations, or waiting for
+              circumstances to change. Both are completely normal.
+            </p>
+            <p>Good decisions rarely come from unnecessary pressure.</p>
+          </div>
+
+          <div className="gp-cta-orientation" data-testid="grand-plan-cta-orientation">
+            <p className="gp-eyebrow">Where Would You Like to Continue?</p>
+            <p>You can return later and continue from your Grand Plan starting point.</p>
           </div>
         </section>
 

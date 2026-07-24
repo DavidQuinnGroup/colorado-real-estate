@@ -1725,6 +1725,121 @@ html, body {
   text-transform: uppercase;
 }
 
+[data-testid="grand-plan-completion"] .gp-advisor-journey {
+  display: grid;
+  gap: 14px;
+  margin-top: 18px;
+}
+
+[data-testid="grand-plan-completion"] .gp-continue-forward,
+[data-testid="grand-plan-completion"] .gp-journey-map,
+[data-testid="grand-plan-completion"] .gp-plan-use,
+[data-testid="grand-plan-completion"] .gp-advisor-note {
+  padding: 16px;
+}
+
+[data-testid="grand-plan-completion"] .gp-continue-forward {
+  border-color: rgba(8, 145, 178, 0.2);
+  background: #f4f0e8;
+}
+
+[data-testid="grand-plan-completion"] .gp-continue-forward p:last-child,
+[data-testid="grand-plan-completion"] .gp-advisor-note p,
+[data-testid="grand-plan-completion"] .gp-cta-orientation p:last-child {
+  margin-top: 10px;
+  color: #33414b;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+[data-testid="grand-plan-completion"] .gp-journey-map ol {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+  padding: 0;
+  list-style: none;
+}
+
+[data-testid="grand-plan-completion"] .gp-journey-map li {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  gap: 10px;
+  border: 1px solid rgba(11, 17, 23, 0.1);
+  border-radius: 12px;
+  background: #fffaf0;
+  padding: 12px;
+}
+
+[data-testid="grand-plan-completion"] .gp-journey-number {
+  display: inline-flex;
+  width: 34px;
+  height: 34px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(8, 145, 178, 0.28);
+  border-radius: 999px;
+  color: #0f6674;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+[data-testid="grand-plan-completion"] .gp-journey-map h4 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+[data-testid="grand-plan-completion"] .gp-journey-map h4 span {
+  border: 1px solid rgba(8, 145, 178, 0.22);
+  border-radius: 999px;
+  background: rgba(8, 145, 178, 0.08);
+  padding: 5px 8px;
+  color: #0f6674;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+[data-testid="grand-plan-completion"] .gp-journey-map li p,
+[data-testid="grand-plan-completion"] .gp-plan-use li {
+  margin-top: 8px;
+  color: #33414b;
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+[data-testid="grand-plan-completion"] .gp-plan-use ul {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+[data-testid="grand-plan-completion"] .gp-plan-use li {
+  margin-top: 0;
+  border-left: 3px solid rgba(8, 145, 178, 0.38);
+  padding-left: 12px;
+}
+
+[data-testid="grand-plan-completion"] .gp-advisor-note {
+  border-color: rgba(174, 122, 54, 0.2);
+  background: #fbf4e5;
+}
+
+[data-testid="grand-plan-completion"] .gp-advisor-note p:nth-child(2) {
+  color: #0b1117;
+  font-size: 16px;
+  font-weight: 900;
+  line-height: 1.55;
+}
+
+[data-testid="grand-plan-completion"] .gp-cta-orientation {
+  border-top: 1px solid rgba(11, 17, 23, 0.1);
+  padding-top: 18px;
+}
+
 [data-testid="grand-plan-completion"] .gp-summary-grid {
   display: grid;
   gap: 16px;
@@ -1936,6 +2051,21 @@ html, body {
   [data-testid="grand-plan-completion"] .gp-preview-status {
     border-radius: 10px;
     white-space: normal;
+  }
+
+  [data-testid="grand-plan-completion"] .gp-advisor-journey {
+    gap: 12px;
+  }
+
+  [data-testid="grand-plan-completion"] .gp-journey-map li {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    padding: 12px;
+  }
+
+  [data-testid="grand-plan-completion"] .gp-journey-number {
+    width: 28px;
+    height: 28px;
   }
 
   [data-testid="grand-plan-completion"] .gp-actions .gp-button {

@@ -31,6 +31,15 @@ const forbiddenPublicClaims = [
   'Generated Analysis',
   'Unlock Your Secret Report',
   'Guaranteed results',
+  'Guaranteed outcomes',
+  '90% complete',
+  'points, badges',
+  'limited time',
+  'fear of missing out',
+  'permanently stored',
+  'saved forever',
+  'synchronizes across devices',
+  'automatically personalized',
   'Medicare',
   'tax questions',
   'debt questions',
@@ -106,6 +115,35 @@ assert.ok(grandPlanIntake.includes('Relevant to Your Priorities'), 'Expected Wav
 assert.ok(grandPlanIntake.includes('getStrategyPreviewSections'), 'Expected deterministic local preview emphasis function.');
 assert.ok(grandPlanIntake.includes("data-grand-plan-preview-section={section.id}"), 'Expected preview section metadata for inspection.');
 assert.ok(grandPlanIntake.includes("data-grand-plan-preview-relevant={section.isRelevant ? 'true' : 'false'}"), 'Expected preview emphasis metadata for inspection.');
+assert.ok(grandPlanIntake.includes('data-testid="grand-plan-advisor-journey"'), 'Expected Wave 3E advisor-journey completion section.');
+assert.ok(grandPlanIntake.includes('data-grand-plan-advisor-journey-read-only="true"'), 'Expected Wave 3E advisor journey to remain read-only.');
+assert.ok(grandPlanIntake.includes('data-testid="grand-plan-continue-from-here"'), 'Expected Wave 3E Continue From Here section.');
+assert.ok(grandPlanIntake.includes('Continue From Here'), 'Expected Wave 3E continuity heading.');
+assert.ok(grandPlanIntake.includes('You are not starting over.'), 'Expected Wave 3E continuity reassurance.');
+assert.ok(grandPlanIntake.includes('Your Grand Plan becomes the foundation for future conversations'), 'Expected Wave 3E continuity copy.');
+assert.ok(grandPlanIntake.includes('data-testid="grand-plan-journey-map"'), 'Expected Wave 3E journey timeline section.');
+assert.ok(grandPlanIntake.includes('const advisorJourneyStages: AdvisorJourneyStage[]'), 'Expected bounded Wave 3E journey stage library.');
+assert.ok(grandPlanIntake.includes("title: 'Your Grand Plan'"), 'Expected Wave 3E Your Grand Plan journey stage.');
+assert.ok(grandPlanIntake.includes("status: 'Complete'"), 'Expected completed status to be visible text.');
+assert.ok(grandPlanIntake.includes("title: 'Guided Property Discovery'"), 'Expected Wave 3E Guided Property Discovery journey stage.');
+assert.ok(grandPlanIntake.includes('Explore homes and locations through the priorities you identified.'), 'Expected approved Guided Property Discovery description.');
+assert.ok(grandPlanIntake.includes("title: 'Personalized Strategy Session'"), 'Expected Wave 3E Personalized Strategy Session journey stage.');
+assert.ok(grandPlanIntake.includes('Review timing, tradeoffs, questions, and possible next steps with an advisor.'), 'Expected approved strategy-session description.');
+assert.ok(grandPlanIntake.includes("title: 'Confident Purchase or Sale'"), 'Expected Wave 3E Confident Purchase or Sale journey stage.');
+assert.ok(grandPlanIntake.includes('Move forward when the decision, property, and timing feel right.'), 'Expected approved purchase-or-sale description.');
+assert.ok(grandPlanIntake.includes('data-testid="grand-plan-how-we-use"'), 'Expected Wave 3E How We Use Your Grand Plan section.');
+assert.ok(grandPlanIntake.includes('Your priorities help focus the conversation.'), 'Expected Wave 3E priority-use point.');
+assert.ok(grandPlanIntake.includes('Important Places help us understand how location affects daily life.'), 'Expected Wave 3E important-places point.');
+assert.ok(grandPlanIntake.includes('Your ownership goals help frame which questions deserve attention.'), 'Expected Wave 3E ownership-goal point.');
+assert.ok(grandPlanIntake.includes('Your Grand Plan can evolve as your needs, timing, and perspective change.'), 'Expected Wave 3E evolution point.');
+assert.ok(grandPlanIntake.includes('data-testid="grand-plan-advisor-commitment"'), 'Expected Wave 3E advisor commitment section.');
+assert.ok(grandPlanIntake.includes('Our goal is not to convince you to move.'), 'Expected Wave 3E low-pressure commitment.');
+assert.ok(grandPlanIntake.includes('data-testid="grand-plan-right-pace"'), 'Expected Wave 3E right-pace section.');
+assert.ok(grandPlanIntake.includes('Some people are ready to move quickly.'), 'Expected Wave 3E confidence without pressure copy.');
+assert.ok(grandPlanIntake.includes('Good decisions rarely come from unnecessary pressure.'), 'Expected Wave 3E pressure boundary.');
+assert.ok(grandPlanIntake.includes('data-testid="grand-plan-cta-orientation"'), 'Expected Wave 3E CTA orientation heading.');
+assert.ok(grandPlanIntake.includes('Where Would You Like to Continue?'), 'Expected Wave 3E CTA orientation copy.');
+assert.ok(grandPlanIntake.includes('You can return later and continue from your Grand Plan starting point.'), 'Expected Wave 3E non-interactive return-later copy.');
 assert.ok(grandPlanIntake.includes('const themeLibrary: Record<PlanningThemeId, PlanningTheme>'), 'Expected bounded deterministic planning theme library.');
 assert.ok(grandPlanIntake.includes('const defaultThemeIds: PlanningThemeId[]'), 'Expected safe default planning themes.');
 assert.ok(grandPlanIntake.includes('return themeIds.slice(0, 5).map'), 'Expected planning themes to be capped at five.');
@@ -129,6 +167,19 @@ assert.ok(!grandPlanIntake.includes('strategyGenerator'), 'Grand Plan result mus
 assert.ok(!grandPlanIntake.includes('Math.random'), 'Grand Plan result must not use random preview generation.');
 assert.ok(!grandPlanIntake.includes('repair-cost'), 'Grand Plan result must not expose repair-cost advice.');
 assert.ok(!grandPlanIntake.includes('Offer recommendations'), 'Grand Plan result must not expose offer recommendations.');
+assert.ok(!grandPlanIntake.includes('90% complete'), 'Grand Plan journey must not use progress-percentage language.');
+assert.ok(!grandPlanIntake.includes('badge'), 'Grand Plan journey must not introduce gamified badges.');
+assert.ok(!grandPlanIntake.includes('unlock'), 'Grand Plan journey must not introduce unlock language.');
+assert.ok(!grandPlanIntake.includes('Create Account'), 'Grand Plan journey must not introduce account behavior.');
+assert.ok(!grandPlanIntake.includes('portal access'), 'Grand Plan journey must not introduce portal behavior.');
+assert.ok(!grandPlanIntake.includes('calendar'), 'Grand Plan journey must not introduce scheduling behavior.');
+assert.ok(!grandPlanIntake.includes('reminder'), 'Grand Plan journey must not introduce reminder behavior.');
+assert.ok(!grandPlanIntake.includes('email delivery'), 'Grand Plan journey must not introduce email-delivery behavior.');
+assert.ok(!grandPlanIntake.includes('saved forever'), 'Grand Plan journey must not claim permanent storage.');
+assert.ok(!grandPlanIntake.includes('permanently stored'), 'Grand Plan journey must not claim permanent storage.');
+assert.ok(!grandPlanIntake.includes('synchronizes across devices'), 'Grand Plan journey must not claim cross-device synchronization.');
+assert.ok(!grandPlanIntake.includes('automatically personalized'), 'Grand Plan journey must not claim automatic personalization.');
+assert.ok(!grandPlanIntake.includes('Return Later</Link>'), 'Return Later must not become an inaccurate interactive control.');
 assert.ok(!grandPlanIntake.includes('Executive Intelligence'), 'Grand Plan public UI must not expose Executive Intelligence terminology.');
 assert.ok(!grandPlanIntake.includes('CRM'), 'Grand Plan public UI must not expose CRM terminology.');
 assert.ok(!grandPlanIntake.includes('heatScore'), 'Grand Plan public UI must not expose scoring internals.');
