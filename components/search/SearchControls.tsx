@@ -181,14 +181,14 @@ export default function SearchControls({
           <div>
             <p id={`${formId}-title`} className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">
               <SlidersHorizontal size={13} aria-hidden="true" />
-              Refine Your Search
+              Shape Your Search
             </p>
             <p id={`${formId}-description`} className="mt-2 text-[11px] font-bold leading-5 text-white/48">
-              Adjust price, place, property type, and listing facts without losing the map view.
+              Choose a place, price range, property type, or listing detail. You can refine again as the map and results add context.
             </p>
           </div>
           <span className="shrink-0 rounded-[5px] border border-cyan-100/20 bg-cyan-100/[0.075] px-2 py-1 text-[9px] font-black uppercase tracking-[0.12em] text-cyan-100/70">
-            {chips.length ? `${chips.length} Applied` : 'Open View'}
+            {chips.length ? `${chips.length} Active` : 'Open Search'}
           </span>
         </div>
       </div>
@@ -197,7 +197,7 @@ export default function SearchControls({
       <div className="flex items-center justify-between gap-3">
         <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.16em] text-white/40">
           <Sparkles size={12} aria-hidden="true" className="text-cyan-100/62" />
-          Search Details
+          Search Criteria
         </p>
         <div className="flex items-center gap-1.5">
           <button
@@ -205,8 +205,8 @@ export default function SearchControls({
             onClick={handleCopyShareLink}
             style={iconButtonStyle}
             className="inline-flex h-7 w-7 items-center justify-center rounded-[6px] border border-white/10 text-white/52 transition hover:border-cyan-100/35 hover:text-cyan-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
-            aria-label="Share search"
-            title="Share Search"
+            aria-label="Share this search"
+            title="Share This Search"
           >
             {copied ? <Check size={13} aria-hidden="true" /> : <Copy size={13} aria-hidden="true" />}
           </button>
@@ -215,8 +215,8 @@ export default function SearchControls({
             onClick={onReset}
             style={iconButtonStyle}
             className="inline-flex h-7 w-7 items-center justify-center rounded-[6px] border border-white/10 text-white/52 transition hover:border-white/25 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
-            aria-label="Clear filters"
-            title="Clear Filters"
+            aria-label="Clear search"
+            title="Clear Search"
           >
             <RotateCcw size={13} aria-hidden="true" />
           </button>
@@ -329,14 +329,14 @@ export default function SearchControls({
           disabled={isSearching}
           style={submitButtonStyle}
           className="inline-flex h-10 w-11 shrink-0 items-center justify-center rounded-[6px] bg-cyan-100 text-[#061017] transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
-          aria-label="Apply search filters"
+          aria-label="Update results"
         >
           {isSearching ? <Loader2 size={16} className="animate-spin" aria-hidden="true" /> : <Search size={16} aria-hidden="true" />}
         </button>
       </div>
 
       {chips.length ? (
-        <div className="mt-3 flex flex-wrap gap-1.5" aria-label="Filters applied">
+        <div className="mt-3 flex flex-wrap gap-1.5" aria-label="Active search criteria">
           {chips.map((chip) => (
             <button
               key={chip.key}
@@ -354,7 +354,7 @@ export default function SearchControls({
 
       <div className="mt-3 flex items-center justify-between gap-3 border-t border-white/10 pt-3">
         <p id={`${formId}-status`} className="text-[10px] font-black uppercase tracking-[0.16em] text-white/34" aria-live="polite">
-          {isSearching ? 'Updating listings' : chips.length ? 'Filters Applied' : 'Ready for map search'}
+          {isSearching ? 'Refreshing your search' : chips.length ? 'Criteria Active' : 'Ready to explore'}
         </p>
         {isSearching ? <Loader2 size={13} className="shrink-0 animate-spin text-cyan-100" aria-hidden="true" /> : null}
       </div>

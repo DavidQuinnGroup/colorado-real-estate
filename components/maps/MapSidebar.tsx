@@ -194,16 +194,16 @@ function EmptyInventoryState({ hasActiveFilters }: { hasActiveFilters?: boolean 
     <div className="flex h-full items-center justify-center px-5 py-8 text-center">
       <div className="max-w-[320px] rounded-[8px] border border-white/10 bg-white/[0.035] p-5">
         <p className="text-[11px] font-black uppercase tracking-[0.24em] text-cyan-100/75">
-          {hasActiveFilters ? 'No Matching Listings' : 'Updating Available Listings'}
+          {hasActiveFilters ? 'No Properties Match This View' : 'Preparing Properties in View'}
         </p>
         <p className="mx-auto mt-4 text-sm leading-6 text-white/52">
           {hasActiveFilters
-            ? 'Loosen one filter or broaden the map area to reveal more Colorado listings.'
-            : 'Move the map or adjust the viewport to load matching Colorado listings.'}
+            ? 'Try clearing one criterion, widening the price range, or broadening the map area.'
+            : 'Move the map or adjust the viewport to bring Colorado properties into view.'}
         </p>
         {hasActiveFilters ? (
           <p className="mt-4 border-t border-white/10 pt-4 text-[10px] font-black uppercase tracking-[0.16em] text-white/34">
-            Filter reset is available above
+            Clear Search is available above
           </p>
         ) : null}
       </div>
@@ -213,7 +213,7 @@ function EmptyInventoryState({ hasActiveFilters }: { hasActiveFilters?: boolean 
 
 function LoadingInventorySkeleton() {
   return (
-    <div className="space-y-3 p-3" aria-label="Loading available listings">
+    <div className="space-y-3 p-3" aria-label="Loading properties in view">
       {Array.from({ length: 4 }).map((_, index) => (
         <div key={index} className="rounded-[8px] border border-white/10 bg-white/[0.035] p-3">
           <div className="h-40 animate-pulse rounded-[6px] bg-white/[0.06]" />
@@ -243,10 +243,10 @@ function StatTile({ icon, label, value }: { icon: ReactNode; label: string; valu
 }
 
 function SearchIntelligenceStrip({ stats }: { stats: InventoryStats }) {
-  const mappedLabel = stats.mappedCount > 0 ? `${stats.mappedCount} listings placed on the map` : 'Map view loading';
+  const mappedLabel = stats.mappedCount > 0 ? `${stats.mappedCount} properties placed on the map` : 'Map view preparing';
   const resilienceLabel =
-    stats.averageResilience === null ? 'Property context pending' : 'Property signals available';
-  const reviewLabel = stats.reviewCount > 0 ? `${stats.reviewCount} listings may need extra diligence` : 'No major diligence prompts';
+    stats.averageResilience === null ? 'Property context pending' : 'Helpful property context available';
+  const reviewLabel = stats.reviewCount > 0 ? `${stats.reviewCount} details to consider` : 'No major review notes';
 
   return (
     <div
@@ -291,7 +291,7 @@ function ResultsToolbar({
   hasActiveFilters?: boolean;
   isLoading?: boolean;
 }) {
-  const mapCoverage = count > 0 ? `${Math.round((stats.mappedCount / count) * 100)}% shown` : 'Map pending';
+  const mapCoverage = count > 0 ? `${stats.mappedCount}/${count}` : 'Map pending';
 
   return (
     <div
@@ -306,24 +306,24 @@ function ResultsToolbar({
         <div className="min-w-0">
           <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">
             <ListFilter size={13} aria-hidden="true" />
-            Listings to Explore
+            Properties to Explore
           </p>
           <p className="mt-1 truncate text-[11px] font-black uppercase tracking-[0.1em] text-white/45">
-            {isLoading ? 'Updating available listings' : hasActiveFilters ? 'Focused Results' : `${stats.dominantCity} open view`}
+            {isLoading ? 'Updating properties in view' : hasActiveFilters ? 'Focused View' : `${stats.dominantCity} open view`}
           </p>
         </div>
 
         <div className="grid shrink-0 grid-cols-3 overflow-hidden rounded-[6px] border border-white/10 bg-black/24 text-center">
           <div className="min-w-[58px] px-2 py-1.5">
-            <p className="text-[9px] font-black uppercase tracking-[0.12em] text-white/34">Listings</p>
+            <p className="text-[9px] font-black uppercase tracking-[0.12em] text-white/34">Properties</p>
             <p className="mt-0.5 text-[13px] font-black leading-none text-white">{count}</p>
           </div>
           <div className="min-w-[58px] border-l border-white/10 px-2 py-1.5">
-            <p className="text-[9px] font-black uppercase tracking-[0.12em] text-white/34">Shown</p>
+            <p className="text-[9px] font-black uppercase tracking-[0.12em] text-white/34">On Map</p>
             <p className="mt-0.5 text-[11px] font-black leading-none text-cyan-100">{mapCoverage}</p>
           </div>
           <div className="min-w-[58px] border-l border-white/10 px-2 py-1.5">
-            <p className="text-[9px] font-black uppercase tracking-[0.12em] text-white/34">Mode</p>
+            <p className="text-[9px] font-black uppercase tracking-[0.12em] text-white/34">View</p>
             <p className="mt-0.5 text-[11px] font-black leading-none text-white">{hasActiveFilters ? 'Focused' : 'Open'}</p>
           </div>
         </div>
@@ -394,7 +394,7 @@ export default function MapSidebar(props: MapSidebarProps) {
             <div>
               <p className="text-[10px] font-black uppercase tracking-[0.28em] text-cyan-100/72">Discovery Summary</p>
               <h2 className="mt-2 font-serif text-[2.15rem] font-black leading-none tracking-normal text-white">
-                Available Listings
+                Properties in View
               </h2>
             </div>
 
@@ -419,7 +419,7 @@ export default function MapSidebar(props: MapSidebarProps) {
                 <p className="mt-1 text-[17px] font-black uppercase leading-none text-white">{stats.dominantCity}</p>
               </div>
               <div className="text-right">
-                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/38">Listings</p>
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/38">Properties</p>
                 <p className="mt-1 text-[17px] font-black leading-none text-cyan-100">{listings.length}</p>
               </div>
             </div>
@@ -442,8 +442,8 @@ export default function MapSidebar(props: MapSidebarProps) {
 
           <div className="mt-3 grid grid-cols-3 gap-2">
             <StatTile icon={<MapPinned size={13} aria-hidden="true" />} label="On Map" value={stats.mappedCount} />
-            <StatTile icon={<ShieldCheck size={13} aria-hidden="true" />} label="Signals" value={stats.averageResilience === null ? '--' : 'Yes'} />
-            <StatTile icon={<Gauge size={13} aria-hidden="true" />} label="Diligence" value={stats.reviewCount} />
+            <StatTile icon={<ShieldCheck size={13} aria-hidden="true" />} label="Context" value={stats.averageResilience === null ? '--' : 'Yes'} />
+            <StatTile icon={<Gauge size={13} aria-hidden="true" />} label="Review Notes" value={stats.reviewCount} />
           </div>
 
           <SearchIntelligenceStrip stats={stats} />
@@ -455,7 +455,7 @@ export default function MapSidebar(props: MapSidebarProps) {
             data-sidebar-selected-address={selectedAddress || ''}
           >
             <p className="truncate text-[10px] font-black uppercase tracking-[0.18em] text-white/36">
-              {selectedAddress ? 'Selected Listing' : 'Primary Market'}
+              {selectedAddress ? 'Selected Property' : 'Primary Market'}
             </p>
             <p className="mt-1 truncate text-[12px] font-black uppercase tracking-[0.08em] text-white/76">
               {selectedAddress || `${stats.dominantCity}, Colorado`}
@@ -564,8 +564,14 @@ export default function MapSidebar(props: MapSidebarProps) {
         <div className="border-t border-white/10 bg-[#070b10] px-4 py-5" data-testid="reie-sidebar-guidance">
           <p className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100/70">Helpful Next Steps</p>
           <p className="mt-2 text-xs leading-5 text-white/42">
-            Compare a short list, open the details that feel promising, and save the search when you want to keep watching this market.
+            Compare a short list, open the details that feel promising, and contact David Quinn Group when you want to talk through tradeoffs.
           </p>
+          <Link
+            href="/contact"
+            className="mt-3 inline-flex text-[10px] font-black uppercase tracking-[0.16em] text-cyan-100/72 transition hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-200"
+          >
+            Talk Through Your Search
+          </Link>
         </div>
       </div>
 

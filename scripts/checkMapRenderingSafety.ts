@@ -80,10 +80,18 @@ async function main() {
   assert(searchMap.includes('map.invalidateSize({ animate: false, pan: false })'), 'SearchMap must explicitly recalculate Leaflet geometry.');
   assert(packageJson.includes('"check:map-rendering-safety"'), 'package.json must expose the map rendering safety check.');
   assert(searchInterface.includes('Guided Property Search'), 'Dedicated search must present guided property discovery framing.');
-  assert(searchInterface.includes('Updating available listings'), 'Dedicated search must use customer-facing loading language.');
+  assert(searchInterface.includes('Explore Colorado homes with fit, context, and confidence.'), 'Dedicated search must preserve the approved editorial headline.');
+  assert(searchInterface.includes('Start with the places, homes, or criteria that matter.'), 'Dedicated search must orient customers before filters.');
+  assert(searchInterface.includes('Build on What Matters'), 'Dedicated search must include Grand Plan continuity framing.');
+  assert(searchInterface.includes('Search does not automatically apply your plan'), 'Dedicated search must avoid implying automatic Grand Plan personalization.');
+  assert(searchInterface.includes('data-testid="reie-search-grand-plan-continuity"'), 'Dedicated search must expose a stable Grand Plan continuity handle.');
+  assert(searchInterface.includes('data-testid="reie-search-orientation"'), 'Dedicated search must expose a stable search orientation handle.');
+  assert(searchInterface.includes('Updating properties in view'), 'Dedicated search must use customer-facing loading language.');
   assert(searchInterface.includes("aria-pressed={mobileView === 'list'}"), 'Mobile list toggle must expose aria-pressed state.');
   assert(searchInterface.includes("aria-pressed={mobileView === 'map'}"), 'Mobile map toggle must expose aria-pressed state.');
   assert(!searchInterface.match(/public inventory command center|command center|internal diagnostics|smoke-ready|source-health|duration diagnostics/i), 'Dedicated search shell must avoid internal operational terminology.');
+  assert(globalsCss.includes('.reie-search-continuity'), 'Global CSS must define the dedicated search Grand Plan continuity treatment.');
+  assert(globalsCss.includes('.reie-search-orientation'), 'Global CSS must define the dedicated search orientation treatment.');
   assert(homePage.includes('Start with fit, context, and confidence.'), 'Homepage discovery section must use Wave 2D fit/context/confidence framing.');
   assert(homePage.includes('Search is the beginning of the decision, not the entire decision.'), 'Homepage discovery section must explain the advisory search boundary.');
   assert(homePage.includes('href="/search"'), 'Homepage discovery section must include a full search CTA.');
@@ -98,14 +106,17 @@ async function main() {
   assert(!homeSearch.includes('Boulder-area preview'), 'Embedded homepage search must not imply a geographic limitation that runtime does not enforce.');
   assert(homeSearch.includes('onBoundsChange={fetchListings}'), 'Homepage embedded search must preserve map bounds search updates.');
   assert(homeSearch.includes('buildSearchUrl(bounds, nextFilters)'), 'Homepage embedded search must preserve existing search URL construction.');
-  assert(searchControls.includes('Refine Your Search'), 'Search controls must use customer-facing refinement language.');
-  assert(searchControls.includes('Share Search'), 'Search controls must preserve share behavior with customer-facing labeling.');
-  assert(searchControls.includes('Clear Filters'), 'Search controls must preserve reset behavior with customer-facing labeling.');
+  assert(searchControls.includes('Shape Your Search'), 'Search controls must use customer-facing refinement language.');
+  assert(searchControls.includes('Share This Search'), 'Search controls must preserve share behavior with customer-facing labeling.');
+  assert(searchControls.includes('Clear Search'), 'Search controls must preserve reset behavior with customer-facing labeling.');
   assert(searchControls.includes('<option value="Residential">Residential</option>'), 'Search controls must preserve residential filter semantics without abbreviations.');
   assert(searchControls.includes('<option value="Commercial">Commercial</option>'), 'Search controls must preserve commercial filter semantics without abbreviations.');
   assert(searchControls.includes('<option value="Multi-Family">Multi-Family</option>'), 'Search controls must preserve multi-family filter semantics without abbreviations.');
   assert(mapSidebar.includes('Helpful Next Steps'), 'Search sidebar must include customer-facing next-step guidance.');
-  assert(mapSidebar.includes('Focused Results'), 'Search sidebar must describe active filter context in customer language.');
+  assert(mapSidebar.includes('Properties to Explore'), 'Search sidebar must use customer-facing results language.');
+  assert(mapSidebar.includes('Focused View'), 'Search sidebar must describe active filter context in customer language.');
+  assert(mapSidebar.includes('No Properties Match This View'), 'Search sidebar must guide customers through empty filtered states.');
+  assert(mapSidebar.includes('Talk Through Your Search'), 'Search sidebar must preserve one restrained advisor pathway.');
   assert(propertyCard.includes('Advisory Note'), 'Property cards must use advisory note framing.');
   assert(propertyCard.includes('Location Fit'), 'Property cards must include plain-language location fit context.');
   assert(propertyCard.includes('Property Signals'), 'Property cards must include plain-language property signals.');
@@ -161,12 +172,25 @@ async function main() {
   assert(equityVision.includes('It is not a valuation or return estimate.'), 'Property review notes must qualify construction context as non-valuation guidance.');
   assert(equityVision.includes('Photo Review Available'), 'Property review notes must use customer-facing photo review language.');
   for (const [label, source] of [
+    ['dedicated search', searchInterface],
     ['search controls', searchControls],
     ['map sidebar', mapSidebar],
     ['property card', propertyCard],
     ['save search', saveSearch],
   ] as const) {
     assert(!source.match(/\bEFF\b|\bRES\b|\bEff\b|\bRes\b|triage|priority stack|command center|source health|AI matching|predictive|heatmap|guaranteed fit|guaranteed-fit|ROI|traffic/i), `${label} must not expose unsupported or operational Wave 2B language.`);
+  }
+  for (const [label, source] of [
+    ['dedicated search', searchInterface],
+    ['search controls', searchControls],
+    ['map sidebar', mapSidebar],
+  ] as const) {
+    assert(
+      !source.match(
+        /Grand Plan-powered|personalized results|best match|perfect home|dream home|exclusive listings|off-market|match score|fit score|AI-powered|automated recommendation|guaranteed outcome|permanent storage|cross-device synchronization/i,
+      ),
+      `${label} must not expose unsupported Guided Search Wave 1 continuity or claim language.`,
+    );
   }
   const popupSource = searchMap.slice(searchMap.indexOf('function buildPopupHtml'), searchMap.indexOf('export default function SearchMap'));
   const prohibitedPublicPropertyLanguage =

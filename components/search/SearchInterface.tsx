@@ -167,6 +167,11 @@ function getDiscoveryFilterLabel(hasFilters: boolean) {
   return hasFilters ? 'Focused view' : 'Open Colorado view';
 }
 
+function getCustomerSearchStatus(meta: SearchMapMeta | null) {
+  if (meta?.health === 'degraded') return 'Search updating';
+  return 'Search ready';
+}
+
 export default function SearchInterface({
   initialListings = [],
   initialSearchMeta = null,
@@ -205,10 +210,10 @@ export default function SearchInterface({
     [visibleListings, visibleSelectedId],
   );
   const mobileStatusLabel = isSearching
-    ? 'Updating available listings'
+    ? 'Updating properties in view'
     : selectedProperty && mobileView === 'map'
       ? selectedProperty.address || 'Selected listing'
-      : `${visibleListings.length} listings`;
+      : `${visibleListings.length} properties`;
   useEffect(() => {
     const handleToggle = (event: Event) => {
       const customEvent = event as CustomEvent<StrategyToggleDetail>;
@@ -234,13 +239,13 @@ export default function SearchInterface({
       if (options.updateUrl) updateBrowserSearchUrl(nextFilters, options.urlMode);
 
       if (!response.ok) {
-        setSearchError(data.error || 'Inventory search is temporarily unavailable.');
+        setSearchError(data.error || 'We are having trouble updating the search. Try again shortly, or continue with an advisor if you would like help exploring options.');
       }
     } catch {
       setListings([]);
       setSearchMeta(null);
       setSelectedId(null);
-      setSearchError('Inventory search is temporarily unavailable.');
+      setSearchError('We are having trouble updating the search. Try again shortly, or continue with an advisor if you would like help exploring options.');
     } finally {
       setIsSearching(false);
     }
@@ -323,7 +328,7 @@ export default function SearchInterface({
   );
   const hasFilters = hasActiveSearchFilters(filters);
   const discoveryFilterLabel = getDiscoveryFilterLabel(hasFilters);
-  const discoveryCountLabel = visibleListings.length === 1 ? '1 available listing' : `${visibleListings.length} available listings`;
+  const discoveryCountLabel = visibleListings.length === 1 ? '1 property in view' : `${visibleListings.length} properties in view`;
 
   return (
     <div
@@ -336,6 +341,7 @@ export default function SearchInterface({
       data-user-tier={userTier}
       data-search-generated-at={effectiveSearchMeta?.generatedAt || ''}
       data-search-source={effectiveSearchMeta?.source || 'initial'}
+      data-search-status={getCustomerSearchStatus(effectiveSearchMeta)}
       data-search-access-level={effectiveSearchMeta?.accessLevel || (userTier === 'Contracted' ? 'contracted' : 'public')}
       data-search-filters-active={String(hasFilters)}
       data-search-loading={String(isSearching)}
@@ -401,11 +407,36 @@ export default function SearchInterface({
             Explore Colorado homes with fit, context, and confidence.
           </h2>
           <p className="mt-3 max-w-[31rem] text-sm leading-6 text-white/62">
-            Listings are the beginning of the decision. Use the filters, map, and property context to compare options before choosing what deserves a closer look.
+            Start with the places, homes, or criteria that matter. Use the map and property details together, then refine as your priorities become clearer.
           </p>
+          <div className="reie-search-continuity" data-testid="reie-search-grand-plan-continuity">
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">Build on What Matters</p>
+              <p className="mt-1 text-xs leading-5 text-white/58">
+                If you completed your Grand Plan, use the priorities you identified as a guide while you explore. Search does not automatically apply your plan, so you remain in control of every refinement.
+              </p>
+            </div>
+            <Link href="/grand-plan" className="reie-search-continuity-link" data-testid="reie-search-grand-plan-link">
+              Create Your Grand Plan
+            </Link>
+          </div>
+          <ol className="reie-search-orientation" data-testid="reie-search-orientation" aria-label="How to begin guided search">
+            <li>
+              <span>Start Broadly</span>
+              Choose a place, price range, or property type.
+            </li>
+            <li>
+              <span>Explore Together</span>
+              Use listings and map context side by side.
+            </li>
+            <li>
+              <span>Refine With Context</span>
+              Adjust the search as your priorities become clearer.
+            </li>
+          </ol>
           <div className="mt-4 grid grid-cols-2 gap-2">
             <div className="rounded-[6px] border border-white/10 bg-white/[0.045] px-3 py-2">
-              <p className="text-[9px] font-black uppercase tracking-[0.14em] text-white/38">Available Listings</p>
+              <p className="text-[9px] font-black uppercase tracking-[0.14em] text-white/38">Properties in View</p>
               <p className="mt-1 text-sm font-black text-white">{visibleListings.length}</p>
             </div>
             <div className="rounded-[6px] border border-cyan-100/18 bg-cyan-100/[0.06] px-3 py-2">
@@ -450,7 +481,7 @@ export default function SearchInterface({
             {discoveryCountLabel}
           </p>
           <p className="mt-1 text-[10px] font-black uppercase tracking-[0.12em] text-white/38">
-            {isSearching ? 'Updating available listings' : discoveryFilterLabel}
+            {isSearching ? 'Updating properties in view' : discoveryFilterLabel}
           </p>
         </div>
 

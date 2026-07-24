@@ -67,9 +67,11 @@ async function assertSearchPage() {
   const html = await fetchHtml('/search');
 
   assert.ok(includesFoldedText(html, 'Guided Property Search'), 'Expected guided property search framing.');
+  assert.ok(includesFoldedText(html, 'Build on What Matters'), 'Expected search Grand Plan continuity framing.');
+  assert.ok(includesFoldedText(html, 'Search does not automatically apply your plan'), 'Expected search continuity to avoid automatic personalization claims.');
   assert.ok(includesFoldedText(html, 'Discovery Summary'), 'Expected search discovery summary strip.');
-  assert.ok(includesFoldedText(html, 'Available Listings'), 'Expected search sidebar listing shell.');
-  assert.ok(includesFoldedText(html, 'Refine Your Search'), 'Expected refined search controls shell.');
+  assert.ok(includesFoldedText(html, 'Properties in View'), 'Expected search sidebar listing shell.');
+  assert.ok(includesFoldedText(html, 'Shape Your Search'), 'Expected refined search controls shell.');
   assert.ok(includesFoldedText(html, 'Advisory Note'), 'Expected property cards to use advisory note framing.');
   assert.ok(includesFoldedText(html, 'Save This Search'), 'Expected save-search opportunity to use customer-facing copy.');
 }
