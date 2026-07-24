@@ -243,10 +243,11 @@ Latest new-chat handoff, July 24, 2026 PROJECT ATLAS Property Intelligence Exper
 - Continue PROJECT ATLAS / REIE work in `/Users/davidquinn/david-quinn-group/colorado-real-estate`; begin the next chat by reading this section, then run `git status --short --branch`.
 - Governing authority remains `REAL ESTATE INTELLIGENCE ENGINE-MASTER V7.1`, Product Design Authority for the public REIE platform. Google Drive verification previously confirmed authoritative source file ID `1HylaD5fL9l0WpiYJLbDRxCKagcUdU99B`.
 - Current branch is `main`.
-- Current baseline after PIE Wave 1 closure should be `HEAD = origin/main = the PIE Wave 1 closure documentation commit` with a clean working tree.
-- Latest committed production-certified program state: Guided Search Experience Restoration Program is certified and formally closed end to end; Property Intelligence Experience 1.0 Wave 1 - Property Intelligence Foundation is certified, deployed, documented, and closed.
-- Current active program is `PROJECT ATLAS - Property Intelligence Experience 1.0`; Wave 1 is closed. PIE Wave 2 has not begun and is not authorized unless explicitly requested.
+- Current baseline after PIE Wave 2 closure should be `HEAD = origin/main = the PIE Wave 2 closure documentation commit` with a clean working tree.
+- Latest committed production-certified program state: Guided Search Experience Restoration Program is certified and formally closed end to end; Property Intelligence Experience 1.0 Wave 1 - Property Intelligence Foundation and Wave 2 - Construction Intelligence are certified, deployed, documented, and closed.
+- Current active program is `PROJECT ATLAS - Property Intelligence Experience 1.0`; Waves 1-2 are closed. PIE Wave 3 has not begun and is not authorized unless explicitly requested.
 - PIE Wave 1 Architectural Assessment is complete. PIE Wave 1 Property Intelligence Foundation implementation is complete and closed.
+- PIE Wave 2 Architectural Assessment is complete. PIE Wave 2 Construction Intelligence implementation is complete and closed.
 - Wave 1 - Editorial Search Experience was committed as `5af11928bdd68b9ced4aaf9750996c8892fe87dc`, pushed to `origin/main`, deployed by Vercel, production-certified, and closed.
 - Governed Wave 1 closure record: `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/GUIDED-SEARCH-WAVE-1-EDITORIAL-EXPERIENCE-CLOSURE.md`.
 - Wave 2 - Search Refinement was committed as `932076340a654d0d6331e92ce0b9044c542cf310`, pushed to `origin/main`, deployed by Vercel, production-certified, and closed.
@@ -260,6 +261,34 @@ Latest new-chat handoff, July 24, 2026 PROJECT ATLAS Property Intelligence Exper
 - Governed Guided Search program closure record: `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/GUIDED-SEARCH-EXPERIENCE-RESTORATION-PROGRAM-CLOSURE.md`.
 - PIE Wave 1 - Property Intelligence Foundation was committed as `25bc035044b58fbd69283c64cdeac9d40a4ae6e3`, pushed to `origin/main`, deployed by Vercel/GitHub deployment `5594528472`, deployment status `15908901533`, Vercel status `51058026771`, production-certified, and closed.
 - Governed PIE Wave 1 closure record: `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/PIE-1.0-WAVE-1-PROPERTY-INTELLIGENCE-FOUNDATION-CLOSURE.md`.
+- PIE Wave 2 - Construction Intelligence was committed as `cefafc5d003fa255db7a2f8c509d53de1fc5b987`, pushed to `origin/main`, deployed by Vercel/GitHub deployment `5595364559`, deployment status `15911163655`, Vercel status `51061689457`, production-certified, and closed.
+- Governed PIE Wave 2 closure record: `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/PIE-1.0-WAVE-2-CONSTRUCTION-INTELLIGENCE-CLOSURE.md`.
+- PIE Wave 2 implementation scope:
+  - Added the public Property page construction section inside the existing Decision Workspace.
+  - Separated construction content into `Known From Public Listing Data`, `General Construction Context`, `Mentioned in Listing Remarks`, and `Questions to Verify`.
+  - Used current public fields only for property-specific facts: year built, property type, lot size, listing status, area context, altitude context, soil text, and listing remarks.
+  - Framed description-derived construction references only as listing-remark mentions to verify independently; `gcForensics` remains internal.
+  - Added seven neutral construction verification prompts covering roof, HVAC, electrical, plumbing, drainage/foundation/site records, permits/remodeling, windows, and exterior envelope.
+  - Added concise professional-boundary language directing customers to appropriate inspectors, contractors, engineers, or other licensed professionals.
+  - Softened public polybutylene and EquityVision language so it does not imply defects, repair costs, condition assessment, valuation, equity conclusion, advisor review, photo review, or private intelligence.
+  - Aligned FAQ and structured-data wording to avoid `reviewedBy`, `construction forensics`, `Location Fit`, condition-sensitive pricing, buyer-objection, advisor-review, verified-condition, or private-analysis claims.
+  - Extended existing public safety and smoke checks for PIE Wave 2 construction trust boundaries.
+- PIE Wave 2 runtime preservation:
+  - No intended changes to property routing, property URL generation, property APIs, data fetching, listing parsing, `gcForensics`, `/api/search`, Search runtime, Save Search, map runtime, inquiry endpoint and payload, Prisma, Supabase, Typesense, authentication, CRM, email, MLS ingestion, schema architecture, migrations, dependencies, configuration, or environment variables.
+- PIE Wave 2 validation passed:
+  - `git diff --check`
+  - `npm run typecheck`
+  - `npm run lint`
+  - `npm run build`
+  - `npm run check:search-runtime-safety`
+  - `npm run check:map-rendering-safety`
+  - `PUBLIC_EXPERIENCE_SMOKE_BASE_URL=https://davidquinngroup.com npm run smoke:public-experience`
+  - Production route probes returned HTTP 200 for `/`, `/grand-plan`, `/search`, `/contact`, `/api/search?limit=5`, and `/properties/32224-poudre-canyon-rd-bellvue-co-ire1363681`; `/favicon.ico` returned the known resource-watch 404.
+  - Production `/api/search?limit=5` returned HTTP 200 with 5 returned, found count 1287, mapped count 5, `source="database"`, `health="degraded"`, and fallback reason `Search provider fallback served the request.`
+  - Production browser review passed at desktop `1280x900`, tablet `900x1050`, and mobile `386x900`; no horizontal overflow; construction section measured approximately desktop `896x860`, tablet `896x860`, and mobile `382x1184`; mobile action bar remained mobile-only at approximately `382x63`.
+  - Production property route rendered the construction section, five Decision Lens questions, seven public construction facts, seven verification prompts, one professional-boundary statement, and safe listing-remarks grouping; prohibited claims such as `construction forensics`, `reviewedBy`, `Location Fit`, `Advisor Review`, `Photo Review Available`, `verified condition`, `condition-sensitive pricing`, and `buyer objections` were absent from rendered and schema-visible production HTML.
+  - Production CTA review confirmed `Search -> /search`, `Market` / `Market Context -> /market/bellvue-co-housing-market`, `Ask` / `Ask About This Property -> #property-contact`, inquiry form reachability, and related-property destination preservation.
+  - No-mutation certification found unchanged counts for `User`, `SavedSearch`, `AlertEvent`, `AlertQueue`, `EmailLog`, `CRMTask`, `LeadInteraction`, `UserInteraction`, and `UserPreference` records between `2026-07-24T21:11:19.461Z` and `2026-07-24T21:12:29.253Z`.
 - PIE Wave 1 implementation scope:
   - Reframed the public Property page as a `Decision Workspace`.
   - Added the five Decision Lenses: `Understand`, `Evaluate`, `Compare`, `Investigate`, and `Discuss`.
@@ -491,8 +520,8 @@ Latest new-chat handoff, July 24, 2026 PROJECT ATLAS Property Intelligence Exper
   - Trust review passed: primary Search surfaces did not expose `Listing Facts`, `Advisory Note`, `Location Fit`, or `Advisor Review Recommended`, and did not imply personalization, cross-page memory, recommendations, advisor review, private inventory, complete coverage, guaranteed alerts, guaranteed response, account/dashboard availability, automatic CRM follow-up, browsing-history transfer, or confidential-information transfer.
   - No-mutation certification found 0 new timestamped `User`, `SavedSearch`, `AlertQueue`, `EmailLog`, `CRMTask`, `UserInteraction`, `LeadInteraction`, or `UserPreference` records after `2026-07-24T18:22:27Z`.
   - Final program status: `GUIDED_SEARCH_EXPERIENCE_RESTORATION_PROGRAM_CERTIFIED_AND_CLOSED`.
-- Next recommended action: preserve the closed Guided Search and PIE Wave 1 states. The appropriate next step, if authorized, is PIE Wave 2 Architectural Assessment only.
-- Do not begin PIE Wave 2 implementation, another implementation wave, or unrelated restoration initiative until explicitly authorized.
+- Next recommended action: preserve the closed Guided Search and PIE Wave 1-2 states. The appropriate next step, if authorized, is PIE Wave 3 Architectural Assessment only.
+- Do not begin PIE Wave 3 implementation, another implementation wave, or unrelated restoration initiative until explicitly authorized.
 - Do not deploy, push, alter database/schema/environment configuration, run live sync, run live workers, send live email, mutate CRM, call OpenAI, request MLS Grid, call TitlePro247, reset/reindex Typesense, retry/drain queues, run saved-search alert dry-runs, run `npm run smoke:property-inquiry`, reset databases, run `prisma db push`, run `npm audit fix`, or force-push unless explicitly authorized.
 
 Previous new-chat handoff, July 19, 2026 Sprint 2 certification reconciliation:
