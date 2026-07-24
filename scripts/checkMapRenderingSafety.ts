@@ -107,6 +107,13 @@ async function main() {
   assert(homeSearch.includes('onBoundsChange={fetchListings}'), 'Homepage embedded search must preserve map bounds search updates.');
   assert(homeSearch.includes('buildSearchUrl(bounds, nextFilters)'), 'Homepage embedded search must preserve existing search URL construction.');
   assert(searchControls.includes('Shape Your Search'), 'Search controls must use customer-facing refinement language.');
+  assert(searchControls.includes('Build clarity by starting with place'), 'Search controls must frame refinement as decision-building.');
+  assert(searchControls.includes('Where would you like to live?'), 'Search controls must prioritize location first.');
+  assert(searchControls.includes('What fits your budget?'), 'Search controls must group price as budget refinement.');
+  assert(searchControls.includes('What kind of home?'), 'Search controls must present property type before details.');
+  assert(searchControls.includes('What do you need?'), 'Search controls must group bedrooms and bathrooms as details.');
+  assert(searchControls.includes('Already have a property in mind?'), 'Search controls must position keyword search as specific-property refinement.');
+  assert(searchControls.includes('Use this when you already know an address, ZIP code, keyword, or MLS number.'), 'Search controls must explain specific-property search without changing behavior.');
   assert(searchControls.includes('Share This Search'), 'Search controls must preserve share behavior with customer-facing labeling.');
   assert(searchControls.includes('Clear Search'), 'Search controls must preserve reset behavior with customer-facing labeling.');
   assert(searchControls.includes('<option value="Residential">Residential</option>'), 'Search controls must preserve residential filter semantics without abbreviations.');
@@ -123,7 +130,8 @@ async function main() {
   assert(propertyCard.includes('View Property'), 'Property cards must retain a clear details action.');
   assert(propertyCard.includes('data-property-card-detail-href='), 'Property cards must retain detail navigation metadata.');
   assert(saveSearch.includes('Save This Search'), 'Save-search UI must use customer-facing save language.');
-  assert(saveSearch.includes('Receive updates when relevant listings appear.'), 'Save-search UI must avoid guaranteed or instant alert claims.');
+  assert(saveSearch.includes('After you explore the results, save this view for listing updates and follow-up routing.'), 'Save-search UI must position saving as a continuation after exploration.');
+  assert(saveSearch.includes('Save this view when it reflects what you want to keep watching.'), 'Save-search UI must avoid guaranteed or instant alert claims.');
   assert(saveSearch.includes("fetch('/api/save-search'"), 'Save-search UI must preserve the existing save-search request route.');
   assert(saveSearch.includes('data-save-search-email-valid'), 'Save-search UI must preserve email validation metadata.');
   assert(searchMap.includes('data-testid="reie-property-map-popup"'), 'Search map popups must expose stable popup metadata.');

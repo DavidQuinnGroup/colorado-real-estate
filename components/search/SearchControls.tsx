@@ -1,7 +1,7 @@
 'use client';
 
 import { Check, Copy, Loader2, RotateCcw, Search, SlidersHorizontal, Sparkles, X } from 'lucide-react';
-import type { CSSProperties, FormEvent } from 'react';
+import type { CSSProperties, FormEvent, ReactNode } from 'react';
 import { useId, useMemo, useState } from 'react';
 
 export type SearchFilters = {
@@ -53,6 +53,24 @@ const submitButtonStyle: CSSProperties = {
   justifyContent: 'center',
   width: 44,
 };
+
+function RefinementSection({
+  eyebrow,
+  title,
+  children,
+}: {
+  eyebrow: string;
+  title: string;
+  children: ReactNode;
+}) {
+  return (
+    <section className="rounded-[8px] border border-white/10 bg-white/[0.032] p-3" aria-label={title}>
+      <p className="text-[9px] font-black uppercase tracking-[0.18em] text-cyan-100/66">{eyebrow}</p>
+      <p className="mt-1 text-[12px] font-black leading-5 text-white/72">{title}</p>
+      <div className="mt-3">{children}</div>
+    </section>
+  );
+}
 
 export function getInitialSearchFilters(): SearchFilters {
   return {
@@ -184,7 +202,7 @@ export default function SearchControls({
               Shape Your Search
             </p>
             <p id={`${formId}-description`} className="mt-2 text-[11px] font-bold leading-5 text-white/48">
-              Choose a place, price range, property type, or listing detail. You can refine again as the map and results add context.
+              Build clarity by starting with place, then narrowing by budget, home type, and the details that matter.
             </p>
           </div>
           <span className="shrink-0 rounded-[5px] border border-cyan-100/20 bg-cyan-100/[0.075] px-2 py-1 text-[9px] font-black uppercase tracking-[0.12em] text-cyan-100/70">
@@ -223,116 +241,132 @@ export default function SearchControls({
         </div>
       </div>
 
-      <label className="mt-3 block" htmlFor={`${formId}-query`}>
-        <span className="sr-only">Keyword, address, ZIP, or MLS number</span>
-        <input
-          id={`${formId}-query`}
-          aria-label="Keyword, address, ZIP, or MLS number"
-          value={filters.query}
-          onChange={(event) => onChange(updateFilter(filters, 'query', event.target.value))}
-          placeholder="Keyword, address, ZIP, MLS"
-          style={textControlStyle}
-          className="h-10 w-full rounded-[6px] border border-white/10 bg-white/[0.06] px-3 text-sm font-semibold text-white outline-none transition placeholder:text-white/30 focus:border-cyan-100/45"
-        />
-      </label>
+      <div className="mt-3 grid gap-2">
+        <RefinementSection eyebrow="Where" title="Where would you like to live?">
+          <label className="block" htmlFor={`${formId}-city`}>
+            <span className="sr-only">City</span>
+            <input
+              id={`${formId}-city`}
+              aria-label="City"
+              value={filters.city}
+              onChange={(event) => onChange(updateFilter(filters, 'city', event.target.value))}
+              placeholder="City"
+              style={textControlStyle}
+              className="h-11 w-full rounded-[6px] border border-cyan-100/24 bg-cyan-100/[0.075] px-3 text-sm font-black text-white outline-none transition placeholder:text-cyan-50/38 focus:border-cyan-100/70"
+            />
+          </label>
+        </RefinementSection>
 
-      <div className="mt-2 grid grid-cols-2 gap-2">
-        <label htmlFor={`${formId}-min-price`}>
-          <span className="sr-only">Minimum price</span>
-          <input
-            id={`${formId}-min-price`}
-            aria-label="Minimum price"
-            inputMode="numeric"
-            value={filters.minPrice}
-            onChange={(event) => onChange(updateFilter(filters, 'minPrice', event.target.value))}
-            placeholder="Min price"
-            style={compactControlStyle}
-            className="h-10 w-full rounded-[6px] border border-white/10 bg-white/[0.06] px-3 text-xs font-bold text-white outline-none transition placeholder:text-white/30 focus:border-cyan-100/45"
-          />
-        </label>
-        <label htmlFor={`${formId}-max-price`}>
-          <span className="sr-only">Maximum price</span>
-          <input
-            id={`${formId}-max-price`}
-            aria-label="Maximum price"
-            inputMode="numeric"
-            value={filters.maxPrice}
-            onChange={(event) => onChange(updateFilter(filters, 'maxPrice', event.target.value))}
-            placeholder="Max price"
-            style={compactControlStyle}
-            className="h-10 w-full rounded-[6px] border border-white/10 bg-white/[0.06] px-3 text-xs font-bold text-white outline-none transition placeholder:text-white/30 focus:border-cyan-100/45"
-          />
-        </label>
-      </div>
+        <RefinementSection eyebrow="Budget" title="What fits your budget?">
+          <div className="grid grid-cols-2 gap-2">
+            <label htmlFor={`${formId}-min-price`}>
+              <span className="sr-only">Minimum price</span>
+              <input
+                id={`${formId}-min-price`}
+                aria-label="Minimum price"
+                inputMode="numeric"
+                value={filters.minPrice}
+                onChange={(event) => onChange(updateFilter(filters, 'minPrice', event.target.value))}
+                placeholder="Min price"
+                style={compactControlStyle}
+                className="h-10 w-full rounded-[6px] border border-white/10 bg-white/[0.06] px-3 text-xs font-bold text-white outline-none transition placeholder:text-white/30 focus:border-cyan-100/45"
+              />
+            </label>
+            <label htmlFor={`${formId}-max-price`}>
+              <span className="sr-only">Maximum price</span>
+              <input
+                id={`${formId}-max-price`}
+                aria-label="Maximum price"
+                inputMode="numeric"
+                value={filters.maxPrice}
+                onChange={(event) => onChange(updateFilter(filters, 'maxPrice', event.target.value))}
+                placeholder="Max price"
+                style={compactControlStyle}
+                className="h-10 w-full rounded-[6px] border border-white/10 bg-white/[0.06] px-3 text-xs font-bold text-white outline-none transition placeholder:text-white/30 focus:border-cyan-100/45"
+              />
+            </label>
+          </div>
+        </RefinementSection>
 
-      <div className="mt-2 grid grid-cols-3 gap-2">
-        <select
-          id={`${formId}-beds`}
-          value={filters.beds}
-          onChange={(event) => onChange(updateFilter(filters, 'beds', event.target.value))}
-          style={compactControlStyle}
-          className="h-10 rounded-[6px] border border-white/10 bg-[#101720] px-2 text-xs font-black uppercase tracking-[0.04em] text-white outline-none transition focus:border-cyan-100/45"
-          aria-label="Minimum bedrooms"
-        >
-          <option value="">Beds</option>
-          <option value="1">1+</option>
-          <option value="2">2+</option>
-          <option value="3">3+</option>
-          <option value="4">4+</option>
-          <option value="5">5+</option>
-        </select>
-        <select
-          id={`${formId}-baths`}
-          value={filters.baths}
-          onChange={(event) => onChange(updateFilter(filters, 'baths', event.target.value))}
-          style={compactControlStyle}
-          className="h-10 rounded-[6px] border border-white/10 bg-[#101720] px-2 text-xs font-black uppercase tracking-[0.04em] text-white outline-none transition focus:border-cyan-100/45"
-          aria-label="Minimum bathrooms"
-        >
-          <option value="">Baths</option>
-          <option value="1">1+</option>
-          <option value="2">2+</option>
-          <option value="3">3+</option>
-          <option value="4">4+</option>
-        </select>
-        <select
-          id={`${formId}-property-type`}
-          value={filters.propertyType}
-          onChange={(event) => onChange(updateFilter(filters, 'propertyType', event.target.value))}
-          style={compactControlStyle}
-          className="h-10 rounded-[6px] border border-white/10 bg-[#101720] px-2 text-xs font-black uppercase tracking-[0.04em] text-white outline-none transition focus:border-cyan-100/45"
-          aria-label="Property type"
-        >
-          <option value="">Type</option>
-          <option value="Residential">Residential</option>
-          <option value="Land">Land</option>
-          <option value="Commercial">Commercial</option>
-          <option value="Multi-Family">Multi-Family</option>
-        </select>
-      </div>
-
-      <div className="mt-2 flex gap-2">
-        <label className="min-w-0 flex-1" htmlFor={`${formId}-city`}>
-          <span className="sr-only">City</span>
-          <input
-            id={`${formId}-city`}
-            aria-label="City"
-            value={filters.city}
-            onChange={(event) => onChange(updateFilter(filters, 'city', event.target.value))}
-            placeholder="City"
+        <RefinementSection eyebrow="Home Type" title="What kind of home?">
+          <select
+            id={`${formId}-property-type`}
+            value={filters.propertyType}
+            onChange={(event) => onChange(updateFilter(filters, 'propertyType', event.target.value))}
             style={compactControlStyle}
-            className="h-10 w-full rounded-[6px] border border-white/10 bg-white/[0.06] px-3 text-xs font-bold text-white outline-none transition placeholder:text-white/30 focus:border-cyan-100/45"
-          />
-        </label>
-        <button
-          type="submit"
-          disabled={isSearching}
-          style={submitButtonStyle}
-          className="inline-flex h-10 w-11 shrink-0 items-center justify-center rounded-[6px] bg-cyan-100 text-[#061017] transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
-          aria-label="Update results"
-        >
-          {isSearching ? <Loader2 size={16} className="animate-spin" aria-hidden="true" /> : <Search size={16} aria-hidden="true" />}
-        </button>
+            className="h-10 w-full rounded-[6px] border border-white/10 bg-[#101720] px-3 text-xs font-black uppercase tracking-[0.04em] text-white outline-none transition focus:border-cyan-100/45"
+            aria-label="Property type"
+          >
+            <option value="">Type</option>
+            <option value="Residential">Residential</option>
+            <option value="Land">Land</option>
+            <option value="Commercial">Commercial</option>
+            <option value="Multi-Family">Multi-Family</option>
+          </select>
+        </RefinementSection>
+
+        <RefinementSection eyebrow="Details" title="What do you need?">
+          <div className="grid grid-cols-2 gap-2">
+            <select
+              id={`${formId}-beds`}
+              value={filters.beds}
+              onChange={(event) => onChange(updateFilter(filters, 'beds', event.target.value))}
+              style={compactControlStyle}
+              className="h-10 rounded-[6px] border border-white/10 bg-[#101720] px-2 text-xs font-black uppercase tracking-[0.04em] text-white outline-none transition focus:border-cyan-100/45"
+              aria-label="Minimum bedrooms"
+            >
+              <option value="">Beds</option>
+              <option value="1">1+</option>
+              <option value="2">2+</option>
+              <option value="3">3+</option>
+              <option value="4">4+</option>
+              <option value="5">5+</option>
+            </select>
+            <select
+              id={`${formId}-baths`}
+              value={filters.baths}
+              onChange={(event) => onChange(updateFilter(filters, 'baths', event.target.value))}
+              style={compactControlStyle}
+              className="h-10 rounded-[6px] border border-white/10 bg-[#101720] px-2 text-xs font-black uppercase tracking-[0.04em] text-white outline-none transition focus:border-cyan-100/45"
+              aria-label="Minimum bathrooms"
+            >
+              <option value="">Baths</option>
+              <option value="1">1+</option>
+              <option value="2">2+</option>
+              <option value="3">3+</option>
+              <option value="4">4+</option>
+            </select>
+          </div>
+        </RefinementSection>
+
+        <RefinementSection eyebrow="Specific Property" title="Already have a property in mind?">
+          <div className="flex gap-2">
+            <label className="min-w-0 flex-1" htmlFor={`${formId}-query`}>
+              <span className="sr-only">Keyword, address, ZIP, or MLS number</span>
+              <input
+                id={`${formId}-query`}
+                aria-label="Keyword, address, ZIP, or MLS number"
+                value={filters.query}
+                onChange={(event) => onChange(updateFilter(filters, 'query', event.target.value))}
+                placeholder="Address, ZIP, keyword, MLS"
+                style={compactControlStyle}
+                className="h-10 w-full rounded-[6px] border border-white/10 bg-white/[0.06] px-3 text-xs font-bold text-white outline-none transition placeholder:text-white/30 focus:border-cyan-100/45"
+              />
+            </label>
+            <button
+              type="submit"
+              disabled={isSearching}
+              style={submitButtonStyle}
+              className="inline-flex h-10 w-11 shrink-0 items-center justify-center rounded-[6px] bg-cyan-100 text-[#061017] transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
+              aria-label="Update results"
+            >
+              {isSearching ? <Loader2 size={16} className="animate-spin" aria-hidden="true" /> : <Search size={16} aria-hidden="true" />}
+            </button>
+          </div>
+          <p className="mt-2 text-[11px] font-bold leading-5 text-white/38">
+            Use this when you already know an address, ZIP code, keyword, or MLS number.
+          </p>
+        </RefinementSection>
       </div>
 
       {chips.length ? (

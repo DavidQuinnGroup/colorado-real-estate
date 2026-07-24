@@ -364,7 +364,7 @@ export default function SaveSearch({ city }: SaveSearchProps) {
           {isSaving ? <Loader2 size={16} className="mt-0.5 shrink-0 animate-spin text-cyan-300" /> : null}
         </div>
         <p className="mt-3 text-xs leading-5 text-white/48">
-          Keep an eye on new matches and preserve the filters that shaped this search.
+          After you explore the results, save this view for listing updates and follow-up routing.
         </p>
         <div
           className="mt-3 grid grid-cols-2 overflow-hidden rounded-[6px] border border-white/10 bg-black/24"
@@ -523,10 +523,10 @@ export default function SaveSearch({ city }: SaveSearchProps) {
           data-testid="reie-save-search-status"
           data-save-search-state={submitState}
           data-save-search-error={error || ''}
-          data-save-search-status-text={error || 'Receive updates when relevant listings appear.'}
+          data-save-search-status-text={error || 'Save this view when it reflects what you want to keep watching.'}
         >
           <p className={`min-w-0 text-xs font-bold ${error ? 'text-red-300' : 'text-white/35'}`}>
-            {error || 'Receive updates when relevant listings appear.'}
+            {error || 'Save this view when it reflects what you want to keep watching.'}
           </p>
         </div>
         <p

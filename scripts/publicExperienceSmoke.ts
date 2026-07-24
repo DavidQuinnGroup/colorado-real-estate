@@ -72,8 +72,12 @@ async function assertSearchPage() {
   assert.ok(includesFoldedText(html, 'Discovery Summary'), 'Expected search discovery summary strip.');
   assert.ok(includesFoldedText(html, 'Properties in View'), 'Expected search sidebar listing shell.');
   assert.ok(includesFoldedText(html, 'Shape Your Search'), 'Expected refined search controls shell.');
+  assert.ok(includesFoldedText(html, 'Where would you like to live?'), 'Expected search controls to prioritize location.');
+  assert.ok(includesFoldedText(html, 'What fits your budget?'), 'Expected search controls to group price refinement.');
+  assert.ok(includesFoldedText(html, 'Already have a property in mind?'), 'Expected search controls to move specific-property lookup after broader refinements.');
   assert.ok(includesFoldedText(html, 'Advisory Note'), 'Expected property cards to use advisory note framing.');
   assert.ok(includesFoldedText(html, 'Save This Search'), 'Expected save-search opportunity to use customer-facing copy.');
+  assert.ok(includesFoldedText(html, 'save this view for listing updates and follow-up routing'), 'Expected save-search presentation to avoid recommendation claims.');
 }
 
 async function assertHomePortalPage() {
