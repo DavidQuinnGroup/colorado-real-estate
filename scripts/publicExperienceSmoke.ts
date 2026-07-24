@@ -210,9 +210,12 @@ async function assertDrawerSource() {
   assert.ok(source.includes('const inquiryHref = `${propertyHref}#property-contact`;'), 'Expected selected drawer inquiry hash target.');
   assert.ok(source.includes('View Property'), 'Expected selected drawer View Property CTA label.');
   assert.ok(source.includes('Ask About This Property'), 'Expected selected drawer inquiry action label.');
-  assert.ok(source.includes('Property Brief'), 'Expected selected drawer to use public property brief framing.');
-  assert.ok(source.includes('Advisory Note'), 'Expected selected drawer to use advisory note framing.');
-  assert.ok(source.includes('Location Fit'), 'Expected selected drawer to expose location fit context.');
+  assert.ok(source.includes('Selected Property'), 'Expected selected drawer to identify selected properties.');
+  assert.ok(source.includes('This panel reflects the property selected from the map or listing results.'), 'Expected selected drawer to explain map/list selection continuity.');
+  assert.ok(source.includes('Property Details'), 'Expected selected drawer to expose property details.');
+  assert.ok(source.includes('Review Context'), 'Expected selected drawer to use review context framing.');
+  assert.ok(source.includes('Map Context'), 'Expected selected drawer to expose map context.');
+  assert.ok(!source.includes('Location Fit'), 'Expected selected drawer to avoid deprecated location-fit language.');
   assert.ok(source.includes('Property Signals'), 'Expected selected drawer to expose property signal context.');
   assert.ok(source.includes('data-testid="reie-selected-property-drawer"'), 'Expected selected drawer to expose a stable shell handle.');
   assert.ok(source.includes('data-testid="reie-selected-property-media"'), 'Expected selected drawer to expose media metadata.');

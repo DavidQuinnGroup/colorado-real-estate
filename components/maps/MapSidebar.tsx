@@ -243,7 +243,7 @@ function StatTile({ icon, label, value }: { icon: ReactNode; label: string; valu
 }
 
 function SearchIntelligenceStrip({ stats }: { stats: InventoryStats }) {
-  const mappedLabel = stats.mappedCount > 0 ? `${stats.mappedCount} properties placed on the map` : 'Map view preparing';
+  const mappedLabel = stats.mappedCount > 0 ? `${stats.mappedCount} properties shown on this map` : 'Map view preparing';
   const resilienceLabel =
     stats.averageResilience === null ? 'Property context pending' : 'Helpful property context available';
   const reviewLabel = stats.reviewCount > 0 ? `${stats.reviewCount} details to consider` : 'No major review notes';

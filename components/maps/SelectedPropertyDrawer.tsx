@@ -53,14 +53,14 @@ function getReviewSignal(property: MapSidebarListing) {
 function getAdvisoryNote(property: MapSidebarListing) {
   if (property.hasPolybutyleneRisk) return 'Worth a closer plumbing review before next steps.';
   if (typeof property.resilienceScore === 'number' && property.resilienceScore >= 80) return 'Worth a closer look for location and property context.';
-  if (typeof property.efficiencyScore === 'number' && property.efficiencyScore >= 80) return 'Location context may be useful for comparing daily fit.';
+  if (typeof property.efficiencyScore === 'number' && property.efficiencyScore >= 80) return 'Public location context may be useful for comparison.';
   if (property.isPrivateExclusive) return 'Private listing context can be reviewed with an advisor.';
 
   return 'Review public facts, location, and condition details before deciding.';
 }
 
 function getLocationFit(property: MapSidebarListing) {
-  return hasCoordinates(property) ? 'Shown on map' : 'Location needs review';
+  return hasCoordinates(property) ? 'Shown on this map' : 'Map location needs review';
 }
 
 function getPropertyTypeLabel(value: string | null | undefined) {
@@ -160,7 +160,7 @@ export default function SelectedPropertyDrawer({ property, onClose }: SelectedPr
         </button>
 
         <div className="pointer-events-none absolute bottom-4 left-4 right-4">
-          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100/76">Property Brief</p>
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100/76">Selected Property</p>
           <p className="mt-2 font-serif text-[30px] font-black leading-none text-white drop-shadow">{formatLuxuryPrice(price)}</p>
         </div>
       </div>
@@ -174,30 +174,33 @@ export default function SelectedPropertyDrawer({ property, onClose }: SelectedPr
             <MapPin size={13} aria-hidden="true" className="text-cyan-100/68" />
             {city}, {state}
           </p>
+          <p className="mt-2 text-left text-[11px] font-bold leading-5 text-white/42">
+            This panel reflects the property selected from the map or listing results.
+          </p>
         </div>
 
         <div
-          className="mt-4 rounded-[6px] border border-cyan-100/18 bg-cyan-100/[0.06] p-3"
+          className="mt-3 rounded-[6px] border border-cyan-100/18 bg-cyan-100/[0.06] p-3"
           data-testid="reie-selected-property-decision"
           data-selected-property-decision-signal={advisoryNote}
           data-selected-property-review-signal={reviewSignal}
         >
           <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.16em] text-cyan-100/76">
             <Sparkles size={13} aria-hidden="true" />
-            Advisory Note
+            Review Context
           </p>
-          <p className="mt-2 text-left text-xs font-bold leading-5 text-white/72">{advisoryNote}</p>
+          <p className="mt-1.5 text-left text-xs font-bold leading-5 text-white/72">{advisoryNote}</p>
         </div>
 
-        <p className="mt-4 text-[10px] font-black uppercase tracking-[0.16em] text-white/42">Listing Facts</p>
-        <div className="mt-4 grid grid-cols-3 gap-2">
+        <p className="mt-3 text-[10px] font-black uppercase tracking-[0.16em] text-white/42">Property Details</p>
+        <div className="mt-3 grid grid-cols-3 gap-2">
           <StatTile icon={<BedDouble size={13} />} label="Beds" value={formatStat(property.beds)} />
           <StatTile icon={<Bath size={13} />} label="Baths" value={formatStat(property.baths)} />
           <StatTile icon={<Ruler size={13} />} label="Sq Ft" value={formatStat(property.sqft)} />
         </div>
 
         <div className="mt-3 grid grid-cols-2 gap-2">
-          <ContextTile icon={<MapPin size={13} />} label="Location Fit" value={locationFit} />
+          <ContextTile icon={<MapPin size={13} />} label="Map Context" value={locationFit} />
           <ContextTile
             icon={<ShieldCheck size={13} />}
             label="Property Signals"
@@ -224,7 +227,7 @@ export default function SelectedPropertyDrawer({ property, onClose }: SelectedPr
             View Property
             <ArrowUpRight size={13} aria-hidden="true" />
           </Link>
-          <p className="mt-2 text-left text-[10px] font-bold leading-4 text-white/42">Open the full listing details, then compare facts, location, and next-step questions with an advisor.</p>
+          <p className="mt-2 text-left text-[10px] font-bold leading-4 text-white/42">Open the full listing details when this property deserves a closer look.</p>
           <Link
             href={inquiryHref}
             data-testid="reie-selected-property-inquiry-link"

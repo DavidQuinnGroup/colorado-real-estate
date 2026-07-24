@@ -164,14 +164,14 @@ function getReviewSignal(property: MapSidebarListing) {
 function getAdvisoryNote(property: MapSidebarListing) {
   if (property.hasPolybutyleneRisk) return 'Plumbing review suggested.';
   if (typeof property.resilienceScore === 'number' && property.resilienceScore >= 80) return 'Worth a closer look.';
-  if (typeof property.efficiencyScore === 'number' && property.efficiencyScore >= 80) return 'Compare daily location fit.';
+  if (typeof property.efficiencyScore === 'number' && property.efficiencyScore >= 80) return 'Compare public location context.';
   if (property.isPrivateExclusive) return 'Advisor context available.';
 
   return 'Review facts and location.';
 }
 
 function getLocationFit(property: MapSidebarListing) {
-  return hasCoordinates(property) ? 'Shown on map' : 'Location needs review';
+  return hasCoordinates(property) ? 'Shown on this map' : 'Map location needs review';
 }
 
 function getPropertyTypeLabel(value: string | null | undefined) {
@@ -233,9 +233,9 @@ function buildPopupHtml(property: MapSidebarListing) {
         <p class="reie-map-popup-price">${price}</p>
         <h2 class="reie-map-popup-address">${address}</h2>
         <p class="reie-map-popup-city">${city}, CO</p>
-        ${features ? `<p class="reie-map-popup-features"><span>Listing Facts</span> ${escapeHtml(features)}</p>` : ''}
-        <p class="reie-map-popup-note"><span>Advisory Note</span> ${advisoryNote}</p>
-        <p class="reie-map-popup-context"><span>Location Fit</span> ${locationFit}</p>
+        ${features ? `<p class="reie-map-popup-features" aria-label="Core property facts">${escapeHtml(features)}</p>` : ''}
+        <p class="reie-map-popup-note"><span>Review Context</span> ${advisoryNote}</p>
+        <p class="reie-map-popup-context"><span>Map Context</span> ${locationFit}</p>
         <p class="reie-map-popup-context"><span>Property Signals</span> ${reviewSignal}</p>
         <a class="reie-map-popup-cta" href="${detailHref}" aria-label="View property details for ${address}">View Property</a>
       </div>
@@ -640,7 +640,7 @@ export default function SearchMap({
   }, [listings, mapReady, selectedId, hoveredId, setSelectedId, setHoveredId, viewportVersion]);
 
   return (
-    <>
+    <div className="relative h-full w-full" data-testid="reie-search-map-surface">
       <div
         ref={containerRef}
         className="reie-map-canvas h-full w-full"
@@ -722,6 +722,17 @@ export default function SearchMap({
         </div>
       ) : null}
 
+      <div
+        className="reie-map-orientation pointer-events-none z-[710] max-w-[min(330px,calc(100%-2rem))] rounded-[8px] border border-white/14 bg-black/70 px-3 py-2.5 text-white shadow-[0_18px_48px_rgba(0,0,0,0.45)] backdrop-blur"
+        data-testid="reie-search-map-orientation"
+        aria-hidden="true"
+      >
+        <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/78">Map View</p>
+        <p className="mt-1 text-[11px] font-bold leading-4 text-white/62">
+          Properties shown here have public map coordinates. Select a marker to compare it with the list.
+        </p>
+      </div>
+
       <style jsx global>{`
         .leaflet-container {
           background: #030303 !important;
@@ -731,6 +742,13 @@ export default function SearchMap({
         .reie-map-canvas {
           isolation: isolate;
           position: relative;
+        }
+
+        .reie-map-orientation {
+          left: 1rem;
+          position: absolute;
+          top: 1rem;
+          z-index: 710;
         }
 
         .leaflet-control-zoom {
@@ -786,22 +804,30 @@ export default function SearchMap({
           padding: 7px 11px;
           text-align: center;
           transform: translateY(0);
-          transition: border-color 180ms ease, color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
+          outline: 0;
+          transition: background 180ms ease, border-color 180ms ease, color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
           white-space: nowrap;
         }
 
-        .luxury-marker:hover,
-        .luxury-marker.active {
+        .luxury-marker:hover {
           border-color: #00e5ff;
           box-shadow: 0 14px 38px rgba(0, 229, 255, 0.2), 0 18px 48px rgba(0, 0, 0, 0.74);
           color: #fff;
           transform: translateY(-2px);
         }
 
+        .luxury-marker.active {
+          background: #cffafe;
+          border-color: #ffffff;
+          box-shadow: 0 0 0 3px rgba(8, 17, 23, 0.76), 0 0 0 6px rgba(207, 250, 254, 0.36), 0 18px 48px rgba(0, 0, 0, 0.74);
+          color: #061017;
+          transform: translateY(-2px);
+        }
+
         .luxury-cluster {
           align-items: center;
           background: rgba(8, 11, 15, 0.93);
-          border: 2px solid rgba(255, 255, 255, 0.64);
+          border: 2px solid rgba(207, 250, 254, 0.68);
           border-radius: 999px;
           box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.65), 0 12px 32px rgba(0, 0, 0, 0.5);
           color: #fff;
@@ -822,6 +848,14 @@ export default function SearchMap({
           border-color: #00e5ff;
           box-shadow: 0 14px 38px rgba(0, 229, 255, 0.2), 0 18px 48px rgba(0, 0, 0, 0.74);
           transform: translateY(-2px);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .luxury-marker,
+          .luxury-cluster,
+          .reie-map-popup-cta {
+            transition: none;
+          }
         }
 
         .reie-map-popup {
@@ -960,6 +994,13 @@ export default function SearchMap({
         }
 
         @media (max-width: 640px) {
+          .reie-map-orientation {
+            left: 12px;
+            right: 12px;
+            max-width: none;
+            padding: 10px 11px;
+          }
+
           .reie-map-popup .leaflet-popup-content {
             width: min(286px, calc(100vw - 44px)) !important;
           }
@@ -973,7 +1014,7 @@ export default function SearchMap({
           }
         }
       `}</style>
-    </>
+    </div>
   );
 }
 

@@ -123,6 +123,7 @@ async function main() {
   assert(mapSidebar.includes('Properties to Explore'), 'Search sidebar must use customer-facing results language.');
   assert(mapSidebar.includes('Focused View'), 'Search sidebar must describe active filter context in customer language.');
   assert(mapSidebar.includes('No Properties Match This View'), 'Search sidebar must guide customers through empty filtered states.');
+  assert(mapSidebar.includes('properties shown on this map'), 'Search sidebar must describe mapped properties without implying complete map coverage.');
   assert(mapSidebar.includes('Talk Through Your Search'), 'Search sidebar must preserve one restrained advisor pathway.');
   assert(propertyCard.includes('Review Context'), 'Property cards must use neutral review context framing.');
   assert(propertyCard.includes('Map Context'), 'Property cards must include plain-language map context.');
@@ -137,8 +138,13 @@ async function main() {
   assert(saveSearch.includes("fetch('/api/save-search'"), 'Save-search UI must preserve the existing save-search request route.');
   assert(saveSearch.includes('data-save-search-email-valid'), 'Save-search UI must preserve email validation metadata.');
   assert(searchMap.includes('data-testid="reie-property-map-popup"'), 'Search map popups must expose stable popup metadata.');
-  assert(searchMap.includes('Advisory Note'), 'Search map popups must use advisory note framing.');
-  assert(searchMap.includes('Location Fit'), 'Search map popups must include location fit context.');
+  assert(searchMap.includes('data-testid="reie-search-map-orientation"'), 'Search map must expose lightweight map orientation guidance.');
+  assert(searchMap.includes('Properties shown here have public map coordinates.'), 'Search map guidance must ground mapped properties in public coordinates.');
+  assert(searchMap.includes('Select a marker to compare it with the list.'), 'Search map guidance must connect markers to the list without introducing new state.');
+  assert(searchMap.includes('Review Context'), 'Search map popups must use review context framing.');
+  assert(searchMap.includes('Map Context'), 'Search map popups must use map context framing.');
+  assert(!searchMap.includes('Location Fit'), 'Search map popups must avoid deprecated public location-fit language.');
+  assert(!searchMap.includes('Listing Facts'), 'Search map popups must avoid duplicative listing-facts framing.');
   assert(searchMap.includes('Property Signals'), 'Search map popups must include property signal context.');
   assert(searchMap.includes('View Property'), 'Search map popups must retain a clear property detail action.');
   assert(searchMap.includes('href="${detailHref}"'), 'Search map popups must preserve property detail navigation.');
@@ -146,10 +152,13 @@ async function main() {
   assert(searchMap.includes('marker.openPopup()'), 'Search map markers must continue to open popups from interaction.');
   assert(searchMap.includes('Map Ready'), 'Search map public status text must use customer-safe ready language.');
   assert(searchMap.includes('Explore on Map'), 'Search map public status text must avoid testing or diagnostic language.');
-  assert(selectedDrawer.includes('Property Brief'), 'Selected-property drawer must use customer-facing property brief framing.');
-  assert(selectedDrawer.includes('Listing Facts'), 'Selected-property drawer must expose listing facts.');
-  assert(selectedDrawer.includes('Advisory Note'), 'Selected-property drawer must use advisory note framing.');
-  assert(selectedDrawer.includes('Location Fit'), 'Selected-property drawer must expose location fit context.');
+  assert(selectedDrawer.includes('Selected Property'), 'Selected-property drawer must clearly identify the selected property.');
+  assert(selectedDrawer.includes('This panel reflects the property selected from the map or listing results.'), 'Selected-property drawer must explain map/list selection continuity.');
+  assert(selectedDrawer.includes('Property Details'), 'Selected-property drawer must expose property details.');
+  assert(selectedDrawer.includes('Review Context'), 'Selected-property drawer must use review context framing.');
+  assert(selectedDrawer.includes('Map Context'), 'Selected-property drawer must expose map context.');
+  assert(!selectedDrawer.includes('Location Fit'), 'Selected-property drawer must avoid deprecated public location-fit language.');
+  assert(!selectedDrawer.includes('Listing Facts'), 'Selected-property drawer must avoid duplicative listing-facts framing.');
   assert(selectedDrawer.includes('Property Signals'), 'Selected-property drawer must expose property signal context.');
   assert(selectedDrawer.includes('View Property'), 'Selected-property drawer must retain a clear property detail action.');
   assert(selectedDrawer.includes('data-testid="reie-selected-property-drawer"'), 'Selected-property drawer must expose a stable shell handle.');
@@ -233,7 +242,7 @@ async function main() {
   );
 
   console.log(
-    '[map-rendering-safety] ok: deterministic map pane visibility, dedicated search discovery framing, Wave 2B sidebar/card/control language, Wave 2C popup/drawer language, native Leaflet tile reset, resize invalidation, and no decorative basemap overlays verified.',
+    '[map-rendering-safety] ok: deterministic map pane visibility, dedicated search discovery framing, Wave 4 map guidance, popup/drawer language, native Leaflet tile reset, resize invalidation, and no decorative basemap overlays verified.',
   );
 }
 

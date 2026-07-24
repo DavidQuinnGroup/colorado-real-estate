@@ -593,14 +593,22 @@ html, body {
   font-size: 11px;
   box-shadow: 0 14px 35px rgba(0, 0, 0, 0.48);
   border-radius: 6px;
-  transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+  outline: 0;
+  transition: background 180ms ease, border-color 180ms ease, color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
 }
 
-.luxury-marker:hover,
-.luxury-marker.active {
+.luxury-marker:hover {
   border-color: rgba(166, 231, 242, 0.72);
-  background: rgba(215, 242, 246, 0.94);
-  color: #081117;
+  background: rgba(10, 16, 22, 0.96);
+  color: rgba(255, 255, 255, 0.98);
+  transform: translateY(-2px);
+}
+
+.luxury-marker.active {
+  border-color: #ffffff;
+  background: #cffafe;
+  color: #061017;
+  box-shadow: 0 0 0 3px rgba(8, 17, 23, 0.76), 0 0 0 6px rgba(207, 250, 254, 0.36), 0 18px 48px rgba(0, 0, 0, 0.74);
   transform: translateY(-2px);
 }
 
@@ -640,12 +648,20 @@ html, body {
   width: 42px;
   height: 42px;
   border-radius: 8px;
-  border: 1px solid rgba(210, 231, 236, 0.24);
+  border: 2px solid rgba(207, 250, 254, 0.68);
   background: rgba(8, 17, 23, 0.9);
   color: rgba(255, 255, 255, 0.94);
   font-size: 12px;
   font-weight: 900;
   box-shadow: 0 16px 38px rgba(0, 0, 0, 0.48);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .luxury-marker,
+  .luxury-cluster,
+  .reie-map-popup-cta {
+    transition: none;
+  }
 }
 
 .leaflet-popup-content-wrapper,
