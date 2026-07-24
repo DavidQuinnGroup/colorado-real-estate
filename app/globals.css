@@ -1508,9 +1508,15 @@ html, body {
 }
 
 [data-testid="grand-plan-completion"] {
-  background: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 18px;
+  background: #f7f2e8;
   padding: 32px;
   color: #0b1117;
+}
+
+[data-testid="grand-plan-completion"] .gp-result-hero {
+  max-width: 760px;
 }
 
 [data-testid="grand-plan-completion"] .gp-completion-icon {
@@ -1536,12 +1542,117 @@ html, body {
   font-size: 40px;
 }
 
+[data-testid="grand-plan-completion"] h2:focus {
+  outline: none;
+}
+
+[data-testid="grand-plan-completion"] h3 {
+  margin-top: 10px;
+  color: #101820;
+  font-size: 22px;
+  line-height: 1.25;
+}
+
+[data-testid="grand-plan-completion"] h4 {
+  color: #101820;
+  font-size: 15px;
+  line-height: 1.35;
+}
+
 [data-testid="grand-plan-completion"] p {
   max-width: 700px;
   margin-top: 20px;
   color: #33414b;
   font-size: 16px;
   line-height: 1.8;
+}
+
+[data-testid="grand-plan-completion"] .gp-result-section {
+  margin-top: 28px;
+  border: 1px solid rgba(11, 17, 23, 0.1);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.48);
+  padding: 22px;
+}
+
+[data-testid="grand-plan-completion"] .gp-result-section > p:last-child {
+  margin-top: 10px;
+}
+
+[data-testid="grand-plan-completion"] .gp-result-pill-list,
+[data-testid="grand-plan-completion"] .gp-result-place-list,
+[data-testid="grand-plan-completion"] .gp-next-step ul {
+  display: grid;
+  gap: 10px;
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+[data-testid="grand-plan-completion"] .gp-result-pill-list {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+[data-testid="grand-plan-completion"] .gp-result-pill-list li,
+[data-testid="grand-plan-completion"] .gp-result-place-list li,
+[data-testid="grand-plan-completion"] .gp-next-step li {
+  border: 1px solid rgba(11, 17, 23, 0.1);
+  border-radius: 999px;
+  background: #fffaf0;
+  padding: 11px 14px;
+  color: #101820;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.45;
+}
+
+[data-testid="grand-plan-completion"] .gp-result-place-list li {
+  display: grid;
+  gap: 4px;
+  border-radius: 12px;
+}
+
+[data-testid="grand-plan-completion"] .gp-result-place-list li span:first-child {
+  overflow-wrap: anywhere;
+}
+
+[data-testid="grand-plan-completion"] .gp-result-place-list li span:last-child {
+  color: #58707a;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+[data-testid="grand-plan-completion"] .gp-theme-grid {
+  display: grid;
+  gap: 14px;
+  margin-top: 18px;
+}
+
+[data-testid="grand-plan-completion"] .gp-theme-card {
+  border: 1px solid rgba(11, 17, 23, 0.1);
+  border-left: 4px solid #0891b2;
+  border-radius: 12px;
+  background: #fffaf0;
+  padding: 16px;
+}
+
+[data-testid="grand-plan-completion"] .gp-theme-card p {
+  margin-top: 10px;
+  color: #33414b;
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+[data-testid="grand-plan-completion"] .gp-theme-card p:last-child {
+  color: #101820;
+}
+
+[data-testid="grand-plan-completion"] .gp-theme-card span {
+  color: #58707a;
+  font-weight: 900;
+  text-transform: uppercase;
 }
 
 [data-testid="grand-plan-completion"] .gp-summary-grid {
@@ -1580,6 +1691,10 @@ html, body {
 [data-testid="grand-plan-completion"] .gp-next-step {
   margin-top: 32px;
   padding: 20px;
+}
+
+[data-testid="grand-plan-completion"] .gp-next-step li {
+  border-radius: 12px;
 }
 
 [data-testid="grand-plan-completion"] .gp-actions {
@@ -1630,6 +1745,10 @@ html, body {
 @media (min-width: 768px) {
   [data-testid="grand-plan-explanation"] .gp-card-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  [data-testid="grand-plan-completion"] .gp-theme-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   [data-testid="grand-plan-completion"] .gp-summary-grid {
@@ -1714,6 +1833,28 @@ html, body {
 
   [data-testid="grand-plan-intake"] .gp-anchor-card-heading button,
   [data-testid="grand-plan-intake"] .gp-add-anchor {
+    width: 100%;
+  }
+
+  [data-testid="grand-plan-completion"] {
+    padding: 22px;
+  }
+
+  [data-testid="grand-plan-completion"] h2 {
+    font-size: 32px;
+  }
+
+  [data-testid="grand-plan-completion"] .gp-result-section {
+    padding: 18px;
+  }
+
+  [data-testid="grand-plan-completion"] .gp-result-pill-list,
+  [data-testid="grand-plan-completion"] .gp-summary-grid,
+  [data-testid="grand-plan-completion"] .gp-theme-grid {
+    grid-template-columns: 1fr;
+  }
+
+  [data-testid="grand-plan-completion"] .gp-actions .gp-button {
     width: 100%;
   }
 }

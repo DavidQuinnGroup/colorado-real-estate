@@ -29,6 +29,27 @@ type ImportantPlace = {
   frequency: FrequencyId;
 };
 
+type PlanningThemeId =
+  | 'daily-life-fit'
+  | 'location-rhythm'
+  | 'property-readiness'
+  | 'community-connection'
+  | 'privacy-space'
+  | 'outdoor-access'
+  | 'school-family'
+  | 'long-term-flexibility'
+  | 'timing-clarity'
+  | 'market-context'
+  | 'relocation-planning'
+  | 'ownership-transition';
+
+type PlanningTheme = {
+  id: PlanningThemeId;
+  title: string;
+  body: string;
+  question: string;
+};
+
 type SubmitState = 'idle' | 'submitting' | 'success' | 'error';
 
 type StepId = 'priorities' | 'place' | 'timing' | 'context' | 'review';
@@ -110,6 +131,83 @@ const frequencyOptions: Array<{ id: FrequencyId; label: string; value: number }>
 ];
 
 const MAX_IMPORTANT_PLACES = 3;
+
+const themeLibrary: Record<PlanningThemeId, PlanningTheme> = {
+  'daily-life-fit': {
+    id: 'daily-life-fit',
+    title: 'Daily-Life Fit',
+    body: 'Your priorities and routines should shape where the conversation begins.',
+    question: 'Which routine would create the greatest improvement if it became easier?',
+  },
+  'location-rhythm': {
+    id: 'location-rhythm',
+    title: 'Location Rhythm',
+    body: 'Multiple important places can change how each area feels day to day.',
+    question: 'Which place should carry the most weight when comparing locations?',
+  },
+  'property-readiness': {
+    id: 'property-readiness',
+    title: 'Property Readiness',
+    body: 'Condition, maintenance, and improvement comfort may matter alongside location.',
+    question: 'How much project work feels comfortable after closing?',
+  },
+  'community-connection': {
+    id: 'community-connection',
+    title: 'Community Connection',
+    body: 'The right move should account for the people and places that keep life connected.',
+    question: 'Which connection would be hardest to give up?',
+  },
+  'privacy-space': {
+    id: 'privacy-space',
+    title: 'Privacy and Space',
+    body: 'Room, quiet, and separation may be central to how a property supports daily life.',
+    question: 'Where do you need more space or privacy than you have today?',
+  },
+  'outdoor-access': {
+    id: 'outdoor-access',
+    title: 'Outdoor Access',
+    body: 'Colorado lifestyle needs can depend on how easily outdoor time fits into the week.',
+    question: 'Which outdoor routine should stay easy to reach?',
+  },
+  'school-family': {
+    id: 'school-family',
+    title: 'School and Family Considerations',
+    body: 'School, family, and care routines can shape the practical boundaries of a move.',
+    question: 'Which family or school need should be protected first?',
+  },
+  'long-term-flexibility': {
+    id: 'long-term-flexibility',
+    title: 'Long-Term Flexibility',
+    body: 'The next decision should leave room for future needs, not only today’s search.',
+    question: 'What future change should this decision leave room for?',
+  },
+  'timing-clarity': {
+    id: 'timing-clarity',
+    title: 'Timing Clarity',
+    body: 'Your timing helps determine whether the next step is exploration, preparation, or active decision-making.',
+    question: 'What needs to happen before you would feel ready to move forward?',
+  },
+  'market-context': {
+    id: 'market-context',
+    title: 'Market Context',
+    body: 'Your market focus gives the next conversation a clearer starting point.',
+    question: 'Which tradeoff are you least willing to make in this market?',
+  },
+  'relocation-planning': {
+    id: 'relocation-planning',
+    title: 'Relocation Planning',
+    body: 'Relocation decisions work best when daily routines are discussed before listings dominate the conversation.',
+    question: 'What part of the move would benefit most from local context?',
+  },
+  'ownership-transition': {
+    id: 'ownership-transition',
+    title: 'Ownership Transition',
+    body: 'A clear transition plan can help connect preparation, timing, and the next chapter.',
+    question: 'What needs to feel settled before the transition begins?',
+  },
+};
+
+const defaultThemeIds: PlanningThemeId[] = ['daily-life-fit', 'timing-clarity', 'market-context'];
 
 const timelines: Array<{ id: TimelineId; label: string }> = [
   { id: 'now', label: 'Now' },
@@ -197,6 +295,65 @@ function getReviewValue(value: string, fallback: string) {
   return value.trim() || fallback;
 }
 
+function addTheme(themeIds: PlanningThemeId[], themeId: PlanningThemeId) {
+  if (!themeIds.includes(themeId)) themeIds.push(themeId);
+}
+
+function getPlanningThemes(priorities: LifestylePriorityId[], selectedGoal: GoalId, selectedTimeline: TimelineId, places: ImportantPlace[]) {
+  const themeIds: PlanningThemeId[] = [];
+
+  for (const priority of priorities) {
+    if (priority === 'daily-ease') addTheme(themeIds, 'daily-life-fit');
+    if (priority === 'trails-outdoors') addTheme(themeIds, 'outdoor-access');
+    if (priority === 'privacy-space') addTheme(themeIds, 'privacy-space');
+    if (priority === 'schools-family') addTheme(themeIds, 'school-family');
+    if (priority === 'renovation-readiness') addTheme(themeIds, 'property-readiness');
+    if (priority === 'long-term-flexibility') addTheme(themeIds, 'long-term-flexibility');
+    if (priority === 'community-connection') addTheme(themeIds, 'community-connection');
+    if (priority === 'market-resilience') addTheme(themeIds, 'market-context');
+  }
+
+  if (selectedGoal === 'relocation-fit') addTheme(themeIds, 'relocation-planning');
+  if (selectedGoal === 'sell-optimize') {
+    addTheme(themeIds, 'ownership-transition');
+    addTheme(themeIds, 'property-readiness');
+  }
+  if (selectedGoal === 'portfolio-review') addTheme(themeIds, 'long-term-flexibility');
+  if (selectedGoal === 'buy-strategy') {
+    addTheme(themeIds, 'daily-life-fit');
+    addTheme(themeIds, 'market-context');
+  }
+
+  if (selectedTimeline === 'now' || selectedTimeline === 'ninety-days') addTheme(themeIds, 'timing-clarity');
+  if (places.length > 1) addTheme(themeIds, 'location-rhythm');
+
+  for (const themeId of defaultThemeIds) addTheme(themeIds, themeId);
+
+  return themeIds.slice(0, 5).map((themeId) => themeLibrary[themeId]);
+}
+
+function getDiscussionPrompts(goalLabel: string, timelineLabel: string, places: ImportantPlace[], priorities: string[]) {
+  const prompts = [
+    'Which daily routine matters most when comparing locations?',
+    'What would make your timing feel clearer?',
+    'Which important place should carry the greatest weight?',
+  ];
+
+  if (priorities.includes('Renovation Readiness') || goalLabel === 'Preparing to Sell') {
+    prompts.push('How much property improvement feels comfortable?');
+  }
+
+  if (timelineLabel === 'Now' || timelineLabel === 'Next 90 days') {
+    prompts.push('What needs to happen before you would feel ready to move forward?');
+  }
+
+  if (places.length > 1) prompts.push('What tradeoff are you least willing to make around location?');
+  if (goalLabel === 'Relocating') prompts.push('Which local context would make the move easier to compare?');
+  if (goalLabel === 'Long-Term Ownership') prompts.push('What future need should this decision leave room for?');
+
+  return Array.from(new Set(prompts)).slice(0, 5);
+}
+
 function createImportantPlace(index = 1): ImportantPlace {
   return {
     id: `anchor-${index}`,
@@ -218,6 +375,7 @@ async function readResponse(response: Response): Promise<SaveSearchResponse> {
 export default function GrandPlanIntake() {
   const formId = useId();
   const stepTitleRef = useRef<HTMLHeadingElement>(null);
+  const successTitleRef = useRef<HTMLHeadingElement>(null);
   const reviewUnlockTimerRef = useRef<number | null>(null);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -243,6 +401,8 @@ export default function GrandPlanIntake() {
   const activeImportantPlaces = importantPlaces
     .map((place) => ({ ...place, label: place.label.trim() }))
     .filter((place) => place.label);
+  const planningThemes = getPlanningThemes(selectedPriorities, goal, timeline, activeImportantPlaces);
+  const discussionPrompts = getDiscussionPrompts(selectedGoalLabel, selectedTimelineLabel, activeImportantPlaces, selectedPriorityLabels);
   const currentStep = steps[currentStepIndex];
   const hasValidEmail = useMemo(() => isValidEmail(normalizedEmail), [normalizedEmail]);
   const isReviewStep = currentStep.id === 'review';
@@ -251,6 +411,10 @@ export default function GrandPlanIntake() {
   useEffect(() => {
     stepTitleRef.current?.focus();
   }, [currentStepIndex]);
+
+  useEffect(() => {
+    if (submitState === 'success') successTitleRef.current?.focus();
+  }, [submitState]);
 
   useEffect(() => {
     return () => {
@@ -444,36 +608,95 @@ export default function GrandPlanIntake() {
     return (
       <section
         data-testid="grand-plan-completion"
+        data-grand-plan-result="public-starting-point"
         data-grand-plan-state="success"
         data-grand-plan-source={result?.intake?.source || ''}
-        data-grand-plan-saved-search-id={result?.savedSearchId || ''}
-        data-grand-plan-crm-task-id={result?.crmTaskId || ''}
-        data-grand-plan-interaction-id={result?.interactionId || ''}
-        data-grand-plan-alert-readiness={result?.alertReadiness?.level || ''}
+        data-grand-plan-theme-count={planningThemes.length}
+        data-grand-plan-read-only="true"
         aria-live="polite"
       >
-        <div className="gp-completion-icon">
-          <CheckCircle2 size={30} aria-hidden="true" />
-        </div>
-        <p className="gp-eyebrow">Grand Plan Saved</p>
-        <h2>Your Grand Plan starting point has been saved for advisor review.</h2>
-        <p>
-          We will use your priorities, timing, and context to prepare for a more useful conversation.
-        </p>
-        <div className="gp-summary-grid">
-          <SummaryCard label="Goal" value={result?.intake?.reieGoalLabel || selectedGoalLabel} />
-          <SummaryCard label="Priorities" value={`${selectedPriorityLabels.length} selected`} />
-          <SummaryCard label="Places" value={`${activeImportantPlaces.length} shared`} />
-          <SummaryCard label="Timing" value={result?.intake?.timelineLabel || selectedTimelineLabel} />
-          <SummaryCard label="Market" value={normalizedCity} />
-        </div>
-        <div className="gp-next-step">
-          <p>What happens next</p>
+        <div className="gp-result-hero">
+          <div className="gp-completion-icon">
+            <CheckCircle2 size={30} aria-hidden="true" />
+          </div>
+          <p className="gp-eyebrow">Your Grand Plan Starting Point</p>
+          <h2 ref={successTitleRef} tabIndex={-1}>
+            Your Grand Plan starting point is ready.
+          </h2>
           <p>
-            Your request is saved for direct follow-up. This form does not create automated advice, a private report, or a brokerage
-            relationship by itself.
+            We saved your priorities, timing, and important places so the next conversation can begin with context instead of starting from
+            scratch.
           </p>
         </div>
+
+        <div className="gp-result-section gp-result-summary" data-testid="grand-plan-result-summary">
+          <div>
+            <p className="gp-eyebrow">Your Priorities</p>
+            <h3>What you told us matters most</h3>
+          </div>
+          <ul className="gp-result-pill-list" aria-label="Selected lifestyle priorities">
+            {selectedPriorityLabels.map((priority) => (
+              <li key={priority}>{priority}</li>
+            ))}
+          </ul>
+          <div className="gp-summary-grid">
+            <SummaryCard label="Your Ownership Goal" value={result?.intake?.reieGoalLabel || selectedGoalLabel} />
+            <SummaryCard label="Your Timing" value={result?.intake?.timelineLabel || selectedTimelineLabel} />
+            <SummaryCard label="Primary Market" value={normalizedCity} />
+          </div>
+        </div>
+
+        <div className="gp-result-section" data-testid="grand-plan-result-places">
+          <div>
+            <p className="gp-eyebrow">Your Important Places</p>
+            <h3>Places and routines that shape the plan</h3>
+          </div>
+          <ul className="gp-result-place-list">
+            {activeImportantPlaces.map((place) => (
+              <li key={place.id}>
+                <span>{place.label}</span>
+                <span>
+                  {getCategoryLabel(place.category)} | {getFrequencyOption(place.frequency).label}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {normalizedNotes ? (
+          <div className="gp-result-section" data-testid="grand-plan-result-context">
+            <p className="gp-eyebrow">Additional Context</p>
+            <p>{normalizedNotes}</p>
+          </div>
+        ) : null}
+
+        <div className="gp-result-section" data-testid="grand-plan-result-themes">
+          <div>
+            <p className="gp-eyebrow">Your Planning Themes</p>
+            <h3>Good topics for the first advisory conversation</h3>
+          </div>
+          <div className="gp-theme-grid">
+            {planningThemes.map((theme) => (
+              <article className="gp-theme-card" data-testid="grand-plan-result-theme" key={theme.id}>
+                <h4>{theme.title}</h4>
+                <p>{theme.body}</p>
+                <p>
+                  <span>Discuss:</span> {theme.question}
+                </p>
+              </article>
+            ))}
+          </div>
+        </div>
+
+        <div className="gp-result-section gp-next-step" data-testid="grand-plan-result-prompts">
+          <p className="gp-eyebrow">What We Should Explore Together</p>
+          <ul>
+            {discussionPrompts.map((prompt) => (
+              <li key={prompt}>{prompt}</li>
+            ))}
+          </ul>
+        </div>
+
         <div className="gp-actions">
           <Link
             href="/contact"
