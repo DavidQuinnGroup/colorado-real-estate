@@ -120,6 +120,7 @@ export default function PropertyCard({ property, isActive, onClick }: PropertyCa
   const hasCoordinatesFlag = hasCoordinates(property);
   const isFallbackVisual = imageSrc === LISTING_IMAGE_FALLBACK || !hasListingPhoto(property);
   const detailHref = `/properties/${property.id}`;
+  const selectedStateId = `property-${property.id}-selected-state`;
 
   function handleImageError() {
     if (imageSrc === LISTING_IMAGE_FALLBACK) return;
@@ -140,6 +141,7 @@ export default function PropertyCard({ property, isActive, onClick }: PropertyCa
       tabIndex={0}
       aria-label={cardLabel}
       aria-pressed={isActive}
+      aria-describedby={isActive ? selectedStateId : undefined}
       onClick={onClick}
       onKeyDown={handleKeyDown}
       data-testid="reie-property-card"
@@ -162,12 +164,20 @@ export default function PropertyCard({ property, isActive, onClick }: PropertyCa
       data-property-card-detail-href={detailHref}
       className={`group m-3 cursor-pointer overflow-hidden rounded-[8px] border outline-none transition duration-200 focus-visible:border-cyan-200 focus-visible:ring-2 focus-visible:ring-cyan-200/40 ${
         isActive
-          ? 'border-cyan-200/70 bg-[#101821] shadow-[0_18px_55px_rgba(7,22,38,0.55)] ring-1 ring-cyan-100/25'
+          ? 'border-cyan-100/80 bg-[#101821] shadow-[0_18px_55px_rgba(7,22,38,0.55)] ring-2 ring-cyan-100/32'
           : 'border-white/10 bg-[#0a0f14] shadow-[0_12px_35px_rgba(0,0,0,0.28)] hover:border-white/24 hover:bg-[#101720]'
       }`}
     >
-      {isActive ? <div className="h-1 w-full bg-cyan-100" aria-hidden="true" /> : null}
-      <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#10151b]">
+      {isActive ? (
+        <div
+          id={selectedStateId}
+          className="flex h-7 items-center justify-between bg-cyan-100 px-4 text-[9px] font-black uppercase tracking-[0.14em] text-[#061017]"
+        >
+          <span>Selected Property</span>
+          <span className="text-[#061017]/62">Map Synced</span>
+        </div>
+      ) : null}
+      <div className="relative aspect-[16/9] w-full overflow-hidden bg-[#10151b]">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={imageSrc}
@@ -181,9 +191,6 @@ export default function PropertyCard({ property, isActive, onClick }: PropertyCa
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#080b0f]/82 via-[#080b0f]/16 to-transparent" />
         <div className="absolute left-4 top-4 flex max-w-[calc(100%-2rem)] items-center gap-2">
-          <span className="rounded-[4px] border border-white/20 bg-black/58 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-white/88 backdrop-blur">
-            {propertyType}
-          </span>
           {property.isPrivateExclusive ? (
             <span className="rounded-[4px] border border-cyan-200/45 bg-cyan-200/12 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-cyan-100 backdrop-blur">
               Private
@@ -210,32 +217,37 @@ export default function PropertyCard({ property, isActive, onClick }: PropertyCa
               {statusLabel || 'Available'}
             </span>
           </div>
-          <div className="mt-3 flex flex-wrap gap-2">
+          <div
+            className="mt-3 flex flex-wrap gap-2"
+            data-testid="reie-property-card-core-facts"
+            data-property-card-beds={getCompactStat(property.beds, '--')}
+            data-property-card-baths={getCompactStat(property.baths, '--')}
+            data-property-card-sqft={getCompactStat(property.sqft, '--')}
+            data-property-card-status={statusLabel || 'Available'}
+          >
             <span style={heroStatStyle} className="inline-flex items-center gap-1.5 rounded-[4px] bg-white/92 px-2.5 py-1 text-[11px] font-black uppercase tracking-[0.08em] text-[#111820]">
               <BedDouble size={13} aria-hidden="true" />
-              {getCompactStat(property.beds, '--')}
+              {getCompactStat(property.beds, '--')} bd
             </span>
             <span style={heroStatStyle} className="inline-flex items-center gap-1.5 rounded-[4px] bg-white/92 px-2.5 py-1 text-[11px] font-black uppercase tracking-[0.08em] text-[#111820]">
               <Bath size={13} aria-hidden="true" />
-              {getCompactStat(property.baths, '--')}
+              {getCompactStat(property.baths, '--')} ba
             </span>
             <span style={heroStatStyle} className="inline-flex items-center gap-1.5 rounded-[4px] bg-white/92 px-2.5 py-1 text-[11px] font-black uppercase tracking-[0.08em] text-[#111820]">
               <Ruler size={13} aria-hidden="true" />
-              {getCompactStat(property.sqft, '--')}
+              {getCompactStat(property.sqft, '--')} sf
             </span>
           </div>
         </div>
       </div>
 
-      <div className="px-4 pb-4 pt-4">
+      <div className="px-4 pb-4 pt-3.5">
         <div>
           <div className="flex items-start justify-between gap-3">
             <h2 className="min-w-0 text-[15px] font-black uppercase leading-snug text-white">{address}</h2>
-            {isActive ? (
-              <span className="shrink-0 rounded-[5px] border border-cyan-100/42 bg-cyan-100 px-2 py-1 text-[9px] font-black uppercase tracking-[0.12em] text-[#061017]">
-                Selected
-              </span>
-            ) : null}
+            <span className="shrink-0 rounded-[5px] border border-white/12 bg-white/[0.055] px-2 py-1 text-[9px] font-black uppercase tracking-[0.12em] text-white/64">
+              {statusLabel || 'Available'}
+            </span>
           </div>
           <p className="mt-2 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.16em] text-white/55">
             <MapPin size={13} aria-hidden="true" className="text-cyan-100/70" />
@@ -243,17 +255,24 @@ export default function PropertyCard({ property, isActive, onClick }: PropertyCa
           </p>
         </div>
 
+        <div className="mt-2 flex flex-wrap items-center gap-2 text-[10px] font-black uppercase tracking-[0.12em] text-white/48">
+          <span className="rounded-[5px] border border-white/10 bg-white/[0.035] px-2.5 py-1">{propertyType}</span>
+          <span className="rounded-[5px] border border-white/10 bg-white/[0.035] px-2.5 py-1">
+            {hasCoordinatesFlag ? 'Map Located' : 'Map Review'}
+          </span>
+        </div>
+
         <div
-          className="mt-4 rounded-[6px] border border-cyan-100/18 bg-cyan-100/[0.055] px-3 py-2.5"
+          className="mt-3 rounded-[6px] border border-cyan-100/18 bg-cyan-100/[0.055] px-3 py-2"
           data-testid="reie-property-card-decision"
           data-property-card-decision-signal={decisionLabel}
           data-property-card-review-signal={reviewSignal}
         >
           <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100/76">
             <Sparkles size={12} aria-hidden="true" />
-            Advisory Note
+            Review Context
           </p>
-          <p className="mt-1 text-xs font-bold leading-5 text-white/70">{decisionLabel}</p>
+          <p className="mt-1 text-xs font-bold leading-4 text-white/70">{decisionLabel}</p>
         </div>
 
         <div
@@ -263,24 +282,24 @@ export default function PropertyCard({ property, isActive, onClick }: PropertyCa
           data-property-card-resilience-score={formatIntelligenceScore(property.resilienceScore)}
           data-property-card-review-signal={reviewSignal}
         >
-          <div className="rounded-[6px] border border-white/10 bg-white/[0.045] px-3 py-2.5">
+          <div className="rounded-[6px] border border-white/10 bg-white/[0.045] px-3 py-2">
             <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.12em] text-white/38">
               <ShieldCheck size={12} aria-hidden="true" />
-              Location Fit
+              Map Context
             </p>
             <p className="mt-1 text-[12px] font-black uppercase leading-none text-white">
               {hasCoordinatesFlag ? 'Location Shown' : 'Location Needs Review'}
             </p>
           </div>
-          <div className="min-w-0 rounded-[6px] border border-white/10 bg-white/[0.045] px-3 py-2.5">
+          <div className="min-w-0 rounded-[6px] border border-white/10 bg-white/[0.045] px-3 py-2">
             <p className="text-[10px] font-black uppercase tracking-[0.12em] text-white/38">Property Signals</p>
             <p className="mt-1 truncate text-[12px] font-black leading-none text-cyan-100">{reviewSignal}</p>
           </div>
         </div>
 
-        <div className="mt-4 flex flex-col items-start gap-3 border-t border-white/10 pt-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-2.5 flex flex-col items-start gap-2.5 border-t border-white/10 pt-2.5 sm:flex-row sm:items-center sm:justify-between">
           <p className="min-w-0 text-[10px] font-bold uppercase leading-4 tracking-[0.14em] text-white/40">
-            Listing Facts: {getCompactStat(property.beds, '--')} beds / {getCompactStat(property.baths, '--')} baths / {getCompactStat(property.sqft, '--')} sq ft
+            Open details when this listing deserves a closer look.
           </p>
 
           <div className="flex shrink-0 items-center gap-2 self-end sm:self-auto">

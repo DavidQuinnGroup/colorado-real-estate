@@ -75,7 +75,9 @@ async function assertSearchPage() {
   assert.ok(includesFoldedText(html, 'Where would you like to live?'), 'Expected search controls to prioritize location.');
   assert.ok(includesFoldedText(html, 'What fits your budget?'), 'Expected search controls to group price refinement.');
   assert.ok(includesFoldedText(html, 'Already have a property in mind?'), 'Expected search controls to move specific-property lookup after broader refinements.');
-  assert.ok(includesFoldedText(html, 'Advisory Note'), 'Expected property cards to use advisory note framing.');
+  assert.ok(includesFoldedText(html, 'Review Context'), 'Expected property cards to use neutral review context framing.');
+  assert.ok(includesFoldedText(html, 'Map Context'), 'Expected property cards to include map context.');
+  assert.ok(includesFoldedText(html, 'Open details when this listing deserves a closer look'), 'Expected property cards to frame detail navigation after comparison.');
   assert.ok(includesFoldedText(html, 'Save This Search'), 'Expected save-search opportunity to use customer-facing copy.');
   assert.ok(includesFoldedText(html, 'save this view for listing updates and follow-up routing'), 'Expected save-search presentation to avoid recommendation claims.');
 }
