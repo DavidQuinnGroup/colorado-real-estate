@@ -50,6 +50,27 @@ assert.ok(grandPlanIntake.includes('data-testid="grand-plan-review"'), 'Expected
 assert.ok(grandPlanIntake.includes('data-testid="grand-plan-continue"'), 'Expected intermediate actions to avoid accidental submission.');
 assert.ok(grandPlanIntake.includes('data-testid="grand-plan-back"'), 'Expected backward navigation handle.');
 assert.ok(grandPlanIntake.includes('data-testid="grand-plan-review-edit"'), 'Expected keyboard-accessible review edit controls.');
+assert.ok(grandPlanIntake.includes('aria-label={`Edit ${label}`}'), 'Expected review edit controls to expose contextual accessible names.');
+assert.ok(grandPlanIntake.includes('data-testid="grand-plan-lifestyle-priority"'), 'Expected Wave 3B lifestyle priority multi-select cards.');
+assert.ok(grandPlanIntake.includes('Select at least one lifestyle priority before continuing.'), 'Expected lifestyle priority selection to be required.');
+assert.ok(grandPlanIntake.includes('data-testid="grand-plan-important-places"'), 'Expected Wave 3B multiple important-place UI.');
+assert.ok(grandPlanIntake.includes('const MAX_IMPORTANT_PLACES = 3'), 'Expected Wave 3B important-place limit to remain capped at three.');
+assert.ok(grandPlanIntake.includes('data-testid="grand-plan-add-anchor"'), 'Expected add-anchor control.');
+assert.ok(grandPlanIntake.includes('data-testid="grand-plan-remove-anchor"'), 'Expected remove-anchor control.');
+assert.ok(grandPlanIntake.includes('data-testid="grand-plan-anchor-frequency"'), 'Expected qualitative frequency controls.');
+assert.ok(grandPlanIntake.includes("{ id: 'most-days', label: 'Most Days', value: 6 }"), 'Expected Most Days to map to supported frequency value 6.');
+assert.ok(grandPlanIntake.includes("{ id: 'few-times-week', label: 'A Few Times a Week', value: 3 }"), 'Expected A Few Times a Week to map to supported frequency value 3.');
+assert.ok(grandPlanIntake.includes("{ id: 'weekly', label: 'Weekly', value: 1 }"), 'Expected Weekly to map to supported frequency value 1.');
+assert.ok(grandPlanIntake.includes("{ id: 'few-times-month', label: 'A Few Times a Month', value: 1 }"), 'Expected A Few Times a Month to map to supported frequency value 1.');
+assert.ok(grandPlanIntake.includes("{ id: 'occasionally', label: 'Occasionally', value: 1 }"), 'Expected Occasionally to map to supported frequency value 1.');
+assert.ok(grandPlanIntake.includes('northStars: activeImportantPlaces.map'), 'Expected Grand Plan to preserve filters.northStars[] array shape.');
+assert.ok(grandPlanIntake.includes('frequency: getFrequencyOption(place.frequency).value'), 'Expected qualitative frequency to map into existing numeric frequency field.');
+assert.ok(grandPlanIntake.includes('lat: null'), 'Expected Grand Plan anchors to avoid false coordinates.');
+assert.ok(grandPlanIntake.includes('lng: null'), 'Expected Grand Plan anchors to avoid false coordinates.');
+assert.ok(grandPlanIntake.includes('Lifestyle priorities'), 'Expected review screen to include selected lifestyle priorities.');
+assert.ok(grandPlanIntake.includes('Important places'), 'Expected review screen to include multiple important places.');
+assert.ok(!grandPlanIntake.includes('coordinates'), 'Grand Plan public review must not display coordinates.');
+assert.ok(!grandPlanIntake.includes('frequencyLabel:') && !grandPlanIntake.includes('frequencyValue:'), 'Grand Plan must not introduce new top-level frequency API fields.');
 assert.ok(grandPlanIntake.includes('data-testid="grand-plan-completion"'), 'Expected Grand Plan to render a clear completion state.');
 assert.ok(grandPlanIntake.includes('Your Grand Plan starting point has been saved for advisor review.'), 'Expected success copy to occur only after persistence succeeds.');
 assert.ok(grandPlanIntake.includes('href="/contact"'), 'Expected primary success CTA to point to /contact.');
@@ -60,6 +81,10 @@ assert.ok(!grandPlanIntake.includes('CRM'), 'Grand Plan public UI must not expos
 assert.ok(!grandPlanIntake.includes('heatScore'), 'Grand Plan public UI must not expose scoring internals.');
 assert.ok(!grandPlanIntake.includes('Resend'), 'Grand Plan intake must not send live email directly.');
 assert.ok(!grandPlanIntake.includes('resend.emails.send'), 'Grand Plan intake must not send live email.');
+assert.ok(grandPlanIntake.includes('isFinalSubmitter'), 'Expected final submitter guard to remain present.');
+assert.ok(grandPlanIntake.includes("data-testid') === 'grand-plan-submit'"), 'Expected only final Grand Plan submit control to invoke persistence.');
+assert.ok(grandPlanIntake.includes('reviewSubmitReadyStep !== currentStepIndex'), 'Expected 300ms review unlock guard to remain present.');
+assert.ok(grandPlanIntake.includes("submitState === 'submitting'"), 'Expected duplicate-submit guard to remain present.');
 
 for (const claim of forbiddenPublicClaims) {
   assert.ok(!grandPlanPage.includes(claim), `Grand Plan page must not expose unsupported claim language: ${claim}`);

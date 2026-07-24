@@ -16,15 +16,15 @@ export const metadata: Metadata = {
 const planningSteps = [
   {
     title: 'Start with priorities',
-    body: 'Name the decision and the daily-life needs that should guide it.',
+    body: 'Select the lifestyle priorities and ownership goal that should guide the conversation.',
   },
   {
-    title: 'Frame the timing',
-    body: 'Connect market focus, timing, and the practical tradeoffs around the move.',
+    title: 'Name the places',
+    body: 'Share the places and routines that matter, along with how often they shape daily life.',
   },
   {
     title: 'Prepare the conversation',
-    body: 'Create a clearer starting point for advisor follow-up.',
+    body: 'Connect priorities, places, timing, and context before advisor follow-up.',
   },
 ];
 
@@ -52,8 +52,8 @@ export default function GrandPlanPage() {
               Build Your Grand Plan.
             </h1>
             <p className="gp-copy">
-              A clearer real estate decision begins with your priorities, timing, and daily life. Start with what matters most before the
-              property search takes over.
+              A clearer real estate decision begins with your priorities, important places, timing, and daily life. Start with what matters
+              most before the property search takes over.
             </p>
             <div className="mt-10 flex flex-wrap gap-3" data-testid="grand-plan-primary-actions">
               <a
@@ -91,8 +91,8 @@ export default function GrandPlanPage() {
               A good real estate decision has to survive real life.
             </h2>
             <p className="gp-section-copy">
-              A search can show inventory. The Grand Plan helps connect the decision to timing, location, preparation, lifestyle fit, and
-              the conversation that should happen before the next move.
+              A search can show inventory. The Grand Plan helps connect the decision to timing, important places, preparation, lifestyle
+              priorities, and the conversation that should happen before the next move.
             </p>
           </div>
           <div className="gp-card-grid">
@@ -120,7 +120,8 @@ export default function GrandPlanPage() {
               {[
                 'How to reach you.',
                 'The market or community you are focused on.',
-                'The place, routine, or timing anchor that matters most.',
+                'The lifestyle priorities and ownership goal behind the decision.',
+                'Up to three places or routines that matter in real life.',
                 'The decision you need help making.',
               ].map((item) => (
                 <li key={item}>
