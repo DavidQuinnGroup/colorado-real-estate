@@ -25,15 +25,15 @@ export function generateFAQs(city: string, topic: string): FAQItem[] {
   return [
     {
       question: `What does David Quinn Group evaluate in the ${marketScope} ${topicName} market?`,
-      answer: `David Quinn Group evaluates ${marketScope} through the Real Estate Intelligence Engine, combining inventory context, pricing signals, construction condition, neighborhood resilience, lifestyle efficiency, and buyer or seller strategy.`,
+      answer: `David Quinn Group evaluates ${marketScope} through the Real Estate Intelligence Engine, combining inventory context, pricing signals, public construction questions, neighborhood context, and buyer or seller strategy.`,
     },
     {
-      question: `How does construction forensics change a ${cityName} real estate decision?`,
-      answer: `Construction forensics helps separate surface-level presentation from durable value. In ${cityName}, that means reviewing condition, building envelope risk, drainage, soil context, mechanical systems, and future maintenance exposure before relying only on comparable sales.`,
+      question: `How does construction context support a ${cityName} real estate decision?`,
+      answer: `Construction context helps buyers move beyond surface-level presentation. In ${cityName}, that means asking about drainage, exterior exposure, soil context, mechanical systems, maintenance history, and professional inspection scope before relying only on comparable sales.`,
     },
     {
       question: `Why does neighborhood resilience matter in ${cityName}?`,
-      answer: `Neighborhood resilience affects long-term ownership confidence, insurance complexity, renovation planning, and resale strategy. David Quinn Group uses resilience signals to help buyers and sellers understand risk beyond the headline price.`,
+      answer: `Neighborhood context can affect long-term ownership planning, insurance questions, maintenance expectations, and resale strategy. David Quinn Group uses public context to help buyers and sellers identify what deserves closer review beyond the headline price.`,
     },
     {
       question: `Is the ${cityName} housing market competitive?`,
@@ -41,11 +41,11 @@ export function generateFAQs(city: string, topic: string): FAQItem[] {
     },
     {
       question: `How should buyers use the Real Estate Intelligence Engine in ${cityName}?`,
-      answer: `Buyers can use the Real Estate Intelligence Engine to compare inventory, identify stronger neighborhood fits, review property-level risk signals, and decide where to move quickly versus where to negotiate or investigate further.`,
+      answer: `Buyers can use the Real Estate Intelligence Engine to compare inventory, review public property context, prepare better questions, and decide what to verify before touring, writing, or negotiating.`,
     },
     {
       question: `How should sellers use David Quinn Group intelligence in ${cityName}?`,
-      answer: `Sellers can use David Quinn Group intelligence to understand likely buyer objections, prioritize high-leverage preparation, position the home against competing inventory, and frame value around condition, location, resilience, and lifestyle efficiency.`,
+      answer: `Sellers can use David Quinn Group intelligence to prepare for buyer questions, review competing inventory, organize documentation, and frame the home around public facts, location context, and preparation priorities.`,
     },
   ];
 }

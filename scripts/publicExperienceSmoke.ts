@@ -60,6 +60,11 @@ async function assertPropertyPage(path: string) {
   assert.ok(includesFoldedText(html, 'Property Brief'), 'Expected property page brief framing.');
   assert.ok(includesFoldedText(html, 'Listing Facts'), 'Expected property page listing facts.');
   assert.ok(includesFoldedText(html, 'Construction Perspective'), 'Expected property page construction perspective.');
+  assert.ok(includesFoldedText(html, 'Construction Questions'), 'Expected property page construction questions section.');
+  assert.ok(includesFoldedText(html, 'Known From Public Listing Data'), 'Expected property page public construction fact grouping.');
+  assert.ok(includesFoldedText(html, 'General Construction Context'), 'Expected property page general construction education grouping.');
+  assert.ok(includesFoldedText(html, 'Questions to Verify'), 'Expected property page neutral construction verification prompts.');
+  assert.ok(includesFoldedText(html, 'Public listing information is a starting point'), 'Expected property page construction professional-boundary language.');
   assert.ok(includesFoldedText(html, 'Questions Worth Asking'), 'Expected property page diligence questions.');
   assert.ok(includesFoldedText(html, 'Questions for a Better Property Conversation'), 'Expected property page advisor discussion preparation.');
   assert.ok(includesFoldedText(html, 'Ask About This Property'), 'Expected property page inquiry CTA.');
@@ -71,6 +76,9 @@ async function assertPropertyPage(path: string) {
   assert.ok(!includesFoldedText(html, 'Advisor Review'), 'Expected property page to avoid advisor-review claims.');
   assert.ok(!includesFoldedText(html, 'Location Fit'), 'Expected property page to avoid public location-fit claims.');
   assert.ok(!includesFoldedText(html, 'Photo Review Available'), 'Expected property page to avoid unavailable photo-review capability claims.');
+  assert.ok(!includesFoldedText(html, 'construction forensics'), 'Expected property page to avoid construction-forensics claims.');
+  assert.ok(!includesFoldedText(html, 'verified condition'), 'Expected property page to avoid verified-condition claims.');
+  assert.ok(!includesFoldedText(html, 'reviewedBy'), 'Expected property page schema to avoid completed-review claims.');
 }
 
 async function assertSearchPage() {

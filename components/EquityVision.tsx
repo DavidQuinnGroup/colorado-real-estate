@@ -33,7 +33,7 @@ export default function EquityVision({ property }: EquityVisionProps) {
         <p className="text-[10px] font-black uppercase tracking-[0.28em] text-[#fbbf24]">Investigate</p>
         <h2 className="mt-2 text-2xl font-black uppercase tracking-tight text-white">Property Review Notes</h2>
         <p className="mt-3 text-sm leading-6 text-slate-400">
-          Public construction context only. Use these notes to prepare questions about measurements, systems, and improvement choices before decisions are made.
+          Public construction context only. Use these notes to prepare questions about measurements, systems, and records before decisions are made.
         </p>
       </header>
 
@@ -62,14 +62,14 @@ export default function EquityVision({ property }: EquityVisionProps) {
         <div className="mt-10 border-t border-slate-800 pt-6">
           <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-[#fbbf24]">Questions to Discuss</p>
           <p className="text-sm leading-6 text-slate-400">
-            Use this section to frame questions about finish quality, basement utility, inspection scope, and improvement priorities. It is not a valuation, inspection result, or return estimate.
+            Use this section to frame questions about finished area, unfinished area, records, and inspection scope. It is not a valuation, inspection result, condition assessment, or return estimate.
           </p>
         </div>
 
         {property.hasPolybutyleneRisk ? (
           <div className="mt-6 flex items-center gap-3 border border-red-500/50 bg-red-950/40 p-4 text-xs font-black uppercase italic tracking-widest text-red-400">
             <ShieldAlert size={20} className="animate-pulse" />
-            Plumbing Review Suggested: Potential Polybutylene Risk Flag
+            Plumbing Records to Verify: Confirm materials with an appropriate professional
           </div>
         ) : null}
 

@@ -102,8 +102,8 @@ function buildPersonNode() {
       "Colorado real estate",
       "Boulder real estate",
       "Denver real estate",
-      "construction forensics",
-      "building envelope analysis",
+      "public construction questions",
+      "building system diligence",
       "property intelligence",
       "buyer strategy",
       "seller strategy",
@@ -119,7 +119,7 @@ function buildAgentNode(property: PropertySchemaInput) {
     legalName: "David Quinn Group",
     url: SITE_URL,
     description:
-      "David Quinn Group provides Colorado real estate intelligence for Boulder, Denver, and the greater Front Range, combining property search, market context, construction forensics, and buyer and seller strategy.",
+      "David Quinn Group provides Colorado real estate intelligence for Boulder, Denver, and the greater Front Range, combining property search, market context, public construction questions, and buyer and seller strategy.",
     parentOrganization: {
       "@id": ORGANIZATION_ID,
     },
@@ -149,7 +149,7 @@ function buildAgentNode(property: PropertySchemaInput) {
       `${property.city} Colorado homes`,
       property.neighborhood ? `${property.neighborhood} real estate` : null,
       "Colorado property intelligence",
-      "Colorado construction forensics",
+      "Colorado construction context",
       "residential market intelligence",
       "buyer strategy",
       "seller strategy",
@@ -193,8 +193,8 @@ function buildReieServiceNode(property: PropertySchemaInput) {
     about: [
       "property search",
       "market intelligence",
-      "construction forensics",
-      "resilience scoring",
+      "construction questions",
+      "public property context",
       "buyer strategy",
       "seller strategy",
     ],
@@ -314,9 +314,6 @@ function buildWebPageNode(property: PropertySchemaInput, propertyId: string, web
     },
     publisher: {
       "@id": ORGANIZATION_ID,
-    },
-    reviewedBy: {
-      "@id": AGENT_ID,
     },
     breadcrumb: {
       "@id": breadcrumbId,

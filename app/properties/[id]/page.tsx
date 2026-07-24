@@ -233,14 +233,14 @@ function formatDateTime(value: Date | null | undefined) {
 
 function getAltitudeNarrative(altitude: number) {
   if (altitude > 6000) {
-    return 'Higher elevation can make roof, window, exterior, and mechanical questions more important during normal review.';
+    return 'Higher-elevation settings can make roof, window, exterior, and mechanical questions worth discussing during normal diligence.';
   }
 
   return 'Front Range homes are commonly reviewed for drainage, roof age, mechanical systems, and exterior exposure before next steps.';
 }
 
 function getReviewSignal(property: PropertyWithPhotos) {
-  if (property.hasPolybutyleneRisk) return 'Ask about plumbing history';
+  if (property.hasPolybutyleneRisk) return 'Plumbing records to verify';
   if (property.soilType?.trim()) return property.soilType.trim();
   if (property.altitude) return 'Elevation Context';
 
@@ -308,24 +308,86 @@ function getPricePerSquareFoot(property: PropertyWithPhotos) {
 }
 
 function getDiligencePosture(property: PropertyWithPhotos) {
-  if (property.hasPolybutyleneRisk) return 'Plumbing question';
+  if (property.hasPolybutyleneRisk) return 'Plumbing records';
   if (property.yearBuilt && property.yearBuilt < 1980) return 'Era review';
   if (property.lotSize) return 'Site review';
   return 'Standard questions';
 }
 
 function getDecisionNextStep(property: PropertyWithPhotos) {
-  if (property.hasPolybutyleneRisk) return 'Ask what is known about plumbing history and what should be verified during inspection.';
+  if (property.hasPolybutyleneRisk) return 'Ask what records are available about plumbing history and what should be verified by an appropriate professional.';
   if (!property.sqft || !property.price) return 'Confirm the missing core facts before comparing this property with other options.';
   if (property.yearBuilt && property.yearBuilt < 1980) return 'Use the age, systems, and listing details to prepare focused questions before touring or writing.';
   return 'Compare the core facts, review public context, and decide what should be verified before moving forward.';
 }
 
 function getDecisionTone(property: PropertyWithPhotos) {
-  if (property.hasPolybutyleneRisk) return 'Question to Verify';
+  if (property.hasPolybutyleneRisk) return 'Records to Verify';
   if (property.yearBuilt && property.yearBuilt < 1980) return 'Context to Understand';
   if (property.lotSize) return 'Details to Compare';
   return 'Property Brief Ready';
+}
+
+function formatLotSize(value: number | null | undefined) {
+  if (!value) return 'Not provided in public listing data';
+  const formatted = value >= 1 ? value.toFixed(value >= 10 ? 1 : 2) : value.toFixed(2);
+  return `${formatted.replace(/\.?0+$/, '')} acres`;
+}
+
+function getPublicConstructionFacts(property: PropertyWithPhotos) {
+  return [
+    { label: 'Year Built', value: property.yearBuilt ? String(property.yearBuilt) : 'Not provided in public listing data' },
+    { label: 'Property Type', value: property.propertyType || 'Not provided in public listing data' },
+    { label: 'Lot Size', value: formatLotSize(property.lotSize) },
+    { label: 'Listing Status', value: property.status || 'Not provided in public listing data' },
+    { label: 'Area Context', value: property.neighborhood || property.city || 'Colorado' },
+    {
+      label: 'Elevation Context',
+      value: property.altitude ? `${formatNumber(property.altitude)} ft, verify if site-specific elevation matters` : 'Not provided in public listing data',
+    },
+    {
+      label: 'Soil Text',
+      value: property.soilType?.trim() || 'Not provided in public listing data',
+    },
+  ];
+}
+
+const CONSTRUCTION_CONTEXT_ITEMS = [
+  'Construction era can shape which systems, records, and updates deserve closer review.',
+  'Roofing, windows, exterior materials, and drainage are practical ownership questions in Colorado conditions.',
+  'Mechanical, electrical, and plumbing information is often incomplete in public listing data and should be verified before relying on it.',
+];
+
+const CONSTRUCTION_VERIFICATION_QUESTIONS = [
+  'What is known about the roof age, material, warranties, and repair history?',
+  'When were the heating and cooling systems installed and last serviced?',
+  'What electrical service and panel information is documented?',
+  'What plumbing materials are present, and have any replacements been recorded?',
+  'Are drainage, foundation, grading, sewer, septic, well, or water-source records available?',
+  'Are permits available for additions or major remodeling?',
+  'What is documented about the windows and exterior envelope?',
+];
+
+function getListingRemarkMentions(description: string | null | undefined) {
+  const normalizedDescription = description?.toLowerCase() || '';
+  if (!normalizedDescription) return ['No construction feature mentions were available in the public listing remarks.'];
+
+  const mentionGroups = [
+    { label: 'Roofing', terms: ['roof', 'shingle', 'metal roof', 'tile roof', 'tpo'] },
+    { label: 'Heating or cooling', terms: ['furnace', 'boiler', 'radiant', 'heat pump', 'mini split', 'mini-split', 'central air', 'air conditioning'] },
+    { label: 'Electrical service', terms: ['electrical', 'panel', 'amp', 'ev charger', '50-amp', '200 amp'] },
+    { label: 'Plumbing or water systems', terms: ['plumbing', 'water heater', 'well', 'septic', 'sewer', 'piping'] },
+    { label: 'Windows or exterior envelope', terms: ['window', 'siding', 'stucco', 'brick', 'hardie', 'insulation'] },
+    { label: 'Permits or remodeling', terms: ['permit', 'remodel', 'renovated', 'updated', 'addition'] },
+  ];
+
+  const matches = mentionGroups
+    .filter((group) => group.terms.some((term) => normalizedDescription.includes(term)))
+    .map((group) => group.label);
+
+  if (!matches.length) return ['Listing remarks do not call out these systems directly; verify records independently.'];
+
+  return matches.map((label) => `${label} mentioned in the listing remarks; verify independently.`);
 }
 
 async function getProperty(id: string) {
@@ -376,7 +438,7 @@ function getPropertyFaqs(property: PropertyWithPhotos): FAQItem[] {
     },
     {
       question: `Why does construction diligence matter for ${property.address}?`,
-      answer: `Construction diligence matters because visible finishes do not answer every practical question. Buyers should review drainage, exterior exposure, mechanical age, soil context, altitude, maintenance history, and inspection scope before relying only on comparable sales.`,
+      answer: `Construction diligence matters because visible finishes do not answer every practical question. Buyers should treat public listing data as a starting point and verify drainage, exterior exposure, mechanical age, soil context, altitude, maintenance history, and inspection scope with appropriate professionals before relying only on comparable sales.`,
     },
     {
       question: `How should buyers interpret this ${property.city} property${priceContext}?`,
@@ -384,7 +446,7 @@ function getPropertyFaqs(property: PropertyWithPhotos): FAQItem[] {
     },
     {
       question: `How should sellers use property intelligence for a home like ${property.address}?`,
-      answer: `Sellers should use property intelligence to understand likely buyer objections, competing inventory, condition-sensitive pricing, and which preparation items may improve confidence before launch or negotiation.`,
+      answer: `Sellers should use property intelligence to prepare for likely buyer questions, review competing inventory, understand documentation needs, and decide which preparation items may improve clarity before launch or negotiation.`,
     },
     ...cityFaqs.slice(4, 6),
   ];
@@ -452,6 +514,8 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
   const diligencePosture = getDiligencePosture(property);
   const decisionNextStep = getDecisionNextStep(property);
   const decisionTone = getDecisionTone(property);
+  const publicConstructionFacts = getPublicConstructionFacts(property);
+  const listingRemarkMentions = getListingRemarkMentions(property.description);
   const propertyLinks = await getPropertyLinks({
     id: property.id,
     city: property.city,
@@ -643,9 +707,9 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                 <ShieldAlert size={17} /> Questions Worth Asking
               </h2>
               <ul className="mt-4 space-y-2 text-xs font-bold uppercase tracking-[0.12em] text-white/62">
-                {property.hasPolybutyleneRisk ? <li>Ask about plumbing history and inspection scope</li> : null}
-                <li>Review drainage and grade during inspection</li>
-                <li>Confirm mechanical age and electrical capacity</li>
+                {property.hasPolybutyleneRisk ? <li>Ask what plumbing records are available and what should be verified by an appropriate professional</li> : null}
+                <li>What drainage and grading records are available?</li>
+                <li>What mechanical age and electrical service information is documented?</li>
               </ul>
             </section>
 
@@ -709,6 +773,87 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                   <BriefSignalTile label="Compare" value={`${property.propertyType || 'Residential'} / ${property.status || 'Active'} / ${pricePerSquareFoot}`} />
                   <BriefSignalTile label="Next Step" value={decisionNextStep} />
                 </div>
+              </div>
+            </section>
+
+            <section
+              className="overflow-hidden rounded-[8px] border border-cyan-100/16 bg-[#0d141c]"
+              data-testid="reie-property-construction-intelligence"
+              data-construction-public-fact-count={publicConstructionFacts.length}
+              data-construction-question-count={CONSTRUCTION_VERIFICATION_QUESTIONS.length}
+              data-construction-remark-mention-count={listingRemarkMentions.length}
+            >
+              <div className="border-b border-white/10 bg-white/[0.035] p-5 md:p-6">
+                <div className="flex flex-col justify-between gap-4 md:flex-row md:items-start">
+                  <div>
+                    <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.22em] text-cyan-100/76">
+                      <HardHat size={14} aria-hidden="true" />
+                      Construction Questions
+                    </p>
+                    <h2 className="mt-3 text-xl font-black uppercase tracking-tight text-white md:text-2xl">
+                      Systems and records to verify
+                    </h2>
+                    <p className="mt-3 max-w-3xl text-sm leading-6 text-white/58">
+                      Public listing information is a starting point. Confirm condition, systems, permits, costs, and code questions with the appropriate inspectors, contractors, engineers, or other licensed professionals.
+                    </p>
+                  </div>
+                  <span className="inline-flex h-8 items-center rounded-[6px] border border-cyan-100/22 bg-cyan-100/[0.08] px-3 text-[10px] font-black uppercase tracking-[0.16em] text-cyan-100">
+                    Public Context
+                  </span>
+                </div>
+              </div>
+
+              <div className="grid gap-4 p-5 md:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] md:p-6">
+                <div className="rounded-[8px] border border-white/10 bg-white/[0.035] p-4">
+                  <h3 className="text-[11px] font-black uppercase tracking-[0.18em] text-white/70">
+                    Known From Public Listing Data
+                  </h3>
+                  <dl className="mt-4 grid gap-3">
+                    {publicConstructionFacts.map((fact) => (
+                      <div key={fact.label} className="grid gap-1 border-b border-white/10 pb-3 last:border-b-0 last:pb-0">
+                        <dt className="text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100/54">{fact.label}</dt>
+                        <dd className="text-sm font-bold leading-6 text-white/72">{fact.value}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </div>
+
+                <div className="grid gap-4">
+                  <div className="rounded-[8px] border border-white/10 bg-white/[0.035] p-4">
+                    <h3 className="text-[11px] font-black uppercase tracking-[0.18em] text-white/70">
+                      General Construction Context
+                    </h3>
+                    <ul className="mt-4 space-y-2 text-sm leading-6 text-white/58">
+                      {CONSTRUCTION_CONTEXT_ITEMS.map((item) => (
+                        <li key={item}>{item}</li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className="rounded-[8px] border border-white/10 bg-white/[0.035] p-4">
+                    <h3 className="text-[11px] font-black uppercase tracking-[0.18em] text-white/70">
+                      Mentioned in Listing Remarks
+                    </h3>
+                    <ul className="mt-4 space-y-2 text-sm leading-6 text-white/58">
+                      {listingRemarkMentions.map((item) => (
+                        <li key={item}>{item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div className="border-t border-white/10 p-5 md:p-6">
+                <h3 className="text-[11px] font-black uppercase tracking-[0.18em] text-amber-100">
+                  Questions to Verify
+                </h3>
+                <ul className="mt-4 grid gap-3 md:grid-cols-2">
+                  {CONSTRUCTION_VERIFICATION_QUESTIONS.map((question) => (
+                    <li key={question} className="rounded-[6px] border border-amber-100/14 bg-amber-100/[0.055] p-3 text-sm leading-6 text-white/64">
+                      {question}
+                    </li>
+                  ))}
+                </ul>
               </div>
             </section>
 
@@ -803,7 +948,6 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
               <SnapshotTile label="MLS Source" value={property.mlsId ? `MLS ${property.mlsId}` : 'MLS review required'} />
               <SnapshotTile label="Listing Brokerage" value={property.listingOffice || 'Unavailable'} />
               <SnapshotTile label="Listing Broker" value={property.listingAgent || 'Unavailable'} />
-              <SnapshotTile label="Compass.com Link" value="Mapping required" />
               <SnapshotTile label="Updated" value={formatDateTime(property.updatedAt)} />
               <SnapshotTile label="Sync Time" value={formatDateTime(property.lastIntelligenceSync)} />
             </div>

@@ -69,7 +69,7 @@ function buildPersonNode() {
       "Colorado real estate",
       "Boulder real estate",
       "Denver real estate",
-      "construction forensics",
+      "construction questions",
       "market intelligence",
       "buyer strategy",
       "seller strategy",
@@ -104,7 +104,7 @@ function buildAgentNode() {
       "Colorado real estate",
       "Boulder real estate",
       "Denver real estate",
-      "construction forensics",
+      "construction questions",
       "residential property intelligence",
       "buyer strategy",
       "seller strategy",
@@ -134,8 +134,8 @@ function buildReieServiceNode() {
     about: [
       "property search",
       "market intelligence",
-      "construction forensics",
-      "resilience scoring",
+      "construction context",
+      "public property context",
       "buyer strategy",
       "seller strategy",
     ],
@@ -176,9 +176,6 @@ function buildFaqPageNode(normalizedFaqs: ReturnType<typeof normalizeFaqs>, page
     publisher: {
       "@id": ORGANIZATION_ID,
     },
-    reviewedBy: {
-      "@id": AGENT_ID,
-    },
   };
 }
 
@@ -198,9 +195,6 @@ function buildWebPageNode(pageUrl: string) {
     },
     publisher: {
       "@id": ORGANIZATION_ID,
-    },
-    reviewedBy: {
-      "@id": AGENT_ID,
     },
   };
 }

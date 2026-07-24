@@ -177,6 +177,13 @@ async function main() {
   assert(propertyPage.includes('Listing Facts'), 'Property detail page must expose listing facts.');
   assert(propertyPage.includes('Review Context'), 'Property detail page must expose review context framing.');
   assert(propertyPage.includes('Construction Perspective'), 'Property detail page must use construction perspective framing.');
+  assert(propertyPage.includes('data-testid="reie-property-construction-intelligence"'), 'Property detail page must expose Wave 2 construction intelligence section.');
+  assert(propertyPage.includes('Known From Public Listing Data'), 'Property detail page must separate public construction facts.');
+  assert(propertyPage.includes('General Construction Context'), 'Property detail page must separate general construction education.');
+  assert(propertyPage.includes('Mentioned in Listing Remarks'), 'Property detail page must distinguish listing remarks from verification.');
+  assert(propertyPage.includes('Questions to Verify'), 'Property detail page must present construction prompts as questions.');
+  assert(propertyPage.includes('Public listing information is a starting point'), 'Property detail page must include concise professional-boundary language.');
+  assert(propertyPage.includes('Confirm condition, systems, permits, costs, and code questions'), 'Property detail page must direct customers to appropriate professional verification.');
   assert(propertyPage.includes('Questions Worth Asking'), 'Property detail page must present construction diligence as questions.');
   assert(propertyPage.includes('Questions for a Better Property Conversation'), 'Property detail page must prepare advisor discussion without implying review.');
   assert(propertyPage.includes('href="#property-contact"'), 'Property detail page must preserve inquiry hash navigation.');
@@ -196,12 +203,16 @@ async function main() {
   assert(relatedPropertyLinks.includes('data-related-property-risk-window-days="review-required"'), 'Related-property planning must avoid fixed financing-risk windows.');
   assert(equityVision.includes('Investigate'), 'Property review notes must align to the investigation decision lens.');
   assert(equityVision.includes('Property Review Notes'), 'Property review notes must avoid valuation-suite framing.');
-  assert(equityVision.includes('It is not a valuation, inspection result, or return estimate.'), 'Property review notes must qualify construction context as non-valuation guidance.');
+  assert(equityVision.includes('It is not a valuation, inspection result, condition assessment, or return estimate.'), 'Property review notes must qualify construction context as non-valuation and non-condition guidance.');
+  assert(equityVision.includes('Plumbing Records to Verify'), 'Property review notes must frame plumbing flags as verification records, not defects.');
   assert(equityVision.includes('Photo Review Placeholder'), 'Property review notes must avoid implying active photo-review capability.');
   assert(!equityVision.includes('Advisor Review'), 'Property review notes must avoid implying completed advisor review.');
+  assert(!equityVision.includes('Potential Polybutylene Risk Flag'), 'Property review notes must avoid alarmist plumbing flag language.');
   assert(!propertyPage.includes('Location Fit'), 'Property detail page must avoid public location-fit claims.');
   assert(!propertyPage.includes('Advisor Review Recommended'), 'Property detail page must avoid advisor-review claims.');
   assert(!propertyPage.includes('Detailed Review Suggested'), 'Property detail page must avoid unsupported review conclusions.');
+  assert(!propertyPage.includes('reviewedBy'), 'Property detail schema must not imply completed review.');
+  assert(!propertyPage.match(/good condition|verified condition|known defect|repair cost|remaining useful life|code compliant|structural soundness|construction score|condition score/i), 'Property detail page must avoid construction conclusions and scoring claims.');
   for (const [label, source] of [
     ['dedicated search', searchInterface],
     ['search controls', searchControls],

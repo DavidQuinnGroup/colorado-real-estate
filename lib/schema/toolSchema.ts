@@ -21,7 +21,7 @@ function getKeywords(options: ToolSchemaOptions) {
     "Boulder real estate",
     "Denver real estate",
     "real estate intelligence",
-    "construction forensics",
+    "construction questions",
     "Colorado property search",
     "David Quinn Group",
   ];
@@ -69,7 +69,7 @@ function buildPersonNode() {
       "Boulder real estate",
       "Denver real estate",
       "Front Range market intelligence",
-      "construction forensics",
+      "construction questions",
       "property search strategy",
       "buyer strategy",
       "seller strategy",
@@ -85,7 +85,7 @@ function buildAgentNode() {
     legalName: "David Quinn Group",
     url: SITE_URL,
     description:
-      "David Quinn Group provides Colorado real estate intelligence for Boulder, Denver, and the greater Front Range, combining property search, market context, construction forensics, and buyer and seller strategy.",
+      "David Quinn Group provides Colorado real estate intelligence for Boulder, Denver, and the greater Front Range, combining property search, market context, public construction questions, and buyer and seller strategy.",
     parentOrganization: {
       "@id": ORGANIZATION_ID,
     },
@@ -116,7 +116,7 @@ function buildAgentNode() {
       "Denver real estate",
       "Colorado property search",
       "market intelligence",
-      "construction forensics",
+      "construction questions",
       "buyer strategy",
       "seller strategy",
     ],
@@ -153,8 +153,8 @@ function buildReieServiceNode(toolId: string) {
     about: [
       "property search",
       "market intelligence",
-      "construction forensics",
-      "resilience scoring",
+      "construction context",
+      "public property context",
       "lifestyle efficiency",
       "buyer strategy",
       "seller strategy",
@@ -187,7 +187,7 @@ function buildToolNode(options: ToolSchemaOptions, toolId: string, offerId: stri
       "Map-based MLS inventory discovery",
       "Market intelligence context",
       "Neighborhood authority paths",
-      "Construction and resilience signals",
+      "Construction questions and public context",
       "Buyer and seller strategy prompts",
     ],
     provider: {
@@ -250,9 +250,6 @@ function buildWebPageNode(options: ToolSchemaOptions, toolId: string, webpageId:
     ],
     publisher: {
       "@id": ORGANIZATION_ID,
-    },
-    reviewedBy: {
-      "@id": AGENT_ID,
     },
     breadcrumb: {
       "@id": breadcrumbId,
