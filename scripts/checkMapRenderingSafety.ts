@@ -167,12 +167,18 @@ async function main() {
   assert(selectedDrawer.includes('data-selected-property-detail-href='), 'Selected-property drawer must preserve detail navigation metadata.');
   assert(selectedDrawer.includes('data-selected-property-inquiry-href='), 'Selected-property drawer must preserve inquiry metadata.');
   assert(selectedDrawer.includes('data-selected-property-market-href='), 'Selected-property drawer must preserve market metadata.');
+  assert(propertyPage.includes('Decision Workspace'), 'Property detail page must frame the page as a decision workspace.');
+  assert(propertyPage.includes('What am I looking at?'), 'Property detail page must expose the Understand decision lens.');
+  assert(propertyPage.includes('Why does this matter?'), 'Property detail page must expose the Evaluate decision lens.');
+  assert(propertyPage.includes('How does this compare with other homes?'), 'Property detail page must expose the Compare decision lens.');
+  assert(propertyPage.includes('What deserves a closer look?'), 'Property detail page must expose the Investigate decision lens.');
+  assert(propertyPage.includes('What should I discuss with my advisor?'), 'Property detail page must expose the Discuss decision lens.');
   assert(propertyPage.includes('Property Brief'), 'Property detail page must use property brief framing.');
   assert(propertyPage.includes('Listing Facts'), 'Property detail page must expose listing facts.');
   assert(propertyPage.includes('Review Context'), 'Property detail page must expose review context framing.');
   assert(propertyPage.includes('Construction Perspective'), 'Property detail page must use construction perspective framing.');
   assert(propertyPage.includes('Questions Worth Asking'), 'Property detail page must present construction diligence as questions.');
-  assert(propertyPage.includes('Helpful Next Steps'), 'Property detail page must include customer-facing next steps.');
+  assert(propertyPage.includes('Questions for a Better Property Conversation'), 'Property detail page must prepare advisor discussion without implying review.');
   assert(propertyPage.includes('href="#property-contact"'), 'Property detail page must preserve inquiry hash navigation.');
   assert(propertyPage.includes('data-testid="reie-property-schema"'), 'Property detail page must preserve property schema metadata handle.');
   assert(propertyPage.includes('data-testid="listing-advertising-attribution"'), 'Property detail page must preserve listing attribution.');
@@ -186,10 +192,16 @@ async function main() {
   assert(relatedPropertyLinks.includes('Compare Preparation Approaches'), 'Related-property planning must use directional preparation comparison language.');
   assert(relatedPropertyLinks.includes('Marketability Focus'), 'Related-property planning must avoid property-specific equity lift language.');
   assert(relatedPropertyLinks.includes('Actual costs, timing, and outcomes vary.'), 'Related-property planning must qualify directional preparation guidance.');
-  assert(equityVision.includes('Construction Context'), 'Property review notes must avoid internal equity module language.');
+  assert(relatedPropertyLinks.includes('Timing Review'), 'Related-property planning must frame timing as a review topic.');
+  assert(relatedPropertyLinks.includes('data-related-property-risk-window-days="review-required"'), 'Related-property planning must avoid fixed financing-risk windows.');
+  assert(equityVision.includes('Investigate'), 'Property review notes must align to the investigation decision lens.');
   assert(equityVision.includes('Property Review Notes'), 'Property review notes must avoid valuation-suite framing.');
-  assert(equityVision.includes('It is not a valuation or return estimate.'), 'Property review notes must qualify construction context as non-valuation guidance.');
-  assert(equityVision.includes('Photo Review Available'), 'Property review notes must use customer-facing photo review language.');
+  assert(equityVision.includes('It is not a valuation, inspection result, or return estimate.'), 'Property review notes must qualify construction context as non-valuation guidance.');
+  assert(equityVision.includes('Photo Review Placeholder'), 'Property review notes must avoid implying active photo-review capability.');
+  assert(!equityVision.includes('Advisor Review'), 'Property review notes must avoid implying completed advisor review.');
+  assert(!propertyPage.includes('Location Fit'), 'Property detail page must avoid public location-fit claims.');
+  assert(!propertyPage.includes('Advisor Review Recommended'), 'Property detail page must avoid advisor-review claims.');
+  assert(!propertyPage.includes('Detailed Review Suggested'), 'Property detail page must avoid unsupported review conclusions.');
   for (const [label, source] of [
     ['dedicated search', searchInterface],
     ['search controls', searchControls],

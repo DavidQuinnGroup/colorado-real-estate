@@ -44,21 +44,21 @@ const prepScenarios: PrepScenario[] = [
     label: "As-Is Market Exit",
     scope: "Baseline presentation",
     planningSignal: "Review buyer confidence",
-    velocity: "Slow",
+    velocity: "Timing varies",
     description: "Review current presentation, disclosure needs, and likely buyer questions before deciding whether updates are warranted.",
   },
   {
     label: "DQG Refresh",
     scope: "Focused refresh",
     planningSignal: "Improve showing confidence",
-    velocity: "Accelerated",
+    velocity: "Focused timing",
     description: "Consider paint, flooring, and high-friction fixes that may improve perceived move-in readiness.",
   },
   {
     label: "Designer-Grade Prep",
     scope: "Expanded preparation",
     planningSignal: "Elevate marketability",
-    velocity: "Instant",
+    velocity: "Expanded timing",
     description: "Review staging and finish-profile updates when presentation quality is central to the launch plan.",
   },
 ];
@@ -198,18 +198,17 @@ export default function RelatedPropertyLinks({
             <div
               className="mt-12 flex items-start gap-4 border border-red-500/20 bg-red-500/10 p-6"
               data-testid="reie-related-property-contingency-alert"
-              data-related-property-alert-type="dual-mortgage-risk"
-              data-related-property-risk-window-days="7"
+              data-related-property-alert-type="timing-review"
+              data-related-property-risk-window-days="review-required"
             >
               <ShieldAlert className="shrink-0 text-red-500" size={18} />
               <div>
                 <p className="mb-1 text-[10px] font-black uppercase tracking-widest text-red-500">
-                  Contingency Alert
+                  Timing Review
                 </p>
                 <p className="text-[10px] italic leading-relaxed text-red-500/80">
-                  Dual-mortgage risk identified for 7 days between closing dates.
-                  Consider reviewing bridge-financing options or a post-closing occupancy agreement
-                  to protect liquidity.
+                  When buying and selling overlap, review closing dates, occupancy needs, financing terms, and contingency options with
+                  the appropriate advisors before relying on a plan.
                 </p>
               </div>
             </div>

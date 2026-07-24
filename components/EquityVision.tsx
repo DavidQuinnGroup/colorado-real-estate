@@ -28,12 +28,12 @@ function formatSquareFeet(value: number | null | undefined) {
 
 export default function EquityVision({ property }: EquityVisionProps) {
   return (
-    <div className="border border-[#fbbf24]/20 bg-slate-950 p-8 shadow-2xl">
-      <header className="mb-8">
-        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-[#fbbf24]">Construction Context</p>
-        <h2 className="text-3xl font-black italic uppercase tracking-tight text-white">Property Review Notes</h2>
+    <div className="rounded-[8px] border border-[#fbbf24]/20 bg-slate-950 p-5 shadow-2xl md:p-6">
+      <header className="mb-6">
+        <p className="text-[10px] font-black uppercase tracking-[0.28em] text-[#fbbf24]">Investigate</p>
+        <h2 className="mt-2 text-2xl font-black uppercase tracking-tight text-white">Property Review Notes</h2>
         <p className="mt-3 text-sm leading-6 text-slate-400">
-          Directional construction context only. Measurements, systems, and improvement choices should be reviewed with an advisor before decisions are made.
+          Public construction context only. Use these notes to prepare questions about measurements, systems, and improvement choices before decisions are made.
         </p>
       </header>
 
@@ -60,9 +60,9 @@ export default function EquityVision({ property }: EquityVisionProps) {
         />
 
         <div className="mt-10 border-t border-slate-800 pt-6">
-          <p className="mb-2 text-[10px] font-black uppercase italic tracking-widest text-[#fbbf24]">Advisor Review</p>
+          <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-[#fbbf24]">Questions to Discuss</p>
           <p className="text-sm leading-6 text-slate-400">
-            Use this section to frame questions about finish quality, basement utility, inspection scope, and improvement priorities. It is not a valuation or return estimate.
+            Use this section to frame questions about finish quality, basement utility, inspection scope, and improvement priorities. It is not a valuation, inspection result, or return estimate.
           </p>
         </div>
 
@@ -76,9 +76,9 @@ export default function EquityVision({ property }: EquityVisionProps) {
         <button
           type="button"
           disabled
-          className="mt-6 flex w-full cursor-not-allowed items-center justify-center gap-2 bg-white/70 py-4 text-xs font-black italic uppercase tracking-[0.3em] text-black/70"
+          className="mt-6 flex w-full cursor-not-allowed items-center justify-center gap-2 rounded-[6px] bg-white/70 py-4 text-xs font-black uppercase tracking-[0.18em] text-black/70"
         >
-          <Camera size={16} /> Photo Review Available <ChevronRight size={16} />
+          <Camera size={16} /> Photo Review Placeholder <ChevronRight size={16} />
         </button>
       </div>
     </div>

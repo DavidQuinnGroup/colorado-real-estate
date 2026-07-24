@@ -51,16 +51,26 @@ async function getSmokeProperty() {
 async function assertPropertyPage(path: string) {
   const html = await fetchHtml(path);
 
+  assert.ok(includesFoldedText(html, 'Decision Workspace'), 'Expected property page decision workspace framing.');
+  assert.ok(includesFoldedText(html, 'Understand'), 'Expected property page understand decision lens.');
+  assert.ok(includesFoldedText(html, 'Evaluate'), 'Expected property page evaluate decision lens.');
+  assert.ok(includesFoldedText(html, 'Compare'), 'Expected property page compare decision lens.');
+  assert.ok(includesFoldedText(html, 'Investigate'), 'Expected property page investigate decision lens.');
+  assert.ok(includesFoldedText(html, 'Discuss'), 'Expected property page discuss decision lens.');
   assert.ok(includesFoldedText(html, 'Property Brief'), 'Expected property page brief framing.');
   assert.ok(includesFoldedText(html, 'Listing Facts'), 'Expected property page listing facts.');
   assert.ok(includesFoldedText(html, 'Construction Perspective'), 'Expected property page construction perspective.');
   assert.ok(includesFoldedText(html, 'Questions Worth Asking'), 'Expected property page diligence questions.');
+  assert.ok(includesFoldedText(html, 'Questions for a Better Property Conversation'), 'Expected property page advisor discussion preparation.');
   assert.ok(includesFoldedText(html, 'Ask About This Property'), 'Expected property page inquiry CTA.');
   assert.ok(includesFoldedText(html, 'Property Inquiry'), 'Expected property inquiry form.');
   assert.ok(includesFoldedText(html, 'Follow-up routing'), 'Expected inquiry follow-up routing guidance.');
   assert.ok(includesFoldedText(html, 'Current Request'), 'Expected inquiry request guidance.');
   assert.ok(includesFoldedText(html, 'Timing / Intent'), 'Expected inquiry timing controls.');
   assert.ok(includesFoldedText(html, 'Notes optional but helpful'), 'Expected inquiry notes guidance.');
+  assert.ok(!includesFoldedText(html, 'Advisor Review'), 'Expected property page to avoid advisor-review claims.');
+  assert.ok(!includesFoldedText(html, 'Location Fit'), 'Expected property page to avoid public location-fit claims.');
+  assert.ok(!includesFoldedText(html, 'Photo Review Available'), 'Expected property page to avoid unavailable photo-review capability claims.');
 }
 
 async function assertSearchPage() {
@@ -458,7 +468,8 @@ async function assertRelatedPropertyLinksSource() {
   assert.ok(source.includes('Compare Preparation Approaches'), 'Expected related property links to use non-financial comparison language.');
   assert.ok(source.includes('Marketability Focus'), 'Expected related property links to use directional marketability language.');
   assert.ok(!source.match(/Listing Prep ROI|ROI Engine|Equity Lift|Investment Cost|equity capture/i), 'Expected related property links to avoid unsupported public ROI/equity language.');
-  assert.ok(source.includes('data-related-property-risk-window-days="7"'), 'Expected related property links to expose contingency risk window.');
+  assert.ok(source.includes('data-related-property-risk-window-days="review-required"'), 'Expected related property links to avoid fixed financing-risk windows.');
+  assert.ok(source.includes('Timing Review'), 'Expected related property links to frame timing as review-oriented guidance.');
   assert.ok(source.includes('data-related-property-link-source='), 'Expected related property links to expose CTA link source.');
 }
 
