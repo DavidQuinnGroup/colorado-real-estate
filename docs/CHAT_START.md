@@ -243,13 +243,14 @@ Latest new-chat handoff, July 24, 2026 PROJECT ATLAS Guided Search Experience Re
 - Continue PROJECT ATLAS / REIE work in `/Users/davidquinn/david-quinn-group/colorado-real-estate`; begin the next chat by reading this section, then run `git status --short --branch`.
 - Governing authority remains `REAL ESTATE INTELLIGENCE ENGINE-MASTER V7.1`, Product Design Authority for the public REIE platform. Google Drive verification previously confirmed authoritative source file ID `1HylaD5fL9l0WpiYJLbDRxCKagcUdU99B`.
 - Current branch is `main`.
-- Current baseline is `HEAD = origin/main = 5af11928bdd68b9ced4aaf9750996c8892fe87dc`.
-- Latest committed production-certified program state: Guided Search Experience Restoration Program Wave 1 is certified, deployed, documented, and closed. Latest known commit is `5af11928bdd68b9ced4aaf9750996c8892fe87dc Restore Guided Search Wave 1 editorial experience`.
-- Current active program is `PROJECT ATLAS - Guided Search Experience Restoration Program`; Wave 1 is closed and Wave 2 is not authorized unless explicitly requested.
-- Guided Search Architectural Assessment is complete and recommended `READY_TO_BEGIN_WAVE_1`.
+- Current baseline after Wave 2 closure should be `HEAD = origin/main = the Wave 2 closure documentation commit` with a clean working tree.
+- Latest committed production-certified program state: Guided Search Experience Restoration Program Wave 2 is certified, deployed, documented, and closed.
+- Current active program is `PROJECT ATLAS - Guided Search Experience Restoration Program`; Wave 1 and Wave 2 are closed. Wave 3 is not authorized unless explicitly requested.
+- Guided Search Architectural Assessment is complete. Wave 2 Search Refinement is complete and closed.
 - Wave 1 - Editorial Search Experience was committed as `5af11928bdd68b9ced4aaf9750996c8892fe87dc`, pushed to `origin/main`, deployed by Vercel, production-certified, and closed.
 - Governed Wave 1 closure record: `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/GUIDED-SEARCH-WAVE-1-EDITORIAL-EXPERIENCE-CLOSURE.md`.
-- Current working tree after closure should be clean once this documentation-only closure commit is pushed.
+- Wave 2 - Search Refinement was committed as `932076340a654d0d6331e92ce0b9044c542cf310`, pushed to `origin/main`, deployed by Vercel, production-certified, and closed.
+- Governed Wave 2 closure record: `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/GUIDED-SEARCH-WAVE-2-SEARCH-REFINEMENT-CLOSURE.md`.
 - Wave 1 implementation scope:
   - Refined `/search` first impression and support copy while preserving headline `Explore Colorado homes with fit, context, and confidence.`
   - Added accurate Grand Plan continuity copy that explicitly says Search does not automatically apply the user plan.
@@ -302,8 +303,42 @@ Latest new-chat handoff, July 24, 2026 PROJECT ATLAS Guided Search Experience Re
   - `public/favicon.ico` is missing and remains a non-Wave-1 resource watch item.
   - Direct `/search?city=...` navigation produced a hydration mismatch tied to existing URL-filter SSR/client state behavior. Base `/search` clean-tab review had no console/hydration errors, and the mismatch was not introduced by Wave 1 presentation changes, but it remains a watch item for a later runtime-focused wave.
 - No search was saved, no contact form was submitted, no Grand Plan was submitted, no user/SavedSearch/alert/email/CRM task was created, and no production data was modified during Wave 1 certification.
-- Next recommended action: do not begin Wave 2 unless explicitly authorized; if a new chat is needed, preserve this closed Wave 1 state and start from `git status --short --branch`.
-- Do not begin Wave 2, Wave 3, Wave 4, Wave 5, or any unrelated restoration initiative until explicitly authorized.
+- Wave 2 implementation scope:
+  - Reordered Search controls into the approved refinement sequence: `Where`, `Budget`, `Home Type`, `Details`, and `Specific Property`.
+  - Made City the visually primary first field.
+  - Preserved paired minimum and maximum price behavior.
+  - Moved Property Type before Bedrooms and Bathrooms.
+  - Moved the existing keyword/address/ZIP/MLS field to the final Specific Property section without changing its `q` behavior.
+  - Refined Save Search copy to position saving as a continuation after exploration, without implying automated recommendations.
+  - Extended existing public and map safety checks for Wave 2 presentation language.
+- Wave 2 runtime preservation:
+  - No intended changes to `/api/search`, `buildSearchParams`, `getSearchFiltersFromParams`, URL parameter contract, filtering, sorting, pagination, result limits, Prisma, Supabase, Typesense, map bounds, marker rendering, clustering, popups, auto-pan, hover synchronization, selected-property state, Selected Property Drawer, mobile List/Map switching, Save Search runtime, authentication, CRM, MLS, email, schema, environment variables, or dependencies.
+- Wave 2 validation passed:
+  - `git diff --check`
+  - `npm run typecheck`
+  - `npm run lint`
+  - `npm run build`
+  - `npm run check:search-runtime-safety`
+  - `npm run check:map-rendering-safety`
+  - `PUBLIC_EXPERIENCE_SMOKE_BASE_URL=http://127.0.0.1:3001 npm run smoke:public-experience`
+- Wave 2 production promotion and certification passed:
+  - Push advanced `origin/main` from `07ed623` to `932076340a654d0d6331e92ce0b9044c542cf310`.
+  - Vercel/GitHub deployment reached terminal `success` at `2026-07-24T14:58:17Z`; terminal status ID `51040985517`; target `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/Q7cULor6Fhst4pdJf2mCcVL7mLcE`.
+  - Production domain certified: `https://davidquinngroup.com`.
+  - Production route probes passed for `/`, `/grand-plan`, `/search`, `/contact`, and `/api/search?limit=5`; `/favicon.ico` returned the known resource-watch 404.
+  - Production public smoke passed with `PUBLIC_EXPERIENCE_SMOKE_BASE_URL=https://davidquinngroup.com npm run smoke:public-experience`.
+  - Production `/api/search?limit=5` returned HTTP 200 with 5 public results, `returned=5`, `found=1287`, `source="database"`, `health="degraded"`, and `fallbackReason="Search provider fallback served the request."`
+  - Production browser review passed at desktop `1280x900`, tablet `900x1050`, and mobile `386x900`; no horizontal overflow; City remained the clear starting point; price fields remained paired; Specific Property stayed subordinate; mobile controls remained reachable after the Wave 1 introduction.
+  - Production mobile Map mode rendered 157 markers and preserved `aria-pressed` behavior; Leaflet tile geometry remained `256x256` with `filter: none` and `object-fit: fill`.
+  - Production interaction review passed: city filter apply changed URL to `/search?city=Boulder` and returned 38 visible results; combined refinements preserved existing URL keys and returned 3 visible results; Specific Property used `q`; chip removal removed only the selected refinement; Clear Search restored `/search` with 250 visible results; marker and listing selection synchronized popup and drawer; GET-only no-results URL rendered safely with no provider diagnostics.
+  - No-mutation certification found 0 new timestamped `User`, `SavedSearch`, `AlertQueue`, `EmailLog`, `CRMTask`, `LeadInteraction`, `UserInteraction`, or `UserPreference` records after `2026-07-24T14:56:00Z`.
+- Watch items:
+  - `public/favicon.ico` is missing and remains a non-Wave-2 resource watch item.
+  - External `media.mlsgrid.com` image failures remain a pre-existing external resource watch; production Search still references `media.mlsgrid.com` assets, and a direct sample image probe returned HTTP 400.
+  - Direct `/search?city=...` navigation still emits React hydration error `#418`, tied to existing URL-filter SSR/client state behavior; the page rendered correctly and this remains deferred to an explicitly authorized runtime-focused scope.
+- No search was saved, no contact form was submitted, no Grand Plan was submitted, no user/SavedSearch/alert/email/CRM task was created, and no production data was modified during Wave 2 certification.
+- Next recommended action: do not begin Wave 3 unless explicitly authorized; if a new chat is needed, preserve this closed Wave 2 state and start from `git status --short --branch`.
+- Do not begin Wave 3, Wave 4, Wave 5, or any unrelated restoration initiative until explicitly authorized.
 - Do not deploy, push, alter database/schema/environment configuration, run live sync, run live workers, send live email, mutate CRM, call OpenAI, request MLS Grid, call TitlePro247, reset/reindex Typesense, retry/drain queues, run saved-search alert dry-runs, run `npm run smoke:property-inquiry`, reset databases, run `prisma db push`, run `npm audit fix`, or force-push unless explicitly authorized.
 
 Previous new-chat handoff, July 19, 2026 Sprint 2 certification reconciliation:
