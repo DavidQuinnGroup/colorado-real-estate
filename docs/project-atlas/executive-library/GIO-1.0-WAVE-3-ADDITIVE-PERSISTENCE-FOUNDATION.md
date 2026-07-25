@@ -4,7 +4,7 @@
 
 ### Wave 3 - Additive Persistence Foundation(tm)
 
-Status: `IMPLEMENTED_LOCAL_VALIDATION_COMPLETE_DEPLOYMENT_PENDING`
+Status: `IMPLEMENTED_CODE_DEPLOYED_SCHEMA_MIGRATION_PENDING_BLOCKED`
 
 Implementation baseline: `1eb6e8f9b89ec333042e2c55f3ce90be873eee91`
 
@@ -226,9 +226,36 @@ Notification readiness remained `watch` because 195 pending saved-search alert r
 
 ## Deployment Evidence
 
-Deployment is pending until the Wave 3 implementation commit is pushed and the production deployment completes.
+Implementation commit:
 
-No production GIO schema verification has been performed yet.
+- `9069b7c8857a00287d6d38cdc6e0a49f8b513678`
+
+Push status:
+
+- Pushed to `origin/main`.
+
+Code deployment:
+
+- GitHub/Vercel commit status: `success`
+- Vercel status ID: `51084428262`
+- Description: `Deployment has completed`
+- Timestamp: `2026-07-25T16:35:56Z`
+- Deployment target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/Gzv1Lfj87pmzodt5tCFfrbbyuxuL`
+
+Production schema verification:
+
+- `npx prisma migrate status` was run as a non-mutating verification check.
+- Result: production database has unapplied migrations.
+- Unapplied migrations reported:
+  - `20260722210000_repair_seller_lead_schema_parity`
+  - `20260722211500_repair_seller_lead_id_type`
+  - `20260725143000_gio_wave3_additive_persistence_foundation`
+
+Stop condition:
+
+- `npx prisma migrate deploy` was not run because it would apply two pre-existing, non-GIO migrations in addition to the Wave 3 migration.
+- Applying unrelated pending production migrations is outside the Wave 3 scope and requires explicit authorization.
+- Therefore, Wave 3 code is deployed, but production GIO schema migration remains pending.
 
 ---
 
@@ -237,6 +264,7 @@ No production GIO schema verification has been performed yet.
 Confirmed:
 
 - No GIO business data was inserted.
+- No production GIO schema migration was applied in this wave because applying it through Prisma would also apply unrelated pending prior migrations.
 - No production GIO object, alias, relationship, source, observation, eligibility, or property assignment records were created.
 - No seed operation was added.
 - No backfill operation was added.
@@ -276,6 +304,6 @@ Explicitly deferred:
 
 ## Recommended Next Authorization
 
-Authorize production deployment evidence closure for Wave 3 after this implementation commit is pushed and the deployment completes.
+Authorize a production migration-resolution decision for the three unapplied migrations reported by `npx prisma migrate status`. Options require explicit approval because `prisma migrate deploy` would apply both pre-existing seller-lead repair migrations and the new GIO migration.
 
-After Wave 3 is fully deployed and schema presence is verified, the next implementation authorization should be a documentation-reviewed GIO Wave 4 object-governance and fixture-only verification package. It should remain non-customer-facing and must not begin current-data mapping, backfill, geographic resolution, eligibility preview, or customer integration without separate explicit approval.
+After production migration status is resolved and schema presence is verified, the next implementation authorization should be a documentation-reviewed GIO Wave 4 object-governance and fixture-only verification package. It should remain non-customer-facing and must not begin current-data mapping, backfill, geographic resolution, eligibility preview, or customer integration without separate explicit approval.
