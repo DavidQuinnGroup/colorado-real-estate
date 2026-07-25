@@ -72,6 +72,11 @@ async function assertPropertyPage(path: string) {
   assert.ok(includesFoldedText(html, 'Professional Context'), 'Expected property page financial professional-boundary language.');
   assert.ok(includesFoldedText(html, 'Calculated Price / Sq Ft'), 'Expected property page calculated price-per-square-foot labeling.');
   assert.ok(includesFoldedText(html, 'current listing price and listed square footage only'), 'Expected property page price-per-square-foot input disclosure.');
+  assert.ok(includesFoldedText(html, 'Known Listing and Market Facts'), 'Expected property page public market fact grouping.');
+  assert.ok(includesFoldedText(html, 'Local Market Context'), 'Expected property page local market education grouping.');
+  assert.ok(includesFoldedText(html, 'Market Questions to Investigate'), 'Expected property page neutral market investigation prompts.');
+  assert.ok(includesFoldedText(html, 'Market information on this page is educational'), 'Expected property page market professional-boundary language.');
+  assert.ok(includesFoldedText(html, 'Market Pathway'), 'Expected property page market pathway fact.');
   assert.ok(includesFoldedText(html, 'Questions Worth Asking'), 'Expected property page diligence questions.');
   assert.ok(includesFoldedText(html, 'Questions for a Better Property Conversation'), 'Expected property page advisor discussion preparation.');
   assert.ok(includesFoldedText(html, 'Ask About This Property'), 'Expected property page inquiry CTA.');
@@ -87,6 +92,7 @@ async function assertPropertyPage(path: string) {
   assert.ok(!includesFoldedText(html, 'verified condition'), 'Expected property page to avoid verified-condition claims.');
   assert.ok(!includesFoldedText(html, 'reviewedBy'), 'Expected property page schema to avoid completed-review claims.');
   assert.ok(!html.match(/Affordability Analysis|Investment Analysis|Equity Opportunity|Financial Recommendation|True Monthly Cost|Get Preapproved|Check Affordability|See Investment Return|Calculate Equity|Get Loan Recommendation|guaranteed monthly payment|future appreciation|positive cash flow/i), 'Expected property page to avoid unsupported financial advice and capability claims.');
+  assert.ok(!html.match(/Market Forecast|Pricing Recommendation|Investment Outlook|Appraisal Estimate|Fair Market Value|undervalued|overvalued|hot market|cold market|seller motivation|likely bidding war/i), 'Expected property page to avoid unsupported market predictions and valuation claims.');
 }
 
 async function assertSearchPage() {

@@ -29,7 +29,7 @@ import PropertyLinks from '@/components/internal-links/PropertyLinks';
 import FAQSchema from '@/components/schema/FAQSchema';
 import { getCityByName } from '@/lib/cities';
 import { getBlogLinks } from '@/lib/linking/getBlogLinks';
-import { getPropertyLinks } from '@/lib/linking/getPropertyLinks';
+import { getPropertyLinks, type PropertyAuthorityLink } from '@/lib/linking/getPropertyLinks';
 import { getListingFallbackPhotoUrl, getListingPhotoUrl } from '@/lib/listingVisuals';
 import { neighborhoods } from '@/lib/neighborhoods';
 import { prisma } from '@/lib/prisma';
@@ -262,11 +262,18 @@ function normalize(value: string | null | undefined) {
 }
 
 function getCityMarketHref(cityName: string | null | undefined) {
-  const city = cityName || 'Boulder';
-  const cityData = getCityByName(city);
-  const marketSlug = cityData?.marketSlug ?? `${normalize(city).replace(/\s+/g, '-')}-co-housing-market`;
+  const city = cityName?.trim();
+  if (!city) return null;
 
-  return `/market/${marketSlug}`;
+  const cityData = getCityByName(city);
+  if (!cityData?.marketSlug) return null;
+
+  return `/market/${cityData.marketSlug}`;
+}
+
+function getCitySearchHref(cityName: string | null | undefined) {
+  const city = cityName?.trim();
+  return city ? `/search?city=${encodeURIComponent(city)}` : '/search';
 }
 
 function getNeighborhoodHref(property: PropertyWithPhotos) {
@@ -394,6 +401,76 @@ function getKnownPublicPriceFacts(property: PropertyWithPhotos, pricePerSquareFo
     { label: 'Lot Size', value: formatLotSize(property.lotSize) },
     { label: 'Location Context', value: property.neighborhood || property.city || 'Colorado' },
   ];
+}
+
+type MarketPathway = {
+  href: string;
+  eyebrow: string;
+  label: string;
+  note: string;
+  isMarketPageAvailable: boolean;
+};
+
+function getMarketPathway(property: PropertyWithPhotos): MarketPathway {
+  const city = property.city || 'Colorado';
+  const marketHref = getCityMarketHref(property.city);
+
+  if (marketHref) {
+    return {
+      href: marketHref,
+      eyebrow: 'Market Context',
+      label: `${city} Market Brief`,
+      note: 'Open the broader public market page for this area.',
+      isMarketPageAvailable: true,
+    };
+  }
+
+  return {
+    href: getCitySearchHref(property.city),
+    eyebrow: 'Search Context',
+    label: `${city} Search View`,
+    note: 'A dedicated public market page is not available for this city, so use the current search view for active listing context.',
+    isMarketPageAvailable: false,
+  };
+}
+
+function getKnownListingMarketFacts(property: PropertyWithPhotos, pricePerSquareFoot: string, marketPathway: MarketPathway) {
+  return [
+    { label: 'Current Listing Price', value: formatCurrency(property.price) },
+    { label: 'Calculated Price / Sq Ft', value: pricePerSquareFoot },
+    { label: 'Listing Status', value: property.status || 'Not provided in public listing data' },
+    { label: 'Property Type', value: property.propertyType || 'Not provided in public listing data' },
+    { label: 'Location Context', value: property.neighborhood || property.city || 'Colorado' },
+    { label: 'Last Public Update', value: formatDateTime(property.updatedAt) },
+    { label: 'Market Pathway', value: marketPathway.label },
+  ];
+}
+
+const LOCAL_MARKET_CONTEXT_ITEMS = [
+  'Market context should be read as broader area information, not a property-specific conclusion.',
+  'Search views can help compare public listing facts when a dedicated public market page is not available.',
+  'Property type, condition, location, timing, and available records can affect which comparisons are useful.',
+];
+
+const MARKET_INVESTIGATION_QUESTIONS = [
+  'Which active or recently reviewed listings are genuinely comparable in location, property type, size, condition, and timing?',
+  'How current are the public listing facts and broader market figures being reviewed?',
+  'Does the broader city or neighborhood context reflect this property type and price range?',
+  'What information is public fact, and what requires professional interpretation before pricing, offer, or timing decisions?',
+];
+
+function getPropertyPageAuthorityLinks(authorityLinks: PropertyAuthorityLink[], marketPathway: MarketPathway): PropertyAuthorityLink[] {
+  return authorityLinks.map((link) => {
+    if (link.status !== 'Market') return link;
+
+    return {
+      ...link,
+      label: marketPathway.label,
+      href: marketPathway.href,
+      description: marketPathway.note,
+      status: marketPathway.isMarketPageAvailable ? 'Market' : 'Search',
+    };
+  });
 }
 
 function getListingRemarkMentions(description: string | null | undefined) {
@@ -534,7 +611,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
   const propertySchemaGraph = propertySchema['@graph'];
   const propertyFaqs = getPropertyFaqs(property);
   const canonicalUrl = getPropertyUrl(property);
-  const cityMarketHref = getCityMarketHref(property.city);
+  const marketPathway = getMarketPathway(property);
   const neighborhoodHref = getNeighborhoodHref(property);
   const briefHref = getPropertyBriefHref(property);
   const primaryStatLabel = getPrimaryStatLabel(property);
@@ -545,11 +622,13 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
   const publicConstructionFacts = getPublicConstructionFacts(property);
   const listingRemarkMentions = getListingRemarkMentions(property.description);
   const knownPublicPriceFacts = getKnownPublicPriceFacts(property, pricePerSquareFoot);
+  const knownListingMarketFacts = getKnownListingMarketFacts(property, pricePerSquareFoot, marketPathway);
   const propertyLinks = await getPropertyLinks({
     id: property.id,
     city: property.city,
     neighborhood: property.neighborhood,
   });
+  const propertyPageAuthorityLinks = getPropertyPageAuthorityLinks(propertyLinks.authorityLinks, marketPathway);
   const relatedListings = [...propertyLinks.neighborhoodHomes, ...propertyLinks.cityHomes];
 
   return (
@@ -672,10 +751,10 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                     <Mail size={13} aria-hidden="true" />
                   </Link>
                   <Link
-                    href={cityMarketHref}
+                    href={marketPathway.href}
                     className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-[6px] border border-white/10 bg-white/[0.055] px-3 py-2.5 text-[10px] font-black uppercase tracking-[0.12em] text-white/72 transition hover:border-cyan-100/35 hover:text-cyan-100"
                   >
-                    Market Context
+                    {marketPathway.eyebrow}
                     <TrendingUp size={13} aria-hidden="true" />
                   </Link>
                 </div>
@@ -706,7 +785,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
             <section className="mt-4 rounded-[8px] border border-white/10 bg-[#0d141c] p-4">
               <DecisionLensLabel lens="Discuss" question="What should I discuss with my advisor?" />
               <div className="mt-4 grid gap-2">
-                <AuthorityLink href={cityMarketHref} eyebrow="Market Context" label={`${property.city || 'Colorado'} Market Brief`} />
+                <AuthorityLink href={marketPathway.href} eyebrow={marketPathway.eyebrow} label={marketPathway.label} />
                 {neighborhoodHref ? (
                   <AuthorityLink href={neighborhoodHref} eyebrow="Neighborhood Context" label={`${property.neighborhood} Area Guide`} />
                 ) : null}
@@ -887,6 +966,98 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                 </h3>
                 <ul className="mt-4 grid gap-3 md:grid-cols-2">
                   {FINANCIAL_VERIFICATION_QUESTIONS.map((question) => (
+                    <li key={question} className="rounded-[6px] border border-amber-100/14 bg-amber-100/[0.055] p-3 text-xs leading-5 text-white/64 md:text-sm md:leading-6">
+                      {question}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </section>
+
+            <section
+              className="overflow-hidden rounded-[8px] border border-sky-100/16 bg-[#0d141c]"
+              data-testid="reie-property-market-intelligence"
+              data-market-public-fact-count={knownListingMarketFacts.length}
+              data-market-question-count={MARKET_INVESTIGATION_QUESTIONS.length}
+              data-market-page-available={marketPathway.isMarketPageAvailable ? 'true' : 'false'}
+              data-market-pathway-href={marketPathway.href}
+            >
+              <div className="border-b border-white/10 bg-white/[0.035] p-5 md:p-6">
+                <div className="flex flex-col justify-between gap-4 md:flex-row md:items-start">
+                  <div>
+                    <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.22em] text-cyan-100/76">
+                      <TrendingUp size={14} aria-hidden="true" />
+                      Market Context
+                    </p>
+                    <h2 className="mt-3 text-xl font-black uppercase tracking-tight text-white md:text-2xl">
+                      Listing facts and local market questions to review
+                    </h2>
+                    <p className="mt-3 max-w-3xl text-sm leading-6 text-white/58">
+                      Market information on this page is educational and based on public listing context where available. Verify pricing,
+                      comparable properties, timing, and offer questions with the appropriate professionals before relying on them.
+                    </p>
+                  </div>
+                  <Link
+                    href={marketPathway.href}
+                    className="inline-flex min-h-10 items-center justify-center rounded-[6px] border border-cyan-100/22 bg-cyan-100/[0.08] px-3 py-2 text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100 transition hover:border-cyan-100/40 hover:bg-cyan-100/[0.12]"
+                  >
+                    {marketPathway.label}
+                  </Link>
+                </div>
+              </div>
+
+              <div className="grid gap-4 p-5 md:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] md:p-6">
+                <div className="rounded-[8px] border border-white/10 bg-white/[0.035] p-4">
+                  <h3 className="text-[11px] font-black uppercase tracking-[0.18em] text-white/70">
+                    Known Listing and Market Facts
+                  </h3>
+                  <dl className="mt-4 grid gap-3">
+                    {knownListingMarketFacts.map((fact) => (
+                      <div key={fact.label} className="grid gap-1 border-b border-white/10 pb-3 last:border-b-0 last:pb-0">
+                        <dt className="text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100/54">{fact.label}</dt>
+                        <dd className="text-sm font-bold leading-6 text-white/72">{fact.value}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                  <p className="mt-4 border-t border-white/10 pt-3 text-xs leading-5 text-white/44">
+                    Price per square foot is calculated from current listing price and listed square footage only. It is not a valuation,
+                    pricing opinion, or complete market comparison.
+                  </p>
+                </div>
+
+                <div className="grid gap-4">
+                  <div className="rounded-[8px] border border-white/10 bg-white/[0.035] p-4">
+                    <h3 className="text-[11px] font-black uppercase tracking-[0.18em] text-white/70">
+                      Local Market Context
+                    </h3>
+                    <ul className="mt-4 space-y-2 text-xs leading-5 text-white/58 md:text-sm md:leading-6">
+                      {LOCAL_MARKET_CONTEXT_ITEMS.map((item) => (
+                        <li key={item}>{item}</li>
+                      ))}
+                    </ul>
+                    <p className="mt-4 rounded-[6px] border border-white/10 bg-black/18 p-3 text-xs leading-5 text-white/48">
+                      {marketPathway.note}
+                    </p>
+                  </div>
+
+                  <div className="rounded-[8px] border border-white/10 bg-white/[0.035] p-4">
+                    <h3 className="text-[11px] font-black uppercase tracking-[0.18em] text-white/70">
+                      Professional Context
+                    </h3>
+                    <p className="mt-4 text-xs leading-5 text-white/58 md:text-sm md:leading-6">
+                      Public market context does not provide appraisal advice, legal advice, investment advice, pricing direction,
+                      forecast guidance, or a complete market analysis.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="border-t border-white/10 p-5 md:p-6">
+                <h3 className="text-[11px] font-black uppercase tracking-[0.18em] text-amber-100">
+                  Market Questions to Investigate
+                </h3>
+                <ul className="mt-4 grid gap-3 md:grid-cols-2">
+                  {MARKET_INVESTIGATION_QUESTIONS.map((question) => (
                     <li key={question} className="rounded-[6px] border border-amber-100/14 bg-amber-100/[0.055] p-3 text-xs leading-5 text-white/64 md:text-sm md:leading-6">
                       {question}
                     </li>
@@ -1084,7 +1255,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
         <RelatedPropertyLinks
           city={property.city || 'Colorado'}
           neighborhood={property.neighborhood}
-          authorityLinks={propertyLinks.authorityLinks}
+          authorityLinks={propertyPageAuthorityLinks}
         />
         <section className="my-14 rounded-[8px] border border-white/10 bg-[#0d141c] p-6 md:p-8">
           <div className="mb-8 max-w-3xl">
@@ -1110,7 +1281,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
           city={property.city}
           neighborhood={property.neighborhood ?? undefined}
           listings={relatedListings}
-          authorityLinks={propertyLinks.authorityLinks}
+          authorityLinks={propertyPageAuthorityLinks}
           title={`${property.city || 'Colorado'} Related Property Links`}
         />
       </section>
@@ -1129,12 +1300,12 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
             Search
           </Link>
           <Link
-            href={cityMarketHref}
+            href={marketPathway.href}
             className="inline-flex h-11 items-center justify-center gap-1.5 rounded-[6px] border border-white/10 bg-white/[0.055] text-[10px] font-black uppercase tracking-[0.12em] text-white/72"
             style={{ alignItems: 'center', display: 'inline-flex', height: 44, justifyContent: 'center' }}
           >
             <TrendingUp size={13} aria-hidden="true" />
-            Market
+            {marketPathway.isMarketPageAvailable ? 'Market' : 'View'}
           </Link>
           <Link
             href="#property-contact"

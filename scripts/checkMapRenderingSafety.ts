@@ -193,6 +193,14 @@ async function main() {
   assert(propertyPage.includes('current listing price and listed square footage only'), 'Property detail page must disclose price-per-square-foot inputs.');
   assert(propertyPage.includes('does not provide lender quotes, loan approval, tax advice, insurance advice, legal advice, appraisal'), 'Property detail page must avoid presenting financial education as professional advice.');
   assert(propertyPage.includes('Verify taxes,') && propertyPage.includes('HOA dues, closing costs'), 'Property detail page must direct customers to verify financial assumptions.');
+  assert(propertyPage.includes('data-testid="reie-property-market-intelligence"'), 'Property detail page must expose Wave 4 market context section.');
+  assert(propertyPage.includes('Known Listing and Market Facts'), 'Property detail page must separate public market facts.');
+  assert(propertyPage.includes('Local Market Context'), 'Property detail page must separate local market education.');
+  assert(propertyPage.includes('Market Questions to Investigate'), 'Property detail page must present market prompts as questions.');
+  assert(propertyPage.includes('Market Pathway'), 'Property detail page must expose the public market or search pathway.');
+  assert(propertyPage.includes('A dedicated public market page is not available for this city'), 'Property detail page must use Search fallback copy when no city market page is supported.');
+  assert(propertyPage.includes('Public market context does not provide appraisal advice'), 'Property detail page must avoid presenting market context as appraisal or pricing advice.');
+  assert(!propertyPage.includes('MarketChart'), 'Property detail page must not embed unsupported market-chart runtime in PIE Wave 4.');
   assert(propertyPage.includes('Questions Worth Asking'), 'Property detail page must present construction diligence as questions.');
   assert(propertyPage.includes('Questions for a Better Property Conversation'), 'Property detail page must prepare advisor discussion without implying review.');
   assert(propertyPage.includes('href="#property-contact"'), 'Property detail page must preserve inquiry hash navigation.');
@@ -223,6 +231,7 @@ async function main() {
   assert(!propertyPage.includes('reviewedBy'), 'Property detail schema must not imply completed review.');
   assert(!propertyPage.match(/good condition|verified condition|known defect|repair cost|remaining useful life|code compliant|structural soundness|construction score|condition score/i), 'Property detail page must avoid construction conclusions and scoring claims.');
   assert(!propertyPage.match(/Affordability Analysis|Investment Analysis|Equity Opportunity|Financial Recommendation|True Monthly Cost|Get Preapproved|Check Affordability|See Investment Return|Calculate Equity|Get Loan Recommendation|guaranteed monthly payment|future appreciation|positive cash flow/i), 'Property detail page must avoid unsupported public financial advice and capability claims.');
+  assert(!propertyPage.match(/Market Forecast|Pricing Recommendation|Investment Outlook|Appraisal Estimate|Fair Market Value|undervalued|overvalued|hot market|cold market|seller motivation|likely bidding war/i), 'Property detail page must avoid unsupported public market predictions and valuation claims.');
   for (const [label, source] of [
     ['dedicated search', searchInterface],
     ['search controls', searchControls],
