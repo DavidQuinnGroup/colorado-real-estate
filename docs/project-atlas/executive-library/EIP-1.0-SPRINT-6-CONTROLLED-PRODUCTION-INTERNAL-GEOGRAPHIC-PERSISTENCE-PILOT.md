@@ -4,7 +4,7 @@
 
 ### Controlled Production-Internal Geographic Persistence Pilot(tm)
 
-Status: `EIP_1.0_SPRINT_6_CONTROLLED_PRODUCTION_INTERNAL_GEOGRAPHIC_PERSISTENCE_PILOT_IN_PROGRESS`
+Status: `EIP_1.0_SPRINT_6_CONTROLLED_PRODUCTION_INTERNAL_GEOGRAPHIC_PERSISTENCE_PILOT_PAUSED_AT_DEPLOYMENT_GATE`
 
 Implementation date: July 25, 2026
 
@@ -29,6 +29,16 @@ The pilot is limited to one approved municipality subject, `Thornton, Colorado`,
 No customer-facing activation is authorized. The pilot creates no property relationship, no search integration, no map integration, no public page, no SEO activation, no indexing, no analytics consumption, and no AI consumption.
 
 Certification recommendation will be recorded after deployment, production dry run, controlled execute, inspection, idempotency, public runtime smoke, and final documentation are complete.
+
+Current stop point:
+
+- implementation commit `84989669d62e9d18a6b86534155f957b5f4ad8fe` was pushed and deployed successfully;
+- first authenticated production dry-run and inspection attempts returned HTTP `500` before any write was executed;
+- local dry-run reproduction against the configured production database succeeded with zero writes and the expected one-object plan;
+- route hardening commit `d50f3a815dd7f340d1f5db5caa3153ee4c9feb73` was pushed to make runtime/module failures catchable as JSON;
+- Vercel status `51090536652` for `d50f3a815dd7f340d1f5db5caa3153ee4c9feb73` completed successfully;
+- retried production dry run `EIP-S6-DRY-20260725-002` returned HTTP `500` with JSON error `ENOENT: no such file or directory, open 'prisma/schema.prisma'`;
+- production execute remains paused.
 
 ---
 
@@ -183,31 +193,65 @@ Planned observations:
 
 ## 8. Production Dry Run Evidence
 
-Pending until Phase C after deployment.
+Local pre-execute dry-run reproduction against the configured production database:
+
+- invocation ID: `EIP-S6-LOCAL-DRY-20260725-001`;
+- success: true;
+- mode: `dry-run`;
+- writes performed: 0;
+- planned creates: `GeographicObject` 1, `GeographicAlias` 2, `GeographicSource` 1, `GeographicObservation` 6, `GeographicEligibility` 1, `GeographicRelationship` 0, `PropertyGeographicRelationship` 0;
+- stop conditions: none.
+
+Production route dry-run attempt:
+
+- commit deployed at time of attempt: `84989669d62e9d18a6b86534155f957b5f4ad8fe`;
+- Vercel status ID: `51090439735`;
+- status: `success`;
+- invocation ID: `EIP-S6-DRY-20260725-001`;
+- result: HTTP `500`;
+- response surface: generic Next.js 500 HTML;
+- writes performed: 0;
+- execute attempted: no.
+
+Route hardening response:
+
+- correction commit: `d50f3a815dd7f340d1f5db5caa3153ee4c9feb73`;
+- purpose: move Prisma and Sprint 6 pilot module loading inside guarded route handlers so deployed runtime failures can be returned as JSON instead of generic HTML;
+- validation before push: Sprint 6 focused check, typecheck, lint, production build;
+- push status: pushed to `origin/main`;
+- Vercel status ID: `51090536652`;
+- current status: `success`;
+- production dry run after correction: HTTP `500`;
+- returned error: `ENOENT: no such file or directory, open 'prisma/schema.prisma'`;
+- interpretation: deployed route/runtime cannot load the Prisma schema artifact required by the current production package;
+- production execute attempted: no;
+- production writes performed: 0.
 
 ---
 
 ## 9. Controlled Execute Evidence
 
-Pending until Phase D after successful production dry run.
+Paused. No controlled execute was run because production dry run did not complete successfully.
 
 ---
 
 ## 10. Inspection Evidence
 
-Pending until Phase E after controlled execute.
+Authenticated production inspection before execute returned HTTP `500` against commit `84989669d62e9d18a6b86534155f957b5f4ad8fe`.
+
+No production GIO write was executed before or after this inspection failure.
 
 ---
 
 ## 11. Idempotency Evidence
 
-Pending until Phase F after inspection.
+Paused. Idempotency execute requires successful dry run, controlled execute, and inspection.
 
 ---
 
 ## 12. Public Runtime Smoke Evidence
 
-Pending until Phase G after idempotency validation.
+Paused. Public runtime smoke must run after successful idempotency validation.
 
 ---
 
@@ -242,4 +286,15 @@ It improves product quality by separating governed knowledge readiness from cust
 
 ## 15. Certification Recommendation
 
-Pending final production execution evidence.
+Certification is not recommended yet.
+
+Required remaining gates:
+
+- Vercel success for route hardening commit `d50f3a815dd7f340d1f5db5caa3153ee4c9feb73`;
+- deployed Prisma schema packaging/configuration issue is corrected;
+- production dry run returns success with zero writes;
+- controlled execute persists or reuses only the authorized Thornton pilot rows;
+- inspection verifies internal-only state and zero relationships;
+- idempotency execute creates zero duplicate rows;
+- public runtime smoke passes;
+- final documentation and Google Doc governance are updated with executed evidence.

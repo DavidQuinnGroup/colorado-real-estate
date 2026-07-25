@@ -8,6 +8,94 @@ Product:
 
 - David Quinn Group Real Estate Intelligence Engine
 
+## Latest New-Chat Handoff
+
+PROJECT ATLAS(tm) / EIP Sprint 6 continuation, July 25, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch
+git rev-parse HEAD
+git rev-parse origin/main
+curl -s --max-time 20 https://api.github.com/repos/DavidQuinnGroup/colorado-real-estate/commits/d50f3a815dd7f340d1f5db5caa3153ee4c9feb73/status
+```
+
+Current Sprint 6 state:
+
+- Program: `EIP_1.0_SPRINT_6_CONTROLLED_PRODUCTION_INTERNAL_GEOGRAPHIC_PERSISTENCE_PILOT`.
+- Authorized subject: `Thornton, Colorado` only.
+- Production boundary: one production-internal GIO pilot object only.
+- Runtime/customer activation: not authorized.
+- Property relationships/search/maps/pages/SEO/indexing/analytics/AI/vendor/MLS/CRM/alert/email/customer behavior changes: not authorized.
+- First implementation commit: `84989669d62e9d18a6b86534155f957b5f4ad8fe`.
+- First deployment status: success, Vercel status ID `51090439735`.
+- Authenticated production dry-run attempt `EIP-S6-DRY-20260725-001`: HTTP `500`, generic Next.js 500 HTML, no execute run, no production GIO write performed.
+- Authenticated production inspection attempt: HTTP `500`, no production GIO write performed.
+- Local dry-run reproduction against the configured production database succeeded with zero writes and planned creates of 1 `GeographicObject`, 2 `GeographicAlias`, 1 `GeographicSource`, 6 `GeographicObservation`, 1 `GeographicEligibility`, 0 `GeographicRelationship`, and 0 `PropertyGeographicRelationship`.
+- Route hardening commit: `d50f3a815dd7f340d1f5db5caa3153ee4c9feb73`.
+- Route hardening status at handoff: pushed to `origin/main`, Vercel status ID `51090536652`, state `success`.
+- Retried production dry run `EIP-S6-DRY-20260725-002`: HTTP `500`, JSON error `ENOENT: no such file or directory, open 'prisma/schema.prisma'`, no execute run, no production GIO write performed.
+- Current active phase: blocked before controlled execute until deployed Prisma schema packaging/configuration is corrected and production dry run succeeds.
+
+Completed validation before route hardening push:
+
+- `npm run check:eip-sprint-6-controlled-production-internal-geographic-persistence-pilot`
+- `npm run check:eip-sprint-5-enterprise-knowledge-approval-system`
+- `npm run check:eip-sprint-4-internal-geographic-activation-readiness-ledger`
+- `npm run check:eip-sprint-3-enterprise-knowledge-quality-engine`
+- `npm run check:eip-sprint-2-internal-geographic-read-model`
+- `npm run check:eip-sprint-1-internal-geographic-persistence-proof`
+- `npm run check:geographic-intelligence-object-safety`
+- `npm run check:gkc-fixture-governance`
+- `npm run check:gma-read-only-mapping-preview`
+- `npm run check:gma-internal-mapping-review-queue`
+- `npm run check:gma-internal-review-decision-fixture`
+- `npm run check:enterprise-intelligence-persistence-safety`
+- `npm run check:enterprise-intelligence-safety`
+- `npm run check:production-dependencies`
+- `npm run check:public-runtime-safety`
+- `npm run check:search-runtime-safety`
+- `npm run check:search-runtime-adapter-safety`
+- `npm run check:unsubscribe-safety`
+- `npm run check:notification-readiness:strict-contract`
+- `npx prisma validate`
+- `npm run check:prisma-client-parity`
+- `npx prisma migrate status`
+- `npm run typecheck`
+- `npm run lint`
+- `npm run worker:build`
+- `npm run build`
+- `npm run check:fast`
+- `git diff --check`
+
+Google Doc governance update:
+
+- Document: `PROJECT ATLAS REIE V 7.1 - ADJUSTMENTS & MODIFICATIONS`
+- ID: `1jfTLWoRNuuQ0DhJZSjTWx96n72VLZGPqO371FCjbkBs`
+- Tab: `t.0`
+- Readback revision after Sprint 6 append: `AIroW35qt_CtJ9DQQmzhNc2ci9-6spqGp84Oxzc4Jl5aTm5a31nPqVXwYkM6kWya67jS7mf6iDWGtJ4FvbNGqwpmTY9rtYhU7YrD4gJE6W0`
+- The doc records Sprint 5 certification, Sprint 6 authorization, Thornton as the only pilot subject, one-object limit, continued prohibitions, recovery/rollback requirement, and the paused deployment gate.
+
+Next safe step after Prisma schema packaging/configuration correction:
+
+1. Retry production dry run only with a new invocation ID:
+
+```bash
+curl --max-time 30 -s -X POST "https://davidquinngroup.com/api/admin/enterprise/geographic-persistence-pilot" \
+  -H "content-type: application/json" \
+  -H "x-admin-key: $REIE_ADMIN_API_KEY" \
+  --data '{"subject":"Thornton, Colorado","scope":"CONTROLLED_PRODUCTION_INTERNAL_GEOGRAPHIC_PERSISTENCE_PILOT","invocationId":"EIP-S6-DRY-20260725-003"}'
+```
+
+2. Proceed to controlled execute only if dry run succeeds with zero writes and the authorized planned row counts.
+
+Do not begin Sprint 7.
+
 Workspace:
 
 - `/Users/davidquinn/david-quinn-group/colorado-real-estate`

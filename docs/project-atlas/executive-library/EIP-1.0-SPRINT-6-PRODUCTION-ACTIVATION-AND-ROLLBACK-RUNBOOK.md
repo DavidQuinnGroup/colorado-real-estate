@@ -147,3 +147,16 @@ Do not:
 - send email;
 - mutate saved-search alert rows;
 - execute MLS sync.
+
+---
+
+## 8. Current Stop Condition
+
+Current stop condition:
+
+- deployed route returned HTTP `500` for authenticated dry-run and inspection attempts against commit `84989669d62e9d18a6b86534155f957b5f4ad8fe`;
+- no execute was run;
+- no production GIO write was performed;
+- route hardening commit `d50f3a815dd7f340d1f5db5caa3153ee4c9feb73` deployed successfully with Vercel status ID `51090536652`;
+- retried production dry run `EIP-S6-DRY-20260725-002` returned HTTP `500` with JSON error `ENOENT: no such file or directory, open 'prisma/schema.prisma'`;
+- next retry is blocked until deployed Prisma schema packaging/configuration is corrected.

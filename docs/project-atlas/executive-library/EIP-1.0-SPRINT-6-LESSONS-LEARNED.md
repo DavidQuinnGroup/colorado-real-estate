@@ -45,3 +45,13 @@ That makes the internal boundary inspectable in production data instead of relyi
 Sprint 7 should remain internal.
 
 The next valuable scope is a production-internal GIO inspection and governance read model that retrieves the persisted pilot row, source, observations, eligibility, and lineage without exposing it to search, maps, property pages, SEO, indexing, analytics, AI, or customers.
+
+## 6. Deployment Gates Must Be Treated As Operational Evidence
+
+Sprint 6 confirmed that a locally valid internal persistence workflow can still fail at the deployed route boundary.
+
+The first production dry run returned HTTP `500` before any write was executed. The correct response was to stop before execute, harden the route to return catchable JSON errors, push the correction, and wait for deployment success before retrying.
+
+After route hardening deployed, the production dry run returned the catchable JSON error `ENOENT: no such file or directory, open 'prisma/schema.prisma'`. That isolates the remaining blocker to deployed Prisma schema packaging/configuration, not to the governed Thornton data plan.
+
+This reinforces the program rule that production persistence requires deployed-route evidence, not only local validation.
