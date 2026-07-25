@@ -243,9 +243,9 @@ Latest new-chat handoff, July 25, 2026 PROJECT ATLAS Property Intelligence Exper
 - Continue PROJECT ATLAS / REIE work in `/Users/davidquinn/david-quinn-group/colorado-real-estate`; begin the next chat by reading this section, then run `git status --short --branch`.
 - Governing authority remains `REAL ESTATE INTELLIGENCE ENGINE-MASTER V7.1`, Product Design Authority for the public REIE platform. Google Drive verification previously confirmed authoritative source file ID `1HylaD5fL9l0WpiYJLbDRxCKagcUdU99B`.
 - Current branch is `main`.
-- Current baseline after PIE Wave 4 closure should be `HEAD = origin/main = the PIE Wave 4 closure documentation commit` with a clean working tree.
-- Latest committed production-certified program state: Guided Search Experience Restoration Program is certified and formally closed end to end; Property Intelligence Experience 1.0 Wave 1 - Property Intelligence Foundation, Wave 2 - Construction Intelligence, Wave 3 - Financial Intelligence, and Wave 4 - Market Intelligence are certified, deployed, documented, and closed.
-- Current active program is `PROJECT ATLAS - Property Intelligence Experience 1.0`; Waves 1-4 are closed. PIE Wave 5 has not begun and is not authorized unless explicitly requested.
+- Current baseline after PIE Wave 5 implementation promotion should be `HEAD = origin/main = 85367b5fece1a1eff8220844017a9d472a60ae39` until the Wave 5 closure documentation commit is created, with a clean working tree.
+- Latest committed production-certified program state: Guided Search Experience Restoration Program is certified and formally closed end to end; Property Intelligence Experience 1.0 Wave 1 - Property Intelligence Foundation, Wave 2 - Construction Intelligence, Wave 3 - Financial Intelligence, Wave 4 - Market Intelligence, and Wave 5 - Executive Decision Workspace are certified, deployed, and ready for Wave 5 closure documentation.
+- Current active program is `PROJECT ATLAS - Property Intelligence Experience 1.0`; Waves 1-4 are closed. PIE Wave 5 implementation is production-certified and awaiting documentation-only closure. Do not begin another implementation program unless explicitly authorized.
 - PIE Wave 1 Architectural Assessment is complete. PIE Wave 1 Property Intelligence Foundation implementation is complete and closed.
 - PIE Wave 2 Architectural Assessment is complete. PIE Wave 2 Construction Intelligence implementation is complete and closed.
 - PIE Wave 3 Architectural Assessment is complete. PIE Wave 3 Financial Intelligence implementation is complete and closed.
@@ -269,6 +269,25 @@ Latest new-chat handoff, July 25, 2026 PROJECT ATLAS Property Intelligence Exper
 - Governed PIE Wave 3 closure record: `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/PIE-1.0-WAVE-3-FINANCIAL-INTELLIGENCE-CLOSURE.md`.
 - PIE Wave 4 - Market Intelligence was committed as `0af7a9b1506cc56a8e8fd9ca3a20016189f235f7`, pushed to `origin/main`, deployed by Vercel/GitHub status `success`, Vercel status `51081736998`, production-certified, and closed.
 - Governed PIE Wave 4 closure record: `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/PIE-1.0-WAVE-4-MARKET-INTELLIGENCE-CLOSURE.md`.
+- PIE Wave 5 - Executive Decision Workspace was committed as `85367b5fece1a1eff8220844017a9d472a60ae39`, pushed to `origin/main`, deployed by Vercel/GitHub status `success`, Vercel status `51082681280`, production-certified, and awaiting documentation-only closure.
+- Governed PIE Wave 5 closure record to create: `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/PIE-1.0-WAVE-5-EXECUTIVE-DECISION-WORKSPACE-CLOSURE.md`.
+- PIE Wave 5 implementation scope:
+  - Completed the public Property Decision Workspace by connecting property summary, construction, financial, market, investigation, advisor-discussion, inquiry, related-property, FAQ, and schema-visible surfaces.
+  - Added clearer executive decision framing, a concise decision summary, and `Questions to Carry Forward` so customers can understand what is known, what to verify, and what to discuss next.
+  - Preserved the five Decision Lenses and did not create a competing framework.
+  - Strengthened CTA hierarchy around `Search`, `Market`, `Ask`, `Ask About This Property`, inquiry, and related-property paths without changing routes, href generation, handlers, forms, or runtime behavior.
+  - Kept EquityVision, FAQ, schema, and related-property wording neutral and trust-safe.
+  - Did not activate or imply scoring, recommendations, private intelligence, advisor review, valuation, investment analysis, inspection findings, construction conclusions, financial advice, market forecasts, or automatic CRM/follow-up behavior.
+- PIE Wave 5 runtime preservation:
+  - No intended changes to property routing, property URL generation, property APIs, data fetching, listing parsing, market routing, `/api/search`, Search runtime, Save Search, map runtime, inquiry endpoint and payload, Prisma, Supabase, Typesense, authentication, CRM, email, MLS ingestion, schema architecture, migrations, dependencies, configuration, or environment variables.
+- PIE Wave 5 validation and production certification passed:
+  - `PUBLIC_EXPERIENCE_SMOKE_BASE_URL=https://davidquinngroup.com npm run smoke:public-experience`
+  - Production route probes returned HTTP 200 for `/`, `/grand-plan`, `/search`, `/contact`, `/api/search?limit=5`, `/properties/32224-poudre-canyon-rd-bellvue-co-ire1363681`, `/search?city=Bellvue`, and `/market/boulder-co-housing-market`; `/market/bellvue-co-housing-market` returned the known non-blocking HTTP 404 watch response.
+  - Production `/api/search?limit=5` returned HTTP 200 with 5 returned, found count 1287, mapped count 5, `source="database"`, `health="degraded"`, and fallback reason `Search provider fallback served the request.`
+  - Production browser review passed at desktop `1280x900`, tablet `900x1050`, and mobile `386x900`; no horizontal overflow; summary, financial, construction, market, questions-forward, inquiry, related links, and EquityVision surfaces rendered; mobile action bar remained mobile-only at approximately `386x63`.
+  - Production property route rendered all five Decision Lenses, summary, financial section, construction section, market section, questions-forward section, inquiry, related-property links, and safe EquityVision language.
+  - Production CTA review confirmed `Search -> /search`, Bellvue search context `-> /search?city=Bellvue`, supported Boulder market route availability, `Ask` / `Ask About This Property -> #property-contact`, inquiry form reachability, and related-property destination preservation.
+  - No property inquiry, contact form, Grand Plan, Saved Search, user, alert, email, CRM task, lead interaction, user interaction, user preference, or production data write was created during certification.
 - PIE Wave 4 implementation scope:
   - Added the public Property page market section inside the existing Decision Workspace.
   - Separated market content into `Known From Public Listing Data`, `Market Context to Review`, `Questions to Ask`, and professional-boundary language.
