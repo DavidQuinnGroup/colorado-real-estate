@@ -45,6 +45,7 @@
     "scripts/checkEnterpriseLearningSystemSafety.ts",
     "scripts/checkEnterpriseIntelligencePersistenceSafety.ts",
     "scripts/checkGeographicIntelligenceObjectSafety.ts",
+    "scripts/checkSellerLeadSchemaSafety.ts",
     "scripts/checkEnterpriseAdapterFrameworkSafety.ts",
     "scripts/checkRepositoryGovernanceAdapterSafety.ts",
     "scripts/checkPlatformAvailabilityAdapterSafety.ts",

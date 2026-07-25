@@ -142,17 +142,20 @@ model User {
 }
 
 model CRMTask {
-  id        String   @id @default(cuid())
-  leadId    String
-  user      User     @relation(fields: [leadId], references: [id], onDelete: Cascade)
-  type      String
-  status    String   @default("pending")
-  priority  String   @default("medium")
-  title     String
-  metadata  Json?
-  createdAt DateTime @default(now())
+  id           String      @id @default(cuid())
+  leadId       String
+  user         User        @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  sellerLeadId String?     @map("leadid") @db.Uuid
+  sellerLead   SellerLead? @relation(fields: [sellerLeadId], references: [id], onDelete: Cascade)
+  type         String
+  status       String      @default("pending")
+  priority     String      @default("medium")
+  title        String
+  metadata     Json?
+  createdAt    DateTime    @default(now())
 
   @@index([leadId])
+  @@index([sellerLeadId])
   @@index([type, createdAt])
   @@index([status, type, createdAt])
 }
@@ -253,12 +256,13 @@ model AlertQueue {
 }
 
 model SellerLead {
-  id         String @id @default(cuid())
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   city       String
   beds       Int?
   price      Int?
   reason     String
   propertyId String
+  crmTasks   CRMTask[]
 }
 
 model UnsubscribeToken {

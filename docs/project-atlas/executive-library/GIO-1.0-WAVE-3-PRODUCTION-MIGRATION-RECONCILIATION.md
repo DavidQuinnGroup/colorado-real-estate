@@ -360,3 +360,29 @@ That package should decide whether to:
 - mark `20260722210000_repair_seller_lead_schema_parity` applied only after backup/recovery is confirmed.
 
 GIO Wave 4 remains unauthorized.
+
+---
+
+## SellerLead Repair Follow-Up
+
+Follow-up package:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/SELLER-LEAD-SCHEMA-RECONCILIATION-AND-MIGRATION-REPAIR.md`
+
+Result:
+
+- The local SellerLead repair package was implemented.
+- The empty untracked `20260722211500_repair_seller_lead_id_type` directory was removed after git-history and production-ledger checks found no tracked migration SQL or applied ledger row.
+- A new corrective migration was added: `20260725142500_seller_lead_uuid_schema_reconciliation`.
+- Prisma now models `SellerLead.id` as UUID with `gen_random_uuid()` and models the production `CRMTask.leadid` SellerLead FK as UUID-compatible.
+- Production mutation was still not executed because backup/recovery could not be independently confirmed.
+
+Updated pending migration order:
+
+1. `20260722210000_repair_seller_lead_schema_parity`
+2. `20260725142500_seller_lead_uuid_schema_reconciliation`
+3. `20260725143000_gio_wave3_additive_persistence_foundation`
+
+Retained stop condition:
+
+- Do not run `npx prisma migrate resolve`, `npx prisma migrate deploy`, or any equivalent production mutation until current restorable Supabase backup/PITR posture and restore access are confirmed.

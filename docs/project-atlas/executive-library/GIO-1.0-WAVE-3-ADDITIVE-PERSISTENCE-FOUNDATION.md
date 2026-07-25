@@ -238,6 +238,22 @@ Code deployment:
 
 - GitHub/Vercel commit status: `success`
 - Vercel status ID: `51084428262`
+
+---
+
+## SellerLead Reconciliation Update
+
+Follow-up repair record:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/SELLER-LEAD-SCHEMA-RECONCILIATION-AND-MIGRATION-REPAIR.md`
+
+Current Wave 3 production status remains:
+
+- `GIO_1.0_WAVE_3_SCHEMA_MIGRATION_PENDING_BLOCKED`
+
+The SellerLead UUID schema reconciliation has been implemented locally through a corrective migration that sorts before the GIO Wave 3 migration. Production mutation remains blocked because current restorable Supabase backup/recovery posture could not be independently confirmed from available tooling.
+
+No GIO schema deployment, GIO data insertion, SellerLead business-data rewrite, migration resolve, or migration deploy was performed during the SellerLead repair package.
 - Description: `Deployment has completed`
 - Timestamp: `2026-07-25T16:35:56Z`
 - Deployment target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/Gzv1Lfj87pmzodt5tCFfrbbyuxuL`
