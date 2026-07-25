@@ -373,6 +373,36 @@ Sprint 2 does not authorize:
 - search, map, page, SEO, Typesense, MLS, alert, CRM, email, or runtime activation;
 - vendor integration, scraping, or AI-assisted mapping activation.
 
+## Enterprise Implementation Program - Sprint 3 Status
+
+Enterprise Implementation Program Sprint 3 is certified and closed as `EIP_1.0_SPRINT_3_ENTERPRISE_KNOWLEDGE_QUALITY_ENGINE_CERTIFIED_AND_CLOSED`.
+
+Sprint 3 proves the first reusable Enterprise Knowledge Quality Engine over the Sprint 2 geographic read model.
+
+Certified Sprint 3 outputs:
+
+- Sprint charter: `EIP-1.0-SPRINT-3-ENTERPRISE-KNOWLEDGE-QUALITY-ENGINE-CHARTER.md`.
+- Sprint record: `EIP-1.0-SPRINT-3-ENTERPRISE-KNOWLEDGE-QUALITY-ENGINE.md`.
+- Lessons learned: `EIP-1.0-SPRINT-3-LESSONS-LEARNED.md`.
+- Internal-only quality engine module: `lib/eip/enterpriseKnowledgeQualityEngine.ts`.
+- Deterministic safety command: `npm run check:eip-sprint-3-enterprise-knowledge-quality-engine`.
+- 10 Sprint 2 geographic read-model records assessed.
+- Identity, source, trust, freshness, completeness, conflict, review, and activation-readiness dimensions implemented.
+- Required quality scenarios validated: complete governed object, missing source, stale knowledge, conflict present, duplicate candidate, editorial-only knowledge, insufficient evidence, and fully activation-ready internal knowledge.
+- Customer-visible quality scores remained zero.
+
+Sprint 3 does not authorize:
+
+- production geographic persistence;
+- GIO row creation;
+- public APIs or routes;
+- customer-visible quality scores;
+- property relationship creation;
+- final canonical selection;
+- customer retrieval;
+- search, map, page, SEO, Typesense, MLS, alert, CRM, email, or runtime activation;
+- vendor integration, scraping, or AI-assisted mapping activation.
+
 ---
 
 ## Program Watch Items
@@ -394,7 +424,9 @@ Sprint 2 does not authorize:
 | Fixture-to-persistence drift | Decision fixtures could be mistaken for permission to create GIO rows. | Treat fixtures as non-authoritative evidence only until a separate internal-persistence proof is authorized. |
 | Internal-proof-to-product drift | Internal persisted proof records could be mistaken for customer-ready value. | Sprint 2 read-model proof is complete; require later quality, conflict, and activation gates before any customer or runtime surface is considered. |
 | Read-model-to-runtime drift | Internal read-model views could be mistaken for permission to expose geographic intelligence publicly. | Require separate activation authorization and keep runtime import scanning mandatory. |
-| Canonical-name collision handling | Internal retrieval may find duplicate names, such as Mapleton Hill, before canonical resolution. | Preserve deterministic internal retrieval and require Sprint 3 quality/conflict review before any canonical claim. |
+| Canonical-name collision handling | Internal retrieval may find duplicate names, such as Mapleton Hill, before canonical resolution. | Sprint 3 quality review is complete; preserve deterministic internal retrieval and require readiness-ledger plus activation gates before any canonical claim. |
+| Quality-score exposure drift | Internal quality scores could be misunderstood as public trust badges or ranking inputs. | Keep quality scores internal and require a separate customer-language review before any public presentation. |
+| Quality-to-activation drift | A `READY` internal quality status could be mistaken for customer activation authorization. | Keep activation readiness separate from activation; require Sprint 4 readiness ledger and later executive activation gate. |
 
 ---
 
@@ -402,7 +434,7 @@ Sprint 2 does not authorize:
 
 Authorize only:
 
-- `EIP_1.0_SPRINT_3_INTERNAL_GEOGRAPHIC_QUALITY_AND_CONFLICT_REVIEW`
+- `EIP_1.0_SPRINT_4_INTERNAL_GEOGRAPHIC_ACTIVATION_READINESS_LEDGER`
 
 Do not authorize without a separate directive:
 
