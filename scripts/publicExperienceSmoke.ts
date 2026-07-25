@@ -65,6 +65,13 @@ async function assertPropertyPage(path: string) {
   assert.ok(includesFoldedText(html, 'General Construction Context'), 'Expected property page general construction education grouping.');
   assert.ok(includesFoldedText(html, 'Questions to Verify'), 'Expected property page neutral construction verification prompts.');
   assert.ok(includesFoldedText(html, 'Public listing information is a starting point'), 'Expected property page construction professional-boundary language.');
+  assert.ok(includesFoldedText(html, 'Financial Context'), 'Expected property page financial context section.');
+  assert.ok(includesFoldedText(html, 'Known Public Price Facts'), 'Expected property page public price fact grouping.');
+  assert.ok(includesFoldedText(html, 'Ownership Costs to Verify'), 'Expected property page ownership-cost verification grouping.');
+  assert.ok(includesFoldedText(html, 'Financial Questions to Ask'), 'Expected property page financial verification prompts.');
+  assert.ok(includesFoldedText(html, 'Professional Context'), 'Expected property page financial professional-boundary language.');
+  assert.ok(includesFoldedText(html, 'Calculated Price / Sq Ft'), 'Expected property page calculated price-per-square-foot labeling.');
+  assert.ok(includesFoldedText(html, 'current listing price and listed square footage only'), 'Expected property page price-per-square-foot input disclosure.');
   assert.ok(includesFoldedText(html, 'Questions Worth Asking'), 'Expected property page diligence questions.');
   assert.ok(includesFoldedText(html, 'Questions for a Better Property Conversation'), 'Expected property page advisor discussion preparation.');
   assert.ok(includesFoldedText(html, 'Ask About This Property'), 'Expected property page inquiry CTA.');
@@ -79,6 +86,7 @@ async function assertPropertyPage(path: string) {
   assert.ok(!includesFoldedText(html, 'construction forensics'), 'Expected property page to avoid construction-forensics claims.');
   assert.ok(!includesFoldedText(html, 'verified condition'), 'Expected property page to avoid verified-condition claims.');
   assert.ok(!includesFoldedText(html, 'reviewedBy'), 'Expected property page schema to avoid completed-review claims.');
+  assert.ok(!html.match(/Affordability Analysis|Investment Analysis|Equity Opportunity|Financial Recommendation|True Monthly Cost|Get Preapproved|Check Affordability|See Investment Return|Calculate Equity|Get Loan Recommendation|guaranteed monthly payment|future appreciation|positive cash flow/i), 'Expected property page to avoid unsupported financial advice and capability claims.');
 }
 
 async function assertSearchPage() {

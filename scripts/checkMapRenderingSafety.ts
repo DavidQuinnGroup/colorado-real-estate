@@ -184,6 +184,15 @@ async function main() {
   assert(propertyPage.includes('Questions to Verify'), 'Property detail page must present construction prompts as questions.');
   assert(propertyPage.includes('Public listing information is a starting point'), 'Property detail page must include concise professional-boundary language.');
   assert(propertyPage.includes('Confirm condition, systems, permits, costs, and code questions'), 'Property detail page must direct customers to appropriate professional verification.');
+  assert(propertyPage.includes('data-testid="reie-property-financial-intelligence"'), 'Property detail page must expose Wave 3 financial context section.');
+  assert(propertyPage.includes('Known Public Price Facts'), 'Property detail page must separate known public price facts.');
+  assert(propertyPage.includes('Ownership Costs to Verify'), 'Property detail page must separate ownership-cost verification categories.');
+  assert(propertyPage.includes('Financial Questions to Ask'), 'Property detail page must present financial prompts as questions.');
+  assert(propertyPage.includes('Professional Context'), 'Property detail page must include financial professional-boundary language.');
+  assert(propertyPage.includes('Calculated Price / Sq Ft'), 'Property detail page must label price per square foot as a calculated comparison measure.');
+  assert(propertyPage.includes('current listing price and listed square footage only'), 'Property detail page must disclose price-per-square-foot inputs.');
+  assert(propertyPage.includes('does not provide lender quotes, loan approval, tax advice, insurance advice, legal advice, appraisal'), 'Property detail page must avoid presenting financial education as professional advice.');
+  assert(propertyPage.includes('Verify taxes,') && propertyPage.includes('HOA dues, closing costs'), 'Property detail page must direct customers to verify financial assumptions.');
   assert(propertyPage.includes('Questions Worth Asking'), 'Property detail page must present construction diligence as questions.');
   assert(propertyPage.includes('Questions for a Better Property Conversation'), 'Property detail page must prepare advisor discussion without implying review.');
   assert(propertyPage.includes('href="#property-contact"'), 'Property detail page must preserve inquiry hash navigation.');
@@ -213,6 +222,7 @@ async function main() {
   assert(!propertyPage.includes('Detailed Review Suggested'), 'Property detail page must avoid unsupported review conclusions.');
   assert(!propertyPage.includes('reviewedBy'), 'Property detail schema must not imply completed review.');
   assert(!propertyPage.match(/good condition|verified condition|known defect|repair cost|remaining useful life|code compliant|structural soundness|construction score|condition score/i), 'Property detail page must avoid construction conclusions and scoring claims.');
+  assert(!propertyPage.match(/Affordability Analysis|Investment Analysis|Equity Opportunity|Financial Recommendation|True Monthly Cost|Get Preapproved|Check Affordability|See Investment Return|Calculate Equity|Get Loan Recommendation|guaranteed monthly payment|future appreciation|positive cash flow/i), 'Property detail page must avoid unsupported public financial advice and capability claims.');
   for (const [label, source] of [
     ['dedicated search', searchInterface],
     ['search controls', searchControls],

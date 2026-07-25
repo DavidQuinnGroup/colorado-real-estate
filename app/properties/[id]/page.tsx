@@ -368,6 +368,34 @@ const CONSTRUCTION_VERIFICATION_QUESTIONS = [
   'What is documented about the windows and exterior envelope?',
 ];
 
+const OWNERSHIP_COST_CATEGORIES = [
+  { label: 'Taxes and HOA', guidance: 'Verify current amounts, inclusions, transfer changes, and any special assessments.' },
+  { label: 'Insurance', guidance: 'Obtain independent quotes for the coverages that apply to this property and location.' },
+  { label: 'Financing Terms', guidance: 'Review down payment, interest rate, loan term, PMI, and excluded costs before relying on any payment illustration.' },
+  { label: 'Ownership Planning', guidance: 'Consider utilities, maintenance records, major-system planning, closing costs, prepaid items, and transition costs.' },
+];
+
+const FINANCIAL_VERIFICATION_QUESTIONS = [
+  'What property-tax amount is currently recorded, and could it change after the sale?',
+  'Are HOA dues or special assessments applicable, and what services or obligations do they include?',
+  'Which insurance policies and premiums should be independently quoted?',
+  'What down payment, interest rate, loan term, PMI, tax, insurance, and HOA assumptions are being used or excluded?',
+  'What closing costs and prepaid expenses may apply?',
+  'Which maintenance records, major-system documents, and professional figures should be verified before relying on ownership-cost assumptions?',
+];
+
+function getKnownPublicPriceFacts(property: PropertyWithPhotos, pricePerSquareFoot: string) {
+  return [
+    { label: 'Listing Price', value: formatCurrency(property.price) },
+    { label: 'Calculated Price / Sq Ft', value: pricePerSquareFoot },
+    { label: 'Listing Status', value: property.status || 'Not provided in public listing data' },
+    { label: 'Property Type', value: property.propertyType || 'Not provided in public listing data' },
+    { label: 'Year Built', value: property.yearBuilt ? String(property.yearBuilt) : 'Not provided in public listing data' },
+    { label: 'Lot Size', value: formatLotSize(property.lotSize) },
+    { label: 'Location Context', value: property.neighborhood || property.city || 'Colorado' },
+  ];
+}
+
 function getListingRemarkMentions(description: string | null | undefined) {
   const normalizedDescription = description?.toLowerCase() || '';
   if (!normalizedDescription) return ['No construction feature mentions were available in the public listing remarks.'];
@@ -516,6 +544,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
   const decisionTone = getDecisionTone(property);
   const publicConstructionFacts = getPublicConstructionFacts(property);
   const listingRemarkMentions = getListingRemarkMentions(property.description);
+  const knownPublicPriceFacts = getKnownPublicPriceFacts(property, pricePerSquareFoot);
   const propertyLinks = await getPropertyLinks({
     id: property.id,
     city: property.city,
@@ -627,11 +656,13 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
               <div className="p-4">
                 <DecisionLensLabel lens="Understand" question="What am I looking at?" />
                 <div className="grid gap-3">
-                  <DecisionRow label="Price Basis" value={pricePerSquareFoot} />
+                  <DecisionRow label="Calculated Price / Sq Ft" value={pricePerSquareFoot} />
                   <DecisionRow label="Property Type" value={property.propertyType || 'Residential'} />
                   <DecisionRow label="Status" value={property.status || 'Active'} />
                 </div>
-                <p className="mt-4 border-t border-cyan-100/14 pt-4 text-sm leading-6 text-white/66">{decisionNextStep}</p>
+                <p className="mt-4 border-t border-cyan-100/14 pt-4 text-sm leading-6 text-white/66">
+                  {decisionNextStep} Price per square foot is a calculated comparison measure, not a valuation or complete cost picture.
+                </p>
                 <div className="reie-property-advisor-actions mt-4 grid gap-2">
                   <Link
                     href="#property-contact"
@@ -654,7 +685,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
             <div className="mt-4 rounded-[8px] border border-white/10 bg-[#0d141c] p-4">
               <DecisionLensLabel lens="Compare" question="How does this compare with other homes?" />
               <div className="mt-4 grid grid-cols-2 gap-3">
-                <SignalTile icon={<TrendingUp size={16} />} label="Price Basis" value={pricePerSquareFoot} tone="cyan" />
+                <SignalTile icon={<TrendingUp size={16} />} label="Calculated Basis" value={pricePerSquareFoot} tone="cyan" />
                 <SignalTile icon={<ShieldCheck size={16} />} label="Location" value={property.neighborhood || property.city || 'Colorado'} tone="white" />
               </div>
               <div className="mt-3 rounded-[6px] border border-white/10 bg-white/[0.045] p-3">
@@ -739,7 +770,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
           </div>
           <div className="grid grid-cols-3 overflow-hidden rounded-[8px] border border-white/10 bg-[#0d141c] text-center md:min-w-[380px]">
             <SnapshotTile label="Price" value={formatCompactCurrency(property.price)} />
-            <SnapshotTile label="Basis" value={pricePerSquareFoot} />
+            <SnapshotTile label="Calc. Basis" value={pricePerSquareFoot} />
             <SnapshotTile label="Review" value={decisionTone} />
           </div>
         </div>
@@ -773,6 +804,94 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                   <BriefSignalTile label="Compare" value={`${property.propertyType || 'Residential'} / ${property.status || 'Active'} / ${pricePerSquareFoot}`} />
                   <BriefSignalTile label="Next Step" value={decisionNextStep} />
                 </div>
+              </div>
+            </section>
+
+            <section
+              className="overflow-hidden rounded-[8px] border border-emerald-100/16 bg-[#0d141c]"
+              data-testid="reie-property-financial-intelligence"
+              data-financial-public-fact-count={knownPublicPriceFacts.length}
+              data-financial-cost-category-count={OWNERSHIP_COST_CATEGORIES.length}
+              data-financial-question-count={FINANCIAL_VERIFICATION_QUESTIONS.length}
+            >
+              <div className="border-b border-white/10 bg-white/[0.035] p-5 md:p-6">
+                <div className="flex flex-col justify-between gap-4 md:flex-row md:items-start">
+                  <div>
+                    <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.22em] text-cyan-100/76">
+                      <TrendingUp size={14} aria-hidden="true" />
+                      Financial Context
+                    </p>
+                    <h2 className="mt-3 text-xl font-black uppercase tracking-tight text-white md:text-2xl">
+                      Price facts and ownership-cost questions to verify
+                    </h2>
+                    <p className="mt-3 max-w-3xl text-sm leading-6 text-white/58">
+                      Financial information on this page is educational and based on public listing context where available. Verify taxes,
+                      insurance, financing terms, HOA dues, closing costs, and legal or tax questions with the appropriate professionals.
+                    </p>
+                  </div>
+                  <span className="inline-flex h-8 items-center rounded-[6px] border border-cyan-100/22 bg-cyan-100/[0.08] px-3 text-[10px] font-black uppercase tracking-[0.16em] text-cyan-100">
+                    Public Context
+                  </span>
+                </div>
+              </div>
+
+              <div className="grid gap-4 p-5 md:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] md:p-6">
+                <div className="rounded-[8px] border border-white/10 bg-white/[0.035] p-4">
+                  <h3 className="text-[11px] font-black uppercase tracking-[0.18em] text-white/70">
+                    Known Public Price Facts
+                  </h3>
+                  <dl className="mt-4 grid gap-3">
+                    {knownPublicPriceFacts.map((fact) => (
+                      <div key={fact.label} className="grid gap-1 border-b border-white/10 pb-3 last:border-b-0 last:pb-0">
+                        <dt className="text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100/54">{fact.label}</dt>
+                        <dd className="text-sm font-bold leading-6 text-white/72">{fact.value}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                  <p className="mt-4 border-t border-white/10 pt-3 text-xs leading-5 text-white/44">
+                    Calculated price per square foot uses the current listing price and listed square footage only. It is not a valuation,
+                    affordability guidance, or a complete comparison metric.
+                  </p>
+                </div>
+
+                <div className="grid gap-4">
+                  <div className="rounded-[8px] border border-white/10 bg-white/[0.035] p-4">
+                    <h3 className="text-[11px] font-black uppercase tracking-[0.18em] text-white/70">
+                      Ownership Costs to Verify
+                    </h3>
+                    <ul className="mt-4 space-y-2 text-xs leading-5 text-white/58 md:text-sm md:leading-6">
+                      {OWNERSHIP_COST_CATEGORIES.map((item) => (
+                        <li key={item.label}>
+                          <span className="font-black uppercase tracking-[0.08em] text-white/76">{item.label}: </span>
+                          {item.guidance}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className="rounded-[8px] border border-white/10 bg-white/[0.035] p-4">
+                    <h3 className="text-[11px] font-black uppercase tracking-[0.18em] text-white/70">
+                      Professional Context
+                    </h3>
+                    <p className="mt-4 text-xs leading-5 text-white/58 md:text-sm md:leading-6">
+                      This page does not provide lender quotes, loan approval, tax advice, insurance advice, legal advice, appraisal,
+                      financial planning, investment advice, or contractor estimates.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="border-t border-white/10 p-5 md:p-6">
+                <h3 className="text-[11px] font-black uppercase tracking-[0.18em] text-amber-100">
+                  Financial Questions to Ask
+                </h3>
+                <ul className="mt-4 grid gap-3 md:grid-cols-2">
+                  {FINANCIAL_VERIFICATION_QUESTIONS.map((question) => (
+                    <li key={question} className="rounded-[6px] border border-amber-100/14 bg-amber-100/[0.055] p-3 text-xs leading-5 text-white/64 md:text-sm md:leading-6">
+                      {question}
+                    </li>
+                  ))}
+                </ul>
               </div>
             </section>
 
