@@ -27,7 +27,8 @@ Current program posture:
 - GIO 1.0 Wave 3: additive persistence foundation certified and closed.
 - GIO 1.0 Wave 4: object governance verification certified and closed.
 - GKC 1.0: architectural assessment certified and closed.
-- GKC 1.0 fixture governance validation: recommended next package only.
+- GKC 1.0 fixture governance validation: certified and closed.
+- GKC 1.0 internal development persistence assessment: recommended next authorization only.
 
 ---
 
@@ -51,7 +52,8 @@ Current program posture:
 | Wave 3 | Additive Persistence Foundation | Implement dormant Prisma schema, migration, helper contract, and static safety checks. | `CERTIFIED_AND_CLOSED` | Dormant persistence only |
 | Wave 4 | Object Governance Verification | Verify implemented object governance, constraints, relationships, source posture, observations, eligibility, and runtime isolation. | `CERTIFIED_AND_CLOSED` | Verification only |
 | GKC 1.0 | Geographic Knowledge Classification | Architect classification taxonomies, review rules, source trust levels, observation keys, and fixture-only validation. | `CERTIFIED_AND_CLOSED` | Architecture only |
-| Future Wave | Fixture Governance Validation | Validate classification behavior against non-production fixtures without production writes. | `RECOMMENDED_NEXT_PACKAGE` | Fixture only |
+| Future Wave | Fixture Governance Validation | Validate classification behavior against non-production fixtures without production writes. | `CERTIFIED_AND_CLOSED` | Synthetic local validation only |
+| Future Wave | Internal Development Persistence Assessment | Assess whether fixture-governance contracts are sufficient for isolated non-production persistence. | `RECOMMENDED_NEXT_ASSESSMENT` | No production persistence |
 | Future Wave | Current Data Mapping Report | Produce dry-run reports from existing city, neighborhood, ZIP, subdivision, and market data. | `NOT_AUTHORIZED` | Read-only report only |
 | Future Wave | Controlled Object Population | Seed a bounded canonical object set after source and classification approval. | `NOT_AUTHORIZED` | Production mutation only after gate |
 | Future Wave | Property Relationship Backfill | Create governed property-to-geography relationships in bounded batches. | `NOT_AUTHORIZED` | Production mutation only after gate |
@@ -70,6 +72,7 @@ Current program posture:
 | Wave 3 production migration reconciliation | `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/GIO-1.0-WAVE-3-PRODUCTION-MIGRATION-RECONCILIATION.md` | Certified and closed |
 | Wave 4 object governance verification | `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/GIO-1.0-WAVE-4-OBJECT-GOVERNANCE-VERIFICATION.md` | Certified and closed |
 | GKC 1.0 geographic knowledge classification architecture | `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/GKC-1.0-GEOGRAPHIC-KNOWLEDGE-CLASSIFICATION-ARCHITECTURE.md` | Certified and closed |
+| GKC 1.0 fixture governance validation | `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/GKC-1.0-FIXTURE-GOVERNANCE-VALIDATION.md` | Certified and closed |
 
 ---
 
@@ -81,7 +84,7 @@ Current program posture:
 | Runtime isolation gate | Any GIO or GKC implementation | Active; safety check must continue passing |
 | Source trust gate | Material source-backed observations or object claims | Not authorized |
 | Classification gate | Any object classification or knowledge layer | GKC 1.0 architecture certified; implementation not authorized |
-| Fixture gate | Any non-production object or relationship validation | Recommended next package only |
+| Fixture gate | Any non-production object or relationship validation | Synthetic local fixture validation certified; persistence not authorized |
 | Production population gate | Any GIO row insertion | Not authorized |
 | Customer activation gate | Public GIO routes, search, maps, property pages, or content | Not authorized |
 
@@ -134,6 +137,8 @@ GKC 1.0 closure does not authorize:
 - Activate public GIO pages.
 - Change search, maps, property pages, MLS, Typesense, alert, CRM, email, or customer account behavior.
 
+GKC 1.0 fixture governance validation is also certified and closed. It implemented pure local validation contracts and `npm run check:gkc-fixture-governance` without production persistence, runtime integration, current-data mapping, or customer-facing activation.
+
 ---
 
 ## Program Watch Items
@@ -141,9 +146,9 @@ GKC 1.0 closure does not authorize:
 | Watch item | Reason | Recommended handling |
 | --- | --- | --- |
 | Enum vocabulary breadth | Wave 3 intentionally used narrower governed enums than the full Wave 2 recommendation set. | Reassess during GKC 1.0 before classification. |
-| Source provenance | Some source references are nullable for dormant flexibility. | Require source or governed first-party designation before material-fact activation. |
-| Alias normalization | Helper normalization exists; database-level normalization is not automatic. | Define normalization policy and fixture tests before alias population. |
-| Observation JSON schema keys | JSON observations require a schema key but no registry exists yet. | Create registry during GKC 1.0 assessment. |
+| Source provenance | Some source references are nullable for dormant flexibility. | Fixture validation now proves source requirements locally; future persistence must enforce them before writes. |
+| Alias normalization | Helper normalization exists; database-level normalization is not automatic. | Fixture validation now proves deterministic normalization; future persistence must keep collision review. |
+| Observation JSON schema keys | JSON observations require a schema key but no persisted registry exists yet. | Fixture validation now proves a local registry; future persistence must decide registry storage without activating production data. |
 | Slug route strategy | Current uniqueness is by object type and canonical slug. | Decide route and redirect posture before any public route activation. |
 | Runtime isolation | Future imports can erode the dormant boundary. | Keep static safety checks mandatory until activation is authorized. |
 
@@ -153,11 +158,12 @@ GKC 1.0 closure does not authorize:
 
 Authorize only:
 
-- `GKC_1.0_FIXTURE_GOVERNANCE_VALIDATION_PACKAGE`
+- `GKC_1.0_INTERNAL_DEVELOPMENT_PERSISTENCE_ASSESSMENT`
 
 Do not authorize without a separate directive:
 
 - production table population
+- production fixture creation
 - geographic migration
 - property relationship backfill
 - runtime read adapters
