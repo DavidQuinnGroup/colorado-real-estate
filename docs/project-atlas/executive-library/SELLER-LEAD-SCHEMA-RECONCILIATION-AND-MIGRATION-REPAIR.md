@@ -295,6 +295,23 @@ SellerLead local repair state:
 - Validated locally.
 - Ready for production migration execution only after backup/recovery is independently confirmed.
 
+Implementation commit:
+
+- `670e6dbaeb3d1e048661e6f61ff192bc83c4c796`
+
+Code/docs deployment:
+
+- GitHub/Vercel commit status: `success`
+- Vercel status ID: `51084926603`
+- Description: `Deployment has completed`
+- Target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/5Fgk5B3TNPQGVntwtEzy82QEqDRj`
+
+Production smoke after deployment:
+
+- `PUBLIC_EXPERIENCE_SMOKE_BASE_URL=https://davidquinngroup.com npm run smoke:public-experience` - passed.
+- Representative property route: `/properties/32224-poudre-canyon-rd-bellvue-co-ire1363681`.
+- No property inquiry, contact, Grand Plan, Save Search, email, CRM, MLS live request, Typesense reset/reindex, or database migration mutation was performed.
+
 Production migration state:
 
 - Blocked.

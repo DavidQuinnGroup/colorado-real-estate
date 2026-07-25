@@ -259,6 +259,8 @@ Latest new-chat handoff, July 25, 2026 PROJECT ATLAS SellerLead Schema Reconcili
 - Added safety command: `npm run check:geographic-intelligence-object-safety`.
 - Wave 3 implementation commit: `9069b7c8857a00287d6d38cdc6e0a49f8b513678`.
 - Wave 3 code deployment status: success; Vercel status ID `51084428262`; description `Deployment has completed`; timestamp `2026-07-25T16:35:56Z`.
+- SellerLead repair implementation commit: `670e6dbaeb3d1e048661e6f61ff192bc83c4c796`.
+- SellerLead repair code/docs deployment status: success; Vercel status ID `51084926603`; description `Deployment has completed`; target `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/5Fgk5B3TNPQGVntwtEzy82QEqDRj`.
 - SellerLead repair implemented locally: `SellerLead.id` now uses `String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid`; `CRMTask.leadid` is modeled as nullable `sellerLeadId String? @map("leadid") @db.Uuid` with the existing SellerLead FK behavior.
 - Added corrective migration: `/Users/davidquinn/david-quinn-group/colorado-real-estate/prisma/migrations/20260725142500_seller_lead_uuid_schema_reconciliation/migration.sql`.
 - Added safety command: `npm run check:seller-lead-schema-safety`.
@@ -268,6 +270,7 @@ Latest new-chat handoff, July 25, 2026 PROJECT ATLAS SellerLead Schema Reconcili
 - Production evidence remains: `SellerLead.id` is `uuid DEFAULT gen_random_uuid()`; `CRMTask.leadid` is a nullable uuid FK to `SellerLead.id`; GIO tables/enums were verified absent before any mutation.
 - Production migration commands not run: no `prisma migrate resolve`, no `prisma migrate deploy`, no `prisma db push`.
 - SellerLead repair validation passed: `npx prisma format`, `npx prisma validate`, `npm run check:seller-lead-schema-safety`, `npx prisma generate`, `npm run typecheck`, `npm run lint`, `npm run check:geographic-intelligence-object-safety`, `npm run check:seller-journey-safety`, `npm run check:track-click-runtime-safety`, `npm run check:search-runtime-safety`, `npm run check:enterprise-intelligence-persistence-safety`, `npm run check:repository-governance-adapter-safety`, `npm run check:production-dependencies`, `npm run check:prisma-client-parity`, `npm run check:public-runtime-safety`, `npm run check:fast`, `npm run build`, and `git diff --check`.
+- Production public smoke after SellerLead repair deployment passed: `PUBLIC_EXPERIENCE_SMOKE_BASE_URL=https://davidquinngroup.com npm run smoke:public-experience`; representative property route `/properties/32224-poudre-canyon-rd-bellvue-co-ire1363681`.
 - `npm run check:fast` remained non-mutating for notifications and MLS; MLS dry run reported `dryRun=true`, `executed=false`, and "No MLS Grid request was made."
 - Notification readiness remains `watch` because 195 pending saved-search alert rows are available for dry-run review; no email sends or alert-row mutations were performed.
 - The migration is additive only: no drops, no destructive casts, no data backfill, no triggers, no seeds, no geometry/PostGIS, and no GIO business data insertion.
