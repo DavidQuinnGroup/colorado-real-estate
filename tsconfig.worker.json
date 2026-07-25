@@ -45,6 +45,7 @@
     "scripts/checkEnterpriseLearningSystemSafety.ts",
     "scripts/checkEnterpriseIntelligencePersistenceSafety.ts",
     "scripts/checkEipSprint1InternalGeographicPersistenceProof.ts",
+    "scripts/checkEipSprint2InternalGeographicReadModel.ts",
     "scripts/checkGeographicIntelligenceObjectSafety.ts",
     "scripts/checkGkcFixtureGovernance.ts",
     "scripts/checkGmaReadOnlyMappingPreview.ts",

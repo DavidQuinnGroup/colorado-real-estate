@@ -343,6 +343,36 @@ Sprint 1 does not authorize:
 - search, map, page, SEO, Typesense, MLS, alert, CRM, email, or runtime activation;
 - vendor integration, scraping, or AI-assisted mapping activation.
 
+## Enterprise Implementation Program - Sprint 2 Status
+
+Enterprise Implementation Program Sprint 2 is certified and closed as `EIP_1.0_SPRINT_2_INTERNAL_GEOGRAPHIC_READ_MODEL_CERTIFIED_AND_CLOSED`.
+
+Sprint 2 proves the first governed internal geographic read model over the Sprint 1 persistence proof.
+
+Certified Sprint 2 outputs:
+
+- Sprint charter: `EIP-1.0-SPRINT-2-INTERNAL-GEOGRAPHIC-READ-MODEL-CHARTER.md`.
+- Sprint record: `EIP-1.0-SPRINT-2-INTERNAL-GEOGRAPHIC-READ-MODEL.md`.
+- Lessons learned: `EIP-1.0-SPRINT-2-LESSONS-LEARNED.md`.
+- Internal-only read-model module: `lib/eip/internalGeographicReadModel.ts`.
+- Deterministic safety command: `npm run check:eip-sprint-2-internal-geographic-read-model`.
+- 10 internal geographic views returned from Sprint 1 records.
+- Retrieval by internal ID, canonical name, alias, and object type verified.
+- Identity, classification, source, trust, lifecycle, eligibility, review, relationship, and metadata propagation verified.
+- Persistence details remain hidden behind the read-model contract.
+- Customer visibility remained zero.
+
+Sprint 2 does not authorize:
+
+- production geographic persistence;
+- GIO row creation;
+- public APIs or routes;
+- property relationship creation;
+- final canonical selection;
+- customer retrieval;
+- search, map, page, SEO, Typesense, MLS, alert, CRM, email, or runtime activation;
+- vendor integration, scraping, or AI-assisted mapping activation.
+
 ---
 
 ## Program Watch Items
@@ -362,7 +392,9 @@ Sprint 1 does not authorize:
 | Preview-to-production drift | Preview records could be mistaken for authoritative mappings. | Keep all preview records non-active, non-authoritative, and not eligible for activation. |
 | Review-to-production drift | Review queue classifications could be mistaken for canonical approval. | Keep every queue item `NOT_ELIGIBLE` and require separate authorization before any persistence. |
 | Fixture-to-persistence drift | Decision fixtures could be mistaken for permission to create GIO rows. | Treat fixtures as non-authoritative evidence only until a separate internal-persistence proof is authorized. |
-| Internal-proof-to-product drift | Internal persisted proof records could be mistaken for customer-ready value. | Require Sprint 2 to prove an internal read-model contract before any customer or runtime surface is considered. |
+| Internal-proof-to-product drift | Internal persisted proof records could be mistaken for customer-ready value. | Sprint 2 read-model proof is complete; require later quality, conflict, and activation gates before any customer or runtime surface is considered. |
+| Read-model-to-runtime drift | Internal read-model views could be mistaken for permission to expose geographic intelligence publicly. | Require separate activation authorization and keep runtime import scanning mandatory. |
+| Canonical-name collision handling | Internal retrieval may find duplicate names, such as Mapleton Hill, before canonical resolution. | Preserve deterministic internal retrieval and require Sprint 3 quality/conflict review before any canonical claim. |
 
 ---
 
@@ -370,7 +402,7 @@ Sprint 1 does not authorize:
 
 Authorize only:
 
-- `EIP_1.0_SPRINT_2_INTERNAL_PERSISTENCE_READ_MODEL_PROOF`
+- `EIP_1.0_SPRINT_3_INTERNAL_GEOGRAPHIC_QUALITY_AND_CONFLICT_REVIEW`
 
 Do not authorize without a separate directive:
 
