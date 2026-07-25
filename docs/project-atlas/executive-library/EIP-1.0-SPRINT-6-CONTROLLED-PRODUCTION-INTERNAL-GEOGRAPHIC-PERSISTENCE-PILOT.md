@@ -4,7 +4,7 @@
 
 ### Controlled Production-Internal Geographic Persistence Pilot(tm)
 
-Status: `EIP_1.0_SPRINT_6_CONTROLLED_PRODUCTION_INTERNAL_GEOGRAPHIC_PERSISTENCE_PILOT_PENDING_SPRINT_6A_1_DEPLOYED_DRY_RUN_RETRY`
+Status: `EIP_1.0_SPRINT_6_CONTROLLED_PRODUCTION_INTERNAL_GEOGRAPHIC_PERSISTENCE_PILOT_BLOCKED_AT_AUTHENTICATED_DRY_RUN_RETRY`
 
 Implementation date: July 25, 2026
 
@@ -42,6 +42,8 @@ Current stop point:
 - production dry run `EIP-S6-DRY-20260725-003` returned HTTP `500` with new error `ENOENT: no such file or directory, scandir 'prisma/migrations'`;
 - Sprint 6A.1 runtime dependency separation correction has been implemented locally to remove the validation-script dependency from the protected route graph;
 - focused validation confirms the protected route dependency graph no longer reads `prisma/schema.prisma` or scans `prisma/migrations`;
+- Sprint 6A.1 commit `3a2874a6d936c81c3f5f4c5e1e6440d536065c39` deployed successfully with Vercel status ID `51091139012`;
+- production dry-run retry `EIP-S6-DRY-20260725-004` returned HTTP `401` at the admin auth gate, so dry-run execution was not reached;
 - production execute remains paused.
 
 ---
@@ -252,7 +254,13 @@ Sprint 6A.1 runtime dependency separation correction:
 - local focused validation result: passed;
 - production execute attempted: no;
 - production GIO writes performed: `0`;
-- next required deployed dry-run invocation ID: `EIP-S6-DRY-20260725-004`.
+- deployment commit: `3a2874a6d936c81c3f5f4c5e1e6440d536065c39`;
+- Vercel status ID: `51091139012`;
+- deployment status: success;
+- dry-run retry invocation ID: `EIP-S6-DRY-20260725-004`;
+- dry-run retry status: HTTP `401` unauthorized;
+- dry-run execution reached: no;
+- next required action: retry dry run with a valid admin credential in the execution environment.
 - Vercel status ID: `51090831312`;
 - deployment status: success;
 - production dry-run retry: `EIP-S6-DRY-20260725-003`;

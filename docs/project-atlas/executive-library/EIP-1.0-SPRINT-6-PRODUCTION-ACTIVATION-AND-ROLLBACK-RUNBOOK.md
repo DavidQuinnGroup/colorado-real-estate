@@ -171,10 +171,14 @@ Current stop condition:
 - Sprint 6A.1 implemented a runtime dependency separation correction that moved reusable GMA preview records into `lib/gma/readOnlyMappingPreviewFixtures.ts`;
 - `lib/gma/internalMappingReviewQueue.ts` no longer imports `scripts/checkGmaReadOnlyMappingPreview.js`;
 - `npm run check:eip-sprint-6a-runtime-dependency-separation` passed locally and proved the protected route graph does not read `prisma/schema.prisma` or scan `prisma/migrations`;
-- next retry is blocked until Sprint 6A.1 is fully validated, committed, pushed, deployed successfully, and production dry-run evidence is reviewed.
+- Sprint 6A.1 commit `3a2874a6d936c81c3f5f4c5e1e6440d536065c39` deployed successfully with Vercel status ID `51091139012`;
+- dry-run retry `EIP-S6-DRY-20260725-004` returned HTTP `401` unauthorized before dry-run execution;
+- no execute was run;
+- no production GIO write was performed;
+- next retry is blocked until a valid admin credential is available in the execution environment.
 
-Next dry-run invocation must use a new invocation ID after Sprint 6A.1 deployment:
+Next dry-run invocation must use a new invocation ID after admin credential verification:
 
-- `EIP-S6-DRY-20260725-004`
+- `EIP-S6-DRY-20260725-005`
 
 Controlled execute remains prohibited until that dry run returns HTTP `200`, `success=true`, `dryRun=true`, `executed=false`, `writesPerformed=0`, all eligibility flags false, zero relationship writes, and a rollback plan.

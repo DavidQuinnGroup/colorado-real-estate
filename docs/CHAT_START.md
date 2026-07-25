@@ -22,7 +22,7 @@ Start by running:
 git status --short --branch
 git rev-parse HEAD
 git rev-parse origin/main
-curl -s --max-time 20 https://api.github.com/repos/DavidQuinnGroup/colorado-real-estate/commits/c5bdca74fbf24c5a5e6801e1b0093005777d55c4/status
+curl -s --max-time 20 https://api.github.com/repos/DavidQuinnGroup/colorado-real-estate/commits/3a2874a6d936c81c3f5f4c5e1e6440d536065c39/status
 ```
 
 Current Sprint 6 state:
@@ -51,7 +51,10 @@ Current Sprint 6 state:
 - Sprint 6A.1 local correction: reusable GMA preview fixture records moved to `lib/gma/readOnlyMappingPreviewFixtures.ts`; `lib/gma/internalMappingReviewQueue.ts` now imports from `./readOnlyMappingPreviewFixtures.js`; `scripts/checkGmaReadOnlyMappingPreview.ts` remains validation-only.
 - New validation command: `npm run check:eip-sprint-6a-runtime-dependency-separation`.
 - Focused local validation passed and proved the protected route dependency graph does not read `prisma/schema.prisma` or scan `prisma/migrations`.
-- Current active phase: full validation, commit, push, deployment, and production dry-run retry only. Controlled execute remains prohibited.
+- Sprint 6A.1 commit: `3a2874a6d936c81c3f5f4c5e1e6440d536065c39`.
+- Sprint 6A.1 deployment status: success, Vercel status ID `51091139012`.
+- Production dry-run retry `EIP-S6-DRY-20260725-004`: HTTP `401` unauthorized before dry-run execution; no execute run; production GIO writes remain `0`.
+- Current active phase: admin credential correction/verification, then production dry-run retry only. Controlled execute remains prohibited.
 
 Completed validation before route hardening push:
 
@@ -97,9 +100,9 @@ Google Doc governance update:
 
 Next safe step:
 
-1. Commit and push the Sprint 6A.1 runtime dependency separation correction after validation passes.
-2. Confirm deployment success.
-3. Retry production dry run with invocation ID `EIP-S6-DRY-20260725-004`.
+1. Verify a valid admin credential is available to the execution environment without exposing the secret.
+2. Retry production dry run with a new invocation ID, recommended `EIP-S6-DRY-20260725-005`.
+3. If the dry run returns HTTP `200`, `success=true`, `dryRun=true`, `executed=false`, `writesPerformed=0`, all eligibility false, zero relationship writes, and rollback plan present, stop for executive review before controlled execute.
 
 Do not run Sprint 6 controlled execute until a future deployed dry run returns HTTP `200`, `success=true`, `dryRun=true`, `executed=false`, `writesPerformed=0`, all eligibility flags false, zero relationship writes, and a rollback plan.
 
