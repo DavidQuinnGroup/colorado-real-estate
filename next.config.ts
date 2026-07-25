@@ -1,6 +1,9 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
+  outputFileTracingIncludes: {
+    '/api/admin/enterprise/geographic-persistence-pilot': ['./prisma/schema.prisma'],
+  },
   experimental: {
     turbo: {
       resolveAlias: {

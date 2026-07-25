@@ -50,6 +50,7 @@
     "scripts/checkEipSprint4InternalGeographicActivationReadinessLedger.ts",
     "scripts/checkEipSprint5EnterpriseKnowledgeApprovalSystem.ts",
     "scripts/checkEipSprint6ControlledProductionInternalGeographicPersistencePilot.ts",
+    "scripts/checkEipSprint6aProductionRuntimePackagingCorrection.ts",
     "scripts/checkGeographicIntelligenceObjectSafety.ts",
     "scripts/checkGkcFixtureGovernance.ts",
     "scripts/checkGmaReadOnlyMappingPreview.ts",

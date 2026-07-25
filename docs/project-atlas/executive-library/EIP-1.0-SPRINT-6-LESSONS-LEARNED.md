@@ -55,3 +55,9 @@ The first production dry run returned HTTP `500` before any write was executed. 
 After route hardening deployed, the production dry run returned the catchable JSON error `ENOENT: no such file or directory, open 'prisma/schema.prisma'`. That isolates the remaining blocker to deployed Prisma schema packaging/configuration, not to the governed Thornton data plan.
 
 This reinforces the program rule that production persistence requires deployed-route evidence, not only local validation.
+
+## 7. Generated ORM Runtime Assets Need Packaging Evidence
+
+Sprint 6A confirmed that the route and pilot module did not read `schema.prisma`; the missing file came from Prisma Client's deployed node runtime packaging requirement.
+
+The correction is intentionally route-scoped to the protected admin route and does not introduce a general repository-file access pattern.

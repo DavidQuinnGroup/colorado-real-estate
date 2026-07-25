@@ -4,7 +4,7 @@
 
 ### Controlled Production-Internal Geographic Persistence Pilot(tm)
 
-Status: `EIP_1.0_SPRINT_6_CONTROLLED_PRODUCTION_INTERNAL_GEOGRAPHIC_PERSISTENCE_PILOT_PAUSED_AT_DEPLOYMENT_GATE`
+Status: `EIP_1.0_SPRINT_6_CONTROLLED_PRODUCTION_INTERNAL_GEOGRAPHIC_PERSISTENCE_PILOT_BLOCKED_AT_PRODUCTION_DRY_RUN_PENDING_SPRINT_6A_DEPLOYMENT`
 
 Implementation date: July 25, 2026
 
@@ -38,6 +38,7 @@ Current stop point:
 - route hardening commit `d50f3a815dd7f340d1f5db5caa3153ee4c9feb73` was pushed to make runtime/module failures catchable as JSON;
 - Vercel status `51090536652` for `d50f3a815dd7f340d1f5db5caa3153ee4c9feb73` completed successfully;
 - retried production dry run `EIP-S6-DRY-20260725-002` returned HTTP `500` with JSON error `ENOENT: no such file or directory, open 'prisma/schema.prisma'`;
+- Sprint 6A route-scoped Prisma schema packaging correction was implemented locally and validated;
 - production execute remains paused.
 
 ---
@@ -227,6 +228,18 @@ Route hardening response:
 - production execute attempted: no;
 - production writes performed: 0.
 
+Sprint 6A packaging correction:
+
+- implemented correction package: `EIP_1.0_SPRINT_6A_PRODUCTION_RUNTIME_PACKAGING_CORRECTION`;
+- correction file: `next.config.ts`;
+- correction pattern: route-scoped `outputFileTracingIncludes` for `/api/admin/enterprise/geographic-persistence-pilot`;
+- included asset: `./prisma/schema.prisma`;
+- validation command: `npm run check:eip-sprint-6a-production-runtime-packaging-correction`;
+- local validation result: passed;
+- schema or migration change: none;
+- runtime/customer behavior change: none;
+- next production dry run: `EIP-S6-DRY-20260725-003` after deployment success.
+
 ---
 
 ## 9. Controlled Execute Evidence
@@ -291,7 +304,7 @@ Certification is not recommended yet.
 Required remaining gates:
 
 - Vercel success for route hardening commit `d50f3a815dd7f340d1f5db5caa3153ee4c9feb73`;
-- deployed Prisma schema packaging/configuration issue is corrected;
+- Sprint 6A packaging correction is deployed successfully;
 - production dry run returns success with zero writes;
 - controlled execute persists or reuses only the authorized Thornton pilot rows;
 - inspection verifies internal-only state and zero relationships;

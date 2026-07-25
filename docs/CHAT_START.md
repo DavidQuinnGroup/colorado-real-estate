@@ -10,7 +10,7 @@ Product:
 
 ## Latest New-Chat Handoff
 
-PROJECT ATLAS(tm) / EIP Sprint 6 continuation, July 25, 2026:
+PROJECT ATLAS(tm) / EIP Sprint 6A continuation, July 25, 2026:
 
 Workspace:
 
@@ -28,6 +28,7 @@ curl -s --max-time 20 https://api.github.com/repos/DavidQuinnGroup/colorado-real
 Current Sprint 6 state:
 
 - Program: `EIP_1.0_SPRINT_6_CONTROLLED_PRODUCTION_INTERNAL_GEOGRAPHIC_PERSISTENCE_PILOT`.
+- Correction package: `EIP_1.0_SPRINT_6A_PRODUCTION_RUNTIME_PACKAGING_CORRECTION`.
 - Authorized subject: `Thornton, Colorado` only.
 - Production boundary: one production-internal GIO pilot object only.
 - Runtime/customer activation: not authorized.
@@ -40,10 +41,14 @@ Current Sprint 6 state:
 - Route hardening commit: `d50f3a815dd7f340d1f5db5caa3153ee4c9feb73`.
 - Route hardening status at handoff: pushed to `origin/main`, Vercel status ID `51090536652`, state `success`.
 - Retried production dry run `EIP-S6-DRY-20260725-002`: HTTP `500`, JSON error `ENOENT: no such file or directory, open 'prisma/schema.prisma'`, no execute run, no production GIO write performed.
-- Current active phase: blocked before controlled execute until deployed Prisma schema packaging/configuration is corrected and production dry run succeeds.
+- Sprint 6A root cause: protected admin route and pilot module do not read `schema.prisma`; Prisma Client generated node runtime requires the schema artifact in the deployed route package.
+- Sprint 6A correction implemented locally: route-scoped `outputFileTracingIncludes` in `next.config.ts` for `/api/admin/enterprise/geographic-persistence-pilot` with only `./prisma/schema.prisma`.
+- Sprint 6A validation command added and passed locally: `npm run check:eip-sprint-6a-production-runtime-packaging-correction`.
+- Current active phase: deploy Sprint 6A correction, verify deployment success, then retry production dry run `EIP-S6-DRY-20260725-003`.
 
 Completed validation before route hardening push:
 
+- `npm run check:eip-sprint-6a-production-runtime-packaging-correction`
 - `npm run check:eip-sprint-6-controlled-production-internal-geographic-persistence-pilot`
 - `npm run check:eip-sprint-5-enterprise-knowledge-approval-system`
 - `npm run check:eip-sprint-4-internal-geographic-activation-readiness-ledger`
@@ -80,8 +85,9 @@ Google Doc governance update:
 - Tab: `t.0`
 - Readback revision after Sprint 6 append: `AIroW35qt_CtJ9DQQmzhNc2ci9-6spqGp84Oxzc4Jl5aTm5a31nPqVXwYkM6kWya67jS7mf6iDWGtJ4FvbNGqwpmTY9rtYhU7YrD4gJE6W0`
 - The doc records Sprint 5 certification, Sprint 6 authorization, Thornton as the only pilot subject, one-object limit, continued prohibitions, recovery/rollback requirement, and the paused deployment gate.
+- Sprint 6A Google Doc update is still required after local docs/source commit and deployed dry-run retry evidence are available.
 
-Next safe step after Prisma schema packaging/configuration correction:
+Next safe step after Sprint 6A deployment success:
 
 1. Retry production dry run only with a new invocation ID:
 
@@ -93,6 +99,8 @@ curl --max-time 30 -s -X POST "https://davidquinngroup.com/api/admin/enterprise/
 ```
 
 2. Proceed to controlled execute only if dry run succeeds with zero writes and the authorized planned row counts.
+
+Do not run Sprint 6 controlled execute until the deployed Sprint 6A dry run returns HTTP `200`, `success=true`, `dryRun=true`, `executed=false`, `writesPerformed=0`, all eligibility flags false, zero relationship writes, and a rollback plan.
 
 Do not begin Sprint 7.
 
