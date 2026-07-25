@@ -4,7 +4,7 @@
 
 ### Wave 3 - Additive Persistence Foundation(tm)
 
-Status: `IMPLEMENTED_CODE_DEPLOYED_SCHEMA_MIGRATION_PENDING_BLOCKED`
+Status: `GIO_1.0_WAVE_3_SCHEMA_MIGRATION_PENDING_BLOCKED`
 
 Implementation baseline: `1eb6e8f9b89ec333042e2c55f3ce90be873eee91`
 
@@ -257,6 +257,16 @@ Stop condition:
 - Applying unrelated pending production migrations is outside the Wave 3 scope and requires explicit authorization.
 - Therefore, Wave 3 code is deployed, but production GIO schema migration remains pending.
 
+Production migration reconciliation update:
+
+- Reconciliation record: `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/GIO-1.0-WAVE-3-PRODUCTION-MIGRATION-RECONCILIATION.md`
+- Result: blocked before mutation.
+- Backup/recovery posture could not be independently confirmed from available tooling.
+- `20260722210000_repair_seller_lead_schema_parity` appears fully present in production schema but has no `_prisma_migrations` ledger row.
+- `20260722211500_repair_seller_lead_id_type` exists locally as an empty migration directory with no `migration.sql`; production `SellerLead.id` is `uuid DEFAULT gen_random_uuid()`, while Prisma currently declares `String @default(cuid())`.
+- GIO tables and enums were verified absent before any deployment attempt.
+- No `migrate resolve` or `migrate deploy` command was executed.
+
 ---
 
 ## Zero Activation Confirmation
@@ -304,6 +314,6 @@ Explicitly deferred:
 
 ## Recommended Next Authorization
 
-Authorize a production migration-resolution decision for the three unapplied migrations reported by `npx prisma migrate status`. Options require explicit approval because `prisma migrate deploy` would apply both pre-existing seller-lead repair migrations and the new GIO migration.
+Authorize a narrow SellerLead production schema repair/reconciliation package before any GIO schema deployment. The package should resolve the empty `20260722211500_repair_seller_lead_id_type` migration-history issue, govern the production `SellerLead` UUID/legacy-column drift, and confirm backup/recovery posture before any production mutation.
 
-After production migration status is resolved and schema presence is verified, the next implementation authorization should be a documentation-reviewed GIO Wave 4 object-governance and fixture-only verification package. It should remain non-customer-facing and must not begin current-data mapping, backfill, geographic resolution, eligibility preview, or customer integration without separate explicit approval.
+After production migration status is resolved and GIO schema presence is verified, the next implementation authorization should be a documentation-reviewed GIO Wave 4 object-governance and fixture-only verification package. It should remain non-customer-facing and must not begin current-data mapping, backfill, geographic resolution, eligibility preview, or customer integration without separate explicit approval.
