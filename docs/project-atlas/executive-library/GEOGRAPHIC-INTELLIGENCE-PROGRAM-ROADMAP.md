@@ -403,6 +403,37 @@ Sprint 3 does not authorize:
 - search, map, page, SEO, Typesense, MLS, alert, CRM, email, or runtime activation;
 - vendor integration, scraping, or AI-assisted mapping activation.
 
+## Enterprise Implementation Program - Sprint 4 Status
+
+Enterprise Implementation Program Sprint 4 is certified and closed as `EIP_1.0_SPRINT_4_INTERNAL_GEOGRAPHIC_ACTIVATION_READINESS_LEDGER_CERTIFIED_AND_CLOSED`.
+
+Sprint 4 proves deterministic internal activation readiness accounting over the Sprint 2 geographic read model and Sprint 3 Enterprise Knowledge Quality Engine.
+
+Certified Sprint 4 outputs:
+
+- Sprint charter: `EIP-1.0-SPRINT-4-INTERNAL-GEOGRAPHIC-ACTIVATION-READINESS-LEDGER-CHARTER.md`.
+- Sprint record: `EIP-1.0-SPRINT-4-INTERNAL-GEOGRAPHIC-ACTIVATION-READINESS-LEDGER.md`.
+- Lessons learned: `EIP-1.0-SPRINT-4-LESSONS-LEARNED.md`.
+- Internal-only readiness ledger module: `lib/eip/internalGeographicActivationReadinessLedger.ts`.
+- Deterministic safety command: `npm run check:eip-sprint-4-internal-geographic-activation-readiness-ledger`.
+- 120 ledger entries created from 10 Sprint 2 geographic read-model records across 12 activation gates.
+- Quality, readiness, authorization, and activation are explicitly separated.
+- All ledger entries remain `authorizationStatus: NOT_AUTHORIZED`.
+- All ledger entries remain `active: false`.
+- Customer-visible readiness signals remained zero.
+
+Sprint 4 does not authorize:
+
+- production geographic persistence;
+- GIO row creation;
+- public APIs or routes;
+- customer-visible readiness or quality scores;
+- property relationship creation;
+- final canonical selection;
+- customer retrieval;
+- search, map, page, SEO, Typesense, MLS, alert, CRM, email, indexing, market analytics, customer presentation, AI-assisted synthesis, or runtime activation;
+- vendor integration or scraping.
+
 ---
 
 ## Program Watch Items
@@ -426,7 +457,9 @@ Sprint 3 does not authorize:
 | Read-model-to-runtime drift | Internal read-model views could be mistaken for permission to expose geographic intelligence publicly. | Require separate activation authorization and keep runtime import scanning mandatory. |
 | Canonical-name collision handling | Internal retrieval may find duplicate names, such as Mapleton Hill, before canonical resolution. | Sprint 3 quality review is complete; preserve deterministic internal retrieval and require readiness-ledger plus activation gates before any canonical claim. |
 | Quality-score exposure drift | Internal quality scores could be misunderstood as public trust badges or ranking inputs. | Keep quality scores internal and require a separate customer-language review before any public presentation. |
-| Quality-to-activation drift | A `READY` internal quality status could be mistaken for customer activation authorization. | Keep activation readiness separate from activation; require Sprint 4 readiness ledger and later executive activation gate. |
+| Quality-to-activation drift | A `READY` internal quality status could be mistaken for customer activation authorization. | Sprint 4 readiness ledger now separates quality, readiness, authorization, and activation; require a later executive activation gate before any runtime change. |
+| Readiness-to-authorization drift | A `READY_FOR_EXECUTIVE_REVIEW` ledger status could be mistaken for approval. | Keep `authorizationStatus: NOT_AUTHORIZED` mandatory until explicit executive authorization is recorded. |
+| Internal-proof-complete drift | Sprint 1/Sprint 2 internal proof completion could be mistaken for production persistence approval. | Treat `INTERNAL_PROOF_COMPLETE` as historical accounting only; require separate production persistence authorization. |
 
 ---
 
@@ -434,7 +467,7 @@ Sprint 3 does not authorize:
 
 Authorize only:
 
-- `EIP_1.0_SPRINT_4_INTERNAL_GEOGRAPHIC_ACTIVATION_READINESS_LEDGER`
+- `EIP_1.0_SPRINT_5_INTERNAL_GEOGRAPHIC_EXECUTIVE_REVIEW_PACKET`
 
 Do not authorize without a separate directive:
 
