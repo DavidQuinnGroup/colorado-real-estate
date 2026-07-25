@@ -28,7 +28,8 @@ Current program posture:
 - GIO 1.0 Wave 4: object governance verification certified and closed.
 - GKC 1.0: architectural assessment certified and closed.
 - GKC 1.0 fixture governance validation: certified and closed.
-- GKC 1.0 internal development persistence assessment: recommended next authorization only.
+- GKM 1.0 existing geographic knowledge inventory and classification: certified and closed.
+- GKM 1.0 internal development mapping plan: recommended next authorization only.
 
 ---
 
@@ -53,7 +54,9 @@ Current program posture:
 | Wave 4 | Object Governance Verification | Verify implemented object governance, constraints, relationships, source posture, observations, eligibility, and runtime isolation. | `CERTIFIED_AND_CLOSED` | Verification only |
 | GKC 1.0 | Geographic Knowledge Classification | Architect classification taxonomies, review rules, source trust levels, observation keys, and fixture-only validation. | `CERTIFIED_AND_CLOSED` | Architecture only |
 | Future Wave | Fixture Governance Validation | Validate classification behavior against non-production fixtures without production writes. | `CERTIFIED_AND_CLOSED` | Synthetic local validation only |
-| Future Wave | Internal Development Persistence Assessment | Assess whether fixture-governance contracts are sufficient for isolated non-production persistence. | `RECOMMENDED_NEXT_ASSESSMENT` | No production persistence |
+| GKM 1.0 | Existing Geographic Knowledge Inventory and Classification | Inventory existing repository knowledge assets, classify them against GIO/GKC, map Data Tools source categories, and identify persistence candidates without activation. | `CERTIFIED_AND_CLOSED` | Read-only documentation and source classification |
+| Future Wave | Internal Development Mapping Plan | Produce deterministic non-production mapping, alias, source, conflict, and dry-run ledger plans before any persistence authorization. | `RECOMMENDED_NEXT_ASSESSMENT` | No production persistence |
+| Future Wave | Internal Development Persistence Assessment | Assess whether fixture-governance contracts are sufficient for isolated non-production persistence. | `DEFERRED_BY_GKM` | No production persistence |
 | Future Wave | Current Data Mapping Report | Produce dry-run reports from existing city, neighborhood, ZIP, subdivision, and market data. | `NOT_AUTHORIZED` | Read-only report only |
 | Future Wave | Controlled Object Population | Seed a bounded canonical object set after source and classification approval. | `NOT_AUTHORIZED` | Production mutation only after gate |
 | Future Wave | Property Relationship Backfill | Create governed property-to-geography relationships in bounded batches. | `NOT_AUTHORIZED` | Production mutation only after gate |
@@ -73,6 +76,7 @@ Current program posture:
 | Wave 4 object governance verification | `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/GIO-1.0-WAVE-4-OBJECT-GOVERNANCE-VERIFICATION.md` | Certified and closed |
 | GKC 1.0 geographic knowledge classification architecture | `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/GKC-1.0-GEOGRAPHIC-KNOWLEDGE-CLASSIFICATION-ARCHITECTURE.md` | Certified and closed |
 | GKC 1.0 fixture governance validation | `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/GKC-1.0-FIXTURE-GOVERNANCE-VALIDATION.md` | Certified and closed |
+| GKM 1.0 existing geographic knowledge inventory and classification | `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/GKM-1.0-GEOGRAPHIC-KNOWLEDGE-MATRIX.md` | Certified and closed |
 
 ---
 
@@ -85,6 +89,7 @@ Current program posture:
 | Source trust gate | Material source-backed observations or object claims | Not authorized |
 | Classification gate | Any object classification or knowledge layer | GKC 1.0 architecture certified; implementation not authorized |
 | Fixture gate | Any non-production object or relationship validation | Synthetic local fixture validation certified; persistence not authorized |
+| Existing knowledge matrix gate | Any current-data mapping, source-ledger creation, or persistence planning | GKM 1.0 certified as read-only inventory; persistence still not authorized |
 | Production population gate | Any GIO row insertion | Not authorized |
 | Customer activation gate | Public GIO routes, search, maps, property pages, or content | Not authorized |
 
@@ -141,6 +146,33 @@ GKC 1.0 fixture governance validation is also certified and closed. It implement
 
 ---
 
+## GKM 1.0 Status
+
+GKM 1.0 existing geographic knowledge inventory and classification is certified and closed. It is a read-only matrix and source-classification record, not an implementation or activation wave.
+
+Certified GKM 1.0 outputs:
+
+- Existing geographic knowledge inventory across repository data, routes, models, maps, search, SEO, internal links, GIO/GKC modules, and source documents.
+- GIO object-to-domain matrix.
+- Repository asset classification matrix.
+- GKC classification matrix.
+- Source trust and freshness matrix.
+- Real Estate Data Tools source matrix based on the accessible authoritative Google Doc.
+- Duplicate and conflict register.
+- Editorial-versus-factual separation.
+- Persistence-candidate, restricted-knowledge, deferred-knowledge, and activation-readiness registers.
+- Recommended minimum internal-development mapping scope.
+
+GKM 1.0 closure does not authorize:
+
+- GIO row insertion.
+- Existing data mapping or production persistence.
+- Property relationship backfill.
+- Search, map, property page, market page, sitemap, SEO, Typesense, MLS, alert, CRM, email, or customer-facing activation.
+- Vendor integration or external data ingestion.
+
+---
+
 ## Program Watch Items
 
 | Watch item | Reason | Recommended handling |
@@ -151,6 +183,8 @@ GKC 1.0 fixture governance validation is also certified and closed. It implement
 | Observation JSON schema keys | JSON observations require a schema key but no persisted registry exists yet. | Fixture validation now proves a local registry; future persistence must decide registry storage without activating production data. |
 | Slug route strategy | Current uniqueness is by object type and canonical slug. | Decide route and redirect posture before any public route activation. |
 | Runtime isolation | Future imports can erode the dormant boundary. | Keep static safety checks mandatory until activation is authorized. |
+| Existing knowledge duplication | City, neighborhood, market, polygon, and link data exist in parallel structures. | Use GKM 1.0 conflict register before any mapping or persistence. |
+| External source governance | Authoritative Google Docs are accessible but external to repository version control. | Record exact required external updates; do not claim external updates unless performed. |
 
 ---
 
@@ -158,7 +192,7 @@ GKC 1.0 fixture governance validation is also certified and closed. It implement
 
 Authorize only:
 
-- `GKC_1.0_INTERNAL_DEVELOPMENT_PERSISTENCE_ASSESSMENT`
+- `GKM_1.0_INTERNAL_DEVELOPMENT_MAPPING_PLAN`
 
 Do not authorize without a separate directive:
 
