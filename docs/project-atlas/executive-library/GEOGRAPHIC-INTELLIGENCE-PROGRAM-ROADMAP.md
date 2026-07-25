@@ -26,7 +26,8 @@ Current program posture:
 - GIO 1.0 Wave 2: chartered and implementation-ready.
 - GIO 1.0 Wave 3: additive persistence foundation certified and closed.
 - GIO 1.0 Wave 4: object governance verification certified and closed.
-- GKC 1.0: recommended next architectural assessment only.
+- GKC 1.0: architectural assessment certified and closed.
+- GKC 1.0 fixture governance validation: recommended next package only.
 
 ---
 
@@ -49,8 +50,8 @@ Current program posture:
 | Wave 2 | Canonical Core Model Charter | Define the approved GIO persistence, relationship, source, observation, eligibility, and property-compatibility architecture. | `DOCUMENTATION_ONLY_IMPLEMENTATION_READY` | No runtime implementation |
 | Wave 3 | Additive Persistence Foundation | Implement dormant Prisma schema, migration, helper contract, and static safety checks. | `CERTIFIED_AND_CLOSED` | Dormant persistence only |
 | Wave 4 | Object Governance Verification | Verify implemented object governance, constraints, relationships, source posture, observations, eligibility, and runtime isolation. | `CERTIFIED_AND_CLOSED` | Verification only |
-| GKC 1.0 | Geographic Knowledge Classification | Architect classification taxonomies, review rules, source trust levels, observation keys, and fixture-only validation. | `RECOMMENDED_NEXT_ASSESSMENT` | Architecture only |
-| Future Wave | Fixture Governance Validation | Validate classification behavior against non-production fixtures without production writes. | `NOT_AUTHORIZED` | Fixture only |
+| GKC 1.0 | Geographic Knowledge Classification | Architect classification taxonomies, review rules, source trust levels, observation keys, and fixture-only validation. | `CERTIFIED_AND_CLOSED` | Architecture only |
+| Future Wave | Fixture Governance Validation | Validate classification behavior against non-production fixtures without production writes. | `RECOMMENDED_NEXT_PACKAGE` | Fixture only |
 | Future Wave | Current Data Mapping Report | Produce dry-run reports from existing city, neighborhood, ZIP, subdivision, and market data. | `NOT_AUTHORIZED` | Read-only report only |
 | Future Wave | Controlled Object Population | Seed a bounded canonical object set after source and classification approval. | `NOT_AUTHORIZED` | Production mutation only after gate |
 | Future Wave | Property Relationship Backfill | Create governed property-to-geography relationships in bounded batches. | `NOT_AUTHORIZED` | Production mutation only after gate |
@@ -68,6 +69,7 @@ Current program posture:
 | Wave 3 additive persistence foundation | `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/GIO-1.0-WAVE-3-ADDITIVE-PERSISTENCE-FOUNDATION.md` | Certified and closed |
 | Wave 3 production migration reconciliation | `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/GIO-1.0-WAVE-3-PRODUCTION-MIGRATION-RECONCILIATION.md` | Certified and closed |
 | Wave 4 object governance verification | `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/GIO-1.0-WAVE-4-OBJECT-GOVERNANCE-VERIFICATION.md` | Certified and closed |
+| GKC 1.0 geographic knowledge classification architecture | `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/GKC-1.0-GEOGRAPHIC-KNOWLEDGE-CLASSIFICATION-ARCHITECTURE.md` | Certified and closed |
 
 ---
 
@@ -78,8 +80,8 @@ Current program posture:
 | Recovery gate | Any production mutation | Satisfied for Wave 3; must be reconfirmed before future mutation-producing waves |
 | Runtime isolation gate | Any GIO or GKC implementation | Active; safety check must continue passing |
 | Source trust gate | Material source-backed observations or object claims | Not authorized |
-| Classification gate | Any object classification or knowledge layer | GKC 1.0 assessment recommended |
-| Fixture gate | Any non-production object or relationship validation | Not authorized |
+| Classification gate | Any object classification or knowledge layer | GKC 1.0 architecture certified; implementation not authorized |
+| Fixture gate | Any non-production object or relationship validation | Recommended next package only |
 | Production population gate | Any GIO row insertion | Not authorized |
 | Customer activation gate | Public GIO routes, search, maps, property pages, or content | Not authorized |
 
@@ -109,11 +111,11 @@ Deferred until separate trust review:
 
 ---
 
-## GKC 1.0 Readiness
+## GKC 1.0 Status
 
-GKC 1.0 is recommended as an architectural assessment, not an implementation wave.
+GKC 1.0 architectural assessment is certified and closed. It is a governance standard, not an implementation wave.
 
-Required GKC 1.0 assessment outputs:
+Certified GKC 1.0 assessment outputs:
 
 - Classification taxonomy for geographic object types.
 - Relationship classification rules.
@@ -124,7 +126,7 @@ Required GKC 1.0 assessment outputs:
 - Fixture-only validation plan.
 - Explicit non-activation statement.
 
-GKC 1.0 must not:
+GKC 1.0 closure does not authorize:
 
 - Insert production GIO data.
 - Migrate existing geography strings.
@@ -151,11 +153,10 @@ GKC 1.0 must not:
 
 Authorize only:
 
-- `Geographic Knowledge Classification - GKC 1.0 Architectural Assessment`
+- `GKC_1.0_FIXTURE_GOVERNANCE_VALIDATION_PACKAGE`
 
 Do not authorize without a separate directive:
 
-- fixture data creation
 - production table population
 - geographic migration
 - property relationship backfill
