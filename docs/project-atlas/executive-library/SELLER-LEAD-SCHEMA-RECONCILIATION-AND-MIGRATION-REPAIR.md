@@ -2,7 +2,7 @@
 
 ## SellerLead Schema Reconciliation & Migration Repair
 
-Status: `SELLER_LEAD_SCHEMA_RECONCILIATION_IMPLEMENTED_PRODUCTION_MUTATION_BLOCKED`
+Status: `SELLER_LEAD_SCHEMA_RECONCILIATION_CERTIFIED_AND_CLOSED`
 
 Authorization date: July 25, 2026
 
@@ -23,7 +23,23 @@ The repair preserves the production `SellerLead` UUID identity strategy:
 - No CUID/text conversion is introduced.
 - No SellerLead business rows are rewritten.
 
-Production mutation was not executed. The required backup/recovery posture could not be independently confirmed from local tooling, so `npx prisma migrate resolve` and `npx prisma migrate deploy` remain blocked.
+The Recovery Gate was later satisfied by executive confirmation of a restorable Supabase production backup. The parity migration was truthfully resolved as applied through Prisma, and the SellerLead UUID corrective migration was deployed through `npx prisma migrate deploy`.
+
+Post-deploy verification confirmed SellerLead row count and UUID identity hash were unchanged.
+
+---
+
+## Production Recovery Evidence
+
+- Project: `davidquinn-leads`
+- Project ID: `otmkoqvmhthitldlnjdk`
+- Environment: Production
+- Plan: Supabase Pro
+- Scheduled Backups: Enabled
+- Latest Verified Backup: `2026-07-25 09:49:14 UTC`
+- Restore Capability: Verified
+- PITR: Not enabled (optional add-on)
+- Executive Determination: `RECOVERY_GATE_SATISFIED`
 
 ---
 
@@ -240,24 +256,31 @@ The check verifies:
 
 Production mutation result:
 
-- Not run.
+- Completed through governed Prisma commands after Recovery Gate satisfaction.
 
-Commands intentionally not executed:
+Commands executed:
 
 - `npx prisma migrate resolve --applied 20260722210000_repair_seller_lead_schema_parity`
 - `npx prisma migrate deploy`
+
+Resolve result:
+
+- `20260722210000_repair_seller_lead_schema_parity` marked as applied.
+- Immediate status then showed only `20260725142500_seller_lead_uuid_schema_reconciliation` and `20260725143000_gio_wave3_additive_persistence_foundation` pending.
+
+Deploy result:
+
+- Applied `20260725142500_seller_lead_uuid_schema_reconciliation`.
+- Applied `20260725143000_gio_wave3_additive_persistence_foundation`.
+- Prisma reported all migrations successfully applied.
+
+Commands intentionally not executed:
+
 - `prisma db push`
-- Any manual `_prisma_migrations` edit
+- Manual `_prisma_migrations` edits
+- Isolated/manual GIO SQL execution
 - Any SellerLead business-data update
 - Any GIO row insertion
-
-Reason:
-
-- Backup/recovery could not be confirmed.
-- Supabase CLI was unavailable.
-- Local environment exposed application Supabase keys but no management access token suitable for backup/PITR verification.
-
-This is a hard stop under the authorization.
 
 ---
 
@@ -289,11 +312,12 @@ Notification readiness remained `watch` because 195 pending saved-search alert r
 
 ## Current Status
 
-SellerLead local repair state:
+SellerLead repair state:
 
 - Implemented.
-- Validated locally.
-- Ready for production migration execution only after backup/recovery is independently confirmed.
+- Deployed.
+- Production-verified.
+- Certified and closed.
 
 Implementation commit:
 
@@ -314,14 +338,34 @@ Production smoke after deployment:
 
 Production migration state:
 
-- Blocked.
-- No production migration mutation has been performed by this package.
+- Complete.
+- `npx prisma migrate status` reports `Database schema is up to date!`
+
+Final SellerLead preservation evidence:
+
+- SellerLead row count before deploy: 1.
+- SellerLead row count after deploy: 1.
+- SellerLead ID hash before deploy: `0b3f2a96dbf98c97fb8dfba37306d904`.
+- SellerLead ID hash after deploy: `0b3f2a96dbf98c97fb8dfba37306d904`.
+- Property row count before deploy: 15,282.
+- Property row count after deploy: 15,282.
+- Property ID hash before deploy: `ad9942b742ea52aaa663205ad5c4f64f`.
+- Property ID hash after deploy: `ad9942b742ea52aaa663205ad5c4f64f`.
+
+Final SellerLead schema evidence:
+
+- `SellerLead.id`: `uuid`, not null, default `gen_random_uuid()`.
+- `SellerLead.propertyId`: `text`, not null.
+- `SellerLead.listingid`: `text`, nullable.
+- `CRMTask.leadid`: `uuid`, nullable.
+- `CRMTask_leadid_fkey`: `CRMTask.leadid -> SellerLead.id`, `ON DELETE CASCADE`, `ON UPDATE NO ACTION`.
+- `CRMTask.leadId` user ownership remains separately present and unchanged.
 
 GIO Wave 3 state:
 
-- Still `GIO_1.0_WAVE_3_SCHEMA_MIGRATION_PENDING_BLOCKED`.
-- GIO schema deployment must wait until SellerLead reconciliation can proceed truthfully and safely.
+- Deployed and verified as additive schema-only.
+- GIO business record count remains zero across all seven GIO tables.
 
-Next required operator prerequisite:
+Closure:
 
-- Confirm current restorable Supabase backup/PITR posture and restore access for the target production database before authorizing migration resolve/deploy.
+- `SELLER_LEAD_SCHEMA_RECONCILIATION_CERTIFIED_AND_CLOSED`
