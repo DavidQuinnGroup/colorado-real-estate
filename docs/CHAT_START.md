@@ -243,9 +243,9 @@ Latest new-chat handoff, July 25, 2026 PROJECT ATLAS Property Intelligence Exper
 - Continue PROJECT ATLAS / REIE work in `/Users/davidquinn/david-quinn-group/colorado-real-estate`; begin the next chat by reading this section, then run `git status --short --branch`.
 - Governing authority remains `REAL ESTATE INTELLIGENCE ENGINE-MASTER V7.1`, Product Design Authority for the public REIE platform. Google Drive verification previously confirmed authoritative source file ID `1HylaD5fL9l0WpiYJLbDRxCKagcUdU99B`.
 - Current branch is `main`.
-- Current baseline after PIE Wave 5 implementation promotion should be `HEAD = origin/main = 85367b5fece1a1eff8220844017a9d472a60ae39` until the Wave 5 closure documentation commit is created, with a clean working tree.
-- Latest committed production-certified program state: Guided Search Experience Restoration Program is certified and formally closed end to end; Property Intelligence Experience 1.0 Wave 1 - Property Intelligence Foundation, Wave 2 - Construction Intelligence, Wave 3 - Financial Intelligence, Wave 4 - Market Intelligence, and Wave 5 - Executive Decision Workspace are certified, deployed, and ready for Wave 5 closure documentation.
-- Current active program is `PROJECT ATLAS - Property Intelligence Experience 1.0`; Waves 1-4 are closed. PIE Wave 5 implementation is production-certified and awaiting documentation-only closure. Do not begin another implementation program unless explicitly authorized.
+- Current baseline after PIE 1.0 program closure should be `HEAD = origin/main = the PIE 1.0 program closure documentation commit` with a clean working tree.
+- Latest committed production-certified program state: Guided Search Experience Restoration Program is certified and formally closed end to end; Property Intelligence Experience 1.0 Waves 1-5 are certified, deployed, documented, and formally closed end to end.
+- Current active program state is closure-only: `PROJECT ATLAS - Property Intelligence Experience 1.0` is certified and closed. Do not begin another implementation program unless explicitly authorized through a new architectural assessment directive.
 - PIE Wave 1 Architectural Assessment is complete. PIE Wave 1 Property Intelligence Foundation implementation is complete and closed.
 - PIE Wave 2 Architectural Assessment is complete. PIE Wave 2 Construction Intelligence implementation is complete and closed.
 - PIE Wave 3 Architectural Assessment is complete. PIE Wave 3 Financial Intelligence implementation is complete and closed.
@@ -269,8 +269,9 @@ Latest new-chat handoff, July 25, 2026 PROJECT ATLAS Property Intelligence Exper
 - Governed PIE Wave 3 closure record: `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/PIE-1.0-WAVE-3-FINANCIAL-INTELLIGENCE-CLOSURE.md`.
 - PIE Wave 4 - Market Intelligence was committed as `0af7a9b1506cc56a8e8fd9ca3a20016189f235f7`, pushed to `origin/main`, deployed by Vercel/GitHub status `success`, Vercel status `51081736998`, production-certified, and closed.
 - Governed PIE Wave 4 closure record: `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/PIE-1.0-WAVE-4-MARKET-INTELLIGENCE-CLOSURE.md`.
-- PIE Wave 5 - Executive Decision Workspace was committed as `85367b5fece1a1eff8220844017a9d472a60ae39`, pushed to `origin/main`, deployed by Vercel/GitHub status `success`, Vercel status `51082681280`, production-certified, and awaiting documentation-only closure.
-- Governed PIE Wave 5 closure record to create: `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/PIE-1.0-WAVE-5-EXECUTIVE-DECISION-WORKSPACE-CLOSURE.md`.
+- PIE Wave 5 - Executive Decision Workspace was committed as `85367b5fece1a1eff8220844017a9d472a60ae39`, pushed to `origin/main`, deployed by Vercel/GitHub status `success`, Vercel status `51082681280`, production-certified, and closed.
+- Governed PIE Wave 5 closure record: `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/PIE-1.0-WAVE-5-EXECUTIVE-DECISION-WORKSPACE-CLOSURE.md`.
+- Governed PIE 1.0 program closure record: `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/PIE-1.0-PROPERTY-INTELLIGENCE-EXPERIENCE-PROGRAM-CLOSURE.md`.
 - PIE Wave 5 implementation scope:
   - Completed the public Property Decision Workspace by connecting property summary, construction, financial, market, investigation, advisor-discussion, inquiry, related-property, FAQ, and schema-visible surfaces.
   - Added clearer executive decision framing, a concise decision summary, and `Questions to Carry Forward` so customers can understand what is known, what to verify, and what to discuss next.
