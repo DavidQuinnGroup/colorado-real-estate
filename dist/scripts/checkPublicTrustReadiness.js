@@ -13,6 +13,9 @@ const routes = [
     { href: '/brokerage-disclosures', file: 'app/brokerage-disclosures/page.tsx', title: 'Brokerage Disclosures' },
     { href: '/contact', file: 'app/contact/page.tsx', title: 'Contact' },
 ];
+const publicExperienceRoutes = [
+    { href: '/about', file: 'app/about/page.tsx', title: 'Advisor Experience' },
+];
 const formNoticeFiles = [
     { file: 'components/PropertyInquiryForm.tsx', marker: 'data-public-trust-form-notice="property-inquiry"' },
     { file: 'components/maps/SaveSearch.tsx', marker: 'data-public-trust-form-notice="save-search"' },
@@ -64,14 +67,33 @@ for (const route of routes) {
     assert.doesNotMatch(source, /CERTIFIED|APPROVED_BY_COUNSEL|FINAL_LEGAL/i, `${route.file} must not claim legal approval.`);
     assert.equal(source.includes(obsoleteDraftStatus), false, `${route.file} must not expose obsolete draft review markers.`);
 }
+for (const route of publicExperienceRoutes) {
+    assertExists(route.file);
+    const source = read(route.file);
+    assertMetadata(source, route.file, route.title);
+    assert.match(source, /data-testid="about-advisor-page"/, `${route.file} must expose a stable advisor experience shell.`);
+    assert.match(source, /Why REIE Exists/, `${route.file} must explain why REIE exists.`);
+    assert.match(source, /Construction Expertise/, `${route.file} must include construction expertise as advisory support.`);
+    assert.match(source, /Advisory Philosophy/, `${route.file} must include advisory philosophy.`);
+    assert.match(source, /How I Work With Clients/, `${route.file} must include client working model.`);
+    assert.match(source, /What Makes This Different/, `${route.file} must explain differentiation without unsupported claims.`);
+    assert.match(source, /The Grand Plan Approach/, `${route.file} must connect the Grand Plan approach.`);
+    assert.match(source, /What Clients Can Expect/, `${route.file} must set customer expectations.`);
+    assert.match(source, /Do not submit confidential negotiating positions/, `${route.file} must preserve confidential-information guardrails.`);
+    assert.doesNotMatch(source, /traditional biography|pending approved source|draft fixture|owner and brokerage review/i, `${route.file} must not expose placeholder or draft-review language.`);
+}
 const footer = read('components/Footer.tsx');
 assert.match(footer, /data-testid="public-trust-footer-links"/, 'Footer must expose governed public trust links.');
+assert.match(footer, /data-testid="public-experience-footer-links"/, 'Footer must expose public experience links.');
 assert.match(footer, /PUBLIC_TRUST_REVIEW_STATUS/, 'Footer must expose the public trust review status.');
 assert.match(footer, /BROKERAGE_FIRM_NAME/, 'Footer must include brokerage firm attribution.');
 assert.match(footer, /\/contact/, 'Footer must route public contact requests through the contact page.');
 assert.doesNotMatch(footer, /mailto:/, 'Footer must not publish a direct email link until a branded contact email is operational.');
 for (const route of routes) {
     assert.match(footer, new RegExp(`href:\\s*'${route.href}'|"${route.href}"|route\\.href`), `Footer must link ${route.href}.`);
+}
+for (const route of publicExperienceRoutes) {
+    assert.match(footer, new RegExp(`href:\\s*'${route.href}'|"${route.href}"`), `Footer must link ${route.href}.`);
 }
 const layout = read('app/layout.tsx');
 assert.match(layout, /BrokerageAttribution/, 'Shared root layout must render brokerage attribution on every viewable public page.');
@@ -81,6 +103,7 @@ assert.match(brokerageAttribution, /BROKERAGE_FIRM_NAME/, 'Brokerage attribution
 assert.match(brokerageAttribution, /data-team-is-separate-brokerage="false"/, 'Team identity must not be presented as a separate brokerage.');
 const sitemap = read('app/sitemap.ts');
 assert.match(sitemap, /publicTrustRoutes/, 'Sitemap must include public trust routes from the governed route list.');
+assert.match(sitemap, /url\('\/about'\)/, 'Sitemap must include the public advisor experience route.');
 const robots = read('app/robots.ts');
 assert.match(robots, /allow:\s*'\/'|allow:\s*"\/"/, 'Robots must explicitly allow public pages.');
 assert.match(robots, /disallow:\s*\['\/admin\/', '\/api\/'\]|disallow:\s*\["\/admin\/", "\/api\/"\]/, 'Robots must keep admin and API routes disallowed.');
@@ -98,6 +121,7 @@ const publicSources = [
     'components/BrokerageAttribution.tsx',
     'components/PublicTrustPage.tsx',
     ...routes.map((route) => route.file),
+    ...publicExperienceRoutes.map((route) => route.file),
     ...formNoticeFiles.map((form) => form.file),
 ].map((filePath) => ({ filePath, source: read(filePath) }));
 for (const { filePath, source } of publicSources) {
@@ -162,4 +186,7 @@ const appRoutes = fs
 for (const route of routes) {
     assert.ok(appRoutes.includes(path.dirname(route.file)), `${route.href} must be a public app route.`);
 }
-console.log(`[public-trust-readiness] ok: ${routes.length} trust routes, branded contact email pending, contact form routing, shared brokerage attribution, Compass/MLS external approval watch, footer links, sitemap inclusion, production trust status, listing attribution controls, market source controls, verification register, and form notices verified.`);
+for (const route of publicExperienceRoutes) {
+    assert.ok(appRoutes.includes(path.dirname(route.file)), `${route.href} must be a public app route.`);
+}
+console.log(`[public-trust-readiness] ok: ${routes.length} trust routes, ${publicExperienceRoutes.length} public experience route, branded contact email pending, contact form routing, shared brokerage attribution, Compass/MLS external approval watch, footer links, sitemap inclusion, production trust status, listing attribution controls, market source controls, verification register, and form notices verified.`);

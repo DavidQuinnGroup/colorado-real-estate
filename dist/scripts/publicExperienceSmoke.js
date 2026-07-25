@@ -38,18 +38,69 @@ async function getSmokeProperty() {
 }
 async function assertPropertyPage(path) {
     const html = await fetchHtml(path);
-    assert.ok(includesFoldedText(html, 'Buyer Decision Snapshot'), 'Expected property page decision snapshot.');
+    assert.ok(includesFoldedText(html, 'Decision Workspace'), 'Expected property page decision workspace framing.');
+    assert.ok(includesFoldedText(html, 'Understand'), 'Expected property page understand decision lens.');
+    assert.ok(includesFoldedText(html, 'Evaluate'), 'Expected property page evaluate decision lens.');
+    assert.ok(includesFoldedText(html, 'Compare'), 'Expected property page compare decision lens.');
+    assert.ok(includesFoldedText(html, 'Investigate'), 'Expected property page investigate decision lens.');
+    assert.ok(includesFoldedText(html, 'Discuss'), 'Expected property page discuss decision lens.');
+    assert.ok(includesFoldedText(html, 'Decision Summary'), 'Expected property page decision summary.');
+    assert.ok(includesFoldedText(html, 'Known facts, verification needs, and next steps'), 'Expected property page compact decision summary framing.');
+    assert.ok(includesFoldedText(html, 'Questions to carry forward'), 'Expected property page integrated question continuity.');
+    assert.ok(includesFoldedText(html, 'Property Brief'), 'Expected property page brief framing.');
+    assert.ok(includesFoldedText(html, 'Listing Facts'), 'Expected property page listing facts.');
+    assert.ok(includesFoldedText(html, 'Construction Perspective'), 'Expected property page construction perspective.');
+    assert.ok(includesFoldedText(html, 'Construction Questions'), 'Expected property page construction questions section.');
+    assert.ok(includesFoldedText(html, 'Known From Public Listing Data'), 'Expected property page public construction fact grouping.');
+    assert.ok(includesFoldedText(html, 'General Construction Context'), 'Expected property page general construction education grouping.');
+    assert.ok(includesFoldedText(html, 'Questions to Verify'), 'Expected property page neutral construction verification prompts.');
+    assert.ok(includesFoldedText(html, 'Confirm condition, systems, permits, costs, and code questions'), 'Expected property page construction professional-boundary language.');
+    assert.ok(includesFoldedText(html, 'Financial Context'), 'Expected property page financial context section.');
+    assert.ok(includesFoldedText(html, 'Known Public Price Facts'), 'Expected property page public price fact grouping.');
+    assert.ok(includesFoldedText(html, 'Ownership Costs to Verify'), 'Expected property page ownership-cost verification grouping.');
+    assert.ok(includesFoldedText(html, 'Financial Questions to Ask'), 'Expected property page financial verification prompts.');
+    assert.ok(includesFoldedText(html, 'Professional Context'), 'Expected property page financial professional-boundary language.');
+    assert.ok(includesFoldedText(html, 'Calculated Price / Sq Ft'), 'Expected property page calculated price-per-square-foot labeling.');
+    assert.ok(includesFoldedText(html, 'current listing price and listed square footage only'), 'Expected property page price-per-square-foot input disclosure.');
+    assert.ok(includesFoldedText(html, 'Known Listing and Market Facts'), 'Expected property page public market fact grouping.');
+    assert.ok(includesFoldedText(html, 'Local Market Context'), 'Expected property page local market education grouping.');
+    assert.ok(includesFoldedText(html, 'Market Questions to Investigate'), 'Expected property page neutral market investigation prompts.');
+    assert.ok(includesFoldedText(html, 'Read broader market context as education'), 'Expected property page market education boundary language.');
+    assert.ok(includesFoldedText(html, 'Market Pathway'), 'Expected property page market pathway fact.');
+    assert.ok(includesFoldedText(html, 'Questions Worth Asking'), 'Expected property page diligence questions.');
+    assert.ok(includesFoldedText(html, 'Questions for a Better Property Conversation'), 'Expected property page advisor discussion preparation.');
+    assert.ok(includesFoldedText(html, 'Ask About This Property'), 'Expected property page inquiry CTA.');
     assert.ok(includesFoldedText(html, 'Property Inquiry'), 'Expected property inquiry form.');
     assert.ok(includesFoldedText(html, 'Follow-up routing'), 'Expected inquiry follow-up routing guidance.');
     assert.ok(includesFoldedText(html, 'Current Request'), 'Expected inquiry request guidance.');
     assert.ok(includesFoldedText(html, 'Timing / Intent'), 'Expected inquiry timing controls.');
     assert.ok(includesFoldedText(html, 'Notes optional but helpful'), 'Expected inquiry notes guidance.');
+    assert.ok(!includesFoldedText(html, 'Photo Review Placeholder'), 'Expected property page to avoid disabled photo-review placeholder language.');
+    assert.ok(!includesFoldedText(html, 'Advisor Review'), 'Expected property page to avoid advisor-review claims.');
+    assert.ok(!includesFoldedText(html, 'Location Fit'), 'Expected property page to avoid public location-fit claims.');
+    assert.ok(!includesFoldedText(html, 'Photo Review Available'), 'Expected property page to avoid unavailable photo-review capability claims.');
+    assert.ok(!includesFoldedText(html, 'construction forensics'), 'Expected property page to avoid construction-forensics claims.');
+    assert.ok(!includesFoldedText(html, 'verified condition'), 'Expected property page to avoid verified-condition claims.');
+    assert.ok(!includesFoldedText(html, 'reviewedBy'), 'Expected property page schema to avoid completed-review claims.');
+    assert.ok(!html.match(/Affordability Analysis|Investment Analysis|Equity Opportunity|Financial Recommendation|True Monthly Cost|Get Preapproved|Check Affordability|See Investment Return|Calculate Equity|Get Loan Recommendation|guaranteed monthly payment|future appreciation|positive cash flow/i), 'Expected property page to avoid unsupported financial advice and capability claims.');
+    assert.ok(!html.match(/Market Forecast|Pricing Recommendation|Investment Outlook|Appraisal Estimate|Fair Market Value|undervalued|overvalued|hot market|cold market|seller motivation|likely bidding war/i), 'Expected property page to avoid unsupported market predictions and valuation claims.');
 }
 async function assertSearchPage() {
     const html = await fetchHtml('/search');
-    assert.ok(includesFoldedText(html, 'Search Snapshot'), 'Expected search snapshot strip.');
-    assert.ok(includesFoldedText(html, 'Property Search'), 'Expected search sidebar inventory shell.');
-    assert.ok(includesFoldedText(html, 'Filters'), 'Expected search filters shell.');
+    assert.ok(includesFoldedText(html, 'Guided Property Search'), 'Expected guided property search framing.');
+    assert.ok(includesFoldedText(html, 'Build on What Matters'), 'Expected search Grand Plan continuity framing.');
+    assert.ok(includesFoldedText(html, 'Search does not automatically apply your plan'), 'Expected search continuity to avoid automatic personalization claims.');
+    assert.ok(includesFoldedText(html, 'Discovery Summary'), 'Expected search discovery summary strip.');
+    assert.ok(includesFoldedText(html, 'Properties in View'), 'Expected search sidebar listing shell.');
+    assert.ok(includesFoldedText(html, 'Shape Your Search'), 'Expected refined search controls shell.');
+    assert.ok(includesFoldedText(html, 'Where would you like to live?'), 'Expected search controls to prioritize location.');
+    assert.ok(includesFoldedText(html, 'What fits your budget?'), 'Expected search controls to group price refinement.');
+    assert.ok(includesFoldedText(html, 'Already have a property in mind?'), 'Expected search controls to move specific-property lookup after broader refinements.');
+    assert.ok(includesFoldedText(html, 'Review Context'), 'Expected property cards to use neutral review context framing.');
+    assert.ok(includesFoldedText(html, 'Map Context'), 'Expected property cards to include map context.');
+    assert.ok(includesFoldedText(html, 'Open details when this listing deserves a closer look'), 'Expected property cards to frame detail navigation after comparison.');
+    assert.ok(includesFoldedText(html, 'Save This Search'), 'Expected save-search opportunity to use customer-facing copy.');
+    assert.ok(includesFoldedText(html, 'Save when this view is worth watching'), 'Expected save-search presentation to avoid recommendation claims.');
 }
 async function assertHomePortalPage() {
     const html = await fetchHtml('/');
@@ -58,11 +109,40 @@ async function assertHomePortalPage() {
     assert.ok(includesFoldedText(html, 'Build Your Grand Plan'), 'Expected Home Portal Grand Plan CTA.');
     assert.ok(includesFoldedText(html, 'Why REIE'), 'Expected Home Portal REIE introduction.');
     assert.ok(includesFoldedText(html, 'Featured Colorado Communities'), 'Expected Home Portal community section.');
-    assert.ok(includesFoldedText(html, 'Search when the strategy is clear'), 'Expected existing search to be relocated below advisory sections.');
+    assert.ok(includesFoldedText(html, 'Start with fit, context, and confidence'), 'Expected homepage discovery to use fit/context/confidence framing.');
+    assert.ok(includesFoldedText(html, 'Search is the beginning of the decision, not the entire decision'), 'Expected homepage discovery to define the advisory search boundary.');
+    assert.ok(includesFoldedText(html, 'Continue to Guided Search'), 'Expected homepage discovery to include a full search CTA.');
+    assert.ok(includesFoldedText(html, 'Colorado Discovery Preview'), 'Expected embedded homepage search to include discovery preview framing.');
+    assert.ok(includesFoldedText(html, 'Colorado property preview'), 'Expected embedded homepage search to use accurate geographic preview language.');
+    assert.ok(!includesFoldedText(html, 'Boulder-area preview'), 'Expected embedded homepage search not to imply a Boulder-only runtime boundary.');
+    assert.ok(!includesFoldedText(html, 'Open Full Search'), 'Expected embedded homepage search not to duplicate the full search CTA.');
+    assert.ok(!includesFoldedText(html, 'Plan Around What Matters'), 'Expected embedded homepage search not to duplicate the Grand Plan CTA.');
     assert.ok(html.includes('data-testid="home-portal-hero"'), 'Expected Home Portal hero test handle.');
     assert.ok(html.includes('data-testid="home-portal-search-section"'), 'Expected Home Portal search section test handle.');
+    assert.ok(html.includes('data-testid="home-discovery-principles"'), 'Expected homepage discovery principles test handle.');
+    assert.ok(html.includes('data-testid="home-discovery-continuation"'), 'Expected homepage discovery continuation test handle.');
+    assert.ok(html.includes('data-testid="reie-home-discovery-intro"'), 'Expected embedded homepage discovery intro test handle.');
+    assert.ok(!html.includes('data-testid="reie-home-discovery-full-search-link"'), 'Expected embedded homepage full-search CTA duplication to be removed.');
+    assert.ok(!html.includes('data-testid="reie-home-discovery-grand-plan-link"'), 'Expected embedded homepage Grand Plan CTA duplication to be removed.');
     assert.ok(html.includes('data-home-search-variant="embedded"'), 'Expected homepage search to render in embedded presentation mode.');
     assert.ok(html.includes('<link rel="canonical" href="https://davidquinngroup.com"'), 'Expected home canonical metadata to be preserved.');
+}
+async function assertAboutAdvisorExperiencePage() {
+    const html = await fetchHtml('/about');
+    assert.ok(includesFoldedText(html, 'Advisor Experience'), 'Expected about advisor experience positioning.');
+    assert.ok(includesFoldedText(html, 'Why REIE Exists'), 'Expected about page to explain why REIE exists.');
+    assert.ok(includesFoldedText(html, 'Construction Expertise'), 'Expected about page construction expertise section.');
+    assert.ok(includesFoldedText(html, 'Advisory Philosophy'), 'Expected about page advisory philosophy section.');
+    assert.ok(includesFoldedText(html, 'How I Work With Clients'), 'Expected about page client working model.');
+    assert.ok(includesFoldedText(html, 'What Makes This Different'), 'Expected about page differentiation section.');
+    assert.ok(includesFoldedText(html, 'The Grand Plan Approach'), 'Expected about page Grand Plan section.');
+    assert.ok(includesFoldedText(html, 'What Clients Can Expect'), 'Expected about page customer expectation section.');
+    assert.ok(includesFoldedText(html, 'Begin with the question you need answered'), 'Expected about page next-step CTA.');
+    assert.ok(html.includes('data-testid="about-advisor-page"'), 'Expected about page stable shell handle.');
+    assert.ok(html.includes('data-testid="about-decision-framework"'), 'Expected about page decision framework handle.');
+    assert.ok(html.includes('<link rel="canonical" href="https://davidquinngroup.com/about"'), 'Expected about canonical metadata.');
+    assert.ok(!includesFoldedText(html, 'traditional biography'), 'Expected about page not to present itself as a traditional biography.');
+    assert.ok(!includesFoldedText(html, 'pending approved source'), 'Expected about page not to expose placeholder review language.');
 }
 async function assertSellerPage() {
     const html = await fetchHtml('/sell');
@@ -74,18 +154,83 @@ async function assertSellerPage() {
     assert.ok(!includesFoldedText(html, 'Estimated Value'), 'Expected seller page not to render fabricated instant valuation copy.');
     assert.ok(!includesFoldedText(html, 'REIE CRM'), 'Expected seller page not to expose CRM terminology.');
 }
+async function assertPublicBrandVoiceSource() {
+    const publicFiles = [
+        'app/page.tsx',
+        'app/about/page.tsx',
+        'app/search/page.tsx',
+        'app/properties/[id]/page.tsx',
+        'app/grand-plan/page.tsx',
+        'app/sell/page.tsx',
+        'app/market/[city]/page.tsx',
+        'app/market/[city]/[slug]/page.tsx',
+        'components/home/HomeSearchExperience.tsx',
+        'components/search/SearchInterface.tsx',
+        'components/maps/SearchMap.tsx',
+        'components/maps/MapSidebar.tsx',
+        'components/settings/NorthStarManager.tsx',
+        'components/Footer.tsx',
+        'components/PropertyInquiryForm.tsx',
+        'components/LeadCapture.tsx',
+        'components/maps/SaveSearch.tsx',
+    ];
+    const flaggedTerms = [
+        'Module',
+        'Engine',
+        'Runtime',
+        'Adapter',
+        'Repository',
+        'Governance',
+        'Executive',
+        'Sprint',
+        'Internal Preview',
+        'MCP',
+        'Client DNA',
+        'Repository Studio',
+    ];
+    const obsoleteMarkers = [
+        'pending approved source',
+        'draft fixture',
+        'owner and brokerage review',
+        'OWNER_APPROVED_REVIEW_SOURCE_REQUIRED',
+        'Module 04',
+        'Encrypting Client DNA',
+    ];
+    for (const file of publicFiles) {
+        const rawSource = await readFile(file, 'utf8');
+        const source = rawSource
+            .split('Colorado Real Estate Intelligence Engine')
+            .join('Colorado Real Estate Intelligence')
+            .split('Real Estate Intelligence Engine')
+            .join('Real Estate Intelligence');
+        for (const term of flaggedTerms) {
+            assert.ok(!source.includes(term), `${file} exposes unintended public engineering language: ${term}`);
+        }
+        for (const marker of obsoleteMarkers) {
+            assert.ok(!rawSource.toLowerCase().includes(marker.toLowerCase()), `${file} exposes obsolete placeholder language: ${marker}`);
+        }
+    }
+}
 async function assertDrawerSource() {
     const [source, imageSource] = await Promise.all([
         readFile('components/maps/SelectedPropertyDrawer.tsx', 'utf8'),
         readFile('components/ResilientListingImage.tsx', 'utf8'),
     ]);
     assert.ok(source.includes('const inquiryHref = `${propertyHref}#property-contact`;'), 'Expected selected drawer inquiry hash target.');
-    assert.ok(source.includes('Inquire'), 'Expected selected drawer Inquire CTA label.');
+    assert.ok(source.includes('View Property'), 'Expected selected drawer View Property CTA label.');
+    assert.ok(source.includes('Ask About This Property'), 'Expected selected drawer inquiry action label.');
+    assert.ok(source.includes('Selected Property'), 'Expected selected drawer to identify selected properties.');
+    assert.ok(source.includes('This panel reflects the property selected from the map or listing results.'), 'Expected selected drawer to explain map/list selection continuity.');
+    assert.ok(source.includes('Property Details'), 'Expected selected drawer to expose property details.');
+    assert.ok(source.includes('Review Context'), 'Expected selected drawer to use review context framing.');
+    assert.ok(source.includes('Map Context'), 'Expected selected drawer to expose map context.');
+    assert.ok(!source.includes('Location Fit'), 'Expected selected drawer to avoid deprecated location-fit language.');
+    assert.ok(source.includes('Property Signals'), 'Expected selected drawer to expose property signal context.');
     assert.ok(source.includes('data-testid="reie-selected-property-drawer"'), 'Expected selected drawer to expose a stable shell handle.');
     assert.ok(source.includes('data-testid="reie-selected-property-media"'), 'Expected selected drawer to expose media metadata.');
     assert.ok(source.includes('data-testid="reie-selected-property-close"'), 'Expected selected drawer to expose close control metadata.');
     assert.ok(source.includes('data-testid="reie-selected-property-decision"'), 'Expected selected drawer to expose decision metadata.');
-    assert.ok(source.includes('data-testid="reie-selected-property-signal"'), 'Expected selected drawer to expose review signal metadata.');
+    assert.ok(source.includes('testId="reie-selected-property-signal"'), 'Expected selected drawer to expose review signal metadata.');
     assert.ok(source.includes('data-testid="reie-selected-property-inquiry-link"'), 'Expected selected drawer to expose inquiry link metadata.');
     assert.ok(source.includes('data-testid="reie-selected-property-detail-link"'), 'Expected selected drawer to expose detail link metadata.');
     assert.ok(source.includes('data-testid="reie-selected-property-market-link"'), 'Expected selected drawer to expose market link metadata.');
@@ -296,14 +441,19 @@ async function assertRelatedPropertyLinksSource() {
     assert.ok(source.includes('data-related-property-city='), 'Expected related property links to expose city metadata.');
     assert.ok(source.includes('data-related-property-neighborhood='), 'Expected related property links to expose neighborhood metadata.');
     assert.ok(source.includes('data-related-property-active-tab='), 'Expected related property links to expose active tab state.');
-    assert.ok(source.includes('data-related-property-price-basis='), 'Expected related property links to expose price basis.');
     assert.ok(source.includes('data-related-property-authority-link-count='), 'Expected related property links to expose authority link counts.');
     assert.ok(source.includes('data-related-property-visible-authority-link-count='), 'Expected related property links to expose visible authority link counts.');
     assert.ok(source.includes('data-related-property-primary-href='), 'Expected related property links to expose primary CTA href.');
     assert.ok(source.includes('data-related-property-prep-scenario-count='), 'Expected related property links to expose prep scenario counts.');
     assert.ok(source.includes('data-related-property-timeline-step-count='), 'Expected related property links to expose timeline step counts.');
-    assert.ok(source.includes('data-related-property-scenario-lift-percent='), 'Expected related property links to expose scenario lift percentages.');
-    assert.ok(source.includes('data-related-property-risk-window-days="7"'), 'Expected related property links to expose contingency risk window.');
+    assert.ok(source.includes('data-related-property-scenario-scope='), 'Expected related property links to expose non-financial scenario scope metadata.');
+    assert.ok(source.includes('Preparation Considerations'), 'Expected related property links to use non-ROI preparation tab language.');
+    assert.ok(source.includes('Related Property Paths'), 'Expected related property links to frame continued exploration.');
+    assert.ok(source.includes('Compare Review Paths'), 'Expected related property links to use non-financial comparison language.');
+    assert.ok(source.includes('Continue Comparing'), 'Expected related property links to use continued comparison language.');
+    assert.ok(!source.match(/Listing Prep ROI|ROI Engine|Equity Lift|Investment Cost|equity capture/i), 'Expected related property links to avoid unsupported public ROI/equity language.');
+    assert.ok(source.includes('data-related-property-risk-window-days="review-required"'), 'Expected related property links to avoid fixed financing-risk windows.');
+    assert.ok(source.includes('Timing Review'), 'Expected related property links to frame timing as review-oriented guidance.');
     assert.ok(source.includes('data-related-property-link-source='), 'Expected related property links to expose CTA link source.');
 }
 async function assertPropertyLinksSource() {
@@ -713,7 +863,7 @@ async function assertToolSchemaSource() {
     assert.ok(homeSource.includes('data-tool-schema-type="WebApplication"'), 'Expected home tool schema to expose schema type metadata.');
     assert.ok(searchSource.includes('data-tool-schema-type="WebApplication"'), 'Expected search tool schema to expose schema type metadata.');
     assert.ok(homeSource.includes('data-tool-schema-name="Colorado Real Estate Intelligence Engine"'), 'Expected home tool schema to expose tool names.');
-    assert.ok(searchSource.includes('data-tool-schema-name="Colorado Real Estate Search"'), 'Expected search tool schema to expose tool names.');
+    assert.ok(searchSource.includes('data-tool-schema-name="Guided Colorado Property Search"'), 'Expected search tool schema to expose tool names.');
     assert.ok(homeSource.includes('data-tool-schema-url={SITE_URL}'), 'Expected home tool schema to expose canonical URLs.');
     assert.ok(searchSource.includes('data-tool-schema-url={SEARCH_URL}'), 'Expected search tool schema to expose canonical URLs.');
     assert.ok(homeSource.includes('data-tool-schema-keyword-count={homeToolSchemaKeywords.length}'), 'Expected home tool schema to expose keyword counts.');
@@ -1654,9 +1804,11 @@ async function main() {
     const property = await getSmokeProperty();
     const propertyPath = `/properties/${property.slug || property.id}`;
     await assertHomePortalPage();
+    await assertAboutAdvisorExperiencePage();
     await assertSellerPage();
     await assertPropertyPage(propertyPath);
     await assertSearchPage();
+    await assertPublicBrandVoiceSource();
     await assertDrawerSource();
     await assertPropertyDetailSource();
     await assertLuxuryPopupSource();
@@ -1709,8 +1861,9 @@ async function main() {
         },
         assertions: {
             homePortalRestoration: true,
+            aboutAdvisorExperience: true,
             sellerJourneyEntry: true,
-            propertyDecisionSnapshot: true,
+            propertyDetailBridge: true,
             propertyInquiryGuidance: true,
             searchIntelligence: true,
             adminPageMetadata: true,
@@ -1719,6 +1872,7 @@ async function main() {
             deadLetterPageMetadata: true,
             deadLetterInspectionMetadata: true,
             selectedDrawerInquiryTarget: true,
+            publicBrandVoiceSafety: true,
         },
     }, null, 2));
 }
