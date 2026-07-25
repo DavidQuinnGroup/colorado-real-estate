@@ -4,14 +4,10 @@ import {
   authorizeRepositoryAdminRequest,
   repositoryAdminUnauthorizedResponse,
 } from "@/app/api/admin/repository/auth";
-import {
-  EIP_SPRINT_6_AUTHORIZED_CANONICAL_NAME,
-  EIP_SPRINT_6_AUTHORIZED_SCOPE,
-  inspectEipSprint6Pilot,
-  invokeEipSprint6Pilot,
-  type EipSprint6PilotMode,
-} from "@/lib/eip/controlledProductionInternalGeographicPersistencePilot";
-import { prisma } from "@/lib/prisma";
+import type { EipSprint6PilotMode } from "@/lib/eip/controlledProductionInternalGeographicPersistencePilot";
+
+const EIP_SPRINT_6_AUTHORIZED_CANONICAL_NAME = "Thornton";
+const EIP_SPRINT_6_AUTHORIZED_SCOPE = "CONTROLLED_PRODUCTION_INTERNAL_GEOGRAPHIC_PERSISTENCE_PILOT";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -22,15 +18,19 @@ export async function GET(request: NextRequest) {
   }
 
   try {
+    const [{ prisma }, pilot] = await Promise.all([
+      import("@/lib/prisma"),
+      import("@/lib/eip/controlledProductionInternalGeographicPersistencePilot"),
+    ]);
     const mode = modeFrom(request.nextUrl.searchParams.get("mode")) ?? "inspection";
     const result = mode === "retirement-plan"
-      ? await invokeEipSprint6Pilot(prisma, {
+      ? await pilot.invokeEipSprint6Pilot(prisma, {
         mode,
         subject: request.nextUrl.searchParams.get("subject") ?? EIP_SPRINT_6_AUTHORIZED_CANONICAL_NAME,
         scope: request.nextUrl.searchParams.get("scope") ?? EIP_SPRINT_6_AUTHORIZED_SCOPE,
         authorized: true,
       })
-      : await inspectEipSprint6Pilot(prisma);
+      : await pilot.inspectEipSprint6Pilot(prisma);
 
     return NextResponse.json({
       success: result.success,
@@ -50,11 +50,15 @@ export async function POST(request: NextRequest) {
   }
 
   try {
+    const [{ prisma }, pilot] = await Promise.all([
+      import("@/lib/prisma"),
+      import("@/lib/eip/controlledProductionInternalGeographicPersistencePilot"),
+    ]);
     const body = await safeJson(request);
     const searchParams = request.nextUrl.searchParams;
     const execute = body.execute === true || searchParams.get("execute") === "true";
     const mode = execute ? "execute" : "dry-run";
-    const result = await invokeEipSprint6Pilot(prisma, {
+    const result = await pilot.invokeEipSprint6Pilot(prisma, {
       mode,
       subject: String(body.subject ?? searchParams.get("subject") ?? EIP_SPRINT_6_AUTHORIZED_CANONICAL_NAME),
       scope: String(body.scope ?? searchParams.get("scope") ?? EIP_SPRINT_6_AUTHORIZED_SCOPE),
