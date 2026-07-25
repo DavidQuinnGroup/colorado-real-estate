@@ -314,6 +314,35 @@ GMA 1.0 Internal Review Decision Fixture does not authorize:
 
 Internal persistence remains unauthorized until a separate internal-persistence proof directive is issued.
 
+## Enterprise Implementation Program - Sprint 1 Status
+
+Enterprise Implementation Program Sprint 1 is certified and closed as `EIP_1.0_SPRINT_1_INTERNAL_GEOGRAPHIC_PERSISTENCE_PROOF_CERTIFIED_AND_CLOSED`.
+
+Sprint 1 proves the first complete internal execution of the Enterprise Knowledge Acquisition Framework.
+
+Certified Sprint 1 outputs:
+
+- Sprint charter: `EIP-1.0-SPRINT-1-INTERNAL-GEOGRAPHIC-PERSISTENCE-PROOF-CHARTER.md`.
+- Sprint record: `EIP-1.0-SPRINT-1-INTERNAL-GEOGRAPHIC-PERSISTENCE-PROOF.md`.
+- Lessons learned: `EIP-1.0-SPRINT-1-LESSONS-LEARNED.md`.
+- Internal-only implementation module: `lib/eip/internalGeographicPersistenceProof.ts`.
+- Deterministic safety command: `npm run check:eip-sprint-1-internal-geographic-persistence-proof`.
+- 10 internal knowledge records created from certified GMA decision fixtures.
+- 10 internal records persisted in an isolated in-memory store.
+- 10 internal records retrieved and governance-verified.
+- EKAF classification, source, trust, mapping, persistence, retrieval, eligibility, lifecycle, and review metadata verified.
+- Customer visibility remained zero.
+
+Sprint 1 does not authorize:
+
+- production geographic persistence;
+- GIO row creation;
+- property relationship creation;
+- final canonical selection;
+- customer retrieval;
+- search, map, page, SEO, Typesense, MLS, alert, CRM, email, or runtime activation;
+- vendor integration, scraping, or AI-assisted mapping activation.
+
 ---
 
 ## Program Watch Items
@@ -333,6 +362,7 @@ Internal persistence remains unauthorized until a separate internal-persistence 
 | Preview-to-production drift | Preview records could be mistaken for authoritative mappings. | Keep all preview records non-active, non-authoritative, and not eligible for activation. |
 | Review-to-production drift | Review queue classifications could be mistaken for canonical approval. | Keep every queue item `NOT_ELIGIBLE` and require separate authorization before any persistence. |
 | Fixture-to-persistence drift | Decision fixtures could be mistaken for permission to create GIO rows. | Treat fixtures as non-authoritative evidence only until a separate internal-persistence proof is authorized. |
+| Internal-proof-to-product drift | Internal persisted proof records could be mistaken for customer-ready value. | Require Sprint 2 to prove an internal read-model contract before any customer or runtime surface is considered. |
 
 ---
 
@@ -340,7 +370,7 @@ Internal persistence remains unauthorized until a separate internal-persistence 
 
 Authorize only:
 
-- `GMA_1.0_INTERNAL_PERSISTENCE_PROOF`
+- `EIP_1.0_SPRINT_2_INTERNAL_PERSISTENCE_READ_MODEL_PROOF`
 
 Do not authorize without a separate directive:
 

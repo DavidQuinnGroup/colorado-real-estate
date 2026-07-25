@@ -32,6 +32,7 @@
     "check:enterprise-decision-support-safety": "npm run worker:build && node dist/scripts/checkEnterpriseDecisionSupportSafety.js",
     "check:enterprise-learning-system-safety": "npm run worker:build && node dist/scripts/checkEnterpriseLearningSystemSafety.js",
     "check:enterprise-intelligence-persistence-safety": "npm run worker:build && node dist/scripts/checkEnterpriseIntelligencePersistenceSafety.js",
+    "check:eip-sprint-1-internal-geographic-persistence-proof": "npm run worker:build && node dist/scripts/checkEipSprint1InternalGeographicPersistenceProof.js",
     "check:geographic-intelligence-object-safety": "npm run worker:build && node dist/scripts/checkGeographicIntelligenceObjectSafety.js",
     "check:gkc-fixture-governance": "npm run worker:build && node dist/scripts/checkGkcFixtureGovernance.js",
     "check:gma-read-only-mapping-preview": "npm run worker:build && node dist/scripts/checkGmaReadOnlyMappingPreview.js",

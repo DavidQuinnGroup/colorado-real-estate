@@ -82,8 +82,9 @@ function assertTransitions() {
 
   const plat = getEnterpriseKpi("KPI-PLAT-001");
   assert.ok(plat);
-  assert.equal(evaluateKpi(plat, null).status, "UNKNOWN");
-  assert.equal(evaluateKpi(plat, obs("KPI-PLAT-001", 100, "2026-07-18T18:43:18Z")).status, "HEALTHY");
+  const fixtureNow = new Date("2026-07-18T18:43:18Z");
+  assert.equal(evaluateKpi(plat, null, fixtureNow).status, "UNKNOWN");
+  assert.equal(evaluateKpi(plat, obs("KPI-PLAT-001", 100, "2026-07-18T18:43:18Z"), fixtureNow).status, "HEALTHY");
 }
 
 function assertEventsSignalsEvidence() {
