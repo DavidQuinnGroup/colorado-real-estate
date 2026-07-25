@@ -253,7 +253,7 @@ GMA 1.0 Read-Only Mapping Preview closure does not authorize:
 
 ## GMA 1.0 Internal Mapping Review Queue Status
 
-GMA 1.0 Internal Mapping Review Queue is active as a non-production governance capability and certified closed as `GMA_1.0_INTERNAL_MAPPING_REVIEW_QUEUE_CERTIFIED_AND_CLOSED`.
+GMA 1.0 Internal Mapping Review Queue is certified and closed as `GMA_1.0_INTERNAL_MAPPING_REVIEW_QUEUE_CERTIFIED_AND_CLOSED`.
 
 Certified queue outputs:
 
@@ -280,6 +280,40 @@ GMA 1.0 Internal Mapping Review Queue does not authorize:
 - Search, map, route, page, SEO, Typesense, MLS, alert, CRM, email, or customer-facing activation.
 - Vendor integration, scraping, or AI-assisted mapping activation.
 
+## GMA 1.0 Internal Review Decision Fixture Status
+
+GMA 1.0 Internal Review Decision Fixture is certified and closed as `GMA_1.0_INTERNAL_REVIEW_DECISION_FIXTURE_CERTIFIED_AND_CLOSED`.
+
+This is the final non-persistence GMA validation phase.
+
+Certified fixture outputs:
+
+- 10 deterministic representative fixture decisions.
+- Exact municipality preview candidate approved only as a preview candidate.
+- Gunbarrel object-type ambiguity escalated.
+- Superior registry mismatch conflict preserved.
+- Niwot authority question held for more evidence.
+- Municipality/market-area conflation conflict preserved.
+- Static polygon boundary risk deferred.
+- Legacy city alias candidate approved only as an alias candidate.
+- Legacy neighborhood duplicate candidate preserved as duplicate.
+- Editorial-only search/page association locked as editorial-only.
+- ZIP/subdivision absence and deferred boundary preserved without inventing records.
+- Deterministic safety command: `npm run check:gma-internal-review-decision-fixture`.
+
+GMA 1.0 Internal Review Decision Fixture does not authorize:
+
+- GIO persistence.
+- Final canonical selection.
+- Production mapping.
+- Property relationship assignment.
+- Production data mutation.
+- Runtime integration.
+- Search, map, route, page, SEO, Typesense, MLS, alert, CRM, email, or customer-facing activation.
+- Vendor integration, scraping, or AI-assisted mapping activation.
+
+Internal persistence remains unauthorized until a separate internal-persistence proof directive is issued.
+
 ---
 
 ## Program Watch Items
@@ -298,6 +332,7 @@ GMA 1.0 Internal Mapping Review Queue does not authorize:
 | Mapping architecture maturity | Mapping types, methods, confidence terms, and lifecycle terms exceed current Prisma enums. | Resolve through GMA architecture before any persistence authorization. |
 | Preview-to-production drift | Preview records could be mistaken for authoritative mappings. | Keep all preview records non-active, non-authoritative, and not eligible for activation. |
 | Review-to-production drift | Review queue classifications could be mistaken for canonical approval. | Keep every queue item `NOT_ELIGIBLE` and require separate authorization before any persistence. |
+| Fixture-to-persistence drift | Decision fixtures could be mistaken for permission to create GIO rows. | Treat fixtures as non-authoritative evidence only until a separate internal-persistence proof is authorized. |
 
 ---
 
@@ -305,7 +340,7 @@ GMA 1.0 Internal Mapping Review Queue does not authorize:
 
 Authorize only:
 
-- `GMA_1.0_INTERNAL_REVIEW_DECISION_FIXTURE`
+- `GMA_1.0_INTERNAL_PERSISTENCE_PROOF`
 
 Do not authorize without a separate directive:
 

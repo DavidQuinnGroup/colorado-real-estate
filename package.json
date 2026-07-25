@@ -36,6 +36,7 @@
     "check:gkc-fixture-governance": "npm run worker:build && node dist/scripts/checkGkcFixtureGovernance.js",
     "check:gma-read-only-mapping-preview": "npm run worker:build && node dist/scripts/checkGmaReadOnlyMappingPreview.js",
     "check:gma-internal-mapping-review-queue": "npm run worker:build && node dist/scripts/checkGmaInternalMappingReviewQueue.js",
+    "check:gma-internal-review-decision-fixture": "npm run worker:build && node dist/scripts/checkGmaInternalReviewDecisionFixture.js",
     "check:seller-lead-schema-safety": "npm run worker:build && node dist/scripts/checkSellerLeadSchemaSafety.js",
     "check:enterprise-adapter-framework-safety": "npm run worker:build && node dist/scripts/checkEnterpriseAdapterFrameworkSafety.js",
     "check:repository-governance-adapter-safety": "npm run worker:build && node dist/scripts/checkRepositoryGovernanceAdapterSafety.js",

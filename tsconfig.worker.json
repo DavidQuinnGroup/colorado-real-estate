@@ -48,6 +48,7 @@
     "scripts/checkGkcFixtureGovernance.ts",
     "scripts/checkGmaReadOnlyMappingPreview.ts",
     "scripts/checkGmaInternalMappingReviewQueue.ts",
+    "scripts/checkGmaInternalReviewDecisionFixture.ts",
     "scripts/checkSellerLeadSchemaSafety.ts",
     "scripts/checkEnterpriseAdapterFrameworkSafety.ts",
     "scripts/checkRepositoryGovernanceAdapterSafety.ts",
