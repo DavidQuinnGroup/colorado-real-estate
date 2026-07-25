@@ -32,6 +32,7 @@ Current program posture:
 - Editorial Separation Principle: adopted.
 - GMA 1.0 geographic mapping architecture: certified and closed as architectural assessment only.
 - GMA 1.0 read-only mapping preview: certified and closed.
+- EIP 1.0 Sprint 5 Enterprise Knowledge Approval System: certification recommended.
 - Internal geographic mapping, persistence, final canonical selection, and customer activation remain unauthorized.
 
 ---
@@ -68,6 +69,8 @@ Current program posture:
 | Future Wave | Property Relationship Backfill | Create governed property-to-geography relationships in bounded batches. | `NOT_AUTHORIZED` | Production mutation only after gate |
 | Future Wave | Read Adapter Preview | Build internal read-only preview adapters for governed review. | `NOT_AUTHORIZED` | Internal only |
 | Future Wave | Customer Experience Activation | Integrate eligible GIO intelligence into search, maps, property pages, market pages, and public content. | `NOT_AUTHORIZED` | Customer-facing activation |
+| EIP Sprint 5 | Enterprise Knowledge Approval System | Convert readiness-ledger evidence into approval requests, executive review packets, decisions, audit history, and policy enforcement. | `CERTIFICATION_RECOMMENDED` | Internal approval fixture only; no activation |
+| Future Sprint | Enterprise Approval Decision Read Model | Retrieve approval requests, review packets, decisions, audit history, and policy summaries through a stable internal contract. | `RECOMMENDED_NEXT_AUTHORIZATION` | Internal read model only |
 
 ---
 
@@ -85,6 +88,8 @@ Current program posture:
 | GKM 1.0 existing geographic knowledge inventory and classification | `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/GKM-1.0-GEOGRAPHIC-KNOWLEDGE-MATRIX.md` | Certified and closed |
 | GMA 1.0 geographic mapping architecture | `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/GMA-1.0-GEOGRAPHIC-MAPPING-ARCHITECTURE.md` | Certified and closed |
 | GMA 1.0 read-only mapping preview | `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/GMA-1.0-READ-ONLY-MAPPING-PREVIEW.md` | Certified and closed |
+| EIP Sprint 5 enterprise knowledge approval system | `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/EIP-1.0-SPRINT-5-ENTERPRISE-KNOWLEDGE-APPROVAL-SYSTEM.md` | Certification recommended |
+| Enterprise knowledge approval policy | `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/ENTERPRISE-KNOWLEDGE-APPROVAL-POLICY.md` | Active internal policy fixture |
 
 ---
 
@@ -100,6 +105,7 @@ Current program posture:
 | Existing knowledge matrix gate | Any current-data mapping, source-ledger creation, or persistence planning | GKM 1.0 certified as read-only inventory; persistence still not authorized |
 | Mapping architecture gate | Any internal mapping preview, mapping ledger, source-to-target decision, or property assignment plan | GMA 1.0 certified as architecture only; internal mapping remains unauthorized |
 | Read-only preview gate | Any internal mapping execution, final canonical selection, production persistence, or runtime activation | GMA 1.0 read-only mapping preview certified; persistence and activation still not authorized |
+| Approval gate | Any transition from readiness to approved next step | EIP Sprint 5 approval system implemented as internal fixture; approval still does not authorize implementation, activation, persistence, or customer visibility |
 | Production population gate | Any GIO row insertion | Not authorized |
 | Customer activation gate | Public GIO routes, search, maps, property pages, or content | Not authorized |
 
@@ -434,6 +440,41 @@ Sprint 4 does not authorize:
 - search, map, page, SEO, Typesense, MLS, alert, CRM, email, indexing, market analytics, customer presentation, AI-assisted synthesis, or runtime activation;
 - vendor integration or scraping.
 
+## Enterprise Implementation Program - Sprint 5 Status
+
+Enterprise Implementation Program Sprint 5 certification is recommended as `EIP_1.0_SPRINT_5_ENTERPRISE_KNOWLEDGE_APPROVAL_SYSTEM_CERTIFIED_AND_CLOSED`.
+
+Sprint 5 proves a reusable internal Enterprise Knowledge Approval System over Sprint 4 readiness-ledger evidence.
+
+Certified Sprint 5 outputs:
+
+- Sprint charter: `EIP-1.0-SPRINT-5-ENTERPRISE-KNOWLEDGE-APPROVAL-SYSTEM-CHARTER.md`.
+- Sprint record: `EIP-1.0-SPRINT-5-ENTERPRISE-KNOWLEDGE-APPROVAL-SYSTEM.md`.
+- Lessons learned: `EIP-1.0-SPRINT-5-LESSONS-LEARNED.md`.
+- Enterprise approval policy: `ENTERPRISE-KNOWLEDGE-APPROVAL-POLICY.md`.
+- Internal-only approval-system module: `lib/eip/enterpriseKnowledgeApprovalSystem.ts`.
+- Deterministic safety command: `npm run check:eip-sprint-5-enterprise-knowledge-approval-system`.
+- 10 approval requests generated from Sprint 4 readiness-ledger evidence.
+- 10 executive review packets preserving quality, readiness, source, trust, governance, risk, and recommendation evidence.
+- 12 approval decision records covering evidence-required, deferred, conditionally approved, approved-for-defined-next-step, rejected, revoked, expired, superseded, and closed-without-action outcomes.
+- 42 immutable audit events.
+- Approval requests, review packets, decisions, audit events, and policy are reusable across Geographic, Property, Market, Construction, Environmental, Community, Financial, Regulatory, Executive, and future governed domains.
+- Automated recommendations remain advisory and never become decisions.
+- Approval, authorization to implement, activation, and customer visibility remain explicitly separate.
+- All decision records preserve activation, runtime, customer visibility, and production persistence authorization as false.
+
+Sprint 5 does not authorize:
+
+- production geographic persistence;
+- GIO row creation;
+- public APIs or routes;
+- customer-visible readiness, quality, approval, or trust scores;
+- property relationship creation;
+- final canonical selection;
+- customer retrieval;
+- search, map, page, SEO, Typesense, MLS, alert, CRM, email, indexing, market analytics, customer presentation, AI-assisted synthesis, or runtime activation;
+- vendor integration or scraping.
+
 ---
 
 ## Program Watch Items
@@ -460,6 +501,8 @@ Sprint 4 does not authorize:
 | Quality-to-activation drift | A `READY` internal quality status could be mistaken for customer activation authorization. | Sprint 4 readiness ledger now separates quality, readiness, authorization, and activation; require a later executive activation gate before any runtime change. |
 | Readiness-to-authorization drift | A `READY_FOR_EXECUTIVE_REVIEW` ledger status could be mistaken for approval. | Keep `authorizationStatus: NOT_AUTHORIZED` mandatory until explicit executive authorization is recorded. |
 | Internal-proof-complete drift | Sprint 1/Sprint 2 internal proof completion could be mistaken for production persistence approval. | Treat `INTERNAL_PROOF_COMPLETE` as historical accounting only; require separate production persistence authorization. |
+| Approval-to-activation drift | A positive Sprint 5 decision could be mistaken for implementation authority or customer activation. | Keep approval decisions scoped to defined next steps and preserve all post-approval prohibitions until separate implementation and activation directives exist. |
+| Recommendation-to-decision drift | Automated recommendations could be treated as decisions. | Keep recommendations advisory only and require policy-authorized human decision records. |
 
 ---
 
@@ -467,7 +510,7 @@ Sprint 4 does not authorize:
 
 Authorize only:
 
-- `EIP_1.0_SPRINT_5_INTERNAL_GEOGRAPHIC_EXECUTIVE_REVIEW_PACKET`
+- `EIP_1.0_SPRINT_6_ENTERPRISE_APPROVAL_DECISION_READ_MODEL`
 
 Do not authorize without a separate directive:
 
@@ -478,5 +521,7 @@ Do not authorize without a separate directive:
 - geographic migration
 - property relationship backfill
 - runtime read adapters
+- approval-driven implementation
+- customer-facing approval presentation
 - customer-facing GIO experiences
 - vendor integrations
