@@ -31,7 +31,8 @@ Current program posture:
 - GKM 1.0 existing geographic knowledge inventory and classification: certified and closed.
 - Editorial Separation Principle: adopted.
 - GMA 1.0 geographic mapping architecture: certified and closed as architectural assessment only.
-- Internal geographic mapping remains unauthorized.
+- GMA 1.0 read-only mapping preview: certified and closed.
+- Internal geographic mapping, persistence, final canonical selection, and customer activation remain unauthorized.
 
 ---
 
@@ -58,7 +59,8 @@ Current program posture:
 | Future Wave | Fixture Governance Validation | Validate classification behavior against non-production fixtures without production writes. | `CERTIFIED_AND_CLOSED` | Synthetic local validation only |
 | GKM 1.0 | Existing Geographic Knowledge Inventory and Classification | Inventory existing repository knowledge assets, classify them against GIO/GKC, map Data Tools source categories, and identify persistence candidates without activation. | `CERTIFIED_AND_CLOSED` | Read-only documentation and source classification |
 | GMA 1.0 | Geographic Mapping Architecture | Define the canonical mapping model, confidence and lifecycle standards, ambiguity rules, duplicate governance, evidence requirements, activation gates, and Editorial Separation Principle controls before any mappings exist. | `CERTIFIED_AND_CLOSED` | Architecture only; no mapping or persistence |
-| Future Wave | Read-Only Mapping Preview Plan | Produce deterministic preview-ledger design and non-persistent candidate reporting rules before internal mapping authorization. | `RECOMMENDED_NEXT_AUTHORIZATION` | Read-only, non-persistent preview planning |
+| GMA 1.0 | Read-Only Mapping Preview | Apply approved GMA rules to repository geographic assets and produce deterministic non-authoritative candidate, duplicate, conflict, editorial, deferred, and human-review ledgers. | `CERTIFIED_AND_CLOSED` | Read-only preview only; no persistence |
+| Future Wave | Internal Mapping Review Queue | Convert preview findings into executive review actions and disposition decisions without persistence or runtime activation. | `RECOMMENDED_NEXT_AUTHORIZATION` | Review queue only |
 | Future Wave | Internal Development Mapping Plan | Produce deterministic non-production mapping, alias, source, conflict, and dry-run ledger plans before any persistence authorization. | `DEFERRED_BY_GMA` | No production persistence |
 | Future Wave | Internal Development Persistence Assessment | Assess whether fixture-governance contracts are sufficient for isolated non-production persistence. | `DEFERRED_BY_GKM` | No production persistence |
 | Future Wave | Current Data Mapping Report | Produce dry-run reports from existing city, neighborhood, ZIP, subdivision, and market data. | `NOT_AUTHORIZED` | Read-only report only |
@@ -82,6 +84,7 @@ Current program posture:
 | GKC 1.0 fixture governance validation | `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/GKC-1.0-FIXTURE-GOVERNANCE-VALIDATION.md` | Certified and closed |
 | GKM 1.0 existing geographic knowledge inventory and classification | `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/GKM-1.0-GEOGRAPHIC-KNOWLEDGE-MATRIX.md` | Certified and closed |
 | GMA 1.0 geographic mapping architecture | `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/GMA-1.0-GEOGRAPHIC-MAPPING-ARCHITECTURE.md` | Certified and closed |
+| GMA 1.0 read-only mapping preview | `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/GMA-1.0-READ-ONLY-MAPPING-PREVIEW.md` | Certified and closed |
 
 ---
 
@@ -96,6 +99,7 @@ Current program posture:
 | Fixture gate | Any non-production object or relationship validation | Synthetic local fixture validation certified; persistence not authorized |
 | Existing knowledge matrix gate | Any current-data mapping, source-ledger creation, or persistence planning | GKM 1.0 certified as read-only inventory; persistence still not authorized |
 | Mapping architecture gate | Any internal mapping preview, mapping ledger, source-to-target decision, or property assignment plan | GMA 1.0 certified as architecture only; internal mapping remains unauthorized |
+| Read-only preview gate | Any internal mapping execution, final canonical selection, production persistence, or runtime activation | GMA 1.0 read-only mapping preview certified; persistence and activation still not authorized |
 | Production population gate | Any GIO row insertion | Not authorized |
 | Customer activation gate | Public GIO routes, search, maps, property pages, or content | Not authorized |
 
@@ -212,6 +216,32 @@ GMA 1.0 does not authorize:
 - Search, map, property page, market page, sitemap, SEO, Typesense, MLS, alert, CRM, email, or customer-facing activation.
 - Vendor integration, scraping, or AI-assisted mapping activation.
 
+## GMA 1.0 Read-Only Mapping Preview Status
+
+GMA 1.0 Read-Only Mapping Preview is certified and closed.
+
+Certified preview outputs:
+
+- Deterministic in-memory preview ledger with 91 non-authoritative, non-active records.
+- Municipality, neighborhood, market-area, ZIP-code, and subdivision preview findings.
+- Alias candidate register.
+- Duplicate register.
+- Conflict register.
+- Editorial-association register.
+- Human-review queue.
+- Deferred and unresolved register.
+- Deterministic safety command: `npm run check:gma-read-only-mapping-preview`.
+
+GMA 1.0 Read-Only Mapping Preview closure does not authorize:
+
+- Final canonical selection.
+- Internal mapping execution.
+- Production persistence.
+- GIO row insertion.
+- Property relationship assignment.
+- Search, map, route, page, SEO, Typesense, MLS, alert, CRM, email, or customer-facing activation.
+- Vendor integration, scraping, or AI-assisted mapping activation.
+
 ---
 
 ## Program Watch Items
@@ -228,6 +258,7 @@ GMA 1.0 does not authorize:
 | External source governance | Authoritative Google Docs are accessible but external to repository version control. | Record exact required external updates; do not claim external updates unless performed. |
 | Editorial fact conversion | Editorial geography could be accidentally promoted into canonical facts. | Apply the Editorial Separation Principle and GMA stop rules before any mapping preview. |
 | Mapping architecture maturity | Mapping types, methods, confidence terms, and lifecycle terms exceed current Prisma enums. | Resolve through GMA architecture before any persistence authorization. |
+| Preview-to-production drift | Preview records could be mistaken for authoritative mappings. | Keep all preview records non-active, non-authoritative, and not eligible for activation. |
 
 ---
 
@@ -235,11 +266,12 @@ GMA 1.0 does not authorize:
 
 Authorize only:
 
-- `GMA_1.0_READ_ONLY_MAPPING_PREVIEW_PLAN`
+- `GMA_1.0_INTERNAL_MAPPING_REVIEW_QUEUE`
 
 Do not authorize without a separate directive:
 
 - internal geographic mapping execution
+- final canonical selection
 - production table population
 - production fixture creation
 - geographic migration
