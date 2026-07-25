@@ -17,7 +17,8 @@ Before production execute:
 - repository validation must pass;
 - deployment must succeed;
 - Sprint 6A production runtime packaging correction must be deployed successfully;
-- validation-script runtime dependency on `prisma/migrations` must be removed from the deployed protected route path;
+- Sprint 6A.1 runtime dependency separation correction must be deployed successfully;
+- validation-script runtime dependency on `prisma/migrations` must remain removed from the deployed protected route path;
 - production dry run must return `success=true`;
 - dry run must return `dryRun=true`;
 - dry run must return `executed=false`;
@@ -167,8 +168,13 @@ Current stop condition:
 - dry run `EIP-S6-DRY-20260725-003` returned HTTP `500` with error `ENOENT: no such file or directory, scandir 'prisma/migrations'`;
 - no execute was run;
 - no production GIO write was performed;
-- next retry is blocked until the validation-script runtime dependency is removed from the protected route path.
+- Sprint 6A.1 implemented a runtime dependency separation correction that moved reusable GMA preview records into `lib/gma/readOnlyMappingPreviewFixtures.ts`;
+- `lib/gma/internalMappingReviewQueue.ts` no longer imports `scripts/checkGmaReadOnlyMappingPreview.js`;
+- `npm run check:eip-sprint-6a-runtime-dependency-separation` passed locally and proved the protected route graph does not read `prisma/schema.prisma` or scan `prisma/migrations`;
+- next retry is blocked until Sprint 6A.1 is fully validated, committed, pushed, deployed successfully, and production dry-run evidence is reviewed.
 
-Next dry-run invocation must use a new invocation ID after a separately authorized correction.
+Next dry-run invocation must use a new invocation ID after Sprint 6A.1 deployment:
+
+- `EIP-S6-DRY-20260725-004`
 
 Controlled execute remains prohibited until that dry run returns HTTP `200`, `success=true`, `dryRun=true`, `executed=false`, `writesPerformed=0`, all eligibility flags false, zero relationship writes, and a rollback plan.

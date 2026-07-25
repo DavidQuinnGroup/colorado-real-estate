@@ -1,7 +1,7 @@
 import {
   readOnlyMappingPreviewRecords,
   type PreviewRecord,
-} from "../../scripts/checkGmaReadOnlyMappingPreview.js";
+} from "./readOnlyMappingPreviewFixtures.js";
 
 export type ReviewStatus =
   | "PENDING_REVIEW"

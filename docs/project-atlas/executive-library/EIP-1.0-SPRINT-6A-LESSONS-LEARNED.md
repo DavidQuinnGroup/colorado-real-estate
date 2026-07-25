@@ -2,7 +2,7 @@
 
 ## Enterprise Implementation Program(tm) - Sprint 6A Lessons Learned
 
-Status: `EIP_1.0_SPRINT_6A_PRODUCTION_RUNTIME_PACKAGING_CORRECTION_DEPLOYED_BLOCKED_AT_DRY_RUN_BY_MIGRATION_DIRECTORY_DEPENDENCY`
+Status: `EIP_1.0_SPRINT_6A_PRODUCTION_RUNTIME_PACKAGING_CORRECTION_DEPLOYED_SUPERSEDED_BY_SPRINT_6A_1_RUNTIME_DEPENDENCY_CORRECTION`
 
 Date: July 25, 2026
 
@@ -58,4 +58,6 @@ The deployed Sprint 6A dry-run retry moved past the prior `schema.prisma` failur
 
 Source review showed `lib/gma/internalMappingReviewQueue.ts` imports from `scripts/checkGmaReadOnlyMappingPreview.js`. That script performs repository validation and scans `prisma/migrations`, which is appropriate for build/check workflows but not for a deployed production route dependency graph.
 
-The next correction should separate reusable deterministic fixture data from validation scripts so deployed admin routes can consume runtime-safe modules without repository file-system scans.
+Sprint 6A.1 implements this correction by moving reusable deterministic GMA preview fixture records to `lib/gma/readOnlyMappingPreviewFixtures.ts`, updating `lib/gma/internalMappingReviewQueue.ts` to import that runtime-safe module, and adding `npm run check:eip-sprint-6a-runtime-dependency-separation`.
+
+The Sprint 6A.1 local focused validation confirms the protected route dependency graph no longer reads `prisma/schema.prisma` or scans `prisma/migrations`.

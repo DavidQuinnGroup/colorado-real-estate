@@ -4,7 +4,7 @@
 
 ### Controlled Production-Internal Geographic Persistence Pilot(tm)
 
-Status: `EIP_1.0_SPRINT_6_CONTROLLED_PRODUCTION_INTERNAL_GEOGRAPHIC_PERSISTENCE_PILOT_BLOCKED_AT_PRODUCTION_DRY_RUN_PENDING_SPRINT_6A_DEPLOYMENT`
+Status: `EIP_1.0_SPRINT_6_CONTROLLED_PRODUCTION_INTERNAL_GEOGRAPHIC_PERSISTENCE_PILOT_PENDING_SPRINT_6A_1_DEPLOYED_DRY_RUN_RETRY`
 
 Implementation date: July 25, 2026
 
@@ -40,6 +40,8 @@ Current stop point:
 - retried production dry run `EIP-S6-DRY-20260725-002` returned HTTP `500` with JSON error `ENOENT: no such file or directory, open 'prisma/schema.prisma'`;
 - Sprint 6A route-scoped Prisma schema packaging correction was implemented, validated, pushed, and deployed successfully;
 - production dry run `EIP-S6-DRY-20260725-003` returned HTTP `500` with new error `ENOENT: no such file or directory, scandir 'prisma/migrations'`;
+- Sprint 6A.1 runtime dependency separation correction has been implemented locally to remove the validation-script dependency from the protected route graph;
+- focused validation confirms the protected route dependency graph no longer reads `prisma/schema.prisma` or scans `prisma/migrations`;
 - production execute remains paused.
 
 ---
@@ -238,6 +240,19 @@ Sprint 6A packaging correction:
 - validation command: `npm run check:eip-sprint-6a-production-runtime-packaging-correction`;
 - local validation result: passed;
 - deployment commit: `a8f09faf2e9011d78b995359b11e97bdbc80f79d`;
+
+Sprint 6A.1 runtime dependency separation correction:
+
+- correction package: `EIP_1.0_SPRINT_6A_1_RUNTIME_DEPENDENCY_SEPARATION_CORRECTION`;
+- root cause: `lib/gma/internalMappingReviewQueue.ts` imported `scripts/checkGmaReadOnlyMappingPreview.js`, which scanned `prisma/migrations` at module load;
+- correction file: `lib/gma/readOnlyMappingPreviewFixtures.ts`;
+- updated runtime consumer: `lib/gma/internalMappingReviewQueue.ts`;
+- updated validation script: `scripts/checkGmaReadOnlyMappingPreview.ts`;
+- validation command: `npm run check:eip-sprint-6a-runtime-dependency-separation`;
+- local focused validation result: passed;
+- production execute attempted: no;
+- production GIO writes performed: `0`;
+- next required deployed dry-run invocation ID: `EIP-S6-DRY-20260725-004`.
 - Vercel status ID: `51090831312`;
 - deployment status: success;
 - production dry-run retry: `EIP-S6-DRY-20260725-003`;

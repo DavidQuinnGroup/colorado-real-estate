@@ -4,7 +4,7 @@
 
 ### Production Runtime Packaging Correction(tm)
 
-Status: `EIP_1.0_SPRINT_6A_PRODUCTION_RUNTIME_PACKAGING_CORRECTION_DEPLOYED_BLOCKED_AT_DRY_RUN_BY_MIGRATION_DIRECTORY_DEPENDENCY`
+Status: `EIP_1.0_SPRINT_6A_PRODUCTION_RUNTIME_PACKAGING_CORRECTION_DEPLOYED_SUPERSEDED_BY_SPRINT_6A_1_RUNTIME_DEPENDENCY_CORRECTION`
 
 Implementation date: July 25, 2026
 
@@ -170,6 +170,18 @@ Interpretation:
 Current determination:
 
 `SPRINT_6A_DEPLOYED_DRY_RUN_BLOCKED_BY_VALIDATION_SCRIPT_RUNTIME_LEAK`
+
+Sprint 6A.1 continuation:
+
+- package: `EIP_1.0_SPRINT_6A_1_RUNTIME_DEPENDENCY_SEPARATION_CORRECTION`;
+- purpose: separate reusable GMA preview fixtures/contracts from validation scripts;
+- runtime-safe fixture module: `lib/gma/readOnlyMappingPreviewFixtures.ts`;
+- runtime consumer update: `lib/gma/internalMappingReviewQueue.ts` now imports from `./readOnlyMappingPreviewFixtures.js`;
+- validation script retained repository checks in `scripts/checkGmaReadOnlyMappingPreview.ts`;
+- new safety command: `npm run check:eip-sprint-6a-runtime-dependency-separation`;
+- local focused validation result: passed;
+- production execute attempted: no;
+- production GIO writes performed: `0`.
 
 Required next production dry run:
 

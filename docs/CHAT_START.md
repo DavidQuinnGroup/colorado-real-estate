@@ -10,7 +10,7 @@ Product:
 
 ## Latest New-Chat Handoff
 
-PROJECT ATLAS(tm) / EIP Sprint 6A continuation, July 25, 2026:
+PROJECT ATLAS(tm) / EIP Sprint 6A.1 continuation, July 25, 2026:
 
 Workspace:
 
@@ -22,13 +22,13 @@ Start by running:
 git status --short --branch
 git rev-parse HEAD
 git rev-parse origin/main
-curl -s --max-time 20 https://api.github.com/repos/DavidQuinnGroup/colorado-real-estate/commits/a8f09faf2e9011d78b995359b11e97bdbc80f79d/status
+curl -s --max-time 20 https://api.github.com/repos/DavidQuinnGroup/colorado-real-estate/commits/c5bdca74fbf24c5a5e6801e1b0093005777d55c4/status
 ```
 
 Current Sprint 6 state:
 
 - Program: `EIP_1.0_SPRINT_6_CONTROLLED_PRODUCTION_INTERNAL_GEOGRAPHIC_PERSISTENCE_PILOT`.
-- Correction package: `EIP_1.0_SPRINT_6A_PRODUCTION_RUNTIME_PACKAGING_CORRECTION`.
+- Correction package: `EIP_1.0_SPRINT_6A_1_RUNTIME_DEPENDENCY_SEPARATION_CORRECTION`.
 - Authorized subject: `Thornton, Colorado` only.
 - Production boundary: one production-internal GIO pilot object only.
 - Runtime/customer activation: not authorized.
@@ -48,11 +48,15 @@ Current Sprint 6 state:
 - Sprint 6A deployment status: success, Vercel status ID `51090831312`.
 - Production dry run `EIP-S6-DRY-20260725-003`: HTTP `500`, JSON error `ENOENT: no such file or directory, scandir 'prisma/migrations'`, no execute run, no production GIO write performed.
 - New blocker: validation-script runtime dependency reaches the protected admin route. Source review shows `lib/gma/internalMappingReviewQueue.ts` imports from `scripts/checkGmaReadOnlyMappingPreview.js`, which scans `prisma/migrations` at module load.
-- Current active phase: blocked before controlled execute until a separately authorized runtime dependency separation correction removes validation-script repository file scans from the protected deployed route path.
+- Sprint 6A.1 local correction: reusable GMA preview fixture records moved to `lib/gma/readOnlyMappingPreviewFixtures.ts`; `lib/gma/internalMappingReviewQueue.ts` now imports from `./readOnlyMappingPreviewFixtures.js`; `scripts/checkGmaReadOnlyMappingPreview.ts` remains validation-only.
+- New validation command: `npm run check:eip-sprint-6a-runtime-dependency-separation`.
+- Focused local validation passed and proved the protected route dependency graph does not read `prisma/schema.prisma` or scan `prisma/migrations`.
+- Current active phase: full validation, commit, push, deployment, and production dry-run retry only. Controlled execute remains prohibited.
 
 Completed validation before route hardening push:
 
 - `npm run check:eip-sprint-6a-production-runtime-packaging-correction`
+- `npm run check:eip-sprint-6a-runtime-dependency-separation`
 - `npm run check:eip-sprint-6-controlled-production-internal-geographic-persistence-pilot`
 - `npm run check:eip-sprint-5-enterprise-knowledge-approval-system`
 - `npm run check:eip-sprint-4-internal-geographic-activation-readiness-ledger`
@@ -91,11 +95,11 @@ Google Doc governance update:
 - The doc records Sprint 5 certification, Sprint 6 authorization, Thornton as the only pilot subject, one-object limit, continued prohibitions, recovery/rollback requirement, and the paused deployment gate.
 - Sprint 6A Google Doc update recorded the authorization, root cause, route-scoped correction, local validation, and continued prohibition before deployed dry-run retry. A follow-up Google Doc addendum is still required for the `prisma/migrations` dry-run blocker.
 
-Next safe step after separate authorization:
+Next safe step:
 
-1. Create a narrow runtime dependency separation package that moves reusable GMA preview fixture data out of validation scripts and keeps `prisma/migrations` scans in check scripts only.
-2. Validate that the protected Sprint 6 route no longer bundles validation scripts or scans repository directories.
-3. Deploy, then retry production dry run with a new invocation ID.
+1. Commit and push the Sprint 6A.1 runtime dependency separation correction after validation passes.
+2. Confirm deployment success.
+3. Retry production dry run with invocation ID `EIP-S6-DRY-20260725-004`.
 
 Do not run Sprint 6 controlled execute until a future deployed dry run returns HTTP `200`, `success=true`, `dryRun=true`, `executed=false`, `writesPerformed=0`, all eligibility flags false, zero relationship writes, and a rollback plan.
 
