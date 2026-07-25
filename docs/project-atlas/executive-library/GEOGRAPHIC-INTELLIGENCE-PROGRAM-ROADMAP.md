@@ -32,8 +32,9 @@ Current program posture:
 - Editorial Separation Principle: adopted.
 - GMA 1.0 geographic mapping architecture: certified and closed as architectural assessment only.
 - GMA 1.0 read-only mapping preview: certified and closed.
-- EIP 1.0 Sprint 5 Enterprise Knowledge Approval System: certification recommended.
-- Internal geographic mapping, persistence, final canonical selection, and customer activation remain unauthorized.
+- EIP 1.0 Sprint 5 Enterprise Knowledge Approval System: certified and closed.
+- EIP 1.0 Sprint 6 Controlled Production-Internal Geographic Persistence Pilot: authorized and in progress.
+- Internal geographic mapping, final canonical selection, runtime consumption, and customer activation remain unauthorized.
 
 ---
 
@@ -69,8 +70,9 @@ Current program posture:
 | Future Wave | Property Relationship Backfill | Create governed property-to-geography relationships in bounded batches. | `NOT_AUTHORIZED` | Production mutation only after gate |
 | Future Wave | Read Adapter Preview | Build internal read-only preview adapters for governed review. | `NOT_AUTHORIZED` | Internal only |
 | Future Wave | Customer Experience Activation | Integrate eligible GIO intelligence into search, maps, property pages, market pages, and public content. | `NOT_AUTHORIZED` | Customer-facing activation |
-| EIP Sprint 5 | Enterprise Knowledge Approval System | Convert readiness-ledger evidence into approval requests, executive review packets, decisions, audit history, and policy enforcement. | `CERTIFICATION_RECOMMENDED` | Internal approval fixture only; no activation |
-| Future Sprint | Enterprise Approval Decision Read Model | Retrieve approval requests, review packets, decisions, audit history, and policy summaries through a stable internal contract. | `RECOMMENDED_NEXT_AUTHORIZATION` | Internal read model only |
+| EIP Sprint 5 | Enterprise Knowledge Approval System | Convert readiness-ledger evidence into approval requests, executive review packets, decisions, audit history, and policy enforcement. | `CERTIFIED_AND_CLOSED` | Internal approval fixture only; no activation |
+| EIP Sprint 6 | Controlled Production-Internal Geographic Persistence Pilot | Persist one approved Thornton municipality object internally in production infrastructure through dry-run, execute, inspection, idempotency, and rollback planning. | `AUTHORIZED_IN_PROGRESS` | Production-internal only; no runtime or customer activation |
+| Future Sprint | Production-Internal Geographic Inspection Read Model | Retrieve and inspect the Sprint 6 production-internal pilot rows through a stable internal contract without customer activation. | `RECOMMENDED_AFTER_SPRINT_6_CERTIFICATION` | Internal inspection/read model only |
 
 ---
 
@@ -88,7 +90,11 @@ Current program posture:
 | GKM 1.0 existing geographic knowledge inventory and classification | `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/GKM-1.0-GEOGRAPHIC-KNOWLEDGE-MATRIX.md` | Certified and closed |
 | GMA 1.0 geographic mapping architecture | `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/GMA-1.0-GEOGRAPHIC-MAPPING-ARCHITECTURE.md` | Certified and closed |
 | GMA 1.0 read-only mapping preview | `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/GMA-1.0-READ-ONLY-MAPPING-PREVIEW.md` | Certified and closed |
-| EIP Sprint 5 enterprise knowledge approval system | `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/EIP-1.0-SPRINT-5-ENTERPRISE-KNOWLEDGE-APPROVAL-SYSTEM.md` | Certification recommended |
+| EIP Sprint 5 enterprise knowledge approval system | `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/EIP-1.0-SPRINT-5-ENTERPRISE-KNOWLEDGE-APPROVAL-SYSTEM.md` | Certified and closed |
+| EIP Sprint 6 controlled production-internal geographic persistence pilot charter | `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/EIP-1.0-SPRINT-6-CONTROLLED-PRODUCTION-INTERNAL-GEOGRAPHIC-PERSISTENCE-PILOT-CHARTER.md` | Authorized |
+| EIP Sprint 6 controlled production-internal geographic persistence pilot record | `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/EIP-1.0-SPRINT-6-CONTROLLED-PRODUCTION-INTERNAL-GEOGRAPHIC-PERSISTENCE-PILOT.md` | In progress |
+| EIP Sprint 6 lessons learned | `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/EIP-1.0-SPRINT-6-LESSONS-LEARNED.md` | In progress |
+| EIP Sprint 6 production activation and rollback runbook | `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/EIP-1.0-SPRINT-6-PRODUCTION-ACTIVATION-AND-ROLLBACK-RUNBOOK.md` | Active controlled runbook |
 | Enterprise knowledge approval policy | `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/ENTERPRISE-KNOWLEDGE-APPROVAL-POLICY.md` | Active internal policy fixture |
 
 ---
@@ -105,8 +111,8 @@ Current program posture:
 | Existing knowledge matrix gate | Any current-data mapping, source-ledger creation, or persistence planning | GKM 1.0 certified as read-only inventory; persistence still not authorized |
 | Mapping architecture gate | Any internal mapping preview, mapping ledger, source-to-target decision, or property assignment plan | GMA 1.0 certified as architecture only; internal mapping remains unauthorized |
 | Read-only preview gate | Any internal mapping execution, final canonical selection, production persistence, or runtime activation | GMA 1.0 read-only mapping preview certified; persistence and activation still not authorized |
-| Approval gate | Any transition from readiness to approved next step | EIP Sprint 5 approval system implemented as internal fixture; approval still does not authorize implementation, activation, persistence, or customer visibility |
-| Production population gate | Any GIO row insertion | Not authorized |
+| Approval gate | Any transition from readiness to approved next step | EIP Sprint 5 approval system certified and closed; approval still does not authorize activation or customer visibility |
+| Production population gate | Any GIO row insertion | Authorized only for EIP Sprint 6 one-object Thornton production-internal pilot; all other population remains unauthorized |
 | Customer activation gate | Public GIO routes, search, maps, property pages, or content | Not authorized |
 
 ---
@@ -442,7 +448,7 @@ Sprint 4 does not authorize:
 
 ## Enterprise Implementation Program - Sprint 5 Status
 
-Enterprise Implementation Program Sprint 5 certification is recommended as `EIP_1.0_SPRINT_5_ENTERPRISE_KNOWLEDGE_APPROVAL_SYSTEM_CERTIFIED_AND_CLOSED`.
+Enterprise Implementation Program Sprint 5 is certified and closed as `EIP_1.0_SPRINT_5_ENTERPRISE_KNOWLEDGE_APPROVAL_SYSTEM_CERTIFIED_AND_CLOSED`.
 
 Sprint 5 proves a reusable internal Enterprise Knowledge Approval System over Sprint 4 readiness-ledger evidence.
 
@@ -475,6 +481,57 @@ Sprint 5 does not authorize:
 - search, map, page, SEO, Typesense, MLS, alert, CRM, email, indexing, market analytics, customer presentation, AI-assisted synthesis, or runtime activation;
 - vendor integration or scraping.
 
+## Enterprise Implementation Program - Sprint 6 Status
+
+Enterprise Implementation Program Sprint 6 is authorized as `EIP_1.0_SPRINT_6_CONTROLLED_PRODUCTION_INTERNAL_GEOGRAPHIC_PERSISTENCE_PILOT`.
+
+Sprint 6 is the first controlled production-internal GIO persistence pilot. It is limited to one unambiguous municipality subject:
+
+- `Thornton, Colorado`
+
+Authorized Sprint 6 outputs:
+
+- Sprint charter: `EIP-1.0-SPRINT-6-CONTROLLED-PRODUCTION-INTERNAL-GEOGRAPHIC-PERSISTENCE-PILOT-CHARTER.md`.
+- Sprint record: `EIP-1.0-SPRINT-6-CONTROLLED-PRODUCTION-INTERNAL-GEOGRAPHIC-PERSISTENCE-PILOT.md`.
+- Lessons learned: `EIP-1.0-SPRINT-6-LESSONS-LEARNED.md`.
+- Production activation and rollback runbook: `EIP-1.0-SPRINT-6-PRODUCTION-ACTIVATION-AND-ROLLBACK-RUNBOOK.md`.
+- Internal production-persistence pilot module: `lib/eip/controlledProductionInternalGeographicPersistencePilot.ts`.
+- Protected admin-only route: `app/api/admin/enterprise/geographic-persistence-pilot/route.ts`.
+- Deterministic safety command: `npm run check:eip-sprint-6-controlled-production-internal-geographic-persistence-pilot`.
+
+Authorized maximum production-internal rows:
+
+| Table | Maximum |
+| --- | ---: |
+| `GeographicObject` | 1 |
+| `GeographicAlias` | 2 |
+| `GeographicSource` | 1 |
+| `GeographicObservation` | 6 |
+| `GeographicEligibility` | 1 |
+| `GeographicRelationship` | 0 |
+| `PropertyGeographicRelationship` | 0 |
+
+Sprint 6 preserves:
+
+- object lifecycle: `DRAFT`;
+- object visibility: `INTERNAL_ONLY`;
+- all eligibility flags: false;
+- runtime activation: false;
+- customer visibility: zero;
+- property relationships: zero;
+- search, map, page, SEO, indexing, analytics, AI, MLS, alert, CRM, email, and Typesense consumption: not authorized.
+
+Sprint 6 does not authorize:
+
+- current-data mapping;
+- final canonical customer selection;
+- public routes or APIs;
+- customer-visible geographic intelligence;
+- customer-visible approval, quality, readiness, trust, or source scores;
+- property relationship creation;
+- search, map, page, SEO, Typesense, MLS, alert, CRM, email, indexing, market analytics, customer presentation, AI-assisted synthesis, or runtime activation;
+- vendor integration or scraping.
+
 ---
 
 ## Program Watch Items
@@ -503,21 +560,22 @@ Sprint 5 does not authorize:
 | Internal-proof-complete drift | Sprint 1/Sprint 2 internal proof completion could be mistaken for production persistence approval. | Treat `INTERNAL_PROOF_COMPLETE` as historical accounting only; require separate production persistence authorization. |
 | Approval-to-activation drift | A positive Sprint 5 decision could be mistaken for implementation authority or customer activation. | Keep approval decisions scoped to defined next steps and preserve all post-approval prohibitions until separate implementation and activation directives exist. |
 | Recommendation-to-decision drift | Automated recommendations could be treated as decisions. | Keep recommendations advisory only and require policy-authorized human decision records. |
+| Production-internal-to-customer drift | The Sprint 6 internal production row could be mistaken for a public product claim. | Keep lifecycle `DRAFT`, visibility `INTERNAL_ONLY`, eligibility flags false, and runtime/public scans mandatory until a separate customer activation directive exists. |
 
 ---
 
 ## Next Recommended Authorization
 
-Authorize only:
+After Sprint 6 certification, authorize only:
 
-- `EIP_1.0_SPRINT_6_ENTERPRISE_APPROVAL_DECISION_READ_MODEL`
+- `EIP_1.0_SPRINT_7_PRODUCTION_INTERNAL_GEOGRAPHIC_INSPECTION_READ_MODEL`
 
 Do not authorize without a separate directive:
 
 - internal geographic mapping execution
 - final canonical selection
-- production table population
-- production fixture creation
+- production table population beyond the Sprint 6 one-object Thornton pilot
+- production fixture creation beyond the Sprint 6 one-object Thornton pilot
 - geographic migration
 - property relationship backfill
 - runtime read adapters

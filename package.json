@@ -37,6 +37,7 @@
     "check:eip-sprint-3-enterprise-knowledge-quality-engine": "npm run worker:build && node dist/scripts/checkEipSprint3EnterpriseKnowledgeQualityEngine.js",
     "check:eip-sprint-4-internal-geographic-activation-readiness-ledger": "npm run worker:build && node dist/scripts/checkEipSprint4InternalGeographicActivationReadinessLedger.js",
     "check:eip-sprint-5-enterprise-knowledge-approval-system": "npm run worker:build && node dist/scripts/checkEipSprint5EnterpriseKnowledgeApprovalSystem.js",
+    "check:eip-sprint-6-controlled-production-internal-geographic-persistence-pilot": "npm run worker:build && node dist/scripts/checkEipSprint6ControlledProductionInternalGeographicPersistencePilot.js",
     "check:geographic-intelligence-object-safety": "npm run worker:build && node dist/scripts/checkGeographicIntelligenceObjectSafety.js",
     "check:gkc-fixture-governance": "npm run worker:build && node dist/scripts/checkGkcFixtureGovernance.js",
     "check:gma-read-only-mapping-preview": "npm run worker:build && node dist/scripts/checkGmaReadOnlyMappingPreview.js",
