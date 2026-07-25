@@ -29,7 +29,9 @@ Current program posture:
 - GKC 1.0: architectural assessment certified and closed.
 - GKC 1.0 fixture governance validation: certified and closed.
 - GKM 1.0 existing geographic knowledge inventory and classification: certified and closed.
-- GKM 1.0 internal development mapping plan: recommended next authorization only.
+- Editorial Separation Principle: adopted.
+- GMA 1.0 geographic mapping architecture: certified and closed as architectural assessment only.
+- Internal geographic mapping remains unauthorized.
 
 ---
 
@@ -55,7 +57,9 @@ Current program posture:
 | GKC 1.0 | Geographic Knowledge Classification | Architect classification taxonomies, review rules, source trust levels, observation keys, and fixture-only validation. | `CERTIFIED_AND_CLOSED` | Architecture only |
 | Future Wave | Fixture Governance Validation | Validate classification behavior against non-production fixtures without production writes. | `CERTIFIED_AND_CLOSED` | Synthetic local validation only |
 | GKM 1.0 | Existing Geographic Knowledge Inventory and Classification | Inventory existing repository knowledge assets, classify them against GIO/GKC, map Data Tools source categories, and identify persistence candidates without activation. | `CERTIFIED_AND_CLOSED` | Read-only documentation and source classification |
-| Future Wave | Internal Development Mapping Plan | Produce deterministic non-production mapping, alias, source, conflict, and dry-run ledger plans before any persistence authorization. | `RECOMMENDED_NEXT_ASSESSMENT` | No production persistence |
+| GMA 1.0 | Geographic Mapping Architecture | Define the canonical mapping model, confidence and lifecycle standards, ambiguity rules, duplicate governance, evidence requirements, activation gates, and Editorial Separation Principle controls before any mappings exist. | `CERTIFIED_AND_CLOSED` | Architecture only; no mapping or persistence |
+| Future Wave | Read-Only Mapping Preview Plan | Produce deterministic preview-ledger design and non-persistent candidate reporting rules before internal mapping authorization. | `RECOMMENDED_NEXT_AUTHORIZATION` | Read-only, non-persistent preview planning |
+| Future Wave | Internal Development Mapping Plan | Produce deterministic non-production mapping, alias, source, conflict, and dry-run ledger plans before any persistence authorization. | `DEFERRED_BY_GMA` | No production persistence |
 | Future Wave | Internal Development Persistence Assessment | Assess whether fixture-governance contracts are sufficient for isolated non-production persistence. | `DEFERRED_BY_GKM` | No production persistence |
 | Future Wave | Current Data Mapping Report | Produce dry-run reports from existing city, neighborhood, ZIP, subdivision, and market data. | `NOT_AUTHORIZED` | Read-only report only |
 | Future Wave | Controlled Object Population | Seed a bounded canonical object set after source and classification approval. | `NOT_AUTHORIZED` | Production mutation only after gate |
@@ -77,6 +81,7 @@ Current program posture:
 | GKC 1.0 geographic knowledge classification architecture | `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/GKC-1.0-GEOGRAPHIC-KNOWLEDGE-CLASSIFICATION-ARCHITECTURE.md` | Certified and closed |
 | GKC 1.0 fixture governance validation | `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/GKC-1.0-FIXTURE-GOVERNANCE-VALIDATION.md` | Certified and closed |
 | GKM 1.0 existing geographic knowledge inventory and classification | `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/GKM-1.0-GEOGRAPHIC-KNOWLEDGE-MATRIX.md` | Certified and closed |
+| GMA 1.0 geographic mapping architecture | `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/GMA-1.0-GEOGRAPHIC-MAPPING-ARCHITECTURE.md` | Certified and closed |
 
 ---
 
@@ -90,6 +95,7 @@ Current program posture:
 | Classification gate | Any object classification or knowledge layer | GKC 1.0 architecture certified; implementation not authorized |
 | Fixture gate | Any non-production object or relationship validation | Synthetic local fixture validation certified; persistence not authorized |
 | Existing knowledge matrix gate | Any current-data mapping, source-ledger creation, or persistence planning | GKM 1.0 certified as read-only inventory; persistence still not authorized |
+| Mapping architecture gate | Any internal mapping preview, mapping ledger, source-to-target decision, or property assignment plan | GMA 1.0 certified as architecture only; internal mapping remains unauthorized |
 | Production population gate | Any GIO row insertion | Not authorized |
 | Customer activation gate | Public GIO routes, search, maps, property pages, or content | Not authorized |
 
@@ -171,6 +177,41 @@ GKM 1.0 closure does not authorize:
 - Search, map, property page, market page, sitemap, SEO, Typesense, MLS, alert, CRM, email, or customer-facing activation.
 - Vendor integration or external data ingestion.
 
+## Editorial Separation Principle Status
+
+The Editorial Separation Principle is adopted:
+
+- `EDITORIAL_SEPARATION_PRINCIPLE_ADOPTED`
+
+Editorial content, market commentary, lifestyle descriptions, local guidance, and community narratives shall never become governed geographic facts unless they receive explicit classification, source attribution, trust review, and activation approval.
+
+This principle governs GIO objects, GKC classifications, GKM inventories, GMA mappings, geographic pages, property enrichment, market intelligence, search and maps, SEO content, and future AI-assisted synthesis.
+
+## GMA 1.0 Status
+
+GMA 1.0 Geographic Mapping Architecture is certified and closed as an architectural assessment only.
+
+Required GMA 1.0 outputs:
+
+- Canonical conceptual mapping record model.
+- Mapping classifications, methods, confidence model, and lifecycle model.
+- Canonical selection framework.
+- Object-specific mapping rules for municipality, neighborhood, market area, ZIP code, subdivision, and property relationships.
+- Alias, ambiguity, duplicate, merge, evidence, human-review, and AI-assisted mapping boundaries.
+- Activation gates from architecture approval through customer presentation.
+- Persistence implications and enum or registry gap analysis.
+
+GMA 1.0 does not authorize:
+
+- Internal mapping execution.
+- Production persistence.
+- GIO row insertion.
+- Current-data mapping.
+- Property relationship assignment.
+- Runtime integration.
+- Search, map, property page, market page, sitemap, SEO, Typesense, MLS, alert, CRM, email, or customer-facing activation.
+- Vendor integration, scraping, or AI-assisted mapping activation.
+
 ---
 
 ## Program Watch Items
@@ -185,6 +226,8 @@ GKM 1.0 closure does not authorize:
 | Runtime isolation | Future imports can erode the dormant boundary. | Keep static safety checks mandatory until activation is authorized. |
 | Existing knowledge duplication | City, neighborhood, market, polygon, and link data exist in parallel structures. | Use GKM 1.0 conflict register before any mapping or persistence. |
 | External source governance | Authoritative Google Docs are accessible but external to repository version control. | Record exact required external updates; do not claim external updates unless performed. |
+| Editorial fact conversion | Editorial geography could be accidentally promoted into canonical facts. | Apply the Editorial Separation Principle and GMA stop rules before any mapping preview. |
+| Mapping architecture maturity | Mapping types, methods, confidence terms, and lifecycle terms exceed current Prisma enums. | Resolve through GMA architecture before any persistence authorization. |
 
 ---
 
@@ -192,10 +235,11 @@ GKM 1.0 closure does not authorize:
 
 Authorize only:
 
-- `GKM_1.0_INTERNAL_DEVELOPMENT_MAPPING_PLAN`
+- `GMA_1.0_READ_ONLY_MAPPING_PREVIEW_PLAN`
 
 Do not authorize without a separate directive:
 
+- internal geographic mapping execution
 - production table population
 - production fixture creation
 - geographic migration
