@@ -43,7 +43,7 @@ type Outcome =
   | "REJECTED"
   | "UNRESOLVED";
 
-type PreviewRecord = {
+export type PreviewRecord = {
   previewId: string;
   sourceAsset: string;
   repositoryLocation: string;
@@ -85,6 +85,7 @@ const legacyCityNames = new Set(legacyCities.map((city) => city.name));
 const searchCityNames = new Set(searchCities.map((city) => city.replace(/-/g, " ")));
 
 const records: PreviewRecord[] = [];
+export { records as readOnlyMappingPreviewRecords };
 
 for (const city of primaryCities) {
   const ambiguousAsNeighborhood = primaryNeighborhoodNames.has(city.name);

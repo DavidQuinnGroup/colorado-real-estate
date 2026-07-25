@@ -218,7 +218,16 @@ GMA 1.0 does not authorize:
 
 ## GMA 1.0 Read-Only Mapping Preview Status
 
-GMA 1.0 Read-Only Mapping Preview is certified and closed.
+GMA 1.0 Read-Only Mapping Preview is certified and closed. Final deployment verification succeeded before Internal Mapping Review Queue implementation began.
+
+Deployment closure evidence:
+
+- Repository HEAD: `e11c268e7e2a42c7814c16e1899c2250b2d0e3a6`
+- GitHub/Vercel status ID: `51087822916`
+- Final state: `success`
+- Description: `Deployment has completed`
+- Completion time: `2026-07-25T19:48:05Z`
+- Deployment target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/ASCEYeXUbFngghCq4kXsqeAkREc9`
 
 Certified preview outputs:
 
@@ -242,6 +251,35 @@ GMA 1.0 Read-Only Mapping Preview closure does not authorize:
 - Search, map, route, page, SEO, Typesense, MLS, alert, CRM, email, or customer-facing activation.
 - Vendor integration, scraping, or AI-assisted mapping activation.
 
+## GMA 1.0 Internal Mapping Review Queue Status
+
+GMA 1.0 Internal Mapping Review Queue is active as a non-production governance capability and certified closed as `GMA_1.0_INTERNAL_MAPPING_REVIEW_QUEUE_CERTIFIED_AND_CLOSED`.
+
+Certified queue outputs:
+
+- Deterministic local review queue generated from the existing 91-record Read-Only Mapping Preview ledger only.
+- 91 queue items.
+- 36 editorial-separation items locked as non-factual.
+- 26 duplicate candidates preserved.
+- 4 conflicts preserved.
+- 42 ambiguous items blocked from canonical approval.
+- 80 unresolved items retained.
+- Controlled review status and action vocabularies.
+- Evidence-sufficiency model.
+- Negative tests for prohibited editorial, ambiguity, duplicate, conflict, and eligibility transitions.
+- Deterministic safety command: `npm run check:gma-internal-mapping-review-queue`.
+
+GMA 1.0 Internal Mapping Review Queue does not authorize:
+
+- GIO persistence.
+- Final canonical selection.
+- Production mapping.
+- Property relationship assignment.
+- Production data mutation.
+- Runtime integration.
+- Search, map, route, page, SEO, Typesense, MLS, alert, CRM, email, or customer-facing activation.
+- Vendor integration, scraping, or AI-assisted mapping activation.
+
 ---
 
 ## Program Watch Items
@@ -259,6 +297,7 @@ GMA 1.0 Read-Only Mapping Preview closure does not authorize:
 | Editorial fact conversion | Editorial geography could be accidentally promoted into canonical facts. | Apply the Editorial Separation Principle and GMA stop rules before any mapping preview. |
 | Mapping architecture maturity | Mapping types, methods, confidence terms, and lifecycle terms exceed current Prisma enums. | Resolve through GMA architecture before any persistence authorization. |
 | Preview-to-production drift | Preview records could be mistaken for authoritative mappings. | Keep all preview records non-active, non-authoritative, and not eligible for activation. |
+| Review-to-production drift | Review queue classifications could be mistaken for canonical approval. | Keep every queue item `NOT_ELIGIBLE` and require separate authorization before any persistence. |
 
 ---
 
@@ -266,7 +305,7 @@ GMA 1.0 Read-Only Mapping Preview closure does not authorize:
 
 Authorize only:
 
-- `GMA_1.0_INTERNAL_MAPPING_REVIEW_QUEUE`
+- `GMA_1.0_INTERNAL_REVIEW_DECISION_FIXTURE`
 
 Do not authorize without a separate directive:
 
