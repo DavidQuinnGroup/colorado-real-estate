@@ -57,6 +57,9 @@ async function assertPropertyPage(path: string) {
   assert.ok(includesFoldedText(html, 'Compare'), 'Expected property page compare decision lens.');
   assert.ok(includesFoldedText(html, 'Investigate'), 'Expected property page investigate decision lens.');
   assert.ok(includesFoldedText(html, 'Discuss'), 'Expected property page discuss decision lens.');
+  assert.ok(includesFoldedText(html, 'Decision Summary'), 'Expected property page decision summary.');
+  assert.ok(includesFoldedText(html, 'Known facts, verification needs, and next steps'), 'Expected property page compact decision summary framing.');
+  assert.ok(includesFoldedText(html, 'Questions to carry forward'), 'Expected property page integrated question continuity.');
   assert.ok(includesFoldedText(html, 'Property Brief'), 'Expected property page brief framing.');
   assert.ok(includesFoldedText(html, 'Listing Facts'), 'Expected property page listing facts.');
   assert.ok(includesFoldedText(html, 'Construction Perspective'), 'Expected property page construction perspective.');
@@ -64,7 +67,7 @@ async function assertPropertyPage(path: string) {
   assert.ok(includesFoldedText(html, 'Known From Public Listing Data'), 'Expected property page public construction fact grouping.');
   assert.ok(includesFoldedText(html, 'General Construction Context'), 'Expected property page general construction education grouping.');
   assert.ok(includesFoldedText(html, 'Questions to Verify'), 'Expected property page neutral construction verification prompts.');
-  assert.ok(includesFoldedText(html, 'Public listing information is a starting point'), 'Expected property page construction professional-boundary language.');
+  assert.ok(includesFoldedText(html, 'Confirm condition, systems, permits, costs, and code questions'), 'Expected property page construction professional-boundary language.');
   assert.ok(includesFoldedText(html, 'Financial Context'), 'Expected property page financial context section.');
   assert.ok(includesFoldedText(html, 'Known Public Price Facts'), 'Expected property page public price fact grouping.');
   assert.ok(includesFoldedText(html, 'Ownership Costs to Verify'), 'Expected property page ownership-cost verification grouping.');
@@ -75,7 +78,7 @@ async function assertPropertyPage(path: string) {
   assert.ok(includesFoldedText(html, 'Known Listing and Market Facts'), 'Expected property page public market fact grouping.');
   assert.ok(includesFoldedText(html, 'Local Market Context'), 'Expected property page local market education grouping.');
   assert.ok(includesFoldedText(html, 'Market Questions to Investigate'), 'Expected property page neutral market investigation prompts.');
-  assert.ok(includesFoldedText(html, 'Market information on this page is educational'), 'Expected property page market professional-boundary language.');
+  assert.ok(includesFoldedText(html, 'Read broader market context as education'), 'Expected property page market education boundary language.');
   assert.ok(includesFoldedText(html, 'Market Pathway'), 'Expected property page market pathway fact.');
   assert.ok(includesFoldedText(html, 'Questions Worth Asking'), 'Expected property page diligence questions.');
   assert.ok(includesFoldedText(html, 'Questions for a Better Property Conversation'), 'Expected property page advisor discussion preparation.');
@@ -85,6 +88,7 @@ async function assertPropertyPage(path: string) {
   assert.ok(includesFoldedText(html, 'Current Request'), 'Expected inquiry request guidance.');
   assert.ok(includesFoldedText(html, 'Timing / Intent'), 'Expected inquiry timing controls.');
   assert.ok(includesFoldedText(html, 'Notes optional but helpful'), 'Expected inquiry notes guidance.');
+  assert.ok(!includesFoldedText(html, 'Photo Review Placeholder'), 'Expected property page to avoid disabled photo-review placeholder language.');
   assert.ok(!includesFoldedText(html, 'Advisor Review'), 'Expected property page to avoid advisor-review claims.');
   assert.ok(!includesFoldedText(html, 'Location Fit'), 'Expected property page to avoid public location-fit claims.');
   assert.ok(!includesFoldedText(html, 'Photo Review Available'), 'Expected property page to avoid unavailable photo-review capability claims.');
@@ -487,8 +491,9 @@ async function assertRelatedPropertyLinksSource() {
   assert.ok(source.includes('data-related-property-timeline-step-count='), 'Expected related property links to expose timeline step counts.');
   assert.ok(source.includes('data-related-property-scenario-scope='), 'Expected related property links to expose non-financial scenario scope metadata.');
   assert.ok(source.includes('Preparation Considerations'), 'Expected related property links to use non-ROI preparation tab language.');
-  assert.ok(source.includes('Compare Preparation Approaches'), 'Expected related property links to use non-financial comparison language.');
-  assert.ok(source.includes('Marketability Focus'), 'Expected related property links to use directional marketability language.');
+  assert.ok(source.includes('Related Property Paths'), 'Expected related property links to frame continued exploration.');
+  assert.ok(source.includes('Compare Review Paths'), 'Expected related property links to use non-financial comparison language.');
+  assert.ok(source.includes('Continue Comparing'), 'Expected related property links to use continued comparison language.');
   assert.ok(!source.match(/Listing Prep ROI|ROI Engine|Equity Lift|Investment Cost|equity capture/i), 'Expected related property links to avoid unsupported public ROI/equity language.');
   assert.ok(source.includes('data-related-property-risk-window-days="review-required"'), 'Expected related property links to avoid fixed financing-risk windows.');
   assert.ok(source.includes('Timing Review'), 'Expected related property links to frame timing as review-oriented guidance.');

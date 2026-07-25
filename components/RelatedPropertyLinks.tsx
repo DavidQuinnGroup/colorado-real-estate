@@ -41,25 +41,25 @@ type TimelinePointProps = TimelineStep;
 
 const prepScenarios: PrepScenario[] = [
   {
-    label: "As-Is Market Exit",
+    label: "Current Presentation",
     scope: "Baseline presentation",
     planningSignal: "Review buyer confidence",
     velocity: "Timing varies",
-    description: "Review current presentation, disclosure needs, and likely buyer questions before deciding whether updates are warranted.",
+    description: "Use public context to compare how this property is presented before assuming updates or next steps are warranted.",
   },
   {
-    label: "DQG Refresh",
-    scope: "Focused refresh",
-    planningSignal: "Improve showing confidence",
+    label: "Focused Updates",
+    scope: "Targeted preparation",
+    planningSignal: "Clarify showing questions",
     velocity: "Focused timing",
-    description: "Consider paint, flooring, and high-friction fixes that may improve perceived move-in readiness.",
+    description: "Review whether visible presentation, records, and buyer questions should be discussed before relying on assumptions.",
   },
   {
-    label: "Designer-Grade Prep",
-    scope: "Expanded preparation",
-    planningSignal: "Elevate marketability",
+    label: "Expanded Review",
+    scope: "Broader preparation",
+    planningSignal: "Organize records and timing",
     velocity: "Expanded timing",
-    description: "Review staging and finish-profile updates when presentation quality is central to the launch plan.",
+    description: "Use advisor and professional input when timing, records, or property presentation need a broader review.",
   },
 ];
 
@@ -68,7 +68,7 @@ const timelineSteps: TimelineStep[] = [
   { label: "Market Debut", date: "Day 15", active: true },
   { label: "Contingent Offer", date: "Day 22" },
   { label: "Due Diligence", date: "Day 35" },
-  { label: "DQG Simultaneous Close", date: "Day 45", highlight: true },
+  { label: "Closing Review", date: "Day 45", highlight: true },
 ];
 
 export default function RelatedPropertyLinks({
@@ -99,14 +99,14 @@ export default function RelatedPropertyLinks({
         <div className="mb-2 flex items-center gap-3">
           <ArrowRightLeft className="h-4 w-4 text-cyan-300" />
           <span className="text-[10px] font-black uppercase tracking-[0.4em] text-cyan-300">
-            Property Planning Context
+            Continue Comparing
           </span>
         </div>
         <h2 className="text-4xl font-black uppercase italic tracking-tighter text-white">
-          Move Planning Considerations
+          Related Property Paths
         </h2>
         <p className="mt-2 text-xs uppercase tracking-widest text-white/40">
-          Preparation and timing context for {authorityLabel} moves
+          Search and market context for continued review in {authorityLabel}
         </p>
       </div>
 
@@ -139,7 +139,7 @@ export default function RelatedPropertyLinks({
             data-related-property-prep-scenario-count={prepScenarios.length}
           >
             <h3 className="mb-8 text-[11px] font-black uppercase italic tracking-[0.3em] text-cyan-300">
-              Compare Preparation Approaches
+              Compare Review Paths
             </h3>
             <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
               {prepScenarios.map((scenario) => (
@@ -158,7 +158,7 @@ export default function RelatedPropertyLinks({
                       {scenario.scope}
                     </div>
                     <div className="mb-6 text-[9px] font-bold uppercase text-white/40">
-                      Planning Scope
+                      Review Scope
                     </div>
 
                     <div className="space-y-4 border-t border-white/5 pt-4">
@@ -175,7 +175,7 @@ export default function RelatedPropertyLinks({
                 ))}
             </div>
             <p className="mt-6 text-[10px] leading-5 text-white/38">
-              Actual costs, timing, and outcomes vary. Review improvements with an advisor before making decisions.
+              Actual costs, timing, and outcomes vary. Treat these paths as conversation context, not as recommendations.
             </p>
           </div>
         ) : (
@@ -185,7 +185,7 @@ export default function RelatedPropertyLinks({
             data-related-property-timeline-step-count={timelineSteps.length}
           >
             <h3 className="mb-8 text-[11px] font-black uppercase italic tracking-[0.3em] text-cyan-300">
-              Sell-to-Buy Contingency Path
+              Timing Questions to Review
             </h3>
             <div className="relative overflow-x-auto pb-8 pt-12">
               <div className="absolute left-0 top-1/2 h-px min-w-full bg-white/10" />
@@ -207,8 +207,8 @@ export default function RelatedPropertyLinks({
                   Timing Review
                 </p>
                 <p className="text-[10px] italic leading-relaxed text-red-500/80">
-                  When buying and selling overlap, review closing dates, occupancy needs, financing terms, and contingency options with
-                  the appropriate advisors before relying on a plan.
+                  When timing questions overlap, review closing dates, occupancy needs, financing terms, and contingency options with
+                  the appropriate professionals before relying on a plan.
                 </p>
               </div>
             </div>
@@ -227,7 +227,7 @@ export default function RelatedPropertyLinks({
           <div className="mb-4 flex items-center gap-4">
             <ClipboardCheck className="text-cyan-300/50" size={16} />
             <span className="text-[9px] font-bold uppercase italic tracking-[0.3em] text-white/20">
-              Advisor Planning Context
+              Continued Exploration
             </span>
           </div>
           {authorityLinks.length ? (
@@ -264,7 +264,7 @@ export default function RelatedPropertyLinks({
           data-related-property-primary-href={primaryHref}
           data-related-property-link-source={authorityLinks[0] ? "authority-link" : "city-search-fallback"}
         >
-          Review Related Market Context
+          Continue Comparing
           <ChevronRight size={14} className="transition-transform group-hover:translate-x-1" />
         </Link>
       </div>

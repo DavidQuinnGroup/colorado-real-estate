@@ -459,6 +459,24 @@ const MARKET_INVESTIGATION_QUESTIONS = [
   'What information is public fact, and what requires professional interpretation before pricing, offer, or timing decisions?',
 ];
 
+const SUMMARY_VERIFY_CATEGORIES = [
+  { label: 'Ownership costs', value: 'Taxes, HOA, insurance, financing terms, closing costs, and maintenance assumptions.' },
+  { label: 'Systems and records', value: 'Roof, mechanical, electrical, plumbing, drainage, permits, windows, and exterior records.' },
+  { label: 'Market context', value: 'Comparable public facts, listing timing, area context, and which route gives the best supported context.' },
+];
+
+const SUMMARY_DISCUSS_PATHWAYS = [
+  'Ask which financial assumptions belong with a lender, insurer, tax professional, attorney, or advisor.',
+  'Ask which construction records should be reviewed by inspectors, contractors, engineers, or other qualified professionals.',
+  'Ask how public market context should be interpreted before tour, timing, or offer decisions.',
+];
+
+const QUESTIONS_TO_CARRY_FORWARD = [
+  { label: 'Financial', value: 'Which taxes, insurance, HOA, financing, closing, and maintenance assumptions need independent confirmation?' },
+  { label: 'Construction', value: 'Which systems, permits, records, and site conditions should be verified by the right professionals?' },
+  { label: 'Market', value: 'Which public listing facts and local context are useful for comparison, and which need interpretation?' },
+];
+
 function getPropertyPageAuthorityLinks(authorityLinks: PropertyAuthorityLink[], marketPathway: MarketPathway): PropertyAuthorityLink[] {
   return authorityLinks.map((link) => {
     if (link.status !== 'Market') return link;
@@ -493,6 +511,17 @@ function getListingRemarkMentions(description: string | null | undefined) {
   if (!matches.length) return ['Listing remarks do not call out these systems directly; verify records independently.'];
 
   return matches.map((label) => `${label} mentioned in the listing remarks; verify independently.`);
+}
+
+function getDecisionSummaryFacts(property: PropertyWithPhotos, pricePerSquareFoot: string) {
+  return [
+    { label: 'Price', value: formatCurrency(property.price) },
+    { label: 'Calc. Basis', value: pricePerSquareFoot },
+    { label: 'Status', value: property.status || 'Not provided' },
+    { label: 'Type', value: property.propertyType || 'Residential' },
+    { label: 'Year Built', value: property.yearBuilt ? String(property.yearBuilt) : 'Not provided' },
+    { label: 'Lot', value: formatLotSize(property.lotSize) },
+  ];
 }
 
 async function getProperty(id: string) {
@@ -623,6 +652,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
   const listingRemarkMentions = getListingRemarkMentions(property.description);
   const knownPublicPriceFacts = getKnownPublicPriceFacts(property, pricePerSquareFoot);
   const knownListingMarketFacts = getKnownListingMarketFacts(property, pricePerSquareFoot, marketPathway);
+  const decisionSummaryFacts = getDecisionSummaryFacts(property, pricePerSquareFoot);
   const propertyLinks = await getPropertyLinks({
     id: property.id,
     city: property.city,
@@ -742,6 +772,10 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                 <p className="mt-4 border-t border-cyan-100/14 pt-4 text-sm leading-6 text-white/66">
                   {decisionNextStep} Price per square foot is a calculated comparison measure, not a valuation or complete cost picture.
                 </p>
+                <p className="mt-3 rounded-[6px] border border-cyan-100/14 bg-black/18 p-3 text-xs leading-5 text-white/52">
+                  This workspace organizes public information, educational context, and questions to verify. It does not replace inspection,
+                  appraisal, lending, tax, legal, insurance, construction, or market-professional review.
+                </p>
                 <div className="reie-property-advisor-actions mt-4 grid gap-2">
                   <Link
                     href="#property-contact"
@@ -856,6 +890,82 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
 
         <div className="reie-property-detail-grid grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
           <div className="space-y-6">
+            <section
+              className="overflow-hidden rounded-[8px] border border-cyan-100/18 bg-[#0d141c]"
+              data-testid="reie-property-decision-summary"
+              data-decision-summary-known-count={decisionSummaryFacts.length}
+              data-decision-summary-verify-count={SUMMARY_VERIFY_CATEGORIES.length}
+              data-decision-summary-discuss-count={SUMMARY_DISCUSS_PATHWAYS.length}
+            >
+              <div className="border-b border-white/10 bg-white/[0.035] p-4 md:p-5">
+                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-cyan-100/76">
+                  Decision Summary
+                </p>
+                <h2 className="mt-2 text-xl font-black uppercase tracking-tight text-white md:text-2xl">
+                  Known facts, verification needs, and next steps
+                </h2>
+                <p className="mt-2 max-w-3xl text-sm leading-6 text-white/58">
+                  A quick orientation to public facts, questions to verify, and existing next steps. It does not score, recommend, predict,
+                  value, diagnose, or decide whether this property is right for you.
+                </p>
+              </div>
+              <div className="grid gap-px bg-white/10 md:grid-cols-4">
+                <div className="bg-[#0d141c] p-3 md:p-4">
+                  <h3 className="text-[11px] font-black uppercase tracking-[0.18em] text-white/70">Known</h3>
+                  <dl className="mt-3 grid grid-cols-2 gap-2">
+                    {decisionSummaryFacts.map((fact) => (
+                      <div key={fact.label} className="min-w-0">
+                        <dt className="text-[10px] font-black uppercase tracking-[0.12em] text-cyan-100/52">{fact.label}</dt>
+                        <dd className="mt-1 truncate text-sm font-bold text-white/74">{fact.value}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </div>
+                <div className="bg-[#0d141c] p-3 md:p-4">
+                  <h3 className="text-[11px] font-black uppercase tracking-[0.18em] text-white/70">Verify</h3>
+                  <ul className="mt-3 space-y-2 text-xs leading-5 text-white/58">
+                    {SUMMARY_VERIFY_CATEGORIES.map((item) => (
+                      <li key={item.label}>
+                        <span className="font-black uppercase tracking-[0.08em] text-white/76">{item.label}: </span>
+                        {item.value}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="bg-[#0d141c] p-3 md:p-4">
+                  <h3 className="text-[11px] font-black uppercase tracking-[0.18em] text-white/70">Discuss</h3>
+                  <ul className="mt-3 space-y-2 text-xs leading-5 text-white/58">
+                    {SUMMARY_DISCUSS_PATHWAYS.map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="bg-[#0d141c] p-3 md:p-4">
+                  <h3 className="text-[11px] font-black uppercase tracking-[0.18em] text-white/70">Next</h3>
+                  <div className="mt-3 grid gap-2">
+                    <Link
+                      href="#property-contact"
+                      className="inline-flex min-h-10 items-center justify-center rounded-[6px] bg-cyan-100 px-3 py-2 text-[10px] font-black uppercase tracking-[0.12em] text-[#061017] transition hover:bg-white"
+                    >
+                      Ask About This Property
+                    </Link>
+                    <Link
+                      href={getCitySearchHref(property.city)}
+                      className="inline-flex min-h-10 items-center justify-center rounded-[6px] border border-white/10 bg-white/[0.055] px-3 py-2 text-[10px] font-black uppercase tracking-[0.12em] text-white/66 transition hover:border-cyan-100/35 hover:text-cyan-100"
+                    >
+                      View Listings in This Area
+                    </Link>
+                    <Link
+                      href={marketPathway.href}
+                      className="inline-flex min-h-10 items-center justify-center rounded-[6px] border border-white/10 bg-white/[0.055] px-3 py-2 text-[10px] font-black uppercase tracking-[0.12em] text-white/66 transition hover:border-cyan-100/35 hover:text-cyan-100"
+                    >
+                      {marketPathway.isMarketPageAvailable ? 'View Market Context' : 'Return to Search'}
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </section>
+
             <section className="overflow-hidden rounded-[8px] border border-white/10 bg-[#0d141c]">
               <div className="border-b border-white/10 bg-white/[0.035] p-5 md:p-6">
                 <div className="flex flex-col justify-between gap-4 md:flex-row md:items-start">
@@ -904,8 +1014,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                       Price facts and ownership-cost questions to verify
                     </h2>
                     <p className="mt-3 max-w-3xl text-sm leading-6 text-white/58">
-                      Financial information on this page is educational and based on public listing context where available. Verify taxes,
-                      insurance, financing terms, HOA dues, closing costs, and legal or tax questions with the appropriate professionals.
+                      Review public price facts alongside ownership-cost assumptions that should be confirmed before relying on any estimate.
                     </p>
                   </div>
                   <span className="inline-flex h-8 items-center rounded-[6px] border border-cyan-100/22 bg-cyan-100/[0.08] px-3 text-[10px] font-black uppercase tracking-[0.16em] text-cyan-100">
@@ -953,8 +1062,8 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                       Professional Context
                     </h3>
                     <p className="mt-4 text-xs leading-5 text-white/58 md:text-sm md:leading-6">
-                      This page does not provide lender quotes, loan approval, tax advice, insurance advice, legal advice, appraisal,
-                      financial planning, investment advice, or contractor estimates.
+                      Verify taxes, insurance, financing terms, HOA dues, closing costs, legal questions, and tax questions with the
+                      appropriate professionals.
                     </p>
                   </div>
                 </div>
@@ -971,6 +1080,90 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                     </li>
                   ))}
                 </ul>
+              </div>
+            </section>
+
+            <section
+              className="overflow-hidden rounded-[8px] border border-cyan-100/16 bg-[#0d141c]"
+              data-testid="reie-property-construction-intelligence"
+              data-construction-public-fact-count={publicConstructionFacts.length}
+              data-construction-question-count={CONSTRUCTION_VERIFICATION_QUESTIONS.length}
+              data-construction-remark-mention-count={listingRemarkMentions.length}
+            >
+              <div className="border-b border-white/10 bg-white/[0.035] p-5 md:p-6">
+                <div className="flex flex-col justify-between gap-4 md:flex-row md:items-start">
+                  <div>
+                    <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.22em] text-cyan-100/76">
+                      <HardHat size={14} aria-hidden="true" />
+                      Construction Questions
+                    </p>
+                    <h2 className="mt-3 text-xl font-black uppercase tracking-tight text-white md:text-2xl">
+                      Systems and records to verify
+                    </h2>
+                    <p className="mt-3 max-w-3xl text-sm leading-6 text-white/58">
+                      Public listing information is a starting point for system, permit, site, and maintenance questions.
+                    </p>
+                  </div>
+                  <span className="inline-flex h-8 items-center rounded-[6px] border border-cyan-100/22 bg-cyan-100/[0.08] px-3 text-[10px] font-black uppercase tracking-[0.16em] text-cyan-100">
+                    Public Context
+                  </span>
+                </div>
+              </div>
+
+              <div className="grid gap-4 p-5 md:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] md:p-6">
+                <div className="rounded-[8px] border border-white/10 bg-white/[0.035] p-4">
+                  <h3 className="text-[11px] font-black uppercase tracking-[0.18em] text-white/70">
+                    Known From Public Listing Data
+                  </h3>
+                  <dl className="mt-4 grid gap-3">
+                    {publicConstructionFacts.map((fact) => (
+                      <div key={fact.label} className="grid gap-1 border-b border-white/10 pb-3 last:border-b-0 last:pb-0">
+                        <dt className="text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100/54">{fact.label}</dt>
+                        <dd className="text-sm font-bold leading-6 text-white/72">{fact.value}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </div>
+
+                <div className="grid gap-4">
+                  <div className="rounded-[8px] border border-white/10 bg-white/[0.035] p-4">
+                    <h3 className="text-[11px] font-black uppercase tracking-[0.18em] text-white/70">
+                      General Construction Context
+                    </h3>
+                    <ul className="mt-4 space-y-2 text-sm leading-6 text-white/58">
+                      {CONSTRUCTION_CONTEXT_ITEMS.map((item) => (
+                        <li key={item}>{item}</li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className="rounded-[8px] border border-white/10 bg-white/[0.035] p-4">
+                    <h3 className="text-[11px] font-black uppercase tracking-[0.18em] text-white/70">
+                      Mentioned in Listing Remarks
+                    </h3>
+                    <ul className="mt-4 space-y-2 text-sm leading-6 text-white/58">
+                      {listingRemarkMentions.map((item) => (
+                        <li key={item}>{item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div className="border-t border-white/10 p-5 md:p-6">
+                <h3 className="text-[11px] font-black uppercase tracking-[0.18em] text-amber-100">
+                  Questions to Verify
+                </h3>
+                <ul className="mt-4 grid gap-3 md:grid-cols-2">
+                  {CONSTRUCTION_VERIFICATION_QUESTIONS.map((question) => (
+                    <li key={question} className="rounded-[6px] border border-amber-100/14 bg-amber-100/[0.055] p-3 text-sm leading-6 text-white/64">
+                      {question}
+                    </li>
+                  ))}
+                </ul>
+                <p className="mt-4 text-xs leading-5 text-white/44">
+                  Confirm condition, systems, permits, costs, and code questions with appropriate inspectors, contractors, engineers, or other licensed professionals.
+                </p>
               </div>
             </section>
 
@@ -993,8 +1186,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                       Listing facts and local market questions to review
                     </h2>
                     <p className="mt-3 max-w-3xl text-sm leading-6 text-white/58">
-                      Market information on this page is educational and based on public listing context where available. Verify pricing,
-                      comparable properties, timing, and offer questions with the appropriate professionals before relying on them.
+                      Read broader market context as education, not as a property-specific pricing conclusion.
                     </p>
                   </div>
                   <Link
@@ -1067,83 +1259,26 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
             </section>
 
             <section
-              className="overflow-hidden rounded-[8px] border border-cyan-100/16 bg-[#0d141c]"
-              data-testid="reie-property-construction-intelligence"
-              data-construction-public-fact-count={publicConstructionFacts.length}
-              data-construction-question-count={CONSTRUCTION_VERIFICATION_QUESTIONS.length}
-              data-construction-remark-mention-count={listingRemarkMentions.length}
+              className="overflow-hidden rounded-[8px] border border-amber-100/16 bg-[#0d141c]"
+              data-testid="reie-property-questions-forward"
+              data-questions-forward-count={QUESTIONS_TO_CARRY_FORWARD.length}
             >
               <div className="border-b border-white/10 bg-white/[0.035] p-5 md:p-6">
-                <div className="flex flex-col justify-between gap-4 md:flex-row md:items-start">
-                  <div>
-                    <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.22em] text-cyan-100/76">
-                      <HardHat size={14} aria-hidden="true" />
-                      Construction Questions
-                    </p>
-                    <h2 className="mt-3 text-xl font-black uppercase tracking-tight text-white md:text-2xl">
-                      Systems and records to verify
-                    </h2>
-                    <p className="mt-3 max-w-3xl text-sm leading-6 text-white/58">
-                      Public listing information is a starting point. Confirm condition, systems, permits, costs, and code questions with the appropriate inspectors, contractors, engineers, or other licensed professionals.
-                    </p>
-                  </div>
-                  <span className="inline-flex h-8 items-center rounded-[6px] border border-cyan-100/22 bg-cyan-100/[0.08] px-3 text-[10px] font-black uppercase tracking-[0.16em] text-cyan-100">
-                    Public Context
-                  </span>
-                </div>
+                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-amber-100">Investigate</p>
+                <h2 className="mt-3 text-xl font-black uppercase tracking-tight text-white md:text-2xl">
+                  Questions to carry forward
+                </h2>
+                <p className="mt-3 max-w-3xl text-sm leading-6 text-white/58">
+                  These categories organize the questions above for a conversation. They are not findings, risks, or selected priorities.
+                </p>
               </div>
-
-              <div className="grid gap-4 p-5 md:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] md:p-6">
-                <div className="rounded-[8px] border border-white/10 bg-white/[0.035] p-4">
-                  <h3 className="text-[11px] font-black uppercase tracking-[0.18em] text-white/70">
-                    Known From Public Listing Data
-                  </h3>
-                  <dl className="mt-4 grid gap-3">
-                    {publicConstructionFacts.map((fact) => (
-                      <div key={fact.label} className="grid gap-1 border-b border-white/10 pb-3 last:border-b-0 last:pb-0">
-                        <dt className="text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100/54">{fact.label}</dt>
-                        <dd className="text-sm font-bold leading-6 text-white/72">{fact.value}</dd>
-                      </div>
-                    ))}
-                  </dl>
-                </div>
-
-                <div className="grid gap-4">
-                  <div className="rounded-[8px] border border-white/10 bg-white/[0.035] p-4">
-                    <h3 className="text-[11px] font-black uppercase tracking-[0.18em] text-white/70">
-                      General Construction Context
-                    </h3>
-                    <ul className="mt-4 space-y-2 text-sm leading-6 text-white/58">
-                      {CONSTRUCTION_CONTEXT_ITEMS.map((item) => (
-                        <li key={item}>{item}</li>
-                      ))}
-                    </ul>
+              <div className="grid gap-px bg-white/10 md:grid-cols-3">
+                {QUESTIONS_TO_CARRY_FORWARD.map((item) => (
+                  <div key={item.label} className="bg-[#0d141c] p-5">
+                    <h3 className="text-[11px] font-black uppercase tracking-[0.18em] text-white/70">{item.label}</h3>
+                    <p className="mt-3 text-sm leading-6 text-white/58">{item.value}</p>
                   </div>
-
-                  <div className="rounded-[8px] border border-white/10 bg-white/[0.035] p-4">
-                    <h3 className="text-[11px] font-black uppercase tracking-[0.18em] text-white/70">
-                      Mentioned in Listing Remarks
-                    </h3>
-                    <ul className="mt-4 space-y-2 text-sm leading-6 text-white/58">
-                      {listingRemarkMentions.map((item) => (
-                        <li key={item}>{item}</li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              </div>
-
-              <div className="border-t border-white/10 p-5 md:p-6">
-                <h3 className="text-[11px] font-black uppercase tracking-[0.18em] text-amber-100">
-                  Questions to Verify
-                </h3>
-                <ul className="mt-4 grid gap-3 md:grid-cols-2">
-                  {CONSTRUCTION_VERIFICATION_QUESTIONS.map((question) => (
-                    <li key={question} className="rounded-[6px] border border-amber-100/14 bg-amber-100/[0.055] p-3 text-sm leading-6 text-white/64">
-                      {question}
-                    </li>
-                  ))}
-                </ul>
+                ))}
               </div>
             </section>
 

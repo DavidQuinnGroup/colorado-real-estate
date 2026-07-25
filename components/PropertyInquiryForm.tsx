@@ -269,7 +269,7 @@ export default function PropertyInquiryForm({ propertyId, address, city, state }
           </span>
         </div>
         <p className="mt-3 text-sm leading-6 text-white/62">
-          Share tour timing, property questions, or next-step concerns for {address}, {city}, {state}.
+          Ask about the property, financial assumptions, construction records, market context, or appropriate next steps for {address}, {city}, {state}.
         </p>
       </div>
 
@@ -378,7 +378,7 @@ export default function PropertyInquiryForm({ propertyId, address, city, state }
           <textarea
             value={notes}
             onChange={(event) => setNotes(event.target.value)}
-            placeholder="Questions, showing windows, financing status, or specific concerns"
+            placeholder="Property questions, records to verify, market context, timing, or next-step concerns"
             maxLength={600}
             style={notesControlStyle}
             className="min-h-24 w-full resize-none rounded-[6px] border border-white/10 bg-[#071017]/70 px-3 py-3 text-sm leading-6 text-white outline-none transition placeholder:text-white/25 focus:border-cyan-100/55"

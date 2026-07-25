@@ -25,7 +25,7 @@ export function generateFAQs(city: string, topic: string): FAQItem[] {
   return [
     {
       question: `What does David Quinn Group evaluate in the ${marketScope} ${topicName} market?`,
-      answer: `David Quinn Group evaluates ${marketScope} through the Real Estate Intelligence Engine, combining inventory context, pricing signals, public construction questions, neighborhood context, and buyer or seller strategy.`,
+      answer: `David Quinn Group frames ${marketScope} through public inventory context, price context, construction questions, neighborhood context, and next-step discussion topics.`,
     },
     {
       question: `How does construction context support a ${cityName} real estate decision?`,
@@ -37,11 +37,11 @@ export function generateFAQs(city: string, topic: string): FAQItem[] {
     },
     {
       question: `Is the ${cityName} housing market competitive?`,
-      answer: `${cityName} can be competitive depending on price band, inventory depth, location quality, and property condition. The REIE approach looks at live supply, demand posture, construction quality, and negotiation leverage instead of treating the entire city as one uniform market.`,
+      answer: `${cityName} can vary by price band, inventory depth, location, property type, and public listing context. Review current listings and professional guidance before treating the city as one uniform market.`,
     },
     {
       question: `How should buyers use the Real Estate Intelligence Engine in ${cityName}?`,
-      answer: `Buyers can use the Real Estate Intelligence Engine to compare inventory, review public property context, prepare better questions, and decide what to verify before touring, writing, or negotiating.`,
+      answer: `Buyers can use the Real Estate Intelligence Engine to compare inventory, review public property context, prepare better questions, and decide what to verify before touring or discussing next steps.`,
     },
     {
       question: `How should sellers use David Quinn Group intelligence in ${cityName}?`,

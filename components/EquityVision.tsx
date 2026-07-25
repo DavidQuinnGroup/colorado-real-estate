@@ -1,7 +1,7 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { Camera, ChevronRight, Hammer, Ruler, ShieldAlert } from 'lucide-react';
+import { Hammer, Ruler, ShieldAlert } from 'lucide-react';
 
 export type EquityVisionProperty = {
   sqftAboveGrade: number;
@@ -23,7 +23,7 @@ function getPositiveNumber(value: number | null | undefined, fallback = 0) {
 
 function formatSquareFeet(value: number | null | undefined) {
   const squareFeet = getPositiveNumber(value);
-  return squareFeet ? `${squareFeet.toLocaleString('en-US')} sq ft` : 'Review with advisor';
+  return squareFeet ? `${squareFeet.toLocaleString('en-US')} sq ft` : 'Verify records';
 }
 
 export default function EquityVision({ property }: EquityVisionProps) {
@@ -31,9 +31,9 @@ export default function EquityVision({ property }: EquityVisionProps) {
     <div className="rounded-[8px] border border-[#fbbf24]/20 bg-slate-950 p-5 shadow-2xl md:p-6">
       <header className="mb-6">
         <p className="text-[10px] font-black uppercase tracking-[0.28em] text-[#fbbf24]">Investigate</p>
-        <h2 className="mt-2 text-2xl font-black uppercase tracking-tight text-white">Property Review Notes</h2>
+        <h2 className="mt-2 text-2xl font-black uppercase tracking-tight text-white">Area and Records Review</h2>
         <p className="mt-3 text-sm leading-6 text-slate-400">
-          Public construction context only. Use these notes to prepare questions about measurements, systems, and records before decisions are made.
+          Use these public measurement notes to prepare questions about finished area, unfinished area, records, and inspection scope.
         </p>
       </header>
 
@@ -62,7 +62,7 @@ export default function EquityVision({ property }: EquityVisionProps) {
         <div className="mt-10 border-t border-slate-800 pt-6">
           <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-[#fbbf24]">Questions to Discuss</p>
           <p className="text-sm leading-6 text-slate-400">
-            Use this section to frame questions about finished area, unfinished area, records, and inspection scope. It is not a valuation, inspection result, condition assessment, or return estimate.
+            These notes are not a valuation, inspection result, condition assessment, or return estimate. Confirm measurements and records with the appropriate professionals.
           </p>
         </div>
 
@@ -73,13 +73,12 @@ export default function EquityVision({ property }: EquityVisionProps) {
           </div>
         ) : null}
 
-        <button
-          type="button"
-          disabled
-          className="mt-6 flex w-full cursor-not-allowed items-center justify-center gap-2 rounded-[6px] bg-white/70 py-4 text-xs font-black uppercase tracking-[0.18em] text-black/70"
-        >
-          <Camera size={16} /> Photo Review Placeholder <ChevronRight size={16} />
-        </button>
+        <div className="mt-6 rounded-[6px] border border-white/10 bg-white/[0.045] p-4">
+          <p className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-500">Professional Context</p>
+          <p className="mt-2 text-sm leading-6 text-slate-400">
+            Bring area, basement, and record questions into the broader property conversation when they affect next-step decisions.
+          </p>
+        </div>
       </div>
     </div>
   );
