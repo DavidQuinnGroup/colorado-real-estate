@@ -4,7 +4,7 @@
 
 ### Production Runtime Packaging Correction(tm)
 
-Status: `EIP_1.0_SPRINT_6A_PRODUCTION_RUNTIME_PACKAGING_CORRECTION_IMPLEMENTED_PENDING_DEPLOYMENT`
+Status: `EIP_1.0_SPRINT_6A_PRODUCTION_RUNTIME_PACKAGING_CORRECTION_DEPLOYED_BLOCKED_AT_DRY_RUN_BY_MIGRATION_DIRECTORY_DEPENDENCY`
 
 Implementation date: July 25, 2026
 
@@ -144,7 +144,32 @@ Admin authorization remains required through the existing repository admin auth 
 
 ## 7. Production Verification Status
 
-Production verification is pending until the correction commit is deployed.
+Correction deployment evidence:
+
+- commit: `a8f09faf2e9011d78b995359b11e97bdbc80f79d`;
+- Vercel status ID: `51090831312`;
+- status: `success`;
+- description: `Deployment has completed`.
+
+Production dry-run retry:
+
+- invocation ID: `EIP-S6-DRY-20260725-003`;
+- HTTP status: `500`;
+- result: `success=false`;
+- error: `ENOENT: no such file or directory, scandir 'prisma/migrations'`;
+- execute attempted: no;
+- production GIO writes performed: `0`.
+
+Interpretation:
+
+- the route-scoped schema packaging correction resolved the previously observed `prisma/schema.prisma` file-open failure;
+- deployed runtime then exposed a new file-system dependency on `prisma/migrations`;
+- source investigation shows `lib/gma/internalMappingReviewQueue.ts` imports from `scripts/checkGmaReadOnlyMappingPreview.js`, and that validation script scans `prisma/migrations` at module load;
+- this validation-script dependency reaches the protected Sprint 6 admin route through the EIP fixture/readiness dependency chain.
+
+Current determination:
+
+`SPRINT_6A_DEPLOYED_DRY_RUN_BLOCKED_BY_VALIDATION_SCRIPT_RUNTIME_LEAK`
 
 Required next production dry run:
 
@@ -184,6 +209,10 @@ Readback revision after Sprint 6A addendum:
 
 - `AIroW36d83cu-D2jgMNIXyhETtDew3QJAFdpjH22W6qcLpaoogXytvakJTKgqIuPu4Uz9NSbURPdm1pRpfSdcRejXN-DiRyybPElUKvpsGI`
 
+Readback revision after deployed dry-run blocker addendum:
+
+- `AIroW34KVXr1_pKS5rmREkKatisygg_9MPXuzssIr701Wcw5yjfcUrfSqd_vGBxdNAkLxhCenUv1BmbGRkGEnf54vzeZr8ecokBGSS-_CB4`
+
 ---
 
 ## 9. Risk Register
@@ -191,6 +220,7 @@ Readback revision after Sprint 6A addendum:
 | Risk | Status | Mitigation |
 | --- | --- | --- |
 | Prisma Client requires schema artifact in deployed node route | Mitigated locally | Route-scoped file tracing include |
+| Validation script dependency leaks into deployed admin route and scans `prisma/migrations` | Open blocker | Requires separate correction to separate runtime-safe fixture modules from validation scripts |
 | Broad repository file exposure | Controlled | Include is limited to `./prisma/schema.prisma` for one admin route |
 | Runtime schema inspection pattern | Rejected | Route and pilot module do not read schema files |
 | Production writes before dry-run evidence | Blocked | Execute remains prohibited until deployed dry run succeeds |
@@ -200,9 +230,13 @@ Readback revision after Sprint 6A addendum:
 
 ## 10. Certification Recommendation
 
-Sprint 6A is not yet certified.
+Sprint 6A is not certified.
 
-Recommendation after successful deployment and production dry-run retry:
+Recommended next action:
+
+- authorize a narrow runtime dependency separation correction that removes production-route imports from validation scripts and keeps repository file scans in build/check scripts only.
+
+Certification recommendation remains deferred:
 
 `EIP_1.0_SPRINT_6A_PRODUCTION_RUNTIME_PACKAGING_CORRECTION_CERTIFIED_AND_CLOSED`
 

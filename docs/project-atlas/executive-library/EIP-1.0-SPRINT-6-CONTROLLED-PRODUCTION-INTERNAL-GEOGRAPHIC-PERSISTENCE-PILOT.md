@@ -38,7 +38,8 @@ Current stop point:
 - route hardening commit `d50f3a815dd7f340d1f5db5caa3153ee4c9feb73` was pushed to make runtime/module failures catchable as JSON;
 - Vercel status `51090536652` for `d50f3a815dd7f340d1f5db5caa3153ee4c9feb73` completed successfully;
 - retried production dry run `EIP-S6-DRY-20260725-002` returned HTTP `500` with JSON error `ENOENT: no such file or directory, open 'prisma/schema.prisma'`;
-- Sprint 6A route-scoped Prisma schema packaging correction was implemented locally and validated;
+- Sprint 6A route-scoped Prisma schema packaging correction was implemented, validated, pushed, and deployed successfully;
+- production dry run `EIP-S6-DRY-20260725-003` returned HTTP `500` with new error `ENOENT: no such file or directory, scandir 'prisma/migrations'`;
 - production execute remains paused.
 
 ---
@@ -236,9 +237,17 @@ Sprint 6A packaging correction:
 - included asset: `./prisma/schema.prisma`;
 - validation command: `npm run check:eip-sprint-6a-production-runtime-packaging-correction`;
 - local validation result: passed;
+- deployment commit: `a8f09faf2e9011d78b995359b11e97bdbc80f79d`;
+- Vercel status ID: `51090831312`;
+- deployment status: success;
+- production dry-run retry: `EIP-S6-DRY-20260725-003`;
+- production dry-run result: HTTP `500`, `ENOENT: no such file or directory, scandir 'prisma/migrations'`;
+- execute attempted: no;
+- production GIO writes performed: 0;
+- new blocker: validation-script runtime dependency reaches the protected admin route and scans `prisma/migrations`;
 - schema or migration change: none;
 - runtime/customer behavior change: none;
-- next production dry run: `EIP-S6-DRY-20260725-003` after deployment success.
+- next production dry run requires a separately authorized runtime dependency separation correction.
 
 ---
 
@@ -304,7 +313,7 @@ Certification is not recommended yet.
 Required remaining gates:
 
 - Vercel success for route hardening commit `d50f3a815dd7f340d1f5db5caa3153ee4c9feb73`;
-- Sprint 6A packaging correction is deployed successfully;
+- validation-script runtime dependency on `prisma/migrations` is removed from the deployed protected route path;
 - production dry run returns success with zero writes;
 - controlled execute persists or reuses only the authorized Thornton pilot rows;
 - inspection verifies internal-only state and zero relationships;

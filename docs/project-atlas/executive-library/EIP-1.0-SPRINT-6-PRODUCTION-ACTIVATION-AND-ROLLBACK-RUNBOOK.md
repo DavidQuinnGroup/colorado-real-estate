@@ -17,6 +17,7 @@ Before production execute:
 - repository validation must pass;
 - deployment must succeed;
 - Sprint 6A production runtime packaging correction must be deployed successfully;
+- validation-script runtime dependency on `prisma/migrations` must be removed from the deployed protected route path;
 - production dry run must return `success=true`;
 - dry run must return `dryRun=true`;
 - dry run must return `executed=false`;
@@ -162,10 +163,12 @@ Current stop condition:
 - retried production dry run `EIP-S6-DRY-20260725-002` returned HTTP `500` with JSON error `ENOENT: no such file or directory, open 'prisma/schema.prisma'`;
 - Sprint 6A implemented a route-scoped Prisma schema packaging correction for the protected admin route;
 - local Sprint 6A validation passed;
-- next retry is blocked until the Sprint 6A correction is deployed successfully.
+- Sprint 6A correction commit `a8f09faf2e9011d78b995359b11e97bdbc80f79d` deployed successfully with Vercel status ID `51090831312`;
+- dry run `EIP-S6-DRY-20260725-003` returned HTTP `500` with error `ENOENT: no such file or directory, scandir 'prisma/migrations'`;
+- no execute was run;
+- no production GIO write was performed;
+- next retry is blocked until the validation-script runtime dependency is removed from the protected route path.
 
-Next authorized dry-run invocation after deployment:
-
-- `EIP-S6-DRY-20260725-003`
+Next dry-run invocation must use a new invocation ID after a separately authorized correction.
 
 Controlled execute remains prohibited until that dry run returns HTTP `200`, `success=true`, `dryRun=true`, `executed=false`, `writesPerformed=0`, all eligibility flags false, zero relationship writes, and a rollback plan.

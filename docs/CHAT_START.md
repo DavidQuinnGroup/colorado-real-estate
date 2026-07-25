@@ -22,7 +22,7 @@ Start by running:
 git status --short --branch
 git rev-parse HEAD
 git rev-parse origin/main
-curl -s --max-time 20 https://api.github.com/repos/DavidQuinnGroup/colorado-real-estate/commits/d50f3a815dd7f340d1f5db5caa3153ee4c9feb73/status
+curl -s --max-time 20 https://api.github.com/repos/DavidQuinnGroup/colorado-real-estate/commits/a8f09faf2e9011d78b995359b11e97bdbc80f79d/status
 ```
 
 Current Sprint 6 state:
@@ -42,9 +42,13 @@ Current Sprint 6 state:
 - Route hardening status at handoff: pushed to `origin/main`, Vercel status ID `51090536652`, state `success`.
 - Retried production dry run `EIP-S6-DRY-20260725-002`: HTTP `500`, JSON error `ENOENT: no such file or directory, open 'prisma/schema.prisma'`, no execute run, no production GIO write performed.
 - Sprint 6A root cause: protected admin route and pilot module do not read `schema.prisma`; Prisma Client generated node runtime requires the schema artifact in the deployed route package.
-- Sprint 6A correction implemented locally: route-scoped `outputFileTracingIncludes` in `next.config.ts` for `/api/admin/enterprise/geographic-persistence-pilot` with only `./prisma/schema.prisma`.
+- Sprint 6A correction implemented, pushed, and deployed: route-scoped `outputFileTracingIncludes` in `next.config.ts` for `/api/admin/enterprise/geographic-persistence-pilot` with only `./prisma/schema.prisma`.
 - Sprint 6A validation command added and passed locally: `npm run check:eip-sprint-6a-production-runtime-packaging-correction`.
-- Current active phase: deploy Sprint 6A correction, verify deployment success, then retry production dry run `EIP-S6-DRY-20260725-003`.
+- Sprint 6A commit: `a8f09faf2e9011d78b995359b11e97bdbc80f79d`.
+- Sprint 6A deployment status: success, Vercel status ID `51090831312`.
+- Production dry run `EIP-S6-DRY-20260725-003`: HTTP `500`, JSON error `ENOENT: no such file or directory, scandir 'prisma/migrations'`, no execute run, no production GIO write performed.
+- New blocker: validation-script runtime dependency reaches the protected admin route. Source review shows `lib/gma/internalMappingReviewQueue.ts` imports from `scripts/checkGmaReadOnlyMappingPreview.js`, which scans `prisma/migrations` at module load.
+- Current active phase: blocked before controlled execute until a separately authorized runtime dependency separation correction removes validation-script repository file scans from the protected deployed route path.
 
 Completed validation before route hardening push:
 
@@ -85,22 +89,15 @@ Google Doc governance update:
 - Tab: `t.0`
 - Readback revision after Sprint 6 append: `AIroW35qt_CtJ9DQQmzhNc2ci9-6spqGp84Oxzc4Jl5aTm5a31nPqVXwYkM6kWya67jS7mf6iDWGtJ4FvbNGqwpmTY9rtYhU7YrD4gJE6W0`
 - The doc records Sprint 5 certification, Sprint 6 authorization, Thornton as the only pilot subject, one-object limit, continued prohibitions, recovery/rollback requirement, and the paused deployment gate.
-- Sprint 6A Google Doc update is still required after local docs/source commit and deployed dry-run retry evidence are available.
+- Sprint 6A Google Doc update recorded the authorization, root cause, route-scoped correction, local validation, and continued prohibition before deployed dry-run retry. A follow-up Google Doc addendum is still required for the `prisma/migrations` dry-run blocker.
 
-Next safe step after Sprint 6A deployment success:
+Next safe step after separate authorization:
 
-1. Retry production dry run only with a new invocation ID:
+1. Create a narrow runtime dependency separation package that moves reusable GMA preview fixture data out of validation scripts and keeps `prisma/migrations` scans in check scripts only.
+2. Validate that the protected Sprint 6 route no longer bundles validation scripts or scans repository directories.
+3. Deploy, then retry production dry run with a new invocation ID.
 
-```bash
-curl --max-time 30 -s -X POST "https://davidquinngroup.com/api/admin/enterprise/geographic-persistence-pilot" \
-  -H "content-type: application/json" \
-  -H "x-admin-key: $REIE_ADMIN_API_KEY" \
-  --data '{"subject":"Thornton, Colorado","scope":"CONTROLLED_PRODUCTION_INTERNAL_GEOGRAPHIC_PERSISTENCE_PILOT","invocationId":"EIP-S6-DRY-20260725-003"}'
-```
-
-2. Proceed to controlled execute only if dry run succeeds with zero writes and the authorized planned row counts.
-
-Do not run Sprint 6 controlled execute until the deployed Sprint 6A dry run returns HTTP `200`, `success=true`, `dryRun=true`, `executed=false`, `writesPerformed=0`, all eligibility flags false, zero relationship writes, and a rollback plan.
+Do not run Sprint 6 controlled execute until a future deployed dry run returns HTTP `200`, `success=true`, `dryRun=true`, `executed=false`, `writesPerformed=0`, all eligibility flags false, zero relationship writes, and a rollback plan.
 
 Do not begin Sprint 7.
 
