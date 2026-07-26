@@ -72,6 +72,8 @@
     "scripts/certifyGeographicIntelligenceProviderInventoryGovernance.ts",
     "scripts/checkGeographicIntelligenceFixtureProviderAdapterSafety.ts",
     "scripts/certifyGeographicIntelligenceFixtureProviderAdapter.ts",
+    "scripts/checkGeographicIntelligenceProviderEvaluationSafety.ts",
+    "scripts/certifyGeographicIntelligenceProviderEvaluationGovernance.ts",
     "scripts/checkGkcFixtureGovernance.ts",
     "scripts/checkGmaReadOnlyMappingPreview.ts",
     "scripts/checkGmaInternalMappingReviewQueue.ts",

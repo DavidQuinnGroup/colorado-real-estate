@@ -10,7 +10,7 @@ Product:
 
 ## Latest New-Chat Handoff
 
-PROJECT ATLAS(tm) / GIS 1.0 Sprint 4 controlled fixture provider adapter handoff, July 26, 2026:
+PROJECT ATLAS(tm) / GIS 1.0 Sprint 5 provider evaluation governance handoff, July 26, 2026:
 
 Workspace:
 
@@ -34,7 +34,9 @@ Current GIS 1.0 state:
 - Sprint 3 final state: `GIS_1_0_SPRINT_3_PROVIDER_INVENTORY_GOVERNANCE_CERTIFIED`.
 - Sprint 4 authorization: `GIS_1_0_SPRINT_4_CONTROLLED_FIXTURE_PROVIDER_ADAPTER_AUTHORIZED`.
 - Sprint 4 final state: `GIS_1_0_SPRINT_4_CONTROLLED_FIXTURE_PROVIDER_ADAPTER_CERTIFIED`.
-- Sprint 5 state: `NOT_AUTHORIZED`.
+- Sprint 5 authorization: `GIS_1_0_SPRINT_5_PROVIDER_EVALUATION_AND_SELECTION_GOVERNANCE_AUTHORIZED`.
+- Sprint 5 final state: `GIS_1_0_SPRINT_5_PROVIDER_EVALUATION_AND_SELECTION_GOVERNANCE_CERTIFIED`.
+- Sprint 6 state: `NOT_AUTHORIZED`.
 - Current implementation commit: verify with `git log -1 --oneline` after resuming.
 
 Sprint 1 foundation:
@@ -108,7 +110,28 @@ Sprint 1 foundation:
 - Sprint 4 deterministic output fingerprint: `d858fc1443981cfda1662bf44cdf2f8d31599bcb8c4eeeeb25d21b76b1fcf708`.
 - Sprint 4 fixture scenarios A-N cover valid transformation, duplicate reacquisition, changed governed content, malformed input, unsupported schema, provider mismatch, missing fixture marker, unknown licensing, subject mismatch, domain mismatch, invalid temporal range, checksum mismatch, incomplete provenance, and activation drift.
 - Sprint 4 production effect: deployments `0`, migrations `0`, production reads `0`, production writes `0`, network calls `0`, provider connections `0`, provider acquisitions `0`, accounts created `0`, credentials used `0`, runtime activations `0`, downstream integrations `0`, customer-visible changes `0`, relationships created `0`.
-- Recommended next governed phase if separately authorized: GIS 1.0 Sprint 5 Provider Evaluation and Selection Governance.
+- Sprint 5 implemented contracts:
+  - `lib/geographic-intelligence/providerEvaluationContract.ts`
+  - `lib/geographic-intelligence/providerEvaluationScoring.ts`
+  - `lib/geographic-intelligence/providerEvaluationGates.ts`
+  - `lib/geographic-intelligence/providerSelectionGovernance.ts`
+  - `lib/geographic-intelligence/minimumProviderSet.ts`
+  - `lib/geographic-intelligence/fixtures/gisSprint5ProviderEvaluationFixtures.ts`
+- Sprint 5 implemented validation:
+  - `npm run check:geographic-intelligence-provider-evaluation-safety`
+  - `npm run certify:geographic-intelligence-provider-evaluation-governance`
+- Sprint 5 implemented documentation:
+  - `docs/project-atlas/geographic-intelligence/GIS-1.0-PROVIDER-EVALUATION-AND-SELECTION-STANDARD.md`
+  - `docs/project-atlas/geographic-intelligence/GIS-1.0-SPRINT-5-PROVIDER-EVALUATION-AND-SELECTION-GOVERNANCE.md`
+  - `docs/project-atlas/geographic-intelligence/GIS-1.0-PROVIDER-EVALUATION-REGISTER.md`
+- Sprint 5 capability: `ENVIRONMENTAL_GEOGRAPHIC_EVIDENCE_PROVIDER_EVALUATION`.
+- Sprint 5 scoring model/version: `GIS_SPRINT_5_PROVIDER_EVALUATION_SCORING_MODEL` / `1.0.0`.
+- Sprint 5 evaluated 13 Sprint 3 inventory entries across 24 normalized criteria.
+- Sprint 5 due-diligence candidates: `colorado-geological-survey`, `u-s-geological-survey`.
+- Sprint 5 proposed minimum provider set: `GIS-S5-MINIMUM-SET-7d0b83d2f24a2369`, classified `PROPOSED_MINIMUM_PROVIDER_SET_FOR_DUE_DILIGENCE`, provider use authorized `false`.
+- Sprint 5 deterministic fingerprint: `f79beea89c956509493030b15b3d94bdc4495d9618fd72d97138ca363be74691`.
+- Sprint 5 production/external effect: deployments `0`, migrations `0`, production reads `0`, production writes `0`, external calls `0`, provider contacts `0`, accounts created `0`, credentials used `0`, contracts accepted `0`, purchases `0`, provider connections `0`, acquisitions `0`, runtime activations `0`, downstream integrations `0`, customer-visible changes `0`, relationships created `0`.
+- Recommended next governed phase if separately authorized: GIS 1.0 Sprint 6 Controlled Provider Due Diligence.
 
 Current EKCP Sprint 2R state:
 
