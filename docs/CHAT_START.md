@@ -10,7 +10,7 @@ Product:
 
 ## Latest New-Chat Handoff
 
-PROJECT ATLAS(tm) / GIS 1.0 Sprint 1 architecture foundation handoff, July 26, 2026:
+PROJECT ATLAS(tm) / GIS 1.0 Sprint 2 evidence and provenance foundation handoff, July 26, 2026:
 
 Workspace:
 
@@ -27,7 +27,14 @@ git rev-parse origin/main
 Current GIS 1.0 state:
 
 - Program: `GIS_1.0`.
-- Authorization: `AUTHORIZED_FOR_ARCHITECTURE_AND_IMPLEMENTATION_PLANNING`.
+- Sprint 1 final state: `GIS_1_0_SPRINT_1_ARCHITECTURE_FOUNDATION_CERTIFIED`.
+- Sprint 2 authorization: `GIS_1_0_SPRINT_2_EVIDENCE_AND_PROVENANCE_FOUNDATION_AUTHORIZED`.
+- Sprint 2 final state: `GIS_1_0_SPRINT_2_EVIDENCE_AND_PROVENANCE_FOUNDATION_CERTIFIED`.
+- Sprint 3 state: `NOT_AUTHORIZED`.
+- Current implementation commit: verify with `git log -1 --oneline` after resuming.
+
+Sprint 1 foundation:
+
 - Sprint 1 classification: `GEOGRAPHIC_INTELLIGENCE_ARCHITECTURE_FOUNDATION`.
 - Sprint 1 final state: `GIS_1_0_SPRINT_1_ARCHITECTURE_FOUNDATION_CERTIFIED`.
 - Implemented contracts:
@@ -49,7 +56,20 @@ Current GIS 1.0 state:
 - Initial domains are foundation-only and fail-closed: `COMMUNITY_INTELLIGENCE`, `EDUCATION_INTELLIGENCE`, `TRANSPORTATION_INTELLIGENCE`, `ENVIRONMENTAL_INTELLIGENCE`, `ECONOMIC_INTELLIGENCE`, `INFRASTRUCTURE_INTELLIGENCE`, `MARKET_INTELLIGENCE`, and `LIFESTYLE_INTELLIGENCE`.
 - Production effect: deployments `0`, migrations `0`, production writes `0`, external acquisitions `0`, runtime activations `0`, downstream integrations `0`, customer-visible changes `0`, relationships created `0`.
 - Retained prohibitions: no live providers, credentials, external APIs, scraping, browser automation, migrations, production writes, production retrieval, runtime activation, downstream integration, customer visibility, geographic relationships, hierarchy traversal, Colorado runtime consumption, or GOF Wave 5.
-- Recommended next governed phase if separately authorized: GIS 1.0 Sprint 2 Evidence and Provenance Foundation.
+- Sprint 2 implemented contracts:
+  - `lib/geographic-intelligence/evidenceProvenanceContract.ts`
+  - `lib/geographic-intelligence/evidenceFingerprint.ts`
+  - `lib/geographic-intelligence/evidenceValidation.ts`
+  - `lib/geographic-intelligence/fixtures/gisSprint2EvidenceFixtures.ts`
+- Sprint 2 implemented validation:
+  - `npm run check:geographic-intelligence-evidence-provenance-safety`
+  - `npm run certify:geographic-intelligence-evidence-provenance-foundation`
+- Sprint 2 implemented documentation:
+  - `docs/project-atlas/geographic-intelligence/GIS-1.0-EVIDENCE-AND-PROVENANCE-STANDARD.md`
+  - `docs/project-atlas/geographic-intelligence/GIS-1.0-SPRINT-2-EVIDENCE-AND-PROVENANCE-FOUNDATION.md`
+- Sprint 2 fixture scenarios A-J cover complete chain, duplicate acquisition, changed version, conflict preservation, unknown licensing, expired evidence, invalid supersession, subject mismatch, incomplete provenance, and invalidated evidence.
+- Sprint 2 production effect: deployments `0`, migrations `0`, production reads `0`, production writes `0`, network calls `0`, provider acquisitions `0`, runtime activations `0`, downstream integrations `0`, customer-visible changes `0`, relationships created `0`.
+- Recommended next governed phase if separately authorized: GIS 1.0 Sprint 3 Provider Inventory Governance.
 
 Current EKCP Sprint 2R state:
 

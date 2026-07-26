@@ -16,8 +16,8 @@ Every sprint below requires its own authorization gate. Completion of one sprint
 
 | Sprint | Name | Purpose | Current state | Separate approvals required |
 | --- | --- | --- | --- | --- |
-| Sprint 1 | Architecture Foundation | Establish provider-neutral contracts, fail-closed activation, initial domains, deterministic fixtures, safety checks, and certification docs. | `GIS_1_0_SPRINT_1_ARCHITECTURE_FOUNDATION_CERTIFIED` | None remaining for Sprint 1 closure |
-| Sprint 2 | Evidence and Provenance Foundation | Expand evidence identity, lineage, provenance, time, freshness, quality, and explainability rules. | `NOT_AUTHORIZED` | Evidence model implementation and any fixture extension |
+| Sprint 1 | Architecture Foundation | Establish provider-neutral contracts, fail-closed activation, initial domains, deterministic fixtures, safety checks, and certification docs. | `CERTIFIED_AND_CLOSED` | None remaining for Sprint 1 closure |
+| Sprint 2 | Evidence and Provenance Foundation | Establish provider-neutral evidence identity, provider/source separation, acquisition records, immutable versions, provenance chains, supersession, conflicts, lineage, deterministic fingerprints, and fail-closed validation. | `GIS_1_0_SPRINT_2_EVIDENCE_AND_PROVENANCE_FOUNDATION_CERTIFIED` | None remaining for Sprint 2 closure |
 | Sprint 3 | Provider Inventory Governance | Map provider inventory context into governed licensing, authority, permitted-use, acquisition-readiness, and stop-condition records. | `NOT_AUTHORIZED` | Provider selection and provider licensing validation |
 | Sprint 4 | Controlled Fixture Adapter | Create a non-production fixture adapter that proves provider-boundary behavior without external calls or live data. | `NOT_AUTHORIZED` | Fixture adapter implementation |
 | Sprint 5 | Geographic Intelligence Persistence Design | Design persistence boundaries and migration implications without applying schema changes. | `NOT_AUTHORIZED` | Schema change, migration, production persistence |
@@ -46,4 +46,4 @@ No live providers, external calls, credentials, scraping, browser automation, pr
 
 ## Recommended Next Decision Gate
 
-The next governed phase, if authorized separately, is GIS 1.0 Sprint 2 Evidence and Provenance Foundation. It should remain architecture and fixture-led until provider licensing, acquisition, persistence, retrieval, runtime, downstream, and customer gates are explicitly approved.
+The next governed phase, if authorized separately, is GIS 1.0 Sprint 3 Provider Inventory Governance. It should remain governance-led and must not select providers, create provider adapters, authorize acquisition, assume licensing rights, persist data, retrieve production evidence, activate runtime use, integrate downstream systems, or expose customer-visible evidence.
