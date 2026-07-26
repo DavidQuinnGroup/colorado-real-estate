@@ -29,6 +29,7 @@ const packageJson = fs.readFileSync("package.json", "utf8");
 const workerTsconfig = fs.readFileSync("tsconfig.worker.json", "utf8");
 const separatelyAuthorizedSprint6SourceReferenceFiles = new Set([
   "lib/geographic-intelligence/fixtures/gisSprint6ProviderDueDiligenceFixtures.ts",
+  "lib/geographic-intelligence/fixtures/gisSprint8LicensingAttributionFixtures.ts",
 ]);
 
 assert.equal(GIS_1_0_PROGRAM_AUTHORIZATION, "AUTHORIZED_FOR_ARCHITECTURE_AND_IMPLEMENTATION_PLANNING");

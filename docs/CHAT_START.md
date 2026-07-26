@@ -10,7 +10,7 @@ Product:
 
 ## Latest New-Chat Handoff
 
-PROJECT ATLAS(tm) / GIS 1.0 Sprint 7 controlled provider pilot design handoff, July 26, 2026:
+PROJECT ATLAS(tm) / GIS 1.0 Sprint 8 licensing attribution gate handoff, July 26, 2026:
 
 Workspace:
 
@@ -40,7 +40,9 @@ Current GIS 1.0 state:
 - Sprint 6 final state: `GIS_1_0_SPRINT_6_CONTROLLED_PROVIDER_DUE_DILIGENCE_CERTIFIED`.
 - Sprint 7 authorization: `GIS_1_0_SPRINT_7_CONTROLLED_PROVIDER_PILOT_AUTHORIZATION_AND_DESIGN_AUTHORIZED`.
 - Sprint 7 final state: `GIS_1_0_SPRINT_7_CONTROLLED_PROVIDER_PILOT_AUTHORIZATION_AND_DESIGN_CERTIFIED`.
-- Sprint 8 state: `NOT_AUTHORIZED`.
+- Sprint 8 authorization: `GIS_1_0_SPRINT_8_LICENSING_AND_ATTRIBUTION_RESOLUTION_GATE_AUTHORIZED`.
+- Sprint 8 final state: `GIS_1_0_SPRINT_8_LICENSING_AND_ATTRIBUTION_RESOLUTION_GATE_CERTIFIED`.
+- Sprint 9 state: `NOT_AUTHORIZED`.
 - Current implementation commit: verify with `git log -1 --oneline` after resuming.
 
 Sprint 1 foundation:
@@ -171,8 +173,26 @@ Sprint 1 foundation:
 - Sprint 7 disposition: `PILOT_DESIGN_COMPLETE_EXECUTION_NOT_AUTHORIZED`.
 - Sprint 7 scenarios A-N certify exact pilot design, missing dataset fail-closed state, unresolved licensing, unresolved attribution, scope mismatch, field mismatch, subject mismatch, volume expansion, execution authorization drift, persistence drift, runtime drift, customer visibility drift, audit determinism, and zero live execution.
 - Sprint 7 production/external effect: provider contacts `0`, accounts created `0`, credentials requested `0`, credentials used `0`, terms accepted `0`, provider connections `0`, provider data acquisitions `0`, production reads `0`, production writes `0`, live adapter executions `0`, runtime activations `0`, downstream integrations `0`, customer-visible changes `0`, relationships created `0`.
-- Sprint 8 remains `NOT_AUTHORIZED`; provider use, legal approval, licensing approval, attribution approval, provider contact, accounts, credentials, terms acceptance, contracts, purchases, operational acquisition, live adapters, persistence, retrieval, enterprise consumption, runtime, downstream integration, customer visibility, Colorado runtime consumption, geographic relationships, hierarchy inference, and GOF Wave 5 remain `NOT_AUTHORIZED`.
-- Recommended next governed phase if separately authorized: GIS 1.0 Sprint 8 Licensing and Attribution Resolution Gate. Do not begin it without separate explicit authorization.
+- Sprint 8 implemented contracts:
+  - `lib/geographic-intelligence/licensingResolutionContract.ts`
+  - `lib/geographic-intelligence/licensingResolutionValidation.ts`
+  - `lib/geographic-intelligence/attributionContract.ts`
+  - `lib/geographic-intelligence/disclaimerContract.ts`
+  - `lib/geographic-intelligence/pilotConditionMatrix.ts`
+  - `lib/geographic-intelligence/fixtures/gisSprint8LicensingAttributionFixtures.ts`
+- Sprint 8 implemented validation:
+  - `npm run check:geographic-intelligence-licensing-attribution-safety`
+  - `npm run certify:geographic-intelligence-licensing-attribution-resolution`
+- Sprint 8 implemented documentation:
+  - `docs/project-atlas/geographic-intelligence/GIS-1.0-LICENSING-AND-ATTRIBUTION-STANDARD.md`
+  - `docs/project-atlas/geographic-intelligence/GIS-1.0-SPRINT-8-LICENSING-AND-ATTRIBUTION-RESOLUTION-GATE.md`
+  - `docs/project-atlas/geographic-intelligence/GIS-1.0-CGS-LANDSLIDE-LICENSING-ATTRIBUTION-REGISTER.md`
+- Sprint 8 subject: Colorado Geological Survey `Colorado Landslide Inventory`.
+- Sprint 8 strongest permitted outcome: `LICENSING_GATE_RESOLVED_FOR_TECHNICAL_FEASIBILITY_REVIEW`.
+- Sprint 8 rights state: public access and internal research are conditionally supported; attribution and disclaimers are required; legal review is required for operational use, derivative use, raw/normalized retention, commercial use, third-party components, and modification notices; customer display and redistribution are prohibited.
+- Sprint 8 production/external effect: provider contacts `0`, forms submitted `0`, accounts created `0`, registrations `0`, credentials requested `0`, credentials used `0`, terms accepted `0`, purchases `0`, downloads `0`, live service calls `0`, provider acquisitions `0`, production reads `0`, production writes `0`, adapter executions `0`, runtime activations `0`, customer-visible changes `0`, relationships created `0`.
+- Sprint 9 remains `NOT_AUTHORIZED`; provider contact, legal approval, provider approval, accounts, credentials, terms acceptance, contracts, purchases, operational acquisition, live adapters, persistence, retrieval, enterprise consumption, runtime, downstream integration, customer visibility, Colorado runtime consumption, geographic relationships, hierarchy inference, and GOF Wave 5 remain `NOT_AUTHORIZED`.
+- Recommended next governed phase if separately authorized: GIS 1.0 Sprint 9 Provider Confirmation and Legal Review Gate. Do not begin it without separate explicit authorization.
 
 Current EKCP Sprint 2R state:
 
