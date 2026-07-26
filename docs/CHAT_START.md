@@ -10,7 +10,7 @@ Product:
 
 ## Latest New-Chat Handoff
 
-PROJECT ATLAS(tm) / GIS 1.0 Sprint 3 provider inventory governance handoff, July 26, 2026:
+PROJECT ATLAS(tm) / GIS 1.0 Sprint 4 controlled fixture provider adapter handoff, July 26, 2026:
 
 Workspace:
 
@@ -32,7 +32,9 @@ Current GIS 1.0 state:
 - Sprint 2 final state: `GIS_1_0_SPRINT_2_EVIDENCE_AND_PROVENANCE_FOUNDATION_CERTIFIED`.
 - Sprint 3 authorization: `GIS_1_0_SPRINT_3_PROVIDER_INVENTORY_GOVERNANCE_AUTHORIZED`.
 - Sprint 3 final state: `GIS_1_0_SPRINT_3_PROVIDER_INVENTORY_GOVERNANCE_CERTIFIED`.
-- Sprint 4 state: `NOT_AUTHORIZED`.
+- Sprint 4 authorization: `GIS_1_0_SPRINT_4_CONTROLLED_FIXTURE_PROVIDER_ADAPTER_AUTHORIZED`.
+- Sprint 4 final state: `GIS_1_0_SPRINT_4_CONTROLLED_FIXTURE_PROVIDER_ADAPTER_CERTIFIED`.
+- Sprint 5 state: `NOT_AUTHORIZED`.
 - Current implementation commit: verify with `git log -1 --oneline` after resuming.
 
 Sprint 1 foundation:
@@ -85,7 +87,28 @@ Sprint 1 foundation:
 - Sprint 3 inventory certification: 16 canonical categories, 64 entries, 19 generic source classes, 3 overlap records, deterministic fingerprint `288d89180b07708b4abc06445d2d7214276324252669c1d6b51611dcb15007dc`.
 - Sprint 3 fixture scenarios A-J cover governed inventory entry, commercial review, operational-tool separation, consumer-portal separation, generic jurisdictional source class, unknown licensing fail-closed, overlap preservation, future provider evaluation non-authorization, rejected candidate retention, and verification required.
 - Sprint 3 production effect: deployments `0`, migrations `0`, production reads `0`, production writes `0`, network calls `0`, provider connections `0`, credentials `0`, acquisitions `0`, runtime activations `0`, downstream integrations `0`, customer-visible changes `0`, relationships created `0`.
-- Recommended next governed phase if separately authorized: GIS 1.0 Sprint 4 Controlled Fixture Adapter.
+- Sprint 4 implemented contracts:
+  - `lib/geographic-intelligence/fixtureProviderAdapterContract.ts`
+  - `lib/geographic-intelligence/fixtureProviderNormalization.ts`
+  - `lib/geographic-intelligence/fixtureProviderValidation.ts`
+  - `lib/geographic-intelligence/syntheticFixtureProviderAdapter.ts`
+  - `lib/geographic-intelligence/fixtures/gisSprint4SyntheticProviderFixtures.ts`
+- Sprint 4 implemented validation:
+  - `npm run check:geographic-intelligence-fixture-provider-adapter-safety`
+  - `npm run certify:geographic-intelligence-fixture-provider-adapter`
+- Sprint 4 implemented documentation:
+  - `docs/project-atlas/geographic-intelligence/GIS-1.0-FIXTURE-PROVIDER-ADAPTER-STANDARD.md`
+  - `docs/project-atlas/geographic-intelligence/GIS-1.0-SPRINT-4-CONTROLLED-FIXTURE-PROVIDER-ADAPTER.md`
+- Sprint 4 synthetic provider identity: `ATLAS_SYNTHETIC_GEO_EVIDENCE_PROVIDER`.
+- Sprint 4 adapter identity/version: `GIS_SPRINT_4_SYNTHETIC_PROVIDER_ADAPTER` / `1.0.0`.
+- Sprint 4 fixture schema version: `GIS_SPRINT_4_SYNTHETIC_FIXTURE_SCHEMA_V1`.
+- Sprint 4 evidence family: `GIS-S4-EVIDENCE-FAMILY-c9d740f73bae19fe64f842c5`.
+- Sprint 4 baseline evidence version: `GIS-S4-EVIDENCE-VERSION-1b751702a92c42f3a83698bc`.
+- Sprint 4 changed evidence version: `GIS-S4-EVIDENCE-VERSION-e87de2a9d9034ecb2b397d01`.
+- Sprint 4 deterministic output fingerprint: `d858fc1443981cfda1662bf44cdf2f8d31599bcb8c4eeeeb25d21b76b1fcf708`.
+- Sprint 4 fixture scenarios A-N cover valid transformation, duplicate reacquisition, changed governed content, malformed input, unsupported schema, provider mismatch, missing fixture marker, unknown licensing, subject mismatch, domain mismatch, invalid temporal range, checksum mismatch, incomplete provenance, and activation drift.
+- Sprint 4 production effect: deployments `0`, migrations `0`, production reads `0`, production writes `0`, network calls `0`, provider connections `0`, provider acquisitions `0`, accounts created `0`, credentials used `0`, runtime activations `0`, downstream integrations `0`, customer-visible changes `0`, relationships created `0`.
+- Recommended next governed phase if separately authorized: GIS 1.0 Sprint 5 Provider Evaluation and Selection Governance.
 
 Current EKCP Sprint 2R state:
 

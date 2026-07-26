@@ -22,6 +22,13 @@ import {
 const packageJson = fs.readFileSync("package.json", "utf8");
 const workerTsconfig = fs.readFileSync("tsconfig.worker.json", "utf8");
 const gisFiles = listSourceFiles("lib/geographic-intelligence");
+const separatelyAuthorizedSprint4FixtureAdapterFiles = new Set([
+  "lib/geographic-intelligence/fixtureProviderAdapterContract.ts",
+  "lib/geographic-intelligence/fixtureProviderNormalization.ts",
+  "lib/geographic-intelligence/fixtureProviderValidation.ts",
+  "lib/geographic-intelligence/syntheticFixtureProviderAdapter.ts",
+  "lib/geographic-intelligence/fixtures/gisSprint4SyntheticProviderFixtures.ts",
+]);
 
 assert.equal(GIS_1_0_SPRINT_3_AUTHORIZATION, "GIS_1_0_SPRINT_3_PROVIDER_INVENTORY_GOVERNANCE_AUTHORIZED");
 assert.equal(GIS_1_0_SPRINT_3_CERTIFICATION, "GIS_1_0_SPRINT_3_PROVIDER_INVENTORY_GOVERNANCE_CERTIFIED");
@@ -41,7 +48,9 @@ for (const file of gisFiles) {
   assert.equal(/process\.env|DATABASE_URL|DIRECT_URL|SUPABASE|TYPESENSE|RESEND|SECRET|TOKEN|PASSWORD|API_KEY|providerApiKey/i.test(contents), false, `Sprint 3 must not read credentials or environment: ${file}`);
   assert.equal(/scheduler|setInterval|pollProvider|providerPolling/i.test(contents), false, `Sprint 3 must not schedule or poll providers: ${file}`);
   assert.equal(/runtimeRegistry\s*\(|dispatcher\s*\(|registerRuntime\s*\(|featureFlag\s*\(/i.test(contents), false, `Sprint 3 must not register runtime behavior: ${file}`);
-  assert.equal(/providerAdapter\s*\(|connectProvider\s*\(|acquireProvider\s*\(|licensedDataFeed\s*\(/i.test(contents), false, `Sprint 3 must not create provider adapters or acquisition: ${file}`);
+  if (!separatelyAuthorizedSprint4FixtureAdapterFiles.has(file)) {
+    assert.equal(/providerAdapter\s*\(|connectProvider\s*\(|acquireProvider\s*\(|licensedDataFeed\s*\(/i.test(contents), false, `Sprint 3 must not create provider adapters or acquisition: ${file}`);
+  }
   assert.equal(/(?:geographic|property|prisma)\w*\.(?:create|createMany|update|updateMany|upsert|delete|deleteMany)\s*\(|\$transaction|executeRaw/i.test(contents), false, `Sprint 3 must not contain production write patterns: ${file}`);
   assert.equal(/customerDisplayAuthorized:\s*true|redistributionAuthorized:\s*true|runtimeAuthorized:\s*true|downstreamIntegrationAuthorized:\s*true|acquisitionAuthorized:\s*true/i.test(contents), false, `Sprint 3 must not authorize use: ${file}`);
 }

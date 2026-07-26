@@ -57,6 +57,8 @@
     "certify:geographic-intelligence-evidence-provenance-foundation": "npm run worker:build && node dist/scripts/certifyGeographicIntelligenceEvidenceProvenanceFoundation.js",
     "check:geographic-intelligence-provider-inventory-safety": "npm run worker:build && node dist/scripts/checkGeographicIntelligenceProviderInventorySafety.js",
     "certify:geographic-intelligence-provider-inventory-governance": "npm run worker:build && node dist/scripts/certifyGeographicIntelligenceProviderInventoryGovernance.js",
+    "check:geographic-intelligence-fixture-provider-adapter-safety": "npm run worker:build && node dist/scripts/checkGeographicIntelligenceFixtureProviderAdapterSafety.js",
+    "certify:geographic-intelligence-fixture-provider-adapter": "npm run worker:build && node dist/scripts/certifyGeographicIntelligenceFixtureProviderAdapter.js",
     "check:gkc-fixture-governance": "npm run worker:build && node dist/scripts/checkGkcFixtureGovernance.js",
     "check:gma-read-only-mapping-preview": "npm run worker:build && node dist/scripts/checkGmaReadOnlyMappingPreview.js",
     "check:gma-internal-mapping-review-queue": "npm run worker:build && node dist/scripts/checkGmaInternalMappingReviewQueue.js",
