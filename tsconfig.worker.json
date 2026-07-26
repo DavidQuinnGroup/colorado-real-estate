@@ -55,6 +55,7 @@
     "scripts/checkEipSprint6aRuntimeDependencySeparation.ts",
     "scripts/checkEipSprint7ProductionInternalGeographicReadAdapter.ts",
     "scripts/checkEkcpSprint1EnterpriseGeographicConsumerAdapter.ts",
+    "scripts/checkEkcpSprint2rColoradoEnterpriseGeographicConsumptionReadiness.ts",
     "scripts/checkGofWave1StateObjectTypeFoundation.ts",
     "scripts/checkGofWave2ColoradoGovernedInstanceFoundation.ts",
     "scripts/checkGofWave3ControlledColoradoProductionPersistence.ts",

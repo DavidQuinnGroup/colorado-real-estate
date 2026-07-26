@@ -42,6 +42,7 @@
     "check:eip-sprint-6a-runtime-dependency-separation": "npm run worker:build && node dist/scripts/checkEipSprint6aRuntimeDependencySeparation.js",
     "check:eip-sprint-7-production-internal-geographic-read-adapter": "npm run worker:build && node dist/scripts/checkEipSprint7ProductionInternalGeographicReadAdapter.js",
     "check:ekcp-sprint-1-enterprise-geographic-consumer-adapter": "npm run worker:build && node dist/scripts/checkEkcpSprint1EnterpriseGeographicConsumerAdapter.js",
+    "check:ekcp-sprint-2r-colorado-enterprise-geographic-consumption-readiness": "npm run worker:build && node dist/scripts/checkEkcpSprint2rColoradoEnterpriseGeographicConsumptionReadiness.js",
     "check:gof-wave-1-state-object-type-foundation": "npm run worker:build && node dist/scripts/checkGofWave1StateObjectTypeFoundation.js",
     "check:gof-wave-2-colorado-governed-instance-foundation": "npm run worker:build && node dist/scripts/checkGofWave2ColoradoGovernedInstanceFoundation.js",
     "check:gof-wave-3-controlled-colorado-production-persistence": "npm run worker:build && node dist/scripts/checkGofWave3ControlledColoradoProductionPersistence.js",
