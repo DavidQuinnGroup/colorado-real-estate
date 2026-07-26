@@ -161,7 +161,7 @@ function readRepositoryControl(expectedCommit: string | null): GofWave3bExecutio
   const branch = execGit(["rev-parse", "--abbrev-ref", "HEAD"]);
   const head = execGit(["rev-parse", "HEAD"]);
   const originMain = execGit(["rev-parse", "origin/main"]);
-  const status = execGit(["status", "--porcelain"]);
+  const status = execGit(["status", "--porcelain", "--", ".", ":(exclude)dist"]);
   return Object.freeze({
     branch: branch as "main",
     head,

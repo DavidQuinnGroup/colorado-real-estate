@@ -136,6 +136,7 @@ assert.equal(/geographicRelationship\.create|propertyGeographicRelationship\.cre
 assert.equal(adapterSource.includes("createGofWave3bPrismaPersistencePort"), true, "Real Prisma adapter port must exist.");
 assert.equal(commandSource.includes("--execute"), true, "Command must require explicit execute flag.");
 assert.equal(commandSource.includes("GOF_WAVE_3B_OPERATOR_AUTHORIZATION_TOKEN"), true, "Command must require an operator token outside source.");
+assert.equal(commandSource.includes('":(exclude)dist"'), true, "Command must exclude generated dist output from its self-cleanliness check.");
 assert.ok(packageJson.includes("check:gof-wave-3b-colorado-production-execution-adapter"));
 assert.ok(packageJson.includes("activate:gof-wave-3b-colorado-persistence"));
 assert.ok(workerTsconfig.includes("scripts/checkGofWave3bColoradoProductionExecutionAdapter.ts"));

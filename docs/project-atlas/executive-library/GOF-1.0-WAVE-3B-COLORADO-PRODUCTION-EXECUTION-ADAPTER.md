@@ -107,6 +107,8 @@ Execution controls require:
 - clean working tree;
 - Prisma migrations up to date.
 
+The clean-working-tree check excludes only command-generated `dist` output so the package build step cannot mark its own dry-run command dirty. Source, documentation, configuration, Prisma, route, runtime, and integration drift remain blocking.
+
 Wave 3B uses a governed expected-commit parameter rather than hardcoding its own future commit. This keeps repository validation strong without making later certified execution impossible after the Wave 3B implementation commit.
 
 ---
