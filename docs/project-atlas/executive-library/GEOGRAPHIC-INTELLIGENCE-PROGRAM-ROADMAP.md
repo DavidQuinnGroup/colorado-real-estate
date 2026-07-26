@@ -37,6 +37,7 @@ Current program posture:
 - EIP 1.0 Sprint 6A Production Runtime Packaging Correction: deployed and superseded by Sprint 6A.1 for the validation-script dependency blocker.
 - EIP 1.0 Sprint 6A.1 Runtime Dependency Separation Correction: certified and closed.
 - EIP 1.0 Sprint 7 Production-Internal Geographic Read Adapter: implemented pending deployed production read evidence.
+- EKCP 1.0 Sprint 1 Enterprise Geographic Consumer Adapter: certified and closed.
 - Internal geographic mapping, final canonical selection, runtime consumption, and customer activation remain unauthorized.
 
 ---
@@ -78,6 +79,8 @@ Current program posture:
 | EIP Sprint 6A | Production Runtime Packaging Correction | Correct the protected Sprint 6 route package so Prisma Client can load the schema artifact required for deployed dry-run execution. | `DEPLOYED_SUPERSEDED_BY_SPRINT_6A_1_RUNTIME_DEPENDENCY_CORRECTION` | Admin route packaging only; no data mutation or customer activation |
 | EIP Sprint 6A.1 | Runtime Dependency Separation Correction | Separate reusable GMA preview fixtures from validation scripts so protected runtime code does not import repository-scanning check modules. | `CERTIFIED_AND_CLOSED` | Runtime dependency correction only; no customer activation |
 | EIP Sprint 7 | Production-Internal Geographic Read Adapter | Retrieve the certified Thornton production-internal pilot rows through a stable governed internal contract without customer activation. | `IMPLEMENTED_PENDING_DEPLOYED_PRODUCTION_READ_EVIDENCE` | Protected admin-only internal read; no runtime or customer activation |
+| EKCP Sprint 1 | Enterprise Geographic Consumer Adapter | Translate the neutral shared geographic-read contract into a reusable business-domain place profile for future enterprise consumers without integration, hierarchy operations, relationship operations, or activation. | `CERTIFIED_AND_CLOSED` | Internal consumer contract only; no Search, Map, AI, runtime, or customer activation |
+| EKCP Sprint 2 | Future Enterprise Geographic Consumption Capability | Any hierarchy, relationship, Search, Maps, Property Intelligence, AI, Executive Intelligence runtime, or customer activation capability after Sprint 1. | `NOT_AUTHORIZED` | Requires separate charter |
 | Future Sprint | Production-Internal Geographic Inspection Experience | Build a richer internal inspection experience over certified read-adapter results only after Sprint 7 certification. | `NOT_AUTHORIZED` | Internal inspection only |
 
 ---
@@ -111,6 +114,8 @@ Current program posture:
 | EIP Sprint 7 production-internal geographic read adapter record | `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/EIP-1.0-SPRINT-7-PRODUCTION-INTERNAL-GEOGRAPHIC-READ-ADAPTER.md` | Implemented pending deployed production read evidence |
 | EIP Sprint 7 production read adapter runbook | `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/EIP-1.0-SPRINT-7-PRODUCTION-READ-ADAPTER-RUNBOOK.md` | Active read-only validation runbook |
 | EIP Sprint 7 lessons learned | `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/EIP-1.0-SPRINT-7-LESSONS-LEARNED.md` | Implemented pending deployed production read evidence |
+| EKCP Sprint 1 enterprise geographic consumer adapter charter | `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/EKCP-1.0-SPRINT-1-ENTERPRISE-GEOGRAPHIC-CONSUMER-ADAPTER-CHARTER.md` | Authorized |
+| EKCP Sprint 1 enterprise geographic consumer adapter report | `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/EKCP-1.0-SPRINT-1-ENTERPRISE-GEOGRAPHIC-CONSUMER-ADAPTER.md` | Certified and closed |
 | Enterprise knowledge approval policy | `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/ENTERPRISE-KNOWLEDGE-APPROVAL-POLICY.md` | Active internal policy fixture |
 
 ---
@@ -131,6 +136,7 @@ Current program posture:
 | Production population gate | Any GIO row insertion | Completed only for EIP Sprint 6 one-object Thornton production-internal pilot; all other population remains unauthorized |
 | Production runtime packaging gate | Sprint 6 dry-run retry and controlled execute | Sprint 6A and Sprint 6A.1 certified; no current packaging blocker |
 | Production-internal read gate | Any production GIO read adapter | Authorized only for EIP Sprint 7 single certified Thornton object; broad enumeration and customer activation remain unauthorized |
+| Enterprise consumption gate | Any enterprise service consumption of production-internal GIO read results | EKCP Sprint 1 creates a reusable internal contract over the neutral shared geographic-read contract only; Search, Maps, Property Intelligence, AI, hierarchy operations, relationship operations, runtime, and customer activation remain unauthorized |
 | Customer activation gate | Public GIO routes, search, maps, property pages, or content | Not authorized |
 
 ---

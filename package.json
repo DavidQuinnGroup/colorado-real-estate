@@ -41,6 +41,7 @@
     "check:eip-sprint-6a-production-runtime-packaging-correction": "npm run worker:build && node dist/scripts/checkEipSprint6aProductionRuntimePackagingCorrection.js",
     "check:eip-sprint-6a-runtime-dependency-separation": "npm run worker:build && node dist/scripts/checkEipSprint6aRuntimeDependencySeparation.js",
     "check:eip-sprint-7-production-internal-geographic-read-adapter": "npm run worker:build && node dist/scripts/checkEipSprint7ProductionInternalGeographicReadAdapter.js",
+    "check:ekcp-sprint-1-enterprise-geographic-consumer-adapter": "npm run worker:build && node dist/scripts/checkEkcpSprint1EnterpriseGeographicConsumerAdapter.js",
     "check:geographic-intelligence-object-safety": "npm run worker:build && node dist/scripts/checkGeographicIntelligenceObjectSafety.js",
     "check:gkc-fixture-governance": "npm run worker:build && node dist/scripts/checkGkcFixtureGovernance.js",
     "check:gma-read-only-mapping-preview": "npm run worker:build && node dist/scripts/checkGmaReadOnlyMappingPreview.js",

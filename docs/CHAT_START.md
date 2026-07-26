@@ -80,6 +80,26 @@ Current Sprint 7 state:
 - Validation command: `npm run check:eip-sprint-7-production-internal-geographic-read-adapter`.
 - Current active phase: Sprint 7 implemented pending deployment, authenticated production read evidence, public runtime smoke, Google Doc update, and final certification recommendation.
 
+Current EKCP Sprint 1 state:
+
+- Program: `EKCP_1.0_SPRINT_1_ENTERPRISE_GEOGRAPHIC_CONSUMER_ADAPTER_CERTIFIED_AND_CLOSED`.
+- Authorization: Create the first reusable Enterprise Geographic Consumer Adapter between the Sprint 7 Production Read Adapter and future enterprise consumers.
+- Shared read contract: `lib/enterprise-knowledge/geographicReadContract.ts`.
+- Implemented adapter: `lib/ekcp/enterpriseGeographicConsumerAdapter.ts`.
+- Validation command: `npm run check:ekcp-sprint-1-enterprise-geographic-consumer-adapter`.
+- Implemented governance docs:
+  - `docs/project-atlas/executive-library/EKCP-1.0-SPRINT-1-ENTERPRISE-GEOGRAPHIC-CONSUMER-ADAPTER-CHARTER.md`
+  - `docs/project-atlas/executive-library/EKCP-1.0-SPRINT-1-ENTERPRISE-GEOGRAPHIC-CONSUMER-ADAPTER.md`
+- EKCP Sprint 1 consumes only the neutral shared geographic-read contract through dependency injection and exposes business-domain place profile, evidence, governance boundary, activation boundary, and read-source health fields.
+- Sprint 7 implements the same neutral shared geographic-read contract without changing its protected route behavior.
+- EKCP Sprint 1 does not import the Sprint 7 implementation module, does not import Prisma, does not write persistence, does not create routes, and does not integrate Search, Maps, Property Intelligence, AI, Executive Intelligence runtime, or customer-visible behavior.
+- Search, Maps, Property Intelligence, AI, and Executive Intelligence are represented only as future consumer classifications, not integrations.
+- Hierarchy operations and relationship operations are deferred beyond EKCP Sprint 1.
+- Prior architectural blocker: Sprint 7 importer guard conflict resolved after both `npm run check:ekcp-sprint-1-enterprise-geographic-consumer-adapter` and `npm run check:eip-sprint-7-production-internal-geographic-read-adapter` passed.
+- Certification validation passed: `npm run check:ekcp-sprint-1-enterprise-geographic-consumer-adapter`, `npm run check:eip-sprint-7-production-internal-geographic-read-adapter`, `npm run typecheck`, `npm run lint`, and `git diff --check`.
+- Current active phase: certified and closed pending commit/push closure.
+- EKCP Sprint 2 remains unauthorized and requires a separate charter.
+
 Final validation performed:
 
 - `npm run check:eip-sprint-6a-production-runtime-packaging-correction`
@@ -132,7 +152,9 @@ Next safe step:
 3. Run unauthenticated access proof and public runtime smoke.
 4. Do not run controlled execute again.
 5. Do not run rollback or retirement without separate authorization.
-6. Do not begin Sprint 8 without separate authorization.
+6. Do not integrate EKCP into Search, Maps, AI, customer runtime, or public routes without separate authorization.
+7. Do not begin EKCP Sprint 2 without separate authorization.
+8. Do not begin Sprint 8 without separate authorization.
 
 Do not begin Sprint 8.
 

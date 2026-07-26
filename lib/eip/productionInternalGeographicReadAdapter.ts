@@ -1,4 +1,12 @@
-import type { Prisma, PrismaClient } from "@prisma/client";
+import type { PrismaClient } from "@prisma/client";
+
+import type {
+  EnterpriseGeographicReadAggregate,
+  EnterpriseGeographicReadOperation,
+  EnterpriseGeographicReadRequest,
+  EnterpriseGeographicReadResult,
+  EnterpriseGeographicReadStatus,
+} from "../enterprise-knowledge/geographicReadContract.js";
 
 import { normalizeGioLookupValue } from "../gio/persistence.js";
 
@@ -25,142 +33,15 @@ const EXPECTED_OBSERVATION_KEYS = Object.freeze([
   "state_association",
 ]);
 
-export type EipSprint7ReadOperation = "object-id" | "canonical-name" | "alias" | "aggregate" | "health";
-export type EipSprint7AdapterHealth = "HEALTHY" | "DEGRADED" | "INCOMPLETE" | "CONFLICT" | "NOT_FOUND" | "NOT_AUTHORIZED" | "INVARIANT_VIOLATION";
-
-export type EipSprint7ReadRequest = Readonly<{
-  operation: EipSprint7ReadOperation;
-  objectId?: string;
-  canonicalName?: string;
-  alias?: string;
-  requestId?: string;
-}>;
-
-export type EipSprint7ReadResult = Readonly<{
-  success: boolean;
+export type EipSprint7ReadOperation = EnterpriseGeographicReadOperation;
+export type EipSprint7AdapterHealth = EnterpriseGeographicReadStatus;
+export type EipSprint7ReadRequest = EnterpriseGeographicReadRequest;
+export type EipSprint7ReadResult = EnterpriseGeographicReadResult & Readonly<{
   module: "eip-sprint-7-production-internal-geographic-read-adapter";
   version: typeof EIP_SPRINT_7_ADAPTER_VERSION;
   authorization: typeof EIP_SPRINT_7_AUTHORIZATION;
-  mode: "read";
-  operation: EipSprint7ReadOperation;
-  executed: false;
-  writesPerformed: 0;
-  requestId: string | null;
-  retrievalTimestamp: string;
-  status: EipSprint7AdapterHealth;
-  requiredRecords: Readonly<Record<string, number>>;
-  foundRecords: Readonly<Record<string, number>>;
-  warnings: readonly string[];
-  blockingFailures: readonly string[];
-  invariantResults: {
-    canonicalIdentity: boolean;
-    eligibility: boolean;
-    relationships: boolean;
-    rowCounts: boolean;
-    authorizedLookup: boolean;
-    noActivation: boolean;
-  };
-  resolution: {
-    requestedValue: string | null;
-    resolvedBy: EipSprint7ReadOperation;
-    resolvedObjectId: string | null;
-  };
-  aggregate: EipSprint7Aggregate | null;
 }>;
-
-export type EipSprint7Aggregate = Readonly<{
-  identity: {
-    governedObjectId: string;
-    objectType: string;
-    canonicalName: string;
-    displayName: string;
-    canonicalSlug: string;
-    canonicalIdentityState: "CERTIFIED_SINGLETON";
-    lifecycleState: string;
-    visibility: string;
-  };
-  aliases: readonly {
-    aliasId: string;
-    aliasValue: string;
-    normalizedValue: string;
-    aliasType: string;
-    canonicalAssociation: string;
-    lifecycleState: string;
-    language: string | null;
-    sourceId: string | null;
-    effectiveDate: string | null;
-    confidenceMetadata: "CERTIFIED_BY_SPRINT_6_PILOT";
-  }[];
-  sources: readonly {
-    sourceId: string;
-    sourceIdentity: string;
-    sourceClass: string;
-    authority: string;
-    accessMethod: string;
-    updateCadence: string;
-    licensingRestriction: boolean;
-    publicDisplayRestriction: boolean;
-    healthState: string;
-    verificationMetadata: "CERTIFIED_BY_SPRINT_6_PILOT";
-  }[];
-  observations: readonly {
-    observationId: string;
-    schemaKey: string | null;
-    observationKey: string;
-    governedValue: Prisma.JsonValue | string | number | boolean | null;
-    knowledgeClassification: string;
-    confidence: string;
-    freshness: string;
-    derivationMethod: string;
-    sourceReference: string | null;
-    effectiveDate: string | null;
-    retrievedAt: string | null;
-    verifiedAt: string | null;
-    internalOnly: boolean;
-    reviewStatus: string;
-  }[];
-  eligibility: {
-    eligibilityId: string;
-    internalUse: boolean;
-    searchEligibility: boolean;
-    mapEligibility: boolean;
-    publicPageEligibility: boolean;
-    indexingEligibility: boolean;
-    propertyEnrichment: boolean;
-    marketAnalytics: boolean;
-    allActivationFlagsFalse: boolean;
-  };
-  relationships: {
-    geographicRelationshipCount: 0;
-    propertyGeographicRelationshipCount: 0;
-  };
-  governance: {
-    persistedLineage: Prisma.JsonValue | null;
-    governedExternalLineage: {
-      sprint3QualityState: "READY";
-      sprint4ReadinessReference: string;
-      sprint5ApprovalReference: string;
-      sprint6AuthorizationReference: string;
-      sprint6CertificationStatus: string;
-      sprint6A1CertificationStatus: string;
-      sourceGmaLineage: string;
-    };
-    productionPilotVersion: string;
-    adapterVersion: typeof EIP_SPRINT_7_ADAPTER_VERSION;
-    retrievalTimestamp: string;
-  };
-  activation: {
-    runtime: false;
-    customer: false;
-    search: false;
-    map: false;
-    publicPage: false;
-    indexing: false;
-    analytics: false;
-    ai: false;
-    propertyRelationship: false;
-  };
-}>;
+export type EipSprint7Aggregate = EnterpriseGeographicReadAggregate;
 
 type RawAggregate = Awaited<ReturnType<typeof readCertifiedThorntonRows>>;
 
