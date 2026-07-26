@@ -10,7 +10,7 @@ Product:
 
 ## Latest New-Chat Handoff
 
-PROJECT ATLAS(tm) / EIP Sprint 6 closure handoff, July 25, 2026:
+PROJECT ATLAS(tm) / EIP Sprint 7 production-internal read adapter handoff, July 25, 2026:
 
 Workspace:
 
@@ -64,7 +64,21 @@ Current Sprint 6 state:
 - Customer visibility remains zero: no search, map, property, public page, SEO, indexing, analytics, AI, customer eligibility, email, alert, CRM, MLS, vendor, or customer behavior activation.
 - Sprint 6 certification documentation commit: `0d45bc02b21cf44286813ed361e7842214da7bae`.
 - Sprint 6 certification deployment status: success, Vercel status ID `51091910562`.
-- Current active phase: Sprint 6 is certified and closed. Sprint 7 is not authorized.
+- Sprint 6 final handoff baseline: `8545f93f8b4b7bd9ce2905ce3771ba3bab3ced0e`.
+- Sprint 6 final handoff deployment status: success, Vercel status ID `51091969730`.
+
+Current Sprint 7 state:
+
+- Program: `EIP_1.0_SPRINT_7_PRODUCTION_INTERNAL_GEOGRAPHIC_READ_ADAPTER`.
+- Authorization: Sprint 7 is authorized for read-only internal retrieval of the single certified Thornton production-internal GIO subject.
+- Certified object ID: `cms10utak0002qa0l8mu7gr8i`.
+- Certified row counts: `GeographicObject=1`, aliases `2`, sources `1`, observations `6`, eligibility rows `1`, `GeographicRelationship=0`, `PropertyGeographicRelationship=0`.
+- Runtime/customer activation: not authorized.
+- Writes/additional objects/property relationships/search/maps/pages/SEO/indexing/analytics/AI/vendor/MLS/CRM/alert/email/customer behavior changes: not authorized.
+- Implemented adapter: `lib/eip/productionInternalGeographicReadAdapter.ts`.
+- Protected route: `app/api/admin/enterprise/geographic-read-adapter/route.ts`.
+- Validation command: `npm run check:eip-sprint-7-production-internal-geographic-read-adapter`.
+- Current active phase: Sprint 7 implemented pending deployment, authenticated production read evidence, public runtime smoke, Google Doc update, and final certification recommendation.
 
 Final validation performed:
 
@@ -113,11 +127,14 @@ Google Doc governance update:
 
 Next safe step:
 
-1. Do not run controlled execute again.
-2. Do not run rollback or retirement without separate authorization.
-3. Do not begin Sprint 7 without separate authorization.
+1. Complete Sprint 7 validation and deployment.
+2. Run only authenticated read-only Sprint 7 production reads after deployment.
+3. Run unauthenticated access proof and public runtime smoke.
+4. Do not run controlled execute again.
+5. Do not run rollback or retirement without separate authorization.
+6. Do not begin Sprint 8 without separate authorization.
 
-Do not begin Sprint 7.
+Do not begin Sprint 8.
 
 Workspace:
 

@@ -36,6 +36,7 @@ Current program posture:
 - EIP 1.0 Sprint 6 Controlled Production-Internal Geographic Persistence Pilot: certified and closed.
 - EIP 1.0 Sprint 6A Production Runtime Packaging Correction: deployed and superseded by Sprint 6A.1 for the validation-script dependency blocker.
 - EIP 1.0 Sprint 6A.1 Runtime Dependency Separation Correction: certified and closed.
+- EIP 1.0 Sprint 7 Production-Internal Geographic Read Adapter: implemented pending deployed production read evidence.
 - Internal geographic mapping, final canonical selection, runtime consumption, and customer activation remain unauthorized.
 
 ---
@@ -76,7 +77,8 @@ Current program posture:
 | EIP Sprint 6 | Controlled Production-Internal Geographic Persistence Pilot | Persist one approved Thornton municipality object internally in production infrastructure through dry-run, execute, inspection, idempotency, and rollback planning. | `CERTIFIED_AND_CLOSED` | Production-internal only; no runtime or customer activation |
 | EIP Sprint 6A | Production Runtime Packaging Correction | Correct the protected Sprint 6 route package so Prisma Client can load the schema artifact required for deployed dry-run execution. | `DEPLOYED_SUPERSEDED_BY_SPRINT_6A_1_RUNTIME_DEPENDENCY_CORRECTION` | Admin route packaging only; no data mutation or customer activation |
 | EIP Sprint 6A.1 | Runtime Dependency Separation Correction | Separate reusable GMA preview fixtures from validation scripts so protected runtime code does not import repository-scanning check modules. | `CERTIFIED_AND_CLOSED` | Runtime dependency correction only; no customer activation |
-| Future Sprint | Production-Internal Geographic Inspection Read Model | Retrieve and inspect the Sprint 6 production-internal pilot rows through a stable internal contract without customer activation. | `RECOMMENDED_AFTER_SPRINT_6_CERTIFICATION` | Internal inspection/read model only |
+| EIP Sprint 7 | Production-Internal Geographic Read Adapter | Retrieve the certified Thornton production-internal pilot rows through a stable governed internal contract without customer activation. | `IMPLEMENTED_PENDING_DEPLOYED_PRODUCTION_READ_EVIDENCE` | Protected admin-only internal read; no runtime or customer activation |
+| Future Sprint | Production-Internal Geographic Inspection Experience | Build a richer internal inspection experience over certified read-adapter results only after Sprint 7 certification. | `NOT_AUTHORIZED` | Internal inspection only |
 
 ---
 
@@ -105,6 +107,10 @@ Current program posture:
 | EIP Sprint 6A.1 runtime dependency separation correction charter | `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/EIP-1.0-SPRINT-6A-1-RUNTIME-DEPENDENCY-SEPARATION-CORRECTION-CHARTER.md` | Authorized |
 | EIP Sprint 6A.1 runtime dependency separation correction record | `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/EIP-1.0-SPRINT-6A-1-RUNTIME-DEPENDENCY-SEPARATION-CORRECTION.md` | Certified and closed |
 | EIP Sprint 6A.1 lessons learned | `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/EIP-1.0-SPRINT-6A-1-LESSONS-LEARNED.md` | Certified and closed |
+| EIP Sprint 7 production-internal geographic read adapter charter | `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/EIP-1.0-SPRINT-7-PRODUCTION-INTERNAL-GEOGRAPHIC-READ-ADAPTER-CHARTER.md` | Authorized |
+| EIP Sprint 7 production-internal geographic read adapter record | `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/EIP-1.0-SPRINT-7-PRODUCTION-INTERNAL-GEOGRAPHIC-READ-ADAPTER.md` | Implemented pending deployed production read evidence |
+| EIP Sprint 7 production read adapter runbook | `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/EIP-1.0-SPRINT-7-PRODUCTION-READ-ADAPTER-RUNBOOK.md` | Active read-only validation runbook |
+| EIP Sprint 7 lessons learned | `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/EIP-1.0-SPRINT-7-LESSONS-LEARNED.md` | Implemented pending deployed production read evidence |
 | Enterprise knowledge approval policy | `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/ENTERPRISE-KNOWLEDGE-APPROVAL-POLICY.md` | Active internal policy fixture |
 
 ---
@@ -124,6 +130,7 @@ Current program posture:
 | Approval gate | Any transition from readiness to approved next step | EIP Sprint 5 approval system certified and closed; approval still does not authorize activation or customer visibility |
 | Production population gate | Any GIO row insertion | Completed only for EIP Sprint 6 one-object Thornton production-internal pilot; all other population remains unauthorized |
 | Production runtime packaging gate | Sprint 6 dry-run retry and controlled execute | Sprint 6A and Sprint 6A.1 certified; no current packaging blocker |
+| Production-internal read gate | Any production GIO read adapter | Authorized only for EIP Sprint 7 single certified Thornton object; broad enumeration and customer activation remain unauthorized |
 | Customer activation gate | Public GIO routes, search, maps, property pages, or content | Not authorized |
 
 ---
