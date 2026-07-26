@@ -10,6 +10,45 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / CEP 1.0 Customer Experience Platform(tm) architecture and roadmap handoff, July 26, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -5 --oneline
+```
+
+Current CEP 1.0 state:
+
+- Program: `PROJECT_ATLAS_CEP_1_0_CUSTOMER_EXPERIENCE_PLATFORM`.
+- Status: `CEP_1_0_ARCHITECTURE_AND_ROADMAP_COMPLETE_IMPLEMENTATION_NOT_AUTHORIZED`.
+- Primary document: `docs/project-atlas/executive-library/CEP-1.0-CUSTOMER-EXPERIENCE-PLATFORM-ARCHITECTURE-AND-IMPLEMENTATION-ROADMAP.md`.
+- GIS provider progression state: `GIS_1_0_PROVIDER_PROGRESSION_PAUSED_AFTER_SPRINT_8`.
+- Preserved CGS pathway: `READY_FOR_FUTURE_TECHNICAL_FEASIBILITY_AUTHORIZATION`.
+- GIS Sprint 9 state: `NOT_AUTHORIZED`.
+- CEP implementation state: `NOT_AUTHORIZED`.
+- Production actions: `NOT_AUTHORIZED`.
+- Deployment: `NOT_AUTHORIZED`.
+- Provider connection, credentials, terms acceptance, downloads, live GIS service/API calls, provider acquisition, provider persistence, provider data customer display, AI runtime activation, geographic runtime consumption, database/schema/API/UI/search/map/property-page/customer-visible changes, alert/CRM mutation tests, Vercel actions, and environment changes remain `NOT_AUTHORIZED`.
+- Recommended first implementation phase if separately authorized: `CEP_1_0_SPRINT_1_SEARCH_AND_MAP_EXPERIENCE_BASELINE`.
+- Exact next executive decision required: David must explicitly decide whether to authorize CEP Sprint 1 Search and Map Experience Baseline, including exact scope, allowed files/routes/APIs, validation, production/deployment boundaries, and stop conditions.
+
+Current GIS 1.0 pause context:
+
+- GIS 1.0 Sprints 1-8 are certified and closed.
+- Sprint 8 final state remains `GIS_1_0_SPRINT_8_LICENSING_AND_ATTRIBUTION_RESOLUTION_GATE_CERTIFIED`.
+- Sprint 8 strongest permitted outcome remains `LICENSING_GATE_RESOLVED_FOR_TECHNICAL_FEASIBILITY_REVIEW`.
+- The Colorado Geological Survey pathway is preserved for future technical-feasibility authorization only.
+- No completed CEP planning stage authorizes GIS Sprint 9, implementation, runtime activation, production action, or customer-visible geographic intelligence.
+
+Prior GIS handoff context retained below.
+
 PROJECT ATLAS(tm) / GIS 1.0 Sprint 8 licensing attribution gate handoff, July 26, 2026:
 
 Workspace:
