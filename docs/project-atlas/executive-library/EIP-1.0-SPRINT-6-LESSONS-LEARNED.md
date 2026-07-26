@@ -2,7 +2,7 @@
 
 ## Enterprise Implementation Program(tm) - Sprint 6 Lessons Learned
 
-Status: `EIP_1.0_SPRINT_6_CONTROLLED_PRODUCTION_INTERNAL_GEOGRAPHIC_PERSISTENCE_PILOT_IN_PROGRESS`
+Status: `EIP_1.0_SPRINT_6_CONTROLLED_PRODUCTION_INTERNAL_GEOGRAPHIC_PERSISTENCE_PILOT_CERTIFIED_AND_CLOSED`
 
 Implementation date: July 25, 2026
 
@@ -61,3 +61,29 @@ This reinforces the program rule that production persistence requires deployed-r
 Sprint 6A confirmed that the route and pilot module did not read `schema.prisma`; the missing file came from Prisma Client's deployed node runtime packaging requirement.
 
 The correction is intentionally route-scoped to the protected admin route and does not introduce a general repository-file access pattern.
+
+## 8. Runtime Fixture Dependencies Must Not Import Validation Scripts
+
+Sprint 6A.1 confirmed that protected runtime code can inherit deployment-only failures from validation scripts even when the protected route itself is clean.
+
+The production dry run failed on `prisma/migrations` because runtime code imported a GMA checker that scanned repository migration files at module load. The correction moved deterministic GMA preview fixtures into `lib/gma/readOnlyMappingPreviewFixtures.ts` and kept repository/migration validation inside `scripts/`.
+
+The durable lesson is that reusable fixtures belong in runtime-safe libraries; validation scripts may consume those fixtures, but runtime libraries must not consume validation scripts.
+
+## 9. Authenticated Dry Run Is The Execute Gate
+
+Sprint 6A.1 deployment was successful, but the first retry returned HTTP `401`. Treating that as an authentication blocker, not a packaging or persistence failure, prevented unauthorized credential guessing and preserved the controlled execute gate.
+
+The later authenticated dry run `EIP-S6-DRY-20260725-005` returned HTTP `200`, `success=true`, `dryRun=true`, `executed=false`, and `writesPerformed=0`, proving the deployed route was ready before the controlled execute.
+
+## 10. Idempotency Is Not Optional After A Production Write
+
+The controlled execute created exactly the authorized internal pilot rows. The idempotency execute then reused the canonical object `cms10utak0002qa0l8mu7gr8i` with `writesPerformed=0`.
+
+That second execute is what converts a one-time successful write into a governed persistence pattern.
+
+## 11. Customer Invisibility Must Be Proved After Persistence
+
+The final public-runtime smoke confirmed `/`, `/grand-plan`, `/search`, `/contact`, and `/api/search?limit=5` returned HTTP `200`, search continued using its existing database-backed governed runtime behavior, and the pilot did not activate search, maps, property pages, SEO, indexing, analytics, AI, or customer eligibility.
+
+Sprint 6 therefore proved production-internal persistence without customer activation.

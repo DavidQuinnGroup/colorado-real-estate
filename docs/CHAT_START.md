@@ -10,7 +10,7 @@ Product:
 
 ## Latest New-Chat Handoff
 
-PROJECT ATLAS(tm) / EIP Sprint 6A.1 continuation, July 25, 2026:
+PROJECT ATLAS(tm) / EIP Sprint 6 closure handoff, July 25, 2026:
 
 Workspace:
 
@@ -22,13 +22,12 @@ Start by running:
 git status --short --branch
 git rev-parse HEAD
 git rev-parse origin/main
-curl -s --max-time 20 https://api.github.com/repos/DavidQuinnGroup/colorado-real-estate/commits/3a2874a6d936c81c3f5f4c5e1e6440d536065c39/status
 ```
 
 Current Sprint 6 state:
 
-- Program: `EIP_1.0_SPRINT_6_CONTROLLED_PRODUCTION_INTERNAL_GEOGRAPHIC_PERSISTENCE_PILOT`.
-- Correction package: `EIP_1.0_SPRINT_6A_1_RUNTIME_DEPENDENCY_SEPARATION_CORRECTION`.
+- Program: `EIP_1.0_SPRINT_6_CONTROLLED_PRODUCTION_INTERNAL_GEOGRAPHIC_PERSISTENCE_PILOT_CERTIFIED_AND_CLOSED`.
+- Correction package: `EIP_1.0_SPRINT_6A_1_RUNTIME_DEPENDENCY_SEPARATION_CORRECTION_CERTIFIED_AND_CLOSED`.
 - Authorized subject: `Thornton, Colorado` only.
 - Production boundary: one production-internal GIO pilot object only.
 - Runtime/customer activation: not authorized.
@@ -54,9 +53,18 @@ Current Sprint 6 state:
 - Sprint 6A.1 commit: `3a2874a6d936c81c3f5f4c5e1e6440d536065c39`.
 - Sprint 6A.1 deployment status: success, Vercel status ID `51091139012`.
 - Production dry-run retry `EIP-S6-DRY-20260725-004`: HTTP `401` unauthorized before dry-run execution; no execute run; production GIO writes remain `0`.
-- Current active phase: admin credential correction/verification, then production dry-run retry only. Controlled execute remains prohibited.
+- Final documentation deployment for baseline `cdb3dff9d6f20da16ab8e29bf192ea26a5455ffe`: success, Vercel status ID `51091203542`.
+- Authenticated production dry run `EIP-S6-DRY-20260725-005`: HTTP `200`, `success=true`, `dryRun=true`, `executed=false`, `writesPerformed=0`, planned `GeographicObject=1`, aliases `2`, sources `1`, observations `6`, eligibility rows `1`, `GeographicRelationship=0`, `PropertyGeographicRelationship=0`, all eligibility and activation flags false, approval lineage valid, rollback plan available, `stopConditions=[]`.
+- Controlled execute `EIP-S6-EXEC-20260725-001`: HTTP `200`, `success=true`, `dryRun=false`, `executed=true`, `writesPerformed=11`, created `GeographicObject=1`, aliases `2`, sources `1`, observations `6`, eligibility rows `1`, `GeographicRelationship=0`, `PropertyGeographicRelationship=0`, all eligibility and activation flags false, approval lineage present, rollback plan present, `stopConditions=[]`.
+- Read-only inspection: HTTP `200`, `success=true`, mode `inspection`, `executed=false`, `writesPerformed=0`, canonical object ID `cms10utak0002qa0l8mu7gr8i`, reused `GeographicObject=1`, aliases `2`, sources `1`, observations `6`, eligibility rows `1`, relationships `0`, property relationships `0`, approval and governance lineage intact, rollback plan present, `stopConditions=[]`.
+- Idempotency execute `EIP-S6-IDEMPOTENCY-20260725-001`: HTTP `200`, `success=true`, `executed=true`, `writesPerformed=0`, created counts all `0`, canonical object ID unchanged `cms10utak0002qa0l8mu7gr8i`, reused row counts unchanged, all eligibility and activation flags false, `stopConditions=[]`.
+- Final public production smoke: `/`, `/grand-plan`, `/search`, `/contact`, and `/api/search?limit=5` returned HTTP `200`; `/api/search?limit=5` returned `5`, found `1287`, mapped `5`, source `database`, health `degraded`.
+- Production public-experience smoke passed against `https://davidquinngroup.com` with representative property route `/properties/32224-poudre-canyon-rd-bellvue-co-ire1363681`.
+- Final governed production pilot row counts: `GeographicObject=1`, aliases `2`, sources `1`, observations `6`, eligibility rows `1`, `GeographicRelationship=0`, `PropertyGeographicRelationship=0`.
+- Customer visibility remains zero: no search, map, property, public page, SEO, indexing, analytics, AI, customer eligibility, email, alert, CRM, MLS, vendor, or customer behavior activation.
+- Current active phase: Sprint 6 certification documentation closure only. Sprint 7 is not authorized.
 
-Completed validation before route hardening push:
+Final validation performed:
 
 - `npm run check:eip-sprint-6a-production-runtime-packaging-correction`
 - `npm run check:eip-sprint-6a-runtime-dependency-separation`
@@ -86,6 +94,7 @@ Completed validation before route hardening push:
 - `npm run lint`
 - `npm run worker:build`
 - `npm run build`
+- `PUBLIC_EXPERIENCE_SMOKE_BASE_URL=https://davidquinngroup.com npm run smoke:public-experience`
 - `npm run check:fast`
 - `git diff --check`
 
@@ -96,15 +105,16 @@ Google Doc governance update:
 - Tab: `t.0`
 - Readback revision after Sprint 6 append: `AIroW35qt_CtJ9DQQmzhNc2ci9-6spqGp84Oxzc4Jl5aTm5a31nPqVXwYkM6kWya67jS7mf6iDWGtJ4FvbNGqwpmTY9rtYhU7YrD4gJE6W0`
 - The doc records Sprint 5 certification, Sprint 6 authorization, Thornton as the only pilot subject, one-object limit, continued prohibitions, recovery/rollback requirement, and the paused deployment gate.
-- Sprint 6A Google Doc update recorded the authorization, root cause, route-scoped correction, local validation, and continued prohibition before deployed dry-run retry. A follow-up Google Doc addendum is still required for the `prisma/migrations` dry-run blocker.
+- Sprint 6A and Sprint 6A.1 Google Doc updates recorded the packaging and runtime dependency corrections.
+- Sprint 6 final Google Doc closure update recorded the dry run, execute, inspection, idempotency, public smoke, row counts, zero customer visibility, rollback boundary, and Sprint 7 prohibition.
+- Google Doc readback revision after Sprint 6 closure append: `AIroW34QTDi_FhgxnXVdZgjodYtxOOK4njaSI2P_FFVqgLFs_uYvv17pYXhEB8THBgchVYtvFX-Jkw9HkYMOtMuIZAJxdj1OroKwBfYSC2I`.
 
 Next safe step:
 
-1. Verify a valid admin credential is available to the execution environment without exposing the secret.
-2. Retry production dry run with a new invocation ID, recommended `EIP-S6-DRY-20260725-005`.
-3. If the dry run returns HTTP `200`, `success=true`, `dryRun=true`, `executed=false`, `writesPerformed=0`, all eligibility false, zero relationship writes, and rollback plan present, stop for executive review before controlled execute.
-
-Do not run Sprint 6 controlled execute until a future deployed dry run returns HTTP `200`, `success=true`, `dryRun=true`, `executed=false`, `writesPerformed=0`, all eligibility flags false, zero relationship writes, and a rollback plan.
+1. Verify final documentation commit and deployment status.
+2. Do not run controlled execute again.
+3. Do not run rollback or retirement without separate authorization.
+4. Do not begin Sprint 7 without separate authorization.
 
 Do not begin Sprint 7.
 

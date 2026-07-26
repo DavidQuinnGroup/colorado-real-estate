@@ -4,7 +4,7 @@
 
 ### Lessons Learned
 
-Status: `IMPLEMENTED_PENDING_DEPLOYED_DRY_RUN_EVIDENCE`
+Status: `EIP_1.0_SPRINT_6A_1_RUNTIME_DEPENDENCY_SEPARATION_CORRECTION_CERTIFIED_AND_CLOSED`
 
 Date: July 25, 2026
 
@@ -75,5 +75,19 @@ Future EIP safety packages should include a generic repository rule:
 - validation-time repository scans must remain in scripts.
 
 This should become a standard pre-deployment check for internal enterprise route work.
+
+## 7. Authentication Failures Are Separate From Runtime Failures
+
+After Sprint 6A.1 deployed, production dry-run retry `EIP-S6-DRY-20260725-004` returned HTTP `401` before dry-run execution. That was correctly treated as an admin credential gate, not as a runtime packaging, dependency, or persistence failure.
+
+The later authenticated dry-run retry `EIP-S6-DRY-20260725-005` returned HTTP `200`, `success=true`, `dryRun=true`, `executed=false`, and `writesPerformed=0`.
+
+This distinction kept the program from masking an auth issue as an implementation issue and preserved the controlled execute gate.
+
+## 8. Closure Determination
+
+Sprint 6A.1 is certified and closed:
+
+- `EIP_1.0_SPRINT_6A_1_RUNTIME_DEPENDENCY_SEPARATION_CORRECTION_CERTIFIED_AND_CLOSED`
 
 <!-- /Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/EIP-1.0-SPRINT-6A-1-LESSONS-LEARNED.md -->

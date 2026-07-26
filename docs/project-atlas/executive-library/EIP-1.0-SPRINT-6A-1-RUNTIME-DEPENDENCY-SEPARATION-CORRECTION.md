@@ -4,7 +4,7 @@
 
 ### Runtime Dependency Separation Correction(tm)
 
-Status: `DEPLOYED_DRY_RUN_RETRY_BLOCKED_BY_ADMIN_AUTH`
+Status: `EIP_1.0_SPRINT_6A_1_RUNTIME_DEPENDENCY_SEPARATION_CORRECTION_CERTIFIED_AND_CLOSED`
 
 Implementation date: July 25, 2026
 
@@ -20,7 +20,9 @@ Sprint 6A.1 corrects the second deployed dry-run blocker in the protected Sprint
 
 The correction does not change the Sprint 6 data plan, route authorization model, Prisma schema, migrations, customer runtime, or production write behavior. It separates reusable GMA preview fixtures from the GMA validation script so protected runtime code no longer imports a checker that scans repository migration files.
 
-Controlled execute remains prohibited pending deployed dry-run success and executive review.
+The correction was deployed successfully and verified by the authenticated production dry-run retry.
+
+Sprint 6A.1 is certified and closed.
 
 ---
 
@@ -186,7 +188,7 @@ Deployment evidence:
 - status: `success`;
 - description: `Deployment has completed`.
 
-Production dry-run retry:
+First production dry-run retry after deployment:
 
 - invocation ID: `EIP-S6-DRY-20260725-004`;
 - subject: `Thornton, Colorado`;
@@ -204,10 +206,40 @@ Result:
 Interpretation:
 
 - Sprint 6A.1 deployment succeeded;
-- the migration-directory dependency correction has not yet been production-dry-run verified because the protected admin auth gate rejected the request;
+- the migration-directory dependency correction had not yet been production-dry-run verified because the protected admin auth gate rejected the request;
 - per stop conditions, no credential guessing or repeated production route retry was performed.
 
-Controlled execute remains prohibited after dry-run success until executive review confirms continuation.
+Authenticated production dry-run retry:
+
+- invocation ID: `EIP-S6-DRY-20260725-005`;
+- subject: `Thornton, Colorado`;
+- scope: `CONTROLLED_PRODUCTION_INTERNAL_GEOGRAPHIC_PERSISTENCE_PILOT`;
+- HTTP status: `200`;
+- success: `true`;
+- dryRun: `true`;
+- executed: `false`;
+- writesPerformed: `0`;
+- planned `GeographicObject`: `1`;
+- planned aliases: `2`;
+- planned sources: `1`;
+- planned observations: `6`;
+- planned eligibility rows: `1`;
+- planned `GeographicRelationship`: `0`;
+- planned `PropertyGeographicRelationship`: `0`;
+- all eligibility and activation flags: `false`;
+- approval lineage: valid;
+- rollback plan: available;
+- stopConditions: `[]`.
+
+Final determination:
+
+- Sprint 6A.1 deployment and authenticated dry-run verification succeeded;
+- runtime no longer imports the validation script path that scanned `prisma/migrations`;
+- controlled execute authorization returned to the Sprint 6 charter after executive review.
+
+Sprint 6A.1 final status:
+
+- `EIP_1.0_SPRINT_6A_1_RUNTIME_DEPENDENCY_SEPARATION_CORRECTION_CERTIFIED_AND_CLOSED`
 
 ---
 
@@ -219,25 +251,18 @@ Controlled execute remains prohibited after dry-run success until executive revi
 | Protected route scans `prisma/migrations` | Mitigated locally | Route dependency graph validated under blocked schema/migration filesystem guard |
 | Fixture outputs drift during extraction | Controlled | Existing GMA preview, queue, and decision fixture checks passed with expected counts |
 | Schema or migration mutation | Controlled | New safety check asserts no Prisma schema/migration diff |
-| Production dry-run auth failure | Open blocker | Retry requires valid `x-admin-key` or `Authorization: Bearer <key>` admin credential in the execution environment |
-| Production write before dry-run evidence | Blocked | Execute remains prohibited |
+| Production dry-run auth failure | Closed | Authenticated retry `EIP-S6-DRY-20260725-005` returned HTTP `200` with zero writes |
+| Production write before dry-run evidence | Closed | Execute did not run until dry-run evidence passed and executive review authorized Sprint 6 to resume |
 | Customer-visible behavior changes | Controlled | No public/runtime integration changed |
 
 ---
 
 ## 9. Certification Recommendation
 
-Implementation and deployment succeeded, but production dry-run verification is blocked by admin authentication.
+Implementation, deployment, and authenticated production dry-run verification succeeded.
 
-Certification remains deferred until:
+Final recommendation:
 
-- all required validation passes;
-- deployment succeeds;
-- production dry run returns the required zero-mutation success evidence;
-- controlled execute remains paused for executive review.
-
-Current recommendation:
-
-`EIP_1.0_SPRINT_6A_1_RUNTIME_DEPENDENCY_SEPARATION_CORRECTION_DEPLOYED_PENDING_AUTHENTICATED_DRY_RUN_RETRY`
+`EIP_1.0_SPRINT_6A_1_RUNTIME_DEPENDENCY_SEPARATION_CORRECTION_CERTIFIED_AND_CLOSED`
 
 <!-- /Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/EIP-1.0-SPRINT-6A-1-RUNTIME-DEPENDENCY-SEPARATION-CORRECTION.md -->

@@ -2,7 +2,7 @@
 
 ## EIP Sprint 6 Production Activation And Rollback Runbook
 
-Status: `ACTIVE_FOR_SPRINT_6_CONTROLLED_PILOT`
+Status: `SPRINT_6_CONTROLLED_PILOT_COMPLETED_ROLLBACK_PLAN_RETAINED`
 
 Authorized subject: `Thornton, Colorado`
 
@@ -153,32 +153,75 @@ Do not:
 
 ---
 
-## 8. Current Stop Condition
+## 8. Final Production Evidence
 
-Current stop condition:
+Historical deployment blockers were resolved before execute:
 
-- deployed route returned HTTP `500` for authenticated dry-run and inspection attempts against commit `84989669d62e9d18a6b86534155f957b5f4ad8fe`;
-- no execute was run;
-- no production GIO write was performed;
 - route hardening commit `d50f3a815dd7f340d1f5db5caa3153ee4c9feb73` deployed successfully with Vercel status ID `51090536652`;
-- retried production dry run `EIP-S6-DRY-20260725-002` returned HTTP `500` with JSON error `ENOENT: no such file or directory, open 'prisma/schema.prisma'`;
-- Sprint 6A implemented a route-scoped Prisma schema packaging correction for the protected admin route;
-- local Sprint 6A validation passed;
-- Sprint 6A correction commit `a8f09faf2e9011d78b995359b11e97bdbc80f79d` deployed successfully with Vercel status ID `51090831312`;
-- dry run `EIP-S6-DRY-20260725-003` returned HTTP `500` with error `ENOENT: no such file or directory, scandir 'prisma/migrations'`;
-- no execute was run;
-- no production GIO write was performed;
-- Sprint 6A.1 implemented a runtime dependency separation correction that moved reusable GMA preview records into `lib/gma/readOnlyMappingPreviewFixtures.ts`;
-- `lib/gma/internalMappingReviewQueue.ts` no longer imports `scripts/checkGmaReadOnlyMappingPreview.js`;
-- `npm run check:eip-sprint-6a-runtime-dependency-separation` passed locally and proved the protected route graph does not read `prisma/schema.prisma` or scan `prisma/migrations`;
-- Sprint 6A.1 commit `3a2874a6d936c81c3f5f4c5e1e6440d536065c39` deployed successfully with Vercel status ID `51091139012`;
-- dry-run retry `EIP-S6-DRY-20260725-004` returned HTTP `401` unauthorized before dry-run execution;
-- no execute was run;
-- no production GIO write was performed;
-- next retry is blocked until a valid admin credential is available in the execution environment.
+- Sprint 6A packaging correction commit `a8f09faf2e9011d78b995359b11e97bdbc80f79d` deployed successfully with Vercel status ID `51090831312`;
+- Sprint 6A.1 runtime dependency separation implementation commit `3a2874a6d936c81c3f5f4c5e1e6440d536065c39` deployed successfully with Vercel status ID `51091139012`;
+- Sprint 6A.1 final documentation deployment completed successfully with Vercel status ID `51091203542`;
+- Sprint 6A.1 is certified and closed as `EIP_1.0_SPRINT_6A_1_RUNTIME_DEPENDENCY_SEPARATION_CORRECTION_CERTIFIED_AND_CLOSED`.
 
-Next dry-run invocation must use a new invocation ID after admin credential verification:
+Successful dry run:
 
-- `EIP-S6-DRY-20260725-005`
+- invocation ID: `EIP-S6-DRY-20260725-005`;
+- HTTP `200`;
+- `success=true`;
+- `dryRun=true`;
+- `executed=false`;
+- `writesPerformed=0`;
+- planned creates: `GeographicObject=1`, aliases `2`, sources `1`, observations `6`, eligibility rows `1`, `GeographicRelationship=0`, `PropertyGeographicRelationship=0`;
+- all eligibility and activation flags false;
+- approval lineage valid;
+- rollback plan available;
+- stopConditions: `[]`.
 
-Controlled execute remains prohibited until that dry run returns HTTP `200`, `success=true`, `dryRun=true`, `executed=false`, `writesPerformed=0`, all eligibility flags false, zero relationship writes, and a rollback plan.
+Successful controlled execute:
+
+- invocation ID: `EIP-S6-EXEC-20260725-001`;
+- HTTP `200`;
+- `success=true`;
+- `dryRun=false`;
+- `executed=true`;
+- `writesPerformed=11`;
+- created: `GeographicObject=1`, aliases `2`, sources `1`, observations `6`, eligibility rows `1`, `GeographicRelationship=0`, `PropertyGeographicRelationship=0`;
+- all eligibility and activation flags false;
+- approval lineage present;
+- rollback plan present;
+- stopConditions: `[]`.
+
+Successful inspection:
+
+- HTTP `200`;
+- `success=true`;
+- mode `inspection`;
+- `executed=false`;
+- `writesPerformed=0`;
+- canonical object ID: `cms10utak0002qa0l8mu7gr8i`;
+- reused: `GeographicObject=1`, aliases `2`, sources `1`, observations `6`, eligibility rows `1`;
+- relationships and property relationships remain `0`;
+- all eligibility and activation flags false;
+- approval and governance lineage intact;
+- rollback plan present;
+- stopConditions: `[]`.
+
+Successful idempotency execute:
+
+- invocation ID: `EIP-S6-IDEMPOTENCY-20260725-001`;
+- HTTP `200`;
+- `success=true`;
+- `executed=true`;
+- `writesPerformed=0`;
+- created counts all `0`;
+- canonical object ID unchanged: `cms10utak0002qa0l8mu7gr8i`;
+- reused: `GeographicObject=1`, aliases `2`, sources `1`, observations `6`, eligibility rows `1`;
+- relationships and property relationships remain `0`;
+- all eligibility and activation flags false;
+- stopConditions: `[]`.
+
+Final determination:
+
+- Sprint 6 is certified and closed as `EIP_1.0_SPRINT_6_CONTROLLED_PRODUCTION_INTERNAL_GEOGRAPHIC_PERSISTENCE_PILOT_CERTIFIED_AND_CLOSED`.
+- Controlled execute is complete for the single authorized Thornton pilot object only.
+- Any rollback, retirement, second object, public activation, Sprint 7 work, search integration, map integration, property assignment, SEO, indexing, analytics, AI, vendor, MLS, alert, CRM, email, or customer behavior change requires separate authorization.
