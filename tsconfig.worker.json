@@ -56,6 +56,7 @@
     "scripts/checkEkcpSprint1EnterpriseGeographicConsumerAdapter.ts",
     "scripts/checkGofWave1StateObjectTypeFoundation.ts",
     "scripts/checkGofWave2ColoradoGovernedInstanceFoundation.ts",
+    "scripts/checkGofWave3ControlledColoradoProductionPersistence.ts",
     "scripts/checkGeographicIntelligenceObjectSafety.ts",
     "scripts/checkGkcFixtureGovernance.ts",
     "scripts/checkGmaReadOnlyMappingPreview.ts",
