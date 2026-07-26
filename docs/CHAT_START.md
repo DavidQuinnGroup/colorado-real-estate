@@ -10,7 +10,7 @@ Product:
 
 ## Latest New-Chat Handoff
 
-PROJECT ATLAS(tm) / GIS 1.0 Sprint 2 evidence and provenance foundation handoff, July 26, 2026:
+PROJECT ATLAS(tm) / GIS 1.0 Sprint 3 provider inventory governance handoff, July 26, 2026:
 
 Workspace:
 
@@ -30,7 +30,9 @@ Current GIS 1.0 state:
 - Sprint 1 final state: `GIS_1_0_SPRINT_1_ARCHITECTURE_FOUNDATION_CERTIFIED`.
 - Sprint 2 authorization: `GIS_1_0_SPRINT_2_EVIDENCE_AND_PROVENANCE_FOUNDATION_AUTHORIZED`.
 - Sprint 2 final state: `GIS_1_0_SPRINT_2_EVIDENCE_AND_PROVENANCE_FOUNDATION_CERTIFIED`.
-- Sprint 3 state: `NOT_AUTHORIZED`.
+- Sprint 3 authorization: `GIS_1_0_SPRINT_3_PROVIDER_INVENTORY_GOVERNANCE_AUTHORIZED`.
+- Sprint 3 final state: `GIS_1_0_SPRINT_3_PROVIDER_INVENTORY_GOVERNANCE_CERTIFIED`.
+- Sprint 4 state: `NOT_AUTHORIZED`.
 - Current implementation commit: verify with `git log -1 --oneline` after resuming.
 
 Sprint 1 foundation:
@@ -69,7 +71,21 @@ Sprint 1 foundation:
   - `docs/project-atlas/geographic-intelligence/GIS-1.0-SPRINT-2-EVIDENCE-AND-PROVENANCE-FOUNDATION.md`
 - Sprint 2 fixture scenarios A-J cover complete chain, duplicate acquisition, changed version, conflict preservation, unknown licensing, expired evidence, invalid supersession, subject mismatch, incomplete provenance, and invalidated evidence.
 - Sprint 2 production effect: deployments `0`, migrations `0`, production reads `0`, production writes `0`, network calls `0`, provider acquisitions `0`, runtime activations `0`, downstream integrations `0`, customer-visible changes `0`, relationships created `0`.
-- Recommended next governed phase if separately authorized: GIS 1.0 Sprint 3 Provider Inventory Governance.
+- Sprint 3 implemented contracts:
+  - `lib/geographic-intelligence/providerInventoryContract.ts`
+  - `lib/geographic-intelligence/providerInventoryValidation.ts`
+  - `lib/geographic-intelligence/fixtures/gisSprint3ProviderInventoryFixtures.ts`
+- Sprint 3 implemented validation:
+  - `npm run check:geographic-intelligence-provider-inventory-safety`
+  - `npm run certify:geographic-intelligence-provider-inventory-governance`
+- Sprint 3 implemented documentation:
+  - `docs/project-atlas/geographic-intelligence/GIS-1.0-PROVIDER-INVENTORY-GOVERNANCE-STANDARD.md`
+  - `docs/project-atlas/geographic-intelligence/GIS-1.0-SPRINT-3-PROVIDER-INVENTORY-GOVERNANCE.md`
+  - `docs/project-atlas/geographic-intelligence/GIS-1.0-PROVIDER-INVENTORY-REGISTER.md`
+- Sprint 3 inventory certification: 16 canonical categories, 64 entries, 19 generic source classes, 3 overlap records, deterministic fingerprint `288d89180b07708b4abc06445d2d7214276324252669c1d6b51611dcb15007dc`.
+- Sprint 3 fixture scenarios A-J cover governed inventory entry, commercial review, operational-tool separation, consumer-portal separation, generic jurisdictional source class, unknown licensing fail-closed, overlap preservation, future provider evaluation non-authorization, rejected candidate retention, and verification required.
+- Sprint 3 production effect: deployments `0`, migrations `0`, production reads `0`, production writes `0`, network calls `0`, provider connections `0`, credentials `0`, acquisitions `0`, runtime activations `0`, downstream integrations `0`, customer-visible changes `0`, relationships created `0`.
+- Recommended next governed phase if separately authorized: GIS 1.0 Sprint 4 Controlled Fixture Adapter.
 
 Current EKCP Sprint 2R state:
 

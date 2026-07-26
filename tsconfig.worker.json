@@ -68,6 +68,8 @@
     "scripts/certifyGeographicIntelligenceArchitectureFoundation.ts",
     "scripts/checkGeographicIntelligenceEvidenceProvenanceSafety.ts",
     "scripts/certifyGeographicIntelligenceEvidenceProvenanceFoundation.ts",
+    "scripts/checkGeographicIntelligenceProviderInventorySafety.ts",
+    "scripts/certifyGeographicIntelligenceProviderInventoryGovernance.ts",
     "scripts/checkGkcFixtureGovernance.ts",
     "scripts/checkGmaReadOnlyMappingPreview.ts",
     "scripts/checkGmaInternalMappingReviewQueue.ts",
