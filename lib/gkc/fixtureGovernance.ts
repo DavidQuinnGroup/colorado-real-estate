@@ -22,6 +22,7 @@ export const GKC_SOURCE_CLASSES = [
 export type GkcSourceClass = (typeof GKC_SOURCE_CLASSES)[number];
 
 export const GKC_FIXTURE_OBJECT_TYPES = [
+  "STATE",
   "MUNICIPALITY",
   "NEIGHBORHOOD",
   "MARKET_AREA",
@@ -122,7 +123,7 @@ export type GkcObservationFixture = {
 export type GkcAliasFixture = {
   objectId: string;
   aliasText: string;
-  aliasType: "PRIMARY" | "COMMON" | "LEGAL" | "MLS" | "LEGACY" | "COLLOQUIAL" | "SUBDIVISION_VARIANT";
+  aliasType: "PRIMARY" | "COMMON" | "LEGAL" | "ABBREVIATION" | "MLS" | "LEGACY" | "COLLOQUIAL" | "SUBDIVISION_VARIANT";
   language?: string;
   deprecated?: boolean;
 };
@@ -217,6 +218,21 @@ export const GKC_SOURCE_FIXTURES: readonly GkcSourceFixture[] = [
 ] as const;
 
 export const GKC_SCHEMA_KEY_REGISTRY: readonly GkcSchemaKeyDefinition[] = [
+  {
+    key: "government.state_identity.v1",
+    domain: "Government",
+    valueKind: "JSON",
+    applicableObjectTypes: ["STATE"],
+    unit: "NONE",
+    requiresSource: true,
+    requiresEffectiveDate: true,
+    freshnessPolicy: "AGING",
+    confidenceFloor: "HIGH",
+    requiresReview: true,
+    publicDisplayEligibleByDefault: false,
+    version: "v1",
+    deprecated: false,
+  },
   {
     key: "market.median_sale_price.v1",
     domain: "Market",
@@ -340,6 +356,13 @@ export const GKC_SCHEMA_KEY_REGISTRY: readonly GkcSchemaKeyDefinition[] = [
 ] as const;
 
 export const GKC_FIXTURE_OBJECTS: readonly GkcFixtureObject[] = [
+  {
+    id: "synthetic-gio-state-example",
+    synthetic: true,
+    objectType: "STATE",
+    canonicalName: "Synthetic Example State",
+    canonicalSlug: "synthetic-example-state",
+  },
   {
     id: "synthetic-gio-municipality-north-table",
     synthetic: true,
@@ -744,6 +767,23 @@ export function createGkcRepresentativeObservations(): readonly GkcObservationFi
       confidence: "HIGH",
       reviewStatus: "CONFLICTED",
       conflictGroupKey: "synthetic-conflict-flood-80000",
+      eligibility: { ...GKC_SAFE_ELIGIBILITY_DEFAULTS },
+    },
+    {
+      id: "synthetic-observation-state-identity",
+      synthetic: true,
+      objectId: "synthetic-gio-state-example",
+      objectType: "STATE",
+      schemaKey: "government.state_identity.v1",
+      classification: "RESTRICTED_KNOWLEDGE",
+      sourceId: "synthetic-source-authoritative-government",
+      valueKind: "JSON",
+      value: { canonicalName: "Synthetic Example State", objectType: "STATE", approvedInstance: false },
+      unit: "NONE",
+      effectiveDate: "2026-01-01",
+      freshness: "AGING",
+      confidence: "HIGH",
+      reviewStatus: "PENDING_REVIEW",
       eligibility: { ...GKC_SAFE_ELIGIBILITY_DEFAULTS },
     },
   ] as const;

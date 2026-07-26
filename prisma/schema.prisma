@@ -321,6 +321,7 @@ model Neighborhood {
 }
 
 enum GeographicObjectType {
+  STATE
   MUNICIPALITY
   NEIGHBORHOOD
   MARKET_AREA

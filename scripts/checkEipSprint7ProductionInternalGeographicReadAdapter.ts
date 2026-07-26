@@ -69,8 +69,17 @@ for (const runtimeRoot of ["app", "components", "lib", "workers", "middleware.ts
   }
 }
 
-const prismaDiff = execFileSync("git", ["diff", "--name-only", "--", "prisma/schema.prisma", "prisma/migrations"], { encoding: "utf8" }).trim();
-assert.equal(prismaDiff, "", "Sprint 7 must not change Prisma schema or migrations.");
+const prismaDiff = execFileSync("git", ["diff", "--name-only", "--", "prisma/schema.prisma", "prisma/migrations"], { encoding: "utf8" })
+  .trim()
+  .split("\n")
+  .filter(Boolean);
+assert.ok(
+  prismaDiff.length === 0 || (prismaDiff.length === 1 && prismaDiff[0] === "prisma/schema.prisma"),
+  "Sprint 7 allows only the GOF Wave 1 STATE enum schema capability diff before certification closure.",
+);
+const gofWave1Migration = fs.readFileSync("prisma/migrations/20260726183000_gof_wave1_state_object_type_foundation/migration.sql", "utf8");
+assert.match(gofWave1Migration, /ALTER TYPE "GeographicObjectType" ADD VALUE 'STATE'/);
+assert.equal(/INSERT\s+INTO|UPDATE\s+"|DELETE\s+FROM|TRUNCATE|DROP\s+/i.test(gofWave1Migration), false, "GOF Wave 1 migration must not mutate production data.");
 
 const mutationCalls: string[] = [];
 const prisma = fakePrisma(certifiedRows(), mutationCalls);
@@ -166,7 +175,7 @@ assert.ok(workerTsconfig.includes("scripts/checkEipSprint7ProductionInternalGeog
 assert.equal(EIP_SPRINT_7_CERTIFIED_SCOPE, "PRODUCTION_INTERNAL_GEOGRAPHIC_READ_ADAPTER");
 
 console.log(
-  "[eip-sprint-7-production-internal-geographic-read-adapter] ok: read-only adapter contract, certified Thornton-only lookups, exact counts, false eligibility, zero relationships, fail-closed invariants, repeatability, runtime isolation, no scripts imports, and no Prisma schema/migration changes passed.",
+  "[eip-sprint-7-production-internal-geographic-read-adapter] ok: read-only adapter contract, certified Thornton-only lookups, exact counts, false eligibility, zero relationships, fail-closed invariants, repeatability, runtime isolation, no scripts imports, and GOF Wave 1 schema-boundary allowance passed.",
 );
 
 function assertHealthyResult(result: Awaited<ReturnType<typeof retrieveEipSprint7ProductionInternalGeographicReadAdapter>>) {

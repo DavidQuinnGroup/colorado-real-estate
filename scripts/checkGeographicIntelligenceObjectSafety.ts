@@ -68,7 +68,6 @@ for (const disallowedType of [
   "SCHOOL_DISTRICT",
   "SCHOOL",
   "COUNTY",
-  "STATE",
   "PARCEL",
   "HOA",
   "BUILDER",
@@ -200,5 +199,5 @@ assert.equal(packageJson.includes("gio:seed"), false);
 assert.equal(packageJson.includes("gio:backfill"), false);
 
 console.log(
-  "[geographic-intelligence-object-safety] ok: additive GIO schema, five-type scope, safe eligibility defaults, duplicate protections, no geometry, no seeds/backfills, no runtime consumption, and property-protective referential behavior passed.",
+  "[geographic-intelligence-object-safety] ok: additive GIO schema, governed object-type scope, safe eligibility defaults, duplicate protections, no geometry, no seeds/backfills, no runtime consumption, and property-protective referential behavior passed.",
 );

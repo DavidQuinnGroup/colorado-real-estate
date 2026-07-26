@@ -54,6 +54,7 @@
     "scripts/checkEipSprint6aRuntimeDependencySeparation.ts",
     "scripts/checkEipSprint7ProductionInternalGeographicReadAdapter.ts",
     "scripts/checkEkcpSprint1EnterpriseGeographicConsumerAdapter.ts",
+    "scripts/checkGofWave1StateObjectTypeFoundation.ts",
     "scripts/checkGeographicIntelligenceObjectSafety.ts",
     "scripts/checkGkcFixtureGovernance.ts",
     "scripts/checkGmaReadOnlyMappingPreview.ts",

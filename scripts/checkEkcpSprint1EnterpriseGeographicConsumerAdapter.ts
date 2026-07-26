@@ -74,8 +74,17 @@ for (const runtimeRoot of ["app", "components", "lib/search", "lib/typesense", "
 
 assert.equal(fs.existsSync("app/api/admin/enterprise/geographic-consumer-adapter/route.ts"), false, "EKCP Sprint 1 must not create an API route.");
 
-const prismaDiff = execFileSync("git", ["diff", "--name-only", "--", "prisma/schema.prisma", "prisma/migrations"], { encoding: "utf8" }).trim();
-assert.equal(prismaDiff, "", "EKCP Sprint 1 must not change Prisma schema or migrations.");
+const prismaDiff = execFileSync("git", ["diff", "--name-only", "--", "prisma/schema.prisma", "prisma/migrations"], { encoding: "utf8" })
+  .trim()
+  .split("\n")
+  .filter(Boolean);
+assert.ok(
+  prismaDiff.length === 0 || (prismaDiff.length === 1 && prismaDiff[0] === "prisma/schema.prisma"),
+  "EKCP Sprint 1 allows only the GOF Wave 1 STATE enum schema capability diff before certification closure.",
+);
+const gofWave1Migration = fs.readFileSync("prisma/migrations/20260726183000_gof_wave1_state_object_type_foundation/migration.sql", "utf8");
+assert.match(gofWave1Migration, /ALTER TYPE "GeographicObjectType" ADD VALUE 'STATE'/);
+assert.equal(/INSERT\s+INTO|UPDATE\s+"|DELETE\s+FROM|TRUNCATE|DROP\s+/i.test(gofWave1Migration), false, "GOF Wave 1 migration must not mutate production data.");
 
 const readSource: EnterpriseGeographicReadSource = (request) =>
   retrieveEipSprint7ProductionInternalGeographicReadAdapter(fakePrisma(certifiedRows(), []) as never, request);
