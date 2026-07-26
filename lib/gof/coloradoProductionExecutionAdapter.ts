@@ -81,17 +81,6 @@ type PreflightRows = {
   geographic_relationships: number;
   property_geographic_relationships: number;
   state_enum_present: boolean;
-  companion_conflicts: number;
-};
-
-type SupportRows = {
-  alias_count: number;
-  source_count: number;
-  observation_count: number;
-  eligibility_count: number;
-  relationship_count: number;
-  property_relationship_count: number;
-  all_eligibility_false: boolean;
 };
 
 type GeographicObjectRow = {
@@ -104,6 +93,49 @@ type GeographicObjectRow = {
   visibility: string;
   convenienceParentId: string | null;
   mergedIntoId: string | null;
+};
+
+type AliasRow = {
+  aliasText: string;
+  normalizedValue: string;
+  aliasType: string;
+  language: string | null;
+  lifecycleStatus: string;
+  sourceCanonicalName: string | null;
+};
+
+type SourceRow = {
+  canonicalName: string;
+  sourceClass: string;
+  authorityLevel: string;
+  accessMethod: string;
+  defaultUpdateCadence: string;
+  licensingRestriction: boolean;
+  publicDisplayRestriction: boolean;
+  healthState: string;
+};
+
+type ObservationRow = {
+  observationKey: string;
+  valueKind: string;
+  valueSchemaKey: string | null;
+  valueJson: Prisma.JsonValue;
+  sourceCanonicalName: string | null;
+  freshness: string;
+  confidence: string;
+  derivationMethod: string;
+  reviewStatus: string;
+  publicVisibility: string;
+};
+
+type EligibilityRow = {
+  internalUse: boolean;
+  searchEligible: boolean;
+  mapEligible: boolean;
+  publicPageEligible: boolean;
+  indexingEligible: boolean;
+  propertyEnrichment: boolean;
+  marketAnalytics: boolean;
 };
 
 const ZERO_COUNTS: GofWave3PlannedWriteCounts = Object.freeze({
@@ -293,6 +325,7 @@ async function readPreflight(
   prisma: PrismaClient,
   repository: GofWave3bRepositoryControl,
 ): Promise<GofWave3aPreflightSnapshot> {
+  const contract = buildGofWave3ColoradoPersistenceContract();
   const [counts] = await prisma.$queryRaw<readonly [PreflightRows]>`
     SELECT
       (SELECT count(*)::int FROM "GeographicObject") AS geographic_objects,
@@ -308,29 +341,7 @@ async function readPreflight(
         WHERE n.nspname = 'public'
           AND t.typname = 'GeographicObjectType'
           AND e.enumlabel = 'STATE'
-      ) AS state_enum_present,
-      (
-        SELECT count(*)::int
-        FROM "GeographicAlias"
-        WHERE "normalizedValue" IN ('co', 'state of colorado')
-      ) +
-      (
-        SELECT count(*)::int
-        FROM "GeographicObservation"
-        WHERE "observationKey" LIKE 'gof.wave3.colorado.%'
-          OR "valueSchemaKey" = 'gof.wave3.colorado.evidence.v1'
-      ) +
-      (
-        SELECT count(*)::int
-        FROM "GeographicSource"
-        WHERE "canonicalName" = 'State of Colorado'
-          AND (
-            "sourceClass"::text <> 'GOVERNMENT'
-            OR "authorityLevel"::text <> 'AUTHORITATIVE'
-            OR "defaultUpdateCadence"::text <> 'EVENT_DRIVEN'
-            OR "publicDisplayRestriction" IS DISTINCT FROM true
-          )
-      ) AS companion_conflicts
+      ) AS state_enum_present
   `;
   const [object = null] = await prisma.$queryRaw<readonly GeographicObjectRow[]>`
     SELECT
@@ -353,9 +364,12 @@ async function readPreflight(
     FROM "GeographicObject"
     WHERE id = 'cms10utak0002qa0l8mu7gr8i'
   `;
+  const companionConflictCount = object
+    ? await readOwnedCompanionConflictCount(prisma, object.id, contract)
+    : await readOrphanCompanionConflictCount(prisma);
   const supportState = object
-    ? await readSupportState(prisma, object.id)
-    : counts.colorado_named_objects === 0 && counts.companion_conflicts === 0
+    ? companionConflictCount === 0 ? "COMPLETE" : "PARTIAL_OR_CONFLICTING"
+    : counts.colorado_named_objects === 0 && companionConflictCount === 0
       ? "NONE"
       : "PARTIAL_OR_CONFLICTING";
   return Object.freeze({
@@ -364,8 +378,8 @@ async function readPreflight(
     repositoryBaselineMatched: (repository.branch === "main" && repository.head === repository.expectedCommit && repository.originMain === repository.expectedCommit) as true,
     workingTreeClean: repository.workingTreeClean as true,
     sprint7ColoradoRetrievalEnabled: false,
-    existingRecordSetFingerprint: supportState === "COMPLETE" ? buildGofWave3ColoradoPersistenceContract().evidenceFingerprint : null,
-    companionConflictCount: counts.companion_conflicts,
+    existingRecordSetFingerprint: supportState === "COMPLETE" ? contract.evidenceFingerprint : null,
+    companionConflictCount,
     geographicObjectCount: counts.geographic_objects,
     stateObjectCount: counts.state_objects,
     coloradoNamedObjectCount: counts.colorado_named_objects,
@@ -390,26 +404,163 @@ async function readPreflight(
   });
 }
 
-async function readSupportState(prisma: PrismaClient, objectId: string): Promise<GofWave3aPreflightSnapshot["matchingColoradoSupportState"]> {
-  const [support] = await prisma.$queryRaw<readonly [SupportRows]>`
+async function readOwnedCompanionConflictCount(
+  prisma: PrismaClient,
+  objectId: string,
+  contract: GofWave3ColoradoPersistenceContract,
+): Promise<number> {
+  const aliases = await prisma.$queryRaw<readonly AliasRow[]>`
     SELECT
-      (SELECT count(*)::int FROM "GeographicAlias" WHERE "objectId" = ${objectId}) AS alias_count,
-      (SELECT count(*)::int FROM "GeographicSource" WHERE "canonicalName" IN (${Prisma.join(SOURCE_NAMES)})) AS source_count,
-      (SELECT count(*)::int FROM "GeographicObservation" WHERE "objectId" = ${objectId}) AS observation_count,
-      (SELECT count(*)::int FROM "GeographicEligibility" WHERE "objectId" = ${objectId}) AS eligibility_count,
-      (SELECT count(*)::int FROM "GeographicRelationship" WHERE "sourceObjectId" = ${objectId} OR "targetObjectId" = ${objectId}) AS relationship_count,
-      (SELECT count(*)::int FROM "PropertyGeographicRelationship" WHERE "geographicObjectId" = ${objectId}) AS property_relationship_count,
-      COALESCE((SELECT NOT ("internalUse" OR "searchEligible" OR "mapEligible" OR "publicPageEligible" OR "indexingEligible" OR "propertyEnrichment" OR "marketAnalytics") FROM "GeographicEligibility" WHERE "objectId" = ${objectId}), false) AS all_eligibility_false
+      a."aliasText",
+      a."normalizedValue",
+      a."aliasType"::text AS "aliasType",
+      a."language",
+      a."lifecycleStatus"::text AS "lifecycleStatus",
+      s."canonicalName" AS "sourceCanonicalName"
+    FROM "GeographicAlias" a
+    LEFT JOIN "GeographicSource" s ON s.id = a."sourceId"
+    WHERE a."objectId" = ${objectId}
+    ORDER BY a."normalizedValue", a."aliasType"::text, a."aliasText"
   `;
-  return support.alias_count === GOF_WAVE_3_WRITE_CEILING.aliases &&
-    support.source_count === GOF_WAVE_3_WRITE_CEILING.sources &&
-    support.observation_count === GOF_WAVE_3_WRITE_CEILING.observations &&
-    support.eligibility_count === GOF_WAVE_3_WRITE_CEILING.eligibilityRows &&
-    support.relationship_count === 0 &&
-    support.property_relationship_count === 0 &&
-    support.all_eligibility_false
-    ? "COMPLETE"
-    : "PARTIAL_OR_CONFLICTING";
+  const sources = await prisma.$queryRaw<readonly SourceRow[]>`
+    SELECT
+      "canonicalName",
+      "sourceClass"::text AS "sourceClass",
+      "authorityLevel"::text AS "authorityLevel",
+      "accessMethod"::text AS "accessMethod",
+      "defaultUpdateCadence"::text AS "defaultUpdateCadence",
+      "licensingRestriction",
+      "publicDisplayRestriction",
+      "healthState"::text AS "healthState"
+    FROM "GeographicSource"
+    WHERE "canonicalName" IN (${Prisma.join(SOURCE_NAMES)})
+    ORDER BY "canonicalName"
+  `;
+  const observations = await prisma.$queryRaw<readonly ObservationRow[]>`
+    SELECT
+      o."observationKey",
+      o."valueKind"::text AS "valueKind",
+      o."valueSchemaKey",
+      o."valueJson",
+      s."canonicalName" AS "sourceCanonicalName",
+      o."freshness"::text AS "freshness",
+      o."confidence"::text AS "confidence",
+      o."derivationMethod"::text AS "derivationMethod",
+      o."reviewStatus"::text AS "reviewStatus",
+      o."publicVisibility"::text AS "publicVisibility"
+    FROM "GeographicObservation" o
+    LEFT JOIN "GeographicSource" s ON s.id = o."sourceId"
+    WHERE o."objectId" = ${objectId}
+    ORDER BY o."observationKey"
+  `;
+  const eligibility = await prisma.$queryRaw<readonly EligibilityRow[]>`
+    SELECT
+      "internalUse",
+      "searchEligible",
+      "mapEligible",
+      "publicPageEligible",
+      "indexingEligible",
+      "propertyEnrichment",
+      "marketAnalytics"
+    FROM "GeographicEligibility"
+    WHERE "objectId" = ${objectId}
+  `;
+  const [relationships] = await prisma.$queryRaw<readonly [{
+    relationship_count: number;
+    property_relationship_count: number;
+  }]>`
+    SELECT
+      (SELECT count(*)::int FROM "GeographicRelationship" WHERE "sourceObjectId" = ${objectId} OR "targetObjectId" = ${objectId}) AS relationship_count,
+      (SELECT count(*)::int FROM "PropertyGeographicRelationship" WHERE "geographicObjectId" = ${objectId}) AS property_relationship_count
+  `;
+
+  return [
+    compareAliases(aliases, contract),
+    compareSources(sources, contract),
+    compareObservations(observations, contract),
+    compareEligibility(eligibility, contract),
+    relationships.relationship_count === 0 && relationships.property_relationship_count === 0,
+  ].filter((matches) => !matches).length;
+}
+
+async function readOrphanCompanionConflictCount(prisma: PrismaClient): Promise<number> {
+  const [conflicts] = await prisma.$queryRaw<readonly [{ companion_conflicts: number }]>`
+    SELECT
+      (
+        SELECT count(*)::int
+        FROM "GeographicAlias"
+        WHERE "normalizedValue" IN ('co', 'state of colorado')
+      ) +
+      (
+        SELECT count(*)::int
+        FROM "GeographicObservation"
+        WHERE "observationKey" LIKE 'gof.wave3.colorado.%'
+          OR "valueSchemaKey" = 'gof.wave3.colorado.evidence.v1'
+      ) +
+      (
+        SELECT count(*)::int
+        FROM "GeographicSource"
+        WHERE "canonicalName" = 'State of Colorado'
+          AND (
+            "sourceClass"::text <> 'GOVERNMENT'
+            OR "authorityLevel"::text <> 'AUTHORITATIVE'
+            OR "defaultUpdateCadence"::text <> 'EVENT_DRIVEN'
+            OR "publicDisplayRestriction" IS DISTINCT FROM true
+          )
+      ) AS companion_conflicts
+  `;
+  return conflicts.companion_conflicts;
+}
+
+function compareAliases(rows: readonly AliasRow[], contract: GofWave3ColoradoPersistenceContract): boolean {
+  const expected = contract.aliases.map((alias) => canonicalString({
+    aliasText: alias.aliasText,
+    normalizedValue: alias.normalizedValue,
+    aliasType: alias.aliasType,
+    language: alias.language,
+    lifecycleStatus: alias.lifecycleStatus,
+    sourceCanonicalName: alias.sourceRef,
+  })).sort();
+  const actual = rows.map((alias) => canonicalString(alias)).sort();
+  return arraysEqual(actual, expected);
+}
+
+function compareSources(rows: readonly SourceRow[], contract: GofWave3ColoradoPersistenceContract): boolean {
+  const expected = contract.sources.map((source) => canonicalString(source)).sort();
+  const actual = rows.map((source) => canonicalString(source)).sort();
+  return arraysEqual(actual, expected);
+}
+
+function compareObservations(rows: readonly ObservationRow[], contract: GofWave3ColoradoPersistenceContract): boolean {
+  const expected = contract.observations.map((observation) => canonicalString({
+    observationKey: observation.observationKey,
+    valueKind: observation.valueKind,
+    valueSchemaKey: observation.valueSchemaKey,
+    valueJson: observation.valueJson,
+    sourceCanonicalName: observation.sourceRef,
+    freshness: observation.freshness,
+    confidence: observation.confidence,
+    derivationMethod: observation.derivationMethod,
+    reviewStatus: observation.reviewStatus,
+    publicVisibility: observation.publicVisibility,
+  })).sort();
+  const actual = rows.map((observation) => canonicalString(observation)).sort();
+  return arraysEqual(actual, expected);
+}
+
+function compareEligibility(rows: readonly EligibilityRow[], contract: GofWave3ColoradoPersistenceContract): boolean {
+  return rows.length === GOF_WAVE_3_WRITE_CEILING.eligibilityRows && canonicalString(rows[0]) === canonicalString(contract.eligibility);
+}
+
+function canonicalString(value: unknown): string {
+  if (value === null || typeof value !== "object") return JSON.stringify(value);
+  if (Array.isArray(value)) return `[${value.map((item) => canonicalString(item)).join(",")}]`;
+  const record = value as Record<string, unknown>;
+  return `{${Object.keys(record).sort().map((key) => `${JSON.stringify(key)}:${canonicalString(record[key])}`).join(",")}}`;
+}
+
+function arraysEqual(left: readonly string[], right: readonly string[]): boolean {
+  return left.length === right.length && left.every((value, index) => value === right[index]);
 }
 
 function assertControls(controls: GofWave3bExecutionControls, contract: GofWave3ColoradoPersistenceContract): void {

@@ -205,11 +205,11 @@ async function assertProductionBoundary(): Promise<void> {
         (SELECT count(*)::int FROM "GeographicObject" WHERE "canonicalName" = 'Colorado') AS colorado_named_objects
     `;
     const counts = rows[0];
-    assert.equal(counts.geographic_objects, 1);
+    assert.equal(counts.geographic_objects, 2);
     assert.equal(counts.geographic_relationships, 0);
     assert.equal(counts.property_geographic_relationships, 0);
-    assert.equal(counts.state_objects, 0);
-    assert.equal(counts.colorado_named_objects, 0);
+    assert.equal(counts.state_objects, 1);
+    assert.equal(counts.colorado_named_objects, 1);
 
     const thorntonRows = await prisma.$queryRaw<readonly [{
       id: string;

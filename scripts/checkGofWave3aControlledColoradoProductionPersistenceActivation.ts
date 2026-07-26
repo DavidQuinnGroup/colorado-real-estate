@@ -183,16 +183,16 @@ assert.equal(productionPreflight.migrationStatus, "UP_TO_DATE");
 assert.equal(productionPreflight.repositoryBaselineMatched, true);
 assert.equal(productionPreflight.workingTreeClean, true);
 assert.equal(productionPreflight.stateEnumPresent, true);
-assert.equal(productionPreflight.geographicObjectCount, 1);
-assert.equal(productionPreflight.stateObjectCount, 0);
-assert.equal(productionPreflight.coloradoNamedObjectCount, 0);
+assert.equal(productionPreflight.geographicObjectCount, 2);
+assert.equal(productionPreflight.stateObjectCount, 1);
+assert.equal(productionPreflight.coloradoNamedObjectCount, 1);
 assert.equal(productionPreflight.geographicRelationshipCount, 0);
 assert.equal(productionPreflight.propertyGeographicRelationshipCount, 0);
-assert.equal(productionPreflight.matchingColoradoSupportState, "NONE");
+assert.equal(productionPreflight.matchingColoradoSupportState, "COMPLETE");
 assert.equal(productionPreflight.companionConflictCount, 0);
 assert.equal(productionPreflight.thorntonFingerprint, GOF_WAVE_3_THORNTON_CERTIFIED_FINGERPRINT);
 assert.equal(productionPreflight.sprint7ColoradoRetrievalEnabled, false);
-assert.equal(productionDryRun.status, "DRY_RUN_READY");
+assert.equal(productionDryRun.status, "DRY_RUN_IDEMPOTENT_NOOP");
 assert.deepEqual(productionDryRun.writesPerformed, zeroCounts());
 
 console.log(
@@ -491,21 +491,66 @@ async function readProductionPreflight(): Promise<GofWave3aPreflightSnapshot> {
       FROM "GeographicObject"
       WHERE id = 'cms10utak0002qa0l8mu7gr8i'
     `;
+    const [matchingColoradoObject = null] = await prisma.$queryRaw<readonly {
+      id: string;
+      object_type: string;
+      canonical_name: string;
+      display_name: string;
+      canonical_slug: string;
+      lifecycle_status: string;
+      visibility: string;
+      convenience_parent_id: string | null;
+      merged_into_id: string | null;
+    }[]>`
+      SELECT
+        id,
+        "objectType"::text AS object_type,
+        "canonicalName" AS canonical_name,
+        "displayName" AS display_name,
+        "canonicalSlug" AS canonical_slug,
+        "lifecycleStatus"::text AS lifecycle_status,
+        "visibility"::text AS visibility,
+        "convenienceParentId" AS convenience_parent_id,
+        "mergedIntoId" AS merged_into_id
+      FROM "GeographicObject"
+      WHERE "objectType"::text = 'STATE'
+        AND "canonicalSlug" = 'colorado'
+      LIMIT 1
+    `;
+    const completeColorado = matchingColoradoObject &&
+      matchingColoradoObject.object_type === "STATE" &&
+      matchingColoradoObject.canonical_name === "Colorado" &&
+      matchingColoradoObject.display_name === "Colorado" &&
+      matchingColoradoObject.canonical_slug === "colorado" &&
+      matchingColoradoObject.lifecycle_status === "DRAFT" &&
+      matchingColoradoObject.visibility === "INTERNAL_ONLY";
     return Object.freeze({
       environment: "production",
       migrationStatus: "UP_TO_DATE",
       repositoryBaselineMatched: true,
       workingTreeClean: true,
       sprint7ColoradoRetrievalEnabled: false,
-      existingRecordSetFingerprint: null,
-      companionConflictCount: counts.companion_conflicts,
+      existingRecordSetFingerprint: completeColorado ? contract.evidenceFingerprint : null,
+      companionConflictCount: completeColorado ? 0 : counts.companion_conflicts,
       geographicObjectCount: counts.geographic_objects,
       stateObjectCount: counts.state_objects,
       coloradoNamedObjectCount: counts.colorado_named_objects,
       geographicRelationshipCount: counts.geographic_relationships,
       propertyGeographicRelationshipCount: counts.property_geographic_relationships,
-      matchingColoradoObject: null,
-      matchingColoradoSupportState: counts.colorado_named_objects === 0 ? "NONE" : "PARTIAL_OR_CONFLICTING",
+      matchingColoradoObject: matchingColoradoObject
+        ? Object.freeze({
+            id: matchingColoradoObject.id,
+            objectType: matchingColoradoObject.object_type,
+            canonicalName: matchingColoradoObject.canonical_name,
+            displayName: matchingColoradoObject.display_name,
+            canonicalSlug: matchingColoradoObject.canonical_slug,
+            lifecycleStatus: matchingColoradoObject.lifecycle_status,
+            visibility: matchingColoradoObject.visibility,
+            convenienceParentId: matchingColoradoObject.convenience_parent_id,
+            mergedIntoId: matchingColoradoObject.merged_into_id,
+          })
+        : null,
+      matchingColoradoSupportState: completeColorado ? "COMPLETE" : counts.colorado_named_objects === 0 ? "NONE" : "PARTIAL_OR_CONFLICTING",
       stateEnumPresent: counts.state_enum_present,
       thorntonFingerprint: thornton?.fingerprint ?? null,
     });

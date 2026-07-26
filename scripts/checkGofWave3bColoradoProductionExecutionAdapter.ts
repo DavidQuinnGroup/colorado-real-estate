@@ -160,9 +160,9 @@ for (const runtimeRoot of ["app", "components", "lib/search", "lib/mls", "lib/ty
 }
 
 const production = await readProductionBaseline();
-assert.equal(production.geographicObjectCount, 1);
-assert.equal(production.stateObjectCount, 0);
-assert.equal(production.coloradoNamedObjectCount, 0);
+assert.equal(production.geographicObjectCount, 2);
+assert.equal(production.stateObjectCount, 1);
+assert.equal(production.coloradoNamedObjectCount, 1);
 assert.equal(production.geographicRelationshipCount, 0);
 assert.equal(production.propertyGeographicRelationshipCount, 0);
 assert.equal(production.stateEnumPresent, true);
@@ -173,11 +173,21 @@ assert.equal(evaluateGofWave3DryRun({
   coloradoNamedObjectCount: production.coloradoNamedObjectCount,
   geographicRelationshipCount: production.geographicRelationshipCount,
   propertyGeographicRelationshipCount: production.propertyGeographicRelationshipCount,
-  matchingColoradoObject: null,
-  matchingColoradoSupportState: "NONE",
+  matchingColoradoObject: {
+    id: "DATABASE_GENERATED_ON_AUTHORIZED_EXECUTION",
+    objectType: "STATE",
+    canonicalName: "Colorado",
+    displayName: "Colorado",
+    canonicalSlug: "colorado",
+    lifecycleStatus: "DRAFT",
+    visibility: "INTERNAL_ONLY",
+    convenienceParentId: null,
+    mergedIntoId: null,
+  },
+  matchingColoradoSupportState: "COMPLETE",
   stateEnumPresent: production.stateEnumPresent,
   thorntonFingerprint: production.thorntonFingerprint,
-}).status, "DRY_RUN_READY");
+}).status, "DRY_RUN_IDEMPOTENT_NOOP");
 
 console.log("[gof-wave-3b-colorado-production-execution-adapter] ok: real Prisma adapter surface, dry-run terminal command, explicit execution controls, mocked Prisma transaction/rollback/idempotency/conflict behavior, zero relationships, retrieval isolation, runtime isolation, and read-only production preflight passed.");
 
@@ -232,9 +242,9 @@ type MockOptions = {
 
 type MockState = {
   objects: Array<Record<string, string | null>>;
-  aliases: Array<Record<string, string>>;
-  sources: Array<Record<string, string>>;
-  observations: Array<Record<string, string>>;
+  aliases: Array<Record<string, string | null>>;
+  sources: Array<Record<string, string | boolean>>;
+  observations: Array<Record<string, unknown>>;
   eligibility: Array<Record<string, string | boolean>>;
   relationships: unknown[];
   propertyRelationships: unknown[];
@@ -286,7 +296,6 @@ function makeClient(getState: () => MockState, setState: (state: MockState) => v
           geographic_relationships: state.relationships.length,
           property_geographic_relationships: state.propertyRelationships.length,
           state_enum_present: true,
-          companion_conflicts: options.companionConflictCount ?? 0,
         }]);
       }
       if (sql.includes('FROM "GeographicObject"') && sql.includes('"objectType"::text = \'STATE\'') && sql.includes('"canonicalSlug" = \'colorado\'')) {
@@ -310,18 +319,64 @@ function makeClient(getState: () => MockState, setState: (state: MockState) => v
       if (sql.includes("AS fingerprint")) {
         return Promise.resolve([{ fingerprint: GOF_WAVE_3_THORNTON_CERTIFIED_FINGERPRINT }]);
       }
-      if (sql.includes("AS alias_count")) {
+      if (sql.includes('FROM "GeographicAlias" a')) {
         const objectId = String(values[0]);
-        const eligibility = state.eligibility.find((item) => item.objectId === objectId);
+        return Promise.resolve(state.aliases.filter((item) => item.objectId === objectId).map((alias) => ({
+          aliasText: alias.aliasText,
+          normalizedValue: alias.normalizedValue,
+          aliasType: alias.aliasType,
+          language: alias.language,
+          lifecycleStatus: alias.lifecycleStatus,
+          sourceCanonicalName: state.sources.find((source) => source.id === alias.sourceId)?.canonicalName ?? null,
+        })));
+      }
+      if (sql.includes('FROM "GeographicSource"') && sql.includes('"canonicalName" IN')) {
+        return Promise.resolve(state.sources.map((source) => ({
+          canonicalName: source.canonicalName,
+          sourceClass: source.sourceClass,
+          authorityLevel: source.authorityLevel,
+          accessMethod: source.accessMethod,
+          defaultUpdateCadence: source.defaultUpdateCadence,
+          licensingRestriction: source.licensingRestriction,
+          publicDisplayRestriction: source.publicDisplayRestriction,
+          healthState: source.healthState,
+        })));
+      }
+      if (sql.includes('FROM "GeographicObservation" o')) {
+        const objectId = String(values[0]);
+        return Promise.resolve(state.observations.filter((item) => item.objectId === objectId).map((observation) => ({
+          observationKey: observation.observationKey,
+          valueKind: observation.valueKind,
+          valueSchemaKey: observation.valueSchemaKey,
+          valueJson: observation.valueJson,
+          sourceCanonicalName: state.sources.find((source) => source.id === observation.sourceId)?.canonicalName ?? null,
+          freshness: observation.freshness,
+          confidence: observation.confidence,
+          derivationMethod: observation.derivationMethod,
+          reviewStatus: observation.reviewStatus,
+          publicVisibility: observation.publicVisibility,
+        })));
+      }
+      if (sql.includes('FROM "GeographicEligibility"') && sql.includes('"internalUse"')) {
+        const objectId = String(values[0]);
+        return Promise.resolve(state.eligibility.filter((item) => item.objectId === objectId).map((item) => ({
+          internalUse: item.internalUse,
+          searchEligible: item.searchEligible,
+          mapEligible: item.mapEligible,
+          publicPageEligible: item.publicPageEligible,
+          indexingEligible: item.indexingEligible,
+          propertyEnrichment: item.propertyEnrichment,
+          marketAnalytics: item.marketAnalytics,
+        })));
+      }
+      if (sql.includes("AS relationship_count")) {
         return Promise.resolve([{
-          alias_count: state.aliases.filter((item) => item.objectId === objectId).length,
-          source_count: state.sources.length,
-          observation_count: state.observations.filter((item) => item.objectId === objectId).length,
-          eligibility_count: eligibility ? 1 : 0,
-          relationship_count: 0,
-          property_relationship_count: 0,
-          all_eligibility_false: eligibility ? Object.entries(eligibility).filter(([key]) => key !== "objectId").every(([, value]) => value === false) : false,
+          relationship_count: state.relationships.length,
+          property_relationship_count: state.propertyRelationships.length,
         }]);
+      }
+      if (sql.includes("AS companion_conflicts")) {
+        return Promise.resolve([{ companion_conflicts: options.companionConflictCount ?? 0 }]);
       }
       throw new Error(`unhandled mocked query: ${sql}`);
     },
@@ -339,7 +394,17 @@ function makeClient(getState: () => MockState, setState: (state: MockState) => v
         const state = getState();
         const existing = state.sources.find((item) => item.canonicalName === where.canonicalName);
         if (existing) return Promise.resolve({ id: existing.id });
-        const row = { id: `mock-source-${state.sources.length + 1}`, canonicalName: String(create.canonicalName) };
+        const row = {
+          id: `mock-source-${state.sources.length + 1}`,
+          canonicalName: String(create.canonicalName),
+          sourceClass: String(create.sourceClass),
+          authorityLevel: String(create.authorityLevel),
+          accessMethod: String(create.accessMethod),
+          defaultUpdateCadence: String(create.defaultUpdateCadence),
+          licensingRestriction: Boolean(create.licensingRestriction),
+          publicDisplayRestriction: Boolean(create.publicDisplayRestriction),
+          healthState: String(create.healthState),
+        };
         state.sources.push(row);
         return Promise.resolve({ id: row.id });
       },
@@ -351,6 +416,10 @@ function makeClient(getState: () => MockState, setState: (state: MockState) => v
           objectId: String(data.objectId),
           aliasText: String(data.aliasText),
           normalizedValue: String(data.normalizedValue),
+          aliasType: String(data.aliasType),
+          language: data.language ? String(data.language) : null,
+          lifecycleStatus: String(data.lifecycleStatus),
+          sourceId: data.sourceId ? String(data.sourceId) : null,
         });
         return Promise.resolve({});
       },
@@ -365,6 +434,15 @@ function makeClient(getState: () => MockState, setState: (state: MockState) => v
           id: `mock-observation-${state.observations.length + 1}`,
           objectId: String(data.objectId),
           observationKey: String(data.observationKey),
+          valueKind: String(data.valueKind),
+          valueSchemaKey: String(data.valueSchemaKey),
+          valueJson: data.valueJson,
+          sourceId: data.sourceId ? String(data.sourceId) : null,
+          freshness: String(data.freshness),
+          confidence: String(data.confidence),
+          derivationMethod: String(data.derivationMethod),
+          reviewStatus: String(data.reviewStatus),
+          publicVisibility: String(data.publicVisibility),
         });
         return Promise.resolve({});
       },

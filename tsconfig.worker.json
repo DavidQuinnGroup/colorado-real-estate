@@ -60,6 +60,7 @@
     "scripts/checkGofWave3ControlledColoradoProductionPersistence.ts",
     "scripts/checkGofWave3aControlledColoradoProductionPersistenceActivation.ts",
     "scripts/checkGofWave3bColoradoProductionExecutionAdapter.ts",
+    "scripts/checkGofWave3cColoradoIdempotencyRecovery.ts",
     "scripts/checkGeographicIntelligenceObjectSafety.ts",
     "scripts/checkGkcFixtureGovernance.ts",
     "scripts/checkGmaReadOnlyMappingPreview.ts",

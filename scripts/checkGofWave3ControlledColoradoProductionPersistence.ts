@@ -197,15 +197,15 @@ assert.match(report, /CUSTOMER VISIBILITY STATUS: `NOT_AUTHORIZED`/);
 
 const productionState = await readProductionState();
 const productionDryRun = evaluateGofWave3DryRun(productionState);
-assert.equal(productionDryRun.status, "DRY_RUN_READY");
+assert.equal(productionDryRun.status, "DRY_RUN_IDEMPOTENT_NOOP");
 assert.deepEqual(productionDryRun.writesPerformed, zeroWrites());
-assert.deepEqual(productionDryRun.proposedWritesIfAuthorized, GOF_WAVE_3_WRITE_CEILING);
-assert.equal(productionState.geographicObjectCount, 1);
-assert.equal(productionState.stateObjectCount, 0);
-assert.equal(productionState.coloradoNamedObjectCount, 0);
+assert.deepEqual(productionDryRun.proposedWritesIfAuthorized, zeroWrites());
+assert.equal(productionState.geographicObjectCount, 2);
+assert.equal(productionState.stateObjectCount, 1);
+assert.equal(productionState.coloradoNamedObjectCount, 1);
 assert.equal(productionState.geographicRelationshipCount, 0);
 assert.equal(productionState.propertyGeographicRelationshipCount, 0);
-assert.equal(productionState.matchingColoradoSupportState, "NONE");
+assert.equal(productionState.matchingColoradoSupportState, "COMPLETE");
 assert.equal(productionState.stateEnumPresent, true);
 assert.equal(productionState.thorntonFingerprint, GOF_WAVE_3_THORNTON_CERTIFIED_FINGERPRINT);
 
