@@ -27,6 +27,9 @@ import {
 const gisFiles = listSourceFiles("lib/geographic-intelligence");
 const packageJson = fs.readFileSync("package.json", "utf8");
 const workerTsconfig = fs.readFileSync("tsconfig.worker.json", "utf8");
+const separatelyAuthorizedSprint6SourceReferenceFiles = new Set([
+  "lib/geographic-intelligence/fixtures/gisSprint6ProviderDueDiligenceFixtures.ts",
+]);
 
 assert.equal(GIS_1_0_PROGRAM_AUTHORIZATION, "AUTHORIZED_FOR_ARCHITECTURE_AND_IMPLEMENTATION_PLANNING");
 assert.equal(GIS_1_0_SPRINT_1_CLASSIFICATION, "GEOGRAPHIC_INTELLIGENCE_ARCHITECTURE_FOUNDATION");
@@ -38,7 +41,9 @@ for (const file of gisFiles) {
   assert.equal(/\bprisma\./.test(contents), false, `GIS architecture must not call Prisma: ${file}`);
   assert.equal(/(?:^|[\s;])(?:SELECT|INSERT\s+INTO|UPDATE\s+\w|DELETE\s+FROM|CREATE\s+TABLE|ALTER\s+TABLE|DROP\s+TABLE)\b/i.test(contents), false, `GIS architecture must not contain SQL behavior: ${file}`);
   assert.equal(/\bfetch\s*\(/.test(contents), false, `GIS architecture must not fetch external resources: ${file}`);
-  assert.equal(/http:\/\/|https:\/\//i.test(contents), false, `GIS architecture must not contain external URLs: ${file}`);
+  if (!separatelyAuthorizedSprint6SourceReferenceFiles.has(file)) {
+    assert.equal(/http:\/\/|https:\/\//i.test(contents), false, `GIS architecture must not contain external URLs: ${file}`);
+  }
   assert.equal(/process\.env|DATABASE_URL|DIRECT_URL|SUPABASE|TYPESENSE|RESEND|SECRET|TOKEN|PASSWORD|API_KEY/i.test(contents), false, `GIS architecture must not read credentials or environment: ${file}`);
   assert.equal(/playwright|puppeteer|chromium|browser/i.test(contents), false, `GIS architecture must not use browser automation: ${file}`);
   assert.equal(/mayScrape:\s*true|scrape\s*\(|crawler\s*\(|crawl\s*\(/i.test(contents), false, `GIS architecture must not scrape: ${file}`);

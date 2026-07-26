@@ -10,7 +10,7 @@ Product:
 
 ## Latest New-Chat Handoff
 
-PROJECT ATLAS(tm) / GIS 1.0 Sprint 5 provider evaluation governance handoff, July 26, 2026:
+PROJECT ATLAS(tm) / GIS 1.0 Sprint 6 controlled provider due diligence handoff, July 26, 2026:
 
 Workspace:
 
@@ -36,7 +36,9 @@ Current GIS 1.0 state:
 - Sprint 4 final state: `GIS_1_0_SPRINT_4_CONTROLLED_FIXTURE_PROVIDER_ADAPTER_CERTIFIED`.
 - Sprint 5 authorization: `GIS_1_0_SPRINT_5_PROVIDER_EVALUATION_AND_SELECTION_GOVERNANCE_AUTHORIZED`.
 - Sprint 5 final state: `GIS_1_0_SPRINT_5_PROVIDER_EVALUATION_AND_SELECTION_GOVERNANCE_CERTIFIED`.
-- Sprint 6 state: `NOT_AUTHORIZED`.
+- Sprint 6 authorization: `GIS_1_0_SPRINT_6_CONTROLLED_PROVIDER_DUE_DILIGENCE_AUTHORIZED`.
+- Sprint 6 final state: `GIS_1_0_SPRINT_6_CONTROLLED_PROVIDER_DUE_DILIGENCE_CERTIFIED`.
+- Sprint 7 state: `NOT_AUTHORIZED`.
 - Current implementation commit: verify with `git log -1 --oneline` after resuming.
 
 Sprint 1 foundation:
@@ -131,7 +133,27 @@ Sprint 1 foundation:
 - Sprint 5 proposed minimum provider set: `GIS-S5-MINIMUM-SET-7d0b83d2f24a2369`, classified `PROPOSED_MINIMUM_PROVIDER_SET_FOR_DUE_DILIGENCE`, provider use authorized `false`.
 - Sprint 5 deterministic fingerprint: `f79beea89c956509493030b15b3d94bdc4495d9618fd72d97138ca363be74691`.
 - Sprint 5 production/external effect: deployments `0`, migrations `0`, production reads `0`, production writes `0`, external calls `0`, provider contacts `0`, accounts created `0`, credentials used `0`, contracts accepted `0`, purchases `0`, provider connections `0`, acquisitions `0`, runtime activations `0`, downstream integrations `0`, customer-visible changes `0`, relationships created `0`.
-- Recommended next governed phase if separately authorized: GIS 1.0 Sprint 6 Controlled Provider Due Diligence.
+- Sprint 6 implemented contracts:
+  - `lib/geographic-intelligence/providerDueDiligenceContract.ts`
+  - `lib/geographic-intelligence/providerDueDiligenceValidation.ts`
+  - `lib/geographic-intelligence/fixtures/gisSprint6ProviderDueDiligenceFixtures.ts`
+- Sprint 6 implemented validation:
+  - `npm run check:geographic-intelligence-provider-due-diligence-safety`
+  - `npm run certify:geographic-intelligence-provider-due-diligence`
+- Sprint 6 implemented documentation:
+  - `docs/project-atlas/geographic-intelligence/GIS-1.0-CONTROLLED-PROVIDER-DUE-DILIGENCE-STANDARD.md`
+  - `docs/project-atlas/geographic-intelligence/GIS-1.0-SPRINT-6-CONTROLLED-PROVIDER-DUE-DILIGENCE.md`
+  - `docs/project-atlas/geographic-intelligence/GIS-1.0-ENVIRONMENTAL-PROVIDER-DUE-DILIGENCE-REGISTER.md`
+- Sprint 6 evidence subjects: Colorado Geological Survey, U.S. Geological Survey, FEMA flood mapping, and authoritative Colorado air-quality sources.
+- Sprint 6 official source references: `11`.
+- Sprint 6 pilot-authorization-review candidates: `colorado-geological-survey`, `u-s-geological-survey`.
+- Sprint 6 fallback candidate: `fema-flood-map-source-class`.
+- Sprint 6 supplemental candidate: `air-quality-source-class`.
+- Sprint 6 proposed minimum provider set: `colorado-geological-survey`, `u-s-geological-survey`, `fema-flood-map-source-class`, `air-quality-source-class`.
+- Sprint 6 deterministic fingerprint: `8f436ae895b274528a67859b618e372fc55102a08ae3c28192202fee35650d8a`.
+- Sprint 6 production/external effect: deployments `0`, migrations `0`, production reads `0`, production writes `0`, provider contacts `0`, forms submitted `0`, accounts created `0`, registrations `0`, credentials requested `0`, credentials used `0`, terms accepted `0`, contracts accepted `0`, purchases `0`, restricted downloads `0`, provider data acquisitions `0`, live adapters `0`, runtime activations `0`, downstream integrations `0`, customer-visible changes `0`, relationships created `0`.
+- Sprint 7 remains `NOT_AUTHORIZED`; provider use, provider approval, provider contact, accounts, credentials, terms acceptance, contracts, purchases, operational acquisition, live adapters, persistence, retrieval, enterprise consumption, runtime, downstream integration, customer visibility, Colorado runtime consumption, geographic relationships, hierarchy inference, and GOF Wave 5 remain `NOT_AUTHORIZED`.
+- Recommended next governed phase if separately authorized: GIS 1.0 Sprint 7 Controlled Provider Pilot Authorization and Design. Do not begin it without separate explicit authorization.
 
 Current EKCP Sprint 2R state:
 
