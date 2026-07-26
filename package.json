@@ -51,6 +51,8 @@
     "check:gof-wave-3c-colorado-idempotency-recovery": "npm run worker:build && node dist/scripts/checkGofWave3cColoradoIdempotencyRecovery.js",
     "check:gof-wave-4-colorado-production-retrieval-readiness": "npm run worker:build && node dist/scripts/checkGofWave4ColoradoProductionRetrievalReadiness.js",
     "check:geographic-intelligence-object-safety": "npm run worker:build && node dist/scripts/checkGeographicIntelligenceObjectSafety.js",
+    "check:geographic-intelligence-architecture-safety": "npm run worker:build && node dist/scripts/checkGeographicIntelligenceArchitectureSafety.js",
+    "certify:geographic-intelligence-architecture-foundation": "npm run worker:build && node dist/scripts/certifyGeographicIntelligenceArchitectureFoundation.js",
     "check:gkc-fixture-governance": "npm run worker:build && node dist/scripts/checkGkcFixtureGovernance.js",
     "check:gma-read-only-mapping-preview": "npm run worker:build && node dist/scripts/checkGmaReadOnlyMappingPreview.js",
     "check:gma-internal-mapping-review-queue": "npm run worker:build && node dist/scripts/checkGmaInternalMappingReviewQueue.js",

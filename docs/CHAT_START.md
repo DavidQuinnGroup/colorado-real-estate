@@ -10,7 +10,7 @@ Product:
 
 ## Latest New-Chat Handoff
 
-PROJECT ATLAS(tm) / EIP Sprint 7 production-internal read adapter handoff, July 25, 2026:
+PROJECT ATLAS(tm) / GIS 1.0 Sprint 1 architecture foundation handoff, July 26, 2026:
 
 Workspace:
 
@@ -23,6 +23,44 @@ git status --short --branch
 git rev-parse HEAD
 git rev-parse origin/main
 ```
+
+Current GIS 1.0 state:
+
+- Program: `GIS_1.0`.
+- Authorization: `AUTHORIZED_FOR_ARCHITECTURE_AND_IMPLEMENTATION_PLANNING`.
+- Sprint 1 classification: `GEOGRAPHIC_INTELLIGENCE_ARCHITECTURE_FOUNDATION`.
+- Sprint 1 final state: `GIS_1_0_SPRINT_1_ARCHITECTURE_FOUNDATION_CERTIFIED`.
+- Implemented contracts:
+  - `lib/geographic-intelligence/activationContract.ts`
+  - `lib/geographic-intelligence/domainContract.ts`
+  - `lib/geographic-intelligence/evidenceContract.ts`
+  - `lib/geographic-intelligence/observationContract.ts`
+  - `lib/geographic-intelligence/derivedIntelligenceContract.ts`
+  - `lib/geographic-intelligence/providerAdapterContract.ts`
+  - `lib/geographic-intelligence/domainRegistry.ts`
+  - `lib/geographic-intelligence/fixtures/gisSprint1Fixtures.ts`
+- Implemented validation:
+  - `npm run check:geographic-intelligence-architecture-safety`
+  - `npm run certify:geographic-intelligence-architecture-foundation`
+- Implemented documentation:
+  - `docs/project-atlas/geographic-intelligence/GIS-1.0-ARCHITECTURE-AND-IMPLEMENTATION-CHARTER.md`
+  - `docs/project-atlas/geographic-intelligence/GIS-1.0-SPRINT-1-GEOGRAPHIC-INTELLIGENCE-ARCHITECTURE-FOUNDATION.md`
+  - `docs/project-atlas/geographic-intelligence/GIS-1.0-IMPLEMENTATION-ROADMAP.md`
+- Initial domains are foundation-only and fail-closed: `COMMUNITY_INTELLIGENCE`, `EDUCATION_INTELLIGENCE`, `TRANSPORTATION_INTELLIGENCE`, `ENVIRONMENTAL_INTELLIGENCE`, `ECONOMIC_INTELLIGENCE`, `INFRASTRUCTURE_INTELLIGENCE`, `MARKET_INTELLIGENCE`, and `LIFESTYLE_INTELLIGENCE`.
+- Production effect: deployments `0`, migrations `0`, production writes `0`, external acquisitions `0`, runtime activations `0`, downstream integrations `0`, customer-visible changes `0`, relationships created `0`.
+- Retained prohibitions: no live providers, credentials, external APIs, scraping, browser automation, migrations, production writes, production retrieval, runtime activation, downstream integration, customer visibility, geographic relationships, hierarchy traversal, Colorado runtime consumption, or GOF Wave 5.
+- Recommended next governed phase if separately authorized: GIS 1.0 Sprint 2 Evidence and Provenance Foundation.
+
+Current EKCP Sprint 2R state:
+
+- Program: `EKCP_1.0_SPRINT_2R_COLORADO_ENTERPRISE_GEOGRAPHIC_CONSUMPTION_READINESS`.
+- Final classification: `EKCP_SPRINT_2R_CONSUMPTION_READINESS_CERTIFIED`.
+- Consumption-readiness classification: `ENTERPRISE_CONSUMPTION_READY_NOT_RUNTIME_ENABLED`.
+- Runtime consumption: not authorized.
+- Customer visibility: not authorized.
+- Relationships/hierarchy traversal: not authorized.
+- Search, Maps, Property Intelligence, AI, Executive Intelligence: not authorized.
+- GOF Wave 5: not authorized.
 
 Current Sprint 6 state:
 

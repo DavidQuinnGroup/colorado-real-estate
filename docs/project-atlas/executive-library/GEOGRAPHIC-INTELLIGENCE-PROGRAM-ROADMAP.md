@@ -38,6 +38,7 @@ Current program posture:
 - EIP 1.0 Sprint 6A.1 Runtime Dependency Separation Correction: certified and closed.
 - EIP 1.0 Sprint 7 Production-Internal Geographic Read Adapter: implemented pending deployed production read evidence.
 - EKCP 1.0 Sprint 1 Enterprise Geographic Consumer Adapter: certified and closed.
+- GIS 1.0 Sprint 1 Geographic Intelligence Architecture Foundation: certified and closed.
 - Internal geographic mapping, final canonical selection, runtime consumption, and customer activation remain unauthorized.
 
 ---
@@ -80,6 +81,7 @@ Current program posture:
 | EIP Sprint 6A.1 | Runtime Dependency Separation Correction | Separate reusable GMA preview fixtures from validation scripts so protected runtime code does not import repository-scanning check modules. | `CERTIFIED_AND_CLOSED` | Runtime dependency correction only; no customer activation |
 | EIP Sprint 7 | Production-Internal Geographic Read Adapter | Retrieve the certified Thornton production-internal pilot rows through a stable governed internal contract without customer activation. | `IMPLEMENTED_PENDING_DEPLOYED_PRODUCTION_READ_EVIDENCE` | Protected admin-only internal read; no runtime or customer activation |
 | EKCP Sprint 1 | Enterprise Geographic Consumer Adapter | Translate the neutral shared geographic-read contract into a reusable business-domain place profile for future enterprise consumers without integration, hierarchy operations, relationship operations, or activation. | `CERTIFIED_AND_CLOSED` | Internal consumer contract only; no Search, Map, AI, runtime, or customer activation |
+| GIS Sprint 1 | Geographic Intelligence Architecture Foundation | Establish provider-neutral geographic intelligence domains, subjects, evidence, observations, derived intelligence, provider-boundary, activation, fixture, safety, and certification architecture. | `CERTIFIED_AND_CLOSED` | Architecture and deterministic internal fixtures only; no provider, persistence, retrieval, runtime, downstream, customer, relationship, or GOF Wave 5 authorization |
 | EKCP Sprint 2 | Future Enterprise Geographic Consumption Capability | Any hierarchy, relationship, Search, Maps, Property Intelligence, AI, Executive Intelligence runtime, or customer activation capability after Sprint 1. | `NOT_AUTHORIZED` | Requires separate charter |
 | Future Sprint | Production-Internal Geographic Inspection Experience | Build a richer internal inspection experience over certified read-adapter results only after Sprint 7 certification. | `NOT_AUTHORIZED` | Internal inspection only |
 
@@ -116,6 +118,9 @@ Current program posture:
 | EIP Sprint 7 lessons learned | `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/EIP-1.0-SPRINT-7-LESSONS-LEARNED.md` | Implemented pending deployed production read evidence |
 | EKCP Sprint 1 enterprise geographic consumer adapter charter | `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/EKCP-1.0-SPRINT-1-ENTERPRISE-GEOGRAPHIC-CONSUMER-ADAPTER-CHARTER.md` | Authorized |
 | EKCP Sprint 1 enterprise geographic consumer adapter report | `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/EKCP-1.0-SPRINT-1-ENTERPRISE-GEOGRAPHIC-CONSUMER-ADAPTER.md` | Certified and closed |
+| GIS 1.0 architecture and implementation charter | `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/geographic-intelligence/GIS-1.0-ARCHITECTURE-AND-IMPLEMENTATION-CHARTER.md` | Authorized architecture and implementation planning |
+| GIS 1.0 Sprint 1 architecture foundation | `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/geographic-intelligence/GIS-1.0-SPRINT-1-GEOGRAPHIC-INTELLIGENCE-ARCHITECTURE-FOUNDATION.md` | Certified and closed |
+| GIS 1.0 implementation roadmap | `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/geographic-intelligence/GIS-1.0-IMPLEMENTATION-ROADMAP.md` | Planning roadmap |
 | Enterprise knowledge approval policy | `/Users/davidquinn/david-quinn-group/colorado-real-estate/docs/project-atlas/executive-library/ENTERPRISE-KNOWLEDGE-APPROVAL-POLICY.md` | Active internal policy fixture |
 
 ---
@@ -137,6 +142,7 @@ Current program posture:
 | Production runtime packaging gate | Sprint 6 dry-run retry and controlled execute | Sprint 6A and Sprint 6A.1 certified; no current packaging blocker |
 | Production-internal read gate | Any production GIO read adapter | Authorized only for EIP Sprint 7 single certified Thornton object; broad enumeration and customer activation remain unauthorized |
 | Enterprise consumption gate | Any enterprise service consumption of production-internal GIO read results | EKCP Sprint 1 creates a reusable internal contract over the neutral shared geographic-read contract only; Search, Maps, Property Intelligence, AI, hierarchy operations, relationship operations, runtime, and customer activation remain unauthorized |
+| GIS architecture gate | Any geographic intelligence domain, evidence, observation, derived intelligence, provider boundary, activation, or roadmap work | GIS Sprint 1 certified architecture contracts and deterministic fixtures only; provider acquisition, persistence, retrieval, runtime, downstream integration, customer visibility, relationships, Colorado runtime consumption, and GOF Wave 5 remain unauthorized |
 | Customer activation gate | Public GIO routes, search, maps, property pages, or content | Not authorized |
 
 ---
