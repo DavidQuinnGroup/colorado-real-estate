@@ -50,6 +50,8 @@ Wave 3B adds:
 
 The adapter consumes the certified Wave 3 persistence contract and implements a Prisma-backed Wave 3A transaction port. It exposes only the Colorado `STATE` activation path and does not expose a generic geographic-object write method.
 
+The `GeographicObject` `STATE` lookup/create path uses Prisma raw SQL inside the Prisma client/transaction boundary because the deployed generated Prisma client may reject newly added enum values before client regeneration. Companion source, alias, observation, and eligibility writes remain on Prisma model APIs.
+
 Implemented adapter capabilities:
 
 - read-only production preflight;

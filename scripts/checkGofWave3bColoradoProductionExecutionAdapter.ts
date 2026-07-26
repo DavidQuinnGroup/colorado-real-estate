@@ -133,6 +133,7 @@ for (const prohibited of ["app/api", "route.ts", "Search", "Maps", "Property Int
   assert.equal(adapterSource.includes(prohibited), false, `Wave 3B adapter source contains prohibited integration text: ${prohibited}`);
 }
 assert.equal(/geographicRelationship\.create|propertyGeographicRelationship\.create/.test(adapterSource), false);
+assert.equal(adapterSource.includes("geographicObject.create"), false, "Adapter must not route STATE object creation through generated Prisma enum validation.");
 assert.equal(adapterSource.includes("createGofWave3bPrismaPersistencePort"), true, "Real Prisma adapter port must exist.");
 assert.equal(commandSource.includes("--execute"), true, "Command must require explicit execute flag.");
 assert.equal(commandSource.includes("GOF_WAVE_3B_OPERATOR_AUTHORIZATION_TOKEN"), true, "Command must require an operator token outside source.");
@@ -287,6 +288,24 @@ function makeClient(getState: () => MockState, setState: (state: MockState) => v
           state_enum_present: true,
           companion_conflicts: options.companionConflictCount ?? 0,
         }]);
+      }
+      if (sql.includes('FROM "GeographicObject"') && sql.includes('"objectType"::text = \'STATE\'') && sql.includes('"canonicalSlug" = \'colorado\'')) {
+        return Promise.resolve(state.objects.filter((item) => item.objectType === "STATE" && item.canonicalSlug === "colorado").slice(0, 1));
+      }
+      if (sql.includes('INSERT INTO "GeographicObject"')) {
+        const id = String(values[0]);
+        state.objects.push({
+          id,
+          objectType: String(values[1]),
+          canonicalName: String(values[2]),
+          displayName: String(values[3]),
+          canonicalSlug: String(values[4]),
+          lifecycleStatus: String(values[5]),
+          visibility: String(values[6]),
+          convenienceParentId: values[7] === null ? null : String(values[7]),
+          mergedIntoId: values[8] === null ? null : String(values[8]),
+        });
+        return Promise.resolve([{ id }]);
       }
       if (sql.includes("AS fingerprint")) {
         return Promise.resolve([{ fingerprint: GOF_WAVE_3_THORNTON_CERTIFIED_FINGERPRINT }]);

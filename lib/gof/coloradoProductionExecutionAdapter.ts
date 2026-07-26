@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import { Prisma, type PrismaClient } from "@prisma/client";
 
 import {
@@ -93,6 +94,18 @@ type SupportRows = {
   all_eligibility_false: boolean;
 };
 
+type GeographicObjectRow = {
+  id: string;
+  objectType: string;
+  canonicalName: string;
+  displayName: string;
+  canonicalSlug: string;
+  lifecycleStatus: string;
+  visibility: string;
+  convenienceParentId: string | null;
+  mergedIntoId: string | null;
+};
+
 const ZERO_COUNTS: GofWave3PlannedWriteCounts = Object.freeze({
   geographicObjects: 0,
   aliases: 0,
@@ -183,19 +196,36 @@ function createTransactionWriter(tx: Prisma.TransactionClient): GofWave3aTransac
   return Object.freeze({
     async createColoradoObject(context: GofWave3aTransactionContext): Promise<{ id: string }> {
       const object = context.contract.object;
-      return tx.geographicObject.create({
-        data: {
-          objectType: object.objectType as never,
-          canonicalName: object.canonicalName,
-          displayName: object.displayName,
-          canonicalSlug: object.canonicalSlug,
-          lifecycleStatus: object.lifecycleStatus,
-          visibility: object.visibility,
-          convenienceParentId: object.convenienceParentId,
-          mergedIntoId: object.mergedIntoId,
-        },
-        select: { id: true },
-      });
+      const [row] = await tx.$queryRaw<readonly [{ id: string }]>`
+        INSERT INTO "GeographicObject" (
+          "id",
+          "objectType",
+          "canonicalName",
+          "displayName",
+          "canonicalSlug",
+          "lifecycleStatus",
+          "visibility",
+          "convenienceParentId",
+          "mergedIntoId",
+          "createdAt",
+          "updatedAt"
+        )
+        VALUES (
+          ${randomUUID()},
+          ${object.objectType}::"GeographicObjectType",
+          ${object.canonicalName},
+          ${object.displayName},
+          ${object.canonicalSlug},
+          ${object.lifecycleStatus}::"GeographicLifecycleStatus",
+          ${object.visibility}::"GeographicVisibility",
+          ${object.convenienceParentId},
+          ${object.mergedIntoId},
+          now(),
+          now()
+        )
+        RETURNING "id"
+      `;
+      return row;
     },
     async createSource(context: GofWave3aTransactionContext, index: number): Promise<void> {
       const source = context.contract.sources[index];
@@ -302,20 +332,22 @@ async function readPreflight(
           )
       ) AS companion_conflicts
   `;
-  const object = await prisma.geographicObject.findUnique({
-    where: { objectType_canonicalSlug: { objectType: "STATE" as never, canonicalSlug: "colorado" } },
-    select: {
-      id: true,
-      objectType: true,
-      canonicalName: true,
-      displayName: true,
-      canonicalSlug: true,
-      lifecycleStatus: true,
-      visibility: true,
-      convenienceParentId: true,
-      mergedIntoId: true,
-    },
-  });
+  const [object = null] = await prisma.$queryRaw<readonly GeographicObjectRow[]>`
+    SELECT
+      id,
+      "objectType"::text AS "objectType",
+      "canonicalName",
+      "displayName",
+      "canonicalSlug",
+      "lifecycleStatus"::text AS "lifecycleStatus",
+      "visibility"::text AS "visibility",
+      "convenienceParentId",
+      "mergedIntoId"
+    FROM "GeographicObject"
+    WHERE "objectType"::text = 'STATE'
+      AND "canonicalSlug" = 'colorado'
+    LIMIT 1
+  `;
   const [thornton] = await prisma.$queryRaw<readonly [{ fingerprint: string }]>`
     SELECT concat_ws('|', id, "objectType"::text, "canonicalName", "canonicalSlug", "lifecycleStatus"::text, "visibility"::text, to_char("updatedAt" AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"')) AS fingerprint
     FROM "GeographicObject"
