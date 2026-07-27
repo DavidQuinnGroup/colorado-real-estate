@@ -1,6 +1,6 @@
 # PROJECT ATLAS(tm) - CEP 1.0 Sprint 1 Search and Map Experience Baseline(tm)
 
-Status: `CEP_1_0_SPRINT_1_IMPLEMENTED_AND_READY_TO_PUSH_DEPLOYMENT_NOT_AUTHORIZED`
+Status: `CEP_1_0_SPRINT_1_CERTIFIED_AND_CLOSED`
 
 Date: July 26, 2026
 
@@ -8,22 +8,22 @@ Date: July 26, 2026
 
 CEP 1.0 Sprint 1 implements a controlled baseline improvement to the existing public Search and Map customer journey. The sprint clarifies how customers begin a search, understand active criteria, recover from zero results, interpret degraded fallback search posture, and understand map/list state without changing search semantics, result eligibility, ranking, persistence, database schema, provider access, AI behavior, GIS behavior, saved-search mutation behavior, alerts, CRM, seller leads, property inquiry, tour requests, or production deployment.
 
-Strongest permitted outcome:
+Final governed outcome:
 
-`CEP_1_0_SPRINT_1_IMPLEMENTED_AND_PUSHED_DEPLOYMENT_NOT_AUTHORIZED`
+`CEP_1_0_SPRINT_1_CERTIFIED_AND_CLOSED`
 
 ## 2. Sprint Status
 
 - Sprint identifier: `CEP_1_0_SPRINT_1_SEARCH_AND_MAP_EXPERIENCE_BASELINE`
-- Current implementation status: `IMPLEMENTED_LOCAL_VALIDATION_COMPLETE_READY_TO_PUSH`
-- Deployment status: `NOT_AUTHORIZED`
-- Production smoke status: `NOT_AUTHORIZED`
-- Production certification status: `NOT_AUTHORIZED`
-- Customer-visible certification: `NOT_AUTHORIZED`
+- Current implementation status: `IMPLEMENTED_AND_PUSHED`
+- Deployment status: `DEPLOYED_BY_EXISTING_AUTOMATION`
+- Production smoke status: `PASSED`
+- Production certification status: `CERTIFIED_AND_CLOSED`
+- Customer-visible certification: `CERTIFIED_FOR_SPRINT_1_SCOPE`
 
 ## 3. Authorization
 
-David explicitly authorized controlled repository implementation, local validation, documentation, commit, and push for CEP 1.0 Sprint 1. The authorization did not permit deployment, production activation, production mutation, external-service activation, database changes, provider connection, AI activation, GIS Sprint 9, or customer-visible production certification.
+David explicitly authorized controlled repository implementation, local validation, documentation, commit, and push for CEP 1.0 Sprint 1. David later authorized controlled verification of the deployment associated with commit `49bdef608222bef711d867d7e8feaeb65b6e8bec`, non-mutating production smoke testing, responsive and interaction review, certification documentation, and documentation-only commit and push. The certification authorization did not permit new implementation, remediation code, database mutation, environment changes, provider activation, AI activation, GIS Sprint 9, Sprint 2, or mutation-bearing customer workflows.
 
 ## 4. Baseline
 
@@ -252,29 +252,29 @@ Sprint 1 did not activate new analytics or persistence. It prepared deterministi
 
 ## 20. Remaining Gaps
 
-- No production deployment or production certification was authorized.
-- No production smoke was performed.
+- Production deployment and production certification review were completed only after separate authorization.
+- Production smoke passed against the governed production domain.
 - Dedicated `/search` still does not use map bounds to reload results; the sprint clarifies this rather than changing semantics.
 - Future measurement requires separate analytics authorization.
 - Property comparison, saved-property persistence, mortgage tools, geographic customer context, and AI guidance remain future programs.
 
 ## 21. Production-Readiness Assessment
 
-Local implementation is designed for production-readiness review but is not production-certified. Production deployment and production certification require a separate executive decision.
+Sprint 1 is production-certified and closed for the implemented Search and Map Experience Baseline scope. This certification does not authorize Sprint 2, new implementation, provider connection, AI activation, GIS Sprint 9, database changes, analytics activation, or mutation-bearing customer workflow testing.
 
 ## 22. Deployment Authorization State
 
-Deployment remains `NOT_AUTHORIZED`.
+Deployment was completed by existing repository automation after the authorized Sprint 1 implementation push.
 
-No Vercel action, production smoke, production mutation, production credential use, production provider access, or manual production activation was performed.
+No manual Vercel action, redeployment, preview promotion, production mutation, production credential change, production provider access, or manual production activation was performed during certification.
 
 ## 23. Stop Conditions
 
-Sprint 1 stops before deployment, production smoke testing, production mutation, customer-visible certification, Sprint 2, provider connection, GIS Sprint 9, AI activation, database changes, and unrelated implementation.
+Sprint 1 stops after certification and closure. It remains stopped before new implementation, remediation, redeployment, production mutation, Sprint 2, provider connection, GIS Sprint 9, AI activation, database changes, and unrelated implementation.
 
 ## 24. Recommended Next Executive Decision
 
-David should decide whether to authorize a controlled deployment and production certification review of the Sprint 1 implementation.
+David should decide whether to keep CEP 1.0 paused at Sprint 1 closure or separately authorize the next CEP 1.0 executive planning decision.
 
 ## 25. Evidence Appendix
 
@@ -300,3 +300,113 @@ Reviewed governing and safety evidence:
 - `docs/project-atlas/geographic-intelligence/GIS-1.0-LICENSING-AND-ATTRIBUTION-STANDARD.md`
 - `scripts/checkMapRenderingSafety.ts`
 - `scripts/publicExperienceSmoke.ts`
+
+## 26. Production Certification Review
+
+Production review date: July 26, 2026 MDT / July 27, 2026 UTC.
+
+Reviewed implementation commit:
+
+`49bdef608222bef711d867d7e8feaeb65b6e8bec`
+
+Final governed status:
+
+`CEP_1_0_SPRINT_1_CERTIFIED_AND_CLOSED`
+
+### Deployment Evidence
+
+| Field | Evidence |
+| --- | --- |
+| Provider | Vercel through GitHub deployment/status integration |
+| GitHub deployment ID | `5615283659` |
+| GitHub deployment status ID | `15968289995` |
+| GitHub commit status ID | `51115552342` |
+| Deployment state | `success` |
+| Deployment description | `Deployment has completed` |
+| Deployed commit | `49bdef608222bef711d867d7e8feaeb65b6e8bec` |
+| Environment | `Production` |
+| Deployment created | `2026-07-27T00:02:43Z` |
+| Deployment completed | `2026-07-27T00:02:44Z` |
+| Vercel status target | `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/H2oxNPoLrbHwLxYB8VajLKseqy3v` |
+| Production environment URL | `https://david-quinn-group-8rde-kshib2652-david-quinns-projects-a0953600.vercel.app` |
+| Governed production domain | `https://davidquinngroup.com` |
+| Deployment source | Automatic from existing repository push integration |
+| Manual deployment action during review | None |
+
+### Route and API Results
+
+| Target | Result |
+| --- | --- |
+| `/` | `HTTP_STATUS:200`, `REDIRECTS:0`, usable public home page, no internal error exposure observed. |
+| `/search` | `HTTP_STATUS:200`, `REDIRECTS:0`, usable Search and Map page, Sprint 1 search-entry and state-panel copy present, no internal error exposure observed. |
+| `/api/search?limit=5` | `HTTP_STATUS:200`, compatible response with `found=1287`, `returned=5`, `mapped=5`, `accessLevel=public`, `source=database`, `health=degraded`, and `meta.smoke.ready=true`. |
+| `/api/search?city=NoSuchColoradoCityZZZ&query=unlikely-zero-result-cep-sprint-1&limit=5` | `HTTP_STATUS:200`, compatible zero-result response with `found=0`, `returned=0`, `mapped=0`, `filtersApplied=["query","city","defaultStatus","publicAccess"]`, degraded safe fallback metadata, and no stack trace. |
+| `/properties/cmqln53qg09rvpi4jzrvdb33v` | `HTTP_STATUS:200`, representative production search detail route loaded `102 S Cherry St`; inquiry form was observed but not submitted. |
+
+Production smoke:
+
+- `env PUBLIC_EXPERIENCE_SMOKE_BASE_URL=https://davidquinngroup.com npm run smoke:public-experience`: passed.
+- Smoke assertions passed for home portal restoration, advisor experience, seller journey entry, property detail bridge, property inquiry guidance, search intelligence, admin page metadata, search inspection metadata, admin inspection metadata, dead-letter metadata, selected drawer inquiry target, and public brand voice safety.
+
+### Interaction Results
+
+- Search entry: visible and understandable on production `/search`; city field accessible name `City`; specific-property field accessible name `Keyword, address, ZIP, or MLS number`; helper text matched Sprint 1 implementation.
+- Refinements: city, minimum price, property type, minimum bedrooms, and minimum bathrooms applied together without changing URL semantics or search eligibility behavior.
+- Active count and summary: combined refinement review produced `5 Active` and a summary stating that five refinements were shaping the view.
+- Chips: active chips matched criteria exactly: `City: Denver`, `Min $500K`, `3+ beds`, `2+ baths`, and `Residential`.
+- Chip removal: removing `City: Denver` reduced the active count from five to four and preserved remaining chips.
+- Clear Search: reset active chip count to zero and restored the open results view.
+- Zero-result recovery: safe no-match production search showed `No matching properties`, active criteria, recovery guidance, and a clear-search action; clear search restored results.
+- Degraded messaging: degraded fallback was naturally observable and customer-safe: `Search is using a safe fallback. Results remain usable, but refreshes may take longer.`
+- List/map behavior: production list and map rendered together; marker count metadata reported `250`; property card keyboard activation selected `102 S Cherry St` with `aria-pressed=true` and selected summary updated.
+- Mobile List/Map toggle: visible and functional at mobile and narrow-mobile widths; `Show search map` changed to `aria-pressed=true` and `Show listing list` changed to `aria-pressed=false`.
+- Property navigation: representative production search result navigated to `https://davidquinngroup.com/properties/cmqln53qg09rvpi4jzrvdb33v` and loaded the expected detail page.
+
+### Responsive Results
+
+Screenshots were captured locally as non-committed review evidence:
+
+- `/tmp/cep-sprint1-prod-desktop.png`
+- `/tmp/cep-sprint1-prod-tablet.png`
+- `/tmp/cep-sprint1-prod-mobile.png`
+- `/tmp/cep-sprint1-prod-narrow-mobile.png`
+
+| Viewport | Result |
+| --- | --- |
+| 1280 x 900 | No horizontal overflow; search input usable; state panel visible; list/map panes visible; result links navigable. |
+| 900 x 1050 | No horizontal overflow; search input usable; state panel visible; list/map panes visible; result links navigable. |
+| 386 x 900 | No horizontal overflow; mobile List/Map controls visible; map toggle worked; result links navigable. |
+| 320 x 900 | No horizontal overflow; mobile List/Map controls visible; map toggle worked; result links navigable. |
+
+### Accessibility Results
+
+- Search input accessible name: `City`.
+- Specific-property input accessible name: `Keyword, address, ZIP, or MLS number`.
+- Mobile toggle labels: `Show listing list` and `Show search map`.
+- Mobile toggle selected state: `aria-pressed` values updated correctly.
+- Active chip labels: production combined search exposed explicit removal labels, including `Remove City: Denver`, `Remove Min $500K`, `Remove 3+ beds`, `Remove 2+ baths`, and `Remove Residential`.
+- Keyboard behavior: property-card selection worked through keyboard activation and updated selected state.
+- Live status: `reie-search-state-announcement` remained screen-reader-only and announced result state without internal details.
+- No material Sprint 1 accessibility regression was found.
+
+### Mutation Safety and Exclusions
+
+No production mutation was performed. The review did not submit saved searches, alerts, email, CRM tasks, seller leads, property inquiries, tour requests, valuation requests, contact forms, account changes, admin actions, MLS sync, database writes, analytics events, provider access, GIS Sprint 9 behavior, AI behavior, or environment changes.
+
+The only production activity was read-only route/API fetching, public production smoke, and browser interaction that did not submit mutation-bearing workflows.
+
+### Unresolved Issues
+
+- The search provider remained naturally degraded during production review, with safe database fallback serving results. This is not a Sprint 1 regression and the deployed UI now communicates the fallback safely.
+- Public listing image URLs include existing MLS media URL parameters. No Sprint 1 stack trace, environment value, app credential, protected diagnostic, or internal provider detail was exposed.
+- Dedicated `/search` still does not reload results from map movement; Sprint 1 intentionally documents the current behavior rather than changing map query semantics.
+
+### Certification Decision
+
+All Sprint 1 production certification gates passed. CEP 1.0 Sprint 1 is certified and closed as:
+
+`CEP_1_0_SPRINT_1_CERTIFIED_AND_CLOSED`
+
+### Next Executive Recommendation
+
+David should decide whether to keep CEP 1.0 paused at Sprint 1 closure or separately authorize the next CEP 1.0 executive planning decision. Sprint 2 remains `NOT_AUTHORIZED`.

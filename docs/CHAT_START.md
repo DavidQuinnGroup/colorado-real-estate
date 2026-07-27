@@ -10,7 +10,7 @@ Product:
 
 ## Latest New-Chat Handoff
 
-PROJECT ATLAS(tm) / CEP 1.0 Sprint 1 Search and Map Experience Baseline(tm) handoff, July 26, 2026:
+PROJECT ATLAS(tm) / CEP 1.0 Sprint 1 Search and Map Experience Baseline(tm) certification handoff, July 26, 2026:
 
 Workspace:
 
@@ -28,7 +28,7 @@ Current CEP 1.0 Sprint 1 state:
 
 - Program: `PROJECT_ATLAS_CEP_1_0_CUSTOMER_EXPERIENCE_PLATFORM`.
 - Sprint: `CEP_1_0_SPRINT_1_SEARCH_AND_MAP_EXPERIENCE_BASELINE`.
-- Status: `CEP_1_0_SPRINT_1_IMPLEMENTED_LOCAL_VALIDATION_COMPLETE_READY_TO_PUSH_DEPLOYMENT_NOT_AUTHORIZED`.
+- Status: `CEP_1_0_SPRINT_1_CERTIFIED_AND_CLOSED`.
 - Primary document: `docs/project-atlas/executive-library/CEP-1.0-CUSTOMER-EXPERIENCE-PLATFORM-ARCHITECTURE-AND-IMPLEMENTATION-ROADMAP.md`.
 - Sprint 1 record: `docs/project-atlas/executive-library/CEP-1.0-SPRINT-1-SEARCH-AND-MAP-EXPERIENCE-BASELINE.md`.
 - Implemented scope: search entry clarity, active criteria metadata, customer-safe search state panel, degraded fallback status, zero-result recovery, dedicated-search map-movement context, MapSidebar clear-search recovery, and deterministic Sprint 1 safety check.
@@ -36,18 +36,28 @@ Current CEP 1.0 Sprint 1 state:
 - Validation additions: `scripts/checkCepSearchMapBaseline.ts`, `package.json`, and `tsconfig.worker.json`.
 - Validation complete: focused Sprint 1 safety, typecheck, lint, build, map-rendering safety, search listing quality, search runtime adapter safety, Prisma validation, local search smoke, local public-experience smoke, local API zero-result check, and local browser responsive review passed.
 - Boundary note: `npm run check:search-runtime-safety` was not run because approval review blocked it as authenticated external Supabase service-role read behavior outside this Sprint 1 local-validation boundary.
+- Production review result: certification passed and Sprint 1 is closed.
+- Certification commit under review: `49bdef608222bef711d867d7e8feaeb65b6e8bec`.
+- Deployment evidence: Vercel/GitHub deployment `5615283659`, deployment status `15968289995`, commit status `51115552342`, state `success`, description `Deployment has completed`, environment `Production`, completed `2026-07-27T00:02:44Z`, target `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/H2oxNPoLrbHwLxYB8VajLKseqy3v`.
+- Governed production domain certified for Sprint 1 scope: `https://davidquinngroup.com`.
+- Production smoke: `env PUBLIC_EXPERIENCE_SMOKE_BASE_URL=https://davidquinngroup.com npm run smoke:public-experience` passed.
+- Production route/API review passed for `/`, `/search`, `/api/search?limit=5`, safe zero-result `/api/search?city=NoSuchColoradoCityZZZ&query=unlikely-zero-result-cep-sprint-1&limit=5`, and representative detail route `/properties/cmqln53qg09rvpi4jzrvdb33v`.
+- Production interaction review passed for search entry, combined refinements, active count/summary, chips, chip removal, Clear Search, zero-result recovery, degraded fallback messaging, list/map rendering, keyboard property selection, mobile List/Map toggle, and property navigation.
+- Responsive production review passed at 1280 x 900, 900 x 1050, 386 x 900, and 320 x 900 with no horizontal overflow.
+- Accessibility review found accessible search labels, explicit chip removal labels, List/Map `aria-pressed` semantics, screen-reader-only status text, and keyboard-selectable property cards with no material Sprint 1 regression.
+- Mutation-safety confirmation: no saved-search, alert, email, CRM, seller-lead, inquiry, tour, valuation, admin, MLS sync, database write, environment change, provider access, GIS Sprint 9, AI activation, redeployment, or manual production action was performed.
 - Required check for future continuation: `npm run check:cep-search-map-baseline`.
-- Implementation commit: this handoff is prepared for the final Sprint 1 implementation commit; verify with `git log -1 --oneline` after final commit and push.
+- Latest documentation-only certification commit: verify with `git log -1 --oneline` after final commit and push.
 - GIS provider progression state: `GIS_1_0_PROVIDER_PROGRESSION_PAUSED_AFTER_SPRINT_8`.
 - Preserved CGS pathway: `READY_FOR_FUTURE_TECHNICAL_FEASIBILITY_AUTHORIZATION`.
 - GIS Sprint 9 state: `NOT_AUTHORIZED`.
 - CEP Sprint 2 state: `NOT_AUTHORIZED`.
-- Production actions: `NOT_AUTHORIZED`.
-- Deployment: `NOT_AUTHORIZED`.
-- Production smoke: `NOT_AUTHORIZED`.
-- Customer-visible certification: `NOT_AUTHORIZED`.
+- Production actions beyond certified read-only review: `NOT_AUTHORIZED`.
+- Deployment or redeployment: `NOT_AUTHORIZED`.
+- Production smoke beyond the completed Sprint 1 certification review: `NOT_AUTHORIZED`.
+- Customer-visible certification: `CERTIFIED_FOR_CEP_1_0_SPRINT_1_SCOPE_ONLY`.
 - Provider connection, credentials, terms acceptance, downloads, live GIS service/API calls, provider acquisition, provider persistence, provider data customer display, AI runtime activation, geographic runtime consumption, database/schema changes, API contract changes, alert/CRM/email/seller/inquiry mutation tests, Vercel actions, and environment changes remain `NOT_AUTHORIZED`.
-- Exact next executive decision required: David must decide whether to authorize a controlled deployment and production certification review of the Sprint 1 implementation. Codex must not authorize that decision.
+- Exact next executive decision required: David must decide whether to keep CEP 1.0 paused at Sprint 1 closure or separately authorize the next CEP 1.0 executive planning decision. Codex must not authorize that decision.
 
 Current GIS 1.0 pause context:
 
