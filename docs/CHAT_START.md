@@ -10,6 +10,51 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / CIM 1.0 Sprint 2 Privacy, Consent and Data Minimization Gate(tm) handoff, July 27, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -5 --oneline
+```
+
+Current CIM 1.0 Sprint 2 state:
+
+- Program: `CIM_1_0_CUSTOMER_INTELLIGENCE_AND_MEASUREMENT_PROGRAM`.
+- Sprint: `CIM_1_0_SPRINT_2_PRIVACY_CONSENT_AND_DATA_MINIMIZATION_GATE`.
+- Status: `CIM_1_0_SPRINT_2_PRIVACY_CONSENT_AND_DATA_MINIMIZATION_GATE_IMPLEMENTED_AND_PUSHED_DEPLOYMENT_NOT_AUTHORIZED`.
+- Baseline: implementation began from clean, aligned `main` at `8098373dfb62d0610c8ebd55bb623dfb75111e4d`.
+- Sprint 1 state: `CIM_1_0_SPRINT_1_EVENT_TAXONOMY_AND_MEASUREMENT_CONTRACT_IMPLEMENTED_AND_PUSHED_DEPLOYMENT_NOT_AUTHORIZED`.
+- CIM Sprint 2 record: `docs/project-atlas/executive-library/CIM-1.0-SPRINT-2-PRIVACY-CONSENT-DATA-MINIMIZATION-GATE.md`.
+- Implemented contract file: `lib/cim/privacyConsentDataMinimization.ts`.
+- Updated export surface: `lib/cim/index.ts`.
+- Validation script: `scripts/checkCimPrivacyConsentDataMinimizationGate.ts`.
+- Required Sprint 2 check: `npm run check:cim-privacy-consent-data-minimization-gate`.
+- Package/build wiring: `package.json` and `tsconfig.worker.json`.
+- Consent classifications: `REQUIRED`, `OPTIONAL`, `NOT_APPLICABLE`, and `BLOCKED`.
+- Privacy classifications: `PUBLIC`, `INTERNAL`, `CONFIDENTIAL`, and `PROHIBITED`.
+- Identity classifications: `ANONYMOUS`, `PSEUDONYMOUS`, and `IDENTIFIED`.
+- Retention classifications: `NONE`, `SESSION_ONLY`, `SHORT_TERM`, and `LONG_TERM`.
+- Deletion classifications: `IMMEDIATE`, `EXPIRATION`, `USER_REQUEST`, and `LEGAL_EXCEPTION`.
+- Measurement categories governed: `search_engagement`, `property_engagement`, `market_engagement`, `seller_engagement`, `cta_engagement`, `journey_completion`, `journey_abandonment`, `navigation_transition`, `lead_attribution`, and `measurement_governance`.
+- Activation status for every measurement category: `INACTIVE`.
+- Permitted technical metadata only where governance allows: `page_identifier`, `route`, `feature_identifier`, `coarse_timestamp`, `anonymous_journey_stage`, `journey_transition`, `event_version`, and `consent_state`.
+- Prohibited data: names, email, phone, message body, free-text search terms, precise address, internal identifiers, protected intelligence, CRM identifiers, seller-lead identifiers, alert identifiers, raw IP address, and device fingerprint. Uploaded content, credentials, authentication tokens, and analytics/vendor identifiers remain prohibited by activation boundary.
+- Validation coverage: prohibited fields fail, invalid consent mappings fail, invalid retention mappings fail, prohibited activation states fail, identity classification conflicts fail, and activation primitives are excluded from the Sprint 2 contract source.
+- Measurement posture: `PRIVACY_CONSENT_DATA_MINIMIZATION_GATE_IMPLEMENTED_TELEMETRY_INACTIVE`.
+- Telemetry activation: `NOT_AUTHORIZED`.
+- Customer event emission: `NOT_AUTHORIZED`.
+- Analytics vendors, cookies, trackers, browser storage, network telemetry, new persistence, Prisma models, migrations, runtime measurement changes, production behavior changes, deployment, production smoke, feature flag activation, customer data collection, provider activation, GIS, GIS Sprint 9, AI, and database changes remain `NOT_AUTHORIZED`.
+- Exact next executive decision required: David must decide whether to authorize `CIM_1_0_SPRINT_3_FIRST_PARTY_MEASUREMENT_READINESS_ADAPTER`. Codex must not authorize that decision.
+
+Prior CIM Sprint 1 handoff retained below.
+
 PROJECT ATLAS(tm) / CIM 1.0 Sprint 1 Event Taxonomy and Measurement Contract(tm) handoff, July 27, 2026:
 
 Workspace:
