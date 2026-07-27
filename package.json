@@ -97,6 +97,7 @@
     "check:cim-first-party-measurement-readiness-adapter": "npm run worker:build && node dist/scripts/checkCimFirstPartyMeasurementReadinessAdapter.js",
     "check:cao-operating-model-service-level-contract": "npm run worker:build && node dist/scripts/checkCaoOperatingModelServiceLevelContract.js",
     "check:cao-operations-queue-review-readiness": "npm run worker:build && node dist/scripts/checkCaoOperationsQueueReviewReadiness.js",
+    "check:cao-consultation-workflow-disposition-standard": "npm run worker:build && node dist/scripts/checkCaoConsultationWorkflowDispositionStandard.js",
     "check:launch-readiness": "npm run worker:build && node dist/scripts/launchReadiness.js",
     "worker:build": "tsc -p tsconfig.worker.json --pretty false",
     "infra:up": "docker compose up -d",

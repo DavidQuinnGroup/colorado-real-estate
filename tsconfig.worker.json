@@ -39,6 +39,7 @@
     "scripts/checkCimFirstPartyMeasurementReadinessAdapter.ts",
     "scripts/checkCaoOperatingModelServiceLevelContract.ts",
     "scripts/checkCaoOperationsQueueReviewReadiness.ts",
+    "scripts/checkCaoConsultationWorkflowDispositionStandard.ts",
     "scripts/checkPrismaClientParity.ts",
     "scripts/checkProductionDependencies.ts",
     "scripts/checkPropertyRouteSafety.ts",

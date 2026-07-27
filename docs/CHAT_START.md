@@ -10,6 +10,53 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / CAO 1.0 Sprint 3 Consultation Workflow and Lead Disposition Standard(tm) implementation handoff, July 27, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -5 --oneline
+```
+
+Current CAO 1.0 Sprint 3 state:
+
+- Program: `CAO_1_0_CUSTOMER_ACQUISITION_OPERATIONS_PROGRAM`.
+- Sprint: `CAO_1_0_SPRINT_3_CONSULTATION_WORKFLOW_AND_LEAD_DISPOSITION_STANDARD`.
+- Status: `CAO_1_0_SPRINT_3_CONSULTATION_WORKFLOW_AND_LEAD_DISPOSITION_STANDARD_IMPLEMENTED_AND_PUSHED_DEPLOYMENT_NOT_AUTHORIZED`.
+- Baseline: implementation began from clean, aligned `main` at `595f80d6d53c271afbffeaa21d47028d92c37f0f`.
+- Certified CAO Sprint 1: `CAO_1_0_SPRINT_1_OPERATING_MODEL_AND_SERVICE_LEVEL_CONTRACT_CERTIFIED_AND_CLOSED`.
+- Certified CAO Sprint 2: `CAO_1_0_SPRINT_2_OPERATIONS_QUEUE_AND_REVIEW_READINESS_BASELINE_CERTIFIED_AND_CLOSED`.
+- Preceding priority review: `CAO_1_0_EXECUTIVE_PRIORITY_REVIEW_COMPLETE_IMPLEMENTATION_NOT_AUTHORIZED`.
+- Sprint 3 record: `docs/project-atlas/executive-library/CAO-1.0-SPRINT-3-CONSULTATION-WORKFLOW-AND-LEAD-DISPOSITION-STANDARD.md`.
+- New passive contract: `lib/cao/consultationWorkflowDispositionContract.ts`.
+- Updated export surface: `lib/cao/index.ts`.
+- Validation script: `scripts/checkCaoConsultationWorkflowDispositionStandard.ts`.
+- Required Sprint 3 check: `npm run check:cao-consultation-workflow-disposition-standard`.
+- Package/build wiring: `package.json` and `tsconfig.worker.json`.
+- Contract version: `CAO-1.0-SPRINT-3`.
+- Buyer consultation outcomes: `SCHEDULED`, `COMPLETED`, `RESCHEDULE_REQUIRED`, `NO_SHOW`, `CANCELLED`, and `FOLLOW_UP_REQUIRED`.
+- Seller consultation outcomes: `STRATEGY_MEETING_SCHEDULED`, `STRATEGY_COMPLETED`, `LISTING_PREPARATION`, `NOT_READY`, `LOST`, and `FOLLOW_UP_REQUIRED`.
+- Lead disposition taxonomy: `NEW`, `WORKING`, `QUALIFIED`, `ACTIVE_CLIENT`, `CLOSED_WON`, `CLOSED_LOST`, `NURTURE`, and `ARCHIVED`.
+- Each consultation outcome defines engagement type, entry criteria, exit criteria, required documentation, required follow-up, responsible role, escalation owner, closure owner, audit requirements, allowed next dispositions, terminal status, and `automationAuthorized: false`.
+- Each lead disposition defines entry criteria, exit criteria, required documentation, required follow-up, ownership, audit requirements, allowed transitions, terminal status, KPI mappings, and `automationAuthorized: false`.
+- Validation passed: `npm run check:cao-consultation-workflow-disposition-standard`, `npm run check:cao-operating-model-service-level-contract`, `npm run check:cao-operations-queue-review-readiness`, `npm run typecheck`, `npm run lint`, `npx prisma validate`, `npm run build`, and `git diff --check`.
+- Validation coverage: valid contract passes; missing buyer outcome, missing seller documentation, missing ownership, missing disposition, invalid transition, missing no-automation audit requirement, and missing KPI mapping fail closed.
+- Runtime behavior change: `NONE`.
+- CRM task creation, assignment, routing, priority behavior, status transition behavior, inquiry processing, seller processing, notification behavior, alert behavior, email behavior, saved-search behavior, database schema, Prisma migrations, persistence, CIM telemetry inactive state, GIS pause, AI non-activation, and provider non-activation were preserved.
+- Deployment: `NOT_AUTHORIZED`.
+- Production certification: `NOT_AUTHORIZED`.
+- Production actions during implementation: `NONE`.
+- CRM automation, consultation routing automation, lead assignment automation, lead disposition automation, CRM transition automation, notifications, emails, alerts, persistence, Prisma schema changes, migrations, production mutation, telemetry activation, provider activation, GIS, GIS Sprint 9, AI, CAO Sprint 4, and unrelated work remain `NOT_AUTHORIZED`.
+- Exact next executive decision required: David must decide whether to authorize `CAO_1_0_SPRINT_3_CONTROLLED_DEPLOYMENT_AND_PRODUCTION_CERTIFICATION_REVIEW`. Codex must not authorize that decision.
+
+Prior CAO Executive Priority Review handoff retained below.
+
 PROJECT ATLAS(tm) / CAO 1.0 Executive Priority Review handoff, July 27, 2026:
 
 Workspace:
