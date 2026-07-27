@@ -373,3 +373,55 @@ Unresolved issue:
 Next executive recommendation:
 
 Authorize a narrowly scoped authenticated admin production review retry using a known-good browser/session or sanitized operator-provided evidence. Do not authorize remediation, dashboard redesign, analytics, trend reporting, Sprint 4, automation, database work, telemetry, AI, GIS, provider activation, or production mutation.
+
+## 14. Authenticated Admin Production Review Retry
+
+Review date:
+
+July 27, 2026
+
+Authorization:
+
+`EOI_1_0_SPRINT_3_AUTHENTICATED_ADMIN_PRODUCTION_REVIEW_RETRY`
+
+Repository baseline:
+
+- Starting HEAD: `895a65829d7a4ef1bac9eead4e79d26ce6ac304e`
+- Starting origin/main: `895a65829d7a4ef1bac9eead4e79d26ce6ac304e`
+- Working tree: clean
+
+Deployment confirmation:
+
+- Implementation commit remained deployed: `88e3a55c427f7bf0d7707a3167cb6d0ebde0d582`
+- GitHub deployment ID remained: `5629030257`
+- GitHub commit status ID remained: `51171735079`
+- Deployment status remained: `success`
+
+Authenticated production review attempts:
+
+- Required authenticated GET targets remained `/admin/repository/executive-operations-dashboard`, `/api/admin/enterprise/operational-kpis`, and `/api/admin/enterprise/operational-summary`.
+- No mutating route was invoked.
+- Direct unauthenticated and dummy-header GET checks continued to return `401`, confirming protected admin behavior remained intact.
+- The locally available admin key could not be used successfully through the command-line tool path; requests failed before usable production response evidence was returned.
+- The in-app browser had no existing authenticated production admin tab/session available to claim.
+- No admin keys, cookies, bearer tokens, authorization headers, session identifiers, or raw protected payloads were documented.
+
+Certification retry decision:
+
+`DEPLOYED_PRODUCTION_CERTIFICATION_BLOCKED`
+
+Final governed status remains:
+
+`EOI_1_0_SPRINT_3_DEPLOYED_PRODUCTION_CERTIFICATION_BLOCKED_AUTHENTICATED_ADMIN_REVIEW_UNAVAILABLE`
+
+Remaining unavailable evidence:
+
+- Authenticated production dashboard render confirmation.
+- Authenticated production dashboard visible section confirmation.
+- Authenticated production dashboard visible label confirmation.
+- Authenticated production KPI endpoint governed metadata confirmation.
+- Authenticated production executive summary endpoint governed metadata confirmation.
+
+Next executive recommendation:
+
+Provide a known-good authenticated browser session already open to the protected production dashboard, or provide sanitized operator evidence for the three authenticated GET targets. Do not authorize implementation, remediation, redeployment, credential changes, environment changes, analytics, trend reporting, Sprint 4, automation, database work, telemetry, AI, GIS, provider activation, or production mutation.

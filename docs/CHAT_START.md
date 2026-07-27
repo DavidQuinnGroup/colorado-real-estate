@@ -58,11 +58,16 @@ Current EOI 1.0 Sprint 3 state:
 - Protected unauthenticated production checks passed: `/admin`, `/admin/repository/executive-operations-dashboard`, `/api/admin/enterprise/operational-kpis`, and `/api/admin/enterprise/operational-summary` returned `401`.
 - Public exposure review passed: public pages and search API responses did not expose EOI dashboard text, `EOI-DASHBOARD`, `GOVERNED METADATA`, or `NO LIVE KPI` labels.
 - Certification blocker: authenticated production dashboard rendering could not be observed. The in-app browser reported `net::ERR_BLOCKED_BY_CLIENT`, and command-line authenticated header requests could not be completed safely and reliably in this tool environment.
+- Authenticated admin production review retry was attempted on July 27, 2026 under `EOI_1_0_SPRINT_3_AUTHENTICATED_ADMIN_PRODUCTION_REVIEW_RETRY`.
+- Retry baseline: clean, aligned `main` at documentation commit `895a65829d7a4ef1bac9eead4e79d26ce6ac304e`; implementation deployment still mapped to `88e3a55c427f7bf0d7707a3167cb6d0ebde0d582`.
+- Retry evidence: unauthenticated and dummy-header production GET checks for `/admin/repository/executive-operations-dashboard` returned `401`, confirming protected admin behavior still held.
+- Retry blocker: the locally available admin key could not be used successfully through the command-line tool path, and no existing authenticated production admin browser tab/session was available to claim.
+- Retry did not expose admin keys, cookies, bearer tokens, authorization headers, session IDs, screenshots containing secrets, or raw protected payloads.
 - Certification decision: `DEPLOYED_PRODUCTION_CERTIFICATION_BLOCKED`.
 - Unresolved issue: authenticated production dashboard rendering and authenticated production EOI admin endpoint metadata review remain unverified.
 - No manual deployment, redeployment, preview promotion, domain change, environment change, database write, Prisma mutation, migration, CRM automation, workflow automation, notification, email, alert, persistence, telemetry, AI activation, GIS activation, provider activation, protected public exposure, or production mutation occurred.
 - Production certification, EOI Sprint 4, Operational Source Quality & Readiness Gate, trend reporting, analytics, decision support, risk detection, opportunity detection, live KPI computation, CRM automation, workflow automation, database work, persistence, telemetry activation, AI activation, GIS activation, provider activation, production mutation, and unrelated work remain `NOT_AUTHORIZED`.
-- Exact next executive decision required: David must decide whether to authorize `EOI_1_0_SPRINT_3_AUTHENTICATED_ADMIN_PRODUCTION_REVIEW_RETRY` using a known-good browser/session or sanitized operator-provided evidence. Codex must not authorize that decision.
+- Exact next executive decision required: David must provide a known-good authenticated browser session already open to the protected production dashboard or sanitized operator evidence for the three authenticated GET targets. Codex must not authorize that decision.
 
 Prior EOI Sprint 2 production certification handoff retained below.
 
