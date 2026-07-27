@@ -37,6 +37,7 @@
     "scripts/checkSearchListingQuality.ts",
     "scripts/checkSearchRuntimeSafety.ts",
     "scripts/checkSupabase.ts",
+    "scripts/checkCepPropertyIntelligenceExperience.ts",
     "scripts/checkTrackClickSafety.ts",
     "scripts/checkTrackClickRuntimeSafety.ts",
     "scripts/checkUnsubscribeSafety.ts",

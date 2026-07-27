@@ -10,6 +10,48 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / CEP 1.0 Sprint 2 Property Intelligence Experience Integration(tm) implementation handoff, July 26, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -5 --oneline
+```
+
+Current CEP 1.0 Sprint 2 state:
+
+- Program: `PROJECT_ATLAS_CEP_1_0_CUSTOMER_EXPERIENCE_PLATFORM`.
+- Sprint: `CEP_1_0_SPRINT_2_PROPERTY_INTELLIGENCE_EXPERIENCE_INTEGRATION`.
+- Status: `CEP_1_0_SPRINT_2_IMPLEMENTED_AND_READY_FOR_CONTROLLED_DEPLOYMENT_REVIEW`.
+- Strongest local implementation outcome after final commit and push: `CEP_1_0_SPRINT_2_IMPLEMENTED_AND_PUSHED_DEPLOYMENT_NOT_AUTHORIZED`.
+- Sprint 1 state: `CEP_1_0_SPRINT_1_CERTIFIED_AND_CLOSED`.
+- Sprint 1 certification commit: `56252b6a41903ae14b04252a1afaf2cc5e50e815`.
+- Primary CEP roadmap: `docs/project-atlas/executive-library/CEP-1.0-CUSTOMER-EXPERIENCE-PLATFORM-ARCHITECTURE-AND-IMPLEMENTATION-ROADMAP.md`.
+- Sprint 2 record: `docs/project-atlas/executive-library/CEP-1.0-SPRINT-2-PROPERTY-INTELLIGENCE-EXPERIENCE-INTEGRATION.md`.
+- Implemented runtime scope: property-detail decision brief, buyer-question hierarchy, existing Property Intelligence integration, source/freshness posture, public-fact confidence boundary, existing related-listing comparison context, and safe next-action links.
+- Runtime files changed: `app/properties/[id]/page.tsx`.
+- Validation additions: `scripts/checkCepPropertyIntelligenceExperience.ts`, `package.json`, and `tsconfig.worker.json`.
+- Required Sprint 2 check: `npm run check:cep-property-intelligence-experience`.
+- Validation completed: focused Sprint 2 safety check, `npm run typecheck`, `npm run lint`, `npm run build`, `npx prisma validate`, local public-experience smoke, local route/API review, local search-to-property navigation, local responsive review at 1280 x 900, 900 x 1050, 386 x 900, and 320 x 900, accessibility-focused review, and mutation-safety review.
+- Validation note: `npm run check:property-route-safety` was not run because it requires service-role Supabase reads; Sprint 2 used local route/API/browser evidence for the implemented presentation change.
+- Latest Sprint 2 implementation commit: verify with `git log -1 --oneline` after final commit and push.
+- Deployment: `NOT_AUTHORIZED`.
+- Production smoke testing: `NOT_AUTHORIZED`.
+- Production certification: `NOT_AUTHORIZED`.
+- Customer-visible certification: `NOT_AUTHORIZED`.
+- Sprint 3: `NOT_AUTHORIZED`.
+- GIS Sprint 9: `NOT_AUTHORIZED`.
+- Provider connection, credentials, terms acceptance, downloads, live GIS service/API calls, provider acquisition, provider persistence, provider data customer display, AI runtime activation, geographic runtime consumption, database/schema changes, migrations, API contract changes, alert/CRM/email/seller/inquiry mutation tests, Vercel actions, and environment changes remain `NOT_AUTHORIZED`.
+- Exact next executive decision required after final local validation, commit, and push: David must decide whether to authorize a controlled deployment and production certification review of the Sprint 2 implementation. Codex must not authorize that decision.
+
+Prior CEP Sprint 1 certification handoff retained below.
+
 PROJECT ATLAS(tm) / CEP 1.0 Sprint 1 Search and Map Experience Baseline(tm) certification handoff, July 26, 2026:
 
 Workspace:

@@ -459,6 +459,122 @@ const MARKET_INVESTIGATION_QUESTIONS = [
   'What information is public fact, and what requires professional interpretation before pricing, offer, or timing decisions?',
 ];
 
+type PropertyDecisionBriefItem = {
+  question: string;
+  label: string;
+  answer: string;
+  detail: string;
+  href: string;
+  action: string;
+};
+
+function getPropertyDecisionBriefItems({
+  property,
+  decisionTone,
+  decisionNextStep,
+  diligencePosture,
+  reviewSignal,
+  pricePerSquareFoot,
+  marketPathway,
+  relatedListingCount,
+}: {
+  property: PropertyWithPhotos;
+  decisionTone: string;
+  decisionNextStep: string;
+  diligencePosture: string;
+  reviewSignal: string;
+  pricePerSquareFoot: string;
+  marketPathway: MarketPathway;
+  relatedListingCount: number;
+}): PropertyDecisionBriefItem[] {
+  const areaLabel = property.neighborhood || property.city || 'this area';
+  const relatedListingLabel =
+    relatedListingCount > 0
+      ? `${relatedListingCount} related public listings available from existing property links.`
+      : 'Use the local search view for currently available public listing context.';
+
+  return [
+    {
+      question: 'Is this property right for me?',
+      label: decisionTone,
+      answer: decisionNextStep,
+      detail: 'Use the public facts below as orientation, then decide what needs professional review before touring or writing.',
+      href: '#property-contact',
+      action: 'Ask a focused question',
+    },
+    {
+      question: 'What should I know before touring?',
+      label: diligencePosture,
+      answer: property.yearBuilt
+        ? `${property.yearBuilt} construction context and listed systems should guide tour questions.`
+        : 'Core listing facts are available, but construction-era context is not fully present in public listing data.',
+      detail: 'Tour preparation should focus on records, condition, systems, and site context that cannot be confirmed from public facts alone.',
+      href: '#property-contact',
+      action: 'Prepare tour questions',
+    },
+    {
+      question: 'What is unique about this property?',
+      label: reviewSignal,
+      answer: `${property.propertyType || 'Residential'} listing in ${areaLabel}.`,
+      detail: 'Uniqueness is presented from listing facts and observable context only, without a score or automated recommendation.',
+      href: getCitySearchHref(property.city),
+      action: 'Compare nearby listings',
+    },
+    {
+      question: 'How does it compare with the market?',
+      label: pricePerSquareFoot,
+      answer: relatedListingLabel,
+      detail: 'Comparison context reuses existing related-listing and market-link capability; it is not a valuation or pricing opinion.',
+      href: marketPathway.href,
+      action: marketPathway.isMarketPageAvailable ? 'Open market context' : 'Open search context',
+    },
+    {
+      question: 'What should I investigate further?',
+      label: 'Verify before relying',
+      answer: 'Records, costs, condition, financing, taxes, insurance, and any property-specific constraints should be independently reviewed.',
+      detail: 'This page organizes questions to carry forward; it does not replace inspection, appraisal, lending, tax, legal, insurance, or qualified professional review.',
+      href: '#property-contact',
+      action: 'Ask about next steps',
+    },
+  ];
+}
+
+function getPropertyIntelligenceSourceItems({
+  property,
+  relatedListingCount,
+  authorityLinkCount,
+}: {
+  property: PropertyWithPhotos;
+  relatedListingCount: number;
+  authorityLinkCount: number;
+}) {
+  return [
+    {
+      label: 'Source',
+      value: 'Public listing facts',
+      detail: 'Stored listing fields, listing photos, and existing public property-link context.',
+    },
+    {
+      label: 'Freshness',
+      value: formatDateTime(property.lastIntelligenceSync || property.updatedAt),
+      detail: property.lastIntelligenceSync ? 'Last synchronized listing intelligence timestamp.' : 'Last public listing update timestamp.',
+    },
+    {
+      label: 'Comparison',
+      value: relatedListingCount > 0 ? `${relatedListingCount} related listings` : 'Search context available',
+      detail:
+        authorityLinkCount > 0
+          ? `${authorityLinkCount} existing authority links are available for buyer review.`
+          : 'No additional authority links are required for this view.',
+    },
+    {
+      label: 'Boundary',
+      value: 'Public-fact confidence',
+      detail: 'No protected intelligence, generated advice, provider data, or automated valuation is exposed.',
+    },
+  ];
+}
+
 const SUMMARY_VERIFY_CATEGORIES = [
   { label: 'Ownership costs', value: 'Taxes, HOA, insurance, financing terms, closing costs, and maintenance assumptions.' },
   { label: 'Systems and records', value: 'Roof, mechanical, electrical, plumbing, drainage, permits, windows, and exterior records.' },
@@ -660,6 +776,21 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
   });
   const propertyPageAuthorityLinks = getPropertyPageAuthorityLinks(propertyLinks.authorityLinks, marketPathway);
   const relatedListings = [...propertyLinks.neighborhoodHomes, ...propertyLinks.cityHomes];
+  const propertyDecisionBriefItems = getPropertyDecisionBriefItems({
+    property,
+    decisionTone,
+    decisionNextStep,
+    diligencePosture,
+    reviewSignal,
+    pricePerSquareFoot,
+    marketPathway,
+    relatedListingCount: relatedListings.length,
+  });
+  const propertyIntelligenceSourceItems = getPropertyIntelligenceSourceItems({
+    property,
+    relatedListingCount: relatedListings.length,
+    authorityLinkCount: propertyPageAuthorityLinks.length,
+  });
 
   return (
     <main className="min-h-screen overflow-y-auto bg-[#070b10] text-white">
@@ -890,6 +1021,75 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
 
         <div className="reie-property-detail-grid grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
           <div className="space-y-6">
+            <section
+              className="overflow-hidden rounded-[8px] border border-cyan-100/20 bg-[#0d141c]"
+              data-testid="cep-property-decision-brief"
+              data-property-decision-brief-status="public-fact-context"
+              data-property-decision-brief-item-count={propertyDecisionBriefItems.length}
+              data-property-decision-brief-related-count={relatedListings.length}
+              data-property-decision-brief-provider="none"
+              data-property-decision-brief-generated-guidance="false"
+            >
+              <div className="border-b border-white/10 bg-cyan-100/[0.055] p-5 md:p-6">
+                <div className="flex flex-col justify-between gap-4 md:flex-row md:items-start">
+                  <div className="max-w-3xl">
+                    <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.22em] text-cyan-100/76">
+                      <ShieldCheck size={14} aria-hidden="true" />
+                      Property Decision Brief
+                    </p>
+                    <h2 className="mt-3 text-xl font-black uppercase tracking-tight text-white md:text-2xl">
+                      The buyer questions this page can answer
+                    </h2>
+                    <p className="mt-3 text-sm leading-6 text-white/58">
+                      A customer-facing orientation built from existing listing facts, property-intelligence sections, related public
+                      listings, and market links already available on this page.
+                    </p>
+                  </div>
+                  <span className="inline-flex h-8 items-center rounded-[6px] border border-cyan-100/24 bg-black/20 px-3 text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100">
+                    No New Data Source
+                  </span>
+                </div>
+              </div>
+
+              <div className="grid gap-px bg-white/10 md:grid-cols-5">
+                {propertyDecisionBriefItems.map((item) => (
+                  <article
+                    key={item.question}
+                    className="flex min-w-0 flex-col bg-[#0d141c] p-4"
+                    data-testid="cep-property-decision-brief-item"
+                    data-property-decision-question={item.question}
+                    data-property-decision-action={item.action}
+                  >
+                    <p className="text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100/54">{item.label}</p>
+                    <h3 className="mt-3 text-sm font-black uppercase leading-5 tracking-[0.06em] text-white">{item.question}</h3>
+                    <p className="mt-3 text-xs leading-5 text-white/62">{item.answer}</p>
+                    <p className="mt-3 text-xs leading-5 text-white/42">{item.detail}</p>
+                    <Link
+                      href={item.href}
+                      className="mt-auto pt-4 text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100 transition hover:text-white"
+                    >
+                      {item.action}
+                    </Link>
+                  </article>
+                ))}
+              </div>
+
+              <div
+                className="grid gap-px border-t border-white/10 bg-white/10 md:grid-cols-4"
+                data-testid="cep-property-intelligence-source-status"
+                data-property-intelligence-source="public-listing-facts"
+                data-property-intelligence-confidence-boundary="public-fact-confidence"
+              >
+                {propertyIntelligenceSourceItems.map((item) => (
+                  <div key={item.label} className="bg-[#0d141c] p-4">
+                    <p className="text-[10px] font-black uppercase tracking-[0.14em] text-white/38">{item.label}</p>
+                    <p className="mt-2 truncate text-sm font-black uppercase tracking-[0.06em] text-white/78">{item.value}</p>
+                    <p className="mt-2 text-xs leading-5 text-white/44">{item.detail}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+
             <section
               className="overflow-hidden rounded-[8px] border border-cyan-100/18 bg-[#0d141c]"
               data-testid="reie-property-decision-summary"
