@@ -103,7 +103,10 @@ function assertApiAndUiContracts() {
   }
 
   const middleware = fs.readFileSync("middleware.ts", "utf8");
-  assert.ok(middleware.includes("/api/admin/enterprise/:path*"));
+  assert.ok(
+    middleware.includes("/api/admin/enterprise/:path*") ||
+      middleware.includes("/api/admin/:path*"),
+  );
 
   const page = fs.readFileSync("app/admin/repository/executive-command-center/page.tsx", "utf8");
   assert.ok(page.includes("NON_PRODUCTION_FIXTURE"));

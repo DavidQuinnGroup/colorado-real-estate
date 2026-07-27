@@ -10,6 +10,43 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / EOI 1.0 Sprint 2 Executive Operational Summary Baseline(tm), July 27, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -5 --oneline
+```
+
+Current EOI 1.0 Sprint 2 state:
+
+- Program: `ENTERPRISE_OPERATIONS_INTELLIGENCE_1_0`.
+- Sprint: `EOI_1_0_SPRINT_2_EXECUTIVE_OPERATIONAL_SUMMARY_BASELINE`.
+- Status: `EOI_1_0_SPRINT_2_EXECUTIVE_OPERATIONAL_SUMMARY_BASELINE_IMPLEMENTED_DEPLOYMENT_NOT_AUTHORIZED`.
+- Starting baseline: clean, aligned `main` at `028ea4b41caba068eefc75c9bf81c7fe808e0f94`.
+- Sprint 1 remains certified and closed: `EOI_1_0_SPRINT_1_OPERATIONAL_KPI_REPORTING_BASELINE_CERTIFIED_AND_CLOSED`.
+- Governing predecessor review: `docs/project-atlas/executive-library/EOI-1.0-STRATEGIC-PRIORITY-REVIEW.md`.
+- Sprint record: `docs/project-atlas/executive-library/EOI-1.0-SPRINT-2-EXECUTIVE-OPERATIONAL-SUMMARY-BASELINE.md`.
+- Implementation created a protected, read-only EOI executive operational summary contract, Next-compatible metadata route adapter, and admin endpoint.
+- Summary sections: Executive Overview, Operational Context, KPI Coverage, Confidence Assessment, Freshness Assessment, Human Review Required, Governance Notes, Recommended Attention Areas, Deferred Interpretation, and Evidence Provenance.
+- Each section defines identifier, display name, purpose, governing source, owner, confidence classification, freshness classification, evidence classification, interpretation boundary, and summary points.
+- Summary distinguishes governed fact, governed metadata, human interpretation, and deferred analysis.
+- Protected adapter: `/api/admin/enterprise/operational-summary`.
+- Adapter posture: repository-admin authorization required, GET-only, read-only, governed metadata only, no live KPI computation, no Prisma query, no mutation handler, no CRM workflow change, no telemetry, no persistence, no AI, no GIS, no provider activation.
+- Deterministic safety command: `npm run check:eoi-executive-operational-summary-baseline`.
+- Validation passed: `npm run check:eoi-executive-operational-summary-baseline`, `npm run check:eoi-operational-kpi-reporting-baseline`, `npm run check:enterprise-executive-workspace-safety`, `npm run check:enterprise-kpi-safety`, `npm run check:cim-first-party-measurement-readiness-adapter`, `npm run typecheck`, `npm run lint`, `npm run build`, and `npx prisma validate`.
+- Local protected route review passed on the built server with throwaway local admin keys only: unauthenticated `GET /api/admin/enterprise/operational-summary` returned `401`; authenticated `GET /api/admin/enterprise/operational-summary` returned `200` with `module="enterprise-operations-intelligence-operational-summary"`, `mode="read_only"`, `contractVersion="EOI-1.0-SPRINT-2"`, `sourceContractVersion="EOI-1.0-SPRINT-1"`, `generatedFrom="GOVERNED_CONTRACT_METADATA"`, 10 summary sections, and live KPI computation, automation, telemetry, persistence, and mutation flags all `false`.
+- Deployment, production certification, EOI Sprint 3, dashboards, live KPI computation, trend reporting, risk detection, decision support, automation, CRM changes, database work, persistence, telemetry activation, AI activation, GIS activation, provider activation, production mutation, and unrelated work remain `NOT_AUTHORIZED`.
+- Exact next executive decision required after push: David must decide whether to authorize a controlled deployment and production certification review for EOI Sprint 2. Codex must not authorize that decision.
+
+Prior EOI Strategic Priority Review handoff retained below.
+
 PROJECT ATLAS(tm) / EOI 1.0 Strategic Priority Review(tm), July 27, 2026:
 
 Workspace:
