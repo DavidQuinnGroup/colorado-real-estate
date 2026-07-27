@@ -10,6 +10,51 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / CEP 1.0 Sprint 4 Market Intelligence Baseline(tm) implementation handoff, July 27, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -5 --oneline
+```
+
+Current CEP 1.0 Sprint 4 state:
+
+- Program: `PROJECT_ATLAS_CEP_1_0_CUSTOMER_EXPERIENCE_PLATFORM`.
+- Sprint: `CEP_1_0_SPRINT_4_MARKET_INTELLIGENCE_BASELINE`.
+- Status: `CEP_1_0_SPRINT_4_IMPLEMENTED_AND_PUSHED_DEPLOYMENT_NOT_AUTHORIZED`.
+- Strongest governed implementation outcome: `CEP_1_0_SPRINT_4_IMPLEMENTED_AND_PUSHED_DEPLOYMENT_NOT_AUTHORIZED`.
+- Sprint 3 state: `CEP_1_0_SPRINT_3_CERTIFIED_AND_CLOSED`.
+- Sprint 3 certification commit: `6e929e53993dc1742d6ebb1488880f8d4844a119`.
+- Baseline note: Sprint 4 implementation began from `a213f4d9c002e2f8308abfffcce89960d0743b55`, the authorized documentation-only CEP Remaining Investment Review commit after Sprint 3 certification.
+- Primary CEP roadmap: `docs/project-atlas/executive-library/CEP-1.0-CUSTOMER-EXPERIENCE-PLATFORM-ARCHITECTURE-AND-IMPLEMENTATION-ROADMAP.md`.
+- Remaining Investment Review: `docs/project-atlas/executive-library/CEP-1.0-REMAINING-INVESTMENT-REVIEW.md`.
+- Sprint 4 record: `docs/project-atlas/executive-library/CEP-1.0-SPRINT-4-MARKET-INTELLIGENCE-BASELINE.md`.
+- Implemented runtime scope: reusable market-intelligence summary helper, city Market Decision Brief, neighborhood Market Brief, customer-safe market direction/pricing/inventory/timing signals, source-boundary copy, and existing route continuity into search, seller review, and market context paths.
+- Runtime files changed: `lib/marketIntelligenceExperience.ts`, `app/market/[city]/page.tsx`, and `app/market/[city]/[slug]/page.tsx`.
+- Validation additions: `scripts/checkCepMarketIntelligenceBaseline.ts`, `package.json`, and `tsconfig.worker.json`.
+- Required Sprint 4 check: `npm run check:cep-market-intelligence-baseline`.
+- Validation completed before final commit: `npm run check:cep-market-intelligence-baseline`, `npm run typecheck`, `npm run lint`, `npx prisma validate`, `npm run build`, local public-experience smoke against `http://localhost:3000`, local route review for city market, neighborhood market, search, and representative property detail, search-to-market review, property-to-market review, responsive review at 1280 x 900, 900 x 1050, 386 x 900, and 320 x 900, accessibility-focused review, mutation-safety review, `git diff --check`, and `git diff --cached --check`.
+- Preserved behavior: search API compatibility, search result eligibility, market route identity, neighborhood route identity, property detail behavior, property inquiry/tour behavior, seller review/valuation backend behavior, Save Search/LeadCapture behavior, alerts, email, CRM, Seller Lead Engine, schema/migration state, protected routes, public/private intelligence separation, GIS pause, AI non-activation, and provider non-activation.
+- Deployment: `NOT_AUTHORIZED`.
+- Redeployment: `NOT_AUTHORIZED`.
+- Production smoke: `NOT_AUTHORIZED`.
+- Production certification: `NOT_AUTHORIZED`.
+- Customer-visible certification: `NOT_AUTHORIZED`.
+- Sprint 5: `NOT_AUTHORIZED`.
+- GIS Sprint 9: `NOT_AUTHORIZED`.
+- AI activation: `NOT_AUTHORIZED`.
+- Provider connection, credentials, terms acceptance, downloads, live GIS service/API calls, provider acquisition, provider persistence, provider data customer display, geographic runtime consumption, analytics activation, alert/CRM/email/seller/inquiry mutation tests, Vercel actions, and environment changes remain `NOT_AUTHORIZED`.
+- Exact next executive decision required: David must decide whether to authorize controlled deployment and production certification review of the CEP 1.0 Sprint 4 implementation. Codex must not authorize that decision.
+
+Prior CEP Remaining Investment Review handoff retained below.
+
 PROJECT ATLAS(tm) / CEP 1.0 Remaining Investment Review(tm) handoff, July 27, 2026:
 
 Workspace:

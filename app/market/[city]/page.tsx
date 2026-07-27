@@ -11,6 +11,7 @@ import ResilienceDashboard from '@/components/ResilienceDashboard';
 import RelatedArticles from '@/components/RelatedArticles';
 import FAQSchema from '@/components/schema/FAQSchema';
 import { cities, getCityByMarketSlug, type CityData } from '@/lib/cities';
+import { buildCityMarketExperience } from '@/lib/marketIntelligenceExperience';
 import { neighborhoods, type Neighborhood } from '@/lib/neighborhoods';
 import { generateFAQs } from '@/lib/schema/generateFAQs';
 import { buildCityMarketSchema } from '@/lib/schema/neighborhoodSchema';
@@ -165,6 +166,7 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
   const canonicalUrl = getCanonicalUrl(cityData);
   const cityMarketSchema = getJsonLd(cityData, cityNeighborhoods);
   const cityMarketSchemaGraph = cityMarketSchema['@graph'];
+  const marketExperience = buildCityMarketExperience(cityData, cityNeighborhoods.length);
   const transitionStats = {
     ...cityData.stats,
     medianPrice: parseCurrency(cityData.stats.medianPrice),
@@ -256,11 +258,86 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
       </section>
 
       <div className="mx-auto max-w-6xl space-y-20 px-6 pb-24">
+        <section
+          className="grid gap-6 border border-white/10 bg-white/[0.025] p-6 md:p-8 lg:grid-cols-[1fr_0.85fr]"
+          data-testid="cep-market-intelligence-summary"
+          data-market-intelligence-scope="city"
+          data-market-intelligence-city={cityData.name}
+          data-market-intelligence-direction={marketExperience.directionLabel}
+          data-market-intelligence-competitiveness={marketExperience.competitivenessLabel}
+          data-market-intelligence-pricing={marketExperience.pricingLabel}
+          data-market-intelligence-timing={marketExperience.timingLabel}
+          data-market-intelligence-provider="none"
+          data-market-intelligence-ai-generated="false"
+          data-market-intelligence-gis-activated="false"
+        >
+          <div>
+            <p className="mb-3 text-[10px] font-black uppercase tracking-[0.35em] text-[#00ff80]">
+              Market Decision Brief
+            </p>
+            <h2 className="text-3xl font-black uppercase italic leading-tight tracking-tight text-white md:text-4xl">
+              What this market signal means before you search or sell.
+            </h2>
+            <p className="mt-5 max-w-3xl text-sm leading-7 text-white/58 md:text-base">
+              {marketExperience.summary}
+            </p>
+          </div>
+
+          <div
+            className="grid gap-px overflow-hidden border border-white/10 bg-white/10 sm:grid-cols-2"
+            data-testid="cep-market-intelligence-signals"
+            data-market-intelligence-signal-count={marketExperience.signals.length}
+          >
+            {marketExperience.signals.map((signal) => (
+              <article
+                key={signal.label}
+                className="bg-[#050505] p-5"
+                data-testid="cep-market-intelligence-signal"
+                data-market-intelligence-signal={signal.label}
+                data-market-intelligence-signal-value={signal.value}
+              >
+                <p className="text-[9px] font-black uppercase tracking-[0.26em] text-white/30">{signal.label}</p>
+                <p className="mt-2 text-base font-black uppercase italic tracking-tight text-white">{signal.value}</p>
+                <p className="mt-3 text-xs leading-6 text-white/45">{signal.explanation}</p>
+              </article>
+            ))}
+          </div>
+
+          <div className="border-t border-white/10 pt-6 lg:col-span-2">
+            <div
+              className="grid gap-3 sm:grid-cols-3"
+              data-testid="cep-market-intelligence-next-steps"
+              data-market-intelligence-next-step-count={marketExperience.nextSteps.length}
+            >
+              {marketExperience.nextSteps.map((step) => (
+                <Link
+                  key={step.href}
+                  href={step.href}
+                  className="flex min-h-14 items-center justify-between gap-4 border border-white/10 bg-black/30 px-4 py-3 text-sm font-black uppercase tracking-[0.12em] text-white transition hover:border-[#00ff80]/50 hover:text-[#00ff80] focus:outline-none focus:ring-2 focus:ring-[#00ff80]/70"
+                  data-testid="cep-market-intelligence-next-step"
+                  data-market-intelligence-next-step-intent={step.intent}
+                  data-market-intelligence-next-step-href={step.href}
+                >
+                  {step.label}
+                  <span aria-hidden="true" className="text-[#00ff80]">Open</span>
+                </Link>
+              ))}
+            </div>
+            <p
+              className="mt-5 text-xs leading-6 text-white/40"
+              data-testid="cep-market-intelligence-source-note"
+              data-market-intelligence-source-boundary="repository-public-context"
+            >
+              {marketExperience.sourceNote}
+            </p>
+          </div>
+        </section>
+
         <section>
           <CityMarketStats stats={transitionStats} />
         </section>
 
-        <section className="relative">
+        <section id="market-neighborhood-context" className="relative">
           <div className="mb-8 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div>
               <p className="mb-2 text-[10px] font-black uppercase tracking-[0.35em] text-white/30">Neighborhood Authority Layer</p>
