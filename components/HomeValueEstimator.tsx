@@ -127,6 +127,8 @@ export default function HomeValueEstimator() {
         data-seller-lead-status={result?.sellerLeadStatus || ''}
         data-seller-follow-up-status={result?.followUp?.status || ''}
         data-seller-email-sent={String(result?.followUp?.emailSent ?? false)}
+        data-cep-measurement-ready="true"
+        data-cep-measurement-active="false"
       >
         <div className="flex h-14 w-14 items-center justify-center rounded-full bg-cyan-100 text-[#101820]">
           <CheckCircle2 size={30} aria-hidden="true" />
@@ -174,6 +176,8 @@ export default function HomeValueEstimator() {
       data-conversion-source="seller-valuation"
       data-conversion-backend-route="/api/valuation"
       data-conversion-automated-valuation="false"
+      data-cep-measurement-ready="true"
+      data-cep-measurement-active="false"
       noValidate
     >
       <div>

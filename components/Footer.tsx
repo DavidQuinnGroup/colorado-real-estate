@@ -1,10 +1,12 @@
 import Link from 'next/link';
 
+import { getJourneyMeasurementAttributes } from '@/lib/customerJourneyMeasurement';
 import { BROKERAGE_FIRM_NAME, PUBLIC_TRUST_REVIEW_STATUS, publicTrustRoutes } from '@/lib/publicTrust';
 
 const experienceLinks = [
   { label: 'About', href: '/about' },
   { label: 'Search', href: '/search' },
+  { label: 'Market', href: '/market' },
   { label: 'Grand Plan™', href: '/grand-plan' },
   { label: 'Sell', href: '/sell' },
 ];
@@ -32,6 +34,12 @@ export default function PlatformFooter() {
                 href={route.href}
                 className="text-[11px] font-black uppercase tracking-[0.14em] text-slate-500 transition hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-200"
                 data-testid="public-experience-footer-link"
+                {...getJourneyMeasurementAttributes({
+                  surface: 'footer-experience',
+                  stage: 'search',
+                  action: route.href === '/sell' ? 'request-seller-review' : route.href === '/market' ? 'view-market' : 'continue-journey',
+                  destination: route.href === '/sell' ? 'seller' : route.href === '/market' ? 'market' : 'search',
+                })}
               >
                 {route.label}
               </Link>

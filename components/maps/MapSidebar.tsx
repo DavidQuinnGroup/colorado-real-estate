@@ -9,6 +9,7 @@ import { cities } from '@/lib/cities';
 import { getBlogLinks, type BlogLink } from '@/lib/linking/getBlogLinks';
 import PropertyCard from '../PropertyCard';
 import SaveSearch from './SaveSearch';
+import { getJourneyMeasurementAttributes } from '@/lib/customerJourneyMeasurement';
 
 export type MapSidebarListing = {
   id: string;
@@ -502,6 +503,12 @@ export default function MapSidebar(props: MapSidebarProps) {
             <Link
               href={authorityLinks.marketHref}
               className="group rounded-[8px] border border-white/10 bg-white/[0.045] px-3 py-2.5 transition-colors hover:border-cyan-100/35 hover:bg-white/[0.075]"
+              {...getJourneyMeasurementAttributes({
+                surface: 'search-sidebar-market-card',
+                stage: 'search',
+                action: 'view-market',
+                destination: 'market',
+              })}
             >
               <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100/72">
                 <Layers3 size={13} aria-hidden="true" />
@@ -605,6 +612,13 @@ export default function MapSidebar(props: MapSidebarProps) {
           <Link
             href="/contact"
             className="mt-3 inline-flex text-[10px] font-black uppercase tracking-[0.16em] text-cyan-100/72 transition hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-200"
+            data-testid="cep-navigation-sidebar-journey"
+            {...getJourneyMeasurementAttributes({
+              surface: 'search-sidebar-guidance',
+              stage: 'search',
+              action: 'ask-property-question',
+              destination: 'inquiry',
+            })}
           >
             Talk Through Your Search
           </Link>

@@ -79,6 +79,11 @@ function buildSearchAuthorityLinks(): SearchAuthorityLink[] {
         ]
       : []),
     {
+      label: 'Market Discovery',
+      href: '/market',
+      eyebrow: 'Markets',
+    },
+    {
       label: 'Boulder Neighborhood Intelligence',
       href: boulder ? `/market/${boulder.marketSlug}` : '/search?city=Boulder',
       eyebrow: 'Authority',

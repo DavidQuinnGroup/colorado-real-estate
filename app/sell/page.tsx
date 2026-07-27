@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 import HomeValueEstimator from '@/components/HomeValueEstimator';
+import { getJourneyMeasurementAttributes } from '@/lib/customerJourneyMeasurement';
 import { SITE_NAME, SITE_URL } from '@/lib/publicTrust';
 
 export const metadata: Metadata = {
@@ -48,19 +49,49 @@ export default function SellPage() {
               David Quinn Group helps sellers understand what buyers will notice, what should be prepared before launch, how to position
               the property, and what the current local market is likely to reward.
             </p>
-            <div className="mt-10 flex flex-wrap gap-3" data-testid="seller-page-primary-actions">
-              <a
-                href="#seller-intake"
-                className="inline-flex min-h-12 items-center justify-center rounded-full bg-cyan-100 px-6 py-3 text-sm font-black uppercase tracking-[0.14em] text-[#101820] transition hover:-translate-y-0.5 hover:bg-white focus:outline-none focus:ring-2 focus:ring-cyan-100 focus:ring-offset-2 focus:ring-offset-[#0b1117]"
-              >
-                Request Seller Review
-              </a>
-              <Link
-                href="/contact"
-                className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/18 px-6 py-3 text-sm font-black uppercase tracking-[0.14em] text-white transition hover:-translate-y-0.5 hover:border-white/38 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-100 focus:ring-offset-2 focus:ring-offset-[#0b1117]"
-              >
-                Contact Routing
-              </Link>
+            <div
+              data-testid="cep-navigation-seller-journey"
+              data-cep-measurement-ready="true"
+              data-cep-measurement-active="false"
+            >
+              <div className="mt-10 flex flex-wrap gap-3" data-testid="seller-page-primary-actions">
+                <a
+                  href="#seller-intake"
+                  className="inline-flex min-h-12 items-center justify-center rounded-full bg-cyan-100 px-6 py-3 text-sm font-black uppercase tracking-[0.14em] text-[#101820] transition hover:-translate-y-0.5 hover:bg-white focus:outline-none focus:ring-2 focus:ring-cyan-100 focus:ring-offset-2 focus:ring-offset-[#0b1117]"
+                  {...getJourneyMeasurementAttributes({
+                    surface: 'seller-primary-actions',
+                    stage: 'seller',
+                    action: 'request-seller-review',
+                    destination: 'seller',
+                  })}
+                >
+                  Request Seller Review
+                </a>
+                <Link
+                  href="/market"
+                  className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/18 px-6 py-3 text-sm font-black uppercase tracking-[0.14em] text-white transition hover:-translate-y-0.5 hover:border-white/38 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-100 focus:ring-offset-2 focus:ring-offset-[#0b1117]"
+                  {...getJourneyMeasurementAttributes({
+                    surface: 'seller-primary-actions',
+                    stage: 'seller',
+                    action: 'view-market',
+                    destination: 'market',
+                  })}
+                >
+                  Market Context
+                </Link>
+                <Link
+                  href="/contact"
+                  className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/18 px-6 py-3 text-sm font-black uppercase tracking-[0.14em] text-white transition hover:-translate-y-0.5 hover:border-white/38 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-100 focus:ring-offset-2 focus:ring-offset-[#0b1117]"
+                  {...getJourneyMeasurementAttributes({
+                    surface: 'seller-primary-actions',
+                    stage: 'seller',
+                    action: 'ask-property-question',
+                    destination: 'inquiry',
+                  })}
+                >
+                  Contact Routing
+                </Link>
+              </div>
             </div>
           </div>
 

@@ -7,6 +7,7 @@ import type { CollectionCreateSchema } from 'typesense/lib/Typesense/Collections
 import NearbyNeighborhoods from '@/components/NearbyNeighborhoods';
 import RelatedContent from '@/components/RelatedContent';
 import FAQSchema from '@/components/schema/FAQSchema';
+import { getJourneyMeasurementAttributes } from '@/lib/customerJourneyMeasurement';
 import { buildLinkGraph } from '@/lib/linking/buildLinkGraph';
 import { buildNeighborhoodMarketExperience } from '@/lib/marketIntelligenceExperience';
 import { getResilienceAdvice, neighborhoods, type Neighborhood } from '@/lib/neighborhoods';
@@ -445,6 +446,49 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
             >
               {marketExperience.sourceNote}
             </p>
+            <div
+              className="mt-5 grid gap-3 sm:grid-cols-3"
+              data-testid="cep-navigation-neighborhood-market-journey"
+              data-cep-measurement-ready="true"
+              data-cep-measurement-active="false"
+            >
+              <Link
+                href="/market"
+                className="flex min-h-12 items-center justify-center border border-white/10 bg-white/[0.035] px-4 py-3 text-center text-[11px] font-black uppercase tracking-[0.12em] text-white/64 transition hover:border-[#00ff80]/50 hover:text-[#00ff80] focus:outline-none focus:ring-2 focus:ring-[#00ff80]/70"
+                {...getJourneyMeasurementAttributes({
+                  surface: 'neighborhood-market-journey',
+                  stage: 'market',
+                  action: 'view-market',
+                  destination: 'market',
+                })}
+              >
+                All Markets
+              </Link>
+              <Link
+                href={`/market/${normalizeRouteSegment(neighborhood.city)}-co-housing-market`}
+                className="flex min-h-12 items-center justify-center border border-white/10 bg-white/[0.035] px-4 py-3 text-center text-[11px] font-black uppercase tracking-[0.12em] text-white/64 transition hover:border-[#00ff80]/50 hover:text-[#00ff80] focus:outline-none focus:ring-2 focus:ring-[#00ff80]/70"
+                {...getJourneyMeasurementAttributes({
+                  surface: 'neighborhood-market-journey',
+                  stage: 'market',
+                  action: 'view-market',
+                  destination: 'market',
+                })}
+              >
+                City Market
+              </Link>
+              <Link
+                href={`/search?neighborhood=${encodeURIComponent(neighborhood.name)}`}
+                className="flex min-h-12 items-center justify-center border border-white/10 bg-white/[0.035] px-4 py-3 text-center text-[11px] font-black uppercase tracking-[0.12em] text-white/64 transition hover:border-[#00ff80]/50 hover:text-[#00ff80] focus:outline-none focus:ring-2 focus:ring-[#00ff80]/70"
+                {...getJourneyMeasurementAttributes({
+                  surface: 'neighborhood-market-journey',
+                  stage: 'market',
+                  action: 'start-search',
+                  destination: 'search',
+                })}
+              >
+                Search Nearby
+              </Link>
+            </div>
           </div>
         </div>
 

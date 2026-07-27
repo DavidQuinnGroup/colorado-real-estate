@@ -10,6 +10,51 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / CEP 1.0 Sprint 5 Navigation, Conversion, and Measurement Baseline(tm) implementation handoff, July 27, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -5 --oneline
+```
+
+Current CEP 1.0 Sprint 5 state:
+
+- Program: `PROJECT_ATLAS_CEP_1_0_CUSTOMER_EXPERIENCE_PLATFORM`.
+- Sprint: `CEP_1_0_SPRINT_5_NAVIGATION_CONVERSION_AND_MEASUREMENT_BASELINE`.
+- Status: `CEP_1_0_SPRINT_5_IMPLEMENTED_AND_PUSHED_DEPLOYMENT_NOT_AUTHORIZED`.
+- Sprint 4 state: `CEP_1_0_SPRINT_4_CERTIFIED_AND_CLOSED`.
+- Sprint 4 certification commit: `b9762e413be08e0f22a57decc2065a15d3ee3a41`.
+- Baseline: implementation began from clean, aligned `main` at `b9762e413be08e0f22a57decc2065a15d3ee3a41`.
+- Primary CEP roadmap: `docs/project-atlas/executive-library/CEP-1.0-CUSTOMER-EXPERIENCE-PLATFORM-ARCHITECTURE-AND-IMPLEMENTATION-ROADMAP.md`.
+- Sprint 5 record: `docs/project-atlas/executive-library/CEP-1.0-SPRINT-5-NAVIGATION-CONVERSION-AND-MEASUREMENT-BASELINE.md`.
+- Implemented runtime scope: governed `/market` discovery page, passive journey-measurement helper, footer Market navigation, search Market Discovery authority link, search journey links, search-sidebar journey metadata, property decision-continuity links, city/neighborhood market continuity links, seller Market Context CTA, and passive seller-intake measurement posture.
+- Runtime files changed: `app/market/page.tsx`, `lib/customerJourneyMeasurement.ts`, `components/Footer.tsx`, `app/search/page.tsx`, `components/search/SearchInterface.tsx`, `components/maps/MapSidebar.tsx`, `app/properties/[id]/page.tsx`, `app/market/[city]/page.tsx`, `app/market/[city]/[slug]/page.tsx`, `app/sell/page.tsx`, and `components/HomeValueEstimator.tsx`.
+- Validation additions: `scripts/checkCepNavigationConversionMeasurementBaseline.ts`, `package.json`, and `tsconfig.worker.json`.
+- Required Sprint 5 check: `npm run check:cep-navigation-conversion-measurement-baseline`.
+- Validation completed before final commit: `npm run check:cep-navigation-conversion-measurement-baseline`, `npm run typecheck`, `npm run lint`, `npx prisma validate`, `npm run build`, local public-experience smoke against `http://localhost:3000`, CEP Sprint 1-4 regression checks, map-rendering safety, search-listing quality, search-runtime adapter safety, local route/API review, responsive browser review at 1280 x 900, 900 x 1050, 386 x 900, and 320 x 900, accessibility-focused review, mutation-safety review, and `git diff --check`.
+- Measurement posture: passive readiness only through governed `data-*` attributes; `data-cep-measurement-active="false"` remains the controlling state.
+- Analytics activation: `NOT_AUTHORIZED`; no analytics vendor, cookie, browser storage write, tracking endpoint call, new persistence, or event submission was added.
+- Preserved behavior: search API compatibility, search result eligibility, map/list behavior, property detail behavior, inquiry/tour behavior, seller review/valuation backend behavior, saved-search behavior, alerts, email, CRM, Seller Lead Engine, market route identity, database schema, migrations, environment variables, protected routes, public/private intelligence separation, protected intelligence boundaries, GIS pause, AI non-activation, and provider non-activation.
+- Deployment: `NOT_AUTHORIZED`.
+- Redeployment: `NOT_AUTHORIZED`.
+- Production smoke: `NOT_AUTHORIZED`.
+- Production certification: `NOT_AUTHORIZED`.
+- Customer-visible certification: `NOT_AUTHORIZED`.
+- Sprint 6: `NOT_AUTHORIZED`.
+- GIS Sprint 9: `NOT_AUTHORIZED`.
+- AI activation: `NOT_AUTHORIZED`.
+- Provider connection, credentials, terms acceptance, downloads, live GIS service/API calls, provider acquisition, provider persistence, provider data customer display, geographic runtime consumption, analytics activation, alert/CRM/email/seller/inquiry mutation tests, Vercel actions, environment changes, Prisma changes, migrations, and database changes remain `NOT_AUTHORIZED`.
+- Exact next executive decision required: David must decide whether to authorize `CEP_1_0_SPRINT_5_CONTROLLED_DEPLOYMENT_AND_PRODUCTION_CERTIFICATION_REVIEW`. Codex must not authorize that decision.
+
+Prior CEP Sprint 4 certification handoff retained below.
+
 PROJECT ATLAS(tm) / CEP 1.0 Sprint 4 Market Intelligence Baseline(tm) certification handoff, July 27, 2026:
 
 Workspace:

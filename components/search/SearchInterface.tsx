@@ -17,6 +17,7 @@ import SearchControls, {
   type SearchFilters,
 } from '@/components/search/SearchControls';
 import type { SearchMapMeta } from '@/components/maps/SearchMap';
+import { getJourneyMeasurementAttributes } from '@/lib/customerJourneyMeasurement';
 import type { FAQItem } from '@/lib/schema/faqSchema';
 
 const MapInner = dynamic(() => import('@/components/maps/MapInner'), {
@@ -459,6 +460,33 @@ export default function SearchInterface({
               Create Your Grand Plan
             </Link>
           </div>
+          <nav
+            className="mt-4 grid gap-2 rounded-[8px] border border-white/10 bg-white/[0.035] p-3 sm:grid-cols-3"
+            aria-label="Continue from search"
+            data-testid="cep-navigation-search-journey"
+            data-cep-measurement-ready="true"
+            data-cep-measurement-active="false"
+          >
+            {[
+              { label: 'Market context', href: '/market', action: 'view-market' as const, destination: 'market' as const },
+              { label: 'Seller review', href: '/sell', action: 'request-seller-review' as const, destination: 'seller' as const },
+              { label: 'Ask an advisor', href: '/contact', action: 'ask-property-question' as const, destination: 'inquiry' as const },
+            ].map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="inline-flex min-h-10 items-center justify-center rounded-[6px] border border-white/10 bg-black/18 px-3 py-2 text-center text-[10px] font-black uppercase tracking-[0.12em] text-white/58 transition hover:border-cyan-100/35 hover:text-cyan-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
+                {...getJourneyMeasurementAttributes({
+                  surface: 'search-continuity',
+                  stage: 'search',
+                  action: item.action,
+                  destination: item.destination,
+                })}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </nav>
           <ol className="reie-search-orientation" data-testid="reie-search-orientation" aria-label="How to begin guided search">
             <li>
               <span>Start Broadly</span>
@@ -589,6 +617,12 @@ export default function SearchInterface({
                   key={`${link.href}-${link.label}`}
                   href={link.href}
                   className="group rounded-[6px] border border-white/10 bg-white/[0.055] p-3 transition-colors hover:border-cyan-100/35 hover:bg-white/[0.085]"
+                  {...getJourneyMeasurementAttributes({
+                    surface: 'search-map-authority-links',
+                    stage: 'search',
+                    action: link.href.startsWith('/market') ? 'view-market' : 'continue-journey',
+                    destination: link.href.startsWith('/market') ? 'market' : 'search',
+                  })}
                 >
                   <p className="text-[10px] font-black uppercase tracking-[0.16em] text-cyan-100/72">
                     {link.eyebrow}

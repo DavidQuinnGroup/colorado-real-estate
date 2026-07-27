@@ -28,6 +28,7 @@ import ResilientListingImage from '@/components/ResilientListingImage';
 import PropertyLinks from '@/components/internal-links/PropertyLinks';
 import FAQSchema from '@/components/schema/FAQSchema';
 import { getCityByName } from '@/lib/cities';
+import { getJourneyMeasurementAttributes } from '@/lib/customerJourneyMeasurement';
 import { getBlogLinks } from '@/lib/linking/getBlogLinks';
 import { getPropertyLinks, type PropertyAuthorityLink } from '@/lib/linking/getPropertyLinks';
 import { getListingFallbackPhotoUrl, getListingPhotoUrl } from '@/lib/listingVisuals';
@@ -1527,6 +1528,53 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
             <p className="mt-4 border-t border-cyan-100/14 pt-4 text-sm leading-6 text-white/58">
               Use the inquiry form to share timing, tour intent, and property-specific questions. Do not submit confidential negotiation details here.
             </p>
+          </section>
+
+          <section
+            className="rounded-[8px] border border-white/10 bg-[#0d141c] p-4"
+            data-testid="cep-navigation-property-journey"
+            data-cep-measurement-ready="true"
+            data-cep-measurement-active="false"
+          >
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/46">Continue the decision</p>
+            <div className="mt-4 grid gap-2">
+              <Link
+                href={marketPathway.href}
+                className="inline-flex min-h-10 items-center justify-center rounded-[6px] border border-cyan-100/22 bg-cyan-100/[0.08] px-3 py-2 text-[10px] font-black uppercase tracking-[0.12em] text-cyan-100 transition hover:border-cyan-100/40 hover:bg-cyan-100/[0.12] focus:outline-none focus:ring-2 focus:ring-cyan-100/70"
+                {...getJourneyMeasurementAttributes({
+                  surface: 'property-decision-journey',
+                  stage: 'property',
+                  action: 'view-market',
+                  destination: 'market',
+                })}
+              >
+                {marketPathway.isMarketPageAvailable ? 'View Market Context' : 'Return to Search'}
+              </Link>
+              <Link
+                href="#property-contact"
+                className="inline-flex min-h-10 items-center justify-center rounded-[6px] bg-cyan-100 px-3 py-2 text-[10px] font-black uppercase tracking-[0.12em] text-[#061017] transition hover:bg-white focus:outline-none focus:ring-2 focus:ring-cyan-100/70"
+                {...getJourneyMeasurementAttributes({
+                  surface: 'property-decision-journey',
+                  stage: 'property',
+                  action: 'ask-property-question',
+                  destination: 'inquiry',
+                })}
+              >
+                Ask About This Property
+              </Link>
+              <Link
+                href="/sell"
+                className="inline-flex min-h-10 items-center justify-center rounded-[6px] border border-white/10 bg-white/[0.055] px-3 py-2 text-[10px] font-black uppercase tracking-[0.12em] text-white/66 transition hover:border-cyan-100/35 hover:text-cyan-100 focus:outline-none focus:ring-2 focus:ring-cyan-100/70"
+                {...getJourneyMeasurementAttributes({
+                  surface: 'property-decision-journey',
+                  stage: 'property',
+                  action: 'request-seller-review',
+                  destination: 'seller',
+                })}
+              >
+                Request Seller Review
+              </Link>
+            </div>
           </section>
 
           <PropertyInquiryForm

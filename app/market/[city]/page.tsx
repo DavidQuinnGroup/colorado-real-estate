@@ -11,6 +11,7 @@ import ResilienceDashboard from '@/components/ResilienceDashboard';
 import RelatedArticles from '@/components/RelatedArticles';
 import FAQSchema from '@/components/schema/FAQSchema';
 import { cities, getCityByMarketSlug, type CityData } from '@/lib/cities';
+import { getJourneyMeasurementAttributes } from '@/lib/customerJourneyMeasurement';
 import { buildCityMarketExperience } from '@/lib/marketIntelligenceExperience';
 import { neighborhoods, type Neighborhood } from '@/lib/neighborhoods';
 import { generateFAQs } from '@/lib/schema/generateFAQs';
@@ -330,6 +331,49 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
             >
               {marketExperience.sourceNote}
             </p>
+            <div
+              className="mt-5 grid gap-3 sm:grid-cols-3"
+              data-testid="cep-navigation-market-journey"
+              data-cep-measurement-ready="true"
+              data-cep-measurement-active="false"
+            >
+              <Link
+                href="/market"
+                className="flex min-h-12 items-center justify-center border border-white/10 bg-white/[0.035] px-4 py-3 text-center text-[11px] font-black uppercase tracking-[0.12em] text-white/64 transition hover:border-[#00ff80]/50 hover:text-[#00ff80] focus:outline-none focus:ring-2 focus:ring-[#00ff80]/70"
+                {...getJourneyMeasurementAttributes({
+                  surface: 'city-market-journey',
+                  stage: 'market',
+                  action: 'view-market',
+                  destination: 'market',
+                })}
+              >
+                All Markets
+              </Link>
+              <Link
+                href={`/search?city=${encodeURIComponent(cityData.name)}`}
+                className="flex min-h-12 items-center justify-center border border-white/10 bg-white/[0.035] px-4 py-3 text-center text-[11px] font-black uppercase tracking-[0.12em] text-white/64 transition hover:border-[#00ff80]/50 hover:text-[#00ff80] focus:outline-none focus:ring-2 focus:ring-[#00ff80]/70"
+                {...getJourneyMeasurementAttributes({
+                  surface: 'city-market-journey',
+                  stage: 'market',
+                  action: 'start-search',
+                  destination: 'search',
+                })}
+              >
+                Search This Market
+              </Link>
+              <Link
+                href="/sell"
+                className="flex min-h-12 items-center justify-center border border-white/10 bg-white/[0.035] px-4 py-3 text-center text-[11px] font-black uppercase tracking-[0.12em] text-white/64 transition hover:border-[#00ff80]/50 hover:text-[#00ff80] focus:outline-none focus:ring-2 focus:ring-[#00ff80]/70"
+                {...getJourneyMeasurementAttributes({
+                  surface: 'city-market-journey',
+                  stage: 'market',
+                  action: 'request-seller-review',
+                  destination: 'seller',
+                })}
+              >
+                Seller Strategy
+              </Link>
+            </div>
           </div>
         </section>
 
