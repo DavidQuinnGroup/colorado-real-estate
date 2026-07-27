@@ -28,7 +28,8 @@ Current EOI 1.0 Sprint 2 state:
 
 - Program: `ENTERPRISE_OPERATIONS_INTELLIGENCE_1_0`.
 - Sprint: `EOI_1_0_SPRINT_2_EXECUTIVE_OPERATIONAL_SUMMARY_BASELINE`.
-- Status: `EOI_1_0_SPRINT_2_EXECUTIVE_OPERATIONAL_SUMMARY_BASELINE_IMPLEMENTED_DEPLOYMENT_NOT_AUTHORIZED`.
+- Status: `EOI_1_0_SPRINT_2_EXECUTIVE_OPERATIONAL_SUMMARY_BASELINE_CERTIFIED_AND_CLOSED`.
+- Implementation commit certified: `0ce571e88f1cf2a173947e1c0a413fe70b9cbb5b`.
 - Starting baseline: clean, aligned `main` at `028ea4b41caba068eefc75c9bf81c7fe808e0f94`.
 - Sprint 1 remains certified and closed: `EOI_1_0_SPRINT_1_OPERATIONAL_KPI_REPORTING_BASELINE_CERTIFIED_AND_CLOSED`.
 - Governing predecessor review: `docs/project-atlas/executive-library/EOI-1.0-STRATEGIC-PRIORITY-REVIEW.md`.
@@ -42,8 +43,23 @@ Current EOI 1.0 Sprint 2 state:
 - Deterministic safety command: `npm run check:eoi-executive-operational-summary-baseline`.
 - Validation passed: `npm run check:eoi-executive-operational-summary-baseline`, `npm run check:eoi-operational-kpi-reporting-baseline`, `npm run check:enterprise-executive-workspace-safety`, `npm run check:enterprise-kpi-safety`, `npm run check:cim-first-party-measurement-readiness-adapter`, `npm run typecheck`, `npm run lint`, `npm run build`, and `npx prisma validate`.
 - Local protected route review passed on the built server with throwaway local admin keys only: unauthenticated `GET /api/admin/enterprise/operational-summary` returned `401`; authenticated `GET /api/admin/enterprise/operational-summary` returned `200` with `module="enterprise-operations-intelligence-operational-summary"`, `mode="read_only"`, `contractVersion="EOI-1.0-SPRINT-2"`, `sourceContractVersion="EOI-1.0-SPRINT-1"`, `generatedFrom="GOVERNED_CONTRACT_METADATA"`, 10 summary sections, and live KPI computation, automation, telemetry, persistence, and mutation flags all `false`.
-- Deployment, production certification, EOI Sprint 3, dashboards, live KPI computation, trend reporting, risk detection, decision support, automation, CRM changes, database work, persistence, telemetry activation, AI activation, GIS activation, provider activation, production mutation, and unrelated work remain `NOT_AUTHORIZED`.
-- Exact next executive decision required after push: David must decide whether to authorize a controlled deployment and production certification review for EOI Sprint 2. Codex must not authorize that decision.
+- Deployment provider: Vercel through existing GitHub deployment automation.
+- GitHub deployment ID: `5628351810`.
+- GitHub deployment status ID: `16004997235`.
+- GitHub commit status ID: `51168535369`.
+- Deployment status: `success`; description: `Deployment has completed`.
+- Deployed SHA: `0ce571e88f1cf2a173947e1c0a413fe70b9cbb5b`.
+- Deployment created: `2026-07-27T19:09:15Z`; deployment status timestamp: `2026-07-27T19:09:15Z`.
+- Vercel target: `https://david-quinn-group-8rde-jdaajsriz-david-quinns-projects-a0953600.vercel.app`.
+- Governed production domain reviewed: `https://davidquinngroup.com`.
+- Production route review passed for `/`, `/search`, `/market`, `/sell`, representative property route `/properties/cmqlmynbh00bupi4jyw0rkgy0`, `/api/search?limit=5`, safe zero-result search, `/admin`, `/api/admin/enterprise/operational-kpis`, and `/api/admin/enterprise/operational-summary`.
+- Public routes remained usable; `/admin` returned `401`; unauthenticated `/api/admin/enterprise/operational-kpis` returned `401`; unauthenticated `/api/admin/enterprise/operational-summary` returned `401`.
+- Authenticated `/api/admin/enterprise/operational-kpis` returned `200` with existing Sprint 1 read-only KPI metadata unchanged.
+- Authenticated `/api/admin/enterprise/operational-summary` returned `200` with Sprint 2 read-only summary metadata only: 10 sections, source contract `EOI-1.0-SPRINT-1`, generated from `GOVERNED_CONTRACT_METADATA`, evidence classifications present, interpretation boundaries present, and all live KPI computation, automation, telemetry, persistence, and mutation flags `false`.
+- Public `/`, `/search`, `/market`, `/sell`, and representative property HTML were checked for executive operational summary exposure; no public EOI summary/KPI exposure was found.
+- No manual deployment, redeployment, preview promotion, domain change, environment change, database write, Prisma mutation, migration, CRM automation, workflow automation, dashboard runtime logic, live analytics, notification, email, alert, persistence, telemetry, AI activation, GIS activation, provider activation, protected public exposure, or production mutation occurred.
+- EOI Sprint 3, dashboards, live KPI computation, trend reporting, risk detection, decision support, automation, CRM changes, database work, persistence, telemetry activation, AI activation, GIS activation, provider activation, production mutation, and unrelated work remain `NOT_AUTHORIZED`.
+- Exact next executive decision required: David must decide whether to authorize the next EOI 1.0 executive priority review or a separately scoped EOI Sprint 3 proposal. Codex must not authorize that decision.
 
 Prior EOI Strategic Priority Review handoff retained below.
 

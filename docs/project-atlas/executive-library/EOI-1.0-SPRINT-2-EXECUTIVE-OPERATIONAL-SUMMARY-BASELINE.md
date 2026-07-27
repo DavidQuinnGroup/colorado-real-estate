@@ -1,6 +1,6 @@
 # PROJECT ATLAS(tm) - EOI 1.0 Sprint 2 Executive Operational Summary Baseline(tm)
 
-Status: `EOI_1_0_SPRINT_2_EXECUTIVE_OPERATIONAL_SUMMARY_BASELINE_IMPLEMENTED_DEPLOYMENT_NOT_AUTHORIZED`
+Status: `EOI_1_0_SPRINT_2_EXECUTIVE_OPERATIONAL_SUMMARY_BASELINE_CERTIFIED_AND_CLOSED`
 
 Date: July 27, 2026
 
@@ -252,11 +252,11 @@ Preserved:
 
 ## 10. Deployment State
 
-Deployment is not authorized.
+Manual deployment is not authorized and was not performed during certification.
 
-This sprint stops at local implementation, validation, documentation, commit, and push.
+The implementation commit deployed through existing GitHub/Vercel automation and was reviewed through non-mutating production certification only.
 
-No production deployment, production certification, production mutation, environment change, provider activation, AI activation, GIS activation, telemetry activation, dashboard implementation, trend reporting, risk detection, decision support, automation, or EOI Sprint 3 work is authorized.
+No production mutation, environment change, provider activation, AI activation, GIS activation, telemetry activation, dashboard implementation, trend reporting, risk detection, decision support, automation, or EOI Sprint 3 work is authorized.
 
 ## 11. Remaining Gaps
 
@@ -274,18 +274,83 @@ Remaining gaps require separate authorization:
 - read-only CRM source binding
 - automation readiness decision gate
 
-## 12. Production Readiness Assessment
+## 12. Production Certification Review
 
-Sprint 2 is implementation-ready for controlled deployment review only after successful local validation and push.
+Production review date: July 27, 2026
 
-It is not production-certified by this record.
+Reviewed implementation commit:
 
-The strongest permitted post-implementation state is:
+`0ce571e88f1cf2a173947e1c0a413fe70b9cbb5b`
 
-`EOI_1_0_SPRINT_2_EXECUTIVE_OPERATIONAL_SUMMARY_BASELINE_IMPLEMENTED_DEPLOYMENT_NOT_AUTHORIZED`
+Deployment evidence:
+
+- Deployment provider: Vercel through existing GitHub deployment automation.
+- GitHub deployment ID: `5628351810`.
+- GitHub deployment status ID: `16004997235`.
+- GitHub commit status ID: `51168535369`.
+- Deployment state: `success`.
+- Deployment description: `Deployment has completed`.
+- Deployed SHA: `0ce571e88f1cf2a173947e1c0a413fe70b9cbb5b`.
+- Deployment created: `2026-07-27T19:09:15Z`.
+- Deployment status timestamp: `2026-07-27T19:09:15Z`.
+- Vercel target: `https://david-quinn-group-8rde-jdaajsriz-david-quinns-projects-a0953600.vercel.app`.
+- Governed production domain reviewed: `https://davidquinngroup.com`.
+- Deployment was automatic from existing GitHub/Vercel automation.
+- No manual deployment, redeployment, preview promotion, domain change, or environment change was performed.
+
+Production route review:
+
+- `/`: `200`, usable public HTML.
+- `/search`: `200`, usable public HTML.
+- `/market`: `200`, usable public HTML.
+- `/sell`: `200`, usable public HTML.
+- `/properties/cmqlmynbh00bupi4jyw0rkgy0`: `200`, representative property page usable.
+- `/api/search?limit=5`: `200`, compatible JSON response with 5 results.
+- `/api/search?query=zzzzzzzzzz-no-match-eoi-sprint-2&limit=5`: `200`, compatible JSON response with 0 results.
+- `/admin`: `401`, protected admin remained protected.
+- Unauthenticated `/api/admin/enterprise/operational-kpis`: `401`.
+- Authenticated `/api/admin/enterprise/operational-kpis`: `200`, existing EOI Sprint 1 read-only KPI endpoint unchanged with 10 definitions, 10 observations, and automation, telemetry, and persistence disabled.
+- Unauthenticated `/api/admin/enterprise/operational-summary`: `401`.
+- Authenticated `/api/admin/enterprise/operational-summary`: `200`, EOI Sprint 2 read-only summary metadata only.
+
+Authenticated operational summary evidence:
+
+- `module`: `enterprise-operations-intelligence-operational-summary`.
+- `mode`: `read_only`.
+- `contractVersion`: `EOI-1.0-SPRINT-2`.
+- `sourceContractVersion`: `EOI-1.0-SPRINT-1`.
+- `generatedFrom`: `GOVERNED_CONTRACT_METADATA`.
+- Summary section count: `10`.
+- Section identifiers: Executive Overview, Operational Context, KPI Coverage, Confidence Assessment, Freshness Assessment, Human Review Required, Governance Notes, Recommended Attention Areas, Deferred Interpretation, and Evidence Provenance.
+- Evidence classifications observed: governed metadata, governed fact, human interpretation, and deferred analysis.
+- Interpretation boundaries observed: metadata-only, fact-only, human-review-required, and deferred-until-source-evidence.
+- `liveKpiComputationAuthorized`: `false`.
+- `automationAuthorized`: `false`.
+- `telemetryAuthorized`: `false`.
+- `persistenceAuthorized`: `false`.
+- `mutationAuthorized`: `false`.
+
+Public exposure review:
+
+- Public `/`, `/search`, `/market`, `/sell`, and representative property HTML were checked for `operational-summary`, `enterprise-operations-intelligence`, `EOI-SUMMARY`, and `operational kpi`.
+- No public exposure of executive operational summary or operational KPI metadata was found.
+
+Source-level contract review:
+
+- `lib/eoi/executiveOperationalSummaryContract.ts` contains the full governed summary contract with governing source, governing owner, confidence classification, freshness classification, evidence classification, interpretation boundary, Sprint 1 metadata source reference, and no-activation flags.
+- `lib/eoi/executiveOperationalSummaryRouteAdapter.ts` exposes protected route metadata only and keeps live KPI computation, automation, telemetry, persistence, and mutation unauthorized.
+- `npm run check:eoi-executive-operational-summary-baseline` passed during certification review.
+
+Certification gate decision:
+
+All certification gates passed.
+
+Final governed status:
+
+`EOI_1_0_SPRINT_2_EXECUTIVE_OPERATIONAL_SUMMARY_BASELINE_CERTIFIED_AND_CLOSED`
 
 ## 13. Next Executive Recommendation
 
-Authorize a controlled deployment and production certification review of EOI Sprint 2 only after local validation passes and the implementation commit is pushed.
+Decide whether to authorize the next EOI 1.0 executive priority review or a separately scoped EOI Sprint 3 proposal.
 
 Do not authorize EOI Sprint 3, dashboards, trend reporting, risk detection, decision support, live KPI computation, automation, telemetry, persistence, AI, GIS, provider activation, or production mutation as part of that decision.
