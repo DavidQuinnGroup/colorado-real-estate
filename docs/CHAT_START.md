@@ -10,7 +10,7 @@ Product:
 
 ## Latest New-Chat Handoff
 
-PROJECT ATLAS(tm) / EOI 1.0 Strategic Priority Review 2(tm), July 27, 2026:
+PROJECT ATLAS(tm) / EOI 1.0 Sprint 3 Operational Dashboard Baseline(tm), July 27, 2026:
 
 Workspace:
 
@@ -24,29 +24,28 @@ git rev-parse HEAD origin/main
 git log -5 --oneline
 ```
 
-Current EOI 1.0 strategic state:
+Current EOI 1.0 Sprint 3 state:
 
 - Program: `ENTERPRISE_OPERATIONS_INTELLIGENCE_1_0`.
-- Review: `EOI_1_0_STRATEGIC_PRIORITY_REVIEW_2`.
-- Status: `EOI_1_0_STRATEGIC_PRIORITY_REVIEW_2_COMPLETE_IMPLEMENTATION_NOT_AUTHORIZED`.
-- Review baseline: clean, aligned `main` at `480b3ffd2813d8e07ca5745ad98502ba52eac2c5`.
-- Certified EOI Sprint 1: `EOI_1_0_SPRINT_1_OPERATIONAL_KPI_REPORTING_BASELINE_CERTIFIED_AND_CLOSED`.
-- Certified EOI Sprint 2: `EOI_1_0_SPRINT_2_EXECUTIVE_OPERATIONAL_SUMMARY_BASELINE_CERTIFIED_AND_CLOSED`.
-- Strategic review record: `docs/project-atlas/executive-library/EOI-1.0-STRATEGIC-PRIORITY-REVIEW-2.md`.
-- Repository assets reviewed: EOI KPI reporting and executive summary contracts, protected EOI admin routes, CAO operating/queue/consultation/disposition contracts, CIM inactive measurement/privacy/adapter contracts, enterprise KPI registry/evaluation/health/intelligence/executive workspace/decision-support modules, protected enterprise admin routes, repository health/reporting utilities, governed EOI/CAO/CIM records, and safety scripts.
-- Strategic conclusion: EOI has enough certified semantics for a protected operational dashboard baseline, but not enough source evidence for live KPI computation, trend reporting, risk detection, decision support, analytics, or automation.
-- Recommended Sprint 3: `EOI_1_0_SPRINT_3_OPERATIONAL_DASHBOARD_BASELINE`.
-- Recommended Sprint 3 objective: create a protected, read-only administrative EOI dashboard presenting certified Sprint 1 KPI metadata and certified Sprint 2 executive summary metadata with visible confidence, freshness, evidence classification, interpretation boundary, data-integrity, and limitation language.
-- Dashboard decision: dashboards should now precede analytics, but only as metadata-only protected presentation; dashboards must not imply live operational performance.
-- Trend decision: service-level trend reporting should not precede the dashboard because historical observations, snapshot governance, persistence, or source binding are not authorized.
-- Summary decision: Sprint 2 established enough summary semantics for a dashboard; further summary expansion should be scoped only where needed to preserve dashboard clarity.
-- Live KPI computation remains deferred.
-- Operational intelligence should remain read-only.
-- CRM automation remains outside EOI.
-- Implementation performed during this review: documentation only.
-- Validation: `git diff --check` passed; final diff was documentation-only before commit.
-- EOI Sprint 3 implementation, dashboard implementation, analytics implementation, trend reporting, risk detection, decision support, live KPI computation, CRM automation, workflow automation, database work, persistence, telemetry activation, AI activation, GIS activation, provider activation, deployment, production mutation, and unrelated work remain `NOT_AUTHORIZED`.
-- Exact next executive decision required: David must decide whether to authorize `EOI_1_0_SPRINT_3_OPERATIONAL_DASHBOARD_BASELINE`. Codex must not authorize that decision.
+- Sprint: `EOI_1_0_SPRINT_3_OPERATIONAL_DASHBOARD_BASELINE`.
+- Status: `EOI_1_0_SPRINT_3_OPERATIONAL_DASHBOARD_BASELINE_IMPLEMENTED_DEPLOYMENT_NOT_AUTHORIZED`.
+- Starting baseline: clean, aligned `main` at `0a095f6f88cdf09ef955cd20ae33558f9085463e`.
+- Sprint 1 remains certified and closed: `EOI_1_0_SPRINT_1_OPERATIONAL_KPI_REPORTING_BASELINE_CERTIFIED_AND_CLOSED`.
+- Sprint 2 remains certified and closed: `EOI_1_0_SPRINT_2_EXECUTIVE_OPERATIONAL_SUMMARY_BASELINE_CERTIFIED_AND_CLOSED`.
+- Governing predecessor review: `docs/project-atlas/executive-library/EOI-1.0-STRATEGIC-PRIORITY-REVIEW-2.md`.
+- Sprint record: `docs/project-atlas/executive-library/EOI-1.0-SPRINT-3-OPERATIONAL-DASHBOARD-BASELINE.md`.
+- Implementation created a protected admin dashboard route at `/admin/repository/executive-operations-dashboard`.
+- Dashboard presents governed metadata only from EOI Sprint 1 operational KPI reporting and EOI Sprint 2 executive operational summary.
+- Dashboard sections: Executive Operational Overview, KPI Registry Summary, Executive Summary Overview, Confidence Status, Freshness Status, Evidence Classification, Governance Status, Interpretation Boundaries, Human Review Indicators, and Deferred Capability Indicators.
+- Required dashboard labels: `READ-ONLY`, `GOVERNED METADATA`, `NO LIVE KPI COMPUTATION`, `NO TREND ANALYSIS`, and `NO OPERATIONAL AUTOMATION`.
+- Runtime posture: protected admin presentation only, read-only, `generatedFrom="GOVERNED_METADATA_ONLY"`, zero live observations, live KPI computation disabled, trend analysis disabled, analytics disabled, automation disabled, telemetry disabled, persistence disabled, and mutation disabled.
+- Files added: `lib/eoi/operationalDashboardContract.ts`, `lib/eoi/operationalDashboardRouteAdapter.ts`, `app/admin/repository/executive-operations-dashboard/page.tsx`, `scripts/checkEoiOperationalDashboardBaseline.ts`, and `docs/project-atlas/executive-library/EOI-1.0-SPRINT-3-OPERATIONAL-DASHBOARD-BASELINE.md`.
+- Files updated: `lib/eoi/index.ts`, `package.json`, `tsconfig.worker.json`, and `docs/CHAT_START.md`.
+- Deterministic safety command: `npm run check:eoi-operational-dashboard-baseline`.
+- Validation passed: `npm run check:eoi-operational-dashboard-baseline`, `npm run check:eoi-executive-operational-summary-baseline`, `npm run check:eoi-operational-kpi-reporting-baseline`, `npm run check:enterprise-executive-workspace-safety`, `npm run check:enterprise-kpi-safety`, `npm run check:cim-first-party-measurement-readiness-adapter`, `npm run typecheck`, `npm run lint`, `npm run build`, `npx prisma validate`, `git diff --check`, and `git diff --cached --check`.
+- Local protected dashboard review passed on the built server with throwaway local admin keys only: unauthenticated `GET /admin/repository/executive-operations-dashboard` was protected; authenticated `GET /admin/repository/executive-operations-dashboard` rendered dashboard HTML with required labels, governed metadata language, evidence classifications, interpretation boundaries, and no live KPI/trend/automation claims.
+- Deployment, production certification, EOI Sprint 4, trend reporting, analytics, decision support, risk detection, opportunity detection, live KPI computation, CRM automation, workflow automation, database work, persistence, telemetry activation, AI activation, GIS activation, provider activation, production mutation, and unrelated work remain `NOT_AUTHORIZED`.
+- Exact next executive decision required: David must decide whether to authorize `EOI_1_0_SPRINT_3_CONTROLLED_DEPLOYMENT_AND_PRODUCTION_CERTIFICATION_REVIEW`. Codex must not authorize that decision.
 
 Prior EOI Sprint 2 production certification handoff retained below.
 

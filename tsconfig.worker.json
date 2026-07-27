@@ -42,6 +42,7 @@
     "scripts/checkCaoConsultationWorkflowDispositionStandard.ts",
     "scripts/checkEoiOperationalKpiReportingBaseline.ts",
     "scripts/checkEoiExecutiveOperationalSummaryBaseline.ts",
+    "scripts/checkEoiOperationalDashboardBaseline.ts",
     "scripts/checkPrismaClientParity.ts",
     "scripts/checkProductionDependencies.ts",
     "scripts/checkPropertyRouteSafety.ts",
