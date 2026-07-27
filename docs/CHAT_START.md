@@ -10,6 +10,44 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / CAO 1.0 Executive Priority Review handoff, July 27, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -5 --oneline
+```
+
+Current CAO 1.0 executive priority state:
+
+- Program: `CAO_1_0_CUSTOMER_ACQUISITION_OPERATIONS_PROGRAM`.
+- Review: `CAO_1_0_EXECUTIVE_PRIORITY_REVIEW`.
+- Status: `CAO_1_0_EXECUTIVE_PRIORITY_REVIEW_COMPLETE_IMPLEMENTATION_NOT_AUTHORIZED`.
+- Review baseline: clean, aligned `main` at `403918a862323cd941ce1e5c75614230cd4b2547`.
+- Certified CAO Sprint 1: `CAO_1_0_SPRINT_1_OPERATING_MODEL_AND_SERVICE_LEVEL_CONTRACT_CERTIFIED_AND_CLOSED`.
+- Certified CAO Sprint 2: `CAO_1_0_SPRINT_2_OPERATIONS_QUEUE_AND_REVIEW_READINESS_BASELINE_CERTIFIED_AND_CLOSED`.
+- Executive priority review record: `docs/project-atlas/executive-library/CAO-1.0-EXECUTIVE-PRIORITY-REVIEW.md`.
+- Current operational state: `OPERATIONAL_FOUNDATION_GOVERNED_CONSULTATION_STANDARD_MISSING`.
+- Repository evidence reviewed: CAO Sprint 1 and Sprint 2 contracts, protected CRM task list/detail APIs, Master Control Panel CRM and CAO queue readiness surfaces, buyer property inquiry route, seller valuation route, CRM task creation helper, seller lead helper, CRM worker/reporting utilities, enterprise KPI infrastructure, and CAO governance records.
+- Candidate programs scored: Consultation Workflow and Lead Disposition Standard, Operational KPI Reporting Baseline, Service-Level Reporting Baseline, CRM Automation Readiness, and Enterprise Operations Intelligence Review.
+- Recommended next priority: `CAO_1_0_SPRINT_3_CONSULTATION_WORKFLOW_AND_LEAD_DISPOSITION_STANDARD`.
+- Recommendation: CAO Sprint 3 should proceed only if separately authorized as a governance-first, non-automating sprint.
+- Rationale: queue visibility and service-level governance now exist, but buyer/seller consultation standards, disposition taxonomy, follow-up cadence, no-response handling, closure/lost-reason quality, and outcome-quality expectations remain undefined.
+- KPI reporting decision: KPI reporting should not precede consultation workflow because outcome and disposition meanings are not yet governed.
+- Automation decision: consultation workflow must precede automation; CRM automation remains premature.
+- If CAO pauses, recommended successor program: `ENTERPRISE_OPERATIONS_INTELLIGENCE_1_0_EXECUTIVE_READINESS_REVIEW`.
+- Implementation authorization: `NOT_AUTHORIZED`.
+- Runtime changes, CRM automation, assignment automation, routing automation, lifecycle automation, notifications, emails, alerts, database changes, Prisma schema changes, migrations, telemetry activation, AI activation, GIS activation, provider activation, deployment, production mutation, CAO Sprint 3 implementation, and unrelated work remain `NOT_AUTHORIZED`.
+- Exact next executive decision required: David must decide whether to authorize `CAO_1_0_SPRINT_3_CONSULTATION_WORKFLOW_AND_LEAD_DISPOSITION_STANDARD` as a governance-first, non-automating implementation sprint. Codex must not authorize that decision.
+
+Prior CAO Sprint 2 production certification handoff retained below.
+
 PROJECT ATLAS(tm) / CAO 1.0 Sprint 2 Operations Queue and Review Readiness Baseline(tm) production certification handoff, July 27, 2026:
 
 Workspace:
