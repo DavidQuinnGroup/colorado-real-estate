@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import type { LucideIcon } from 'lucide-react';
+import type { CaoQueueReadinessSummary, CaoQueueReadinessView } from '@/lib/cao/operationsQueueReadinessContract';
 import {
   Activity,
   BellRing,
@@ -970,6 +971,7 @@ type CRMTask = {
     intakeCommand: string;
     alertStatusCommand: string;
   };
+  operationsReadiness: CaoQueueReadinessView;
 };
 
 type CRMTaskReviewStatus = 'reviewing' | 'completed' | 'dismissed';
@@ -1048,6 +1050,7 @@ type CRMTasksResponse =
       summary: CRMTaskSummary;
       audit: CRMTaskAuditSummary;
       readiness: CRMTaskReadiness;
+      queueReadiness: CaoQueueReadinessSummary;
       verdict: string;
       filters: {
         limit: number;
@@ -1073,6 +1076,7 @@ type CRMTasksResponse =
       summary?: CRMTaskSummary;
       audit?: CRMTaskAuditSummary;
       readiness?: CRMTaskReadiness;
+      queueReadiness?: CaoQueueReadinessSummary;
       verdict?: string;
       filters?: {
         limit: number;
@@ -1197,6 +1201,25 @@ const emptyCRMTaskReadiness: CRMTaskReadiness = {
   terminal: 'Terminal 5',
   nextCommand: 'npm run run:crm:active',
   gates: [],
+};
+
+const emptyCaoQueueReadiness: CaoQueueReadinessSummary = {
+  contractVersion: 'CAO-1.0-SPRINT-2',
+  source: 'CRM_TASK_LIST',
+  total: 0,
+  unassigned: 0,
+  assigned: 0,
+  waiting: 0,
+  overdue: 0,
+  completed: 0,
+  dismissed: 0,
+  onTime: 0,
+  approachingSla: 0,
+  overdueSla: 0,
+  closureReviewRequired: 0,
+  reviewIncomplete: 0,
+  operationalReadiness: 'READY',
+  summary: 'Queue readiness has not been loaded.',
 };
 
 const ADMIN_KEY_SESSION_STORAGE_KEY = 'reie.adminKey';
@@ -3155,6 +3178,27 @@ function getCRMReadinessClass(level: CRMTaskReadiness['level']) {
   return 'border-red-400/40 bg-red-500/10 text-red-100';
 }
 
+function getCaoQueueReadinessClass(level: CaoQueueReadinessSummary['operationalReadiness']) {
+  if (level === 'READY') return 'border-emerald-300/30 bg-emerald-400/10 text-emerald-100';
+  if (level === 'WATCH') return 'border-amber-300/40 bg-amber-400/10 text-amber-100';
+  return 'border-red-400/40 bg-red-500/10 text-red-100';
+}
+
+function getCaoQueueStateClass(state: CaoQueueReadinessView['queueState']) {
+  if (state === 'COMPLETED') return 'border-emerald-300/30 bg-emerald-400/10 text-emerald-100';
+  if (state === 'DISMISSED') return 'border-slate-700 bg-black text-slate-300';
+  if (state === 'OVERDUE') return 'border-red-400/40 bg-red-500/10 text-red-100';
+  if (state === 'WAITING') return 'border-amber-300/40 bg-amber-400/10 text-amber-100';
+  if (state === 'ASSIGNED') return 'border-cyan-300/30 bg-cyan-300/10 text-cyan-100';
+  return 'border-slate-800 bg-slate-950 text-slate-300';
+}
+
+function getCaoServiceLevelClass(visibility: CaoQueueReadinessView['serviceLevel']['visibility']) {
+  if (visibility === 'ON_TIME') return 'border-emerald-300/30 bg-emerald-400/10 text-emerald-100';
+  if (visibility === 'APPROACHING_SLA') return 'border-amber-300/40 bg-amber-400/10 text-amber-100';
+  return 'border-red-400/40 bg-red-500/10 text-red-100';
+}
+
 function getIntakeReadinessClass(level: IntakeReadiness['level']) {
   if (level === 'ready') return 'border-emerald-300/30 bg-emerald-400/10 text-emerald-100';
   if (level === 'watch') return 'border-amber-300/40 bg-amber-400/10 text-amber-100';
@@ -3427,6 +3471,7 @@ export default function MasterControlPanel() {
   const [crmTaskSummary, setCRMTaskSummary] = useState<CRMTaskSummary>(emptyCRMTaskSummary);
   const [crmTaskAuditSummary, setCRMTaskAuditSummary] = useState<CRMTaskAuditSummary>(emptyCRMTaskAuditSummary);
   const [crmTaskReadiness, setCRMTaskReadiness] = useState<CRMTaskReadiness>(emptyCRMTaskReadiness);
+  const [caoQueueReadiness, setCaoQueueReadiness] = useState<CaoQueueReadinessSummary>(emptyCaoQueueReadiness);
   const [crmTaskVerdict, setCRMTaskVerdict] = useState('');
   const [crmTaskOperations, setCRMTaskOperations] = useState<CRMTaskOperations | null>(null);
   const [crmTaskApiMetadata, setCRMTaskApiMetadata] = useState<CRMTaskApiMetadata | null>(null);
@@ -3660,6 +3705,7 @@ export default function MasterControlPanel() {
           setCRMTaskSummary(payload.summary || emptyCRMTaskSummary);
           setCRMTaskAuditSummary(payload.audit || emptyCRMTaskAuditSummary);
           setCRMTaskReadiness(payload.readiness || emptyCRMTaskReadiness);
+          setCaoQueueReadiness(payload.queueReadiness || emptyCaoQueueReadiness);
           setCRMTaskVerdict(payload.verdict || '');
           setCRMTaskOperations(payload.operations || null);
           setCRMTaskApiMetadata({
@@ -3677,6 +3723,7 @@ export default function MasterControlPanel() {
       setCRMTaskSummary(payload.summary);
       setCRMTaskAuditSummary(payload.audit);
       setCRMTaskReadiness(payload.readiness);
+      setCaoQueueReadiness(payload.queueReadiness);
       setCRMTaskVerdict(payload.verdict);
       setCRMTaskOperations(payload.operations);
       setCRMTaskApiMetadata({
@@ -4701,6 +4748,46 @@ export default function MasterControlPanel() {
                     </code>
                   </div>
                 </div>
+                <div
+                  className="mt-4 border border-slate-800 bg-black/70 p-4"
+                  data-testid="reie-cao-queue-readiness"
+                  data-cao-contract-version={caoQueueReadiness.contractVersion}
+                  data-cao-source={caoQueueReadiness.source}
+                  data-cao-readiness={caoQueueReadiness.operationalReadiness}
+                  data-cao-unassigned={caoQueueReadiness.unassigned}
+                  data-cao-assigned={caoQueueReadiness.assigned}
+                  data-cao-waiting={caoQueueReadiness.waiting}
+                  data-cao-overdue={caoQueueReadiness.overdue}
+                  data-cao-review-incomplete={caoQueueReadiness.reviewIncomplete}
+                  data-cao-automation-authorized="false"
+                  data-cao-telemetry-authorized="false"
+                >
+                  <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                      <div className="text-xs font-black uppercase text-slate-500">CAO Queue Readiness</div>
+                      <p className="mt-1 text-xs leading-5 text-slate-500">Passive operating visibility only; human review remains required.</p>
+                    </div>
+                    <span className={`border px-2 py-1 text-[10px] font-black uppercase ${getCaoQueueReadinessClass(caoQueueReadiness.operationalReadiness)}`}>
+                      {caoQueueReadiness.operationalReadiness}
+                    </span>
+                  </div>
+                  <p className="text-sm leading-6 text-slate-300">{caoQueueReadiness.summary}</p>
+                  <div className="mt-3 grid grid-cols-2 gap-2 text-xs sm:grid-cols-3">
+                    {[
+                      ['Unassigned', caoQueueReadiness.unassigned],
+                      ['Assigned', caoQueueReadiness.assigned],
+                      ['Waiting', caoQueueReadiness.waiting],
+                      ['Overdue', caoQueueReadiness.overdue],
+                      ['Approaching SLA', caoQueueReadiness.approachingSla],
+                      ['Review Gaps', caoQueueReadiness.reviewIncomplete],
+                    ].map(([label, value]) => (
+                      <div key={label} className="border border-slate-900 bg-slate-950/70 px-3 py-2">
+                        <div className="text-[10px] font-black uppercase text-slate-500">{label}</div>
+                        <div className="mt-1 text-lg font-black uppercase text-white">{value}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
                 {crmTaskVerdict ? <p className="mt-4 text-sm leading-6 text-slate-400">{crmTaskVerdict}</p> : null}
                 {crmTaskApiMetadata ? (
                   <div
@@ -4811,9 +4898,24 @@ export default function MasterControlPanel() {
                       const taskTemperature = propertyInquiry?.leadTemperature || task.latestSavedSearchIntake?.leadTemperature || 'No Temp';
                       const triageFocus = getCRMTaskFocus(task);
                       const closureHint = getCRMTaskClosureHint(task);
+                      const operationsReadiness = task.operationsReadiness;
 
                       return (
-                      <article key={task.id} className="grid gap-4 border border-slate-800 bg-black/70 p-4 xl:grid-cols-[minmax(0,1fr)_180px]">
+                      <article
+                        key={task.id}
+                        className="grid gap-4 border border-slate-800 bg-black/70 p-4 xl:grid-cols-[minmax(0,1fr)_180px]"
+                        data-testid={`reie-cao-crm-task-readiness-${task.id}`}
+                        data-cao-contract-version={operationsReadiness.contractVersion}
+                        data-cao-queue-state={operationsReadiness.queueState}
+                        data-cao-lifecycle-state={operationsReadiness.crmLifecycleState}
+                        data-cao-sla={operationsReadiness.serviceLevel.visibility}
+                        data-cao-review-state={operationsReadiness.review.state}
+                        data-cao-responsible-role={operationsReadiness.ownership.responsibleRole}
+                        data-cao-escalation-owner={operationsReadiness.ownership.escalationOwner}
+                        data-cao-review-owner={operationsReadiness.ownership.reviewOwner}
+                        data-cao-automation-authorized={String(operationsReadiness.automationAuthorized)}
+                        data-cao-telemetry-authorized={String(operationsReadiness.telemetryAuthorized)}
+                      >
                         <div className="min-w-0">
                           <div className="mb-3 flex flex-wrap items-center gap-2">
                             <span className={`border px-2 py-1 text-[10px] font-black uppercase ${getCRMTaskPriorityClass(task.priority)}`}>
@@ -4824,6 +4926,12 @@ export default function MasterControlPanel() {
                             </span>
                             <span className="border border-slate-800 bg-slate-950 px-2 py-1 text-[10px] font-black uppercase text-slate-400">
                               {getCRMTaskTypeLabel(task.type)}
+                            </span>
+                            <span className={`border px-2 py-1 text-[10px] font-black uppercase ${getCaoQueueStateClass(operationsReadiness.queueState)}`}>
+                              {operationsReadiness.queueState}
+                            </span>
+                            <span className={`border px-2 py-1 text-[10px] font-black uppercase ${getCaoServiceLevelClass(operationsReadiness.serviceLevel.visibility)}`}>
+                              SLA {operationsReadiness.serviceLevel.visibility}
                             </span>
                           </div>
                           <h3 className="text-sm font-black uppercase leading-5 text-white">{task.title}</h3>
@@ -4841,6 +4949,29 @@ export default function MasterControlPanel() {
                               <div className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">Closure Note Should Capture</div>
                               <p className="mt-2 text-xs leading-5 text-slate-400">{closureHint}</p>
                             </div>
+                          </div>
+                          <div className="mt-3 grid gap-3 border border-cyan-400/20 bg-cyan-950/10 p-3 sm:grid-cols-3">
+                            <div>
+                              <div className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/60">Owner</div>
+                              <p className="mt-2 text-xs font-black uppercase leading-5 text-slate-200">{operationsReadiness.ownership.responsibleRole}</p>
+                            </div>
+                            <div>
+                              <div className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/60">Escalation</div>
+                              <p className="mt-2 text-xs font-black uppercase leading-5 text-slate-200">{operationsReadiness.ownership.escalationOwner}</p>
+                            </div>
+                            <div>
+                              <div className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/60">Review</div>
+                              <p className="mt-2 text-xs font-black uppercase leading-5 text-slate-200">{operationsReadiness.ownership.reviewOwner}</p>
+                            </div>
+                          </div>
+                          <div className="mt-3 border border-slate-800 bg-black/40 p-3">
+                            <div className="flex flex-wrap items-center justify-between gap-2">
+                              <div className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">Service Level</div>
+                              <span className={`border px-2 py-1 text-[10px] font-black uppercase ${getCaoServiceLevelClass(operationsReadiness.serviceLevel.visibility)}`}>
+                                {operationsReadiness.serviceLevel.ageHours ?? 'Unknown'}h / {operationsReadiness.serviceLevel.targetHours}h
+                              </span>
+                            </div>
+                            <p className="mt-2 text-xs leading-5 text-slate-400">{operationsReadiness.review.summary}</p>
                           </div>
                           <p className="mt-3 text-sm leading-6 text-slate-400">{task.nextAction}</p>
                           {propertyInquiry ? (

@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+import {
+  getCaoQueueReadinessView,
+  type CaoQueueReadinessView,
+} from '@/lib/cao/operationsQueueReadinessContract';
 import { prisma } from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
@@ -84,6 +88,7 @@ type CRMTask = {
     intakeCommand: string;
     alertStatusCommand: string;
   };
+  operationsReadiness: CaoQueueReadinessView;
   metadata: Record<string, unknown>;
 };
 
@@ -285,6 +290,11 @@ function getOperations(status: string) {
   };
 }
 
+function hasReviewNote(metadata: Record<string, unknown>) {
+  const review = asRecord(metadata.review);
+  return Boolean(cleanString(review.reviewNote));
+}
+
 function getRoutePath(id: string) {
   return `/api/admin/crm-tasks/${id}`;
 }
@@ -347,6 +357,15 @@ function normalizeTask(row: CRMTaskRow): CRMTask {
     propertyInquiry: getPropertyInquiry(metadata),
     alertReadiness,
     operations: getOperations(status),
+    operationsReadiness: getCaoQueueReadinessView({
+      id: row.id,
+      status: row.status,
+      priority: row.priority,
+      type: row.type,
+      createdAt: row.createdAt,
+      hasReviewNote: hasReviewNote(metadata),
+      source: 'CRM_TASK_DETAIL',
+    }),
     metadata,
   };
 }

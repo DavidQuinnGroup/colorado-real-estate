@@ -10,6 +10,60 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / CAO 1.0 Sprint 2 Operations Queue and Review Readiness Baseline(tm) implementation handoff, July 27, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -5 --oneline
+```
+
+Current CAO 1.0 Sprint 2 state:
+
+- Program: `CAO_1_0_CUSTOMER_ACQUISITION_OPERATIONS_PROGRAM`.
+- Sprint: `CAO_1_0_SPRINT_2_OPERATIONS_QUEUE_AND_REVIEW_READINESS_BASELINE`.
+- Status: `CAO_1_0_SPRINT_2_OPERATIONS_QUEUE_AND_REVIEW_READINESS_BASELINE_IMPLEMENTED_AND_PUSHED_DEPLOYMENT_NOT_AUTHORIZED`.
+- Baseline: implementation began from clean, aligned `main` at `2443def7746185a7fb4b29ee67d14db91d63ef10`.
+- Sprint 1 state: `CAO_1_0_SPRINT_1_OPERATING_MODEL_AND_SERVICE_LEVEL_CONTRACT_CERTIFIED_AND_CLOSED`.
+- Sprint 1 certification commit: `2443def7746185a7fb4b29ee67d14db91d63ef10`.
+- Sprint 2 record: `docs/project-atlas/executive-library/CAO-1.0-SPRINT-2-OPERATIONS-QUEUE-AND-REVIEW-READINESS-BASELINE.md`.
+- New passive contract: `lib/cao/operationsQueueReadinessContract.ts`.
+- Updated export surface: `lib/cao/index.ts`.
+- Protected admin API visibility: `app/api/admin/crm-tasks/route.ts` and `app/api/admin/crm-tasks/[id]/route.ts`.
+- Protected admin UI visibility: `components/admin/MasterControlPanel.tsx`.
+- Validation script: `scripts/checkCaoOperationsQueueReviewReadiness.ts`.
+- Required Sprint 2 check: `npm run check:cao-operations-queue-review-readiness`.
+- Package/build wiring: `package.json` and `tsconfig.worker.json`.
+- Contract version: `CAO-1.0-SPRINT-2`.
+- Queue states: `UNASSIGNED`, `ASSIGNED`, `WAITING`, `OVERDUE`, `COMPLETED`, and `DISMISSED`.
+- Service-level visibility states: `ON_TIME`, `APPROACHING_SLA`, and `OVERDUE`.
+- Review-readiness states: `REVIEW_READY`, `NOTES_REQUIRED`, `CLOSURE_REVIEW_REQUIRED`, `REVIEW_COMPLETE`, and `REVIEW_INCOMPLETE`.
+- Operational readiness levels: `READY`, `WATCH`, and `BLOCKED`.
+- Ownership visibility: responsible role, escalation owner, and review owner.
+- Service-level visibility: customer-safe target language, age hours, target hours, escalation language, and required evidence.
+- Protected CRM list response now includes passive `queueReadiness` and per-task `operationsReadiness`.
+- Protected CRM detail response now includes passive `operationsReadiness`.
+- Master Control Panel CRM section now displays passive CAO queue-readiness, SLA, ownership, escalation, review-owner, and review-completeness indicators.
+- Stable admin-only data handles record `data-cao-automation-authorized="false"` and `data-cao-telemetry-authorized="false"`.
+- CRM task creation, assignment, routing, prioritization, lifecycle update behavior, inquiry processing, seller processing, notification behavior, alert behavior, email behavior, saved-search behavior, database schema, Prisma migrations, persistence, CIM telemetry inactive state, GIS pause, AI non-activation, and provider non-activation were preserved.
+- Validation passed: `npm run check:cao-operations-queue-review-readiness`, `npm run typecheck`, `npm run lint`, `npm run build`, `npx prisma validate`, `npm run check:cao-operating-model-service-level-contract`, and `git diff --check`.
+- Local protected admin review: authenticated `/admin` returned HTTP `200` with the admin page and CRM section; authenticated `/api/admin/crm-tasks?limit=2&status=active` returned HTTP `200`, `success: true`, `queueReadiness.contractVersion: CAO-1.0-SPRINT-2`, per-task `operationsReadiness`, `automationAuthorized: false`, and `telemetryAuthorized: false`.
+- `scripts/opsSmoke.ts` was inspected but not used as the primary Sprint 2 gate because it includes broad local POST dry-run checks for MLS and alert operations beyond the narrow CAO Sprint 2 implementation.
+- Runtime behavior change: protected admin visibility only; no CRM automation or workflow automation.
+- Deployment: `NOT_AUTHORIZED`.
+- Production certification: `NOT_AUTHORIZED`.
+- Production actions during implementation: `NONE`.
+- CRM automation, notifications, emails, alerts, CRM task creation, inquiry processing changes, seller workflow changes, persistence, Prisma schema changes, migrations, production mutation, telemetry activation, provider activation, GIS, GIS Sprint 9, AI, CAO Sprint 3, and unrelated work remain `NOT_AUTHORIZED`.
+- Exact next executive decision required: David must decide whether to authorize `CAO_1_0_SPRINT_2_CONTROLLED_DEPLOYMENT_AND_PRODUCTION_CERTIFICATION_REVIEW`. Codex must not authorize that decision.
+
+Prior CAO Sprint 1 production certification handoff retained below.
+
 PROJECT ATLAS(tm) / CAO 1.0 Sprint 1 Operating Model and Service-Level Contract production certification handoff, July 27, 2026:
 
 Workspace:

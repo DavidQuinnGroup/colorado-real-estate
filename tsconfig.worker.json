@@ -38,6 +38,7 @@
     "scripts/checkCimPrivacyConsentDataMinimizationGate.ts",
     "scripts/checkCimFirstPartyMeasurementReadinessAdapter.ts",
     "scripts/checkCaoOperatingModelServiceLevelContract.ts",
+    "scripts/checkCaoOperationsQueueReviewReadiness.ts",
     "scripts/checkPrismaClientParity.ts",
     "scripts/checkProductionDependencies.ts",
     "scripts/checkPropertyRouteSafety.ts",

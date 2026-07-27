@@ -1,5 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+import {
+  getCaoQueueReadinessSummary,
+  getCaoQueueReadinessView,
+  type CaoQueueReadinessSummary,
+  type CaoQueueReadinessView,
+} from '@/lib/cao/operationsQueueReadinessContract';
 import { prisma } from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
@@ -122,6 +128,7 @@ type CRMTask = {
     intakeCommand: string;
     alertStatusCommand: string;
   };
+  operationsReadiness: CaoQueueReadinessView;
   metadata: Record<string, unknown>;
 };
 
@@ -329,6 +336,11 @@ function getOperations(status: string) {
   };
 }
 
+function hasReviewNote(metadata: Record<string, unknown>) {
+  const review = asRecord(metadata.review);
+  return Boolean(cleanString(review.reviewNote));
+}
+
 function getInspectionCommand(request: NextRequest) {
   const searchParams = new URLSearchParams(request.nextUrl.searchParams);
   searchParams.delete('adminKey');
@@ -368,6 +380,15 @@ function normalizeTask(row: CRMTaskRow, status: string): CRMTask {
     propertyInquiry: getPropertyInquiry(metadata),
     alertReadiness,
     operations: getOperations(status),
+    operationsReadiness: getCaoQueueReadinessView({
+      id: row.id,
+      status: row.status,
+      priority: row.priority,
+      type: row.type,
+      createdAt: row.createdAt,
+      hasReviewNote: hasReviewNote(metadata),
+      source: 'CRM_TASK_LIST',
+    }),
     metadata,
   };
 }
@@ -543,6 +564,17 @@ function getCRMTaskEnvelope(
   const type = parseType(request);
   const summary = getSummary(tasks);
   const readiness = options?.fallbackReason ? getFallbackReadiness(status, options.fallbackReason) : getReadiness(summary, audit, status);
+  const queueReadiness: CaoQueueReadinessSummary = getCaoQueueReadinessSummary(
+    tasks.map((task) => ({
+      id: task.id,
+      status: task.status,
+      priority: task.priority,
+      type: task.type,
+      createdAt: task.createdAt,
+      hasReviewNote: task.operationsReadiness.review.reviewComplete,
+      source: 'CRM_TASK_LIST',
+    })),
+  );
 
   return {
     ...getInspectionMetadata(request),
@@ -550,6 +582,7 @@ function getCRMTaskEnvelope(
     summary,
     audit,
     readiness,
+    queueReadiness,
     verdict: options?.fallbackReason || getVerdict(summary, status),
     filters: getFilters(limit, status, type),
     operations: getOperations(status),
