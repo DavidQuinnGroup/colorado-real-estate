@@ -10,6 +10,55 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / CEP 1.0 Sprint 1 Search and Map Experience Baseline(tm) handoff, July 26, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -5 --oneline
+```
+
+Current CEP 1.0 Sprint 1 state:
+
+- Program: `PROJECT_ATLAS_CEP_1_0_CUSTOMER_EXPERIENCE_PLATFORM`.
+- Sprint: `CEP_1_0_SPRINT_1_SEARCH_AND_MAP_EXPERIENCE_BASELINE`.
+- Status: `CEP_1_0_SPRINT_1_IMPLEMENTED_LOCAL_VALIDATION_COMPLETE_READY_TO_PUSH_DEPLOYMENT_NOT_AUTHORIZED`.
+- Primary document: `docs/project-atlas/executive-library/CEP-1.0-CUSTOMER-EXPERIENCE-PLATFORM-ARCHITECTURE-AND-IMPLEMENTATION-ROADMAP.md`.
+- Sprint 1 record: `docs/project-atlas/executive-library/CEP-1.0-SPRINT-1-SEARCH-AND-MAP-EXPERIENCE-BASELINE.md`.
+- Implemented scope: search entry clarity, active criteria metadata, customer-safe search state panel, degraded fallback status, zero-result recovery, dedicated-search map-movement context, MapSidebar clear-search recovery, and deterministic Sprint 1 safety check.
+- Runtime files changed: `components/search/SearchControls.tsx`, `components/search/SearchInterface.tsx`, `components/maps/MapSidebar.tsx`, and `app/globals.css`.
+- Validation additions: `scripts/checkCepSearchMapBaseline.ts`, `package.json`, and `tsconfig.worker.json`.
+- Validation complete: focused Sprint 1 safety, typecheck, lint, build, map-rendering safety, search listing quality, search runtime adapter safety, Prisma validation, local search smoke, local public-experience smoke, local API zero-result check, and local browser responsive review passed.
+- Boundary note: `npm run check:search-runtime-safety` was not run because approval review blocked it as authenticated external Supabase service-role read behavior outside this Sprint 1 local-validation boundary.
+- Required check for future continuation: `npm run check:cep-search-map-baseline`.
+- Implementation commit: this handoff is prepared for the final Sprint 1 implementation commit; verify with `git log -1 --oneline` after final commit and push.
+- GIS provider progression state: `GIS_1_0_PROVIDER_PROGRESSION_PAUSED_AFTER_SPRINT_8`.
+- Preserved CGS pathway: `READY_FOR_FUTURE_TECHNICAL_FEASIBILITY_AUTHORIZATION`.
+- GIS Sprint 9 state: `NOT_AUTHORIZED`.
+- CEP Sprint 2 state: `NOT_AUTHORIZED`.
+- Production actions: `NOT_AUTHORIZED`.
+- Deployment: `NOT_AUTHORIZED`.
+- Production smoke: `NOT_AUTHORIZED`.
+- Customer-visible certification: `NOT_AUTHORIZED`.
+- Provider connection, credentials, terms acceptance, downloads, live GIS service/API calls, provider acquisition, provider persistence, provider data customer display, AI runtime activation, geographic runtime consumption, database/schema changes, API contract changes, alert/CRM/email/seller/inquiry mutation tests, Vercel actions, and environment changes remain `NOT_AUTHORIZED`.
+- Exact next executive decision required: David must decide whether to authorize a controlled deployment and production certification review of the Sprint 1 implementation. Codex must not authorize that decision.
+
+Current GIS 1.0 pause context:
+
+- GIS 1.0 Sprints 1-8 are certified and closed.
+- Sprint 8 final state remains `GIS_1_0_SPRINT_8_LICENSING_AND_ATTRIBUTION_RESOLUTION_GATE_CERTIFIED`.
+- Sprint 8 strongest permitted outcome remains `LICENSING_GATE_RESOLVED_FOR_TECHNICAL_FEASIBILITY_REVIEW`.
+- The Colorado Geological Survey pathway is preserved for future technical-feasibility authorization only.
+- No completed CEP planning stage authorizes GIS Sprint 9, implementation, runtime activation, production action, or customer-visible geographic intelligence.
+
+Prior CEP architecture handoff retained below.
+
 PROJECT ATLAS(tm) / CEP 1.0 Customer Experience Platform(tm) architecture and roadmap handoff, July 26, 2026:
 
 Workspace:
@@ -24,28 +73,12 @@ git rev-parse HEAD origin/main
 git log -5 --oneline
 ```
 
-Current CEP 1.0 state:
+Architecture state:
 
 - Program: `PROJECT_ATLAS_CEP_1_0_CUSTOMER_EXPERIENCE_PLATFORM`.
 - Status: `CEP_1_0_ARCHITECTURE_AND_ROADMAP_COMPLETE_IMPLEMENTATION_NOT_AUTHORIZED`.
 - Primary document: `docs/project-atlas/executive-library/CEP-1.0-CUSTOMER-EXPERIENCE-PLATFORM-ARCHITECTURE-AND-IMPLEMENTATION-ROADMAP.md`.
-- GIS provider progression state: `GIS_1_0_PROVIDER_PROGRESSION_PAUSED_AFTER_SPRINT_8`.
-- Preserved CGS pathway: `READY_FOR_FUTURE_TECHNICAL_FEASIBILITY_AUTHORIZATION`.
-- GIS Sprint 9 state: `NOT_AUTHORIZED`.
-- CEP implementation state: `NOT_AUTHORIZED`.
-- Production actions: `NOT_AUTHORIZED`.
-- Deployment: `NOT_AUTHORIZED`.
-- Provider connection, credentials, terms acceptance, downloads, live GIS service/API calls, provider acquisition, provider persistence, provider data customer display, AI runtime activation, geographic runtime consumption, database/schema/API/UI/search/map/property-page/customer-visible changes, alert/CRM mutation tests, Vercel actions, and environment changes remain `NOT_AUTHORIZED`.
 - Recommended first implementation phase if separately authorized: `CEP_1_0_SPRINT_1_SEARCH_AND_MAP_EXPERIENCE_BASELINE`.
-- Exact next executive decision required: David must explicitly decide whether to authorize CEP Sprint 1 Search and Map Experience Baseline, including exact scope, allowed files/routes/APIs, validation, production/deployment boundaries, and stop conditions.
-
-Current GIS 1.0 pause context:
-
-- GIS 1.0 Sprints 1-8 are certified and closed.
-- Sprint 8 final state remains `GIS_1_0_SPRINT_8_LICENSING_AND_ATTRIBUTION_RESOLUTION_GATE_CERTIFIED`.
-- Sprint 8 strongest permitted outcome remains `LICENSING_GATE_RESOLVED_FOR_TECHNICAL_FEASIBILITY_REVIEW`.
-- The Colorado Geological Survey pathway is preserved for future technical-feasibility authorization only.
-- No completed CEP planning stage authorizes GIS Sprint 9, implementation, runtime activation, production action, or customer-visible geographic intelligence.
 
 Prior GIS handoff context retained below.
 

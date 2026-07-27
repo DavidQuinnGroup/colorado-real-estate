@@ -2,13 +2,15 @@
 
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import { List, Map as MapIcon } from 'lucide-react';
+import { AlertTriangle, List, Map as MapIcon, RotateCcw, SlidersHorizontal } from 'lucide-react';
 import { type FormEvent, useEffect, useMemo, useState } from 'react';
 
 import MapSidebar, { type MapSidebarListing } from '@/components/maps/MapSidebar';
+import type { MapBounds } from '@/components/maps/MapInner';
 import SelectedPropertyDrawer from '@/components/maps/SelectedPropertyDrawer';
 import SearchControls, {
   buildSearchParams,
+  getActiveFilterChips,
   getInitialSearchFilters,
   getSearchFiltersFromParams,
   hasActiveSearchFilters,
@@ -172,6 +174,17 @@ function getCustomerSearchStatus(meta: SearchMapMeta | null) {
   return 'Search ready';
 }
 
+function getSearchResultLabel(count: number) {
+  if (count === 0) return 'No properties in this view';
+  if (count === 1) return '1 property in this view';
+  return `${count} properties in this view`;
+}
+
+function getMapMovementLabel(bounds: MapBounds, hasMoved: boolean) {
+  if (!hasMoved || !bounds) return 'Map ready';
+  return 'Map moved';
+}
+
 export default function SearchInterface({
   initialListings = [],
   initialSearchMeta = null,
@@ -187,6 +200,8 @@ export default function SearchInterface({
   const [mobileView, setMobileView] = useState<MobileSearchView>('list');
   const [isSearching, setIsSearching] = useState(false);
   const [searchError, setSearchError] = useState<string | null>(null);
+  const [lastMapBounds, setLastMapBounds] = useState<MapBounds>(null);
+  const [hasMovedMap, setHasMovedMap] = useState(false);
 
   const visibleListings = useMemo(() => {
     if (userTier === 'Contracted') return listings;
@@ -209,11 +224,23 @@ export default function SearchInterface({
     () => (visibleSelectedId ? visibleListings.find((listing) => listing.id === visibleSelectedId) || null : null),
     [visibleListings, visibleSelectedId],
   );
+  const hasFilters = hasActiveSearchFilters(filters);
   const mobileStatusLabel = isSearching
     ? 'Updating properties in view'
     : selectedProperty && mobileView === 'map'
       ? selectedProperty.address || 'Selected listing'
       : `${visibleListings.length} properties`;
+  const activeFilterChips = useMemo(() => getActiveFilterChips(filters), [filters]);
+  const hasZeroResults = !isSearching && visibleListings.length === 0;
+  const isSearchDegraded = effectiveSearchMeta?.health === 'degraded' || Boolean(effectiveSearchMeta?.customerExperience?.providerDegraded);
+  const searchResultLabel = getSearchResultLabel(visibleListings.length);
+  const mapMovementLabel = getMapMovementLabel(lastMapBounds, hasMovedMap);
+  const searchStateAnnouncement = isSearching
+    ? 'Search is updating.'
+    : searchError
+      ? searchError
+      : `${searchResultLabel}. ${hasFilters ? `${activeFilterChips.length} active criteria.` : 'Open Colorado view.'}`;
+
   useEffect(() => {
     const handleToggle = (event: Event) => {
       const customEvent = event as CustomEvent<StrategyToggleDetail>;
@@ -269,6 +296,7 @@ export default function SearchInterface({
     setSelectedId(null);
     setHoveredId(null);
     setSearchError(null);
+    setHasMovedMap(false);
     updateBrowserSearchUrl(nextFilters);
   }
 
@@ -282,6 +310,11 @@ export default function SearchInterface({
 
   function handleMapSelect(id: string) {
     setSelectedId(id);
+  }
+
+  function handleBoundsChange(bounds: MapBounds) {
+    setLastMapBounds(bounds);
+    if (bounds) setHasMovedMap(true);
   }
 
   useEffect(() => {
@@ -326,7 +359,6 @@ export default function SearchInterface({
       onSubmit={handleSearch}
     />
   );
-  const hasFilters = hasActiveSearchFilters(filters);
   const discoveryFilterLabel = getDiscoveryFilterLabel(hasFilters);
   const discoveryCountLabel = visibleListings.length === 1 ? '1 property in view' : `${visibleListings.length} properties in view`;
 
@@ -344,8 +376,15 @@ export default function SearchInterface({
       data-search-status={getCustomerSearchStatus(effectiveSearchMeta)}
       data-search-access-level={effectiveSearchMeta?.accessLevel || (userTier === 'Contracted' ? 'contracted' : 'public')}
       data-search-filters-active={String(hasFilters)}
+      data-search-active-filter-count={activeFilterChips.length}
       data-search-loading={String(isSearching)}
+      data-search-zero-results={String(hasZeroResults)}
+      data-search-degraded={String(isSearchDegraded)}
+      data-search-map-movement={mapMovementLabel}
     >
+      <p className="sr-only" aria-live="polite" data-testid="reie-search-state-announcement">
+        {searchStateAnnouncement}
+      </p>
       <div
         className="reie-search-mobile-toolbar absolute left-3 right-3 top-3 z-[900] items-center justify-between gap-3"
         data-testid="reie-search-mobile-toolbar"
@@ -437,13 +476,63 @@ export default function SearchInterface({
           <div className="mt-4 grid grid-cols-2 gap-2">
             <div className="rounded-[6px] border border-white/10 bg-white/[0.045] px-3 py-2">
               <p className="text-[9px] font-black uppercase tracking-[0.14em] text-white/38">Properties in View</p>
-              <p className="mt-1 text-sm font-black text-white">{visibleListings.length}</p>
+              <p className="mt-1 text-sm font-black text-white" data-testid="reie-search-result-count">{visibleListings.length}</p>
             </div>
             <div className="rounded-[6px] border border-cyan-100/18 bg-cyan-100/[0.06] px-3 py-2">
               <p className="text-[9px] font-black uppercase tracking-[0.14em] text-cyan-100/68">Discovery View</p>
               <p className="mt-1 text-sm font-black text-white">{discoveryFilterLabel}</p>
             </div>
           </div>
+          <div
+            className="reie-search-state-panel"
+            data-testid="reie-search-state-panel"
+            data-search-result-label={searchResultLabel}
+            data-search-degraded={String(isSearchDegraded)}
+            data-search-map-movement={mapMovementLabel}
+            data-search-zero-results={String(hasZeroResults)}
+          >
+            <div>
+              <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.16em] text-cyan-100/72">
+                <SlidersHorizontal size={12} aria-hidden="true" />
+                Search State
+              </p>
+              <p className="mt-1 text-[11px] font-bold leading-5 text-white/54">{searchResultLabel}</p>
+            </div>
+            <div className="grid gap-1.5 text-[10px] font-black uppercase tracking-[0.12em] text-white/42">
+              <span>{hasFilters ? `${activeFilterChips.length} active criteria` : 'Open criteria'}</span>
+              <span>{mapMovementLabel === 'Map moved' ? 'Map movement preserves this result set until criteria change' : 'Map and list are ready'}</span>
+              {isSearchDegraded ? <span className="text-amber-100/82">Fallback search is serving results</span> : <span>Search service ready</span>}
+            </div>
+          </div>
+          {isSearchDegraded ? (
+            <div
+              className="reie-search-safe-status"
+              role="status"
+              data-testid="reie-search-degraded-status"
+              data-search-health={effectiveSearchMeta?.health || ''}
+              data-search-provider-degraded={String(Boolean(effectiveSearchMeta?.customerExperience?.providerDegraded))}
+            >
+              <AlertTriangle size={14} aria-hidden="true" />
+              <span>Search is using a safe fallback. Results remain usable, but refreshes may take longer.</span>
+            </div>
+          ) : null}
+          {hasZeroResults ? (
+            <div className="reie-search-recovery-panel" data-testid="reie-search-zero-result-recovery">
+              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">No matching properties</p>
+              <p className="mt-2 text-xs font-bold leading-5 text-white/56">
+                Broaden the criteria, remove one active chip, or clear the search to return to the open Colorado view.
+              </p>
+              <button
+                type="button"
+                onClick={handleReset}
+                className="mt-3 inline-flex min-h-9 items-center justify-center gap-1.5 rounded-[6px] border border-cyan-100/28 bg-cyan-100/[0.08] px-3 text-[10px] font-black uppercase tracking-[0.12em] text-cyan-100 transition hover:border-cyan-100/55 hover:bg-cyan-100/[0.14] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
+                data-testid="reie-search-zero-result-clear"
+              >
+                <RotateCcw size={12} aria-hidden="true" />
+                Clear Search
+              </button>
+            </div>
+          ) : null}
         </section>
 
         <MapSidebar
@@ -455,6 +544,7 @@ export default function SearchInterface({
           searchControls={searchControls}
           hasActiveFilters={hasFilters}
           isLoading={isSearching}
+          onClearSearch={handleReset}
         />
       </div>
 
@@ -467,6 +557,7 @@ export default function SearchInterface({
       >
         <MapInner
           listings={visibleListings}
+          onBoundsChange={handleBoundsChange}
           selectedId={visibleSelectedId}
           setSelectedId={handleMapSelect}
           hoveredId={visibleHoveredId}

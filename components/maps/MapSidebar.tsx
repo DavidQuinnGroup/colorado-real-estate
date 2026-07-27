@@ -40,6 +40,7 @@ type BaseMapSidebarProps = {
   hoveredId?: string | null;
   onHover?: (id: string | null) => void;
   onCloseDetail?: () => void;
+  onClearSearch?: () => void;
   searchControls?: ReactNode;
   hasActiveFilters?: boolean;
   isLoading?: boolean;
@@ -189,27 +190,43 @@ function SaveSearchFallback() {
   );
 }
 
-function EmptyInventoryState({ hasActiveFilters }: { hasActiveFilters?: boolean }) {
+function EmptyInventoryState({
+  hasActiveFilters,
+  onClearSearch,
+}: {
+  hasActiveFilters?: boolean;
+  onClearSearch?: () => void;
+}) {
   return (
-    <div className="flex h-full items-center justify-center px-5 py-8 text-center">
-      <div className="max-w-[320px] rounded-[8px] border border-white/10 bg-white/[0.035] p-5">
+    <div className="flex h-full items-center justify-center px-5 py-8 text-center" data-testid="reie-sidebar-empty-state">
+      <div className="max-w-[340px] rounded-[8px] border border-white/10 bg-white/[0.035] p-5">
         <p className="text-[11px] font-black uppercase tracking-[0.24em] text-cyan-100/75">
           {hasActiveFilters ? 'No Properties Match This View' : 'Preparing Properties in View'}
         </p>
         <p className="mx-auto mt-4 text-sm leading-6 text-white/52">
           {hasActiveFilters
-            ? 'Start by widening one refinement or moving the map area. Clear Search is available above when you want to reset the view.'
+            ? 'Start by removing one active criterion, widening the location or budget, or clearing the search to return to the open Colorado view.'
             : 'Move the map or adjust the viewport to bring Colorado properties into view.'}
         </p>
         {hasActiveFilters ? (
           <div className="mt-4 border-t border-white/10 pt-4">
             <p className="text-[10px] font-black uppercase tracking-[0.16em] text-white/34">Next best steps</p>
             <ol className="mt-3 space-y-2 text-left text-[11px] font-bold leading-5 text-white/46">
-              <li>1. Adjust refinements</li>
-              <li>2. Adjust map area</li>
-              <li>3. Clear Search above</li>
+              <li>1. Remove one active chip above.</li>
+              <li>2. Broaden place, price, home type, beds, or baths.</li>
+              <li>3. Clear the search to restart broadly.</li>
             </ol>
             <div className="mt-4 grid gap-2">
+              {onClearSearch ? (
+                <button
+                  type="button"
+                  onClick={onClearSearch}
+                  className="inline-flex min-h-9 items-center justify-center rounded-[6px] border border-cyan-100/24 bg-cyan-100/[0.08] px-3 text-[10px] font-black uppercase tracking-[0.12em] text-cyan-100 transition hover:border-cyan-100/45 hover:bg-cyan-100/[0.13] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-200"
+                  data-testid="reie-sidebar-empty-clear-search"
+                >
+                  Clear Search
+                </button>
+              ) : null}
               <Link
                 href="/grand-plan"
                 className="inline-flex min-h-9 items-center justify-center rounded-[6px] border border-white/10 bg-white/[0.045] px-3 text-[10px] font-black uppercase tracking-[0.12em] text-white/58 transition hover:border-cyan-100/35 hover:text-cyan-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-200"
@@ -359,7 +376,7 @@ function getSelectedAddress(property: MapSidebarListing | null | undefined, list
 }
 
 export default function MapSidebar(props: MapSidebarProps) {
-  const { listings = [], selectedId, hoveredId, onHover = () => {}, onCloseDetail, searchControls, hasActiveFilters, isLoading } = props;
+  const { listings = [], selectedId, hoveredId, onHover = () => {}, onCloseDetail, onClearSearch, searchControls, hasActiveFilters, isLoading } = props;
   const sidebarRef = useRef<HTMLDivElement>(null);
   const activeId = selectedId ?? props.selectedProperty?.id ?? null;
   const stats = useMemo(() => getInventoryStats(listings), [listings]);
@@ -572,7 +589,7 @@ export default function MapSidebar(props: MapSidebarProps) {
             );
           })
         ) : (
-          <EmptyInventoryState hasActiveFilters={hasActiveFilters} />
+          <EmptyInventoryState hasActiveFilters={hasActiveFilters} onClearSearch={onClearSearch} />
         )}
 
         <div className="border-t border-white/12 bg-[#070b10] p-4" data-testid="reie-sidebar-save-search-footer">

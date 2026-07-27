@@ -478,6 +478,40 @@ html, body {
   text-transform: uppercase;
 }
 
+.reie-search-state-panel,
+.reie-search-safe-status,
+.reie-search-recovery-panel {
+  margin-top: 12px;
+  border-radius: 8px;
+}
+
+.reie-search-state-panel {
+  display: grid;
+  gap: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.18);
+  padding: 11px 12px;
+}
+
+.reie-search-safe-status {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  border: 1px solid rgba(251, 191, 36, 0.28);
+  background: rgba(251, 191, 36, 0.09);
+  padding: 10px 11px;
+  color: rgba(254, 243, 199, 0.86);
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.45;
+}
+
+.reie-search-recovery-panel {
+  border: 1px solid rgba(207, 250, 254, 0.18);
+  background: rgba(207, 250, 254, 0.06);
+  padding: 12px;
+}
+
 .reie-search-list-pane > [data-testid='reie-map-sidebar'] {
   flex: 1 1 auto;
   min-height: 0;

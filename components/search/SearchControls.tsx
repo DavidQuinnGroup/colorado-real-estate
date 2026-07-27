@@ -1,6 +1,6 @@
 'use client';
 
-import { Check, Copy, Loader2, RotateCcw, Search, SlidersHorizontal, Sparkles, X } from 'lucide-react';
+import { Check, Copy, Loader2, MapPin, RotateCcw, Search, SlidersHorizontal, Sparkles, X } from 'lucide-react';
 import type { CSSProperties, FormEvent, ReactNode } from 'react';
 import { useId, useMemo, useState } from 'react';
 
@@ -135,7 +135,7 @@ function formatCurrencyFilter(value: string) {
   return `$${parsed.toLocaleString()}`;
 }
 
-function getActiveFilterChips(filters: SearchFilters) {
+export function getActiveFilterChips(filters: SearchFilters) {
   const chips: Array<{ key: keyof SearchFilters; label: string }> = [];
 
   if (filters.query.trim()) chips.push({ key: 'query', label: `Keyword: ${filters.query.trim()}` });
@@ -154,6 +154,12 @@ function buildSharePath(filters: SearchFilters) {
   return params.toString() ? `/search?${params.toString()}` : '/search';
 }
 
+function getCriteriaSummary(chipCount: number) {
+  if (chipCount === 0) return 'Start broad, then refine.';
+  if (chipCount === 1) return 'One refinement is shaping this view.';
+  return `${chipCount} refinements are shaping this view.`;
+}
+
 export default function SearchControls({
   filters,
   isSearching = false,
@@ -167,6 +173,7 @@ export default function SearchControls({
   const [copied, setCopied] = useState(false);
   const chips = useMemo(() => getActiveFilterChips(filters), [filters]);
   const sharePath = useMemo(() => buildSharePath(filters), [filters]);
+  const criteriaSummary = useMemo(() => getCriteriaSummary(chips.length), [chips.length]);
 
   async function handleCopyShareLink() {
     const shareUrl = typeof window === 'undefined' ? sharePath : new URL(sharePath, window.location.origin).toString();
@@ -202,44 +209,63 @@ export default function SearchControls({
               Shape Your Search
             </p>
             <p id={`${formId}-description`} className="mt-2 text-[11px] font-bold leading-5 text-white/48">
-              Build clarity by starting with place, then narrowing by budget, home type, and the details that matter.
+              Build clarity by starting with place or a specific property, then narrow by budget, home type, beds, baths, and keywords the search already supports.
             </p>
           </div>
-          <span className="shrink-0 rounded-[5px] border border-cyan-100/20 bg-cyan-100/[0.075] px-2 py-1 text-[9px] font-black uppercase tracking-[0.12em] text-cyan-100/70">
+          <span
+            className="shrink-0 rounded-[5px] border border-cyan-100/20 bg-cyan-100/[0.075] px-2 py-1 text-[9px] font-black uppercase tracking-[0.12em] text-cyan-100/70"
+            data-testid="reie-search-active-count"
+            data-search-active-filter-count={chips.length}
+          >
             {chips.length ? `${chips.length} Active` : 'Open Search'}
           </span>
         </div>
       </div>
 
       <div className="p-3">
-      <div className="flex items-center justify-between gap-3">
-        <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.16em] text-white/40">
-          <Sparkles size={12} aria-hidden="true" className="text-cyan-100/62" />
-          Search Criteria
-        </p>
-        <div className="flex items-center gap-1.5">
-          <button
-            type="button"
-            onClick={handleCopyShareLink}
-            style={iconButtonStyle}
-            className="inline-flex h-7 w-7 items-center justify-center rounded-[6px] border border-white/10 text-white/52 transition hover:border-cyan-100/35 hover:text-cyan-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
-            aria-label="Share this search"
-            title="Share This Search"
-          >
-            {copied ? <Check size={13} aria-hidden="true" /> : <Copy size={13} aria-hidden="true" />}
-          </button>
-          <button
-            type="button"
-            onClick={onReset}
-            style={iconButtonStyle}
-            className="inline-flex h-7 w-7 items-center justify-center rounded-[6px] border border-white/10 text-white/52 transition hover:border-white/25 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
-            aria-label="Clear search"
-            title="Clear Search"
-          >
-            <RotateCcw size={13} aria-hidden="true" />
-          </button>
+        <div className="flex items-center justify-between gap-3">
+          <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.16em] text-white/40">
+            <Sparkles size={12} aria-hidden="true" className="text-cyan-100/62" />
+            Search Criteria
+          </p>
+          <div className="flex items-center gap-1.5">
+            <button
+              type="button"
+              onClick={handleCopyShareLink}
+              style={iconButtonStyle}
+              className="inline-flex h-7 w-7 items-center justify-center rounded-[6px] border border-white/10 text-white/52 transition hover:border-cyan-100/35 hover:text-cyan-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
+              aria-label="Share this search"
+              title="Share This Search"
+            >
+              {copied ? <Check size={13} aria-hidden="true" /> : <Copy size={13} aria-hidden="true" />}
+            </button>
+            <button
+              type="button"
+              onClick={onReset}
+              style={iconButtonStyle}
+              className="inline-flex h-7 w-7 items-center justify-center rounded-[6px] border border-white/10 text-white/52 transition hover:border-white/25 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
+              aria-label="Clear search"
+              title="Clear Search"
+            >
+              <RotateCcw size={13} aria-hidden="true" />
+            </button>
+          </div>
         </div>
-      </div>
+
+        <div
+          className="mt-3 rounded-[8px] border border-white/10 bg-black/24 px-3 py-2"
+          data-testid="reie-search-criteria-summary"
+          data-search-criteria-summary={criteriaSummary}
+          data-search-active-filter-count={chips.length}
+        >
+          <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.16em] text-cyan-100/72">
+            <MapPin size={12} aria-hidden="true" />
+            Search Path
+          </p>
+          <p className="mt-1 text-[11px] font-bold leading-5 text-white/52">
+            {criteriaSummary} City shapes place, while the specific-property field supports address, ZIP, keyword, or MLS-style lookups without changing result eligibility.
+          </p>
+        </div>
 
       <div className="mt-3 grid gap-2">
         <RefinementSection eyebrow="Where" title="Where would you like to live?">
@@ -250,7 +276,7 @@ export default function SearchControls({
               aria-label="City"
               value={filters.city}
               onChange={(event) => onChange(updateFilter(filters, 'city', event.target.value))}
-              placeholder="City"
+              placeholder="City or town"
               style={textControlStyle}
               className="h-11 w-full rounded-[6px] border border-cyan-100/24 bg-cyan-100/[0.075] px-3 text-sm font-black text-white outline-none transition placeholder:text-cyan-50/38 focus:border-cyan-100/70"
             />
@@ -364,19 +390,23 @@ export default function SearchControls({
             </button>
           </div>
           <p className="mt-2 text-[11px] font-bold leading-5 text-white/38">
-            Use this when you already know an address, ZIP code, keyword, or MLS number.
+            Use this when you already know an address, ZIP code, keyword, or MLS number. Neighborhood names and listing details can also help narrow supported search text.
           </p>
         </RefinementSection>
       </div>
 
       {chips.length ? (
-        <div className="mt-3 flex flex-wrap gap-1.5" aria-label="Active search criteria">
+        <div className="mt-3 flex flex-wrap gap-1.5" aria-label="Active search criteria" data-testid="reie-search-active-criteria">
           {chips.map((chip) => (
             <button
               key={chip.key}
               type="button"
               onClick={() => removeFilter(chip.key)}
+              data-testid="reie-search-active-chip"
+              data-search-filter-key={chip.key}
+              data-search-filter-label={chip.label}
               className="inline-flex max-w-full items-center gap-1 rounded-[6px] border border-cyan-100/20 bg-cyan-100/[0.08] px-2 py-1 text-[10px] font-black uppercase leading-none tracking-[0.08em] text-cyan-50 transition hover:border-cyan-100/45 hover:bg-cyan-100/[0.13] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
+              aria-label={`Remove ${chip.label}`}
               title={`Remove ${chip.label}`}
             >
               <span className="truncate">{chip.label}</span>
@@ -388,7 +418,7 @@ export default function SearchControls({
 
       <div className="mt-3 flex items-center justify-between gap-3 border-t border-white/10 pt-3">
         <p id={`${formId}-status`} className="text-[10px] font-black uppercase tracking-[0.16em] text-white/34" aria-live="polite">
-          {isSearching ? 'Refreshing your search' : chips.length ? 'Criteria Active' : 'Ready to explore'}
+          {isSearching ? 'Refreshing your search' : chips.length ? criteriaSummary : 'Ready to explore'}
         </p>
         {isSearching ? <Loader2 size={13} className="shrink-0 animate-spin text-cyan-100" aria-hidden="true" /> : null}
       </div>
