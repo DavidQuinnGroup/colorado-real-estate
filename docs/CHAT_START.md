@@ -10,7 +10,7 @@ Product:
 
 ## Latest New-Chat Handoff
 
-PROJECT ATLAS(tm) / EOI 1.0 Sprint 1 Operational KPI Reporting Baseline(tm), July 27, 2026:
+PROJECT ATLAS(tm) / EOI 1.0 Sprint 1 Operational KPI Reporting Baseline(tm) production certification, July 27, 2026:
 
 Workspace:
 
@@ -28,8 +28,9 @@ Current EOI 1.0 Sprint 1 state:
 
 - Program: `ENTERPRISE_OPERATIONS_INTELLIGENCE_1_0`.
 - Sprint: `EOI_1_0_SPRINT_1_OPERATIONAL_KPI_REPORTING_BASELINE`.
-- Status: `EOI_1_0_SPRINT_1_OPERATIONAL_KPI_REPORTING_BASELINE_IMPLEMENTED_DEPLOYMENT_NOT_AUTHORIZED`.
-- Starting baseline: clean, aligned `main` at `7495fcad4469f4d98e3d1bd77900a15bfb05fe50`.
+- Status: `EOI_1_0_SPRINT_1_OPERATIONAL_KPI_REPORTING_BASELINE_CERTIFIED_AND_CLOSED`.
+- Implementation commit certified: `f28979827329ad75a3482a7fa9397597ccea1d5c`.
+- Certification baseline: clean, aligned `main` at `f28979827329ad75a3482a7fa9397597ccea1d5c` before documentation update.
 - Governing predecessor review: `docs/project-atlas/executive-library/EOI-1.0-ARCHITECTURE-AND-READINESS-REVIEW.md`.
 - Sprint record: `docs/project-atlas/executive-library/EOI-1.0-SPRINT-1-OPERATIONAL-KPI-REPORTING-BASELINE.md`.
 - Implementation created a protected, read-only EOI operational KPI reporting contract and admin adapter.
@@ -40,8 +41,21 @@ Current EOI 1.0 Sprint 1 state:
 - Deterministic safety command: `npm run check:eoi-operational-kpi-reporting-baseline`.
 - Validation passed: `npm run check:eoi-operational-kpi-reporting-baseline`, `npm run typecheck`, `npm run lint`, `npm run build`, `npx prisma validate`, `npm run check:cao-operating-model-service-level-contract`, `npm run check:cao-operations-queue-review-readiness`, `npm run check:cao-consultation-workflow-disposition-standard`, `npm run check:cim-first-party-measurement-readiness-adapter`, `npm run check:enterprise-kpi-safety`, and `git diff --check`.
 - Local protected route review: GET `/api/admin/enterprise/operational-kpis` without credentials returned `401 Unauthorized`; no mutation was invoked.
-- Deployment, production certification, EOI Sprint 2, CRM automation, workflow automation, notifications, email, database changes, persistence, telemetry activation, AI activation, GIS activation, provider activation, production mutation, and unrelated work remain `NOT_AUTHORIZED`.
-- Exact next executive decision required after push: David must decide whether to authorize a controlled deployment and production certification review for EOI Sprint 1. Codex must not authorize that decision.
+- Deployment provider: Vercel through existing GitHub deployment automation.
+- GitHub deployment ID: `5626448592`.
+- GitHub deployment status ID: `15999814054`.
+- GitHub commit status ID: `51159711269`.
+- Deployment status: `success`; description: `Deployment has completed`.
+- Deployed SHA: `f28979827329ad75a3482a7fa9397597ccea1d5c`.
+- Deployment created: `2026-07-27T16:52:28Z`; deployment status timestamp: `2026-07-27T16:52:28Z`.
+- Vercel target: `https://david-quinn-group-8rde-9xztsyr85-david-quinns-projects-a0953600.vercel.app`.
+- Governed production domain reviewed: `https://davidquinngroup.com`.
+- Production route review passed for `/`, `/search`, `/market`, `/sell`, representative property route `/properties/cmqlmynbh00bupi4jyw0rkgy0`, `/api/search?limit=5`, safe zero-result search, `/admin`, and `/api/admin/enterprise/operational-kpis`.
+- Public routes stayed usable; `/admin` returned `401`; unauthenticated `/api/admin/enterprise/operational-kpis` returned `401`; authenticated `/api/admin/enterprise/operational-kpis` returned `200` with contract/report metadata only.
+- Authenticated operational KPI response confirmed `module="enterprise-operations-intelligence-operational-kpis"`, `mode="read_only"`, `validation.valid=true`, `contractVersion="EOI-1.0-SPRINT-1"`, 10 definitions, 10 observations, and automation/telemetry/persistence/mutation disabled.
+- No database writes, Prisma mutations, migrations, CRM automation, workflow automation, notifications, emails, alerts, persistence, telemetry, AI activation, GIS activation, provider activation, protected public exposure, or production mutation occurred.
+- EOI Sprint 2, implementation, remediation, deployment changes, automation, database work, telemetry activation, AI activation, GIS activation, provider activation, production mutation, and unrelated work remain `NOT_AUTHORIZED`.
+- Exact next executive decision required: David must decide whether to authorize an EOI 1.0 strategic priority review or a separately scoped EOI Sprint 2 proposal. Codex must not authorize that decision.
 
 Prior EOI Architecture and Readiness Review handoff retained below.
 

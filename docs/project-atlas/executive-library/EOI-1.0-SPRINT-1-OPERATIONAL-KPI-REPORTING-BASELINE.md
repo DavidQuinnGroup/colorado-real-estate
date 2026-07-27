@@ -1,6 +1,6 @@
 # PROJECT ATLAS(tm) - EOI 1.0 Sprint 1 Operational KPI Reporting Baseline(tm)
 
-Status: `EOI_1_0_SPRINT_1_OPERATIONAL_KPI_REPORTING_BASELINE_IMPLEMENTED_DEPLOYMENT_NOT_AUTHORIZED`
+Status: `EOI_1_0_SPRINT_1_OPERATIONAL_KPI_REPORTING_BASELINE_CERTIFIED_AND_CLOSED`
 
 Date: July 27, 2026
 
@@ -279,3 +279,154 @@ The strongest permitted post-implementation state is:
 Authorize a controlled deployment and production certification review of EOI Sprint 1 only after local validation passes and the implementation commit is pushed.
 
 Do not authorize EOI Sprint 2, automation, telemetry, persistence, AI, GIS, provider activation, or production mutation as part of that decision.
+
+## 14. Production Certification
+
+Production review date: July 27, 2026
+
+Reviewed implementation commit:
+
+`f28979827329ad75a3482a7fa9397597ccea1d5c`
+
+Final governed status:
+
+`EOI_1_0_SPRINT_1_OPERATIONAL_KPI_REPORTING_BASELINE_CERTIFIED_AND_CLOSED`
+
+### Deployment Evidence
+
+- Deployment provider: Vercel through existing GitHub deployment automation.
+- GitHub deployment ID: `5626448592`.
+- GitHub deployment status ID: `15999814054`.
+- GitHub commit status ID: `51159711269`.
+- Deployment status: `success`.
+- Deployment description: `Deployment has completed`.
+- Deployed SHA: `f28979827329ad75a3482a7fa9397597ccea1d5c`.
+- Production environment: `Production`.
+- Deployment created: `2026-07-27T16:52:28Z`.
+- Deployment status timestamp: `2026-07-27T16:52:28Z`.
+- Vercel target URL: `https://david-quinn-group-8rde-9xztsyr85-david-quinns-projects-a0953600.vercel.app`.
+- Governed production domain reviewed: `https://davidquinngroup.com`.
+- Deployment origin: automatic Vercel/GitHub integration from the approved implementation commit.
+- Manual deployment, redeployment, preview promotion, domain modification, and environment modification during certification: none.
+
+### Production Route Review
+
+Production domain:
+
+`https://davidquinngroup.com`
+
+Read-only route/API results:
+
+- `/` returned `200`; usable; no stack trace, secret, or protected intelligence exposure observed.
+- `/search` returned `200`; usable; no stack trace, secret, or protected intelligence exposure observed.
+- `/market` returned `200`; usable; no stack trace, secret, or protected intelligence exposure observed.
+- `/sell` returned `200`; usable; no stack trace, secret, or protected intelligence exposure observed.
+- Representative property route `/properties/cmqlmynbh00bupi4jyw0rkgy0` returned `200`; usable; no stack trace, secret, or protected intelligence exposure observed.
+- `/api/search?limit=5` returned `200` JSON with compatible search keys and 5 results; no stack trace, secret, or protected intelligence exposure observed.
+- Safe zero-result search `/api/search?limit=5&q=zzzzzz-no-match-eoi-certification-20260727` returned `200` JSON with 0 results; no stack trace, secret, or protected intelligence exposure observed.
+- `/admin` returned `401`, confirming protected admin access without credentials.
+- Unauthenticated `/api/admin/enterprise/operational-kpis` returned `401` JSON, confirming protected access.
+- Authenticated `/api/admin/enterprise/operational-kpis` returned `200` JSON with contract/report metadata only.
+
+### Operational KPI Endpoint Evidence
+
+Authenticated production response summary:
+
+- `success`: `true`
+- `module`: `enterprise-operations-intelligence-operational-kpis`
+- `access`: `internal_admin`
+- `mode`: `read_only`
+- `validation.valid`: `true`
+- `validation.issues`: `[]`
+- `contractVersion`: `EOI-1.0-SPRINT-1`
+- `generatedFrom`: `GOVERNED_CONTRACTS`
+- `report.access`: `PROTECTED_ADMIN`
+- `report.readOnly`: `true`
+- `definitionCount`: `10`
+- `observationCount`: `10`
+- First definition: `EOI-KPI-CONSULTATION-VOLUME`
+- First definition governing source: `CAO-KPI-CONSULTATION-SCHEDULING`
+- First definition owner: `OPERATIONS_LEAD`
+- First definition confidence: `MEDIUM`
+- First definition freshness: `UNKNOWN`
+- First definition reporting classification: `DEFINED_PENDING_SOURCE_EVIDENCE`
+
+Runtime behavior flags:
+
+- `automationAuthorized`: `false`
+- `telemetryAuthorized`: `false`
+- `persistenceAuthorized`: `false`
+- `mutationAuthorized`: `false`
+
+Report flags:
+
+- `automationAuthorized`: `false`
+- `telemetryAuthorized`: `false`
+- `persistenceAuthorized`: `false`
+
+### Contract Review
+
+Confirmed:
+
+- canonical KPI definitions are present
+- reporting metadata is present
+- confidence values are present
+- freshness values are present
+- governing source values are present
+- reporting classifications are present
+- automation flags remain disabled
+- telemetry flags remain disabled
+- persistence flags remain disabled
+- adapter remains read-only
+- no live CRM execution is performed by the route
+- no Prisma query or mutation is performed by the route
+- no persistence is introduced
+- no telemetry is emitted
+- no provider activity is introduced
+
+### Safety Review
+
+Confirmed absent during certification:
+
+- database writes
+- Prisma mutations
+- migrations
+- CRM automation
+- workflow automation
+- notifications
+- emails
+- alerts
+- persistence
+- telemetry
+- AI activation
+- GIS activation
+- provider activation
+- production mutation
+
+### Certification Gates
+
+- Deployment matches implementation: PASS
+- Production behavior unchanged: PASS
+- Protected reporting only: PASS
+- KPI definitions present: PASS
+- Reporting metadata complete: PASS
+- Read-only adapter: PASS
+- Automation disabled: PASS
+- No persistence: PASS
+- No telemetry: PASS
+- No regression: PASS
+- Documentation updated: PASS
+
+### Unresolved Issues
+
+None found within the authorized EOI Sprint 1 production certification scope.
+
+### Certification Decision
+
+EOI 1.0 Sprint 1 is certified and closed.
+
+This certification does not authorize EOI Sprint 2, implementation, remediation, deployment changes, automation, database work, telemetry activation, AI activation, GIS activation, provider activation, production mutation, or unrelated work.
+
+### Next Executive Recommendation
+
+David should decide whether to authorize an EOI 1.0 strategic priority review or a separately scoped EOI Sprint 2 proposal. Codex must not authorize that decision.
