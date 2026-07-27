@@ -10,6 +10,43 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / CAO 1.0 Executive Readiness Review handoff, July 27, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -5 --oneline
+```
+
+Current CAO 1.0 strategic state:
+
+- Program: `CAO_1_0_CUSTOMER_ACQUISITION_OPERATIONS_PROGRAM`.
+- Review: `CAO_1_0_EXECUTIVE_READINESS_REVIEW`.
+- Status: `CAO_1_0_EXECUTIVE_READINESS_REVIEW_COMPLETE_IMPLEMENTATION_NOT_AUTHORIZED`.
+- Review baseline: clean, aligned `main` at `8d28334f6f13fab7e6b95d916fcca073350b8151`.
+- Predecessor programs: CEP 1.0 foundationally complete; CIM 1.0 foundationally complete with activation deferred.
+- CAO review record: `docs/project-atlas/executive-library/CAO-1.0-EXECUTIVE-READINESS-REVIEW.md`.
+- Operational state: `OPERATIONAL_CAPABILITY_PRESENT_OPERATING_MODEL_INCOMPLETE`.
+- Buyer readiness: `BUYER_ACQUISITION_SOFTWARE_PRESENT_PROCESS_NOT_FULLY_GOVERNED`.
+- Seller readiness: `SELLER_ACQUISITION_SOFTWARE_PRESENT_PROCESS_NOT_FULLY_GOVERNED`.
+- CRM readiness: `CRM_TOOLING_READY_FOR_HUMAN_REVIEW_NOT_READY_FOR_AUTOMATION_EXPANSION`.
+- Lead readiness: `LEAD_CAPTURE_PRESENT_LEAD_OPERATING_MODEL_REQUIRED`.
+- Consultation readiness: `CONSULTATION_ENTRY_READY_CONSULTATION_OPERATING_STANDARDS_MISSING`.
+- Service-level readiness: `SERVICE_LEVEL_MODEL_NOT_GOVERNED`.
+- Recommended next sprint: `CAO_1_0_SPRINT_1_OPERATING_MODEL_AND_SERVICE_LEVEL_CONTRACT`.
+- Final recommendation: `AUTHORIZE_CAO_1_0_SPRINT_1_OPERATING_MODEL_AND_SERVICE_LEVEL_CONTRACT`.
+- Implementation authorization: `NOT_AUTHORIZED`.
+- Runtime changes, deployment, CRM implementation, workflow automation, database changes, production mutation, customer-visible changes, telemetry activation, analytics vendors, cookies, browser storage, provider activation, GIS, AI, and unrelated work remain `NOT_AUTHORIZED`.
+- Exact next executive decision required: David must decide whether to authorize `CAO_1_0_SPRINT_1_OPERATING_MODEL_AND_SERVICE_LEVEL_CONTRACT` as a governance-first CAO sprint. Codex must not authorize that decision.
+
+Prior CIM strategic activation review handoff retained below.
+
 PROJECT ATLAS(tm) / CIM 1.0 Strategic Activation Review handoff, July 27, 2026:
 
 Workspace:
