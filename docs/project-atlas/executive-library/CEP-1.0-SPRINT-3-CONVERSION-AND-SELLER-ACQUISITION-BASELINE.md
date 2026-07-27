@@ -1,6 +1,6 @@
 # PROJECT ATLAS(tm) - CEP 1.0 Sprint 3 Conversion and Seller Acquisition Baseline(tm)
 
-Status: `CEP_1_0_SPRINT_3_IMPLEMENTED_AND_PUSHED_DEPLOYMENT_NOT_AUTHORIZED`
+Status: `CEP_1_0_SPRINT_3_CERTIFIED_AND_CLOSED`
 
 Date: July 27, 2026
 
@@ -12,14 +12,18 @@ Final governed implementation outcome:
 
 `CEP_1_0_SPRINT_3_IMPLEMENTED_AND_PUSHED_DEPLOYMENT_NOT_AUTHORIZED`
 
+Final governed production-certification outcome:
+
+`CEP_1_0_SPRINT_3_CERTIFIED_AND_CLOSED`
+
 ## 2. Sprint Status
 
 - Sprint identifier: `CEP_1_0_SPRINT_3_CONVERSION_AND_SELLER_ACQUISITION_BASELINE`
 - Implementation status: `IMPLEMENTED_AND_PUSHED`
-- Deployment status: `NOT_AUTHORIZED`
-- Production smoke status: `NOT_AUTHORIZED`
-- Production certification status: `NOT_AUTHORIZED`
-- Customer-visible certification: `NOT_AUTHORIZED`
+- Deployment status: `AUTOMATIC_DEPLOYMENT_VERIFIED`
+- Production smoke status: `PASSED_NON_MUTATING_PUBLIC_REVIEW`
+- Production certification status: `CERTIFIED_AND_CLOSED`
+- Customer-visible certification: `CERTIFIED_FOR_CEP_1_0_SPRINT_3_SCOPE_ONLY`
 - Sprint 4 state: `NOT_AUTHORIZED`
 
 ## 3. Authorization
@@ -28,7 +32,9 @@ David explicitly authorized controlled repository implementation, local validati
 
 Authorized work included inquiry-entry hierarchy, schedule-tour hierarchy, seller valuation journey clarity, CTA clarity, pre-submission guidance, confirmation and recovery states, buyer and seller decision pathways, mobile conversion usability, accessibility, lead attribution through existing architecture only, deterministic regression coverage, documentation, commit, and push.
 
-The sprint did not authorize deployment, production review, production mutation, CRM redesign, Seller Lead Engine redesign, valuation-engine redesign, alert or email redesign, inquiry or tour backend redesign, schema changes, migrations, new persistence, environment changes, AI activation, GIS activation, provider activation, or production form submissions.
+The implementation sprint did not authorize deployment, production review, production mutation, CRM redesign, Seller Lead Engine redesign, valuation-engine redesign, alert or email redesign, inquiry or tour backend redesign, schema changes, migrations, new persistence, environment changes, AI activation, GIS activation, provider activation, or production form submissions.
+
+David later authorized controlled deployment verification, non-mutating production certification review, certification documentation, and documentation-only commit and push for implementation commit `9e150e2ba461df5bc326da386d02775c0ec66d35`. That certification authorization did not permit runtime implementation, remediation, redeployment, preview promotion, environment changes, database mutation, provider activation, AI activation, GIS Sprint 9, Sprint 4, or mutation-bearing customer workflows.
 
 ## 4. Baseline
 
@@ -260,25 +266,112 @@ Future measurement still requires separate authorization for any analytics activ
 - Analytics measurement remains preparation-only and inactive.
 - Sprint 4 remains unauthorized.
 
-## 21. Production-Readiness Assessment
+## 21. Production Certification Review
 
-Sprint 3 is locally implemented and validated for controlled repository scope. It is ready for an executive decision on controlled deployment and production certification review, but it is not deployed, production-smoked, production-certified, or customer-visible certified by this record.
+Review date: July 27, 2026
 
-## 22. Deployment Authorization State
+Reviewed implementation commit: `9e150e2ba461df5bc326da386d02775c0ec66d35`
 
-- Deployment: `NOT_AUTHORIZED`
+Production domain: `https://davidquinngroup.com`
+
+Deployment evidence:
+
+- Provider: Vercel through GitHub deployment automation.
+- Deployment status: `success`.
+- Deployment identifier: `5618909107`.
+- Deployment status identifier: `15978462737`.
+- Commit status identifier: `51128137306`.
+- Deployed SHA: `9e150e2ba461df5bc326da386d02775c0ec66d35`.
+- Commit status description: `Deployment has completed`.
+- Environment: `Production`.
+- Deployment created/updated: `2026-07-27T07:46:46Z`.
+- Commit status created/updated: `2026-07-27T07:46:45Z`.
+- Deployment target: `https://david-quinn-group-8rde-209n09e54-david-quinns-projects-a0953600.vercel.app`.
+- Vercel status target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/66u3pS4RYztB7MkqMDJsJNVS6AEw`.
+- Deployment type: automatic from existing Vercel/GitHub automation.
+- Manual deployment action during certification: none.
+
+Production route and API results:
+
+- `/`: HTTP `200`; usable public response; no redirect, stack trace, credential, or protected intelligence exposure observed.
+- `/search`: HTTP `200`; usable public response; search interface, map/list experience, selected-property drawer, and conversion guidance rendered.
+- `/sell`: HTTP `200`; usable public response; seller valuation expectations, seller guidance, and intake form rendered.
+- `/api/search?limit=5`: HTTP `200`; compatible response with `results`, `found`, `returned`, `mapped`, `source`, `health`, and customer-experience metadata. The primary provider was reported as degraded and the database fallback served the request with customer-safe messaging.
+- Safe zero-result `/api/search?city=NoSuchColoradoCityZZZ&query=unlikely-zero-result-cep-sprint-3-prod&limit=5`: HTTP `200`; compatible zero-result response with no stack trace, secrets, or mutation.
+- Representative property detail route `/properties/cmqln53qg09rvpi4jzrvdb33v`: HTTP `200`; usable public response with property inquiry guidance and inquiry form visible.
+
+Production interaction results:
+
+- Buyer inquiry guidance rendered on the property detail page.
+- Tour-intent guidance rendered without submitting the form.
+- Selected-property drawer guidance rendered after selecting a search result.
+- Selected-property drawer preserved `View Property` and `Ask About This Property` routes.
+- Search-to-property navigation from the selected-property drawer worked and opened the representative property detail route.
+- Seller valuation expectations and seller guidance rendered on `/sell`.
+- Inquiry and seller forms were visible but not submitted.
+- Inquiry recovery links and seller recovery links remain implemented in the deployed commit, but were not triggered in production because doing so would require mutation-bearing form submissions.
+
+Responsive production results:
+
+- Desktop `1280 x 900`: passed; no horizontal overflow observed.
+- Tablet `900 x 1050`: passed; no horizontal overflow observed.
+- Mobile `386 x 900`: passed; no horizontal overflow observed.
+- Narrow mobile `320 x 900`: passed; no horizontal overflow observed.
+- Search input, result cards, selected-property drawer, property inquiry guidance, seller guidance, and List/Map controls remained reachable at reviewed dimensions.
+- Mobile List/Map toggle exposed the selected state and switched from list to map without horizontal overflow.
+
+Accessibility production results:
+
+- Property inquiry fields exposed usable labels for name, phone, email, and notes.
+- Seller intake fields exposed usable labels for name, email, phone, city, property address, objective, timeline, and notes.
+- Tour timing buttons preserved `aria-pressed` selected-state semantics.
+- Selected-property card activation worked by keyboard and opened the drawer.
+- Primary links and CTAs used explicit customer-facing names.
+- Focus-compatible controls and mobile controls remained usable in the reviewed paths.
+- No material Sprint 3 accessibility regression was observed.
+
+Safety and mutation review:
+
+- No inquiry form was submitted.
+- No tour submission was triggered.
+- No valuation form was submitted.
+- No saved-search submission, alert, email, CRM activity, seller lead, database write, admin action, MLS sync, provider activity, GIS activation, AI activation, environment change, manual deployment, redeployment, or preview promotion was performed.
+- No protected intelligence, credentials, stack traces, internal diagnostics, or unsupported provider details were exposed.
+
+Production certification command:
+
+- `env PUBLIC_EXPERIENCE_SMOKE_BASE_URL=https://davidquinngroup.com npm run smoke:public-experience`: passed. The smoke command performed non-mutating public route checks and confirmed home, seller journey entry, property detail bridge, property inquiry guidance, search intelligence, selected-drawer inquiry target, and public brand voice safety.
+
+Certification decision:
+
+`CEP_1_0_SPRINT_3_CERTIFIED_AND_CLOSED`
+
+Unresolved issues:
+
+- No material Sprint 3 production regression was found.
+- The search API naturally reported primary-provider degradation during review, but the deployed database fallback returned compatible, customer-safe responses. This was treated as a preserved degraded-service behavior, not a Sprint 3 conversion regression.
+- Mutation-dependent confirmation recovery states were not production-triggered because production form submission was prohibited.
+
+## 22. Production-Readiness Assessment
+
+Sprint 3 is implemented, deployed through existing automation, non-mutating production-reviewed, certified for the CEP 1.0 Sprint 3 scope, and closed. No deployment verification beyond the reviewed automatic deployment, production mutation, customer data creation, provider activation, AI activation, GIS Sprint 9 behavior, or Sprint 4 work is authorized by this record.
+
+## 23. Deployment Authorization State
+
+- Deployment: `AUTOMATIC_DEPLOYMENT_VERIFIED_FOR_IMPLEMENTATION_COMMIT`
 - Redeployment: `NOT_AUTHORIZED`
-- Production smoke: `NOT_AUTHORIZED`
-- Production certification: `NOT_AUTHORIZED`
-- Customer-visible certification: `NOT_AUTHORIZED`
+- Production smoke: `PASSED_NON_MUTATING_PUBLIC_REVIEW`
+- Production certification: `CEP_1_0_SPRINT_3_CERTIFIED_AND_CLOSED`
+- Customer-visible certification: `CERTIFIED_FOR_CEP_1_0_SPRINT_3_SCOPE_ONLY`
+- Sprint 4: `NOT_AUTHORIZED`
 
-## 23. Stop Conditions
+## 24. Stop Conditions
 
 Codex stopped before:
 
-- deployment
-- production review
 - production mutation
+- manual deployment
+- redeployment
 - Sprint 4
 - AI activation
 - GIS activation
@@ -287,15 +380,16 @@ Codex stopped before:
 - database changes
 - unrelated implementation
 
-## 24. Recommended Next Executive Decision
+## 25. Recommended Next Executive Decision
 
-David should decide whether to authorize a controlled deployment and production certification review of CEP 1.0 Sprint 3.
+David should decide whether to keep CEP 1.0 paused at Sprint 3 closure or separately authorize the next CEP 1.0 executive planning decision.
 
 Codex does not authorize that decision.
 
-## 25. Evidence Appendix
+## 26. Evidence Appendix
 
-- Implementation commit: recorded after commit and push in `docs/CHAT_START.md`.
+- Implementation commit certified: `9e150e2ba461df5bc326da386d02775c0ec66d35`.
 - Required Sprint 3 check: `npm run check:cep-conversion-seller-acquisition-baseline`.
+- Production smoke command: `env PUBLIC_EXPERIENCE_SMOKE_BASE_URL=https://davidquinngroup.com npm run smoke:public-experience`.
 - Primary runtime files: `components/PropertyInquiryForm.tsx`, `components/HomeValueEstimator.tsx`, `components/maps/SelectedPropertyDrawer.tsx`.
 - Backend routes inspected but not changed: `app/api/property-inquiry/route.ts`, `app/api/valuation/route.ts`, `app/api/save-search/route.ts`.

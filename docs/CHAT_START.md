@@ -10,7 +10,7 @@ Product:
 
 ## Latest New-Chat Handoff
 
-PROJECT ATLAS(tm) / CEP 1.0 Sprint 3 Conversion and Seller Acquisition Baseline(tm) implementation handoff, July 27, 2026:
+PROJECT ATLAS(tm) / CEP 1.0 Sprint 3 Conversion and Seller Acquisition Baseline(tm) certification handoff, July 27, 2026:
 
 Workspace:
 
@@ -28,8 +28,8 @@ Current CEP 1.0 Sprint 3 state:
 
 - Program: `PROJECT_ATLAS_CEP_1_0_CUSTOMER_EXPERIENCE_PLATFORM`.
 - Sprint: `CEP_1_0_SPRINT_3_CONVERSION_AND_SELLER_ACQUISITION_BASELINE`.
-- Status: `CEP_1_0_SPRINT_3_IMPLEMENTED_AND_PUSHED_DEPLOYMENT_NOT_AUTHORIZED`.
-- Strongest governed implementation outcome: `CEP_1_0_SPRINT_3_IMPLEMENTED_AND_PUSHED_DEPLOYMENT_NOT_AUTHORIZED`.
+- Status: `CEP_1_0_SPRINT_3_CERTIFIED_AND_CLOSED`.
+- Final governed outcome: `CEP_1_0_SPRINT_3_CERTIFIED_AND_CLOSED`.
 - Sprint 2 state: `CEP_1_0_SPRINT_2_CERTIFIED_AND_CLOSED`.
 - Sprint 2 certification commit: `4485f7fcd8f6a20bdef78e63879fe4ce41f7125a`.
 - Primary CEP roadmap: `docs/project-atlas/executive-library/CEP-1.0-CUSTOMER-EXPERIENCE-PLATFORM-ARCHITECTURE-AND-IMPLEMENTATION-ROADMAP.md`.
@@ -41,16 +41,28 @@ Current CEP 1.0 Sprint 3 state:
 - Validation completed: focused Sprint 3 safety check, `npm run typecheck`, `npm run lint`, `npm run build`, `npx prisma validate`, local public-experience smoke, local route/API review, local conversion journey review, responsive review at 1280 x 900, 900 x 1050, 386 x 900, and 320 x 900, accessibility-focused review, and mutation-safety review.
 - Mutation-safety confirmation: no inquiry submission, tour submission, valuation submission, saved-search submission, alert, email, CRM action, seller-lead action, admin action, MLS sync, database write, environment change, provider access, GIS Sprint 9, AI activation, deployment, redeployment, or production action was performed.
 - Protected-boundary confirmation: no protected intelligence, credentials, stack traces, internal diagnostics, AI guidance, GIS runtime behavior, provider data, schema changes, migrations, new persistence, or environment changes were introduced.
-- Implementation commit: verify with `git log -1 --oneline` after final commit and push.
-- Deployment: `NOT_AUTHORIZED`.
+- Implementation commit certified: `9e150e2ba461df5bc326da386d02775c0ec66d35`.
+- Deployment evidence: Vercel/GitHub deployment `5618909107`, deployment status `15978462737`, commit status `51128137306`, state `success`, description `Deployment has completed`, environment `Production`, created/updated `2026-07-27T07:46:46Z`, target `https://david-quinn-group-8rde-209n09e54-david-quinns-projects-a0953600.vercel.app`, commit status target `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/66u3pS4RYztB7MkqMDJsJNVS6AEw`.
+- Governed production domain certified for Sprint 3 scope: `https://davidquinngroup.com`.
+- Production smoke: `env PUBLIC_EXPERIENCE_SMOKE_BASE_URL=https://davidquinngroup.com npm run smoke:public-experience` passed.
+- Production route/API review passed for `/`, `/search`, `/sell`, `/api/search?limit=5`, safe zero-result `/api/search?city=NoSuchColoradoCityZZZ&query=unlikely-zero-result-cep-sprint-3-prod&limit=5`, and representative detail route `/properties/cmqln53qg09rvpi4jzrvdb33v`.
+- Production buyer journey review passed for property inquiry guidance, tour guidance, selected-property drawer improvements, search-to-property navigation, property-to-inquiry visibility, and property navigation without form submission.
+- Production seller journey review passed for valuation expectations, seller guidance, and seller form visibility without form submission.
+- Production responsive review passed at 1280 x 900, 900 x 1050, 386 x 900, and 320 x 900 with no horizontal overflow.
+- Accessibility review found named inquiry and seller fields, explicit CTA wording, timing `aria-pressed` semantics, keyboard property-card activation, selected-property drawer behavior, visible focus-compatible controls, and no material Sprint 3 regression.
+- Production degraded-state note: `/api/search` naturally reported primary-provider degradation while preserving a compatible, customer-safe database fallback response.
+- Mutation-safety confirmation during production review: no inquiry submission, tour submission, valuation submission, saved-search submission, alert, email, CRM action, seller-lead action, admin action, MLS sync, database write, environment change, provider access, GIS Sprint 9, AI activation, manual deployment, redeployment, preview promotion, or production mutation was performed.
+- Protected-boundary confirmation during production review: no protected intelligence, credentials, stack traces, internal diagnostics, provider data, unauthorized GIS behavior, or AI behavior were exposed.
+- Latest documentation-only certification commit: verify with `git log -1 --oneline` after final commit and push.
+- Deployment beyond the verified automatic Sprint 3 deployment: `NOT_AUTHORIZED`.
 - Redeployment: `NOT_AUTHORIZED`.
-- Production smoke: `NOT_AUTHORIZED`.
-- Production certification: `NOT_AUTHORIZED`.
-- Customer-visible certification: `NOT_AUTHORIZED`.
+- Production smoke beyond completed Sprint 3 certification review: `NOT_AUTHORIZED`.
+- Production certification beyond Sprint 3 scope: `NOT_AUTHORIZED`.
+- Customer-visible certification: `CERTIFIED_FOR_CEP_1_0_SPRINT_3_SCOPE_ONLY`.
 - Sprint 4: `NOT_AUTHORIZED`.
 - GIS Sprint 9: `NOT_AUTHORIZED`.
 - Provider connection, credentials, terms acceptance, downloads, live GIS service/API calls, provider acquisition, provider persistence, provider data customer display, AI runtime activation, geographic runtime consumption, database/schema changes, migrations, API contract changes, alert/CRM/email/seller/inquiry mutation tests, Vercel actions, and environment changes remain `NOT_AUTHORIZED`.
-- Exact next executive decision required: David must decide whether to authorize controlled deployment and production certification review of the CEP 1.0 Sprint 3 implementation. Codex must not authorize that decision.
+- Exact next executive decision required: David must decide whether to keep CEP 1.0 paused at Sprint 3 closure or separately authorize the next CEP 1.0 executive planning decision. Codex must not authorize that decision.
 
 Prior CEP Sprint 2 certification handoff retained below.
 
