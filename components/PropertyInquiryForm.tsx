@@ -2,12 +2,14 @@
 
 import { type CSSProperties, type FormEvent, type ReactNode, useState } from 'react';
 import {
+  ArrowLeft,
   CheckCircle2,
   Clock3,
   Loader2,
   Mail,
   MessageSquareText,
   Phone,
+  Search,
   ShieldCheck,
   Sparkles,
   UserRound,
@@ -220,6 +222,27 @@ export default function PropertyInquiryForm({ propertyId, address, city, state }
           <SuccessMetric label="Request" value={timelineLabel} />
           <SuccessMetric label="Follow-up" value={leadTemperature} tone="cyan" />
         </div>
+        <div
+          className="grid gap-3 border-t border-white/10 p-4 sm:grid-cols-2"
+          data-testid="cep-conversion-inquiry-confirmation-recovery"
+          data-conversion-source="property-inquiry"
+          data-conversion-recovery-state="submitted"
+        >
+          <Link
+            href={`/properties/${propertyId}`}
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[6px] border border-white/12 bg-white/[0.055] px-3 py-2 text-[10px] font-black uppercase tracking-[0.13em] text-white/70 transition hover:border-cyan-100/35 hover:text-cyan-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100"
+          >
+            <ArrowLeft size={13} aria-hidden="true" />
+            Return to Property
+          </Link>
+          <Link
+            href="/search"
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[6px] border border-cyan-100/24 bg-cyan-100/[0.08] px-3 py-2 text-[10px] font-black uppercase tracking-[0.13em] text-cyan-100 transition hover:border-cyan-100/45 hover:bg-cyan-100/[0.12] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100"
+          >
+            Continue Search
+            <Search size={13} aria-hidden="true" />
+          </Link>
+        </div>
       </section>
     );
   }
@@ -281,6 +304,28 @@ export default function PropertyInquiryForm({ propertyId, address, city, state }
       >
         <StatusTile icon={<ShieldCheck size={13} />} label="Follow-up routing" value="Property-specific inquiry saved" />
         <StatusTile icon={<Clock3 size={13} />} label="Current Request" value={getTimelineDetail(timeline)} />
+      </div>
+
+      <div
+        className="border-b border-white/10 bg-white/[0.025] p-4"
+        data-testid="cep-conversion-inquiry-guidance"
+        data-conversion-source="property-inquiry"
+        data-conversion-backend-route="/api/property-inquiry"
+        data-conversion-submission-required="true"
+        data-conversion-tour-option-visible={TIMELINE_OPTIONS.some((option) => option.value === 'tour') ? 'true' : 'false'}
+      >
+        <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.16em] text-cyan-100/74">
+          <Sparkles size={13} aria-hidden="true" />
+          Choose the next step
+        </p>
+        <div className="mt-3 grid gap-2 sm:grid-cols-2">
+          <ConversionCue label="Tour" value="Use Schedule Tour when access and showing timing are the priority." />
+          <ConversionCue label="Ask" value="Use Ready Now or Researching for property facts, records, or strategy questions." />
+        </div>
+        <p className="mt-3 text-xs leading-5 text-white/42">
+          The request is reviewed for property-specific follow-up. It does not submit an offer, schedule a confirmed showing, or create a
+          brokerage relationship by itself.
+        </p>
       </div>
 
       <form
@@ -483,6 +528,15 @@ function SuccessMetric({ label, value, tone = 'white' }: { label: string; value:
         {label}
       </p>
       <p className={`mt-2 truncate text-xs font-black uppercase tracking-[0.1em] ${valueClass}`}>{value}</p>
+    </div>
+  );
+}
+
+function ConversionCue({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-[6px] border border-white/10 bg-black/18 p-3">
+      <p className="text-[10px] font-black uppercase tracking-[0.14em] text-white/38">{label}</p>
+      <p className="mt-1.5 text-xs font-bold leading-5 text-white/66">{value}</p>
     </div>
   );
 }

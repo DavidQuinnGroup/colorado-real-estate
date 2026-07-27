@@ -1,7 +1,8 @@
 'use client';
 
 import { type FormEvent, useId, useState } from 'react';
-import { CheckCircle2, Loader2 } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, Loader2, MessageSquareText, Search } from 'lucide-react';
+import Link from 'next/link';
 
 type SubmitState = 'idle' | 'submitting' | 'success' | 'error';
 
@@ -138,6 +139,27 @@ export default function HomeValueEstimator() {
           {result?.followUp?.nextStep ||
             'Expect a direct follow-up through the contact information you submitted. No brokerage relationship is created by submitting this form.'}
         </p>
+        <div
+          className="mt-7 grid gap-3 sm:grid-cols-2"
+          data-testid="cep-conversion-seller-confirmation-recovery"
+          data-conversion-source="seller-valuation"
+          data-conversion-recovery-state="submitted"
+        >
+          <Link
+            href="/sell"
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-white/14 px-4 py-2 text-[11px] font-black uppercase tracking-[0.13em] text-white/72 transition hover:border-white/32 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-100 focus:ring-offset-2 focus:ring-offset-[#101820]"
+          >
+            <ArrowLeft size={14} aria-hidden="true" />
+            Seller Page
+          </Link>
+          <Link
+            href="/search"
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-cyan-100 px-4 py-2 text-[11px] font-black uppercase tracking-[0.13em] text-[#101820] transition hover:bg-white focus:outline-none focus:ring-2 focus:ring-cyan-100 focus:ring-offset-2 focus:ring-offset-[#101820]"
+          >
+            Continue Search
+            <Search size={14} aria-hidden="true" />
+          </Link>
+        </div>
       </section>
     );
   }
@@ -149,6 +171,9 @@ export default function HomeValueEstimator() {
       data-testid="seller-intake-form"
       aria-labelledby={`${formId}-title`}
       aria-describedby={`${formId}-description ${formId}-notice`}
+      data-conversion-source="seller-valuation"
+      data-conversion-backend-route="/api/valuation"
+      data-conversion-automated-valuation="false"
       noValidate
     >
       <div>
@@ -160,6 +185,25 @@ export default function HomeValueEstimator() {
         </p>
       </div>
 
+      <div
+        className="mt-6 rounded-[10px] border border-cyan-100/18 bg-cyan-100/[0.06] p-4"
+        data-testid="cep-conversion-seller-guidance"
+        data-conversion-source="seller-valuation"
+        data-conversion-backend-route="/api/valuation"
+        data-conversion-submission-required="true"
+        data-conversion-automated-valuation="false"
+      >
+        <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.17em] text-cyan-100/78">
+          <MessageSquareText size={13} aria-hidden="true" />
+          What happens next
+        </p>
+        <div className="mt-3 grid gap-2 sm:grid-cols-3">
+          <SellerCue label="Review" value="Property details and timing are organized for advisor follow-up." />
+          <SellerCue label="Prepare" value="Repairs, presentation, and buyer objections can be discussed before launch." />
+          <SellerCue label="Price" value="Pricing conversation stays consultative and local-market based." />
+        </div>
+      </div>
+
       <div className="mt-8 grid gap-4 sm:grid-cols-2">
         <label className="block text-sm font-bold text-white/76" htmlFor={`${formId}-name`}>
           Name
@@ -168,7 +212,7 @@ export default function HomeValueEstimator() {
             aria-label="Name"
             value={name}
             onChange={(event) => setName(event.target.value)}
-            className="mt-2 w-full rounded-[8px] border border-white/12 bg-black/30 px-4 py-3 text-white outline-none transition focus:border-cyan-100"
+            className="mt-2 box-border w-full rounded-[8px] border border-white/12 bg-black/30 px-4 py-3 text-white outline-none transition focus:border-cyan-100"
             autoComplete="name"
             required
           />
@@ -180,7 +224,7 @@ export default function HomeValueEstimator() {
             aria-label="Email"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
-            className="mt-2 w-full rounded-[8px] border border-white/12 bg-black/30 px-4 py-3 text-white outline-none transition focus:border-cyan-100"
+            className="mt-2 box-border w-full rounded-[8px] border border-white/12 bg-black/30 px-4 py-3 text-white outline-none transition focus:border-cyan-100"
             autoComplete="email"
             inputMode="email"
             required
@@ -193,7 +237,7 @@ export default function HomeValueEstimator() {
             aria-label="Phone"
             value={phone}
             onChange={(event) => setPhone(event.target.value)}
-            className="mt-2 w-full rounded-[8px] border border-white/12 bg-black/30 px-4 py-3 text-white outline-none transition focus:border-cyan-100"
+            className="mt-2 box-border w-full rounded-[8px] border border-white/12 bg-black/30 px-4 py-3 text-white outline-none transition focus:border-cyan-100"
             autoComplete="tel"
             inputMode="tel"
           />
@@ -205,7 +249,7 @@ export default function HomeValueEstimator() {
             aria-label="City"
             value={city}
             onChange={(event) => setCity(event.target.value)}
-            className="mt-2 w-full rounded-[8px] border border-white/12 bg-black/30 px-4 py-3 text-white outline-none transition focus:border-cyan-100"
+            className="mt-2 box-border w-full rounded-[8px] border border-white/12 bg-black/30 px-4 py-3 text-white outline-none transition focus:border-cyan-100"
             autoComplete="address-level2"
             placeholder="Boulder"
           />
@@ -219,7 +263,7 @@ export default function HomeValueEstimator() {
           aria-label="Property address"
           value={address}
           onChange={(event) => setAddress(event.target.value)}
-          className="mt-2 w-full rounded-[8px] border border-white/12 bg-black/30 px-4 py-3 text-white outline-none transition focus:border-cyan-100"
+          className="mt-2 box-border w-full rounded-[8px] border border-white/12 bg-black/30 px-4 py-3 text-white outline-none transition focus:border-cyan-100"
           autoComplete="street-address"
           required
         />
@@ -233,7 +277,7 @@ export default function HomeValueEstimator() {
             aria-label="Main objective"
             value={objective}
             onChange={(event) => setObjective(event.target.value)}
-            className="mt-2 w-full rounded-[8px] border border-white/12 bg-black/30 px-4 py-3 text-white outline-none transition focus:border-cyan-100"
+            className="mt-2 box-border w-full rounded-[8px] border border-white/12 bg-black/30 px-4 py-3 text-white outline-none transition focus:border-cyan-100"
           >
             {objectiveOptions.map((option) => (
               <option key={option.value} value={option.value} className="bg-[#101820] text-white">
@@ -249,7 +293,7 @@ export default function HomeValueEstimator() {
             aria-label="Timeline"
             value={timeline}
             onChange={(event) => setTimeline(event.target.value)}
-            className="mt-2 w-full rounded-[8px] border border-white/12 bg-black/30 px-4 py-3 text-white outline-none transition focus:border-cyan-100"
+            className="mt-2 box-border w-full rounded-[8px] border border-white/12 bg-black/30 px-4 py-3 text-white outline-none transition focus:border-cyan-100"
           >
             {timelineOptions.map((option) => (
               <option key={option.value} value={option.value} className="bg-[#101820] text-white">
@@ -267,7 +311,7 @@ export default function HomeValueEstimator() {
           aria-label="Optional notes"
           value={notes}
           onChange={(event) => setNotes(event.target.value)}
-          className="mt-2 min-h-28 w-full resize-y rounded-[8px] border border-white/12 bg-black/30 px-4 py-3 text-white outline-none transition focus:border-cyan-100"
+          className="mt-2 box-border min-h-28 w-full resize-y rounded-[8px] border border-white/12 bg-black/30 px-4 py-3 text-white outline-none transition focus:border-cyan-100"
           placeholder="Preparation questions, updates, timing, or concerns you want reviewed."
         />
       </label>
@@ -297,6 +341,15 @@ export default function HomeValueEstimator() {
         appropriate brokerage relationship and disclosures have been discussed.
       </p>
     </form>
+  );
+}
+
+function SellerCue({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-[8px] border border-white/10 bg-black/18 p-3">
+      <p className="text-[10px] font-black uppercase tracking-[0.14em] text-white/40">{label}</p>
+      <p className="mt-1.5 text-xs font-bold leading-5 text-white/66">{value}</p>
+    </div>
   );
 }
 

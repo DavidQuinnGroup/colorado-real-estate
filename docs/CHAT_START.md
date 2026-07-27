@@ -10,6 +10,50 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / CEP 1.0 Sprint 3 Conversion and Seller Acquisition Baseline(tm) implementation handoff, July 27, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -5 --oneline
+```
+
+Current CEP 1.0 Sprint 3 state:
+
+- Program: `PROJECT_ATLAS_CEP_1_0_CUSTOMER_EXPERIENCE_PLATFORM`.
+- Sprint: `CEP_1_0_SPRINT_3_CONVERSION_AND_SELLER_ACQUISITION_BASELINE`.
+- Status: `CEP_1_0_SPRINT_3_IMPLEMENTED_AND_PUSHED_DEPLOYMENT_NOT_AUTHORIZED`.
+- Strongest governed implementation outcome: `CEP_1_0_SPRINT_3_IMPLEMENTED_AND_PUSHED_DEPLOYMENT_NOT_AUTHORIZED`.
+- Sprint 2 state: `CEP_1_0_SPRINT_2_CERTIFIED_AND_CLOSED`.
+- Sprint 2 certification commit: `4485f7fcd8f6a20bdef78e63879fe4ce41f7125a`.
+- Primary CEP roadmap: `docs/project-atlas/executive-library/CEP-1.0-CUSTOMER-EXPERIENCE-PLATFORM-ARCHITECTURE-AND-IMPLEMENTATION-ROADMAP.md`.
+- Sprint 3 record: `docs/project-atlas/executive-library/CEP-1.0-SPRINT-3-CONVERSION-AND-SELLER-ACQUISITION-BASELINE.md`.
+- Implemented runtime scope: buyer inquiry guidance, schedule-tour versus property-question hierarchy, inquiry confirmation recovery, seller review guidance, seller confirmation recovery, selected-property next-step guidance, and deterministic conversion/seller-acquisition safety coverage.
+- Runtime files changed: `components/PropertyInquiryForm.tsx`, `components/HomeValueEstimator.tsx`, and `components/maps/SelectedPropertyDrawer.tsx`.
+- Validation additions: `scripts/checkCepConversionSellerAcquisitionBaseline.ts`, `package.json`, and `tsconfig.worker.json`.
+- Required Sprint 3 check: `npm run check:cep-conversion-seller-acquisition-baseline`.
+- Validation completed: focused Sprint 3 safety check, `npm run typecheck`, `npm run lint`, `npm run build`, `npx prisma validate`, local public-experience smoke, local route/API review, local conversion journey review, responsive review at 1280 x 900, 900 x 1050, 386 x 900, and 320 x 900, accessibility-focused review, and mutation-safety review.
+- Mutation-safety confirmation: no inquiry submission, tour submission, valuation submission, saved-search submission, alert, email, CRM action, seller-lead action, admin action, MLS sync, database write, environment change, provider access, GIS Sprint 9, AI activation, deployment, redeployment, or production action was performed.
+- Protected-boundary confirmation: no protected intelligence, credentials, stack traces, internal diagnostics, AI guidance, GIS runtime behavior, provider data, schema changes, migrations, new persistence, or environment changes were introduced.
+- Implementation commit: verify with `git log -1 --oneline` after final commit and push.
+- Deployment: `NOT_AUTHORIZED`.
+- Redeployment: `NOT_AUTHORIZED`.
+- Production smoke: `NOT_AUTHORIZED`.
+- Production certification: `NOT_AUTHORIZED`.
+- Customer-visible certification: `NOT_AUTHORIZED`.
+- Sprint 4: `NOT_AUTHORIZED`.
+- GIS Sprint 9: `NOT_AUTHORIZED`.
+- Provider connection, credentials, terms acceptance, downloads, live GIS service/API calls, provider acquisition, provider persistence, provider data customer display, AI runtime activation, geographic runtime consumption, database/schema changes, migrations, API contract changes, alert/CRM/email/seller/inquiry mutation tests, Vercel actions, and environment changes remain `NOT_AUTHORIZED`.
+- Exact next executive decision required: David must decide whether to authorize controlled deployment and production certification review of the CEP 1.0 Sprint 3 implementation. Codex must not authorize that decision.
+
+Prior CEP Sprint 2 certification handoff retained below.
+
 PROJECT ATLAS(tm) / CEP 1.0 Sprint 2 Property Intelligence Experience Integration(tm) certification handoff, July 27, 2026:
 
 Workspace:

@@ -217,6 +217,18 @@ export default function SelectedPropertyDrawer({ property, onClose }: SelectedPr
         ) : null}
 
         <div className="mt-4 border-t border-white/10 pt-4">
+          <div
+            className="mb-3 rounded-[6px] border border-cyan-100/16 bg-cyan-100/[0.055] p-3"
+            data-testid="cep-conversion-selected-property-guidance"
+            data-conversion-source="search-selected-property"
+            data-conversion-detail-href={propertyHref}
+            data-conversion-inquiry-href={inquiryHref}
+          >
+            <p className="text-[10px] font-black uppercase tracking-[0.15em] text-cyan-100/72">Next Step</p>
+            <p className="mt-1.5 text-left text-xs font-bold leading-5 text-white/62">
+              Open the full property decision view first, or ask a property-specific question when timing, records, or tour fit matter.
+            </p>
+          </div>
           <Link
             href={propertyHref}
             data-testid="reie-selected-property-detail-link"

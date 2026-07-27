@@ -89,6 +89,7 @@
     "check:search-runtime-safety": "npm run worker:build && node dist/scripts/checkSearchRuntimeSafety.js",
     "check:cep-search-map-baseline": "npm run worker:build && node dist/scripts/checkCepSearchMapBaseline.js",
     "check:cep-property-intelligence-experience": "npm run worker:build && node dist/scripts/checkCepPropertyIntelligenceExperience.js",
+    "check:cep-conversion-seller-acquisition-baseline": "npm run worker:build && node dist/scripts/checkCepConversionSellerAcquisitionBaseline.js",
     "check:launch-readiness": "npm run worker:build && node dist/scripts/launchReadiness.js",
     "worker:build": "tsc -p tsconfig.worker.json --pretty false",
     "infra:up": "docker compose up -d",

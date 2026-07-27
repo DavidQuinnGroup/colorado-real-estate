@@ -31,6 +31,7 @@
     "scripts/checkNextSecurityVersion.ts",
     "scripts/checkMapRenderingSafety.ts",
     "scripts/checkCepSearchMapBaseline.ts",
+    "scripts/checkCepConversionSellerAcquisitionBaseline.ts",
     "scripts/checkPrismaClientParity.ts",
     "scripts/checkProductionDependencies.ts",
     "scripts/checkPropertyRouteSafety.ts",
