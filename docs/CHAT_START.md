@@ -10,6 +10,54 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / CEP 1.0 Remaining Investment Review(tm) handoff, July 27, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -5 --oneline
+```
+
+Current CEP 1.0 investment-review state:
+
+- Program: `PROJECT_ATLAS_CEP_1_0_CUSTOMER_EXPERIENCE_PLATFORM`.
+- Review: `CEP_1_0_REMAINING_INVESTMENT_REVIEW`.
+- Status: `CEP_1_0_REMAINING_INVESTMENT_REVIEW_COMPLETE_IMPLEMENTATION_NOT_AUTHORIZED`.
+- Certified journey state: `DISCOVER_EVALUATE_ENGAGE_SUBSTANTIALLY_SUPPORTED`.
+- Sprint 1 state: `CEP_1_0_SPRINT_1_CERTIFIED_AND_CLOSED`.
+- Sprint 2 state: `CEP_1_0_SPRINT_2_CERTIFIED_AND_CLOSED`.
+- Sprint 3 state: `CEP_1_0_SPRINT_3_CERTIFIED_AND_CLOSED`.
+- Sprint 3 certification commit: `6e929e53993dc1742d6ebb1488880f8d4844a119`.
+- Primary CEP roadmap: `docs/project-atlas/executive-library/CEP-1.0-CUSTOMER-EXPERIENCE-PLATFORM-ARCHITECTURE-AND-IMPLEMENTATION-ROADMAP.md`.
+- Remaining investment review record: `docs/project-atlas/executive-library/CEP-1.0-REMAINING-INVESTMENT-REVIEW.md`.
+- Repository analysis evaluated four remaining opportunities: Navigation and Conversion Optimization, Community and Neighborhood Intelligence, Market Intelligence Experience, and AI-Grounded Customer Guidance.
+- Recommended next implementation program if separately authorized: `CEP_1_0_MARKET_INTELLIGENCE_EXPERIENCE_AND_OPTIMIZATION`.
+- Recommended next sprint decision if separately authorized: `CEP_1_0_SPRINT_4_MARKET_INTELLIGENCE_BASELINE`.
+- Rationale: market-intelligence work has the strongest weighted return after Sprint 1-3 closure because existing market routes, neighborhood routes, market components, schema helpers, internal links, public smoke coverage, and certified search/property/conversion destinations can be reused without activating GIS, providers, AI, schema changes, or new mutation paths.
+- Scored ranking: Market Intelligence Experience ranked first, Navigation and Conversion Optimization second, Community and Neighborhood Intelligence third, and AI-Grounded Customer Guidance fourth.
+- Planning-only files changed: `docs/project-atlas/executive-library/CEP-1.0-REMAINING-INVESTMENT-REVIEW.md` and `docs/CHAT_START.md`.
+- Validation required for this documentation-only review: `git diff --check` and `git status --short --branch --untracked-files=all`.
+- Runtime implementation: `NOT_AUTHORIZED`.
+- UI changes: `NOT_AUTHORIZED`.
+- API changes: `NOT_AUTHORIZED`.
+- Database changes, Prisma changes, migrations, and new persistence: `NOT_AUTHORIZED`.
+- Deployment, redeployment, and production smoke: `NOT_AUTHORIZED`.
+- Production mutation: `NOT_AUTHORIZED`.
+- Sprint 4 implementation: `NOT_AUTHORIZED`.
+- Redeployment: `NOT_AUTHORIZED`.
+- GIS Sprint 9: `NOT_AUTHORIZED`.
+- AI activation: `NOT_AUTHORIZED`.
+- Provider connection, credentials, terms acceptance, downloads, live GIS service/API calls, provider acquisition, provider persistence, provider data customer display, geographic runtime consumption, analytics activation, alert/CRM/email/seller/inquiry mutation tests, Vercel actions, and environment changes remain `NOT_AUTHORIZED`.
+- Exact next executive decision required: David must decide whether to authorize `CEP_1_0_SPRINT_4_MARKET_INTELLIGENCE_BASELINE` as a controlled implementation sprint. Codex must not authorize that decision.
+
+Prior CEP Sprint 3 certification handoff retained below.
+
 PROJECT ATLAS(tm) / CEP 1.0 Sprint 3 Conversion and Seller Acquisition Baseline(tm) certification handoff, July 27, 2026:
 
 Workspace:
