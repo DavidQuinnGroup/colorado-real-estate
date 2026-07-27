@@ -36,6 +36,7 @@
     "scripts/checkCepNavigationConversionMeasurementBaseline.ts",
     "scripts/checkCimEventTaxonomyMeasurementContract.ts",
     "scripts/checkCimPrivacyConsentDataMinimizationGate.ts",
+    "scripts/checkCimFirstPartyMeasurementReadinessAdapter.ts",
     "scripts/checkPrismaClientParity.ts",
     "scripts/checkProductionDependencies.ts",
     "scripts/checkPropertyRouteSafety.ts",

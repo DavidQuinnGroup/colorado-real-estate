@@ -10,6 +10,47 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / CIM 1.0 Sprint 3 First-Party Measurement Readiness Adapter handoff, July 27, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -5 --oneline
+```
+
+Current CIM 1.0 Sprint 3 state:
+
+- Program: `CIM_1_0_CUSTOMER_INTELLIGENCE_AND_MEASUREMENT_PROGRAM`.
+- Sprint: `CIM_1_0_SPRINT_3_FIRST_PARTY_MEASUREMENT_READINESS_ADAPTER`.
+- Status: `CIM_1_0_SPRINT_3_FIRST_PARTY_MEASUREMENT_READINESS_ADAPTER_IMPLEMENTED_AND_PUSHED_DEPLOYMENT_NOT_AUTHORIZED`.
+- Baseline: implementation began from clean, aligned `main` at `746dec4e3700a854f6b4abfab24fe08f9766c810`.
+- Sprint 2 state: `CIM_1_0_SPRINT_2_PRIVACY_CONSENT_AND_DATA_MINIMIZATION_GATE_IMPLEMENTED_AND_PUSHED_DEPLOYMENT_NOT_AUTHORIZED`.
+- CIM Sprint 3 record: `docs/project-atlas/executive-library/CIM-1.0-SPRINT-3-FIRST-PARTY-MEASUREMENT-READINESS-ADAPTER.md`.
+- Implemented adapter file: `lib/cim/firstPartyMeasurementReadinessAdapter.ts`.
+- Updated export surface: `lib/cim/index.ts`.
+- Validation script: `scripts/checkCimFirstPartyMeasurementReadinessAdapter.ts`.
+- Required Sprint 3 check: `npm run check:cim-first-party-measurement-readiness-adapter`.
+- Package/build wiring: `package.json` and `tsconfig.worker.json`.
+- Adapter version: `CIM-1.0-SPRINT-3`.
+- Default adapter status: `FAIL_CLOSED`.
+- Positive readiness status: `READY_INACTIVE`.
+- Adapter decisions always return `canEmit: false`, `canTransmit: false`, and `canPersist: false`.
+- Adapter consumes the Sprint 1 canonical event taxonomy and Sprint 2 privacy, consent, data-minimization, identity, retention, deletion, and activation-prerequisite policy.
+- Validation coverage: valid inactive contracts pass; unknown events, prohibited payloads, invalid consent, invalid privacy compatibility, activation attempts, transmission attempts, persistence attempts, and blocked categories fail closed.
+- Measurement posture: `FIRST_PARTY_MEASUREMENT_READINESS_ADAPTER_IMPLEMENTED_TELEMETRY_INACTIVE`.
+- Telemetry activation: `NOT_AUTHORIZED`.
+- Event emission: `NOT_AUTHORIZED`.
+- Analytics vendors, cookies, trackers, browser storage, network telemetry, new persistence, Prisma models, migrations, runtime measurement changes, production behavior changes, deployment, production smoke, feature flag activation, customer data collection, provider activation, GIS, GIS Sprint 9, AI, and database changes remain `NOT_AUTHORIZED`.
+- Exact next executive decision required: David must decide whether to authorize a controlled deployment and production certification review for the non-activating CIM Sprint 3 readiness adapter. Codex must not authorize that decision.
+
+Prior CIM Sprint 2 handoff retained below.
+
 PROJECT ATLAS(tm) / CIM 1.0 Sprint 2 Privacy, Consent and Data Minimization Gate(tm) handoff, July 27, 2026:
 
 Workspace:
