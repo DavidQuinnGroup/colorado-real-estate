@@ -10,6 +10,42 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / CIM 1.0 Architecture and Activation Readiness Review(tm) handoff, July 27, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -5 --oneline
+```
+
+Current CIM 1.0 state:
+
+- Program: `CIM_1_0_CUSTOMER_INTELLIGENCE_AND_MEASUREMENT_PROGRAM`.
+- Review: `CIM_1_0_ARCHITECTURE_AND_ACTIVATION_READINESS_REVIEW`.
+- Status: `CIM_1_0_ARCHITECTURE_AND_ACTIVATION_READINESS_REVIEW_COMPLETE_IMPLEMENTATION_NOT_AUTHORIZED`.
+- Repository baseline reviewed: `33269df28fe35ce495b634f3339ca0f560bac01a`.
+- CEP 1.0 state: `CEP_1_0_FOUNDATIONAL_CUSTOMER_EXPERIENCE_PROGRAM_COMPLETE`.
+- Certified CEP journey: `Search -> Property -> Market -> Seller -> Navigation Continuity`.
+- CIM architecture review record: `docs/project-atlas/executive-library/CIM-1.0-ARCHITECTURE-AND-ACTIVATION-READINESS-REVIEW.md`.
+- CEP strategic completion record: `docs/project-atlas/executive-library/CEP-1.0-STRATEGIC-COMPLETION-REVIEW.md`.
+- Existing reusable measurement evidence reviewed: passive Sprint 5 journey attributes, `lib/customerJourneyMeasurement.ts`, `app/api/track-click/route.ts`, `lib/tracking/store.ts`, `lib/analytics/*`, `lib/enterprise-kpi/*`, enterprise KPI admin surfaces, privacy page, consent notices, and safety scripts.
+- Current safe measurement posture: `MEASUREMENT_READY_PASSIVE_INACTIVE`.
+- CIM implementation readiness decision: `CIM_1_0_READY_FOR_SPRINT_1_ARCHITECTURE_IMPLEMENTATION_NOT_ACTIVATION`.
+- CIM activation readiness decision: `CIM_1_0_MEASUREMENT_ACTIVATION_NOT_READY`.
+- Recommended Sprint 1: `CIM_1_0_SPRINT_1_EVENT_TAXONOMY_AND_MEASUREMENT_CONTRACT`.
+- Recommended Sprint 1 boundary: define governed surfaces, event taxonomy, allowed payloads, sensitive-field exclusions, KPI mapping, privacy exclusions, consent prerequisites, and activation gates only.
+- Measurement activation: `NOT_AUTHORIZED`.
+- Analytics activation, telemetry activation, cookies, external analytics vendors, tracking systems, browser storage, new persistence, schema changes, migrations, production mutation, deployment, production smoke, provider activation, GIS, AI, CRM changes, seller-lead changes, alert/email changes, inquiry/tour/valuation backend changes, and customer-facing runtime changes remain `NOT_AUTHORIZED`.
+- Exact next executive decision required: David must decide whether to authorize `CIM_1_0_SPRINT_1_EVENT_TAXONOMY_AND_MEASUREMENT_CONTRACT` as a non-activating architecture sprint. Codex must not authorize that decision.
+
+Prior CEP Strategic Completion Review handoff retained below.
+
 PROJECT ATLAS(tm) / CEP 1.0 Strategic Completion Review(tm) handoff, July 27, 2026:
 
 Workspace:
