@@ -10,6 +10,44 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / CIM 1.0 Strategic Activation Review handoff, July 27, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -5 --oneline
+```
+
+Current CIM 1.0 strategic state:
+
+- Program: `CIM_1_0_CUSTOMER_INTELLIGENCE_AND_MEASUREMENT_PROGRAM`.
+- Review: `CIM_1_0_STRATEGIC_ACTIVATION_REVIEW`.
+- Status: `CIM_1_0_STRATEGIC_ACTIVATION_REVIEW_COMPLETE_ACTIVATION_NOT_AUTHORIZED`.
+- Review baseline: clean, aligned `main` at `c72bb61d29e0778073c279730adc18d045932eed`.
+- Certified CIM Sprint 1: `CIM_1_0_SPRINT_1_EVENT_TAXONOMY_AND_MEASUREMENT_CONTRACT`.
+- Certified CIM Sprint 2: `CIM_1_0_SPRINT_2_PRIVACY_CONSENT_AND_DATA_MINIMIZATION_GATE`.
+- Certified CIM Sprint 3: `CIM_1_0_SPRINT_3_FIRST_PARTY_MEASUREMENT_READINESS_ADAPTER_CERTIFIED_AND_CLOSED`.
+- Strategic review record: `docs/project-atlas/executive-library/CIM-1.0-STRATEGIC-ACTIVATION-REVIEW.md`.
+- Architectural decision: `CIM_1_0_ARCHITECTURALLY_COMPLETE_AS_READINESS_PROGRAM`.
+- Activation decision: `CIM_1_0_MEASUREMENT_ACTIVATION_DEFERRED`.
+- Sprint 4 recommendation: `CIM_1_0_SPRINT_4_NOT_RECOMMENDED_AT_THIS_TIME`.
+- Final recommendation: `CIM_1_0_COMPLETE_AS_STRATEGIC_READINESS_PROGRAM_ACTIVATION_DEFERRED`.
+- Recommended successor: `CUSTOMER_ACQUISITION_OPERATIONS_1_0_EXECUTIVE_READINESS_REVIEW`.
+- Highest future KPI value, if separately justified: search engagement, property engagement, market engagement, CTA engagement, and seller engagement.
+- KPIs/measurement areas remaining prohibited or blocked: lead attribution, journey abandonment, return visits, raw search text analysis, precise-address behavior tracking, message-body/form-content analysis, protected intelligence engagement, and CRM/seller-lead priority analytics.
+- Implementation authorization: `NOT_AUTHORIZED`.
+- Telemetry activation: `NOT_AUTHORIZED`.
+- Event emission, cookies, browser storage, analytics vendors, persistence, deployment, production mutation, CIM Sprint 4 implementation, provider activation, GIS, GIS Sprint 9, AI, database changes, and unrelated runtime work remain `NOT_AUTHORIZED`.
+- Exact next executive decision required: David must decide whether to authorize `CUSTOMER_ACQUISITION_OPERATIONS_1_0_EXECUTIVE_READINESS_REVIEW` as a documentation-only successor review, or pause after CIM 1.0 readiness completion. Codex must not authorize that decision.
+
+Prior CIM Sprint 3 production certification handoff retained below.
+
 PROJECT ATLAS(tm) / CIM 1.0 Sprint 3 First-Party Measurement Readiness Adapter production certification handoff, July 27, 2026:
 
 Workspace:
