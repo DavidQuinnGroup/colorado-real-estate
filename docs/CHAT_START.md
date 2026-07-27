@@ -10,7 +10,7 @@ Product:
 
 ## Latest New-Chat Handoff
 
-PROJECT ATLAS(tm) / CIM 1.0 Sprint 3 First-Party Measurement Readiness Adapter handoff, July 27, 2026:
+PROJECT ATLAS(tm) / CIM 1.0 Sprint 3 First-Party Measurement Readiness Adapter production certification handoff, July 27, 2026:
 
 Workspace:
 
@@ -28,8 +28,17 @@ Current CIM 1.0 Sprint 3 state:
 
 - Program: `CIM_1_0_CUSTOMER_INTELLIGENCE_AND_MEASUREMENT_PROGRAM`.
 - Sprint: `CIM_1_0_SPRINT_3_FIRST_PARTY_MEASUREMENT_READINESS_ADAPTER`.
-- Status: `CIM_1_0_SPRINT_3_FIRST_PARTY_MEASUREMENT_READINESS_ADAPTER_IMPLEMENTED_AND_PUSHED_DEPLOYMENT_NOT_AUTHORIZED`.
+- Status: `CIM_1_0_SPRINT_3_FIRST_PARTY_MEASUREMENT_READINESS_ADAPTER_CERTIFIED_AND_CLOSED`.
 - Baseline: implementation began from clean, aligned `main` at `746dec4e3700a854f6b4abfab24fe08f9766c810`.
+- Production certification reviewed implementation commit: `c517806427b0c65b6766734b5750770532076ae8`.
+- Deployment provider: Vercel.
+- Deployment status: GitHub commit status `success`, description `Deployment has completed`.
+- Deployment identifier: `2pdxecn7yeMKT3h8MW6SN6LWooYE`.
+- GitHub commit status identifier: `51142394974`.
+- Deployment status timestamp: `2026-07-27T12:37:25Z`.
+- Production domain reviewed: `https://davidquinngroup.com`.
+- Automatic deployment from pushed commit was observed through existing GitHub/Vercel status evidence.
+- Manual deployment, redeployment, preview promotion, domain modification, and environment modification during certification: none.
 - Sprint 2 state: `CIM_1_0_SPRINT_2_PRIVACY_CONSENT_AND_DATA_MINIMIZATION_GATE_IMPLEMENTED_AND_PUSHED_DEPLOYMENT_NOT_AUTHORIZED`.
 - CIM Sprint 3 record: `docs/project-atlas/executive-library/CIM-1.0-SPRINT-3-FIRST-PARTY-MEASUREMENT-READINESS-ADAPTER.md`.
 - Implemented adapter file: `lib/cim/firstPartyMeasurementReadinessAdapter.ts`.
@@ -43,11 +52,15 @@ Current CIM 1.0 Sprint 3 state:
 - Adapter decisions always return `canEmit: false`, `canTransmit: false`, and `canPersist: false`.
 - Adapter consumes the Sprint 1 canonical event taxonomy and Sprint 2 privacy, consent, data-minimization, identity, retention, deletion, and activation-prerequisite policy.
 - Validation coverage: valid inactive contracts pass; unknown events, prohibited payloads, invalid consent, invalid privacy compatibility, activation attempts, transmission attempts, persistence attempts, and blocked categories fail closed.
-- Measurement posture: `FIRST_PARTY_MEASUREMENT_READINESS_ADAPTER_IMPLEMENTED_TELEMETRY_INACTIVE`.
+- Production routes reviewed: `/`, `/search`, `/market`, `/sell`, `/properties/27383-mildred-ln-evergreen-co-ire402034034`, `/api/search?limit=5`, and `/api/search?query=CIM3_NO_MATCH_1785156073&limit=5`.
+- Production route result: reviewed routes returned HTTP 200 usable responses; search API returned valid public JSON; zero-result API path returned valid empty JSON; degraded database fallback remained customer-safe where observed.
+- Production browser result: no active measurement markers, no customer-visible adapter text, no analytics/vendor script sources, and same-origin Next.js scripts only on reviewed browser routes.
+- Adapter production/repository result: `FAIL_CLOSED`, `INACTIVE`, `canEmit: false`, `canTransmit: false`, and `canPersist: false` preserved.
+- Measurement posture: `FIRST_PARTY_MEASUREMENT_READINESS_ADAPTER_CERTIFIED_CLOSED_TELEMETRY_INACTIVE`.
 - Telemetry activation: `NOT_AUTHORIZED`.
 - Event emission: `NOT_AUTHORIZED`.
-- Analytics vendors, cookies, trackers, browser storage, network telemetry, new persistence, Prisma models, migrations, runtime measurement changes, production behavior changes, deployment, production smoke, feature flag activation, customer data collection, provider activation, GIS, GIS Sprint 9, AI, and database changes remain `NOT_AUTHORIZED`.
-- Exact next executive decision required: David must decide whether to authorize a controlled deployment and production certification review for the non-activating CIM Sprint 3 readiness adapter. Codex must not authorize that decision.
+- Analytics vendors, cookies, trackers, browser storage, network telemetry, new persistence, Prisma models, migrations, runtime measurement changes, production behavior changes, redeployment, feature flag activation, customer data collection, provider activation, GIS, GIS Sprint 9, AI, and database changes remain `NOT_AUTHORIZED`.
+- Exact next executive decision required: David must decide whether to authorize the next CIM 1.0 planning or implementation step. Codex must not authorize that decision.
 
 Prior CIM Sprint 2 handoff retained below.
 
