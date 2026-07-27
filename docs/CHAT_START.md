@@ -10,6 +10,46 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / CIM 1.0 Sprint 1 Event Taxonomy and Measurement Contract(tm) handoff, July 27, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -5 --oneline
+```
+
+Current CIM 1.0 Sprint 1 state:
+
+- Program: `CIM_1_0_CUSTOMER_INTELLIGENCE_AND_MEASUREMENT_PROGRAM`.
+- Sprint: `CIM_1_0_SPRINT_1_EVENT_TAXONOMY_AND_MEASUREMENT_CONTRACT`.
+- Status: `CIM_1_0_SPRINT_1_EVENT_TAXONOMY_AND_MEASUREMENT_CONTRACT_IMPLEMENTED_AND_PUSHED_DEPLOYMENT_NOT_AUTHORIZED`.
+- Baseline: implementation began from clean, aligned `main` at `116c200ab1a39422b8ccf67889ea4528cd919937`.
+- CIM architecture review record: `docs/project-atlas/executive-library/CIM-1.0-ARCHITECTURE-AND-ACTIVATION-READINESS-REVIEW.md`.
+- CIM Sprint 1 record: `docs/project-atlas/executive-library/CIM-1.0-SPRINT-1-EVENT-TAXONOMY-AND-MEASUREMENT-CONTRACT.md`.
+- Implemented contract files: `lib/cim/measurementContract.ts` and `lib/cim/index.ts`.
+- Validation script: `scripts/checkCimEventTaxonomyMeasurementContract.ts`.
+- Required Sprint 1 check: `npm run check:cim-event-taxonomy-measurement-contract`.
+- Package/build wiring: `package.json` and `tsconfig.worker.json`.
+- Canonical event domains: search, property, market, seller, journey, navigation, and measurement.
+- Canonical events: `search_started`, `search_refined`, `search_completed`, `property_viewed`, `property_scrolled`, `property_inquiry_started`, `property_tour_started`, `market_viewed`, `neighborhood_market_viewed`, `valuation_started`, `valuation_completed`, `journey_started`, `journey_completed`, `journey_abandoned`, `navigation_transition`, `measurement_blocked`, and `consent_missing`.
+- Activation status for every event and KPI mapping: `INACTIVE`.
+- Allowed payload fields: `page_identifier`, `route`, `feature_identifier`, `coarse_timestamp`, `anonymous_journey_stage`, `journey_transition`, `event_version`, and `consent_state`.
+- Prohibited payload fields: names, email, phone, message body, free-text search terms, precise address, internal identifiers, protected intelligence, CRM identifiers, seller-lead identifiers, alert identifiers, raw IP address, and device fingerprint.
+- Validation coverage: duplicate event identifiers fail, prohibited payload fields fail, undefined KPI mappings fail, activation defaults must remain inactive, and activation primitives are excluded from the CIM contract source.
+- Measurement posture: `MEASUREMENT_CONTRACT_IMPLEMENTED_TELEMETRY_INACTIVE`.
+- Telemetry activation: `NOT_AUTHORIZED`.
+- Customer event emission: `NOT_AUTHORIZED`.
+- Analytics vendors, cookies, trackers, browser storage, network telemetry, new persistence, Prisma models, migrations, production behavior changes, deployment, production smoke, feature flag activation, customer data collection, provider activation, GIS, GIS Sprint 9, AI, and database changes remain `NOT_AUTHORIZED`.
+- Exact next executive decision required: David must decide whether to authorize `CIM_1_0_SPRINT_2_PRIVACY_CONSENT_AND_DATA_MINIMIZATION_GATE`. Codex must not authorize that decision.
+
+Prior CIM 1.0 Architecture and Activation Readiness Review handoff retained below.
+
 PROJECT ATLAS(tm) / CIM 1.0 Architecture and Activation Readiness Review(tm) handoff, July 27, 2026:
 
 Workspace:
