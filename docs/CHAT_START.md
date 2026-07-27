@@ -10,7 +10,7 @@ Product:
 
 ## Latest New-Chat Handoff
 
-PROJECT ATLAS(tm) / CEP 1.0 Sprint 5 Navigation, Conversion, and Measurement Baseline(tm) implementation handoff, July 27, 2026:
+PROJECT ATLAS(tm) / CEP 1.0 Sprint 5 Navigation, Conversion, and Measurement Baseline(tm) certification handoff, July 27, 2026:
 
 Workspace:
 
@@ -28,7 +28,8 @@ Current CEP 1.0 Sprint 5 state:
 
 - Program: `PROJECT_ATLAS_CEP_1_0_CUSTOMER_EXPERIENCE_PLATFORM`.
 - Sprint: `CEP_1_0_SPRINT_5_NAVIGATION_CONVERSION_AND_MEASUREMENT_BASELINE`.
-- Status: `CEP_1_0_SPRINT_5_IMPLEMENTED_AND_PUSHED_DEPLOYMENT_NOT_AUTHORIZED`.
+- Status: `CEP_1_0_SPRINT_5_CERTIFIED_AND_CLOSED`.
+- Final governed outcome: `CEP_1_0_SPRINT_5_CERTIFIED_AND_CLOSED`.
 - Sprint 4 state: `CEP_1_0_SPRINT_4_CERTIFIED_AND_CLOSED`.
 - Sprint 4 certification commit: `b9762e413be08e0f22a57decc2065a15d3ee3a41`.
 - Baseline: implementation began from clean, aligned `main` at `b9762e413be08e0f22a57decc2065a15d3ee3a41`.
@@ -39,19 +40,30 @@ Current CEP 1.0 Sprint 5 state:
 - Validation additions: `scripts/checkCepNavigationConversionMeasurementBaseline.ts`, `package.json`, and `tsconfig.worker.json`.
 - Required Sprint 5 check: `npm run check:cep-navigation-conversion-measurement-baseline`.
 - Validation completed before final commit: `npm run check:cep-navigation-conversion-measurement-baseline`, `npm run typecheck`, `npm run lint`, `npx prisma validate`, `npm run build`, local public-experience smoke against `http://localhost:3000`, CEP Sprint 1-4 regression checks, map-rendering safety, search-listing quality, search-runtime adapter safety, local route/API review, responsive browser review at 1280 x 900, 900 x 1050, 386 x 900, and 320 x 900, accessibility-focused review, mutation-safety review, and `git diff --check`.
+- Implementation commit certified: `f82664b3f50b885816d7199b2f265c9b208262db`.
+- Deployment evidence: Vercel/GitHub deployment `5621339102`, deployment status `15985401595`, commit status `51137821408`, state `success`, description `Deployment has completed`, environment `Production`, deployment created `2026-07-27T11:05:37Z`, deployment status created/updated `2026-07-27T11:05:37Z`, target `https://david-quinn-group-8rde-g70jlehcy-david-quinns-projects-a0953600.vercel.app`, commit status target `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/AWgL6aCzszgYX7Sua5Cbh2PVFmoK`.
+- Governed production domain certified for Sprint 5 scope: `https://davidquinngroup.com`.
+- Production smoke: `env PUBLIC_EXPERIENCE_SMOKE_BASE_URL=https://davidquinngroup.com npm run smoke:public-experience` passed.
+- Production route/API review passed for `/`, `/search`, `/market`, `/market/boulder-co-housing-market`, `/market/boulder/downtown-boulder`, representative property route `/properties/cmqlmynbh00bupi4jyw0rkgy0`, `/sell`, `/api/search?limit=5`, and safe zero-result `/api/search?city=NoSuchColoradoCityZZZ&query=unlikely-zero-result-cep-sprint-5-prod&limit=5`.
+- Production navigation review passed for Search -> Property, Property -> Market/Search fallback pathway where applicable, Market -> Seller, footer navigation, contextual navigation, journey continuity, market discovery, property continuity links, and seller continuity links.
+- Production measurement review passed: passive measurement attributes rendered, `data-cep-measurement-active="false"` remained present, no active measurement markers were found, no external telemetry scripts were found, no `Set-Cookie` header was observed on reviewed responses, and no analytics activation occurred.
+- Production responsive browser review passed across 28 route/viewport combinations at 1280 x 900, 900 x 1050, 386 x 900, and 320 x 900 with no horizontal overflow, no missing Sprint 5 markers, no unnamed links/buttons, and seller intake visible without submission.
+- Production degraded-state note: `/api/search` naturally reported database fallback with `health: degraded`; response remained compatible and customer-safe, with zero-result API returning `found: 0`, `returned: 0`, and `results: []`.
+- Mutation-safety confirmation during production review: no inquiry submission, valuation submission, tour submission, saved-search creation, contact submission, CRM activity, seller-lead creation, alert, email, admin action, MLS sync, database write, environment change, provider activity, GIS activation, AI activation, external analytics activation, manual deployment, redeployment, preview promotion, domain modification, or production mutation was performed.
+- Protected-boundary confirmation during production review: no protected intelligence, credentials, stack traces, provider data, unauthorized GIS behavior, AI behavior, or internal diagnostics were exposed.
 - Measurement posture: passive readiness only through governed `data-*` attributes; `data-cep-measurement-active="false"` remains the controlling state.
 - Analytics activation: `NOT_AUTHORIZED`; no analytics vendor, cookie, browser storage write, tracking endpoint call, new persistence, or event submission was added.
 - Preserved behavior: search API compatibility, search result eligibility, map/list behavior, property detail behavior, inquiry/tour behavior, seller review/valuation backend behavior, saved-search behavior, alerts, email, CRM, Seller Lead Engine, market route identity, database schema, migrations, environment variables, protected routes, public/private intelligence separation, protected intelligence boundaries, GIS pause, AI non-activation, and provider non-activation.
-- Deployment: `NOT_AUTHORIZED`.
+- Reviewed automatic deployment: `VERIFIED`.
 - Redeployment: `NOT_AUTHORIZED`.
-- Production smoke: `NOT_AUTHORIZED`.
-- Production certification: `NOT_AUTHORIZED`.
-- Customer-visible certification: `NOT_AUTHORIZED`.
+- Production smoke beyond completed Sprint 5 certification review: `NOT_AUTHORIZED`.
+- Production certification beyond Sprint 5 scope: `NOT_AUTHORIZED`.
+- Customer-visible certification: `CERTIFIED_FOR_CEP_1_0_SPRINT_5_SCOPE_ONLY`.
 - Sprint 6: `NOT_AUTHORIZED`.
 - GIS Sprint 9: `NOT_AUTHORIZED`.
 - AI activation: `NOT_AUTHORIZED`.
 - Provider connection, credentials, terms acceptance, downloads, live GIS service/API calls, provider acquisition, provider persistence, provider data customer display, geographic runtime consumption, analytics activation, alert/CRM/email/seller/inquiry mutation tests, Vercel actions, environment changes, Prisma changes, migrations, and database changes remain `NOT_AUTHORIZED`.
-- Exact next executive decision required: David must decide whether to authorize `CEP_1_0_SPRINT_5_CONTROLLED_DEPLOYMENT_AND_PRODUCTION_CERTIFICATION_REVIEW`. Codex must not authorize that decision.
+- Exact next executive decision required: David must decide whether to keep CEP 1.0 paused at Sprint 5 closure or separately authorize the next CEP 1.0 executive planning decision. Codex must not authorize that decision.
 
 Prior CEP Sprint 4 certification handoff retained below.
 
