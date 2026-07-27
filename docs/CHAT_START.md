@@ -28,7 +28,8 @@ Current EOI 1.0 Sprint 3 state:
 
 - Program: `ENTERPRISE_OPERATIONS_INTELLIGENCE_1_0`.
 - Sprint: `EOI_1_0_SPRINT_3_OPERATIONAL_DASHBOARD_BASELINE`.
-- Status: `EOI_1_0_SPRINT_3_OPERATIONAL_DASHBOARD_BASELINE_IMPLEMENTED_DEPLOYMENT_NOT_AUTHORIZED`.
+- Status: `EOI_1_0_SPRINT_3_DEPLOYED_PRODUCTION_CERTIFICATION_BLOCKED_AUTHENTICATED_ADMIN_REVIEW_UNAVAILABLE`.
+- Implementation commit reviewed: `88e3a55c427f7bf0d7707a3167cb6d0ebde0d582`.
 - Starting baseline: clean, aligned `main` at `0a095f6f88cdf09ef955cd20ae33558f9085463e`.
 - Sprint 1 remains certified and closed: `EOI_1_0_SPRINT_1_OPERATIONAL_KPI_REPORTING_BASELINE_CERTIFIED_AND_CLOSED`.
 - Sprint 2 remains certified and closed: `EOI_1_0_SPRINT_2_EXECUTIVE_OPERATIONAL_SUMMARY_BASELINE_CERTIFIED_AND_CLOSED`.
@@ -44,8 +45,24 @@ Current EOI 1.0 Sprint 3 state:
 - Deterministic safety command: `npm run check:eoi-operational-dashboard-baseline`.
 - Validation passed: `npm run check:eoi-operational-dashboard-baseline`, `npm run check:eoi-executive-operational-summary-baseline`, `npm run check:eoi-operational-kpi-reporting-baseline`, `npm run check:enterprise-executive-workspace-safety`, `npm run check:enterprise-kpi-safety`, `npm run check:cim-first-party-measurement-readiness-adapter`, `npm run typecheck`, `npm run lint`, `npm run build`, `npx prisma validate`, `git diff --check`, and `git diff --cached --check`.
 - Local protected dashboard review passed on the built server with throwaway local admin keys only: unauthenticated `GET /admin/repository/executive-operations-dashboard` was protected; authenticated `GET /admin/repository/executive-operations-dashboard` rendered dashboard HTML with required labels, governed metadata language, evidence classifications, interpretation boundaries, and no live KPI/trend/automation claims.
-- Deployment, production certification, EOI Sprint 4, trend reporting, analytics, decision support, risk detection, opportunity detection, live KPI computation, CRM automation, workflow automation, database work, persistence, telemetry activation, AI activation, GIS activation, provider activation, production mutation, and unrelated work remain `NOT_AUTHORIZED`.
-- Exact next executive decision required: David must decide whether to authorize `EOI_1_0_SPRINT_3_CONTROLLED_DEPLOYMENT_AND_PRODUCTION_CERTIFICATION_REVIEW`. Codex must not authorize that decision.
+- Deployment provider: Vercel through existing GitHub deployment automation.
+- GitHub deployment ID: `5629030257`.
+- GitHub deployment status ID: `16006874370`.
+- GitHub commit status ID: `51171735079`.
+- Deployment status: `success`; description: `Deployment has completed`.
+- Deployed SHA: `88e3a55c427f7bf0d7707a3167cb6d0ebde0d582`.
+- Deployment created: `2026-07-27T19:59:25Z`; deployment status timestamp: `2026-07-27T19:59:26Z`.
+- Vercel target: `https://david-quinn-group-8rde-dl493jaqn-david-quinns-projects-a0953600.vercel.app`.
+- Governed production domain reviewed: `https://davidquinngroup.com`.
+- Production public route review passed for `/`, `/search`, `/market`, `/sell`, representative property route `/properties/cmqlmynbh00bupi4jyw0rkgy0`, `/api/search?limit=5`, and safe zero-result search.
+- Protected unauthenticated production checks passed: `/admin`, `/admin/repository/executive-operations-dashboard`, `/api/admin/enterprise/operational-kpis`, and `/api/admin/enterprise/operational-summary` returned `401`.
+- Public exposure review passed: public pages and search API responses did not expose EOI dashboard text, `EOI-DASHBOARD`, `GOVERNED METADATA`, or `NO LIVE KPI` labels.
+- Certification blocker: authenticated production dashboard rendering could not be observed. The in-app browser reported `net::ERR_BLOCKED_BY_CLIENT`, and command-line authenticated header requests could not be completed safely and reliably in this tool environment.
+- Certification decision: `DEPLOYED_PRODUCTION_CERTIFICATION_BLOCKED`.
+- Unresolved issue: authenticated production dashboard rendering and authenticated production EOI admin endpoint metadata review remain unverified.
+- No manual deployment, redeployment, preview promotion, domain change, environment change, database write, Prisma mutation, migration, CRM automation, workflow automation, notification, email, alert, persistence, telemetry, AI activation, GIS activation, provider activation, protected public exposure, or production mutation occurred.
+- Production certification, EOI Sprint 4, Operational Source Quality & Readiness Gate, trend reporting, analytics, decision support, risk detection, opportunity detection, live KPI computation, CRM automation, workflow automation, database work, persistence, telemetry activation, AI activation, GIS activation, provider activation, production mutation, and unrelated work remain `NOT_AUTHORIZED`.
+- Exact next executive decision required: David must decide whether to authorize `EOI_1_0_SPRINT_3_AUTHENTICATED_ADMIN_PRODUCTION_REVIEW_RETRY` using a known-good browser/session or sanitized operator-provided evidence. Codex must not authorize that decision.
 
 Prior EOI Sprint 2 production certification handoff retained below.
 
