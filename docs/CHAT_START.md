@@ -10,6 +10,42 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / EOI 1.0 Strategic Priority Review(tm), July 27, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -5 --oneline
+```
+
+Current EOI 1.0 strategic state:
+
+- Program: `ENTERPRISE_OPERATIONS_INTELLIGENCE_1_0`.
+- Review: `EOI_1_0_STRATEGIC_PRIORITY_REVIEW`.
+- Status: `EOI_1_0_STRATEGIC_PRIORITY_REVIEW_COMPLETE_IMPLEMENTATION_NOT_AUTHORIZED`.
+- Review baseline: clean, aligned `main` at `ac6e8763dded8db569722b32b70fa187a57680ab`.
+- Sprint 1 remains certified and closed: `EOI_1_0_SPRINT_1_OPERATIONAL_KPI_REPORTING_BASELINE_CERTIFIED_AND_CLOSED`.
+- Strategic review record: `docs/project-atlas/executive-library/EOI-1.0-STRATEGIC-PRIORITY-REVIEW.md`.
+- Repository assets reviewed: EOI operational KPI reporting contract and protected adapter, CAO operating/queue/consultation/disposition contracts, CIM inactive measurement/privacy/adapter contracts, enterprise KPI registry/evaluation/health/intelligence/executive workspace/decision-support modules, protected enterprise admin routes, protected CRM task/intake routes, admin UI surfaces, governed EOI and CAO records, and safety scripts.
+- Recommended next sprint: `EOI_1_0_SPRINT_2_EXECUTIVE_OPERATIONAL_SUMMARY_BASELINE`.
+- Recommended Sprint 2 objective: create a protected, read-only executive operational summary layer that converts the certified EOI Sprint 1 operational KPI reporting baseline into concise executive status, limitations, attention items, and human-review recommendations.
+- Strategic conclusion: executive summaries should precede dashboards; dashboards should precede deeper analytics only after summary semantics are governed; trend reporting should precede operational risk analysis but both should follow executive summaries and source-quality governance.
+- Live KPI computation remains deferred.
+- Operational intelligence should remain read-only.
+- CRM automation remains outside EOI.
+- Implementation performed during this review: documentation only.
+- Validation: `git diff --check` passed; final diff was documentation-only before commit.
+- EOI Sprint 2 implementation, dashboards, live KPI computation, trend reporting, risk/opportunity detection, decision-support implementation, remediation, deployment, automation, CRM changes, database work, persistence, telemetry activation, AI activation, GIS activation, provider activation, production mutation, and unrelated work remain `NOT_AUTHORIZED`.
+- Exact next executive decision required: David must decide whether to authorize `EOI_1_0_SPRINT_2_EXECUTIVE_OPERATIONAL_SUMMARY_BASELINE`. Codex must not authorize that decision.
+
+Prior EOI Sprint 1 production certification handoff retained below.
+
 PROJECT ATLAS(tm) / EOI 1.0 Sprint 1 Operational KPI Reporting Baseline(tm) production certification, July 27, 2026:
 
 Workspace:
