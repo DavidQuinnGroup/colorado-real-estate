@@ -10,6 +10,47 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / CAO 1.0 Sprint 1 Operating Model and Service-Level Contract handoff, July 27, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -5 --oneline
+```
+
+Current CAO 1.0 Sprint 1 state:
+
+- Program: `CAO_1_0_CUSTOMER_ACQUISITION_OPERATIONS_PROGRAM`.
+- Sprint: `CAO_1_0_SPRINT_1_OPERATING_MODEL_AND_SERVICE_LEVEL_CONTRACT`.
+- Status: `CAO_1_0_SPRINT_1_OPERATING_MODEL_AND_SERVICE_LEVEL_CONTRACT_IMPLEMENTED_AND_PUSHED_DEPLOYMENT_NOT_AUTHORIZED`.
+- Baseline: implementation began from clean, aligned `main` at `9531b422c96bd8ebb141f9ca9903166057e64f07`.
+- CAO Sprint 1 record: `docs/project-atlas/executive-library/CAO-1.0-SPRINT-1-OPERATING-MODEL-AND-SERVICE-LEVEL-CONTRACT.md`.
+- Implemented contract: `lib/cao/operatingModelContract.ts`.
+- Export surface: `lib/cao/index.ts`.
+- Validation script: `scripts/checkCaoOperatingModelServiceLevelContract.ts`.
+- Required Sprint 1 check: `npm run check:cao-operating-model-service-level-contract`.
+- Package/build wiring: `package.json` and `tsconfig.worker.json`.
+- Contract version: `CAO-1.0-SPRINT-1`.
+- Buyer lifecycle states: `NEW`, `ASSIGNED`, `CONTACTED`, `QUALIFIED`, `CONSULTATION_SCHEDULED`, `ACTIVE_CLIENT`, `CLOSED`, `LOST`, and `ARCHIVED`.
+- Seller lifecycle states: `NEW`, `REVIEWING`, `STRATEGY_PREPARATION`, `CONSULTATION_SCHEDULED`, `ACTIVE_CLIENT`, `CLOSED`, `LOST`, and `ARCHIVED`.
+- CRM task lifecycle states: `OPEN`, `IN_PROGRESS`, `WAITING`, `COMPLETED`, and `DISMISSED`.
+- Service-level types: `FIRST_RESPONSE`, `FOLLOW_UP`, `CONSULTATION_SCHEDULING`, and `CLOSURE_REVIEW`.
+- Operational KPI ownership: inquiry response time, seller response time, consultation scheduling, consultation completion, lead disposition, SLA compliance, and closure completeness.
+- Validation coverage: valid contract passes; undefined lifecycle transitions, missing ownership, missing service levels, missing closure requirements, telemetry-required KPI drift, and runtime primitive drift fail closed.
+- Runtime behavior changes: `NONE`.
+- Deployment: `NOT_AUTHORIZED`.
+- Production actions: `NONE`.
+- CRM automation, inquiry processing changes, seller workflow changes, notifications, emails, alerts, persistence, Prisma schema changes, migrations, production mutation, telemetry activation, provider activation, GIS, GIS Sprint 9, AI, CAO Sprint 2, and unrelated work remain `NOT_AUTHORIZED`.
+- Exact next executive decision required: David must decide whether to authorize `CAO_1_0_SPRINT_1_CONTROLLED_DEPLOYMENT_AND_PRODUCTION_CERTIFICATION_REVIEW`. Codex must not authorize that decision.
+
+Prior CAO executive readiness review handoff retained below.
+
 PROJECT ATLAS(tm) / CAO 1.0 Executive Readiness Review handoff, July 27, 2026:
 
 Workspace:
