@@ -10,7 +10,7 @@ Product:
 
 ## Latest New-Chat Handoff
 
-PROJECT ATLAS(tm) / CEP 1.0 Sprint 4 Market Intelligence Baseline(tm) implementation handoff, July 27, 2026:
+PROJECT ATLAS(tm) / CEP 1.0 Sprint 4 Market Intelligence Baseline(tm) certification handoff, July 27, 2026:
 
 Workspace:
 
@@ -28,8 +28,8 @@ Current CEP 1.0 Sprint 4 state:
 
 - Program: `PROJECT_ATLAS_CEP_1_0_CUSTOMER_EXPERIENCE_PLATFORM`.
 - Sprint: `CEP_1_0_SPRINT_4_MARKET_INTELLIGENCE_BASELINE`.
-- Status: `CEP_1_0_SPRINT_4_IMPLEMENTED_AND_PUSHED_DEPLOYMENT_NOT_AUTHORIZED`.
-- Strongest governed implementation outcome: `CEP_1_0_SPRINT_4_IMPLEMENTED_AND_PUSHED_DEPLOYMENT_NOT_AUTHORIZED`.
+- Status: `CEP_1_0_SPRINT_4_CERTIFIED_AND_CLOSED`.
+- Final governed outcome: `CEP_1_0_SPRINT_4_CERTIFIED_AND_CLOSED`.
 - Sprint 3 state: `CEP_1_0_SPRINT_3_CERTIFIED_AND_CLOSED`.
 - Sprint 3 certification commit: `6e929e53993dc1742d6ebb1488880f8d4844a119`.
 - Baseline note: Sprint 4 implementation began from `a213f4d9c002e2f8308abfffcce89960d0743b55`, the authorized documentation-only CEP Remaining Investment Review commit after Sprint 3 certification.
@@ -42,16 +42,31 @@ Current CEP 1.0 Sprint 4 state:
 - Required Sprint 4 check: `npm run check:cep-market-intelligence-baseline`.
 - Validation completed before final commit: `npm run check:cep-market-intelligence-baseline`, `npm run typecheck`, `npm run lint`, `npx prisma validate`, `npm run build`, local public-experience smoke against `http://localhost:3000`, local route review for city market, neighborhood market, search, and representative property detail, search-to-market review, property-to-market review, responsive review at 1280 x 900, 900 x 1050, 386 x 900, and 320 x 900, accessibility-focused review, mutation-safety review, `git diff --check`, and `git diff --cached --check`.
 - Preserved behavior: search API compatibility, search result eligibility, market route identity, neighborhood route identity, property detail behavior, property inquiry/tour behavior, seller review/valuation backend behavior, Save Search/LeadCapture behavior, alerts, email, CRM, Seller Lead Engine, schema/migration state, protected routes, public/private intelligence separation, GIS pause, AI non-activation, and provider non-activation.
-- Deployment: `NOT_AUTHORIZED`.
+- Implementation commit certified: `300d1c3b27d368770c7fe26d761af269cc3882a5`.
+- Deployment evidence: Vercel/GitHub deployment `5620442358`, deployment status `15982859785`, commit status `51134230881`, state `success`, description `Deployment has completed`, environment `Production`, deployment created `2026-07-27T09:52:40Z`, deployment status created/updated `2026-07-27T09:52:41Z`, target `https://david-quinn-group-8rde-q59d83b05-david-quinns-projects-a0953600.vercel.app`, commit status target `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/7RJRzQHMwUse8xjJC785izJSZAi1`.
+- Governed production domain certified for Sprint 4 scope: `https://davidquinngroup.com`.
+- Production smoke: `env PUBLIC_EXPERIENCE_SMOKE_BASE_URL=https://davidquinngroup.com npm run smoke:public-experience` passed.
+- Production route/API review passed for `/`, `/search`, `/market/boulder-co-housing-market`, `/market/boulder/downtown-boulder`, representative property route `/properties/cmqlmynbh00bupi4jyw0rkgy0`, `/api/search?limit=5`, and safe zero-result `/api/search?city=NoSuchColoradoCityZZZ&query=unlikely-zero-result-cep-sprint-4-prod&limit=5`.
+- Production `/market` returned HTTP `404` because no governed `app/market/page.tsx` route exists; this was recorded as non-applicable to Sprint 4 certification and not a Sprint 4 regression.
+- Production Market Decision Brief review passed for Boulder city market direction, pricing, inventory, timing, source-boundary language, and links to search, seller review, and neighborhood context.
+- Production Neighborhood Market Brief review passed for Downtown Boulder inventory, competitiveness, pricing context, timing, source-boundary language, and links to search, city market context, and seller review.
+- Production search/property integration review passed: search property cards retained market links, and representative property detail retained Property Decision Brief and market pathway.
+- Responsive production review passed at 1280 x 900, 900 x 1050, 386 x 900, and 320 x 900 with no horizontal overflow.
+- Accessibility-focused review found explicit next-step link labels, focus-ring classes, preserved `aria-pressed` states where applicable, and no material Sprint 4 keyboard/focus regression.
+- Production zero-result review passed: safe zero-result API returned 0 results with compatible fallback metadata, and UI settled to 0 properties with fallback-search messaging and Clear Search recovery.
+- Mutation-safety confirmation: no inquiry submission, tour submission, valuation submission, saved-search submission, contact submission, alert, email, CRM action, seller-lead creation, admin mutation, MLS sync, database write, provider call, GIS Sprint 9, AI activation, manual deployment, redeployment, preview promotion, environment change, or production mutation was performed.
+- Protected-boundary confirmation: no protected intelligence, credentials, stack traces, internal provider details, GIS provider output, or AI-generated recommendations were exposed; property page retained the intended public boundary statement that no protected intelligence is exposed.
+- Latest documentation-only certification commit: verify with `git log -1 --oneline` after final commit and push.
+- Deployment beyond the verified automatic Sprint 4 deployment: `NOT_AUTHORIZED`.
 - Redeployment: `NOT_AUTHORIZED`.
-- Production smoke: `NOT_AUTHORIZED`.
-- Production certification: `NOT_AUTHORIZED`.
-- Customer-visible certification: `NOT_AUTHORIZED`.
+- Production smoke beyond completed Sprint 4 certification review: `NOT_AUTHORIZED`.
+- Production certification beyond Sprint 4 scope: `NOT_AUTHORIZED`.
+- Customer-visible certification: `CERTIFIED_FOR_CEP_1_0_SPRINT_4_SCOPE_ONLY`.
 - Sprint 5: `NOT_AUTHORIZED`.
 - GIS Sprint 9: `NOT_AUTHORIZED`.
 - AI activation: `NOT_AUTHORIZED`.
 - Provider connection, credentials, terms acceptance, downloads, live GIS service/API calls, provider acquisition, provider persistence, provider data customer display, geographic runtime consumption, analytics activation, alert/CRM/email/seller/inquiry mutation tests, Vercel actions, and environment changes remain `NOT_AUTHORIZED`.
-- Exact next executive decision required: David must decide whether to authorize controlled deployment and production certification review of the CEP 1.0 Sprint 4 implementation. Codex must not authorize that decision.
+- Exact next executive decision required: David must decide whether to keep CEP 1.0 paused at Sprint 4 closure or separately authorize the next CEP 1.0 executive planning decision. Codex must not authorize that decision.
 
 Prior CEP Remaining Investment Review handoff retained below.
 

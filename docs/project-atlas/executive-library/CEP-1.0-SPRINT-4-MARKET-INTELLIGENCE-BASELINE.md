@@ -1,6 +1,6 @@
 # PROJECT ATLAS(tm) - CEP 1.0 Sprint 4 Market Intelligence Baseline(tm)
 
-Status: `CEP_1_0_SPRINT_4_IMPLEMENTED_AND_PUSHED_DEPLOYMENT_NOT_AUTHORIZED`
+Status: `CEP_1_0_SPRINT_4_CERTIFIED_AND_CLOSED`
 
 Date: July 27, 2026
 
@@ -8,20 +8,20 @@ Date: July 27, 2026
 
 CEP 1.0 Sprint 4 transforms existing market capabilities into a cohesive customer-facing Market Intelligence baseline. The sprint improves market summary, pricing context, competitiveness context, timing guidance, city/neighborhood market hierarchy, and route continuity into certified search, property, and seller-review paths.
 
-Final governed implementation outcome:
+Final governed certification outcome:
 
-`CEP_1_0_SPRINT_4_IMPLEMENTED_AND_PUSHED_DEPLOYMENT_NOT_AUTHORIZED`
+`CEP_1_0_SPRINT_4_CERTIFIED_AND_CLOSED`
 
-Sprint 4 does not authorize deployment, production certification, GIS activation, AI activation, provider connection, external data, new persistence, database changes, search redesign, property redesign, conversion-flow redesign, CRM changes, alert changes, valuation redesign, or production mutation.
+Sprint 4 production certification does not authorize further deployment, redeployment, Sprint 5, GIS activation, AI activation, provider connection, external data, new persistence, database changes, search redesign, property redesign, conversion-flow redesign, CRM changes, alert changes, valuation redesign, or production mutation.
 
 ## 2. Sprint Status
 
 - Sprint identifier: `CEP_1_0_SPRINT_4_MARKET_INTELLIGENCE_BASELINE`
 - Implementation status: `IMPLEMENTED_AND_PUSHED`
-- Deployment status: `NOT_AUTHORIZED`
-- Production smoke status: `NOT_AUTHORIZED`
-- Production certification status: `NOT_AUTHORIZED`
-- Customer-visible certification: `NOT_AUTHORIZED`
+- Deployment status: `AUTOMATIC_DEPLOYMENT_VERIFIED`
+- Production smoke status: `PASSED`
+- Production certification status: `CERTIFIED_AND_CLOSED`
+- Customer-visible certification: `CERTIFIED_FOR_CEP_1_0_SPRINT_4_SCOPE_ONLY`
 - Sprint 5 state: `NOT_AUTHORIZED`
 
 ## 3. Authorization
@@ -261,8 +261,8 @@ Potential future KPIs require separate authorization for analytics, logs, or saf
 
 ## 18. Remaining Gaps
 
-- Production deployment is not authorized.
-- Production certification is not authorized.
+- Further deployment or redeployment is not authorized.
+- Production certification beyond Sprint 4 scope is not authorized.
 - Market KPI measurement is preparation-only and inactive.
 - Full community intelligence remains constrained by GIS/provider authorization boundaries.
 - AI-guided customer assistance remains unauthorized.
@@ -270,23 +270,121 @@ Potential future KPIs require separate authorization for analytics, logs, or saf
 
 ## 19. Production-Readiness Assessment
 
-Sprint 4 is implemented for local validation and repository certification only. It is not deployed, production-smoked, production-certified, or customer-visible certified by this record.
+Sprint 4 is production-certified and closed for the implemented Market Intelligence baseline scope after automatic deployment verification, public route/API review, responsive review, accessibility-focused review, zero-result review, degraded-search review, mutation-safety confirmation, and documentation-only certification.
+
+No deployment, redeployment, preview promotion, domain change, environment change, runtime remediation, database write, form submission, provider activation, GIS activation, AI activation, or production mutation was performed during certification.
+
+## 19A. Production Certification Review
+
+Review date: July 27, 2026
+
+Reviewed implementation commit:
+
+`300d1c3b27d368770c7fe26d761af269cc3882a5`
+
+Final governed status:
+
+`CEP_1_0_SPRINT_4_CERTIFIED_AND_CLOSED`
+
+Deployment evidence:
+
+- Provider: Vercel through GitHub deployment/status automation.
+- Deployment identifier: `5620442358`.
+- Deployment status identifier: `15982859785`.
+- Commit status identifier: `51134230881`.
+- Deployment state: `success`.
+- Deployment description: `Deployment has completed`.
+- Deployed SHA: `300d1c3b27d368770c7fe26d761af269cc3882a5`.
+- Environment: `Production`.
+- Deployment created: `2026-07-27T09:52:40Z`.
+- Deployment status created/updated: `2026-07-27T09:52:41Z`.
+- Commit status created/updated: `2026-07-27T09:52:40Z`.
+- Vercel deployment target: `https://david-quinn-group-8rde-q59d83b05-david-quinns-projects-a0953600.vercel.app`.
+- Vercel commit-status target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/7RJRzQHMwUse8xjJC785izJSZAi1`.
+- Governed production domain reviewed: `https://davidquinngroup.com`.
+- Deployment source: automatic Vercel/GitHub deployment from pushed commit.
+- Manual deployment actions: none.
+- Preview promotion: none.
+- Domain changes: none.
+- Environment changes: none.
+
+Production route and API review:
+
+- `/`: HTTP 200, usable public home response.
+- `/search`: HTTP 200, usable public search response.
+- `/market`: HTTP 404 with the standard public 404 shell; repository evidence confirms no governed `app/market/page.tsx` index route exists. This is not a Sprint 4 regression and did not expose stack traces, secrets, or protected intelligence.
+- `/market/boulder-co-housing-market`: HTTP 200, city Market Decision Brief rendered.
+- `/market/boulder/downtown-boulder`: HTTP 200, Neighborhood Market Brief rendered.
+- `/properties/cmqlmynbh00bupi4jyw0rkgy0`: HTTP 200, representative property detail rendered from production search results.
+- `/api/search?limit=5`: HTTP 200, returned 5 public results, `found=1287`, `source=database`, `health=degraded`, and customer-safe fallback metadata.
+- `/api/search?city=NoSuchColoradoCityZZZ&query=unlikely-zero-result-cep-sprint-4-prod&limit=5`: HTTP 200, returned 0 results with compatible response contract and customer-safe degraded fallback metadata.
+
+Production interaction results:
+
+- City Market Decision Brief rendered with `data-market-intelligence-scope="city"`, `data-market-intelligence-provider="none"`, `data-market-intelligence-ai-generated="false"`, and `data-market-intelligence-gis-activated="false"`.
+- City signals rendered: Direction `Strong seller pressure`, Pricing `$1,450,000 median / $850 per sq ft`, Inventory `58 active signal`, Timing `Prepare before touring`.
+- City next steps rendered to `/search?city=Boulder`, `/sell`, and `#market-neighborhood-context`.
+- City source note rendered: market intelligence uses repository city data and is not a forecast, appraisal, automated valuation, or provider-fed geographic analysis.
+- Neighborhood Market Brief rendered with `data-market-intelligence-scope="neighborhood"`, `data-market-intelligence-provider="none"`, `data-market-intelligence-ai-generated="false"`, and `data-market-intelligence-gis-activated="false"`.
+- Neighborhood signals rendered: Inventory `7 active`, Competitiveness `Selective options`, Pricing context `80/100 resilience`, Timing `Compare fit before touring`.
+- Neighborhood next steps rendered to `/search?city=Boulder&query=Downtown+Boulder`, `/market/boulder-co-housing-market`, and `/sell`.
+- Neighborhood source note rendered: no appreciation or availability prediction, no GIS provider activation, no external geographic service, and no AI-generated recommendations.
+- Search page retained market links from property cards into market intelligence pages.
+- Representative property page retained Property Decision Brief and market pathway, with market context routed to `/search?city=Evergreen`.
+- Inquiry and seller entry points were visible where expected but were not submitted.
+
+Responsive review:
+
+- Desktop `1280 x 900`: city market, neighborhood market, search, and representative property pages rendered without horizontal overflow.
+- Tablet `900 x 1050`: city market, neighborhood market, search, and representative property pages rendered without horizontal overflow.
+- Mobile `386 x 900`: city market, neighborhood market, search, and representative property pages rendered without horizontal overflow.
+- Narrow mobile `320 x 900`: city market, neighborhood market, search, and representative property pages rendered without horizontal overflow.
+- Market summary links remained reachable, readable, and named at all reviewed widths.
+- CTA hierarchy remained intact for search, seller review, and market-context paths.
+
+Accessibility-focused review:
+
+- New market next-step links had explicit text labels.
+- New market next-step links retained focus-ring classes.
+- City market mode controls retained `aria-pressed` state.
+- Search mobile List/Map controls retained `aria-pressed` state.
+- Property inquiry timing controls retained `aria-pressed` state.
+- Reviewed city and neighborhood market briefs exposed zero unnamed buttons and zero unnamed links.
+- No material Sprint 4 keyboard/focus regression was observed.
+
+Zero-result and degraded-state evidence:
+
+- Safe zero-result API returned 0 results with compatible metadata and customer-safe database fallback.
+- Safe zero-result UI settled to 0 properties, showed fallback-search messaging, and presented Clear Search recovery guidance.
+- Production `/api/search?limit=5` naturally reported primary-provider degradation while preserving a usable database fallback response.
+- No internal provider credentials, stack traces, protected health details, or unsupported certainty claims were exposed.
+
+Mutation-safety confirmation:
+
+- No saved-search submission, inquiry submission, tour submission, valuation submission, contact submission, seller-lead creation, CRM activity, alert activity, email activity, admin mutation, MLS sync, provider call, GIS activation, AI activation, database write, environment change, manual deployment, redeployment, or preview promotion was performed.
+
+Unresolved issues:
+
+- No material Sprint 4 certification issue remains.
+- `/market` returned HTTP 404 because no governed market index route exists in the repository; this is recorded as non-applicable to Sprint 4 certification rather than a Sprint 4 regression.
 
 ## 20. Deployment Authorization State
 
-- Deployment: `NOT_AUTHORIZED`
+- Deployment: `AUTOMATIC_DEPLOYMENT_VERIFIED_FOR_IMPLEMENTATION_COMMIT`
 - Redeployment: `NOT_AUTHORIZED`
-- Production smoke: `NOT_AUTHORIZED`
-- Production certification: `NOT_AUTHORIZED`
-- Customer-visible certification: `NOT_AUTHORIZED`
+- Production smoke: `PASSED_FOR_SPRINT_4_SCOPE`
+- Production certification: `CEP_1_0_SPRINT_4_CERTIFIED_AND_CLOSED`
+- Customer-visible certification: `CERTIFIED_FOR_CEP_1_0_SPRINT_4_SCOPE_ONLY`
 - Sprint 5: `NOT_AUTHORIZED`
 
 ## 21. Stop Conditions
 
 Codex stopped before:
 
-- deployment
-- production certification
+- new implementation
+- remediation
+- manual deployment
+- redeployment
 - production mutation
 - Sprint 5
 - GIS activation
@@ -297,7 +395,7 @@ Codex stopped before:
 
 ## 22. Recommended Next Executive Decision
 
-David should decide whether to authorize a controlled deployment and production certification review of the CEP 1.0 Sprint 4 implementation.
+David should decide whether to keep CEP 1.0 paused at Sprint 4 closure or separately authorize the next CEP 1.0 executive planning decision.
 
 Codex does not authorize that decision.
 
@@ -307,3 +405,5 @@ Codex does not authorize that decision.
 - Primary runtime files: `app/market/[city]/page.tsx`, `app/market/[city]/[slug]/page.tsx`, `lib/marketIntelligenceExperience.ts`.
 - Existing integration paths reused: `/search`, `/sell`, city market routes, neighborhood market routes, certified property detail pages.
 - Backend routes inspected or preserved but not changed: `app/api/search/route.ts`, `app/properties/[id]/page.tsx`, `app/api/valuation/route.ts`.
+- Production certification command: `env PUBLIC_EXPERIENCE_SMOKE_BASE_URL=https://davidquinngroup.com npm run smoke:public-experience`.
+- Production certification routes reviewed: `/`, `/search`, `/market`, `/market/boulder-co-housing-market`, `/market/boulder/downtown-boulder`, `/properties/cmqlmynbh00bupi4jyw0rkgy0`, `/api/search?limit=5`, and a safe zero-result search API/UI path.
