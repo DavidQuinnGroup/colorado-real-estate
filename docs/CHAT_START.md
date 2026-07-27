@@ -10,6 +10,45 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / EOI 1.0 Architecture and Readiness Review(tm), July 27, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -5 --oneline
+```
+
+Current EOI 1.0 architecture state:
+
+- Program: `ENTERPRISE_OPERATIONS_INTELLIGENCE_1_0`.
+- Review: `EOI_1_0_ARCHITECTURE_AND_READINESS_REVIEW`.
+- Status: `EOI_1_0_ARCHITECTURE_AND_READINESS_REVIEW_COMPLETE_IMPLEMENTATION_NOT_AUTHORIZED`.
+- Review baseline: clean, aligned `main` at `5bab91ff3bbe4f6c79ea4f090144bd31801ce079`.
+- Predecessor programs complete: CEP 1.0, CIM 1.0, and CAO 1.0.
+- EOI readiness classification: `ARCHITECTURE_READY_IMPLEMENTATION_NOT_AUTHORIZED`.
+- EOI architecture review record: `docs/project-atlas/executive-library/EOI-1.0-ARCHITECTURE-AND-READINESS-REVIEW.md`.
+- Repository assets reviewed: enterprise KPI registry/evaluation/health/intelligence/executive workspace modules, protected enterprise admin routes, CAO operating/queue/consultation contracts, CIM measurement/privacy/adapter contracts, CRM task admin APIs, Master Control Panel, CRM reporting utilities, repository health/governance routes, analytics helpers, safety scripts, and enterprise governance records.
+- Architectural conclusion: repository is ready for a controlled, read-only EOI first implementation sprint if separately authorized.
+- Ownership decision: EOI should own operational KPI reporting, operational intelligence synthesis, executive visibility, trend/risk/opportunity interpretation, and automation-readiness evidence.
+- CAO remains owner of operating definitions, lifecycle definitions, service-level definitions, queue readiness, consultation outcomes, and lead disposition taxonomy.
+- CIM remains owner of measurement taxonomy, privacy, consent, data minimization, telemetry activation gates, event payload contracts, and fail-closed measurement adapter governance.
+- Dashboard decision: dashboards should not precede KPI source contracts and reporting semantics.
+- Automation decision: workflow automation and CRM automation remain deferred.
+- Recommended first sprint: `EOI_1_0_SPRINT_1_OPERATIONAL_KPI_REPORTING_BASELINE`.
+- Recommended Sprint 1 objective: create a protected, read-only operational KPI reporting baseline mapping CAO-owned KPIs to existing CRM/CAO read evidence and enterprise KPI reporting patterns while preserving CIM inactivity, no automation, no new persistence, no database changes, no notifications, and no production mutation.
+- Implementation performed during review: documentation only.
+- Validation: `git diff --check` passed; final diff was documentation-only before commit.
+- EOI Sprint 1, runtime implementation, deployment, CRM automation, workflow automation, database changes, persistence, notifications, telemetry activation, AI activation, GIS activation, provider activation, production mutation, dashboards, operational KPI reporting implementation, and unrelated work remain `NOT_AUTHORIZED`.
+- Exact next executive decision required: David must decide whether to authorize `EOI_1_0_SPRINT_1_OPERATIONAL_KPI_REPORTING_BASELINE`. Codex must not authorize that decision.
+
+Prior CAO Strategic Completion Review handoff retained below.
+
 PROJECT ATLAS(tm) / CAO 1.0 Strategic Completion Review(tm), July 27, 2026:
 
 Workspace:
