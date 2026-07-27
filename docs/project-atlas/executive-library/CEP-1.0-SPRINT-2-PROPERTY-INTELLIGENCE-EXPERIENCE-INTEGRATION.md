@@ -1,6 +1,6 @@
 # PROJECT ATLAS(tm) - CEP 1.0 Sprint 2 Property Intelligence Experience Integration(tm)
 
-Status: `CEP_1_0_SPRINT_2_IMPLEMENTED_AND_READY_FOR_CONTROLLED_DEPLOYMENT_REVIEW`
+Status: `CEP_1_0_SPRINT_2_CERTIFIED_AND_CLOSED`
 
 Date: July 26, 2026
 
@@ -8,24 +8,27 @@ Date: July 26, 2026
 
 CEP 1.0 Sprint 2 integrates the existing property-detail experience more directly with customer-facing Property Intelligence. The sprint adds a concise property decision brief to help buyers orient around fit, tour preparation, uniqueness, market comparison, and investigation needs before using the existing property sections and inquiry path.
 
-Final implementation target:
+Final governed outcome:
 
-`CEP_1_0_SPRINT_2_IMPLEMENTED_AND_PUSHED_DEPLOYMENT_NOT_AUTHORIZED`
+`CEP_1_0_SPRINT_2_CERTIFIED_AND_CLOSED`
 
 ## 2. Sprint Status
 
 - Sprint identifier: `CEP_1_0_SPRINT_2_PROPERTY_INTELLIGENCE_EXPERIENCE_INTEGRATION`
-- Current implementation status: `IMPLEMENTED_AND_VALIDATED_LOCALLY_PENDING_FINAL_COMMIT`
-- Deployment status: `NOT_AUTHORIZED`
-- Production smoke status: `NOT_AUTHORIZED`
-- Customer-visible certification: `NOT_AUTHORIZED`
+- Current implementation status: `IMPLEMENTED_AND_PUSHED`
+- Deployment status: `DEPLOYED_BY_EXISTING_AUTOMATION`
+- Production smoke status: `PASSED`
+- Production certification status: `CERTIFIED_AND_CLOSED`
+- Customer-visible certification: `CERTIFIED_FOR_SPRINT_2_SCOPE`
 - Sprint 3 state: `NOT_AUTHORIZED`
 
 ## 3. Authorization
 
 David explicitly authorized controlled repository implementation, local validation, documentation, commit, and push for CEP 1.0 Sprint 2. The authorization permits property detail presentation improvements, reuse of existing Property Intelligence capability, improved hierarchy, pricing and market context, property-history presentation where supported, comparable context through existing capability, customer-safe confidence and freshness display, responsive and accessibility improvements, regression coverage, documentation, commit, and push.
 
-The authorization does not permit deployment, production smoke testing, database schema changes, migrations, provider connection, GIS Sprint 9, AI customer guidance, search redesign, navigation redesign, seller-flow redesign, CRM changes, alert changes, inquiry or tour redesign, valuation redesign, mortgage functionality, favorites persistence, new persistence, environment changes, or production mutation.
+The implementation authorization did not permit deployment, production smoke testing, database schema changes, migrations, provider connection, GIS Sprint 9, AI customer guidance, search redesign, navigation redesign, seller-flow redesign, CRM changes, alert changes, inquiry or tour redesign, valuation redesign, mortgage functionality, favorites persistence, new persistence, environment changes, or production mutation.
+
+David later authorized controlled deployment verification, non-mutating production review, production certification, documentation updates, documentation-only commit, and documentation-only push for implementation commit `324fc0ce9c23d435b508c6dda60dd839d62ddfbe`. That certification authorization did not permit runtime implementation, remediation, manual deployment, provider activation, GIS Sprint 9, AI activation, database changes, environment changes, or mutation-bearing customer workflows.
 
 ## 4. Baseline
 
@@ -259,28 +262,123 @@ Future authorization required:
 
 ## 20. Remaining Gaps
 
-- No production deployment review is authorized in this sprint.
-- No production smoke test is authorized.
-- No customer-visible production certification is authorized.
 - No new analytics instrumentation is activated.
 - Comparable context remains existing related-listing context, not a full comparison workspace.
 - Property history remains limited to existing public listing facts and timestamps.
+- Sprint 3 remains unauthorized.
+- Production certification is limited to the Sprint 2 property-intelligence experience integration scope.
+
+## 20A. Production Certification Review
+
+Production review date: July 27, 2026
+
+Reviewed implementation commit:
+
+`324fc0ce9c23d435b508c6dda60dd839d62ddfbe`
+
+Production domain:
+
+`https://davidquinngroup.com`
+
+Deployment evidence:
+
+| Evidence | Value |
+| --- | --- |
+| Deployment provider | GitHub deployment status from Vercel |
+| Deployment ID | `5615668127` |
+| Deployment status ID | `15969342672` |
+| Commit status ID | `51116794574` |
+| Deployed SHA | `324fc0ce9c23d435b508c6dda60dd839d62ddfbe` |
+| Environment | `Production` |
+| State | `success` |
+| Description | `Deployment has completed` |
+| Created | `2026-07-27T00:59:09Z` |
+| Updated | `2026-07-27T00:59:09Z` |
+| Target URL | `https://david-quinn-group-8rde-bfdx84nup-david-quinns-projects-a0953600.vercel.app` |
+| Commit status target | `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/BDoaYeyBmchKQDDUipEtx8FuvJRE` |
+| Automatic deployment | Yes, via existing Vercel/GitHub automation |
+| Manual deployment action by Codex | None |
+
+Production route and API evidence:
+
+- `/`: HTTP `200`, usable response, no redirect.
+- `/search`: HTTP `200`, usable response, no redirect.
+- `/api/search?limit=5`: HTTP `200`, compatible response, `returned=5`, `mapped=5`, `found=1287`, source `database`, health `degraded`, customer-safe fallback metadata.
+- `/api/search?city=NoSuchColoradoCityZZZ&query=unlikely-zero-result-cep-sprint-2&limit=5`: HTTP `200`, compatible zero-result response, `results=[]`, `found=0`, source `database`, customer-safe degraded fallback metadata.
+- `/properties/cmqln53qg09rvpi4jzrvdb33v`: HTTP `200`, usable representative property detail route.
+
+Production interaction evidence:
+
+- Property Decision Brief rendered with 5 buyer-question items.
+- Buyer questions rendered for fit, tour preparation, uniqueness, market comparison, and further investigation.
+- Pricing context rendered through `Calculated Price / Sq Ft`.
+- Market context rendered through the existing market/search pathway and market intelligence section.
+- Source status rendered as `public-listing-facts`.
+- Freshness displayed from existing listing sync/update timestamps.
+- Confidence boundary rendered as `public-fact-confidence`.
+- Related listing context rendered with 6 related links on the reviewed property page.
+- Search-to-property transition from `/search` to `/properties/cmqln53qg09rvpi4jzrvdb33v` worked and rendered the decision brief.
+- Inquiry form was visible and labeled; no inquiry was submitted.
+- Tour-intent entry was visible inside the existing inquiry form; no tour request was submitted.
+
+Responsive and accessibility evidence:
+
+- Desktop `1280 x 900`: decision brief visible, source status visible, related listings present, inquiry visible, no horizontal overflow.
+- Tablet `900 x 1050`: decision brief visible, source status visible, related listings present, inquiry visible, no horizontal overflow.
+- Mobile `386 x 900`: decision brief visible, source status visible, mobile action bar visible, inquiry visible, no horizontal overflow.
+- Narrow mobile `320 x 900`: decision brief visible, source status visible, mobile action bar visible, inquiry visible, no horizontal overflow.
+- Decision links had accessible names.
+- Inquiry fields had labels, placeholders, or accessible names.
+- Mobile property actions had names.
+- Keyboard/focus review found no material Sprint 2 regression.
+
+Production safety evidence:
+
+- No database mutation was performed.
+- No inquiry submission was performed.
+- No tour submission was performed.
+- No valuation submission was performed.
+- No saved-search submission was performed.
+- No alert or email action was performed.
+- No CRM or seller-lead action was performed.
+- No environment changes were made.
+- No provider activity was initiated.
+- No GIS Sprint 9 behavior was initiated.
+- No AI activation was initiated.
+- No protected intelligence, credentials, stack traces, or internal diagnostics were exposed. The only production text match for `protected intelligence` was the intended customer-safe boundary statement: no protected intelligence is exposed.
+- No manual deployment, redeployment, or preview promotion was performed.
+
+Production validation command:
+
+- `env PUBLIC_EXPERIENCE_SMOKE_BASE_URL=https://davidquinngroup.com npm run smoke:public-experience`: passed.
+
+Certification decision:
+
+`CEP_1_0_SPRINT_2_CERTIFIED_AND_CLOSED`
+
+Unresolved issues:
+
+- None for the Sprint 2 certification scope.
+
+Next executive recommendation:
+
+David should decide whether to keep CEP 1.0 paused at Sprint 2 closure or separately authorize the next CEP 1.0 executive planning decision.
 
 ## 21. Production-Readiness Assessment
 
-Sprint 2 is intended to be locally validated, committed, and pushed for executive review. Deployment and production certification require a separate explicit authorization.
+Sprint 2 has been locally validated, deployed by existing automation, reviewed in production through non-mutating checks, and certified for the Sprint 2 property-intelligence experience integration scope.
 
-Current assessment after local validation:
+Current assessment after production certification:
 
-`IMPLEMENTED_AND_VALIDATED_LOCALLY_DEPLOYMENT_NOT_AUTHORIZED`
+`CEP_1_0_SPRINT_2_CERTIFIED_AND_CLOSED`
 
 ## 22. Deployment Authorization State
 
-- Deployment: `NOT_AUTHORIZED`
+- Deployment: `COMPLETED_BY_EXISTING_AUTOMATION`
 - Redeployment: `NOT_AUTHORIZED`
-- Production smoke testing: `NOT_AUTHORIZED`
-- Production certification: `NOT_AUTHORIZED`
-- Customer-visible certification: `NOT_AUTHORIZED`
+- Production smoke testing: `COMPLETED_FOR_SPRINT_2_CERTIFICATION_SCOPE`
+- Production certification: `CERTIFIED_AND_CLOSED`
+- Customer-visible certification: `CERTIFIED_FOR_SPRINT_2_SCOPE`
 - Environment changes: `NOT_AUTHORIZED`
 - Database changes: `NOT_AUTHORIZED`
 
@@ -289,7 +387,7 @@ Current assessment after local validation:
 Codex must stop before:
 
 - deployment
-- production review
+- additional production review beyond Sprint 2 certification scope
 - Sprint 3
 - GIS Sprint 9
 - provider activation
@@ -302,7 +400,7 @@ Codex must stop before:
 
 ## 24. Recommended Next Executive Decision
 
-After final local validation, commit, and push, David should decide whether to authorize a controlled deployment and production certification review of CEP 1.0 Sprint 2.
+David should decide whether to keep CEP 1.0 paused at Sprint 2 closure or separately authorize the next CEP 1.0 executive planning decision.
 
 Codex must not authorize that decision.
 
@@ -323,3 +421,7 @@ Primary validation evidence:
 
 - `scripts/checkCepPropertyIntelligenceExperience.ts`
 - `npm run check:cep-property-intelligence-experience`
+- `env PUBLIC_EXPERIENCE_SMOKE_BASE_URL=https://davidquinngroup.com npm run smoke:public-experience`
+- GitHub/Vercel deployment ID `5615668127`
+- GitHub/Vercel deployment status ID `15969342672`
+- GitHub/Vercel commit status ID `51116794574`
