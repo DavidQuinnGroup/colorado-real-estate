@@ -10,6 +10,41 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / EOI 1.0 Sprint 1 Operational KPI Reporting Baseline(tm), July 27, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -5 --oneline
+```
+
+Current EOI 1.0 Sprint 1 state:
+
+- Program: `ENTERPRISE_OPERATIONS_INTELLIGENCE_1_0`.
+- Sprint: `EOI_1_0_SPRINT_1_OPERATIONAL_KPI_REPORTING_BASELINE`.
+- Status: `EOI_1_0_SPRINT_1_OPERATIONAL_KPI_REPORTING_BASELINE_IMPLEMENTED_DEPLOYMENT_NOT_AUTHORIZED`.
+- Starting baseline: clean, aligned `main` at `7495fcad4469f4d98e3d1bd77900a15bfb05fe50`.
+- Governing predecessor review: `docs/project-atlas/executive-library/EOI-1.0-ARCHITECTURE-AND-READINESS-REVIEW.md`.
+- Sprint record: `docs/project-atlas/executive-library/EOI-1.0-SPRINT-1-OPERATIONAL-KPI-REPORTING-BASELINE.md`.
+- Implementation created a protected, read-only EOI operational KPI reporting contract and admin adapter.
+- Operational KPI baseline covers Consultation Volume, Consultation Completion Rate, Consultation No-Show Rate, Lead Qualification Rate, Active Client Count, Closed Won Count, Closed Lost Count, Follow-Up Required Count, Queue Health, and SLA Health.
+- Reporting definitions include identifier, display name, business definition, governing CAO source, owner, calculation source, confidence, freshness, source availability, reporting classification, and explicit no-automation/no-telemetry/no-persistence flags.
+- Protected adapter: `/api/admin/enterprise/operational-kpis`.
+- Adapter posture: repository-admin authorization required, GET-only, read-only, no Prisma query, no mutation handler, no CRM workflow change, no telemetry, no persistence, no AI, no GIS, no provider activation.
+- Deterministic safety command: `npm run check:eoi-operational-kpi-reporting-baseline`.
+- Validation passed: `npm run check:eoi-operational-kpi-reporting-baseline`, `npm run typecheck`, `npm run lint`, `npm run build`, `npx prisma validate`, `npm run check:cao-operating-model-service-level-contract`, `npm run check:cao-operations-queue-review-readiness`, `npm run check:cao-consultation-workflow-disposition-standard`, `npm run check:cim-first-party-measurement-readiness-adapter`, `npm run check:enterprise-kpi-safety`, and `git diff --check`.
+- Local protected route review: GET `/api/admin/enterprise/operational-kpis` without credentials returned `401 Unauthorized`; no mutation was invoked.
+- Deployment, production certification, EOI Sprint 2, CRM automation, workflow automation, notifications, email, database changes, persistence, telemetry activation, AI activation, GIS activation, provider activation, production mutation, and unrelated work remain `NOT_AUTHORIZED`.
+- Exact next executive decision required after push: David must decide whether to authorize a controlled deployment and production certification review for EOI Sprint 1. Codex must not authorize that decision.
+
+Prior EOI Architecture and Readiness Review handoff retained below.
+
 PROJECT ATLAS(tm) / EOI 1.0 Architecture and Readiness Review(tm), July 27, 2026:
 
 Workspace:
