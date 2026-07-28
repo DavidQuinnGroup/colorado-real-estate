@@ -10,6 +10,38 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE 7.1 Seller Confidence Experience Design Review(tm), July 28, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -5 --oneline
+```
+
+Current Seller Confidence Experience Design Review state:
+
+- Review: `REIE_7_1_SELLER_CONFIDENCE_EXPERIENCE_DESIGN_REVIEW`.
+- Status: `REIE_7_1_SELLER_CONFIDENCE_EXPERIENCE_DESIGN_REVIEW_COMPLETE_IMPLEMENTATION_NOT_AUTHORIZED`.
+- Review baseline: clean, aligned `main` at `24cd1f110a2de362aa7e957ab98a8bbb66858101`.
+- Review record: `docs/project-atlas/executive-library/REIE-7.1-SELLER-CONFIDENCE-EXPERIENCE-DESIGN-REVIEW.md`.
+- Governing evidence reviewed: Product Excellence Roadmap 1.0, `/sell`, `components/HomeValueEstimator.tsx`, `/api/valuation`, homepage seller entry points, public navigation, footer, market seller links, property-detail seller links, brokerage attribution, and active REIE 7.1 handoff records.
+- Design conclusion: the current `/sell` seller strategy page and `HomeValueEstimator` provide a credible governed foundation, but the homeowner confidence journey still lacks a dedicated "What Is My Home Worth?" entry point that begins with valuation anxiety, explains methodology, and guides the customer into a human seller review.
+- Trust conclusion: current copy correctly avoids automated valuation claims and explains advisor follow-up, but the strongest trust language should move earlier in the future seller-confidence route.
+- Luxury conclusion: the current seller journey is professional and restrained; the next implementation should feel calmer, more spacious, more educational, and less form-first.
+- Differentiation conclusion: REIE should differentiate from Zillow, Redfin, Realtor.com, and typical brokerage valuation pages by rejecting instant-price theater and emphasizing local market context, preparation, condition, timing, buyer objections, and human review.
+- Recommended implementation if separately authorized: `REIE_7_1_SPRINT_2_SELLER_VALUATION_ROUTE_COMPLETION`.
+- Recommended route posture if separately authorized: primary route `/home-worth`, customer-facing title "What Is My Home Worth?", no instant automated estimate, reuse existing `/sell`, `HomeValueEstimator`, valuation backend posture, market links, property continuity, public navigation, and brokerage disclosure.
+- Explicit exclusions retained: no implementation, no route creation, no form/backend change, no automated valuation, no new persistence, no schema change, no CRM automation, no notifications, no emails, no deployment, no production mutation, no telemetry, no AI, no GIS, no provider activation, no Mortgage Calculator, no Lender, no Sundance, no AEO, no Executive Workspace, no EOI Sprint 4, no authentication work, and no unrelated work.
+- Exact next executive decision required: David should decide whether to authorize `REIE_7_1_SPRINT_2_SELLER_VALUATION_ROUTE_COMPLETION` as a controlled implementation sprint. Codex must not authorize that decision.
+
+Prior Product Excellence Roadmap handoff retained below.
+
 PROJECT ATLAS(tm) / REIE 7.1 Sprint 1 Public Navigation, Visual Trust and Route Completion Baseline(tm), July 28, 2026:
 
 Workspace:
