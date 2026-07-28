@@ -382,6 +382,33 @@ html, body {
     color: inherit;
   }
 
+  .reie-public-brand-link {
+    color: #ffffff;
+    text-decoration: none;
+  }
+
+  .reie-public-brand-link:hover {
+    color: #ffffff;
+  }
+
+  .reie-public-navigation-link {
+    color: rgba(255, 255, 255, 0.62);
+    text-decoration: none;
+  }
+
+  .reie-public-navigation-link:hover {
+    color: #ffffff;
+  }
+
+  .reie-public-footer-link {
+    color: rgb(100, 116, 139);
+    text-decoration: none;
+  }
+
+  .reie-public-footer-link:hover {
+    color: #ffffff;
+  }
+
   @media (min-width: 1024px) {
     .home-nav-items {
       display: flex;

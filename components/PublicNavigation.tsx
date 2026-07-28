@@ -31,7 +31,7 @@ export default function PublicNavigation() {
       >
         <Link
           href="/"
-          className="group flex min-w-0 items-center gap-2 rounded-[8px] text-white no-underline outline-none transition focus-visible:ring-2 focus-visible:ring-cyan-100 focus-visible:ring-offset-4 focus-visible:ring-offset-[#071017] sm:gap-3"
+          className="reie-public-brand-link group flex min-w-0 items-center gap-2 rounded-[8px] text-white no-underline outline-none transition focus-visible:ring-2 focus-visible:ring-cyan-100 focus-visible:ring-offset-4 focus-visible:ring-offset-[#071017] sm:gap-3"
           aria-label="David Quinn Group home"
           data-testid="reie-public-navigation-brand"
           data-reie-brand-position="upper-left"
@@ -53,7 +53,7 @@ export default function PublicNavigation() {
             <Link
               key={link.href}
               href={link.href}
-              className="rounded-[7px] px-3 py-2 text-[11px] font-black uppercase tracking-[0.13em] text-white/58 no-underline transition hover:bg-white/[0.06] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100"
+              className="reie-public-navigation-link rounded-[7px] px-3 py-2 text-[11px] font-black uppercase tracking-[0.13em] text-white/58 no-underline transition hover:bg-white/[0.06] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100"
               data-testid="reie-public-navigation-link"
               data-reie-public-route={link.href}
             >
@@ -80,7 +80,7 @@ export default function PublicNavigation() {
           <Link
             key={`mobile-${link.href}`}
             href={link.href}
-            className="min-h-11 bg-[#071017]/94 px-2 py-3 text-center text-[10px] font-black uppercase tracking-[0.1em] text-white/62 no-underline transition hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-cyan-100"
+            className="reie-public-navigation-link min-h-11 bg-[#071017]/94 px-2 py-3 text-center text-[10px] font-black uppercase tracking-[0.1em] text-white/62 no-underline transition hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-cyan-100"
             data-testid="reie-public-mobile-navigation-link"
             data-reie-public-route={link.href}
           >

@@ -33,7 +33,7 @@ export default function PlatformFooter() {
               <Link
                 key={route.href}
                 href={route.href}
-                className="text-[11px] font-black uppercase tracking-[0.14em] text-slate-500 transition hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-200"
+                className="reie-public-footer-link text-[11px] font-black uppercase tracking-[0.14em] text-slate-500 transition hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-200"
                 data-testid="public-experience-footer-link"
                 {...getJourneyMeasurementAttributes({
                   surface: 'footer-experience',

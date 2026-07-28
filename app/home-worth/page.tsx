@@ -33,14 +33,10 @@ const eyebrowClass = 'text-[11px] font-black uppercase tracking-[0.28em] text-cy
 const darkEyebrowClass = 'text-[11px] font-black uppercase tracking-[0.28em] text-[#6f5b43]';
 const headingClass = 'mt-5 max-w-4xl text-4xl font-black leading-[1.04] tracking-normal text-white sm:text-5xl';
 const bodyClass = 'mt-6 max-w-2xl text-base leading-8 text-white/66 sm:text-lg';
-const primaryButtonClass =
-  'inline-flex min-h-12 items-center justify-center rounded-full bg-cyan-100 px-6 py-3 text-sm font-black uppercase tracking-[0.14em] text-[#101820] transition hover:-translate-y-0.5 hover:bg-white focus:outline-none focus:ring-2 focus:ring-cyan-100 focus:ring-offset-2 focus:ring-offset-[#071017]';
-const secondaryButtonClass =
-  'inline-flex min-h-12 items-center justify-center rounded-full border border-white/18 px-6 py-3 text-sm font-black uppercase tracking-[0.14em] text-white transition hover:-translate-y-0.5 hover:border-white/38 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-100 focus:ring-offset-2 focus:ring-offset-[#071017]';
-const darkButtonClass =
-  'inline-flex min-h-12 items-center justify-center rounded-full bg-[#101820] px-6 py-3 text-sm font-black uppercase tracking-[0.14em] text-white transition hover:-translate-y-0.5 hover:bg-[#182533] focus:outline-none focus:ring-2 focus:ring-[#101820] focus:ring-offset-2 focus:ring-offset-white';
-const lightButtonClass =
-  'inline-flex min-h-12 items-center justify-center rounded-full border border-[#101820]/18 px-6 py-3 text-sm font-black uppercase tracking-[0.14em] text-[#101820] transition hover:-translate-y-0.5 hover:bg-[#101820]/6 focus:outline-none focus:ring-2 focus:ring-[#101820] focus:ring-offset-2 focus:ring-offset-white';
+const primaryButtonClass = 'home-btn home-btn-primary';
+const secondaryButtonClass = 'home-btn home-btn-secondary';
+const darkButtonClass = 'home-btn home-btn-dark';
+const lightButtonClass = 'home-btn home-btn-light';
 
 const valueFactors = [
   {
