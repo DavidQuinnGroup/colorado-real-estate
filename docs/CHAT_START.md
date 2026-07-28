@@ -10,6 +10,36 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE 8 Property Intelligence Experience(tm) v8 Implementation, July 28, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Current implementation state:
+
+- Governed identifier: `REIE_8_PROPERTY_INTELLIGENCE_EXPERIENCE_V8`.
+- Starting baseline: clean local `main` at `8b54c2e2b30a61211d2b78fbe40414acabb70a5a`, one commit ahead of `origin/main` after REIE 8 Guided Search Intelligence(tm) v8.
+- Implementation record: `docs/project-atlas/executive-library/REIE-8-PROPERTY-INTELLIGENCE-EXPERIENCE-V8.md`.
+- Runtime implementation: `lib/property/propertyDecisionWorkspace.ts` adds deterministic property decision-workspace guidance; `app/properties/[id]/page.tsx` exposes a v8 Decision Readiness Plan with understand, compare, verify, discuss, and next stages.
+- Governance implementation: `scripts/checkReiePropertyIntelligenceExperienceV8.ts` verifies the Decision Readiness Plan, Decision Experience Index documentation, read-only property route boundaries, inquiry boundary preservation, and prohibited activation exclusions.
+- Decision Experience Index: documentation-only product-quality framework, overall score `4.4 / 5`; it does not affect runtime behavior, ranking, visibility, personalization, or data access.
+- Explicit exclusions retained: no AI, customer accounts, GIS activation, Public Geographic Intelligence, Mortgage Calculator, loan calculator, lender workflow, financing application, telemetry activation, analytics activation, recommendation engine, schema redesign, Prisma change, API breaking change, provider activation, production mutation, deployment, or major architecture rewrite.
+- New validation: `npm run check:reie-property-intelligence-experience-v8`.
+- Completion validation passed: `npm run check:reie-property-intelligence-experience-v8`, `npm run check:cep-property-intelligence-experience`, `npm run check:property-route-safety`, `npm run check:production-media-resilience`, `npm run check:reie-guided-search-intelligence-v8`, `npm run check:reie-buyer-confidence-experience`, `npm run check:reie-seller-confidence-experience`, `npm run check:reie-financing-confidence-education`, `PUBLIC_EXPERIENCE_SMOKE_BASE_URL=http://localhost:3000 npm run smoke:public-experience`, `npm run typecheck`, `npm run lint`, `npm run build`, browser review across desktop and narrow mobile, and `git diff --check`.
+- Implementation commit: reported in the completion response.
+- Exact next step: David should decide whether to authorize deployment or the next governed REIE 8 implementation program. Codex must not infer or authorize that next program without an explicit directive.
+
+Prior REIE 8 Guided Search implementation handoff retained below.
+
 PROJECT ATLAS(tm) / REIE 8 Guided Search Intelligence(tm) v8 Implementation, July 28, 2026:
 
 Workspace:

@@ -35,6 +35,7 @@ import { getPropertyLinks, type PropertyAuthorityLink } from '@/lib/linking/getP
 import { getDisplaySafeListingPhotoUrl, getListingFallbackPhotoUrl, getListingPhotoUrl } from '@/lib/listingVisuals';
 import { neighborhoods } from '@/lib/neighborhoods';
 import { prisma } from '@/lib/prisma';
+import { buildPropertyDecisionWorkspace } from '@/lib/property/propertyDecisionWorkspace';
 import { LISTING_ADVERTISING_CLASSIFICATION } from '@/lib/publicTrust';
 import type { FAQItem } from '@/lib/schema/faqSchema';
 import { generateFAQs } from '@/lib/schema/generateFAQs';
@@ -801,6 +802,26 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
     relatedListingCount: relatedListings.length,
     authorityLinkCount: propertyPageAuthorityLinks.length,
   });
+  const propertyDecisionWorkspace = buildPropertyDecisionWorkspace({
+    address: property.address,
+    city: property.city,
+    neighborhood: property.neighborhood,
+    propertyType: property.propertyType,
+    status: property.status,
+    price: property.price,
+    sqft: property.sqft,
+    beds: property.beds,
+    baths: property.baths,
+    yearBuilt: property.yearBuilt,
+    lotSize: property.lotSize,
+    hasPolybutyleneRisk: property.hasPolybutyleneRisk,
+    soilType: property.soilType,
+    altitude: property.altitude,
+    relatedListingCount: relatedListings.length,
+    authorityLinkCount: propertyPageAuthorityLinks.length,
+    marketPathwayLabel: marketPathway.label,
+    marketPathwayHref: marketPathway.href,
+  });
 
   return (
     <main className="min-h-screen overflow-y-auto bg-[#070b10] text-white">
@@ -1160,6 +1181,61 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                   </div>
                 ))}
               </div>
+            </section>
+
+            <section
+              className="overflow-hidden rounded-[8px] border border-cyan-100/18 bg-[#0d141c]"
+              data-testid="reie-property-v8-decision-readiness-plan"
+              data-property-v8-posture={propertyDecisionWorkspace.posture}
+              data-property-v8-readiness-item-count={propertyDecisionWorkspace.readinessItems.length}
+              data-property-v8-ai="false"
+              data-property-v8-gis="false"
+              data-property-v8-telemetry="false"
+              data-property-v8-lender-workflow="false"
+            >
+              <div className="border-b border-white/10 bg-cyan-100/[0.045] p-5 md:p-6">
+                <div className="flex flex-col justify-between gap-4 md:flex-row md:items-start">
+                  <div className="max-w-3xl">
+                    <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.22em] text-cyan-100/76">
+                      <ShieldCheck size={14} aria-hidden="true" />
+                      Decision Readiness Plan
+                    </p>
+                    <h2 className="mt-3 text-xl font-black uppercase tracking-tight text-white md:text-2xl">
+                      {propertyDecisionWorkspace.headline}
+                    </h2>
+                    <p className="mt-3 text-sm leading-6 text-white/58">{propertyDecisionWorkspace.rationale}</p>
+                  </div>
+                  <span className="inline-flex min-h-8 items-center rounded-[6px] border border-cyan-100/24 bg-black/20 px-3 py-2 text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100">
+                    {propertyDecisionWorkspace.posture.replace(/-/g, ' ')}
+                  </span>
+                </div>
+              </div>
+
+              <div className="grid gap-px bg-white/10 md:grid-cols-5">
+                {propertyDecisionWorkspace.readinessItems.map((item) => (
+                  <article
+                    key={item.stage}
+                    className="flex min-w-0 flex-col bg-[#0d141c] p-4"
+                    data-testid="reie-property-v8-decision-readiness-item"
+                    data-property-v8-readiness-stage={item.stage}
+                    data-property-v8-readiness-action={item.action}
+                  >
+                    <p className="text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100/54">{item.label}</p>
+                    <h3 className="mt-3 text-sm font-black uppercase leading-5 tracking-[0.06em] text-white">{item.prompt}</h3>
+                    <p className="mt-3 text-xs leading-5 text-white/58">{item.evidence}</p>
+                    <Link
+                      href={item.href}
+                      className="mt-auto pt-4 text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100 transition hover:text-white"
+                    >
+                      {item.action}
+                    </Link>
+                  </article>
+                ))}
+              </div>
+
+              <p className="border-t border-white/10 bg-black/12 p-4 text-xs leading-5 text-white/44">
+                {propertyDecisionWorkspace.trustBoundary}
+              </p>
             </section>
 
             <section
@@ -1537,6 +1613,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
             <section
               className="overflow-hidden rounded-[8px] border border-amber-100/16 bg-[#0d141c]"
               data-testid="reie-property-questions-forward"
+              id="property-questions-forward"
               data-questions-forward-count={QUESTIONS_TO_CARRY_FORWARD.length}
             >
               <div className="border-b border-white/10 bg-white/[0.035] p-5 md:p-6">
@@ -1659,7 +1736,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
             state={property.state}
           />
 
-          <section className="overflow-hidden rounded-[8px] border border-white/10 bg-[#0d141c]">
+          <section id="property-facts" className="overflow-hidden rounded-[8px] border border-white/10 bg-[#0d141c]">
             <div className="border-b border-white/10 bg-white/[0.035] p-5">
               <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.22em] text-white/46">
                 <Home size={14} aria-hidden="true" />
