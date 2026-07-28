@@ -44,6 +44,8 @@
     "scripts/checkEoiExecutiveOperationalSummaryBaseline.ts",
     "scripts/checkEoiOperationalDashboardBaseline.ts",
     "scripts/checkEparbGovernance.ts",
+    "scripts/checkEparbAuthenticationAccessReview.ts",
+    "scripts/checkReieAdjustmentsTraceability.ts",
     "scripts/checkPrismaClientParity.ts",
     "scripts/checkProductionDependencies.ts",
     "scripts/checkPropertyRouteSafety.ts",

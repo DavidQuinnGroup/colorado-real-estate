@@ -10,6 +10,60 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / EPARB Review 1 Enterprise Administrative Authentication and Access Architecture(tm), July 28, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -5 --oneline
+```
+
+Current EPARB Review 1 state:
+
+- Review: `EPARB-REVIEW-001_ENTERPRISE_ADMINISTRATIVE_AUTHENTICATION_AND_ACCESS_ARCHITECTURE_REVIEW`.
+- Status: `EPARB_REVIEW_001_COMPLETE_IMPLEMENTATION_NOT_AUTHORIZED`.
+- Baseline before Review 1: clean, aligned `main` at `62e5956466af433efb546937b36bbc5ef0815b65`.
+- Review record: `docs/project-atlas/executive-library/EPARB-REVIEW-001-ENTERPRISE-ADMINISTRATIVE-AUTHENTICATION-AND-ACCESS-ARCHITECTURE.md`.
+- Review contract: `lib/eparb/authenticationAccessReviewContract.ts`.
+- Deterministic review safety command: `npm run check:eparb-authentication-access-review`.
+- Current access inventory reviewed: `middleware.ts`, `app/api/admin/repository/auth.ts`, protected `/admin` pages, `/api/admin/:path*`, route-local admin-key checks, public optional admin contexts, and production-authenticated review limitations from EOI Sprint 3.
+- Current repository access model uses bearer/header/cookie admin key patterns with non-production fallback behavior where configured by existing code. This review did not change that behavior.
+- EPARB Review 1 recommends Model E: repository-supported hybrid administrative access architecture with human sessions for protected administrative browser pages and scoped API credentials for machine/API access.
+- Required principles: separate authentication from authorization, separate human browser identity from machine/API credentials, keep protected admin surfaces protected, preserve fail-closed production behavior, retain David's final executive authorization, and migrate incrementally only if separately authorized.
+- Candidate models compared: current API-key-only posture, human sessions plus scoped machine keys, external IDP/RBAC, repository-native auth extension, and repository-supported hybrid.
+- Review 1 does not authorize implementation, middleware changes, credential changes, session implementation, deployment, database work, telemetry, AI, GIS, provider activation, production mutation, or EOI Sprint 3 remediation.
+
+REIE 7.1 Adjustments and Modifications traceability state:
+
+- Source: Google Doc `PROJECT ATLAS REIE V 7.1 - ADJUSTMENTS & MODIFICATIONS`.
+- Source reconciliation status: `SOURCE_RECONCILED_GOOGLE_DOC_READ_ONLY`.
+- Requirements register status: `REIE_7_1_ADJUSTMENTS_REQUIREMENTS_REGISTER_ESTABLISHED`.
+- Requirements register: `docs/project-atlas/executive-library/REIE-7.1-ADJUSTMENTS-AND-MODIFICATIONS-REQUIREMENTS-REGISTER.md`.
+- Traceability matrix: `docs/project-atlas/executive-library/REIE-7.1-ADJUSTMENTS-AND-MODIFICATIONS-TRACEABILITY-MATRIX.md`.
+- Traceability contract: `lib/eparb/requirementsTraceabilityContract.ts`.
+- Deterministic traceability command: `npm run check:reie-adjustments-traceability`.
+- Forty source requirements were registered from the accessible Google Doc and classified as implemented-certified, partially implemented, open, not found in repository, governance-only, or governed prohibition.
+- No strategic completion review for a customer-experience or platform program may claim full completion without reconciling relevant open requirements in the register.
+- Future implementation work must explicitly declare whether it implements, partially implements, defers, rejects, or supersedes a registered requirement.
+- No requirement may be marked `SUPERSEDED` without documented rationale and executive approval.
+- Open customer-facing requirements include Mortgage Calculator, recommended lender page, Sundance page and article strategy, map theme/water-color requirements, brokerage disclosure placement and simplification, global navigation consistency, and visual/mobile polish.
+- Certified geographic and enterprise-knowledge governance requirements remain binding and do not authorize GIS, AI, provider activation, customer visibility, runtime activation, or production mutation.
+
+Current authorization boundary:
+
+- EPARB Review 1 implementation remains `NOT_AUTHORIZED`.
+- Authentication changes, authorization changes, middleware changes, admin session implementation, credential changes, admin route remediation, EOI Sprint 3 remediation, EOI Sprint 4, deployment, database work, telemetry, AI, GIS, provider activation, production mutation, and unrelated work remain `NOT_AUTHORIZED`.
+- REIE 7.1 product requirement implementation remains `NOT_AUTHORIZED` unless separately authorized.
+- Exact next executive decision required: David must decide whether to authorize a controlled administrative authentication/session foundation implementation based on EPARB Review 1, or proceed to `EPARB-REVIEW-002` Enterprise Executive Workspace. Codex must not authorize that decision.
+
+Prior EPARB 1.0 charter handoff retained below.
+
 PROJECT ATLAS(tm) / EPARB 1.0 Enterprise Platform Architecture Review Board(tm), July 28, 2026:
 
 Workspace:
