@@ -6,7 +6,7 @@ Governed implementation:
 
 Current governed certification status:
 
-`REIE_7_1_SPRINT_4_PRODUCTION_CERTIFICATION_BLOCKED_FINAL_DEPLOYMENT_PENDING`
+`REIE_7_1_SPRINT_4_PRODUCTION_CERTIFICATION_BLOCKED_EXTERNAL_MEDIA_RESOURCE_ERRORS`
 
 Review date: July 28, 2026
 
@@ -16,7 +16,7 @@ Production domain reviewed:
 
 ## Executive Summary
 
-REIE 7.1 Sprint 4 Financing Confidence Education was deployed and reviewed in production, but final certification is blocked.
+REIE 7.1 Sprint 4 Financing Confidence Education was deployed and reviewed in production, but final certification remains blocked.
 
 The original implementation commit deployed successfully and production route checks passed. During Customer Experience Certification, a certification-blocking narrow-mobile property hero overlap was found. Narrow corrective commits were authorized as certification-blocking fixes, validated locally, committed, and pushed.
 
@@ -24,7 +24,9 @@ The final corrective commit is:
 
 `3faff7e3f5e6a98df5bbe7bee9d0dc229efada74`
 
-GitHub/Vercel reports the final commit deployment as pending, and production still showed the prior mobile hero badge row during the final production screenshot. Because the final deployed SHA could not be confirmed and the final customer-experience correction was not yet observable in production, Sprint 4 is not certified.
+GitHub/Vercel now reports the final corrective commit as successfully deployed. The previously identified narrow-mobile property hero overlap at `320x900` is resolved.
+
+Certification is still blocked because the completion review found production console errors and visible broken imagery caused by external `media.mlsgrid.com` image resources returning HTTP 400 on `/search` and the representative property page. The review directive requires no console errors or runtime failures, so Sprint 4 is not certified.
 
 ## Deployment Evidence
 
@@ -57,13 +59,22 @@ Certification-blocking corrective commits:
 Final deployment evidence:
 
 - Final commit: `3faff7e3f5e6a98df5bbe7bee9d0dc229efada74`.
-- Commit status ID: `51250433499`.
-- GitHub/Vercel state observed: pending.
-- Description: `Vercel is deploying your app`.
+- Commit status ID: `51250537640`.
+- GitHub/Vercel state observed: success.
+- Description: `Deployment has completed`.
 - Target URL: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/xPW3sEQQh4M859CCuHay8WCRgqsb`.
-- Created timestamp: `2026-07-28T21:18:01Z`.
-- Successful final deployment: not confirmed.
+- Status timestamp: `2026-07-28T21:19:40Z`.
+- Successful final deployment: confirmed.
 - Manual deployment, redeployment, preview promotion, domain change, or environment change: none.
+
+Documentation commit deployment evidence:
+
+- Documentation commit: `4b3209a82936ea3415e491e2b62cb13b88c04498`.
+- Commit status ID: `51250642465`.
+- GitHub/Vercel state observed: success.
+- Description: `Deployment has completed`.
+- Target URL: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/wA4XptWSYeRv9qS8Y8HpGzgWf6kP`.
+- Status timestamp: `2026-07-28T21:21:20Z`.
 
 ## Production Route Review
 
@@ -83,6 +94,18 @@ Production checks performed against `https://davidquinngroup.com`:
 
 Public search API behavior remained compatible. No stack traces, secrets, protected intelligence, mutation behavior, provider activation, AI activation, or GIS activation were observed.
 
+Completion review console evidence:
+
+- `/` - HTTP 200; no console warnings or errors observed.
+- `/search` - HTTP 200; three HTTP 400 console resource errors from `https://media.mlsgrid.com/...`.
+- `/market` - HTTP 200; no console warnings or errors observed.
+- `/market/boulder-co-housing-market` - HTTP 200; no console warnings or errors observed.
+- `/market/boulder/downtown-boulder` - HTTP 200; no console warnings or errors observed.
+- `/properties/27383-mildred-ln-evergreen-co-ire402034034` - HTTP 200; five HTTP 400 console resource errors from `https://media.mlsgrid.com/...`.
+- `/home-worth` - HTTP 200; no console warnings or errors observed.
+- `/sell` - HTTP 200; no console warnings or errors observed.
+- `/contact` - HTTP 200; no console warnings or errors observed.
+
 ## Financing Confidence Certification
 
 Observed production implementation:
@@ -98,20 +121,21 @@ Certification result:
 
 Reason:
 
-The final narrow-mobile property presentation correction has not been confirmed in a successful production deployment.
+The Financing Confidence education itself passed, but Sprint 4 production certification remains blocked by unrelated production media resource console errors on search and property routes.
 
 ## Customer Experience Certification
 
-Customer Experience Certification found a material narrow-mobile defect in the representative property page hero:
+Customer Experience Certification originally found a material narrow-mobile defect in the representative property page hero:
 
 - At `320x900`, the mobile property hero top badge row collided with other hero content.
-- Subsequent production screenshot after `3faff7e3f5e6a98df5bbe7bee9d0dc229efada74` was pushed still showed the prior lower hero badge row, indicating production had not yet received the final correction.
+- Completion review screenshot after `3faff7e3f5e6a98df5bbe7bee9d0dc229efada74` deployed confirmed the narrow-mobile badge overlap was resolved.
+- A new blocker remains: the representative property page shows broken production imagery tied to external `media.mlsgrid.com` HTTP 400 resource failures.
 
 Certification result:
 
 `BLOCKED`
 
-The public experience is not certified until the final deployment succeeds and the corrected mobile property hero is observed in production.
+The public experience is not certified until the external-media resource failures are resolved or otherwise governed as non-blocking by executive decision.
 
 ## Responsive Review
 
@@ -122,13 +146,13 @@ Responsive review was performed at:
 - Mobile: `390x844`.
 - Narrow mobile: `320x900`.
 
-The certification-blocking issue was isolated to the representative property route at narrow mobile width.
+The prior badge-overlap issue was isolated to the representative property route at narrow mobile width and is now resolved.
 
 Final production screenshot evidence:
 
-- `/tmp/reie-s4-3faff7e-property-narrow.png`.
+- `/tmp/reie-s4-completion-property-narrow.png`.
 
-The final screenshot still showed stale production behavior from before the final hidden mobile badge-row correction.
+The final screenshot confirmed no repeat of the prior mobile badge collision. It also showed visible broken media fallback behavior on the property hero, consistent with the `media.mlsgrid.com` HTTP 400 failures.
 
 ## Regression Review
 
@@ -145,7 +169,7 @@ No regression was found in:
 - Zero-result search response compatibility.
 - Public navigation availability.
 
-Regression review remains incomplete for final Sprint 4 certification because the final corrective commit was not confirmed as successfully deployed.
+Regression review now confirms the final corrective commit deployed successfully, but production certification remains blocked by the external media resource errors observed on search and property routes.
 
 ## Validation Evidence
 
@@ -164,6 +188,16 @@ Earlier certification validation also passed:
 - `npm run check:reie-seller-confidence-experience` - PASS.
 - `npm run check:reie-first-impression-experience-baseline` - PASS.
 - `PUBLIC_EXPERIENCE_SMOKE_BASE_URL=https://davidquinngroup.com npm run smoke:public-experience` - PASS before the final mobile corrective commits.
+
+Completion review validation:
+
+- `PUBLIC_EXPERIENCE_SMOKE_BASE_URL=https://davidquinngroup.com npm run smoke:public-experience` - PASS.
+- `npm run check:reie-financing-confidence-education` - PASS.
+- `npm run check:reie-buyer-confidence-experience` - PASS.
+- `npm run check:reie-seller-confidence-experience` - PASS.
+- `npm run check:reie-first-impression-experience-baseline` - PASS.
+- Production narrow-mobile screenshot at `320x900` - prior hero badge overlap resolved.
+- Production console/resource review - BLOCKED by `media.mlsgrid.com` HTTP 400 image resources.
 
 Sandbox note:
 
@@ -207,19 +241,18 @@ Customer Experience Certification:
 
 Final governed status:
 
-`REIE_7_1_SPRINT_4_PRODUCTION_CERTIFICATION_BLOCKED_FINAL_DEPLOYMENT_PENDING`
+`REIE_7_1_SPRINT_4_PRODUCTION_CERTIFICATION_BLOCKED_EXTERNAL_MEDIA_RESOURCE_ERRORS`
 
 ## Outstanding Observations
 
-- Final corrective commit `3faff7e3f5e6a98df5bbe7bee9d0dc229efada74` must reach a successful production deployment.
-- The representative property page must be re-reviewed at `320x900`.
-- Public smoke should be rerun after the final deployment succeeds.
-- Certification should not proceed until the final deployed SHA is matched and the stale mobile hero row is gone from production.
+- External `media.mlsgrid.com` image resources returned HTTP 400 on `/search` and the representative property page.
+- Representative property imagery showed broken media behavior during the completion review.
+- Certification should not proceed until the media resource failures are corrected or explicitly governed as non-blocking by executive decision.
 
 ## Strategic Assessment
 
-Sprint 4 remains strategically sound and locally validated. The Financing Confidence education model is customer-safe, non-lender, non-calculator, non-AI, and non-provider. The only remaining blocker is production deployment propagation and final narrow-mobile confirmation.
+Sprint 4 remains strategically sound and locally validated. The Financing Confidence education model is customer-safe, non-lender, non-calculator, non-AI, and non-provider. The prior narrow-mobile overlap blocker is resolved. The remaining blocker is external production listing media reliability, which affects customer trust on search and property routes but is not a Financing Confidence semantic issue.
 
 ## Next Executive Decision
 
-David should authorize a controlled REIE 7.1 Sprint 4 production certification retry after the final deployment for `3faff7e3f5e6a98df5bbe7bee9d0dc229efada74` reports success.
+David should decide whether to authorize a narrowly scoped production-media resilience correction and certification retry for the `media.mlsgrid.com` HTTP 400 image-resource failures.
