@@ -835,7 +835,9 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
             flex-direction: column;
           }
           .reie-property-hero-badge {
+            display: block;
             max-width: 100%;
+            min-width: 0;
             overflow-wrap: anywhere;
             white-space: normal;
           }
@@ -880,11 +882,17 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
             <div className="absolute bottom-0 left-0 right-0 p-4 pb-6 md:p-8 lg:p-12">
               <div className="max-w-4xl">
                 <div className="reie-property-hero-badges mb-4 flex flex-wrap gap-2">
-                  <span className="reie-property-hero-badge rounded-[5px] border border-white/18 bg-white/12 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.14em] text-white/84 backdrop-blur">
+                  <span
+                    className="reie-property-hero-badge rounded-[5px] border border-white/18 bg-white/12 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.14em] text-white/84 backdrop-blur"
+                    style={{ display: 'block', lineHeight: 1.45, maxWidth: '100%', minWidth: 0, overflowWrap: 'anywhere', whiteSpace: 'normal' }}
+                  >
                     {primaryStatLabel}
                   </span>
                   {property.isPrivateExclusive ? (
-                    <span className="reie-property-hero-badge rounded-[5px] border border-cyan-100/40 bg-cyan-100/12 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100 backdrop-blur">
+                    <span
+                      className="reie-property-hero-badge rounded-[5px] border border-cyan-100/40 bg-cyan-100/12 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100 backdrop-blur"
+                      style={{ display: 'block', lineHeight: 1.45, maxWidth: '100%', minWidth: 0, overflowWrap: 'anywhere', whiteSpace: 'normal' }}
+                    >
                       Listing Access
                     </span>
                   ) : null}
