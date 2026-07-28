@@ -10,6 +10,35 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE 7.1 Sprint 3 Buyer Confidence Experience(tm) Design Review, July 28, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -5 --oneline
+```
+
+Current REIE 7.1 Sprint 3 design-review state:
+
+- Review: `REIE_7_1_SPRINT_3_BUYER_CONFIDENCE_EXPERIENCE_DESIGN_REVIEW`.
+- Status: `REIE_7_1_BUYER_CONFIDENCE_EXPERIENCE_DESIGN_REVIEW_COMPLETE_IMPLEMENTATION_NOT_AUTHORIZED`.
+- Review baseline: clean, aligned `main` at `d700396b844018deb5a0eb6bfbc4015896452942`.
+- Design review record: `docs/project-atlas/executive-library/REIE-7.1-BUYER-CONFIDENCE-EXPERIENCE-DESIGN-REVIEW.md`.
+- Governing evidence reviewed: REIE 7.1 requirements register and traceability, Customer Experience Completion Program, certified Sprint 1 navigation/visual trust record, certified Sprint 2 Seller Confidence production record, home page, search page, SearchInterface, SearchControls, selected-property drawer, property detail route, property inquiry form, market index, city market pages, neighborhood market pages, and financing/saved-search references.
+- Design conclusion: the buyer journey has strong certified pieces in search, property, market, neighborhood, and inquiry, but buyer confidence is fragmented across pages. The next high-value package should orchestrate existing capabilities into a visible buyer-confidence path.
+- Recommended implementation if separately authorized: `REIE_7_1_SPRINT_3_BUYER_CONFIDENCE_EXPERIENCE_BASELINE`.
+- Recommended scope if separately authorized: buyer-confidence orientation, search-to-property-to-market continuity, neighborhood confidence discovery, affordability-awareness checklist using existing property financial-question posture, buyer "known / compare / verify / ask / next" guidance, responsive/accessibility review, and deterministic safety coverage.
+- Explicit exclusions retained: no implementation, no deployment, no runtime changes, no Mortgage Calculator, no recommended lender implementation, no lender endorsement, no AEO, no Sundance, no AI, no GIS, no provider activation, no authentication changes, no database changes, no production mutation, no search semantics change, no inquiry/tour backend change, no saved-search or alert mutation change, no CRM workflow change, and no unrelated work.
+- Exact next executive decision required: David should decide whether to authorize `REIE_7_1_SPRINT_3_BUYER_CONFIDENCE_EXPERIENCE_BASELINE` as a controlled implementation sprint. Codex must not authorize that decision.
+
+Prior REIE 7.1 Sprint 2 certification handoff retained below.
+
 PROJECT ATLAS(tm) / REIE 7.1 Sprint 2 Seller Confidence Experience(tm) Production Certification, July 28, 2026:
 
 Workspace:
