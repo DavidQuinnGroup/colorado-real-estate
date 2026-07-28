@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { AlertTriangle, List, Map as MapIcon, RotateCcw, SlidersHorizontal } from 'lucide-react';
 import { type FormEvent, useEffect, useMemo, useState } from 'react';
 
+import FinancingConfidenceEducation from '@/components/FinancingConfidenceEducation';
 import MapSidebar, { type MapSidebarListing } from '@/components/maps/MapSidebar';
 import type { MapBounds } from '@/components/maps/MapInner';
 import SelectedPropertyDrawer from '@/components/maps/SelectedPropertyDrawer';
@@ -469,6 +470,9 @@ export default function SearchInterface({
                 <p className="mt-1 text-[11px] font-bold leading-5 text-white/52">{body}</p>
               </article>
             ))}
+          </div>
+          <div className="mt-4">
+            <FinancingConfidenceEducation surface="search" compact />
           </div>
           <div className="reie-search-continuity" data-testid="reie-search-grand-plan-continuity">
             <div>

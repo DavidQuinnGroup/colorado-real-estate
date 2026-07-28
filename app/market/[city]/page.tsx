@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { Lock, MapPinned, ShieldCheck, Zap } from 'lucide-react';
 
 import CityMarketStats from '@/components/CityMarketStats';
+import FinancingConfidenceEducation from '@/components/FinancingConfidenceEducation';
 import LeadCapture from '@/components/LeadCapture';
 import MarketHomesLinks from '@/components/MarketHomesLinks';
 import MarketNeighborhoodLinks from '@/components/MarketNeighborhoodLinks';
@@ -276,6 +277,9 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
               <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">Before Contact</p>
               <p className="mt-2 text-sm leading-6 text-white/58">Ask focused questions only after the market and neighborhood context gives you a clearer reason to move forward.</p>
             </div>
+          </div>
+          <div className="mt-5">
+            <FinancingConfidenceEducation surface="city-market" />
           </div>
         </div>
       </section>

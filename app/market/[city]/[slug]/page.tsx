@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { Hammer, ShieldCheck, Zap } from 'lucide-react';
 import type { CollectionCreateSchema } from 'typesense/lib/Typesense/Collections.js';
 
+import FinancingConfidenceEducation from '@/components/FinancingConfidenceEducation';
 import NearbyNeighborhoods from '@/components/NearbyNeighborhoods';
 import RelatedContent from '@/components/RelatedContent';
 import FAQSchema from '@/components/schema/FAQSchema';
@@ -390,6 +391,9 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
               <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#00ff80]">Next</p>
               <p className="mt-2 text-sm leading-6 text-white/58">Compare this context with search results and property decision briefs before asking focused next-step questions.</p>
             </div>
+          </div>
+          <div className="mt-5">
+            <FinancingConfidenceEducation surface="neighborhood-market" />
           </div>
         </div>
       </section>

@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 
 import EquityVision from '@/components/EquityVision';
+import FinancingConfidenceEducation from '@/components/FinancingConfidenceEducation';
 import PropertyInquiryForm from '@/components/PropertyInquiryForm';
 import RelatedPropertyLinks from '@/components/RelatedPropertyLinks';
 import ResilientListingImage from '@/components/ResilientListingImage';
@@ -1325,6 +1326,10 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                     </li>
                   ))}
                 </ul>
+              </div>
+
+              <div className="border-t border-white/10 p-5 md:p-6">
+                <FinancingConfidenceEducation surface="property" />
               </div>
             </section>
 

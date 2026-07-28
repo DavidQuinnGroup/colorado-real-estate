@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { BarChart3, Home, MapPinned, Search, TrendingUp } from 'lucide-react';
 
+import FinancingConfidenceEducation from '@/components/FinancingConfidenceEducation';
 import FAQSchema from '@/components/schema/FAQSchema';
 import { cities, type CityData } from '@/lib/cities';
 import { getJourneyMeasurementAttributes } from '@/lib/customerJourneyMeasurement';
@@ -175,6 +176,9 @@ export default function MarketIndexPage() {
               <p className="mt-3 text-sm leading-6 text-white/58">{body}</p>
             </article>
           ))}
+        </div>
+        <div className="mx-auto mt-5 max-w-6xl">
+          <FinancingConfidenceEducation surface="market" />
         </div>
       </section>
 

@@ -109,9 +109,9 @@ export default function PropertyLinks({
           data-testid="reie-property-links-authority-list"
           data-property-links-authority-count={authorityLinks.length}
         >
-          {authorityLinks.map((link) => (
+          {authorityLinks.map((link, index) => (
             <Link
-              key={`${link.status}-${link.href}`}
+              key={`${link.status}-${link.href}-${link.label}-${index}`}
               href={link.href}
               className="group bg-black p-5 transition-colors hover:bg-white/[0.04]"
               data-testid="reie-property-links-authority-link"

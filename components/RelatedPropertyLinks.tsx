@@ -236,9 +236,9 @@ export default function RelatedPropertyLinks({
               data-testid="reie-related-property-authority-links"
               data-related-property-visible-authority-link-count={visibleAuthorityLinks.length}
             >
-              {visibleAuthorityLinks.map((link) => (
+              {visibleAuthorityLinks.map((link, index) => (
                 <Link
-                  key={`${link.status}-${link.href}`}
+                  key={`${link.status}-${link.href}-${link.label}-${index}`}
                   href={link.href}
                   className="group bg-black p-4 transition-colors hover:bg-white/[0.05]"
                   data-testid="reie-related-property-authority-link"

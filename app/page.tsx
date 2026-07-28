@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 
+import FinancingConfidenceEducation from '@/components/FinancingConfidenceEducation';
 import HomeSearchExperience, { type HomeAuthorityLink } from '@/components/home/HomeSearchExperience';
 import FAQSchema from '@/components/schema/FAQSchema';
 import { cities } from '@/lib/cities';
@@ -324,6 +325,9 @@ export default function HomePage() {
                   </article>
                 ))}
               </div>
+            </div>
+            <div className="mt-10">
+              <FinancingConfidenceEducation surface="home" />
             </div>
           </div>
         </section>

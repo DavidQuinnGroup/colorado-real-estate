@@ -51,6 +51,7 @@
     "scripts/checkReieFirstImpressionExperienceBaseline.ts",
     "scripts/checkReieSellerConfidenceExperience.ts",
     "scripts/checkReieBuyerConfidenceExperience.ts",
+    "scripts/checkReieFinancingConfidenceEducation.ts",
     "scripts/checkPrismaClientParity.ts",
     "scripts/checkProductionDependencies.ts",
     "scripts/checkPropertyRouteSafety.ts",

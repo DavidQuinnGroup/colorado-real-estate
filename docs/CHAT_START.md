@@ -10,6 +10,36 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE 7.1 Sprint 4 Financing Confidence Education(tm) Implementation, July 28, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -5 --oneline
+```
+
+Current REIE 7.1 Sprint 4 implementation state:
+
+- Governed implementation: `REIE_7_1_SPRINT_4_FINANCING_CONFIDENCE_EDUCATION_BASELINE`.
+- Status: `REIE_7_1_SPRINT_4_FINANCING_CONFIDENCE_EDUCATION_IMPLEMENTED_AND_PUSHED_DEPLOYMENT_PROHIBITED`.
+- Implementation baseline: clean, aligned `main` at `c45ce92ac9013f27ec39c6e28ce8ec6b93563487`.
+- Implementation record: `docs/project-atlas/executive-library/REIE-7.1-SPRINT-4-FINANCING-CONFIDENCE-EDUCATION.md`.
+- Runtime implementation: shared Financing Confidence education component integrated into home Buyer Confidence, guided search, search budget guidance, property Financial Context, market index, city market, and neighborhood market experiences.
+- Educational scope: affordability factors, monthly ownership-cost components, closing/cash-to-close awareness, taxes, insurance, HOA, PMI, escrow, rate assumptions, lender questions, and real estate advisor questions.
+- Preserved behavior: search semantics, map/list behavior, property route behavior, inquiry/tour behavior, seller valuation posture, Home Worth, market routes, public navigation architecture, authentication boundaries, database schema, CRM, alerts, emails, saved-search behavior, provider non-activation, AI non-activation, and GIS non-activation.
+- Safety validation: `npm run check:reie-financing-confidence-education`.
+- Deployment remains prohibited. Production certification remains not authorized. Customer-visible certification remains not authorized.
+- Explicit exclusions retained: no Mortgage Calculator, no loan calculator, no lender workflow, no lender recommendation, no lender directory, no affiliate integration, no financing application, no prequalification, no personal financial intake, no AI, no GIS, no provider activation, no authentication changes, no database changes, no production mutation, and no unrelated work.
+- Exact next executive decision required: David should decide whether to authorize controlled deployment and production/customer-experience certification review for `REIE_7_1_SPRINT_4_FINANCING_CONFIDENCE_EDUCATION_BASELINE`. Codex must not authorize that decision.
+
+Prior Financing Confidence Readiness Review handoff retained below.
+
 PROJECT ATLAS(tm) / Financing Confidence Experience(tm) Readiness Review v1.0, July 28, 2026:
 
 Workspace:

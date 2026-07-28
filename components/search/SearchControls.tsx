@@ -318,7 +318,7 @@ export default function SearchControls({
             data-buyer-confidence-financing-workflow="false"
           >
             Treat price range as a search boundary, not an affordability conclusion. Taxes, insurance, HOA, financing terms,
-            closing costs, maintenance, and reserves should be verified with the appropriate professionals before relying on a budget.
+            closing costs, cash to close, escrow, maintenance, reserves, and rate assumptions should be verified with the appropriate professionals before relying on a budget.
           </p>
         </RefinementSection>
 
