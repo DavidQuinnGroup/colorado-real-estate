@@ -255,6 +255,28 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
             Market statistics are market-wide REIE context from repository city data and public MLS/search signals where available. They do
             not state or imply that David Quinn, David Quinn Group, or Compass listed, sold, or participated in every reported property.
           </p>
+          <div
+            className="mt-8 grid gap-3 rounded-[8px] border border-cyan-100/16 bg-cyan-100/[0.055] p-4 md:grid-cols-3"
+            data-testid="reie-city-buyer-confidence"
+            data-buyer-confidence-neighborhood-guidance="true"
+            data-buyer-confidence-forecast="false"
+            data-buyer-confidence-ai="false"
+            data-buyer-confidence-gis="false"
+            data-buyer-confidence-provider-activation="false"
+          >
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">Before Search</p>
+              <p className="mt-2 text-sm leading-6 text-white/58">Use this city context to understand inventory, pricing, timing, and neighborhood paths before narrowing too quickly.</p>
+            </div>
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">Before Touring</p>
+              <p className="mt-2 text-sm leading-6 text-white/58">Compare property facts against the area context, then identify condition, records, cost, and commute questions to verify.</p>
+            </div>
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">Before Contact</p>
+              <p className="mt-2 text-sm leading-6 text-white/58">Ask focused questions only after the market and neighborhood context gives you a clearer reason to move forward.</p>
+            </div>
+          </div>
         </div>
       </section>
 

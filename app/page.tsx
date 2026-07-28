@@ -115,6 +115,29 @@ const decisionSignals = [
   'Construction perspective, lifestyle fit, and market context work together so the next step feels deliberate.',
 ];
 
+const buyerConfidencePath = [
+  {
+    step: 'Orient',
+    title: 'Know where to begin',
+    body: 'Start with place, budget range, daily-life fit, and the type of home you are trying to evaluate before the search becomes too narrow.',
+  },
+  {
+    step: 'Compare',
+    title: 'Understand the tradeoffs',
+    body: 'Use search, property briefs, market context, and neighborhood signals together so price, condition, timing, and fit are not evaluated in isolation.',
+  },
+  {
+    step: 'Verify',
+    title: 'Know what to ask',
+    body: 'Carry forward the assumptions that need professional review, including financing terms, taxes, insurance, HOA, condition, systems, and records.',
+  },
+  {
+    step: 'Decide',
+    title: 'Choose the next step',
+    body: 'Continue searching, open market context, ask a focused question, or schedule a tour when the property deserves closer review.',
+  },
+];
+
 const homeToolSchema = buildToolSchema({
   name: 'Colorado Real Estate Intelligence Engine',
   description:
@@ -252,6 +275,55 @@ export default function HomePage() {
                   <p className="mt-6 text-sm leading-7 text-white/64">{pillar.body}</p>
                 </article>
               ))}
+            </div>
+          </div>
+        </section>
+
+        <section
+          className={sectionShell}
+          data-testid="reie-buyer-confidence-orientation"
+          data-reie-sprint-3-buyer-confidence="true"
+          data-buyer-confidence-ai="false"
+          data-buyer-confidence-gis="false"
+          data-buyer-confidence-provider-activation="false"
+          data-buyer-confidence-financing-workflow="false"
+        >
+          <div className={containerShell}>
+            <div className="grid gap-12 lg:grid-cols-[0.72fr_1fr] lg:items-start">
+              <div className="max-w-3xl">
+                <p className={eyebrowClass}>Buyer Confidence</p>
+                <h2 className={headingClass}>
+                  Know what matters before the market asks you to move.
+                </h2>
+                <p className={bodyClass}>
+                  REIE helps buyers reduce uncertainty before contact by organizing search, property facts, neighborhood context,
+                  market timing, affordability assumptions, and questions to verify into one guided decision path.
+                </p>
+                <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+                  <Link href="/search" className={primaryButtonClass}>
+                    Start Buyer Search
+                  </Link>
+                  <Link href="/market" className={secondaryButtonClass}>
+                    Understand the Market
+                  </Link>
+                </div>
+              </div>
+              <div className="grid gap-3" data-testid="reie-buyer-confidence-path">
+                {buyerConfidencePath.map((item) => (
+                  <article
+                    key={item.step}
+                    className="grid gap-4 rounded-[10px] bg-white/[0.045] p-5 ring-1 ring-white/[0.07] sm:grid-cols-[7rem_1fr]"
+                    data-testid="reie-buyer-confidence-path-step"
+                    data-buyer-confidence-step={item.step.toLowerCase()}
+                  >
+                    <p className="text-[10px] font-black uppercase tracking-[0.22em] text-cyan-100/72">{item.step}</p>
+                    <div>
+                      <h3 className="text-lg font-black leading-tight text-white">{item.title}</h3>
+                      <p className="mt-2 text-sm leading-7 text-white/60">{item.body}</p>
+                    </div>
+                  </article>
+                ))}
+              </div>
             </div>
           </div>
         </section>

@@ -154,6 +154,30 @@ export default function MarketIndexPage() {
         </div>
       </section>
 
+      <section
+        className="px-5 py-12 sm:px-8 lg:px-12"
+        data-testid="reie-market-buyer-confidence"
+        data-buyer-confidence-market-context="true"
+        data-buyer-confidence-forecast="false"
+        data-buyer-confidence-ai="false"
+        data-buyer-confidence-gis="false"
+        data-buyer-confidence-provider-activation="false"
+      >
+        <div className="mx-auto grid max-w-6xl gap-4 md:grid-cols-4">
+          {[
+            ['Market timing', 'Use direction, pricing, inventory, and competitiveness as context before narrowing to one property.'],
+            ['Neighborhood fit', 'Open city and neighborhood paths to understand lifestyle, resilience, access, and local tradeoffs.'],
+            ['Affordability assumptions', 'Treat market and price facts as education; verify lending, tax, insurance, HOA, and cost assumptions separately.'],
+            ['Next step', 'Return to search, open a property decision brief, or ask a focused question when the context is clear.'],
+          ].map(([label, body]) => (
+            <article key={label} className="rounded-[8px] bg-white/[0.035] p-5 ring-1 ring-white/[0.07]" data-testid="reie-market-buyer-confidence-step">
+              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/70">{label}</p>
+              <p className="mt-3 text-sm leading-6 text-white/58">{body}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
       <section className="px-5 py-16 sm:px-8 lg:px-12" data-testid="cep-market-discovery-featured">
         <div className="mx-auto max-w-6xl">
           <div className="mb-8 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">

@@ -192,6 +192,18 @@ export default function SelectedPropertyDrawer({ property, onClose }: SelectedPr
           <p className="mt-1.5 text-left text-xs font-bold leading-5 text-white/72">{advisoryNote}</p>
         </div>
 
+        <div
+          className="mt-3 rounded-[6px] border border-white/10 bg-white/[0.045] p-3"
+          data-testid="reie-selected-property-buyer-confidence"
+          data-buyer-confidence-next-step="view-property-before-contact"
+          data-buyer-confidence-automation="false"
+        >
+          <p className="text-[10px] font-black uppercase tracking-[0.16em] text-white/44">Buyer Confidence Path</p>
+          <p className="mt-1.5 text-left text-xs font-bold leading-5 text-white/58">
+            Open the property decision view to compare public facts, market context, ownership-cost questions, and records to verify before asking or touring.
+          </p>
+        </div>
+
         <p className="mt-3 text-[10px] font-black uppercase tracking-[0.16em] text-white/42">Property Details</p>
         <div className="mt-3 grid grid-cols-3 gap-2">
           <StatTile icon={<BedDouble size={13} />} label="Beds" value={formatStat(property.beds)} />

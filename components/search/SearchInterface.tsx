@@ -449,6 +449,27 @@ export default function SearchInterface({
           <p className="mt-3 max-w-[31rem] text-sm leading-6 text-white/62">
             Start with the places, homes, or criteria that matter. Use the map and property details together, then refine as your priorities become clearer.
           </p>
+          <div
+            className="mt-4 grid gap-2 rounded-[8px] border border-cyan-100/16 bg-cyan-100/[0.055] p-3 sm:grid-cols-5"
+            data-testid="reie-buyer-search-confidence-framework"
+            data-buyer-confidence-framework="known-compare-verify-ask-next"
+            data-buyer-confidence-ai="false"
+            data-buyer-confidence-gis="false"
+            data-buyer-confidence-provider-activation="false"
+          >
+            {[
+              ['Known', 'Start with the facts the listing and search view can show.'],
+              ['Compare', 'Use map, list, market, and property context together.'],
+              ['Verify', 'Carry forward cost, condition, timing, and records questions.'],
+              ['Ask', 'Open the property page before submitting focused questions.'],
+              ['Next', 'Tour, continue search, or review the market when confidence is not ready.'],
+            ].map(([label, body]) => (
+              <article key={label} data-testid="reie-buyer-search-confidence-step">
+                <p className="text-[9px] font-black uppercase tracking-[0.16em] text-cyan-100/72">{label}</p>
+                <p className="mt-1 text-[11px] font-bold leading-5 text-white/52">{body}</p>
+              </article>
+            ))}
+          </div>
           <div className="reie-search-continuity" data-testid="reie-search-grand-plan-continuity">
             <div>
               <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">Build on What Matters</p>

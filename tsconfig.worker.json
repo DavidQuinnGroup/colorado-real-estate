@@ -50,6 +50,7 @@
     "scripts/checkReieAdjustmentsTraceability.ts",
     "scripts/checkReieFirstImpressionExperienceBaseline.ts",
     "scripts/checkReieSellerConfidenceExperience.ts",
+    "scripts/checkReieBuyerConfidenceExperience.ts",
     "scripts/checkPrismaClientParity.ts",
     "scripts/checkProductionDependencies.ts",
     "scripts/checkPropertyRouteSafety.ts",

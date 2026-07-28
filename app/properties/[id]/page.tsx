@@ -594,6 +594,14 @@ const QUESTIONS_TO_CARRY_FORWARD = [
   { label: 'Market', value: 'Which public listing facts and local context are useful for comparison, and which need interpretation?' },
 ];
 
+const BUYER_CONFIDENCE_FRAMEWORK = [
+  { label: 'Known', value: 'Start with the public listing facts available on this page.' },
+  { label: 'Compare', value: 'Use related listings, search context, and broader market context before judging fit.' },
+  { label: 'Verify', value: 'Separate facts from assumptions about cost, condition, records, timing, and suitability.' },
+  { label: 'Ask', value: 'Bring focused questions forward rather than submitting confidential negotiating details.' },
+  { label: 'Next', value: 'Continue searching, open market context, ask a question, or schedule a tour when ready.' },
+];
+
 function getPropertyPageAuthorityLinks(authorityLinks: PropertyAuthorityLink[], marketPathway: MarketPathway): PropertyAuthorityLink[] {
   return authorityLinks.map((link) => {
     if (link.status !== 'Market') return link;
@@ -1022,6 +1030,42 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
 
         <div className="reie-property-detail-grid grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
           <div className="space-y-6">
+            <section
+              className="overflow-hidden rounded-[8px] border border-cyan-100/18 bg-[#0d141c]"
+              data-testid="reie-property-buyer-confidence-framework"
+              data-buyer-confidence-framework="known-compare-verify-ask-next"
+              data-buyer-confidence-live-kpi="false"
+              data-buyer-confidence-ai="false"
+              data-buyer-confidence-gis="false"
+              data-buyer-confidence-provider-activation="false"
+            >
+              <div className="border-b border-white/10 bg-cyan-100/[0.055] p-5 md:p-6">
+                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-cyan-100/76">
+                  Buyer Confidence Framework
+                </p>
+                <h2 className="mt-3 text-xl font-black uppercase tracking-tight text-white md:text-2xl">
+                  Move from curiosity to a focused next step
+                </h2>
+                <p className="mt-3 max-w-3xl text-sm leading-6 text-white/58">
+                  Use this property page to understand what is known, what should be compared, what needs verification,
+                  what to ask, and which next step fits your confidence level.
+                </p>
+              </div>
+              <div className="grid gap-px bg-white/10 sm:grid-cols-5">
+                {BUYER_CONFIDENCE_FRAMEWORK.map((item) => (
+                  <article
+                    key={item.label}
+                    className="bg-[#0d141c] p-4"
+                    data-testid="reie-property-buyer-confidence-step"
+                    data-buyer-confidence-step={item.label.toLowerCase()}
+                  >
+                    <p className="text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100/58">{item.label}</p>
+                    <p className="mt-3 text-xs leading-5 text-white/58">{item.value}</p>
+                  </article>
+                ))}
+              </div>
+            </section>
+
             <section
               className="overflow-hidden rounded-[8px] border border-cyan-100/20 bg-[#0d141c]"
               data-testid="cep-property-decision-brief"

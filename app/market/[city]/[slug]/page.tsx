@@ -370,6 +370,27 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
             where available. They do not state or imply that David Quinn, David Quinn Group, or Compass listed, sold, or participated in
             every reported property.
           </p>
+          <div
+            className="mt-8 grid gap-3 border border-[#00ff80]/20 bg-[#00ff80]/[0.055] p-4 md:grid-cols-3"
+            data-testid="reie-neighborhood-buyer-confidence"
+            data-buyer-confidence-neighborhood-context="true"
+            data-buyer-confidence-ai="false"
+            data-buyer-confidence-gis="false"
+            data-buyer-confidence-provider-activation="false"
+          >
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#00ff80]">Fit</p>
+              <p className="mt-2 text-sm leading-6 text-white/58">Use local context to test whether this neighborhood supports daily life, access, and lifestyle priorities.</p>
+            </div>
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#00ff80]">Risk</p>
+              <p className="mt-2 text-sm leading-6 text-white/58">Read resilience, insurance, soil, altitude, and inventory signals as questions to verify before touring or writing.</p>
+            </div>
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#00ff80]">Next</p>
+              <p className="mt-2 text-sm leading-6 text-white/58">Compare this context with search results and property decision briefs before asking focused next-step questions.</p>
+            </div>
+          </div>
         </div>
       </section>
 

@@ -10,6 +10,36 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE 7.1 Sprint 3 Buyer Confidence Experience(tm) Implementation, July 28, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -5 --oneline
+```
+
+Current REIE 7.1 Sprint 3 implementation state:
+
+- Governed implementation: `REIE_7_1_SPRINT_3_BUYER_CONFIDENCE_EXPERIENCE_BASELINE`.
+- Status: `REIE_7_1_SPRINT_3_BUYER_CONFIDENCE_EXPERIENCE_IMPLEMENTED_AND_PUSHED_DEPLOYMENT_PROHIBITED`.
+- Implementation baseline: clean, aligned `main` at `26417ff4a34acf3fb4287bc6b4c6ec8dfa31a8df`.
+- Implementation record: `docs/project-atlas/executive-library/REIE-7.1-SPRINT-3-BUYER-CONFIDENCE-EXPERIENCE.md`.
+- Runtime implementation: buyer-confidence orientation on `/`, Known / Compare / Verify / Ask / Next guidance in search and property experiences, affordability-awareness copy in search budget refinements, selected-property continuity guidance, and market/city/neighborhood buyer-confidence context.
+- Safety validation: `npm run check:reie-buyer-confidence-experience`.
+- Preserved behavior: search semantics, map architecture, property-detail route behavior, inquiry/tour form behavior, seller valuation posture, saved-search/alert behavior, CRM behavior, authentication behavior, database schema, protected intelligence boundaries, AI non-activation, GIS non-activation, provider non-activation, and financing-workflow non-activation.
+- Local validation passed: `git diff --check`, `npm run check:reie-buyer-confidence-experience`, `npm run check:reie-first-impression-experience-baseline`, `npm run check:cep-search-map-baseline`, `npm run check:cep-property-intelligence-experience`, `npm run check:cep-market-intelligence-baseline`, `npm run check:seller-journey-safety`, `npm run typecheck`, `npm run lint`, `npx prisma validate`, and `npm run build`.
+- Deployment remains prohibited. Production validation remains prohibited. Customer-visible certification remains prohibited.
+- Explicit exclusions retained: no Mortgage Calculator, no recommended lender implementation, no financing workflow, no AEO, no Sundance, no AI, no GIS, no provider activation, no authentication changes, no database changes, no production mutation, no deployment, no production certification, no search/map architecture redesign, no inquiry/tour backend change, no saved-search or alert mutation change, no CRM workflow change, and no unrelated work.
+- Exact next executive decision required: David should decide whether to authorize `REIE_7_1_SPRINT_3_CONTROLLED_DEPLOYMENT_PRODUCTION_AND_CUSTOMER_EXPERIENCE_CERTIFICATION_REVIEW`. Codex must not authorize that decision.
+
+Prior REIE 7.1 Sprint 3 design review handoff retained below.
+
 PROJECT ATLAS(tm) / REIE 7.1 Sprint 3 Buyer Confidence Experience(tm) Design Review, July 28, 2026:
 
 Workspace:

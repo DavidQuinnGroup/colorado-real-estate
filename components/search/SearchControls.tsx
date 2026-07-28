@@ -312,6 +312,14 @@ export default function SearchControls({
               />
             </label>
           </div>
+          <p
+            className="mt-2 text-[11px] font-bold leading-5 text-white/38"
+            data-testid="reie-buyer-affordability-awareness"
+            data-buyer-confidence-financing-workflow="false"
+          >
+            Treat price range as a search boundary, not an affordability conclusion. Taxes, insurance, HOA, financing terms,
+            closing costs, maintenance, and reserves should be verified with the appropriate professionals before relying on a budget.
+          </p>
         </RefinementSection>
 
         <RefinementSection eyebrow="Home Type" title="What kind of home?">
