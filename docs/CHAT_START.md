@@ -10,6 +10,37 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE 7.1 Customer Experience Completion Program(tm), July 28, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -5 --oneline
+```
+
+Current REIE 7.1 customer experience completion state:
+
+- Program: `REIE_7_1_CUSTOMER_EXPERIENCE_COMPLETION_PROGRAM`.
+- Status: `REIE_7_1_CUSTOMER_EXPERIENCE_COMPLETION_PROGRAM_ESTABLISHED_IMPLEMENTATION_NOT_AUTHORIZED`.
+- Program baseline: clean, aligned `main` at `47cff694c2f407f32500826a11a613b457d04683`.
+- Program record: `docs/project-atlas/executive-library/REIE-7.1-CUSTOMER-EXPERIENCE-COMPLETION-PROGRAM.md`.
+- Governing evidence reviewed: REIE 7.1 requirements register, REIE 7.1 traceability matrix, Enterprise Portfolio Strategic Review 1.0, public route inventory, home page, search page, property detail route, market page, seller page, footer, brokerage attribution, and route inventory.
+- Program conclusion: the highest-return customer experience work is not more enterprise architecture; it is a controlled public REIE 7.1 completion sprint focused on customer-visible coherence and trust.
+- Recommended first sprint: `REIE_7_1_SPRINT_1_PUBLIC_NAVIGATION_VISUAL_TRUST_AND_ROUTE_COMPLETION_BASELINE`.
+- Recommended Sprint 1 scope if separately authorized: navigation consistency, company identity and home-link consistency, route clarity, luxury visual trust, negative space and clutter reduction, mobile horizontal spacing polish, bounded public-trust disclosure review, and bounded search/map visual QA within existing provider/style limits.
+- Requirements grouped into the first sprint: REIE-ADJ-001, 002, 005, 006, 007, 008 as bounded review, 010 as preservation, 011, 012, 013, 018 as bounded legal-preservation review, 019, 023, and 024 as bounded review.
+- Deferred requirements: mortgage calculator, recommended lender page, dedicated home-worth page, Sundance page/articles, AEO expansion, three map themes, Electric Caribbean Blue water-color/provider styling beyond existing controls, GIS/customer activation, AI guidance, telemetry, database changes, and production mutation.
+- This program establishment did not authorize implementation, deployment, runtime changes, visual redesign, authentication changes, database changes, EOI Sprint 4, Executive Workspace implementation, telemetry, AI, GIS, provider activation, production mutation, or unrelated work.
+- Exact next executive decision required: David should decide whether to authorize `REIE_7_1_SPRINT_1_PUBLIC_NAVIGATION_VISUAL_TRUST_AND_ROUTE_COMPLETION_BASELINE`. Codex must not authorize that decision.
+
+Prior Enterprise Portfolio Strategic Review handoff retained below.
+
 PROJECT ATLAS(tm) / Enterprise Portfolio Strategic Review 1.0(tm), July 28, 2026:
 
 Workspace:
