@@ -866,7 +866,10 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
             <div className="absolute inset-0 bg-gradient-to-t from-[#070b10] via-[#070b10]/20 to-transparent" />
             <div className="absolute inset-0 bg-gradient-to-r from-[#070b10]/88 via-[#070b10]/18 to-transparent" />
 
-            <div className="absolute left-4 right-4 top-4 flex flex-wrap items-center justify-between gap-2 md:left-8 md:right-8 md:top-5 md:gap-4">
+            <div
+              className="absolute left-4 right-4 top-4 flex flex-wrap items-center justify-between gap-2 md:left-8 md:right-8 md:top-5 md:gap-4"
+              style={{ display: 'flex', gap: 8, justifyContent: 'space-between', left: 16, position: 'absolute', right: 16, top: 16 }}
+            >
               <Link
                 href="/search"
                 className="inline-flex items-center gap-2 rounded-[6px] border border-white/14 bg-[#071017]/76 px-3 py-2 text-[10px] font-black uppercase tracking-[0.16em] text-white/70 backdrop-blur transition hover:border-cyan-100/40 hover:text-cyan-100"
@@ -879,7 +882,10 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
               </span>
             </div>
 
-            <div className="absolute bottom-0 left-0 right-0 p-4 pb-6 md:p-8 lg:p-12">
+            <div
+              className="absolute bottom-0 left-0 right-0 p-4 pb-6 md:p-8 lg:p-12"
+              style={{ bottom: 0, left: 0, padding: '16px 16px 24px', position: 'absolute', right: 0 }}
+            >
               <div className="max-w-4xl">
                 <div className="reie-property-hero-badges mb-4 flex flex-wrap gap-2">
                   <span
