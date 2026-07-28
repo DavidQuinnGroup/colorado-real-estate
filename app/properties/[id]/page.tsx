@@ -886,7 +886,8 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                     className="reie-property-hero-badge rounded-[5px] border border-white/18 bg-white/12 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.14em] text-white/84 backdrop-blur"
                     style={{ display: 'block', lineHeight: 1.45, maxWidth: '100%', minWidth: 0, overflowWrap: 'anywhere', whiteSpace: 'normal' }}
                   >
-                    {primaryStatLabel}
+                    <span className="hidden sm:inline">{primaryStatLabel}</span>
+                    <span className="sm:hidden">Property Context</span>
                   </span>
                   {property.isPrivateExclusive ? (
                     <span
