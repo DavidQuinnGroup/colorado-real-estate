@@ -10,6 +10,36 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE 7.1 First Impression Experience Design Review(tm), July 28, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -5 --oneline
+```
+
+Current REIE 7.1 first-impression design state:
+
+- Review: `REIE_7_1_FIRST_IMPRESSION_EXPERIENCE_DESIGN_REVIEW`.
+- Status: `REIE_7_1_FIRST_IMPRESSION_EXPERIENCE_DESIGN_REVIEW_COMPLETE_IMPLEMENTATION_NOT_AUTHORIZED`.
+- Review baseline: clean, aligned `main` at `4b6e0bf2512d7c9a6e228a48d2dd216ce1e65ab6`.
+- Review record: `docs/project-atlas/executive-library/REIE-7.1-FIRST-IMPRESSION-EXPERIENCE-DESIGN-REVIEW.md`.
+- Governing evidence reviewed: REIE 7.1 Customer Experience Completion Program, requirements register, traceability matrix, home page, search page, property detail route, market page, seller page, grand-plan page, about page, contact and brokerage-disclosure pages, footer, brokerage attribution, global CSS, and search interface.
+- Design conclusion: the public experience has strong certified substance, but the first five minutes should be unified around trust, luxury, clarity, intelligence, simplicity, confidence, calm, and professionalism.
+- Recommended first implementation remains: `REIE_7_1_SPRINT_1_PUBLIC_NAVIGATION_VISUAL_TRUST_AND_ROUTE_COMPLETION_BASELINE`.
+- Recommended implementation package if separately authorized: shared public navigation/header standard, top-left `David Quinn Group` identity linking home, route transition clarity, decorative border reduction, negative-space and density polish, mobile horizontal comfort, bounded disclosure presentation review, and bounded map visual QA within existing provider/style limits.
+- Deferred from Sprint 1: mortgage calculator, recommended lender page, dedicated home-worth route, Sundance page/articles, AEO expansion, three map themes, Electric Caribbean Blue water-color control requiring provider/style change, search/property/seller redesign, authentication changes, database changes, telemetry, AI, GIS, provider activation, deployment, production mutation, EOI Sprint 4, and Executive Workspace implementation.
+- This review did not authorize implementation, deployment, runtime changes, visual redesign, authentication changes, database changes, telemetry, AI, GIS, provider activation, production mutation, or unrelated work.
+- Exact next executive decision required: David should decide whether to authorize `REIE_7_1_SPRINT_1_PUBLIC_NAVIGATION_VISUAL_TRUST_AND_ROUTE_COMPLETION_BASELINE`. Codex must not authorize that decision.
+
+Prior REIE 7.1 Customer Experience Completion Program handoff retained below.
+
 PROJECT ATLAS(tm) / REIE 7.1 Customer Experience Completion Program(tm), July 28, 2026:
 
 Workspace:
