@@ -54,15 +54,23 @@ Complete.
 
 Status: `COMPLETE_IMPLEMENTATION_NOT_AUTHORIZED`
 
+Implementation status:
+
+`EPARB_REVIEW_001_CONTROLLED_ADMINISTRATIVE_AUTHENTICATION_AND_SESSION_FOUNDATION_IMPLEMENTED_DEPLOYMENT_NOT_AUTHORIZED`
+
 Review record:
 
 `docs/project-atlas/executive-library/EPARB-REVIEW-001-ENTERPRISE-ADMINISTRATIVE-AUTHENTICATION-AND-ACCESS-ARCHITECTURE.md`
+
+Implementation record:
+
+`docs/project-atlas/executive-library/EPARB-REVIEW-001-CONTROLLED-ADMINISTRATIVE-AUTHENTICATION-AND-SESSION-FOUNDATION-IMPLEMENTATION.md`
 
 Recommendation:
 
 Adopt Model E, a repository-supported hybrid administrative access architecture with human sessions for protected administrative browser pages and scoped API credentials for machine/API access.
 
-Implementation authorized:
+Deployment authorized:
 
 No.
 

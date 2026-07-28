@@ -1,10 +1,11 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 
-const ADMIN_KEY_COOKIE = "reie_admin_key";
-
-function getAdminKey() {
-  return process.env.REIE_ADMIN_API_KEY || process.env.ADMIN_API_KEY || null;
-}
+import {
+  ADMIN_MACHINE_KEY_COOKIE,
+  buildAdminUnauthorizedResponse,
+  getConfiguredAdminCredential,
+  isTrustedMiddlewareAuthorizedRequest,
+} from "@/lib/admin/adminAuth";
 
 function getRequestAdminKey(request: NextRequest) {
   const authorization = request.headers.get("authorization") || "";
@@ -15,13 +16,17 @@ function getRequestAdminKey(request: NextRequest) {
   return (
     request.headers.get("x-admin-key") ||
     bearerToken ||
-    request.cookies.get(ADMIN_KEY_COOKIE)?.value ||
+    request.cookies.get(ADMIN_MACHINE_KEY_COOKIE)?.value ||
     ""
   );
 }
 
 export function authorizeRepositoryAdminRequest(request: NextRequest) {
-  const configuredKey = getAdminKey();
+  if (isTrustedMiddlewareAuthorizedRequest(request)) {
+    return true;
+  }
+
+  const configuredKey = getConfiguredAdminCredential();
 
   if (!configuredKey) {
     return process.env.NODE_ENV !== "production";
@@ -31,12 +36,5 @@ export function authorizeRepositoryAdminRequest(request: NextRequest) {
 }
 
 export function repositoryAdminUnauthorizedResponse() {
-  return NextResponse.json(
-    {
-      success: false,
-      error:
-        "Unauthorized. Send x-admin-key or Authorization: Bearer <key> when an admin key is configured.",
-    },
-    { status: 401 },
-  );
+  return buildAdminUnauthorizedResponse();
 }

@@ -10,6 +10,50 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / EPARB Review 1 Controlled Administrative Authentication and Session Foundation(tm), July 28, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -5 --oneline
+```
+
+Current EPARB Review 1 implementation state:
+
+- Governed identifier: `EPARB_REVIEW_001_CONTROLLED_ADMINISTRATIVE_AUTHENTICATION_AND_SESSION_FOUNDATION_IMPLEMENTATION`.
+- Status: `EPARB_REVIEW_001_CONTROLLED_ADMINISTRATIVE_AUTHENTICATION_AND_SESSION_FOUNDATION_IMPLEMENTED_DEPLOYMENT_NOT_AUTHORIZED`.
+- Baseline before implementation: clean, aligned `main` at `de8bd61acb286ed5b67964507a19ba076a0dce94`.
+- Approved architecture: `MODEL_E_REPOSITORY_SUPPORTED_HYBRID`.
+- Implementation record: `docs/project-atlas/executive-library/EPARB-REVIEW-001-CONTROLLED-ADMINISTRATIVE-AUTHENTICATION-AND-SESSION-FOUNDATION-IMPLEMENTATION.md`.
+- Architecture review record: `docs/project-atlas/executive-library/EPARB-REVIEW-001-ENTERPRISE-ADMINISTRATIVE-AUTHENTICATION-AND-ACCESS-ARCHITECTURE.md`.
+- Shared admin auth boundary: `lib/admin/adminAuth.ts`.
+- Middleware integration: `middleware.ts`.
+- Route-local compatibility helper: `app/api/admin/repository/auth.ts`.
+- Login page: `/admin/login`.
+- Login POST route: `/admin-auth/login`.
+- Logout route: `/admin/logout`.
+- Session cookie: `reie_admin_session`.
+- Legacy machine-key cookie remains explicitly classified as `reie_admin_key`; the new login flow does not create raw admin-key cookies.
+- Human sessions are signed, HttpOnly, Secure in production, SameSite `lax`, bounded to eight hours, and version-revocable through `REIE_ADMIN_SESSION_VERSION` when configured.
+- Existing header/bearer machine/API admin-key compatibility is preserved where protected-surface classification permits it.
+- Protected dashboard path `/admin/repository/executive-operations-dashboard` now has a human browser-session access path for future EOI Sprint 3 authenticated review.
+- Mutating admin APIs were not migrated to human sessions in this implementation; they remain machine-key controlled unless separately authorized with CSRF or equivalent same-origin protections.
+- Deterministic safety commands:
+  - `npm run check:eparb-admin-auth-session-foundation`
+  - `npm run check:admin-auth-safety`
+- Required regression commands include EPARB governance/review checks, EOI Sprint 1-3 checks, REIE traceability, typecheck, lint, build, Prisma validate, and git whitespace checks.
+- No customer authentication changes, public workflow changes, database schema changes, migrations, telemetry, AI, GIS, provider activation, deployment, production certification, EOI Sprint 3 certification, production credential rotation, environment-variable change, or production mutation were authorized by implementation.
+- REIE 7.1 traceability: this implementation is an enterprise platform dependency contribution only; it does not fulfill a direct customer-facing REIE 7.1 product requirement.
+- Exact next executive decision required: David must decide whether to authorize controlled deployment and production certification review of the EPARB Review 1 administrative authentication/session foundation. Codex must not authorize that decision.
+
+Prior EPARB Review 1 architecture handoff retained below.
+
 PROJECT ATLAS(tm) / EPARB Review 1 Enterprise Administrative Authentication and Access Architecture(tm), July 28, 2026:
 
 Workspace:

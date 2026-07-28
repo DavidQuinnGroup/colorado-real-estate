@@ -1,50 +1,34 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const ADMIN_KEY_COOKIE = "reie_admin_key";
+import {
+  authorizeAdminRequest,
+  buildAdminLoginRedirect,
+  buildAdminUnauthorizedResponse,
+  withTrustedAdminHeaders,
+} from "@/lib/admin/adminAuth";
 
-function getAdminKey() {
-  return process.env.REIE_ADMIN_API_KEY || process.env.ADMIN_API_KEY || null;
-}
+export async function middleware(request: NextRequest) {
+  const pathname = request.nextUrl.pathname;
 
-function getRequestAdminKey(request: NextRequest) {
-  const authorization = request.headers.get("authorization") || "";
-  const bearerToken = authorization.toLowerCase().startsWith("bearer ")
-    ? authorization.slice(7).trim()
-    : "";
+  if (pathname === "/admin/login" || pathname === "/admin/logout") {
+    return NextResponse.next();
+  }
 
-  return (
-    request.headers.get("x-admin-key") ||
-    bearerToken ||
-    request.cookies.get(ADMIN_KEY_COOKIE)?.value ||
-    ""
-  );
-}
+  const result = await authorizeAdminRequest(request);
 
-function unauthorizedResponse() {
-  return NextResponse.json(
-    {
-      success: false,
-      error:
-        "Unauthorized. Send x-admin-key or Authorization: Bearer <key> when an admin key is configured.",
+  if (!result.authenticated) {
+    if (pathname.startsWith("/admin")) {
+      return buildAdminLoginRedirect(request);
+    }
+
+    return buildAdminUnauthorizedResponse();
+  }
+
+  return NextResponse.next({
+    request: {
+      headers: withTrustedAdminHeaders(request, result),
     },
-    { status: 401 },
-  );
-}
-
-export function middleware(request: NextRequest) {
-  const configuredKey = getAdminKey();
-
-  if (!configuredKey) {
-    return process.env.NODE_ENV !== "production"
-      ? NextResponse.next()
-      : unauthorizedResponse();
-  }
-
-  if (getRequestAdminKey(request) !== configuredKey) {
-    return unauthorizedResponse();
-  }
-
-  return NextResponse.next();
+  });
 }
 
 export const config = {
