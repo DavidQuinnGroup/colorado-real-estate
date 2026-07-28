@@ -2,6 +2,8 @@
 
 Status: `EPARB_REVIEW_001_CONTROLLED_ADMINISTRATIVE_AUTHENTICATION_AND_SESSION_FOUNDATION_IMPLEMENTED_DEPLOYMENT_NOT_AUTHORIZED`
 
+Production certification status: `EPARB_REVIEW_001_ADMIN_AUTH_SESSION_PRODUCTION_CERTIFICATION_BLOCKED_AUTHENTICATED_CREDENTIAL_REVIEW_UNAVAILABLE`
+
 Date: July 28, 2026
 
 Governed identifier:
@@ -245,9 +247,60 @@ No REIE 7.1 product requirement was marked implemented by this work.
 
 ## 14. Deployment and Production State
 
-Deployment remains prohibited.
+Manual deployment remains prohibited.
 
-Production certification has not been performed.
+Production certification review was authorized on July 28, 2026, for commit `38ea8eedd764b636eed19967bb8d1ae1d8675703`.
+
+Production deployment evidence:
+
+- Provider: Vercel through existing GitHub deployment automation.
+- Deployment identifier: `5644198904`.
+- Deployment status identifier: `16049932575`.
+- Commit status identifier: `51234009528`.
+- Deployed SHA: `38ea8eedd764b636eed19967bb8d1ae1d8675703`.
+- Deployment status: `success`.
+- Deployment description: `Deployment has completed`.
+- Deployment environment: `Production`.
+- Deployment created: `2026-07-28T17:09:30Z`.
+- Deployment status timestamp: `2026-07-28T17:09:30Z`.
+- Vercel target: `https://david-quinn-group-8rde-fca1gljpk-david-quinns-projects-a0953600.vercel.app`.
+- Governed production domain reviewed: `https://davidquinngroup.com`.
+- Manual deployment, redeployment, preview promotion, domain change, and environment change by Codex during review: none.
+
+Production public route review:
+
+- `/`: HTTP `200`.
+- `/search`: HTTP `200`.
+- `/market`: HTTP `200`.
+- `/sell`: HTTP `200`.
+- Representative property route `/properties/cmqlmynbh00bupi4jyw0rkgy0`: HTTP `200`.
+- `/api/search?limit=5`: HTTP `200`, compatible public search contract, `results` count `5`.
+- Safe zero-result search `/api/search?query=zzzz-no-match-eparb-certification&limit=5`: HTTP `200`, compatible public search contract, `results` count `0`.
+- No public route reviewed redirected to `/admin/login`.
+
+Unauthenticated admin production review:
+
+- `/admin`: HTTP `303` to `/admin/login?next=%2Fadmin`.
+- `/admin/repository`: HTTP `303` to `/admin/login?next=%2Fadmin%2Frepository`.
+- `/admin/repository/executive-operations-dashboard`: HTTP `303` to `/admin/login?next=%2Fadmin%2Frepository%2Fexecutive-operations-dashboard`.
+- `/api/admin/enterprise/operational-kpis`: HTTP `401`, JSON unauthorized response.
+- `/api/admin/enterprise/operational-summary`: HTTP `401`, JSON unauthorized response.
+- `/api/admin/toggle-access` using non-mutating GET: HTTP `401`, JSON unauthorized response.
+- Invalid machine credential on `/api/admin/enterprise/operational-kpis`: HTTP `401`.
+- Login page rendered with password field, POST form, and sanitized hidden return path when supplied an external `next` URL.
+- No credential-bearing URL, stack trace, secret, or protected payload exposure was observed.
+
+Authenticated production review:
+
+- Direct use of the local admin credential for production login/session review was unavailable in the execution environment.
+- Valid human login, authenticated `/admin`, authenticated `/admin/repository`, authenticated EOI dashboard rendering, human-session read-only EOI API access, valid machine/API credential compatibility, and logout invalidation were therefore not directly observed.
+- Expiration, tampered-session rejection, version-revocation rejection, secure cookie attributes, open-redirect rejection, cross-origin login rejection, machine/API compatibility, and human-session mutation denial remain supported by deterministic repository safety evidence from `npm run check:eparb-admin-auth-session-foundation` and `npm run check:admin-auth-safety`.
+
+Certification decision:
+
+`EPARB_REVIEW_001_ADMIN_AUTH_SESSION_PRODUCTION_CERTIFICATION_BLOCKED_AUTHENTICATED_CREDENTIAL_REVIEW_UNAVAILABLE`
+
+Certification was not granted because security-critical authenticated human-session and approved machine-credential production gates were not directly observable in this environment. EOI Sprint 3 remains separately uncertified.
 
 Production environment variables were not changed.
 
@@ -267,6 +320,12 @@ Remaining gaps requiring separate authorization:
 
 ## 16. Final Status
 
+Implementation status:
+
 `EPARB_REVIEW_001_CONTROLLED_ADMINISTRATIVE_AUTHENTICATION_AND_SESSION_FOUNDATION_IMPLEMENTED_DEPLOYMENT_NOT_AUTHORIZED`
 
-The controlled administrative authentication and session foundation is implemented locally and ready for separately authorized deployment and production certification review.
+Production certification status:
+
+`EPARB_REVIEW_001_ADMIN_AUTH_SESSION_PRODUCTION_CERTIFICATION_BLOCKED_AUTHENTICATED_CREDENTIAL_REVIEW_UNAVAILABLE`
+
+The controlled administrative authentication and session foundation is implemented and deployed by existing automation, but production certification remains blocked pending authenticated human-session and approved machine/API credential evidence gathered through an authorized secure operator-assisted review.

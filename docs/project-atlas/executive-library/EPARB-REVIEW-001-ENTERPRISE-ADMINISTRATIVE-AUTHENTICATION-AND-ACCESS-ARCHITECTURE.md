@@ -380,12 +380,25 @@ Implemented status:
 
 `EPARB_REVIEW_001_CONTROLLED_ADMINISTRATIVE_AUTHENTICATION_AND_SESSION_FOUNDATION_IMPLEMENTED_DEPLOYMENT_NOT_AUTHORIZED`
 
+Production certification review status:
+
+`EPARB_REVIEW_001_ADMIN_AUTH_SESSION_PRODUCTION_CERTIFICATION_BLOCKED_AUTHENTICATED_CREDENTIAL_REVIEW_UNAVAILABLE`
+
 The implementation follows `MODEL_E_REPOSITORY_SUPPORTED_HYBRID` by adding a signed human administrative browser-session foundation while preserving approved machine/API credential compatibility.
+
+Controlled production review evidence recorded on July 28, 2026:
+
+- Vercel/GitHub deployment `5644198904` for commit `38ea8eedd764b636eed19967bb8d1ae1d8675703` completed successfully with deployment status `16049932575` and commit status `51234009528`.
+- Public production pages and search APIs remained usable on `https://davidquinngroup.com`.
+- Unauthenticated admin browser pages redirected safely to `/admin/login` with sanitized local return paths.
+- Unauthenticated admin APIs failed closed with HTTP `401`.
+- Invalid machine credential failed closed with HTTP `401`.
+- Authenticated human-session and approved machine/API credential production gates were not directly observed because credential-based production login/session review was unavailable in this execution environment.
 
 The implementation remains bounded:
 
-- deployment is not authorized
-- production certification is not authorized
+- manual deployment and redeployment are not authorized
+- production certification remains blocked
 - EOI Sprint 3 certification is not authorized
 - production environment changes are not authorized
 - production credential rotation is not authorized

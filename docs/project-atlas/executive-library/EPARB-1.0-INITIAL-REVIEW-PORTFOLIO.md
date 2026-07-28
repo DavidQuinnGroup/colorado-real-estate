@@ -58,6 +58,10 @@ Implementation status:
 
 `EPARB_REVIEW_001_CONTROLLED_ADMINISTRATIVE_AUTHENTICATION_AND_SESSION_FOUNDATION_IMPLEMENTED_DEPLOYMENT_NOT_AUTHORIZED`
 
+Production certification status:
+
+`EPARB_REVIEW_001_ADMIN_AUTH_SESSION_PRODUCTION_CERTIFICATION_BLOCKED_AUTHENTICATED_CREDENTIAL_REVIEW_UNAVAILABLE`
+
 Review record:
 
 `docs/project-atlas/executive-library/EPARB-REVIEW-001-ENTERPRISE-ADMINISTRATIVE-AUTHENTICATION-AND-ACCESS-ARCHITECTURE.md`
@@ -72,7 +76,11 @@ Adopt Model E, a repository-supported hybrid administrative access architecture 
 
 Deployment authorized:
 
-No.
+Automatic deployment observed from the pushed implementation commit. Manual deployment and redeployment remain not authorized.
+
+Certification note:
+
+Production certification remains blocked pending authenticated human-session and approved machine/API credential evidence. EOI Sprint 3 certification remains separate and not authorized by this portfolio entry.
 
 ### Review 2: Enterprise Executive Workspace
 

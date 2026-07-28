@@ -10,7 +10,7 @@ Product:
 
 ## Latest New-Chat Handoff
 
-PROJECT ATLAS(tm) / EPARB Review 1 Controlled Administrative Authentication and Session Foundation(tm), July 28, 2026:
+PROJECT ATLAS(tm) / EPARB Review 1 Administrative Authentication and Session Foundation Production Certification Review(tm), July 28, 2026:
 
 Workspace:
 
@@ -24,11 +24,13 @@ git rev-parse HEAD origin/main
 git log -5 --oneline
 ```
 
-Current EPARB Review 1 implementation state:
+Current EPARB Review 1 production review state:
 
 - Governed identifier: `EPARB_REVIEW_001_CONTROLLED_ADMINISTRATIVE_AUTHENTICATION_AND_SESSION_FOUNDATION_IMPLEMENTATION`.
-- Status: `EPARB_REVIEW_001_CONTROLLED_ADMINISTRATIVE_AUTHENTICATION_AND_SESSION_FOUNDATION_IMPLEMENTED_DEPLOYMENT_NOT_AUTHORIZED`.
+- Implementation status: `EPARB_REVIEW_001_CONTROLLED_ADMINISTRATIVE_AUTHENTICATION_AND_SESSION_FOUNDATION_IMPLEMENTED_DEPLOYMENT_NOT_AUTHORIZED`.
+- Production certification status: `EPARB_REVIEW_001_ADMIN_AUTH_SESSION_PRODUCTION_CERTIFICATION_BLOCKED_AUTHENTICATED_CREDENTIAL_REVIEW_UNAVAILABLE`.
 - Baseline before implementation: clean, aligned `main` at `de8bd61acb286ed5b67964507a19ba076a0dce94`.
+- Production review baseline: clean, aligned `main` at implementation commit `38ea8eedd764b636eed19967bb8d1ae1d8675703`.
 - Approved architecture: `MODEL_E_REPOSITORY_SUPPORTED_HYBRID`.
 - Implementation record: `docs/project-atlas/executive-library/EPARB-REVIEW-001-CONTROLLED-ADMINISTRATIVE-AUTHENTICATION-AND-SESSION-FOUNDATION-IMPLEMENTATION.md`.
 - Architecture review record: `docs/project-atlas/executive-library/EPARB-REVIEW-001-ENTERPRISE-ADMINISTRATIVE-AUTHENTICATION-AND-ACCESS-ARCHITECTURE.md`.
@@ -48,9 +50,19 @@ Current EPARB Review 1 implementation state:
   - `npm run check:eparb-admin-auth-session-foundation`
   - `npm run check:admin-auth-safety`
 - Required regression commands include EPARB governance/review checks, EOI Sprint 1-3 checks, REIE traceability, typecheck, lint, build, Prisma validate, and git whitespace checks.
-- No customer authentication changes, public workflow changes, database schema changes, migrations, telemetry, AI, GIS, provider activation, deployment, production certification, EOI Sprint 3 certification, production credential rotation, environment-variable change, or production mutation were authorized by implementation.
+- Deployment evidence: Vercel/GitHub deployment `5644198904`, deployment status `16049932575`, commit status `51234009528`, state `success`, description `Deployment has completed`, environment `Production`, deployment created/status timestamp `2026-07-28T17:09:30Z`, deployed SHA `38ea8eedd764b636eed19967bb8d1ae1d8675703`, target `https://david-quinn-group-8rde-fca1gljpk-david-quinns-projects-a0953600.vercel.app`.
+- Governed production domain reviewed: `https://davidquinngroup.com`.
+- Public production review passed for `/`, `/search`, `/market`, `/sell`, representative property route `/properties/cmqlmynbh00bupi4jyw0rkgy0`, `/api/search?limit=5`, and safe zero-result search `/api/search?query=zzzz-no-match-eparb-certification&limit=5`.
+- Public search API result: normal query returned HTTP `200` with `results` count `5`; safe zero-result query returned HTTP `200` with `results` count `0`.
+- Unauthenticated admin browser review passed: `/admin`, `/admin/repository`, and `/admin/repository/executive-operations-dashboard` returned HTTP `303` redirects to `/admin/login` with sanitized local `next` paths and no credential-bearing URL.
+- Unauthenticated admin API review passed: `/api/admin/enterprise/operational-kpis`, `/api/admin/enterprise/operational-summary`, and non-mutating GET `/api/admin/toggle-access` returned HTTP `401` with governed JSON unauthorized responses.
+- Invalid machine credential review passed: `/api/admin/enterprise/operational-kpis` returned HTTP `401`.
+- Login page review passed for password field, POST form, generic failure state, and hidden return-path sanitization of an external `next` URL.
+- Certification blocker: authenticated human-session production login/session review and approved machine/API credential success review could not be completed in this environment because direct use of the local admin credential for production login/session exercise was unavailable. Valid human login, authenticated `/admin`, authenticated `/admin/repository`, authenticated EOI dashboard rendering, human-session read-only EOI API access, valid machine/API credential compatibility, and logout invalidation remain not directly observed in production.
+- Deterministic repository evidence still verifies signed sessions, expiration, version revocation, tampered-session rejection, secure cookie attributes, open-redirect rejection, cross-origin login rejection, machine/API compatibility, human dashboard access path, mutation boundary, and protected-surface classification.
+- No customer authentication changes, public workflow changes, database schema changes, migrations, telemetry, AI, GIS, provider activation, manual deployment, redeployment, EOI Sprint 3 certification, production credential rotation, environment-variable change, or production mutation were performed by Codex during review.
 - REIE 7.1 traceability: this implementation is an enterprise platform dependency contribution only; it does not fulfill a direct customer-facing REIE 7.1 product requirement.
-- Exact next executive decision required: David must decide whether to authorize controlled deployment and production certification review of the EPARB Review 1 administrative authentication/session foundation. Codex must not authorize that decision.
+- Exact next executive decision required: David must decide whether to authorize an operator-assisted authenticated production review retry for EPARB Review 1 using a secure known-good admin session or sanitized operator-provided evidence. Codex must not authorize that decision.
 
 Prior EPARB Review 1 architecture handoff retained below.
 
