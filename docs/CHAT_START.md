@@ -10,6 +10,37 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / Enterprise Portfolio Strategic Review 1.0(tm), July 28, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -5 --oneline
+```
+
+Current enterprise portfolio review state:
+
+- Review: `ENTERPRISE_PORTFOLIO_STRATEGIC_REVIEW_1_0`.
+- Status: `ENTERPRISE_PORTFOLIO_STRATEGIC_REVIEW_1_0_COMPLETE_IMPLEMENTATION_NOT_AUTHORIZED`.
+- Review baseline: clean, aligned `main` at `2cb6eccf924e9733d87065bd03a2bc84e4f23592`.
+- Review record: `docs/project-atlas/executive-library/ENTERPRISE-PORTFOLIO-STRATEGIC-REVIEW-1.0.md`.
+- Portfolio conclusion: CEP 1.0, CIM 1.0 readiness, CAO 1.0 governance, EOI 1.0 Sprints 1-3, GIS Sprint 1-8 governance/feasibility, and EPARB Review 1 are mature enough that the next highest-return investment should return to public customer-facing value.
+- Recommended next enterprise program: `REIE_7_1_CUSTOMER_EXPERIENCE_COMPLETION_PROGRAM`.
+- Recommended first implementation if separately authorized: `REIE_7_1_PUBLIC_NAVIGATION_VISUAL_TRUST_AND_ROUTE_COMPLETION_BASELINE`.
+- Highest-ROI customer-facing focus: public navigation consistency, brand-home consistency, luxury visual trust, mobile spacing, route clarity, map visual review within existing limits, seller valuation route readiness, and buyer financing readiness.
+- Recommended near-term sequence: REIE 7.1 public navigation/visual trust/route completion first, seller valuation route completion second, buyer financing and mortgage readiness review third, then EPARB Executive Workspace and EOI source-quality readiness work.
+- Initiatives to pause or defer: EOI Sprint 4 implementation, Operational Source Quality implementation, Enterprise Executive Workspace implementation, Enterprise Dashboard Framework implementation, CIM telemetry activation, AI guidance, GIS Sprint 9, provider contact, geographic customer/runtime activation, CRM/workflow automation, database changes, migrations, external identity-provider expansion, and lender relationship activation.
+- This review did not authorize implementation, deployment, runtime changes, authentication changes, customer-facing changes, database changes, telemetry, AI, GIS, provider activation, production mutation, or unrelated work.
+- Exact next executive decision required: David should decide whether to authorize `REIE_7_1_CUSTOMER_EXPERIENCE_COMPLETION_PROGRAM` with a first controlled implementation sprint for public navigation, visual trust, mobile polish, and route clarity. Codex must not authorize that decision.
+
+Prior EOI Sprint 3 final production certification handoff retained below.
+
 PROJECT ATLAS(tm) / EOI 1.0 Sprint 3 Final Operator-Assisted Production Certification(tm), July 28, 2026:
 
 Workspace:
