@@ -20,8 +20,10 @@ export type ListingVisualInput = {
 const RESIDENTIAL_FALLBACKS = ['/reie-listing-modern.svg', '/reie-listing-estate.svg'] as const;
 const LAND_FALLBACKS = ['/reie-listing-land.svg'] as const;
 const COMMERCIAL_FALLBACKS = ['/reie-listing-commercial.svg'] as const;
+const BLOCKED_EXTERNAL_MEDIA_HOSTS = new Set(['media.mlsgrid.com']);
 
 export const LISTING_IMAGE_FALLBACK = RESIDENTIAL_FALLBACKS[0];
+export const BLOCKED_EXTERNAL_LISTING_MEDIA_HOSTS = Array.from(BLOCKED_EXTERNAL_MEDIA_HOSTS);
 
 function hashText(value: string) {
   let hash = 0;
@@ -56,11 +58,30 @@ function normalizePhotoUrl(value: unknown) {
   }
 }
 
+export function isBlockedExternalListingMediaUrl(value: unknown) {
+  const photoUrl = normalizePhotoUrl(value);
+  if (!photoUrl || photoUrl.startsWith('/')) return false;
+
+  try {
+    const hostname = new URL(photoUrl).hostname.toLowerCase();
+    return BLOCKED_EXTERNAL_MEDIA_HOSTS.has(hostname);
+  } catch {
+    return false;
+  }
+}
+
+export function getDisplaySafeListingPhotoUrl(value: unknown) {
+  const photoUrl = normalizePhotoUrl(value);
+  if (!photoUrl || isBlockedExternalListingMediaUrl(photoUrl)) return null;
+
+  return photoUrl;
+}
+
 function getFirstPhotoUrl(property: ListingVisualInput) {
   if (!property.photos?.length) return null;
 
   for (const photo of property.photos) {
-    const photoUrl = normalizePhotoUrl(typeof photo === 'string' ? photo : photo.url);
+    const photoUrl = getDisplaySafeListingPhotoUrl(typeof photo === 'string' ? photo : photo.url);
     if (photoUrl) return photoUrl;
   }
 
@@ -108,8 +129,8 @@ function getFallbackPhotoPool(category: ListingVisualCategory) {
 export function getListingPhotoUrl(property: ListingVisualInput) {
   const mlsPhoto =
     getFirstPhotoUrl(property) ||
-    normalizePhotoUrl(property.mainPhoto) ||
-    normalizePhotoUrl(property.image);
+    getDisplaySafeListingPhotoUrl(property.mainPhoto) ||
+    getDisplaySafeListingPhotoUrl(property.image);
 
   if (mlsPhoto) return mlsPhoto;
 

@@ -1,24 +1,20 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowUpRight, Bath, BedDouble, ImageOff, MapPin, Ruler, ShieldCheck, Sparkles, TriangleAlert } from 'lucide-react';
+import { ArrowUpRight, Bath, BedDouble, MapPin, Ruler, ShieldCheck, Sparkles, TriangleAlert } from 'lucide-react';
 import type { CSSProperties, KeyboardEvent } from 'react';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 
 import type { MapSidebarListing } from '@/components/maps/MapSidebar';
+import ResilientListingImage from '@/components/ResilientListingImage';
 import { getCityByName } from '@/lib/cities';
-import { getListingPhotoUrl, LISTING_IMAGE_FALLBACK } from '@/lib/listingVisuals';
+import { getListingFallbackPhotoUrl, getListingPhotoUrl } from '@/lib/listingVisuals';
 import { formatLuxuryPrice } from '@/lib/utils/formatters';
 
 type PropertyCardProps = {
   property: MapSidebarListing;
   isActive: boolean;
   onClick: () => void;
-};
-
-type ImageFallbackState = {
-  originalSrc: string;
-  activeSrc: string;
 };
 
 const heroStatStyle: CSSProperties = {
@@ -77,11 +73,6 @@ function isResidentialListing(value: string | null | undefined) {
   );
 }
 
-function getActiveImageSrc(photoUrl: string, fallbackState: ImageFallbackState | null) {
-  if (!fallbackState || fallbackState.originalSrc !== photoUrl) return photoUrl;
-  return fallbackState.activeSrc;
-}
-
 function hasListingPhoto(property: MapSidebarListing) {
   return Boolean(property.mainPhoto?.trim() || property.image?.trim());
 }
@@ -104,8 +95,7 @@ function hasCoordinates(property: MapSidebarListing) {
 
 export default function PropertyCard({ property, isActive, onClick }: PropertyCardProps) {
   const photoUrl = useMemo(() => getListingPhotoUrl(property), [property]);
-  const [fallbackState, setFallbackState] = useState<ImageFallbackState | null>(null);
-  const imageSrc = getActiveImageSrc(photoUrl, fallbackState);
+  const fallbackPhotoUrl = useMemo(() => getListingFallbackPhotoUrl(property), [property]);
   const price = getNumericValue(property.price) ?? 0;
   const address = property.address || 'Address Available by Request';
   const city = property.city || 'Colorado';
@@ -118,14 +108,9 @@ export default function PropertyCard({ property, isActive, onClick }: PropertyCa
   const cityMarketHref = getCityMarketHref(city);
   const hasReviewFlag = Boolean(property.hasPolybutyleneRisk);
   const hasCoordinatesFlag = hasCoordinates(property);
-  const isFallbackVisual = imageSrc === LISTING_IMAGE_FALLBACK || !hasListingPhoto(property);
+  const isFallbackVisual = photoUrl === fallbackPhotoUrl || !hasListingPhoto(property);
   const detailHref = `/properties/${property.id}`;
   const selectedStateId = `property-${property.id}-selected-state`;
-
-  function handleImageError() {
-    if (imageSrc === LISTING_IMAGE_FALLBACK) return;
-    setFallbackState({ originalSrc: photoUrl, activeSrc: LISTING_IMAGE_FALLBACK });
-  }
 
   function handleKeyDown(event: KeyboardEvent<HTMLElement>) {
     if (event.key !== 'Enter' && event.key !== ' ') return;
@@ -178,13 +163,13 @@ export default function PropertyCard({ property, isActive, onClick }: PropertyCa
         </div>
       ) : null}
       <div className="relative aspect-[16/9] w-full overflow-hidden bg-[#10151b]">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={imageSrc}
+        <ResilientListingImage
+          src={photoUrl}
+          fallbackSrc={fallbackPhotoUrl}
           alt={address}
           loading="lazy"
-          decoding="async"
-          onError={handleImageError}
+          fallbackLabel="Photo Pending"
+          timeoutMs={4500}
           className={`h-full w-full object-cover opacity-95 transition duration-700 group-hover:scale-[1.025] group-hover:opacity-100 ${
             isFallbackVisual ? 'saturate-[0.82]' : 'saturate-[1.02]'
           }`}
@@ -203,13 +188,6 @@ export default function PropertyCard({ property, isActive, onClick }: PropertyCa
             </span>
           ) : null}
         </div>
-        {isFallbackVisual ? (
-          <span className="absolute right-4 top-4 inline-flex items-center gap-1 rounded-[4px] border border-white/18 bg-black/58 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-white/72 backdrop-blur">
-            <ImageOff size={12} aria-hidden="true" />
-            Photo Pending
-          </span>
-        ) : null}
-
         <div className="absolute bottom-4 left-4 right-4">
           <div className="flex items-end justify-between gap-3">
             <p className="font-serif text-[24px] font-black leading-none text-white drop-shadow">{formatLuxuryPrice(price)}</p>

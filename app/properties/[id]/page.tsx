@@ -32,7 +32,7 @@ import { getCityByName } from '@/lib/cities';
 import { getJourneyMeasurementAttributes } from '@/lib/customerJourneyMeasurement';
 import { getBlogLinks } from '@/lib/linking/getBlogLinks';
 import { getPropertyLinks, type PropertyAuthorityLink } from '@/lib/linking/getPropertyLinks';
-import { getListingFallbackPhotoUrl, getListingPhotoUrl } from '@/lib/listingVisuals';
+import { getDisplaySafeListingPhotoUrl, getListingFallbackPhotoUrl, getListingPhotoUrl } from '@/lib/listingVisuals';
 import { neighborhoods } from '@/lib/neighborhoods';
 import { prisma } from '@/lib/prisma';
 import { LISTING_ADVERTISING_CLASSIFICATION } from '@/lib/publicTrust';
@@ -1576,7 +1576,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                 {property.photos.slice(1, 5).map((photo) => (
                   <div key={photo.id} className="relative aspect-[4/3] overflow-hidden rounded-[6px] border border-white/10 bg-[#101720]">
                     <ResilientListingImage
-                      src={photo.url}
+                      src={getDisplaySafeListingPhotoUrl(photo.url) || fallbackPhoto}
                       fallbackSrc={fallbackPhoto}
                       alt={`${property.address} listing photo`}
                       loading="eager"

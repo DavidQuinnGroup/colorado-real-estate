@@ -10,6 +10,36 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / Production Media Resilience Corrective Sprint 1, July 28, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Current corrective sprint state:
+
+- Governed identifier: `PRODUCTION_MEDIA_RESILIENCE_CORRECTIVE_SPRINT_1`.
+- Status: `PRODUCTION_MEDIA_RESILIENCE_CORRECTIVE_SPRINT_1_IMPLEMENTED_AND_PUSHED_DEPLOYMENT_PROHIBITED`.
+- Starting baseline: clean, aligned `main` at `c2c2f4225445ae18f58460b848241222fc597b81`.
+- Corrective record: `docs/project-atlas/executive-library/PRODUCTION-MEDIA-RESILIENCE-CORRECTIVE-SPRINT-1.md`.
+- Root cause: production search and property pages could render syntactically valid external `media.mlsgrid.com` listing image URLs that returned HTTP 400 at browser render time, creating console resource errors and visible broken imagery during REIE 7.1 Sprint 4 certification.
+- Runtime correction: `lib/listingVisuals.ts` now classifies `media.mlsgrid.com` as display-unsafe, exposes `isBlockedExternalListingMediaUrl` and `getDisplaySafeListingPhotoUrl`, and routes known failing media to existing local REIE listing fallback visuals.
+- Search/property correction: `components/PropertyCard.tsx`, `components/search/PropertyDetail.tsx`, and `app/properties/[id]/page.tsx` use governed resilient image/fallback paths for listing cards, in-search details, primary property imagery, and secondary property-page media.
+- Validation added: `npm run check:production-media-resilience`.
+- Deployment remains prohibited. Production certification remains prohibited. Customer-visible certification remains prohibited.
+- Preserved boundaries: no MLS data modification, provider activation, image proxy, database change, migration, authentication change, inquiry change, tour change, seller valuation change, Mortgage Calculator, lender workflow, telemetry, AI, GIS, production mutation, or unrelated implementation.
+- Exact next executive decision required: David should decide whether to authorize controlled deployment and production/customer-experience certification retry for `PRODUCTION_MEDIA_RESILIENCE_CORRECTIVE_SPRINT_1`. Codex must not authorize that decision.
+
+Prior REIE 7.1 Sprint 4 production certification findings retained below.
+
 PROJECT ATLAS(tm) / REIE 7.1 Sprint 4 Financing Confidence Education(tm) Production Certification Findings, July 28, 2026:
 
 Workspace:

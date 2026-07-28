@@ -10,7 +10,7 @@ import NorthStarManager, {
   getSavedNorthStarAnchors,
   type NorthStarAnchor,
 } from '@/components/settings/NorthStarManager';
-import { getListingFallbackPhotoUrl } from '@/lib/listingVisuals';
+import { getListingFallbackPhotoUrl, getListingPhotoUrl } from '@/lib/listingVisuals';
 import { formatLuxuryPrice } from '@/lib/utils/formatters';
 import { calculateEfficiencyScore, getTravelNarrative } from '@/lib/utils/geo-logic';
 
@@ -100,8 +100,16 @@ export default function PropertyDetail({ property, onClose, userTier = 'Public' 
   const [northStarAnchors, setNorthStarAnchors] = useState<NorthStarAnchor[]>(() => getSavedNorthStarAnchors());
   const [logistics, setLogistics] = useState<LogisticsState>({ status: 'idle', times: [] });
 
-  const imageSrc = property.mainPhoto || property.image || null;
   const fallbackImageSrc = getListingFallbackPhotoUrl({
+    id: property.id,
+    address: property.address,
+    city: property.city,
+    propertyType: property.propertyType,
+    price: property.price,
+    mainPhoto: property.mainPhoto,
+    image: property.image,
+  });
+  const imageSrc = getListingPhotoUrl({
     id: property.id,
     address: property.address,
     city: property.city,
