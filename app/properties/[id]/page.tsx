@@ -829,6 +829,24 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
             display: none !important;
           }
         }
+        @media (max-width: 420px) {
+          .reie-property-hero-badges {
+            align-items: flex-start;
+            flex-direction: column;
+          }
+          .reie-property-hero-badge {
+            max-width: 100%;
+            overflow-wrap: anywhere;
+            white-space: normal;
+          }
+          .reie-property-mobile-action-label {
+            display: block;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+        }
       `}</style>
       <section className="relative border-b border-white/10">
         <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(100,188,205,0.14),transparent_38%),linear-gradient(180deg,rgba(255,255,255,0.035),transparent_35%)]" />
@@ -861,12 +879,12 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
 
             <div className="absolute bottom-0 left-0 right-0 p-4 pb-6 md:p-8 lg:p-12">
               <div className="max-w-4xl">
-                <div className="mb-4 flex flex-wrap gap-2">
-                  <span className="rounded-[5px] border border-white/18 bg-white/12 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.14em] text-white/84 backdrop-blur">
+                <div className="reie-property-hero-badges mb-4 flex flex-wrap gap-2">
+                  <span className="reie-property-hero-badge rounded-[5px] border border-white/18 bg-white/12 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.14em] text-white/84 backdrop-blur">
                     {primaryStatLabel}
                   </span>
                   {property.isPrivateExclusive ? (
-                    <span className="rounded-[5px] border border-cyan-100/40 bg-cyan-100/12 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100 backdrop-blur">
+                    <span className="reie-property-hero-badge rounded-[5px] border border-cyan-100/40 bg-cyan-100/12 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100 backdrop-blur">
                       Listing Access
                     </span>
                   ) : null}
@@ -1729,7 +1747,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
             style={{ alignItems: 'center', display: 'inline-flex', height: 44, justifyContent: 'center' }}
           >
             <ArrowLeft size={13} aria-hidden="true" />
-            Search
+            <span className="reie-property-mobile-action-label">Search</span>
           </Link>
           <Link
             href={marketPathway.href}
@@ -1737,7 +1755,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
             style={{ alignItems: 'center', display: 'inline-flex', height: 44, justifyContent: 'center' }}
           >
             <TrendingUp size={13} aria-hidden="true" />
-            {marketPathway.isMarketPageAvailable ? 'Market' : 'View'}
+            <span className="reie-property-mobile-action-label">{marketPathway.isMarketPageAvailable ? 'Market' : 'View'}</span>
           </Link>
           <Link
             href="#property-contact"
@@ -1745,7 +1763,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
             style={{ alignItems: 'center', display: 'inline-flex', height: 44, justifyContent: 'center' }}
           >
             <Mail size={13} aria-hidden="true" />
-            Ask
+            <span className="reie-property-mobile-action-label">Ask</span>
           </Link>
         </div>
       </nav>
