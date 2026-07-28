@@ -10,6 +10,37 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / Product Experience Strategic Review(tm) 1.0, July 28, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -5 --oneline
+```
+
+Current Product Experience Strategic Review state:
+
+- Review: `PRODUCT_EXPERIENCE_STRATEGIC_REVIEW_1_0`.
+- Status: `PRODUCT_EXPERIENCE_STRATEGIC_REVIEW_1_0_COMPLETE_IMPLEMENTATION_NOT_AUTHORIZED`.
+- Review baseline: clean, aligned `main` at `64cc8424e1e8558129ba0cbfd74e4c3c2a83d0c5`.
+- Strategic review record: `docs/project-atlas/executive-library/PRODUCT-EXPERIENCE-STRATEGIC-REVIEW-1.0.md`.
+- Certified customer experiences reviewed: First Impression Experience, Seller Confidence Experience, and Buyer Confidence Experience.
+- Product conclusion: REIE now substantially feels like one coherent premium advisory product rather than separate implementation sprints.
+- Current strongest product strengths: certified public navigation, Home Worth route, Buyer Confidence sequencing, Property Decision Briefs, market and neighborhood context, restrained luxury posture, and disciplined trust/source boundaries.
+- Highest-value remaining customer-experience gap: buyer financing and affordability confidence.
+- Recommended next initiative: `REIE_7_1_BUYER_FINANCING_AND_AFFORDABILITY_CONFIDENCE_READINESS_REVIEW`.
+- Implementation remains not authorized. Deployment remains not authorized. Runtime changes remain not authorized.
+- Explicit exclusions retained: no Mortgage Calculator implementation, no lender workflow, no financing activation, no AEO, no Sundance, no AI, no GIS, no provider activation, no authentication changes, no database changes, no production mutation, and no unrelated work.
+- Exact next executive decision required: David should decide whether to authorize `REIE_7_1_BUYER_FINANCING_AND_AFFORDABILITY_CONFIDENCE_READINESS_REVIEW`. Codex must not authorize that decision.
+
+Prior REIE 7.1 Sprint 3 certification handoff retained below.
+
 PROJECT ATLAS(tm) / REIE 7.1 Sprint 3 Buyer Confidence Experience(tm) Production Certification, July 28, 2026:
 
 Workspace:
