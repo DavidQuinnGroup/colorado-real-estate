@@ -107,6 +107,7 @@
     "check:admin-auth-safety": "npm run worker:build && node dist/scripts/checkAdminAuthSafety.js",
     "check:reie-adjustments-traceability": "npm run worker:build && node dist/scripts/checkReieAdjustmentsTraceability.js",
     "check:reie-first-impression-experience-baseline": "npm run worker:build && node dist/scripts/checkReieFirstImpressionExperienceBaseline.js",
+    "check:reie-seller-confidence-experience": "npm run worker:build && node dist/scripts/checkReieSellerConfidenceExperience.js",
     "check:launch-readiness": "npm run worker:build && node dist/scripts/launchReadiness.js",
     "worker:build": "tsc -p tsconfig.worker.json --pretty false",
     "infra:up": "docker compose up -d",

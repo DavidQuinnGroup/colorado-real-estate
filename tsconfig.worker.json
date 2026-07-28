@@ -49,6 +49,7 @@
     "scripts/checkAdminAuthSafety.ts",
     "scripts/checkReieAdjustmentsTraceability.ts",
     "scripts/checkReieFirstImpressionExperienceBaseline.ts",
+    "scripts/checkReieSellerConfidenceExperience.ts",
     "scripts/checkPrismaClientParity.ts",
     "scripts/checkProductionDependencies.ts",
     "scripts/checkPropertyRouteSafety.ts",

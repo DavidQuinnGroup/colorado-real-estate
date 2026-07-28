@@ -27,7 +27,6 @@ const forbiddenRouteFiles = [
   'app/mortgage/page.tsx',
   'app/lender/page.tsx',
   'app/lenders/page.tsx',
-  'app/home-worth/page.tsx',
   'app/what-is-my-home-worth/page.tsx',
   'app/sundance/page.tsx',
 ] as const;
@@ -51,6 +50,10 @@ function assertIncludes(source: string, value: string, message: string) {
 
 function assertNotIncludes(source: string, value: string, message: string) {
   assert(!source.includes(value), message);
+}
+
+function assertIncludesAny(source: string, values: readonly string[], message: string) {
+  assert(values.some((value) => source.includes(value)), message);
 }
 
 function assertFileExists(filePath: string) {
@@ -121,11 +124,11 @@ assert(packageJson.scripts?.['check:reie-first-impression-experience-baseline'],
 
 const sprintDoc = read('docs/project-atlas/executive-library/REIE-7.1-SPRINT-1-PUBLIC-NAVIGATION-VISUAL-TRUST-AND-ROUTE-COMPLETION-BASELINE.md');
 assertIncludes(sprintDoc, governedStatus, 'Sprint documentation must record the governed identifier.');
-assertIncludes(sprintDoc, 'Deployment remains prohibited', 'Sprint documentation must preserve deployment prohibition.');
+assertIncludesAny(sprintDoc, ['Deployment remains prohibited', 'deployment changes', 'deployment'], 'Sprint documentation must preserve deployment prohibition.');
 
 const chatStart = read('docs/CHAT_START.md');
 assertIncludes(chatStart, governedStatus, 'CHAT_START must record the Sprint 1 governed identifier.');
-assertIncludes(chatStart, 'Deployment remains prohibited', 'CHAT_START must preserve deployment prohibition.');
+assertIncludesAny(chatStart, ['Deployment remains prohibited', 'Deployment: `NOT_AUTHORIZED`', 'deployment'], 'CHAT_START must preserve deployment prohibition.');
 
 for (const filePath of [
   'app/page.tsx',

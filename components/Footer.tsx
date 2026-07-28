@@ -7,6 +7,7 @@ const experienceLinks = [
   { label: 'About', href: '/about' },
   { label: 'Search', href: '/search' },
   { label: 'Market', href: '/market' },
+  { label: 'Home Worth', href: '/home-worth' },
   { label: 'Grand Plan™', href: '/grand-plan' },
   { label: 'Sell', href: '/sell' },
 ];
@@ -37,8 +38,8 @@ export default function PlatformFooter() {
                 {...getJourneyMeasurementAttributes({
                   surface: 'footer-experience',
                   stage: 'search',
-                  action: route.href === '/sell' ? 'request-seller-review' : route.href === '/market' ? 'view-market' : 'continue-journey',
-                  destination: route.href === '/sell' ? 'seller' : route.href === '/market' ? 'market' : 'search',
+                  action: route.href === '/sell' || route.href === '/home-worth' ? 'request-seller-review' : route.href === '/market' ? 'view-market' : 'continue-journey',
+                  destination: route.href === '/sell' || route.href === '/home-worth' ? 'seller' : route.href === '/market' ? 'market' : 'search',
                 })}
               >
                 {route.label}

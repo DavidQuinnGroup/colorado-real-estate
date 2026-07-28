@@ -10,6 +10,39 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE 7.1 Sprint 2 Seller Confidence Experience(tm), July 28, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -5 --oneline
+```
+
+Current REIE 7.1 Sprint 2 implementation state:
+
+- Governed implementation: `REIE_7_1_SPRINT_2_SELLER_VALUATION_ROUTE_COMPLETION`.
+- Status: `REIE_7_1_SPRINT_2_SELLER_CONFIDENCE_EXPERIENCE_IMPLEMENTED_AND_PUSHED_DEPLOYMENT_PROHIBITED`.
+- Implementation baseline: clean, aligned `main` at `b9d7fbfeb4551acffbd334a8dfb2753ffa96af33`.
+- Implementation record: `docs/project-atlas/executive-library/REIE-7.1-SPRINT-2-SELLER-CONFIDENCE-EXPERIENCE.md`.
+- Design review: `docs/project-atlas/executive-library/REIE-7.1-SELLER-CONFIDENCE-EXPERIENCE-DESIGN-REVIEW.md`.
+- Runtime implementation: new public `/home-worth` route in `app/home-worth/page.tsx`.
+- Customer experience: educational Seller Confidence Experience that explains why home value is difficult, what affects value, why automated estimates differ, why local expertise matters, what information improves confidence, the home value request, and next steps.
+- Navigation integration: shared public navigation and footer include `Home Worth` while preserving `/sell`; mobile public navigation maps the full route list so Contact remains reachable.
+- Reuse: `/home-worth` reuses `HomeValueEstimator`, preserves `/sell`, preserves the existing `/api/valuation` backend posture, and links to `/market`, `/sell`, `/search`, and `/contact`.
+- Safety coverage: `npm run check:reie-seller-confidence-experience`.
+- Validation required for certification handoff: confirm local implementation commit, deployment evidence if later authorized, production `/home-worth` route, navigation, seller request visibility without submission, no automated valuation claim, no AI/GIS/provider activation, and no production mutation.
+- Deployment remains prohibited. Production certification remains prohibited until separately authorized.
+- Mortgage Calculator, Lender, Sundance, AEO, EOI Sprint 4, Executive Workspace, authentication changes, database work, telemetry, AI, GIS, provider activation, production mutation, and unrelated work remain `NOT_AUTHORIZED`.
+- Exact next executive decision required: David should decide whether to authorize controlled deployment and production plus Customer Experience Certification review for `REIE_7_1_SPRINT_2_SELLER_VALUATION_ROUTE_COMPLETION`. Codex must not authorize that decision.
+
+Prior Seller Confidence Experience Design Review handoff retained below.
+
 PROJECT ATLAS(tm) / REIE 7.1 Seller Confidence Experience Design Review(tm), July 28, 2026:
 
 Workspace:

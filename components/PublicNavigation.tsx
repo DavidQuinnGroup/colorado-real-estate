@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 const publicNavigationLinks = [
   { label: 'Search', href: '/search' },
   { label: 'Market', href: '/market' },
+  { label: 'Home Worth', href: '/home-worth' },
   { label: 'Sell', href: '/sell' },
   { label: 'Grand Plan', href: '/grand-plan' },
   { label: 'About', href: '/about' },
@@ -75,7 +76,7 @@ export default function PublicNavigation() {
         aria-label="Primary public mobile navigation"
         data-testid="reie-public-mobile-navigation"
       >
-        {publicNavigationLinks.slice(0, 6).map((link) => (
+        {publicNavigationLinks.map((link) => (
           <Link
             key={`mobile-${link.href}`}
             href={link.href}
