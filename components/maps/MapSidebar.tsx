@@ -7,6 +7,7 @@ import { Suspense, useEffect, useMemo, useRef } from 'react';
 
 import { cities } from '@/lib/cities';
 import { getBlogLinks, type BlogLink } from '@/lib/linking/getBlogLinks';
+import { buildGuidedSearchDecisionSupport } from '@/lib/search/guidedSearchDecisionSupport';
 import PropertyCard from '../PropertyCard';
 import SaveSearch from './SaveSearch';
 import { getJourneyMeasurementAttributes } from '@/lib/customerJourneyMeasurement';
@@ -65,6 +66,7 @@ type InventoryStats = {
   mappedCount: number;
   averageResilience: number | null;
   reviewCount: number;
+  fallbackVisualCount: number;
   priceFloor: number | null;
   priceCeiling: number | null;
 };
@@ -135,6 +137,7 @@ function getInventoryStats(listings: MapSidebarListing[]): InventoryStats {
   let resilienceTotal = 0;
   let resilienceCount = 0;
   let reviewCount = 0;
+  let fallbackVisualCount = 0;
   let priceFloor: number | null = null;
   let priceCeiling: number | null = null;
 
@@ -143,6 +146,7 @@ function getInventoryStats(listings: MapSidebarListing[]): InventoryStats {
     if (city) cityCounts.set(city, (cityCounts.get(city) || 0) + 1);
     if (listing.isPrivateExclusive) privateCount += 1;
     if (hasCoordinates(listing)) mappedCount += 1;
+    if (!listing.mainPhoto?.trim() && !listing.image?.trim()) fallbackVisualCount += 1;
     if (typeof listing.resilienceScore === 'number' && Number.isFinite(listing.resilienceScore)) {
       resilienceTotal += listing.resilienceScore;
       resilienceCount += 1;
@@ -164,6 +168,7 @@ function getInventoryStats(listings: MapSidebarListing[]): InventoryStats {
     mappedCount,
     averageResilience: resilienceCount ? Math.round(resilienceTotal / resilienceCount) : null,
     reviewCount,
+    fallbackVisualCount,
     priceFloor,
     priceCeiling,
   };
@@ -284,6 +289,7 @@ function SearchIntelligenceStrip({ stats }: { stats: InventoryStats }) {
   const resilienceLabel =
     stats.averageResilience === null ? 'Property context pending' : 'Helpful property context available';
   const reviewLabel = stats.reviewCount > 0 ? `${stats.reviewCount} details to consider` : 'No major review notes';
+  const mediaLabel = stats.fallbackVisualCount > 0 ? `${stats.fallbackVisualCount} listings use governed fallback media` : 'Listing media appears ready';
 
   return (
     <div
@@ -312,7 +318,77 @@ function SearchIntelligenceStrip({ stats }: { stats: InventoryStats }) {
           <Gauge size={12} aria-hidden="true" className="shrink-0 text-cyan-100/70" />
           <span>{reviewLabel}</span>
         </div>
+        <div className="flex items-center gap-2">
+          <FileText size={12} aria-hidden="true" className="shrink-0 text-cyan-100/70" />
+          <span>{mediaLabel}</span>
+        </div>
       </div>
+    </div>
+  );
+}
+
+function SearchDecisionPortfolio({
+  listings,
+  stats,
+}: {
+  listings: MapSidebarListing[];
+  stats: InventoryStats;
+}) {
+  const mappedRatio = listings.length > 0 ? Math.round((stats.mappedCount / listings.length) * 100) : 0;
+  const reviewRatio = listings.length > 0 ? Math.round((stats.reviewCount / listings.length) * 100) : 0;
+  const decisionMode =
+    stats.reviewCount > 0 ? 'Verify flagged details' : stats.mappedCount > 0 ? 'Compare mapped alternatives' : 'Start with listing facts';
+  const sampleDecision = listings[0]
+    ? buildGuidedSearchDecisionSupport({
+        city: listings[0].city,
+        price: listings[0].price,
+        beds: listings[0].beds,
+        baths: listings[0].baths,
+        sqft: listings[0].sqft,
+        propertyType: listings[0].propertyType,
+        status: listings[0].status,
+        hasCoordinates: hasCoordinates(listings[0]),
+        hasReviewFlag: Boolean(listings[0].hasPolybutyleneRisk || !isResidentialType(listings[0].propertyType)),
+        hasFallbackVisual: !listings[0].mainPhoto?.trim() && !listings[0].image?.trim(),
+        reviewSignal: listings[0].hasPolybutyleneRisk ? 'Plumbing Review' : null,
+      })
+    : null;
+
+  return (
+    <div
+      className="mt-3 rounded-[8px] border border-white/10 bg-black/28 p-3"
+      data-testid="reie-sidebar-v8-decision-portfolio"
+      data-sidebar-v8-decision-mode={decisionMode}
+      data-sidebar-v8-mapped-ratio={mappedRatio}
+      data-sidebar-v8-review-ratio={reviewRatio}
+      data-sidebar-v8-sample-confidence={sampleDecision?.confidenceLevel || ''}
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100/74">Decision View</p>
+          <p className="mt-1 text-sm font-black leading-5 text-white">{decisionMode}</p>
+        </div>
+        <span className="shrink-0 rounded-[5px] border border-white/10 bg-white/[0.045] px-2 py-1 text-[9px] font-black uppercase tracking-[0.12em] text-white/48">
+          V8
+        </span>
+      </div>
+      <div className="mt-3 grid grid-cols-3 gap-2 text-center">
+        <div className="rounded-[6px] bg-white/[0.045] px-2 py-2">
+          <p className="text-[9px] font-black uppercase tracking-[0.12em] text-white/34">Mapped</p>
+          <p className="mt-1 text-sm font-black text-white">{mappedRatio}%</p>
+        </div>
+        <div className="rounded-[6px] bg-white/[0.045] px-2 py-2">
+          <p className="text-[9px] font-black uppercase tracking-[0.12em] text-white/34">Review</p>
+          <p className="mt-1 text-sm font-black text-white">{reviewRatio}%</p>
+        </div>
+        <div className="rounded-[6px] bg-white/[0.045] px-2 py-2">
+          <p className="text-[9px] font-black uppercase tracking-[0.12em] text-white/34">Media</p>
+          <p className="mt-1 text-sm font-black text-white">{stats.fallbackVisualCount}</p>
+        </div>
+      </div>
+      <p className="mt-3 text-[11px] font-bold leading-5 text-white/48">
+        Use the list to compare alternatives, then open Property Intelligence when the result still fits after place, price, condition, and verification questions.
+      </p>
     </div>
   );
 }
@@ -410,6 +486,7 @@ export default function MapSidebar(props: MapSidebarProps) {
       data-sidebar-mapped-count={stats.mappedCount}
       data-sidebar-private-count={stats.privateCount}
       data-sidebar-review-count={stats.reviewCount}
+      data-sidebar-fallback-visual-count={stats.fallbackVisualCount}
       data-sidebar-dominant-city={stats.dominantCity}
       data-sidebar-selected-listing-id={activeId || ''}
       data-sidebar-hovered-listing-id={hoveredId || ''}
@@ -484,6 +561,7 @@ export default function MapSidebar(props: MapSidebarProps) {
           </div>
 
           <SearchIntelligenceStrip stats={stats} />
+          <SearchDecisionPortfolio listings={listings} stats={stats} />
 
           <div
             className="mt-3 min-h-12 rounded-[8px] border border-white/10 bg-black/35 px-3 py-2.5"

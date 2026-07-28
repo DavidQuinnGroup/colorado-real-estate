@@ -10,6 +10,34 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE 8 Guided Search Intelligence(tm) v8 Implementation, July 28, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Current implementation state:
+
+- Governed identifier: `REIE_8_GUIDED_SEARCH_INTELLIGENCE_V8`.
+- Starting baseline: clean, aligned `main` at `9a30c13c51694eccff0f16e36e6e211adb70f44d`.
+- Implementation record: `docs/project-atlas/executive-library/REIE-8-GUIDED-SEARCH-INTELLIGENCE-V8.md`.
+- Runtime implementation: `lib/search/guidedSearchDecisionSupport.ts` adds deterministic, customer-safe search decision support; `components/PropertyCard.tsx` exposes why a result deserves attention plus compare/verify/next-step guidance; `components/maps/MapSidebar.tsx` adds a result-set Decision View summarizing mapped coverage, review signal ratio, and governed fallback-media count.
+- Preserved architecture: existing `/search` route, search API, filters, map/list behavior, saved-search path, resilient listing media, buyer confidence framework, financing education boundary, and search-to-property continuity.
+- Explicit exclusions retained: no customer AI, Public Geographic Intelligence, Mortgage Calculator, loan calculator, lender workflow, customer account, telemetry activation, analytics activation, recommendation engine, schema redesign, Prisma change, API breaking change, provider activation, production mutation, or major architecture rewrite.
+- New validation: `npm run check:reie-guided-search-intelligence-v8`.
+- Required completion validation: `npm run check:reie-guided-search-intelligence-v8`, `npm run check:search-listing-quality`, `npm run check:search-runtime-safety`, `npm run check:production-media-resilience`, `npm run check:reie-buyer-confidence-experience`, `npm run check:reie-financing-confidence-education`, `npm run check:map-rendering-safety`, `npm run smoke:public-experience`, `npm run typecheck`, `npm run lint`, `npm run build`, and `git diff --check`.
+- Exact next step: complete validation, commit once clean, and report the implementation commit hash. Deployment is not part of this handoff unless separately authorized.
+
+Prior Production Media Resilience certification handoff retained below.
+
 PROJECT ATLAS(tm) / Production Media Resilience Certification Retry and REIE 7.1 Sprint 4 Certification, July 28, 2026:
 
 Workspace:

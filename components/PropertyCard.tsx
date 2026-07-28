@@ -9,6 +9,7 @@ import type { MapSidebarListing } from '@/components/maps/MapSidebar';
 import ResilientListingImage from '@/components/ResilientListingImage';
 import { getCityByName } from '@/lib/cities';
 import { getListingFallbackPhotoUrl, getListingPhotoUrl } from '@/lib/listingVisuals';
+import { buildGuidedSearchDecisionSupport } from '@/lib/search/guidedSearchDecisionSupport';
 import { formatLuxuryPrice } from '@/lib/utils/formatters';
 
 type PropertyCardProps = {
@@ -109,6 +110,23 @@ export default function PropertyCard({ property, isActive, onClick }: PropertyCa
   const hasReviewFlag = Boolean(property.hasPolybutyleneRisk);
   const hasCoordinatesFlag = hasCoordinates(property);
   const isFallbackVisual = photoUrl === fallbackPhotoUrl || !hasListingPhoto(property);
+  const decisionSupport = useMemo(
+    () =>
+      buildGuidedSearchDecisionSupport({
+        city,
+        price,
+        beds: property.beds,
+        baths: property.baths,
+        sqft: property.sqft,
+        propertyType,
+        status: statusLabel,
+        hasCoordinates: hasCoordinatesFlag,
+        hasReviewFlag,
+        hasFallbackVisual: isFallbackVisual,
+        reviewSignal,
+      }),
+    [city, price, property.beds, property.baths, property.sqft, propertyType, statusLabel, hasCoordinatesFlag, hasReviewFlag, isFallbackVisual, reviewSignal],
+  );
   const detailHref = `/properties/${property.id}`;
   const selectedStateId = `property-${property.id}-selected-state`;
 
@@ -145,6 +163,8 @@ export default function PropertyCard({ property, isActive, onClick }: PropertyCa
       data-property-card-resilience-score={formatIntelligenceScore(property.resilienceScore)}
       data-property-card-review-signal={reviewSignal}
       data-property-card-decision-signal={decisionLabel}
+      data-property-card-v8-attention-label={decisionSupport.attentionLabel}
+      data-property-card-v8-confidence-level={decisionSupport.confidenceLevel}
       data-property-card-market-href={cityMarketHref}
       data-property-card-detail-href={detailHref}
       className={`group m-3 cursor-pointer overflow-hidden rounded-[8px] border outline-none transition duration-200 focus-visible:border-cyan-200 focus-visible:ring-2 focus-visible:ring-cyan-200/40 ${
@@ -245,12 +265,15 @@ export default function PropertyCard({ property, isActive, onClick }: PropertyCa
           data-testid="reie-property-card-decision"
           data-property-card-decision-signal={decisionLabel}
           data-property-card-review-signal={reviewSignal}
+          data-property-card-v8-attention-label={decisionSupport.attentionLabel}
+          data-property-card-v8-attention-reason={decisionSupport.attentionReason}
         >
           <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100/76">
             <Sparkles size={12} aria-hidden="true" />
             Review Context
           </p>
-          <p className="mt-1 text-xs font-bold leading-4 text-white/70">{decisionLabel}</p>
+          <p className="mt-1 text-[11px] font-black uppercase tracking-[0.1em] text-white/62">{decisionSupport.attentionLabel}</p>
+          <p className="mt-1 text-xs font-bold leading-5 text-white/70">{decisionSupport.attentionReason}</p>
         </div>
 
         <div
@@ -275,9 +298,27 @@ export default function PropertyCard({ property, isActive, onClick }: PropertyCa
           </div>
         </div>
 
+        <div
+          className="mt-3 grid gap-2 rounded-[6px] border border-white/10 bg-white/[0.035] px-3 py-2.5"
+          data-testid="reie-property-card-v8-decision-path"
+          data-property-card-v8-compare={decisionSupport.comparePrompt}
+          data-property-card-v8-verify={decisionSupport.verifyPrompt}
+          data-property-card-v8-next={decisionSupport.nextStep}
+          data-property-card-v8-confidence-level={decisionSupport.confidenceLevel}
+        >
+          <div>
+            <p className="text-[9px] font-black uppercase tracking-[0.14em] text-white/34">Compare</p>
+            <p className="mt-1 text-[11px] font-bold leading-5 text-white/58">{decisionSupport.comparePrompt}</p>
+          </div>
+          <div>
+            <p className="text-[9px] font-black uppercase tracking-[0.14em] text-white/34">Verify</p>
+            <p className="mt-1 text-[11px] font-bold leading-5 text-white/58">{decisionSupport.verifyPrompt}</p>
+          </div>
+        </div>
+
         <div className="mt-2.5 flex flex-col items-start gap-2.5 border-t border-white/10 pt-2.5 sm:flex-row sm:items-center sm:justify-between">
           <p className="min-w-0 text-[10px] font-bold uppercase leading-4 tracking-[0.14em] text-white/40">
-            Open details when this listing deserves a closer look.
+            Open details when this listing deserves a closer look. {decisionSupport.nextStep}
           </p>
 
           <div className="flex shrink-0 items-center gap-2 self-end sm:self-auto">
