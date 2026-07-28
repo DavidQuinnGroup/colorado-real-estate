@@ -101,6 +101,7 @@
     "check:eoi-operational-kpi-reporting-baseline": "npm run worker:build && node dist/scripts/checkEoiOperationalKpiReportingBaseline.js",
     "check:eoi-executive-operational-summary-baseline": "npm run worker:build && node dist/scripts/checkEoiExecutiveOperationalSummaryBaseline.js",
     "check:eoi-operational-dashboard-baseline": "npm run worker:build && node dist/scripts/checkEoiOperationalDashboardBaseline.js",
+    "check:eparb-governance": "npm run worker:build && node dist/scripts/checkEparbGovernance.js",
     "check:launch-readiness": "npm run worker:build && node dist/scripts/launchReadiness.js",
     "worker:build": "tsc -p tsconfig.worker.json --pretty false",
     "infra:up": "docker compose up -d",

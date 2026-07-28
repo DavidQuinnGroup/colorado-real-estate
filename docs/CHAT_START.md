@@ -10,6 +10,49 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / EPARB 1.0 Enterprise Platform Architecture Review Board(tm), July 28, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -5 --oneline
+```
+
+Current EPARB 1.0 state:
+
+- Program: `ENTERPRISE_PLATFORM_ARCHITECTURE_REVIEW_BOARD_1_0`.
+- Status: `EPARB_1_0_ESTABLISHED_RUNTIME_IMPLEMENTATION_NOT_AUTHORIZED`.
+- Baseline before EPARB establishment: clean, aligned `main` at `6874e04959a8663db4865f867a9f9070d874185e`.
+- EPARB exists to govern cross-program and shared platform architecture across PROJECT ATLAS(tm).
+- EPARB scope includes authentication, authorization, administrative access, shared middleware, enterprise APIs, executive workspaces, dashboard frameworks, observability, configuration, feature activation, repository governance, and shared platform services.
+- EPARB complements existing enterprise programs and does not replace CEP, CIM, CAO, EOI, GIS, EIP, EKCP, GOF, GMA, or GKC governance.
+- David retains final executive authorization.
+- EPARB may review, recommend, approve architecture for executive authorization, reject unsafe or duplicative platform direction, require readiness gates, require remediation plans, and establish shared standards.
+- EPARB may not independently authorize production mutation, activate providers, bypass David's executive authorization, implement runtime changes automatically, or bypass existing program governance.
+- Governance contract: `lib/eparb/eparbGovernanceContract.ts`.
+- Export surface: `lib/eparb/index.ts`.
+- Charter: `docs/project-atlas/executive-library/EPARB-1.0-ENTERPRISE-PLATFORM-ARCHITECTURE-REVIEW-BOARD-CHARTER.md`.
+- Initial review portfolio: `docs/project-atlas/executive-library/EPARB-1.0-INITIAL-REVIEW-PORTFOLIO.md`.
+- Deterministic safety command: `npm run check:eparb-governance`.
+- Initial portfolio:
+  - `EPARB-REVIEW-001` - Enterprise Administrative Authentication and Access Architecture, priority `CRITICAL`.
+  - `EPARB-REVIEW-002` - Enterprise Executive Workspace, priority `HIGH`.
+  - `EPARB-REVIEW-003` - Enterprise Dashboard Framework, priority `HIGH`.
+  - `EPARB-REVIEW-004` - Enterprise Repository Platform, priority `HIGH`.
+  - `EPARB-REVIEW-005` - Enterprise Observability, priority `MEDIUM`.
+  - `EPARB-REVIEW-006` - Enterprise Configuration and Feature Activation, priority `MEDIUM`.
+- Review 1 is the next recommended executive review.
+- EPARB Review 1 implementation, authentication changes, authorization changes, middleware changes, admin session implementation, EOI Sprint 3 remediation, EOI Sprint 4, deployment, database work, telemetry, AI, GIS, provider activation, production mutation, and unrelated work remain `NOT_AUTHORIZED`.
+- Exact next executive decision required: David must decide whether to authorize `EPARB-REVIEW-001_ENTERPRISE_ADMINISTRATIVE_AUTHENTICATION_AND_ACCESS_ARCHITECTURE_REVIEW`. Codex must not authorize that decision.
+
+Prior EOI Sprint 3 production certification retry handoff retained below.
+
 PROJECT ATLAS(tm) / EOI 1.0 Sprint 3 Operational Dashboard Baseline(tm), July 27, 2026:
 
 Workspace:
