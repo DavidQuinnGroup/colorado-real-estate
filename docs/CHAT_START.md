@@ -10,6 +10,39 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE 7.1 Sprint 4 Financing Confidence Education(tm) Production Certification Findings, July 28, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Current REIE 7.1 Sprint 4 certification state:
+
+- Governed implementation: `REIE_7_1_SPRINT_4_FINANCING_CONFIDENCE_EDUCATION_BASELINE`.
+- Current certification status: `REIE_7_1_SPRINT_4_PRODUCTION_CERTIFICATION_BLOCKED_FINAL_DEPLOYMENT_PENDING`.
+- Original implementation commit: `7e8163b17aa60210f52dc25d2fa4fad60d048373`.
+- Original deployment evidence: Vercel/GitHub deployment `5646741971`, deployment status `16056942617`, commit status `51246070014`, state `success`, timestamp `2026-07-28T20:09:56Z`.
+- Certification-blocking production issue found: representative property page hero badges overlapped on narrow mobile (`320x900`).
+- Authorized corrective commits pushed during certification: `6d67a0332768bb4f942c56ce6876347007b6c557`, `e25afe7da2eadc6705519bad9e6bfc9a7a913e02`, `43a6ed9bbd8cdf8745a37f299415e167b0eed80b`, `a698c5f4a078510c1844bb0d7cfaea61279c97f6`, `f50871c1992cc38328c0f18613e555753219fad9`, `f5881756917f6e16245bf64e0aa9aa83bca90bc9`, and final corrective commit `3faff7e3f5e6a98df5bbe7bee9d0dc229efada74`.
+- Final corrective commit status observed: GitHub/Vercel status `pending`, commit status ID `51250433499`, description `Vercel is deploying your app`, created `2026-07-28T21:18:01Z`.
+- Final production observation: production still showed the prior mobile lower hero badge row after `3faff7e3f5e6a98df5bbe7bee9d0dc229efada74` was pushed, so the final correction was not yet confirmed in production.
+- Certification record: `docs/project-atlas/executive-library/REIE-7.1-SPRINT-4-PRODUCTION-CERTIFICATION.md`.
+- Production Certification: `BLOCKED`.
+- Customer Experience Certification: `BLOCKED`.
+- Local validation for the final correction passed: `npm run check:reie-financing-confidence-education`, `npm run typecheck`, `npm run lint`, `npm run build`, `npx prisma validate`, and `git diff --check`.
+- No manual deployment, redeployment, preview promotion, domain change, environment change, production mutation, form submission, CRM action, alert/email action, telemetry activation, AI activation, GIS activation, provider activation, authentication change, database change, or unrelated implementation occurred.
+- Exact next executive decision required: David should authorize a controlled REIE 7.1 Sprint 4 production certification retry after deployment success is confirmed for `3faff7e3f5e6a98df5bbe7bee9d0dc229efada74`. Codex must not authorize that decision.
+
+Prior REIE 7.1 Sprint 4 implementation handoff retained below.
+
 PROJECT ATLAS(tm) / REIE 7.1 Sprint 4 Financing Confidence Education(tm) Implementation, July 28, 2026:
 
 Workspace:
