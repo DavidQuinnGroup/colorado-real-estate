@@ -831,8 +831,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
         }
         @media (max-width: 420px) {
           .reie-property-hero-badges {
-            align-items: flex-start;
-            flex-direction: column;
+            display: none !important;
           }
           .reie-property-hero-badge {
             display: block;
