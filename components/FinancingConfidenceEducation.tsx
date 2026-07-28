@@ -14,11 +14,11 @@ const educationItems = [
   },
   {
     label: 'Monthly cost components',
-    body: 'Principal, interest, taxes, insurance, PMI, HOA dues, utilities, and maintenance should be reviewed separately.',
+    body: 'Principal, interest, taxes, insurance, escrow, PMI, HOA dues, utilities, and maintenance should be reviewed separately.',
   },
   {
     label: 'Cash to close',
-    body: 'Down payment, closing costs, prepaid expenses, inspections, moving costs, and reserves may all matter before an offer.',
+    body: 'Down payment, closing costs, escrow setup, prepaid expenses, inspections, moving costs, and reserves may all matter before an offer.',
   },
   {
     label: 'Rate sensitivity',
