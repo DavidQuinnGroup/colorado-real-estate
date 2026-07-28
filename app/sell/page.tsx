@@ -35,13 +35,10 @@ const sellerServices = [
 export default function SellPage() {
   return (
     <main className="min-h-screen bg-[#0b1117] text-white" data-testid="seller-page">
-      <section className="border-b border-white/10 px-7 py-24 sm:px-10 sm:py-28 lg:px-12">
+      <section className="px-5 py-24 sm:px-8 sm:py-28 lg:px-12">
         <div className="mx-auto grid w-full max-w-[1180px] gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
           <div>
-            <Link href="/" className="text-[11px] font-black uppercase tracking-[0.18em] text-cyan-100/80 transition hover:text-white">
-              David Quinn Group
-            </Link>
-            <p className="mt-12 text-[11px] font-black uppercase tracking-[0.28em] text-cyan-100">Colorado Seller Strategy</p>
+            <p className="text-[11px] font-black uppercase tracking-[0.28em] text-cyan-100">Colorado Seller Strategy</p>
             <h1 className="mt-6 max-w-3xl text-5xl font-black leading-[0.98] tracking-normal text-white sm:text-6xl">
               Sell with preparation, pricing, and market context.
             </h1>
@@ -97,7 +94,7 @@ export default function SellPage() {
 
           <div className="grid gap-4 sm:grid-cols-2" data-testid="seller-value-proposition">
             {sellerServices.map((service) => (
-              <article key={service.title} className="rounded-[14px] bg-white/[0.06] p-6 ring-1 ring-white/10">
+              <article key={service.title} className="rounded-[10px] bg-white/[0.045] p-6 ring-1 ring-white/[0.06]">
                 <h2 className="text-xl font-black leading-tight text-white">{service.title}</h2>
                 <p className="mt-4 text-sm leading-7 text-white/62">{service.body}</p>
               </article>
@@ -106,7 +103,7 @@ export default function SellPage() {
         </div>
       </section>
 
-      <section id="seller-intake" className="px-7 py-20 sm:px-10 sm:py-24 lg:px-12" data-testid="seller-intake-section">
+      <section id="seller-intake" className="px-5 py-20 sm:px-8 sm:py-24 lg:px-12" data-testid="seller-intake-section">
         <div className="mx-auto grid w-full max-w-[1180px] gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
           <div>
             <p className="text-[11px] font-black uppercase tracking-[0.28em] text-cyan-100">Next Step</p>

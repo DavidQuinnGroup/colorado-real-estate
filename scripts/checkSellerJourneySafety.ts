@@ -9,10 +9,11 @@ const valuationRoute = read('app/api/valuation/route.ts');
 const sellerPage = read('app/sell/page.tsx');
 const sellerForm = read('components/HomeValueEstimator.tsx');
 const homePage = read('app/page.tsx');
+const publicNavigation = read('components/PublicNavigation.tsx');
 
 assert.ok(sellerPage.includes('data-testid="seller-page"'), 'Expected /sell to expose a stable seller page handle.');
 assert.ok(sellerPage.includes('HomeValueEstimator'), 'Expected /sell to reuse the seller intake form.');
-assert.ok(homePage.includes("{ label: 'Sell', href: '/sell' }"), 'Expected home navigation to route Sell directly to /sell.');
+assert.ok(publicNavigation.includes("{ label: 'Sell', href: '/sell' }"), 'Expected shared public navigation to route Sell directly to /sell.');
 assert.ok(homePage.includes("href: '/sell'"), 'Expected home seller card to route to /sell.');
 
 assert.ok(valuationRoute.includes("type: 'strategy_intake'"), 'Expected seller submissions to use canonical strategy_intake CRM tasks.');

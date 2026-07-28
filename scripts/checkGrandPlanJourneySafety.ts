@@ -9,6 +9,7 @@ const homePage = read('app/page.tsx');
 const grandPlanPage = read('app/grand-plan/page.tsx');
 const grandPlanIntake = read('components/GrandPlanIntake.tsx');
 const saveSearchRoute = read('app/api/save-search/route.ts');
+const publicNavigation = read('components/PublicNavigation.tsx');
 const forbiddenPublicClaims = [
   'Client DNA',
   'Strategy synthesis',
@@ -48,7 +49,7 @@ const forbiddenPublicClaims = [
 
 assert.ok(existsSync('app/grand-plan/page.tsx'), 'Expected /grand-plan page to exist.');
 assert.ok(!existsSync('app/api/grand-plan/route.ts'), 'Grand Plan must reuse the existing strategy-intake API, not create a duplicate API.');
-assert.ok(homePage.includes("{ label: 'Grand Plan™', href: '/grand-plan' }"), 'Expected Home Portal navigation to discover /grand-plan.');
+assert.ok(publicNavigation.includes("{ label: 'Grand Plan', href: '/grand-plan' }"), 'Expected shared public navigation to discover /grand-plan.');
 assert.ok(homePage.includes("href: '/grand-plan'"), 'Expected Home Portal Grand Plan CTAs to route to /grand-plan.');
 
 assert.ok(grandPlanPage.includes('data-testid="grand-plan-page"'), 'Expected stable Grand Plan page test handle.');

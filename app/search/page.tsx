@@ -127,7 +127,7 @@ export default async function SearchPage() {
   const searchFaqs = buildSearchFaqs();
 
   return (
-    <main className="h-[calc(100vh-64px)] w-full overflow-hidden bg-black text-white">
+    <main className="h-[calc(100vh-112px)] min-h-[560px] w-full overflow-hidden bg-black text-white">
       <h1 className="sr-only">Guided Colorado Property Search</h1>
       <script
         type="application/ld+json"

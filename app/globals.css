@@ -64,6 +64,7 @@ html, body {
   .public-trust-grid {
     width: 100%;
     max-width: 1024px;
+    min-width: 0;
     margin-left: auto;
     margin-right: auto;
   }
@@ -118,6 +119,7 @@ html, body {
 
   .public-trust-grid {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 32px;
   }
 
@@ -131,6 +133,9 @@ html, body {
   .public-trust-card {
     border: 1px solid rgba(255, 255, 255, 0.1);
     background: rgba(255, 255, 255, 0.03);
+    min-width: 0;
+    max-width: 100%;
+    overflow-wrap: anywhere;
   }
 
   .public-trust-aside {
@@ -193,14 +198,18 @@ html, body {
     display: grid;
     gap: 16px;
     margin-top: 16px;
+    min-width: 0;
     color: rgba(255, 255, 255, 0.62);
     font-size: 14px;
     line-height: 1.75;
+    overflow-wrap: anywhere;
   }
 
   .public-trust-card-body p,
   .public-trust-list {
     margin: 0;
+    min-width: 0;
+    overflow-wrap: anywhere;
   }
 
   .public-trust-list {
@@ -213,6 +222,8 @@ html, body {
   .public-trust-list-item {
     border-left: 1px solid rgba(207, 250, 254, 0.28);
     padding-left: 16px;
+    min-width: 0;
+    overflow-wrap: anywhere;
   }
 
   .public-trust-card-body a {
@@ -230,6 +241,14 @@ html, body {
 
     .public-trust-title {
       font-size: 48px;
+    }
+  }
+
+  @media (max-width: 359px) {
+    .public-trust-hero,
+    .public-trust-body {
+      padding-left: 16px;
+      padding-right: 16px;
     }
   }
 

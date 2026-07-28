@@ -534,7 +534,8 @@ export default function SaveSearch({ city }: SaveSearchProps) {
           data-testid="reie-save-search-consent-notice"
           data-public-trust-form-notice="save-search"
         >
-          Email is required. Supported search criteria, timing, intent, and optional notes are used for saved-search updates and follow-up context. Review the{' '}
+          Email is required. Supported search criteria, timing, intent, and optional notes are used for saved-search updates and follow-up routing. Saving a search
+          does not automatically create a brokerage relationship. Review the{' '}
           <Link href="/privacy" className="font-bold text-cyan-100 underline underline-offset-4">
             Privacy Notice
           </Link>{' '}

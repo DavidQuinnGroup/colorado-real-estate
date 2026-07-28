@@ -39,16 +39,7 @@ export const metadata: Metadata = {
   },
 };
 
-const navigationLinks = [
-  { label: 'Search', href: '#search' },
-  { label: 'Communities', href: '#communities' },
-  { label: 'Sell', href: '/sell' },
-  { label: 'Grand Plan™', href: '/grand-plan' },
-  { label: 'About', href: '/about' },
-  { label: 'Contact', href: '/contact' },
-];
-
-const sectionShell = 'px-7 py-28 sm:px-10 sm:py-36 lg:px-12';
+const sectionShell = 'px-5 py-24 sm:px-8 sm:py-32 lg:px-12';
 const containerShell = 'mx-auto w-full max-w-[1180px]';
 const eyebrowClass = 'text-[11px] font-black uppercase tracking-[0.28em] text-[#b7dbe2]';
 const headingClass = 'mt-5 max-w-4xl text-4xl font-black leading-[1.04] tracking-normal text-white sm:text-5xl lg:text-6xl';
@@ -205,37 +196,7 @@ export default function HomePage() {
       />
       <FAQSchema faqs={homeFaqs} pageUrl={SITE_URL} />
       <div className="bg-[#070b10] text-white">
-        <header className="sticky top-0 z-40 border-b border-white/10 bg-[#071017]/74 shadow-[0_16px_40px_rgba(0,0,0,0.18)] backdrop-blur-xl" data-testid="home-portal-premium-header">
-          <nav className={`${containerShell} flex items-center justify-between gap-8 px-7 py-5 sm:px-10 lg:px-12`} aria-label="Home portal navigation">
-            <Link href="/" className="home-brand group flex min-w-0 items-center gap-4">
-              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[10px] border border-white/16 bg-white/[0.08] text-sm font-black tracking-normal transition group-hover:border-cyan-100/40 group-hover:bg-white/[0.12]">
-                DQ
-              </span>
-              <span className="min-w-0">
-                <span className="block text-sm font-black uppercase tracking-[0.16em]">David Quinn Group</span>
-                <span className="mt-1 hidden text-[10px] font-bold uppercase tracking-[0.22em] text-white/44 sm:block">
-                  Colorado Advisory
-                </span>
-              </span>
-            </Link>
-            <div className="home-nav-items">
-              {navigationLinks.map((link) => (
-                <Link
-                  key={`${link.href}-${link.label}`}
-                  href={link.href}
-                  className="home-nav-link text-[11px] font-black uppercase tracking-[0.15em]"
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </div>
-            <Link href="/contact" className={secondaryButtonClass}>
-              Contact
-            </Link>
-          </nav>
-        </header>
-
-        <section className="relative min-h-[calc(100vh-74px)] overflow-hidden" data-testid="home-portal-hero">
+        <section className="relative min-h-[calc(100vh-112px)] overflow-hidden" data-testid="home-portal-hero">
           <Image
             src={HERO_IMAGE}
             alt="Colorado Front Range residential landscape at golden hour"
@@ -247,7 +208,7 @@ export default function HomePage() {
           <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(5,7,10,0.9)_0%,rgba(5,7,10,0.66)_42%,rgba(5,7,10,0.22)_100%)]" />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_50%,rgba(183,219,226,0.16),transparent_32%)]" />
 
-          <div className={`${containerShell} relative z-10 flex min-h-[calc(100vh-74px)] items-center px-7 pb-28 pt-24 sm:px-10 lg:px-12`}>
+          <div className={`${containerShell} relative z-10 flex min-h-[calc(100vh-112px)] items-center px-5 pb-24 pt-20 sm:px-8 sm:pb-28 lg:px-12`}>
             <div className="max-w-3xl">
               <p className={eyebrowClass}>
                 Colorado Front Range Advisory
@@ -389,7 +350,7 @@ export default function HomePage() {
                 'Add property and neighborhood context.',
                 'Continue into guided search when you are ready to refine.',
               ].map((principle) => (
-                <p key={principle} className="rounded-[10px] border border-white/10 bg-white/[0.045] px-5 py-4 text-sm font-bold leading-6 text-white/66">
+                <p key={principle} className="rounded-[8px] bg-white/[0.045] px-5 py-4 text-sm font-bold leading-6 text-white/66 ring-1 ring-white/[0.06]">
                   {principle}
                 </p>
               ))}

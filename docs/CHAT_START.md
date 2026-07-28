@@ -10,6 +10,37 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE 7.1 Sprint 1 Public Navigation, Visual Trust and Route Completion Baseline(tm), July 28, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -5 --oneline
+```
+
+Current REIE 7.1 Sprint 1 implementation state:
+
+- Sprint: `REIE_7_1_SPRINT_1_PUBLIC_NAVIGATION_VISUAL_TRUST_AND_ROUTE_COMPLETION_BASELINE`.
+- Status: `REIE_7_1_SPRINT_1_IMPLEMENTED_AND_PUSHED_DEPLOYMENT_NOT_AUTHORIZED`.
+- Implementation baseline: clean, aligned `main` at `7025d583322ef2e9637943d29a1ba26a3fe7aa33`.
+- Sprint record: `docs/project-atlas/executive-library/REIE-7.1-SPRINT-1-PUBLIC-NAVIGATION-VISUAL-TRUST-AND-ROUTE-COMPLETION-BASELINE.md`.
+- First-impression design review: `docs/project-atlas/executive-library/REIE-7.1-FIRST-IMPRESSION-EXPERIENCE-DESIGN-REVIEW.md`.
+- Runtime implementation: shared public navigation in `components/PublicNavigation.tsx`, root layout integration, reduced visual dominance of brokerage attribution, removal of duplicate route-local brand/header elements, spacing/visual trust polish on home/search/market/sell/grand-plan/about/public-trust/property surfaces.
+- Deterministic safety command: `npm run check:reie-first-impression-experience-baseline`.
+- Requirements advanced: REIE-ADJ-001, 002, 005, 006, 007, 008 bounded review, 010 preservation, 011, 012, 013, 018 bounded preservation review, 019, 023, and 024 bounded review.
+- Remaining open/deferred requirements: three map themes, AEO expansion, Mortgage Calculator, recommended lender page, dedicated What is My Home Worth route, Sundance page/articles, Electric Caribbean Blue water-color/provider styling feasibility, and all activation-bound geographic governance items.
+- Deployment remains prohibited; production certification has not been performed.
+- Mortgage Calculator, Lender page, Home Worth route, Sundance, AEO, EOI Sprint 4, Executive Workspace, authentication work, database work, telemetry, AI, GIS, provider activation, production mutation, and unrelated work remain `NOT_AUTHORIZED`.
+- Exact next executive decision required: David should decide whether to authorize controlled deployment and production certification review for REIE 7.1 Sprint 1. Codex must not authorize that decision.
+
+Prior REIE 7.1 First Impression Experience Design Review handoff retained below.
+
 PROJECT ATLAS(tm) / REIE 7.1 First Impression Experience Design Review(tm), July 28, 2026:
 
 Workspace:

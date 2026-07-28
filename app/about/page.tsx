@@ -75,7 +75,7 @@ const advisorySteps = [
 export default function AboutPage() {
   return (
     <main className="bg-[#070b10] text-white" data-testid="about-advisor-page">
-      <section className="border-b border-white/10 px-7 py-28 sm:px-10 sm:py-36 lg:px-12">
+      <section className="px-5 py-24 sm:px-8 sm:py-32 lg:px-12">
         <div className="mx-auto max-w-[1180px]">
           <p className="text-[11px] font-black uppercase tracking-[0.28em] text-[#b7dbe2]">Advisor Experience</p>
           <h1 className="mt-7 max-w-4xl text-5xl font-black leading-[0.98] tracking-normal sm:text-6xl lg:text-7xl">
@@ -96,10 +96,10 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className="border-b border-white/10 bg-[#0b1117] px-7 py-24 sm:px-10 lg:px-12" data-testid="about-advisory-sections">
+      <section className="bg-[#0b1117] px-5 py-24 sm:px-8 lg:px-12" data-testid="about-advisory-sections">
         <div className="mx-auto grid max-w-[1180px] gap-8 lg:grid-cols-2">
           {sections.map((section) => (
-            <article key={section.eyebrow} className="rounded-[14px] bg-white/[0.052] p-8 ring-1 ring-white/10">
+            <article key={section.eyebrow} className="rounded-[10px] bg-white/[0.045] p-8 ring-1 ring-white/[0.06]">
               <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[#b7dbe2]">{section.eyebrow}</p>
               <h2 className="mt-5 text-3xl font-black leading-tight tracking-normal text-white">{section.title}</h2>
               <p className="mt-5 text-sm leading-7 text-white/64">{section.body}</p>
@@ -108,7 +108,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className="bg-[#e8e2d8] px-7 py-24 text-[#111820] sm:px-10 lg:px-12" data-testid="about-decision-framework">
+      <section className="bg-[#e8e2d8] px-5 py-24 text-[#111820] sm:px-8 lg:px-12" data-testid="about-decision-framework">
         <div className="mx-auto grid max-w-[1180px] gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
           <div>
             <p className="text-[11px] font-black uppercase tracking-[0.28em] text-[#6f5b43]">Decision-Making Framework</p>
@@ -129,8 +129,8 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className="px-7 py-24 sm:px-10 lg:px-12" data-testid="about-next-steps">
-        <div className="mx-auto max-w-[1180px] rounded-[16px] bg-white px-8 py-14 text-[#071017] shadow-[0_30px_90px_rgba(0,0,0,0.22)] sm:px-12">
+      <section className="px-5 py-24 sm:px-8 lg:px-12" data-testid="about-next-steps">
+        <div className="mx-auto max-w-[1180px] rounded-[10px] bg-white px-6 py-14 text-[#071017] shadow-[0_30px_90px_rgba(0,0,0,0.18)] sm:px-12">
           <p className="text-[11px] font-black uppercase tracking-[0.24em] text-[#6f5b43]">Next Steps</p>
           <h2 className="mt-5 max-w-3xl text-4xl font-black leading-[1.05] tracking-normal sm:text-5xl">
             Begin with the question you need answered.

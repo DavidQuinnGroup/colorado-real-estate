@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { ArrowLeft, CheckCircle2, Compass, Home, MapPinned } from 'lucide-react';
+import { CheckCircle2, Compass, Home, MapPinned } from 'lucide-react';
 
 import GrandPlanIntake from '@/components/GrandPlanIntake';
 import { SITE_NAME, SITE_URL } from '@/lib/publicTrust';
@@ -40,13 +40,6 @@ export default function GrandPlanPage() {
       <section data-testid="grand-plan-landing">
         <div>
           <div>
-            <Link
-              href="/"
-              className="gp-back-link"
-            >
-              <ArrowLeft size={14} aria-hidden="true" />
-              David Quinn Group
-            </Link>
             <p className="gp-eyebrow gp-hero-eyebrow">Grand Plan</p>
             <h1>
               Build Your Grand Plan.

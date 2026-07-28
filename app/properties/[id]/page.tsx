@@ -881,7 +881,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
             </div>
           </div>
 
-          <aside className="border-t border-white/10 bg-[#070b10] p-4 sm:p-5 lg:sticky lg:top-0 lg:h-screen lg:overflow-y-auto lg:border-l lg:border-t-0">
+          <aside className="border-t border-white/10 bg-[#070b10] p-4 sm:p-5 lg:sticky lg:top-[68px] lg:h-[calc(100vh-68px)] lg:overflow-y-auto lg:border-l lg:border-t-0">
             <section className="overflow-hidden rounded-[8px] border border-cyan-100/22 bg-cyan-100/[0.075]">
               <div className="border-b border-cyan-100/14 bg-cyan-100/[0.07] p-4">
                 <div className="flex items-start justify-between gap-3">
@@ -1002,7 +1002,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-5 py-10 lg:px-8">
+      <section className="mx-auto max-w-7xl px-5 py-12 sm:px-8 lg:px-10">
         <div className="mb-6 flex flex-col justify-between gap-4 border-b border-white/10 pb-6 md:flex-row md:items-end">
           <div className="max-w-3xl">
             <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.24em] text-cyan-100/76">
@@ -1634,7 +1634,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
           </aside>
         </div>
       </section>
-      <section className="mx-auto max-w-7xl px-5 pb-20 lg:px-8">
+      <section className="mx-auto max-w-7xl px-5 pb-24 sm:px-8 lg:px-10">
         <RelatedPropertyLinks
           city={property.city || 'Colorado'}
           neighborhood={property.neighborhood}

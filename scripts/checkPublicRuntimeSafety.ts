@@ -72,8 +72,14 @@ assert.match(middleware, /"\/admin\/:path\*"/, "Middleware must protect /admin/*
 assert.match(middleware, /"\/api\/admin\/:path\*"/, "Middleware must protect /api/admin/* by default.");
 assert.doesNotMatch(middleware, /NextResponse\.redirect/, "Middleware must not redirect with credential-bearing URLs.");
 assert.doesNotMatch(middleware, /cookies\.set/, "Middleware must not set admin credential cookies from URL credentials.");
-assert.match(middleware, /headers\.get\("x-admin-key"\)/, "Header admin authentication must remain available.");
-assert.match(middleware, /authorization/, "Bearer admin authentication must remain available.");
+assert.match(middleware, /authorizeAdminRequest/, "Middleware must delegate to the governed admin authorization helper.");
+assert.match(middleware, /withTrustedAdminHeaders/, "Middleware must preserve trusted admin context headers after authorization.");
+
+const adminAuth = read("lib/admin/adminAuth.ts");
+assert.match(adminAuth, /headers\.get\('x-admin-key'\)/, "Header admin authentication must remain available.");
+assert.match(adminAuth, /authorization/, "Bearer admin authentication must remain available.");
+assert.match(adminAuth, /X_ADMIN_KEY/, "Admin auth contract must preserve x-admin-key mechanism.");
+assert.match(adminAuth, /BEARER_ADMIN_KEY/, "Admin auth contract must preserve bearer admin-key mechanism.");
 
 const repositoryAuth = read("app/api/admin/repository/auth.ts");
 assert.match(repositoryAuth, /headers\.get\("x-admin-key"\)/, "Repository auth must preserve x-admin-key.");

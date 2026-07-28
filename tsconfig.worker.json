@@ -48,6 +48,7 @@
     "scripts/checkEparbAdminAuthSessionFoundation.ts",
     "scripts/checkAdminAuthSafety.ts",
     "scripts/checkReieAdjustmentsTraceability.ts",
+    "scripts/checkReieFirstImpressionExperienceBaseline.ts",
     "scripts/checkPrismaClientParity.ts",
     "scripts/checkProductionDependencies.ts",
     "scripts/checkPropertyRouteSafety.ts",

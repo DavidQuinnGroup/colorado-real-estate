@@ -95,22 +95,10 @@ export default function MarketIndexPage() {
     >
       <FAQSchema faqs={marketFaqs} pageUrl={MARKET_URL} />
 
-      <section className="border-b border-white/10 px-6 py-20 sm:px-10 lg:px-12">
+      <section className="px-5 py-20 sm:px-8 lg:px-12">
         <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[1fr_0.8fr] lg:items-end">
           <div>
-            <Link
-              href="/"
-              className="text-[11px] font-black uppercase tracking-[0.18em] text-cyan-100/78 transition hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-200"
-              {...getJourneyMeasurementAttributes({
-                surface: 'market-index-hero',
-                stage: 'market',
-                action: 'continue-journey',
-                destination: 'search',
-              })}
-            >
-              David Quinn Group
-            </Link>
-            <p className="mt-12 text-[11px] font-black uppercase tracking-[0.28em] text-cyan-100">Colorado Market Intelligence</p>
+            <p className="text-[11px] font-black uppercase tracking-[0.28em] text-cyan-100">Colorado Market Intelligence</p>
             <h1 className="mt-6 max-w-4xl text-5xl font-black uppercase italic leading-[0.95] tracking-tight text-white sm:text-6xl">
               Choose the market context before the next property decision.
             </h1>
@@ -148,7 +136,7 @@ export default function MarketIndexPage() {
             </div>
           </div>
 
-          <div className="grid gap-3 rounded-[8px] border border-white/10 bg-white/[0.035] p-5">
+          <div className="grid gap-3 rounded-[8px] bg-white/[0.035] p-5 ring-1 ring-white/[0.06]">
             {[
               ['Markets', marketSummaries.length],
               ['Neighborhood paths', marketSummaries.reduce((total, market) => total + market.neighborhoodCount, 0)],
@@ -166,7 +154,7 @@ export default function MarketIndexPage() {
         </div>
       </section>
 
-      <section className="px-6 py-16 sm:px-10 lg:px-12" data-testid="cep-market-discovery-featured">
+      <section className="px-5 py-16 sm:px-8 lg:px-12" data-testid="cep-market-discovery-featured">
         <div className="mx-auto max-w-6xl">
           <div className="mb-8 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div>
@@ -192,7 +180,7 @@ export default function MarketIndexPage() {
               <Link
                 key={market.city.marketSlug}
                 href={`/market/${market.city.marketSlug}`}
-                className="group border border-white/10 bg-white/[0.03] p-5 transition hover:border-cyan-100/36 hover:bg-white/[0.055] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-200"
+                className="group bg-white/[0.03] p-5 ring-1 ring-white/[0.06] transition hover:bg-white/[0.055] hover:ring-cyan-100/28 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-200"
                 data-testid="cep-market-discovery-featured-link"
                 data-cep-market-city={market.city.name}
                 {...getJourneyMeasurementAttributes({
@@ -220,7 +208,7 @@ export default function MarketIndexPage() {
         </div>
       </section>
 
-      <section className="border-y border-white/10 px-6 py-16 sm:px-10 lg:px-12" data-testid="cep-market-discovery-all">
+      <section className="px-5 py-16 sm:px-8 lg:px-12" data-testid="cep-market-discovery-all">
         <div className="mx-auto max-w-6xl">
           <p className="text-[10px] font-black uppercase tracking-[0.28em] text-white/36">All Market Paths</p>
           <div className="mt-6 grid gap-px overflow-hidden border border-white/10 bg-white/10 sm:grid-cols-2 lg:grid-cols-3">
@@ -252,7 +240,7 @@ export default function MarketIndexPage() {
         </div>
       </section>
 
-      <section className="px-6 py-16 sm:px-10 lg:px-12" data-testid="cep-market-discovery-continuity">
+      <section className="px-5 py-16 sm:px-8 lg:px-12" data-testid="cep-market-discovery-continuity">
         <div className="mx-auto grid max-w-6xl gap-4 md:grid-cols-3">
           {[
             { label: 'Search', body: 'Use current filters and market links to compare active inventory.', href: '/search', icon: Search },
@@ -262,7 +250,7 @@ export default function MarketIndexPage() {
             <Link
               key={step.label}
               href={step.href}
-              className="group border border-white/10 bg-white/[0.03] p-5 transition hover:border-cyan-100/36 hover:bg-white/[0.055] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-200"
+              className="group bg-white/[0.03] p-5 ring-1 ring-white/[0.06] transition hover:bg-white/[0.055] hover:ring-cyan-100/28 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-200"
               data-testid="cep-market-discovery-continuity-link"
               {...getJourneyMeasurementAttributes({
                 surface: 'market-index-continuity',
@@ -284,7 +272,7 @@ export default function MarketIndexPage() {
 
 function MarketMetric({ label, value }: { label: string; value: string }) {
   return (
-    <div className="border border-white/10 bg-black/24 p-3">
+    <div className="bg-black/24 p-3 ring-1 ring-white/[0.06]">
       <p className="text-[9px] font-black uppercase tracking-[0.14em] text-white/34">{label}</p>
       <p className="mt-2 text-xs font-black uppercase leading-5 text-white/68">{value}</p>
     </div>
