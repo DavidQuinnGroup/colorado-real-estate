@@ -10,6 +10,34 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE Visual Intelligence System(tm) 1.0, July 29, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Current governed state:
+
+- Boulder County Open Data Activation Gate(tm) 1.0 is implemented locally as documentation/readiness only and remains unpushed.
+- REIE Visual Intelligence System(tm) 1.0 is implemented locally as an internal architecture, design-system, and representative prototype sprint.
+- Core VIS contract: `lib/visual-intelligence/visualIntelligenceSystem.ts`.
+- Internal noindex preview route: `/admin/repository/visual-intelligence`.
+- Representative prototype: Market Pulse, Property DNA, Confidence Layer, and responsive Market Report Composition using deterministic `NON_PRODUCTION_FIXTURE` data.
+- Governed implementation record: `docs/project-atlas/executive-library/REIE-VISUAL-INTELLIGENCE-SYSTEM-1.md`.
+- Validation script: `npm run check:reie-visual-intelligence-system`.
+- Boundaries remain active: no public route, no provider activation, no public GIS, no AI, no telemetry, no personalization, no schema or Prisma changes, no backend provider execution, no predictions, no rankings, no decorative customer-facing charts, no push, and no deployment.
+- Exact next step: David should decide whether to authorize a future VIS production adoption program for a specific customer surface such as Market Product, Property Product, Search, or Decision Guides. Codex must not publicize VIS or bind it to live data without a separate directive.
+
+Prior Boulder County Open Data handoff retained below.
+
 PROJECT ATLAS(tm) / Boulder County Open Data Rights Confirmation & Activation Gate(tm) 1.0, July 29, 2026:
 
 Workspace:

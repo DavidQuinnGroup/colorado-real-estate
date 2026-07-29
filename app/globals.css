@@ -2,6 +2,162 @@
 @tailwind components;
 @tailwind utilities;
 
+[data-testid="vis-prototype"] {
+  width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background: #0b0b0b;
+  color: #f5f1e8;
+}
+
+[data-testid="vis-prototype"],
+[data-testid="vis-prototype"] * {
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+[data-testid="vis-prototype"] > section {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(2rem, 4vw, 3.5rem);
+  width: 100%;
+  max-width: min(80rem, 100%);
+  margin: 0 auto;
+  padding: clamp(3rem, 5vw, 4rem) clamp(1.25rem, 4vw, 2.5rem);
+}
+
+[data-testid="vis-prototype"] header {
+  display: grid;
+  gap: 2rem;
+  align-items: end;
+  padding-bottom: clamp(2rem, 4vw, 3rem);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+[data-testid="vis-prototype"] h1 {
+  max-width: 70rem;
+  margin-top: 1.25rem;
+  font-size: clamp(2.45rem, 7vw, 5rem);
+  font-weight: 650;
+  line-height: 1;
+  overflow-wrap: anywhere;
+}
+
+[data-testid="vis-prototype"] h2 {
+  margin-top: 1rem;
+  font-size: clamp(1.8rem, 4vw, 3.1rem);
+  font-weight: 650;
+  line-height: 1.08;
+}
+
+[data-testid="vis-prototype"] h3 {
+  font-size: 1rem;
+  font-weight: 650;
+}
+
+[data-testid="vis-prototype"] p {
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+}
+
+[data-testid="vis-prototype"] svg {
+  max-width: 100%;
+}
+
+[data-testid="vis-market-report-composition"],
+[data-testid="vis-prototype"] > section > section:not([data-testid]) {
+  display: grid;
+  gap: clamp(1.5rem, 3vw, 2rem);
+}
+
+[data-testid="vis-market-report-composition"] > article,
+[data-testid="vis-market-pulse"],
+[data-testid="vis-property-dna"],
+[data-testid="vis-confidence-layer"],
+[data-testid="vis-prototype"] > section > section:not([data-testid]) > article {
+  overflow: hidden;
+  border-radius: 28px;
+  padding: clamp(1.5rem, 4vw, 2.5rem);
+}
+
+[data-testid="vis-market-report-composition"] > article,
+[data-testid="vis-confidence-layer"] {
+  background: #f6f3ec;
+  color: #1b1710;
+}
+
+[data-testid="vis-market-pulse"],
+[data-testid="vis-property-dna"],
+[data-testid="vis-prototype"] > section > section:not([data-testid]) > article {
+  background: #15130f;
+}
+
+[data-testid="vis-market-report-composition"] > article > div:last-child,
+[data-testid="vis-market-pulse"] > div,
+[data-testid="vis-property-dna"] > div,
+[data-testid="vis-confidence-layer"] > div,
+[data-testid="vis-prototype"] dl,
+[data-testid="vis-prototype"] details + details {
+  margin-top: clamp(1.5rem, 3vw, 2rem);
+}
+
+[data-testid="vis-market-report-composition"] > article > div:last-child,
+[data-testid="vis-property-dna"] > div,
+[data-testid="vis-prototype"] dl {
+  display: grid;
+  gap: 1rem;
+}
+
+[data-testid="vis-prototype"] details,
+[data-testid="vis-prototype"] dl > div,
+[data-testid="vis-market-pulse"] div[class*="bg-white/"],
+[data-testid="vis-property-dna"] div[class*="bg-white/"] {
+  border-radius: 18px;
+  padding: 1.25rem;
+}
+
+[data-testid="vis-confidence-layer"] details {
+  background: rgba(255, 255, 255, 0.74);
+}
+
+[data-testid="vis-prototype"] table {
+  width: 100%;
+  min-width: 40rem;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+[data-testid="vis-prototype"] th,
+[data-testid="vis-prototype"] td {
+  padding: 1rem 1rem 1rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  vertical-align: top;
+}
+
+[data-testid="vis-accessible-data-alternative"] {
+  margin-top: 2rem;
+  overflow-x: auto;
+}
+
+@media (min-width: 1024px) {
+  [data-testid="vis-prototype"] header {
+    grid-template-columns: minmax(0, 1fr) minmax(20rem, 0.72fr);
+  }
+
+  [data-testid="vis-market-report-composition"] {
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  }
+
+  [data-testid="vis-prototype"] > section > section:not([data-testid]) {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  [data-testid="vis-property-dna"] > div {
+    grid-template-columns: 280px minmax(0, 1fr);
+    align-items: center;
+  }
+}
+
 html, body {
   min-height: 100%;
   width: 100%;

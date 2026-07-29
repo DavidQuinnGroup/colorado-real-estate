@@ -122,6 +122,7 @@
     "check:colorado-city-evidence-expansion": "npm run worker:build && node dist/scripts/checkColoradoCityEvidenceExpansion.js",
     "check:source-rights-activation-readiness": "npm run worker:build && node dist/scripts/checkSourceRightsActivationReadiness.js",
     "check:boulder-county-open-data-activation-gate": "npm run worker:build && node dist/scripts/checkBoulderCountyOpenDataActivationGate.js",
+    "check:reie-visual-intelligence-system": "npm run worker:build && node dist/scripts/checkReieVisualIntelligenceSystem.js",
     "check:boulder-decision-guide": "npm run worker:build && node dist/scripts/checkBoulderDecisionGuide.js",
     "check:louisville-decision-guide": "npm run worker:build && node dist/scripts/checkLouisvilleDecisionGuide.js",
     "check:lafayette-decision-guide": "npm run worker:build && node dist/scripts/checkLafayetteDecisionGuide.js",
