@@ -2,6 +2,8 @@
 
 import { BadgeDollarSign, Landmark, ListChecks, ShieldCheck, WalletCards } from 'lucide-react';
 
+import { buildFinancingDecisionWorkspace } from '@/lib/financingDecisionWorkspace';
+
 type FinancingConfidenceEducationProps = {
   surface: 'home' | 'search' | 'property' | 'market' | 'city-market' | 'neighborhood-market';
   compact?: boolean;
@@ -39,6 +41,13 @@ const advisorQuestions = [
 ];
 
 export default function FinancingConfidenceEducation({ surface, compact = false }: FinancingConfidenceEducationProps) {
+  const financingDecisionWorkspace = buildFinancingDecisionWorkspace({
+    buyerHref: '#buyer-financing-confidence',
+    searchHref: '/search',
+    marketHref: '/market',
+    advisorHref: '/contact',
+  });
+
   return (
     <section
       className={`overflow-hidden rounded-[10px] border border-cyan-100/16 bg-[#0b131b] text-white shadow-[0_24px_70px_rgba(0,0,0,0.18)] ${
@@ -54,6 +63,16 @@ export default function FinancingConfidenceEducation({ surface, compact = false 
       data-financing-confidence-ai="false"
       data-financing-confidence-gis="false"
       data-financing-confidence-provider-activation="false"
+      data-financing-v8-ai="false"
+      data-financing-v8-customer-accounts="false"
+      data-financing-v8-gis="false"
+      data-financing-v8-telemetry="false"
+      data-financing-v8-mortgage-calculator="false"
+      data-financing-v8-loan-calculator="false"
+      data-financing-v8-loan-application="false"
+      data-financing-v8-lender-workflow="false"
+      data-financing-v8-rate-shopping="false"
+      data-financing-v8-recommendation-engine="false"
     >
       <div className="flex flex-col justify-between gap-4 md:flex-row md:items-start">
         <div>
@@ -85,6 +104,49 @@ export default function FinancingConfidenceEducation({ surface, compact = false 
           </article>
         ))}
       </div>
+
+      <section
+        className={`mt-5 rounded-[8px] border border-cyan-100/14 bg-cyan-100/[0.045] ${
+          compact ? 'p-4' : 'p-5'
+        }`}
+        data-testid="reie-financing-v8-decision-workspace"
+        data-financing-v8-item-count={financingDecisionWorkspace.items.length}
+      >
+        <div className="grid gap-4 lg:grid-cols-[0.7fr_1fr] lg:items-start">
+          <div>
+            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">
+              Financing Decision Workspace
+            </p>
+            <h3 className={`${compact ? 'mt-2 text-lg' : 'mt-3 text-2xl'} font-black leading-tight tracking-normal text-white`}>
+              {financingDecisionWorkspace.headline}
+            </h3>
+            <p className={`${compact ? 'mt-2 text-xs leading-5' : 'mt-3 text-sm leading-6'} text-white/58`}>
+              {financingDecisionWorkspace.orientation}
+            </p>
+            <p className="mt-4 rounded-[8px] border border-white/10 bg-black/16 p-3 text-xs font-bold leading-5 text-white/48">
+              {financingDecisionWorkspace.trustBoundary}
+            </p>
+          </div>
+          <div className={`grid gap-2 ${compact ? '' : 'sm:grid-cols-2'}`}>
+            {financingDecisionWorkspace.items.map((item) => (
+              <a
+                key={item.lens}
+                href={item.href}
+                className="group rounded-[8px] bg-white/[0.045] p-3 ring-1 ring-white/[0.08] transition hover:bg-white/[0.07] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-200"
+                data-testid="reie-financing-v8-decision-item"
+                data-financing-v8-lens={item.lens}
+                data-financing-v8-action={item.action}
+              >
+                <p className="text-[9px] font-black uppercase tracking-[0.14em] text-cyan-100/68">{item.label}</p>
+                <p className="mt-2 text-[11px] font-bold leading-5 text-white/54">{item.guidance}</p>
+                <span className="mt-3 block text-[9px] font-black uppercase tracking-[0.14em] text-cyan-100/76 group-hover:text-white">
+                  {item.action}
+                </span>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
 
       <div className={`mt-4 grid gap-3 ${compact ? '' : 'lg:grid-cols-2'}`}>
         <div className="rounded-[8px] border border-white/10 bg-white/[0.035] p-4">
