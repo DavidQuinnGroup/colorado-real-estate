@@ -13,6 +13,7 @@ import RelatedArticles from '@/components/RelatedArticles';
 import FAQSchema from '@/components/schema/FAQSchema';
 import { cities, getCityByMarketSlug, type CityData } from '@/lib/cities';
 import { getJourneyMeasurementAttributes } from '@/lib/customerJourneyMeasurement';
+import { buildMarketDecisionWorkspace } from '@/lib/marketDecisionWorkspace';
 import { buildCityMarketExperience } from '@/lib/marketIntelligenceExperience';
 import { neighborhoods, type Neighborhood } from '@/lib/neighborhoods';
 import { generateFAQs } from '@/lib/schema/generateFAQs';
@@ -169,6 +170,20 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
   const cityMarketSchema = getJsonLd(cityData, cityNeighborhoods);
   const cityMarketSchemaGraph = cityMarketSchema['@graph'];
   const marketExperience = buildCityMarketExperience(cityData, cityNeighborhoods.length);
+  const marketDecisionWorkspace = buildMarketDecisionWorkspace({
+    scope: 'city',
+    name: cityData.name,
+    marketSignal: marketExperience.directionLabel,
+    competitivenessSignal: marketExperience.competitivenessLabel,
+    timingSignal: marketExperience.timingLabel,
+    pricingSignal: marketExperience.pricingLabel,
+    inventorySignal: `${cityData.stats.inventory} active inventory signal`,
+    neighborhoodCount: cityNeighborhoods.length,
+    resilienceSignal: `${authoritySignals.neighborhoodCount} neighborhood hubs and ${authoritySignals.averageResilienceScore}/100 average resilience`,
+    searchHref: `/search?city=${encodeURIComponent(cityData.name)}`,
+    marketHref: getCanonicalPath(cityData),
+    sellerHref: '/sell',
+  });
   const transitionStats = {
     ...cityData.stats,
     medianPrice: parseCurrency(cityData.stats.medianPrice),
@@ -285,6 +300,54 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
       </section>
 
       <div className="mx-auto max-w-6xl space-y-20 px-6 pb-24">
+        <section
+          className="grid gap-6 border border-[#00ff80]/18 bg-[#00ff80]/[0.045] p-6 md:p-8 lg:grid-cols-[0.88fr_1.12fr]"
+          data-testid="reie-market-v8-decision-workspace"
+          data-market-v8-scope="city"
+          data-market-v8-city={cityData.name}
+          data-market-v8-item-count={marketDecisionWorkspace.items.length}
+          data-market-v8-ai="false"
+          data-market-v8-forecasting="false"
+          data-market-v8-gis="false"
+          data-market-v8-telemetry="false"
+        >
+          <div>
+            <p className="mb-3 text-[10px] font-black uppercase tracking-[0.35em] text-[#00ff80]">Market Decision Workspace</p>
+            <h2 className="text-3xl font-black uppercase italic leading-tight tracking-tight text-white md:text-4xl">
+              {marketDecisionWorkspace.headline}
+            </h2>
+            <p className="mt-5 text-sm leading-7 text-white/58 md:text-base">{marketDecisionWorkspace.orientation}</p>
+            <p className="mt-5 border border-white/10 bg-black/24 p-3 text-xs leading-5 text-white/44">
+              {marketDecisionWorkspace.trustBoundary}
+            </p>
+          </div>
+
+          <div className="grid gap-px overflow-hidden border border-white/10 bg-white/10 sm:grid-cols-2">
+            {marketDecisionWorkspace.items.map((item) => (
+              <Link
+                key={item.lens}
+                href={item.href}
+                className="group flex min-w-0 flex-col bg-[#050505] p-5 transition hover:bg-[#0a1118]"
+                data-testid="reie-market-v8-decision-item"
+                data-market-v8-lens={item.lens}
+                data-market-v8-action={item.action}
+                {...getJourneyMeasurementAttributes({
+                  surface: 'city-market-v8-decision-workspace',
+                  stage: 'market',
+                  action: 'continue-journey',
+                  destination: item.lens === 'seller' ? 'seller' : item.lens === 'market-type' || item.lens === 'attention' ? 'market' : 'search',
+                })}
+              >
+                <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#00ff80]/70">{item.label}</p>
+                <p className="mt-3 text-xs leading-6 text-white/55">{item.explanation}</p>
+                <span className="mt-auto pt-4 text-[10px] font-black uppercase tracking-[0.14em] text-[#00ff80] transition group-hover:text-white">
+                  {item.action}
+                </span>
+              </Link>
+            ))}
+          </div>
+        </section>
+
         <section
           className="grid gap-6 border border-white/10 bg-white/[0.025] p-6 md:p-8 lg:grid-cols-[1fr_0.85fr]"
           data-testid="cep-market-intelligence-summary"

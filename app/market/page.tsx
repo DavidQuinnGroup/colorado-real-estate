@@ -6,6 +6,7 @@ import FinancingConfidenceEducation from '@/components/FinancingConfidenceEducat
 import FAQSchema from '@/components/schema/FAQSchema';
 import { cities, type CityData } from '@/lib/cities';
 import { getJourneyMeasurementAttributes } from '@/lib/customerJourneyMeasurement';
+import { buildMarketDecisionWorkspace } from '@/lib/marketDecisionWorkspace';
 import { buildCityMarketExperience } from '@/lib/marketIntelligenceExperience';
 import { neighborhoods } from '@/lib/neighborhoods';
 import type { FAQItem } from '@/lib/schema/faqSchema';
@@ -85,6 +86,20 @@ function getFeaturedMarkets(markets: CityMarketSummary[]) {
 export default function MarketIndexPage() {
   const marketSummaries = buildCitySummaries();
   const featuredMarkets = getFeaturedMarkets(marketSummaries);
+  const primaryMarket = featuredMarkets[0] || marketSummaries[0];
+  const marketDecisionWorkspace = buildMarketDecisionWorkspace({
+    scope: 'state',
+    name: 'Colorado',
+    marketSignal: primaryMarket?.direction || 'Mixed local conditions',
+    competitivenessSignal: primaryMarket?.timing || 'Preparation matters',
+    timingSignal: 'Compare markets before choosing a property path',
+    pricingSignal: primaryMarket?.pricing,
+    inventorySignal: `${marketSummaries.length} city market paths and ${marketSummaries.reduce((total, market) => total + market.neighborhoodCount, 0)} neighborhood paths`,
+    neighborhoodCount: marketSummaries.reduce((total, market) => total + market.neighborhoodCount, 0),
+    searchHref: '/search',
+    marketHref: '/market',
+    sellerHref: '/sell',
+  });
 
   return (
     <main
@@ -95,6 +110,57 @@ export default function MarketIndexPage() {
       data-cep-measurement-active="false"
     >
       <FAQSchema faqs={marketFaqs} pageUrl={MARKET_URL} />
+
+      <section
+        className="border-b border-white/10 px-5 py-12 sm:px-8 lg:px-12"
+        data-testid="reie-market-v8-decision-workspace"
+        data-market-v8-scope="state"
+        data-market-v8-item-count={marketDecisionWorkspace.items.length}
+        data-market-v8-ai="false"
+        data-market-v8-forecasting="false"
+        data-market-v8-gis="false"
+        data-market-v8-telemetry="false"
+      >
+        <div className="mx-auto max-w-6xl">
+          <p className="text-[10px] font-black uppercase tracking-[0.28em] text-cyan-100/76">Market Decision Workspace</p>
+          <div className="mt-4 grid gap-5 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
+            <div>
+              <h2 className="text-2xl font-black uppercase tracking-tight text-white md:text-4xl">
+                {marketDecisionWorkspace.headline}
+              </h2>
+              <p className="mt-4 max-w-3xl text-sm leading-7 text-white/58">{marketDecisionWorkspace.orientation}</p>
+              <p className="mt-4 rounded-[6px] border border-cyan-100/14 bg-cyan-100/[0.055] p-3 text-xs leading-5 text-white/48">
+                {marketDecisionWorkspace.trustBoundary}
+              </p>
+            </div>
+
+            <div className="grid gap-px overflow-hidden rounded-[8px] border border-white/10 bg-white/10 sm:grid-cols-2">
+              {marketDecisionWorkspace.items.map((item) => (
+                <Link
+                  key={item.lens}
+                  href={item.href}
+                  className="group flex min-w-0 flex-col bg-[#030303] p-4 transition hover:bg-[#0a1118]"
+                  data-testid="reie-market-v8-decision-item"
+                  data-market-v8-lens={item.lens}
+                  data-market-v8-action={item.action}
+                  {...getJourneyMeasurementAttributes({
+                    surface: 'market-v8-decision-workspace',
+                    stage: 'market',
+                    action: 'continue-journey',
+                    destination: item.lens === 'seller' ? 'seller' : item.lens === 'market-type' ? 'market' : 'search',
+                  })}
+                >
+                  <p className="text-[10px] font-black uppercase tracking-[0.16em] text-cyan-100/58">{item.label}</p>
+                  <p className="mt-3 text-xs leading-5 text-white/58">{item.explanation}</p>
+                  <span className="mt-auto pt-4 text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100 transition group-hover:text-white">
+                    {item.action}
+                  </span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
 
       <section className="px-5 py-20 sm:px-8 lg:px-12">
         <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[1fr_0.8fr] lg:items-end">

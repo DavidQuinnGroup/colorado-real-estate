@@ -10,6 +10,7 @@ import RelatedContent from '@/components/RelatedContent';
 import FAQSchema from '@/components/schema/FAQSchema';
 import { getJourneyMeasurementAttributes } from '@/lib/customerJourneyMeasurement';
 import { buildLinkGraph } from '@/lib/linking/buildLinkGraph';
+import { buildMarketDecisionWorkspace } from '@/lib/marketDecisionWorkspace';
 import { buildNeighborhoodMarketExperience } from '@/lib/marketIntelligenceExperience';
 import { getResilienceAdvice, neighborhoods, type Neighborhood } from '@/lib/neighborhoods';
 import type { FAQItem } from '@/lib/schema/faqSchema';
@@ -85,7 +86,7 @@ function isMissingNeighborhoodFilterError(error: unknown) {
 function warnInventoryLookupOnce(message: string) {
   if (warnedAboutInventoryLookup) return;
 
-  console.warn(message);
+  console.info(message);
   warnedAboutInventoryLookup = true;
 }
 
@@ -239,7 +240,7 @@ async function getNeighborhoodInventoryState(neighborhood: Neighborhood): Promis
 
     const typedError = error as SearchError;
     const status = typedError.httpStatus ? ` (${typedError.httpStatus})` : '';
-    console.warn(`Neighborhood inventory lookup failed${status}: ${getErrorMessage(error)}`);
+    console.info(`Neighborhood inventory lookup failed${status}: ${getErrorMessage(error)}`);
 
     return {
       count: getFallbackInventoryCount(neighborhood),
@@ -306,6 +307,22 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
   const neighborhoodSchema = getJsonLd(neighborhood);
   const neighborhoodSchemaGraph = neighborhoodSchema['@graph'];
   const marketExperience = buildNeighborhoodMarketExperience(neighborhood, inventoryState);
+  const cityMarketHref = `/market/${normalizeRouteSegment(neighborhood.city)}-co-housing-market`;
+  const searchHref = `/search?neighborhood=${encodeURIComponent(neighborhood.name)}`;
+  const marketDecisionWorkspace = buildMarketDecisionWorkspace({
+    scope: 'neighborhood',
+    name: neighborhood.name,
+    city: neighborhood.city,
+    marketSignal: marketExperience.inventoryLabel,
+    competitivenessSignal: marketExperience.competitivenessLabel,
+    timingSignal: marketExperience.timingLabel,
+    pricingSignal: `${neighborhood.resilienceScore}/100 resilience context`,
+    inventorySignal: `${inventoryState.count} active inventory signal`,
+    resilienceSignal: `${neighborhood.fireRisk} fire context, ${neighborhood.insuranceComplexity.toLowerCase()} insurance complexity, and ${neighborhood.soilType}`,
+    searchHref,
+    marketHref: cityMarketHref,
+    sellerHref: '/sell',
+  });
 
   return (
     <main className="min-h-screen bg-[#050505] font-inter text-white">
@@ -399,6 +416,57 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
       </section>
 
       <section className="mx-auto grid max-w-7xl gap-8 px-6 py-12 md:grid-cols-12 md:p-12">
+        <section
+          className="border border-[#00ff80]/18 bg-[#00ff80]/[0.045] p-6 md:col-span-12 md:p-8"
+          data-testid="reie-market-v8-decision-workspace"
+          data-market-v8-scope="neighborhood"
+          data-market-v8-city={neighborhood.city}
+          data-market-v8-neighborhood={neighborhood.name}
+          data-market-v8-item-count={marketDecisionWorkspace.items.length}
+          data-market-v8-ai="false"
+          data-market-v8-forecasting="false"
+          data-market-v8-gis="false"
+          data-market-v8-telemetry="false"
+        >
+          <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
+            <div>
+              <p className="mb-3 text-[10px] font-black uppercase tracking-[0.35em] text-[#00ff80]">Market Decision Workspace</p>
+              <h2 className="text-3xl font-black uppercase italic leading-tight tracking-tight text-white">
+                {marketDecisionWorkspace.headline}
+              </h2>
+              <p className="mt-5 text-sm leading-7 text-white/58 md:text-base">{marketDecisionWorkspace.orientation}</p>
+              <p className="mt-5 border border-white/10 bg-black/24 p-3 text-xs leading-5 text-white/44">
+                {marketDecisionWorkspace.trustBoundary}
+              </p>
+            </div>
+
+            <div className="grid gap-px overflow-hidden border border-white/10 bg-white/10 sm:grid-cols-2">
+              {marketDecisionWorkspace.items.map((item) => (
+                <Link
+                  key={item.lens}
+                  href={item.href}
+                  className="group flex min-w-0 flex-col bg-[#050505] p-5 transition hover:bg-[#0a1118]"
+                  data-testid="reie-market-v8-decision-item"
+                  data-market-v8-lens={item.lens}
+                  data-market-v8-action={item.action}
+                  {...getJourneyMeasurementAttributes({
+                    surface: 'neighborhood-market-v8-decision-workspace',
+                    stage: 'market',
+                    action: 'continue-journey',
+                    destination: item.lens === 'seller' ? 'seller' : item.lens === 'market-type' || item.lens === 'attention' ? 'market' : 'search',
+                  })}
+                >
+                  <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#00ff80]/70">{item.label}</p>
+                  <p className="mt-3 text-xs leading-6 text-white/55">{item.explanation}</p>
+                  <span className="mt-auto pt-4 text-[10px] font-black uppercase tracking-[0.14em] text-[#00ff80] transition group-hover:text-white">
+                    {item.action}
+                  </span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+
         <div
           className="border border-white/10 bg-white/[0.025] p-6 md:col-span-12 md:p-8"
           data-testid="cep-market-intelligence-summary"
