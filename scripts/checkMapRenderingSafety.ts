@@ -64,10 +64,12 @@ async function main() {
   assert(globalsCss.includes('filter: none !important;'), 'Leaflet tile reset must not distort map tiles.');
   assert(globalsCss.includes('.reie-property-hero-grid'), 'Global CSS must define the property detail hero grid fallback.');
   assert(globalsCss.includes('align-items: start !important;'), 'Property detail hero grid must not stretch image and advisor panel to equal height.');
-  assert(globalsCss.includes('grid-template-columns: minmax(0, 1fr) 420px !important;'), 'Property detail hero grid must preserve the desktop advisor panel column.');
+  assert(globalsCss.includes('grid-template-columns: minmax(0, 1fr) 390px !important;'), 'Property detail hero grid must preserve the certified Property Product 2 desktop advisor panel column.');
   assert(globalsCss.includes('height: calc(100vh - 64px) !important;'), 'Property advisor panel must stay within the initial desktop viewport.');
   assert(globalsCss.includes('.reie-property-detail-grid'), 'Global CSS must define the property detail content grid fallback.');
   assert(globalsCss.includes('.reie-property-advisor-actions a'), 'Global CSS must preserve property advisor action touch-target sizing.');
+  assert(propertyPage.includes('md:grid-cols-[minmax(0,1fr)_360px]'), 'Property detail page must preserve the certified Property Product 2 medium advisor column.');
+  assert(propertyPage.includes('xl:grid-cols-[minmax(0,1fr)_390px]'), 'Property detail page must preserve the certified Property Product 2 wide advisor column.');
 
   assert(!searchMap.includes('.reie-map-canvas::after'), 'SearchMap must not paint decorative overlays over map tiles.');
   assert(!searchMap.includes('.reie-map-canvas::before'), 'SearchMap must not paint decorative overlays over map tiles.');
@@ -93,7 +95,8 @@ async function main() {
   assert(globalsCss.includes('.reie-search-continuity'), 'Global CSS must define the dedicated search Grand Plan continuity treatment.');
   assert(globalsCss.includes('.reie-search-orientation'), 'Global CSS must define the dedicated search orientation treatment.');
   assert(homePage.includes('Start with fit, context, and confidence.'), 'Homepage discovery section must use Wave 2D fit/context/confidence framing.');
-  assert(homePage.includes('Search is the beginning of the decision, not the entire decision.'), 'Homepage discovery section must explain the advisory search boundary.');
+  assert(homePage.includes('Explore Colorado homes through the map, listings, and decision context that shape a better shortlist.'), 'Homepage discovery section must explain the certified Homepage Product 2 search decision boundary.');
+  assert(homePage.includes('A clear path into deeper search.'), 'Homepage discovery principles must preserve guided-search continuation framing.');
   assert(homePage.includes('href="/search"'), 'Homepage discovery section must include a full search CTA.');
   assert(homePage.includes('href="/grand-plan"'), 'Homepage discovery section must preserve one subordinate Grand Plan path.');
   assert(homePage.includes('data-testid="home-discovery-principles"'), 'Homepage discovery principles must expose a stable verification handle.');
@@ -168,7 +171,8 @@ async function main() {
   assert(selectedDrawer.includes('data-selected-property-inquiry-href='), 'Selected-property drawer must preserve inquiry metadata.');
   assert(selectedDrawer.includes('data-selected-property-market-href='), 'Selected-property drawer must preserve market metadata.');
   assert(propertyPage.includes('Decision Workspace'), 'Property detail page must frame the page as a decision workspace.');
-  assert(propertyPage.includes('What am I looking at?'), 'Property detail page must expose the Understand decision lens.');
+  assert(propertyPage.includes('Is this worth a closer look?'), 'Property detail page must expose the certified Property Product 2 primary decision question.');
+  assert(propertyPage.includes('Understand'), 'Property detail page must expose the Understand decision lens.');
   assert(propertyPage.includes('Why does this matter?'), 'Property detail page must expose the Evaluate decision lens.');
   assert(propertyPage.includes('How does this compare with other homes?'), 'Property detail page must expose the Compare decision lens.');
   assert(propertyPage.includes('What deserves a closer look?'), 'Property detail page must expose the Investigate decision lens.');
