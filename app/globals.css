@@ -2570,16 +2570,16 @@ html, body {
 @media (min-width: 1024px) {
   .reie-property-hero-grid {
     align-items: start !important;
-    grid-template-columns: minmax(0, 1fr) 420px !important;
+    grid-template-columns: minmax(0, 1fr) 390px !important;
   }
 
   .reie-property-hero-grid > div:first-child {
-    min-height: min(760px, calc(100vh - 64px)) !important;
+    min-height: min(680px, calc(100vh - 150px)) !important;
   }
 
   .reie-property-hero-grid > aside {
     align-self: start !important;
-    height: calc(100vh - 64px) !important;
+    height: auto !important;
     max-height: calc(100vh - 64px) !important;
     overflow-y: auto !important;
   }

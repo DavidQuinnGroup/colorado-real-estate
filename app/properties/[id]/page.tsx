@@ -727,6 +727,7 @@ export async function generateMetadata({ params }: PropertyPageProps): Promise<M
   const primaryPhoto = getPrimaryPhoto(property);
 
   return {
+    metadataBase: new URL(SITE_URL),
     title: `${property.address} | ${property.city}, CO Real Estate Intelligence`,
     description: `David Quinn Group property brief for ${property.address} in ${property.city}, Colorado, including price, listing facts, construction perspective, and neighborhood context.`,
     alternates: {
@@ -872,8 +873,8 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
       `}</style>
       <section className="relative border-b border-white/10">
         <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(100,188,205,0.14),transparent_38%),linear-gradient(180deg,rgba(255,255,255,0.035),transparent_35%)]" />
-        <div className="reie-property-hero-grid relative mx-auto grid min-h-[620px] max-w-[1500px] grid-cols-1 gap-0 lg:min-h-[720px] lg:grid-cols-[minmax(0,1fr)_420px]">
-          <div className="relative min-h-[500px] overflow-hidden bg-[#101720] sm:min-h-[560px] lg:min-h-[720px]">
+        <div className="reie-property-hero-grid relative mx-auto grid max-w-[1500px] grid-cols-1 gap-0 md:min-h-[680px] md:grid-cols-[minmax(0,1fr)_360px] xl:grid-cols-[minmax(0,1fr)_390px]">
+          <div className="relative min-h-[380px] overflow-hidden bg-[#101720] sm:min-h-[480px] md:min-h-[680px]">
             <ResilientListingImage
               src={primaryPhoto}
               fallbackSrc={fallbackPhoto}
@@ -883,8 +884,8 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
               fallbackLabel="Property visual"
               className="absolute inset-0 h-full w-full object-cover opacity-95"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#070b10] via-[#070b10]/20 to-transparent" />
-            <div className="absolute inset-0 bg-gradient-to-r from-[#070b10]/88 via-[#070b10]/18 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#070b10] via-[#070b10]/24 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#070b10]/92 via-[#070b10]/22 to-transparent" />
 
             <div className="absolute left-4 right-4 top-4 hidden items-center justify-between gap-4 sm:flex md:left-8 md:right-8 md:top-5">
               <Link
@@ -899,7 +900,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
               </span>
             </div>
 
-            <div className="absolute bottom-0 left-0 right-0 p-4 pb-6 md:p-8 lg:p-12">
+            <div className="absolute bottom-0 left-0 right-0 p-4 pb-6 md:p-8 lg:p-10">
               <div className="max-w-4xl">
                 <div className="reie-property-hero-badges mb-4 flex flex-wrap gap-2">
                   <span
@@ -918,17 +919,17 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                     </span>
                   ) : null}
                 </div>
-                <p className="font-serif text-[36px] font-black leading-none text-white sm:text-[42px] md:text-[64px]">
+                <p className="font-serif text-[34px] font-black leading-none text-white sm:text-[42px] md:text-[60px]">
                   {formatCurrency(property.price)}
                 </p>
-                <h1 className="mt-4 max-w-4xl text-[26px] font-black uppercase leading-tight tracking-normal text-white sm:text-3xl md:mt-5 md:text-5xl">
+                <h1 className="mt-4 max-w-4xl text-[24px] font-black uppercase leading-tight tracking-normal text-white sm:text-3xl md:mt-5 md:text-[44px]">
                   {property.address}
                 </h1>
                 <p className="mt-4 flex flex-wrap items-center gap-2 text-[12px] font-black uppercase tracking-[0.16em] text-white/64">
                   <MapPin size={15} aria-hidden="true" className="text-cyan-100/78" />
                   {property.city}, {property.state} {property.zip}
                 </p>
-                <div className="mt-6 grid max-w-2xl grid-cols-3 gap-2">
+                <div className="mt-5 grid max-w-xl grid-cols-3 gap-2">
                   <HeroFact icon={<BedDouble size={14} />} label="Beds" value={formatNumber(property.beds)} />
                   <HeroFact icon={<Bath size={14} />} label="Baths" value={formatNumber(property.baths)} />
                   <HeroFact icon={<Ruler size={14} />} label="Sq Ft" value={formatNumber(property.sqft)} />
@@ -937,34 +938,41 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
             </div>
           </div>
 
-          <aside className="border-t border-white/10 bg-[#070b10] p-4 sm:p-5 lg:sticky lg:top-[68px] lg:h-[calc(100vh-68px)] lg:overflow-y-auto lg:border-l lg:border-t-0">
-            <section className="overflow-hidden rounded-[8px] border border-cyan-100/22 bg-cyan-100/[0.075]">
-              <div className="border-b border-cyan-100/14 bg-cyan-100/[0.07] p-4">
+          <aside className="border-t border-white/10 bg-[#070b10] p-4 pb-20 sm:p-5 md:border-l md:border-t-0 md:pb-5 lg:sticky lg:top-[68px] lg:max-h-[calc(100vh-68px)] lg:overflow-y-auto">
+            <section className="overflow-hidden rounded-[8px] bg-cyan-100/[0.075]">
+              <div className="bg-cyan-100/[0.07] p-4">
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className="text-[10px] font-black uppercase tracking-[0.22em] text-cyan-100/76">Decision Workspace</p>
-                    <p className="mt-2 text-sm font-black uppercase tracking-[0.08em] text-white">{decisionTone}</p>
+                    <h2 className="mt-2 text-lg font-black uppercase leading-6 tracking-[0.04em] text-white">
+                      Is this worth a closer look?
+                    </h2>
                   </div>
-                  <span className="shrink-0 rounded-[5px] border border-cyan-100/24 bg-black/24 px-2 py-1 text-[9px] font-black uppercase tracking-[0.14em] text-cyan-100/76">
+                  <span className="shrink-0 rounded-[5px] bg-black/24 px-2 py-1 text-[9px] font-black uppercase tracking-[0.14em] text-cyan-100/76">
                     Property Brief
                   </span>
                 </div>
               </div>
               <div className="p-4">
-                <DecisionLensLabel lens="Understand" question="What am I looking at?" />
-                <div className="grid gap-3">
+                <p className="text-sm leading-6 text-white/70">
+                  {decisionNextStep}
+                </p>
+                <div className="mt-4 grid gap-2">
                   <DecisionRow label="Calculated Price / Sq Ft" value={pricePerSquareFoot} />
-                  <DecisionRow label="Property Type" value={property.propertyType || 'Residential'} />
-                  <DecisionRow label="Status" value={property.status || 'Active'} />
+                  <DecisionRow label="Review Focus" value={diligencePosture} />
+                  <DecisionRow label="Market Pathway" value={marketPathway.label} />
                 </div>
-                <p className="mt-4 border-t border-cyan-100/14 pt-4 text-sm leading-6 text-white/66">
-                  {decisionNextStep} Price per square foot is a calculated comparison measure, not a valuation or complete cost picture.
-                </p>
-                <p className="mt-3 rounded-[6px] border border-cyan-100/14 bg-black/18 p-3 text-xs leading-5 text-white/52">
-                  This workspace organizes public information, educational context, and questions to verify. It does not replace inspection,
-                  appraisal, lending, tax, legal, insurance, construction, or market-professional review.
-                </p>
-                <div className="reie-property-advisor-actions mt-4 grid gap-2">
+                <details className="mt-4 rounded-[6px] bg-black/18 p-3">
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-[10px] font-black uppercase tracking-[0.16em] text-white/48">
+                    Trust boundary
+                    <span className="text-cyan-100/70">+</span>
+                  </summary>
+                  <p className="mt-3 text-xs leading-5 text-white/52">
+                    This workspace organizes public information, educational context, and questions to verify. It does not replace inspection,
+                    appraisal, lending, tax, legal, insurance, construction, or market-professional review.
+                  </p>
+                </details>
+                <div className="reie-property-advisor-actions mt-4 hidden gap-2 md:grid">
                   <Link
                     href="#property-contact"
                     className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-[6px] bg-cyan-100 px-3 py-3 text-[10px] font-black uppercase tracking-[0.12em] text-[#061017] transition hover:bg-white"
@@ -974,7 +982,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                   </Link>
                   <Link
                     href={marketPathway.href}
-                    className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-[6px] border border-white/10 bg-white/[0.055] px-3 py-2.5 text-[10px] font-black uppercase tracking-[0.12em] text-white/72 transition hover:border-cyan-100/35 hover:text-cyan-100"
+                    className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-[6px] bg-white/[0.055] px-3 py-2.5 text-[10px] font-black uppercase tracking-[0.12em] text-white/72 transition hover:bg-white/[0.08] hover:text-cyan-100"
                   >
                     {marketPathway.eyebrow}
                     <TrendingUp size={13} aria-hidden="true" />
@@ -983,76 +991,86 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
               </div>
             </section>
 
-            <div className="mt-4 rounded-[8px] border border-white/10 bg-[#0d141c] p-4">
-              <DecisionLensLabel lens="Compare" question="How does this compare with other homes?" />
-              <div className="mt-4 grid grid-cols-2 gap-3">
-                <SignalTile icon={<TrendingUp size={16} />} label="Calculated Basis" value={pricePerSquareFoot} tone="cyan" />
-                <SignalTile icon={<ShieldCheck size={16} />} label="Location" value={property.neighborhood || property.city || 'Colorado'} tone="white" />
-              </div>
-              <div className="mt-3 rounded-[6px] border border-white/10 bg-white/[0.045] p-3">
-                <p className="text-[10px] font-black uppercase tracking-[0.14em] text-white/40">Review Context</p>
-                <p className="mt-2 truncate text-sm font-black uppercase tracking-[0.08em] text-cyan-100">{reviewSignal}</p>
-              </div>
-              <p className="mt-3 text-xs leading-5 text-white/46">
-                Comparison context uses public listing facts only. Verify condition, systems, and location tradeoffs before making decisions.
-              </p>
-            </div>
-
-            <div className="mt-4 grid grid-cols-3 gap-2">
-              <FactTile icon={<BedDouble size={15} />} label="Beds" value={formatNumber(property.beds)} />
-              <FactTile icon={<Bath size={15} />} label="Baths" value={formatNumber(property.baths)} />
-              <FactTile icon={<Ruler size={15} />} label="Sq Ft" value={formatNumber(property.sqft)} />
-            </div>
-
-            <section className="mt-4 rounded-[8px] border border-white/10 bg-[#0d141c] p-4">
-              <DecisionLensLabel lens="Discuss" question="What should I discuss with my advisor?" />
-              <div className="mt-4 grid gap-2">
-                <AuthorityLink href={marketPathway.href} eyebrow={marketPathway.eyebrow} label={marketPathway.label} />
-                {neighborhoodHref ? (
-                  <AuthorityLink href={neighborhoodHref} eyebrow="Neighborhood Context" label={`${property.neighborhood} Area Guide`} />
-                ) : null}
-                {briefHref ? <AuthorityLink href={briefHref} eyebrow="Property Brief" label="Additional Context" /> : null}
-              </div>
-            </section>
-
-            <section className="mt-4 rounded-[8px] border border-white/10 bg-[#0d141c] p-4">
-              <DecisionLensLabel lens="Evaluate" question="Why does this matter?" />
-              <h2 className="flex items-center gap-2 text-[12px] font-black uppercase tracking-[0.12em] text-white">
-                <Mountain className="text-cyan-100" size={17} /> Construction Perspective
-              </h2>
-              <div className="mt-4 space-y-3 text-sm">
-                <div className="flex justify-between gap-4 border-b border-white/10 pb-2">
-                  <span className="text-white/45">Elevation</span>
-                  <span className="font-bold text-white">{formatNumber(altitude)} FT</span>
+            <details className="mt-4 rounded-[8px] bg-[#0d141c] p-4">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-[10px] font-black uppercase tracking-[0.18em] text-white/58">
+                Compare and discuss
+                <span className="text-cyan-100/70">+</span>
+              </summary>
+              <div className="mt-4">
+                <DecisionLensLabel lens="Compare" question="How does this compare with other homes?" />
+                <div className="mt-4 grid grid-cols-2 gap-3">
+                  <SignalTile icon={<TrendingUp size={16} />} label="Calculated Basis" value={pricePerSquareFoot} tone="cyan" />
+                  <SignalTile icon={<ShieldCheck size={16} />} label="Location" value={property.neighborhood || property.city || 'Colorado'} tone="white" />
                 </div>
-                <div className="flex justify-between gap-4 border-b border-white/10 pb-2">
-                  <span className="text-white/45">Soil Profile</span>
-                  <span className="truncate font-bold text-white">{soilType}</span>
+                <div className="mt-3 rounded-[6px] bg-white/[0.045] p-3">
+                  <p className="text-[10px] font-black uppercase tracking-[0.14em] text-white/40">Review Context</p>
+                  <p className="mt-2 truncate text-sm font-black uppercase tracking-[0.08em] text-cyan-100">{reviewSignal}</p>
                 </div>
-                <p className="pt-1 text-sm leading-6 text-white/56">{getAltitudeNarrative(altitude)}</p>
-              </div>
-            </section>
-
-            <section className="mt-4 rounded-[8px] border border-amber-200/24 bg-amber-200/8 p-4">
-              <DecisionLensLabel lens="Investigate" question="What deserves a closer look?" />
-              <h2 className="flex items-center gap-2 text-[12px] font-black uppercase tracking-[0.12em] text-amber-100">
-                <ShieldAlert size={17} /> Questions Worth Asking
-              </h2>
-              <ul className="mt-4 space-y-2 text-xs font-bold uppercase tracking-[0.12em] text-white/62">
-                {property.hasPolybutyleneRisk ? <li>Ask what plumbing records are available and what should be verified by an appropriate professional</li> : null}
-                <li>What drainage and grading records are available?</li>
-                <li>What mechanical age and electrical service information is documented?</li>
-              </ul>
-            </section>
-
-            {!isContracted ? (
-              <div className="mt-4 rounded-[8px] border border-cyan-100/26 bg-cyan-100/10 p-4">
-                <HardHat className="text-cyan-100" size={24} />
-                <h2 className="mt-3 text-[15px] font-black uppercase tracking-[0.08em] text-white">Property Questions Welcome</h2>
-                <p className="mt-2 text-sm leading-6 text-white/62">
-                  Use the public facts on this page to prepare focused questions before a direct conversation.
+                <p className="mt-3 text-xs leading-5 text-white/46">
+                  Comparison context uses public listing facts only. Verify condition, systems, and location tradeoffs before making decisions.
                 </p>
               </div>
+              <div className="mt-5">
+                <DecisionLensLabel lens="Discuss" question="What should I discuss with my advisor?" />
+                <div className="mt-4 grid gap-2">
+                  <AuthorityLink href={marketPathway.href} eyebrow={marketPathway.eyebrow} label={marketPathway.label} />
+                  {neighborhoodHref ? (
+                    <AuthorityLink href={neighborhoodHref} eyebrow="Neighborhood Context" label={`${property.neighborhood} Area Guide`} />
+                  ) : null}
+                  {briefHref ? <AuthorityLink href={briefHref} eyebrow="Property Brief" label="Additional Context" /> : null}
+                </div>
+              </div>
+            </details>
+
+            <details className="mt-4 rounded-[8px] bg-[#0d141c] p-4">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-[10px] font-black uppercase tracking-[0.18em] text-white/58">
+                What deserves verification?
+                <span className="text-cyan-100/70">+</span>
+              </summary>
+              <section className="mt-4">
+                <DecisionLensLabel lens="Evaluate" question="Why does this matter?" />
+                <h2 className="flex items-center gap-2 text-[12px] font-black uppercase tracking-[0.12em] text-white">
+                  <Mountain className="text-cyan-100" size={17} /> Construction Perspective
+                </h2>
+                <div className="mt-4 space-y-3 text-sm">
+                  <div className="flex justify-between gap-4 border-b border-white/10 pb-2">
+                    <span className="text-white/45">Elevation</span>
+                    <span className="font-bold text-white">{formatNumber(altitude)} FT</span>
+                  </div>
+                  <div className="flex justify-between gap-4 border-b border-white/10 pb-2">
+                    <span className="text-white/45">Soil Profile</span>
+                    <span className="truncate font-bold text-white">{soilType}</span>
+                  </div>
+                  <p className="pt-1 text-sm leading-6 text-white/56">{getAltitudeNarrative(altitude)}</p>
+                </div>
+              </section>
+
+              <section className="mt-5 rounded-[8px] bg-amber-200/8 p-4 ring-1 ring-amber-200/18">
+                <DecisionLensLabel lens="Investigate" question="What deserves a closer look?" />
+                <h2 className="flex items-center gap-2 text-[12px] font-black uppercase tracking-[0.12em] text-amber-100">
+                  <ShieldAlert size={17} /> Questions Worth Asking
+                </h2>
+                <ul className="mt-4 space-y-2 text-xs font-bold uppercase tracking-[0.12em] text-white/62">
+                  {property.hasPolybutyleneRisk ? <li>Ask what plumbing records are available and what should be verified by an appropriate professional</li> : null}
+                  <li>What drainage and grading records are available?</li>
+                  <li>What mechanical age and electrical service information is documented?</li>
+                </ul>
+              </section>
+            </details>
+
+            {!isContracted ? (
+              <details className="mt-4 rounded-[8px] bg-cyan-100/10 p-4">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/76">
+                  <span className="inline-flex items-center gap-2">
+                    <HardHat className="shrink-0 text-cyan-100" size={16} />
+                    Property Questions Welcome
+                  </span>
+                  <span className="text-cyan-100/70">+</span>
+                </summary>
+                    <p className="mt-1 text-sm leading-6 text-white/62">
+                  Use the public facts on this page to prepare focused questions before a direct conversation.
+                    </p>
+              </details>
             ) : null}
           </aside>
         </div>
@@ -1069,7 +1087,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
               A decision workspace for understanding the property
             </h2>
           </div>
-          <div className="grid grid-cols-3 overflow-hidden rounded-[8px] border border-white/10 bg-[#0d141c] text-center md:min-w-[380px]">
+          <div className="grid grid-cols-3 overflow-hidden rounded-[8px] bg-[#0d141c] text-center md:min-w-[380px]">
             <SnapshotTile label="Price" value={formatCompactCurrency(property.price)} />
             <SnapshotTile label="Calc. Basis" value={pricePerSquareFoot} />
             <SnapshotTile label="Review" value={decisionTone} />
@@ -1870,7 +1888,7 @@ function SignalTile({
   const valueClass = tone === 'cyan' ? 'text-cyan-100' : 'text-white';
 
   return (
-    <div className="rounded-[6px] border border-white/10 bg-white/[0.045] p-3">
+    <div className="rounded-[6px] bg-white/[0.045] p-3">
       <div className="text-cyan-100/76">{icon}</div>
       <p className="mt-3 text-[10px] font-black uppercase tracking-[0.14em] text-white/40">{label}</p>
       <p className={`mt-2 text-3xl font-black leading-none ${valueClass}`}>{value}</p>
@@ -1889,20 +1907,10 @@ function DecisionLensLabel({ lens, question }: { lens: string; question: string 
 
 function HeroFact({ icon, label, value }: { icon: ReactNode; label: string; value: string }) {
   return (
-    <div className="min-w-0 rounded-[6px] border border-white/14 bg-[#071017]/62 px-3 py-2.5 backdrop-blur">
+    <div className="min-w-0 rounded-[6px] bg-[#071017]/68 px-3 py-2.5 backdrop-blur">
       <div className="flex items-center gap-1.5 text-cyan-100/76">{icon}</div>
       <p className="mt-2 text-[9px] font-black uppercase tracking-[0.14em] text-white/40">{label}</p>
       <p className="mt-1 truncate text-sm font-black leading-none text-white">{value}</p>
-    </div>
-  );
-}
-
-function FactTile({ icon, label, value }: { icon: ReactNode; label: string; value: string }) {
-  return (
-    <div className="rounded-[6px] border border-white/10 bg-white/[0.045] p-3">
-      <div className="text-cyan-100/72">{icon}</div>
-      <p className="mt-3 text-[10px] font-black uppercase tracking-[0.14em] text-white/40">{label}</p>
-      <p className="mt-1 text-xl font-black leading-none text-white">{value}</p>
     </div>
   );
 }
@@ -1911,7 +1919,7 @@ function AuthorityLink({ href, eyebrow, label }: { href: string; eyebrow: string
   return (
     <Link
       href={href}
-      className="group rounded-[6px] border border-white/10 bg-white/[0.045] p-3 transition-colors hover:border-cyan-100/35 hover:bg-white/[0.075]"
+      className="group rounded-[6px] bg-white/[0.045] p-3 transition-colors hover:bg-white/[0.075]"
     >
       <p className="text-[10px] font-black uppercase tracking-[0.14em] text-white/36">{eyebrow}</p>
       <p className="mt-2 text-xs font-black uppercase tracking-[0.08em] text-white/68 transition-colors group-hover:text-white">
@@ -1923,7 +1931,7 @@ function AuthorityLink({ href, eyebrow, label }: { href: string; eyebrow: string
 
 function ActionMetric({ label, value }: { label: string; value: string }) {
   return (
-    <div className="min-w-0 rounded-[6px] border border-cyan-100/16 bg-black/22 p-3">
+    <div className="min-w-0 rounded-[6px] bg-black/22 p-3">
       <p className="text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100/54">{label}</p>
       <p className="mt-2 truncate text-xs font-black uppercase tracking-[0.08em] text-white">{value}</p>
     </div>
@@ -1932,7 +1940,7 @@ function ActionMetric({ label, value }: { label: string; value: string }) {
 
 function SnapshotTile({ label, value }: { label: string; value: string }) {
   return (
-    <div className="min-w-0 rounded-[6px] border border-white/10 bg-white/[0.045] p-3">
+    <div className="min-w-0 rounded-[6px] bg-white/[0.045] p-3">
       <p className="text-[10px] font-black uppercase tracking-[0.14em] text-white/36">{label}</p>
       <p className="mt-2 truncate text-sm font-black text-white/78">{value}</p>
     </div>
@@ -1941,7 +1949,7 @@ function SnapshotTile({ label, value }: { label: string; value: string }) {
 
 function BriefSignalTile({ label, value }: { label: string; value: string }) {
   return (
-    <div className="min-w-0 rounded-[6px] border border-white/10 bg-white/[0.045] p-4">
+    <div className="min-w-0 rounded-[6px] bg-white/[0.045] p-4">
       <p className="text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100/58">{label}</p>
       <p className="mt-2 line-clamp-3 text-sm font-bold leading-6 text-white/68">{value}</p>
     </div>
