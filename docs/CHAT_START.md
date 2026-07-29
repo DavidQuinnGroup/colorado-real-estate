@@ -10,6 +10,38 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / Colorado City Intelligence Evidence Expansion(tm) 1.0, July 29, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Current governed state:
+
+- Four local Colorado City Intelligence program commits were promoted to `origin/main` through `5320eb96dd3d729610bd5db75aa27b192c5bdb7c`.
+- Colorado City Intelligence Evidence Expansion(tm) 1.0 is implemented locally as the first non-public evidence expansion wave.
+- Core evidence expansion contract: `lib/coloradoCityEvidenceExpansion.ts`.
+- The source-rights matrix covers repository-local city market data, Boulder County Open Data, Boulder County Assessor, Boulder County Accela, City of Boulder permit/planning records, City of Boulder Planning & Development Services, Boulder County Recorder, and DQG imagery inventory.
+- Priority city coverage: Boulder, Louisville, Lafayette, Superior, Erie, and Longmont.
+- Dry-run evidence candidates are in-memory only, non-customer-visible, provenance-tagged, and limited to repository-local candidate observations.
+- Imagery rights fail closed: only the existing DQG fallback image is public eligible; city hero candidates remain unknown-rights/internal-review only.
+- No non-certified city advances to evidence complete or public publication from this wave.
+- Governed implementation record: `docs/project-atlas/executive-library/COLORADO-CITY-INTELLIGENCE-EVIDENCE-EXPANSION-1-IMPLEMENTATION.md`.
+- Supporting records: source-rights matrix, Boulder County coverage matrix, imagery rights inventory, and persistence/provider activation plan in `docs/project-atlas/executive-library/`.
+- Validation script: `npm run check:colorado-city-evidence-expansion`.
+- Prohibited boundaries remain active: no customer-facing AI, public GIS, telemetry, personalization, customer accounts, new providers, scraping, unlicensed imagery, schema changes, Prisma changes, destructive database changes, provider activation, durable persistence, deployment, push, or public guide publication from partial evidence.
+- Exact next step: David should decide whether to authorize future source-rights legal review or a persistence/provider activation design. Codex must not infer provider activation, schema persistence, public GIS, external acquisition, or city publication without an explicit directive.
+
+Prior Colorado City Intelligence Acquisition handoff retained below.
+
 PROJECT ATLAS(tm) / Colorado City Intelligence Acquisition & Enrichment System(tm) 1.0, July 29, 2026:
 
 Workspace:
@@ -35,7 +67,6 @@ Current governed state:
 - Governed implementation record: `docs/project-atlas/executive-library/COLORADO-CITY-INTELLIGENCE-ACQUISITION-ENRICHMENT-1-IMPLEMENTATION.md`.
 - Validation script: `npm run check:colorado-city-intelligence-acquisition-enrichment`.
 - Prohibited boundaries remain active: no customer-facing AI, public GIS, telemetry, personalization, customer accounts, new providers, scraping, unlicensed imagery, schema changes, Prisma changes, destructive database changes, provider activation, durable persistence, deployment, or push.
-- Exact next step: David should decide whether to authorize a non-public City Intelligence Evidence Expansion wave, likely source-domain dry-run acquisition and rights review. Codex must not infer provider activation, schema persistence, public GIS, or city publication without an explicit directive.
 
 Prior Colorado Decision Guide Generation System handoff retained below.
 
