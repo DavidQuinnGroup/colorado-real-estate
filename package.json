@@ -120,6 +120,7 @@
     "check:colorado-decision-guide-generation-system": "npm run worker:build && node dist/scripts/checkColoradoDecisionGuideGenerationSystem.js",
     "check:colorado-city-intelligence-acquisition-enrichment": "npm run worker:build && node dist/scripts/checkColoradoCityIntelligenceAcquisitionEnrichment.js",
     "check:colorado-city-evidence-expansion": "npm run worker:build && node dist/scripts/checkColoradoCityEvidenceExpansion.js",
+    "check:source-rights-activation-readiness": "npm run worker:build && node dist/scripts/checkSourceRightsActivationReadiness.js",
     "check:boulder-decision-guide": "npm run worker:build && node dist/scripts/checkBoulderDecisionGuide.js",
     "check:louisville-decision-guide": "npm run worker:build && node dist/scripts/checkLouisvilleDecisionGuide.js",
     "check:lafayette-decision-guide": "npm run worker:build && node dist/scripts/checkLafayetteDecisionGuide.js",

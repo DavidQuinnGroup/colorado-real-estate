@@ -62,6 +62,7 @@
     "scripts/checkColoradoDecisionGuideGenerationSystem.ts",
     "scripts/checkColoradoCityIntelligenceAcquisitionEnrichment.ts",
     "scripts/checkColoradoCityEvidenceExpansion.ts",
+    "scripts/checkSourceRightsActivationReadiness.ts",
     "scripts/decisionGuideValidation.ts",
     "scripts/checkBoulderDecisionGuide.ts",
     "scripts/checkLouisvilleDecisionGuide.ts",

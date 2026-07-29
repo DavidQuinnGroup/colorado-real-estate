@@ -1,10 +1,11 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { BarChart3, Home, MapPinned, Search, TrendingUp } from 'lucide-react';
+import { BarChart3, Home, MapPinned, Search, ShieldCheck, TrendingUp } from 'lucide-react';
 
 import FinancingConfidenceEducation from '@/components/FinancingConfidenceEducation';
 import FAQSchema from '@/components/schema/FAQSchema';
 import { cities, type CityData } from '@/lib/cities';
+import { getPublicDecisionGuideRegistryEntries } from '@/lib/coloradoDecisionGuideRegistry';
 import { getJourneyMeasurementAttributes } from '@/lib/customerJourneyMeasurement';
 import { buildMarketDecisionWorkspace } from '@/lib/marketDecisionWorkspace';
 import { buildCityMarketExperience } from '@/lib/marketIntelligenceExperience';
@@ -83,9 +84,16 @@ function getFeaturedMarkets(markets: CityMarketSummary[]) {
     .slice(0, 4);
 }
 
+function getCertifiedDecisionGuides() {
+  return getPublicDecisionGuideRegistryEntries()
+    .filter((entry) => entry.guideMaturity === 'EDITORIALLY_CERTIFIED' && entry.optionalEditorialOverride)
+    .sort((a, b) => a.canonicalName.localeCompare(b.canonicalName));
+}
+
 export default function MarketIndexPage() {
   const marketSummaries = buildCitySummaries();
   const featuredMarkets = getFeaturedMarkets(marketSummaries);
+  const certifiedDecisionGuides = getCertifiedDecisionGuides();
   const primaryMarket = featuredMarkets[0] || marketSummaries[0];
   const marketDecisionWorkspace = buildMarketDecisionWorkspace({
     scope: 'state',
@@ -250,6 +258,65 @@ export default function MarketIndexPage() {
 
       <section className="px-5 py-16 sm:px-8 lg:px-12" data-testid="cep-market-discovery-featured">
         <div className="mx-auto max-w-6xl">
+          <section
+            className="mb-16 border-y border-white/8 py-12"
+            data-testid="decision-guide-discovery-certified"
+            data-decision-guide-discovery-status="certified-only"
+            data-decision-guide-discovery-certified-count={certifiedDecisionGuides.length}
+            data-decision-guide-discovery-foundation-promoted="false"
+            data-decision-guide-discovery-ai="false"
+            data-decision-guide-discovery-gis="false"
+            data-decision-guide-discovery-telemetry="false"
+          >
+            <div className="grid gap-8 lg:grid-cols-[0.72fr_1.28fr] lg:items-start">
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.28em] text-cyan-100/70">Certified Decision Guides</p>
+                <h2 className="mt-4 text-3xl font-black uppercase leading-tight tracking-normal text-white sm:text-4xl">
+                  Start where local authority is already reviewed.
+                </h2>
+                <p className="mt-5 text-sm leading-7 text-white/56">
+                  These guides have city-specific editorial review, neighborhood continuity, search paths, market context, and next-step
+                  guidance. Foundation market pages remain available below, but they are not presented as completed local-authority guides.
+                </p>
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-3">
+                {certifiedDecisionGuides.map((guide) => (
+                  <Link
+                    key={guide.routeSlug}
+                    href={guide.marketRoute ?? '/market'}
+                    className="reie-market-action-link group flex min-h-[260px] flex-col rounded-[8px] bg-white/[0.04] p-5 text-white no-underline shadow-[0_22px_70px_rgba(0,0,0,0.18)] ring-1 ring-cyan-100/10 transition hover:bg-white/[0.065] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-200"
+                    data-testid="decision-guide-discovery-certified-card"
+                    data-decision-guide-discovery-city={guide.canonicalName}
+                    data-decision-guide-discovery-maturity={guide.guideMaturity}
+                    data-decision-guide-discovery-public-eligible={String(guide.publicEligibility)}
+                    {...getJourneyMeasurementAttributes({
+                      surface: 'decision-guide-discovery-certified',
+                      stage: 'market',
+                      action: 'view-market',
+                      destination: 'market',
+                    })}
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <p className="text-[9px] font-black uppercase tracking-[0.18em] text-cyan-100/64">Certified Guide</p>
+                        <h3 className="mt-3 text-2xl font-black uppercase tracking-tight text-white">{guide.canonicalName}</h3>
+                      </div>
+                      <ShieldCheck className="h-5 w-5 text-cyan-100/70 transition group-hover:text-white" aria-hidden="true" />
+                    </div>
+                    <p className="mt-5 text-sm leading-7 text-white/58">
+                      City guide, market context, {guide.neighborhoodCount} neighborhood paths, search continuity, and buyer/seller next
+                      steps.
+                    </p>
+                    <span className="mt-auto pt-8 text-[10px] font-black uppercase tracking-[0.16em] text-cyan-100 transition group-hover:text-white">
+                      Open guide
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </section>
+
           <div className="mb-8 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div>
               <p className="text-[10px] font-black uppercase tracking-[0.28em] text-cyan-100/70">Featured Markets</p>
