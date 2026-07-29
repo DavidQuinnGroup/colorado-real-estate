@@ -213,53 +213,51 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
       />
       <FAQSchema faqs={cityFaqs} pageUrl={canonicalUrl} />
 
-      <section className="border-b border-white/5">
-        <div className="mx-auto max-w-6xl px-6 pb-12 pt-16 md:pt-20">
+      <section className="border-b border-white/5 bg-[radial-gradient(circle_at_82%_14%,rgba(207,250,254,0.12),transparent_30%),linear-gradient(180deg,#071017,#030303)]">
+        <div className="mx-auto max-w-6xl px-6 pb-10 pt-12 md:pt-16">
           <div className="mb-4 flex items-center gap-3">
-            <div className="h-2 w-2 rounded-full bg-[#00ff80] shadow-[0_0_18px_rgba(0,255,128,0.65)]" />
-            <span className="text-[10px] font-black italic uppercase tracking-[0.5em] text-[#00ff80]">
+            <div className="h-2 w-2 rounded-full bg-cyan-100 shadow-[0_0_18px_rgba(207,250,254,0.45)]" />
+            <span className="text-[10px] font-black uppercase tracking-[0.32em] text-cyan-100/78">
               Colorado Market Intelligence
             </span>
           </div>
 
-          <h1 className="mb-8 max-w-5xl text-5xl font-black italic uppercase leading-[0.88] tracking-tight md:text-7xl">
+          <h1 className="mb-6 max-w-5xl text-5xl font-black uppercase leading-[0.9] tracking-normal md:text-7xl">
             {cityData.name}
             <br />
-            <span className="text-white/20">Strategy Report</span>
+            <span className="text-white/32">Market Context</span>
           </h1>
 
-          <div className="grid gap-8 lg:grid-cols-[1.35fr_0.65fr] lg:items-end">
-            <p className="max-w-2xl text-base italic leading-relaxed text-white/60 md:text-lg">
-              David Quinn Group evaluates the {cityData.name}, Colorado market through public MLS signals, construction condition,
-              neighborhood resilience, and lifestyle efficiency. The current market health score is{' '}
-              <span className="font-black text-white">{cityData.stats.marketHealthScore}%</span>, with an average efficiency index of{' '}
-              <span className="font-black text-white">{cityData.stats.avgEfficiency}%</span>.
+          <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr] lg:items-end">
+            <p className="max-w-2xl text-base leading-8 text-white/64 md:text-lg">
+              Understand what the {cityData.name} market may mean before you compare homes, prepare a seller plan, or narrow into a
+              neighborhood. Start with the primary signal, then verify property-specific context.
             </p>
 
-            <div className="grid grid-cols-2 border border-white/10 bg-white/[0.02]">
-              <div className="border-r border-white/10 p-5">
-                <p className="mb-2 text-[9px] font-black uppercase tracking-[0.3em] text-white/30">Median Price</p>
-                <p className="text-2xl font-black italic">{cityData.stats.medianPrice}</p>
+            <div className="grid grid-cols-2 overflow-hidden rounded-[8px] bg-white/[0.07] shadow-[0_20px_70px_rgba(0,0,0,0.28)]">
+              <div className="p-5">
+                <p className="mb-2 text-[9px] font-black uppercase tracking-[0.18em] text-white/38">Primary Signal</p>
+                <p className="text-xl font-black uppercase tracking-tight text-white">{marketExperience.directionLabel}</p>
               </div>
               <div className="p-5">
-                <p className="mb-2 text-[9px] font-black uppercase tracking-[0.3em] text-white/30">Inventory</p>
-                <p className="text-2xl font-black italic">{cityData.stats.inventory}</p>
+                <p className="mb-2 text-[9px] font-black uppercase tracking-[0.18em] text-white/38">Inventory</p>
+                <p className="text-xl font-black uppercase tracking-tight text-white">{cityData.stats.inventory}</p>
               </div>
             </div>
           </div>
 
-          <div className="mt-10 grid gap-4 md:grid-cols-3">
-            <div className="border border-white/10 bg-white/[0.02] p-5">
-              <p className="mb-2 text-[9px] font-black uppercase tracking-[0.3em] text-white/30">Neighborhood Hubs</p>
-              <p className="text-2xl font-black italic">{authoritySignals.neighborhoodCount}</p>
+          <div className="mt-8 grid gap-3 md:grid-cols-3">
+            <div className="rounded-[8px] bg-white/[0.055] p-4">
+              <p className="mb-2 text-[9px] font-black uppercase tracking-[0.18em] text-white/36">Median Price</p>
+              <p className="text-lg font-black uppercase tracking-tight text-white">{cityData.stats.medianPrice}</p>
             </div>
-            <div className="border border-white/10 bg-white/[0.02] p-5">
-              <p className="mb-2 text-[9px] font-black uppercase tracking-[0.3em] text-white/30">Avg Resilience</p>
-              <p className="text-2xl font-black italic">{authoritySignals.averageResilienceScore}/100</p>
+            <div className="rounded-[8px] bg-white/[0.055] p-4">
+              <p className="mb-2 text-[9px] font-black uppercase tracking-[0.18em] text-white/36">Neighborhood Hubs</p>
+              <p className="text-lg font-black uppercase tracking-tight text-white">{authoritySignals.neighborhoodCount}</p>
             </div>
-            <div className="border border-white/10 bg-white/[0.02] p-5">
-              <p className="mb-2 text-[9px] font-black uppercase tracking-[0.3em] text-white/30">Top Efficiency</p>
-              <p className="text-2xl font-black italic">{authoritySignals.highestEfficiencyNeighborhood?.name || 'Expanding'}</p>
+            <div className="rounded-[8px] bg-white/[0.055] p-4">
+              <p className="mb-2 text-[9px] font-black uppercase tracking-[0.18em] text-white/36">Timing Context</p>
+              <p className="text-lg font-black uppercase tracking-tight text-white">{marketExperience.timingLabel}</p>
             </div>
           </div>
           <p
@@ -271,37 +269,12 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
             Market statistics are market-wide REIE context from repository city data and public MLS/search signals where available. They do
             not state or imply that David Quinn, David Quinn Group, or Compass listed, sold, or participated in every reported property.
           </p>
-          <div
-            className="mt-8 grid gap-3 rounded-[8px] border border-cyan-100/16 bg-cyan-100/[0.055] p-4 md:grid-cols-3"
-            data-testid="reie-city-buyer-confidence"
-            data-buyer-confidence-neighborhood-guidance="true"
-            data-buyer-confidence-forecast="false"
-            data-buyer-confidence-ai="false"
-            data-buyer-confidence-gis="false"
-            data-buyer-confidence-provider-activation="false"
-          >
-            <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">Before Search</p>
-              <p className="mt-2 text-sm leading-6 text-white/58">Use this city context to understand inventory, pricing, timing, and neighborhood paths before narrowing too quickly.</p>
-            </div>
-            <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">Before Touring</p>
-              <p className="mt-2 text-sm leading-6 text-white/58">Compare property facts against the area context, then identify condition, records, cost, and commute questions to verify.</p>
-            </div>
-            <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">Before Contact</p>
-              <p className="mt-2 text-sm leading-6 text-white/58">Ask focused questions only after the market and neighborhood context gives you a clearer reason to move forward.</p>
-            </div>
-          </div>
-          <div className="mt-5">
-            <FinancingConfidenceEducation surface="city-market" />
-          </div>
         </div>
       </section>
 
-      <div className="mx-auto max-w-6xl space-y-20 px-6 pb-24">
+      <div className="mx-auto max-w-6xl space-y-16 px-6 pb-24 pt-10">
         <section
-          className="grid gap-6 border border-[#00ff80]/18 bg-[#00ff80]/[0.045] p-6 md:p-8 lg:grid-cols-[0.88fr_1.12fr]"
+          className="grid gap-6 rounded-[8px] bg-cyan-100/[0.055] p-5 shadow-[0_24px_80px_rgba(0,0,0,0.22)] md:p-8 lg:grid-cols-[0.88fr_1.12fr]"
           data-testid="reie-market-v8-decision-workspace"
           data-market-v8-scope="city"
           data-market-v8-city={cityData.name}
@@ -312,22 +285,22 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
           data-market-v8-telemetry="false"
         >
           <div>
-            <p className="mb-3 text-[10px] font-black uppercase tracking-[0.35em] text-[#00ff80]">Market Decision Workspace</p>
-            <h2 className="text-3xl font-black uppercase italic leading-tight tracking-tight text-white md:text-4xl">
+            <p className="mb-3 text-[10px] font-black uppercase tracking-[0.22em] text-cyan-100/78">Market Decision Workspace</p>
+            <h2 className="text-3xl font-black uppercase leading-tight tracking-normal text-white md:text-4xl">
               {marketDecisionWorkspace.headline}
             </h2>
             <p className="mt-5 text-sm leading-7 text-white/58 md:text-base">{marketDecisionWorkspace.orientation}</p>
-            <p className="mt-5 border border-white/10 bg-black/24 p-3 text-xs leading-5 text-white/44">
+            <p className="mt-5 rounded-[6px] bg-black/20 p-3 text-xs leading-5 text-white/48">
               {marketDecisionWorkspace.trustBoundary}
             </p>
           </div>
 
-          <div className="grid gap-px overflow-hidden border border-white/10 bg-white/10 sm:grid-cols-2">
+          <div className="grid gap-3 sm:grid-cols-2">
             {marketDecisionWorkspace.items.map((item) => (
               <Link
                 key={item.lens}
                 href={item.href}
-                className="group flex min-w-0 flex-col bg-[#050505] p-5 transition hover:bg-[#0a1118]"
+                className="reie-market-action-link group flex min-w-0 flex-col rounded-[8px] bg-[#071017]/80 p-5 text-white no-underline transition hover:bg-[#0a1118]"
                 data-testid="reie-market-v8-decision-item"
                 data-market-v8-lens={item.lens}
                 data-market-v8-action={item.action}
@@ -338,9 +311,9 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
                   destination: item.lens === 'seller' ? 'seller' : item.lens === 'market-type' || item.lens === 'attention' ? 'market' : 'search',
                 })}
               >
-                <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#00ff80]/70">{item.label}</p>
+                <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/70">{item.label}</p>
                 <p className="mt-3 text-xs leading-6 text-white/55">{item.explanation}</p>
-                <span className="mt-auto pt-4 text-[10px] font-black uppercase tracking-[0.14em] text-[#00ff80] transition group-hover:text-white">
+                <span className="mt-auto pt-4 text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100 transition group-hover:text-white">
                   {item.action}
                 </span>
               </Link>
@@ -349,7 +322,7 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
         </section>
 
         <section
-          className="grid gap-6 border border-white/10 bg-white/[0.025] p-6 md:p-8 lg:grid-cols-[1fr_0.85fr]"
+          className="grid gap-6 rounded-[8px] bg-white/[0.04] p-5 md:p-8 lg:grid-cols-[1fr_0.85fr]"
           data-testid="cep-market-intelligence-summary"
           data-market-intelligence-scope="city"
           data-market-intelligence-city={cityData.name}
@@ -362,10 +335,10 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
           data-market-intelligence-gis-activated="false"
         >
           <div>
-            <p className="mb-3 text-[10px] font-black uppercase tracking-[0.35em] text-[#00ff80]">
+            <p className="mb-3 text-[10px] font-black uppercase tracking-[0.22em] text-cyan-100/72">
               Market Decision Brief
             </p>
-            <h2 className="text-3xl font-black uppercase italic leading-tight tracking-tight text-white md:text-4xl">
+            <h2 className="text-3xl font-black uppercase leading-tight tracking-normal text-white md:text-4xl">
               What this market signal means before you search or sell.
             </h2>
             <p className="mt-5 max-w-3xl text-sm leading-7 text-white/58 md:text-base">
@@ -374,20 +347,20 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
           </div>
 
           <div
-            className="grid gap-px overflow-hidden border border-white/10 bg-white/10 sm:grid-cols-2"
+            className="grid gap-3 sm:grid-cols-2"
             data-testid="cep-market-intelligence-signals"
             data-market-intelligence-signal-count={marketExperience.signals.length}
           >
             {marketExperience.signals.map((signal) => (
               <article
                 key={signal.label}
-                className="bg-[#050505] p-5"
+                className="rounded-[8px] bg-[#071017]/82 p-5"
                 data-testid="cep-market-intelligence-signal"
                 data-market-intelligence-signal={signal.label}
                 data-market-intelligence-signal-value={signal.value}
               >
-                <p className="text-[9px] font-black uppercase tracking-[0.26em] text-white/30">{signal.label}</p>
-                <p className="mt-2 text-base font-black uppercase italic tracking-tight text-white">{signal.value}</p>
+                <p className="text-[9px] font-black uppercase tracking-[0.18em] text-white/36">{signal.label}</p>
+                <p className="mt-2 text-base font-black uppercase tracking-tight text-white">{signal.value}</p>
                 <p className="mt-3 text-xs leading-6 text-white/45">{signal.explanation}</p>
               </article>
             ))}
@@ -403,13 +376,13 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
                 <Link
                   key={step.href}
                   href={step.href}
-                  className="flex min-h-14 items-center justify-between gap-4 border border-white/10 bg-black/30 px-4 py-3 text-sm font-black uppercase tracking-[0.12em] text-white transition hover:border-[#00ff80]/50 hover:text-[#00ff80] focus:outline-none focus:ring-2 focus:ring-[#00ff80]/70"
+                  className="reie-market-action-link flex min-h-14 items-center justify-between gap-4 rounded-[6px] bg-black/30 px-4 py-3 text-sm font-black uppercase tracking-[0.12em] text-white no-underline transition hover:bg-cyan-100/10 hover:text-cyan-100 focus:outline-none focus:ring-2 focus:ring-cyan-100/70"
                   data-testid="cep-market-intelligence-next-step"
                   data-market-intelligence-next-step-intent={step.intent}
                   data-market-intelligence-next-step-href={step.href}
                 >
                   {step.label}
-                  <span aria-hidden="true" className="text-[#00ff80]">Open</span>
+                  <span aria-hidden="true" className="text-cyan-100">Open</span>
                 </Link>
               ))}
             </div>
@@ -428,7 +401,7 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
             >
               <Link
                 href="/market"
-                className="flex min-h-12 items-center justify-center border border-white/10 bg-white/[0.035] px-4 py-3 text-center text-[11px] font-black uppercase tracking-[0.12em] text-white/64 transition hover:border-[#00ff80]/50 hover:text-[#00ff80] focus:outline-none focus:ring-2 focus:ring-[#00ff80]/70"
+                className="flex min-h-12 items-center justify-center rounded-[6px] bg-white/[0.04] px-4 py-3 text-center text-[11px] font-black uppercase tracking-[0.12em] text-white/64 no-underline transition hover:bg-cyan-100/10 hover:text-cyan-100 focus:outline-none focus:ring-2 focus:ring-cyan-100/70"
                 {...getJourneyMeasurementAttributes({
                   surface: 'city-market-journey',
                   stage: 'market',
@@ -440,7 +413,7 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
               </Link>
               <Link
                 href={`/search?city=${encodeURIComponent(cityData.name)}`}
-                className="flex min-h-12 items-center justify-center border border-white/10 bg-white/[0.035] px-4 py-3 text-center text-[11px] font-black uppercase tracking-[0.12em] text-white/64 transition hover:border-[#00ff80]/50 hover:text-[#00ff80] focus:outline-none focus:ring-2 focus:ring-[#00ff80]/70"
+                className="flex min-h-12 items-center justify-center rounded-[6px] bg-white/[0.04] px-4 py-3 text-center text-[11px] font-black uppercase tracking-[0.12em] text-white/64 no-underline transition hover:bg-cyan-100/10 hover:text-cyan-100 focus:outline-none focus:ring-2 focus:ring-cyan-100/70"
                 {...getJourneyMeasurementAttributes({
                   surface: 'city-market-journey',
                   stage: 'market',
@@ -452,7 +425,7 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
               </Link>
               <Link
                 href="/sell"
-                className="flex min-h-12 items-center justify-center border border-white/10 bg-white/[0.035] px-4 py-3 text-center text-[11px] font-black uppercase tracking-[0.12em] text-white/64 transition hover:border-[#00ff80]/50 hover:text-[#00ff80] focus:outline-none focus:ring-2 focus:ring-[#00ff80]/70"
+                className="flex min-h-12 items-center justify-center rounded-[6px] bg-white/[0.04] px-4 py-3 text-center text-[11px] font-black uppercase tracking-[0.12em] text-white/64 no-underline transition hover:bg-cyan-100/10 hover:text-cyan-100 focus:outline-none focus:ring-2 focus:ring-cyan-100/70"
                 {...getJourneyMeasurementAttributes({
                   surface: 'city-market-journey',
                   stage: 'market',
@@ -465,6 +438,31 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
             </div>
           </div>
         </section>
+
+        <section
+          className="grid gap-3 rounded-[8px] bg-cyan-100/[0.045] p-5 md:grid-cols-3"
+          data-testid="reie-city-buyer-confidence"
+          data-buyer-confidence-neighborhood-guidance="true"
+          data-buyer-confidence-forecast="false"
+          data-buyer-confidence-ai="false"
+          data-buyer-confidence-gis="false"
+          data-buyer-confidence-provider-activation="false"
+        >
+          <div>
+            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">Before Search</p>
+            <p className="mt-2 text-sm leading-6 text-white/58">Use this city context to understand inventory, pricing, timing, and neighborhood paths before narrowing too quickly.</p>
+          </div>
+          <div>
+            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">Before Touring</p>
+            <p className="mt-2 text-sm leading-6 text-white/58">Compare property facts against the area context, then identify condition, records, cost, and commute questions to verify.</p>
+          </div>
+          <div>
+            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">Before Contact</p>
+            <p className="mt-2 text-sm leading-6 text-white/58">Ask focused questions only after the market and neighborhood context gives you a clearer reason to move forward.</p>
+          </div>
+        </section>
+
+        <FinancingConfidenceEducation surface="city-market" />
 
         <section>
           <CityMarketStats stats={transitionStats} />

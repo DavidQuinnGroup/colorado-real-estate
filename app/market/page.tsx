@@ -112,7 +112,7 @@ export default function MarketIndexPage() {
       <FAQSchema faqs={marketFaqs} pageUrl={MARKET_URL} />
 
       <section
-        className="border-b border-white/10 px-5 py-12 sm:px-8 lg:px-12"
+        className="border-b border-white/8 bg-[radial-gradient(circle_at_82%_14%,rgba(207,250,254,0.12),transparent_30%),linear-gradient(180deg,#071017,#030303)] px-5 py-14 sm:px-8 lg:px-12"
         data-testid="reie-market-v8-decision-workspace"
         data-market-v8-scope="state"
         data-market-v8-item-count={marketDecisionWorkspace.items.length}
@@ -122,24 +122,24 @@ export default function MarketIndexPage() {
         data-market-v8-telemetry="false"
       >
         <div className="mx-auto max-w-6xl">
-          <p className="text-[10px] font-black uppercase tracking-[0.28em] text-cyan-100/76">Market Decision Workspace</p>
+          <p className="text-[10px] font-black uppercase tracking-[0.28em] text-cyan-100/76">Colorado Market Decision Workspace</p>
           <div className="mt-4 grid gap-5 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
             <div>
-              <h2 className="text-2xl font-black uppercase tracking-tight text-white md:text-4xl">
+              <h2 className="text-3xl font-black uppercase leading-tight tracking-normal text-white md:text-5xl">
                 {marketDecisionWorkspace.headline}
               </h2>
               <p className="mt-4 max-w-3xl text-sm leading-7 text-white/58">{marketDecisionWorkspace.orientation}</p>
-              <p className="mt-4 rounded-[6px] border border-cyan-100/14 bg-cyan-100/[0.055] p-3 text-xs leading-5 text-white/48">
+              <p className="mt-4 rounded-[6px] bg-cyan-100/[0.07] p-3 text-xs leading-5 text-white/50">
                 {marketDecisionWorkspace.trustBoundary}
               </p>
             </div>
 
-            <div className="grid gap-px overflow-hidden rounded-[8px] border border-white/10 bg-white/10 sm:grid-cols-2">
+            <div className="grid gap-3 sm:grid-cols-2">
               {marketDecisionWorkspace.items.map((item) => (
                 <Link
                   key={item.lens}
                   href={item.href}
-                  className="group flex min-w-0 flex-col bg-[#030303] p-4 transition hover:bg-[#0a1118]"
+                  className="reie-market-action-link group flex min-w-0 flex-col rounded-[8px] bg-[#071017]/82 p-4 text-white no-underline transition hover:bg-[#0a1118]"
                   data-testid="reie-market-v8-decision-item"
                   data-market-v8-lens={item.lens}
                   data-market-v8-action={item.action}
@@ -162,11 +162,11 @@ export default function MarketIndexPage() {
         </div>
       </section>
 
-      <section className="px-5 py-20 sm:px-8 lg:px-12">
+      <section className="px-5 py-16 sm:px-8 lg:px-12">
         <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[1fr_0.8fr] lg:items-end">
           <div>
             <p className="text-[11px] font-black uppercase tracking-[0.28em] text-cyan-100">Colorado Market Intelligence</p>
-            <h1 className="mt-6 max-w-4xl text-5xl font-black uppercase italic leading-[0.95] tracking-tight text-white sm:text-6xl">
+            <h1 className="mt-6 max-w-4xl text-5xl font-black uppercase leading-[0.95] tracking-normal text-white sm:text-6xl">
               Choose the market context before the next property decision.
             </h1>
             <p className="mt-7 max-w-2xl text-base leading-8 text-white/62 sm:text-lg">
@@ -203,18 +203,18 @@ export default function MarketIndexPage() {
             </div>
           </div>
 
-          <div className="grid gap-3 rounded-[8px] bg-white/[0.035] p-5 ring-1 ring-white/[0.06]">
+          <div className="grid gap-3 rounded-[8px] bg-white/[0.035] p-5 shadow-[0_24px_80px_rgba(0,0,0,0.22)] ring-1 ring-white/[0.06]">
             {[
               ['Markets', marketSummaries.length],
               ['Neighborhood paths', marketSummaries.reduce((total, market) => total + market.neighborhoodCount, 0)],
               ['Measurement', 'Prepared'],
             ].map(([label, value]) => (
-              <div key={label} className="flex items-center justify-between border-b border-white/10 py-3 last:border-b-0">
+              <div key={label} className="flex items-center justify-between py-3">
                 <p className="text-[10px] font-black uppercase tracking-[0.18em] text-white/40">{label}</p>
                 <p className="text-lg font-black uppercase tracking-tight text-white">{value}</p>
               </div>
             ))}
-            <p className="border-t border-white/10 pt-4 text-xs leading-6 text-white/42" data-testid="cep-market-measurement-boundary">
+            <p className="pt-4 text-xs leading-6 text-white/42" data-testid="cep-market-measurement-boundary">
               Measurement handles are present for future review. No analytics vendor, cookie, tracking system, or new persistence is active.
             </p>
           </div>
@@ -253,7 +253,7 @@ export default function MarketIndexPage() {
           <div className="mb-8 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div>
               <p className="text-[10px] font-black uppercase tracking-[0.28em] text-cyan-100/70">Featured Markets</p>
-              <h2 className="mt-3 text-3xl font-black uppercase italic tracking-tight text-white">Start with the strongest active signals.</h2>
+              <h2 className="mt-3 text-3xl font-black uppercase tracking-normal text-white">Start with the strongest active signals.</h2>
             </div>
             <Link
               href="/search"
@@ -274,7 +274,7 @@ export default function MarketIndexPage() {
               <Link
                 key={market.city.marketSlug}
                 href={`/market/${market.city.marketSlug}`}
-                className="group bg-white/[0.03] p-5 ring-1 ring-white/[0.06] transition hover:bg-white/[0.055] hover:ring-cyan-100/28 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-200"
+                className="reie-market-action-link group rounded-[8px] bg-white/[0.035] p-5 text-white no-underline shadow-[0_18px_55px_rgba(0,0,0,0.16)] transition hover:bg-white/[0.055] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-200"
                 data-testid="cep-market-discovery-featured-link"
                 data-cep-market-city={market.city.name}
                 {...getJourneyMeasurementAttributes({
@@ -287,7 +287,7 @@ export default function MarketIndexPage() {
                 <div className="flex items-start justify-between gap-4">
                   <div>
                     <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/68">Market Report</p>
-                    <h3 className="mt-3 text-2xl font-black uppercase italic tracking-tight text-white">{market.city.name}</h3>
+                    <h3 className="mt-3 text-2xl font-black uppercase tracking-tight text-white">{market.city.name}</h3>
                   </div>
                   <TrendingUp className="h-5 w-5 text-cyan-100/64 transition group-hover:text-white" aria-hidden="true" />
                 </div>
@@ -305,12 +305,12 @@ export default function MarketIndexPage() {
       <section className="px-5 py-16 sm:px-8 lg:px-12" data-testid="cep-market-discovery-all">
         <div className="mx-auto max-w-6xl">
           <p className="text-[10px] font-black uppercase tracking-[0.28em] text-white/36">All Market Paths</p>
-          <div className="mt-6 grid gap-px overflow-hidden border border-white/10 bg-white/10 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {marketSummaries.map((market) => (
               <Link
                 key={market.city.marketSlug}
                 href={`/market/${market.city.marketSlug}`}
-                className="group bg-[#030303] p-5 transition hover:bg-[#0a1118] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-cyan-200"
+                className="reie-market-action-link group rounded-[8px] bg-white/[0.03] p-5 text-white no-underline transition hover:bg-[#0a1118] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-200"
                 data-testid="cep-market-discovery-city-link"
                 data-cep-market-city={market.city.name}
                 data-cep-market-neighborhood-count={market.neighborhoodCount}
@@ -322,7 +322,7 @@ export default function MarketIndexPage() {
                 })}
               >
                 <div className="flex items-center justify-between gap-4">
-                  <h3 className="text-lg font-black uppercase italic tracking-tight text-white">{market.city.name}</h3>
+                  <h3 className="text-lg font-black uppercase tracking-tight text-white">{market.city.name}</h3>
                   <MapPinned className="h-4 w-4 text-cyan-100/54 transition group-hover:text-white" aria-hidden="true" />
                 </div>
                 <p className="mt-3 text-xs leading-6 text-white/46">
@@ -344,7 +344,7 @@ export default function MarketIndexPage() {
             <Link
               key={step.label}
               href={step.href}
-              className="group bg-white/[0.03] p-5 ring-1 ring-white/[0.06] transition hover:bg-white/[0.055] hover:ring-cyan-100/28 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-200"
+              className="reie-market-action-link group rounded-[8px] bg-white/[0.03] p-5 text-white no-underline transition hover:bg-white/[0.055] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-200"
               data-testid="cep-market-discovery-continuity-link"
               {...getJourneyMeasurementAttributes({
                 surface: 'market-index-continuity',
@@ -366,7 +366,7 @@ export default function MarketIndexPage() {
 
 function MarketMetric({ label, value }: { label: string; value: string }) {
   return (
-    <div className="bg-black/24 p-3 ring-1 ring-white/[0.06]">
+    <div className="rounded-[6px] bg-black/24 p-3">
       <p className="text-[9px] font-black uppercase tracking-[0.14em] text-white/34">{label}</p>
       <p className="mt-2 text-xs font-black uppercase leading-5 text-white/68">{value}</p>
     </div>

@@ -616,11 +616,20 @@ html, body {
     text-decoration: none;
   }
 
-  .reie-public-footer-link:hover {
-    color: #ffffff;
-  }
+.reie-public-footer-link:hover {
+  color: #ffffff;
+}
 
-  @media (min-width: 1024px) {
+.reie-market-action-link {
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.reie-market-action-link:hover {
+  color: #cffafe;
+}
+
+@media (min-width: 1024px) {
     .home-nav-items {
       display: flex;
     }
