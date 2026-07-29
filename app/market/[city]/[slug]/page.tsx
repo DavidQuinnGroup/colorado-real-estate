@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { Hammer, ShieldCheck, Zap } from 'lucide-react';
+import { ArrowUpRight, Hammer, HelpCircle, Home, MapPinned, Search, ShieldCheck, Zap } from 'lucide-react';
 import type { CollectionCreateSchema } from 'typesense/lib/Typesense/Collections.js';
 
 import FinancingConfidenceEducation from '@/components/FinancingConfidenceEducation';
@@ -293,6 +293,81 @@ function getNeighborhoodFaqs(neighborhood: Neighborhood): FAQItem[] {
   ];
 }
 
+function getNeighborhoodStory(neighborhood: Neighborhood) {
+  return `${neighborhood.name} is anchored by ${neighborhood.primaryAnchor} and should be evaluated through daily access, housing pattern, construction condition, and verification questions before a customer narrows into individual listings.`;
+}
+
+function getHousingContext(neighborhood: Neighborhood) {
+  return `${neighborhood.era} housing context with ${neighborhood.constructionDNA.toLowerCase()}`;
+}
+
+function getTradeoffSummary(neighborhood: Neighborhood) {
+  const insuranceContext =
+    neighborhood.insuranceComplexity === 'Standard'
+      ? 'insurance review is still part of normal diligence'
+      : `${neighborhood.insuranceComplexity.toLowerCase()} insurance complexity should be checked early`;
+
+  return `${neighborhood.primaryAnchor} may be the practical lifestyle anchor, while ${neighborhood.soilType.toLowerCase()} soil context, ${neighborhood.fireRisk.toLowerCase()} fire context, and ${insuranceContext} define what to verify property by property.`;
+}
+
+function getVerificationQuestions(neighborhood: Neighborhood) {
+  return [
+    `Does the property condition support the ${neighborhood.era} housing pattern?`,
+    `Are drainage, roof, sewer, mechanical, and exterior systems consistent with the visible finish quality?`,
+    `Does access to ${neighborhood.primaryAnchor} still fit the commute, daily routine, and seasonal-use assumptions?`,
+  ];
+}
+
+function getNeighborhoodFramework(
+  neighborhood: Neighborhood,
+  searchHref: string,
+  cityMarketHref: string,
+  inventoryState: InventoryState,
+) {
+  return [
+    {
+      label: 'Context',
+      icon: <MapPinned className="h-4 w-4" />,
+      title: `${neighborhood.primaryAnchor} anchors the location story.`,
+      body: neighborhood.lifestyleVibe,
+      href: cityMarketHref,
+      action: 'Compare city context',
+    },
+    {
+      label: 'Trade-offs',
+      icon: <ShieldCheck className="h-4 w-4" />,
+      title: 'Separate lifestyle appeal from property diligence.',
+      body: getTradeoffSummary(neighborhood),
+      href: '#neighborhood-verification-questions',
+      action: 'Review what to verify',
+    },
+    {
+      label: 'Questions',
+      icon: <HelpCircle className="h-4 w-4" />,
+      title: 'Ask better questions before touring.',
+      body: getVerificationQuestions(neighborhood)[0],
+      href: '#neighborhood-verification-questions',
+      action: 'See questions',
+    },
+    {
+      label: 'Evidence',
+      icon: <Home className="h-4 w-4" />,
+      title: 'Use only bounded, visible signals.',
+      body: `${inventoryState.count} active inventory signal, resilience, soil, altitude, insurance, and construction context are prompts for verification, not suitability scores or predictions.`,
+      href: '#neighborhood-market-evidence',
+      action: 'Read evidence',
+    },
+    {
+      label: 'Next Step',
+      icon: <Search className="h-4 w-4" />,
+      title: 'Open homes only after the fit makes sense.',
+      body: `Search ${neighborhood.name} homes, then compare each property against market context and the verification questions on this page.`,
+      href: searchHref,
+      action: 'Search this neighborhood',
+    },
+  ];
+}
+
 export default async function NeighborhoodIntelligencePage({ params }: NeighborhoodPageProps) {
   const { city, slug } = await params;
   const neighborhood = findNeighborhood(city, slug);
@@ -309,6 +384,11 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
   const marketExperience = buildNeighborhoodMarketExperience(neighborhood, inventoryState);
   const cityMarketHref = `/market/${normalizeRouteSegment(neighborhood.city)}-co-housing-market`;
   const searchHref = `/search?neighborhood=${encodeURIComponent(neighborhood.name)}`;
+  const neighborhoodStory = getNeighborhoodStory(neighborhood);
+  const housingContext = getHousingContext(neighborhood);
+  const tradeoffSummary = getTradeoffSummary(neighborhood);
+  const verificationQuestions = getVerificationQuestions(neighborhood);
+  const neighborhoodFramework = getNeighborhoodFramework(neighborhood, searchHref, cityMarketHref, inventoryState);
   const marketDecisionWorkspace = buildMarketDecisionWorkspace({
     scope: 'neighborhood',
     name: neighborhood.name,
@@ -353,45 +433,107 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
       />
       <FAQSchema faqs={neighborhoodFaqs} pageUrl={canonicalUrl} />
 
-      <section className="relative border-b border-white/5 bg-[radial-gradient(circle_at_78%_12%,rgba(207,250,254,0.12),transparent_30%),linear-gradient(180deg,#071017,#050505)] px-6 py-12 md:px-12 md:py-16">
+      <section
+        className="relative overflow-hidden bg-[radial-gradient(circle_at_78%_10%,rgba(207,250,254,0.14),transparent_30%),linear-gradient(180deg,#081117,#050505_82%)] px-6 py-12 md:px-12 md:py-16"
+        data-testid="neighborhood-product-2-hero"
+        data-neighborhood-product-2="true"
+        data-neighborhood-product-2-fair-housing="neutral-non-ranking"
+        data-neighborhood-product-2-ai="false"
+        data-neighborhood-product-2-gis="false"
+        data-neighborhood-product-2-telemetry="false"
+      >
         <div className="absolute inset-0 z-10 bg-gradient-to-t from-[#050505] via-transparent to-transparent" />
-        <div className="relative z-20 w-full max-w-7xl">
-          <div className="mb-5 flex items-center gap-3">
-            <div className="h-2 w-2 rounded-full bg-cyan-100 shadow-[0_0_18px_rgba(207,250,254,0.45)]" />
-            <span className="text-[10px] font-black uppercase tracking-[0.32em] text-cyan-100/78">Neighborhood Market Context</span>
+        <div className="relative z-20 mx-auto w-full max-w-7xl">
+          <div className="mb-5 flex flex-wrap items-center gap-3">
+            <span className="h-2 w-2 rounded-full bg-cyan-100 shadow-[0_0_18px_rgba(207,250,254,0.45)]" />
+            <span className="text-[10px] font-black uppercase tracking-[0.32em] text-cyan-100/78">Neighborhood Decision Workspace</span>
+            <span className="rounded-full bg-white/[0.08] px-3 py-1 text-[9px] font-black uppercase tracking-[0.18em] text-white/50">
+              {neighborhood.city}
+            </span>
           </div>
-          <h1 className="mb-6 max-w-6xl text-5xl font-black uppercase leading-[0.9] tracking-normal md:text-7xl">{neighborhood.name}</h1>
-          <div className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
-            <p className="max-w-2xl text-base leading-8 text-white/64 md:text-lg">
-              Understand what this local market context may mean before you compare homes, evaluate property tradeoffs, or ask focused
-              advisor questions.
-            </p>
-            <div className="grid grid-cols-2 overflow-hidden rounded-[8px] bg-white/[0.07] shadow-[0_20px_70px_rgba(0,0,0,0.28)]">
-              <div className="p-5">
-                <span className="mb-2 block text-[9px] font-black uppercase tracking-[0.18em] text-white/38">Inventory State</span>
-                <span className="text-xl font-black uppercase tracking-tight text-white">{inventoryState.count} active</span>
-                <span className="mt-2 block text-[9px] font-black uppercase tracking-[0.18em] text-cyan-100/70">
+
+          <div className="grid gap-10 lg:grid-cols-[1.06fr_0.94fr] lg:items-end">
+            <div>
+              <h1 className="max-w-5xl text-5xl font-black uppercase leading-[0.9] tracking-normal md:text-7xl">
+                {neighborhood.name}
+              </h1>
+              <p
+                className="mt-6 max-w-3xl text-base leading-8 text-white/70 md:text-lg"
+                data-testid="neighborhood-product-2-first-value"
+                data-neighborhood-product-2-first-value-position="hero"
+              >
+                {neighborhoodStory}
+              </p>
+              <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+                <Link
+                  href={searchHref}
+                  className="inline-flex min-h-12 items-center justify-center gap-2 rounded-[6px] bg-cyan-100 px-5 py-3 text-[11px] font-black uppercase tracking-[0.14em] text-[#071017] no-underline transition hover:bg-white focus:outline-none focus:ring-2 focus:ring-cyan-100/70"
+                  data-testid="neighborhood-product-2-primary-search"
+                  {...getJourneyMeasurementAttributes({
+                    surface: 'neighborhood-product-2-hero',
+                    stage: 'market',
+                    action: 'start-search',
+                    destination: 'search',
+                  })}
+                >
+                  <Search className="h-4 w-4" />
+                  Search this neighborhood
+                </Link>
+                <Link
+                  href={cityMarketHref}
+                  className="inline-flex min-h-12 items-center justify-center gap-2 rounded-[6px] bg-white/[0.08] px-5 py-3 text-[11px] font-black uppercase tracking-[0.14em] text-white no-underline transition hover:bg-white/[0.14] focus:outline-none focus:ring-2 focus:ring-cyan-100/70"
+                  {...getJourneyMeasurementAttributes({
+                    surface: 'neighborhood-product-2-hero',
+                    stage: 'market',
+                    action: 'view-market',
+                    destination: 'market',
+                  })}
+                >
+                  City market context
+                  <ArrowUpRight className="h-4 w-4" />
+                </Link>
+              </div>
+            </div>
+
+            <div className="rounded-[8px] bg-white/[0.07] p-5 shadow-[0_24px_90px_rgba(0,0,0,0.28)]">
+              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-cyan-100/72">What to understand first</p>
+              <p className="mt-4 text-2xl font-black uppercase leading-tight tracking-normal text-white">
+                Character first. Then trade-offs. Then property evidence.
+              </p>
+              <div className="mt-6 grid gap-3">
+                {[
+                  ['Anchor', neighborhood.primaryAnchor],
+                  ['Housing pattern', neighborhood.era],
+                  ['Verify early', `${neighborhood.soilType} / ${neighborhood.insuranceComplexity} insurance`],
+                ].map(([label, value]) => (
+                  <div key={label} className="rounded-[6px] bg-black/20 p-4">
+                    <p className="text-[9px] font-black uppercase tracking-[0.18em] text-white/35">{label}</p>
+                    <p className="mt-2 text-sm font-black uppercase leading-5 tracking-tight text-white">{value}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-8 grid gap-3 md:grid-cols-4">
+            <div className="rounded-[8px] bg-white/[0.055] p-4">
+              <p className="mb-2 text-[9px] font-black uppercase tracking-[0.18em] text-white/36">Inventory</p>
+              <p className="text-lg font-black uppercase tracking-tight text-white">{inventoryState.count} active</p>
+              <p className="mt-2 text-[9px] font-black uppercase tracking-[0.18em] text-cyan-100/62">
                 {getInventorySourceLabel(inventoryState.source)}
-              </span>
-              </div>
-              <div className="p-5">
-                <span className="mb-2 block text-[9px] font-black uppercase tracking-[0.18em] text-white/38">Resilience</span>
-                <span className="text-xl font-black uppercase tracking-tight text-white">{neighborhood.resilienceScore}/100</span>
-              </div>
-            </div>
-          </div>
-          <div className="mt-8 grid gap-3 md:grid-cols-3">
-            <div className="rounded-[8px] bg-white/[0.055] p-4">
-              <p className="mb-2 text-[9px] font-black uppercase tracking-[0.18em] text-white/36">City Context</p>
-              <p className="text-lg font-black uppercase tracking-tight text-white">{neighborhood.city}</p>
+              </p>
             </div>
             <div className="rounded-[8px] bg-white/[0.055] p-4">
-              <p className="mb-2 text-[9px] font-black uppercase tracking-[0.18em] text-white/36">Timing</p>
-              <p className="text-lg font-black uppercase tracking-tight text-white">{marketExperience.timingLabel}</p>
+              <p className="mb-2 text-[9px] font-black uppercase tracking-[0.18em] text-white/36">Resilience</p>
+              <p className="text-lg font-black uppercase tracking-tight text-white">{neighborhood.resilienceScore}/100</p>
             </div>
             <div className="rounded-[8px] bg-white/[0.055] p-4">
               <p className="mb-2 text-[9px] font-black uppercase tracking-[0.18em] text-white/36">Attention</p>
               <p className="text-lg font-black uppercase tracking-tight text-white">{neighborhood.fireRisk}</p>
+            </div>
+            <div className="rounded-[8px] bg-white/[0.055] p-4">
+              <p className="mb-2 text-[9px] font-black uppercase tracking-[0.18em] text-white/36">Timing</p>
+              <p className="text-lg font-black uppercase tracking-tight text-white">{marketExperience.timingLabel}</p>
             </div>
           </div>
           <p
@@ -408,6 +550,72 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
       </section>
 
       <section className="mx-auto grid max-w-7xl gap-8 px-6 py-10 md:grid-cols-12 md:p-12">
+        <section
+          className="md:col-span-12"
+          data-testid="neighborhood-product-2-decision-framework"
+          data-neighborhood-product-2-framework="context-tradeoffs-questions-evidence-next-step"
+          data-neighborhood-product-2-claims="repository-supported"
+          data-neighborhood-product-2-school-ranking="false"
+          data-neighborhood-product-2-safety-ranking="false"
+          data-neighborhood-product-2-demographic-targeting="false"
+          data-neighborhood-product-2-investment-projection="false"
+        >
+          <div className="mb-6 max-w-3xl">
+            <p className="mb-3 text-[10px] font-black uppercase tracking-[0.26em] text-cyan-100/72">Local Authority Framework</p>
+            <h2 className="text-3xl font-black uppercase leading-tight tracking-normal text-white md:text-4xl">
+              Decide whether the neighborhood deserves a closer look.
+            </h2>
+            <p className="mt-4 text-sm leading-7 text-white/58 md:text-base">
+              {housingContext} Use this as a starting point for property-specific verification, not as a suitability score or prediction.
+            </p>
+          </div>
+
+          <div className="grid gap-3 lg:grid-cols-5">
+            {neighborhoodFramework.map((item) => (
+              <Link
+                key={item.label}
+                href={item.href}
+                className="group flex min-h-[240px] flex-col rounded-[8px] bg-white/[0.045] p-5 text-white no-underline transition hover:bg-white/[0.07] focus:outline-none focus:ring-2 focus:ring-cyan-100/70"
+                data-testid="neighborhood-product-2-framework-item"
+                data-neighborhood-product-2-framework-step={item.label}
+              >
+                <div className="mb-5 flex items-center justify-between gap-3 text-cyan-100/72">
+                  {item.icon}
+                  <span className="text-[9px] font-black uppercase tracking-[0.2em]">{item.label}</span>
+                </div>
+                <h3 className="text-base font-black uppercase leading-6 tracking-tight text-white">{item.title}</h3>
+                <p className="mt-4 text-xs leading-6 text-white/52">{item.body}</p>
+                <span className="mt-auto pt-5 text-[10px] font-black uppercase tracking-[0.13em] text-cyan-100/72 transition group-hover:text-white">
+                  {item.action}
+                </span>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        <section
+          id="neighborhood-verification-questions"
+          className="grid gap-6 rounded-[8px] bg-[#071017]/70 p-5 md:col-span-12 md:grid-cols-[0.78fr_1.22fr] md:p-8"
+          data-testid="neighborhood-product-2-verification"
+          data-neighborhood-product-2-verification-count={verificationQuestions.length}
+        >
+          <div>
+            <p className="mb-3 text-[10px] font-black uppercase tracking-[0.24em] text-cyan-100/72">Verification Guidance</p>
+            <h2 className="text-2xl font-black uppercase leading-tight tracking-normal text-white">
+              What to verify before deciding this fits.
+            </h2>
+            <p className="mt-4 text-sm leading-7 text-white/52">{tradeoffSummary}</p>
+          </div>
+          <div className="grid gap-3">
+            {verificationQuestions.map((question, index) => (
+              <article key={question} className="rounded-[8px] bg-black/22 p-5">
+                <p className="text-[9px] font-black uppercase tracking-[0.18em] text-white/32">Question {index + 1}</p>
+                <p className="mt-3 text-sm font-semibold leading-7 text-white/72">{question}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
         <section
           className="rounded-[8px] bg-cyan-100/[0.055] p-5 shadow-[0_24px_80px_rgba(0,0,0,0.22)] md:col-span-12 md:p-8"
           data-testid="reie-market-v8-decision-workspace"
@@ -460,6 +668,7 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
         </section>
 
         <div
+          id="neighborhood-market-evidence"
           className="rounded-[8px] bg-white/[0.04] p-5 md:col-span-12 md:p-8"
           data-testid="cep-market-intelligence-summary"
           data-market-intelligence-scope="neighborhood"
@@ -603,45 +812,45 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
           <FinancingConfidenceEducation surface="neighborhood-market" />
         </div>
 
-        <div className="border-l-4 border-l-[#00ff80] bg-white/[0.03] p-8 md:col-span-8 md:p-12">
+        <div className="rounded-[8px] bg-white/[0.035] p-8 md:col-span-8 md:p-12">
           <div className="mb-8 flex items-center gap-4">
-            <Hammer className="h-6 w-6 text-[#00ff80]" />
-            <h2 className="text-2xl font-black uppercase italic tracking-tight">GC Intelligence: Construction DNA</h2>
+            <Hammer className="h-6 w-6 text-cyan-100" />
+            <h2 className="text-2xl font-black uppercase tracking-tight">Housing Pattern And Property Diligence</h2>
           </div>
-          <p className="mb-8 text-xl font-medium leading-relaxed text-white/70">{resilienceAdvice.analysis}</p>
-          <div className="border border-white/10 bg-white/5 p-6 text-sm italic text-[#00ff80]">
-            &quot;Strategy: In {neighborhood.name}, we use construction diligence to separate visible finish quality from durable value,
-            insurance exposure, and negotiation leverage.&quot; - David Quinn
+          <p className="mb-8 text-base font-medium leading-8 text-white/68 md:text-lg">{resilienceAdvice.analysis}</p>
+          <div className="rounded-[8px] bg-black/20 p-5 text-sm leading-7 text-cyan-100/72">
+            In {neighborhood.name}, construction diligence is used to separate visible finish quality from durable value, insurance exposure,
+            and negotiation leverage before a customer relies on surface presentation.
           </div>
         </div>
 
-        <div className="flex flex-col justify-between bg-white/[0.03] p-8 md:col-span-4 md:p-12">
+        <div className="flex flex-col justify-between rounded-[8px] bg-white/[0.035] p-8 md:col-span-4 md:p-12">
           <div>
             <div className="mb-4 flex items-center gap-3">
-              <Zap className="h-4 w-4 fill-[#00ff80] text-[#00ff80]" />
-              <span className="text-[10px] font-black uppercase tracking-widest">Efficiency Signal</span>
+              <Zap className="h-4 w-4 fill-cyan-100 text-cyan-100" />
+              <span className="text-[10px] font-black uppercase tracking-widest text-cyan-100/72">Practical Access Signal</span>
             </div>
-            <div className="text-7xl font-black italic tracking-tighter text-white md:text-8xl">{neighborhood.avgEfficiencyScore}</div>
-            <p className="mt-4 text-xs font-bold uppercase tracking-widest text-white/40">Weekly Efficiency Rating</p>
+            <div className="text-7xl font-black tracking-tight text-white md:text-8xl">{neighborhood.avgEfficiencyScore}</div>
+            <p className="mt-4 text-xs font-bold uppercase tracking-widest text-white/40">Guided efficiency signal</p>
           </div>
-          <p className="mt-8 text-[11px] italic leading-relaxed text-white/60">
+          <p className="mt-8 text-sm leading-7 text-white/58">
             {neighborhood.lifestyleVibe} The tactical lever is direct: {neighborhood.tacticalLever}
           </p>
         </div>
 
         <div className="grid gap-4 md:col-span-12 md:grid-cols-3">
-          <div className="border border-white/10 bg-white/[0.02] p-6">
-            <ShieldCheck className="mb-4 h-5 w-5 text-[#00ff80]" />
+          <div className="rounded-[8px] bg-white/[0.03] p-6">
+            <ShieldCheck className="mb-4 h-5 w-5 text-cyan-100" />
             <p className="mb-2 text-[10px] font-black uppercase tracking-[0.3em] text-white/30">Altitude</p>
-            <p className="text-lg font-black italic">{neighborhood.altitude.toLocaleString()} FT</p>
+            <p className="text-lg font-black uppercase tracking-tight">{neighborhood.altitude.toLocaleString()} FT</p>
           </div>
-          <div className="border border-white/10 bg-white/[0.02] p-6">
+          <div className="rounded-[8px] bg-white/[0.03] p-6">
             <p className="mb-2 text-[10px] font-black uppercase tracking-[0.3em] text-white/30">Soil Profile</p>
-            <p className="text-lg font-black italic">{neighborhood.soilType}</p>
+            <p className="text-lg font-black uppercase tracking-tight">{neighborhood.soilType}</p>
           </div>
-          <div className="border border-white/10 bg-white/[0.02] p-6">
+          <div className="rounded-[8px] bg-white/[0.03] p-6">
             <p className="mb-2 text-[10px] font-black uppercase tracking-[0.3em] text-white/30">Insurance</p>
-            <p className="text-lg font-black italic">{neighborhood.insuranceComplexity}</p>
+            <p className="text-lg font-black uppercase tracking-tight">{neighborhood.insuranceComplexity}</p>
           </div>
         </div>
 
