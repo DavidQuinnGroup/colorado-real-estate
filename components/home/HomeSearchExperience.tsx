@@ -346,7 +346,7 @@ export default function HomeSearchExperience({ authorityLinks = [], faqItems = [
   return (
     <div
       className={`reie-search-experience-shell relative flex w-full flex-col overflow-hidden bg-black text-white md:flex-row ${
-        isEmbedded ? 'h-[780px] min-h-[700px] rounded-[18px] shadow-[0_34px_100px_rgba(0,0,0,0.32)] ring-1 ring-white/12' : 'h-screen'
+        isEmbedded ? 'h-[820px] min-h-[720px] shadow-[0_48px_130px_rgba(0,0,0,0.24)]' : 'h-screen'
       }`}
       data-testid="reie-home-search-experience"
       data-home-search-variant={variant}
@@ -397,13 +397,13 @@ export default function HomeSearchExperience({ authorityLinks = [], faqItems = [
       <div className="reie-search-list-pane" data-mobile-view={mobileView}>
         {isEmbedded ? (
           <div className="reie-search-discovery-intro" data-testid="reie-home-discovery-intro">
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100/70">
+            <p className="text-[10px] font-black uppercase tracking-[0.24em] text-cyan-100/70">
               Colorado Discovery Preview
             </p>
-            <h3 className="mt-2 text-left text-[18px] font-black leading-tight tracking-normal text-white">
-              Find the homes worth a closer look.
+            <h3 className="mt-3 text-left text-[22px] font-black leading-tight tracking-normal text-white">
+              Begin with the map, the homes, and the first comparison.
             </h3>
-            <p className="mt-2 text-left text-[12px] leading-5 text-white/58">
+            <p className="mt-3 text-left text-[12px] leading-6 text-white/54">
               Begin with a focused Colorado property preview, then continue when you want more room to compare.
             </p>
           </div>

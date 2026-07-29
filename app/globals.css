@@ -382,6 +382,125 @@ html, body {
     color: inherit;
   }
 
+  .home-journey-grid {
+    display: grid;
+    gap: 32px;
+  }
+
+  .home-journey-card {
+    display: flex;
+    min-height: 560px;
+    flex-direction: column;
+    overflow: hidden;
+    background: #0e171e;
+    box-shadow: 0 38px 100px rgba(0, 0, 0, 0.28);
+    transition: transform 500ms ease;
+  }
+
+  .home-journey-card:hover {
+    transform: translateY(-4px);
+  }
+
+  .home-journey-card-image {
+    min-height: 288px;
+    background-size: cover;
+    transition: transform 700ms ease;
+  }
+
+  .home-journey-card:hover .home-journey-card-image {
+    transform: scale(1.03);
+  }
+
+  .home-community-grid {
+    display: grid;
+    grid-auto-rows: 220px;
+    gap: 16px;
+  }
+
+  .home-community-heading {
+    display: grid;
+    gap: 56px;
+  }
+
+  .home-community-action {
+    justify-self: start;
+  }
+
+  .home-community-card {
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 35px 100px rgba(0, 0, 0, 0.28);
+    transition: transform 500ms ease;
+  }
+
+  .home-community-card:hover {
+    transform: translateY(-4px);
+  }
+
+  .home-community-image,
+  .home-community-overlay {
+    position: absolute;
+    inset: 0;
+  }
+
+  .home-community-image {
+    background-size: cover;
+    transition: transform 700ms ease;
+  }
+
+  .home-community-card:hover .home-community-image {
+    transform: scale(1.03);
+  }
+
+  .home-community-overlay {
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.72), rgba(0, 0, 0, 0.18), transparent);
+  }
+
+  .home-community-title {
+    position: absolute;
+    bottom: 28px;
+    left: 28px;
+    color: #ffffff;
+    font-size: 30px;
+    font-weight: 900;
+    letter-spacing: 0;
+    line-height: 1;
+  }
+
+  @media (min-width: 768px) {
+    .home-journey-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .home-community-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .home-community-heading {
+      grid-template-columns: 0.84fr 1.16fr;
+      align-items: end;
+    }
+
+    .home-community-action {
+      justify-self: end;
+    }
+
+    .home-community-grid {
+      grid-auto-rows: 210px;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+
+    .home-community-card {
+      grid-column: span 3 / span 3;
+    }
+
+    .home-community-card-featured {
+      grid-row: span 2 / span 2;
+    }
+  }
+
   .reie-public-brand-link {
     color: #ffffff;
     text-decoration: none;
