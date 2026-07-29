@@ -5,6 +5,7 @@ import Link from 'next/link';
 import FinancingConfidenceEducation from '@/components/FinancingConfidenceEducation';
 import HomeSearchExperience, { type HomeAuthorityLink } from '@/components/home/HomeSearchExperience';
 import FAQSchema from '@/components/schema/FAQSchema';
+import { buildBuyerDecisionWorkspace } from '@/lib/buyerDecisionWorkspace';
 import { cities } from '@/lib/cities';
 import { getBlogLinks } from '@/lib/linking/getBlogLinks';
 import type { FAQItem } from '@/lib/schema/faqSchema';
@@ -204,6 +205,13 @@ function buildHomeFaqs(): FAQItem[] {
 export default function HomePage() {
   const authorityLinks = buildHomeAuthorityLinks();
   const homeFaqs = buildHomeFaqs();
+  const buyerDecisionWorkspace = buildBuyerDecisionWorkspace({
+    searchHref: '/search',
+    marketHref: '/market',
+    propertyHref: '/search',
+    financingHref: '#buyer-financing-confidence',
+    advisorHref: '/contact',
+  });
 
   return (
     <>
@@ -329,6 +337,50 @@ export default function HomePage() {
             <div className="mt-10">
               <FinancingConfidenceEducation surface="home" />
             </div>
+            <section
+              id="buyer-financing-confidence"
+              className="mt-8 rounded-[8px] border border-cyan-100/14 bg-cyan-100/[0.045] p-5 sm:p-7"
+              data-testid="reie-buyer-v8-decision-workspace"
+              data-buyer-v8-item-count={buyerDecisionWorkspace.items.length}
+              data-buyer-v8-ai="false"
+              data-buyer-v8-accounts="false"
+              data-buyer-v8-gis="false"
+              data-buyer-v8-telemetry="false"
+              data-buyer-v8-mortgage-calculator="false"
+              data-buyer-v8-lender-workflow="false"
+              data-buyer-v8-recommendation-engine="false"
+            >
+              <div className="grid gap-6 lg:grid-cols-[0.72fr_1fr] lg:items-start">
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-[0.24em] text-cyan-100/72">Buyer Decision Workspace</p>
+                  <h3 className="mt-3 max-w-xl text-2xl font-black leading-tight tracking-normal text-white sm:text-3xl">
+                    {buyerDecisionWorkspace.headline}
+                  </h3>
+                  <p className="mt-4 max-w-xl text-sm leading-7 text-white/62">{buyerDecisionWorkspace.orientation}</p>
+                  <p className="mt-5 max-w-xl rounded-[8px] border border-white/10 bg-black/16 p-4 text-xs font-bold leading-6 text-white/48">
+                    {buyerDecisionWorkspace.trustBoundary}
+                  </p>
+                </div>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {buyerDecisionWorkspace.items.map((item) => (
+                    <Link
+                      key={item.lens}
+                      href={item.href}
+                      className="group rounded-[8px] bg-white/[0.045] p-4 ring-1 ring-white/[0.08] transition hover:bg-white/[0.07] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-200"
+                      data-testid="reie-buyer-v8-decision-item"
+                      data-buyer-v8-lens={item.lens}
+                      data-buyer-v8-action={item.action}
+                    >
+                      <p className="text-[9px] font-black uppercase tracking-[0.18em] text-cyan-100/66">{item.label}</p>
+                      <p className="mt-2 text-xs leading-6 text-white/58">{item.guidance}</p>
+                      <span className="mt-3 block text-[10px] font-black uppercase tracking-[0.16em] text-cyan-100/76 group-hover:text-white">
+                        {item.action}
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </section>
           </div>
         </section>
 
@@ -337,7 +389,7 @@ export default function HomePage() {
             <div className="grid gap-8 lg:grid-cols-3">
               {advisoryPaths.map((path) => (
                 <article key={path.title} className="group overflow-hidden rounded-[16px] bg-[#101820] shadow-[0_28px_80px_rgba(0,0,0,0.24)] ring-1 ring-white/10">
-                  <div className="relative h-64 overflow-hidden">
+                  <div className="relative h-64 overflow-hidden" style={{ height: '16rem' }}>
                     <Image
                       src={HERO_IMAGE}
                       alt={path.imageAlt}
@@ -378,7 +430,7 @@ export default function HomePage() {
                   href={community.href}
                   className="home-card-link group overflow-hidden rounded-[16px] bg-white shadow-[0_24px_70px_rgba(40,35,28,0.12)] transition duration-300 hover:-translate-y-1"
                 >
-                  <div className="relative h-52 overflow-hidden">
+                  <div className="relative h-52 overflow-hidden" style={{ height: '13rem' }}>
                     <Image
                       src={HERO_IMAGE}
                       alt={community.imageAlt}

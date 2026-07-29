@@ -10,6 +10,38 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE 8 Buyer Confidence Experience(tm) v8 Implementation, July 29, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Current implementation state:
+
+- Governed identifier: `REIE_8_BUYER_CONFIDENCE_EXPERIENCE_V8`.
+- Starting baseline: clean local `main` at `c3c6562455279eb4350c4de8bd478975704bd483`, four commits ahead of `origin/main` after REIE 8 Guided Search, Property Intelligence, Market Intelligence, and Seller Confidence.
+- Implementation record: `docs/project-atlas/executive-library/REIE-8-BUYER-CONFIDENCE-EXPERIENCE-V8.md`.
+- Runtime implementation: `lib/buyerDecisionWorkspace.ts` adds deterministic buyer decision guidance; the homepage Buyer Confidence section exposes a Buyer Decision Workspace with readiness, gather, compare, questions, research, and next-step lenses.
+- Governance implementation: `scripts/checkReieBuyerConfidenceExperienceV8.ts` verifies the Buyer Decision Workspace, DEI v2.0 documentation, Decision Journey Certification, Product Delta, market-to-buyer continuity, financing education transition, and prohibited activation exclusions.
+- Decision Experience Index v2.0: documentation-only product-quality framework, total score `28 / 30`, normalized score `4.7 / 5`; it does not affect runtime behavior, ranking, visibility, personalization, buyer qualification, customer scoring, recommendation logic, or data access.
+- Decision Journey Certification: governance-only review of Market Intelligence(tm) to Buyer Confidence(tm) continuity across context, education, trust, and decision readiness.
+- Explicit exclusions retained: no AI, customer accounts, Public Geographic Intelligence, GIS activation, telemetry activation, analytics activation, Mortgage Calculator, loan calculator, lender workflow, recommendation engine, buyer qualification, buyer scoring, schema redesign, Prisma change, breaking API change, production mutation, deployment, or major architecture rewrite.
+- New validation: `npm run check:reie-buyer-confidence-experience-v8`.
+- Completion validation passed: `npm run check:reie-buyer-confidence-experience-v8`, `npm run check:reie-buyer-confidence-experience`, `npm run check:reie-seller-confidence-experience-v8`, `npm run check:reie-market-intelligence-v8`, `npm run check:reie-property-intelligence-experience-v8`, `npm run check:reie-guided-search-intelligence-v8`, `npm run check:reie-financing-confidence-education`, `npm run check:production-media-resilience`, `PUBLIC_EXPERIENCE_SMOKE_BASE_URL=http://localhost:3000 npm run smoke:public-experience`, `npm run typecheck`, `npm run lint`, `npm run build`, browser review at desktop and narrow-mobile widths, and `git diff --check`.
+- Browser review confirmed v8 workspace rendering, all six lenses, inactive AI/account/GIS/telemetry/mortgage-calculator/lender-workflow/recommendation-engine boundaries, Financing Confidence education preservation, no horizontal overflow, no zero-height homepage image bands, and no warning/error console logs on `/` at `1280x900` and `320x900`.
+- Implementation commit: reported in the completion response.
+- Exact next step: David should decide whether to authorize deployment or the next governed REIE 8 implementation program. Codex must not infer or authorize deployment or the next program without an explicit directive.
+
+Prior REIE 8 Seller Confidence implementation handoff retained below.
+
 PROJECT ATLAS(tm) / REIE 8 Seller Confidence Experience(tm) v8 Implementation, July 28, 2026:
 
 Workspace:

@@ -114,6 +114,7 @@
     "check:reie-property-intelligence-experience-v8": "npm run worker:build && node dist/scripts/checkReiePropertyIntelligenceExperienceV8.js",
     "check:reie-market-intelligence-v8": "npm run worker:build && node dist/scripts/checkReieMarketIntelligenceV8.js",
     "check:reie-seller-confidence-experience-v8": "npm run worker:build && node dist/scripts/checkReieSellerConfidenceExperienceV8.js",
+    "check:reie-buyer-confidence-experience-v8": "npm run worker:build && node dist/scripts/checkReieBuyerConfidenceExperienceV8.js",
     "check:production-media-resilience": "npm run worker:build && node dist/scripts/checkProductionMediaResilience.js",
     "check:launch-readiness": "npm run worker:build && node dist/scripts/launchReadiness.js",
     "worker:build": "tsc -p tsconfig.worker.json --pretty false",
