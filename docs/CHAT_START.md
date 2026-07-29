@@ -10,6 +10,39 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE 8 Product 2.0 Portfolio Production Certification, July 29, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Current production certification state:
+
+- Governed identifier: `REIE_8_PRODUCT_2_PORTFOLIO_CERTIFIED_AND_CLOSED`.
+- Production domain: `https://davidquinngroup.com`.
+- Included Product 2.0 portfolio: Homepage Product(tm) 2.0, Search Product(tm) 2.0, Property Product(tm) 2.0, Map Product(tm) 2.0, and Market Product(tm) 2.0.
+- Promoted product commit: `6f4dd04ebcbe0f5508cd78093ea48703ed630823`.
+- Product deployment evidence: GitHub/Vercel commit status `success`, commit status ID `51309544006`, timestamp `2026-07-29T17:24:57Z`, Vercel target `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/DmFnD9iJb3XVuEtgeeoiMWNhogy4`.
+- Certification record: `docs/project-atlas/executive-library/REIE-8-PRODUCT-2-PORTFOLIO-PRODUCTION-CERTIFICATION.md`.
+- Preflight validation passed before promotion: `npm run typecheck`, `npm run lint`, `npm run build`, `npm run check:reie-first-impression-experience-baseline`, `npm run check:reie-guided-search-intelligence-v8`, `npm run check:reie-property-intelligence-experience-v8`, `npm run check:reie-market-intelligence-v8`, `npm run check:reie-seller-confidence-experience-v8`, `npm run check:reie-buyer-confidence-experience-v8`, `npm run check:reie-financing-confidence-v8`, `npm run check:search-listing-quality`, `npm run check:search-runtime-safety`, `npm run check:cep-search-map-baseline`, `npm run check:map-rendering-safety`, `npm run check:property-route-safety`, `npm run check:production-media-resilience`, and `git diff --check`.
+- Production smoke passed: `PUBLIC_EXPERIENCE_SMOKE_BASE_URL=https://davidquinngroup.com npm run smoke:public-experience`.
+- Route/API production checks passed: `/`, `/buy`, `/sell`, `/search`, `/market`, `/market/boulder-co-housing-market`, `/market/boulder/downtown-boulder`, `/properties/32224-poudre-canyon-rd-bellvue-co-ire1363681`, `/grand-plan`, `/contact`, and `/api/search?limit=5`.
+- Browser review passed across desktop `1440x1100`, tablet `900x1050`, mobile `390x900`, and narrow mobile `320x900` where practical: no horizontal overflow, no console warnings/errors, no broken rendered media by natural-dimension criteria, zero rendered `media.mlsgrid.com` display images, Search/Map markers rendered, Property Decision Workspace appeared early, and Market interpretation appeared early.
+- Integrated journey review passed: Homepage -> Search -> Map/List -> Property -> Market -> Buyer / Seller / Financing destinations.
+- Defects and corrections: none. No customer-facing correction, schema change, Prisma change, API change, provider activation, AI activation, GIS activation, telemetry activation, account activation, calculator, lender workflow, force-push, or destructive database action was performed.
+- Final documentation-only closure commit and deployment evidence are reported in the completion response.
+- Exact next step: David should decide whether to authorize the next governed post-certification program. Codex must not infer or authorize that next program without an explicit directive.
+
+Prior REIE 8 Financing Confidence implementation handoff retained below.
+
 PROJECT ATLAS(tm) / REIE 8 Financing Confidence(tm) v8 Implementation, July 29, 2026:
 
 Workspace:
