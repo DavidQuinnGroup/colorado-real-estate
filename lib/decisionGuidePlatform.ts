@@ -1,7 +1,14 @@
 import type { CityData } from './cities.js';
 import type { Neighborhood } from './neighborhoods.js';
 
-export type DecisionGuideKey = 'boulder' | 'louisville' | 'lafayette';
+export type DecisionGuideKey = string;
+type EditorialDecisionGuideKey = 'boulder' | 'louisville' | 'lafayette';
+export type DecisionGuideMaturity = 'FOUNDATION' | 'EVIDENCE_BACKED' | 'EDITORIALLY_CERTIFIED';
+
+export type DecisionGuideEligibility = {
+  guideMaturity: DecisionGuideMaturity;
+  publicEligibility: boolean;
+};
 
 type DecisionGuideItem = {
   label: string;
@@ -19,6 +26,8 @@ type DecisionGuideTradeoff = {
 
 export type DecisionGuide = {
   key: DecisionGuideKey;
+  maturity: DecisionGuideMaturity;
+  publicEligibility: boolean;
   cityName: string;
   identity: string;
   summaryEyebrow: string;
@@ -36,7 +45,7 @@ export type DecisionGuide = {
 };
 
 type DecisionGuideCityConfig = {
-  key: DecisionGuideKey;
+  key: EditorialDecisionGuideKey;
   cityName: string;
   identityPattern: string;
   summaryHeadline: string;
@@ -60,6 +69,7 @@ type DecisionGuideCityConfig = {
 
 export const DECISION_GUIDE_FRAMEWORK = 'context-tradeoffs-questions-evidence-next-step';
 export const DECISION_GUIDE_SOURCE = 'governed-city-and-neighborhood-data';
+export const DECISION_GUIDE_FOUNDATION_SOURCE = 'governed-city-market-registry';
 
 export const DECISION_GUIDE_TRUST_BOUNDARIES = {
   ai: false,
@@ -95,7 +105,7 @@ export const DECISION_GUIDE_FRAMEWORK_STEPS: Array<{ label: string; explanation:
   },
 ];
 
-export const DECISION_GUIDE_CITY_CONFIGS: Record<DecisionGuideKey, DecisionGuideCityConfig> = {
+export const DECISION_GUIDE_CITY_CONFIGS: Record<EditorialDecisionGuideKey, DecisionGuideCityConfig> = {
   boulder: {
     key: 'boulder',
     cityName: 'Boulder',
@@ -242,8 +252,20 @@ export const DECISION_GUIDE_CITY_CONFIGS: Record<DecisionGuideKey, DecisionGuide
   },
 };
 
-export function getDecisionGuideKey(city: CityData): DecisionGuideKey | null {
-  const normalizedCityName = city.name.trim().toLowerCase();
+function normalize(value: string) {
+  return value.trim().toLowerCase();
+}
+
+function slugifyCity(value: string) {
+  return normalize(value).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+}
+
+function isEditorialDecisionGuideKey(key: DecisionGuideKey): key is EditorialDecisionGuideKey {
+  return key === 'boulder' || key === 'louisville' || key === 'lafayette';
+}
+
+function getEditorialDecisionGuideKey(city: CityData): EditorialDecisionGuideKey | null {
+  const normalizedCityName = normalize(city.name);
 
   if (normalizedCityName === 'boulder') return 'boulder';
   if (normalizedCityName === 'louisville') return 'louisville';
@@ -252,17 +274,155 @@ export function getDecisionGuideKey(city: CityData): DecisionGuideKey | null {
   return null;
 }
 
-export function buildDecisionGuide({
+export function getDecisionGuideKey(city: CityData, eligibility?: DecisionGuideEligibility | null): DecisionGuideKey | null {
+  if (eligibility) {
+    if (!eligibility.publicEligibility) return null;
+    return slugifyCity(city.name);
+  }
+
+  return getEditorialDecisionGuideKey(city);
+}
+
+function buildFoundationDecisionGuide({
   city,
   cityNeighborhoods,
   marketSignal,
+  guideKey,
+  maturity,
 }: {
   city: CityData;
   cityNeighborhoods: Neighborhood[];
   marketSignal: string;
+  guideKey: DecisionGuideKey;
+  maturity: DecisionGuideMaturity;
+}): DecisionGuide {
+  const hasNeighborhoodEvidence = cityNeighborhoods.length > 0;
+  const anchors = cityNeighborhoods
+    .slice(0, 4)
+    .map((neighborhood) => neighborhood.primaryAnchor)
+    .join(', ');
+  const housingEras = Array.from(new Set(cityNeighborhoods.map((neighborhood) => neighborhood.era))).slice(0, 3);
+  const evidenceLabel = maturity === 'EVIDENCE_BACKED' ? 'Evidence-backed' : 'Foundation';
+
+  return {
+    key: guideKey,
+    maturity,
+    publicEligibility: true,
+    cityName: city.name,
+    identity: `${city.name} is published as a ${evidenceLabel.toLowerCase()} Colorado Decision Guide using governed city-market data, existing search continuity, and standard verification language. Use it as a starting point, then confirm property-specific facts before narrowing into individual homes.`,
+    summaryEyebrow: `${city.name} Decision Summary`,
+    summaryHeadline: `Start with a bounded ${city.name} decision foundation.`,
+    summaryIntro:
+      'This guide uses repository-supported city data and standard Decision Guide structure. It does not add unsupported local interpretation, rankings, predictions, or demographic guidance.',
+    neighborhoodsEyebrow: hasNeighborhoodEvidence ? `Explore ${city.name} Neighborhoods` : `${city.name} Neighborhood Evidence`,
+    neighborhoodsHeadline: hasNeighborhoodEvidence ? 'Move from city question to local context.' : 'Neighborhood-specific guide evidence is not yet certified.',
+    neighborhoodSectionId: `${guideKey}-neighborhoods`,
+    continuitySurface: `${guideKey}-decision-guide-continuity`,
+    decisionSummary: [
+      {
+        label: `What distinguishes ${city.name}`,
+        value: 'A governed Colorado city market with search and market continuity',
+        explanation: `${city.name} has a valid market route, supported search path, and repository-local market statistics for a foundation-level Decision Guide.`,
+      },
+      {
+        label: 'What deserves attention',
+        value: 'Price, inventory, market signal, property facts, and next-step verification',
+        explanation: `Current market context shows ${city.stats.medianPrice} median price, ${city.stats.inventory} active inventory signal, and ${marketSignal.toLowerCase()} as the current city-market interpretation.`,
+      },
+      {
+        label: 'What to verify',
+        value: 'Property records, condition, costs, financing readiness, and advisor questions',
+        explanation:
+          'Use the city guide as a decision starting point, then verify listing facts, disclosures, inspection findings, insurance questions, financing preparation, and advisor guidance before acting.',
+      },
+    ],
+    housingContext: [
+      {
+        label: hasNeighborhoodEvidence ? 'Repository-supported housing evidence' : 'Foundation housing context',
+        explanation: hasNeighborhoodEvidence
+          ? `${city.name} neighborhood records include ${housingEras.join(', ') || 'repository-supported'} housing patterns and local anchors including ${anchors}. Treat those signals as starting evidence, not complete property diligence.`
+          : `${city.name} does not yet have certified neighborhood-level housing interpretation in the repository. Compare age, condition, systems, lot context, records, and maintenance history at the individual property level.`,
+      },
+      {
+        label: 'Local interpretation status',
+        explanation:
+          maturity === 'EVIDENCE_BACKED'
+            ? 'Neighborhood evidence exists, but the guide should still avoid city-wide assumptions and move customers toward specific records and property review.'
+            : 'Foundation-level guides intentionally avoid unsupported city-specific interpretation until editorial review or additional governed knowledge is available.',
+      },
+      {
+        label: 'Condition before assumptions',
+        explanation:
+          'Property age, remodel history, roof condition, drainage, exterior exposure, mechanical systems, lot context, and records review can change the questions that matter for a specific home.',
+      },
+    ],
+    practicalContext: [
+      {
+        label: 'Access relationships',
+        explanation:
+          'Evaluate the relationship between the property, work patterns, daily routes, city services, open-space or neighborhood access where relevant, and the places used most often.',
+      },
+      {
+        label: 'Property-specific fit',
+        explanation:
+          `${city.name} should not be treated as one uniform answer. Compare individual properties, local context, and daily-use assumptions before deciding whether a home deserves more attention.`,
+      },
+      {
+        label: 'Research discipline',
+        explanation:
+          'Use market context, search results, property records, disclosures, inspection review, insurance questions, financing preparation, and advisor discussion as separate evidence layers.',
+      },
+    ],
+    tradeoffs: [
+      {
+        strength: 'Clear starting point with governed city market and search continuity',
+        tradeoff: 'Foundation guidance should not replace neighborhood-specific review, property condition diligence, or advisor discussion.',
+      },
+      {
+        strength: 'Fast path from city context into search and property review',
+        tradeoff: 'Customers should verify facts, costs, records, and financing readiness before comparing homes too narrowly.',
+      },
+      {
+        strength: 'Standardized Decision Guide structure across eligible Colorado cities',
+        tradeoff: 'City-specific interpretation remains limited unless repository evidence and editorial review support it.',
+      },
+    ],
+    verificationQuestions: [
+      `What does the current ${city.name} market context change about my search or preparation questions?`,
+      'Which property facts, records, disclosures, costs, insurance questions, and condition items should be verified first?',
+      'Does this home deserve more attention based on evidence, or only because it matched a broad search filter?',
+      'Which search, market, property, buyer, seller, financing, or Grand Plan step should I use next?',
+    ],
+  };
+}
+
+export function buildDecisionGuide({
+  city,
+  cityNeighborhoods,
+  marketSignal,
+  eligibility,
+}: {
+  city: CityData;
+  cityNeighborhoods: Neighborhood[];
+  marketSignal: string;
+  eligibility?: DecisionGuideEligibility | null;
 }): DecisionGuide | null {
-  const guideKey = getDecisionGuideKey(city);
+  const guideKey = getDecisionGuideKey(city, eligibility);
   if (!guideKey) return null;
+
+  const guideMaturity = eligibility?.guideMaturity ?? 'EDITORIALLY_CERTIFIED';
+  const publicEligibility = eligibility?.publicEligibility ?? true;
+  if (!publicEligibility) return null;
+
+  if (!isEditorialDecisionGuideKey(guideKey)) {
+    return buildFoundationDecisionGuide({
+      city,
+      cityNeighborhoods,
+      marketSignal,
+      guideKey,
+      maturity: guideMaturity,
+    });
+  }
 
   const config = DECISION_GUIDE_CITY_CONFIGS[guideKey];
   const anchors = cityNeighborhoods
@@ -273,6 +433,8 @@ export function buildDecisionGuide({
 
   return {
     key: config.key,
+    maturity: guideMaturity,
+    publicEligibility,
     cityName: city.name,
     identity: `${city.name} should be evaluated as a ${config.identityPattern} before a customer narrows into individual homes.`,
     summaryEyebrow: `${city.name} Decision Summary`,

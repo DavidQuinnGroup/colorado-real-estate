@@ -12,10 +12,12 @@ import ResilienceDashboard from '@/components/ResilienceDashboard';
 import RelatedArticles from '@/components/RelatedArticles';
 import FAQSchema from '@/components/schema/FAQSchema';
 import { cities, getCityByMarketSlug, type CityData } from '@/lib/cities';
+import { getDecisionGuideRegistryEntry } from '@/lib/coloradoDecisionGuideRegistry';
 import { getJourneyMeasurementAttributes } from '@/lib/customerJourneyMeasurement';
 import {
   buildDecisionGuide,
   buildDecisionGuideContinuityLinks,
+  DECISION_GUIDE_FOUNDATION_SOURCE,
   DECISION_GUIDE_FRAMEWORK,
   DECISION_GUIDE_FRAMEWORK_STEPS,
   DECISION_GUIDE_SOURCE,
@@ -178,10 +180,12 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
   const cityMarketSchema = getJsonLd(cityData, cityNeighborhoods);
   const cityMarketSchemaGraph = cityMarketSchema['@graph'];
   const marketExperience = buildCityMarketExperience(cityData, cityNeighborhoods.length);
+  const decisionGuideEligibility = getDecisionGuideRegistryEntry(cityData);
   const cityDecisionGuide = buildDecisionGuide({
     city: cityData,
     cityNeighborhoods,
     marketSignal: marketExperience.directionLabel,
+    eligibility: decisionGuideEligibility,
   });
   const marketDecisionWorkspace = buildMarketDecisionWorkspace({
     scope: 'city',
@@ -231,6 +235,8 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
         data-testid={cityDecisionGuide ? `${cityDecisionGuide.key}-decision-guide-hero` : undefined}
         data-city-decision-guide={cityDecisionGuide ? 'true' : undefined}
         data-city-decision-guide-key={cityDecisionGuide?.key}
+        data-city-decision-guide-maturity={cityDecisionGuide?.maturity}
+        data-city-decision-guide-public-eligible={cityDecisionGuide ? String(cityDecisionGuide.publicEligibility) : undefined}
         data-city-decision-guide-ai={cityDecisionGuide ? String(DECISION_GUIDE_TRUST_BOUNDARIES.ai) : undefined}
         data-city-decision-guide-gis={cityDecisionGuide ? String(DECISION_GUIDE_TRUST_BOUNDARIES.gis) : undefined}
         data-city-decision-guide-telemetry={cityDecisionGuide ? String(DECISION_GUIDE_TRUST_BOUNDARIES.telemetry) : undefined}
@@ -349,7 +355,9 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
               className="grid gap-6 py-4 lg:grid-cols-[0.82fr_1.18fr]"
               data-testid={`${cityDecisionGuide.key}-decision-guide-summary`}
               data-city-decision-guide-framework={DECISION_GUIDE_FRAMEWORK}
-              data-city-decision-guide-source={DECISION_GUIDE_SOURCE}
+              data-city-decision-guide-source={
+                cityDecisionGuide.maturity === 'FOUNDATION' ? DECISION_GUIDE_FOUNDATION_SOURCE : DECISION_GUIDE_SOURCE
+              }
               data-city-decision-guide-school-ranking={String(DECISION_GUIDE_TRUST_BOUNDARIES.schoolRanking)}
               data-city-decision-guide-safety-ranking={String(DECISION_GUIDE_TRUST_BOUNDARIES.safetyRanking)}
               data-city-decision-guide-investment-recommendation={String(DECISION_GUIDE_TRUST_BOUNDARIES.investmentRecommendation)}

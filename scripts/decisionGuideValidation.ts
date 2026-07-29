@@ -54,7 +54,7 @@ export async function assertDecisionGuidePlatformContract({
     readFile('package.json', 'utf8'),
   ]);
   const combinedSource = `${cityMarketPage}\n${platformSource}`;
-  const config = DECISION_GUIDE_CITY_CONFIGS[key];
+  const config = DECISION_GUIDE_CITY_CONFIGS[key as keyof typeof DECISION_GUIDE_CITY_CONFIGS];
 
   assert(config, `${cityName} Decision Guide must have a governed platform configuration.`);
   assert.equal(config.cityName, cityName, `${cityName} platform configuration must remain city-specific.`);

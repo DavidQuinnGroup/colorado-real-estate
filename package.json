@@ -117,6 +117,7 @@
     "check:reie-buyer-confidence-experience-v8": "npm run worker:build && node dist/scripts/checkReieBuyerConfidenceExperienceV8.js",
     "check:reie-financing-confidence-v8": "npm run worker:build && node dist/scripts/checkReieFinancingConfidenceV8.js",
     "check:neighborhood-product-2": "npm run worker:build && node dist/scripts/checkNeighborhoodProduct2.js",
+    "check:colorado-decision-guide-generation-system": "npm run worker:build && node dist/scripts/checkColoradoDecisionGuideGenerationSystem.js",
     "check:boulder-decision-guide": "npm run worker:build && node dist/scripts/checkBoulderDecisionGuide.js",
     "check:louisville-decision-guide": "npm run worker:build && node dist/scripts/checkLouisvilleDecisionGuide.js",
     "check:lafayette-decision-guide": "npm run worker:build && node dist/scripts/checkLafayetteDecisionGuide.js",

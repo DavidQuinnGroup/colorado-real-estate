@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next';
 
-import { cities } from '@/lib/cities';
+import { getPublicDecisionGuideRegistryEntries } from '@/lib/coloradoDecisionGuideRegistry';
 import { publicTrustRoutes } from '@/lib/publicTrust';
 
 const SITE_URL = 'https://davidquinngroup.com';
@@ -56,8 +56,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     })),
   ];
 
-  const marketRoutes: MetadataRoute.Sitemap = cities.map((city) => ({
-    url: url(`/market/${city.marketSlug}`),
+  const marketRoutes: MetadataRoute.Sitemap = getPublicDecisionGuideRegistryEntries().map((city) => ({
+    url: url(city.marketRoute ?? ''),
     lastModified: now,
     changeFrequency: 'weekly' as const,
     priority: 0.7,

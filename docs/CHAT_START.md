@@ -10,6 +10,35 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / Colorado Decision Guide Generation System(tm) 1.0, July 29, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Current governed state:
+
+- Colorado Decision Guide Generation System(tm) 1.0 extends Decision Guide Platform(tm) 1.0 from Boulder/Louisville/Lafayette-only gating to a registry-driven generation and eligibility system.
+- Reusable registry module: `lib/coloradoDecisionGuideRegistry.ts`.
+- Reusable generation module remains `lib/decisionGuidePlatform.ts`.
+- City market route integration remains `app/market/[city]/page.tsx`; eligible guides render from the registry-backed generator, while ineligible cities fail closed to the existing market experience.
+- Sitemap discovery now uses `getPublicDecisionGuideRegistryEntries()` so generated guide discovery follows eligibility.
+- Governed implementation record: `docs/project-atlas/executive-library/COLORADO-DECISION-GUIDE-GENERATION-SYSTEM-1-IMPLEMENTATION.md`.
+- Validation script: `npm run check:colorado-decision-guide-generation-system`.
+- Current registry validation evidence: 15 registry cities, 7 public eligible generated guides, and 8 deferred/ineligible guide entries.
+- Prohibited boundaries remain active: no AI, public GIS, telemetry, personalization, customer accounts, new providers, schema changes, Prisma changes, breaking API changes, automated recommendations, mortgage calculators, lender workflows, school/safety/demographic/hazard/investment scoring, unsupported local claims, speculative statewide claims, urgency claims, deployment, or push.
+- Exact next step: David should decide whether to authorize a future governed city editorial-certification program or production promotion. Codex must not infer or create another city guide without an explicit directive.
+
+Prior Decision Guide Platform handoff retained below.
+
 PROJECT ATLAS(tm) / Decision Guide Platform(tm) 1.0 Product Platform Extraction, July 29, 2026:
 
 Workspace:
