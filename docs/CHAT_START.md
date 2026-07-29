@@ -10,6 +10,37 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE 8 Seller Confidence Experience(tm) v8 Implementation, July 28, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Current implementation state:
+
+- Governed identifier: `REIE_8_SELLER_CONFIDENCE_EXPERIENCE_V8`.
+- Starting baseline: clean local `main` at `3adc024bd695cc18be905c46c80defff6567e727`, three commits ahead of `origin/main` after REIE 8 Guided Search, Property Intelligence, and Market Intelligence.
+- Implementation record: `docs/project-atlas/executive-library/REIE-8-SELLER-CONFIDENCE-EXPERIENCE-V8.md`.
+- Runtime implementation: `lib/sellerDecisionWorkspace.ts` adds deterministic seller decision guidance; `/home-worth` exposes a Seller Decision Workspace with readiness, gather, questions, factors, and next-step lenses before the seller review request form.
+- Governance implementation: `scripts/checkReieSellerConfidenceExperienceV8.ts` verifies the Seller Decision Workspace, DEI v2.0 documentation, Product Delta, intake continuity, and prohibited activation exclusions.
+- Decision Experience Index v2.0: documentation-only product-quality framework, total score `27 / 30`, normalized score `4.5 / 5`; it does not affect runtime behavior, ranking, visibility, personalization, customer scoring, or data access.
+- Explicit exclusions retained: no AI, automated valuation models, instant home values, Public Geographic Intelligence, GIS activation, telemetry activation, analytics activation, customer accounts, Mortgage Calculator, loan calculator, lender workflow, recommendation engine, schema redesign, Prisma change, breaking API change, production mutation, deployment, or major architecture rewrite.
+- New validation: `npm run check:reie-seller-confidence-experience-v8`.
+- Completion validation passed: `npm run check:reie-seller-confidence-experience-v8`, `npm run check:reie-seller-confidence-experience`, `npm run check:reie-market-intelligence-v8`, `npm run check:reie-property-intelligence-experience-v8`, `npm run check:reie-guided-search-intelligence-v8`, `npm run check:reie-buyer-confidence-experience`, `npm run check:reie-financing-confidence-education`, `npm run check:production-media-resilience`, `PUBLIC_EXPERIENCE_SMOKE_BASE_URL=http://localhost:3000 npm run smoke:public-experience`, `npm run typecheck`, `npm run lint`, `npm run build`, browser review at desktop and narrow-mobile widths, and `git diff --check`.
+- Browser review confirmed v8 workspace rendering, all five lenses, inactive AI/automated-valuation/GIS/telemetry/lender-workflow boundaries, existing intake form preservation, no horizontal overflow, and no warning/error console logs on `/home-worth` at `1280x900` and `320x900`.
+- Implementation commit: reported in the completion response.
+- Exact next step: David should decide whether to authorize deployment or the next governed REIE 8 implementation program. Codex must not infer or authorize that next program without an explicit directive.
+
+Prior REIE 8 Market Intelligence implementation handoff retained below.
+
 PROJECT ATLAS(tm) / REIE 8 Market Intelligence(tm) v8 Implementation, July 28, 2026:
 
 Workspace:

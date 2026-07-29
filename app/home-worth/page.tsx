@@ -5,6 +5,7 @@ import Link from 'next/link';
 import HomeValueEstimator from '@/components/HomeValueEstimator';
 import FAQSchema from '@/components/schema/FAQSchema';
 import { getJourneyMeasurementAttributes } from '@/lib/customerJourneyMeasurement';
+import { buildSellerDecisionWorkspace } from '@/lib/sellerDecisionWorkspace';
 import type { FAQItem } from '@/lib/schema/faqSchema';
 import { SITE_NAME, SITE_URL } from '@/lib/publicTrust';
 
@@ -100,6 +101,13 @@ const homeWorthFaqs: FAQItem[] = [
 ];
 
 export default function HomeWorthPage() {
+  const sellerDecisionWorkspace = buildSellerDecisionWorkspace({
+    marketHref: '/market',
+    searchHref: '/search',
+    sellerHref: '/sell',
+    requestHref: '#home-worth-request',
+  });
+
   return (
     <>
       <FAQSchema faqs={homeWorthFaqs} pageUrl={`${SITE_URL}/home-worth`} />
@@ -256,6 +264,55 @@ export default function HomeWorthPage() {
                   <p className="mt-4 text-sm leading-7 text-white/66">{step.body}</p>
                 </article>
               ))}
+            </div>
+          </div>
+        </section>
+
+        <section
+          className={`${sectionShell} bg-[#071017]`}
+          data-testid="reie-seller-v8-decision-workspace"
+          data-seller-v8-item-count={sellerDecisionWorkspace.items.length}
+          data-seller-v8-ai="false"
+          data-seller-v8-automated-valuation="false"
+          data-seller-v8-gis="false"
+          data-seller-v8-telemetry="false"
+          data-seller-v8-lender-workflow="false"
+        >
+          <div className={containerShell}>
+            <div className="grid gap-10 lg:grid-cols-[0.86fr_1.14fr] lg:items-start">
+              <div>
+                <p className={eyebrowClass}>Seller Decision Workspace</p>
+                <h2 className={headingClass}>{sellerDecisionWorkspace.headline}</h2>
+                <p className={bodyClass}>{sellerDecisionWorkspace.orientation}</p>
+                <p className="mt-6 rounded-[8px] border border-cyan-100/16 bg-cyan-100/[0.055] p-4 text-xs font-bold leading-6 text-white/50">
+                  {sellerDecisionWorkspace.trustBoundary}
+                </p>
+              </div>
+
+              <div className="grid gap-px overflow-hidden rounded-[8px] border border-white/10 bg-white/10 sm:grid-cols-2">
+                {sellerDecisionWorkspace.items.map((item) => (
+                  <Link
+                    key={item.lens}
+                    href={item.href}
+                    className="group flex min-w-0 flex-col bg-[#0b1117] p-5 transition hover:bg-[#101820]"
+                    data-testid="reie-seller-v8-decision-item"
+                    data-seller-v8-lens={item.lens}
+                    data-seller-v8-action={item.action}
+                    {...getJourneyMeasurementAttributes({
+                      surface: 'seller-v8-decision-workspace',
+                      stage: 'seller',
+                      action: 'continue-journey',
+                      destination: item.lens === 'factors' ? 'market' : item.lens === 'next' ? 'search' : 'seller',
+                    })}
+                  >
+                    <p className="text-[10px] font-black uppercase tracking-[0.16em] text-cyan-100/62">{item.label}</p>
+                    <p className="mt-3 text-sm leading-6 text-white/60">{item.guidance}</p>
+                    <span className="mt-auto pt-5 text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100 transition group-hover:text-white">
+                      {item.action}
+                    </span>
+                  </Link>
+                ))}
+              </div>
             </div>
           </div>
         </section>
