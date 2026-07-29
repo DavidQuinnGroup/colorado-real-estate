@@ -59,6 +59,7 @@
     "scripts/checkReieBuyerConfidenceExperienceV8.ts",
     "scripts/checkReieFinancingConfidenceV8.ts",
     "scripts/checkNeighborhoodProduct2.ts",
+    "scripts/decisionGuideValidation.ts",
     "scripts/checkBoulderDecisionGuide.ts",
     "scripts/checkLouisvilleDecisionGuide.ts",
     "scripts/checkLafayetteDecisionGuide.ts",

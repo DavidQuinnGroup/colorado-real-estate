@@ -13,6 +13,14 @@ import RelatedArticles from '@/components/RelatedArticles';
 import FAQSchema from '@/components/schema/FAQSchema';
 import { cities, getCityByMarketSlug, type CityData } from '@/lib/cities';
 import { getJourneyMeasurementAttributes } from '@/lib/customerJourneyMeasurement';
+import {
+  buildDecisionGuide,
+  buildDecisionGuideContinuityLinks,
+  DECISION_GUIDE_FRAMEWORK,
+  DECISION_GUIDE_FRAMEWORK_STEPS,
+  DECISION_GUIDE_SOURCE,
+  DECISION_GUIDE_TRUST_BOUNDARIES,
+} from '@/lib/decisionGuidePlatform';
 import { buildMarketDecisionWorkspace } from '@/lib/marketDecisionWorkspace';
 import { buildCityMarketExperience } from '@/lib/marketIntelligenceExperience';
 import { neighborhoods, type Neighborhood } from '@/lib/neighborhoods';
@@ -32,37 +40,6 @@ type CityAuthoritySignals = {
   averageResilienceScore: number;
   highestResilienceNeighborhood?: Neighborhood;
   highestEfficiencyNeighborhood?: Neighborhood;
-};
-
-type CityDecisionGuide = {
-  key: 'boulder' | 'louisville' | 'lafayette';
-  cityName: string;
-  identity: string;
-  summaryEyebrow: string;
-  summaryHeadline: string;
-  summaryIntro: string;
-  neighborhoodsEyebrow: string;
-  neighborhoodsHeadline: string;
-  neighborhoodSectionId: string;
-  continuitySurface: string;
-  decisionSummary: Array<{
-    label: string;
-    value: string;
-    explanation: string;
-  }>;
-  housingContext: Array<{
-    label: string;
-    explanation: string;
-  }>;
-  practicalContext: Array<{
-    label: string;
-    explanation: string;
-  }>;
-  tradeoffs: Array<{
-    strength: string;
-    tradeoff: string;
-  }>;
-  verificationQuestions: string[];
 };
 
 const SITE_URL = 'https://davidquinngroup.com';
@@ -129,285 +106,6 @@ function getAuthoritySignals(cityNeighborhoods: Neighborhood[]): CityAuthoritySi
     averageResilienceScore,
     highestResilienceNeighborhood: cityNeighborhoods[0],
     highestEfficiencyNeighborhood,
-  };
-}
-
-function getDecisionGuideKey(city: CityData): CityDecisionGuide['key'] | null {
-  if (city.name === 'Boulder') return 'boulder';
-  if (city.name === 'Louisville') return 'louisville';
-  if (city.name === 'Lafayette') return 'lafayette';
-  return null;
-}
-
-function buildCityDecisionGuide({
-  city,
-  cityNeighborhoods,
-  marketSignal,
-}: {
-  city: CityData;
-  cityNeighborhoods: Neighborhood[];
-  marketSignal: string;
-}): CityDecisionGuide | null {
-  const guideKey = getDecisionGuideKey(city);
-  if (!guideKey) return null;
-
-  const anchors = cityNeighborhoods
-    .slice(0, 4)
-    .map((neighborhood) => neighborhood.primaryAnchor)
-    .join(', ');
-  const housingEras = Array.from(new Set(cityNeighborhoods.map((neighborhood) => neighborhood.era))).slice(0, 3);
-
-  if (guideKey === 'lafayette') {
-    return {
-      key: guideKey,
-      cityName: city.name,
-      identity: `${city.name} should be evaluated as an east Boulder County decision market: neighborhood pattern, housing condition, local access, and market signal should be reviewed together before a customer narrows into individual homes.`,
-      summaryEyebrow: 'Lafayette Decision Summary',
-      summaryHeadline: 'Decide what Lafayette means before comparing homes.',
-      summaryIntro:
-        'Start with Lafayette as a city decision, then use neighborhood pages, property facts, market evidence, financing preparation, and advisor questions as separate confirmation layers.',
-      neighborhoodsEyebrow: 'Explore Lafayette Neighborhoods',
-      neighborhoodsHeadline: 'Move from city question to local context.',
-      neighborhoodSectionId: 'lafayette-neighborhoods',
-      continuitySurface: 'lafayette-decision-guide-continuity',
-      decisionSummary: [
-        {
-          label: 'What distinguishes Lafayette',
-          value: 'An east Boulder County city with established neighborhoods and practical Front Range access',
-          explanation: `${cityNeighborhoods.length} governed neighborhood paths connect city context to local anchors including ${anchors}.`,
-        },
-        {
-          label: 'What deserves attention',
-          value: 'Price, inventory, neighborhood pattern, condition, and daily access',
-          explanation: `Current market context shows ${city.stats.medianPrice} median price, ${city.stats.inventory} active inventory signal, and ${marketSignal.toLowerCase()} as the current city-market interpretation.`,
-        },
-        {
-          label: 'What to verify',
-          value: 'Property facts, records, costs, financing readiness, and neighborhood evidence',
-          explanation:
-            'Use Lafayette context as a starting point, then verify individual property facts, costs, disclosures, records, and daily-life assumptions before acting.',
-        },
-      ],
-      housingContext: [
-        {
-          label: 'Varied neighborhood patterns',
-          explanation: `Lafayette neighborhood records include ${housingEras.join(', ') || 'varied residential'} housing patterns. Compare remodel quality, systems age, drainage, roof condition, and exterior maintenance before relying on surface presentation.`,
-        },
-        {
-          label: 'City identity with local variation',
-          explanation:
-            "Indian Peaks, Waneka Lake, Old Town Lafayette, and Anna's Farm should be evaluated separately instead of treated as one uniform market.",
-        },
-        {
-          label: 'Condition before assumptions',
-          explanation:
-            'Property age, remodel history, lot context, exterior exposure, and maintenance records can change the diligence questions that matter for a specific Lafayette home.',
-        },
-      ],
-      practicalContext: [
-        {
-          label: 'Access relationships',
-          explanation:
-            'Evaluate the relationship between the property, work patterns, Old Town Lafayette, Waneka Lake, open-space access, Boulder County connections, and the routes used most often.',
-        },
-        {
-          label: 'Neighborhood specificity',
-          explanation:
-            'A Lafayette address is not enough. The decision changes when the property sits near Old Town activity, lake or open-space edges, golf-course adjacency, or quieter residential interiors.',
-        },
-        {
-          label: 'Research discipline',
-          explanation:
-            'Use market context, neighborhood pages, property records, disclosures, inspection review, insurance questions, financing preparation, and advisor discussion as separate evidence layers.',
-        },
-      ],
-      tradeoffs: [
-        {
-          strength: 'Recognizable east Boulder County identity with multiple neighborhood patterns',
-          tradeoff: 'Customers should compare micro-location, property condition, and daily route needs instead of assuming city-wide fit.',
-        },
-        {
-          strength: 'Established neighborhoods with different housing forms',
-          tradeoff: 'Older systems, remodel quality, drainage, exterior-envelope condition, and records review can materially affect confidence.',
-        },
-        {
-          strength: 'Clear continuity from city market to neighborhood and property review',
-          tradeoff: 'Market statistics should inform the decision, not replace property-specific verification or financing preparation.',
-        },
-      ],
-      verificationQuestions: [
-        'Which Lafayette neighborhood pattern best matches the way I would use the city day to day?',
-        'What property-specific condition, records, insurance, cost, or financing-readiness questions should be answered before I compare this home against alternatives?',
-        'Does the current market signal change my search discipline or seller-preparation plan without creating urgency?',
-        'Which neighborhood page, market evidence, property facts, financing preparation items, and advisor questions should I review before the next step?',
-      ],
-    };
-  }
-
-  if (guideKey === 'louisville') {
-    return {
-      key: guideKey,
-      cityName: city.name,
-      identity: `${city.name} should be evaluated as a Boulder County decision market: neighborhood pattern, small-city access, property condition, and market signal should be reviewed together before a customer narrows into individual homes.`,
-      summaryEyebrow: 'Louisville Decision Summary',
-      summaryHeadline: 'Decide what Louisville means before comparing homes.',
-      summaryIntro:
-        'Start with Louisville as a city decision, then use neighborhood pages, property facts, market evidence, financing preparation, and advisor questions as separate confirmation layers.',
-      neighborhoodsEyebrow: 'Explore Louisville Neighborhoods',
-      neighborhoodsHeadline: 'Move from city question to local context.',
-      neighborhoodSectionId: 'louisville-neighborhoods',
-      continuitySurface: 'louisville-decision-guide-continuity',
-      decisionSummary: [
-        {
-          label: 'What distinguishes Louisville',
-          value: 'A Boulder County city with established neighborhoods and practical access choices',
-          explanation: `${cityNeighborhoods.length} governed neighborhood paths connect city context to local anchors including ${anchors}.`,
-        },
-        {
-          label: 'What deserves attention',
-          value: 'Price, inventory, neighborhood fit, condition, and daily access',
-          explanation: `Current market context shows ${city.stats.medianPrice} median price, ${city.stats.inventory} active inventory signal, and ${marketSignal.toLowerCase()} as the current city-market interpretation.`,
-        },
-        {
-          label: 'What to verify',
-          value: 'Property facts, records, costs, financing readiness, and neighborhood evidence',
-          explanation:
-            'Use Louisville context as a starting point, then verify individual property facts, costs, disclosures, records, and daily-life assumptions before acting.',
-        },
-      ],
-      housingContext: [
-        {
-          label: 'Established neighborhood patterns',
-          explanation: `Louisville neighborhood records include ${housingEras.join(', ') || 'established residential'} housing patterns. Compare remodel quality, systems age, drainage, roof condition, and exterior maintenance before relying on surface presentation.`,
-        },
-        {
-          label: 'City identity with neighborhood variation',
-          explanation:
-            'Old Town Louisville, Coal Creek Ranch, Centennial Valley, North End, and Steel Ranch should be evaluated separately instead of treated as one uniform market.',
-        },
-        {
-          label: 'Condition before assumptions',
-          explanation:
-            'Property age, remodel history, exterior exposure, lot context, and maintenance records can change the diligence questions that matter for a specific Louisville home.',
-        },
-      ],
-      practicalContext: [
-        {
-          label: 'Access relationships',
-          explanation:
-            'Evaluate the relationship between the property, work patterns, downtown Louisville, open-space access, Boulder County connections, and the routes used most often.',
-        },
-        {
-          label: 'Neighborhood specificity',
-          explanation:
-            'A Louisville address is not enough. The decision changes when the property sits near Old Town activity, open-space edges, golf-course adjacency, newer infill, or quieter residential interiors.',
-        },
-        {
-          label: 'Research discipline',
-          explanation:
-            'Use market context, neighborhood pages, property records, disclosures, inspection review, insurance questions, financing preparation, and advisor discussion as separate evidence layers.',
-        },
-      ],
-      tradeoffs: [
-        {
-          strength: 'Recognizable small-city identity with Boulder County access',
-          tradeoff: 'Customers should compare micro-location, property condition, and daily route needs instead of assuming city-wide fit.',
-        },
-        {
-          strength: 'Established neighborhoods with different housing patterns',
-          tradeoff: 'Older systems, remodel quality, drainage, exterior-envelope condition, and records review can materially affect confidence.',
-        },
-        {
-          strength: 'Clear continuity from city market to neighborhood and property review',
-          tradeoff: 'Market statistics should inform the decision, not replace property-specific verification or financing preparation.',
-        },
-      ],
-      verificationQuestions: [
-        'Which Louisville neighborhood pattern best matches the way I would use the city day to day?',
-        'What property-specific condition, records, insurance, cost, or financing-readiness questions should be answered before I compare this home against alternatives?',
-        'Does the current market signal change my search discipline or seller-preparation plan without creating urgency?',
-        'Which neighborhood page, market evidence, property facts, financing preparation items, and advisor questions should I review before the next step?',
-      ],
-    };
-  }
-
-  return {
-    key: guideKey,
-    cityName: city.name,
-    identity: `${city.name} should be evaluated as a high-context Colorado market: daily access, neighborhood pattern, housing condition, and market signal all matter before a customer narrows into individual homes.`,
-    summaryEyebrow: 'Boulder Decision Summary',
-    summaryHeadline: 'Decide what Boulder means before comparing homes.',
-    summaryIntro:
-      'Start with the city pattern, then use neighborhood pages, property facts, market evidence, and advisor questions as separate confirmation layers.',
-    neighborhoodsEyebrow: 'Explore Boulder Neighborhoods',
-    neighborhoodsHeadline: 'Move from city question to local context.',
-    neighborhoodSectionId: 'boulder-neighborhoods',
-    continuitySurface: 'boulder-decision-guide-continuity',
-    decisionSummary: [
-      {
-        label: 'What distinguishes Boulder',
-        value: 'A compact Front Range city with multiple neighborhood patterns',
-        explanation: `${cityNeighborhoods.length} governed neighborhood paths connect city context to local anchors including ${anchors}.`,
-      },
-      {
-        label: 'What deserves attention',
-        value: 'Price, inventory, condition, access, and property-specific diligence',
-        explanation: `Current market context shows ${city.stats.medianPrice} median price, ${city.stats.inventory} active inventory signal, and ${marketSignal.toLowerCase()} as the current city-market interpretation.`,
-      },
-      {
-        label: 'What to verify',
-        value: 'Fit, records, condition, commute pattern, and neighborhood evidence',
-        explanation: 'Use Boulder context as a starting point, then verify individual property facts, costs, records, and daily-life assumptions before acting.',
-      },
-    ],
-    housingContext: [
-      {
-        label: 'Mixed housing eras',
-        explanation: `Boulder neighborhood records include ${housingEras.join(', ') || 'mixed-era residential'} housing patterns. Compare remodel quality, systems age, drainage, roof condition, and exterior maintenance before relying on surface presentation.`,
-      },
-      {
-        label: 'Neighborhood-by-neighborhood variation',
-        explanation: 'Downtown, North Boulder, South Boulder, Gunbarrel, Table Mesa, Mapleton Hill, Chautauqua, and Wonderland Hills should be evaluated separately instead of treated as one uniform market.',
-      },
-      {
-        label: 'Condition before assumptions',
-        explanation: 'Older homes, hillside settings, mature landscaping, and remodel history can change the diligence questions that matter for a specific property.',
-      },
-    ],
-    practicalContext: [
-      {
-        label: 'Access relationships',
-        explanation: 'Evaluate the relationship between the property, work patterns, neighborhood anchors, trail or open-space access, and the parts of Boulder used most often.',
-      },
-      {
-        label: 'Location specificity',
-        explanation: 'A Boulder address is not enough. The decision changes when the property sits near downtown activity, foothill edges, north/south corridors, or more residential neighborhood interiors.',
-      },
-      {
-        label: 'Research discipline',
-        explanation: 'Use market context, neighborhood pages, property records, disclosures, inspections, insurance review, and advisor discussion as separate evidence layers.',
-      },
-    ],
-    tradeoffs: [
-      {
-        strength: 'Strong local identity and neighborhood variety',
-        tradeoff: 'Customers should compare micro-location, property condition, and access needs instead of assuming city-wide fit.',
-      },
-      {
-        strength: 'Established housing stock with distinctive character',
-        tradeoff: 'Older systems, remodel quality, drainage, roof, sewer, and exterior-envelope questions can materially affect confidence.',
-      },
-      {
-        strength: 'Clear continuity from city market to neighborhood and property review',
-        tradeoff: 'Market statistics should inform the decision, not replace property-specific verification.',
-      },
-    ],
-    verificationQuestions: [
-      'Which Boulder neighborhood pattern best matches the way I would use the city day to day?',
-      'What property-specific condition, records, insurance, or cost questions should be answered before I compare this home against alternatives?',
-      'Does the current market signal change my timing, search discipline, or seller-preparation plan without creating urgency?',
-      'Which neighborhood page, market evidence, property facts, and advisor questions should I review before the next step?',
-    ],
   };
 }
 
@@ -480,7 +178,7 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
   const cityMarketSchema = getJsonLd(cityData, cityNeighborhoods);
   const cityMarketSchemaGraph = cityMarketSchema['@graph'];
   const marketExperience = buildCityMarketExperience(cityData, cityNeighborhoods.length);
-  const cityDecisionGuide = buildCityDecisionGuide({
+  const cityDecisionGuide = buildDecisionGuide({
     city: cityData,
     cityNeighborhoods,
     marketSignal: marketExperience.directionLabel,
@@ -533,29 +231,29 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
         data-testid={cityDecisionGuide ? `${cityDecisionGuide.key}-decision-guide-hero` : undefined}
         data-city-decision-guide={cityDecisionGuide ? 'true' : undefined}
         data-city-decision-guide-key={cityDecisionGuide?.key}
-        data-city-decision-guide-ai={cityDecisionGuide ? 'false' : undefined}
-        data-city-decision-guide-gis={cityDecisionGuide ? 'false' : undefined}
-        data-city-decision-guide-telemetry={cityDecisionGuide ? 'false' : undefined}
-        data-city-decision-guide-ranking={cityDecisionGuide ? 'false' : undefined}
-        data-city-decision-guide-demographic-targeting={cityDecisionGuide ? 'false' : undefined}
+        data-city-decision-guide-ai={cityDecisionGuide ? String(DECISION_GUIDE_TRUST_BOUNDARIES.ai) : undefined}
+        data-city-decision-guide-gis={cityDecisionGuide ? String(DECISION_GUIDE_TRUST_BOUNDARIES.gis) : undefined}
+        data-city-decision-guide-telemetry={cityDecisionGuide ? String(DECISION_GUIDE_TRUST_BOUNDARIES.telemetry) : undefined}
+        data-city-decision-guide-ranking={cityDecisionGuide ? String(DECISION_GUIDE_TRUST_BOUNDARIES.ranking) : undefined}
+        data-city-decision-guide-demographic-targeting={cityDecisionGuide ? String(DECISION_GUIDE_TRUST_BOUNDARIES.demographicTargeting) : undefined}
         data-boulder-decision-guide={cityDecisionGuide?.key === 'boulder' ? 'true' : undefined}
-        data-boulder-decision-guide-ai={cityDecisionGuide?.key === 'boulder' ? 'false' : undefined}
-        data-boulder-decision-guide-gis={cityDecisionGuide?.key === 'boulder' ? 'false' : undefined}
-        data-boulder-decision-guide-telemetry={cityDecisionGuide?.key === 'boulder' ? 'false' : undefined}
-        data-boulder-decision-guide-ranking={cityDecisionGuide?.key === 'boulder' ? 'false' : undefined}
-        data-boulder-decision-guide-demographic-targeting={cityDecisionGuide?.key === 'boulder' ? 'false' : undefined}
+        data-boulder-decision-guide-ai={cityDecisionGuide?.key === 'boulder' ? String(DECISION_GUIDE_TRUST_BOUNDARIES.ai) : undefined}
+        data-boulder-decision-guide-gis={cityDecisionGuide?.key === 'boulder' ? String(DECISION_GUIDE_TRUST_BOUNDARIES.gis) : undefined}
+        data-boulder-decision-guide-telemetry={cityDecisionGuide?.key === 'boulder' ? String(DECISION_GUIDE_TRUST_BOUNDARIES.telemetry) : undefined}
+        data-boulder-decision-guide-ranking={cityDecisionGuide?.key === 'boulder' ? String(DECISION_GUIDE_TRUST_BOUNDARIES.ranking) : undefined}
+        data-boulder-decision-guide-demographic-targeting={cityDecisionGuide?.key === 'boulder' ? String(DECISION_GUIDE_TRUST_BOUNDARIES.demographicTargeting) : undefined}
         data-louisville-decision-guide={cityDecisionGuide?.key === 'louisville' ? 'true' : undefined}
-        data-louisville-decision-guide-ai={cityDecisionGuide?.key === 'louisville' ? 'false' : undefined}
-        data-louisville-decision-guide-gis={cityDecisionGuide?.key === 'louisville' ? 'false' : undefined}
-        data-louisville-decision-guide-telemetry={cityDecisionGuide?.key === 'louisville' ? 'false' : undefined}
-        data-louisville-decision-guide-ranking={cityDecisionGuide?.key === 'louisville' ? 'false' : undefined}
-        data-louisville-decision-guide-demographic-targeting={cityDecisionGuide?.key === 'louisville' ? 'false' : undefined}
+        data-louisville-decision-guide-ai={cityDecisionGuide?.key === 'louisville' ? String(DECISION_GUIDE_TRUST_BOUNDARIES.ai) : undefined}
+        data-louisville-decision-guide-gis={cityDecisionGuide?.key === 'louisville' ? String(DECISION_GUIDE_TRUST_BOUNDARIES.gis) : undefined}
+        data-louisville-decision-guide-telemetry={cityDecisionGuide?.key === 'louisville' ? String(DECISION_GUIDE_TRUST_BOUNDARIES.telemetry) : undefined}
+        data-louisville-decision-guide-ranking={cityDecisionGuide?.key === 'louisville' ? String(DECISION_GUIDE_TRUST_BOUNDARIES.ranking) : undefined}
+        data-louisville-decision-guide-demographic-targeting={cityDecisionGuide?.key === 'louisville' ? String(DECISION_GUIDE_TRUST_BOUNDARIES.demographicTargeting) : undefined}
         data-lafayette-decision-guide={cityDecisionGuide?.key === 'lafayette' ? 'true' : undefined}
-        data-lafayette-decision-guide-ai={cityDecisionGuide?.key === 'lafayette' ? 'false' : undefined}
-        data-lafayette-decision-guide-gis={cityDecisionGuide?.key === 'lafayette' ? 'false' : undefined}
-        data-lafayette-decision-guide-telemetry={cityDecisionGuide?.key === 'lafayette' ? 'false' : undefined}
-        data-lafayette-decision-guide-ranking={cityDecisionGuide?.key === 'lafayette' ? 'false' : undefined}
-        data-lafayette-decision-guide-demographic-targeting={cityDecisionGuide?.key === 'lafayette' ? 'false' : undefined}
+        data-lafayette-decision-guide-ai={cityDecisionGuide?.key === 'lafayette' ? String(DECISION_GUIDE_TRUST_BOUNDARIES.ai) : undefined}
+        data-lafayette-decision-guide-gis={cityDecisionGuide?.key === 'lafayette' ? String(DECISION_GUIDE_TRUST_BOUNDARIES.gis) : undefined}
+        data-lafayette-decision-guide-telemetry={cityDecisionGuide?.key === 'lafayette' ? String(DECISION_GUIDE_TRUST_BOUNDARIES.telemetry) : undefined}
+        data-lafayette-decision-guide-ranking={cityDecisionGuide?.key === 'lafayette' ? String(DECISION_GUIDE_TRUST_BOUNDARIES.ranking) : undefined}
+        data-lafayette-decision-guide-demographic-targeting={cityDecisionGuide?.key === 'lafayette' ? String(DECISION_GUIDE_TRUST_BOUNDARIES.demographicTargeting) : undefined}
       >
         <div className="mx-auto max-w-6xl px-6 pb-10 pt-12 md:pt-16">
           <div className="mb-4 flex items-center gap-3">
@@ -650,26 +348,26 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
             <section
               className="grid gap-6 py-4 lg:grid-cols-[0.82fr_1.18fr]"
               data-testid={`${cityDecisionGuide.key}-decision-guide-summary`}
-              data-city-decision-guide-framework="context-tradeoffs-questions-evidence-next-step"
-              data-city-decision-guide-source="governed-city-and-neighborhood-data"
-              data-city-decision-guide-school-ranking="false"
-              data-city-decision-guide-safety-ranking="false"
-              data-city-decision-guide-investment-recommendation="false"
-              data-boulder-decision-guide-framework={cityDecisionGuide.key === 'boulder' ? 'context-tradeoffs-questions-evidence-next-step' : undefined}
-              data-boulder-decision-guide-source={cityDecisionGuide.key === 'boulder' ? 'governed-city-and-neighborhood-data' : undefined}
-              data-boulder-decision-guide-school-ranking={cityDecisionGuide.key === 'boulder' ? 'false' : undefined}
-              data-boulder-decision-guide-safety-ranking={cityDecisionGuide.key === 'boulder' ? 'false' : undefined}
-              data-boulder-decision-guide-investment-recommendation={cityDecisionGuide.key === 'boulder' ? 'false' : undefined}
-              data-louisville-decision-guide-framework={cityDecisionGuide.key === 'louisville' ? 'context-tradeoffs-questions-evidence-next-step' : undefined}
-              data-louisville-decision-guide-source={cityDecisionGuide.key === 'louisville' ? 'governed-city-and-neighborhood-data' : undefined}
-              data-louisville-decision-guide-school-ranking={cityDecisionGuide.key === 'louisville' ? 'false' : undefined}
-              data-louisville-decision-guide-safety-ranking={cityDecisionGuide.key === 'louisville' ? 'false' : undefined}
-              data-louisville-decision-guide-investment-recommendation={cityDecisionGuide.key === 'louisville' ? 'false' : undefined}
-              data-lafayette-decision-guide-framework={cityDecisionGuide.key === 'lafayette' ? 'context-tradeoffs-questions-evidence-next-step' : undefined}
-              data-lafayette-decision-guide-source={cityDecisionGuide.key === 'lafayette' ? 'governed-city-and-neighborhood-data' : undefined}
-              data-lafayette-decision-guide-school-ranking={cityDecisionGuide.key === 'lafayette' ? 'false' : undefined}
-              data-lafayette-decision-guide-safety-ranking={cityDecisionGuide.key === 'lafayette' ? 'false' : undefined}
-              data-lafayette-decision-guide-investment-recommendation={cityDecisionGuide.key === 'lafayette' ? 'false' : undefined}
+              data-city-decision-guide-framework={DECISION_GUIDE_FRAMEWORK}
+              data-city-decision-guide-source={DECISION_GUIDE_SOURCE}
+              data-city-decision-guide-school-ranking={String(DECISION_GUIDE_TRUST_BOUNDARIES.schoolRanking)}
+              data-city-decision-guide-safety-ranking={String(DECISION_GUIDE_TRUST_BOUNDARIES.safetyRanking)}
+              data-city-decision-guide-investment-recommendation={String(DECISION_GUIDE_TRUST_BOUNDARIES.investmentRecommendation)}
+              data-boulder-decision-guide-framework={cityDecisionGuide.key === 'boulder' ? DECISION_GUIDE_FRAMEWORK : undefined}
+              data-boulder-decision-guide-source={cityDecisionGuide.key === 'boulder' ? DECISION_GUIDE_SOURCE : undefined}
+              data-boulder-decision-guide-school-ranking={cityDecisionGuide.key === 'boulder' ? String(DECISION_GUIDE_TRUST_BOUNDARIES.schoolRanking) : undefined}
+              data-boulder-decision-guide-safety-ranking={cityDecisionGuide.key === 'boulder' ? String(DECISION_GUIDE_TRUST_BOUNDARIES.safetyRanking) : undefined}
+              data-boulder-decision-guide-investment-recommendation={cityDecisionGuide.key === 'boulder' ? String(DECISION_GUIDE_TRUST_BOUNDARIES.investmentRecommendation) : undefined}
+              data-louisville-decision-guide-framework={cityDecisionGuide.key === 'louisville' ? DECISION_GUIDE_FRAMEWORK : undefined}
+              data-louisville-decision-guide-source={cityDecisionGuide.key === 'louisville' ? DECISION_GUIDE_SOURCE : undefined}
+              data-louisville-decision-guide-school-ranking={cityDecisionGuide.key === 'louisville' ? String(DECISION_GUIDE_TRUST_BOUNDARIES.schoolRanking) : undefined}
+              data-louisville-decision-guide-safety-ranking={cityDecisionGuide.key === 'louisville' ? String(DECISION_GUIDE_TRUST_BOUNDARIES.safetyRanking) : undefined}
+              data-louisville-decision-guide-investment-recommendation={cityDecisionGuide.key === 'louisville' ? String(DECISION_GUIDE_TRUST_BOUNDARIES.investmentRecommendation) : undefined}
+              data-lafayette-decision-guide-framework={cityDecisionGuide.key === 'lafayette' ? DECISION_GUIDE_FRAMEWORK : undefined}
+              data-lafayette-decision-guide-source={cityDecisionGuide.key === 'lafayette' ? DECISION_GUIDE_SOURCE : undefined}
+              data-lafayette-decision-guide-school-ranking={cityDecisionGuide.key === 'lafayette' ? String(DECISION_GUIDE_TRUST_BOUNDARIES.schoolRanking) : undefined}
+              data-lafayette-decision-guide-safety-ranking={cityDecisionGuide.key === 'lafayette' ? String(DECISION_GUIDE_TRUST_BOUNDARIES.safetyRanking) : undefined}
+              data-lafayette-decision-guide-investment-recommendation={cityDecisionGuide.key === 'lafayette' ? String(DECISION_GUIDE_TRUST_BOUNDARIES.investmentRecommendation) : undefined}
             >
               <div>
                 <p className="mb-3 text-[10px] font-black uppercase tracking-[0.28em] text-cyan-100/72">
@@ -698,16 +396,14 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
               className="grid gap-3 rounded-[8px] bg-cyan-100/[0.045] p-5 md:grid-cols-5"
               data-testid={`${cityDecisionGuide.key}-decision-guide-framework`}
             >
-              {[
-                ['Context', `Understand ${cityDecisionGuide.cityName} as a city and a set of neighborhood patterns.`],
-                ['Trade-offs', 'Balance access, housing form, condition, and market signal.'],
-                ['Questions', 'Turn interest into specific facts to verify.'],
-                ['Evidence', 'Use market, neighborhood, property, and advisor evidence separately.'],
-                ['Next Step', 'Move into search, neighborhood review, buyer, seller, financing, or Grand Plan guidance.'],
-              ].map(([label, explanation]) => (
+              {DECISION_GUIDE_FRAMEWORK_STEPS.map(({ label, explanation }) => (
                 <div key={label} className="min-w-0">
                   <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">{label}</p>
-                  <p className="mt-2 text-sm leading-6 text-white/55">{explanation}</p>
+                  <p className="mt-2 text-sm leading-6 text-white/55">
+                    {label === 'Context'
+                      ? `Understand ${cityDecisionGuide.cityName} as a city and a set of neighborhood patterns.`
+                      : explanation}
+                  </p>
                 </div>
               ))}
             </section>
@@ -836,14 +532,11 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
               className="grid gap-3 rounded-[8px] bg-cyan-100/[0.045] p-5 md:grid-cols-3 xl:grid-cols-6"
               data-testid={`${cityDecisionGuide.key}-decision-guide-continuity`}
             >
-              {([
-                { label: 'Market Context', href: getCanonicalPath(cityData), destination: 'market' },
-                { label: `Search ${cityDecisionGuide.cityName} Homes`, href: `/search?city=${encodeURIComponent(cityData.name)}`, destination: 'search' },
-                { label: 'Buyer Guidance', href: '/buy', destination: 'search' },
-                { label: 'Seller Guidance', href: '/sell', destination: 'seller' },
-                { label: 'Financing Guidance', href: '/buy#financing-confidence', destination: 'inquiry' },
-                { label: 'Grand Plan', href: '/grand-plan', destination: 'inquiry' },
-              ] as const).map((item) => (
+              {buildDecisionGuideContinuityLinks({
+                guide: cityDecisionGuide,
+                marketHref: getCanonicalPath(cityData),
+                searchHref: `/search?city=${encodeURIComponent(cityData.name)}`,
+              }).map((item) => (
                 <Link
                   key={item.label}
                   href={item.href}

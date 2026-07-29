@@ -10,6 +10,34 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / Decision Guide Platform(tm) 1.0 Product Platform Extraction, July 29, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Current governed state:
+
+- Decision Guide Platform(tm) 1.0 extracts the shared Boulder, Louisville, and Lafayette Decision Guide(tm) architecture into a reusable platform.
+- No new city guide was implemented.
+- No deployment, production mutation, push, schema change, Prisma change, API change, AI activation, public GIS activation, telemetry activation, provider activation, customer account feature, calculator, lender workflow, or recommendation engine was authorized or performed.
+- Reusable platform module: `lib/decisionGuidePlatform.ts`.
+- Reusable validation platform: `scripts/decisionGuideValidation.ts`.
+- Governed architecture record: `docs/project-atlas/executive-library/DECISION-GUIDE-PLATFORM-1-ARCHITECTURE.md`.
+- City guide route remains `/market/[city]` through `app/market/[city]/page.tsx`, using the shared platform builder while preserving existing Product 2.0 presentation, test IDs, continuity links, and trust-boundary data attributes.
+- Dedicated validations remain `npm run check:boulder-decision-guide`, `npm run check:louisville-decision-guide`, and `npm run check:lafayette-decision-guide`, now backed by a shared platform contract.
+- Exact next step: David should decide whether to authorize a future city guide implementation. Codex must not infer or create another city guide without an explicit directive.
+
+Prior Louisville/Lafayette Decision Guide handoff retained below.
+
 PROJECT ATLAS(tm) / Louisville Decision Guide(tm) 1.0 Production Certification + Lafayette Decision Guide(tm) 1.0 Implementation, July 29, 2026:
 
 Workspace:
