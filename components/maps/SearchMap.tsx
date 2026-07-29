@@ -110,7 +110,7 @@ function getMapboxTileUrl() {
   const token = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
   if (!token) return null;
 
-  return `https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v12/tiles/256/{z}/{x}/{y}@2x?access_token=${token}`;
+  return `https://api.mapbox.com/styles/v1/mapbox/outdoors-v12/tiles/256/{z}/{x}/{y}@2x?access_token=${token}`;
 }
 
 function escapeHtml(value: unknown) {
@@ -324,8 +324,8 @@ function createListingMarker(property: CoordinateListing, isActive: boolean) {
   return L.marker([property.lat, property.lng], {
     icon: L.divIcon({
       className: 'luxury-marker-container',
-      html: `<button class="luxury-marker${isActive ? ' active' : ''}" type="button">${formatLuxuryPrice(Number(property.price))}</button>`,
-      iconAnchor: [39, 18],
+      html: `<button class="luxury-marker${isActive ? ' active' : ''}" type="button"><span>${formatLuxuryPrice(Number(property.price))}</span></button>`,
+      iconAnchor: [42, 19],
     }),
     keyboard: true,
     title: property.address || 'Colorado property',
@@ -336,9 +336,9 @@ function createClusterMarker(cluster: ClusterBucket) {
   return L.marker([cluster.lat, cluster.lng], {
     icon: L.divIcon({
       className: 'luxury-cluster-container',
-      html: `<button class="luxury-cluster" type="button">${cluster.listings.length}</button>`,
-      iconAnchor: [21, 21],
-      iconSize: [42, 42],
+      html: `<button class="luxury-cluster" type="button"><span>${cluster.listings.length}</span><small>homes</small></button>`,
+      iconAnchor: [25, 25],
+      iconSize: [50, 50],
     }),
     keyboard: true,
     title: `${cluster.listings.length} Colorado properties`,
@@ -723,19 +723,20 @@ export default function SearchMap({
       ) : null}
 
       <div
-        className="reie-map-orientation pointer-events-none z-[710] max-w-[min(330px,calc(100%-2rem))] rounded-[8px] border border-white/14 bg-black/70 px-3 py-2.5 text-white shadow-[0_18px_48px_rgba(0,0,0,0.45)] backdrop-blur"
+        className="reie-map-orientation pointer-events-none z-[710] max-w-[min(360px,calc(100%-2rem))] rounded-[8px] bg-[#071017]/78 px-4 py-3 text-white shadow-[0_22px_60px_rgba(0,0,0,0.42)] backdrop-blur"
         data-testid="reie-search-map-orientation"
         aria-hidden="true"
       >
-        <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/78">Map View</p>
-        <p className="mt-1 text-[11px] font-bold leading-4 text-white/62">
+        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100/78">Colorado Map Guide</p>
+        <p className="mt-1 text-[11px] font-bold leading-5 text-white/66">
           Properties shown here have public map coordinates. Select a marker to compare it with the list.
+          Read terrain, towns, and listing clusters together when an area deserves closer comparison.
         </p>
       </div>
 
       <style jsx global>{`
         .leaflet-container {
-          background: #030303 !important;
+          background: #071017 !important;
           font-family: inherit;
         }
 
@@ -752,10 +753,11 @@ export default function SearchMap({
         }
 
         .leaflet-control-zoom {
-          border: 1px solid rgba(255, 255, 255, 0.34) !important;
-          border-radius: 0 !important;
-          box-shadow: 0 18px 42px rgba(0, 0, 0, 0.62) !important;
+          border: 0 !important;
+          border-radius: 8px !important;
+          box-shadow: 0 18px 42px rgba(0, 0, 0, 0.48) !important;
           overflow: hidden;
+          z-index: 720 !important;
         }
 
         .leaflet-control-zoom a {
@@ -763,23 +765,23 @@ export default function SearchMap({
           height: 34px !important;
           border: 0 !important;
           border-radius: 0 !important;
-          background: rgba(0, 0, 0, 0.92) !important;
-          color: #fff !important;
+          background: rgba(7, 16, 23, 0.88) !important;
+          color: rgba(207, 250, 254, 0.9) !important;
           font-weight: 900 !important;
           line-height: 34px !important;
         }
 
         .leaflet-control-zoom a + a {
-          border-top: 1px solid rgba(255, 255, 255, 0.22) !important;
+          border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
         }
 
         .reie-saturday-topo-tiles {
-          filter: none !important;
+          filter: saturate(0.72) contrast(1.03) brightness(0.96) sepia(0.04) !important;
         }
 
         .reie-mapbox-detail-tiles {
-          filter: none !important;
-          mix-blend-mode: normal;
+          filter: saturate(0.7) contrast(1.04) brightness(0.94) sepia(0.04) !important;
+          mix-blend-mode: soft-light;
         }
 
         .luxury-marker-container,
@@ -790,18 +792,19 @@ export default function SearchMap({
         }
 
         .luxury-marker {
-          min-width: 74px;
-          border: 1px solid rgba(255, 255, 255, 0.56);
-          background: rgba(9, 12, 17, 0.93);
-          box-shadow: 0 12px 32px rgba(0, 0, 0, 0.58);
-          color: #fff;
+          min-width: 78px;
+          border: 0;
+          border-radius: 999px;
+          background: linear-gradient(135deg, rgba(246, 248, 242, 0.96), rgba(207, 250, 254, 0.92));
+          box-shadow: 0 10px 28px rgba(0, 0, 0, 0.42), 0 0 0 2px rgba(7, 16, 23, 0.72);
+          color: #071017;
           cursor: pointer;
           display: block;
           font-size: 11px;
-          font-style: italic;
           font-weight: 900;
-          letter-spacing: 0.02em;
-          padding: 7px 11px;
+          letter-spacing: 0.04em;
+          padding: 7px 12px;
+          position: relative;
           text-align: center;
           transform: translateY(0);
           outline: 0;
@@ -809,45 +812,65 @@ export default function SearchMap({
           white-space: nowrap;
         }
 
+        .luxury-marker::after {
+          background: #cffafe;
+          border-radius: 999px;
+          bottom: -5px;
+          box-shadow: 0 0 0 2px rgba(7, 16, 23, 0.72);
+          content: '';
+          height: 6px;
+          left: 50%;
+          position: absolute;
+          transform: translateX(-50%);
+          width: 6px;
+        }
+
         .luxury-marker:hover {
-          border-color: #00e5ff;
-          box-shadow: 0 14px 38px rgba(0, 229, 255, 0.2), 0 18px 48px rgba(0, 0, 0, 0.74);
-          color: #fff;
-          transform: translateY(-2px);
+          box-shadow: 0 14px 38px rgba(207, 250, 254, 0.24), 0 18px 48px rgba(0, 0, 0, 0.62), 0 0 0 3px rgba(207, 250, 254, 0.22);
+          color: #061017;
+          transform: translateY(-3px);
         }
 
         .luxury-marker.active {
-          background: #cffafe;
-          border-color: #ffffff;
-          box-shadow: 0 0 0 3px rgba(8, 17, 23, 0.76), 0 0 0 6px rgba(207, 250, 254, 0.36), 0 18px 48px rgba(0, 0, 0, 0.74);
+          background: #f8f3df;
+          box-shadow: 0 0 0 3px rgba(8, 17, 23, 0.76), 0 0 0 7px rgba(207, 250, 254, 0.32), 0 20px 54px rgba(0, 0, 0, 0.7);
           color: #061017;
-          transform: translateY(-2px);
+          transform: translateY(-4px);
         }
 
         .luxury-cluster {
           align-items: center;
-          background: rgba(8, 11, 15, 0.93);
-          border: 2px solid rgba(207, 250, 254, 0.68);
+          background: rgba(7, 16, 23, 0.92);
+          border: 1px solid rgba(207, 250, 254, 0.38);
           border-radius: 999px;
-          box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.65), 0 12px 32px rgba(0, 0, 0, 0.5);
+          box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08), 0 14px 36px rgba(0, 0, 0, 0.48), 0 0 0 5px rgba(207, 250, 254, 0.1);
           color: #fff;
           cursor: pointer;
           display: flex;
-          font-size: 12px;
-          font-style: italic;
+          flex-direction: column;
+          font-size: 13px;
           font-weight: 900;
-          height: 42px;
+          gap: 1px;
+          height: 50px;
           justify-content: center;
           line-height: 1;
           padding: 0;
           transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
-          width: 42px;
+          width: 50px;
+        }
+
+        .luxury-cluster small {
+          color: rgba(207, 250, 254, 0.62);
+          font-size: 7px;
+          font-weight: 900;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
         }
 
         .luxury-cluster:hover {
-          border-color: #00e5ff;
-          box-shadow: 0 14px 38px rgba(0, 229, 255, 0.2), 0 18px 48px rgba(0, 0, 0, 0.74);
-          transform: translateY(-2px);
+          border-color: rgba(248, 243, 223, 0.8);
+          box-shadow: 0 14px 38px rgba(207, 250, 254, 0.2), 0 18px 48px rgba(0, 0, 0, 0.64), 0 0 0 7px rgba(248, 243, 223, 0.12);
+          transform: translateY(-3px);
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -881,9 +904,8 @@ export default function SearchMap({
 
         .reie-map-popup-card {
           background: rgba(7, 16, 23, 0.97);
-          border: 1px solid rgba(255, 255, 255, 0.18);
           border-radius: 8px;
-          box-shadow: 0 28px 80px rgba(0, 0, 0, 0.72);
+          box-shadow: 0 28px 80px rgba(0, 0, 0, 0.72), 0 0 0 1px rgba(207, 250, 254, 0.14);
           color: #fff;
           overflow: hidden;
           width: 100%;
@@ -940,7 +962,6 @@ export default function SearchMap({
         .reie-map-popup-note,
         .reie-map-popup-context {
           background: rgba(207, 250, 254, 0.07);
-          border: 1px solid rgba(207, 250, 254, 0.16);
           border-radius: 6px;
           color: rgba(255, 255, 255, 0.74);
           font-size: 10px;
