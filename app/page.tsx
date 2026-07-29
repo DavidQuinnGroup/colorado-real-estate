@@ -177,7 +177,7 @@ export default function HomePage() {
       />
       <FAQSchema faqs={homeFaqs} pageUrl={SITE_URL} />
       <div className="max-w-full overflow-x-hidden bg-[#070b10] text-white">
-        <section className="relative min-h-[calc(100vh-112px)] overflow-hidden" data-testid="home-portal-hero">
+        <section className="home-phase-c-hero relative min-h-[calc(100vh-112px)] overflow-hidden" data-testid="home-portal-hero">
           <Image
             src={HERO_IMAGE}
             alt="Colorado Front Range residential landscape at golden hour"
@@ -187,10 +187,11 @@ export default function HomePage() {
             className="object-cover"
           />
           <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(5,7,10,0.9)_0%,rgba(5,7,10,0.58)_44%,rgba(5,7,10,0.12)_100%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_26%_48%,rgba(255,255,255,0.14),transparent_24%),radial-gradient(circle_at_76%_24%,rgba(183,219,226,0.12),transparent_28%)]" />
           <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#070b10] to-transparent" />
 
-          <div className={`${containerShell} relative z-10 flex min-h-[calc(100vh-112px)] items-center px-5 pb-28 pt-24 sm:px-8 sm:pb-36 lg:px-12`}>
-            <div className="max-w-5xl">
+          <div className={`${containerShell} home-hero-frame relative z-10 flex min-h-[calc(100vh-112px)] items-center px-5 pb-28 pt-24 sm:px-8 sm:pb-36 lg:px-12`}>
+            <div className="home-hero-copy max-w-5xl">
               <p className={eyebrowClass}>Colorado Real Estate Intelligence</p>
               <h1 className="mt-8 max-w-5xl text-5xl font-black leading-[0.96] tracking-normal text-white sm:text-7xl lg:text-8xl">
                 Find the right Colorado home with more context before you click.
@@ -198,13 +199,16 @@ export default function HomePage() {
               <p className="mt-9 max-w-2xl text-base leading-8 text-white/72 sm:text-lg">
                 Search homes, compare communities, and understand the decision before the next step.
               </p>
-              <div className="home-hero-actions mt-14">
-                <Link href="#search" className={primaryButtonClass}>
-                  Search Homes
-                </Link>
-                <Link href="#communities" className={secondaryButtonClass}>
-                  Explore Communities
-                </Link>
+              <div className="home-hero-search-focus mt-14">
+                <p className="text-[10px] font-black uppercase tracking-[0.24em] text-white/48">Begin with search</p>
+                <div className="home-hero-actions mt-5">
+                  <Link href="#search" className={primaryButtonClass}>
+                    Search Homes
+                  </Link>
+                  <Link href="#communities" className={secondaryButtonClass}>
+                    Explore Communities
+                  </Link>
+                </div>
               </div>
             </div>
           </div>
@@ -229,10 +233,10 @@ export default function HomePage() {
                     role="img"
                     aria-label={`${card.title} journey in Colorado real estate`}
                   />
-                  <div className="flex flex-1 flex-col px-8 pb-10 pt-8 sm:px-10">
+                  <div className="flex flex-1 flex-col px-8 pb-10 pt-9 sm:px-10">
                     <h3 className="text-4xl font-black leading-none text-white">{card.title}</h3>
                     <p className="mt-6 text-sm leading-7 text-white/58">{card.body}</p>
-                    <p className="mt-10 text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/78 group-hover:text-white">
+                    <p className="mt-auto pt-12 text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/78 group-hover:text-white">
                       {card.cta}
                     </p>
                   </div>
@@ -242,9 +246,9 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section id="search" className="bg-[#f5f1e8] px-4 py-28 text-[#111820] sm:px-8 sm:py-36 lg:px-12 lg:py-44" data-testid="home-portal-search-section">
+        <section id="search" className="home-search-section bg-[#f5f1e8] px-4 py-28 text-[#111820] sm:px-8 sm:py-36 lg:px-12 lg:py-44" data-testid="home-portal-search-section">
           <div className={`${containerShell} home-discovery-container`}>
-            <div className="mb-14 flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+            <div className="mb-16 flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
               <div className="max-w-3xl text-left">
                 <p className="text-[10px] font-black uppercase tracking-[0.34em] text-[#7a694f]">This Is Where You Begin</p>
                 <h2 className="mt-6 max-w-4xl text-5xl font-black leading-[0.98] tracking-normal text-[#111820] sm:text-6xl lg:text-7xl">
@@ -263,13 +267,13 @@ export default function HomePage() {
                 </Link>
               </div>
             </div>
-            <div className="mb-10 grid gap-8 border-y border-[#111820]/10 py-8 md:grid-cols-3" data-testid="home-discovery-principles">
+            <div className="home-search-principles mb-12" data-testid="home-discovery-principles">
               {[
                 'Daily-life fit before endless scrolling.',
                 'Map, list, and context in one place.',
                 'A clear path into deeper search.',
               ].map((principle) => (
-                <p key={principle} className="text-sm font-black uppercase leading-6 tracking-[0.08em] text-[#26333b]/72">
+                <p key={principle} className="text-sm font-black uppercase leading-6 tracking-[0.08em] text-[#26333b]/68">
                   {principle}
                 </p>
               ))}
@@ -315,7 +319,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className={sectionShell} data-testid="home-portal-why-reie">
+        <section className={`${sectionShell} home-why-section`} data-testid="home-portal-why-reie">
           <div className={`${containerShell} grid gap-16 lg:grid-cols-[0.8fr_1.2fr] lg:items-start`}>
             <div>
               <p className={eyebrowClass}>Why REIE</p>
@@ -335,7 +339,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="bg-[#e8e2d8] px-5 py-28 text-[#111820] sm:px-8 sm:py-36 lg:px-12 lg:py-44" data-testid="home-portal-grand-plan">
+        <section className="home-grand-plan-section bg-[#e8e2d8] px-5 py-28 text-[#111820] sm:px-8 sm:py-36 lg:px-12 lg:py-44" data-testid="home-portal-grand-plan">
           <div className={`${containerShell} grid gap-12 lg:grid-cols-[0.92fr_1.08fr] lg:items-center`}>
             <div
               className="min-h-[360px] bg-cover bg-center shadow-[0_40px_100px_rgba(61,51,40,0.16)] lg:min-h-[560px]"
@@ -358,7 +362,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="px-5 py-28 sm:px-8 sm:py-36 lg:px-12 lg:py-40" data-testid="home-portal-david-quinn">
+        <section className="home-david-section px-5 py-28 sm:px-8 sm:py-36 lg:px-12 lg:py-40" data-testid="home-portal-david-quinn">
           <div className={`${containerShell} grid gap-12 lg:grid-cols-[0.72fr_1fr] lg:items-center`}>
             <div
               className="relative min-h-[420px] overflow-hidden bg-cover bg-center shadow-[0_34px_100px_rgba(0,0,0,0.24)]"
