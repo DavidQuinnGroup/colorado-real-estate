@@ -293,7 +293,7 @@ function SearchIntelligenceStrip({ stats }: { stats: InventoryStats }) {
 
   return (
     <div
-      className="mt-3 rounded-[8px] border border-cyan-100/18 bg-cyan-100/[0.065] p-3"
+      className="mt-3 rounded-[8px] bg-cyan-100/[0.055] p-3"
       data-testid="reie-sidebar-intelligence"
       data-sidebar-mapped-count={stats.mappedCount}
       data-sidebar-review-count={stats.reviewCount}
@@ -301,26 +301,26 @@ function SearchIntelligenceStrip({ stats }: { stats: InventoryStats }) {
     >
       <div className="flex items-center justify-between gap-3">
         <p className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100/78">Discovery Summary</p>
-        <span className="rounded-[4px] border border-cyan-100/20 bg-black/30 px-2 py-1 text-[9px] font-black uppercase tracking-[0.12em] text-cyan-100/70">
+        <span className="rounded-[4px] bg-black/30 px-2 py-1 text-[9px] font-black uppercase tracking-[0.12em] text-cyan-100/70">
           Helpful Context
         </span>
       </div>
-      <div className="mt-3 grid gap-2 text-[10px] font-black uppercase leading-4 tracking-[0.12em] text-white/58">
-        <div className="flex items-center gap-2">
+      <div className="mt-3 grid gap-2 text-[10px] font-black uppercase leading-4 tracking-[0.12em] text-white/58 sm:grid-cols-2">
+        <div className="flex min-w-0 items-center gap-2">
           <MapPinned size={12} aria-hidden="true" className="shrink-0 text-cyan-100/70" />
-          <span>{mappedLabel}</span>
+          <span className="truncate">{mappedLabel}</span>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex min-w-0 items-center gap-2">
           <ShieldCheck size={12} aria-hidden="true" className="shrink-0 text-cyan-100/70" />
-          <span>{resilienceLabel}</span>
+          <span className="truncate">{resilienceLabel}</span>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex min-w-0 items-center gap-2">
           <Gauge size={12} aria-hidden="true" className="shrink-0 text-cyan-100/70" />
-          <span>{reviewLabel}</span>
+          <span className="truncate">{reviewLabel}</span>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex min-w-0 items-center gap-2">
           <FileText size={12} aria-hidden="true" className="shrink-0 text-cyan-100/70" />
-          <span>{mediaLabel}</span>
+          <span className="truncate">{mediaLabel}</span>
         </div>
       </div>
     </div>
@@ -355,7 +355,7 @@ function SearchDecisionPortfolio({
     : null;
 
   return (
-    <div
+    <details
       className="mt-3 rounded-[8px] border border-white/10 bg-black/28 p-3"
       data-testid="reie-sidebar-v8-decision-portfolio"
       data-sidebar-v8-decision-mode={decisionMode}
@@ -363,15 +363,15 @@ function SearchDecisionPortfolio({
       data-sidebar-v8-review-ratio={reviewRatio}
       data-sidebar-v8-sample-confidence={sampleDecision?.confidenceLevel || ''}
     >
-      <div className="flex items-start justify-between gap-3">
+      <summary className="flex cursor-pointer list-none items-start justify-between gap-3">
         <div>
           <p className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100/74">Decision View</p>
           <p className="mt-1 text-sm font-black leading-5 text-white">{decisionMode}</p>
         </div>
         <span className="shrink-0 rounded-[5px] border border-white/10 bg-white/[0.045] px-2 py-1 text-[9px] font-black uppercase tracking-[0.12em] text-white/48">
-          V8
+          Open
         </span>
-      </div>
+      </summary>
       <div className="mt-3 grid grid-cols-3 gap-2 text-center">
         <div className="rounded-[6px] bg-white/[0.045] px-2 py-2">
           <p className="text-[9px] font-black uppercase tracking-[0.12em] text-white/34">Mapped</p>
@@ -389,7 +389,7 @@ function SearchDecisionPortfolio({
       <p className="mt-3 text-[11px] font-bold leading-5 text-white/48">
         Use the list to compare alternatives, then open Property Intelligence when the result still fits after place, price, condition, and verification questions.
       </p>
-    </div>
+    </details>
   );
 }
 
@@ -496,7 +496,7 @@ export default function MapSidebar(props: MapSidebarProps) {
       data-sidebar-loading={String(Boolean(isLoading))}
     >
       <header
-        className="relative max-h-[52vh] shrink-0 overflow-y-auto border-b border-white/12 px-4 pb-4 pt-16 md:max-h-none md:overflow-hidden md:px-5 md:pt-5"
+        className="relative max-h-[34vh] shrink-0 overflow-y-auto border-b border-white/12 px-4 pb-4 pt-16 md:max-h-[52vh] md:px-5 md:pt-5"
         data-testid="reie-sidebar-header"
         data-sidebar-dominant-city={stats.dominantCity}
         data-sidebar-listing-count={listings.length}
@@ -507,7 +507,7 @@ export default function MapSidebar(props: MapSidebarProps) {
           <div className="flex items-start justify-between gap-4">
             <div>
               <p className="text-[10px] font-black uppercase tracking-[0.28em] text-cyan-100/72">Discovery Summary</p>
-              <h2 className="mt-2 font-serif text-[2.15rem] font-black leading-none tracking-normal text-white">
+              <h2 className="mt-2 font-serif text-[1.65rem] font-black leading-none tracking-normal text-white">
                 Properties in View
               </h2>
             </div>
@@ -526,7 +526,7 @@ export default function MapSidebar(props: MapSidebarProps) {
 
           {searchControls ? <div className="mt-4">{searchControls}</div> : null}
 
-          <div className="mt-5 rounded-[8px] border border-white/10 bg-black/24 p-3">
+          <div className="mt-4 rounded-[8px] bg-black/24 p-3">
             <div className="flex items-end justify-between gap-4">
               <div>
                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/38">Market</p>

@@ -443,50 +443,104 @@ export default function SearchInterface({
           data-discovery-listing-count={visibleListings.length}
           data-discovery-filter-state={hasFilters ? 'focused' : 'open'}
         >
-          <p className="text-[10px] font-black uppercase tracking-[0.24em] text-cyan-100/76">Guided Property Search</p>
-          <h2 className="mt-3 font-serif text-[2rem] font-black leading-[1.02] tracking-normal text-white">
-            Explore Colorado homes with fit, context, and confidence.
-          </h2>
-          <p className="mt-3 max-w-[31rem] text-sm leading-6 text-white/62">
-            Start with the places, homes, or criteria that matter. Use the map and property details together, then refine as your priorities become clearer.
-          </p>
+          <div className="reie-search-product-hero">
+            <div className="min-w-0">
+              <p className="text-[10px] font-black uppercase tracking-[0.24em] text-cyan-100/76">Guided Property Search</p>
+              <h2 className="mt-3 font-serif text-[2rem] font-black leading-[1.02] tracking-normal text-white">
+                Which homes deserve your attention?
+              </h2>
+              <p className="sr-only">Explore Colorado homes with fit, context, and confidence.</p>
+              <p className="mt-3 max-w-[31rem] text-sm leading-6 text-white/62">
+                Start broad, compare what matters, and open deeper Property Intelligence only when a home earns a closer look.
+              </p>
+              <p className="sr-only">
+                Start with the places, homes, or criteria that matter. Use the map and property details together, then refine as your priorities become clearer.
+              </p>
+            </div>
+            <div className="reie-search-product-status" aria-label="Current search status">
+              <div>
+                <p className="text-[9px] font-black uppercase tracking-[0.14em] text-white/36">Properties</p>
+                <p className="mt-1 text-xl font-black leading-none text-white" data-testid="reie-search-result-count">{visibleListings.length}</p>
+              </div>
+              <div>
+                <p className="text-[9px] font-black uppercase tracking-[0.14em] text-white/36">View</p>
+                <p className="mt-1 text-[12px] font-black uppercase leading-none text-cyan-100">{discoveryFilterLabel}</p>
+              </div>
+            </div>
+          </div>
+
           <div
-            className="mt-4 grid gap-2 rounded-[8px] border border-cyan-100/16 bg-cyan-100/[0.055] p-3 sm:grid-cols-5"
+            className="reie-search-state-panel reie-search-product-state"
+            data-testid="reie-search-state-panel"
+            data-search-result-label={searchResultLabel}
+            data-search-degraded={String(isSearchDegraded)}
+            data-search-map-movement={mapMovementLabel}
+            data-search-zero-results={String(hasZeroResults)}
+          >
+            <div>
+              <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.16em] text-cyan-100/72">
+                <SlidersHorizontal size={12} aria-hidden="true" />
+                Search State
+              </p>
+              <p className="mt-1 text-[11px] font-bold leading-5 text-white/54">{searchResultLabel}</p>
+            </div>
+            <div className="grid gap-1.5 text-[10px] font-black uppercase tracking-[0.12em] text-white/42 sm:text-right">
+              <span>{hasFilters ? `${activeFilterChips.length} active criteria` : 'Open criteria'}</span>
+              <span>{mapMovementLabel === 'Map moved' ? 'Map movement preserves this result set until criteria change' : 'Map and list are ready'}</span>
+              {isSearchDegraded ? <span className="text-amber-100/82">Fallback search is serving results</span> : <span>Search service ready</span>}
+            </div>
+          </div>
+
+          <ol className="reie-search-orientation" data-testid="reie-search-orientation" aria-label="How to begin guided search">
+            <li>
+              <span>Start Broadly</span>
+              Choose a place, price range, or property type.
+            </li>
+            <li>
+              <span>Compare Together</span>
+              Use listings and map context side by side.
+            </li>
+            <li>
+              <span>Open Deeper</span>
+              Move into Property Intelligence when the home still fits.
+            </li>
+          </ol>
+
+          <div
+            className="reie-search-confidence-framework"
             data-testid="reie-buyer-search-confidence-framework"
             data-buyer-confidence-framework="known-compare-verify-ask-next"
             data-buyer-confidence-ai="false"
             data-buyer-confidence-gis="false"
             data-buyer-confidence-provider-activation="false"
           >
-            {[
-              ['Known', 'Start with the facts the listing and search view can show.'],
-              ['Compare', 'Use map, list, market, and property context together.'],
-              ['Verify', 'Carry forward cost, condition, timing, and records questions.'],
-              ['Ask', 'Open the property page before submitting focused questions.'],
-              ['Next', 'Tour, continue search, or review the market when confidence is not ready.'],
-            ].map(([label, body]) => (
-              <article key={label} data-testid="reie-buyer-search-confidence-step">
-                <p className="text-[9px] font-black uppercase tracking-[0.16em] text-cyan-100/72">{label}</p>
-                <p className="mt-1 text-[11px] font-bold leading-5 text-white/52">{body}</p>
-              </article>
-            ))}
+            <details className="group">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">
+                Decision Framework
+                <span className="text-white/34 transition group-open:rotate-45">+</span>
+              </summary>
+              <div className="mt-3 grid gap-2 sm:grid-cols-5">
+                {[
+                  ['Known', 'Start with the facts the listing and search view can show.'],
+                  ['Compare', 'Use map, list, market, and property context together.'],
+                  ['Verify', 'Carry forward cost, condition, timing, and records questions.'],
+                  ['Ask', 'Open the property page before submitting focused questions.'],
+                  ['Next', 'Tour, continue search, or review the market when confidence is not ready.'],
+                ].map(([label, body]) => (
+                  <article key={label} data-testid="reie-buyer-search-confidence-step">
+                    <p className="text-[9px] font-black uppercase tracking-[0.16em] text-cyan-100/72">{label}</p>
+                    <p className="mt-1 text-[11px] font-bold leading-5 text-white/52">{body}</p>
+                  </article>
+                ))}
+              </div>
+              <div className="mt-4">
+                <FinancingConfidenceEducation surface="search" compact />
+              </div>
+            </details>
           </div>
-          <div className="mt-4">
-            <FinancingConfidenceEducation surface="search" compact />
-          </div>
-          <div className="reie-search-continuity" data-testid="reie-search-grand-plan-continuity">
-            <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">Build on What Matters</p>
-              <p className="mt-1 text-xs leading-5 text-white/58">
-                If you completed your Grand Plan, use the priorities you identified as a guide while you explore. Search does not automatically apply your plan, so you remain in control of every refinement.
-              </p>
-            </div>
-            <Link href="/grand-plan" className="reie-search-continuity-link" data-testid="reie-search-grand-plan-link">
-              Create Your Grand Plan
-            </Link>
-          </div>
+
           <nav
-            className="mt-4 grid gap-2 rounded-[8px] border border-white/10 bg-white/[0.035] p-3 sm:grid-cols-3"
+            className="reie-search-journey-nav"
             aria-label="Continue from search"
             data-testid="cep-navigation-search-journey"
             data-cep-measurement-ready="true"
@@ -512,50 +566,16 @@ export default function SearchInterface({
               </Link>
             ))}
           </nav>
-          <ol className="reie-search-orientation" data-testid="reie-search-orientation" aria-label="How to begin guided search">
-            <li>
-              <span>Start Broadly</span>
-              Choose a place, price range, or property type.
-            </li>
-            <li>
-              <span>Explore Together</span>
-              Use listings and map context side by side.
-            </li>
-            <li>
-              <span>Refine With Context</span>
-              Adjust the search as your priorities become clearer.
-            </li>
-          </ol>
-          <div className="mt-4 grid grid-cols-2 gap-2">
-            <div className="rounded-[6px] border border-white/10 bg-white/[0.045] px-3 py-2">
-              <p className="text-[9px] font-black uppercase tracking-[0.14em] text-white/38">Properties in View</p>
-              <p className="mt-1 text-sm font-black text-white" data-testid="reie-search-result-count">{visibleListings.length}</p>
-            </div>
-            <div className="rounded-[6px] border border-cyan-100/18 bg-cyan-100/[0.06] px-3 py-2">
-              <p className="text-[9px] font-black uppercase tracking-[0.14em] text-cyan-100/68">Discovery View</p>
-              <p className="mt-1 text-sm font-black text-white">{discoveryFilterLabel}</p>
-            </div>
-          </div>
-          <div
-            className="reie-search-state-panel"
-            data-testid="reie-search-state-panel"
-            data-search-result-label={searchResultLabel}
-            data-search-degraded={String(isSearchDegraded)}
-            data-search-map-movement={mapMovementLabel}
-            data-search-zero-results={String(hasZeroResults)}
-          >
+          <div className="reie-search-continuity" data-testid="reie-search-grand-plan-continuity">
             <div>
-              <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.16em] text-cyan-100/72">
-                <SlidersHorizontal size={12} aria-hidden="true" />
-                Search State
+              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">Build on What Matters</p>
+              <p className="mt-1 text-xs leading-5 text-white/58">
+                If you completed your Grand Plan, use those priorities as a guide. Search does not automatically apply your plan, so you remain in control.
               </p>
-              <p className="mt-1 text-[11px] font-bold leading-5 text-white/54">{searchResultLabel}</p>
             </div>
-            <div className="grid gap-1.5 text-[10px] font-black uppercase tracking-[0.12em] text-white/42">
-              <span>{hasFilters ? `${activeFilterChips.length} active criteria` : 'Open criteria'}</span>
-              <span>{mapMovementLabel === 'Map moved' ? 'Map movement preserves this result set until criteria change' : 'Map and list are ready'}</span>
-              {isSearchDegraded ? <span className="text-amber-100/82">Fallback search is serving results</span> : <span>Search service ready</span>}
-            </div>
+            <Link href="/grand-plan" className="reie-search-continuity-link" data-testid="reie-search-grand-plan-link">
+              Create Your Grand Plan
+            </Link>
           </div>
           {isSearchDegraded ? (
             <div

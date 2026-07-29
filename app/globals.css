@@ -694,6 +694,8 @@ html, body {
 .reie-search-discovery-intro {
   display: block;
   flex: 0 0 auto;
+  max-height: min(34vh, 360px);
+  overflow-y: auto;
   border-bottom: 1px solid rgba(255, 255, 255, 0.12);
   background:
     linear-gradient(135deg, rgba(100, 188, 205, 0.12), transparent 46%),
@@ -701,11 +703,83 @@ html, body {
   padding: 14px 16px;
 }
 
+.reie-search-discovery-intro::-webkit-scrollbar {
+  width: 8px;
+}
+
+.reie-search-discovery-intro::-webkit-scrollbar-track {
+  background: rgba(7, 16, 23, 0.72);
+}
+
+.reie-search-discovery-intro::-webkit-scrollbar-thumb {
+  background: rgba(207, 250, 254, 0.18);
+  border: 2px solid rgba(7, 16, 23, 0.72);
+}
+
+.reie-search-product-hero {
+  display: grid;
+  gap: 14px;
+}
+
+.reie-search-product-status {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  overflow: hidden;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.reie-search-product-status > div {
+  min-width: 0;
+  background: rgba(3, 8, 12, 0.68);
+  padding: 12px;
+}
+
+.reie-search-product-state {
+  align-items: start;
+}
+
+.reie-search-confidence-framework,
+.reie-search-journey-nav {
+  margin-top: 12px;
+  border-radius: 8px;
+}
+
+.reie-search-confidence-framework {
+  border: 1px solid rgba(207, 250, 254, 0.14);
+  background: rgba(207, 250, 254, 0.045);
+  padding: 12px;
+}
+
+.reie-search-confidence-framework summary::-webkit-details-marker,
+[data-testid='reie-sidebar-v8-decision-portfolio'] summary::-webkit-details-marker,
+[data-testid='reie-property-card-v8-decision-path'] summary::-webkit-details-marker {
+  display: none;
+}
+
+.reie-search-journey-nav {
+  display: grid;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 8px;
+}
+
+[data-testid='reie-map-sidebar'] input,
+[data-testid='reie-map-sidebar'] select {
+  box-sizing: border-box;
+  background-color: rgba(13, 20, 28, 0.92) !important;
+  color: rgba(255, 255, 255, 0.92) !important;
+}
+
+[data-testid='reie-map-sidebar'] input::placeholder {
+  color: rgba(255, 255, 255, 0.36) !important;
+}
+
 .reie-search-continuity {
   display: grid;
   gap: 10px;
   margin-top: 12px;
-  border: 1px solid rgba(147, 222, 235, 0.18);
   border-radius: 8px;
   background: rgba(147, 222, 235, 0.055);
   padding: 12px;
@@ -776,7 +850,6 @@ html, body {
 .reie-search-state-panel {
   display: grid;
   gap: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
   background: rgba(0, 0, 0, 0.18);
   padding: 11px 12px;
 }
@@ -852,7 +925,21 @@ html, body {
 
 @media (min-width: 768px) {
   .reie-search-discovery-intro {
-    padding: 16px 20px 14px;
+    padding: 18px 20px 16px;
+  }
+
+  .reie-search-product-hero,
+  .reie-search-product-state {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .reie-search-product-status {
+    align-self: end;
+    min-width: 190px;
+  }
+
+  .reie-search-journey-nav {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .reie-search-orientation {

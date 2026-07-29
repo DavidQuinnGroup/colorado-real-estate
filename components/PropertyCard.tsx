@@ -182,7 +182,7 @@ export default function PropertyCard({ property, isActive, onClick }: PropertyCa
           <span className="text-[#061017]/62">Map Synced</span>
         </div>
       ) : null}
-      <div className="relative aspect-[16/9] w-full overflow-hidden bg-[#10151b]">
+      <div className="relative aspect-[16/8] w-full overflow-hidden bg-[#10151b]">
         <ResilientListingImage
           src={photoUrl}
           fallbackSrc={fallbackPhotoUrl}
@@ -261,7 +261,7 @@ export default function PropertyCard({ property, isActive, onClick }: PropertyCa
         </div>
 
         <div
-          className="mt-3 rounded-[6px] border border-cyan-100/18 bg-cyan-100/[0.055] px-3 py-2"
+          className="mt-3 rounded-[6px] bg-cyan-100/[0.06] px-3 py-2.5"
           data-testid="reie-property-card-decision"
           data-property-card-decision-signal={decisionLabel}
           data-property-card-review-signal={reviewSignal}
@@ -283,7 +283,7 @@ export default function PropertyCard({ property, isActive, onClick }: PropertyCa
           data-property-card-resilience-score={formatIntelligenceScore(property.resilienceScore)}
           data-property-card-review-signal={reviewSignal}
         >
-          <div className="rounded-[6px] border border-white/10 bg-white/[0.045] px-3 py-2">
+          <div className="rounded-[6px] bg-white/[0.045] px-3 py-2">
             <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.12em] text-white/38">
               <ShieldCheck size={12} aria-hidden="true" />
               Map Context
@@ -292,31 +292,35 @@ export default function PropertyCard({ property, isActive, onClick }: PropertyCa
               {hasCoordinatesFlag ? 'Location Shown' : 'Location Needs Review'}
             </p>
           </div>
-          <div className="min-w-0 rounded-[6px] border border-white/10 bg-white/[0.045] px-3 py-2">
+          <div className="min-w-0 rounded-[6px] bg-white/[0.045] px-3 py-2">
             <p className="text-[10px] font-black uppercase tracking-[0.12em] text-white/38">Property Signals</p>
             <p className="mt-1 truncate text-[12px] font-black leading-none text-cyan-100">{reviewSignal}</p>
           </div>
         </div>
 
-        <div
-          className="mt-3 grid gap-2 rounded-[6px] border border-white/10 bg-white/[0.035] px-3 py-2.5"
+        <details
+          className="mt-3 rounded-[6px] border border-white/10 bg-white/[0.03] px-3 py-2.5"
           data-testid="reie-property-card-v8-decision-path"
           data-property-card-v8-compare={decisionSupport.comparePrompt}
           data-property-card-v8-verify={decisionSupport.verifyPrompt}
           data-property-card-v8-next={decisionSupport.nextStep}
           data-property-card-v8-confidence-level={decisionSupport.confidenceLevel}
         >
-          <div>
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-[9px] font-black uppercase tracking-[0.14em] text-white/42">
+            Compare and verify
+            <span className="text-cyan-100/70">+</span>
+          </summary>
+          <div className="mt-2">
             <p className="text-[9px] font-black uppercase tracking-[0.14em] text-white/34">Compare</p>
             <p className="mt-1 text-[11px] font-bold leading-5 text-white/58">{decisionSupport.comparePrompt}</p>
           </div>
-          <div>
+          <div className="mt-2">
             <p className="text-[9px] font-black uppercase tracking-[0.14em] text-white/34">Verify</p>
             <p className="mt-1 text-[11px] font-bold leading-5 text-white/58">{decisionSupport.verifyPrompt}</p>
           </div>
-        </div>
+        </details>
 
-        <div className="mt-2.5 flex flex-col items-start gap-2.5 border-t border-white/10 pt-2.5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-3 flex flex-col items-start gap-2.5 border-t border-white/10 pt-3 sm:flex-row sm:items-center sm:justify-between">
           <p className="min-w-0 text-[10px] font-bold uppercase leading-4 tracking-[0.14em] text-white/40">
             Open details when this listing deserves a closer look. {decisionSupport.nextStep}
           </p>

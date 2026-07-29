@@ -45,15 +45,6 @@ const iconButtonStyle: CSSProperties = {
   width: 32,
 };
 
-const submitButtonStyle: CSSProperties = {
-  alignItems: 'center',
-  boxSizing: 'border-box',
-  display: 'inline-flex',
-  height: 40,
-  justifyContent: 'center',
-  width: 44,
-};
-
 function RefinementSection({
   eyebrow,
   title,
@@ -268,114 +259,24 @@ export default function SearchControls({
         </div>
 
       <div className="mt-3 grid gap-2">
-        <RefinementSection eyebrow="Where" title="Where would you like to live?">
-          <label className="block" htmlFor={`${formId}-city`}>
-            <span className="sr-only">City</span>
-            <input
-              id={`${formId}-city`}
-              aria-label="City"
-              value={filters.city}
-              onChange={(event) => onChange(updateFilter(filters, 'city', event.target.value))}
-              placeholder="City or town"
-              style={textControlStyle}
-              className="h-11 w-full rounded-[6px] border border-cyan-100/24 bg-cyan-100/[0.075] px-3 text-sm font-black text-white outline-none transition placeholder:text-cyan-50/38 focus:border-cyan-100/70"
-            />
-          </label>
-        </RefinementSection>
-
-        <RefinementSection eyebrow="Budget" title="What fits your budget?">
-          <div className="grid grid-cols-2 gap-2">
-            <label htmlFor={`${formId}-min-price`}>
-              <span className="sr-only">Minimum price</span>
+        <section className="rounded-[8px] bg-cyan-100/[0.055] p-3" aria-label="Primary search criteria">
+          <p className="text-[9px] font-black uppercase tracking-[0.18em] text-cyan-100/66">Start Here</p>
+          <p className="sr-only">Where would you like to live?</p>
+          <p className="sr-only">Already have a property in mind?</p>
+          <div className="mt-3 grid gap-2">
+            <label className="block" htmlFor={`${formId}-city`}>
+              <span className="sr-only">City</span>
               <input
-                id={`${formId}-min-price`}
-                aria-label="Minimum price"
-                inputMode="numeric"
-                value={filters.minPrice}
-                onChange={(event) => onChange(updateFilter(filters, 'minPrice', event.target.value))}
-                placeholder="Min price"
-                style={compactControlStyle}
-                className="h-10 w-full rounded-[6px] border border-white/10 bg-white/[0.06] px-3 text-xs font-bold text-white outline-none transition placeholder:text-white/30 focus:border-cyan-100/45"
+                id={`${formId}-city`}
+                aria-label="City"
+                value={filters.city}
+                onChange={(event) => onChange(updateFilter(filters, 'city', event.target.value))}
+                placeholder="City or town"
+                style={textControlStyle}
+                className="h-11 w-full rounded-[6px] border border-cyan-100/24 bg-cyan-100/[0.075] px-3 text-sm font-black text-white outline-none transition placeholder:text-cyan-50/38 focus:border-cyan-100/70"
               />
             </label>
-            <label htmlFor={`${formId}-max-price`}>
-              <span className="sr-only">Maximum price</span>
-              <input
-                id={`${formId}-max-price`}
-                aria-label="Maximum price"
-                inputMode="numeric"
-                value={filters.maxPrice}
-                onChange={(event) => onChange(updateFilter(filters, 'maxPrice', event.target.value))}
-                placeholder="Max price"
-                style={compactControlStyle}
-                className="h-10 w-full rounded-[6px] border border-white/10 bg-white/[0.06] px-3 text-xs font-bold text-white outline-none transition placeholder:text-white/30 focus:border-cyan-100/45"
-              />
-            </label>
-          </div>
-          <p
-            className="mt-2 text-[11px] font-bold leading-5 text-white/38"
-            data-testid="reie-buyer-affordability-awareness"
-            data-buyer-confidence-financing-workflow="false"
-          >
-            Treat price range as a search boundary, not an affordability conclusion. Taxes, insurance, HOA, financing terms,
-            closing costs, cash to close, escrow, maintenance, reserves, and rate assumptions should be verified with the appropriate professionals before relying on a budget.
-          </p>
-        </RefinementSection>
-
-        <RefinementSection eyebrow="Home Type" title="What kind of home?">
-          <select
-            id={`${formId}-property-type`}
-            value={filters.propertyType}
-            onChange={(event) => onChange(updateFilter(filters, 'propertyType', event.target.value))}
-            style={compactControlStyle}
-            className="h-10 w-full rounded-[6px] border border-white/10 bg-[#101720] px-3 text-xs font-black uppercase tracking-[0.04em] text-white outline-none transition focus:border-cyan-100/45"
-            aria-label="Property type"
-          >
-            <option value="">Type</option>
-            <option value="Residential">Residential</option>
-            <option value="Land">Land</option>
-            <option value="Commercial">Commercial</option>
-            <option value="Multi-Family">Multi-Family</option>
-          </select>
-        </RefinementSection>
-
-        <RefinementSection eyebrow="Details" title="What do you need?">
-          <div className="grid grid-cols-2 gap-2">
-            <select
-              id={`${formId}-beds`}
-              value={filters.beds}
-              onChange={(event) => onChange(updateFilter(filters, 'beds', event.target.value))}
-              style={compactControlStyle}
-              className="h-10 rounded-[6px] border border-white/10 bg-[#101720] px-2 text-xs font-black uppercase tracking-[0.04em] text-white outline-none transition focus:border-cyan-100/45"
-              aria-label="Minimum bedrooms"
-            >
-              <option value="">Beds</option>
-              <option value="1">1+</option>
-              <option value="2">2+</option>
-              <option value="3">3+</option>
-              <option value="4">4+</option>
-              <option value="5">5+</option>
-            </select>
-            <select
-              id={`${formId}-baths`}
-              value={filters.baths}
-              onChange={(event) => onChange(updateFilter(filters, 'baths', event.target.value))}
-              style={compactControlStyle}
-              className="h-10 rounded-[6px] border border-white/10 bg-[#101720] px-2 text-xs font-black uppercase tracking-[0.04em] text-white outline-none transition focus:border-cyan-100/45"
-              aria-label="Minimum bathrooms"
-            >
-              <option value="">Baths</option>
-              <option value="1">1+</option>
-              <option value="2">2+</option>
-              <option value="3">3+</option>
-              <option value="4">4+</option>
-            </select>
-          </div>
-        </RefinementSection>
-
-        <RefinementSection eyebrow="Specific Property" title="Already have a property in mind?">
-          <div className="flex gap-2">
-            <label className="min-w-0 flex-1" htmlFor={`${formId}-query`}>
+            <label className="min-w-0" htmlFor={`${formId}-query`}>
               <span className="sr-only">Keyword, address, ZIP, or MLS number</span>
               <input
                 id={`${formId}-query`}
@@ -383,24 +284,124 @@ export default function SearchControls({
                 value={filters.query}
                 onChange={(event) => onChange(updateFilter(filters, 'query', event.target.value))}
                 placeholder="Address, ZIP, keyword, MLS"
-                style={compactControlStyle}
-                className="h-10 w-full rounded-[6px] border border-white/10 bg-white/[0.06] px-3 text-xs font-bold text-white outline-none transition placeholder:text-white/30 focus:border-cyan-100/45"
+                style={textControlStyle}
+                className="h-11 w-full rounded-[6px] border border-white/10 bg-white/[0.06] px-3 text-sm font-bold text-white outline-none transition placeholder:text-white/30 focus:border-cyan-100/45"
               />
             </label>
             <button
               type="submit"
               disabled={isSearching}
-              style={submitButtonStyle}
-              className="inline-flex h-10 w-11 shrink-0 items-center justify-center rounded-[6px] bg-cyan-100 text-[#061017] transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
+              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[6px] bg-cyan-100 px-4 text-[10px] font-black uppercase tracking-[0.12em] text-[#061017] transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
               aria-label="Update results"
             >
               {isSearching ? <Loader2 size={16} className="animate-spin" aria-hidden="true" /> : <Search size={16} aria-hidden="true" />}
+              Search
             </button>
           </div>
           <p className="mt-2 text-[11px] font-bold leading-5 text-white/38">
             Use this when you already know an address, ZIP code, keyword, or MLS number. Neighborhood names and listing details can also help narrow supported search text.
           </p>
-        </RefinementSection>
+        </section>
+
+        <details className="rounded-[8px] border border-white/10 bg-white/[0.032] p-3">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-[10px] font-black uppercase tracking-[0.16em] text-white/54">
+            Refine budget and home details
+            <span className="text-cyan-100/70">+</span>
+          </summary>
+          <div className="mt-3 grid gap-2">
+            <RefinementSection eyebrow="Budget" title="What fits your budget?">
+              <div className="grid grid-cols-2 gap-2">
+                <label htmlFor={`${formId}-min-price`}>
+                  <span className="sr-only">Minimum price</span>
+                  <input
+                    id={`${formId}-min-price`}
+                    aria-label="Minimum price"
+                    inputMode="numeric"
+                    value={filters.minPrice}
+                    onChange={(event) => onChange(updateFilter(filters, 'minPrice', event.target.value))}
+                    placeholder="Min price"
+                    style={compactControlStyle}
+                    className="h-10 w-full rounded-[6px] border border-white/10 bg-white/[0.06] px-3 text-xs font-bold text-white outline-none transition placeholder:text-white/30 focus:border-cyan-100/45"
+                  />
+                </label>
+                <label htmlFor={`${formId}-max-price`}>
+                  <span className="sr-only">Maximum price</span>
+                  <input
+                    id={`${formId}-max-price`}
+                    aria-label="Maximum price"
+                    inputMode="numeric"
+                    value={filters.maxPrice}
+                    onChange={(event) => onChange(updateFilter(filters, 'maxPrice', event.target.value))}
+                    placeholder="Max price"
+                    style={compactControlStyle}
+                    className="h-10 w-full rounded-[6px] border border-white/10 bg-white/[0.06] px-3 text-xs font-bold text-white outline-none transition placeholder:text-white/30 focus:border-cyan-100/45"
+                  />
+                </label>
+              </div>
+              <p
+                className="mt-2 text-[11px] font-bold leading-5 text-white/38"
+                data-testid="reie-buyer-affordability-awareness"
+                data-buyer-confidence-financing-workflow="false"
+              >
+                Treat price range as a search boundary, not an affordability conclusion. Taxes, insurance, HOA, financing terms,
+                closing costs, cash to close, escrow, maintenance, reserves, and rate assumptions should be verified with the appropriate professionals before relying on a budget.
+              </p>
+            </RefinementSection>
+
+            <div className="grid gap-2 sm:grid-cols-2">
+              <RefinementSection eyebrow="Home Type" title="What kind of home?">
+                <select
+                  id={`${formId}-property-type`}
+                  value={filters.propertyType}
+                  onChange={(event) => onChange(updateFilter(filters, 'propertyType', event.target.value))}
+                  style={compactControlStyle}
+                  className="h-10 w-full rounded-[6px] border border-white/10 bg-[#101720] px-3 text-xs font-black uppercase tracking-[0.04em] text-white outline-none transition focus:border-cyan-100/45"
+                  aria-label="Property type"
+                >
+                  <option value="">Type</option>
+                  <option value="Residential">Residential</option>
+                  <option value="Land">Land</option>
+                  <option value="Commercial">Commercial</option>
+                  <option value="Multi-Family">Multi-Family</option>
+                </select>
+              </RefinementSection>
+
+              <RefinementSection eyebrow="Details" title="What do you need?">
+                <div className="grid grid-cols-2 gap-2">
+                  <select
+                    id={`${formId}-beds`}
+                    value={filters.beds}
+                    onChange={(event) => onChange(updateFilter(filters, 'beds', event.target.value))}
+                    style={compactControlStyle}
+                    className="h-10 rounded-[6px] border border-white/10 bg-[#101720] px-2 text-xs font-black uppercase tracking-[0.04em] text-white outline-none transition focus:border-cyan-100/45"
+                    aria-label="Minimum bedrooms"
+                  >
+                    <option value="">Beds</option>
+                    <option value="1">1+</option>
+                    <option value="2">2+</option>
+                    <option value="3">3+</option>
+                    <option value="4">4+</option>
+                    <option value="5">5+</option>
+                  </select>
+                  <select
+                    id={`${formId}-baths`}
+                    value={filters.baths}
+                    onChange={(event) => onChange(updateFilter(filters, 'baths', event.target.value))}
+                    style={compactControlStyle}
+                    className="h-10 rounded-[6px] border border-white/10 bg-[#101720] px-2 text-xs font-black uppercase tracking-[0.04em] text-white outline-none transition focus:border-cyan-100/45"
+                    aria-label="Minimum bathrooms"
+                  >
+                    <option value="">Baths</option>
+                    <option value="1">1+</option>
+                    <option value="2">2+</option>
+                    <option value="3">3+</option>
+                    <option value="4">4+</option>
+                  </select>
+                </div>
+              </RefinementSection>
+            </div>
+          </div>
+        </details>
       </div>
 
       {chips.length ? (
