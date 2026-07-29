@@ -35,7 +35,7 @@ type CityAuthoritySignals = {
 };
 
 type CityDecisionGuide = {
-  key: 'boulder' | 'louisville';
+  key: 'boulder' | 'louisville' | 'lafayette';
   cityName: string;
   identity: string;
   summaryEyebrow: string;
@@ -135,6 +135,7 @@ function getAuthoritySignals(cityNeighborhoods: Neighborhood[]): CityAuthoritySi
 function getDecisionGuideKey(city: CityData): CityDecisionGuide['key'] | null {
   if (city.name === 'Boulder') return 'boulder';
   if (city.name === 'Louisville') return 'louisville';
+  if (city.name === 'Lafayette') return 'lafayette';
   return null;
 }
 
@@ -155,6 +156,93 @@ function buildCityDecisionGuide({
     .map((neighborhood) => neighborhood.primaryAnchor)
     .join(', ');
   const housingEras = Array.from(new Set(cityNeighborhoods.map((neighborhood) => neighborhood.era))).slice(0, 3);
+
+  if (guideKey === 'lafayette') {
+    return {
+      key: guideKey,
+      cityName: city.name,
+      identity: `${city.name} should be evaluated as an east Boulder County decision market: neighborhood pattern, housing condition, local access, and market signal should be reviewed together before a customer narrows into individual homes.`,
+      summaryEyebrow: 'Lafayette Decision Summary',
+      summaryHeadline: 'Decide what Lafayette means before comparing homes.',
+      summaryIntro:
+        'Start with Lafayette as a city decision, then use neighborhood pages, property facts, market evidence, financing preparation, and advisor questions as separate confirmation layers.',
+      neighborhoodsEyebrow: 'Explore Lafayette Neighborhoods',
+      neighborhoodsHeadline: 'Move from city question to local context.',
+      neighborhoodSectionId: 'lafayette-neighborhoods',
+      continuitySurface: 'lafayette-decision-guide-continuity',
+      decisionSummary: [
+        {
+          label: 'What distinguishes Lafayette',
+          value: 'An east Boulder County city with established neighborhoods and practical Front Range access',
+          explanation: `${cityNeighborhoods.length} governed neighborhood paths connect city context to local anchors including ${anchors}.`,
+        },
+        {
+          label: 'What deserves attention',
+          value: 'Price, inventory, neighborhood pattern, condition, and daily access',
+          explanation: `Current market context shows ${city.stats.medianPrice} median price, ${city.stats.inventory} active inventory signal, and ${marketSignal.toLowerCase()} as the current city-market interpretation.`,
+        },
+        {
+          label: 'What to verify',
+          value: 'Property facts, records, costs, financing readiness, and neighborhood evidence',
+          explanation:
+            'Use Lafayette context as a starting point, then verify individual property facts, costs, disclosures, records, and daily-life assumptions before acting.',
+        },
+      ],
+      housingContext: [
+        {
+          label: 'Varied neighborhood patterns',
+          explanation: `Lafayette neighborhood records include ${housingEras.join(', ') || 'varied residential'} housing patterns. Compare remodel quality, systems age, drainage, roof condition, and exterior maintenance before relying on surface presentation.`,
+        },
+        {
+          label: 'City identity with local variation',
+          explanation:
+            "Indian Peaks, Waneka Lake, Old Town Lafayette, and Anna's Farm should be evaluated separately instead of treated as one uniform market.",
+        },
+        {
+          label: 'Condition before assumptions',
+          explanation:
+            'Property age, remodel history, lot context, exterior exposure, and maintenance records can change the diligence questions that matter for a specific Lafayette home.',
+        },
+      ],
+      practicalContext: [
+        {
+          label: 'Access relationships',
+          explanation:
+            'Evaluate the relationship between the property, work patterns, Old Town Lafayette, Waneka Lake, open-space access, Boulder County connections, and the routes used most often.',
+        },
+        {
+          label: 'Neighborhood specificity',
+          explanation:
+            'A Lafayette address is not enough. The decision changes when the property sits near Old Town activity, lake or open-space edges, golf-course adjacency, or quieter residential interiors.',
+        },
+        {
+          label: 'Research discipline',
+          explanation:
+            'Use market context, neighborhood pages, property records, disclosures, inspection review, insurance questions, financing preparation, and advisor discussion as separate evidence layers.',
+        },
+      ],
+      tradeoffs: [
+        {
+          strength: 'Recognizable east Boulder County identity with multiple neighborhood patterns',
+          tradeoff: 'Customers should compare micro-location, property condition, and daily route needs instead of assuming city-wide fit.',
+        },
+        {
+          strength: 'Established neighborhoods with different housing forms',
+          tradeoff: 'Older systems, remodel quality, drainage, exterior-envelope condition, and records review can materially affect confidence.',
+        },
+        {
+          strength: 'Clear continuity from city market to neighborhood and property review',
+          tradeoff: 'Market statistics should inform the decision, not replace property-specific verification or financing preparation.',
+        },
+      ],
+      verificationQuestions: [
+        'Which Lafayette neighborhood pattern best matches the way I would use the city day to day?',
+        'What property-specific condition, records, insurance, cost, or financing-readiness questions should be answered before I compare this home against alternatives?',
+        'Does the current market signal change my search discipline or seller-preparation plan without creating urgency?',
+        'Which neighborhood page, market evidence, property facts, financing preparation items, and advisor questions should I review before the next step?',
+      ],
+    };
+  }
 
   if (guideKey === 'louisville') {
     return {
@@ -462,6 +550,12 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
         data-louisville-decision-guide-telemetry={cityDecisionGuide?.key === 'louisville' ? 'false' : undefined}
         data-louisville-decision-guide-ranking={cityDecisionGuide?.key === 'louisville' ? 'false' : undefined}
         data-louisville-decision-guide-demographic-targeting={cityDecisionGuide?.key === 'louisville' ? 'false' : undefined}
+        data-lafayette-decision-guide={cityDecisionGuide?.key === 'lafayette' ? 'true' : undefined}
+        data-lafayette-decision-guide-ai={cityDecisionGuide?.key === 'lafayette' ? 'false' : undefined}
+        data-lafayette-decision-guide-gis={cityDecisionGuide?.key === 'lafayette' ? 'false' : undefined}
+        data-lafayette-decision-guide-telemetry={cityDecisionGuide?.key === 'lafayette' ? 'false' : undefined}
+        data-lafayette-decision-guide-ranking={cityDecisionGuide?.key === 'lafayette' ? 'false' : undefined}
+        data-lafayette-decision-guide-demographic-targeting={cityDecisionGuide?.key === 'lafayette' ? 'false' : undefined}
       >
         <div className="mx-auto max-w-6xl px-6 pb-10 pt-12 md:pt-16">
           <div className="mb-4 flex items-center gap-3">
@@ -571,6 +665,11 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
               data-louisville-decision-guide-school-ranking={cityDecisionGuide.key === 'louisville' ? 'false' : undefined}
               data-louisville-decision-guide-safety-ranking={cityDecisionGuide.key === 'louisville' ? 'false' : undefined}
               data-louisville-decision-guide-investment-recommendation={cityDecisionGuide.key === 'louisville' ? 'false' : undefined}
+              data-lafayette-decision-guide-framework={cityDecisionGuide.key === 'lafayette' ? 'context-tradeoffs-questions-evidence-next-step' : undefined}
+              data-lafayette-decision-guide-source={cityDecisionGuide.key === 'lafayette' ? 'governed-city-and-neighborhood-data' : undefined}
+              data-lafayette-decision-guide-school-ranking={cityDecisionGuide.key === 'lafayette' ? 'false' : undefined}
+              data-lafayette-decision-guide-safety-ranking={cityDecisionGuide.key === 'lafayette' ? 'false' : undefined}
+              data-lafayette-decision-guide-investment-recommendation={cityDecisionGuide.key === 'lafayette' ? 'false' : undefined}
             >
               <div>
                 <p className="mb-3 text-[10px] font-black uppercase tracking-[0.28em] text-cyan-100/72">

@@ -10,7 +10,7 @@ Product:
 
 ## Latest New-Chat Handoff
 
-PROJECT ATLAS(tm) / Boulder Decision Guide(tm) 1.0 Production Certification + Louisville Decision Guide(tm) 1.0 Implementation, July 29, 2026:
+PROJECT ATLAS(tm) / Louisville Decision Guide(tm) 1.0 Production Certification + Lafayette Decision Guide(tm) 1.0 Implementation, July 29, 2026:
 
 Workspace:
 
@@ -26,20 +26,20 @@ git log -8 --oneline
 
 Current governed state:
 
-- Boulder Decision Guide(tm) 1.0 implementation commit pushed to `origin/main`: `10edc939191acad6a23e31b795b9db00a7da48ec`.
-- Boulder production certification status: `BOULDER_DECISION_GUIDE_1_PRODUCTION_CERTIFIED`.
+- Louisville Decision Guide(tm) 1.0 implementation commit pushed to `origin/main`: `74590202b96bfba858567aa08c51bc07200870f2`.
+- Louisville production certification status: `LOUISVILLE_DECISION_GUIDE_1_PRODUCTION_CERTIFIED`.
 - Production domain reviewed: `https://davidquinngroup.com`.
-- Deployment evidence for `10edc939191acad6a23e31b795b9db00a7da48ec`: GitHub/Vercel commit status `success`, commit status ID `51314215938`, timestamp `2026-07-29T18:34:23Z`, Vercel target `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/EaDfiUQ3jJugGd2xzK92FpSVkZXY`.
-- Boulder production smoke passed: `PUBLIC_EXPERIENCE_SMOKE_BASE_URL=https://davidquinngroup.com npm run smoke:public-experience`.
-- Boulder production browser review passed on `/market/boulder-co-housing-market` across desktop `1440x1100`, tablet `820x1100`, mobile `390x900`, and narrow mobile `360x800`: Boulder identity and CTAs rendered, buyer/seller/Grand Plan continuity rendered, no horizontal overflow, no broken rendered media, zero rendered `media.mlsgrid.com` images, and no fair-housing-sensitive prohibited terms in visible text.
-- Boulder production certification record: `docs/project-atlas/executive-library/BOULDER-DECISION-GUIDE-1-PRODUCTION-CERTIFICATION.md`.
-- Louisville Decision Guide(tm) 1.0 is implemented locally on `/market/louisville-co-housing-market`, pending final implementation commit in the active task.
-- Louisville implementation record: `docs/project-atlas/executive-library/LOUISVILLE-DECISION-GUIDE-1-IMPLEMENTATION.md`.
-- Dedicated validations: `npm run check:boulder-decision-guide` and `npm run check:louisville-decision-guide`.
-- Louisville local validation passed: `npm run check:boulder-decision-guide`, `npm run check:louisville-decision-guide`, `npm run check:neighborhood-product-2`, `npm run check:reie-market-intelligence-v8`, `npm run check:public-trust-readiness`, `npm run check:production-media-resilience`, `npm run typecheck`, `npm run lint`, `npm run build`, and `PUBLIC_EXPERIENCE_SMOKE_BASE_URL=http://localhost:3000 npm run smoke:public-experience`.
-- Louisville local browser review passed on `/market/louisville-co-housing-market` across desktop `1440x1100`, tablet `820x1100`, mobile `390x900`, and narrow mobile `360x800`: guide hero, summary, framework, context, trade-offs, questions, neighborhoods, search, buyer, seller, financing, and Grand Plan continuity rendered; no horizontal overflow; no console warnings/errors; no broken rendered media; zero rendered `media.mlsgrid.com` images; and no fair-housing-sensitive prohibited terms in visible text.
-- Prohibited boundaries remain active: no AI, public GIS activation, new map overlays, telemetry, personalization, customer accounts, new providers, schema changes, Prisma changes, breaking API changes, automated recommendations, mortgage calculators, lender workflows, school/safety/demographic/investment scoring, unsupported local claims, or urgency claims.
-- Exact next step: complete final cleanup, run `git diff --check`, create one clean Louisville Decision Guide(tm) 1.0 implementation commit, and stop without pushing Louisville.
+- Deployment evidence for `74590202b96bfba858567aa08c51bc07200870f2`: GitHub/Vercel commit status `success`, commit status ID `51315575041`, timestamp `2026-07-29T18:54:36Z`, Vercel target `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/6TkFVYuc3Hc6thWYS8jhC9X8wZF4`.
+- Louisville production smoke passed: `PUBLIC_EXPERIENCE_SMOKE_BASE_URL=https://davidquinngroup.com npm run smoke:public-experience`.
+- Louisville production browser review passed on `/market/louisville-co-housing-market` across desktop `1440x1100`, tablet `820x1100`, mobile `390x900`, and narrow mobile `360x800`: guide hero, summary, framework, context, trade-offs, questions, neighborhoods, search, market, buyer, seller, financing, and Grand Plan continuity rendered; no horizontal overflow; no console warnings/errors; no broken rendered media; zero rendered `media.mlsgrid.com` images; and no fair-housing-sensitive prohibited terms in visible text.
+- Louisville production certification record: `docs/project-atlas/executive-library/LOUISVILLE-DECISION-GUIDE-1-PRODUCTION-CERTIFICATION.md`.
+- Lafayette Decision Guide(tm) 1.0 is implemented locally on `/market/lafayette-co-housing-market`, pending final implementation commit in the active task.
+- Lafayette implementation record: `docs/project-atlas/executive-library/LAFAYETTE-DECISION-GUIDE-1-IMPLEMENTATION.md`.
+- Dedicated validations: `npm run check:boulder-decision-guide`, `npm run check:louisville-decision-guide`, and `npm run check:lafayette-decision-guide`.
+- Lafayette local validation passed: `npm run check:lafayette-decision-guide`, `npm run check:louisville-decision-guide`, `npm run check:boulder-decision-guide`, `npm run check:neighborhood-product-2`, `npm run check:reie-market-intelligence-v8`, `npm run check:public-trust-readiness`, `npm run check:production-media-resilience`, `npm run typecheck`, `npm run lint`, `npm run build`, and `PUBLIC_EXPERIENCE_SMOKE_BASE_URL=http://localhost:3000 npm run smoke:public-experience`.
+- Lafayette local browser review passed on `/market/lafayette-co-housing-market` across desktop `1440x1100`, tablet `820x1100`, mobile `390x900`, and narrow mobile `360x800`: guide hero, summary, framework, context, trade-offs, questions, neighborhoods, search, market, buyer, seller, financing, and Grand Plan continuity rendered; no horizontal overflow; no console warnings/errors; no broken rendered media; zero rendered `media.mlsgrid.com` images; and no fair-housing-sensitive prohibited terms in visible text.
+- Prohibited boundaries remain active: no AI, public GIS activation, new map overlays, telemetry, personalization, customer accounts, new providers, schema changes, Prisma changes, breaking API changes, automated recommendations, mortgage calculators, lender workflows, school/safety/demographic/hazard/investment scoring, unsupported local claims, or urgency claims.
+- Exact next step: complete final cleanup, run `git diff --check`, create one clean Lafayette Decision Guide(tm) 1.0 implementation commit, and stop without pushing Lafayette.
 
 Prior REIE 8 Product 2.0 Portfolio Production Certification handoff retained below.
 

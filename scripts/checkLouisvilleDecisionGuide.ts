@@ -51,7 +51,7 @@ async function main() {
   );
   assertIncludes(
     cityMarketPage,
-    "key: 'boulder' | 'louisville'",
+    "key: 'boulder' | 'louisville' | 'lafayette'",
     'City Decision Guide type must include Louisville without broad activation.',
   );
   assertIncludes(

@@ -61,6 +61,7 @@
     "scripts/checkNeighborhoodProduct2.ts",
     "scripts/checkBoulderDecisionGuide.ts",
     "scripts/checkLouisvilleDecisionGuide.ts",
+    "scripts/checkLafayetteDecisionGuide.ts",
     "scripts/checkProductionMediaResilience.ts",
     "scripts/checkPrismaClientParity.ts",
     "scripts/checkProductionDependencies.ts",

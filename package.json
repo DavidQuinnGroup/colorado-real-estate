@@ -119,6 +119,7 @@
     "check:neighborhood-product-2": "npm run worker:build && node dist/scripts/checkNeighborhoodProduct2.js",
     "check:boulder-decision-guide": "npm run worker:build && node dist/scripts/checkBoulderDecisionGuide.js",
     "check:louisville-decision-guide": "npm run worker:build && node dist/scripts/checkLouisvilleDecisionGuide.js",
+    "check:lafayette-decision-guide": "npm run worker:build && node dist/scripts/checkLafayetteDecisionGuide.js",
     "check:production-media-resilience": "npm run worker:build && node dist/scripts/checkProductionMediaResilience.js",
     "check:launch-readiness": "npm run worker:build && node dist/scripts/launchReadiness.js",
     "worker:build": "tsc -p tsconfig.worker.json --pretty false",
