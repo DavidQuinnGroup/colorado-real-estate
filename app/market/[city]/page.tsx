@@ -34,8 +34,17 @@ type CityAuthoritySignals = {
   highestEfficiencyNeighborhood?: Neighborhood;
 };
 
-type BoulderDecisionGuide = {
+type CityDecisionGuide = {
+  key: 'boulder' | 'louisville';
+  cityName: string;
   identity: string;
+  summaryEyebrow: string;
+  summaryHeadline: string;
+  summaryIntro: string;
+  neighborhoodsEyebrow: string;
+  neighborhoodsHeadline: string;
+  neighborhoodSectionId: string;
+  continuitySurface: string;
   decisionSummary: Array<{
     label: string;
     value: string;
@@ -123,11 +132,13 @@ function getAuthoritySignals(cityNeighborhoods: Neighborhood[]): CityAuthoritySi
   };
 }
 
-function isBoulderDecisionGuide(city: CityData) {
-  return city.name === 'Boulder';
+function getDecisionGuideKey(city: CityData): CityDecisionGuide['key'] | null {
+  if (city.name === 'Boulder') return 'boulder';
+  if (city.name === 'Louisville') return 'louisville';
+  return null;
 }
 
-function buildBoulderDecisionGuide({
+function buildCityDecisionGuide({
   city,
   cityNeighborhoods,
   marketSignal,
@@ -135,15 +146,115 @@ function buildBoulderDecisionGuide({
   city: CityData;
   cityNeighborhoods: Neighborhood[];
   marketSignal: string;
-}): BoulderDecisionGuide {
+}): CityDecisionGuide | null {
+  const guideKey = getDecisionGuideKey(city);
+  if (!guideKey) return null;
+
   const anchors = cityNeighborhoods
     .slice(0, 4)
     .map((neighborhood) => neighborhood.primaryAnchor)
     .join(', ');
   const housingEras = Array.from(new Set(cityNeighborhoods.map((neighborhood) => neighborhood.era))).slice(0, 3);
 
+  if (guideKey === 'louisville') {
+    return {
+      key: guideKey,
+      cityName: city.name,
+      identity: `${city.name} should be evaluated as a Boulder County decision market: neighborhood pattern, small-city access, property condition, and market signal should be reviewed together before a customer narrows into individual homes.`,
+      summaryEyebrow: 'Louisville Decision Summary',
+      summaryHeadline: 'Decide what Louisville means before comparing homes.',
+      summaryIntro:
+        'Start with Louisville as a city decision, then use neighborhood pages, property facts, market evidence, financing preparation, and advisor questions as separate confirmation layers.',
+      neighborhoodsEyebrow: 'Explore Louisville Neighborhoods',
+      neighborhoodsHeadline: 'Move from city question to local context.',
+      neighborhoodSectionId: 'louisville-neighborhoods',
+      continuitySurface: 'louisville-decision-guide-continuity',
+      decisionSummary: [
+        {
+          label: 'What distinguishes Louisville',
+          value: 'A Boulder County city with established neighborhoods and practical access choices',
+          explanation: `${cityNeighborhoods.length} governed neighborhood paths connect city context to local anchors including ${anchors}.`,
+        },
+        {
+          label: 'What deserves attention',
+          value: 'Price, inventory, neighborhood fit, condition, and daily access',
+          explanation: `Current market context shows ${city.stats.medianPrice} median price, ${city.stats.inventory} active inventory signal, and ${marketSignal.toLowerCase()} as the current city-market interpretation.`,
+        },
+        {
+          label: 'What to verify',
+          value: 'Property facts, records, costs, financing readiness, and neighborhood evidence',
+          explanation:
+            'Use Louisville context as a starting point, then verify individual property facts, costs, disclosures, records, and daily-life assumptions before acting.',
+        },
+      ],
+      housingContext: [
+        {
+          label: 'Established neighborhood patterns',
+          explanation: `Louisville neighborhood records include ${housingEras.join(', ') || 'established residential'} housing patterns. Compare remodel quality, systems age, drainage, roof condition, and exterior maintenance before relying on surface presentation.`,
+        },
+        {
+          label: 'City identity with neighborhood variation',
+          explanation:
+            'Old Town Louisville, Coal Creek Ranch, Centennial Valley, North End, and Steel Ranch should be evaluated separately instead of treated as one uniform market.',
+        },
+        {
+          label: 'Condition before assumptions',
+          explanation:
+            'Property age, remodel history, exterior exposure, lot context, and maintenance records can change the diligence questions that matter for a specific Louisville home.',
+        },
+      ],
+      practicalContext: [
+        {
+          label: 'Access relationships',
+          explanation:
+            'Evaluate the relationship between the property, work patterns, downtown Louisville, open-space access, Boulder County connections, and the routes used most often.',
+        },
+        {
+          label: 'Neighborhood specificity',
+          explanation:
+            'A Louisville address is not enough. The decision changes when the property sits near Old Town activity, open-space edges, golf-course adjacency, newer infill, or quieter residential interiors.',
+        },
+        {
+          label: 'Research discipline',
+          explanation:
+            'Use market context, neighborhood pages, property records, disclosures, inspection review, insurance questions, financing preparation, and advisor discussion as separate evidence layers.',
+        },
+      ],
+      tradeoffs: [
+        {
+          strength: 'Recognizable small-city identity with Boulder County access',
+          tradeoff: 'Customers should compare micro-location, property condition, and daily route needs instead of assuming city-wide fit.',
+        },
+        {
+          strength: 'Established neighborhoods with different housing patterns',
+          tradeoff: 'Older systems, remodel quality, drainage, exterior-envelope condition, and records review can materially affect confidence.',
+        },
+        {
+          strength: 'Clear continuity from city market to neighborhood and property review',
+          tradeoff: 'Market statistics should inform the decision, not replace property-specific verification or financing preparation.',
+        },
+      ],
+      verificationQuestions: [
+        'Which Louisville neighborhood pattern best matches the way I would use the city day to day?',
+        'What property-specific condition, records, insurance, cost, or financing-readiness questions should be answered before I compare this home against alternatives?',
+        'Does the current market signal change my search discipline or seller-preparation plan without creating urgency?',
+        'Which neighborhood page, market evidence, property facts, financing preparation items, and advisor questions should I review before the next step?',
+      ],
+    };
+  }
+
   return {
+    key: guideKey,
+    cityName: city.name,
     identity: `${city.name} should be evaluated as a high-context Colorado market: daily access, neighborhood pattern, housing condition, and market signal all matter before a customer narrows into individual homes.`,
+    summaryEyebrow: 'Boulder Decision Summary',
+    summaryHeadline: 'Decide what Boulder means before comparing homes.',
+    summaryIntro:
+      'Start with the city pattern, then use neighborhood pages, property facts, market evidence, and advisor questions as separate confirmation layers.',
+    neighborhoodsEyebrow: 'Explore Boulder Neighborhoods',
+    neighborhoodsHeadline: 'Move from city question to local context.',
+    neighborhoodSectionId: 'boulder-neighborhoods',
+    continuitySurface: 'boulder-decision-guide-continuity',
     decisionSummary: [
       {
         label: 'What distinguishes Boulder',
@@ -281,13 +392,11 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
   const cityMarketSchema = getJsonLd(cityData, cityNeighborhoods);
   const cityMarketSchemaGraph = cityMarketSchema['@graph'];
   const marketExperience = buildCityMarketExperience(cityData, cityNeighborhoods.length);
-  const boulderDecisionGuide = isBoulderDecisionGuide(cityData)
-    ? buildBoulderDecisionGuide({
-        city: cityData,
-        cityNeighborhoods,
-        marketSignal: marketExperience.directionLabel,
-      })
-    : null;
+  const cityDecisionGuide = buildCityDecisionGuide({
+    city: cityData,
+    cityNeighborhoods,
+    marketSignal: marketExperience.directionLabel,
+  });
   const marketDecisionWorkspace = buildMarketDecisionWorkspace({
     scope: 'city',
     name: cityData.name,
@@ -333,13 +442,26 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
 
       <section
         className="border-b border-white/5 bg-[radial-gradient(circle_at_82%_14%,rgba(207,250,254,0.12),transparent_30%),linear-gradient(180deg,#071017,#030303)]"
-        data-testid={boulderDecisionGuide ? 'boulder-decision-guide-hero' : undefined}
-        data-boulder-decision-guide={boulderDecisionGuide ? 'true' : undefined}
-        data-boulder-decision-guide-ai={boulderDecisionGuide ? 'false' : undefined}
-        data-boulder-decision-guide-gis={boulderDecisionGuide ? 'false' : undefined}
-        data-boulder-decision-guide-telemetry={boulderDecisionGuide ? 'false' : undefined}
-        data-boulder-decision-guide-ranking={boulderDecisionGuide ? 'false' : undefined}
-        data-boulder-decision-guide-demographic-targeting={boulderDecisionGuide ? 'false' : undefined}
+        data-testid={cityDecisionGuide ? `${cityDecisionGuide.key}-decision-guide-hero` : undefined}
+        data-city-decision-guide={cityDecisionGuide ? 'true' : undefined}
+        data-city-decision-guide-key={cityDecisionGuide?.key}
+        data-city-decision-guide-ai={cityDecisionGuide ? 'false' : undefined}
+        data-city-decision-guide-gis={cityDecisionGuide ? 'false' : undefined}
+        data-city-decision-guide-telemetry={cityDecisionGuide ? 'false' : undefined}
+        data-city-decision-guide-ranking={cityDecisionGuide ? 'false' : undefined}
+        data-city-decision-guide-demographic-targeting={cityDecisionGuide ? 'false' : undefined}
+        data-boulder-decision-guide={cityDecisionGuide?.key === 'boulder' ? 'true' : undefined}
+        data-boulder-decision-guide-ai={cityDecisionGuide?.key === 'boulder' ? 'false' : undefined}
+        data-boulder-decision-guide-gis={cityDecisionGuide?.key === 'boulder' ? 'false' : undefined}
+        data-boulder-decision-guide-telemetry={cityDecisionGuide?.key === 'boulder' ? 'false' : undefined}
+        data-boulder-decision-guide-ranking={cityDecisionGuide?.key === 'boulder' ? 'false' : undefined}
+        data-boulder-decision-guide-demographic-targeting={cityDecisionGuide?.key === 'boulder' ? 'false' : undefined}
+        data-louisville-decision-guide={cityDecisionGuide?.key === 'louisville' ? 'true' : undefined}
+        data-louisville-decision-guide-ai={cityDecisionGuide?.key === 'louisville' ? 'false' : undefined}
+        data-louisville-decision-guide-gis={cityDecisionGuide?.key === 'louisville' ? 'false' : undefined}
+        data-louisville-decision-guide-telemetry={cityDecisionGuide?.key === 'louisville' ? 'false' : undefined}
+        data-louisville-decision-guide-ranking={cityDecisionGuide?.key === 'louisville' ? 'false' : undefined}
+        data-louisville-decision-guide-demographic-targeting={cityDecisionGuide?.key === 'louisville' ? 'false' : undefined}
       >
         <div className="mx-auto max-w-6xl px-6 pb-10 pt-12 md:pt-16">
           <div className="mb-4 flex items-center gap-3">
@@ -352,13 +474,13 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
           <h1 className="mb-6 max-w-5xl text-5xl font-black uppercase leading-[0.9] tracking-normal md:text-7xl">
             {cityData.name}
             <br />
-            <span className="text-white/32">{boulderDecisionGuide ? 'Decision Guide' : 'Market Context'}</span>
+            <span className="text-white/32">{cityDecisionGuide ? 'Decision Guide' : 'Market Context'}</span>
           </h1>
 
           <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr] lg:items-end">
             <p className="max-w-2xl text-base leading-8 text-white/64 md:text-lg">
-              {boulderDecisionGuide
-                ? boulderDecisionGuide.identity
+              {cityDecisionGuide
+                ? cityDecisionGuide.identity
                 : `Understand what the ${cityData.name} market may mean before you compare homes, prepare a seller plan, or narrow into a
               neighborhood. Start with the primary signal, then verify property-specific context.`}
             </p>
@@ -375,29 +497,29 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
             </div>
           </div>
 
-          {boulderDecisionGuide ? (
+          {cityDecisionGuide ? (
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Link
                 href={`/search?city=${encodeURIComponent(cityData.name)}`}
                 className="inline-flex min-h-12 items-center justify-center gap-3 rounded-[6px] bg-cyan-100 px-5 py-3 text-xs font-black uppercase tracking-[0.16em] text-black no-underline transition hover:bg-white focus:outline-none focus:ring-2 focus:ring-cyan-100/70"
-                data-testid="boulder-decision-guide-search-cta"
+                data-testid={`${cityDecisionGuide.key}-decision-guide-search-cta`}
                 {...getJourneyMeasurementAttributes({
-                  surface: 'boulder-decision-guide-hero',
+                  surface: `${cityDecisionGuide.key}-decision-guide-hero`,
                   stage: 'market',
                   action: 'start-search',
                   destination: 'search',
                 })}
               >
                 <Search className="h-4 w-4" />
-                Search Boulder Homes
+                Search {cityDecisionGuide.cityName} Homes
               </Link>
               <Link
-                href="#boulder-neighborhoods"
+                href={`#${cityDecisionGuide.neighborhoodSectionId}`}
                 className="inline-flex min-h-12 items-center justify-center gap-3 rounded-[6px] bg-white/[0.07] px-5 py-3 text-xs font-black uppercase tracking-[0.16em] text-white no-underline transition hover:bg-white/12 focus:outline-none focus:ring-2 focus:ring-cyan-100/70"
-                data-testid="boulder-decision-guide-neighborhoods-cta"
+                data-testid={`${cityDecisionGuide.key}-decision-guide-neighborhoods-cta`}
               >
                 <MapPinned className="h-4 w-4" />
-                Explore Boulder Neighborhoods
+                Explore {cityDecisionGuide.cityName} Neighborhoods
               </Link>
             </div>
           ) : null}
@@ -429,32 +551,41 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
       </section>
 
       <div className="mx-auto max-w-6xl space-y-16 px-6 pb-24 pt-10">
-        {boulderDecisionGuide ? (
+        {cityDecisionGuide ? (
           <>
             <section
               className="grid gap-6 py-4 lg:grid-cols-[0.82fr_1.18fr]"
-              data-testid="boulder-decision-guide-summary"
-              data-boulder-decision-guide-framework="context-tradeoffs-questions-evidence-next-step"
-              data-boulder-decision-guide-source="governed-city-and-neighborhood-data"
-              data-boulder-decision-guide-school-ranking="false"
-              data-boulder-decision-guide-safety-ranking="false"
-              data-boulder-decision-guide-investment-recommendation="false"
+              data-testid={`${cityDecisionGuide.key}-decision-guide-summary`}
+              data-city-decision-guide-framework="context-tradeoffs-questions-evidence-next-step"
+              data-city-decision-guide-source="governed-city-and-neighborhood-data"
+              data-city-decision-guide-school-ranking="false"
+              data-city-decision-guide-safety-ranking="false"
+              data-city-decision-guide-investment-recommendation="false"
+              data-boulder-decision-guide-framework={cityDecisionGuide.key === 'boulder' ? 'context-tradeoffs-questions-evidence-next-step' : undefined}
+              data-boulder-decision-guide-source={cityDecisionGuide.key === 'boulder' ? 'governed-city-and-neighborhood-data' : undefined}
+              data-boulder-decision-guide-school-ranking={cityDecisionGuide.key === 'boulder' ? 'false' : undefined}
+              data-boulder-decision-guide-safety-ranking={cityDecisionGuide.key === 'boulder' ? 'false' : undefined}
+              data-boulder-decision-guide-investment-recommendation={cityDecisionGuide.key === 'boulder' ? 'false' : undefined}
+              data-louisville-decision-guide-framework={cityDecisionGuide.key === 'louisville' ? 'context-tradeoffs-questions-evidence-next-step' : undefined}
+              data-louisville-decision-guide-source={cityDecisionGuide.key === 'louisville' ? 'governed-city-and-neighborhood-data' : undefined}
+              data-louisville-decision-guide-school-ranking={cityDecisionGuide.key === 'louisville' ? 'false' : undefined}
+              data-louisville-decision-guide-safety-ranking={cityDecisionGuide.key === 'louisville' ? 'false' : undefined}
+              data-louisville-decision-guide-investment-recommendation={cityDecisionGuide.key === 'louisville' ? 'false' : undefined}
             >
               <div>
                 <p className="mb-3 text-[10px] font-black uppercase tracking-[0.28em] text-cyan-100/72">
-                  Boulder Decision Summary
+                  {cityDecisionGuide.summaryEyebrow}
                 </p>
                 <h2 className="text-3xl font-black uppercase leading-tight tracking-normal text-white md:text-5xl">
-                  Decide what Boulder means before comparing homes.
+                  {cityDecisionGuide.summaryHeadline}
                 </h2>
                 <p className="mt-5 text-sm leading-7 text-white/58 md:text-base">
-                  Start with the city pattern, then use neighborhood pages, property facts, market evidence, and advisor questions as
-                  separate confirmation layers.
+                  {cityDecisionGuide.summaryIntro}
                 </p>
               </div>
 
               <div className="grid gap-3">
-                {boulderDecisionGuide.decisionSummary.map((item) => (
+                {cityDecisionGuide.decisionSummary.map((item) => (
                   <article key={item.label} className="rounded-[8px] bg-white/[0.055] p-5">
                     <p className="text-[9px] font-black uppercase tracking-[0.2em] text-cyan-100/68">{item.label}</p>
                     <h3 className="mt-3 text-lg font-black uppercase leading-6 tracking-tight text-white">{item.value}</h3>
@@ -466,14 +597,14 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
 
             <section
               className="grid gap-3 rounded-[8px] bg-cyan-100/[0.045] p-5 md:grid-cols-5"
-              data-testid="boulder-decision-guide-framework"
+              data-testid={`${cityDecisionGuide.key}-decision-guide-framework`}
             >
               {[
-                ['Context', 'Understand Boulder as a city and a set of neighborhood patterns.'],
+                ['Context', `Understand ${cityDecisionGuide.cityName} as a city and a set of neighborhood patterns.`],
                 ['Trade-offs', 'Balance access, housing form, condition, and market signal.'],
                 ['Questions', 'Turn interest into specific facts to verify.'],
                 ['Evidence', 'Use market, neighborhood, property, and advisor evidence separately.'],
-                ['Next Step', 'Move into search, neighborhood review, buyer, seller, or Grand Plan guidance.'],
+                ['Next Step', 'Move into search, neighborhood review, buyer, seller, financing, or Grand Plan guidance.'],
               ].map(([label, explanation]) => (
                 <div key={label} className="min-w-0">
                   <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">{label}</p>
@@ -482,14 +613,14 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
               ))}
             </section>
 
-            <section className="grid gap-10 lg:grid-cols-2" data-testid="boulder-decision-guide-context">
+            <section className="grid gap-10 lg:grid-cols-2" data-testid={`${cityDecisionGuide.key}-decision-guide-context`}>
               <div>
                 <div className="mb-5 flex items-center gap-3">
                   <Home className="h-5 w-5 text-cyan-100" />
                   <p className="text-[10px] font-black uppercase tracking-[0.28em] text-cyan-100/72">Housing Context</p>
                 </div>
                 <div className="space-y-5">
-                  {boulderDecisionGuide.housingContext.map((item) => (
+                  {cityDecisionGuide.housingContext.map((item) => (
                     <article key={item.label}>
                       <h3 className="text-lg font-black uppercase tracking-tight text-white">{item.label}</h3>
                       <p className="mt-2 text-sm leading-7 text-white/55">{item.explanation}</p>
@@ -504,7 +635,7 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
                   <p className="text-[10px] font-black uppercase tracking-[0.28em] text-cyan-100/72">Practical Living Context</p>
                 </div>
                 <div className="space-y-5">
-                  {boulderDecisionGuide.practicalContext.map((item) => (
+                  {cityDecisionGuide.practicalContext.map((item) => (
                     <article key={item.label}>
                       <h3 className="text-lg font-black uppercase tracking-tight text-white">{item.label}</h3>
                       <p className="mt-2 text-sm leading-7 text-white/55">{item.explanation}</p>
@@ -514,7 +645,7 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
               </div>
             </section>
 
-            <section className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]" data-testid="boulder-decision-guide-tradeoffs">
+            <section className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]" data-testid={`${cityDecisionGuide.key}-decision-guide-tradeoffs`}>
               <div>
                 <p className="mb-3 text-[10px] font-black uppercase tracking-[0.28em] text-cyan-100/72">
                   Strengths And Trade-offs
@@ -524,7 +655,7 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
                 </h2>
               </div>
               <div className="grid gap-3">
-                {boulderDecisionGuide.tradeoffs.map((item) => (
+                {cityDecisionGuide.tradeoffs.map((item) => (
                   <article key={item.strength} className="grid gap-4 rounded-[8px] bg-white/[0.045] p-5 md:grid-cols-2">
                     <div>
                       <p className="text-[9px] font-black uppercase tracking-[0.18em] text-cyan-100/70">Strength</p>
@@ -541,7 +672,7 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
 
             <section
               className="grid gap-6 rounded-[8px] bg-white/[0.04] p-5 md:p-8 lg:grid-cols-[0.8fr_1.2fr]"
-              data-testid="boulder-decision-guide-questions"
+              data-testid={`${cityDecisionGuide.key}-decision-guide-questions`}
             >
               <div>
                 <HelpCircle className="mb-5 h-7 w-7 text-cyan-100" />
@@ -553,7 +684,7 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
                 </h2>
               </div>
               <div className="grid gap-3">
-                {boulderDecisionGuide.verificationQuestions.map((question) => (
+                {cityDecisionGuide.verificationQuestions.map((question) => (
                   <p key={question} className="rounded-[8px] bg-[#071017]/80 p-4 text-sm leading-7 text-white/58">
                     {question}
                   </p>
@@ -562,24 +693,24 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
             </section>
 
             <section
-              id="boulder-neighborhoods"
+              id={cityDecisionGuide.neighborhoodSectionId}
               className="scroll-mt-24"
-              data-testid="boulder-decision-guide-neighborhoods"
+              data-testid={`${cityDecisionGuide.key}-decision-guide-neighborhoods`}
             >
               <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
                 <div>
                   <p className="mb-2 text-[10px] font-black uppercase tracking-[0.28em] text-cyan-100/72">
-                    Explore Boulder Neighborhoods
+                    {cityDecisionGuide.neighborhoodsEyebrow}
                   </p>
                   <h2 className="text-3xl font-black uppercase leading-tight tracking-normal text-white md:text-4xl">
-                    Move from city question to local context.
+                    {cityDecisionGuide.neighborhoodsHeadline}
                   </h2>
                 </div>
                 <Link
                   href={`/search?city=${encodeURIComponent(cityData.name)}`}
                   className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[6px] bg-white/[0.07] px-4 py-3 text-xs font-black uppercase tracking-[0.14em] text-white no-underline transition hover:bg-white/12"
                 >
-                  Search Boulder
+                  Search {cityDecisionGuide.cityName}
                   <ArrowUpRight className="h-4 w-4" />
                 </Link>
               </div>
@@ -603,14 +734,15 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
             </section>
 
             <section
-              className="grid gap-3 rounded-[8px] bg-cyan-100/[0.045] p-5 md:grid-cols-4"
-              data-testid="boulder-decision-guide-continuity"
+              className="grid gap-3 rounded-[8px] bg-cyan-100/[0.045] p-5 md:grid-cols-3 xl:grid-cols-6"
+              data-testid={`${cityDecisionGuide.key}-decision-guide-continuity`}
             >
               {([
                 { label: 'Market Context', href: getCanonicalPath(cityData), destination: 'market' },
-                { label: 'Search Boulder Homes', href: `/search?city=${encodeURIComponent(cityData.name)}`, destination: 'search' },
+                { label: `Search ${cityDecisionGuide.cityName} Homes`, href: `/search?city=${encodeURIComponent(cityData.name)}`, destination: 'search' },
                 { label: 'Buyer Guidance', href: '/buy', destination: 'search' },
                 { label: 'Seller Guidance', href: '/sell', destination: 'seller' },
+                { label: 'Financing Guidance', href: '/buy#financing-confidence', destination: 'inquiry' },
                 { label: 'Grand Plan', href: '/grand-plan', destination: 'inquiry' },
               ] as const).map((item) => (
                 <Link
@@ -618,7 +750,7 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
                   href={item.href}
                   className="flex min-h-12 items-center justify-between gap-3 rounded-[6px] bg-[#071017]/80 px-4 py-3 text-xs font-black uppercase tracking-[0.12em] text-white no-underline transition hover:bg-[#0a1118] hover:text-cyan-100"
                   {...getJourneyMeasurementAttributes({
-                    surface: 'boulder-decision-guide-continuity',
+                    surface: cityDecisionGuide.continuitySurface,
                     stage: 'market',
                     action: 'continue-journey',
                     destination: item.destination,

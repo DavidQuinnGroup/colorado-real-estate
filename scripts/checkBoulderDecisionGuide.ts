@@ -41,62 +41,67 @@ async function main() {
 
   assertIncludes(
     cityMarketPage,
-    'function buildBoulderDecisionGuide',
-    'Boulder Decision Guide must use a deterministic governed-data guide builder.',
+    'function buildCityDecisionGuide',
+    'Boulder Decision Guide must use the deterministic governed-data city guide builder.',
   );
   assertIncludes(
     cityMarketPage,
-    "data-testid={boulderDecisionGuide ? 'boulder-decision-guide-hero' : undefined}",
+    "if (city.name === 'Boulder') return 'boulder';",
+    'Boulder Decision Guide must remain explicitly gated to Boulder.',
+  );
+  assertIncludes(
+    cityMarketPage,
+    'data-testid={cityDecisionGuide ? `${cityDecisionGuide.key}-decision-guide-hero` : undefined}',
     'Boulder Decision Guide hero must be explicitly governed.',
   );
   assertIncludes(
     cityMarketPage,
-    'data-testid="boulder-decision-guide-summary"',
+    "summaryEyebrow: 'Boulder Decision Summary'",
     'Boulder Decision Summary must be present.',
   );
   assertIncludes(
     cityMarketPage,
-    'data-boulder-decision-guide-framework="context-tradeoffs-questions-evidence-next-step"',
+    "data-boulder-decision-guide-framework={cityDecisionGuide.key === 'boulder' ? 'context-tradeoffs-questions-evidence-next-step' : undefined}",
     'Boulder guide must preserve Context -> Trade-offs -> Questions -> Evidence -> Next Step.',
   );
   assertIncludes(
     cityMarketPage,
-    'data-testid="boulder-decision-guide-framework"',
+    'data-testid={`${cityDecisionGuide.key}-decision-guide-framework`}',
     'Boulder guide must expose the framework section.',
   );
   assertIncludes(
     cityMarketPage,
-    'data-testid="boulder-decision-guide-context"',
+    'data-testid={`${cityDecisionGuide.key}-decision-guide-context`}',
     'Boulder guide must expose housing and practical living context.',
   );
   assertIncludes(
     cityMarketPage,
-    'data-testid="boulder-decision-guide-tradeoffs"',
+    'data-testid={`${cityDecisionGuide.key}-decision-guide-tradeoffs`}',
     'Boulder guide must expose balanced strengths and trade-offs.',
   );
   assertIncludes(
     cityMarketPage,
-    'data-testid="boulder-decision-guide-questions"',
+    'data-testid={`${cityDecisionGuide.key}-decision-guide-questions`}',
     'Boulder guide must expose verification questions.',
   );
   assertIncludes(
     cityMarketPage,
-    'data-testid="boulder-decision-guide-neighborhoods"',
+    'data-testid={`${cityDecisionGuide.key}-decision-guide-neighborhoods`}',
     'Boulder guide must expose neighborhood exploration continuity.',
   );
   assertIncludes(
     cityMarketPage,
-    'data-testid="boulder-decision-guide-continuity"',
+    'data-testid={`${cityDecisionGuide.key}-decision-guide-continuity`}',
     'Boulder guide must expose market, search, buyer, seller, and Grand Plan continuity.',
   );
   assertIncludes(
     cityMarketPage,
-    'Search Boulder Homes',
+    'Search {cityDecisionGuide.cityName} Homes',
     'Boulder guide must provide direct Boulder search continuity.',
   );
   assertIncludes(
     cityMarketPage,
-    'Explore Boulder Neighborhoods',
+    'Explore {cityDecisionGuide.cityName} Neighborhoods',
     'Boulder guide must provide direct Boulder neighborhood continuity.',
   );
   assertIncludes(
@@ -116,42 +121,42 @@ async function main() {
   );
   assertIncludes(
     cityMarketPage,
-    "data-boulder-decision-guide-ai={boulderDecisionGuide ? 'false' : undefined}",
+    "data-boulder-decision-guide-ai={cityDecisionGuide?.key === 'boulder' ? 'false' : undefined}",
     'Boulder guide must explicitly avoid AI activation.',
   );
   assertIncludes(
     cityMarketPage,
-    "data-boulder-decision-guide-gis={boulderDecisionGuide ? 'false' : undefined}",
+    "data-boulder-decision-guide-gis={cityDecisionGuide?.key === 'boulder' ? 'false' : undefined}",
     'Boulder guide must explicitly avoid GIS activation.',
   );
   assertIncludes(
     cityMarketPage,
-    "data-boulder-decision-guide-telemetry={boulderDecisionGuide ? 'false' : undefined}",
+    "data-boulder-decision-guide-telemetry={cityDecisionGuide?.key === 'boulder' ? 'false' : undefined}",
     'Boulder guide must explicitly avoid telemetry activation.',
   );
   assertIncludes(
     cityMarketPage,
-    "data-boulder-decision-guide-ranking={boulderDecisionGuide ? 'false' : undefined}",
+    "data-boulder-decision-guide-ranking={cityDecisionGuide?.key === 'boulder' ? 'false' : undefined}",
     'Boulder guide must explicitly avoid rankings.',
   );
   assertIncludes(
     cityMarketPage,
-    "data-boulder-decision-guide-demographic-targeting={boulderDecisionGuide ? 'false' : undefined}",
+    "data-boulder-decision-guide-demographic-targeting={cityDecisionGuide?.key === 'boulder' ? 'false' : undefined}",
     'Boulder guide must explicitly avoid demographic targeting.',
   );
   assertIncludes(
     cityMarketPage,
-    'data-boulder-decision-guide-school-ranking="false"',
+    "data-boulder-decision-guide-school-ranking={cityDecisionGuide.key === 'boulder' ? 'false' : undefined}",
     'Boulder guide must explicitly avoid school rankings.',
   );
   assertIncludes(
     cityMarketPage,
-    'data-boulder-decision-guide-safety-ranking="false"',
+    "data-boulder-decision-guide-safety-ranking={cityDecisionGuide.key === 'boulder' ? 'false' : undefined}",
     'Boulder guide must explicitly avoid safety rankings.',
   );
   assertIncludes(
     cityMarketPage,
-    'data-boulder-decision-guide-investment-recommendation="false"',
+    "data-boulder-decision-guide-investment-recommendation={cityDecisionGuide.key === 'boulder' ? 'false' : undefined}",
     'Boulder guide must explicitly avoid investment recommendations.',
   );
   assertIncludes(
