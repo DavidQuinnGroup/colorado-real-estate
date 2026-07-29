@@ -60,6 +60,7 @@
     "scripts/checkReieFinancingConfidenceV8.ts",
     "scripts/checkNeighborhoodProduct2.ts",
     "scripts/checkColoradoDecisionGuideGenerationSystem.ts",
+    "scripts/checkColoradoCityIntelligenceAcquisitionEnrichment.ts",
     "scripts/decisionGuideValidation.ts",
     "scripts/checkBoulderDecisionGuide.ts",
     "scripts/checkLouisvilleDecisionGuide.ts",

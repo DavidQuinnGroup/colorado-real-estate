@@ -10,6 +10,35 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / Colorado City Intelligence Acquisition & Enrichment System(tm) 1.0, July 29, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Current governed state:
+
+- Colorado City Intelligence Acquisition & Enrichment System(tm) 1.0 establishes the governed statewide City Intelligence Factory for future evidence-backed Colorado Decision Guide enrichment.
+- Core factory contract: `lib/coloradoCityIntelligenceFactory.ts`.
+- Governed source-domain matrix covers MLS/listing data, assessor, tax, recorder/deed, permits, zoning/land use, municipal planning, subdivision/parcel relationships, transportation/transit, census/economic, environmental/hazard, amenities, school district boundaries, local government information, licensed imagery, DQG-owned knowledge, and approved secondary public research.
+- Acquisition adapters are contract-defined for dry-run and execute-mode boundaries; execute remains blocked and fail-closed without separate source rights, credential, provider, schema, and persistence authorization.
+- Representative baseline covers Boulder, Louisville, Broomfield, Superior, and Niwot across editorially certified, foundation, incomplete, and fail-closed states.
+- Coverage reporting is read-only through `buildStatewideCityIntelligenceCoverageReport`; no customer-facing or internal dashboard UI was activated.
+- Governed implementation record: `docs/project-atlas/executive-library/COLORADO-CITY-INTELLIGENCE-ACQUISITION-ENRICHMENT-1-IMPLEMENTATION.md`.
+- Validation script: `npm run check:colorado-city-intelligence-acquisition-enrichment`.
+- Prohibited boundaries remain active: no customer-facing AI, public GIS, telemetry, personalization, customer accounts, new providers, scraping, unlicensed imagery, schema changes, Prisma changes, destructive database changes, provider activation, durable persistence, deployment, or push.
+- Exact next step: David should decide whether to authorize a non-public City Intelligence Evidence Expansion wave, likely source-domain dry-run acquisition and rights review. Codex must not infer provider activation, schema persistence, public GIS, or city publication without an explicit directive.
+
+Prior Colorado Decision Guide Generation System handoff retained below.
+
 PROJECT ATLAS(tm) / Colorado Decision Guide Generation System(tm) 1.0, July 29, 2026:
 
 Workspace:
