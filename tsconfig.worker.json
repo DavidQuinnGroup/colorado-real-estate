@@ -65,6 +65,7 @@
     "scripts/checkSourceRightsActivationReadiness.ts",
     "scripts/checkBoulderCountyOpenDataActivationGate.ts",
     "scripts/checkReieVisualIntelligenceSystem.ts",
+    "scripts/checkMarketProduct3.ts",
     "scripts/decisionGuideValidation.ts",
     "scripts/checkBoulderDecisionGuide.ts",
     "scripts/checkLouisvilleDecisionGuide.ts",

@@ -1,19 +1,19 @@
-import type { CityData } from '@/lib/cities';
-import type { Neighborhood } from '@/lib/neighborhoods';
+import type { CityData } from './cities';
+import type { Neighborhood } from './neighborhoods';
 
-type MarketSignal = {
+export type MarketSignal = {
   label: string;
   value: string;
   explanation: string;
 };
 
-type MarketNextStep = {
+export type MarketNextStep = {
   label: string;
   href: string;
   intent: 'search' | 'property' | 'seller' | 'context';
 };
 
-type CityMarketExperience = {
+export type CityMarketExperience = {
   directionLabel: string;
   competitivenessLabel: string;
   pricingLabel: string;
@@ -24,7 +24,7 @@ type CityMarketExperience = {
   nextSteps: MarketNextStep[];
 };
 
-type NeighborhoodMarketExperience = {
+export type NeighborhoodMarketExperience = {
   inventoryLabel: string;
   competitivenessLabel: string;
   timingLabel: string;

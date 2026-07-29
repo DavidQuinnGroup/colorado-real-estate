@@ -3,12 +3,14 @@ import Link from 'next/link';
 import { BarChart3, Home, MapPinned, Search, ShieldCheck, TrendingUp } from 'lucide-react';
 
 import FinancingConfidenceEducation from '@/components/FinancingConfidenceEducation';
+import MarketProduct3VisualIntelligence from '@/components/MarketProduct3VisualIntelligence';
 import FAQSchema from '@/components/schema/FAQSchema';
 import { cities, type CityData } from '@/lib/cities';
 import { getPublicDecisionGuideRegistryEntries } from '@/lib/coloradoDecisionGuideRegistry';
 import { getJourneyMeasurementAttributes } from '@/lib/customerJourneyMeasurement';
 import { buildMarketDecisionWorkspace } from '@/lib/marketDecisionWorkspace';
 import { buildCityMarketExperience } from '@/lib/marketIntelligenceExperience';
+import { buildStateMarketProduct3Experience } from '@/lib/marketProduct3';
 import { neighborhoods } from '@/lib/neighborhoods';
 import type { FAQItem } from '@/lib/schema/faqSchema';
 
@@ -95,6 +97,14 @@ export default function MarketIndexPage() {
   const featuredMarkets = getFeaturedMarkets(marketSummaries);
   const certifiedDecisionGuides = getCertifiedDecisionGuides();
   const primaryMarket = featuredMarkets[0] || marketSummaries[0];
+  const totalNeighborhoodCount = marketSummaries.reduce((total, market) => total + market.neighborhoodCount, 0);
+  const marketProduct3Experience = buildStateMarketProduct3Experience({
+    cityCount: marketSummaries.length,
+    neighborhoodCount: totalNeighborhoodCount,
+    certifiedGuideCount: certifiedDecisionGuides.length,
+    primaryCondition: primaryMarket?.direction || 'Mixed local conditions',
+    primaryPricing: primaryMarket?.pricing || 'City-specific pricing context',
+  });
   const marketDecisionWorkspace = buildMarketDecisionWorkspace({
     scope: 'state',
     name: 'Colorado',
@@ -102,8 +112,8 @@ export default function MarketIndexPage() {
     competitivenessSignal: primaryMarket?.timing || 'Preparation matters',
     timingSignal: 'Compare markets before choosing a property path',
     pricingSignal: primaryMarket?.pricing,
-    inventorySignal: `${marketSummaries.length} city market paths and ${marketSummaries.reduce((total, market) => total + market.neighborhoodCount, 0)} neighborhood paths`,
-    neighborhoodCount: marketSummaries.reduce((total, market) => total + market.neighborhoodCount, 0),
+    inventorySignal: `${marketSummaries.length} city market paths and ${totalNeighborhoodCount} neighborhood paths`,
+    neighborhoodCount: totalNeighborhoodCount,
     searchHref: '/search',
     marketHref: '/market',
     sellerHref: '/sell',
@@ -167,6 +177,12 @@ export default function MarketIndexPage() {
               ))}
             </div>
           </div>
+        </div>
+      </section>
+
+      <section className="px-5 py-12 sm:px-8 lg:px-12">
+        <div className="mx-auto max-w-6xl">
+          <MarketProduct3VisualIntelligence experience={marketProduct3Experience} />
         </div>
       </section>
 

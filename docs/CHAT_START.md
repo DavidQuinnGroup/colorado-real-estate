@@ -10,6 +10,42 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / Market Product 3.0 Visual Intelligence Activation, July 29, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Current governed state:
+
+- Stage A production certification for `c82ba1cf72a148ee92aa82d8ba046415c154ffff` passed before local public VIS activation.
+- Deployment evidence for `c82ba1cf72a148ee92aa82d8ba046415c154ffff`: GitHub/Vercel status `success`, commit status ID `51324361493`, timestamp `2026-07-29T21:19:54Z`.
+- Production smoke passed against `https://davidquinngroup.com`.
+- Production `/admin/repository/visual-intelligence` remained admin-protected.
+- Production `/market` continued to promote only Boulder, Lafayette, and Louisville as certified Decision Guides, with no admin/source/BCOD leakage.
+- Market Product 3.0 public VIS activation is implemented and committed locally at `c5200d64f0247a61a1f3cb208f40b53d92d02876`.
+- Core public VIS model: `lib/marketProduct3.ts`.
+- Public component: `components/MarketProduct3VisualIntelligence.tsx`.
+- Activated surfaces: `/market`, `/market/boulder-co-housing-market`, `/market/louisville-co-housing-market`, `/market/lafayette-co-housing-market`, and sparse bounded handling for foundation city routes such as `/market/broomfield-co-housing-market`.
+- Rich public interpretation is limited to Boulder, Lafayette, and Louisville.
+- Foundation cities render sparse evidence and do not expose completed local-authority interpretation.
+- Validation script: `npm run check:market-product-3`.
+- Governed records: Stage A production certification, Market Product 3.0 implementation, Market Pulse spec, Confidence Layer spec, Market Report Composition spec, responsive/accessibility review, DEI review, and future VIS adoption findings.
+- Local browser review passed across `/market`, Boulder, Louisville, Lafayette, and Broomfield sparse routes at 1440, 1024, 820, 390, and 320 widths: no horizontal overflow, no console warnings/errors, Market Product 3.0 root/pulse/confidence/table present, certified routes complete, Broomfield sparse, and no forbidden public text.
+- Boundaries remain active: no AI, no public GIS, no forecasting, no customer telemetry, no provider activation, no source activation, no schema or Prisma changes, no API changes, no mortgage/lender workflow, no rankings, no deployment, and no push.
+- Current repository state: `main` is clean and ahead of `origin/main` by 1 local commit.
+- Exact next step: David should decide whether to authorize production promotion for `c5200d64f0247a61a1f3cb208f40b53d92d02876`, authorize another governed Product 3.0 activation program, or stop. Codex must not push, deploy, or start another implementation without an explicit directive.
+
+Prior Visual Intelligence System handoff retained below.
+
 PROJECT ATLAS(tm) / REIE Visual Intelligence System(tm) 1.0, July 29, 2026:
 
 Workspace:

@@ -24,6 +24,9 @@ export const metadata = {
   title: 'David Quinn Group | Colorado Real Estate Advisory',
   description:
     "Construction-informed real estate advisory, property search, and strategic planning for Colorado's Front Range.",
+  icons: {
+    icon: '/favicon.svg',
+  },
 };
 
 export default function RootLayout({ children }: RootLayoutProps) {

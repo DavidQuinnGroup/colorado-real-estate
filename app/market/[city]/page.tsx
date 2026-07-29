@@ -8,6 +8,7 @@ import FinancingConfidenceEducation from '@/components/FinancingConfidenceEducat
 import LeadCapture from '@/components/LeadCapture';
 import MarketHomesLinks from '@/components/MarketHomesLinks';
 import MarketNeighborhoodLinks from '@/components/MarketNeighborhoodLinks';
+import MarketProduct3VisualIntelligence from '@/components/MarketProduct3VisualIntelligence';
 import ResilienceDashboard from '@/components/ResilienceDashboard';
 import RelatedArticles from '@/components/RelatedArticles';
 import FAQSchema from '@/components/schema/FAQSchema';
@@ -25,6 +26,7 @@ import {
 } from '@/lib/decisionGuidePlatform';
 import { buildMarketDecisionWorkspace } from '@/lib/marketDecisionWorkspace';
 import { buildCityMarketExperience } from '@/lib/marketIntelligenceExperience';
+import { buildCityMarketProduct3Experience } from '@/lib/marketProduct3';
 import { neighborhoods, type Neighborhood } from '@/lib/neighborhoods';
 import { generateFAQs } from '@/lib/schema/generateFAQs';
 import { buildCityMarketSchema } from '@/lib/schema/neighborhoodSchema';
@@ -180,6 +182,11 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
   const cityMarketSchema = getJsonLd(cityData, cityNeighborhoods);
   const cityMarketSchemaGraph = cityMarketSchema['@graph'];
   const marketExperience = buildCityMarketExperience(cityData, cityNeighborhoods.length);
+  const marketProduct3Experience = buildCityMarketProduct3Experience({
+    city: cityData,
+    marketExperience,
+    neighborhoodCount: cityNeighborhoods.length,
+  });
   const decisionGuideEligibility = getDecisionGuideRegistryEntry(cityData);
   const cityDecisionGuide = buildDecisionGuide({
     city: cityData,
@@ -349,6 +356,8 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
       </section>
 
       <div className="mx-auto max-w-6xl space-y-16 px-6 pb-24 pt-10">
+        <MarketProduct3VisualIntelligence experience={marketProduct3Experience} />
+
         {cityDecisionGuide ? (
           <>
             <section
