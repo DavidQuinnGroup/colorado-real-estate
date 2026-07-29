@@ -24,6 +24,7 @@ function assertFileMissing(filePath: string) {
 }
 
 const runtimeFiles = [
+  'app/buy/page.tsx',
   'app/page.tsx',
   'components/search/SearchInterface.tsx',
   'components/search/SearchControls.tsx',
@@ -45,6 +46,7 @@ for (const forbiddenRoute of [
   assertFileMissing(forbiddenRoute);
 }
 
+const buyerPage = read('app/buy/page.tsx');
 const home = read('app/page.tsx');
 const searchInterface = read('components/search/SearchInterface.tsx');
 const searchControls = read('components/search/SearchControls.tsx');
@@ -59,12 +61,13 @@ const packageJson = JSON.parse(read('package.json')) as { scripts?: Record<strin
 const sprintDoc = read('docs/project-atlas/executive-library/REIE-7.1-SPRINT-3-BUYER-CONFIDENCE-EXPERIENCE.md');
 const chatStart = read('docs/CHAT_START.md');
 
-assertIncludes(home, 'data-testid="reie-buyer-confidence-orientation"', 'Home must include buyer confidence orientation.');
-assertIncludes(home, 'data-testid="reie-buyer-confidence-path"', 'Home must expose buyer confidence path.');
-assertIncludes(home, 'data-reie-sprint-3-buyer-confidence="true"', 'Home must expose governed Sprint 3 marker.');
+assertIncludes(home, "href: '/buy'", 'Home must route buyer education to the dedicated Buy destination.');
+assertIncludes(buyerPage, 'data-testid="reie-buyer-confidence-orientation"', 'Buy page must include buyer confidence orientation.');
+assertIncludes(buyerPage, 'data-testid="reie-buyer-confidence-path"', 'Buy page must expose buyer confidence path.');
+assertIncludes(buyerPage, 'data-reie-sprint-3-buyer-confidence="true"', 'Buy page must expose governed Sprint 3 marker.');
 for (const step of ['orient', 'compare', 'verify', 'decide']) {
-  assertIncludes(home, `data-buyer-confidence-step={item.step.toLowerCase()}`, 'Home buyer confidence steps must be data-marked.');
-  assertIncludes(home, step[0].toUpperCase() + step.slice(1), `Home buyer confidence path must include ${step}.`);
+  assertIncludes(buyerPage, `data-buyer-confidence-step={item.step.toLowerCase()}`, 'Buy page buyer confidence steps must be data-marked.');
+  assertIncludes(buyerPage, step[0].toUpperCase() + step.slice(1), `Buy page buyer confidence path must include ${step}.`);
 }
 
 assertIncludes(searchInterface, 'data-testid="reie-buyer-search-confidence-framework"', 'Search must include buyer confidence framework.');
@@ -107,7 +110,7 @@ assertIncludes(inquiryForm, "fetch('/api/property-inquiry'", 'Property inquiry m
 assertIncludes(navigation, "{ label: 'Search', href: '/search' }", 'Public navigation must preserve search route.');
 assertIncludes(navigation, "{ label: 'Market', href: '/market' }", 'Public navigation must preserve market route.');
 
-for (const source of [home, searchInterface, propertyPage, marketIndex, cityMarket, neighborhoodMarket]) {
+for (const source of [buyerPage, searchInterface, propertyPage, marketIndex, cityMarket, neighborhoodMarket]) {
   assertIncludes(source, 'data-buyer-confidence-ai="false"', 'Buyer confidence surfaces must expose no-AI markers.');
   assertIncludes(source, 'data-buyer-confidence-gis="false"', 'Buyer confidence surfaces must expose no-GIS markers.');
   assertIncludes(source, 'data-buyer-confidence-provider-activation="false"', 'Buyer confidence surfaces must expose no-provider markers.');

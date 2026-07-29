@@ -5,7 +5,7 @@ import { BadgeDollarSign, Landmark, ListChecks, ShieldCheck, WalletCards } from 
 import { buildFinancingDecisionWorkspace } from '@/lib/financingDecisionWorkspace';
 
 type FinancingConfidenceEducationProps = {
-  surface: 'home' | 'search' | 'property' | 'market' | 'city-market' | 'neighborhood-market';
+  surface: 'buy' | 'home' | 'search' | 'property' | 'market' | 'city-market' | 'neighborhood-market';
   compact?: boolean;
 };
 

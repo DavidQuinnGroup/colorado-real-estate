@@ -5,6 +5,7 @@ const governedStatus = 'REIE_7_1_SPRINT_1_PUBLIC_NAVIGATION_VISUAL_TRUST_AND_ROU
 
 const publicRouteFiles = [
   'app/page.tsx',
+  'app/buy/page.tsx',
   'app/search/page.tsx',
   'app/market/page.tsx',
   'app/market/[city]/page.tsx',
@@ -21,7 +22,7 @@ const publicRouteFiles = [
   'app/brokerage-disclosures/page.tsx',
 ] as const;
 
-const requiredNavigationRoutes = ['/search', '/market', '/sell', '/grand-plan', '/about', '/contact'] as const;
+const requiredNavigationRoutes = ['/search', '/buy', '/market', '/sell', '/grand-plan', '/about', '/contact'] as const;
 
 const forbiddenRouteFiles = [
   'app/mortgage/page.tsx',
@@ -132,6 +133,7 @@ assertIncludesAny(chatStart, ['Deployment remains prohibited', 'Deployment: `NOT
 
 for (const filePath of [
   'app/page.tsx',
+  'app/buy/page.tsx',
   'app/search/page.tsx',
   'app/market/page.tsx',
   'app/sell/page.tsx',

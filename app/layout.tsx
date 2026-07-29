@@ -28,7 +28,7 @@ export const metadata = {
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <html lang="en" className={`${lexend.variable} h-full w-full bg-[#050505]`}>
+    <html lang="en" className={`${lexend.variable} h-full w-full overflow-x-hidden bg-[#050505]`}>
       <head>
         <script
           type="application/ld+json"
@@ -43,7 +43,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(realEstateAgentSchema) }}
         />
       </head>
-      <body className="flex min-h-full w-full flex-col font-sans antialiased">
+      <body className="flex min-h-full w-full max-w-full flex-col overflow-x-hidden font-sans antialiased">
         <BrokerageAttribution />
         <PublicNavigation />
         <main className="flex-grow">{children}</main>

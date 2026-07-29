@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 
 const publicNavigationLinks = [
   { label: 'Search', href: '/search' },
+  { label: 'Buy', href: '/buy' },
   { label: 'Market', href: '/market' },
   { label: 'Home Worth', href: '/home-worth' },
   { label: 'Sell', href: '/sell' },
@@ -72,7 +73,7 @@ export default function PublicNavigation() {
       </nav>
 
       <nav
-        className="grid grid-cols-3 gap-px border-t border-white/[0.06] bg-white/[0.06] lg:hidden"
+        className="grid grid-cols-4 gap-px border-t border-white/[0.06] bg-white/[0.06] lg:hidden"
         aria-label="Primary public mobile navigation"
         data-testid="reie-public-mobile-navigation"
       >
@@ -80,7 +81,7 @@ export default function PublicNavigation() {
           <Link
             key={`mobile-${link.href}`}
             href={link.href}
-            className="reie-public-navigation-link min-h-11 bg-[#071017]/94 px-2 py-3 text-center text-[10px] font-black uppercase tracking-[0.1em] text-white/62 no-underline transition hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-cyan-100"
+            className="reie-public-navigation-link flex min-h-11 items-center justify-center bg-[#071017]/94 px-1.5 py-2 text-center text-[9px] font-black uppercase leading-3 tracking-[0.06em] text-white/62 no-underline transition hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-cyan-100 sm:px-2 sm:text-[10px] sm:tracking-[0.1em]"
             data-testid="reie-public-mobile-navigation-link"
             data-reie-public-route={link.href}
           >

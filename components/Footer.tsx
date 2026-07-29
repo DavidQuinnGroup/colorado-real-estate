@@ -6,6 +6,7 @@ import { BROKERAGE_FIRM_NAME, PUBLIC_TRUST_REVIEW_STATUS, publicTrustRoutes } fr
 const experienceLinks = [
   { label: 'About', href: '/about' },
   { label: 'Search', href: '/search' },
+  { label: 'Buy', href: '/buy' },
   { label: 'Market', href: '/market' },
   { label: 'Home Worth', href: '/home-worth' },
   { label: 'Grand Plan™', href: '/grand-plan' },

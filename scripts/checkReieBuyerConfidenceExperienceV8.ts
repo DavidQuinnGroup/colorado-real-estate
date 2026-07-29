@@ -17,6 +17,7 @@ function assertNotIncludes(source: string, value: string, message: string) {
 
 const helper = read('lib/buyerDecisionWorkspace.ts');
 const home = read('app/page.tsx');
+const buyerPage = read('app/buy/page.tsx');
 const searchInterface = read('components/search/SearchInterface.tsx');
 const propertyPage = read('app/properties/[id]/page.tsx');
 const marketIndex = read('app/market/page.tsx');
@@ -30,21 +31,22 @@ assertIncludes(helper, "lens: 'readiness' | 'gather' | 'compare' | 'questions' |
 assertIncludes(helper, 'does not qualify a buyer', 'Buyer Confidence v8 must preserve no-qualification trust boundary.');
 assertIncludes(helper, 'does not qualify a buyer, calculate affordability, use AI, activate telemetry, recommend properties, or start a lender workflow', 'Buyer Confidence v8 must document explicit trust boundaries.');
 
-assertIncludes(home, 'buildBuyerDecisionWorkspace', 'Home must compose the v8 buyer decision helper.');
-assertIncludes(home, 'data-testid="reie-buyer-v8-decision-workspace"', 'Home must expose the v8 Buyer Decision Workspace.');
-assertIncludes(home, 'data-testid="reie-buyer-v8-decision-item"', 'Home must expose deterministic buyer decision items.');
-assertIncludes(home, 'data-buyer-v8-ai="false"', 'Home must preserve no-AI boundary.');
-assertIncludes(home, 'data-buyer-v8-accounts="false"', 'Home must preserve no-customer-account boundary.');
-assertIncludes(home, 'data-buyer-v8-gis="false"', 'Home must preserve no-GIS boundary.');
-assertIncludes(home, 'data-buyer-v8-telemetry="false"', 'Home must preserve telemetry inactive boundary.');
-assertIncludes(home, 'data-buyer-v8-mortgage-calculator="false"', 'Home must preserve mortgage calculator exclusion.');
-assertIncludes(home, 'data-buyer-v8-lender-workflow="false"', 'Home must preserve lender workflow exclusion.');
-assertIncludes(home, 'data-buyer-v8-recommendation-engine="false"', 'Home must preserve recommendation engine exclusion.');
-assertIncludes(home, 'href="/search"', 'Buyer Decision Workspace must preserve search continuity.');
-assertIncludes(home, 'href="/market"', 'Buyer Decision Workspace must preserve market continuity.');
-assertIncludes(home, 'href="/contact"', 'Buyer Decision Workspace must preserve advisor continuity.');
-assertIncludes(home, "financingHref: '#buyer-financing-confidence'", 'Buyer Decision Workspace must preserve financing education transition.');
-assertIncludes(home, '<FinancingConfidenceEducation surface="home" />', 'Home must preserve existing financing education composition.');
+assertIncludes(home, "href: '/buy'", 'Home must route buyer education to the dedicated Buy destination.');
+assertIncludes(buyerPage, 'buildBuyerDecisionWorkspace', 'Buy page must compose the v8 buyer decision helper.');
+assertIncludes(buyerPage, 'data-testid="reie-buyer-v8-decision-workspace"', 'Buy page must expose the v8 Buyer Decision Workspace.');
+assertIncludes(buyerPage, 'data-testid="reie-buyer-v8-decision-item"', 'Buy page must expose deterministic buyer decision items.');
+assertIncludes(buyerPage, 'data-buyer-v8-ai="false"', 'Buy page must preserve no-AI boundary.');
+assertIncludes(buyerPage, 'data-buyer-v8-accounts="false"', 'Buy page must preserve no-customer-account boundary.');
+assertIncludes(buyerPage, 'data-buyer-v8-gis="false"', 'Buy page must preserve no-GIS boundary.');
+assertIncludes(buyerPage, 'data-buyer-v8-telemetry="false"', 'Buy page must preserve telemetry inactive boundary.');
+assertIncludes(buyerPage, 'data-buyer-v8-mortgage-calculator="false"', 'Buy page must preserve mortgage calculator exclusion.');
+assertIncludes(buyerPage, 'data-buyer-v8-lender-workflow="false"', 'Buy page must preserve lender workflow exclusion.');
+assertIncludes(buyerPage, 'data-buyer-v8-recommendation-engine="false"', 'Buy page must preserve recommendation engine exclusion.');
+assertIncludes(buyerPage, 'href="/search"', 'Buyer Decision Workspace must preserve search continuity.');
+assertIncludes(buyerPage, 'href="/market"', 'Buyer Decision Workspace must preserve market continuity.');
+assertIncludes(buyerPage, "advisorHref: '/contact'", 'Buyer Decision Workspace must preserve advisor continuity.');
+assertIncludes(buyerPage, "financingHref: '#buyer-financing-confidence'", 'Buyer Decision Workspace must preserve financing education transition.');
+assertIncludes(buyerPage, '<FinancingConfidenceEducation surface="buy" />', 'Buy page must preserve existing financing education composition.');
 
 for (const expectedLens of ['readiness', 'gather', 'compare', 'questions', 'research', 'next']) {
   assertIncludes(helper, `lens: '${expectedLens}'`, `Buyer Decision Workspace must include ${expectedLens} lens.`);
@@ -92,7 +94,7 @@ assertIncludes(sprintDoc, 'No lender workflow', 'Sprint documentation must prese
 assertIncludes(sprintDoc, 'No Public Geographic Intelligence', 'Sprint documentation must preserve public GIS exclusion.');
 assertIncludes(chatStart, 'REIE_8_BUYER_CONFIDENCE_EXPERIENCE_V8', 'CHAT_START must record Buyer Confidence v8 governed identifier.');
 
-const combinedRuntime = [helper, home, searchInterface, propertyPage, marketIndex, financingEducation].join('\n');
+const combinedRuntime = [helper, home, buyerPage, searchInterface, propertyPage, marketIndex, financingEducation].join('\n');
 for (const forbidden of [
   'estimated monthly payment',
   'pre-approved',

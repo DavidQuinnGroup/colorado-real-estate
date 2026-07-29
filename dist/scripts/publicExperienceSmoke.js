@@ -104,13 +104,17 @@ async function assertSearchPage() {
 }
 async function assertHomePortalPage() {
     const html = await fetchHtml('/');
-    assert.ok(includesFoldedText(html, 'Real Estate Intelligence for the Colorado Front Range'), 'Expected restored Home Portal hero headline.');
-    assert.ok(includesFoldedText(html, 'Helping buyers and sellers make smarter real estate decisions'), 'Expected restored Home Portal supporting copy.');
+    assert.ok(includesFoldedText(html, 'Find the right Colorado home with more context before you click'), 'Expected Home Portal 2.0 hero headline.');
+    assert.ok(includesFoldedText(html, 'Search homes, compare communities, and understand the decision before the next step'), 'Expected Home Portal 2.0 supporting copy.');
+    assert.ok(includesFoldedText(html, 'Choose Your Journey'), 'Expected Home Portal journey selector.');
+    assert.ok(includesFoldedText(html, 'Buy'), 'Expected Home Portal buyer journey card.');
+    assert.ok(includesFoldedText(html, 'Sell'), 'Expected Home Portal seller journey card.');
+    assert.ok(includesFoldedText(html, 'Explore Colorado'), 'Expected Home Portal Colorado exploration journey card.');
     assert.ok(includesFoldedText(html, 'Build Your Grand Plan'), 'Expected Home Portal Grand Plan CTA.');
-    assert.ok(includesFoldedText(html, 'Why REIE'), 'Expected Home Portal REIE introduction.');
+    assert.ok(includesFoldedText(html, 'Why REIE'), 'Expected Home Portal concise REIE introduction.');
     assert.ok(includesFoldedText(html, 'Featured Colorado Communities'), 'Expected Home Portal community section.');
     assert.ok(includesFoldedText(html, 'Start with fit, context, and confidence'), 'Expected homepage discovery to use fit/context/confidence framing.');
-    assert.ok(includesFoldedText(html, 'Search is the beginning of the decision, not the entire decision'), 'Expected homepage discovery to define the advisory search boundary.');
+    assert.ok(includesFoldedText(html, 'Explore Colorado homes through the map, listings, and decision context'), 'Expected homepage discovery to define the advisory search boundary.');
     assert.ok(includesFoldedText(html, 'Continue to Guided Search'), 'Expected homepage discovery to include a full search CTA.');
     assert.ok(includesFoldedText(html, 'Colorado Discovery Preview'), 'Expected embedded homepage search to include discovery preview framing.');
     assert.ok(includesFoldedText(html, 'Colorado property preview'), 'Expected embedded homepage search to use accurate geographic preview language.');
@@ -118,7 +122,10 @@ async function assertHomePortalPage() {
     assert.ok(!includesFoldedText(html, 'Open Full Search'), 'Expected embedded homepage search not to duplicate the full search CTA.');
     assert.ok(!includesFoldedText(html, 'Plan Around What Matters'), 'Expected embedded homepage search not to duplicate the Grand Plan CTA.');
     assert.ok(html.includes('data-testid="home-portal-hero"'), 'Expected Home Portal hero test handle.');
+    assert.ok(html.includes('data-testid="home-portal-journey"'), 'Expected Home Portal journey test handle.');
     assert.ok(html.includes('data-testid="home-portal-search-section"'), 'Expected Home Portal search section test handle.');
+    assert.ok(html.includes('data-testid="home-portal-grand-plan"'), 'Expected Home Portal Grand Plan section handle.');
+    assert.ok(html.includes('data-testid="home-portal-david-quinn"'), 'Expected Home Portal David Quinn section handle.');
     assert.ok(html.includes('data-testid="home-discovery-principles"'), 'Expected homepage discovery principles test handle.');
     assert.ok(html.includes('data-testid="home-discovery-continuation"'), 'Expected homepage discovery continuation test handle.');
     assert.ok(html.includes('data-testid="reie-home-discovery-intro"'), 'Expected embedded homepage discovery intro test handle.');
@@ -126,6 +133,18 @@ async function assertHomePortalPage() {
     assert.ok(!html.includes('data-testid="reie-home-discovery-grand-plan-link"'), 'Expected embedded homepage Grand Plan CTA duplication to be removed.');
     assert.ok(html.includes('data-home-search-variant="embedded"'), 'Expected homepage search to render in embedded presentation mode.');
     assert.ok(html.includes('<link rel="canonical" href="https://davidquinngroup.com"'), 'Expected home canonical metadata to be preserved.');
+}
+async function assertBuyPage() {
+    const html = await fetchHtml('/buy');
+    assert.ok(includesFoldedText(html, 'Know what matters before the market asks you to move'), 'Expected buyer page decision headline.');
+    assert.ok(includesFoldedText(html, 'Buyer Decision Workspace'), 'Expected buyer decision workspace.');
+    assert.ok(includesFoldedText(html, 'Financing Confidence'), 'Expected moved financing education on buyer page.');
+    assert.ok(includesFoldedText(html, 'This is educational guidance only'), 'Expected financing education trust boundary.');
+    assert.ok(html.includes('data-testid="buyer-page"'), 'Expected buyer page stable shell handle.');
+    assert.ok(html.includes('data-testid="reie-buyer-confidence-orientation"'), 'Expected buyer confidence orientation handle.');
+    assert.ok(html.includes('data-testid="reie-buyer-v8-decision-workspace"'), 'Expected buyer v8 workspace handle.');
+    assert.ok(html.includes('data-financing-confidence-surface="buy"'), 'Expected buy financing surface marker.');
+    assert.ok(html.includes('<link rel="canonical" href="https://davidquinngroup.com/buy"'), 'Expected buy canonical metadata.');
 }
 async function assertAboutAdvisorExperiencePage() {
     const html = await fetchHtml('/about');
@@ -157,6 +176,7 @@ async function assertSellerPage() {
 async function assertPublicBrandVoiceSource() {
     const publicFiles = [
         'app/page.tsx',
+        'app/buy/page.tsx',
         'app/about/page.tsx',
         'app/search/page.tsx',
         'app/properties/[id]/page.tsx',
@@ -1804,6 +1824,7 @@ async function main() {
     const property = await getSmokeProperty();
     const propertyPath = `/properties/${property.slug || property.id}`;
     await assertHomePortalPage();
+    await assertBuyPage();
     await assertAboutAdvisorExperiencePage();
     await assertSellerPage();
     await assertPropertyPage(propertyPath);
@@ -1861,6 +1882,7 @@ async function main() {
         },
         assertions: {
             homePortalRestoration: true,
+            buyerDestination: true,
             aboutAdvisorExperience: true,
             sellerJourneyEntry: true,
             propertyDetailBridge: true,

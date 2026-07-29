@@ -25,6 +25,7 @@ function assertFileMissing(filePath: string) {
 
 const runtimeFiles = [
   'components/FinancingConfidenceEducation.tsx',
+  'app/buy/page.tsx',
   'app/page.tsx',
   'components/search/SearchInterface.tsx',
   'components/search/SearchControls.tsx',
@@ -50,6 +51,7 @@ for (const forbiddenRoute of [
 }
 
 const component = read('components/FinancingConfidenceEducation.tsx');
+const buyerPage = read('app/buy/page.tsx');
 const home = read('app/page.tsx');
 const searchInterface = read('components/search/SearchInterface.tsx');
 const searchControls = read('components/search/SearchControls.tsx');
@@ -92,7 +94,7 @@ for (const requiredCopy of [
 }
 
 for (const [source, marker] of [
-  [home, 'surface="home"'],
+  [buyerPage, 'surface="buy"'],
   [searchInterface, 'surface="search"'],
   [propertyPage, 'surface="property"'],
   [marketIndex, 'surface="market"'],
@@ -101,6 +103,8 @@ for (const [source, marker] of [
 ] as const) {
   assertIncludes(source, marker, `Financing education must be integrated on ${marker}.`);
 }
+
+assertIncludes(home, "href: '/buy'", 'Home must route financing education through the dedicated Buy destination.');
 
 assertIncludes(searchControls, 'data-testid="reie-buyer-affordability-awareness"', 'Search budget awareness must remain present.');
 assertIncludes(searchControls, 'cash to close', 'Search budget guidance must include cash-to-close education.');

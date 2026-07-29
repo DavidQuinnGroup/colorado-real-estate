@@ -22,6 +22,7 @@ function assertFileMissing(filePath: string) {
 const helper = read('lib/financingDecisionWorkspace.ts');
 const component = read('components/FinancingConfidenceEducation.tsx');
 const home = read('app/page.tsx');
+const buyerPage = read('app/buy/page.tsx');
 const searchInterface = read('components/search/SearchInterface.tsx');
 const propertyPage = read('app/properties/[id]/page.tsx');
 const marketIndex = read('app/market/page.tsx');
@@ -81,7 +82,7 @@ assert(workspace.items.some((item) => item.lens === 'research' && item.href === 
 assert(workspace.items.some((item) => item.lens === 'questions' && item.href === '/contact'), 'Financing workspace must preserve advisor transition.');
 
 for (const [source, marker] of [
-  [home, 'surface="home"'],
+  [buyerPage, 'surface="buy"'],
   [searchInterface, 'surface="search"'],
   [propertyPage, 'surface="property"'],
   [marketIndex, 'surface="market"'],
@@ -90,7 +91,8 @@ for (const [source, marker] of [
 }
 
 assertIncludes(buyerHelper, 'Review financing education', 'Buyer Confidence v8 must preserve transition to financing education.');
-assertIncludes(home, 'data-testid="reie-buyer-v8-decision-workspace"', 'Homepage must preserve Buyer Decision Workspace.');
+assertIncludes(home, "href: '/buy'", 'Homepage must route Buyer Decision Workspace to the dedicated Buy destination.');
+assertIncludes(buyerPage, 'data-testid="reie-buyer-v8-decision-workspace"', 'Buy page must preserve Buyer Decision Workspace.');
 assertIncludes(searchInterface, 'data-testid="reie-buyer-search-confidence-framework"', 'Search must preserve buyer confidence framework.');
 assertIncludes(propertyPage, 'data-testid="reie-property-buyer-confidence-framework"', 'Property page must preserve buyer confidence framework.');
 assertIncludes(marketIndex, 'data-testid="reie-market-buyer-confidence"', 'Market must preserve buyer confidence framework.');
@@ -117,7 +119,7 @@ assertIncludes(sprintDoc, 'No rate shopping', 'Sprint documentation must preserv
 assertIncludes(sprintDoc, 'No Public Geographic Intelligence', 'Sprint documentation must preserve public GIS exclusion.');
 assertIncludes(chatStart, 'REIE_8_FINANCING_CONFIDENCE_V8', 'CHAT_START must record Financing Confidence v8 governed identifier.');
 
-const combinedRuntime = [helper, component, home, searchInterface, propertyPage, marketIndex, buyerHelper].join('\n');
+const combinedRuntime = [helper, component, home, buyerPage, searchInterface, propertyPage, marketIndex, buyerHelper].join('\n');
 for (const forbidden of [
   'calculateMonthlyPayment',
   'calculateLoan',
