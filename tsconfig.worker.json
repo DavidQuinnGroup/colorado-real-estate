@@ -63,6 +63,7 @@
     "scripts/checkColoradoCityIntelligenceAcquisitionEnrichment.ts",
     "scripts/checkColoradoCityEvidenceExpansion.ts",
     "scripts/checkSourceRightsActivationReadiness.ts",
+    "scripts/checkBoulderCountyOpenDataActivationGate.ts",
     "scripts/decisionGuideValidation.ts",
     "scripts/checkBoulderDecisionGuide.ts",
     "scripts/checkLouisvilleDecisionGuide.ts",

@@ -10,6 +10,37 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / Boulder County Open Data Rights Confirmation & Activation Gate(tm) 1.0, July 29, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Current governed state:
+
+- Source Rights Resolution & Activation Readiness(tm) 1.0 and Decision Guide Discovery Experience(tm) 1.0 were promoted to `origin/main` at `4d1c7e6cc12d1e55c24d42f36d262cac4b323d0a`.
+- Production certification evidence: GitHub/Vercel status `success`, commit status ID `51322007163`, timestamp `2026-07-29T20:38:50Z`, Vercel target `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/B8Q6krtxwFBTd1FBxXNEeekQQp1r`.
+- Production smoke passed: `PUBLIC_EXPERIENCE_SMOKE_BASE_URL=https://davidquinngroup.com npm run smoke:public-experience`.
+- Production `/market` browser review passed: certified Decision Guide discovery count `3`, links only Boulder/Lafayette/Louisville, no Broomfield or foundation guide promotion, no desktop/mobile horizontal overflow, and no console warnings/errors.
+- Boulder County Open Data Activation Gate(tm) 1.0 is implemented locally as documentation/readiness only and not pushed.
+- Core activation-gate contract: `lib/boulderCountyOpenDataActivationGate.ts`.
+- Validation script: `npm run check:boulder-county-open-data-activation-gate`.
+- Governed records: Source Rights Readiness production certification, Boulder County Open Data Activation Gate, Dataset Inventory, Dataset Rights Matrix, Provider Confirmation Request, Counsel Review Packet, First Activation Boundary, Persistence Decision Gate, and Cost/Operations Assessment.
+- Recommended first activation boundary remains narrow and not authorized: `BCOD-ADDRESS-POINTS` and `BCOD-PARK-BOUNDARIES`, pending provider confirmation, counsel approval, future additive persistence, no-write acquisition authorization, attribution, field exclusions, and public copy review.
+- Existing persistence is not sufficient for durable Boulder County Open Data evidence storage; future migration is required but not authorized.
+- Prohibited boundaries remain active: no legal advice, source activation, provider execution, scraping, acquisition, public GIS, AI, telemetry, personalization, customer accounts, new provider data persistence, schema changes, Prisma changes, API changes, public hazard/safety claims, rankings, demographic targeting, forecasts, push, or deployment of the local activation-gate commit.
+- Exact next step: David should decide whether to authorize provider/counsel submission for Boulder County Open Data and/or a future persistence design. Codex must not activate providers, modify schema, persist external evidence, publish incomplete intelligence, push, or deploy without an explicit directive.
+
+Prior Source Rights Resolution handoff retained below.
+
 PROJECT ATLAS(tm) / Source Rights Resolution & Activation Readiness(tm) 1.0 + Decision Guide Discovery Experience(tm) 1.0, July 29, 2026:
 
 Workspace:
