@@ -542,7 +542,7 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
             data-market-sales-source-control="present"
             data-market-non-participation-disclaimer="present"
           >
-            Neighborhood and market signals are market-wide REIE context from repository neighborhood data and public MLS/search signals
+            Neighborhood and market signals are market-wide REIE context from governed neighborhood data and public MLS/search signals
             where available. They do not state or imply that David Quinn, David Quinn Group, or Compass listed, sold, or participated in
             every reported property.
           </p>
@@ -554,7 +554,7 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
           className="md:col-span-12"
           data-testid="neighborhood-product-2-decision-framework"
           data-neighborhood-product-2-framework="context-tradeoffs-questions-evidence-next-step"
-          data-neighborhood-product-2-claims="repository-supported"
+          data-neighborhood-product-2-claims="governed-data-supported"
           data-neighborhood-product-2-school-ranking="false"
           data-neighborhood-product-2-safety-ranking="false"
           data-neighborhood-product-2-demographic-targeting="false"

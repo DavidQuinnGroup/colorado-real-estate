@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { Lock, MapPinned, ShieldCheck, Zap } from 'lucide-react';
+import { ArrowUpRight, Compass, HelpCircle, Home, Lock, MapPinned, Search, ShieldCheck, Zap } from 'lucide-react';
 
 import CityMarketStats from '@/components/CityMarketStats';
 import FinancingConfidenceEducation from '@/components/FinancingConfidenceEducation';
@@ -32,6 +32,28 @@ type CityAuthoritySignals = {
   averageResilienceScore: number;
   highestResilienceNeighborhood?: Neighborhood;
   highestEfficiencyNeighborhood?: Neighborhood;
+};
+
+type BoulderDecisionGuide = {
+  identity: string;
+  decisionSummary: Array<{
+    label: string;
+    value: string;
+    explanation: string;
+  }>;
+  housingContext: Array<{
+    label: string;
+    explanation: string;
+  }>;
+  practicalContext: Array<{
+    label: string;
+    explanation: string;
+  }>;
+  tradeoffs: Array<{
+    strength: string;
+    tradeoff: string;
+  }>;
+  verificationQuestions: string[];
 };
 
 const SITE_URL = 'https://davidquinngroup.com';
@@ -98,6 +120,95 @@ function getAuthoritySignals(cityNeighborhoods: Neighborhood[]): CityAuthoritySi
     averageResilienceScore,
     highestResilienceNeighborhood: cityNeighborhoods[0],
     highestEfficiencyNeighborhood,
+  };
+}
+
+function isBoulderDecisionGuide(city: CityData) {
+  return city.name === 'Boulder';
+}
+
+function buildBoulderDecisionGuide({
+  city,
+  cityNeighborhoods,
+  marketSignal,
+}: {
+  city: CityData;
+  cityNeighborhoods: Neighborhood[];
+  marketSignal: string;
+}): BoulderDecisionGuide {
+  const anchors = cityNeighborhoods
+    .slice(0, 4)
+    .map((neighborhood) => neighborhood.primaryAnchor)
+    .join(', ');
+  const housingEras = Array.from(new Set(cityNeighborhoods.map((neighborhood) => neighborhood.era))).slice(0, 3);
+
+  return {
+    identity: `${city.name} should be evaluated as a high-context Colorado market: daily access, neighborhood pattern, housing condition, and market signal all matter before a customer narrows into individual homes.`,
+    decisionSummary: [
+      {
+        label: 'What distinguishes Boulder',
+        value: 'A compact Front Range city with multiple neighborhood patterns',
+        explanation: `${cityNeighborhoods.length} governed neighborhood paths connect city context to local anchors including ${anchors}.`,
+      },
+      {
+        label: 'What deserves attention',
+        value: 'Price, inventory, condition, access, and property-specific diligence',
+        explanation: `Current market context shows ${city.stats.medianPrice} median price, ${city.stats.inventory} active inventory signal, and ${marketSignal.toLowerCase()} as the current city-market interpretation.`,
+      },
+      {
+        label: 'What to verify',
+        value: 'Fit, records, condition, commute pattern, and neighborhood evidence',
+        explanation: 'Use Boulder context as a starting point, then verify individual property facts, costs, records, and daily-life assumptions before acting.',
+      },
+    ],
+    housingContext: [
+      {
+        label: 'Mixed housing eras',
+        explanation: `Boulder neighborhood records include ${housingEras.join(', ') || 'mixed-era residential'} housing patterns. Compare remodel quality, systems age, drainage, roof condition, and exterior maintenance before relying on surface presentation.`,
+      },
+      {
+        label: 'Neighborhood-by-neighborhood variation',
+        explanation: 'Downtown, North Boulder, South Boulder, Gunbarrel, Table Mesa, Mapleton Hill, Chautauqua, and Wonderland Hills should be evaluated separately instead of treated as one uniform market.',
+      },
+      {
+        label: 'Condition before assumptions',
+        explanation: 'Older homes, hillside settings, mature landscaping, and remodel history can change the diligence questions that matter for a specific property.',
+      },
+    ],
+    practicalContext: [
+      {
+        label: 'Access relationships',
+        explanation: 'Evaluate the relationship between the property, work patterns, neighborhood anchors, trail or open-space access, and the parts of Boulder used most often.',
+      },
+      {
+        label: 'Location specificity',
+        explanation: 'A Boulder address is not enough. The decision changes when the property sits near downtown activity, foothill edges, north/south corridors, or more residential neighborhood interiors.',
+      },
+      {
+        label: 'Research discipline',
+        explanation: 'Use market context, neighborhood pages, property records, disclosures, inspections, insurance review, and advisor discussion as separate evidence layers.',
+      },
+    ],
+    tradeoffs: [
+      {
+        strength: 'Strong local identity and neighborhood variety',
+        tradeoff: 'Customers should compare micro-location, property condition, and access needs instead of assuming city-wide fit.',
+      },
+      {
+        strength: 'Established housing stock with distinctive character',
+        tradeoff: 'Older systems, remodel quality, drainage, roof, sewer, and exterior-envelope questions can materially affect confidence.',
+      },
+      {
+        strength: 'Clear continuity from city market to neighborhood and property review',
+        tradeoff: 'Market statistics should inform the decision, not replace property-specific verification.',
+      },
+    ],
+    verificationQuestions: [
+      'Which Boulder neighborhood pattern best matches the way I would use the city day to day?',
+      'What property-specific condition, records, insurance, or cost questions should be answered before I compare this home against alternatives?',
+      'Does the current market signal change my timing, search discipline, or seller-preparation plan without creating urgency?',
+      'Which neighborhood page, market evidence, property facts, and advisor questions should I review before the next step?',
+    ],
   };
 }
 
@@ -170,6 +281,13 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
   const cityMarketSchema = getJsonLd(cityData, cityNeighborhoods);
   const cityMarketSchemaGraph = cityMarketSchema['@graph'];
   const marketExperience = buildCityMarketExperience(cityData, cityNeighborhoods.length);
+  const boulderDecisionGuide = isBoulderDecisionGuide(cityData)
+    ? buildBoulderDecisionGuide({
+        city: cityData,
+        cityNeighborhoods,
+        marketSignal: marketExperience.directionLabel,
+      })
+    : null;
   const marketDecisionWorkspace = buildMarketDecisionWorkspace({
     scope: 'city',
     name: cityData.name,
@@ -213,7 +331,16 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
       />
       <FAQSchema faqs={cityFaqs} pageUrl={canonicalUrl} />
 
-      <section className="border-b border-white/5 bg-[radial-gradient(circle_at_82%_14%,rgba(207,250,254,0.12),transparent_30%),linear-gradient(180deg,#071017,#030303)]">
+      <section
+        className="border-b border-white/5 bg-[radial-gradient(circle_at_82%_14%,rgba(207,250,254,0.12),transparent_30%),linear-gradient(180deg,#071017,#030303)]"
+        data-testid={boulderDecisionGuide ? 'boulder-decision-guide-hero' : undefined}
+        data-boulder-decision-guide={boulderDecisionGuide ? 'true' : undefined}
+        data-boulder-decision-guide-ai={boulderDecisionGuide ? 'false' : undefined}
+        data-boulder-decision-guide-gis={boulderDecisionGuide ? 'false' : undefined}
+        data-boulder-decision-guide-telemetry={boulderDecisionGuide ? 'false' : undefined}
+        data-boulder-decision-guide-ranking={boulderDecisionGuide ? 'false' : undefined}
+        data-boulder-decision-guide-demographic-targeting={boulderDecisionGuide ? 'false' : undefined}
+      >
         <div className="mx-auto max-w-6xl px-6 pb-10 pt-12 md:pt-16">
           <div className="mb-4 flex items-center gap-3">
             <div className="h-2 w-2 rounded-full bg-cyan-100 shadow-[0_0_18px_rgba(207,250,254,0.45)]" />
@@ -225,13 +352,15 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
           <h1 className="mb-6 max-w-5xl text-5xl font-black uppercase leading-[0.9] tracking-normal md:text-7xl">
             {cityData.name}
             <br />
-            <span className="text-white/32">Market Context</span>
+            <span className="text-white/32">{boulderDecisionGuide ? 'Decision Guide' : 'Market Context'}</span>
           </h1>
 
           <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr] lg:items-end">
             <p className="max-w-2xl text-base leading-8 text-white/64 md:text-lg">
-              Understand what the {cityData.name} market may mean before you compare homes, prepare a seller plan, or narrow into a
-              neighborhood. Start with the primary signal, then verify property-specific context.
+              {boulderDecisionGuide
+                ? boulderDecisionGuide.identity
+                : `Understand what the ${cityData.name} market may mean before you compare homes, prepare a seller plan, or narrow into a
+              neighborhood. Start with the primary signal, then verify property-specific context.`}
             </p>
 
             <div className="grid grid-cols-2 overflow-hidden rounded-[8px] bg-white/[0.07] shadow-[0_20px_70px_rgba(0,0,0,0.28)]">
@@ -245,6 +374,33 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
               </div>
             </div>
           </div>
+
+          {boulderDecisionGuide ? (
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <Link
+                href={`/search?city=${encodeURIComponent(cityData.name)}`}
+                className="inline-flex min-h-12 items-center justify-center gap-3 rounded-[6px] bg-cyan-100 px-5 py-3 text-xs font-black uppercase tracking-[0.16em] text-black no-underline transition hover:bg-white focus:outline-none focus:ring-2 focus:ring-cyan-100/70"
+                data-testid="boulder-decision-guide-search-cta"
+                {...getJourneyMeasurementAttributes({
+                  surface: 'boulder-decision-guide-hero',
+                  stage: 'market',
+                  action: 'start-search',
+                  destination: 'search',
+                })}
+              >
+                <Search className="h-4 w-4" />
+                Search Boulder Homes
+              </Link>
+              <Link
+                href="#boulder-neighborhoods"
+                className="inline-flex min-h-12 items-center justify-center gap-3 rounded-[6px] bg-white/[0.07] px-5 py-3 text-xs font-black uppercase tracking-[0.16em] text-white no-underline transition hover:bg-white/12 focus:outline-none focus:ring-2 focus:ring-cyan-100/70"
+                data-testid="boulder-decision-guide-neighborhoods-cta"
+              >
+                <MapPinned className="h-4 w-4" />
+                Explore Boulder Neighborhoods
+              </Link>
+            </div>
+          ) : null}
 
           <div className="mt-8 grid gap-3 md:grid-cols-3">
             <div className="rounded-[8px] bg-white/[0.055] p-4">
@@ -266,13 +422,216 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
             data-market-sales-source-control="present"
             data-market-non-participation-disclaimer="present"
           >
-            Market statistics are market-wide REIE context from repository city data and public MLS/search signals where available. They do
+            Market statistics are market-wide REIE context from governed city data and public MLS/search signals where available. They do
             not state or imply that David Quinn, David Quinn Group, or Compass listed, sold, or participated in every reported property.
           </p>
         </div>
       </section>
 
       <div className="mx-auto max-w-6xl space-y-16 px-6 pb-24 pt-10">
+        {boulderDecisionGuide ? (
+          <>
+            <section
+              className="grid gap-6 py-4 lg:grid-cols-[0.82fr_1.18fr]"
+              data-testid="boulder-decision-guide-summary"
+              data-boulder-decision-guide-framework="context-tradeoffs-questions-evidence-next-step"
+              data-boulder-decision-guide-source="governed-city-and-neighborhood-data"
+              data-boulder-decision-guide-school-ranking="false"
+              data-boulder-decision-guide-safety-ranking="false"
+              data-boulder-decision-guide-investment-recommendation="false"
+            >
+              <div>
+                <p className="mb-3 text-[10px] font-black uppercase tracking-[0.28em] text-cyan-100/72">
+                  Boulder Decision Summary
+                </p>
+                <h2 className="text-3xl font-black uppercase leading-tight tracking-normal text-white md:text-5xl">
+                  Decide what Boulder means before comparing homes.
+                </h2>
+                <p className="mt-5 text-sm leading-7 text-white/58 md:text-base">
+                  Start with the city pattern, then use neighborhood pages, property facts, market evidence, and advisor questions as
+                  separate confirmation layers.
+                </p>
+              </div>
+
+              <div className="grid gap-3">
+                {boulderDecisionGuide.decisionSummary.map((item) => (
+                  <article key={item.label} className="rounded-[8px] bg-white/[0.055] p-5">
+                    <p className="text-[9px] font-black uppercase tracking-[0.2em] text-cyan-100/68">{item.label}</p>
+                    <h3 className="mt-3 text-lg font-black uppercase leading-6 tracking-tight text-white">{item.value}</h3>
+                    <p className="mt-3 text-sm leading-6 text-white/52">{item.explanation}</p>
+                  </article>
+                ))}
+              </div>
+            </section>
+
+            <section
+              className="grid gap-3 rounded-[8px] bg-cyan-100/[0.045] p-5 md:grid-cols-5"
+              data-testid="boulder-decision-guide-framework"
+            >
+              {[
+                ['Context', 'Understand Boulder as a city and a set of neighborhood patterns.'],
+                ['Trade-offs', 'Balance access, housing form, condition, and market signal.'],
+                ['Questions', 'Turn interest into specific facts to verify.'],
+                ['Evidence', 'Use market, neighborhood, property, and advisor evidence separately.'],
+                ['Next Step', 'Move into search, neighborhood review, buyer, seller, or Grand Plan guidance.'],
+              ].map(([label, explanation]) => (
+                <div key={label} className="min-w-0">
+                  <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">{label}</p>
+                  <p className="mt-2 text-sm leading-6 text-white/55">{explanation}</p>
+                </div>
+              ))}
+            </section>
+
+            <section className="grid gap-10 lg:grid-cols-2" data-testid="boulder-decision-guide-context">
+              <div>
+                <div className="mb-5 flex items-center gap-3">
+                  <Home className="h-5 w-5 text-cyan-100" />
+                  <p className="text-[10px] font-black uppercase tracking-[0.28em] text-cyan-100/72">Housing Context</p>
+                </div>
+                <div className="space-y-5">
+                  {boulderDecisionGuide.housingContext.map((item) => (
+                    <article key={item.label}>
+                      <h3 className="text-lg font-black uppercase tracking-tight text-white">{item.label}</h3>
+                      <p className="mt-2 text-sm leading-7 text-white/55">{item.explanation}</p>
+                    </article>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <div className="mb-5 flex items-center gap-3">
+                  <Compass className="h-5 w-5 text-cyan-100" />
+                  <p className="text-[10px] font-black uppercase tracking-[0.28em] text-cyan-100/72">Practical Living Context</p>
+                </div>
+                <div className="space-y-5">
+                  {boulderDecisionGuide.practicalContext.map((item) => (
+                    <article key={item.label}>
+                      <h3 className="text-lg font-black uppercase tracking-tight text-white">{item.label}</h3>
+                      <p className="mt-2 text-sm leading-7 text-white/55">{item.explanation}</p>
+                    </article>
+                  ))}
+                </div>
+              </div>
+            </section>
+
+            <section className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]" data-testid="boulder-decision-guide-tradeoffs">
+              <div>
+                <p className="mb-3 text-[10px] font-black uppercase tracking-[0.28em] text-cyan-100/72">
+                  Strengths And Trade-offs
+                </p>
+                <h2 className="text-3xl font-black uppercase leading-tight tracking-normal text-white md:text-4xl">
+                  Use balanced local context, not assumptions.
+                </h2>
+              </div>
+              <div className="grid gap-3">
+                {boulderDecisionGuide.tradeoffs.map((item) => (
+                  <article key={item.strength} className="grid gap-4 rounded-[8px] bg-white/[0.045] p-5 md:grid-cols-2">
+                    <div>
+                      <p className="text-[9px] font-black uppercase tracking-[0.18em] text-cyan-100/70">Strength</p>
+                      <p className="mt-2 text-sm leading-6 text-white/64">{item.strength}</p>
+                    </div>
+                    <div>
+                      <p className="text-[9px] font-black uppercase tracking-[0.18em] text-white/36">Trade-off To Evaluate</p>
+                      <p className="mt-2 text-sm leading-6 text-white/52">{item.tradeoff}</p>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </section>
+
+            <section
+              className="grid gap-6 rounded-[8px] bg-white/[0.04] p-5 md:p-8 lg:grid-cols-[0.8fr_1.2fr]"
+              data-testid="boulder-decision-guide-questions"
+            >
+              <div>
+                <HelpCircle className="mb-5 h-7 w-7 text-cyan-100" />
+                <p className="mb-3 text-[10px] font-black uppercase tracking-[0.28em] text-cyan-100/72">
+                  Questions To Verify
+                </p>
+                <h2 className="text-3xl font-black uppercase leading-tight tracking-normal text-white">
+                  Convert interest into research.
+                </h2>
+              </div>
+              <div className="grid gap-3">
+                {boulderDecisionGuide.verificationQuestions.map((question) => (
+                  <p key={question} className="rounded-[8px] bg-[#071017]/80 p-4 text-sm leading-7 text-white/58">
+                    {question}
+                  </p>
+                ))}
+              </div>
+            </section>
+
+            <section
+              id="boulder-neighborhoods"
+              className="scroll-mt-24"
+              data-testid="boulder-decision-guide-neighborhoods"
+            >
+              <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+                <div>
+                  <p className="mb-2 text-[10px] font-black uppercase tracking-[0.28em] text-cyan-100/72">
+                    Explore Boulder Neighborhoods
+                  </p>
+                  <h2 className="text-3xl font-black uppercase leading-tight tracking-normal text-white md:text-4xl">
+                    Move from city question to local context.
+                  </h2>
+                </div>
+                <Link
+                  href={`/search?city=${encodeURIComponent(cityData.name)}`}
+                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[6px] bg-white/[0.07] px-4 py-3 text-xs font-black uppercase tracking-[0.14em] text-white no-underline transition hover:bg-white/12"
+                >
+                  Search Boulder
+                  <ArrowUpRight className="h-4 w-4" />
+                </Link>
+              </div>
+              <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+                {cityNeighborhoods.slice(0, 8).map((neighborhood) => (
+                  <Link
+                    key={neighborhood.slug}
+                    href={getNeighborhoodPath(neighborhood)}
+                    className="group rounded-[8px] bg-white/[0.045] p-5 text-white no-underline transition hover:bg-white/[0.075]"
+                  >
+                    <p className="text-lg font-black uppercase tracking-tight transition group-hover:text-cyan-100">
+                      {neighborhood.name}
+                    </p>
+                    <p className="mt-2 text-[10px] font-black uppercase tracking-[0.18em] text-white/34">
+                      {neighborhood.primaryAnchor}
+                    </p>
+                    <p className="mt-4 text-sm leading-6 text-white/50">{neighborhood.tacticalLever}</p>
+                  </Link>
+                ))}
+              </div>
+            </section>
+
+            <section
+              className="grid gap-3 rounded-[8px] bg-cyan-100/[0.045] p-5 md:grid-cols-4"
+              data-testid="boulder-decision-guide-continuity"
+            >
+              {([
+                { label: 'Market Context', href: getCanonicalPath(cityData), destination: 'market' },
+                { label: 'Search Boulder Homes', href: `/search?city=${encodeURIComponent(cityData.name)}`, destination: 'search' },
+                { label: 'Buyer Guidance', href: '/buy', destination: 'search' },
+                { label: 'Seller Guidance', href: '/sell', destination: 'seller' },
+                { label: 'Grand Plan', href: '/grand-plan', destination: 'inquiry' },
+              ] as const).map((item) => (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  className="flex min-h-12 items-center justify-between gap-3 rounded-[6px] bg-[#071017]/80 px-4 py-3 text-xs font-black uppercase tracking-[0.12em] text-white no-underline transition hover:bg-[#0a1118] hover:text-cyan-100"
+                  {...getJourneyMeasurementAttributes({
+                    surface: 'boulder-decision-guide-continuity',
+                    stage: 'market',
+                    action: 'continue-journey',
+                    destination: item.destination,
+                  })}
+                >
+                  {item.label}
+                  <ArrowUpRight className="h-4 w-4" />
+                </Link>
+              ))}
+            </section>
+          </>
+        ) : null}
+
         <section
           className="grid gap-6 rounded-[8px] bg-cyan-100/[0.055] p-5 shadow-[0_24px_80px_rgba(0,0,0,0.22)] md:p-8 lg:grid-cols-[0.88fr_1.12fr]"
           data-testid="reie-market-v8-decision-workspace"

@@ -195,7 +195,7 @@ export default function SearchInterface({
 }: SearchInterfaceProps) {
   const [listings, setListings] = useState<MapSidebarListing[]>(initialListings);
   const [searchMeta, setSearchMeta] = useState<SearchMapMeta | null>(initialSearchMeta);
-  const [filters, setFilters] = useState<SearchFilters>(() => getBrowserFilters());
+  const [filters, setFilters] = useState<SearchFilters>(() => getInitialSearchFilters());
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [userTier, setUserTier] = useState<UserTier>('Public');
@@ -320,14 +320,15 @@ export default function SearchInterface({
   }
 
   useEffect(() => {
-    if (!hasActiveSearchFilters(filters)) return;
+    const browserFilters = getBrowserFilters();
+    if (!hasActiveSearchFilters(browserFilters)) return;
 
     const initialFilterTimer = window.setTimeout(() => {
-      void runSearch(filters, { updateUrl: true, urlMode: 'replace' });
+      setFilters(browserFilters);
+      void runSearch(browserFilters, { updateUrl: true, urlMode: 'replace' });
     }, 0);
 
     return () => window.clearTimeout(initialFilterTimer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

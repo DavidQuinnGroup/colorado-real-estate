@@ -88,7 +88,7 @@ export function buildCityMarketExperience(city: CityData, neighborhoodCount: num
     timingLabel,
     summary: `${city.name} is currently framed as ${directionLabel.toLowerCase()} with ${competitivenessLabel.toLowerCase()}. Use the market signal to decide how prepared to be before search, touring, or seller review.`,
     sourceNote:
-      'Market Intelligence uses repository city data, public search signals where available, and existing market-page context. It is not a forecast, appraisal, automated valuation, or provider-fed geographic analysis.',
+      'Market Intelligence uses governed city data, public search signals where available, and existing market-page context. It is not a forecast, appraisal, automated valuation, or provider-fed geographic analysis.',
     signals: [
       {
         label: 'Direction',
@@ -147,7 +147,7 @@ export function buildNeighborhoodMarketExperience(
     timingLabel,
     summary: `${neighborhood.name} is framed through ${inventoryLabel.toLowerCase()}, ${competitivenessLabel.toLowerCase()}, and local condition context. Use this page to decide whether to search, tour, or ask for property-specific review.`,
     sourceNote:
-      'Neighborhood Market Intelligence uses repository neighborhood data and public inventory signals where available. It does not predict appreciation or availability and does not activate GIS providers, external geographic services, or AI-generated recommendations.',
+      'Neighborhood Market Intelligence uses governed neighborhood data and public inventory signals where available. It does not predict appreciation or availability and does not activate GIS providers, external geographic services, or AI-generated recommendations.',
     signals: [
       {
         label: 'Inventory',

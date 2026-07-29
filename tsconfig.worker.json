@@ -59,6 +59,7 @@
     "scripts/checkReieBuyerConfidenceExperienceV8.ts",
     "scripts/checkReieFinancingConfidenceV8.ts",
     "scripts/checkNeighborhoodProduct2.ts",
+    "scripts/checkBoulderDecisionGuide.ts",
     "scripts/checkProductionMediaResilience.ts",
     "scripts/checkPrismaClientParity.ts",
     "scripts/checkProductionDependencies.ts",

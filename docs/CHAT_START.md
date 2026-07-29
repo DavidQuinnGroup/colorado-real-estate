@@ -33,9 +33,12 @@ Current governed state:
 - Production smoke passed: `PUBLIC_EXPERIENCE_SMOKE_BASE_URL=https://davidquinngroup.com npm run smoke:public-experience`.
 - Production browser review passed on `/market/boulder/downtown-boulder`, `/market/boulder-co-housing-market`, `/search?neighborhood=Downtown%20Boulder`, and `/properties/32224-poudre-canyon-rd-bellvue-co-ire1363681` across desktop `1440x1100`, tablet `900x1050`, mobile `390x900`, and narrow mobile `316x820`: no horizontal overflow, no console warnings/errors, no broken rendered media, zero rendered `media.mlsgrid.com` images, early neighborhood interpretation, and preserved search/market/property/buyer/seller/Grand Plan transitions.
 - Certification record: `docs/project-atlas/executive-library/NEIGHBORHOOD-PRODUCT-2-PRODUCTION-CERTIFICATION.md`.
-- Active authorized implementation: Boulder Decision Guide(tm) 1.0 as the flagship template for Colorado Decision Guides(tm). Do not push the Boulder implementation unless separately authorized.
+- Active local implementation: Boulder Decision Guide(tm) 1.0 is implemented locally as the flagship template for Colorado Decision Guides(tm), pending final commit in the active task. Do not push the Boulder implementation unless separately authorized.
+- Boulder implementation route: `/market/boulder-co-housing-market`.
+- Boulder implementation record: `docs/project-atlas/executive-library/BOULDER-DECISION-GUIDE-1-IMPLEMENTATION.md`.
+- Dedicated validation: `npm run check:boulder-decision-guide`.
 - Prohibited boundaries remain active: no AI, public GIS activation, new map overlays, telemetry, personalization, customer accounts, new providers, schema changes, Prisma changes, breaking API changes, automated recommendations, school/safety/demographic/investment scoring, unsupported local claims, or urgency claims.
-- Exact next step: complete Boulder Decision Guide(tm) 1.0 local implementation, validation, governed documentation, and one clean unpushed implementation commit.
+- Exact next step: complete final local validation, create one clean Boulder Decision Guide(tm) 1.0 implementation commit, and stop without pushing.
 
 Prior REIE 8 Product 2.0 Portfolio Production Certification handoff retained below.
 
