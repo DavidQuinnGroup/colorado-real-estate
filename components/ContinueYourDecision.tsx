@@ -59,6 +59,7 @@ export default function ContinueYourDecision({
       data-djx-safety-ranking="false"
       data-djx-fixture-data="false"
       data-djx-density={density}
+      data-djx-tone={tone}
     >
       <div className={`grid gap-5 ${isCompact ? 'p-4 md:grid-cols-[0.92fr_1.08fr] md:p-5' : 'p-5 md:grid-cols-[0.82fr_1.18fr] md:p-6'}`}>
         <div>

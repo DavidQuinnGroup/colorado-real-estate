@@ -916,10 +916,10 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                 className="inline-flex items-center gap-2 rounded-[6px] border border-white/14 bg-[#071017]/76 px-3 py-2 text-[10px] font-black uppercase tracking-[0.16em] text-white/70 backdrop-blur transition hover:border-cyan-100/40 hover:text-cyan-100"
               >
                 <ArrowLeft size={14} aria-hidden="true" />
-                Search
+                Back to Search
               </Link>
               <span className="max-w-[calc(100vw-2rem)] rounded-[6px] border border-white/14 bg-[#071017]/76 px-3 py-2 text-[10px] font-black uppercase tracking-[0.12em] text-cyan-100 backdrop-blur md:tracking-[0.16em]">
-                Decision Workspace
+                Property Decision Workspace
               </span>
             </div>
 
@@ -966,7 +966,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
               <div className="bg-cyan-100/[0.07] p-4">
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <p className="text-[10px] font-black uppercase tracking-[0.22em] text-cyan-100/76">Decision Workspace</p>
+                    <p className="text-[10px] font-black uppercase tracking-[0.22em] text-cyan-100/76">Property Orientation</p>
                     <h2 className="mt-2 text-lg font-black uppercase leading-6 tracking-[0.04em] text-white">
                       Is this worth a closer look?
                     </h2>
@@ -979,6 +979,9 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
               <div className="p-4">
                 <p className="text-sm leading-6 text-white/70">
                   {decisionNextStep}
+                </p>
+                <p className="mt-3 text-xs leading-5 text-white/46">
+                  Arrived from Search? Use the browser Back button or return to the local search view below; no search history is stored here.
                 </p>
                 <div className="mt-4 grid gap-2">
                   <DecisionRow label="Calculated Price / Sq Ft" value={pricePerSquareFoot} />
@@ -1000,7 +1003,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                     href="#property-contact"
                     className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-[6px] bg-cyan-100 px-3 py-3 text-[10px] font-black uppercase tracking-[0.12em] text-[#061017] transition hover:bg-white"
                   >
-                    Ask About This Property
+                    Ask a Property Question
                     <Mail size={13} aria-hidden="true" />
                   </Link>
                   <Link
@@ -1099,23 +1102,23 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-5 pb-4 pt-10 sm:px-8 lg:px-10" data-testid="property-djx-continuity">
+      <section className="mx-auto max-w-7xl px-5 py-8 sm:px-8 lg:px-10" data-testid="property-product-3-1-priority">
+        <PropertyProduct31Experience model={propertyProduct31Model} />
+      </section>
+
+      <section className="mx-auto max-w-7xl px-5 pb-4 pt-2 sm:px-8 lg:px-10" data-testid="property-djx-continuity">
         <ContinueYourDecision
           stage="property"
           cameFrom="Search, neighborhood context, or city market context"
-          currentDecision="Decide what this property page can support before the next step."
+          currentDecision="Continue the property decision after reviewing the evidence."
           whyHere="This property view brings listing facts, Property DNA, confidence, comparable context, and verification prompts together without scoring, valuing, forecasting, or recommending the property."
-          nextStep="Review the Product 3 synthesis, compare context, then carry specific verification questions forward."
+          nextStep="Return to search, inspect market context, or ask a focused property question."
           links={[
-            { label: 'Search', href: getCitySearchHref(property.city), note: 'Compare inventory' },
+            { label: 'Search', href: getCitySearchHref(property.city), note: 'Return to results' },
             { label: 'Market', href: marketPathway.href, note: 'Broader context' },
-            { label: 'Verify', href: '#property-contact', note: 'Ask focused questions' },
+            { label: 'Ask', href: '#property-contact', note: 'Focused question' },
           ]}
         />
-      </section>
-
-      <section className="mx-auto max-w-7xl px-5 py-8 sm:px-8 lg:px-10" data-testid="property-product-3-1-priority">
-        <PropertyProduct31Experience model={propertyProduct31Model} />
       </section>
 
       <section className="mx-auto max-w-7xl px-5 py-12 sm:px-8 lg:px-10">
@@ -1199,7 +1202,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                     </p>
                   </div>
                   <span className="inline-flex h-8 items-center rounded-[6px] border border-cyan-100/24 bg-black/20 px-3 text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100">
-                    No New Data Source
+                    Public facts only
                   </span>
                 </div>
               </div>
@@ -1355,13 +1358,13 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                       href="#property-contact"
                       className="inline-flex min-h-10 items-center justify-center rounded-[6px] bg-cyan-100 px-3 py-2 text-[10px] font-black uppercase tracking-[0.12em] text-[#061017] transition hover:bg-white"
                     >
-                      Ask About This Property
+                      Ask a Property Question
                     </Link>
                     <Link
                       href={getCitySearchHref(property.city)}
                       className="inline-flex min-h-10 items-center justify-center rounded-[6px] border border-white/10 bg-white/[0.055] px-3 py-2 text-[10px] font-black uppercase tracking-[0.12em] text-white/66 transition hover:border-cyan-100/35 hover:text-cyan-100"
                     >
-                      View Listings in This Area
+                      Return to Search Results
                     </Link>
                     <Link
                       href={marketPathway.href}
@@ -1772,7 +1775,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                   destination: 'inquiry',
                 })}
               >
-                Ask About This Property
+                Ask a Property Question
               </Link>
               <Link
                 href="/sell"

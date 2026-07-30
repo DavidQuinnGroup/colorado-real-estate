@@ -3505,6 +3505,238 @@ html, body {
   outline-offset: 3px;
 }
 
+[data-testid='continue-your-decision'][data-djx-density='standard'] [data-testid='continue-your-decision-link'] {
+  display: flex;
+  min-height: 3.5rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border-color: rgba(183, 219, 226, 0.22);
+  background: rgba(183, 219, 226, 0.08);
+  padding: 0.75rem 1rem;
+  color: #b7dbe2;
+  text-decoration: none;
+  box-shadow: inset 0 0 0 1px rgba(183, 219, 226, 0.04);
+}
+
+[data-testid='continue-your-decision'][data-djx-density='standard'][data-djx-tone='light'] [data-testid='continue-your-decision-link'] {
+  border-color: rgba(31, 45, 54, 0.16);
+  background: #111820;
+  color: #ffffff;
+}
+
+[data-testid='continue-your-decision'][data-djx-density='standard'] [data-testid='continue-your-decision-link'] span span:last-child {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+[data-testid='continue-your-decision'][data-djx-density='standard'][data-djx-tone='light'] [data-testid='continue-your-decision-link'] span span:last-child {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+[data-testid='continue-your-decision'][data-djx-density='standard'] [data-testid='continue-your-decision-link'] svg {
+  color: rgba(183, 219, 226, 0.76);
+}
+
+[data-testid='continue-your-decision'][data-djx-density='standard'] [data-testid='continue-your-decision-link']:hover {
+  border-color: rgba(183, 219, 226, 0.48);
+  background: rgba(183, 219, 226, 0.14);
+  color: #ffffff;
+}
+
+[data-testid='continue-your-decision'][data-djx-density='standard'][data-djx-tone='light'] [data-testid='continue-your-decision-link']:hover {
+  border-color: rgba(31, 45, 54, 0.28);
+  background: #24343f;
+  color: #ffffff;
+}
+
+[data-testid='continue-your-decision'][data-djx-density='standard'] [data-testid='continue-your-decision-link']:hover span span:last-child,
+[data-testid='continue-your-decision'][data-djx-density='standard'] [data-testid='continue-your-decision-link']:hover svg {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+[data-testid='continue-your-decision'][data-djx-density='standard'] [data-testid='continue-your-decision-link']:active {
+  border-color: rgba(183, 219, 226, 0.62);
+  background: rgba(183, 219, 226, 0.18);
+  color: #ffffff;
+  transform: translateY(1px);
+}
+
+[data-testid='continue-your-decision'][data-djx-density='standard'] [data-testid='continue-your-decision-link']:focus,
+[data-testid='continue-your-decision'][data-djx-density='standard'] [data-testid='continue-your-decision-link']:focus-visible {
+  outline: 2px solid #b7dbe2;
+  outline-offset: 3px;
+}
+
+[data-testid='continue-your-decision'] nav[aria-label='Continue your decision'] {
+  display: grid;
+  gap: 0.5rem;
+}
+
+[data-testid='continue-your-decision'][data-djx-density='standard'][data-djx-tone='light'] [data-testid='continue-your-decision-link']:focus,
+[data-testid='continue-your-decision'][data-djx-density='standard'][data-djx-tone='light'] [data-testid='continue-your-decision-link']:focus-visible {
+  outline-color: #2f6f7d;
+}
+
+.reie-property-product-31 {
+  border-color: rgba(183, 219, 226, 0.2);
+  background: #0d141c;
+  color: #ffffff;
+}
+
+.reie-property-product-31-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(183, 219, 226, 0.055);
+  padding: 1.25rem;
+}
+
+.reie-property-product-31-eyebrow,
+.reie-property-product-31-mini-label {
+  color: rgba(183, 219, 226, 0.76);
+  line-height: 1.25;
+}
+
+.reie-property-product-31-eyebrow-amber {
+  color: rgba(253, 230, 138, 0.82);
+}
+
+.reie-property-product-31-title,
+.reie-property-product-31-section-title,
+.reie-property-product-31-card-title {
+  color: #ffffff;
+  letter-spacing: 0;
+}
+
+.reie-property-product-31-copy {
+  color: rgba(255, 255, 255, 0.64);
+}
+
+.reie-property-product-31-note,
+.reie-property-product-31-trust {
+  color: rgba(255, 255, 255, 0.46);
+}
+
+.reie-property-product-31-badge,
+.reie-property-product-31-rail-link,
+.reie-property-product-31-state,
+.reie-property-product-31-confidence {
+  display: inline-flex;
+  align-items: center;
+  border-style: solid;
+  line-height: 1.25;
+  text-decoration: none;
+}
+
+.reie-property-product-31-badge {
+  align-self: flex-start;
+  min-height: 2rem;
+  border-width: 1px;
+  border-color: rgba(183, 219, 226, 0.24);
+  background: rgba(0, 0, 0, 0.2);
+  padding: 0.5rem 0.75rem;
+  color: #b7dbe2;
+}
+
+.reie-property-product-31-rail-link {
+  justify-content: center;
+  min-height: 2.5rem;
+  border-width: 1px;
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.055);
+  padding: 0.5rem 0.75rem;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.reie-property-product-31-card,
+.reie-property-product-31-panel,
+.reie-property-product-31-link-card {
+  background: #0d141c;
+}
+
+.reie-property-product-31-card,
+.reie-property-product-31-link-card {
+  padding: 1rem;
+}
+
+.reie-property-product-31-panel {
+  padding: 1.25rem;
+}
+
+.reie-property-product-31-link-card {
+  color: inherit;
+  text-decoration: none;
+}
+
+.reie-property-product-31-link-card:hover {
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.reie-property-product-31-state,
+.reie-property-product-31-confidence {
+  border-width: 1px;
+  padding: 0.25rem 0.5rem;
+}
+
+.reie-property-product-31-state {
+  min-height: 1.75rem;
+}
+
+.reie-property-product-31-state-well-supported,
+.reie-property-product-31-confidence-high {
+  border-color: rgba(209, 250, 229, 0.24);
+  background: rgba(209, 250, 229, 0.07);
+  color: #d1fae5;
+}
+
+.reie-property-product-31-state-verify-next,
+.reie-property-product-31-confidence-limited {
+  border-color: rgba(253, 230, 138, 0.26);
+  background: rgba(253, 230, 138, 0.08);
+  color: #fde68a;
+}
+
+.reie-property-product-31-state-context-needed {
+  border-color: rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.045);
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.reie-property-product-31-confidence-moderate {
+  border-color: rgba(183, 219, 226, 0.24);
+  background: rgba(183, 219, 226, 0.07);
+  color: #b7dbe2;
+}
+
+.reie-property-product-31-list {
+  color: rgba(255, 255, 255, 0.58);
+}
+
+@media (min-width: 768px) {
+  .reie-property-product-31-header {
+    padding: 1.5rem;
+  }
+
+  .reie-property-product-31-card,
+  .reie-property-product-31-link-card {
+    padding: 1.25rem;
+  }
+
+  .reie-property-product-31-panel {
+    padding: 1.5rem;
+  }
+}
+
+@media (min-width: 640px) {
+  [data-testid='continue-your-decision'][data-djx-density='standard'] nav[aria-label='Continue your decision'] {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 768px) {
+  [data-testid='continue-your-decision'][data-djx-density='compact'] nav[aria-label='Continue your decision'] {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
 [data-testid='public-experience-footer-links'],
 [data-testid='public-trust-footer-links'] {
   display: grid;
