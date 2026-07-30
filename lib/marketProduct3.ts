@@ -181,7 +181,7 @@ export function buildStateMarketProduct3Experience({
     oneSentence:
       'Colorado market intelligence is most useful when customers compare city context, certified local guides, and search paths before choosing where to focus.',
     whatChanged:
-      'Market Product 3.0 reorganizes existing market facts into a visual decision report without adding providers, predictions, or source activation.',
+      'Market interpretation reorganizes existing market facts into a visual decision report without adding providers, predictions, or source activation.',
     whyItMatters:
       'Customers see the market story, available guide depth, and verification path before entering a dense list of city links.',
     buyerInterpretation:
@@ -220,7 +220,7 @@ export function buildStateMarketProduct3Experience({
     confidenceLayer: {
       sourceAuthority: 'Existing REIE market summaries and certified Decision Guide registry.',
       freshness: 'Current governed REIE market discovery snapshot',
-      completeness: 'Complete for Market Product 3.0 statewide discovery; city depth varies by certification state.',
+      completeness: 'Complete for statewide market discovery; city depth varies by certification state.',
       limitations: 'No AI, forecasting, valuation model, provider GIS, customer telemetry, or external source activation is used.',
       conflicts: 'No conflicting evidence is represented in the current repository data contract.',
       verification: 'Use the statewide pulse to choose a city path, then verify live listings, local guide depth, and property context.',
