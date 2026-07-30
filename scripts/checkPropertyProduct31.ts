@@ -1,0 +1,154 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+
+import { buildPropertyProduct31Model } from '../lib/propertyProduct31.js';
+
+function read(filePath: string) {
+  return fs.readFileSync(filePath, 'utf8');
+}
+
+function assertIncludes(source: string, value: string, message: string) {
+  assert(source.includes(value), message);
+}
+
+function assertNotIncludes(source: string, value: string, message: string) {
+  assert(!source.includes(value), message);
+}
+
+const propertyPage = read('app/properties/[id]/page.tsx');
+const component = read('components/PropertyProduct31Experience.tsx');
+const model = read('lib/propertyProduct31.ts');
+const packageJson = JSON.parse(read('package.json')) as { scripts?: Record<string, string> };
+
+assertIncludes(model, 'buildPropertyProduct31Model', 'Property Product 3.1 must expose a deterministic model builder.');
+assertIncludes(propertyPage, 'buildPropertyProduct31Model', 'Property page must build the Property Product 3.1 model from existing data.');
+assertIncludes(propertyPage, 'relatedListings,', 'Property Product 3.1 must reuse existing related-listing context.');
+assertIncludes(propertyPage, '<PropertyProduct31Experience model={propertyProduct31Model} />', 'Property page must render the Property Product 3.1 experience.');
+
+for (const expectedSurface of [
+  'data-testid="property-product-3-1-root"',
+  'data-testid="property-product-3-1-decision-profile-item"',
+  'data-testid="property-product-3-1-property-dna"',
+  'data-testid="property-product-3-1-confidence-layer"',
+  'data-testid="property-product-3-1-comparable-context"',
+  'data-testid="property-product-3-1-verification-checklist"',
+  'data-testid="property-product-3-1-mobile-decision-rail"',
+]) {
+  assertIncludes(component, expectedSurface, `Property Product 3.1 surface missing: ${expectedSurface}`);
+}
+
+for (const expectedBoundary of [
+  'data-property-product-3-1-ai="false"',
+  'data-property-product-3-1-gis="false"',
+  'data-property-product-3-1-provider-activation="false"',
+  'data-property-product-3-1-telemetry="false"',
+  'data-property-product-3-1-forecasting="false"',
+  'data-property-product-3-1-valuation-model="false"',
+  'data-property-product-3-1-rankings="false"',
+  'data-property-product-3-1-fixture-data="false"',
+  'data-property-dna-scoring="false"',
+  'data-property-dna-ranking="false"',
+  'data-property-dna-valuation="false"',
+  'data-property-dna-recommendation="false"',
+  'data-comparable-context-ranking="false"',
+  'data-comparable-context-valuation="false"',
+  'data-comparable-context-investment-advice="false"',
+]) {
+  assertIncludes(component, expectedBoundary, `Property Product 3.1 boundary missing: ${expectedBoundary}`);
+}
+
+assertIncludes(model, 'Existing public property data only', 'Trust boundary must stay tied to existing public property data.');
+assertIncludes(model, 'no AI', 'Trust boundary must preserve no-AI exclusion.');
+assertIncludes(model, 'no public GIS', 'Trust boundary must preserve no-public-GIS exclusion.');
+assertIncludes(model, 'no provider activation', 'Trust boundary must preserve provider exclusion.');
+assertIncludes(model, 'no fixture data', 'Trust boundary must preserve fixture exclusion.');
+
+const readyModel = buildPropertyProduct31Model({
+  address: '100 Main St',
+  city: 'Boulder',
+  neighborhood: 'Mapleton Hill',
+  propertyType: 'Residential',
+  status: 'Active',
+  price: 1200000,
+  sqft: 2400,
+  beds: 4,
+  baths: 3,
+  yearBuilt: 1976,
+  lotSize: 0.22,
+  altitude: 5400,
+  soilType: 'Front Range Mixed',
+  photoCount: 8,
+  relatedListings: [
+    {
+      id: 'related-1',
+      address: '102 Main St',
+      city: 'Boulder',
+      state: 'CO',
+      neighborhood: 'Mapleton Hill',
+      price: 1275000,
+      beds: 4,
+      baths: 3,
+      sqft: 2600,
+      status: 'Active',
+    },
+    {
+      id: 'related-2',
+      address: '104 Main St',
+      city: 'Boulder',
+      state: 'CO',
+      neighborhood: 'Whittier',
+      price: 980000,
+      beds: 3,
+      baths: 2,
+      sqft: 1900,
+      status: 'Active',
+    },
+  ],
+});
+
+assert.equal(readyModel.profile.length, 3, 'Decision profile must expose three concise synthesis items.');
+assert.equal(readyModel.dna.length, 4, 'Property DNA must expose four deterministic dimensions.');
+assert.equal(readyModel.confidence.facets.length, 4, 'Confidence layer must expose four customer-facing evidence facets.');
+assert.equal(readyModel.comparables.length, 2, 'Comparable Context Panel must reuse related properties without creating new source data.');
+assert.equal(readyModel.checklist.length, 4, 'Verification checklist must include financial, construction, market, and property categories.');
+assert(readyModel.comparables.every((item) => item.similarities.length > 0 && item.differences.length > 0), 'Comparable items must explain factual similarities and differences.');
+assert(readyModel.profile.some((item) => item.state === 'well-supported'), 'Complete facts must produce a well-supported profile signal.');
+
+const sparseModel = buildPropertyProduct31Model({
+  city: 'Broomfield',
+  propertyType: 'Residential',
+  price: 800000,
+});
+
+assert(sparseModel.profile.some((item) => item.state === 'incomplete'), 'Sparse data must surface incomplete evidence.');
+assert.equal(sparseModel.comparables.length, 0, 'Sparse related-listing context must not invent comparable properties.');
+
+for (const forbidden of [
+  'OpenAI',
+  'chatbot',
+  'recommendation engine',
+  'recommended offer',
+  'guaranteed',
+  'perfect home',
+  'preferred lender',
+  'pre-approved',
+  'document.cookie =',
+  'localStorage.setItem',
+  'sessionStorage.setItem',
+  'NON_PRODUCTION_FIXTURE',
+  'GIS Sprint 9',
+]) {
+  assertNotIncludes([propertyPage, component, model].join('\n'), forbidden, `Property Product 3.1 must not include forbidden activation or certainty copy: ${forbidden}`);
+}
+
+assert(!propertyPage.match(/INSERT INTO|UPDATE "|DELETE FROM|prisma\.[a-zA-Z]+\.create|prisma\.[a-zA-Z]+\.update|prisma\.[a-zA-Z]+\.delete/), 'Property page must remain read-only.');
+assert(!component.match(/fetch\(|XMLHttpRequest|navigator\.sendBeacon/), 'Property Product 3.1 component must not introduce API calls or telemetry.');
+assert(!model.match(/fetch\(|prisma\.|createClient\(/), 'Property Product 3.1 model must not introduce data fetching, provider calls, or Prisma usage.');
+
+assert.equal(
+  packageJson.scripts?.['check:property-product-3-1'],
+  'npm run worker:build && node dist/scripts/checkPropertyProduct31.js',
+  'package.json must expose Property Product 3.1 certification check.',
+);
+
+console.log('[property-product-3-1] ok: decision profile, Property DNA, confidence layer, comparable context, verification checklist, mobile rail, and prohibited boundaries verified.');

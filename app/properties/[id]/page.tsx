@@ -24,6 +24,7 @@ import {
 import EquityVision from '@/components/EquityVision';
 import FinancingConfidenceEducation from '@/components/FinancingConfidenceEducation';
 import PropertyInquiryForm from '@/components/PropertyInquiryForm';
+import PropertyProduct31Experience from '@/components/PropertyProduct31Experience';
 import RelatedPropertyLinks from '@/components/RelatedPropertyLinks';
 import ResilientListingImage from '@/components/ResilientListingImage';
 import PropertyLinks from '@/components/internal-links/PropertyLinks';
@@ -36,6 +37,7 @@ import { getDisplaySafeListingPhotoUrl, getListingFallbackPhotoUrl, getListingPh
 import { neighborhoods } from '@/lib/neighborhoods';
 import { prisma } from '@/lib/prisma';
 import { buildPropertyDecisionWorkspace } from '@/lib/property/propertyDecisionWorkspace';
+import { buildPropertyProduct31Model } from '@/lib/propertyProduct31';
 import { LISTING_ADVERTISING_CLASSIFICATION } from '@/lib/publicTrust';
 import type { FAQItem } from '@/lib/schema/faqSchema';
 import { generateFAQs } from '@/lib/schema/generateFAQs';
@@ -823,6 +825,26 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
     marketPathwayLabel: marketPathway.label,
     marketPathwayHref: marketPathway.href,
   });
+  const propertyProduct31Model = buildPropertyProduct31Model({
+    address: property.address,
+    city: property.city,
+    neighborhood: property.neighborhood,
+    propertyType: property.propertyType,
+    status: property.status,
+    price: property.price,
+    sqft: property.sqft,
+    beds: property.beds,
+    baths: property.baths,
+    yearBuilt: property.yearBuilt,
+    lotSize: property.lotSize,
+    updatedAt: property.updatedAt,
+    lastIntelligenceSync: property.lastIntelligenceSync,
+    hasPolybutyleneRisk: property.hasPolybutyleneRisk,
+    soilType: property.soilType,
+    altitude: property.altitude,
+    photoCount: property.photos.length,
+    relatedListings,
+  });
 
   return (
     <main className="min-h-screen overflow-y-auto bg-[#070b10] text-white">
@@ -1096,6 +1118,8 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
 
         <div className="reie-property-detail-grid grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
           <div className="space-y-6">
+            <PropertyProduct31Experience model={propertyProduct31Model} />
+
             <section
               className="overflow-hidden rounded-[8px] border border-cyan-100/18 bg-[#0d141c]"
               data-testid="reie-property-buyer-confidence-framework"
