@@ -84,7 +84,7 @@ export default function MarketHomesLinks({
           <Link
             key={type.slug}
             href={href}
-            className="group bg-black p-5 transition-colors hover:bg-white/[0.04]"
+            className="reie-market-action-link group bg-black p-5 transition-colors hover:bg-white/[0.04]"
             data-testid="reie-market-homes-search-link"
             data-market-homes-link-index={index}
             data-market-homes-link-kind="search"
@@ -112,7 +112,7 @@ export default function MarketHomesLinks({
         {brief ? (
           <Link
             href={brief.href}
-            className="group bg-black p-5 transition-colors hover:bg-white/[0.04]"
+            className="reie-market-action-link group bg-black p-5 transition-colors hover:bg-white/[0.04]"
             data-testid="reie-market-homes-brief-link"
             data-market-homes-link-index={searchLinks.length}
             data-market-homes-link-kind="brief"

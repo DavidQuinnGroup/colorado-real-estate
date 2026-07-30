@@ -122,7 +122,7 @@ export default function MarketIndexPage() {
 
   return (
     <main
-      className="min-h-screen bg-[#030303] text-white"
+      className="market-surface min-h-screen bg-[#030303] text-white"
       data-testid="cep-market-discovery-page"
       data-cep-market-count={marketSummaries.length}
       data-cep-measurement-ready="true"
@@ -141,16 +141,37 @@ export default function MarketIndexPage() {
         data-market-v8-telemetry="false"
       >
         <div className="mx-auto max-w-6xl">
-          <p className="text-[10px] font-black uppercase tracking-[0.28em] text-cyan-100/76">Colorado Market Decision Workspace</p>
+          <p className="text-[10px] font-black uppercase tracking-[0.28em] text-cyan-100/76">Colorado Market Intelligence</p>
           <div className="mt-4 grid gap-5 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
             <div>
-              <h2 className="text-3xl font-black uppercase leading-tight tracking-normal text-white md:text-5xl">
+              <h1 className="text-3xl font-black uppercase leading-tight tracking-normal text-white md:text-5xl">
                 {marketDecisionWorkspace.headline}
-              </h2>
+              </h1>
               <p className="mt-4 max-w-3xl text-sm leading-7 text-white/58">{marketDecisionWorkspace.orientation}</p>
               <p className="mt-4 rounded-[6px] bg-cyan-100/[0.07] p-3 text-xs leading-5 text-white/50">
                 {marketDecisionWorkspace.trustBoundary}
               </p>
+              <div className="mt-6 flex flex-wrap gap-3">
+                <Link
+                  href="/search"
+                  className="market-primary-cta"
+                  {...getJourneyMeasurementAttributes({
+                    surface: 'market-index-orientation',
+                    stage: 'market',
+                    action: 'start-search',
+                    destination: 'search',
+                  })}
+                >
+                  <Search size={15} aria-hidden="true" />
+                  Search with market context
+                </Link>
+                <Link
+                  href="#market-core-synthesis"
+                  className="market-secondary-cta"
+                >
+                  Review the signals
+                </Link>
+              </div>
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2">
@@ -181,7 +202,13 @@ export default function MarketIndexPage() {
         </div>
       </section>
 
-      <section className="px-5 pb-8 pt-10 sm:px-8 lg:px-12" data-testid="market-djx-continuity">
+      <section id="market-core-synthesis" className="px-5 py-12 sm:px-8 lg:px-12">
+        <div className="mx-auto max-w-6xl">
+          <MarketProduct3VisualIntelligence experience={marketProduct3Experience} />
+        </div>
+      </section>
+
+      <section className="px-5 pb-8 pt-2 sm:px-8 lg:px-12" data-testid="market-djx-continuity">
         <div className="mx-auto max-w-6xl">
           <ContinueYourDecision
             stage="market"
@@ -198,19 +225,13 @@ export default function MarketIndexPage() {
         </div>
       </section>
 
-      <section className="px-5 py-12 sm:px-8 lg:px-12">
-        <div className="mx-auto max-w-6xl">
-          <MarketProduct3VisualIntelligence experience={marketProduct3Experience} />
-        </div>
-      </section>
-
       <section className="px-5 py-16 sm:px-8 lg:px-12">
         <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[1fr_0.8fr] lg:items-end">
           <div>
             <p className="text-[11px] font-black uppercase tracking-[0.28em] text-cyan-100">Colorado Market Intelligence</p>
-            <h1 className="mt-6 max-w-4xl text-5xl font-black uppercase leading-[0.95] tracking-normal text-white sm:text-6xl">
+            <h2 className="mt-6 max-w-4xl text-5xl font-black uppercase leading-[0.95] tracking-normal text-white sm:text-6xl">
               Choose the market context before the next property decision.
-            </h1>
+            </h2>
             <p className="mt-7 max-w-2xl text-base leading-8 text-white/62 sm:text-lg">
               Move from search into city market reports, neighborhood context, property review, or seller strategy without changing the
               certified search, property, inquiry, or evidence behavior.
@@ -218,7 +239,7 @@ export default function MarketIndexPage() {
             <div className="mt-10 flex flex-wrap gap-3" data-testid="cep-market-discovery-primary-actions">
               <Link
                 href="/search"
-                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-[6px] bg-cyan-100 px-5 py-3 text-xs font-black uppercase tracking-[0.14em] text-[#061017] transition hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-200"
+                className="market-primary-cta"
                 {...getJourneyMeasurementAttributes({
                   surface: 'market-index-primary-actions',
                   stage: 'market',

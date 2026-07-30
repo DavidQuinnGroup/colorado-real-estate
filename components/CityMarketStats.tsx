@@ -114,9 +114,9 @@ export default function CityMarketStats({ stats, homeAge = 30 }: CityMarketStats
       <div className="border-b border-white/5 bg-white/[0.02] p-8">
         <div className="mb-2 flex items-center gap-3">
           <Activity className="h-4 w-4 text-[#00ff80]" />
-          <span className="text-[10px] font-black uppercase tracking-[0.4em] text-[#00ff80]">REIE Market Signal Layer</span>
+          <span className="text-[10px] font-black uppercase tracking-[0.4em] text-[#00ff80]">Market indicators</span>
         </div>
-        <h2 className="text-4xl font-black uppercase italic tracking-tight text-white">City Intelligence Dashboard</h2>
+        <h2 className="text-4xl font-black uppercase italic tracking-tight text-white">Supporting market facts</h2>
         <p className="mt-2 text-xs uppercase tracking-widest text-white/40">
           Price context, construction questions, inventory posture, and verification prompts.
         </p>
@@ -133,7 +133,7 @@ export default function CityMarketStats({ stats, homeAge = 30 }: CityMarketStats
         <ModeButton
           icon={<ShieldCheck size={18} />}
           isActive={view === 'strategy'}
-          label="Offer Strategy"
+          label="Verification Questions"
           mode="strategy"
           onClick={() => setView('strategy')}
         />
@@ -160,7 +160,7 @@ export default function CityMarketStats({ stats, homeAge = 30 }: CityMarketStats
                 label="Market Signal"
                 metric="market-health"
                 value={marketModel.marketPressure}
-                note={`${marketModel.marketPressure} negotiation climate.`}
+                note={`${marketModel.marketPressure} current market posture.`}
               />
               <StatRow
                 icon={<CalendarClock size={18} />}
@@ -203,15 +203,15 @@ export default function CityMarketStats({ stats, homeAge = 30 }: CityMarketStats
             data-city-market-strategy-inspection-reserve={Math.round(marketModel.inspectionReserve)}
           >
             <div className="space-y-4">
-              <CostRow label="Estimated Monthly Carry Exposure" metric="monthly-carry" value={formatCurrency(marketModel.monthlyCarry)} />
-              <CostRow label="Annual Ownership Friction" metric="annual-carry" value={formatCurrency(marketModel.annualCarry)} />
+              <CostRow label="Estimated Monthly Cost Context" metric="monthly-carry" value={formatCurrency(marketModel.monthlyCarry)} />
+              <CostRow label="Annual Ownership Cost Context" metric="annual-carry" value={formatCurrency(marketModel.annualCarry)} />
               <CostRow label="GC Inspection Reserve" metric="inspection-reserve" value={formatCurrency(marketModel.inspectionReserve)} />
               <div
                 className="flex justify-between border-t border-white/10 pt-4 text-[#00ff80]"
                 data-testid="reie-city-market-leverage"
                 data-city-market-negotiation-context={marketModel.marketPressure}
               >
-                <span className="text-[10px] font-black uppercase tracking-widest">Negotiation Context</span>
+                <span className="text-[10px] font-black uppercase tracking-widest">Market Context</span>
                 <span className="text-xl font-black italic">{marketModel.marketPressure}</span>
               </div>
             </div>
@@ -220,7 +220,7 @@ export default function CityMarketStats({ stats, homeAge = 30 }: CityMarketStats
               <section className="border border-white/10 bg-white/[0.03] p-6">
                 <div className="mb-2 flex items-center gap-3 text-white">
                   <Zap size={16} className="text-[#00ff80]" />
-                  <span className="text-[10px] font-black uppercase tracking-widest">DQG Strategy Note</span>
+                  <span className="text-[10px] font-black uppercase tracking-widest">Verification Note</span>
                 </div>
                 <p className="text-[10px] italic leading-relaxed text-white/45">
                   Use market context to frame timing questions, then use property condition, records, and professional review to frame next steps.
@@ -229,9 +229,9 @@ export default function CityMarketStats({ stats, homeAge = 30 }: CityMarketStats
               <button
                 className="flex w-full items-center justify-center gap-2 bg-[#00ff80] py-4 text-[10px] font-black uppercase italic tracking-[0.3em] text-black transition-all hover:bg-white"
                 data-testid="reie-city-market-strategy-button"
-                data-city-market-strategy-button-label="Build Offer Strategy"
+                data-city-market-strategy-button-label="Review Verification Questions"
               >
-                Build Offer Strategy
+                Review Verification Questions
               </button>
             </div>
           </div>
@@ -244,7 +244,7 @@ export default function CityMarketStats({ stats, homeAge = 30 }: CityMarketStats
       >
         <ShieldCheck size={14} className="shrink-0 text-[#00ff80]/50" />
         <p className="text-[9px] font-bold uppercase italic leading-relaxed tracking-[0.2em] text-white/25">
-          David Quinn Group evaluates market data through construction context, access questions, and verification-oriented negotiation context.
+          David Quinn Group evaluates market data through construction context, access questions, and verification-oriented market context.
         </p>
       </div>
     </div>

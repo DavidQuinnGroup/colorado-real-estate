@@ -883,10 +883,85 @@ html, body {
 
 .reie-market-action-link {
   color: #ffffff;
+  border-color: rgba(207, 250, 254, 0.16);
   text-decoration: none;
 }
 
 .reie-market-action-link:hover {
+  color: #cffafe;
+}
+
+.market-surface a {
+  color: inherit;
+  border-color: rgba(207, 250, 254, 0.16);
+  text-decoration: none;
+}
+
+.market-surface a:hover {
+  color: #cffafe;
+}
+
+.market-surface a:focus-visible,
+.reie-market-action-link:focus-visible,
+.market-product-3__cta:focus-visible,
+.market-primary-cta:focus-visible,
+.market-secondary-cta:focus-visible {
+  outline: 2px solid rgba(207, 250, 254, 0.86);
+  outline-offset: 4px;
+}
+
+.market-surface [data-testid="reie-financing-confidence-education"] a {
+  color: rgba(255, 255, 255, 0.72);
+  border-color: rgba(207, 250, 254, 0.14);
+}
+
+.market-surface [data-testid="reie-financing-confidence-education"] a:hover {
+  color: #cffafe;
+  border-color: rgba(207, 250, 254, 0.32);
+}
+
+.market-primary-cta,
+.market-secondary-cta {
+  display: inline-flex;
+  min-height: 3rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  border-radius: 6px;
+  padding: 0.85rem 1.1rem;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease;
+}
+
+.market-primary-cta,
+.market-surface .market-primary-cta {
+  background: #cffafe;
+  color: #061017;
+}
+
+.market-primary-cta:hover,
+.market-surface .market-primary-cta:hover {
+  background: #ffffff;
+  color: #061017;
+}
+
+.market-secondary-cta,
+.market-surface .market-secondary-cta {
+  border: 1px solid rgba(207, 250, 254, 0.18);
+  background: rgba(255, 255, 255, 0.055);
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.market-secondary-cta:hover,
+.market-surface .market-secondary-cta:hover {
+  border-color: rgba(207, 250, 254, 0.36);
+  background: rgba(207, 250, 254, 0.08);
   color: #cffafe;
 }
 
@@ -3175,6 +3250,7 @@ html, body {
 
 .market-product-3__summary,
 .market-product-3__pulse,
+.market-product-3__inventory,
 .market-product-3__report,
 .market-product-3__confidence,
 .market-product-3__verify {
@@ -3184,6 +3260,38 @@ html, body {
 
 .market-product-3__summary {
   padding: 1.25rem;
+}
+
+.market-product-3__confidence-strip {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.market-product-3__confidence-strip > div {
+  border-radius: 8px;
+  border: 1px solid rgba(207, 250, 254, 0.12);
+  background: rgba(0, 0, 0, 0.18);
+  padding: 1rem;
+}
+
+.market-product-3__confidence-strip span,
+.market-product-3__inventory-grid span {
+  display: block;
+  color: rgba(207, 250, 254, 0.72);
+  font-size: 0.62rem;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.market-product-3__confidence-strip strong,
+.market-product-3__inventory-grid strong {
+  display: block;
+  margin-top: 0.45rem;
+  color: #ffffff;
+  font-size: 0.92rem;
+  font-weight: 900;
+  line-height: 1.35;
 }
 
 .market-product-3__summary strong {
@@ -3197,6 +3305,7 @@ html, body {
 }
 
 .market-product-3__pulse,
+.market-product-3__inventory,
 .market-product-3__report {
   padding: clamp(1.25rem, 3vw, 2rem);
 }
@@ -3214,28 +3323,8 @@ html, body {
   color: #cffafe;
 }
 
-.market-product-3__pulse-bars {
-  display: grid;
-  gap: 0.65rem;
-  margin-top: 1.5rem;
-}
-
-.market-product-3__pulse-bars div {
-  overflow: hidden;
-  height: 0.65rem;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.market-product-3__pulse-bars span {
-  display: block;
-  width: var(--pulse-width);
-  height: 100%;
-  border-radius: inherit;
-  background: linear-gradient(90deg, #cffafe, #f8fafc);
-}
-
 .market-product-3__factor-list,
+.market-product-3__inventory-grid,
 .market-product-3__report,
 .market-product-3__confidence dl {
   display: grid;
@@ -3244,6 +3333,15 @@ html, body {
 
 .market-product-3__factor-list {
   margin-top: 1.5rem;
+}
+
+.market-product-3__inventory-grid {
+  margin-top: 1.5rem;
+}
+
+.market-product-3__inventory-grid > div {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 1rem;
 }
 
 .market-product-3__factor-list > div {
@@ -3296,6 +3394,15 @@ html, body {
   letter-spacing: 0.12em;
   text-decoration: none;
   text-transform: uppercase;
+}
+
+.market-surface .market-product-3__cta {
+  color: #071017;
+}
+
+.market-surface .market-product-3__cta:hover {
+  color: #071017;
+  background: #cffafe;
 }
 
 .market-product-3__cta svg {
@@ -3365,6 +3472,10 @@ html, body {
 @media (min-width: 768px) {
   .market-product-3__footer {
     grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .market-product-3__confidence-strip {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 

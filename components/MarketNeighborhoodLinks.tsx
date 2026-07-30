@@ -93,7 +93,7 @@ export default function MarketNeighborhoodLinks({
           >
             <Link
               href={href}
-              className="group block"
+              className="reie-market-action-link group block"
               data-testid="reie-market-neighborhood-link"
               data-market-neighborhood-link-href={href}
             >
@@ -134,7 +134,7 @@ export default function MarketNeighborhoodLinks({
             {brief ? (
               <Link
                 href={brief.href}
-                className="group mt-5 block border-t border-white/10 pt-4 transition-colors hover:border-[#00ff80]/50"
+                className="reie-market-action-link group mt-5 block border-t border-white/10 pt-4 transition-colors hover:border-[#00ff80]/50"
                 data-testid="reie-market-neighborhood-brief-link"
                 data-market-neighborhood-brief-title={brief.title}
                 data-market-neighborhood-brief-href={brief.href}

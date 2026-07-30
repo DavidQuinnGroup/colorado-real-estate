@@ -9,6 +9,14 @@ type MarketProduct3VisualIntelligenceProps = {
 
 export default function MarketProduct3VisualIntelligence({ experience }: MarketProduct3VisualIntelligenceProps) {
   const rich = experience.authorizedRichInterpretation;
+  const inventoryFactor = experience.pulseFactors.find((factor) => factor.label === 'Inventory');
+  const paceFactor = experience.pulseFactors.find((factor) => factor.label === 'Pace');
+  const priceFactor = experience.pulseFactors.find((factor) => factor.label === 'Price Context' || factor.label === 'Pricing Context');
+  const confidenceSummary = [
+    { label: 'Evidence state', value: rich ? 'Complete public interpretation' : 'Sparse foundation state' },
+    { label: 'Freshness', value: experience.confidenceLayer.freshness },
+    { label: 'Completeness', value: experience.confidenceLayer.completeness },
+  ];
 
   return (
     <section
@@ -30,7 +38,7 @@ export default function MarketProduct3VisualIntelligence({ experience }: MarketP
     >
       <div className="market-product-3__header">
         <div>
-          <p className="market-product-3__eyebrow">Market Product 3.0</p>
+          <p className="market-product-3__eyebrow">Market interpretation</p>
           <h2 id={`market-product-3-${experience.scope}-heading`}>{experience.oneSentence}</h2>
           <p>{experience.whyItMatters}</p>
         </div>
@@ -41,21 +49,23 @@ export default function MarketProduct3VisualIntelligence({ experience }: MarketP
         </div>
       </div>
 
+      <div className="market-product-3__confidence-strip" data-testid="market-product-3-confidence-summary">
+        {confidenceSummary.map((item) => (
+          <div key={item.label}>
+            <span>{item.label}</span>
+            <strong>{item.value}</strong>
+          </div>
+        ))}
+      </div>
+
       <div className="market-product-3__grid">
         <article className="market-product-3__pulse" data-testid="market-product-3-market-pulse">
           <div className="market-product-3__section-title">
             <BarChart3 aria-hidden="true" />
             <div>
               <p>Market Pulse</p>
-              <h3>Condition, direction, and evidence are separated.</h3>
+              <h3>Current facts shape the interpretation.</h3>
             </div>
-          </div>
-          <div className="market-product-3__pulse-bars" aria-hidden="true">
-            {experience.pulseFactors.map((factor, index) => (
-              <div key={factor.label} style={{ '--pulse-width': `${88 - index * 12}%` } as React.CSSProperties}>
-                <span />
-              </div>
-            ))}
           </div>
           <div className="market-product-3__factor-list">
             {experience.pulseFactors.map((factor) => (
@@ -65,6 +75,33 @@ export default function MarketProduct3VisualIntelligence({ experience }: MarketP
                 <p>{factor.interpretation}</p>
               </div>
             ))}
+          </div>
+        </article>
+
+        <article className="market-product-3__inventory" data-testid="market-product-3-inventory-horizon">
+          <div className="market-product-3__section-title">
+            <BarChart3 aria-hidden="true" />
+            <div>
+              <p>Inventory Horizon</p>
+              <h3>Use current selection as context, not a forecast.</h3>
+            </div>
+          </div>
+          <div className="market-product-3__inventory-grid">
+            <div>
+              <span>Current selection</span>
+              <strong>{inventoryFactor?.exactValue ?? 'Current inventory signal'}</strong>
+              <p>{inventoryFactor?.interpretation ?? 'Current inventory should be verified through Search before relying on availability.'}</p>
+            </div>
+            <div>
+              <span>Pace context</span>
+              <strong>{paceFactor?.exactValue ?? experience.condition}</strong>
+              <p>{paceFactor?.interpretation ?? 'Pace is used for preparation, not prediction.'}</p>
+            </div>
+            <div>
+              <span>Price context</span>
+              <strong>{priceFactor?.exactValue ?? experience.condition}</strong>
+              <p>{priceFactor?.interpretation ?? 'Price context requires property-level verification.'}</p>
+            </div>
           </div>
         </article>
 
@@ -116,7 +153,7 @@ export default function MarketProduct3VisualIntelligence({ experience }: MarketP
 
       <div className="market-product-3__table" data-testid="market-product-3-accessible-data">
         <table>
-          <caption>Market Product 3 visual intelligence evidence</caption>
+          <caption>Market interpretation evidence</caption>
           <thead>
             <tr>
               <th scope="col">Signal</th>

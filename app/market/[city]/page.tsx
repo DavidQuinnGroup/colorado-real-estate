@@ -205,7 +205,7 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
   };
 
   return (
-    <main className="min-h-screen bg-[#030303] text-white">
+    <main className="market-surface min-h-screen bg-[#030303] text-white">
       <script
         type="application/ld+json"
         data-testid="reie-city-market-schema"
@@ -297,7 +297,7 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Link
                 href={`/search?city=${encodeURIComponent(cityData.name)}`}
-                className="inline-flex min-h-12 items-center justify-center gap-3 rounded-[6px] bg-cyan-100 px-5 py-3 text-xs font-black uppercase tracking-[0.16em] text-black no-underline transition hover:bg-white focus:outline-none focus:ring-2 focus:ring-cyan-100/70"
+                className="market-primary-cta"
                 data-testid={`${cityDecisionGuide.key}-decision-guide-search-cta`}
                 {...getJourneyMeasurementAttributes({
                   surface: `${cityDecisionGuide.key}-decision-guide-hero`,
@@ -311,7 +311,7 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
               </Link>
               <Link
                 href={`#${cityDecisionGuide.neighborhoodSectionId}`}
-                className="inline-flex min-h-12 items-center justify-center gap-3 rounded-[6px] bg-white/[0.07] px-5 py-3 text-xs font-black uppercase tracking-[0.16em] text-white no-underline transition hover:bg-white/12 focus:outline-none focus:ring-2 focus:ring-cyan-100/70"
+                className="market-secondary-cta"
                 data-testid={`${cityDecisionGuide.key}-decision-guide-neighborhoods-cta`}
               >
                 <MapPinned className="h-4 w-4" />
@@ -347,6 +347,8 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
       </section>
 
       <div className="mx-auto max-w-6xl space-y-16 px-6 pb-24 pt-10">
+        <MarketProduct3VisualIntelligence experience={marketProduct3Experience} />
+
         <ContinueYourDecision
           stage="market"
           cameFrom="Market discovery, search, or a neighborhood page"
@@ -359,8 +361,6 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
             { label: 'All Markets', href: '/market', note: 'Broaden comparison' },
           ]}
         />
-
-        <MarketProduct3VisualIntelligence experience={marketProduct3Experience} />
 
         {cityDecisionGuide ? (
           <>
