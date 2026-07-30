@@ -431,7 +431,7 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
   });
 
   return (
-    <main className="min-h-screen bg-[#050505] font-inter text-white">
+    <main className="reie-neighborhood-page min-h-screen bg-[#050505] font-inter text-white">
       <script
         type="application/ld+json"
         data-testid="reie-neighborhood-schema"
@@ -460,7 +460,7 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
       <FAQSchema faqs={neighborhoodFaqs} pageUrl={canonicalUrl} />
 
       <section
-        className="relative overflow-hidden bg-[radial-gradient(circle_at_78%_10%,rgba(207,250,254,0.14),transparent_30%),linear-gradient(180deg,#081117,#050505_82%)] px-6 py-12 md:px-12 md:py-16"
+        className="reie-neighborhood-hero relative overflow-hidden bg-[radial-gradient(circle_at_78%_10%,rgba(207,250,254,0.14),transparent_30%),linear-gradient(180deg,#081117,#050505_82%)] px-6 py-12 md:px-12 md:py-16"
         data-testid="neighborhood-product-2-hero"
         data-neighborhood-product-2="true"
         data-neighborhood-product-2-fair-housing="neutral-non-ranking"
@@ -470,7 +470,7 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
       >
         <div className="absolute inset-0 z-10 bg-gradient-to-t from-[#050505] via-transparent to-transparent" />
         <div className="relative z-20 mx-auto w-full max-w-7xl">
-          <div className="mb-5 flex flex-wrap items-center gap-3">
+          <div className="reie-neighborhood-hero-eyebrow mb-5 flex flex-wrap items-center gap-3">
             <span className="h-2 w-2 rounded-full bg-cyan-100 shadow-[0_0_18px_rgba(207,250,254,0.45)]" />
             <span className="text-[10px] font-black uppercase tracking-[0.32em] text-cyan-100/78">Neighborhood Decision Workspace</span>
             <span className="rounded-full bg-white/[0.08] px-3 py-1 text-[9px] font-black uppercase tracking-[0.18em] text-white/50">
@@ -478,7 +478,7 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
             </span>
           </div>
 
-          <div className="grid gap-10 lg:grid-cols-[1.06fr_0.94fr] lg:items-end">
+          <div className="reie-neighborhood-hero-layout grid gap-10 lg:grid-cols-[1.06fr_0.94fr] lg:items-end">
             <div>
               <h1 className="max-w-5xl text-5xl font-black uppercase leading-[0.9] tracking-normal md:text-7xl">
                 {neighborhood.name}
@@ -490,10 +490,10 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
               >
                 {neighborhoodStory}
               </p>
-              <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+              <div className="reie-neighborhood-hero-actions mt-7 flex flex-col gap-3 sm:flex-row">
                 <Link
                   href={searchHref}
-                  className="inline-flex min-h-12 items-center justify-center gap-2 rounded-[6px] bg-cyan-100 px-5 py-3 text-[11px] font-black uppercase tracking-[0.14em] text-[#071017] no-underline transition hover:bg-white focus:outline-none focus:ring-2 focus:ring-cyan-100/70"
+                  className="reie-neighborhood-primary-action inline-flex min-h-12 items-center justify-center gap-2 rounded-[6px] bg-cyan-100 px-5 py-3 text-[11px] font-black uppercase tracking-[0.14em] text-[#071017] no-underline transition hover:bg-white focus:outline-none focus:ring-2 focus:ring-cyan-100/70"
                   data-testid="neighborhood-product-2-primary-search"
                   {...getJourneyMeasurementAttributes({
                     surface: 'neighborhood-product-2-hero',
@@ -507,7 +507,7 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
                 </Link>
                 <Link
                   href={cityMarketHref}
-                  className="inline-flex min-h-12 items-center justify-center gap-2 rounded-[6px] bg-white/[0.08] px-5 py-3 text-[11px] font-black uppercase tracking-[0.14em] text-white no-underline transition hover:bg-white/[0.14] focus:outline-none focus:ring-2 focus:ring-cyan-100/70"
+                  className="reie-neighborhood-secondary-action inline-flex min-h-12 items-center justify-center gap-2 rounded-[6px] bg-white/[0.08] px-5 py-3 text-[11px] font-black uppercase tracking-[0.14em] text-white no-underline transition hover:bg-white/[0.14] focus:outline-none focus:ring-2 focus:ring-cyan-100/70"
                   {...getJourneyMeasurementAttributes({
                     surface: 'neighborhood-product-2-hero',
                     stage: 'market',
@@ -521,7 +521,7 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
               </div>
             </div>
 
-            <div className="rounded-[8px] bg-white/[0.07] p-5 shadow-[0_24px_90px_rgba(0,0,0,0.28)]">
+            <div className="reie-neighborhood-hero-card rounded-[8px] bg-white/[0.07] p-5 shadow-[0_24px_90px_rgba(0,0,0,0.28)]">
               <p className="text-[10px] font-black uppercase tracking-[0.22em] text-cyan-100/72">What to understand first</p>
               <p className="mt-4 text-2xl font-black uppercase leading-tight tracking-normal text-white">
                 Character first. Then trade-offs. Then property evidence.
@@ -532,7 +532,7 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
                   ['Housing pattern', neighborhood.era],
                   ['Verify early', `${neighborhood.soilType} / ${neighborhood.insuranceComplexity} insurance`],
                 ].map(([label, value]) => (
-                  <div key={label} className="rounded-[6px] bg-black/20 p-4">
+                  <div key={label} className="reie-neighborhood-hero-fact rounded-[6px] bg-black/20 p-4">
                     <p className="text-[9px] font-black uppercase tracking-[0.18em] text-white/35">{label}</p>
                     <p className="mt-2 text-sm font-black uppercase leading-5 tracking-tight text-white">{value}</p>
                   </div>
@@ -541,23 +541,23 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
             </div>
           </div>
 
-          <div className="mt-8 grid gap-3 md:grid-cols-4">
-            <div className="rounded-[8px] bg-white/[0.055] p-4">
+          <div className="reie-neighborhood-hero-metrics mt-8 grid gap-3 md:grid-cols-4">
+            <div className="reie-neighborhood-hero-metric rounded-[8px] bg-white/[0.055] p-4">
               <p className="mb-2 text-[9px] font-black uppercase tracking-[0.18em] text-white/36">Property Path</p>
               <p className="text-lg font-black uppercase tracking-tight text-white">{getInventoryDisplayValue(inventoryState)}</p>
               <p className="mt-2 text-[9px] font-black uppercase tracking-[0.18em] text-cyan-100/62">
                 {getInventorySourceLabel(inventoryState.source)}
               </p>
             </div>
-            <div className="rounded-[8px] bg-white/[0.055] p-4">
+            <div className="reie-neighborhood-hero-metric rounded-[8px] bg-white/[0.055] p-4">
               <p className="mb-2 text-[9px] font-black uppercase tracking-[0.18em] text-white/36">Evidence</p>
               <p className="text-lg font-black uppercase tracking-tight text-white">{neighborhoodProduct3Model.evidenceState}</p>
             </div>
-            <div className="rounded-[8px] bg-white/[0.055] p-4">
+            <div className="reie-neighborhood-hero-metric rounded-[8px] bg-white/[0.055] p-4">
               <p className="mb-2 text-[9px] font-black uppercase tracking-[0.18em] text-white/36">Attention</p>
               <p className="text-lg font-black uppercase tracking-tight text-white">{neighborhood.fireRisk}</p>
             </div>
-            <div className="rounded-[8px] bg-white/[0.055] p-4">
+            <div className="reie-neighborhood-hero-metric rounded-[8px] bg-white/[0.055] p-4">
               <p className="mb-2 text-[9px] font-black uppercase tracking-[0.18em] text-white/36">Timing</p>
               <p className="text-lg font-black uppercase tracking-tight text-white">{marketExperience.timingLabel}</p>
             </div>
@@ -575,7 +575,9 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-6 pb-4 pt-10 md:px-12" data-testid="neighborhood-djx-continuity">
+      <NeighborhoodProduct3Experience model={neighborhoodProduct3Model} />
+
+      <section className="reie-neighborhood-continuation mx-auto max-w-7xl px-6 pb-4 pt-10 md:px-12" data-testid="neighborhood-djx-continuity">
         <ContinueYourDecision
           stage="neighborhood"
           cameFrom={`${neighborhood.city} market context or property search`}
@@ -590,9 +592,7 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
         />
       </section>
 
-      <NeighborhoodProduct3Experience model={neighborhoodProduct3Model} />
-
-      <section className="mx-auto grid max-w-7xl gap-8 px-6 py-10 md:grid-cols-12 md:p-12">
+      <section className="reie-neighborhood-context mx-auto grid max-w-7xl gap-8 px-6 py-10 md:grid-cols-12 md:p-12">
         <section
           className="md:col-span-12"
           data-testid="neighborhood-product-2-decision-framework"
@@ -618,7 +618,7 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
               <Link
                 key={item.label}
                 href={item.href}
-                className="group flex min-h-[240px] flex-col rounded-[8px] bg-white/[0.045] p-5 text-white no-underline transition hover:bg-white/[0.07] focus:outline-none focus:ring-2 focus:ring-cyan-100/70"
+                className="reie-neighborhood-framework-link group flex min-h-[240px] flex-col rounded-[8px] bg-white/[0.045] p-5 text-white no-underline transition hover:bg-white/[0.07] focus:outline-none focus:ring-2 focus:ring-cyan-100/70"
                 data-testid="neighborhood-product-2-framework-item"
                 data-neighborhood-product-2-framework-step={item.label}
               >
@@ -638,7 +638,7 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
 
         <section
           id="neighborhood-verification-questions"
-          className="grid gap-6 rounded-[8px] bg-[#071017]/70 p-5 md:col-span-12 md:grid-cols-[0.78fr_1.22fr] md:p-8"
+              className="reie-neighborhood-verification grid gap-6 rounded-[8px] bg-[#071017]/70 p-5 md:col-span-12 md:grid-cols-[0.78fr_1.22fr] md:p-8"
           data-testid="neighborhood-product-2-verification"
           data-neighborhood-product-2-verification-count={verificationQuestions.length}
         >
@@ -651,7 +651,7 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
           </div>
           <div className="grid gap-3">
             {verificationQuestions.map((question, index) => (
-              <article key={question} className="rounded-[8px] bg-black/22 p-5">
+                <article key={question} className="reie-neighborhood-context-card rounded-[8px] bg-black/22 p-5">
                 <p className="text-[9px] font-black uppercase tracking-[0.18em] text-white/32">Question {index + 1}</p>
                 <p className="mt-3 text-sm font-semibold leading-7 text-white/72">{question}</p>
               </article>
@@ -660,7 +660,7 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
         </section>
 
         <section
-          className="rounded-[8px] bg-cyan-100/[0.055] p-5 shadow-[0_24px_80px_rgba(0,0,0,0.22)] md:col-span-12 md:p-8"
+          className="reie-neighborhood-market-workspace rounded-[8px] bg-cyan-100/[0.055] p-5 shadow-[0_24px_80px_rgba(0,0,0,0.22)] md:col-span-12 md:p-8"
           data-testid="reie-market-v8-decision-workspace"
           data-market-v8-scope="neighborhood"
           data-market-v8-city={neighborhood.city}
@@ -712,7 +712,7 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
 
         <div
           id="neighborhood-market-evidence"
-          className="rounded-[8px] bg-white/[0.04] p-5 md:col-span-12 md:p-8"
+          className="reie-neighborhood-market-brief rounded-[8px] bg-white/[0.04] p-5 md:col-span-12 md:p-8"
           data-testid="cep-market-intelligence-summary"
           data-market-intelligence-scope="neighborhood"
           data-market-intelligence-city={neighborhood.city}
@@ -855,7 +855,7 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
           <FinancingConfidenceEducation surface="neighborhood-market" />
         </div>
 
-        <div className="rounded-[8px] bg-white/[0.035] p-8 md:col-span-8 md:p-12">
+        <div className="reie-neighborhood-housing-card rounded-[8px] bg-white/[0.035] p-8 md:col-span-8 md:p-12">
           <div className="mb-8 flex items-center gap-4">
             <Hammer className="h-6 w-6 text-cyan-100" />
             <h2 className="text-2xl font-black uppercase tracking-tight">Housing Pattern And Property Diligence</h2>
@@ -867,7 +867,7 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
           </div>
         </div>
 
-        <div className="flex flex-col justify-between rounded-[8px] bg-white/[0.035] p-8 md:col-span-4 md:p-12">
+        <div className="reie-neighborhood-access-card flex flex-col justify-between rounded-[8px] bg-white/[0.035] p-8 md:col-span-4 md:p-12">
           <div>
             <div className="mb-4 flex items-center gap-3">
               <Zap className="h-4 w-4 fill-cyan-100 text-cyan-100" />

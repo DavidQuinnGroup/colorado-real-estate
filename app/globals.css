@@ -3577,6 +3577,308 @@ html, body {
   outline-color: #2f6f7d;
 }
 
+.reie-neighborhood-page {
+  color: #ffffff;
+  background: #050505;
+}
+
+.reie-neighborhood-hero {
+  padding: 3rem 1.5rem;
+  background:
+    radial-gradient(circle at 78% 10%, rgba(207, 250, 254, 0.14), transparent 30%),
+    linear-gradient(180deg, #081117, #050505 82%);
+}
+
+.reie-neighborhood-hero-eyebrow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.reie-neighborhood-hero-layout {
+  display: grid;
+  gap: 2.5rem;
+}
+
+.reie-neighborhood-hero-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.reie-neighborhood-primary-action,
+.reie-neighborhood-secondary-action,
+.reie-neighborhood-product-3-action,
+.reie-neighborhood-framework-link,
+.reie-neighborhood-page [data-testid='cep-market-intelligence-next-step'],
+.reie-neighborhood-page [data-testid='reie-related-content-link'],
+.reie-neighborhood-page [data-testid='reie-nearby-neighborhood-link'],
+.reie-neighborhood-page [data-testid='reie-nearby-neighborhood-brief-link'] {
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.reie-neighborhood-primary-action {
+  border: 1px solid rgba(207, 250, 254, 0.72);
+  background: #cffafe;
+  color: #071017;
+  box-shadow: 0 18px 54px rgba(0, 0, 0, 0.24);
+}
+
+.reie-neighborhood-primary-action:hover {
+  border-color: #ffffff;
+  background: #ffffff;
+  color: #071017;
+}
+
+.reie-neighborhood-secondary-action,
+.reie-neighborhood-product-3-action {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.reie-neighborhood-secondary-action:hover,
+.reie-neighborhood-product-3-action:hover,
+.reie-neighborhood-framework-link:hover,
+.reie-neighborhood-page [data-testid='cep-market-intelligence-next-step']:hover,
+.reie-neighborhood-page [data-testid='reie-related-content-link']:hover,
+.reie-neighborhood-page [data-testid='reie-nearby-neighborhood-link']:hover,
+.reie-neighborhood-page [data-testid='reie-nearby-neighborhood-brief-link']:hover {
+  border-color: rgba(183, 219, 226, 0.42);
+  background: rgba(183, 219, 226, 0.1);
+  color: #ffffff;
+}
+
+.reie-neighborhood-primary-action:focus-visible,
+.reie-neighborhood-secondary-action:focus-visible,
+.reie-neighborhood-product-3-action:focus-visible,
+.reie-neighborhood-framework-link:focus-visible,
+.reie-neighborhood-product-3 a:focus-visible,
+.reie-neighborhood-page [data-testid='cep-market-intelligence-next-step']:focus-visible,
+.reie-neighborhood-page [data-testid='reie-related-content-link']:focus-visible,
+.reie-neighborhood-page [data-testid='reie-nearby-neighborhood-link']:focus-visible,
+.reie-neighborhood-page [data-testid='reie-nearby-neighborhood-brief-link']:focus-visible {
+  outline: 2px solid #b7dbe2;
+  outline-offset: 3px;
+}
+
+.reie-neighborhood-hero-card,
+.reie-neighborhood-hero-metric,
+.reie-neighborhood-context-card,
+.reie-neighborhood-market-workspace,
+.reie-neighborhood-market-brief,
+.reie-neighborhood-housing-card,
+.reie-neighborhood-access-card {
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  background: rgba(7, 16, 23, 0.78);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.2);
+}
+
+.reie-neighborhood-hero-fact,
+.reie-neighborhood-hero-metric {
+  padding: 1rem;
+}
+
+.reie-neighborhood-hero-metrics {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.reie-neighborhood-product-3-shell {
+  border-color: rgba(183, 219, 226, 0.2);
+  background: #071017;
+  color: #ffffff;
+  box-shadow: 0 22px 80px rgba(0, 0, 0, 0.22);
+}
+
+.reie-neighborhood-product-3-header {
+  padding: 1.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(183, 219, 226, 0.055);
+}
+
+.reie-neighborhood-product-3-card {
+  padding: 1rem;
+  background: #071017;
+}
+
+.reie-neighborhood-product-3-profile-grid,
+.reie-neighborhood-product-3-constellation-layout,
+.reie-neighborhood-product-3-constellation-grid,
+.reie-neighborhood-product-3-confidence-summary,
+.reie-neighborhood-product-3-confidence-grid,
+.reie-neighborhood-product-3-verification-grid,
+.reie-neighborhood-product-3-market-grid,
+.reie-neighborhood-product-3-property-grid {
+  display: grid;
+  gap: 1px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.reie-neighborhood-product-3-chip {
+  width: fit-content;
+  border-style: solid;
+  border-width: 1px;
+  line-height: 1;
+  text-decoration: none;
+}
+
+.reie-neighborhood-product-3-rail-link {
+  display: inline-flex;
+  min-height: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(183, 219, 226, 0.22);
+  background: rgba(183, 219, 226, 0.08);
+  padding: 0.55rem 0.6rem;
+  color: #b7dbe2;
+  text-align: center;
+  text-decoration: none;
+}
+
+.reie-neighborhood-product-3-rail-link:hover {
+  border-color: rgba(183, 219, 226, 0.46);
+  background: rgba(183, 219, 226, 0.14);
+  color: #ffffff;
+}
+
+.reie-neighborhood-product-3-property-link {
+  display: block;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.reie-neighborhood-product-3-property-link:hover h4 {
+  color: #b7dbe2;
+}
+
+.reie-neighborhood-product-3-table {
+  padding: 1rem;
+}
+
+.reie-neighborhood-product-3 table {
+  border-collapse: collapse;
+}
+
+.reie-neighborhood-product-3 summary {
+  min-height: 3.5rem;
+  color: #b7dbe2;
+}
+
+.reie-neighborhood-product-3-confidence-summary {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.reie-neighborhood-context {
+  padding-top: 2rem;
+}
+
+.reie-neighborhood-framework-link {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.reie-neighborhood-page [data-testid='reie-related-content'],
+.reie-neighborhood-page [data-testid='reie-nearby-neighborhoods'] {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: #050505;
+}
+
+.reie-neighborhood-page [data-testid='reie-related-content-link'],
+.reie-neighborhood-page [data-testid='reie-nearby-neighborhood-card'] {
+  background: #071017;
+}
+
+.reie-neighborhood-page [data-testid='reie-nearby-neighborhood-link'],
+.reie-neighborhood-page [data-testid='reie-nearby-neighborhood-brief-link'] {
+  display: block;
+}
+
+@media (min-width: 768px) {
+  .reie-neighborhood-hero {
+    padding: 4rem 3rem;
+  }
+
+  .reie-neighborhood-hero-actions {
+    flex-direction: row;
+  }
+
+  .reie-neighborhood-hero-metrics,
+  .reie-neighborhood-product-3-verification-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .reie-neighborhood-product-3-profile-grid,
+  .reie-neighborhood-product-3-confidence-summary,
+  .reie-neighborhood-product-3-confidence-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .reie-neighborhood-product-3-constellation-grid,
+  .reie-neighborhood-product-3-property-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .reie-neighborhood-product-3-market-grid {
+    grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.25fr);
+  }
+
+  .reie-neighborhood-product-3-header,
+  .reie-neighborhood-product-3-card {
+    padding: 1.25rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .reie-neighborhood-hero-layout {
+    grid-template-columns: minmax(0, 1.06fr) minmax(0, 0.94fr);
+    align-items: end;
+  }
+
+  .reie-neighborhood-hero-metrics {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .reie-neighborhood-product-3-constellation-layout {
+    grid-template-columns: minmax(0, 0.74fr) minmax(0, 1.26fr);
+  }
+
+  .reie-neighborhood-product-3-verification-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 639px) {
+  .reie-neighborhood-hero {
+    padding: 2.75rem 1rem;
+  }
+
+  .reie-neighborhood-hero-eyebrow {
+    align-items: flex-start;
+  }
+
+  .reie-neighborhood-primary-action,
+  .reie-neighborhood-secondary-action {
+    width: 100%;
+  }
+
+  .reie-neighborhood-continuation {
+    padding-top: 1.5rem;
+  }
+
+  .reie-neighborhood-product-3 {
+    padding-inline: 1rem;
+  }
+
+  .reie-neighborhood-product-3-card,
+  .reie-neighborhood-product-3-header {
+    padding: 1rem;
+  }
+}
+
 .reie-property-product-31 {
   border-color: rgba(183, 219, 226, 0.2);
   background: #0d141c;
