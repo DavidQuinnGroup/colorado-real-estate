@@ -33,22 +33,22 @@ const DEFAULT_DATE_MODIFIED = "2026-05-23";
 
 export const articleTemplates: ArticleTemplate[] = [
   {
-    titleTemplate: "Living in [Neighborhood], [City]: The Efficiency & Lifestyle Audit",
+    titleTemplate: "[Neighborhood], [City]: Daily Access and Property Context",
     slugTemplate: "living-in-[neighborhood]-[city]",
     intent: "Lifestyle",
   },
   {
-    titleTemplate: "Is [Neighborhood] Future-Proof? Local Resilience & Fire Risk Report",
+    titleTemplate: "[Neighborhood] Property Verification Context",
     slugTemplate: "[neighborhood]-resilience-fire-risk",
     intent: "Resilience",
   },
   {
-    titleTemplate: "Commute Impact: [Neighborhood] vs. [PrimaryAnchor] Time-Tax Analysis",
+    titleTemplate: "[Neighborhood] and [PrimaryAnchor] Access Context",
     slugTemplate: "[neighborhood]-commute-efficiency",
     intent: "Efficiency",
   },
   {
-    titleTemplate: "[Neighborhood] Investment Readiness: Construction DNA & Value Risk",
+    titleTemplate: "[Neighborhood] Construction and Due Diligence Context",
     slugTemplate: "[neighborhood]-investment-readiness",
     intent: "Investment",
   },
@@ -83,13 +83,13 @@ function generateTitle(template: ArticleTemplate, neighborhood: Neighborhood) {
 function generateDynamicBody(neighborhood: Neighborhood, intent: ArticleIntent) {
   switch (intent) {
     case "Resilience":
-      return `David Quinn Group evaluates ${neighborhood.name} through fire risk, insurance complexity, soil profile, altitude, and construction-era context. The current resilience score is ${neighborhood.resilienceScore}/100.`;
+      return `David Quinn Group frames ${neighborhood.name} through fire context, insurance questions, soil profile, altitude, and construction-era context as verification prompts for property-specific review.`;
     case "Efficiency":
-      return `${neighborhood.name} averages an efficiency score of ${neighborhood.avgEfficiencyScore}/100, with ${neighborhood.primaryAnchor} acting as a meaningful lifestyle and commute anchor.`;
+      return `${neighborhood.name} can be reviewed through daily access to ${neighborhood.primaryAnchor}, current property search, and address-specific due diligence based on your individual needs.`;
     case "Investment":
-      return `${neighborhood.name} requires a close look at construction DNA, lot quality, and replacement-cost exposure before treating surface-level comps as truth.`;
+      return `${neighborhood.name} requires a close look at construction context, lot conditions, records, and replacement-cost exposure before relying on surface-level comparable properties.`;
     case "Lifestyle":
-      return `${neighborhood.lifestyleVibe} David Quinn Group tracks this micro-market through construction quality, time wealth, resilience, and location-specific lifestyle ROI.`;
+      return `${neighborhood.name} should be reviewed through place anchor, property condition, access context, and source freshness before narrowing into specific listings.`;
   }
 }
 

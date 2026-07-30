@@ -6,6 +6,7 @@ import type { CollectionCreateSchema } from 'typesense/lib/Typesense/Collections
 
 import FinancingConfidenceEducation from '@/components/FinancingConfidenceEducation';
 import NearbyNeighborhoods from '@/components/NearbyNeighborhoods';
+import NeighborhoodProduct3Experience from '@/components/NeighborhoodProduct3Experience';
 import RelatedContent from '@/components/RelatedContent';
 import FAQSchema from '@/components/schema/FAQSchema';
 import { getJourneyMeasurementAttributes } from '@/lib/customerJourneyMeasurement';
@@ -13,6 +14,7 @@ import { buildLinkGraph } from '@/lib/linking/buildLinkGraph';
 import { buildMarketDecisionWorkspace } from '@/lib/marketDecisionWorkspace';
 import { buildNeighborhoodMarketExperience } from '@/lib/marketIntelligenceExperience';
 import { getResilienceAdvice, neighborhoods, type Neighborhood } from '@/lib/neighborhoods';
+import { buildNeighborhoodProduct3Model } from '@/lib/neighborhoodProduct3';
 import type { FAQItem } from '@/lib/schema/faqSchema';
 import { generateFAQs } from '@/lib/schema/generateFAQs';
 import { buildNeighborhoodSchema } from '@/lib/schema/neighborhoodSchema';
@@ -95,7 +97,8 @@ function toTypesenseFilterValue(value: string) {
 }
 
 function getFallbackInventoryCount(neighborhood: Neighborhood) {
-  return Math.max(1, Math.round(neighborhood.resilienceScore / 12));
+  void neighborhood;
+  return 0;
 }
 
 function shouldUseStaticInventoryFallback() {
@@ -111,7 +114,7 @@ function getCanonicalUrl(neighborhood: Neighborhood) {
 }
 
 function getNeighborhoodDescription(neighborhood: Neighborhood) {
-  return `David Quinn Group's ${neighborhood.name}, ${neighborhood.city}, Colorado intelligence report combines local real estate inventory signals, construction forensics, resilience scoring, and lifestyle efficiency strategy.`;
+  return `David Quinn Group's ${neighborhood.name}, ${neighborhood.city}, Colorado intelligence report combines local property-discovery paths, housing context, verification guidance, and city market continuity.`;
 }
 
 function getNeighborhoodKeywords(neighborhood: Neighborhood) {
@@ -250,7 +253,15 @@ async function getNeighborhoodInventoryState(neighborhood: Neighborhood): Promis
 }
 
 function getInventorySourceLabel(source: InventoryState['source']) {
-  return source === 'typesense' ? 'Live Indexed' : 'Model Signal';
+  return source === 'typesense' ? 'Indexed Search' : 'Search Path';
+}
+
+function getInventoryDisplayValue(inventoryState: InventoryState) {
+  return inventoryState.source === 'typesense' ? `${inventoryState.count} indexed` : 'Search ready';
+}
+
+function getInventoryDecisionSignal(inventoryState: InventoryState) {
+  return inventoryState.source === 'typesense' ? `${inventoryState.count} indexed property signal` : 'Property search path available';
 }
 
 function getJsonLd(neighborhood: Neighborhood) {
@@ -275,19 +286,19 @@ function getNeighborhoodFaqs(neighborhood: Neighborhood): FAQItem[] {
   return [
     {
       question: `What does David Quinn Group evaluate in ${neighborhood.name}, ${neighborhood.city}?`,
-      answer: `David Quinn Group evaluates ${neighborhood.name} through real estate intelligence, combining inventory state, construction diligence, resilience score, fire risk, insurance complexity, soil profile, altitude, lifestyle efficiency, and negotiation leverage.`,
+      answer: `David Quinn Group evaluates ${neighborhood.name} through real estate intelligence, combining property-discovery paths, construction diligence, location context, insurance questions, soil profile, altitude, and verification guidance.`,
     },
     {
       question: `Why does construction forensics matter in ${neighborhood.name}?`,
       answer: `Construction forensics matters in ${neighborhood.name} because visible finishes do not always explain long-term value. David Quinn Group reviews condition signals, building envelope exposure, drainage, mechanical systems, and future maintenance risk before treating comparable sales as the full answer.`,
     },
     {
-      question: `How does the REIE resilience score affect ${neighborhood.name} strategy?`,
-      answer: `${neighborhood.name} currently carries a resilience score of ${neighborhood.resilienceScore}/100. That score helps frame buyer diligence, seller positioning, insurance discussion, and which property risks deserve deeper review before negotiation.`,
+      question: `How should customers use local context in ${neighborhood.name}?`,
+      answer: `${neighborhood.name} should be reviewed as neighborhood orientation rather than a conclusion. Use the page to frame property-specific diligence, current search review, insurance discussion, and questions that deserve deeper review before negotiation.`,
     },
     {
-      question: `What lifestyle signal defines ${neighborhood.name}?`,
-      answer: `${neighborhood.name} is anchored by ${neighborhood.primaryAnchor}. David Quinn Group evaluates that lifestyle anchor alongside commute efficiency, neighborhood character, inventory depth, and the tactical lever: ${neighborhood.tacticalLever}`,
+      question: `What place anchor defines ${neighborhood.name}?`,
+      answer: `${neighborhood.name} is anchored by ${neighborhood.primaryAnchor}. David Quinn Group evaluates that place anchor alongside daily access, housing context, current property discovery, and the verification focus: ${neighborhood.tacticalLever}`,
     },
     ...cityFaqs.slice(4, 6),
   ];
@@ -307,14 +318,14 @@ function getTradeoffSummary(neighborhood: Neighborhood) {
       ? 'insurance review is still part of normal diligence'
       : `${neighborhood.insuranceComplexity.toLowerCase()} insurance complexity should be checked early`;
 
-  return `${neighborhood.primaryAnchor} may be the practical lifestyle anchor, while ${neighborhood.soilType.toLowerCase()} soil context, ${neighborhood.fireRisk.toLowerCase()} fire context, and ${insuranceContext} define what to verify property by property.`;
+  return `${neighborhood.primaryAnchor} may be the practical place anchor, while ${neighborhood.soilType.toLowerCase()} soil context, ${neighborhood.fireRisk.toLowerCase()} fire context, and ${insuranceContext} define what to verify property by property.`;
 }
 
 function getVerificationQuestions(neighborhood: Neighborhood) {
   return [
     `Does the property condition support the ${neighborhood.era} housing pattern?`,
     `Are drainage, roof, sewer, mechanical, and exterior systems consistent with the visible finish quality?`,
-    `Does access to ${neighborhood.primaryAnchor} still fit the commute, daily routine, and seasonal-use assumptions?`,
+    `Does access to ${neighborhood.primaryAnchor} support the commute, daily routine, and seasonal-use assumptions for your individual needs?`,
   ];
 }
 
@@ -336,7 +347,7 @@ function getNeighborhoodFramework(
     {
       label: 'Trade-offs',
       icon: <ShieldCheck className="h-4 w-4" />,
-      title: 'Separate lifestyle appeal from property diligence.',
+      title: 'Separate location context from property diligence.',
       body: getTradeoffSummary(neighborhood),
       href: '#neighborhood-verification-questions',
       action: 'Review what to verify',
@@ -353,14 +364,17 @@ function getNeighborhoodFramework(
       label: 'Evidence',
       icon: <Home className="h-4 w-4" />,
       title: 'Use only bounded, visible signals.',
-      body: `${inventoryState.count} active inventory signal, resilience, soil, altitude, insurance, and construction context are prompts for verification, not suitability scores or predictions.`,
+      body:
+        inventoryState.source === 'typesense'
+          ? `${inventoryState.count} indexed property signal, soil, altitude, insurance, and construction context are prompts for verification, not personal conclusions or predictions.`
+          : 'Property search path, soil, altitude, insurance, and construction context are prompts for verification, not personal conclusions or predictions.',
       href: '#neighborhood-market-evidence',
       action: 'Read evidence',
     },
     {
       label: 'Next Step',
       icon: <Search className="h-4 w-4" />,
-      title: 'Open homes only after the fit makes sense.',
+      title: 'Open homes after the context supports your questions.',
       body: `Search ${neighborhood.name} homes, then compare each property against market context and the verification questions on this page.`,
       href: searchHref,
       action: 'Search this neighborhood',
@@ -396,12 +410,23 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
     marketSignal: marketExperience.inventoryLabel,
     competitivenessSignal: marketExperience.competitivenessLabel,
     timingSignal: marketExperience.timingLabel,
-    pricingSignal: `${neighborhood.resilienceScore}/100 resilience context`,
-    inventorySignal: `${inventoryState.count} active inventory signal`,
+    pricingSignal: 'Neighborhood orientation evidence',
+    inventorySignal: getInventoryDecisionSignal(inventoryState),
     resilienceSignal: `${neighborhood.fireRisk} fire context, ${neighborhood.insuranceComplexity.toLowerCase()} insurance complexity, and ${neighborhood.soilType}`,
     searchHref,
     marketHref: cityMarketHref,
     sellerHref: '/sell',
+  });
+  const neighborhoodProduct3Model = buildNeighborhoodProduct3Model({
+    neighborhood,
+    inventoryState,
+    market: {
+      inventoryLabel: marketExperience.inventoryLabel,
+      competitivenessLabel: marketExperience.competitivenessLabel,
+      timingLabel: marketExperience.timingLabel,
+    },
+    cityMarketHref,
+    searchHref,
   });
 
   return (
@@ -517,15 +542,15 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
 
           <div className="mt-8 grid gap-3 md:grid-cols-4">
             <div className="rounded-[8px] bg-white/[0.055] p-4">
-              <p className="mb-2 text-[9px] font-black uppercase tracking-[0.18em] text-white/36">Inventory</p>
-              <p className="text-lg font-black uppercase tracking-tight text-white">{inventoryState.count} active</p>
+              <p className="mb-2 text-[9px] font-black uppercase tracking-[0.18em] text-white/36">Property Path</p>
+              <p className="text-lg font-black uppercase tracking-tight text-white">{getInventoryDisplayValue(inventoryState)}</p>
               <p className="mt-2 text-[9px] font-black uppercase tracking-[0.18em] text-cyan-100/62">
                 {getInventorySourceLabel(inventoryState.source)}
               </p>
             </div>
             <div className="rounded-[8px] bg-white/[0.055] p-4">
-              <p className="mb-2 text-[9px] font-black uppercase tracking-[0.18em] text-white/36">Resilience</p>
-              <p className="text-lg font-black uppercase tracking-tight text-white">{neighborhood.resilienceScore}/100</p>
+              <p className="mb-2 text-[9px] font-black uppercase tracking-[0.18em] text-white/36">Evidence</p>
+              <p className="text-lg font-black uppercase tracking-tight text-white">{neighborhoodProduct3Model.evidenceState}</p>
             </div>
             <div className="rounded-[8px] bg-white/[0.055] p-4">
               <p className="mb-2 text-[9px] font-black uppercase tracking-[0.18em] text-white/36">Attention</p>
@@ -549,6 +574,8 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
         </div>
       </section>
 
+      <NeighborhoodProduct3Experience model={neighborhoodProduct3Model} />
+
       <section className="mx-auto grid max-w-7xl gap-8 px-6 py-10 md:grid-cols-12 md:p-12">
         <section
           className="md:col-span-12"
@@ -566,7 +593,7 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
               Decide whether the neighborhood deserves a closer look.
             </h2>
             <p className="mt-4 text-sm leading-7 text-white/58 md:text-base">
-              {housingContext} Use this as a starting point for property-specific verification, not as a suitability score or prediction.
+              {housingContext} Use this as a starting point for property-specific verification, not as a personal conclusion or prediction.
             </p>
           </div>
 
@@ -602,7 +629,7 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
           <div>
             <p className="mb-3 text-[10px] font-black uppercase tracking-[0.24em] text-cyan-100/72">Verification Guidance</p>
             <h2 className="text-2xl font-black uppercase leading-tight tracking-normal text-white">
-              What to verify before deciding this fits.
+              What to verify before relying on neighborhood context.
             </h2>
             <p className="mt-4 text-sm leading-7 text-white/52">{tradeoffSummary}</p>
           </div>
@@ -795,8 +822,8 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
           data-buyer-confidence-provider-activation="false"
         >
           <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100/72">Fit</p>
-            <p className="mt-2 text-sm leading-6 text-white/58">Use local context to test whether this neighborhood supports daily life, access, and lifestyle priorities.</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100/72">Context</p>
+            <p className="mt-2 text-sm leading-6 text-white/58">Use local context to test whether this neighborhood supports your practical decision questions and individual search criteria.</p>
           </div>
           <div>
             <p className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100/72">Risk</p>
@@ -830,11 +857,11 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
               <Zap className="h-4 w-4 fill-cyan-100 text-cyan-100" />
               <span className="text-[10px] font-black uppercase tracking-widest text-cyan-100/72">Practical Access Signal</span>
             </div>
-            <div className="text-7xl font-black tracking-tight text-white md:text-8xl">{neighborhood.avgEfficiencyScore}</div>
-            <p className="mt-4 text-xs font-bold uppercase tracking-widest text-white/40">Guided efficiency signal</p>
+            <div className="text-3xl font-black uppercase leading-tight tracking-tight text-white md:text-4xl">{neighborhood.primaryAnchor}</div>
+            <p className="mt-4 text-xs font-bold uppercase tracking-widest text-white/40">Daily access context</p>
           </div>
           <p className="mt-8 text-sm leading-7 text-white/58">
-            {neighborhood.lifestyleVibe} The tactical lever is direct: {neighborhood.tacticalLever}
+            {neighborhood.name} should be reviewed through place anchor, property condition, and source freshness. Verification focus: {neighborhood.tacticalLever}
           </p>
         </div>
 

@@ -55,14 +55,14 @@ export function buildLinkGraph(currentSlug: string): LinkNode[] {
         normalize(neighborhood.city) === normalize(current.city) &&
         neighborhood.slug !== current.slug,
     )
-    .sort((a, b) => b.resilienceScore - a.resilienceScore);
+    .sort((a, b) => a.name.localeCompare(b.name));
 
   for (const peer of peerNeighborhoods.slice(0, 3)) {
     links.push({
       title: `${peer.name} Neighborhood Intelligence`,
       href: getNeighborhoodHref(peer),
       type: "neighborhood",
-      description: `${peer.primaryAnchor} / ${peer.resilienceScore} resilience / ${peer.avgEfficiencyScore} efficiency`,
+      description: `${peer.primaryAnchor} / related neighborhood context / property verification path`,
     });
   }
 
@@ -70,7 +70,7 @@ export function buildLinkGraph(currentSlug: string): LinkNode[] {
     title: `${current.city} Real Estate Strategy & Market Pulse`,
     href: `/market/${getCityMarketSlug(current.city)}`,
     type: "city-market",
-    description: "City-level pricing, inventory, efficiency, and resilience context",
+    description: "City-level pricing, inventory, local context, and verification path",
   });
 
   const articleBriefs = getBlogLinks({
@@ -93,21 +93,21 @@ export function buildLinkGraph(currentSlug: string): LinkNode[] {
       title: `Properties near ${current.primaryAnchor}`,
       href: `/search?anchor=${encodeURIComponent(current.primaryAnchor)}`,
       type: "search",
-      description: "Map-based inventory search tied to the local lifestyle anchor",
+      description: "Map-based inventory search tied to the local place anchor",
     });
   }
 
   const crossCityNeighborhoods = neighborhoods
     .filter((neighborhood) => normalize(neighborhood.city) !== normalize(current.city))
-    .sort((a, b) => b.avgEfficiencyScore - a.avgEfficiencyScore)
+    .sort((a, b) => a.name.localeCompare(b.name))
     .slice(0, 2);
 
   for (const neighborhood of crossCityNeighborhoods) {
     links.push({
-      title: `Exploring Efficiency in ${neighborhood.name}`,
+      title: `Exploring Context in ${neighborhood.name}`,
       href: getNeighborhoodHref(neighborhood),
       type: "lifestyle",
-      description: `${neighborhood.city} lifestyle and construction intelligence`,
+      description: `${neighborhood.city} local context and construction intelligence`,
     });
   }
 

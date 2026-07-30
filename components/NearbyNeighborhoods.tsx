@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
-import { ArrowUpRight, Flame, ShieldCheck, Zap } from 'lucide-react';
+import { ArrowUpRight, Compass, Flame, Hammer } from 'lucide-react';
 
 import { getBlogLinks, type BlogLink } from '@/lib/linking/getBlogLinks';
 import { neighborhoods, type Neighborhood } from '@/lib/neighborhoods';
@@ -34,7 +34,7 @@ function getRelatedNeighborhoods(city: string, currentSlug: string, limit: numbe
 
   return neighborhoods
     .filter((neighborhood) => normalizeCity(neighborhood.city) === normalizedCity && neighborhood.slug !== currentSlug)
-    .sort((a, b) => b.resilienceScore - a.resilienceScore || b.avgEfficiencyScore - a.avgEfficiencyScore || a.name.localeCompare(b.name))
+    .sort((a, b) => a.name.localeCompare(b.name))
     .slice(0, Math.max(1, limit));
 }
 
@@ -91,7 +91,7 @@ export default function NearbyNeighborhoods({ city, currentSlug, limit = 6, titl
           </h2>
         </div>
         <p className="max-w-sm text-[10px] font-bold uppercase leading-relaxed tracking-[0.18em] text-white/30">
-          Ranked by resilience, efficiency, construction context, and tactical inspection leverage.
+          Related neighborhood context for continued orientation. These links are not rankings or recommendations.
         </p>
       </div>
 
@@ -137,9 +137,9 @@ export default function NearbyNeighborhoods({ city, currentSlug, limit = 6, titl
                 </div>
 
                 <div className="mt-5 grid grid-cols-3 gap-px bg-white/10">
-                  <Metric icon={<ShieldCheck size={13} />} label="Resilience" value={`${neighborhood.resilienceScore}`} />
-                  <Metric icon={<Zap size={13} />} label="Efficiency" value={`${neighborhood.avgEfficiencyScore}`} />
-                  <Metric icon={<Flame size={13} />} label="Risk" value={neighborhood.fireRisk} tone={getRiskTone(neighborhood)} />
+                  <Metric icon={<Compass size={13} />} label="Anchor" value={neighborhood.primaryAnchor} />
+                  <Metric icon={<Hammer size={13} />} label="Pattern" value={neighborhood.era} />
+                  <Metric icon={<Flame size={13} />} label="Review" value={neighborhood.fireRisk} tone={getRiskTone(neighborhood)} />
                 </div>
 
                 <p className="mt-5 line-clamp-2 text-[10px] italic leading-relaxed text-white/45">{neighborhood.tacticalLever}</p>

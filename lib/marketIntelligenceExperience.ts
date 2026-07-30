@@ -68,7 +68,7 @@ function getPricingLabel(medianPrice: string, pricePerSqFt: string) {
 }
 
 function getTimingLabel(daysOnMarket: number) {
-  if (daysOnMarket <= 18) return 'Move quickly on well-fit homes';
+  if (daysOnMarket <= 18) return 'Prepare early for well-matched homes';
   if (daysOnMarket <= 30) return 'Prepare before touring';
   return 'Use time for deeper diligence';
 }
@@ -139,13 +139,13 @@ export function buildNeighborhoodMarketExperience(
   const competitivenessLabel = inventoryState.count <= 3 ? 'Very limited selection' : inventoryState.count <= 8 ? 'Selective options' : 'Broader options';
   const timingLabel = neighborhood.fireRisk === 'High' || neighborhood.insuranceComplexity === 'Complex'
     ? 'Plan diligence before writing'
-    : 'Compare fit before touring';
+    : 'Compare context before touring';
 
   return {
     inventoryLabel,
     competitivenessLabel,
     timingLabel,
-    summary: `${neighborhood.name} is framed through ${inventoryLabel.toLowerCase()}, ${competitivenessLabel.toLowerCase()}, and local condition context. Use this page to decide whether to search, tour, or ask for property-specific review.`,
+    summary: `${neighborhood.name} is framed through ${inventoryLabel.toLowerCase()}, ${competitivenessLabel.toLowerCase()}, and local condition context. Use this page to decide what to verify before search, touring, or property-specific review.`,
     sourceNote:
       'Neighborhood Market Intelligence uses governed neighborhood data and public inventory signals where available. It does not predict appreciation or availability and does not activate GIS providers, external geographic services, or AI-generated recommendations.',
     signals: [
@@ -163,8 +163,8 @@ export function buildNeighborhoodMarketExperience(
       },
       {
         label: 'Pricing context',
-        value: `${neighborhood.resilienceScore}/100 resilience`,
-        explanation: 'Resilience, soil, insurance, and condition context help explain why property-level due diligence still matters.',
+        value: 'Verification context',
+        explanation: 'Soil, insurance, and condition context help explain why property-level due diligence still matters.',
       },
       {
         label: 'Timing',
