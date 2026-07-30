@@ -163,7 +163,7 @@ export default function MarketIndexPage() {
                   })}
                 >
                   <Search size={15} aria-hidden="true" />
-                  Search with market context
+                  Search With Market Context
                 </Link>
                 <Link
                   href="#market-core-synthesis"
@@ -217,9 +217,9 @@ export default function MarketIndexPage() {
             whyHere="The market view connects city signals, certified guides, neighborhood paths, and property search without forecasting or ranking locations."
             nextStep="Open a city guide, search active inventory, or move into a neighborhood page."
             links={[
-              { label: 'Search', href: '/search', note: 'Apply criteria' },
-              { label: 'Boulder', href: '/market/boulder-co-housing-market', note: 'Certified guide' },
-              { label: 'Mapleton Hill', href: '/market/boulder/mapleton-hill', note: 'Neighborhood context' },
+              { label: 'Search With Market Context', href: '/search', note: 'Apply criteria' },
+              { label: 'Boulder Market Context', href: '/market/boulder-co-housing-market', note: 'Certified guide' },
+              { label: 'Neighborhood Context', href: '/market/boulder/mapleton-hill', note: 'Mapleton Hill' },
             ]}
           />
         </div>
@@ -248,11 +248,11 @@ export default function MarketIndexPage() {
                 })}
               >
                 <Search size={15} aria-hidden="true" />
-                Start Search
+                Search With Market Context
               </Link>
               <Link
                 href="/sell"
-                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-[6px] border border-white/14 px-5 py-3 text-xs font-black uppercase tracking-[0.14em] text-white/72 transition hover:border-cyan-100/40 hover:text-cyan-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-200"
+                className="reie-decision-link reie-decision-link--secondary inline-flex min-h-12 items-center justify-center gap-2 rounded-[6px] px-5 py-3 text-xs font-black uppercase tracking-[0.14em] transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-200"
                 {...getJourneyMeasurementAttributes({
                   surface: 'market-index-primary-actions',
                   stage: 'market',
@@ -379,7 +379,7 @@ export default function MarketIndexPage() {
             </div>
             <Link
               href="/search"
-              className="text-[10px] font-black uppercase tracking-[0.16em] text-cyan-100/74 transition hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-200"
+              className="reie-inline-link text-[10px] font-black uppercase tracking-[0.16em] transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-200"
               {...getJourneyMeasurementAttributes({
                 surface: 'market-index-featured',
                 stage: 'market',
@@ -387,7 +387,7 @@ export default function MarketIndexPage() {
                 destination: 'search',
               })}
             >
-              Search All Colorado Homes
+              Search With Market Context
             </Link>
           </div>
 

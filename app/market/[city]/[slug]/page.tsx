@@ -503,7 +503,7 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
                   })}
                 >
                   <Search className="h-4 w-4" />
-                  Search this neighborhood
+                  Search This Neighborhood
                 </Link>
                 <Link
                   href={cityMarketHref}
@@ -515,7 +515,7 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
                     destination: 'market',
                   })}
                 >
-                  City market context
+                  City Market Context
                   <ArrowUpRight className="h-4 w-4" />
                 </Link>
               </div>
@@ -585,9 +585,9 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
           whyHere="This neighborhood page connects place orientation, market context, available property paths, confidence, and verification without scoring or recommending where someone should live."
           nextStep="Review confidence, search current properties, or return to the city market."
           links={[
-            { label: 'City Market', href: cityMarketHref, note: 'Broader context' },
-            { label: 'Search', href: searchHref, note: 'Current inventory path' },
-            { label: 'Verify', href: '#neighborhood-verification-questions', note: 'Carry questions forward' },
+            { label: 'City Market Context', href: cityMarketHref, note: 'Broader context' },
+            { label: 'Search This Neighborhood', href: searchHref, note: 'Current inventory path' },
+            { label: 'What to Verify', href: '#neighborhood-verification-questions', note: 'Carry questions forward' },
           ]}
         />
       </section>
@@ -791,7 +791,7 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
             >
               <Link
                 href="/market"
-                className="flex min-h-12 items-center justify-center rounded-[6px] bg-white/[0.04] px-4 py-3 text-center text-[11px] font-black uppercase tracking-[0.12em] text-white/64 no-underline transition hover:bg-cyan-100/10 hover:text-cyan-100 focus:outline-none focus:ring-2 focus:ring-cyan-100/70"
+                className="reie-decision-link reie-decision-link--secondary flex min-h-12 items-center justify-center rounded-[6px] px-4 py-3 text-center text-[11px] font-black uppercase tracking-[0.12em] transition focus:outline-none focus:ring-2 focus:ring-cyan-100/70"
                 {...getJourneyMeasurementAttributes({
                   surface: 'neighborhood-market-journey',
                   stage: 'market',
@@ -803,7 +803,7 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
               </Link>
               <Link
                 href={`/market/${normalizeRouteSegment(neighborhood.city)}-co-housing-market`}
-                className="flex min-h-12 items-center justify-center rounded-[6px] bg-white/[0.04] px-4 py-3 text-center text-[11px] font-black uppercase tracking-[0.12em] text-white/64 no-underline transition hover:bg-cyan-100/10 hover:text-cyan-100 focus:outline-none focus:ring-2 focus:ring-cyan-100/70"
+                className="reie-decision-link reie-decision-link--secondary flex min-h-12 items-center justify-center rounded-[6px] px-4 py-3 text-center text-[11px] font-black uppercase tracking-[0.12em] transition focus:outline-none focus:ring-2 focus:ring-cyan-100/70"
                 {...getJourneyMeasurementAttributes({
                   surface: 'neighborhood-market-journey',
                   stage: 'market',
@@ -811,11 +811,11 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
                   destination: 'market',
                 })}
               >
-                City Market
+                City Market Context
               </Link>
               <Link
                 href={`/search?neighborhood=${encodeURIComponent(neighborhood.name)}`}
-                className="flex min-h-12 items-center justify-center rounded-[6px] bg-white/[0.04] px-4 py-3 text-center text-[11px] font-black uppercase tracking-[0.12em] text-white/64 no-underline transition hover:bg-cyan-100/10 hover:text-cyan-100 focus:outline-none focus:ring-2 focus:ring-cyan-100/70"
+                className="reie-decision-link reie-decision-link--secondary flex min-h-12 items-center justify-center rounded-[6px] px-4 py-3 text-center text-[11px] font-black uppercase tracking-[0.12em] transition focus:outline-none focus:ring-2 focus:ring-cyan-100/70"
                 {...getJourneyMeasurementAttributes({
                   surface: 'neighborhood-market-journey',
                   stage: 'market',
@@ -823,7 +823,7 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
                   destination: 'search',
                 })}
               >
-                Search Nearby
+                Search This Neighborhood
               </Link>
             </div>
           </div>

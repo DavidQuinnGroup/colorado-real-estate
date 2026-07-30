@@ -523,11 +523,11 @@ export default function LeadCapture({ city }: LeadCaptureProps) {
             >
               Email is required. Selected market, goal, timing, and optional notes are used for strategy-intake and follow-up routing and do
               not automatically create a brokerage relationship. Review the{' '}
-              <Link href="/privacy" className="font-bold text-cyan-100 underline underline-offset-4">
+              <Link href="/privacy" className="reie-inline-link font-bold underline underline-offset-4">
                 Privacy Notice
               </Link>{' '}
               and{' '}
-              <Link href="/terms" className="font-bold text-cyan-100 underline underline-offset-4">
+              <Link href="/terms" className="reie-inline-link font-bold underline underline-offset-4">
                 Terms of Use
               </Link>
               . Do not submit confidential negotiating positions, motivation, financial limits, or client-confidential information until the

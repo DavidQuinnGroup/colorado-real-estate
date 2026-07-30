@@ -187,7 +187,7 @@ export default function SelectedPropertyDrawer({ property, onClose }: SelectedPr
         >
           <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.16em] text-cyan-100/76">
             <Sparkles size={13} aria-hidden="true" />
-            Review Context
+            Review context
           </p>
           <p className="mt-1.5 text-left text-xs font-bold leading-5 text-white/72">{advisoryNote}</p>
         </div>
@@ -246,7 +246,7 @@ export default function SelectedPropertyDrawer({ property, onClose }: SelectedPr
             data-testid="reie-selected-property-detail-link"
             data-selected-property-id={property.id}
             data-selected-property-detail-href={propertyHref}
-            className="inline-flex h-11 w-full items-center justify-center gap-1.5 rounded-[6px] bg-cyan-100 text-[10px] font-black uppercase tracking-[0.14em] text-[#061017] transition hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
+            className="reie-decision-link reie-decision-link--primary inline-flex h-11 w-full items-center justify-center gap-1.5 rounded-[6px] text-[10px] font-black uppercase tracking-[0.14em] transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
           >
             View Property
             <ArrowUpRight size={13} aria-hidden="true" />
@@ -257,7 +257,7 @@ export default function SelectedPropertyDrawer({ property, onClose }: SelectedPr
             data-testid="reie-selected-property-inquiry-link"
             data-selected-property-id={property.id}
             data-selected-property-inquiry-href={inquiryHref}
-            className="mt-3 inline-flex h-9 w-full items-center justify-center gap-1.5 rounded-[6px] border border-white/10 bg-white/[0.055] text-[10px] font-black uppercase tracking-[0.12em] text-white/72 transition hover:border-cyan-100/35 hover:text-cyan-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
+            className="reie-decision-link reie-decision-link--secondary mt-3 inline-flex h-9 w-full items-center justify-center gap-1.5 rounded-[6px] text-[10px] font-black uppercase tracking-[0.12em] transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
           >
             Ask About This Property
             <Mail size={13} aria-hidden="true" />

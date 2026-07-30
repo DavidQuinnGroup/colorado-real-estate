@@ -536,11 +536,11 @@ export default function SaveSearch({ city }: SaveSearchProps) {
         >
           Email is required. Supported search criteria, timing, intent, and optional notes are used for saved-search updates and follow-up routing. Saving a search
           does not automatically create a brokerage relationship. Review the{' '}
-          <Link href="/privacy" className="font-bold text-cyan-100 underline underline-offset-4">
+          <Link href="/privacy" className="reie-inline-link font-bold underline underline-offset-4">
             Privacy Notice
           </Link>{' '}
           and{' '}
-          <Link href="/terms" className="font-bold text-cyan-100 underline underline-offset-4">
+          <Link href="/terms" className="reie-inline-link font-bold underline underline-offset-4">
             Terms of Use
           </Link>
           . Do not submit confidential negotiating positions, motivation, financial limits, or client-confidential information until the

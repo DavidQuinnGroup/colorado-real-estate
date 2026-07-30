@@ -68,7 +68,7 @@ export function buildBuyerDecisionWorkspace(input: BuyerDecisionWorkspaceInput):
         lens: 'next',
         label: 'What is the next step?',
         guidance: 'Continue searching, review market context, open a property decision brief, or ask an advisor when a home deserves focused discussion.',
-        action: 'Ask an advisor',
+        action: 'Ask an Advisor',
         href: input.advisorHref,
       },
     ],

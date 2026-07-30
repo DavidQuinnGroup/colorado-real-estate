@@ -236,13 +236,13 @@ function EmptyInventoryState({
               ) : null}
               <Link
                 href="/grand-plan"
-                className="inline-flex min-h-9 items-center justify-center rounded-[6px] border border-white/10 bg-white/[0.045] px-3 text-[10px] font-black uppercase tracking-[0.12em] text-white/58 transition hover:border-cyan-100/35 hover:text-cyan-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-200"
+                className="reie-decision-link reie-decision-link--secondary inline-flex min-h-9 items-center justify-center rounded-[6px] px-3 text-[10px] font-black uppercase tracking-[0.12em] transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-200"
               >
                 Create Your Grand Plan
               </Link>
               <Link
                 href="/contact"
-                className="inline-flex min-h-9 items-center justify-center rounded-[6px] border border-white/10 px-3 text-[10px] font-black uppercase tracking-[0.12em] text-white/46 transition hover:border-cyan-100/35 hover:text-cyan-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-200"
+                className="reie-decision-link reie-decision-link--secondary inline-flex min-h-9 items-center justify-center rounded-[6px] px-3 text-[10px] font-black uppercase tracking-[0.12em] transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-200"
               >
                 Talk Through Your Search
               </Link>
@@ -563,7 +563,7 @@ export default function MapSidebar(props: MapSidebarProps) {
           <div className="mt-3 grid grid-cols-2 gap-2">
             <Link
               href={authorityLinks.marketHref}
-              className="group rounded-[8px] border border-white/10 bg-white/[0.045] px-3 py-2.5 transition-colors hover:border-cyan-100/35 hover:bg-white/[0.075]"
+              className="reie-decision-link reie-decision-link--card group rounded-[8px] px-3 py-2.5 transition-colors"
               {...getJourneyMeasurementAttributes({
                 surface: 'search-sidebar-market-card',
                 stage: 'search',
@@ -583,7 +583,7 @@ export default function MapSidebar(props: MapSidebarProps) {
             {authorityLinks.brief ? (
               <Link
                 href={authorityLinks.brief.href}
-                className="group rounded-[8px] border border-white/10 bg-white/[0.045] px-3 py-2.5 transition-colors hover:border-cyan-100/35 hover:bg-white/[0.075]"
+                className="reie-decision-link reie-decision-link--card group rounded-[8px] px-3 py-2.5 transition-colors"
               >
                 <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100/72">
                   <FileText size={13} aria-hidden="true" />
@@ -596,7 +596,7 @@ export default function MapSidebar(props: MapSidebarProps) {
             ) : (
               <Link
                 href={`/search?city=${encodeURIComponent(stats.dominantCity)}`}
-                className="group rounded-[8px] border border-white/10 bg-white/[0.045] px-3 py-2.5 transition-colors hover:border-cyan-100/35 hover:bg-white/[0.075]"
+                className="reie-decision-link reie-decision-link--card group rounded-[8px] px-3 py-2.5 transition-colors"
               >
                 <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100/72">
                   <Bell size={13} aria-hidden="true" />
@@ -678,7 +678,7 @@ export default function MapSidebar(props: MapSidebarProps) {
           </p>
           <Link
             href="/contact"
-            className="mt-3 inline-flex text-[10px] font-black uppercase tracking-[0.16em] text-cyan-100/72 transition hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-200"
+            className="reie-inline-link mt-3 inline-flex text-[10px] font-black uppercase tracking-[0.16em] transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-200"
             data-testid="cep-navigation-sidebar-journey"
             {...getJourneyMeasurementAttributes({
               surface: 'search-sidebar-guidance',

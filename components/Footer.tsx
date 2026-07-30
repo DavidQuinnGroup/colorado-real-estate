@@ -22,7 +22,7 @@ export default function PlatformFooter() {
           <p className="max-w-md text-sm leading-7 text-slate-400">Colorado real estate intelligence, advisory planning, and property search for the Front Range.</p>
           <p className="text-xs font-bold leading-relaxed text-slate-400">Brokerage Firm: {BROKERAGE_FIRM_NAME}</p>
           <p className="max-w-lg text-xs leading-6 text-slate-500">
-            Public contact, privacy, and accessibility requests route through the <Link href="/contact" className="text-cyan-100/78 hover:text-white">contact page</Link> until a branded contact email is operational.
+            Public contact, privacy, and accessibility requests route through the <Link href="/contact" className="reie-inline-link">contact page</Link> until a branded contact email is operational.
             External Compass, MLS, brokerage-license, office, phone, and branded-email details are published only after approval.
           </p>
         </div>

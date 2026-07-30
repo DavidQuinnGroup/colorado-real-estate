@@ -234,7 +234,7 @@ function buildPopupHtml(property: MapSidebarListing) {
         <h2 class="reie-map-popup-address">${address}</h2>
         <p class="reie-map-popup-city">${city}, CO</p>
         ${features ? `<p class="reie-map-popup-features" aria-label="Core property facts">${escapeHtml(features)}</p>` : ''}
-        <p class="reie-map-popup-note"><span>Review Context</span> ${advisoryNote}</p>
+        <p class="reie-map-popup-note"><span>Review context</span> ${advisoryNote}</p>
         <p class="reie-map-popup-context"><span>Map Context</span> ${locationFit}</p>
         <p class="reie-map-popup-context"><span>Property Signals</span> ${reviewSignal}</p>
         <a class="reie-map-popup-cta" href="${detailHref}" aria-label="View property details for ${address}">View Property</a>

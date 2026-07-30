@@ -274,7 +274,7 @@ export function buildPropertyProduct31Model(input: PropertyProduct31Input): Prop
     profile,
     dna,
     confidence: {
-      summary: 'Property Product 3.1 uses existing public property data to reduce decision friction without scoring, ranking, valuing, forecasting, or recommending a property.',
+      summary: 'Property Decision Profile uses existing public property data to reduce decision friction without scoring, ranking, valuing, forecasting, or recommending a property.',
       facets: confidenceFacets,
     },
     comparables: relatedListings.slice(0, 4).map((listing) => getComparableContext(input, listing)),

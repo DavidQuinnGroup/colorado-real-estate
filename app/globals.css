@@ -3576,6 +3576,105 @@ html, body {
   color: #ffffff;
 }
 
+.reie-decision-link,
+.reie-inline-link {
+  color: #b7dbe2;
+  text-decoration: none;
+  transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms ease;
+}
+
+.reie-decision-link {
+  border-color: rgba(183, 219, 226, 0.2);
+  background: rgba(183, 219, 226, 0.08);
+}
+
+.reie-decision-link:hover,
+.reie-inline-link:hover {
+  border-color: rgba(183, 219, 226, 0.48);
+  color: #ffffff;
+}
+
+.reie-decision-link:active {
+  border-color: rgba(183, 219, 226, 0.62);
+  background: rgba(183, 219, 226, 0.16);
+  color: #ffffff;
+  transform: translateY(1px);
+}
+
+.reie-decision-link:visited,
+.reie-inline-link:visited {
+  color: #b7dbe2;
+}
+
+.reie-decision-link:focus-visible,
+.reie-inline-link:focus-visible {
+  outline: 2px solid #b7dbe2;
+  outline-offset: 4px;
+}
+
+.reie-decision-link--card {
+  display: block;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.reie-decision-link--card:hover {
+  background: rgba(183, 219, 226, 0.1);
+  color: #ffffff;
+}
+
+.reie-decision-link--secondary {
+  border: 1px solid rgba(183, 219, 226, 0.2);
+  background: rgba(255, 255, 255, 0.045);
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.reie-decision-link--secondary:hover {
+  border-color: rgba(183, 219, 226, 0.42);
+  background: rgba(183, 219, 226, 0.1);
+  color: #ffffff;
+}
+
+.reie-decision-link--primary {
+  border-color: rgba(183, 219, 226, 0.56);
+  background: #b7dbe2;
+  color: #061017;
+}
+
+.reie-decision-link--primary:visited {
+  color: #061017;
+}
+
+.reie-decision-link--primary:hover {
+  border-color: #ffffff;
+  background: #ffffff;
+  color: #061017;
+}
+
+.reie-decision-link--primary:focus-visible {
+  outline-color: #ffffff;
+}
+
+[data-testid='reie-financing-confidence-education'] a.reie-decision-link,
+[data-testid='reie-related-property-authority-link'],
+[data-testid='reie-property-links-authority-link'],
+[data-testid='reie-property-links-related-link'],
+[data-testid='reie-search-authority-link'],
+[data-testid='cep-navigation-market-journey'] a,
+[data-testid='cep-navigation-neighborhood-market-journey'] a {
+  color: rgba(255, 255, 255, 0.72);
+  text-decoration: none;
+}
+
+[data-testid='reie-financing-confidence-education'] a.reie-decision-link:hover,
+[data-testid='reie-related-property-authority-link']:hover,
+[data-testid='reie-property-links-authority-link']:hover,
+[data-testid='reie-property-links-related-link']:hover,
+[data-testid='reie-search-authority-link']:hover,
+[data-testid='cep-navigation-market-journey'] a:hover,
+[data-testid='cep-navigation-neighborhood-market-journey'] a:hover {
+  color: #ffffff;
+}
+
 [data-testid='continue-your-decision'][data-djx-density='compact'] [data-testid='continue-your-decision-link'] {
   border-color: rgba(183, 219, 226, 0.2);
   background: rgba(183, 219, 226, 0.08);

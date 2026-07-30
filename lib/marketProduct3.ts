@@ -148,8 +148,8 @@ export function buildCityMarketProduct3Experience({
       sourceAuthority: 'Existing REIE governed city market data and certified Decision Guide registry where available.',
       freshness: period,
       completeness: authorizedRichInterpretation
-        ? 'Complete for first public VIS interpretation across Boulder, Lafayette, and Louisville.'
-        : 'Sparse foundation state; public presentation is intentionally limited.',
+        ? 'Complete evidence for bounded public interpretation across Boulder, Lafayette, and Louisville.'
+        : 'Limited evidence; public presentation is intentionally limited.',
       limitations: 'No AI, forecasting, valuation model, provider GIS, customer telemetry, or external source activation is used.',
       conflicts: 'No conflicting evidence is represented in the current repository data contract.',
       verification: 'Treat the pulse as decision guidance, then verify live listings, disclosures, condition, and advisor context.',
@@ -220,7 +220,7 @@ export function buildStateMarketProduct3Experience({
     confidenceLayer: {
       sourceAuthority: 'Existing REIE market summaries and certified Decision Guide registry.',
       freshness: 'Current governed REIE market discovery snapshot',
-      completeness: 'Complete for statewide market discovery; city depth varies by certification state.',
+      completeness: 'Complete evidence for statewide market discovery; city depth varies by certification state.',
       limitations: 'No AI, forecasting, valuation model, provider GIS, customer telemetry, or external source activation is used.',
       conflicts: 'No conflicting evidence is represented in the current repository data contract.',
       verification: 'Use the statewide pulse to choose a city path, then verify live listings, local guide depth, and property context.',

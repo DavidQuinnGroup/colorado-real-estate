@@ -81,7 +81,8 @@ async function assertSourceContracts() {
   assert(searchProperties.includes("status: { equals: getDefaultStatusFilter(params.status), mode: 'insensitive' }"), 'Expected SSR search to apply canonical status filtering.');
   assert(searchProperties.includes('sortListingsForLaunchQuality(properties.map(mapSearchProperty))'), 'Expected SSR search to apply launch result ranking.');
 
-  assert(searchInterface.includes("return 'Search ready';"), 'Expected visible search interface copy to avoid provider names.');
+  assert(searchInterface.includes("return 'Complete evidence';"), 'Expected visible search interface copy to use governed evidence vocabulary.');
+  assert(searchInterface.includes("return 'Fallback evidence';"), 'Expected degraded search state to use governed fallback evidence vocabulary.');
   assert(searchMap.includes("return 'search ready';"), 'Expected visible map diagnostics to avoid provider names.');
   assert(packageJson.includes('"check:search-listing-quality"'), 'Expected package script for search listing quality check.');
 }

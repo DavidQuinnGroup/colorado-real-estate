@@ -8,9 +8,9 @@ type PropertyProduct31ExperienceProps = {
 };
 
 function confidenceLabel(confidence: PropertyProduct31Confidence) {
-  if (confidence === 'high') return 'Well Supported';
-  if (confidence === 'moderate') return 'Review Context';
-  return 'Limited Evidence';
+  if (confidence === 'high') return 'Well supported';
+  if (confidence === 'moderate') return 'Review context';
+  return 'Limited evidence';
 }
 
 function confidenceClass(confidence: PropertyProduct31Confidence) {

@@ -12,16 +12,16 @@ type NeighborhoodProduct3ExperienceProps = {
 };
 
 function evidenceLabel(state: NeighborhoodProduct3EvidenceState) {
-  if (state === 'complete') return 'Complete';
-  if (state === 'conflict') return 'Conflict';
-  if (state === 'missing') return 'Missing';
-  return 'Sparse';
+  if (state === 'complete') return 'Complete evidence';
+  if (state === 'conflict') return 'Limited evidence';
+  if (state === 'missing') return 'Unavailable evidence';
+  return 'Limited evidence';
 }
 
 function confidenceLabel(confidence: NeighborhoodProduct3Confidence) {
-  if (confidence === 'well-supported') return 'Well Supported';
-  if (confidence === 'review-context') return 'Review Context';
-  return 'Limited Evidence';
+  if (confidence === 'well-supported') return 'Well supported';
+  if (confidence === 'review-context') return 'Review context';
+  return 'Limited evidence';
 }
 
 function confidenceClass(confidence: NeighborhoodProduct3Confidence) {
@@ -280,9 +280,9 @@ export default function NeighborhoodProduct3Experience({ model }: NeighborhoodPr
               <p className="text-sm leading-7 text-white/62">{model.marketContext.summary}</p>
               <Link
                 href={model.marketContext.cityHref}
-                className="reie-neighborhood-product-3-action mt-5 inline-flex min-h-11 items-center gap-2 rounded-[6px] bg-white/[0.07] px-4 py-2 text-[10px] font-black uppercase tracking-[0.12em] text-white no-underline transition hover:bg-white/[0.12] focus:outline-none focus:ring-2 focus:ring-cyan-100/70"
+                className="reie-neighborhood-product-3-action reie-decision-link reie-decision-link--secondary mt-5 inline-flex min-h-11 items-center gap-2 rounded-[6px] px-4 py-2 text-[10px] font-black uppercase tracking-[0.12em] transition focus:outline-none focus:ring-2 focus:ring-cyan-100/70"
               >
-                City market context
+                City Market Context
                 <ArrowUpRight size={14} aria-hidden="true" />
               </Link>
             </div>

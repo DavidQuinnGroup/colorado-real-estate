@@ -45,7 +45,7 @@ export default function ContactPage() {
         <TrustList items={contactItems} />
         <p>
           Start from the{' '}
-          <Link href="/search" className="font-bold text-cyan-100 underline underline-offset-4">
+          <Link href="/search" className="reie-inline-link font-bold underline underline-offset-4">
             property search
           </Link>{' '}
           and open a listing to submit a property-specific inquiry. Submitting any inquiry is for follow-up routing only and does not
@@ -61,8 +61,8 @@ export default function ContactPage() {
         <p>
           Public forms require an email address and may collect optional name, phone, notes, selected timing, market/search criteria, and
           property context. Forms are used for the requested inquiry, saved search, strategy intake, and related follow-up routing. Review
-          the <Link href="/privacy" className="font-bold text-cyan-100 underline underline-offset-4">Privacy Notice</Link> and{' '}
-          <Link href="/terms" className="font-bold text-cyan-100 underline underline-offset-4">Terms of Use</Link> before submitting.
+          the <Link href="/privacy" className="reie-inline-link font-bold underline underline-offset-4">Privacy Notice</Link> and{' '}
+          <Link href="/terms" className="reie-inline-link font-bold underline underline-offset-4">Terms of Use</Link> before submitting.
         </p>
       </TrustSection>
     </PublicTrustPage>

@@ -270,7 +270,7 @@ export default function PropertyCard({ property, isActive, onClick }: PropertyCa
         >
           <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100/76">
             <Sparkles size={12} aria-hidden="true" />
-            Review Context
+            Review context
           </p>
           <p className="mt-1 text-xs font-bold leading-5 text-white/68">{decisionSupport.attentionLabel}. {decisionSupport.attentionReason}</p>
         </div>
@@ -331,7 +331,7 @@ export default function PropertyCard({ property, isActive, onClick }: PropertyCa
               aria-label={`View ${city} market intelligence`}
               onClick={(event) => event.stopPropagation()}
               onKeyDown={(event) => event.stopPropagation()}
-              className="inline-flex h-8 w-8 items-center justify-center rounded-[6px] border border-white/10 text-white/55 transition hover:border-cyan-100/45 hover:text-cyan-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-200"
+              className="reie-decision-link reie-decision-link--secondary inline-flex h-8 w-8 items-center justify-center rounded-[6px] transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-200"
               title={`${city} market intelligence`}
             >
               <MapPin size={15} aria-hidden="true" />
@@ -344,7 +344,7 @@ export default function PropertyCard({ property, isActive, onClick }: PropertyCa
               aria-label={`View details for ${address}`}
               onClick={(event) => event.stopPropagation()}
               onKeyDown={(event) => event.stopPropagation()}
-              className="inline-flex h-8 items-center justify-center gap-1.5 rounded-[6px] border border-cyan-100/35 bg-cyan-100/10 px-3 text-[10px] font-black uppercase tracking-[0.12em] text-cyan-100 transition hover:border-white/60 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-200"
+              className="reie-decision-link reie-decision-link--primary inline-flex h-8 items-center justify-center gap-1.5 rounded-[6px] px-3 text-[10px] font-black uppercase tracking-[0.12em] transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-200"
               title="View Property"
             >
               View Property

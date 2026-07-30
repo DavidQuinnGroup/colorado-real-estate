@@ -132,7 +132,7 @@ export default function FinancingConfidenceEducation({ surface, compact = false 
               <a
                 key={item.lens}
                 href={item.href}
-                className="group rounded-[8px] bg-white/[0.045] p-3 ring-1 ring-white/[0.08] transition hover:bg-white/[0.07] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-200"
+                className="reie-decision-link reie-decision-link--card group rounded-[8px] bg-white/[0.045] p-3 ring-1 ring-white/[0.08] transition hover:bg-white/[0.07] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-200"
                 data-testid="reie-financing-v8-decision-item"
                 data-financing-v8-lens={item.lens}
                 data-financing-v8-action={item.action}

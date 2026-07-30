@@ -60,7 +60,7 @@ export function buildFinancingDecisionWorkspace(input: FinancingDecisionWorkspac
         lens: 'questions',
         label: 'What should I ask a lender?',
         guidance: 'Ask what assumptions are included, what is excluded, how scenarios change, which documents are needed, and when professional review is appropriate.',
-        action: 'Ask a focused question',
+        action: 'Ask an Advisor',
         href: input.advisorHref,
       },
       {

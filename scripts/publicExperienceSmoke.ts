@@ -111,7 +111,7 @@ async function assertSearchPage() {
   assert.ok(includesFoldedText(html, 'Where would you like to live?'), 'Expected search controls to prioritize location.');
   assert.ok(includesFoldedText(html, 'What fits your budget?'), 'Expected search controls to group price refinement.');
   assert.ok(includesFoldedText(html, 'Already have a property in mind?'), 'Expected search controls to move specific-property lookup after broader refinements.');
-  assert.ok(includesFoldedText(html, 'Review Context'), 'Expected property cards to use neutral review context framing.');
+  assert.ok(includesFoldedText(html, 'Review context'), 'Expected property cards to use neutral review context framing.');
   assert.ok(includesFoldedText(html, 'Map Context'), 'Expected property cards to include map context.');
   assert.ok(includesFoldedText(html, 'Open details when this listing deserves a closer look'), 'Expected property cards to frame detail navigation after comparison.');
   assert.ok(includesFoldedText(html, 'Save This Search'), 'Expected save-search opportunity to use customer-facing copy.');
@@ -272,7 +272,7 @@ async function assertDrawerSource() {
   assert.ok(source.includes('Selected Property'), 'Expected selected drawer to identify selected properties.');
   assert.ok(source.includes('This panel reflects the property selected from the map or listing results.'), 'Expected selected drawer to explain map/list selection continuity.');
   assert.ok(source.includes('Property Details'), 'Expected selected drawer to expose property details.');
-  assert.ok(source.includes('Review Context'), 'Expected selected drawer to use review context framing.');
+  assert.ok(source.includes('Review context'), 'Expected selected drawer to use review context framing.');
   assert.ok(source.includes('Map Context'), 'Expected selected drawer to expose map context.');
   assert.ok(!source.includes('Location Fit'), 'Expected selected drawer to avoid deprecated location-fit language.');
   assert.ok(source.includes('Property Signals'), 'Expected selected drawer to expose property signal context.');

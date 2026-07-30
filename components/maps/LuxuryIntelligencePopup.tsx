@@ -117,7 +117,7 @@ export default function LuxuryIntelligencePopup({ property }: LuxuryIntelligence
             Access Context
           </div>
           <div className="bg-white px-2 py-0.5 text-[8px] font-black uppercase italic tracking-widest text-black">
-            Review Context
+            Review context
           </div>
           <div className="col-span-2 truncate text-[8px] font-black uppercase italic tracking-widest text-white/50">
             {riskLabel}

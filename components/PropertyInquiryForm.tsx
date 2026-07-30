@@ -452,11 +452,11 @@ export default function PropertyInquiryForm({ propertyId, address, city, state }
         >
           Email is required. Name, phone, timing, and notes are optional. This inquiry is used for property-specific follow-up routing and
           does not automatically create a brokerage relationship. Review the{' '}
-          <Link href="/privacy" className="font-bold text-cyan-100 underline underline-offset-4">
+          <Link href="/privacy" className="reie-inline-link font-bold underline underline-offset-4">
             Privacy Notice
           </Link>{' '}
           and{' '}
-          <Link href="/terms" className="font-bold text-cyan-100 underline underline-offset-4">
+          <Link href="/terms" className="reie-inline-link font-bold underline underline-offset-4">
             Terms of Use
           </Link>
           . Do not submit confidential negotiating positions, motivation, financial limits, or client-confidential information until the

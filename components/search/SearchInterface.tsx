@@ -173,8 +173,8 @@ function getDiscoveryFilterLabel(hasFilters: boolean) {
 }
 
 function getCustomerSearchStatus(meta: SearchMapMeta | null) {
-  if (meta?.health === 'degraded') return 'Fallback results available';
-  return 'Search ready';
+  if (meta?.health === 'degraded') return 'Fallback evidence';
+  return 'Complete evidence';
 }
 
 function getSearchResultLabel(count: number) {
@@ -197,8 +197,8 @@ function getCriteriaLine(chips: Array<{ label: string }>) {
 function getEvidenceLabel(isSearching: boolean, isDegraded: boolean, hasZeroResults: boolean) {
   if (isSearching) return 'Updating results';
   if (hasZeroResults) return 'No matching properties';
-  if (isDegraded) return 'Fallback results available';
-  return 'Evidence ready';
+  if (isDegraded) return 'Fallback evidence';
+  return 'Complete evidence';
 }
 
 export default function SearchInterface({
@@ -666,14 +666,14 @@ export default function SearchInterface({
                 data-cep-measurement-active="false"
               >
                 {[
-                  { label: 'Market context', href: '/market', action: 'view-market' as const, destination: 'market' as const },
-                  { label: 'Seller review', href: '/sell', action: 'request-seller-review' as const, destination: 'seller' as const },
-                  { label: 'Ask an advisor', href: '/contact', action: 'ask-property-question' as const, destination: 'inquiry' as const },
+                  { label: 'Market Context', href: '/market', action: 'view-market' as const, destination: 'market' as const },
+                  { label: 'Seller Review', href: '/sell', action: 'request-seller-review' as const, destination: 'seller' as const },
+                  { label: 'Ask an Advisor', href: '/contact', action: 'ask-property-question' as const, destination: 'inquiry' as const },
                 ].map((item) => (
                   <Link
                     key={item.href}
                     href={item.href}
-                    className="inline-flex min-h-10 items-center justify-center rounded-[6px] border border-white/10 bg-black/18 px-3 py-2 text-center text-[10px] font-black uppercase tracking-[0.12em] text-white/58 transition hover:border-cyan-100/35 hover:text-cyan-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
+                    className="reie-decision-link reie-decision-link--secondary inline-flex min-h-10 items-center justify-center rounded-[6px] px-3 py-2 text-center text-[10px] font-black uppercase tracking-[0.12em] transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
                     {...getJourneyMeasurementAttributes({
                       surface: 'search-continuity',
                       stage: 'search',
@@ -692,9 +692,9 @@ export default function SearchInterface({
                 whyHere="Search keeps active inventory, criteria, map context, and property links together before you rely on any single listing."
                 nextStep="Open a property decision view or broaden into market context."
                 links={[
-                  { label: 'Market', href: '/market', note: 'Compare city context' },
-                  { label: 'Property', href: visibleListings[0] ? `/properties/${visibleListings[0].id}` : '/search', note: 'Open listing detail' },
-                  { label: 'Ask', href: '/contact', note: 'Bring focused questions' },
+                  { label: 'Market Context', href: '/market', note: 'Compare city context' },
+                  { label: 'View Property', href: visibleListings[0] ? `/properties/${visibleListings[0].id}` : '/search', note: 'Open listing detail' },
+                  { label: 'Ask an Advisor', href: '/contact', note: 'Bring focused questions' },
                 ]}
               />
               <div className="reie-search-continuity" data-testid="reie-search-grand-plan-continuity">
@@ -753,7 +753,8 @@ export default function SearchInterface({
                 <Link
                   key={`${link.href}-${link.label}`}
                   href={link.href}
-                  className="group rounded-[6px] border border-white/10 bg-white/[0.055] p-3 transition-colors hover:border-cyan-100/35 hover:bg-white/[0.085]"
+                  className="reie-decision-link reie-decision-link--card group rounded-[6px] border border-white/10 bg-white/[0.055] p-3 transition-colors hover:border-cyan-100/35 hover:bg-white/[0.085]"
+                  data-testid="reie-search-authority-link"
                   {...getJourneyMeasurementAttributes({
                     surface: 'search-map-authority-links',
                     stage: 'search',

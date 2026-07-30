@@ -129,7 +129,7 @@ export function buildPropertyDecisionWorkspace(input: PropertyDecisionWorkspaceI
           authorityLinkCount > 0
             ? `${authorityLinkCount} authority links are available for broader context.`
             : 'This page keeps discussion grounded in public listing facts and visible context.',
-        action: 'Ask a focused question',
+        action: 'Ask About This Property',
         href: '#property-contact',
       },
       {

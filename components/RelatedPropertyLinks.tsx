@@ -241,7 +241,7 @@ export default function RelatedPropertyLinks({
                 <Link
                   key={`${link.status}-${link.href}-${link.label}-${index}`}
                   href={link.href}
-                  className="group bg-black p-4 transition-colors hover:bg-white/[0.05]"
+                  className="reie-decision-link reie-decision-link--card group bg-black p-4 transition-colors hover:bg-white/[0.05]"
                   data-testid="reie-related-property-authority-link"
                   data-related-property-link-status={link.status}
                   data-related-property-link-label={link.label}
@@ -260,7 +260,7 @@ export default function RelatedPropertyLinks({
         </div>
         <Link
           href={primaryHref}
-          className="group flex min-h-11 shrink-0 items-center gap-2 rounded-[6px] bg-cyan-100 px-5 py-3 text-[10px] font-black uppercase tracking-[0.14em] text-[#061017] transition-colors hover:bg-white"
+          className="reie-decision-link reie-decision-link--primary group flex min-h-11 shrink-0 items-center gap-2 rounded-[6px] px-5 py-3 text-[10px] font-black uppercase tracking-[0.14em] transition-colors"
           data-testid="reie-related-property-primary-link"
           data-related-property-primary-href={primaryHref}
           data-related-property-link-source={authorityLinks[0] ? "authority-link" : "city-search-fallback"}

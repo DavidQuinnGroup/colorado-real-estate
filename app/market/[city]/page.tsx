@@ -307,7 +307,7 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
                 })}
               >
                 <Search className="h-4 w-4" />
-                Search {cityDecisionGuide.cityName} Homes
+                Search With Market Context
               </Link>
               <Link
                 href={`#${cityDecisionGuide.neighborhoodSectionId}`}
@@ -315,7 +315,7 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
                 data-testid={`${cityDecisionGuide.key}-decision-guide-neighborhoods-cta`}
               >
                 <MapPinned className="h-4 w-4" />
-                Explore {cityDecisionGuide.cityName} Neighborhoods
+                Neighborhood Context
               </Link>
             </div>
           ) : null}
@@ -356,8 +356,8 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
           whyHere="This city guide connects market evidence, neighborhood paths, property search, and verification prompts without forecasting or ranking places."
           nextStep="Compare neighborhood context, search active inventory, or use the confidence layer before relying on the signal."
           links={[
-            { label: 'Search', href: `/search?city=${encodeURIComponent(cityData.name)}`, note: 'Review active homes' },
-            { label: 'Neighborhood', href: featuredNeighborhood ? getNeighborhoodPath(featuredNeighborhood) : '#market-neighborhood-context', note: 'Open local context' },
+            { label: 'Search With Market Context', href: `/search?city=${encodeURIComponent(cityData.name)}`, note: 'Review active homes' },
+            { label: 'Neighborhood Context', href: featuredNeighborhood ? getNeighborhoodPath(featuredNeighborhood) : '#market-neighborhood-context', note: 'Open local context' },
             { label: 'All Markets', href: '/market', note: 'Broaden comparison' },
           ]}
         />
@@ -524,9 +524,9 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
                 </div>
                 <Link
                   href={`/search?city=${encodeURIComponent(cityData.name)}`}
-                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[6px] bg-white/[0.07] px-4 py-3 text-xs font-black uppercase tracking-[0.14em] text-white no-underline transition hover:bg-white/12"
+                  className="reie-decision-link reie-decision-link--secondary inline-flex min-h-11 items-center justify-center gap-2 rounded-[6px] px-4 py-3 text-xs font-black uppercase tracking-[0.14em] transition"
                 >
-                  Search {cityDecisionGuide.cityName}
+                  Search With Market Context
                   <ArrowUpRight className="h-4 w-4" />
                 </Link>
               </div>
@@ -535,7 +535,7 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
                   <Link
                     key={neighborhood.slug}
                     href={getNeighborhoodPath(neighborhood)}
-                    className="group rounded-[8px] bg-white/[0.045] p-5 text-white no-underline transition hover:bg-white/[0.075]"
+                    className="reie-decision-link reie-decision-link--card group rounded-[8px] bg-white/[0.045] p-5 text-white no-underline transition hover:bg-white/[0.075]"
                   >
                     <p className="text-lg font-black uppercase tracking-tight transition group-hover:text-cyan-100">
                       {neighborhood.name}
@@ -561,7 +561,7 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
                 <Link
                   key={item.label}
                   href={item.href}
-                  className="flex min-h-12 items-center justify-between gap-3 rounded-[6px] bg-[#071017]/80 px-4 py-3 text-xs font-black uppercase tracking-[0.12em] text-white no-underline transition hover:bg-[#0a1118] hover:text-cyan-100"
+                  className="reie-decision-link reie-decision-link--secondary flex min-h-12 items-center justify-between gap-3 rounded-[6px] bg-[#071017]/80 px-4 py-3 text-xs font-black uppercase tracking-[0.12em] transition hover:bg-[#0a1118]"
                   {...getJourneyMeasurementAttributes({
                     surface: cityDecisionGuide.continuitySurface,
                     stage: 'market',
@@ -705,7 +705,7 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
             >
               <Link
                 href="/market"
-                className="flex min-h-12 items-center justify-center rounded-[6px] bg-white/[0.04] px-4 py-3 text-center text-[11px] font-black uppercase tracking-[0.12em] text-white/64 no-underline transition hover:bg-cyan-100/10 hover:text-cyan-100 focus:outline-none focus:ring-2 focus:ring-cyan-100/70"
+                className="reie-decision-link reie-decision-link--secondary flex min-h-12 items-center justify-center rounded-[6px] px-4 py-3 text-center text-[11px] font-black uppercase tracking-[0.12em] transition focus:outline-none focus:ring-2 focus:ring-cyan-100/70"
                 {...getJourneyMeasurementAttributes({
                   surface: 'city-market-journey',
                   stage: 'market',
@@ -717,7 +717,7 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
               </Link>
               <Link
                 href={`/search?city=${encodeURIComponent(cityData.name)}`}
-                className="flex min-h-12 items-center justify-center rounded-[6px] bg-white/[0.04] px-4 py-3 text-center text-[11px] font-black uppercase tracking-[0.12em] text-white/64 no-underline transition hover:bg-cyan-100/10 hover:text-cyan-100 focus:outline-none focus:ring-2 focus:ring-cyan-100/70"
+                className="reie-decision-link reie-decision-link--secondary flex min-h-12 items-center justify-center rounded-[6px] px-4 py-3 text-center text-[11px] font-black uppercase tracking-[0.12em] transition focus:outline-none focus:ring-2 focus:ring-cyan-100/70"
                 {...getJourneyMeasurementAttributes({
                   surface: 'city-market-journey',
                   stage: 'market',
@@ -725,11 +725,11 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
                   destination: 'search',
                 })}
               >
-                Search This Market
+                Search With Market Context
               </Link>
               <Link
                 href="/sell"
-                className="flex min-h-12 items-center justify-center rounded-[6px] bg-white/[0.04] px-4 py-3 text-center text-[11px] font-black uppercase tracking-[0.12em] text-white/64 no-underline transition hover:bg-cyan-100/10 hover:text-cyan-100 focus:outline-none focus:ring-2 focus:ring-cyan-100/70"
+                className="reie-decision-link reie-decision-link--secondary flex min-h-12 items-center justify-center rounded-[6px] px-4 py-3 text-center text-[11px] font-black uppercase tracking-[0.12em] transition focus:outline-none focus:ring-2 focus:ring-cyan-100/70"
                 {...getJourneyMeasurementAttributes({
                   surface: 'city-market-journey',
                   stage: 'market',
@@ -818,7 +818,7 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
                 <Link
                   key={neighborhood.slug}
                   href={getNeighborhoodPath(neighborhood)}
-                  className="group block border-l border-white/10 py-2 pl-6 transition-colors hover:border-[#00ff80]"
+                  className="reie-decision-link reie-decision-link--card group block border-l border-white/10 py-2 pl-6 transition-colors hover:border-[#00ff80]"
                 >
                   <div className="flex items-center justify-between gap-4">
                     <h4 className="text-lg font-bold text-white transition-colors group-hover:text-[#00ff80]">{neighborhood.name}</h4>

@@ -506,7 +506,7 @@ function getPropertyDecisionBriefItems({
       answer: decisionNextStep,
       detail: 'Use the public facts below as orientation, then decide what needs professional review before touring or writing.',
       href: '#property-contact',
-      action: 'Ask a focused question',
+      action: 'Ask About This Property',
     },
     {
       question: 'What should I know before touring?',
@@ -1008,9 +1008,9 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                   </Link>
                   <Link
                     href={marketPathway.href}
-                    className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-[6px] bg-white/[0.055] px-3 py-2.5 text-[10px] font-black uppercase tracking-[0.12em] text-white/72 transition hover:bg-white/[0.08] hover:text-cyan-100"
+                    className="reie-decision-link reie-decision-link--secondary inline-flex min-h-10 items-center justify-center gap-1.5 rounded-[6px] px-3 py-2.5 text-[10px] font-black uppercase tracking-[0.12em] transition"
                   >
-                    {marketPathway.eyebrow}
+                    Market Context
                     <TrendingUp size={13} aria-hidden="true" />
                   </Link>
                 </div>
@@ -1029,7 +1029,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                   <SignalTile icon={<ShieldCheck size={16} />} label="Location" value={property.neighborhood || property.city || 'Colorado'} tone="white" />
                 </div>
                 <div className="mt-3 rounded-[6px] bg-white/[0.045] p-3">
-                  <p className="text-[10px] font-black uppercase tracking-[0.14em] text-white/40">Review Context</p>
+                  <p className="text-[10px] font-black uppercase tracking-[0.14em] text-white/40">Review context</p>
                   <p className="mt-2 truncate text-sm font-black uppercase tracking-[0.08em] text-cyan-100">{reviewSignal}</p>
                 </div>
                 <p className="mt-3 text-xs leading-5 text-white/46">
@@ -1114,9 +1114,9 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
           whyHere="This property view brings listing facts, Property DNA, confidence, comparable context, and verification prompts together without scoring, valuing, forecasting, or recommending the property."
           nextStep="Return to search, inspect market context, or ask a focused property question."
           links={[
-            { label: 'Search', href: getCitySearchHref(property.city), note: 'Return to results' },
-            { label: 'Market', href: marketPathway.href, note: 'Broader context' },
-            { label: 'Ask', href: '#property-contact', note: 'Focused question' },
+            { label: 'Back to Search', href: getCitySearchHref(property.city), note: 'Return to results' },
+            { label: 'Market Context', href: marketPathway.href, note: 'Broader context' },
+            { label: 'Ask About This Property', href: '#property-contact', note: 'Focused question' },
           ]}
         />
       </section>
@@ -1222,7 +1222,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                     <p className="mt-3 text-xs leading-5 text-white/42">{item.detail}</p>
                     <Link
                       href={item.href}
-                      className="mt-auto pt-4 text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100 transition hover:text-white"
+                      className="reie-inline-link mt-auto pt-4 text-[10px] font-black uppercase tracking-[0.14em] transition"
                     >
                       {item.action}
                     </Link>
@@ -1288,7 +1288,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                     <p className="mt-3 text-xs leading-5 text-white/58">{item.evidence}</p>
                     <Link
                       href={item.href}
-                      className="mt-auto pt-4 text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100 transition hover:text-white"
+                      className="reie-inline-link mt-auto pt-4 text-[10px] font-black uppercase tracking-[0.14em] transition"
                     >
                       {item.action}
                     </Link>
@@ -1356,21 +1356,21 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                   <div className="mt-3 grid gap-2">
                     <Link
                       href="#property-contact"
-                      className="inline-flex min-h-10 items-center justify-center rounded-[6px] bg-cyan-100 px-3 py-2 text-[10px] font-black uppercase tracking-[0.12em] text-[#061017] transition hover:bg-white"
+                      className="reie-decision-link reie-decision-link--primary inline-flex min-h-10 items-center justify-center rounded-[6px] px-3 py-2 text-[10px] font-black uppercase tracking-[0.12em] transition"
                     >
                       Ask a Property Question
                     </Link>
                     <Link
                       href={getCitySearchHref(property.city)}
-                      className="inline-flex min-h-10 items-center justify-center rounded-[6px] border border-white/10 bg-white/[0.055] px-3 py-2 text-[10px] font-black uppercase tracking-[0.12em] text-white/66 transition hover:border-cyan-100/35 hover:text-cyan-100"
+                      className="reie-decision-link reie-decision-link--secondary inline-flex min-h-10 items-center justify-center rounded-[6px] px-3 py-2 text-[10px] font-black uppercase tracking-[0.12em] transition"
                     >
-                      Return to Search Results
+                      Back to Search
                     </Link>
                     <Link
                       href={marketPathway.href}
-                      className="inline-flex min-h-10 items-center justify-center rounded-[6px] border border-white/10 bg-white/[0.055] px-3 py-2 text-[10px] font-black uppercase tracking-[0.12em] text-white/66 transition hover:border-cyan-100/35 hover:text-cyan-100"
+                      className="reie-decision-link reie-decision-link--secondary inline-flex min-h-10 items-center justify-center rounded-[6px] px-3 py-2 text-[10px] font-black uppercase tracking-[0.12em] transition"
                     >
-                      {marketPathway.isMarketPageAvailable ? 'View Market Context' : 'Return to Search'}
+                      {marketPathway.isMarketPageAvailable ? 'Market Context' : 'Back to Search'}
                     </Link>
                   </div>
                 </div>
@@ -1606,7 +1606,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                   </div>
                   <Link
                     href={marketPathway.href}
-                    className="inline-flex min-h-10 items-center justify-center rounded-[6px] border border-cyan-100/22 bg-cyan-100/[0.08] px-3 py-2 text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100 transition hover:border-cyan-100/40 hover:bg-cyan-100/[0.12]"
+                    className="reie-decision-link reie-decision-link--secondary inline-flex min-h-10 items-center justify-center rounded-[6px] px-3 py-2 text-[10px] font-black uppercase tracking-[0.14em] transition"
                   >
                     {marketPathway.label}
                   </Link>
@@ -1755,7 +1755,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
             <div className="mt-4 grid gap-2">
               <Link
                 href={marketPathway.href}
-                className="inline-flex min-h-10 items-center justify-center rounded-[6px] border border-cyan-100/22 bg-cyan-100/[0.08] px-3 py-2 text-[10px] font-black uppercase tracking-[0.12em] text-cyan-100 transition hover:border-cyan-100/40 hover:bg-cyan-100/[0.12] focus:outline-none focus:ring-2 focus:ring-cyan-100/70"
+                className="reie-decision-link reie-decision-link--secondary inline-flex min-h-10 items-center justify-center rounded-[6px] px-3 py-2 text-[10px] font-black uppercase tracking-[0.12em] transition focus:outline-none focus:ring-2 focus:ring-cyan-100/70"
                 {...getJourneyMeasurementAttributes({
                   surface: 'property-decision-journey',
                   stage: 'property',
@@ -1763,11 +1763,11 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                   destination: 'market',
                 })}
               >
-                {marketPathway.isMarketPageAvailable ? 'View Market Context' : 'Return to Search'}
+                {marketPathway.isMarketPageAvailable ? 'Market Context' : 'Back to Search'}
               </Link>
               <Link
                 href="#property-contact"
-                className="inline-flex min-h-10 items-center justify-center rounded-[6px] bg-cyan-100 px-3 py-2 text-[10px] font-black uppercase tracking-[0.12em] text-[#061017] transition hover:bg-white focus:outline-none focus:ring-2 focus:ring-cyan-100/70"
+                className="reie-decision-link reie-decision-link--primary inline-flex min-h-10 items-center justify-center rounded-[6px] px-3 py-2 text-[10px] font-black uppercase tracking-[0.12em] transition focus:outline-none focus:ring-2 focus:ring-cyan-100/70"
                 {...getJourneyMeasurementAttributes({
                   surface: 'property-decision-journey',
                   stage: 'property',
@@ -1779,7 +1779,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
               </Link>
               <Link
                 href="/sell"
-                className="inline-flex min-h-10 items-center justify-center rounded-[6px] border border-white/10 bg-white/[0.055] px-3 py-2 text-[10px] font-black uppercase tracking-[0.12em] text-white/66 transition hover:border-cyan-100/35 hover:text-cyan-100 focus:outline-none focus:ring-2 focus:ring-cyan-100/70"
+                className="reie-decision-link reie-decision-link--secondary inline-flex min-h-10 items-center justify-center rounded-[6px] px-3 py-2 text-[10px] font-black uppercase tracking-[0.12em] transition focus:outline-none focus:ring-2 focus:ring-cyan-100/70"
                 {...getJourneyMeasurementAttributes({
                   surface: 'property-decision-journey',
                   stage: 'property',
@@ -1891,7 +1891,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
         <div className="grid grid-cols-3 gap-2" style={{ display: 'grid', gap: 8, gridTemplateColumns: 'repeat(3, minmax(0, 1fr))' }}>
           <Link
             href="/search"
-            className="inline-flex h-11 items-center justify-center gap-1.5 rounded-[6px] border border-white/10 bg-white/[0.055] text-[10px] font-black uppercase tracking-[0.12em] text-white/72"
+            className="reie-decision-link reie-decision-link--secondary inline-flex h-11 items-center justify-center gap-1.5 rounded-[6px] text-[10px] font-black uppercase tracking-[0.12em]"
             style={{ alignItems: 'center', display: 'inline-flex', height: 44, justifyContent: 'center' }}
           >
             <ArrowLeft size={13} aria-hidden="true" />
@@ -1899,7 +1899,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
           </Link>
           <Link
             href={marketPathway.href}
-            className="inline-flex h-11 items-center justify-center gap-1.5 rounded-[6px] border border-white/10 bg-white/[0.055] text-[10px] font-black uppercase tracking-[0.12em] text-white/72"
+            className="reie-decision-link reie-decision-link--secondary inline-flex h-11 items-center justify-center gap-1.5 rounded-[6px] text-[10px] font-black uppercase tracking-[0.12em]"
             style={{ alignItems: 'center', display: 'inline-flex', height: 44, justifyContent: 'center' }}
           >
             <TrendingUp size={13} aria-hidden="true" />
@@ -1907,7 +1907,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
           </Link>
           <Link
             href="#property-contact"
-            className="inline-flex h-11 items-center justify-center gap-1.5 rounded-[6px] bg-cyan-100 text-[10px] font-black uppercase tracking-[0.12em] text-[#061017]"
+            className="reie-decision-link reie-decision-link--primary inline-flex h-11 items-center justify-center gap-1.5 rounded-[6px] text-[10px] font-black uppercase tracking-[0.12em]"
             style={{ alignItems: 'center', display: 'inline-flex', height: 44, justifyContent: 'center' }}
           >
             <Mail size={13} aria-hidden="true" />
@@ -1964,7 +1964,7 @@ function AuthorityLink({ href, eyebrow, label }: { href: string; eyebrow: string
   return (
     <Link
       href={href}
-      className="group rounded-[6px] bg-white/[0.045] p-3 transition-colors hover:bg-white/[0.075]"
+      className="reie-decision-link reie-decision-link--card group rounded-[6px] bg-white/[0.045] p-3 transition-colors hover:bg-white/[0.075]"
     >
       <p className="text-[10px] font-black uppercase tracking-[0.14em] text-white/36">{eyebrow}</p>
       <p className="mt-2 text-xs font-black uppercase tracking-[0.08em] text-white/68 transition-colors group-hover:text-white">

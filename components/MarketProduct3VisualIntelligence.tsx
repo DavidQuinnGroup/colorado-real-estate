@@ -13,7 +13,7 @@ export default function MarketProduct3VisualIntelligence({ experience }: MarketP
   const paceFactor = experience.pulseFactors.find((factor) => factor.label === 'Pace');
   const priceFactor = experience.pulseFactors.find((factor) => factor.label === 'Price Context' || factor.label === 'Pricing Context');
   const confidenceSummary = [
-    { label: 'Evidence state', value: rich ? 'Complete public interpretation' : 'Sparse foundation state' },
+    { label: 'Evidence state', value: rich ? 'Complete evidence' : 'Limited evidence' },
     { label: 'Freshness', value: experience.confidenceLayer.freshness },
     { label: 'Completeness', value: experience.confidenceLayer.completeness },
   ];
