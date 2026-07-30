@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { ArrowUpRight, Compass, HelpCircle, Home, Lock, MapPinned, Search, ShieldCheck, Zap } from 'lucide-react';
 
 import CityMarketStats from '@/components/CityMarketStats';
+import ContinueYourDecision from '@/components/ContinueYourDecision';
 import FinancingConfidenceEducation from '@/components/FinancingConfidenceEducation';
 import LeadCapture from '@/components/LeadCapture';
 import MarketHomesLinks from '@/components/MarketHomesLinks';
@@ -41,9 +42,7 @@ type MarketPageProps = {
 
 type CityAuthoritySignals = {
   neighborhoodCount: number;
-  averageResilienceScore: number;
-  highestResilienceNeighborhood?: Neighborhood;
-  highestEfficiencyNeighborhood?: Neighborhood;
+  firstNeighborhood?: Neighborhood;
 };
 
 const SITE_URL = 'https://davidquinngroup.com';
@@ -59,7 +58,7 @@ function getCityData(citySlug: string) {
 function getCityNeighborhoods(city: CityData) {
   return neighborhoods
     .filter((neighborhood) => normalizeRouteSegment(neighborhood.city) === normalizeRouteSegment(city.name))
-    .sort((a, b) => b.resilienceScore - a.resilienceScore || a.name.localeCompare(b.name));
+    .sort((a, b) => a.name.localeCompare(b.name));
 }
 
 function parseCurrency(value: string) {
@@ -76,7 +75,7 @@ function getCanonicalUrl(city: CityData) {
 }
 
 function getCityDescription(city: CityData) {
-  return `David Quinn Group's ${city.name}, Colorado housing market intelligence report combines local real estate data, construction forensics, neighborhood resilience, and lifestyle efficiency strategy.`;
+  return `David Quinn Group's ${city.name}, Colorado housing market intelligence report combines local real estate data, neighborhood context, property search paths, evidence, and verification guidance.`;
 }
 
 function getCityKeywords(city: CityData) {
@@ -98,18 +97,10 @@ function getNeighborhoodPath(neighborhood: Neighborhood) {
 
 function getAuthoritySignals(cityNeighborhoods: Neighborhood[]): CityAuthoritySignals {
   const neighborhoodCount = cityNeighborhoods.length;
-  const averageResilienceScore = neighborhoodCount
-    ? Math.round(cityNeighborhoods.reduce((sum, neighborhood) => sum + neighborhood.resilienceScore, 0) / neighborhoodCount)
-    : 0;
-  const highestEfficiencyNeighborhood = [...cityNeighborhoods].sort(
-    (a, b) => b.avgEfficiencyScore - a.avgEfficiencyScore || a.name.localeCompare(b.name),
-  )[0];
 
   return {
     neighborhoodCount,
-    averageResilienceScore,
-    highestResilienceNeighborhood: cityNeighborhoods[0],
-    highestEfficiencyNeighborhood,
+    firstNeighborhood: cityNeighborhoods[0],
   };
 }
 
@@ -203,7 +194,7 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
     pricingSignal: marketExperience.pricingLabel,
     inventorySignal: `${cityData.stats.inventory} active inventory signal`,
     neighborhoodCount: cityNeighborhoods.length,
-    resilienceSignal: `${authoritySignals.neighborhoodCount} neighborhood hubs and ${authoritySignals.averageResilienceScore}/100 average resilience`,
+    resilienceSignal: `${authoritySignals.neighborhoodCount} neighborhood paths and property-specific verification context`,
     searchHref: `/search?city=${encodeURIComponent(cityData.name)}`,
     marketHref: getCanonicalPath(cityData),
     sellerHref: '/sell',
@@ -226,8 +217,8 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
         data-city-market-schema-featured-neighborhood={featuredNeighborhood?.name ?? ""}
         data-city-market-schema-median-price={cityData.stats.medianPrice}
         data-city-market-schema-inventory={cityData.stats.inventory}
-        data-city-market-schema-health-score={cityData.stats.marketHealthScore}
-        data-city-market-schema-avg-efficiency={cityData.stats.avgEfficiency}
+        data-city-market-schema-health-state={marketExperience.directionLabel}
+        data-city-market-schema-access-context="available"
         data-city-market-schema-graph-count={cityMarketSchemaGraph.length}
         data-city-market-schema-has-breadcrumb="true"
         data-city-market-schema-has-neighborhoods={cityNeighborhoods.length > 0 ? "true" : "false"}
@@ -356,6 +347,19 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
       </section>
 
       <div className="mx-auto max-w-6xl space-y-16 px-6 pb-24 pt-10">
+        <ContinueYourDecision
+          stage="market"
+          cameFrom="Market discovery, search, or a neighborhood page"
+          currentDecision={`Decide how ${cityData.name} market context should guide the next move.`}
+          whyHere="This city guide connects market evidence, neighborhood paths, property search, and verification prompts without forecasting or ranking places."
+          nextStep="Compare neighborhood context, search active inventory, or use the confidence layer before relying on the signal."
+          links={[
+            { label: 'Search', href: `/search?city=${encodeURIComponent(cityData.name)}`, note: 'Review active homes' },
+            { label: 'Neighborhood', href: featuredNeighborhood ? getNeighborhoodPath(featuredNeighborhood) : '#market-neighborhood-context', note: 'Open local context' },
+            { label: 'All Markets', href: '/market', note: 'Broaden comparison' },
+          ]}
+        />
+
         <MarketProduct3VisualIntelligence experience={marketProduct3Experience} />
 
         {cityDecisionGuide ? (
@@ -771,8 +775,8 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
         <section id="market-neighborhood-context" className="relative">
           <div className="mb-8 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div>
-              <p className="mb-2 text-[10px] font-black uppercase tracking-[0.35em] text-white/30">Neighborhood Authority Layer</p>
-              <h2 className="text-2xl font-black italic uppercase tracking-tight">Resilience Hubs</h2>
+              <p className="mb-2 text-[10px] font-black uppercase tracking-[0.35em] text-white/30">Neighborhood Context Layer</p>
+              <h2 className="text-2xl font-black italic uppercase tracking-tight">Neighborhood Paths</h2>
             </div>
             <span className="w-fit border-b border-[#00ff80] text-[10px] font-bold uppercase tracking-widest text-[#00ff80]">
               Expert Analysis Gated
@@ -785,7 +789,7 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
             </div>
           ) : (
             <div className="border border-white/10 bg-white/[0.02] p-8 text-sm italic text-white/50">
-              Neighborhood resilience profiles are being expanded for {cityData.name}.
+              Neighborhood context profiles are being expanded for {cityData.name}.
             </div>
           )}
 
@@ -818,7 +822,7 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
                 >
                   <div className="flex items-center justify-between gap-4">
                     <h4 className="text-lg font-bold text-white transition-colors group-hover:text-[#00ff80]">{neighborhood.name}</h4>
-                    <span className="shrink-0 text-[10px] font-black italic text-white/30">{neighborhood.resilienceScore}/100</span>
+                    <span className="shrink-0 text-[10px] font-black italic text-white/30">Context</span>
                   </div>
                   <p className="mt-1 text-sm italic text-white/40">
                     Anchored by {neighborhood.primaryAnchor}. {neighborhood.tacticalLever}
@@ -831,11 +835,10 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
           <div className="flex flex-col justify-between border border-white/5 bg-white/[0.02] p-8">
             <div>
               <Zap className="mb-4 text-[#fbbf24]" size={24} />
-              <h3 className="mb-2 text-xl font-black italic uppercase tracking-tight text-white">Efficiency Index</h3>
+              <h3 className="mb-2 text-xl font-black italic uppercase tracking-tight text-white">Access Context</h3>
               <p className="text-xs uppercase leading-relaxed tracking-widest text-white/40">
-                Average life ROI for {cityData.name} residents currently stands at
-                <span className="text-white"> {cityData.stats.avgEfficiency}%</span>. The current high-efficiency hub is{' '}
-                <span className="text-white">{authoritySignals.highestEfficiencyNeighborhood?.name || cityData.name}</span>.
+                {cityData.name} neighborhood paths should be reviewed through daily access, current inventory, condition questions, and
+                source freshness before relying on any single property comparison.
               </p>
             </div>
             <div className="mt-8 flex items-center gap-4">

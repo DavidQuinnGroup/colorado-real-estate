@@ -100,7 +100,7 @@ export default function PropertyMap({ properties, isContracted = false }: Proper
                       data-map-property-lng={property.lng}
                     >
                       <p className="text-xs font-black uppercase italic">{property.address || 'Address Available by Request'}</p>
-                      <p className="text-[10px] font-bold text-[#fbbf24]">Efficiency: {formatScore(property.efficiencyScore)}/100</p>
+                      <p className="text-[10px] font-bold text-[#fbbf24]">Access context available</p>
                     </div>
                   </Popup>
                 </Marker>

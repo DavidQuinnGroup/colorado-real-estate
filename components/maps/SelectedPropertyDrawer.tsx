@@ -238,7 +238,7 @@ export default function SelectedPropertyDrawer({ property, onClose }: SelectedPr
           >
             <p className="text-[10px] font-black uppercase tracking-[0.15em] text-cyan-100/72">Next Step</p>
             <p className="mt-1.5 text-left text-xs font-bold leading-5 text-white/62">
-              Open the full property decision view first, or ask a property-specific question when timing, records, or tour fit matter.
+              Open the full property decision view first, or ask a property-specific question when timing, records, or tour criteria matter.
             </p>
           </div>
           <Link

@@ -98,7 +98,7 @@ function buildAuthorityLinks(city: string | null, neighborhood: string | null): 
     links.push({
       label: `${city} Market Intelligence`,
       href: getCityMarketHref(city),
-      description: "City market report, inventory posture, pricing, resilience, and efficiency signals",
+      description: "City market report, inventory posture, pricing context, evidence, and verification prompts",
       status: "Market",
     });
   }
@@ -109,7 +109,7 @@ function buildAuthorityLinks(city: string | null, neighborhood: string | null): 
     links.push({
       label: `${neighborhood} Neighborhood Authority`,
       href: neighborhoodHref,
-      description: "Neighborhood-level construction context, resilience, lifestyle efficiency, and tactical fit",
+      description: "Neighborhood-level construction context, access context, evidence, and verification prompts",
       status: "Neighborhood",
     });
   }

@@ -207,7 +207,7 @@ export function buildPropertyProduct31Model(input: PropertyProduct31Input): Prop
 
   const dna: PropertyProduct31DnaDimension[] = [
     {
-      label: 'Core fit facts',
+      label: 'Core public facts',
       evidence: completeness.confidence,
       interpretation: `${input.propertyType || 'Residential property'} in ${areaLabel} with ${formatNumber(input.beds) || 'bed count not provided'} beds, ${formatNumber(input.baths) || 'bath count not provided'} baths, and ${formatNumber(input.sqft) || 'square footage not provided'} listed square feet.`,
       verify: 'Confirm measurements, room counts, included spaces, status, and any listing updates.',

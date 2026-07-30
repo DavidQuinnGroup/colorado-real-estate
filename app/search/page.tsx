@@ -33,7 +33,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Guided Colorado Property Search | David Quinn Group',
     description:
-      'A guided Colorado property search experience built around fit, context, and confident next steps.',
+      'A guided Colorado property search experience built around criteria, context, evidence, and confident next steps.',
     url: SEARCH_URL,
     siteName: 'David Quinn Group',
     locale: 'en_US',
@@ -101,12 +101,12 @@ function buildSearchFaqs(): FAQItem[] {
     {
       question: 'How is REIE search different from a standard home search?',
       answer:
-        'A standard search usually stops at price, beds, baths, and location. REIE search adds market context, construction awareness, resilience signals, neighborhood intelligence, and strategy prompts for Boulder, Denver, and the Colorado Front Range.',
+        'A standard search usually stops at price, beds, baths, and location. REIE search adds market context, construction awareness, evidence prompts, neighborhood intelligence, and next-step questions for Boulder, Denver, and the Colorado Front Range.',
     },
     {
       question: 'How should buyers use this Colorado property search?',
       answer:
-        'Buyers should use the search to compare live inventory, identify stronger neighborhood fits, inspect property-level signals, and decide where speed, caution, or deeper construction diligence is appropriate.',
+        'Buyers should use the search to compare live inventory, identify properties that match stated criteria, inspect property-level signals, and decide where speed, caution, or deeper construction diligence is appropriate.',
     },
     {
       question: 'How should sellers use REIE search intelligence?',

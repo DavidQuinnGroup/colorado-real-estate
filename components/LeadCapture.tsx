@@ -65,13 +65,13 @@ const GOALS: GoalOption[] = [
   {
     id: 'buy-strategy',
     label: 'Buy Strategy',
-    description: 'Compare neighborhoods, construction risks, lifestyle efficiency, and tactical offer posture.',
+    description: 'Compare neighborhoods, construction questions, access context, and tactical offer posture.',
     icon: <Target size={24} />,
   },
   {
     id: 'relocation-fit',
-    label: 'Relocation Fit',
-    description: 'Map daily-life friction, commute logic, school/lifestyle anchors, and Boulder/Denver tradeoffs.',
+    label: 'Relocation Criteria',
+    description: 'Map daily access, commute logic, local-service questions, and Boulder/Denver tradeoffs.',
     icon: <Compass size={24} />,
   },
   {
@@ -263,7 +263,7 @@ export default function LeadCapture({ city }: LeadCaptureProps) {
           </div>
           <h2 className="mb-3 text-3xl font-black italic tracking-tight text-white">Build the {cityName} Strategy Brief</h2>
           <p className="max-w-2xl text-sm leading-relaxed text-white/50 md:text-base">
-            Request a David Quinn Group strategy brief before chasing listings. The REIE intake frames neighborhood fit, construction
+            Request a David Quinn Group strategy brief before chasing listings. The REIE intake frames neighborhood criteria, construction
             exposure, negotiation leverage, and the practical cost of the next move.
           </p>
         </div>

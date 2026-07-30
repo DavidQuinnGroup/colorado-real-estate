@@ -82,8 +82,7 @@ export default function CityNeighborhoods({ city, title }: CityNeighborhoodsProp
               data-city-neighborhood-name={neighborhood.name}
               data-city-neighborhood-city={neighborhood.city}
               data-city-neighborhood-primary-anchor={neighborhood.primaryAnchor}
-              data-city-neighborhood-resilience-score={neighborhood.resilienceScore}
-              data-city-neighborhood-efficiency-score={neighborhood.avgEfficiencyScore}
+              data-city-neighborhood-evidence-context="public-orientation"
               data-city-neighborhood-href={neighborhoodHref}
               data-city-neighborhood-has-brief={brief ? "true" : "false"}
             >
@@ -109,14 +108,8 @@ export default function CityNeighborhoods({ city, title }: CityNeighborhoodsProp
                   </div>
 
                   <div className="mt-5 flex items-center gap-4 text-[10px] font-black uppercase tracking-[0.18em] text-white/30">
-                    <span>
-                      Resilience{" "}
-                      <span className="text-white">{neighborhood.resilienceScore}</span>
-                    </span>
-                    <span>
-                      Efficiency{" "}
-                      <span className="text-white">{neighborhood.avgEfficiencyScore}</span>
-                    </span>
+                    <span>Place anchor</span>
+                    <span className="text-white">{neighborhood.primaryAnchor}</span>
                   </div>
                 </Link>
 

@@ -65,7 +65,7 @@ export default function MarketNeighborhoodLinks({
     >
       <div className="mb-6">
         <p className="text-[10px] font-black uppercase tracking-[0.35em] text-[#00ff80]">
-          Neighborhood Authority Graph
+          Neighborhood Context Graph
         </p>
         <h2 className="mt-2 text-2xl font-black uppercase italic tracking-tight">
           {sectionTitle}
@@ -87,8 +87,7 @@ export default function MarketNeighborhoodLinks({
             data-market-neighborhood-name={neighborhood.name}
             data-market-neighborhood-city={neighborhood.city}
             data-market-neighborhood-primary-anchor={neighborhood.primaryAnchor}
-            data-market-neighborhood-resilience-score={neighborhood.resilienceScore}
-            data-market-neighborhood-efficiency-score={neighborhood.avgEfficiencyScore}
+            data-market-neighborhood-evidence-context="public-orientation"
             data-market-neighborhood-href={href}
             data-market-neighborhood-has-brief={brief ? "true" : "false"}
           >
@@ -115,18 +114,18 @@ export default function MarketNeighborhoodLinks({
               <div className="mt-5 grid grid-cols-2 gap-3">
                 <div className="border border-white/10 bg-white/[0.02] p-3">
                   <p className="text-[8px] font-black uppercase tracking-[0.22em] text-white/25">
-                    Resilience
+                    Place Anchor
                   </p>
-                  <p className="mt-1 text-xl font-black italic text-white">
-                    {neighborhood.resilienceScore}
+                  <p className="mt-1 text-sm font-black italic uppercase leading-5 text-white">
+                    {neighborhood.primaryAnchor}
                   </p>
                 </div>
                 <div className="border border-white/10 bg-white/[0.02] p-3">
                   <p className="text-[8px] font-black uppercase tracking-[0.22em] text-white/25">
-                    Efficiency
+                    Verify
                   </p>
-                  <p className="mt-1 text-xl font-black italic text-white">
-                    {neighborhood.avgEfficiencyScore}
+                  <p className="mt-1 text-sm font-black italic uppercase leading-5 text-white">
+                    Context
                   </p>
                 </div>
               </div>

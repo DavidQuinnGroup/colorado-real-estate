@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { ArrowUpRight, Hammer, HelpCircle, Home, MapPinned, Search, ShieldCheck, Zap } from 'lucide-react';
 import type { CollectionCreateSchema } from 'typesense/lib/Typesense/Collections.js';
 
+import ContinueYourDecision from '@/components/ContinueYourDecision';
 import FinancingConfidenceEducation from '@/components/FinancingConfidenceEducation';
 import NearbyNeighborhoods from '@/components/NearbyNeighborhoods';
 import NeighborhoodProduct3Experience from '@/components/NeighborhoodProduct3Experience';
@@ -340,7 +341,7 @@ function getNeighborhoodFramework(
       label: 'Context',
       icon: <MapPinned className="h-4 w-4" />,
       title: `${neighborhood.primaryAnchor} anchors the location story.`,
-      body: neighborhood.lifestyleVibe,
+      body: getNeighborhoodStory(neighborhood),
       href: cityMarketHref,
       action: 'Compare city context',
     },
@@ -572,6 +573,21 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
             every reported property.
           </p>
         </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-6 pb-4 pt-10 md:px-12" data-testid="neighborhood-djx-continuity">
+        <ContinueYourDecision
+          stage="neighborhood"
+          cameFrom={`${neighborhood.city} market context or property search`}
+          currentDecision={`Decide what ${neighborhood.name} evidence can and cannot support.`}
+          whyHere="This neighborhood page connects place orientation, market context, available property paths, confidence, and verification without scoring or recommending where someone should live."
+          nextStep="Review confidence, search current properties, or return to the city market."
+          links={[
+            { label: 'City Market', href: cityMarketHref, note: 'Broader context' },
+            { label: 'Search', href: searchHref, note: 'Current inventory path' },
+            { label: 'Verify', href: '#neighborhood-verification-questions', note: 'Carry questions forward' },
+          ]}
+        />
       </section>
 
       <NeighborhoodProduct3Experience model={neighborhoodProduct3Model} />
@@ -827,7 +843,7 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
           </div>
           <div>
             <p className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100/72">Risk</p>
-            <p className="mt-2 text-sm leading-6 text-white/58">Read resilience, insurance, soil, altitude, and inventory signals as questions to verify before touring or writing.</p>
+            <p className="mt-2 text-sm leading-6 text-white/58">Read insurance, soil, altitude, and inventory signals as questions to verify before touring or writing.</p>
           </div>
           <div>
             <p className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100/72">Next</p>

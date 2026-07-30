@@ -106,8 +106,8 @@ export function buildCityMarketProduct3Experience({
     whyItMatters: `${boundedIntro} Buyers and sellers can separate pace, price context, inventory, and verification questions before making the next decision.`,
     buyerInterpretation:
       inventory <= 45 || daysOnMarket <= 21
-        ? 'Buyers should define must-haves, verification questions, and decision thresholds before touring because well-fit homes may require faster review.'
-        : 'Buyers should use the available selection to compare fit, condition, ownership costs, and neighborhood context before narrowing too quickly.',
+        ? 'Buyers should define must-haves, verification questions, and decision thresholds before touring because matching homes may require faster review.'
+        : 'Buyers should use the available selection to compare criteria, condition, ownership costs, and neighborhood context before narrowing too quickly.',
     sellerInterpretation:
       inventory <= 45 || daysOnMarket <= 21
         ? 'Sellers should prepare pricing evidence, condition documentation, and competing-inventory context before assuming demand alone will answer buyer questions.'

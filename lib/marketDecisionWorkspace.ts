@@ -43,7 +43,7 @@ function getBuyerExplanation(input: MarketDecisionWorkspaceInput) {
   }
 
   if (timing.includes('diligence')) {
-    return 'Buyers can use the additional time signal to compare condition, cost, records, and location fit more carefully.';
+    return 'Buyers can use the additional time signal to compare condition, cost, records, and location context more carefully.';
   }
 
   return 'Buyers should use market context to decide which properties deserve closer review and which assumptions need confirmation.';

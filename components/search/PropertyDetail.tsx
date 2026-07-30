@@ -399,7 +399,7 @@ export default function PropertyDetail({ property, onClose, userTier = 'Public' 
               data-property-detail-logistics-count={logistics.times.length}
             >
               <div className="space-y-4">
-                <div className="text-[11px] font-black uppercase tracking-[0.6em] text-[#00ff80]">Location Fit</div>
+                <div className="text-[11px] font-black uppercase tracking-[0.6em] text-[#00ff80]">Location Context</div>
                 <div className="text-9xl font-black italic leading-none tracking-tight text-white">{efficiencyScore}</div>
               </div>
               <p className="px-12 text-2xl font-light italic leading-relaxed text-white/70">{narrative}</p>

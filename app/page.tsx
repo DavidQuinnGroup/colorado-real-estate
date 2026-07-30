@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 
+import ContinueYourDecision from '@/components/ContinueYourDecision';
 import HomeSearchExperience, { type HomeAuthorityLink } from '@/components/home/HomeSearchExperience';
 import FAQSchema from '@/components/schema/FAQSchema';
 import { cities } from '@/lib/cities';
@@ -51,7 +52,7 @@ const lightButtonClass = 'home-btn home-btn-light';
 const journeyCards = [
   {
     title: 'Buy',
-    body: 'Begin with fit, context, and the homes worth a closer look.',
+    body: 'Begin with criteria, evidence, and the homes worth a closer look.',
     href: '/buy',
     cta: 'Buyer Path',
     imagePosition: '40% center',
@@ -65,7 +66,7 @@ const journeyCards = [
   },
   {
     title: 'Explore Colorado',
-    body: 'See place, lifestyle, and local context with more intention.',
+    body: 'See place, access, and local context with more intention.',
     href: '#communities',
     cta: 'Explore Communities',
     imagePosition: '72% center',
@@ -143,12 +144,12 @@ function buildHomeFaqs(): FAQItem[] {
     {
       question: 'How does REIE help Colorado home buyers?',
       answer:
-        'REIE helps buyers compare inventory, understand neighborhood context, identify property-level signals, and decide where to move quickly, negotiate, or investigate construction and resilience risk more deeply.',
+        'REIE helps buyers compare inventory, understand neighborhood context, identify property-level signals, and decide where to move quickly, negotiate, or investigate property questions more deeply.',
     },
     {
       question: 'How does REIE help Colorado home sellers?',
       answer:
-        'REIE helps sellers understand competing inventory, likely buyer objections, preparation priorities, and how to position a home around condition, location, resilience, lifestyle efficiency, and market alternatives.',
+        'REIE helps sellers understand competing inventory, likely buyer objections, preparation priorities, and how to position a home around condition, location, evidence, and market alternatives.',
     },
     {
       question: 'Why does David Quinn Group include construction perspective in real estate search?',
@@ -214,6 +215,23 @@ export default function HomePage() {
           </div>
         </section>
 
+        <section className="px-5 pb-8 pt-10 sm:px-8 lg:px-12" data-testid="home-djx-continuity">
+          <div className={containerShell}>
+            <ContinueYourDecision
+              stage="home"
+              cameFrom="Broad orientation"
+              currentDecision="Choose the right starting path."
+              whyHere="The homepage connects search, market context, neighborhood orientation, and property review before you narrow the decision."
+              nextStep="Open guided search or compare market context."
+              links={[
+                { label: 'Search', href: '/search', note: 'Compare active homes' },
+                { label: 'Markets', href: '/market', note: 'Review city context' },
+                { label: 'Boulder', href: '/market/boulder-co-housing-market', note: 'Open a certified guide' },
+              ]}
+            />
+          </div>
+        </section>
+
         <section className={sectionShell} data-testid="home-portal-journey">
           <div className={containerShell}>
             <div className="max-w-4xl">
@@ -252,7 +270,7 @@ export default function HomePage() {
               <div className="max-w-3xl text-left">
                 <p className="text-[10px] font-black uppercase tracking-[0.34em] text-[#7a694f]">This Is Where You Begin</p>
                 <h2 className="mt-6 max-w-4xl text-5xl font-black leading-[0.98] tracking-normal text-[#111820] sm:text-6xl lg:text-7xl">
-                  Start with fit, context, and confidence.
+                  Start with criteria, context, and confidence.
                 </h2>
                 <p className="mt-7 max-w-xl text-base leading-8 text-[#41505a]">
                   Explore Colorado homes through the map, listings, and decision context that shape a better shortlist.
@@ -269,7 +287,7 @@ export default function HomePage() {
             </div>
             <div className="home-search-principles mb-12" data-testid="home-discovery-principles">
               {[
-                'Daily-life fit before endless scrolling.',
+                'Daily access context before endless scrolling.',
                 'Map, list, and context in one place.',
                 'A clear path into deeper search.',
               ].map((principle) => (

@@ -114,10 +114,10 @@ export default function LuxuryIntelligencePopup({ property }: LuxuryIntelligence
           data-popup-risk-label={riskLabel}
         >
           <div className="bg-[#00ff80] px-2 py-0.5 text-[8px] font-black uppercase italic tracking-widest text-black">
-            Efficiency {efficiencyScore}
+            Access Context
           </div>
           <div className="bg-white px-2 py-0.5 text-[8px] font-black uppercase italic tracking-widest text-black">
-            Resilience {resilienceScore}
+            Review Context
           </div>
           <div className="col-span-2 truncate text-[8px] font-black uppercase italic tracking-widest text-white/50">
             {riskLabel}

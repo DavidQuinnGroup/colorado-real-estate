@@ -68,6 +68,7 @@
     "scripts/checkReieVisualIntelligenceSystem.ts",
     "scripts/checkMarketProduct3.ts",
     "scripts/checkPropertyProduct31.ts",
+    "scripts/checkDecisionJourneyExperience.ts",
     "scripts/decisionGuideValidation.ts",
     "scripts/checkBoulderDecisionGuide.ts",
     "scripts/checkLouisvilleDecisionGuide.ts",

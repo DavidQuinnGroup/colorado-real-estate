@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { BarChart3, Home, MapPinned, Search, ShieldCheck, TrendingUp } from 'lucide-react';
 
+import ContinueYourDecision from '@/components/ContinueYourDecision';
 import FinancingConfidenceEducation from '@/components/FinancingConfidenceEducation';
 import MarketProduct3VisualIntelligence from '@/components/MarketProduct3VisualIntelligence';
 import FAQSchema from '@/components/schema/FAQSchema';
@@ -180,6 +181,23 @@ export default function MarketIndexPage() {
         </div>
       </section>
 
+      <section className="px-5 pb-8 pt-10 sm:px-8 lg:px-12" data-testid="market-djx-continuity">
+        <div className="mx-auto max-w-6xl">
+          <ContinueYourDecision
+            stage="market"
+            cameFrom="Homepage, search, or a city decision guide"
+            currentDecision="Decide which market context should guide the next search."
+            whyHere="The market view connects city signals, certified guides, neighborhood paths, and property search without forecasting or ranking locations."
+            nextStep="Open a city guide, search active inventory, or move into a neighborhood page."
+            links={[
+              { label: 'Search', href: '/search', note: 'Apply criteria' },
+              { label: 'Boulder', href: '/market/boulder-co-housing-market', note: 'Certified guide' },
+              { label: 'Mapleton Hill', href: '/market/boulder/mapleton-hill', note: 'Neighborhood context' },
+            ]}
+          />
+        </div>
+      </section>
+
       <section className="px-5 py-12 sm:px-8 lg:px-12">
         <div className="mx-auto max-w-6xl">
           <MarketProduct3VisualIntelligence experience={marketProduct3Experience} />
@@ -195,7 +213,7 @@ export default function MarketIndexPage() {
             </h1>
             <p className="mt-7 max-w-2xl text-base leading-8 text-white/62 sm:text-lg">
               Move from search into city market reports, neighborhood context, property review, or seller strategy without changing the
-              certified search, property, inquiry, or valuation behavior.
+              certified search, property, inquiry, or evidence behavior.
             </p>
             <div className="mt-10 flex flex-wrap gap-3" data-testid="cep-market-discovery-primary-actions">
               <Link
@@ -257,7 +275,7 @@ export default function MarketIndexPage() {
         <div className="mx-auto grid max-w-6xl gap-4 md:grid-cols-4">
           {[
             ['Market timing', 'Use direction, pricing, inventory, and competitiveness as context before narrowing to one property.'],
-            ['Neighborhood fit', 'Open city and neighborhood paths to understand lifestyle, resilience, access, and local tradeoffs.'],
+            ['Neighborhood context', 'Open city and neighborhood paths to understand access, evidence, and local verification questions.'],
             ['Affordability assumptions', 'Treat market and price facts as education; verify lending, tax, insurance, HOA, and cost assumptions separately.'],
             ['Next step', 'Return to search, open a property decision brief, or ask a focused question when the context is clear.'],
           ].map(([label, body]) => (

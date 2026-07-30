@@ -145,10 +145,10 @@ export default function NeighborhoodProduct3Experience({ model }: NeighborhoodPr
                 Community Constellation
               </p>
               <h3 className="mt-3 text-xl font-black uppercase leading-tight tracking-normal text-white">
-                Factual orientation points, not a score
+                Factual orientation points
               </h3>
               <p className="mt-3 text-sm leading-6 text-white/56">
-                The constellation connects place, housing pattern, market context, property discovery, and verification needs without ranking neighborhoods or recommending where someone should live.
+                The constellation connects place, housing pattern, market context, property discovery, and verification needs without ordering neighborhoods or recommending where someone should live.
               </p>
             </div>
             <div className="grid gap-px bg-white/10 md:grid-cols-2">
@@ -263,7 +263,7 @@ export default function NeighborhoodProduct3Experience({ model }: NeighborhoodPr
               <Home size={14} aria-hidden="true" />
               Available Property Context
             </p>
-            <h3 className="mt-3 text-xl font-black uppercase tracking-tight text-white">Use property links to explore, not to rank</h3>
+            <h3 className="mt-3 text-xl font-black uppercase tracking-tight text-white">Use property links to explore available context</h3>
           </div>
           <div className="grid gap-px bg-white/10 md:grid-cols-2">
             {model.propertyContext.map((item) => (

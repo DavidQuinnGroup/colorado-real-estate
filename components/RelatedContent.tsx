@@ -85,7 +85,7 @@ function getNodeDescription(node: RelatedContentItem) {
   }
 
   if (node.type === "neighborhood") {
-    return "Neighborhood authority report and resilience context";
+    return "Neighborhood authority report and verification context";
   }
 
   if (node.type === "address") {

@@ -64,9 +64,9 @@ function getMarketPressureLabel(score: number) {
 }
 
 function getEfficiencyLabel(score: number) {
-  if (score >= 90) return 'High ROI';
-  if (score >= 75) return 'Balanced';
-  return 'Commute Sensitive';
+  if (score >= 90) return 'Access context available';
+  if (score >= 75) return 'Access context mixed';
+  return 'Access questions to verify';
 }
 
 export default function CityMarketStats({ stats, homeAge = 30 }: CityMarketStatsProps) {
@@ -102,14 +102,14 @@ export default function CityMarketStats({ stats, homeAge = 30 }: CityMarketStats
       data-city-market-price-per-sqft={stats.pricePerSqFt}
       data-city-market-days-on-market={stats.daysOnMarket}
       data-city-market-inventory={stats.inventory}
-      data-city-market-health-score={stats.marketHealthScore}
-      data-city-market-avg-efficiency={stats.avgEfficiency}
+      data-city-market-health-state={marketModel.marketPressure}
+      data-city-market-access-context={marketModel.efficiencyLabel}
       data-city-market-pressure={marketModel.marketPressure}
-      data-city-market-efficiency-label={marketModel.efficiencyLabel}
+      data-city-market-access-context-label={marketModel.efficiencyLabel}
       data-city-market-monthly-carry={Math.round(marketModel.monthlyCarry)}
       data-city-market-annual-carry={Math.round(marketModel.annualCarry)}
       data-city-market-inspection-reserve={Math.round(marketModel.inspectionReserve)}
-      data-city-market-leverage-score={marketModel.leverageScore}
+      data-city-market-negotiation-context={marketModel.marketPressure}
     >
       <div className="border-b border-white/5 bg-white/[0.02] p-8">
         <div className="mb-2 flex items-center gap-3">
@@ -118,7 +118,7 @@ export default function CityMarketStats({ stats, homeAge = 30 }: CityMarketStats
         </div>
         <h2 className="text-4xl font-black uppercase italic tracking-tight text-white">City Intelligence Dashboard</h2>
         <p className="mt-2 text-xs uppercase tracking-widest text-white/40">
-          Price pressure, construction risk, inventory posture, and lifestyle efficiency.
+          Price context, construction questions, inventory posture, and verification prompts.
         </p>
       </div>
 
@@ -145,7 +145,7 @@ export default function CityMarketStats({ stats, homeAge = 30 }: CityMarketStats
             className="grid grid-cols-1 gap-8 animate-in fade-in duration-500 lg:grid-cols-[1fr_0.8fr]"
             data-testid="reie-city-market-pulse"
             data-city-market-pulse-pressure={marketModel.marketPressure}
-            data-city-market-pulse-efficiency-label={marketModel.efficiencyLabel}
+            data-city-market-pulse-access-context={marketModel.efficiencyLabel}
           >
             <div className="grid gap-4 sm:grid-cols-2">
               <StatRow
@@ -157,9 +157,9 @@ export default function CityMarketStats({ stats, homeAge = 30 }: CityMarketStats
               />
               <StatRow
                 icon={<Gauge size={18} />}
-                label="Market Health"
+                label="Market Signal"
                 metric="market-health"
-                value={`${stats.marketHealthScore}/100`}
+                value={marketModel.marketPressure}
                 note={`${marketModel.marketPressure} negotiation climate.`}
               />
               <StatRow
@@ -181,17 +181,15 @@ export default function CityMarketStats({ stats, homeAge = 30 }: CityMarketStats
             <div
               className="flex flex-col justify-between border border-white/10 bg-white/[0.03] p-8"
               data-testid="reie-city-market-efficiency"
-              data-city-market-efficiency-score={stats.avgEfficiency}
-              data-city-market-efficiency-label={marketModel.efficiencyLabel}
+              data-city-market-access-context={marketModel.efficiencyLabel}
             >
               <div>
-                <p className="mb-3 text-[10px] font-black uppercase tracking-[0.3em] text-white/30">Lifestyle Efficiency</p>
-                <div className="text-7xl font-black italic tracking-tighter text-white">{stats.avgEfficiency}</div>
-                <p className="mt-3 text-sm font-bold uppercase tracking-widest text-[#00ff80]">{marketModel.efficiencyLabel}</p>
+                <p className="mb-3 text-[10px] font-black uppercase tracking-[0.3em] text-white/30">Access Context</p>
+                <div className="text-4xl font-black italic uppercase tracking-tight text-white">{marketModel.efficiencyLabel}</div>
+                <p className="mt-3 text-sm font-bold uppercase tracking-widest text-[#00ff80]">Verify property by property</p>
               </div>
               <p className="mt-8 text-[11px] italic leading-relaxed text-white/55">
-                Efficiency score reflects practical life ROI: access, commute drag, daily friction, and neighborhood utility relative to
-                acquisition cost.
+                Access context frames practical questions about location, commute assumptions, services, and property-specific records.
               </p>
             </div>
           </div>
@@ -199,7 +197,7 @@ export default function CityMarketStats({ stats, homeAge = 30 }: CityMarketStats
           <div
             className="grid grid-cols-1 gap-8 animate-in fade-in duration-500 lg:grid-cols-[1fr_0.8fr]"
             data-testid="reie-city-market-strategy"
-            data-city-market-strategy-leverage-score={marketModel.leverageScore}
+            data-city-market-strategy-negotiation-context={marketModel.marketPressure}
             data-city-market-strategy-monthly-carry={Math.round(marketModel.monthlyCarry)}
             data-city-market-strategy-annual-carry={Math.round(marketModel.annualCarry)}
             data-city-market-strategy-inspection-reserve={Math.round(marketModel.inspectionReserve)}
@@ -211,10 +209,10 @@ export default function CityMarketStats({ stats, homeAge = 30 }: CityMarketStats
               <div
                 className="flex justify-between border-t border-white/10 pt-4 text-[#00ff80]"
                 data-testid="reie-city-market-leverage"
-                data-city-market-leverage-score={marketModel.leverageScore}
+                data-city-market-negotiation-context={marketModel.marketPressure}
               >
-                <span className="text-[10px] font-black uppercase tracking-widest">Buyer Leverage Model</span>
-                <span className="text-xl font-black italic">{marketModel.leverageScore}/100</span>
+                <span className="text-[10px] font-black uppercase tracking-widest">Negotiation Context</span>
+                <span className="text-xl font-black italic">{marketModel.marketPressure}</span>
               </div>
             </div>
 
@@ -225,8 +223,7 @@ export default function CityMarketStats({ stats, homeAge = 30 }: CityMarketStats
                   <span className="text-[10px] font-black uppercase tracking-widest">DQG Strategy Note</span>
                 </div>
                 <p className="text-[10px] italic leading-relaxed text-white/45">
-                  Use the market score to frame speed, but use construction condition to frame price. Roof, sewer, drainage, mechanicals,
-                  and envelope performance remain the leverage stack.
+                  Use market context to frame timing questions, then use property condition, records, and professional review to frame next steps.
                 </p>
               </section>
               <button
@@ -247,7 +244,7 @@ export default function CityMarketStats({ stats, homeAge = 30 }: CityMarketStats
       >
         <ShieldCheck size={14} className="shrink-0 text-[#00ff80]/50" />
         <p className="text-[9px] font-bold uppercase italic leading-relaxed tracking-[0.2em] text-white/25">
-          David Quinn Group evaluates market data through construction forensics, lifestyle efficiency, and tactical negotiation context.
+          David Quinn Group evaluates market data through construction context, access questions, and verification-oriented negotiation context.
         </p>
       </div>
     </div>

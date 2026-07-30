@@ -21,6 +21,7 @@ import {
   TrendingUp,
 } from 'lucide-react';
 
+import ContinueYourDecision from '@/components/ContinueYourDecision';
 import EquityVision from '@/components/EquityVision';
 import FinancingConfidenceEducation from '@/components/FinancingConfidenceEducation';
 import PropertyInquiryForm from '@/components/PropertyInquiryForm';
@@ -600,8 +601,8 @@ const QUESTIONS_TO_CARRY_FORWARD = [
 
 const BUYER_CONFIDENCE_FRAMEWORK = [
   { label: 'Known', value: 'Start with the public listing facts available on this page.' },
-  { label: 'Compare', value: 'Use related listings, search context, and broader market context before judging fit.' },
-  { label: 'Verify', value: 'Separate facts from assumptions about cost, condition, records, timing, and suitability.' },
+  { label: 'Compare', value: 'Use related listings, search context, and broader market context before relying on a conclusion.' },
+  { label: 'Verify', value: 'Separate facts from assumptions about cost, condition, records, timing, and verification needs.' },
   { label: 'Ask', value: 'Bring focused questions forward rather than submitting confidential negotiating details.' },
   { label: 'Next', value: 'Continue searching, open market context, ask a question, or schedule a tour when ready.' },
 ];
@@ -1098,6 +1099,25 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
         </div>
       </section>
 
+      <section className="mx-auto max-w-7xl px-5 pb-4 pt-10 sm:px-8 lg:px-10" data-testid="property-djx-continuity">
+        <ContinueYourDecision
+          stage="property"
+          cameFrom="Search, neighborhood context, or city market context"
+          currentDecision="Decide what this property page can support before the next step."
+          whyHere="This property view brings listing facts, Property DNA, confidence, comparable context, and verification prompts together without scoring, valuing, forecasting, or recommending the property."
+          nextStep="Review the Product 3 synthesis, compare context, then carry specific verification questions forward."
+          links={[
+            { label: 'Search', href: getCitySearchHref(property.city), note: 'Compare inventory' },
+            { label: 'Market', href: marketPathway.href, note: 'Broader context' },
+            { label: 'Verify', href: '#property-contact', note: 'Ask focused questions' },
+          ]}
+        />
+      </section>
+
+      <section className="mx-auto max-w-7xl px-5 py-8 sm:px-8 lg:px-10" data-testid="property-product-3-1-priority">
+        <PropertyProduct31Experience model={propertyProduct31Model} />
+      </section>
+
       <section className="mx-auto max-w-7xl px-5 py-12 sm:px-8 lg:px-10">
         <div className="mb-6 flex flex-col justify-between gap-4 border-b border-white/10 pb-6 md:flex-row md:items-end">
           <div className="max-w-3xl">
@@ -1118,8 +1138,6 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
 
         <div className="reie-property-detail-grid grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
           <div className="space-y-6">
-            <PropertyProduct31Experience model={propertyProduct31Model} />
-
             <section
               className="overflow-hidden rounded-[8px] border border-cyan-100/18 bg-[#0d141c]"
               data-testid="reie-property-buyer-confidence-framework"
@@ -1295,8 +1313,8 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                   Known facts, verification needs, and next steps
                 </h2>
                 <p className="mt-2 max-w-3xl text-sm leading-6 text-white/58">
-                  A quick orientation to public facts, questions to verify, and existing next steps. It does not score, recommend, predict,
-                  value, diagnose, or decide whether this property is right for you.
+                  A quick orientation to public facts, questions to verify, and existing next steps. It does not make automated
+                  recommendations, predictions, valuations, diagnoses, or personal conclusions.
                 </p>
               </div>
               <div className="grid gap-px bg-white/10 md:grid-cols-4">

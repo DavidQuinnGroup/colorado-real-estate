@@ -136,7 +136,7 @@ export const DECISION_GUIDE_CITY_CONFIGS: Record<EditorialDecisionGuideKey, Deci
     tradeoffs: [
       {
         strength: 'Strong local identity and neighborhood variety',
-        tradeoff: 'Customers should compare micro-location, property condition, and access needs instead of assuming city-wide fit.',
+        tradeoff: 'Customers should compare micro-location, property condition, and access needs instead of assuming one city-wide answer.',
       },
       {
         strength: 'Established housing stock with distinctive character',
@@ -163,7 +163,7 @@ export const DECISION_GUIDE_CITY_CONFIGS: Record<EditorialDecisionGuideKey, Deci
     summaryIntro:
       'Start with Louisville as a city decision, then use neighborhood pages, property facts, market evidence, financing preparation, and advisor questions as separate confirmation layers.',
     distinctValue: 'A Boulder County city with established neighborhoods and practical access choices',
-    attentionValue: 'Price, inventory, neighborhood fit, condition, and daily access',
+    attentionValue: 'Price, inventory, neighborhood context, condition, and daily access',
     verificationValue: 'Property facts, records, costs, financing readiness, and neighborhood evidence',
     verificationExplanation:
       'Use Louisville context as a starting point, then verify individual property facts, costs, disclosures, records, and daily-life assumptions before acting.',
@@ -184,7 +184,7 @@ export const DECISION_GUIDE_CITY_CONFIGS: Record<EditorialDecisionGuideKey, Deci
     tradeoffs: [
       {
         strength: 'Recognizable small-city identity with Boulder County access',
-        tradeoff: 'Customers should compare micro-location, property condition, and daily route needs instead of assuming city-wide fit.',
+        tradeoff: 'Customers should compare micro-location, property condition, and daily route needs instead of assuming one city-wide answer.',
       },
       {
         strength: 'Established neighborhoods with different housing patterns',
@@ -232,7 +232,7 @@ export const DECISION_GUIDE_CITY_CONFIGS: Record<EditorialDecisionGuideKey, Deci
     tradeoffs: [
       {
         strength: 'Recognizable east Boulder County identity with multiple neighborhood patterns',
-        tradeoff: 'Customers should compare micro-location, property condition, and daily route needs instead of assuming city-wide fit.',
+        tradeoff: 'Customers should compare micro-location, property condition, and daily route needs instead of assuming one city-wide answer.',
       },
       {
         strength: 'Established neighborhoods with different housing forms',
@@ -363,7 +363,7 @@ function buildFoundationDecisionGuide({
           'Evaluate the relationship between the property, work patterns, daily routes, city services, open-space or neighborhood access where relevant, and the places used most often.',
       },
       {
-        label: 'Property-specific fit',
+        label: 'Property-specific criteria',
         explanation:
           `${city.name} should not be treated as one uniform answer. Compare individual properties, local context, and daily-use assumptions before deciding whether a home deserves more attention.`,
       },

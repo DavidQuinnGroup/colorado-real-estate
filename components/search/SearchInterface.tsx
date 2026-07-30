@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { AlertTriangle, List, Map as MapIcon, RotateCcw, SlidersHorizontal } from 'lucide-react';
 import { type FormEvent, useEffect, useMemo, useState } from 'react';
 
+import ContinueYourDecision from '@/components/ContinueYourDecision';
 import FinancingConfidenceEducation from '@/components/FinancingConfidenceEducation';
 import MapSidebar, { type MapSidebarListing } from '@/components/maps/MapSidebar';
 import type { MapBounds } from '@/components/maps/MapInner';
@@ -450,7 +451,7 @@ export default function SearchInterface({
               <h2 className="mt-3 font-serif text-[2rem] font-black leading-[1.02] tracking-normal text-white">
                 Which homes deserve your attention?
               </h2>
-              <p className="sr-only">Explore Colorado homes with fit, context, and confidence.</p>
+              <p className="sr-only">Explore Colorado homes with criteria, context, and confidence.</p>
               <p className="mt-3 max-w-[31rem] text-sm leading-6 text-white/62">
                 Start broad, compare what matters, and open deeper Property Intelligence only when a home earns a closer look.
               </p>
@@ -503,9 +504,22 @@ export default function SearchInterface({
             </li>
             <li>
               <span>Open Deeper</span>
-              Move into Property Intelligence when the home still fits.
+              Move into Property Intelligence when the home still matches your stated criteria.
             </li>
           </ol>
+
+          <ContinueYourDecision
+            stage="search"
+            cameFrom="Homepage, market context, or direct search"
+            currentDecision="Choose which properties deserve closer review."
+            whyHere="Search keeps active inventory, criteria, map context, and property links together before you rely on any single listing."
+            nextStep="Open a property decision view or broaden into market context."
+            links={[
+              { label: 'Market', href: '/market', note: 'Compare city context' },
+              { label: 'Property', href: visibleListings[0] ? `/properties/${visibleListings[0].id}` : '/search', note: 'Open listing detail' },
+              { label: 'Ask', href: '/contact', note: 'Bring focused questions' },
+            ]}
+          />
 
           <div
             className="reie-search-confidence-framework"
