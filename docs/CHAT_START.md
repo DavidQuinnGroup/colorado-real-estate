@@ -10,6 +10,55 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / Search Product Experience Review(tm) Wave 1 Production Certification and Closure, July 30, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Current governed state:
+
+- Market Product 3.0 is production-certified and closed.
+- Property Product 3.1 is production-certified and closed.
+- Neighborhood Product 3.0 is production-certified and closed.
+- Decision Journey Experience 1.0 is production-certified and closed.
+- Homepage Product Experience Review(tm) Wave 1 is production-certified and closed.
+- Search Product Experience Review(tm) Wave 1 is production-certified and closed.
+- Final status: `SEARCH_PRODUCT_EXPERIENCE_WAVE_1_CERTIFIED_AND_CLOSED`.
+- Closure status: `CERTIFIED_AND_CLOSED`.
+- Production implementation SHA: `f6f222519e64023f4ffab9d87c194543ef1d5e4c`.
+- Search Wave 1 commit message: `Refine search product experience wave 1`.
+- Pre-implementation Search score: `6.3 / 10`.
+- Final governed Search score: `7.4 / 10`.
+- `origin/main` resolved to `f6f222519e64023f4ffab9d87c194543ef1d5e4c` before documentation recording.
+- GitHub/Vercel commit status: `success`.
+- Commit status ID: `51363539830`.
+- Deployment description: `Deployment has completed`.
+- Deployment timestamp: `2026-07-30T12:57:49Z`.
+- Vercel deployment target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/AhgeyjzKtFwpWYm9JQmHJCjnHyF9`.
+- Production domain: `https://davidquinngroup.com`.
+- Production smoke passed: `PUBLIC_EXPERIENCE_SMOKE_BASE_URL=https://davidquinngroup.com npm run smoke:public-experience`.
+- Production browser review passed across Search desktop 1440 x 1000, tablet 900 x 1050, and mobile 390 x 844.
+- Browser review confirmed revised first-viewport hierarchy, workspace summary, active criteria visibility, customer-facing evidence state, list/map relationship, markers, selected-property drawer, zero-result recovery, degraded/fallback disclosure, subordinate Save Search placement, decision continuity, no horizontal overflow, and no console or hydration errors attributable to the implementation.
+- Shared-surface production probes for Homepage and Boulder Market found no visible PropertyCard regression.
+- Production certification record: `docs/project-atlas/executive-library/SEARCH-PRODUCT-EXPERIENCE-WAVE-1-PRODUCTION-CERTIFICATION.md`.
+- Related closure records: `docs/project-atlas/executive-library/HOMEPAGE-PRODUCT-EXPERIENCE-WAVE-1-PRODUCTION-CERTIFICATION.md`, `docs/project-atlas/executive-library/DECISION-JOURNEY-EXPERIENCE-1-PRODUCTION-CERTIFICATION.md`, `docs/project-atlas/executive-library/MARKET-PRODUCT-3-PRODUCTION-CERTIFICATION.md`, `docs/project-atlas/executive-library/NEIGHBORHOOD-PRODUCT-3-PRODUCTION-CERTIFICATION.md`, and `docs/project-atlas/executive-library/PROPERTY-PRODUCT-3-1-PRODUCTION-CERTIFICATION.md`.
+- Boundaries preserved: no AI, no GIS expansion, no provider activation, no telemetry, no personalization, no forecasting, no valuation, no rankings, no suitability scoring, no demographic targeting, no school or safety rankings, no investment recommendations, no search relevance or ranking changes, no map-bounds semantic changes, no schema changes, no Prisma changes, no migrations, no database changes, no API changes, no provider configuration changes, no fixtures, no new filters, no dependencies, and no Save Search mutation behavior changes.
+- Current repository state after certification evidence recording: production runtime code is pushed at `origin/main`; certification evidence is documentation-only and does not imply that a documentation commit itself was the certified runtime deployment.
+- Next authorized product-review stage: executive decision required.
+- No next-stage implementation authorization exists.
+- Exact next step: stop, or explicitly authorize the next governed product-experience review. Codex must not implement additional product changes, deploy again, or begin another implementation program without an explicit directive.
+
+Prior Homepage Product Experience Wave 1 handoff retained below.
+
 PROJECT ATLAS(tm) / Homepage Product Experience Review(tm) Wave 1 Production Certification and Closure, July 30, 2026:
 
 Workspace:
@@ -37,23 +86,7 @@ Current governed state:
 - Original Homepage Wave 1 implementation SHA: `f0a639b751bf81960a65fd717748b308ce700e4d`.
 - Remediation corrected the compact Continue Your Decision(tm) browser-default blue link and border defect.
 - Homepage final score: `7 / 10`.
-- `origin/main` resolved to `a8e4e0e697e22791d5316ac1688d7cae82882695`.
-- GitHub/Vercel commit status: `success`.
-- Commit status ID: `51360351759`.
-- Deployment description: `Deployment has completed`.
-- Deployment timestamp: `2026-07-30T12:00:11Z`.
-- Vercel deployment target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/CU8CRVyamCVZGEFuEKQwCerjr6HG`.
-- Production domain: `https://davidquinngroup.com`.
-- Production smoke passed: `PUBLIC_EXPERIENCE_SMOKE_BASE_URL=https://davidquinngroup.com npm run smoke:public-experience`.
-- Production browser review passed across desktop 1440 x 1000, tablet 900 x 1050, and mobile 390 x 844.
-- Browser review confirmed compact Continue Your Decision(tm) links no longer render browser-default blue, hover/focus/active states use the REIE visual treatment, no horizontal overflow was detected, no production console or hydration errors were attributable to the fix, the full embedded Search/Map shell remained absent from Home, `/search` remained operational, brokerage attribution remained present, and footer legal/trust links remained present.
 - Production certification record: `docs/project-atlas/executive-library/HOMEPAGE-PRODUCT-EXPERIENCE-WAVE-1-PRODUCTION-CERTIFICATION.md`.
-- Related closure records: `docs/project-atlas/executive-library/DECISION-JOURNEY-EXPERIENCE-1-PRODUCTION-CERTIFICATION.md`, `docs/project-atlas/executive-library/MARKET-PRODUCT-3-PRODUCTION-CERTIFICATION.md`, `docs/project-atlas/executive-library/NEIGHBORHOOD-PRODUCT-3-PRODUCTION-CERTIFICATION.md`, and `docs/project-atlas/executive-library/PROPERTY-PRODUCT-3-1-PRODUCTION-CERTIFICATION.md`.
-- Boundaries preserved: no AI, no GIS expansion, no provider activation, no telemetry, no forecasting, no valuation, no rankings, no personalization, no schema changes, no Prisma changes, no migrations, no database changes, no API changes, and no customer-visible fixtures.
-- Current repository state after certification evidence recording: production code is pushed at `origin/main`; certification evidence is documentation-only and does not imply that a documentation commit was production-deployed.
-- Next authorized product-review stage: Search Product Experience Review(tm) Wave 1.
-- Search implementation remains unauthorized.
-- Exact next step: begin Search Product Experience Review(tm) Wave 1 only as a governed product-experience review. Codex must not implement Search changes, deploy again, or begin another implementation program without an explicit directive.
 
 Prior Decision Journey Experience 1.0 handoff retained below.
 
