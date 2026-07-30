@@ -10,7 +10,7 @@ Product:
 
 ## Latest New-Chat Handoff
 
-PROJECT ATLAS(tm) / Market Product 3.0 Visual Intelligence Activation, July 29, 2026:
+PROJECT ATLAS(tm) / Homepage Product Experience Review(tm) Wave 1 Production Certification and Closure, July 30, 2026:
 
 Workspace:
 
@@ -26,23 +26,152 @@ git log -8 --oneline
 
 Current governed state:
 
-- Stage A production certification for `c82ba1cf72a148ee92aa82d8ba046415c154ffff` passed before local public VIS activation.
-- Deployment evidence for `c82ba1cf72a148ee92aa82d8ba046415c154ffff`: GitHub/Vercel status `success`, commit status ID `51324361493`, timestamp `2026-07-29T21:19:54Z`.
-- Production smoke passed against `https://davidquinngroup.com`.
-- Production `/admin/repository/visual-intelligence` remained admin-protected.
-- Production `/market` continued to promote only Boulder, Lafayette, and Louisville as certified Decision Guides, with no admin/source/BCOD leakage.
-- Market Product 3.0 public VIS activation is implemented and committed locally at `c5200d64f0247a61a1f3cb208f40b53d92d02876`.
+- Market Product 3.0 is production-certified and closed.
+- Property Product 3.1 is production-certified and closed.
+- Neighborhood Product 3.0 is production-certified and closed.
+- Decision Journey Experience 1.0 is production-certified and closed.
+- Homepage Product Experience Review(tm) Wave 1 is production-certified and closed.
+- Final status: `HOMEPAGE_PRODUCT_EXPERIENCE_WAVE_1_CERTIFIED_AND_CLOSED`.
+- Closure status: `CERTIFIED_AND_CLOSED`.
+- Production implementation SHA: `a8e4e0e697e22791d5316ac1688d7cae82882695`.
+- Original Homepage Wave 1 implementation SHA: `f0a639b751bf81960a65fd717748b308ce700e4d`.
+- Remediation corrected the compact Continue Your Decision(tm) browser-default blue link and border defect.
+- Homepage final score: `7 / 10`.
+- `origin/main` resolved to `a8e4e0e697e22791d5316ac1688d7cae82882695`.
+- GitHub/Vercel commit status: `success`.
+- Commit status ID: `51360351759`.
+- Deployment description: `Deployment has completed`.
+- Deployment timestamp: `2026-07-30T12:00:11Z`.
+- Vercel deployment target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/CU8CRVyamCVZGEFuEKQwCerjr6HG`.
+- Production domain: `https://davidquinngroup.com`.
+- Production smoke passed: `PUBLIC_EXPERIENCE_SMOKE_BASE_URL=https://davidquinngroup.com npm run smoke:public-experience`.
+- Production browser review passed across desktop 1440 x 1000, tablet 900 x 1050, and mobile 390 x 844.
+- Browser review confirmed compact Continue Your Decision(tm) links no longer render browser-default blue, hover/focus/active states use the REIE visual treatment, no horizontal overflow was detected, no production console or hydration errors were attributable to the fix, the full embedded Search/Map shell remained absent from Home, `/search` remained operational, brokerage attribution remained present, and footer legal/trust links remained present.
+- Production certification record: `docs/project-atlas/executive-library/HOMEPAGE-PRODUCT-EXPERIENCE-WAVE-1-PRODUCTION-CERTIFICATION.md`.
+- Related closure records: `docs/project-atlas/executive-library/DECISION-JOURNEY-EXPERIENCE-1-PRODUCTION-CERTIFICATION.md`, `docs/project-atlas/executive-library/MARKET-PRODUCT-3-PRODUCTION-CERTIFICATION.md`, `docs/project-atlas/executive-library/NEIGHBORHOOD-PRODUCT-3-PRODUCTION-CERTIFICATION.md`, and `docs/project-atlas/executive-library/PROPERTY-PRODUCT-3-1-PRODUCTION-CERTIFICATION.md`.
+- Boundaries preserved: no AI, no GIS expansion, no provider activation, no telemetry, no forecasting, no valuation, no rankings, no personalization, no schema changes, no Prisma changes, no migrations, no database changes, no API changes, and no customer-visible fixtures.
+- Current repository state after certification evidence recording: production code is pushed at `origin/main`; certification evidence is documentation-only and does not imply that a documentation commit was production-deployed.
+- Next authorized product-review stage: Search Product Experience Review(tm) Wave 1.
+- Search implementation remains unauthorized.
+- Exact next step: begin Search Product Experience Review(tm) Wave 1 only as a governed product-experience review. Codex must not implement Search changes, deploy again, or begin another implementation program without an explicit directive.
+
+Prior Decision Journey Experience 1.0 handoff retained below.
+
+PROJECT ATLAS(tm) / Decision Journey Experience 1.0 Production Certification and Closure, July 30, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Current governed state:
+
+- Market Product 3.0 is production-certified and closed.
+- Property Product 3.1 is production-certified and closed.
+- Neighborhood Product 3.0 is production-certified and closed.
+- Decision Journey Experience 1.0 is production-certified and closed.
+- Final status: `DECISION_JOURNEY_EXPERIENCE_1_PRODUCTION_CERTIFIED_AND_CLOSED`.
+- Production commit: `55be8fffb366a260027a7b2db0442aa53acfe688`.
+- `origin/main` resolved to `55be8fffb366a260027a7b2db0442aa53acfe688`.
+- GitHub/Vercel commit status: `success`.
+- Commit status ID: `51356615102`.
+- Deployment description: `Deployment has completed`.
+- Deployment timestamp: `2026-07-30T10:44:47Z`.
+- Vercel deployment target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/9YNJZcYu498mWBu5ro3b4zhDbf6x`.
+- Production domain: `https://davidquinngroup.com`.
+- Production smoke passed: `PUBLIC_EXPERIENCE_SMOKE_BASE_URL=https://davidquinngroup.com npm run smoke:public-experience`.
+- Production browser review passed across `/`, `/search`, `/market`, `/market/boulder-co-housing-market`, `/market/boulder/mapleton-hill`, `/market/boulder/downtown-boulder`, `/market/boulder/north-boulder`, and `/properties/32224-poudre-canyon-rd-bellvue-co-ire1363681` on desktop 1440 x 1100 and mobile 390 x 900.
+- Browser review confirmed `Continue Your Decision` appeared once where intended, Product 3 surfaces remained intact, no horizontal overflow, no page console warnings/errors, mobile rails behaved correctly, and governed DJX boundary attributes remained `false`.
+- Production certification record: `docs/project-atlas/executive-library/DECISION-JOURNEY-EXPERIENCE-1-PRODUCTION-CERTIFICATION.md`.
+- Boundaries preserved: no AI, no GIS, no provider activation, no telemetry, no forecasting, no valuation, no rankings, no personalization, no schema changes, no Prisma changes, no API changes, and no customer-visible fixtures.
+- Current repository state after certification evidence recording: production code is pushed at `origin/main`; certification evidence is local documentation only unless separately committed and pushed.
+- Exact next step: stop. Codex must not push a documentation-only closure commit, deploy again, or begin another implementation program without an explicit directive.
+
+Prior Neighborhood Product 3.0 handoff retained below.
+
+PROJECT ATLAS(tm) / Neighborhood Product 3.0 Production Certification and Closure, July 30, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Current governed state:
+
+- Market Product 3.0 is production-certified and closed.
+- Property Product 3.1 is production-certified and closed.
+- Neighborhood Product 3.0 is production-certified and closed.
+- Final status: `NEIGHBORHOOD_PRODUCT_3_PRODUCTION_CERTIFIED_AND_CLOSED`.
+- Production commit: `cfc6df7840bffb535621416d74df472560ab237d`.
+- `origin/main` resolved to `cfc6df7840bffb535621416d74df472560ab237d`.
+- GitHub/Vercel commit status: `success`.
+- Commit status ID: `51350018234`.
+- Deployment description: `Deployment has completed`.
+- Deployment timestamp: `2026-07-30T08:36:58Z`.
+- Vercel deployment target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/BTcfhS56u7PyKDaAnkspKzpQ8AN9`.
+- Production domain: `https://davidquinngroup.com`.
+- Production smoke passed: `PUBLIC_EXPERIENCE_SMOKE_BASE_URL=https://davidquinngroup.com npm run smoke:public-experience`.
+- Production browser review passed across `/market/boulder/mapleton-hill`, `/market/boulder/downtown-boulder`, and `/market/boulder/north-boulder` on desktop 1440 x 1100 and mobile 390 x 900.
+- Browser review confirmed Neighborhood Decision Profile, Community Constellation(tm), Neighborhood Confidence Layer, Market Context, Available Property Context, Verification Checklist, Mobile Decision Rail, city-market/search next-step paths, no horizontal overflow, no console warnings/errors, no prohibited public wording, and governed boundary attributes all `false`.
+- Evidence states certified: Mapleton Hill `complete` with rich interpretation `true`; Downtown Boulder `sparse` with rich interpretation `false`; North Boulder `sparse` with rich interpretation `false`.
+- Production certification record: `docs/project-atlas/executive-library/NEIGHBORHOOD-PRODUCT-3-PRODUCTION-CERTIFICATION.md`.
+- Boundaries preserved: no AI, no public GIS, no provider activation, no telemetry, no forecasting, no valuation, no rankings, no suitability scoring, no demographic targeting, no school ranking, no safety ranking, no investment recommendations, no unsupported local claims, no admin leakage, no fixture leakage, no restricted-knowledge leakage, no schema changes, no Prisma changes, no migrations, and no new APIs.
+- Current repository state after certification evidence recording: production code is pushed at `origin/main`; certification evidence is local documentation only unless separately committed and pushed.
+- Exact next step: stop. Codex must not push a documentation-only closure commit, deploy again, or begin another implementation program without an explicit directive.
+
+Prior Market Product 3.0 handoff retained below.
+
+PROJECT ATLAS(tm) / Market Product 3.0 Production Certification and Closure, July 29, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Current governed state:
+
+- Market Product 3.0 is production-certified and closed.
+- Final status: `MARKET_PRODUCT_3_PRODUCTION_CERTIFIED_AND_CLOSED`.
+- Production commit: `928742a698e6544a269871adb1d4ecef657d9018`.
+- `origin/main` resolved to `928742a698e6544a269871adb1d4ecef657d9018`.
+- GitHub/Vercel commit status: `success`.
+- Commit status ID: `51327346797`.
+- Deployment description: `Deployment has completed`.
+- Deployment timestamp: `2026-07-29T22:16:07Z`.
+- Vercel deployment target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/BRDkY9ixD2VEtbtztK5t1wrM8UKU`.
+- Production domain: `https://davidquinngroup.com`.
+- Production smoke passed: `PUBLIC_EXPERIENCE_SMOKE_BASE_URL=https://davidquinngroup.com npm run smoke:public-experience`.
+- Production `/market` served Market Product 3.0 HTML and promoted asset chunk `/_next/static/chunks/app/market/page-16d16bbbe90463d9.js`.
+- Production browser review passed across `/market`, Boulder, Louisville, Lafayette, and Broomfield sparse routes on desktop 1440 x 1100 and mobile 390 x 900.
+- Browser review confirmed no horizontal overflow, no console warnings/errors, Market Product 3.0 root/pulse/confidence/table present, buyer/seller interpretation present, certified routes complete, Broomfield sparse, and no forbidden public leakage.
+- `/market` certified guide cards remained exactly Boulder, Lafayette, and Louisville.
 - Core public VIS model: `lib/marketProduct3.ts`.
 - Public component: `components/MarketProduct3VisualIntelligence.tsx`.
-- Activated surfaces: `/market`, `/market/boulder-co-housing-market`, `/market/louisville-co-housing-market`, `/market/lafayette-co-housing-market`, and sparse bounded handling for foundation city routes such as `/market/broomfield-co-housing-market`.
-- Rich public interpretation is limited to Boulder, Lafayette, and Louisville.
-- Foundation cities render sparse evidence and do not expose completed local-authority interpretation.
-- Validation script: `npm run check:market-product-3`.
-- Governed records: Stage A production certification, Market Product 3.0 implementation, Market Pulse spec, Confidence Layer spec, Market Report Composition spec, responsive/accessibility review, DEI review, and future VIS adoption findings.
-- Local browser review passed across `/market`, Boulder, Louisville, Lafayette, and Broomfield sparse routes at 1440, 1024, 820, 390, and 320 widths: no horizontal overflow, no console warnings/errors, Market Product 3.0 root/pulse/confidence/table present, certified routes complete, Broomfield sparse, and no forbidden public text.
-- Boundaries remain active: no AI, no public GIS, no forecasting, no customer telemetry, no provider activation, no source activation, no schema or Prisma changes, no API changes, no mortgage/lender workflow, no rankings, no deployment, and no push.
-- Current repository state: `main` is clean and ahead of `origin/main` by 1 local commit.
-- Exact next step: David should decide whether to authorize production promotion for `c5200d64f0247a61a1f3cb208f40b53d92d02876`, authorize another governed Product 3.0 activation program, or stop. Codex must not push, deploy, or start another implementation without an explicit directive.
+- Production certification record: `docs/project-atlas/executive-library/MARKET-PRODUCT-3-PRODUCTION-CERTIFICATION.md`.
+- Boundaries preserved: no AI, no public GIS, no forecasting, no customer telemetry, no provider activation, no source activation, no schema or Prisma changes, no API changes, no mortgage/lender workflow, no rankings, no admin leakage, and no fixture leakage.
+- Current repository state after certification evidence recording: production code is pushed at `origin/main`; certification evidence is a local documentation update unless separately committed and pushed.
+- Exact next step: stop. Codex must not push a documentation-only closure commit, deploy again, or begin another implementation program without an explicit directive.
 
 Prior Visual Intelligence System handoff retained below.
 
