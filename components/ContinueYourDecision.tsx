@@ -15,6 +15,7 @@ type ContinueYourDecisionProps = {
   nextStep: string;
   links: ContinueYourDecisionLink[];
   tone?: 'dark' | 'light';
+  density?: 'standard' | 'compact';
 };
 
 export default function ContinueYourDecision({
@@ -25,8 +26,10 @@ export default function ContinueYourDecision({
   nextStep,
   links,
   tone = 'dark',
+  density = 'standard',
 }: ContinueYourDecisionProps) {
   const isLight = tone === 'light';
+  const isCompact = density === 'compact';
   const shellClass = isLight
     ? 'border-[#1f2d36]/12 bg-white text-[#111820] shadow-[0_18px_60px_rgba(17,24,32,0.08)]'
     : 'border-white/10 bg-[#071017]/86 text-white shadow-[0_22px_70px_rgba(0,0,0,0.22)]';
@@ -55,39 +58,46 @@ export default function ContinueYourDecision({
       data-djx-school-ranking="false"
       data-djx-safety-ranking="false"
       data-djx-fixture-data="false"
+      data-djx-density={density}
     >
-      <div className="grid gap-5 p-5 md:grid-cols-[0.82fr_1.18fr] md:p-6">
+      <div className={`grid gap-5 ${isCompact ? 'p-4 md:grid-cols-[0.92fr_1.08fr] md:p-5' : 'p-5 md:grid-cols-[0.82fr_1.18fr] md:p-6'}`}>
         <div>
           <p className={`flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] ${eyebrowClass}`}>
             <Route size={14} aria-hidden="true" />
             Continue Your Decision
           </p>
-          <h2 className="mt-3 text-2xl font-black uppercase leading-tight tracking-normal md:text-3xl">
+          <h2 className={`${isCompact ? 'mt-3 text-xl md:text-2xl' : 'mt-3 text-2xl md:text-3xl'} font-black uppercase leading-tight tracking-normal`}>
             {currentDecision}
           </h2>
           <p className={`mt-4 text-sm leading-7 ${mutedTextClass}`}>{whyHere}</p>
         </div>
 
         <div className="grid gap-3">
-          <div className={`grid gap-3 rounded-[8px] p-4 ring-1 ${panelClass} sm:grid-cols-3`}>
-            {[
-              ['Before this', cameFrom],
-              ['Current focus', currentDecision],
-              ['Next step', nextStep],
-            ].map(([label, value]) => (
-              <div key={label}>
-                <p className={`text-[9px] font-black uppercase tracking-[0.16em] ${isLight ? 'text-[#6b7c84]' : 'text-white/34'}`}>{label}</p>
-                <p className={`mt-2 text-xs font-semibold leading-5 ${isLight ? 'text-[#22313a]' : 'text-white/68'}`}>{value}</p>
-              </div>
-            ))}
-          </div>
+          {isCompact ? (
+            <p className={`rounded-[8px] p-3 text-xs font-semibold leading-6 ring-1 ${panelClass} ${isLight ? 'text-[#22313a]' : 'text-white/64'}`}>
+              Next step: {nextStep}
+            </p>
+          ) : (
+            <div className={`grid gap-3 rounded-[8px] p-4 ring-1 ${panelClass} sm:grid-cols-3`}>
+              {[
+                ['Before this', cameFrom],
+                ['Current focus', currentDecision],
+                ['Next step', nextStep],
+              ].map(([label, value]) => (
+                <div key={label}>
+                  <p className={`text-[9px] font-black uppercase tracking-[0.16em] ${isLight ? 'text-[#6b7c84]' : 'text-white/34'}`}>{label}</p>
+                  <p className={`mt-2 text-xs font-semibold leading-5 ${isLight ? 'text-[#22313a]' : 'text-white/68'}`}>{value}</p>
+                </div>
+              ))}
+            </div>
+          )}
 
-          <nav className="grid gap-2 sm:grid-cols-3" aria-label="Continue your decision">
+          <nav className={`grid gap-2 ${isCompact ? 'md:grid-cols-3' : 'sm:grid-cols-3'}`} aria-label="Continue your decision">
             {links.map((link) => (
               <Link
                 key={`${link.href}-${link.label}`}
                 href={link.href}
-                className={`group flex min-h-14 items-center justify-between gap-3 rounded-[6px] border px-4 py-3 text-xs font-black uppercase tracking-[0.12em] no-underline transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${linkClass}`}
+                className={`group flex items-center justify-between gap-3 rounded-[6px] border px-4 py-3 text-xs font-black uppercase tracking-[0.12em] no-underline transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${isCompact ? 'min-h-12' : 'min-h-14'} ${linkClass}`}
                 data-testid="continue-your-decision-link"
               >
                 <span className="min-w-0">

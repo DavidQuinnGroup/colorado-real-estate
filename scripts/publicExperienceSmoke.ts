@@ -123,21 +123,22 @@ async function assertHomePortalPage() {
 
   assert.ok(includesFoldedText(html, 'Find the right Colorado home with more context before you click'), 'Expected Home Portal 2.0 hero headline.');
   assert.ok(includesFoldedText(html, 'Search homes, compare communities, and understand the decision before the next step'), 'Expected Home Portal 2.0 supporting copy.');
+  assert.ok(includesFoldedText(html, 'Why REIE'), 'Expected Home Portal differentiation section.');
+  assert.ok(includesFoldedText(html, 'A calmer way to prepare the decision'), 'Expected Home Portal REIE differentiation headline.');
   assert.ok(includesFoldedText(html, 'Choose Your Journey'), 'Expected Home Portal journey selector.');
   assert.ok(includesFoldedText(html, 'Buy'), 'Expected Home Portal buyer journey card.');
   assert.ok(includesFoldedText(html, 'Sell'), 'Expected Home Portal seller journey card.');
   assert.ok(includesFoldedText(html, 'Explore Colorado'), 'Expected Home Portal Colorado exploration journey card.');
   assert.ok(includesFoldedText(html, 'Build Your Grand Plan'), 'Expected Home Portal Grand Plan CTA.');
-  assert.ok(includesFoldedText(html, 'Why REIE'), 'Expected Home Portal concise REIE introduction.');
-  assert.ok(includesFoldedText(html, 'Featured Colorado Communities'), 'Expected Home Portal community section.');
+  assert.ok(includesFoldedText(html, 'Place and Market Context'), 'Expected Home Portal place and market section.');
   assert.ok(includesFoldedText(html, 'Start with criteria, context, and confidence'), 'Expected homepage discovery to use criteria/context/confidence framing.');
-  assert.ok(includesFoldedText(html, 'Explore Colorado homes through the map, listings, and decision context'), 'Expected homepage discovery to define the advisory search boundary.');
+  assert.ok(includesFoldedText(html, 'The full search product is where map, list, and property comparison belong'), 'Expected homepage discovery to separate Home from the full Search Product.');
   assert.ok(includesFoldedText(html, 'Continue to Guided Search'), 'Expected homepage discovery to include a full search CTA.');
-  assert.ok(includesFoldedText(html, 'Colorado Discovery Preview'), 'Expected embedded homepage search to include discovery preview framing.');
-  assert.ok(includesFoldedText(html, 'Colorado property preview'), 'Expected embedded homepage search to use accurate geographic preview language.');
-  assert.ok(!includesFoldedText(html, 'Boulder-area preview'), 'Expected embedded homepage search not to imply a Boulder-only runtime boundary.');
-  assert.ok(!includesFoldedText(html, 'Open Full Search'), 'Expected embedded homepage search not to duplicate the full search CTA.');
-  assert.ok(!includesFoldedText(html, 'Plan Around What Matters'), 'Expected embedded homepage search not to duplicate the Grand Plan CTA.');
+  assert.ok(includesFoldedText(html, 'Colorado Discovery Preview'), 'Expected homepage search preview framing.');
+  assert.ok(includesFoldedText(html, 'Continue when you need the full search workspace'), 'Expected homepage search preview to hand off to full search.');
+  assert.ok(!includesFoldedText(html, 'Boulder-area preview'), 'Expected homepage search preview not to imply a Boulder-only runtime boundary.');
+  assert.ok(!includesFoldedText(html, 'Open Full Search'), 'Expected homepage search preview not to duplicate the full search CTA.');
+  assert.ok(!includesFoldedText(html, 'Plan Around What Matters'), 'Expected homepage search preview not to duplicate the Grand Plan CTA.');
   assert.ok(html.includes('data-testid="home-portal-hero"'), 'Expected Home Portal hero test handle.');
   assert.ok(html.includes('data-testid="home-portal-journey"'), 'Expected Home Portal journey test handle.');
   assert.ok(html.includes('data-testid="home-portal-search-section"'), 'Expected Home Portal search section test handle.');
@@ -145,10 +146,10 @@ async function assertHomePortalPage() {
   assert.ok(html.includes('data-testid="home-portal-david-quinn"'), 'Expected Home Portal David Quinn section handle.');
   assert.ok(html.includes('data-testid="home-discovery-principles"'), 'Expected homepage discovery principles test handle.');
   assert.ok(html.includes('data-testid="home-discovery-continuation"'), 'Expected homepage discovery continuation test handle.');
-  assert.ok(html.includes('data-testid="reie-home-discovery-intro"'), 'Expected embedded homepage discovery intro test handle.');
-  assert.ok(!html.includes('data-testid="reie-home-discovery-full-search-link"'), 'Expected embedded homepage full-search CTA duplication to be removed.');
-  assert.ok(!html.includes('data-testid="reie-home-discovery-grand-plan-link"'), 'Expected embedded homepage Grand Plan CTA duplication to be removed.');
-  assert.ok(html.includes('data-home-search-variant="embedded"'), 'Expected homepage search to render in embedded presentation mode.');
+  assert.ok(html.includes('data-testid="reie-home-discovery-intro"'), 'Expected homepage discovery intro test handle.');
+  assert.ok(!html.includes('data-testid="reie-home-discovery-full-search-link"'), 'Expected homepage full-search CTA duplication to be removed.');
+  assert.ok(!html.includes('data-testid="reie-home-discovery-grand-plan-link"'), 'Expected homepage Grand Plan CTA duplication to be removed.');
+  assert.ok(!html.includes('data-home-search-variant="embedded"'), 'Expected homepage not to render the dense embedded search/map variant.');
   assert.ok(html.includes('<link rel="canonical" href="https://davidquinngroup.com"'), 'Expected home canonical metadata to be preserved.');
 }
 

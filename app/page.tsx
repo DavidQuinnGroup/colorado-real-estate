@@ -3,7 +3,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import ContinueYourDecision from '@/components/ContinueYourDecision';
-import HomeSearchExperience, { type HomeAuthorityLink } from '@/components/home/HomeSearchExperience';
 import FAQSchema from '@/components/schema/FAQSchema';
 import { cities } from '@/lib/cities';
 import { getBlogLinks } from '@/lib/linking/getBlogLinks';
@@ -47,54 +46,62 @@ const headingClass = 'mt-6 max-w-5xl text-5xl font-black leading-[0.98] tracking
 const primaryButtonClass = 'home-btn home-btn-primary';
 const secondaryButtonClass = 'home-btn home-btn-secondary';
 const darkButtonClass = 'home-btn home-btn-dark';
-const lightButtonClass = 'home-btn home-btn-light';
+
+type HomeAuthorityLink = {
+  label: string;
+  href: string;
+  eyebrow: string;
+};
 
 const journeyCards = [
   {
     title: 'Buy',
-    body: 'Begin with criteria, evidence, and the homes worth a closer look.',
+    body: 'Prepare criteria, compare active homes, and know which questions should come before a showing.',
     href: '/buy',
     cta: 'Buyer Path',
-    imagePosition: '40% center',
   },
   {
     title: 'Sell',
-    body: 'Prepare the market story before the pricing conversation.',
+    body: 'Understand competing inventory, buyer questions, and preparation priorities before pricing takes over.',
     href: '/sell',
     cta: 'Seller Path',
-    imagePosition: '58% center',
   },
   {
     title: 'Explore Colorado',
-    body: 'See place, access, and local context with more intention.',
+    body: 'Use market and place context to understand where a decision deserves a closer look.',
     href: '#communities',
     cta: 'Explore Communities',
-    imagePosition: '72% center',
   },
 ];
 
 const featuredCommunities = [
-  { name: 'Boulder', href: '/market/boulder-co-housing-market', imagePosition: '30% center', imageAlt: 'Boulder foothills and residential neighborhoods' },
-  { name: 'Louisville', href: '/market/louisville-co-housing-market', imagePosition: '52% center', imageAlt: 'Louisville Colorado neighborhood and open-space setting' },
-  { name: 'Lafayette', href: '/market/lafayette-co-housing-market', imagePosition: '72% center', imageAlt: 'Lafayette Colorado community streetscape and Front Range light' },
-  { name: 'Superior', href: '/search?city=Superior', imagePosition: '58% center', imageAlt: 'Superior Colorado residential community near the foothills' },
-  { name: 'Erie', href: '/market/erie-co-housing-market', imagePosition: '36% center', imageAlt: 'Erie Colorado homes and north Front Range landscape' },
-  { name: 'Longmont', href: '/market/longmont-co-housing-market', imagePosition: '68% center', imageAlt: 'Longmont Colorado neighborhood with mountain access' },
+  { name: 'Boulder', href: '/market/boulder-co-housing-market', context: 'Certified market context and local decision guide.' },
+  { name: 'Louisville', href: '/market/louisville-co-housing-market', context: 'Community-scale market orientation.' },
+  { name: 'Lafayette', href: '/market/lafayette-co-housing-market', context: 'Place and inventory context for early comparison.' },
+  { name: 'Superior', href: '/search?city=Superior', context: 'Continue into search with city context applied.' },
+  { name: 'Erie', href: '/market/erie-co-housing-market', context: 'North Front Range market orientation.' },
+  { name: 'Longmont', href: '/market/longmont-co-housing-market', context: 'City context before property-level review.' },
 ];
 
 const reiePrinciples = [
   {
-    title: 'Better Decisions',
-    body: 'Search, compare, and evaluate with the next question in view.',
+    title: 'Context before clicks',
+    body: 'Search is useful when it helps you understand place, market context, and the next question to verify.',
   },
   {
-    title: 'Colorado Expertise',
-    body: 'Local context shapes the way every property should be read.',
+    title: 'Evidence with limits',
+    body: 'REIE separates useful guidance from unsupported certainty, rankings, forecasts, and automated conclusions.',
   },
   {
-    title: 'Trusted Guidance',
-    body: 'Education comes before pressure, urgency, or conversion.',
+    title: 'Professional judgment',
+    body: 'Construction perspective, local market awareness, and preparation discipline help shape a better conversation.',
   },
+];
+
+const searchPreviewSteps = [
+  'Start broad with the place, property, or criteria already on your mind.',
+  'Use the full search experience when you are ready for map, list, and deeper comparison.',
+  'Treat results as a decision starting point, then verify property details before relying on them.',
 ];
 
 const homeToolSchema = buildToolSchema({
@@ -203,11 +210,11 @@ export default function HomePage() {
               <div className="home-hero-search-focus mt-14">
                 <p className="text-[10px] font-black uppercase tracking-[0.24em] text-white/48">Begin with search</p>
                 <div className="home-hero-actions mt-5">
-                  <Link href="#search" className={primaryButtonClass}>
-                    Search Homes
+                  <Link href="/search" className={primaryButtonClass}>
+                    Start Your Search
                   </Link>
-                  <Link href="#communities" className={secondaryButtonClass}>
-                    Explore Communities
+                  <Link href="#why-reie" className={secondaryButtonClass}>
+                    Why REIE
                   </Link>
                 </div>
               </div>
@@ -215,7 +222,27 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="px-5 pb-8 pt-10 sm:px-8 lg:px-12" data-testid="home-djx-continuity">
+        <section id="why-reie" className={`${sectionShell} home-why-section`} data-testid="home-portal-why-reie">
+          <div className={`${containerShell} grid gap-14 lg:grid-cols-[0.72fr_1.28fr] lg:items-start`}>
+            <div>
+              <p className={eyebrowClass}>Why REIE</p>
+              <h2 className={headingClass}>A calmer way to prepare the decision.</h2>
+              <p className="mt-7 max-w-xl text-base leading-8 text-white/58">
+                REIE is organized around decision quality: what you are trying to understand, what evidence is useful, what remains uncertain, and where to go next.
+              </p>
+            </div>
+            <div className="home-principle-list" data-testid="home-reie-differentiation">
+              {reiePrinciples.map((principle) => (
+                <article key={principle.title} className="home-principle-item">
+                  <h3 className="text-xl font-black leading-tight text-white">{principle.title}</h3>
+                  <p className="mt-4 text-sm leading-7 text-white/56">{principle.body}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="px-5 pb-4 pt-0 sm:px-8 lg:px-12" data-testid="home-djx-continuity">
           <div className={containerShell}>
             <ContinueYourDecision
               stage="home"
@@ -223,6 +250,7 @@ export default function HomePage() {
               currentDecision="Choose the right starting path."
               whyHere="The homepage connects search, market context, neighborhood orientation, and property review before you narrow the decision."
               nextStep="Open guided search or compare market context."
+              density="compact"
               links={[
                 { label: 'Search', href: '/search', note: 'Compare active homes' },
                 { label: 'Markets', href: '/market', note: 'Review city context' },
@@ -237,6 +265,9 @@ export default function HomePage() {
             <div className="max-w-4xl">
               <p className={eyebrowClass}>Choose Your Journey</p>
               <h2 className={headingClass}>Three paths. One clearer decision.</h2>
+              <p className="mt-7 max-w-2xl text-base leading-8 text-white/58">
+                Choose the path that matches the decision you are preparing for now. Each route keeps the focus on context, verification, and next-step clarity.
+              </p>
             </div>
             <div className="home-journey-grid mt-20">
               {journeyCards.map((card) => (
@@ -245,62 +276,76 @@ export default function HomePage() {
                   href={card.href}
                   className="home-card-link home-journey-card group focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-100"
                 >
-                  <div
-                    className="home-journey-card-image"
-                    style={{ backgroundImage: `url(${HERO_IMAGE})`, backgroundPosition: card.imagePosition }}
-                    role="img"
-                    aria-label={`${card.title} journey in Colorado real estate`}
-                  />
-                  <div className="flex flex-1 flex-col px-8 pb-10 pt-9 sm:px-10">
-                    <h3 className="text-4xl font-black leading-none text-white">{card.title}</h3>
-                    <p className="mt-6 text-sm leading-7 text-white/58">{card.body}</p>
-                    <p className="mt-auto pt-12 text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/78 group-hover:text-white">
-                      {card.cta}
-                    </p>
-                  </div>
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100/66">{card.cta}</span>
+                  <h3 className="mt-8 text-4xl font-black leading-none text-white">{card.title}</h3>
+                  <p className="mt-6 text-sm leading-7 text-white/58">{card.body}</p>
+                  <p className="mt-12 text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/78 group-hover:text-white">
+                    Continue
+                  </p>
                 </Link>
               ))}
             </div>
           </div>
         </section>
 
-        <section id="search" className="home-search-section bg-[#f5f1e8] px-4 py-28 text-[#111820] sm:px-8 sm:py-36 lg:px-12 lg:py-44" data-testid="home-portal-search-section">
+        <section id="search" className="home-search-section bg-[#f5f1e8] px-5 py-28 text-[#111820] sm:px-8 sm:py-36 lg:px-12 lg:py-44" data-testid="home-portal-search-section">
           <div className={`${containerShell} home-discovery-container`}>
-            <div className="mb-16 flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+            <div className="mb-14 grid gap-8 lg:grid-cols-[0.82fr_1.18fr] lg:items-end">
               <div className="max-w-3xl text-left">
                 <p className="text-[10px] font-black uppercase tracking-[0.34em] text-[#7a694f]">This Is Where You Begin</p>
                 <h2 className="mt-6 max-w-4xl text-5xl font-black leading-[0.98] tracking-normal text-[#111820] sm:text-6xl lg:text-7xl">
                   Start with criteria, context, and confidence.
                 </h2>
                 <p className="mt-7 max-w-xl text-base leading-8 text-[#41505a]">
-                  Explore Colorado homes through the map, listings, and decision context that shape a better shortlist.
+                  The full search product is where map, list, and property comparison belong. Home gives you a calmer place to begin.
                 </p>
               </div>
               <div className="flex flex-col gap-3 sm:flex-row lg:justify-end">
-                <Link href="/search" className={darkButtonClass}>
+                <Link href="/search" className={darkButtonClass} data-testid="home-discovery-continuation">
                   Continue to Guided Search
-                </Link>
-                <Link href="/grand-plan" className={lightButtonClass}>
-                  Build Your Grand Plan™
                 </Link>
               </div>
             </div>
-            <div className="home-search-principles mb-12" data-testid="home-discovery-principles">
-              {[
-                'Daily access context before endless scrolling.',
-                'Map, list, and context in one place.',
-                'A clear path into deeper search.',
-              ].map((principle) => (
-                <p key={principle} className="text-sm font-black uppercase leading-6 tracking-[0.08em] text-[#26333b]/68">
-                  {principle}
+            <div className="home-search-preview" data-testid="reie-home-discovery-intro">
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[#7a694f]">Colorado Discovery Preview</p>
+                <h3 className="mt-4 max-w-2xl text-3xl font-black leading-tight tracking-normal text-[#111820] sm:text-4xl">
+                  Begin with a place, property, or question. Continue when you need the full search workspace.
+                </h3>
+                <div className="home-search-principles mt-10" data-testid="home-discovery-principles">
+                  {searchPreviewSteps.map((principle) => (
+                    <p key={principle} className="text-sm font-black uppercase leading-6 tracking-[0.08em] text-[#26333b]/68">
+                      {principle}
+                    </p>
+                  ))}
+                </div>
+              </div>
+              <form action="/search" method="get" className="home-search-entry" aria-label="Begin a guided home search">
+                <label className="grid gap-2" htmlFor="home-search-city">
+                  <span className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/68">Place</span>
+                  <input
+                    id="home-search-city"
+                    name="city"
+                    placeholder="City or town"
+                    className="home-search-input"
+                  />
+                </label>
+                <label className="grid gap-2" htmlFor="home-search-query">
+                  <span className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/68">Property or keyword</span>
+                  <input
+                    id="home-search-query"
+                    name="q"
+                    placeholder="Address, ZIP, keyword, MLS"
+                    className="home-search-input"
+                  />
+                </label>
+                <button type="submit" className={`${primaryButtonClass} w-full`}>
+                  Start Your Search
+                </button>
+                <p className="text-xs leading-6 text-white/52">
+                  Search results support orientation and comparison. Verify property details, disclosures, condition, and advisor context before relying on any result.
                 </p>
-              ))}
-            </div>
-            <HomeSearchExperience authorityLinks={authorityLinks} faqItems={homeFaqs} variant="embedded" />
-            <div className="mt-4 flex justify-end" data-testid="home-discovery-continuation">
-              <Link href="/search" className={secondaryButtonClass}>
-                Continue to Guided Search
-              </Link>
+              </form>
             </div>
           </div>
         </section>
@@ -309,58 +354,44 @@ export default function HomePage() {
           <div className={containerShell}>
             <div className="home-community-heading">
               <div className="max-w-2xl">
-                <p className={eyebrowClass}>Featured Colorado Communities</p>
-                <h2 className={headingClass}>Start with place.</h2>
+                <p className={eyebrowClass}>Place and Market Context</p>
+                <h2 className={headingClass}>Understand the place before the property.</h2>
+                <p className="mt-7 max-w-xl text-base leading-8 text-white/58">
+                  Market and community pages help you read local context without turning the homepage into a directory.
+                </p>
               </div>
               <Link href="/market" className={`${secondaryButtonClass} home-community-action`}>
                 Explore Market Context
               </Link>
             </div>
-            <div className="home-community-grid mt-20">
+            <div className="home-community-grid mt-16">
               {featuredCommunities.map((community) => (
                 <Link
                   key={community.name}
                   href={community.href}
-                  className={`home-card-link home-community-card group ${community.name === 'Boulder' ? 'home-community-card-featured' : ''}`}
+                  className="home-card-link home-community-card group"
                 >
-                  <div
-                    className="home-community-image"
-                    style={{ backgroundImage: `url(${HERO_IMAGE})`, backgroundPosition: community.imagePosition }}
-                    role="img"
-                    aria-label={community.imageAlt}
-                  />
-                  <div className="home-community-overlay" />
+                  <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/62">Market Context</p>
                   <h3 className="home-community-title">{community.name}</h3>
+                  <p className="mt-4 text-sm leading-7 text-white/54">{community.context}</p>
+                </Link>
+              ))}
+            </div>
+            <div className="home-authority-links mt-12" aria-label="Additional market and search paths">
+              {authorityLinks.map((link) => (
+                <Link key={`${link.href}-${link.label}`} href={link.href} className="home-authority-link">
+                  <span>{link.eyebrow}</span>
+                  {link.label}
                 </Link>
               ))}
             </div>
           </div>
         </section>
 
-        <section className={`${sectionShell} home-why-section`} data-testid="home-portal-why-reie">
-          <div className={`${containerShell} grid gap-16 lg:grid-cols-[0.8fr_1.2fr] lg:items-start`}>
-            <div>
-              <p className={eyebrowClass}>Why REIE</p>
-              <h2 className={headingClass}>Knowledge before action.</h2>
-              <Link href="/about" className={`${secondaryButtonClass} mt-9`}>
-                Read the Full Approach
-              </Link>
-            </div>
-            <div className="grid gap-10 md:grid-cols-3">
-              {reiePrinciples.map((principle) => (
-                <article key={principle.title}>
-                  <h3 className="text-xl font-black leading-tight text-white">{principle.title}</h3>
-                  <p className="mt-5 text-sm leading-7 text-white/54">{principle.body}</p>
-                </article>
-              ))}
-            </div>
-          </div>
-        </section>
-
         <section className="home-grand-plan-section bg-[#e8e2d8] px-5 py-28 text-[#111820] sm:px-8 sm:py-36 lg:px-12 lg:py-44" data-testid="home-portal-grand-plan">
-          <div className={`${containerShell} grid gap-12 lg:grid-cols-[0.92fr_1.08fr] lg:items-center`}>
+          <div className={`${containerShell} grid gap-12 lg:grid-cols-[0.72fr_1.28fr] lg:items-center`}>
             <div
-              className="min-h-[360px] bg-cover bg-center shadow-[0_40px_100px_rgba(61,51,40,0.16)] lg:min-h-[560px]"
+              className="home-grand-plan-image min-h-[320px] bg-cover bg-center shadow-[0_40px_100px_rgba(61,51,40,0.16)] lg:min-h-[460px]"
               style={{ backgroundImage: `url(${HERO_IMAGE})` }}
               role="img"
               aria-label="Colorado home and mountain setting for Grand Plan"
@@ -371,7 +402,7 @@ export default function HomePage() {
                 The move is bigger than the house.
               </h2>
               <p className="mt-7 max-w-xl text-base leading-8 text-[#41505a]">
-                Align place, timing, priorities, and the life you are building around the decision.
+                When search and place context are not enough, Grand Plan helps organize priorities, timing, and the life you are building around the decision.
               </p>
               <Link href="/grand-plan" className={`${darkButtonClass} mt-10`}>
                 Build Your Grand Plan™
@@ -381,13 +412,7 @@ export default function HomePage() {
         </section>
 
         <section className="home-david-section px-5 py-28 sm:px-8 sm:py-36 lg:px-12 lg:py-40" data-testid="home-portal-david-quinn">
-          <div className={`${containerShell} grid gap-12 lg:grid-cols-[0.72fr_1fr] lg:items-center`}>
-            <div
-              className="relative min-h-[420px] overflow-hidden bg-cover bg-center shadow-[0_34px_100px_rgba(0,0,0,0.24)]"
-              style={{ backgroundImage: `url(${HERO_IMAGE})` }}
-              role="img"
-              aria-label="Colorado Front Range home and mountain setting"
-            />
+          <div className={`${containerShell} home-trust-close`}>
             <div>
               <p className={eyebrowClass}>David Quinn</p>
               <h2 className="mt-6 max-w-3xl text-4xl font-black leading-[1.02] tracking-normal text-white sm:text-5xl lg:text-6xl">
@@ -396,7 +421,12 @@ export default function HomePage() {
               <p className="mt-7 max-w-xl text-base leading-8 text-white/58">
                 Construction perspective, market context, and planning discipline for Colorado buyers, sellers, and owners.
               </p>
-              <div className="mt-10 flex flex-col gap-3 sm:flex-row">
+            </div>
+            <div className="home-trust-actions">
+              <p className="text-sm leading-7 text-white/58">
+                Continue when you want to understand the advisory approach or talk through a specific Colorado decision.
+              </p>
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <Link href="/about" className={primaryButtonClass}>
                   About David Quinn
                 </Link>

@@ -49,7 +49,7 @@ export default function PublicNavigation() {
           </span>
         </Link>
 
-        <div className="hidden items-center gap-2 lg:flex" data-testid="reie-public-navigation-links">
+        <div className="reie-public-desktop-navigation-links hidden items-center gap-2 lg:flex" data-testid="reie-public-navigation-links">
           {publicNavigationLinks.map((link) => (
             <Link
               key={link.href}
@@ -72,23 +72,30 @@ export default function PublicNavigation() {
         </Link>
       </nav>
 
-      <nav
-        className="grid grid-cols-4 gap-px border-t border-white/[0.06] bg-white/[0.06] lg:hidden"
+      <details
+        className="reie-public-mobile-navigation border-t border-white/[0.06] bg-[#071017]/94 lg:hidden"
         aria-label="Primary public mobile navigation"
         data-testid="reie-public-mobile-navigation"
       >
-        {publicNavigationLinks.map((link) => (
-          <Link
-            key={`mobile-${link.href}`}
-            href={link.href}
-            className="reie-public-navigation-link flex min-h-11 items-center justify-center bg-[#071017]/94 px-1.5 py-2 text-center text-[9px] font-black uppercase leading-3 tracking-[0.06em] text-white/62 no-underline transition hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-cyan-100 sm:px-2 sm:text-[10px] sm:tracking-[0.1em]"
-            data-testid="reie-public-mobile-navigation-link"
-            data-reie-public-route={link.href}
-          >
-            {link.label}
-          </Link>
-        ))}
-      </nav>
+        <summary className="reie-public-mobile-menu-summary flex min-h-11 cursor-pointer list-none items-center justify-between px-4 py-2 text-[10px] font-black uppercase tracking-[0.18em] text-white/70 marker:content-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-cyan-100 sm:px-8">
+          Menu
+          <span aria-hidden="true" className="text-cyan-100/70">+</span>
+        </summary>
+        <nav className="reie-public-mobile-route-list grid gap-px bg-white/[0.06] sm:grid-cols-2" aria-label="Primary public mobile route list">
+          {publicNavigationLinks.map((link) => (
+            <Link
+              key={`mobile-${link.href}`}
+              href={link.href}
+              className="reie-public-navigation-link reie-public-mobile-menu-link flex min-h-12 items-center justify-between bg-[#071017]/94 px-4 py-3 text-[10px] font-black uppercase leading-4 tracking-[0.12em] text-white/62 no-underline transition hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-cyan-100 sm:px-8"
+              data-testid="reie-public-mobile-navigation-link"
+              data-reie-public-route={link.href}
+            >
+              {link.label}
+              <span aria-hidden="true" className="text-cyan-100/45">&rarr;</span>
+            </Link>
+          ))}
+        </nav>
+      </details>
     </header>
   );
 }

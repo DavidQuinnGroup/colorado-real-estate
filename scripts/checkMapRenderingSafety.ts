@@ -82,7 +82,7 @@ async function main() {
   assert(searchMap.includes('map.invalidateSize({ animate: false, pan: false })'), 'SearchMap must explicitly recalculate Leaflet geometry.');
   assert(packageJson.includes('"check:map-rendering-safety"'), 'package.json must expose the map rendering safety check.');
   assert(searchInterface.includes('Guided Property Search'), 'Dedicated search must present guided property discovery framing.');
-  assert(searchInterface.includes('Explore Colorado homes with fit, context, and confidence.'), 'Dedicated search must preserve the approved editorial headline.');
+  assert(searchInterface.includes('Explore Colorado homes with criteria, context, and confidence.'), 'Dedicated search must preserve the approved editorial headline.');
   assert(searchInterface.includes('Start with the places, homes, or criteria that matter.'), 'Dedicated search must orient customers before filters.');
   assert(searchInterface.includes('Build on What Matters'), 'Dedicated search must include Grand Plan continuity framing.');
   assert(searchInterface.includes('Search does not automatically apply your plan'), 'Dedicated search must avoid implying automatic Grand Plan personalization.');
@@ -94,21 +94,24 @@ async function main() {
   assert(!searchInterface.match(/public inventory command center|command center|internal diagnostics|smoke-ready|source-health|duration diagnostics/i), 'Dedicated search shell must avoid internal operational terminology.');
   assert(globalsCss.includes('.reie-search-continuity'), 'Global CSS must define the dedicated search Grand Plan continuity treatment.');
   assert(globalsCss.includes('.reie-search-orientation'), 'Global CSS must define the dedicated search orientation treatment.');
-  assert(homePage.includes('Start with fit, context, and confidence.'), 'Homepage discovery section must use Wave 2D fit/context/confidence framing.');
-  assert(homePage.includes('Explore Colorado homes through the map, listings, and decision context that shape a better shortlist.'), 'Homepage discovery section must explain the certified Homepage Product 2 search decision boundary.');
-  assert(homePage.includes('A clear path into deeper search.'), 'Homepage discovery principles must preserve guided-search continuation framing.');
+  assert(homePage.includes('Start with criteria, context, and confidence.'), 'Homepage discovery section must use criteria/context/confidence framing.');
+  assert(homePage.includes('The full search product is where map, list, and property comparison belong.'), 'Homepage discovery section must separate Home from the full Search Product.');
+  assert(homePage.includes('Continue when you need the full search workspace.'), 'Homepage discovery preview must preserve guided-search continuation framing.');
   assert(homePage.includes('href="/search"'), 'Homepage discovery section must include a full search CTA.');
-  assert(homePage.includes('href="/grand-plan"'), 'Homepage discovery section must preserve one subordinate Grand Plan path.');
+  assert(homePage.includes('href="/grand-plan"'), 'Homepage must preserve a subordinate Grand Plan path.');
   assert(homePage.includes('data-testid="home-discovery-principles"'), 'Homepage discovery principles must expose a stable verification handle.');
   assert(homePage.includes('data-testid="home-discovery-continuation"'), 'Homepage discovery continuation CTA must expose a stable verification handle.');
-  assert(homeSearch.includes('Colorado Discovery Preview'), 'Embedded homepage search must include concise discovery preview framing.');
-  assert(homeSearch.includes('Colorado property preview'), 'Embedded homepage search must use geographically accurate preview language.');
-  assert(homeSearch.includes('data-testid="reie-home-discovery-intro"'), 'Embedded homepage search must expose a stable discovery intro handle.');
-  assert(!homeSearch.includes('data-testid="reie-home-discovery-full-search-link"'), 'Embedded homepage search must not duplicate the section full-search CTA.');
-  assert(!homeSearch.includes('data-testid="reie-home-discovery-grand-plan-link"'), 'Embedded homepage search must not duplicate the section Grand Plan CTA.');
-  assert(!homeSearch.includes('Boulder-area preview'), 'Embedded homepage search must not imply a geographic limitation that runtime does not enforce.');
-  assert(homeSearch.includes('onBoundsChange={fetchListings}'), 'Homepage embedded search must preserve map bounds search updates.');
-  assert(homeSearch.includes('buildSearchUrl(bounds, nextFilters)'), 'Homepage embedded search must preserve existing search URL construction.');
+  assert(homePage.includes('data-testid="reie-home-discovery-intro"'), 'Homepage search preview must expose a stable discovery intro handle.');
+  assert(homePage.includes('action="/search"'), 'Homepage search preview must submit only to the existing Search route.');
+  assert(homePage.includes('name="city"'), 'Homepage search preview must support city handoff to existing Search route parameters.');
+  assert(homePage.includes('name="q"'), 'Homepage search preview must support query handoff to existing Search route parameters.');
+  assert(!homePage.includes('HomeSearchExperience'), 'Homepage must not import or render the full embedded Search Product shell.');
+  assert(!homePage.includes('data-home-search-variant="embedded"'), 'Homepage must not render the dense embedded search/map variant.');
+  assert(!homePage.includes('onBoundsChange={fetchListings}'), 'Homepage must not run map bounds search updates.');
+  assert(!homePage.includes('buildSearchUrl(bounds, nextFilters)'), 'Homepage must not construct embedded map/list search URLs.');
+  assert(!homeSearch.includes('data-testid="reie-home-discovery-full-search-link"'), 'HomeSearchExperience must not duplicate a full-search CTA.');
+  assert(!homeSearch.includes('data-testid="reie-home-discovery-grand-plan-link"'), 'HomeSearchExperience must not duplicate a Grand Plan CTA.');
+  assert(!homeSearch.includes('Boulder-area preview'), 'HomeSearchExperience must not imply a geographic limitation that runtime does not enforce.');
   assert(searchControls.includes('Shape Your Search'), 'Search controls must use customer-facing refinement language.');
   assert(searchControls.includes('Build clarity by starting with place'), 'Search controls must frame refinement as decision-building.');
   assert(searchControls.includes('Where would you like to live?'), 'Search controls must prioritize location first.');
@@ -262,7 +265,7 @@ async function main() {
   }
   const popupSource = searchMap.slice(searchMap.indexOf('function buildPopupHtml'), searchMap.indexOf('export default function SearchMap'));
   const prohibitedPublicPropertyLanguage =
-    /Selected Signal|Property Scorecard|Asset Snapshot|Authority Paths|Decision Signal|Triage|\bEFF\b|\bRES\b|\bEff\b|\bRes\b|\bDiagnostic\b|Scorecard|\bPriority\b|Operational status|Smoke ready|Smoke review|AI analysis|AI inspection|predictive|heatmap|guaranteed fit|guaranteed-fit|guaranteed condition|guaranteed equity|ROI|live traffic|commute savings|Discuss This Asset|Altitude Forensics|Internal intelligence/i;
+    /Selected Signal|Property Scorecard|Asset Snapshot|Authority Paths|Decision Signal|Triage|\bEFF\b|\bRES\b|\bEff\b|\bRes\b|\bDiagnostic\b|Scorecard|priority stack|Operational status|Smoke ready|Smoke review|AI analysis|AI inspection|predictive|heatmap|guaranteed fit|guaranteed-fit|guaranteed condition|guaranteed equity|ROI|live traffic|commute savings|Discuss This Asset|Altitude Forensics|Internal intelligence/i;
   for (const [label, source] of [
     ['search map popup', popupSource],
     ['selected-property drawer', selectedDrawer],
