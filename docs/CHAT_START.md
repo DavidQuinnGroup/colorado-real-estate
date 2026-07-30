@@ -10,6 +10,56 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / Neighborhood Product Experience Review(tm) Wave 1 Production Certification and Closure, July 30, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Current governed state:
+
+- Market Product 3.0 is production-certified and closed.
+- Property Product 3.1 is production-certified and closed.
+- Neighborhood Product 3.0 is production-certified and closed.
+- Decision Journey Experience 1.0 is production-certified and closed.
+- Homepage Product Experience Review(tm) Wave 1 is production-certified and closed.
+- Search Product Experience Review(tm) Wave 1 is production-certified and closed.
+- Property Product Experience Review(tm) Wave 1 is production-certified and closed.
+- Neighborhood Product Experience Review(tm) Wave 1 is production-certified and closed.
+- Final status: `NEIGHBORHOOD_PRODUCT_EXPERIENCE_WAVE_1_CERTIFIED_AND_CLOSED`.
+- Closure status: `CERTIFIED_AND_CLOSED`.
+- Production implementation SHA: `3131bf60ed2559206626921f0bb2a589c003a466`.
+- Neighborhood Wave 1 commit message: `Refine neighborhood product experience wave 1`.
+- Pre-implementation Neighborhood score: `5.8 / 10`.
+- Final governed Neighborhood score: `7.0 / 10`.
+- `origin/main` resolved to `3131bf60ed2559206626921f0bb2a589c003a466` before documentation recording.
+- GitHub/Vercel commit status: `success`.
+- Commit status ID: `51376664892`.
+- Deployment description: `Deployment has completed`.
+- Deployment timestamp: `2026-07-30T16:06:49Z`.
+- Vercel deployment target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/Bj9YHyHxaGbzz9zo9HKe69NBUQm9`.
+- Production domain: `https://davidquinngroup.com`.
+- Production smoke passed: `PUBLIC_EXPERIENCE_SMOKE_BASE_URL=https://davidquinngroup.com npm run smoke:public-experience`.
+- Production browser review passed across Neighborhood desktop 1440 x 1000, tablet 900 x 1050, and mobile 390 x 844.
+- Browser review confirmed stable Neighborhood CTA, card, chip, badge, rail, related-link, and standard Continue Your Decision styling; revised Neighborhood orientation; Community Constellation; visible confidence summary; Verification after Confidence; sparse-state preservation for Downtown Boulder and North Boulder; Search, Market, and property/search context transitions; no horizontal overflow; and no console or hydration errors attributable to the implementation.
+- Production certification record: `docs/project-atlas/executive-library/NEIGHBORHOOD-PRODUCT-EXPERIENCE-WAVE-1-PRODUCTION-CERTIFICATION.md`.
+- Related closure records: `docs/project-atlas/executive-library/PROPERTY-PRODUCT-EXPERIENCE-WAVE-1-PRODUCTION-CERTIFICATION.md`, `docs/project-atlas/executive-library/SEARCH-PRODUCT-EXPERIENCE-WAVE-1-PRODUCTION-CERTIFICATION.md`, `docs/project-atlas/executive-library/HOMEPAGE-PRODUCT-EXPERIENCE-WAVE-1-PRODUCTION-CERTIFICATION.md`, `docs/project-atlas/executive-library/DECISION-JOURNEY-EXPERIENCE-1-PRODUCTION-CERTIFICATION.md`, `docs/project-atlas/executive-library/MARKET-PRODUCT-3-PRODUCTION-CERTIFICATION.md`, `docs/project-atlas/executive-library/NEIGHBORHOOD-PRODUCT-3-PRODUCTION-CERTIFICATION.md`, and `docs/project-atlas/executive-library/PROPERTY-PRODUCT-3-1-PRODUCTION-CERTIFICATION.md`.
+- Boundaries preserved: no AI, no GIS expansion, no provider activation, no telemetry, no personalization, no forecasting, no valuation, no rankings, no suitability scoring, no demographic targeting, no school or safety rankings, no investment recommendations, no neighborhood-data semantic changes, no geographic boundary changes, no market calculation changes, no evidence/confidence calculation changes, no property-ranking or relevance behavior changes, no Search query semantic changes, no schema changes, no Prisma changes, no migrations, no database changes, no API changes, no provider configuration changes, no fixtures, no dependencies, and no unrelated product behavior changes.
+- Current repository state after certification evidence recording: production runtime code is pushed at `origin/main`; certification evidence is documentation-only and does not imply that a documentation commit itself was the certified runtime deployment.
+- Next authorized product-review stage: Market Product Experience Review(tm) Wave 1.
+- Market implementation remains unauthorized unless separately granted.
+- Exact next step: stop, or explicitly authorize Market Product Experience Review(tm) Wave 1. Codex must not implement additional product changes, deploy again, or begin another implementation program without an explicit directive.
+
+Prior Property Product Experience Wave 1 handoff retained below.
+
 PROJECT ATLAS(tm) / Property Product Experience Review(tm) Wave 1 Production Certification and Closure, July 30, 2026:
 
 Workspace:
