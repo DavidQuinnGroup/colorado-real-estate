@@ -669,10 +669,10 @@ export default function SearchMap({
 
       {shouldShowSearchDiagnostics ? (
         <div
-          className={`pointer-events-none absolute right-4 top-4 z-[720] border px-3 py-2 text-[9px] font-black uppercase tracking-[0.18em] shadow-[0_18px_48px_rgba(0,0,0,0.55)] ${
+          className={`pointer-events-none absolute right-4 top-4 z-[720] border px-3 py-2 text-[9px] font-black uppercase tracking-[0.18em] shadow-[0_18px_48px_rgba(0,0,0,0.42)] ${
             searchMeta?.health === 'degraded'
-              ? 'border-amber-300/40 bg-black/85 text-amber-100/80'
-              : 'border-white/20 bg-black/80 text-white/70'
+              ? 'border-amber-300/28 bg-black/76 text-amber-100/76'
+              : 'border-white/12 bg-black/70 text-white/62'
           }`}
           data-testid="reie-search-map-diagnostics"
           data-map-ready={String(mapReady)}
@@ -698,15 +698,10 @@ export default function SearchMap({
             ) : null}
           </div>
           <div className="mt-1 text-white/35">
-            <span>{searchMeta?.boundsApplied ? 'bounds' : 'open'}</span>
+            <span>{searchMeta?.boundsApplied ? 'Criteria area' : 'Map context'}</span>
             <span className="mx-2 text-white/20">/</span>
-            <span>{metaFilters}</span>
-            {metaDuration ? (
-              <>
-                <span className="mx-2 text-white/20">/</span>
-                <span>{metaDuration}</span>
-              </>
-            ) : null}
+            <span>List is criteria-led</span>
+            <span className="sr-only">{metaFilters}{metaDuration ? ` / ${metaDuration}` : ''}</span>
           </div>
           {smokeReady !== undefined ? (
             <div className="mt-1 text-white/35">

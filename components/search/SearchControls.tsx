@@ -55,7 +55,7 @@ function RefinementSection({
   children: ReactNode;
 }) {
   return (
-    <section className="rounded-[8px] border border-white/10 bg-white/[0.032] p-3" aria-label={title}>
+    <section className="rounded-[8px] bg-white/[0.032] p-3" aria-label={title}>
       <p className="text-[9px] font-black uppercase tracking-[0.18em] text-cyan-100/66">{eyebrow}</p>
       <p className="mt-1 text-[12px] font-black leading-5 text-white/72">{title}</p>
       <div className="mt-3">{children}</div>
@@ -188,18 +188,19 @@ export default function SearchControls({
   return (
     <form
       onSubmit={onSubmit}
-      className="overflow-hidden rounded-[8px] border border-white/10 bg-[#071017]/76 shadow-[0_14px_42px_rgba(0,0,0,0.2)]"
+      data-testid="reie-search-controls"
+      className="overflow-hidden rounded-[8px] border border-white/8 bg-[#071017]/72 shadow-[0_14px_42px_rgba(0,0,0,0.16)]"
       aria-labelledby={`${formId}-title`}
       aria-describedby={`${formId}-description ${formId}-status`}
     >
-      <div className="border-b border-white/10 bg-white/[0.035] p-3">
+      <div className="border-b border-white/8 bg-white/[0.025] p-3">
         <div className="flex items-start justify-between gap-3">
           <div>
             <p id={`${formId}-title`} className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">
               <SlidersHorizontal size={13} aria-hidden="true" />
               Shape Your Search
             </p>
-            <p id={`${formId}-description`} className="mt-2 text-[11px] font-bold leading-5 text-white/48">
+            <p id={`${formId}-description`} className="mt-1.5 text-[11px] font-bold leading-5 text-white/46">
               Build clarity by starting with place or a specific property, then narrow by budget, home type, beds, baths, and keywords the search already supports.
             </p>
           </div>
@@ -244,7 +245,7 @@ export default function SearchControls({
         </div>
 
         <div
-          className="mt-3 rounded-[8px] border border-white/10 bg-black/24 px-3 py-2"
+          className="mt-2 rounded-[8px] bg-black/18 px-3 py-2"
           data-testid="reie-search-criteria-summary"
           data-search-criteria-summary={criteriaSummary}
           data-search-active-filter-count={chips.length}
@@ -258,12 +259,12 @@ export default function SearchControls({
           </p>
         </div>
 
-      <div className="mt-3 grid gap-2">
-        <section className="rounded-[8px] bg-cyan-100/[0.055] p-3" aria-label="Primary search criteria">
+      <div className="mt-2 grid gap-2">
+        <section className="rounded-[8px] bg-cyan-100/[0.045] p-3" aria-label="Primary search criteria">
           <p className="text-[9px] font-black uppercase tracking-[0.18em] text-cyan-100/66">Start Here</p>
           <p className="sr-only">Where would you like to live?</p>
           <p className="sr-only">Already have a property in mind?</p>
-          <div className="mt-3 grid gap-2">
+          <div className="mt-3 grid gap-2 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.15fr)_auto]">
             <label className="block" htmlFor={`${formId}-city`}>
               <span className="sr-only">City</span>
               <input
@@ -273,7 +274,7 @@ export default function SearchControls({
                 onChange={(event) => onChange(updateFilter(filters, 'city', event.target.value))}
                 placeholder="City or town"
                 style={textControlStyle}
-                className="h-11 w-full rounded-[6px] border border-cyan-100/24 bg-cyan-100/[0.075] px-3 text-sm font-black text-white outline-none transition placeholder:text-cyan-50/38 focus:border-cyan-100/70"
+                className="h-11 w-full rounded-[6px] border border-cyan-100/22 bg-cyan-100/[0.07] px-3 text-sm font-black text-white outline-none transition placeholder:text-cyan-50/38 focus:border-cyan-100/70"
               />
             </label>
             <label className="min-w-0" htmlFor={`${formId}-query`}>
@@ -291,19 +292,19 @@ export default function SearchControls({
             <button
               type="submit"
               disabled={isSearching}
-              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[6px] bg-cyan-100 px-4 text-[10px] font-black uppercase tracking-[0.12em] text-[#061017] transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
+              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[6px] bg-cyan-100 px-4 text-[10px] font-black uppercase tracking-[0.12em] text-[#061017] transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200 lg:min-w-[96px]"
               aria-label="Update results"
             >
               {isSearching ? <Loader2 size={16} className="animate-spin" aria-hidden="true" /> : <Search size={16} aria-hidden="true" />}
               Search
             </button>
           </div>
-          <p className="mt-2 text-[11px] font-bold leading-5 text-white/38">
+          <p className="mt-2 text-[11px] font-bold leading-5 text-white/36">
             Use this when you already know an address, ZIP code, keyword, or MLS number. Neighborhood names and listing details can also help narrow supported search text.
           </p>
         </section>
 
-        <details className="rounded-[8px] border border-white/10 bg-white/[0.032] p-3">
+        <details className="rounded-[8px] border border-white/8 bg-white/[0.026] p-3">
           <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-[10px] font-black uppercase tracking-[0.16em] text-white/54">
             Refine budget and home details
             <span className="text-cyan-100/70">+</span>
@@ -425,7 +426,7 @@ export default function SearchControls({
         </div>
       ) : null}
 
-      <div className="mt-3 flex items-center justify-between gap-3 border-t border-white/10 pt-3">
+      <div className="mt-3 flex items-center justify-between gap-3 border-t border-white/8 pt-3">
         <p id={`${formId}-status`} className="text-[10px] font-black uppercase tracking-[0.16em] text-white/34" aria-live="polite">
           {isSearching ? 'Refreshing your search' : chips.length ? criteriaSummary : 'Ready to explore'}
         </p>

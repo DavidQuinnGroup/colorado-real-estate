@@ -182,7 +182,7 @@ export default function PropertyCard({ property, isActive, onClick }: PropertyCa
           <span className="text-[#061017]/62">Map Synced</span>
         </div>
       ) : null}
-      <div className="relative aspect-[16/8] w-full overflow-hidden bg-[#10151b]">
+      <div className="relative aspect-[16/7] w-full overflow-hidden bg-[#10151b]">
         <ResilientListingImage
           src={photoUrl}
           fallbackSrc={fallbackPhotoUrl}
@@ -254,14 +254,14 @@ export default function PropertyCard({ property, isActive, onClick }: PropertyCa
         </div>
 
         <div className="mt-2 flex flex-wrap items-center gap-2 text-[10px] font-black uppercase tracking-[0.12em] text-white/48">
-          <span className="rounded-[5px] border border-white/10 bg-white/[0.035] px-2.5 py-1">{propertyType}</span>
-          <span className="rounded-[5px] border border-white/10 bg-white/[0.035] px-2.5 py-1">
+          <span className="rounded-[5px] bg-white/[0.035] px-2.5 py-1">{propertyType}</span>
+          <span className="rounded-[5px] bg-white/[0.035] px-2.5 py-1">
             {hasCoordinatesFlag ? 'Map Located' : 'Map Review'}
           </span>
         </div>
 
         <div
-          className="mt-3 rounded-[6px] bg-cyan-100/[0.06] px-3 py-2.5"
+          className="mt-3 rounded-[6px] bg-cyan-100/[0.045] px-3 py-2.5"
           data-testid="reie-property-card-decision"
           data-property-card-decision-signal={decisionLabel}
           data-property-card-review-signal={reviewSignal}
@@ -272,34 +272,11 @@ export default function PropertyCard({ property, isActive, onClick }: PropertyCa
             <Sparkles size={12} aria-hidden="true" />
             Review Context
           </p>
-          <p className="mt-1 text-[11px] font-black uppercase tracking-[0.1em] text-white/62">{decisionSupport.attentionLabel}</p>
-          <p className="mt-1 text-xs font-bold leading-5 text-white/70">{decisionSupport.attentionReason}</p>
-        </div>
-
-        <div
-          className="mt-3 grid grid-cols-2 gap-2 text-left"
-          data-testid="reie-property-card-intelligence"
-          data-property-card-efficiency-score={formatIntelligenceScore(property.efficiencyScore)}
-          data-property-card-resilience-score={formatIntelligenceScore(property.resilienceScore)}
-          data-property-card-review-signal={reviewSignal}
-        >
-          <div className="rounded-[6px] bg-white/[0.045] px-3 py-2">
-            <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.12em] text-white/38">
-              <ShieldCheck size={12} aria-hidden="true" />
-              Map Context
-            </p>
-            <p className="mt-1 text-[12px] font-black uppercase leading-none text-white">
-              {hasCoordinatesFlag ? 'Location Shown' : 'Location Needs Review'}
-            </p>
-          </div>
-          <div className="min-w-0 rounded-[6px] bg-white/[0.045] px-3 py-2">
-            <p className="text-[10px] font-black uppercase tracking-[0.12em] text-white/38">Property Signals</p>
-            <p className="mt-1 truncate text-[12px] font-black leading-none text-cyan-100">{reviewSignal}</p>
-          </div>
+          <p className="mt-1 text-xs font-bold leading-5 text-white/68">{decisionSupport.attentionLabel}. {decisionSupport.attentionReason}</p>
         </div>
 
         <details
-          className="mt-3 rounded-[6px] border border-white/10 bg-white/[0.03] px-3 py-2.5"
+          className="mt-3 rounded-[6px] border border-white/8 bg-white/[0.025] px-3 py-2.5"
           data-testid="reie-property-card-v8-decision-path"
           data-property-card-v8-compare={decisionSupport.comparePrompt}
           data-property-card-v8-verify={decisionSupport.verifyPrompt}
@@ -307,9 +284,30 @@ export default function PropertyCard({ property, isActive, onClick }: PropertyCa
           data-property-card-v8-confidence-level={decisionSupport.confidenceLevel}
         >
           <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-[9px] font-black uppercase tracking-[0.14em] text-white/42">
-            Compare and verify
+            Context and verification
             <span className="text-cyan-100/70">+</span>
           </summary>
+          <div
+            className="mt-3 grid grid-cols-2 gap-2 text-left"
+            data-testid="reie-property-card-intelligence"
+            data-property-card-efficiency-score={formatIntelligenceScore(property.efficiencyScore)}
+            data-property-card-resilience-score={formatIntelligenceScore(property.resilienceScore)}
+            data-property-card-review-signal={reviewSignal}
+          >
+            <div className="rounded-[6px] bg-white/[0.035] px-3 py-2">
+              <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.12em] text-white/38">
+                <ShieldCheck size={12} aria-hidden="true" />
+                Map Context
+              </p>
+              <p className="mt-1 text-[12px] font-black uppercase leading-none text-white">
+                {hasCoordinatesFlag ? 'Location Shown' : 'Location Needs Review'}
+              </p>
+            </div>
+            <div className="min-w-0 rounded-[6px] bg-white/[0.035] px-3 py-2">
+              <p className="text-[10px] font-black uppercase tracking-[0.12em] text-white/38">Property Signals</p>
+              <p className="mt-1 truncate text-[12px] font-black leading-none text-cyan-100">{reviewSignal}</p>
+            </div>
+          </div>
           <div className="mt-2">
             <p className="text-[9px] font-black uppercase tracking-[0.14em] text-white/34">Compare</p>
             <p className="mt-1 text-[11px] font-bold leading-5 text-white/58">{decisionSupport.comparePrompt}</p>
@@ -320,7 +318,7 @@ export default function PropertyCard({ property, isActive, onClick }: PropertyCa
           </div>
         </details>
 
-        <div className="mt-3 flex flex-col items-start gap-2.5 border-t border-white/10 pt-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-3 flex flex-col items-start gap-2.5 border-t border-white/8 pt-3 sm:flex-row sm:items-center sm:justify-between">
           <p className="min-w-0 text-[10px] font-bold uppercase leading-4 tracking-[0.14em] text-white/40">
             Open details when this listing deserves a closer look. {decisionSupport.nextStep}
           </p>

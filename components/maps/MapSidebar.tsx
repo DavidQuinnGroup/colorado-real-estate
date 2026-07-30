@@ -44,6 +44,7 @@ type BaseMapSidebarProps = {
   onCloseDetail?: () => void;
   onClearSearch?: () => void;
   searchControls?: ReactNode;
+  continuityContent?: ReactNode;
   hasActiveFilters?: boolean;
   isLoading?: boolean;
 };
@@ -272,18 +273,6 @@ function LoadingInventorySkeleton() {
   );
 }
 
-function StatTile({ icon, label, value }: { icon: ReactNode; label: string; value: string | number }) {
-  return (
-    <div className="rounded-[8px] border border-white/10 bg-white/[0.045] px-3 py-3">
-      <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.14em] text-white/42">
-        {icon}
-        {label}
-      </p>
-      <p className="mt-2 text-[18px] font-black leading-none text-white">{value}</p>
-    </div>
-  );
-}
-
 function SearchIntelligenceStrip({ stats }: { stats: InventoryStats }) {
   const mappedLabel = stats.mappedCount > 0 ? `${stats.mappedCount} properties shown on this map` : 'Map view preparing';
   const resilienceLabel =
@@ -293,7 +282,7 @@ function SearchIntelligenceStrip({ stats }: { stats: InventoryStats }) {
 
   return (
     <div
-      className="mt-3 rounded-[8px] bg-cyan-100/[0.055] p-3"
+      className="mt-3 rounded-[8px] bg-cyan-100/[0.045] p-3"
       data-testid="reie-sidebar-intelligence"
       data-sidebar-mapped-count={stats.mappedCount}
       data-sidebar-review-count={stats.reviewCount}
@@ -305,7 +294,7 @@ function SearchIntelligenceStrip({ stats }: { stats: InventoryStats }) {
           Helpful Context
         </span>
       </div>
-      <div className="mt-3 grid gap-2 text-[10px] font-black uppercase leading-4 tracking-[0.12em] text-white/58 sm:grid-cols-2">
+      <div className="mt-3 grid gap-2 text-[10px] font-black uppercase leading-4 tracking-[0.12em] text-white/56 sm:grid-cols-2">
         <div className="flex min-w-0 items-center gap-2">
           <MapPinned size={12} aria-hidden="true" className="shrink-0 text-cyan-100/70" />
           <span className="truncate">{mappedLabel}</span>
@@ -356,7 +345,7 @@ function SearchDecisionPortfolio({
 
   return (
     <details
-      className="mt-3 rounded-[8px] border border-white/10 bg-black/28 p-3"
+      className="mt-3 rounded-[8px] border border-white/8 bg-black/20 p-3"
       data-testid="reie-sidebar-v8-decision-portfolio"
       data-sidebar-v8-decision-mode={decisionMode}
       data-sidebar-v8-mapped-ratio={mappedRatio}
@@ -365,7 +354,7 @@ function SearchDecisionPortfolio({
     >
       <summary className="flex cursor-pointer list-none items-start justify-between gap-3">
         <div>
-          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100/74">Decision View</p>
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100/70">Decision View</p>
           <p className="mt-1 text-sm font-black leading-5 text-white">{decisionMode}</p>
         </div>
         <span className="shrink-0 rounded-[5px] border border-white/10 bg-white/[0.045] px-2 py-1 text-[9px] font-black uppercase tracking-[0.12em] text-white/48">
@@ -373,15 +362,15 @@ function SearchDecisionPortfolio({
         </span>
       </summary>
       <div className="mt-3 grid grid-cols-3 gap-2 text-center">
-        <div className="rounded-[6px] bg-white/[0.045] px-2 py-2">
+        <div className="rounded-[6px] bg-white/[0.035] px-2 py-2">
           <p className="text-[9px] font-black uppercase tracking-[0.12em] text-white/34">Mapped</p>
           <p className="mt-1 text-sm font-black text-white">{mappedRatio}%</p>
         </div>
-        <div className="rounded-[6px] bg-white/[0.045] px-2 py-2">
+        <div className="rounded-[6px] bg-white/[0.035] px-2 py-2">
           <p className="text-[9px] font-black uppercase tracking-[0.12em] text-white/34">Review</p>
           <p className="mt-1 text-sm font-black text-white">{reviewRatio}%</p>
         </div>
-        <div className="rounded-[6px] bg-white/[0.045] px-2 py-2">
+        <div className="rounded-[6px] bg-white/[0.035] px-2 py-2">
           <p className="text-[9px] font-black uppercase tracking-[0.12em] text-white/34">Media</p>
           <p className="mt-1 text-sm font-black text-white">{stats.fallbackVisualCount}</p>
         </div>
@@ -453,7 +442,7 @@ function getSelectedAddress(property: MapSidebarListing | null | undefined, list
 }
 
 export default function MapSidebar(props: MapSidebarProps) {
-  const { listings = [], selectedId, hoveredId, onHover = () => {}, onCloseDetail, onClearSearch, searchControls, hasActiveFilters, isLoading } = props;
+  const { listings = [], selectedId, hoveredId, onHover = () => {}, onCloseDetail, onClearSearch, searchControls, continuityContent, hasActiveFilters, isLoading } = props;
   const sidebarRef = useRef<HTMLDivElement>(null);
   const activeId = selectedId ?? props.selectedProperty?.id ?? null;
   const stats = useMemo(() => getInventoryStats(listings), [listings]);
@@ -496,7 +485,7 @@ export default function MapSidebar(props: MapSidebarProps) {
       data-sidebar-loading={String(Boolean(isLoading))}
     >
       <header
-        className="relative max-h-[34vh] shrink-0 overflow-y-auto border-b border-white/12 px-4 pb-4 pt-16 md:max-h-[52vh] md:px-5 md:pt-5"
+        className="relative shrink-0 border-b border-white/10 px-4 pb-4 pt-16 md:px-5 md:pt-5"
         data-testid="reie-sidebar-header"
         data-sidebar-dominant-city={stats.dominantCity}
         data-sidebar-listing-count={listings.length}
@@ -506,8 +495,8 @@ export default function MapSidebar(props: MapSidebarProps) {
         <div className="relative">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.28em] text-cyan-100/72">Discovery Summary</p>
-              <h2 className="mt-2 font-serif text-[1.65rem] font-black leading-none tracking-normal text-white">
+              <p className="text-[10px] font-black uppercase tracking-[0.28em] text-cyan-100/68">Discovery Summary</p>
+              <h2 className="mt-2 font-serif text-[1.45rem] font-black leading-none tracking-normal text-white">
                 Properties in View
               </h2>
             </div>
@@ -526,7 +515,7 @@ export default function MapSidebar(props: MapSidebarProps) {
 
           {searchControls ? <div className="mt-4">{searchControls}</div> : null}
 
-          <div className="mt-4 rounded-[8px] bg-black/24 p-3">
+          <div className="mt-4 rounded-[8px] bg-black/20 p-3">
             <div className="flex items-end justify-between gap-4">
               <div>
                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/38">Market</p>
@@ -539,25 +528,19 @@ export default function MapSidebar(props: MapSidebarProps) {
             </div>
 
             <div className="mt-3 grid grid-cols-3 gap-2">
-              <div className="rounded-[6px] bg-white/[0.055] px-3 py-2">
+              <div className="rounded-[6px] bg-white/[0.04] px-3 py-2">
                 <p className="text-[10px] font-black uppercase tracking-[0.14em] text-white/34">From</p>
                 <p className="mt-1 text-sm font-black text-white">{formatCompactPrice(stats.priceFloor)}</p>
               </div>
-              <div className="rounded-[6px] bg-white/[0.055] px-3 py-2">
+              <div className="rounded-[6px] bg-white/[0.04] px-3 py-2">
                 <p className="text-[10px] font-black uppercase tracking-[0.14em] text-white/34">To</p>
                 <p className="mt-1 text-sm font-black text-white">{formatCompactPrice(stats.priceCeiling)}</p>
               </div>
-              <div className="rounded-[6px] bg-white/[0.055] px-3 py-2">
-                <p className="text-[10px] font-black uppercase tracking-[0.14em] text-white/34">Private</p>
-                <p className="mt-1 text-sm font-black text-white">{stats.privateCount}</p>
+              <div className="rounded-[6px] bg-white/[0.04] px-3 py-2">
+                <p className="text-[10px] font-black uppercase tracking-[0.14em] text-white/34">On Map</p>
+                <p className="mt-1 text-sm font-black text-white">{stats.mappedCount}</p>
               </div>
             </div>
-          </div>
-
-          <div className="mt-3 grid grid-cols-3 gap-2">
-            <StatTile icon={<MapPinned size={13} aria-hidden="true" />} label="On Map" value={stats.mappedCount} />
-            <StatTile icon={<ShieldCheck size={13} aria-hidden="true" />} label="Context" value={stats.averageResilience === null ? '--' : 'Yes'} />
-            <StatTile icon={<Gauge size={13} aria-hidden="true" />} label="Review Notes" value={stats.reviewCount} />
           </div>
 
           <SearchIntelligenceStrip stats={stats} />
@@ -677,7 +660,13 @@ export default function MapSidebar(props: MapSidebarProps) {
           <EmptyInventoryState hasActiveFilters={hasActiveFilters} onClearSearch={onClearSearch} />
         )}
 
-        <div className="border-t border-white/12 bg-[#070b10] p-4" data-testid="reie-sidebar-save-search-footer">
+        {continuityContent ? (
+          <div className="border-t border-white/10 bg-[#070b10] p-4" data-testid="reie-sidebar-continuity-footer">
+            {continuityContent}
+          </div>
+        ) : null}
+
+        <div className="border-t border-white/10 bg-[#070b10] p-4" data-testid="reie-sidebar-save-search-footer">
           <Suspense fallback={<SaveSearchFallback />}>
             <SaveSearch city={stats.dominantCity} />
           </Suspense>
