@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { CheckCircle2, Compass, Home, MapPinned } from 'lucide-react';
 
 import GrandPlanIntake from '@/components/GrandPlanIntake';
+import JourneyCohesionPanel from '@/components/JourneyCohesionPanel';
 import { SITE_NAME, SITE_URL } from '@/lib/publicTrust';
 
 export const metadata: Metadata = {
@@ -129,6 +130,21 @@ export default function GrandPlanPage() {
             </p>
           </aside>
           <GrandPlanIntake />
+        </div>
+      </section>
+
+      <section className="px-5 pb-16 sm:px-8 lg:px-12" data-testid="grand-plan-cohesion-continuity">
+        <div className="mx-auto w-full max-w-[1180px]">
+          <JourneyCohesionPanel
+            surface="grand-plan"
+            title="Use the Grand Plan as orientation, then continue into action."
+            body="The Grand Plan organizes priorities and context. It does not automatically personalize search, predict outcomes, or replace advisor review."
+            links={[
+              { label: 'Search Homes', href: '/search', note: 'Explore inventory', destination: 'search' },
+              { label: 'Buyer Guidance', href: '/buy', note: 'Prepare purchase questions', destination: 'buyer' },
+              { label: 'Advisory Guidance', href: '/contact', note: 'Talk through the plan', destination: 'advisory' },
+            ]}
+          />
         </div>
       </section>
     </main>

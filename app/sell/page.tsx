@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 import HomeValueEstimator from '@/components/HomeValueEstimator';
+import JourneyCohesionPanel from '@/components/JourneyCohesionPanel';
 import { getJourneyMeasurementAttributes } from '@/lib/customerJourneyMeasurement';
 import { SITE_NAME, SITE_URL } from '@/lib/publicTrust';
 
@@ -104,16 +105,28 @@ export default function SellPage() {
       </section>
 
       <section id="seller-intake" className="px-5 py-20 sm:px-8 sm:py-24 lg:px-12" data-testid="seller-intake-section">
-        <div className="mx-auto grid w-full max-w-[1180px] gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
-          <div>
-            <p className="text-[11px] font-black uppercase tracking-[0.28em] text-cyan-100">Next Step</p>
-            <h2 className="mt-5 text-4xl font-black leading-tight text-white">Start with the property and the decision you are trying to make.</h2>
-            <p className="mt-6 text-base leading-8 text-white/64">
-              The request creates a seller follow-up record for advisor review. It does not publish a valuation, send an uncontrolled email,
-              or replace a direct pricing conversation.
-            </p>
+        <div className="mx-auto grid w-full max-w-[1180px] gap-8">
+          <JourneyCohesionPanel
+            surface="seller"
+            title="Connect seller strategy to market context and advisory review."
+            body="A seller decision should move from preparation questions to market alternatives, home-worth context, and a direct advisor conversation without publishing a value claim."
+            links={[
+              { label: 'Home Worth', href: '/home-worth', note: 'Review value context', destination: 'home-worth' },
+              { label: 'Market Context', href: '/market', note: 'See local competition', destination: 'market' },
+              { label: 'Advisory Guidance', href: '/contact', note: 'Ask seller questions', destination: 'advisory' },
+            ]}
+          />
+          <div className="grid gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
+            <div>
+              <p className="text-[11px] font-black uppercase tracking-[0.28em] text-cyan-100">Next Step</p>
+              <h2 className="mt-5 text-4xl font-black leading-tight text-white">Start with the property and the decision you are trying to make.</h2>
+              <p className="mt-6 text-base leading-8 text-white/64">
+                The request creates a seller follow-up record for advisor review. It does not publish a valuation, send an uncontrolled email,
+                or replace a direct pricing conversation.
+              </p>
+            </div>
+            <HomeValueEstimator />
           </div>
-          <HomeValueEstimator />
         </div>
       </section>
     </main>

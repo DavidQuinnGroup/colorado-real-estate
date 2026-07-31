@@ -57,10 +57,14 @@ assertIncludes(homeWorth, 'data-testid="home-worth-local-expertise"', '/home-wor
 assertIncludes(homeWorth, 'data-testid="home-worth-confidence-inputs"', '/home-worth must explain information that improves confidence.');
 assertIncludes(homeWorth, 'data-testid="home-worth-request"', '/home-worth must include the seller review request.');
 assertIncludes(homeWorth, 'data-testid="home-worth-next-steps"', '/home-worth must explain next steps.');
-assertIncludes(homeWorth, 'href="/market"', '/home-worth must connect to market context.');
-assertIncludes(homeWorth, 'href="/sell"', '/home-worth must preserve seller strategy continuity.');
-assertIncludes(homeWorth, 'href="/search"', '/home-worth must preserve search continuity.');
+assertIncludes(homeWorth, "href=\"/market\"", '/home-worth must connect to market context.');
+assertIncludes(homeWorth, "sellerHref: '/sell'", '/home-worth must preserve seller strategy continuity.');
+assertIncludes(homeWorth, "searchHref: '/search'", '/home-worth must preserve search continuity.');
 assertIncludes(homeWorth, 'href="/contact"', '/home-worth must preserve contact continuity.');
+assertIncludes(homeWorth, 'JourneyCohesionPanel', '/home-worth must preserve shared journey cohesion continuity.');
+assertIncludes(homeWorth, "label: 'Market Context', href: '/market'", '/home-worth cohesion panel must route to market context.');
+assertIncludes(homeWorth, "label: 'Review Inventory', href: '/search'", '/home-worth cohesion panel must route to search inventory.');
+assertIncludes(homeWorth, "label: 'Seller Strategy', href: '/sell'", '/home-worth cohesion panel must route to seller strategy.');
 
 for (const forbidden of [
   'Estimated Value',

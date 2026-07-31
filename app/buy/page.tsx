@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 import FinancingConfidenceEducation from '@/components/FinancingConfidenceEducation';
+import JourneyCohesionPanel from '@/components/JourneyCohesionPanel';
 import { buildBuyerDecisionWorkspace } from '@/lib/buyerDecisionWorkspace';
 import { SITE_NAME, SITE_URL } from '@/lib/publicTrust';
 
@@ -145,8 +146,18 @@ export default function BuyPage() {
       </section>
 
       <section className="px-5 pb-24 sm:px-8 lg:px-12">
-        <div className="mx-auto w-full max-w-[1180px]">
+        <div className="mx-auto grid w-full max-w-[1180px] gap-6">
           <FinancingConfidenceEducation surface="buy" />
+          <JourneyCohesionPanel
+            surface="buyer"
+            title="Move from buyer guidance into the right workspace."
+            body="Buyer confidence improves when search, market context, financing assumptions, and advisor questions stay connected instead of becoming separate tasks."
+            links={[
+              { label: 'Search Homes', href: '/search', note: 'Apply buyer criteria', destination: 'search' },
+              { label: 'Financing Guidance', href: '/buy#buyer-financing-confidence', note: 'Review assumptions', destination: 'financing' },
+              { label: 'Advisory Guidance', href: '/contact', note: 'Ask focused questions', destination: 'advisory' },
+            ]}
+          />
         </div>
       </section>
     </main>

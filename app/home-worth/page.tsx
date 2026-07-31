@@ -3,6 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import HomeValueEstimator from '@/components/HomeValueEstimator';
+import JourneyCohesionPanel from '@/components/JourneyCohesionPanel';
 import FAQSchema from '@/components/schema/FAQSchema';
 import { getJourneyMeasurementAttributes } from '@/lib/customerJourneyMeasurement';
 import { buildSellerDecisionWorkspace } from '@/lib/sellerDecisionWorkspace';
@@ -36,8 +37,6 @@ const headingClass = 'mt-5 max-w-4xl text-4xl font-black leading-[1.04] tracking
 const bodyClass = 'mt-6 max-w-2xl text-base leading-8 text-white/66 sm:text-lg';
 const primaryButtonClass = 'home-btn home-btn-primary';
 const secondaryButtonClass = 'home-btn home-btn-secondary';
-const darkButtonClass = 'home-btn home-btn-dark';
-const lightButtonClass = 'home-btn home-btn-light';
 
 const valueFactors = [
   {
@@ -340,22 +339,19 @@ export default function HomeWorthPage() {
         </section>
 
         <section className="px-5 pb-28 pt-4 sm:px-8 sm:pb-32 lg:px-12" data-testid="home-worth-continuation">
-          <div className={`${containerShell} rounded-[16px] bg-white px-8 py-14 text-[#101820] shadow-[0_30px_90px_rgba(0,0,0,0.22)] sm:px-12`}>
-            <p className={darkEyebrowClass}>Continue With Context</p>
-            <h2 className="mt-5 max-w-3xl text-4xl font-black leading-[1.05] tracking-normal sm:text-5xl">
-              Value becomes clearer when the market, the property, and the next move are considered together.
-            </h2>
-            <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-              <Link href="/market" className={darkButtonClass}>
-                View Market Context
-              </Link>
-              <Link href="/search" className={lightButtonClass}>
-                Review Inventory
-              </Link>
-              <Link href="/sell" className={lightButtonClass}>
-                Seller Strategy
-              </Link>
-            </div>
+          <div className={containerShell}>
+            <JourneyCohesionPanel
+              surface="home-worth"
+              tone="light"
+              eyebrow="Continue With Context"
+              title="Value becomes clearer when the market, the property, and the next move are considered together."
+              body="Use this page to frame the seller question, then continue into market context, competing inventory, or a direct advisory path."
+              links={[
+                { label: 'Market Context', href: '/market', note: 'Review alternatives', destination: 'market' },
+                { label: 'Review Inventory', href: '/search', note: 'See buyer options', destination: 'search' },
+                { label: 'Seller Strategy', href: '/sell', note: 'Prepare next steps', destination: 'seller' },
+              ]}
+            />
           </div>
         </section>
       </main>

@@ -86,7 +86,7 @@ const featuredCommunities = [
 const reiePrinciples = [
   {
     title: 'Context before clicks',
-    body: 'Search is useful when it helps you understand place, market context, and the next question to verify.',
+    body: 'Search is useful when it connects place, market context, property facts, financing assumptions, and the next question to verify.',
   },
   {
     title: 'Evidence with limits',
@@ -253,8 +253,8 @@ export default function HomePage() {
               density="compact"
               links={[
                 { label: 'Search', href: '/search', note: 'Compare active homes' },
-                { label: 'Markets', href: '/market', note: 'Review city context' },
-                { label: 'Boulder', href: '/market/boulder-co-housing-market', note: 'Open a certified guide' },
+                { label: 'Market Context', href: '/market', note: 'Review city context' },
+                { label: 'Grand Plan', href: '/grand-plan', note: 'Organize priorities' },
               ]}
             />
           </div>

@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
 
+import JourneyCohesionPanel from '@/components/JourneyCohesionPanel';
 import { PublicTrustPage, StandardTrustIntro, TrustList, TrustSection } from '@/components/PublicTrustPage';
 import { PUBLIC_CONTACT_EMAIL_STATUS, PUBLIC_NOTIFICATION_EMAIL, PUBLIC_TRUST_REVIEW_STATUS, SITE_NAME, SITE_URL } from '@/lib/publicTrust';
 
@@ -42,6 +43,17 @@ export default function ContactPage() {
       </TrustSection>
 
       <TrustSection title="Current Contact Routing">
+        <JourneyCohesionPanel
+          surface="contact"
+          tone="light"
+          title="Choose the route that matches the question."
+          body="Contact is the advisory endpoint. Property questions should start from a property page, search questions can start in search, and broader timing or planning questions can start with Grand Plan."
+          links={[
+            { label: 'Search Homes', href: '/search', note: 'Find a property path', destination: 'search' },
+            { label: 'Grand Plan', href: '/grand-plan', note: 'Organize priorities', destination: 'grand-plan' },
+            { label: 'Home Worth', href: '/home-worth', note: 'Frame seller context', destination: 'home-worth' },
+          ]}
+        />
         <TrustList items={contactItems} />
         <p>
           Start from the{' '}

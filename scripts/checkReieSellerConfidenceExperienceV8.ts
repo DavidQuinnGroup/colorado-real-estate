@@ -34,11 +34,15 @@ assertIncludes(homeWorth, 'data-seller-v8-automated-valuation="false"', '/home-w
 assertIncludes(homeWorth, 'data-seller-v8-gis="false"', '/home-worth must preserve no-GIS boundary.');
 assertIncludes(homeWorth, 'data-seller-v8-telemetry="false"', '/home-worth must preserve telemetry inactive boundary.');
 assertIncludes(homeWorth, 'data-seller-v8-lender-workflow="false"', '/home-worth must preserve lender workflow exclusion.');
-assertIncludes(homeWorth, 'href="/market"', '/home-worth must preserve market continuity.');
-assertIncludes(homeWorth, 'href="/search"', '/home-worth must preserve search/inventory continuity.');
-assertIncludes(homeWorth, 'href="/sell"', '/home-worth must preserve seller strategy continuity.');
+assertIncludes(homeWorth, "marketHref: '/market'", '/home-worth must preserve market continuity.');
+assertIncludes(homeWorth, "searchHref: '/search'", '/home-worth must preserve search/inventory continuity.');
+assertIncludes(homeWorth, "sellerHref: '/sell'", '/home-worth must preserve seller strategy continuity.');
 assertIncludes(homeWorth, 'href="#home-worth-request"', '/home-worth must preserve seller review request continuity.');
 assertIncludes(homeWorth, '<HomeValueEstimator />', '/home-worth must preserve the existing seller intake component.');
+assertIncludes(homeWorth, 'JourneyCohesionPanel', '/home-worth must preserve shared journey cohesion continuity.');
+assertIncludes(homeWorth, "label: 'Market Context', href: '/market'", '/home-worth cohesion panel must route to market context.');
+assertIncludes(homeWorth, "label: 'Review Inventory', href: '/search'", '/home-worth cohesion panel must route to search inventory.');
+assertIncludes(homeWorth, "label: 'Seller Strategy', href: '/sell'", '/home-worth cohesion panel must route to seller strategy.');
 
 for (const expectedLens of ['readiness', 'gather', 'questions', 'factors', 'next']) {
   assertIncludes(helper, `lens: '${expectedLens}'`, `Seller Decision Workspace must include ${expectedLens} lens.`);
