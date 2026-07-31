@@ -10,6 +10,59 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE Post-Buyer Financing Readiness Strategic Next-Phase Review, July 31, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Current governed state:
+
+- Core Product Experience Optimization cycle is complete.
+- Product Cohesion Review(tm) Wave 1 is production-certified and closed.
+- Controlled Fixture Alert Dry-Run(tm) program is certified and closed.
+- Local Decision Intelligence(tm) Phase 1 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 1 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 2 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 3 is production-certified and closed.
+- REIE Product Experience(tm) Next Cohesion Wave is production-certified and closed.
+- REIE Cross-City Decision Comparison(tm) is production-certified and closed.
+- REIE Seller Readiness Advancement(tm) is production-certified and closed.
+- REIE Buyer Financing Readiness Advancement(tm) is production-certified and closed.
+- REIE Post-Buyer Financing Readiness Strategic Next-Phase Review is locally recorded.
+- Strategic next-phase finding: `PRIORITIZE_EVIDENCE_DEPTH_AND_DATA_INTEGRATION`.
+- Primary recommendation: implement a bounded protected-boundary-safe Evidence Depth and Data Integration foundation.
+- Recommended next authorization: `EVIDENCE_DEPTH_AND_DATA_INTEGRATION_IMPLEMENTATION_AUTHORIZATION`.
+- This is a recommendation only. Evidence Depth and Data Integration implementation is not authorized by this review record.
+- Current certified Local Decision Intelligence maturity inventory: `ENHANCED_FOUNDATION` for Broomfield, Superior, Longmont, Denver, Erie, and Westminster; editorial Decision Guides for Boulder, Louisville, and Lafayette.
+- Current certified Product Experience position: Homepage, Buy, Sell, Home Worth, Grand Plan, Contact / Advisory, shared `JourneyCohesionPanel`, and Cross-City Decision Comparison are certified.
+- Current certified Cross-City Decision Comparison position: `/compare` is certified for nine governed markets with safe mixed-maturity comparison, deterministic 2 to 3 city query-state behavior, neutral dimensions, Back and Forward history behavior, and no ranking, scoring, personalization, persistence, or tracking.
+- Current certified Seller Readiness position: `/home-worth#seller-readiness` is certified with `/sell` entry point, preparation, documentation, verification, market-context, property-context, and advisory framing; no valuation, pricing, scoring, uploads, persistence, automation, or personalization.
+- Current certified Buyer Financing Readiness position: `/buy#financing-readiness` is certified with preserved `/buy#buyer-financing-confidence` and `/buy#financing-confidence` anchors; no calculators, rates, qualification, affordability conclusions, lender matching, financial intake, scoring, persistence, automation, or personalization.
+- Post-readiness interpretation: the buyer and seller preparation layer is now balanced and certified. The largest remaining customer-value gap is stronger evidence depth across existing intelligence, comparison, property, neighborhood, seller, buyer, financing, Grand Plan, and advisory surfaces.
+- Evidence Depth scope recommendation: repository-local evidence posture inventory, shared evidence-depth contract, source-rights state normalization, provenance and freshness-state standards, conflict and limitation-state standards, deterministic validation, and explicit protected-boundary documentation.
+- Evidence Depth exclusions: no live provider calls, source acquisition, public-record retrieval, production writes, public route changes, customer-facing conclusions, APIs, schema or migration changes, GIS runtime, customer-data collection, valuation, affordability, qualification, rankings, forecasts, or recommendations.
+- Secondary priority: `PRIORITIZE_ADVISORY_HANDOFF_READINESS`.
+- Advisory Handoff finding: valuable for conversion and customer clarity, but should follow Evidence Depth so handoffs are grounded in clearer provenance, freshness, support level, and limitation framing. No forms, CRM tasks, lead scoring, email, notifications, queues, tracking, cookies, or customer-data workflows are authorized.
+- Property / Seller Evidence finding: should follow Evidence Depth or be included only as a non-public, non-conclusive evidence-category use case; no property lookup, ownership lookup, uploads, provider calls, valuation, or condition conclusions are authorized.
+- Neighborhood/Submarket finding: strategically important but not public-implementation ready; object type, Gunbarrel-like ambiguity, route, registry, source-rights, fair-housing, and certification-scale questions remain prerequisites.
+- Decision Guide unification finding: mixed-maturity comparison continues to reduce immediate unification need; Boulder, Louisville, and Lafayette should not be mechanically migrated or relabeled without separate authorization.
+- Local Decision Intelligence cadence: remain paused and slower-governed; Niwot activation remains unauthorized and should be considered through later geographic or neighborhood/submarket governance.
+- Product Experience finding: another broad cohesion wave is not justified now; targeted fixes should proceed only if new production evidence identifies a specific friction point.
+- Strategic review record: `docs/project-atlas/executive-library/REIE-POST-BUYER-FINANCING-READINESS-STRATEGIC-NEXT-PHASE-REVIEW.md`.
+- Required remediation: none.
+- Exact next step: stop, or explicitly authorize Evidence Depth and Data Integration implementation. Codex must not implement Evidence Depth, begin another initiative, modify runtime code, create routes or anchors, change eligibility, activate providers, activate public-record retrieval, activate GIS runtime, collect customer data, push, deploy, or modify production behavior without an explicit directive.
+
+Prior REIE Buyer Financing Readiness Advancement closure handoff retained below.
+
 PROJECT ATLAS(tm) / REIE Buyer Financing Readiness Advancement(tm) Certification and Closure, July 31, 2026:
 
 Workspace:
