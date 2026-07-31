@@ -10,6 +10,87 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE Cross-City Decision Comparison(tm) Certification and Closure, July 31, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Current governed state:
+
+- Core Product Experience Optimization cycle is complete.
+- Product Cohesion Review(tm) Wave 1 is production-certified and closed.
+- Controlled Fixture Alert Dry-Run(tm) program is certified and closed.
+- Local Decision Intelligence(tm) Phase 1 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 1 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 2 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 3 is production-certified and closed.
+- REIE Product Experience(tm) Next Cohesion Wave is production-certified and closed.
+- REIE Post-Cohesion Wave Strategic Next-Phase Review is complete.
+- REIE Cross-City Decision Comparison(tm) is production-certified and closed.
+- Final status: `CROSS_CITY_DECISION_COMPARISON_CERTIFIED_AND_CLOSED`.
+- Closure status: `CERTIFIED_AND_CLOSED`.
+- Certified public route: `/compare`.
+- Market entry point: `/market` contains one restrained comparison entry point to `/compare`.
+- No competing `/market/compare` route was created.
+- Homepage crowding was not reintroduced.
+- Strategic priority SHA: `00234cc9b5c30aa4834926f5e8bdd07df7cc5992`.
+- Strategic priority commit message: `Prioritize REIE post-cohesion next phase`.
+- Strategic priority finding: `PRIORITIZE_CROSS_CITY_DECISION_COMPARISON`.
+- Initial implementation SHA: `2ab9a81b2b7458718fcd8294d4b21cedc3bc4cd5`.
+- Initial implementation commit message: `Implement Cross-City Decision Comparison`.
+- Remediation SHA: `4cc9eff7bc66c43acc92a8a249669e0b8e7df92c`.
+- Remediation commit message: `Fix Cross-City Comparison content and history`.
+- Final certified production SHA: `4cc9eff7bc66c43acc92a8a249669e0b8e7df92c`.
+- Certified eligible `ENHANCED_FOUNDATION` markets: Broomfield, Superior, Longmont, Denver, Erie, and Westminster.
+- Certified eligible `EDITORIALLY_CERTIFIED` markets: Boulder, Louisville, and Lafayette.
+- Fail-closed exclusions: Niwot, Gunbarrel, Thornton, Brighton, Firestone, Frederick, uncertified cities, neighborhoods, submarkets, and property objects.
+- First-version comparison contract: one public route, eligible certified markets only, minimum two cities, maximum three cities, duplicate prevention, malformed-query handling, unsupported-query handling, over-limit handling, deterministic query-string state, add/remove/reset behavior, no persistence, no tracking, no profile building, no ranking, no scoring, no personalization, and no saved comparisons.
+- Certified neutral dimensions: maturity and evidence structure, Local Character, housing-form context, Market Drivers, buyer considerations, seller considerations, due-diligence prompts, and evidence boundaries.
+- Mixed-maturity governance: `ENHANCED_FOUNDATION` and `EDITORIALLY_CERTIFIED` are preserved; maturity describes governance and evidence structure, not a quality grade; Boulder, Louisville, and Lafayette were not flattened, relabeled, or unified.
+- Preserved continuity destination identities: `city-search`, `buyer-guidance`, `seller-guidance`, `financing-confidence`, `grand-plan`, and `advisory`.
+- Initial production certification found two defects: Boulder-derived mixed-maturity wording containing `Which Boulder neighborhood pattern best matches...`, and browser Back restoring comparison DOM without restoring the exact comparison URL after navigating to Search.
+- Copy root cause: `lib/crossCityComparison.ts` exposed individual guide `verificationQuestions` directly in the comparison due-diligence dimension.
+- History root cause: comparison outbound links used client navigation while Search maintained its own URL synchronization behavior, allowing route-state DOM and address-bar URL to desynchronize in production.
+- Remediation introduced comparison-safe due-diligence language, preserved original editorial Decision Guide content, changed comparison guide/Search/continuity exits to normal document-anchor navigation, and expanded deterministic validation against suitability and superiority language.
+- Production copy remediation passed for `/compare?cities=boulder,broomfield,denver`; the route no longer exposes `best match`, `best matches`, `ideal for`, `best fit`, `right for you`, `suitable city`, `recommended market`, `winner`, `superiority`, or `desirability`.
+- Production history remediation passed for Broomfield, Denver, and Boulder mixed-maturity Search flows; browser Back restored exact comparison URLs and selected state, and browser Forward restored exact Search URLs.
+- Production route checks returned HTTP 200 for Homepage, Compare default and query states, Market, Search, Buyer, Seller, Home Worth, Grand Plan, Contact, Privacy, Terms, Brokerage Disclosures, all nine certified city/Decision Guide routes, representative property `/properties/6137-baseline-rd-boulder-co-ire1349635`, and representative neighborhood `/market/boulder/downtown-boulder`.
+- Desktop `1440 x 1100`, tablet `768 x 1024`, and mobile `390 x 844` production browser review passed across default, two-city, mixed-maturity, duplicate, unsupported, malformed, and over-limit states.
+- No horizontal overflow, broken layouts, unusable mobile comparison table, page-level console errors, runtime errors, query-state desynchronization, unsafe fallback content, or unsupported city activation were found.
+- Content, fair-housing, prohibited-claim, maturity, evidence-boundary, public-trust, and brokerage-boundary reviews passed.
+- No steering, protected-class proxy, demographic targeting, school or safety comparison, desirability ranking, coded preference language, suitability declaration, investment recommendation, valuation claim, forecast, urgency, superiority claim, unsupported causal claim, editorial flattening, AI claim, or personalization claim was introduced.
+- Existing city, Decision Guide, market, search, property, neighborhood, buyer, seller, financing, Grand Plan, advisory, trust, disclosure, Product Cohesion, Decision Journey, public runtime, search runtime, property route safety, unsubscribe, alert readiness, and public-trust experiences remained intact.
+- Protected capabilities remained inactive.
+- No production rows, SavedSearch records, queue jobs, workers, emails, notifications, schema, migrations, APIs, environment variables, customer data, deployment configuration, search ranking, map behavior, or production data were changed.
+- No manual deployment occurred.
+- Final production deployment status: `success`.
+- GitHub commit status ID: `51453159812`.
+- GitHub deployment ID: `5696518422`.
+- Deployment status ID: `16198384965`.
+- Deployment timestamp: `2026-07-31T18:45:18Z`.
+- Vercel deployment target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/GqgptzEWvJQqQWp6uuQ5FkAZf21J`.
+- Production deployment URL: `https://david-quinn-group-8rde-50mtlt7oi-david-quinns-projects-a0953600.vercel.app`.
+- Production domain: `https://davidquinngroup.com`.
+- Supersession status: not superseded during certification.
+- Closure record: `docs/project-atlas/executive-library/REIE-CROSS-CITY-DECISION-COMPARISON-PROGRAM-CLOSURE.md`.
+- Required remediation: none.
+- Recommended next authorization: `REIE_POST_CROSS_CITY_COMPARISON_STRATEGIC_NEXT_PHASE_REVIEW`.
+- This is a recommendation only. The next strategic review is not authorized by this closure.
+- The next review should reassess queued initiatives after comparison completion, including Seller Readiness Advancement, Boulder / Louisville / Lafayette Decision Guide unification, Buyer Financing Readiness, Neighborhood / Submarket Intelligence, Evidence Depth and Data Integration, and Local Decision Intelligence Wave 4 / Niwot reconciliation.
+- Seller Readiness is not automatically authorized solely because it ranked second in the prior review.
+- Exact next step: stop, or explicitly authorize the recommended post-comparison strategic next-phase review. Codex must not begin another strategic review, implementation initiative, Decision Guide unification, seller readiness, neighborhood intelligence, evidence integration, Local Decision Intelligence Wave 4, protected-capability activation, production mutation, push, deploy, or runtime change without explicit authorization.
+
+Prior REIE Post-Cohesion Wave Strategic Next-Phase Review handoff retained below.
+
 PROJECT ATLAS(tm) / REIE Post-Cohesion Wave Strategic Next-Phase Review, July 31, 2026:
 
 Workspace:
