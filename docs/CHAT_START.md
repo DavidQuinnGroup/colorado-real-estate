@@ -10,7 +10,7 @@ Product:
 
 ## Latest New-Chat Handoff
 
-PROJECT ATLAS(tm) / REIE Advisory Handoff Readiness(tm) Certification and Closure, July 31, 2026:
+PROJECT ATLAS(tm) / REIE Post-Advisory Handoff Strategic Next-Phase Review, July 31, 2026:
 
 Workspace:
 
@@ -42,6 +42,14 @@ Current governed state:
 - REIE Advisory Handoff Readiness(tm) is production-certified and closed.
 - Final status: `ADVISORY_HANDOFF_READINESS_CERTIFIED_AND_CLOSED`.
 - Closure status: `CERTIFIED_AND_CLOSED`.
+- REIE Post-Advisory Handoff Strategic Next-Phase Review is locally recorded.
+- Strategic next-phase finding: `PRIORITIZE_CONTROLLED_EVIDENCE_DEPTH_INTEGRATION`.
+- Primary recommendation: implement a bounded Controlled Evidence Depth Integration.
+- Recommended next authorization: `CONTROLLED_EVIDENCE_DEPTH_INTEGRATION_IMPLEMENTATION_AUTHORIZATION`.
+- This is recommendation-only. Controlled Evidence Depth Integration implementation is not authorized by this review record.
+- Recommended first integration target: `ADVISORY_PREPARATION_INTERNAL_EVIDENCE_POSTURE`.
+- Recommended first integration posture: internal, read-only, fixture-backed, non-public, non-mutating, and conclusion-free.
+- Recommended first integration purpose: map certified Evidence Depth posture into internal advisory question-preparation categories and limitation prompts without exposing internal metadata or changing public pages.
 - Strategic priority SHA: `580397c9181b111317a22a68512736270f5bd15e`.
 - Strategic priority commit message: `Prioritize REIE post-evidence next phase`.
 - Strategic priority finding: `PRIORITIZE_ADVISORY_HANDOFF_READINESS`.
@@ -95,10 +103,46 @@ Current governed state:
 - Supersession status: not superseded during certification.
 - Deterministic validation command: `npm run check:advisory-handoff-readiness`.
 - Closure record: `docs/project-atlas/executive-library/REIE-ADVISORY-HANDOFF-READINESS-PROGRAM-CLOSURE.md`.
-- Recommended next authorization: `REIE_POST_ADVISORY_HANDOFF_STRATEGIC_NEXT_PHASE_REVIEW`.
-- This is recommendation-only. The next review should reassess queued initiatives after Advisory Handoff Readiness completion, including Controlled Evidence Depth Integration, Neighborhood / Submarket Intelligence Architecture, Property / Seller Evidence Readiness, Boulder / Louisville / Lafayette Decision Guide unification, Local Decision Intelligence Wave 4 / Niwot reconciliation, and targeted Product Experience follow-up only if production evidence supports it.
+- Post-Advisory Handoff strategic review record: `docs/project-atlas/executive-library/REIE-POST-ADVISORY-HANDOFF-STRATEGIC-NEXT-PHASE-REVIEW.md`.
+- Strategic review assessment: the current customer guidance, readiness, comparison, and handoff layer is complete; further guidance-only public pages now have lower marginal value unless production evidence identifies a specific friction.
+- Largest remaining gap: the Evidence Depth foundation is certified but not yet integrated into one operating domain where it can improve question preparation, limitation handling, and future evidence transparency.
+- Controlled Evidence Depth Integration finding: now the strongest next candidate because it converts the certified internal foundation into reusable governed value while staying internal, read-only, fixture-backed, and protected-boundary safe.
+- Safest first target: internal Advisory preparation, because Advisory Handoff already uses public-safe evidence-aware framing and the integration can remain non-public without Contact changes, customer data, CRM, tracking, providers, acquisition, persistence, APIs, schema, GIS runtime, or production writes.
+- Secondary priority: `PRIORITIZE_ADVISORY_OPERATING_READINESS`.
+- Advisory Operating Readiness finding: high business value, but it should follow the controlled Evidence Depth integration so it can reuse concrete posture categories and limitation prompts; it must not activate CRM tasks, lead scoring, lead routing, tracking, telemetry, customer profiling, personalization, email, alerts, queues, workers, or customer-data workflows.
+- Neighborhood / Submarket finding: strategically important and ready for future architecture work, but not the primary next implementation and not ready for public route activation; object-type, canonical identity, Gunbarrel-like ambiguity, parent/child geography, route/registry, source-rights, fair-housing, and certification-scale prerequisites remain.
+- Property / Seller Evidence finding: valuable but premature as the next primary initiative because property identity, title, condition, insurance, disclosure, structural, environmental, ownership, privacy, valuation, and specialist-boundary risks remain.
+- Decision Guide unification finding: Evidence Depth does not create an immediate need for Boulder, Louisville, and Lafayette unification; mixed-maturity comparison remains governed and certified.
+- Local Decision Intelligence cadence: Wave 4, Niwot, and Gunbarrel remain paused pending geographic-object and neighborhood/submarket governance.
+- Product Experience finding: no broad wave is justified; targeted follow-up requires new production evidence of specific discovery, CTA, mobile, duplicate-path, or cognitive-load friction.
 - Required remediation: none.
-- Exact next step: stop, or explicitly authorize REIE Post-Advisory Handoff Strategic Next-Phase Review. Codex must not begin that review, Controlled Evidence Depth Integration, Neighborhood/Submarket Intelligence, Property / Seller Evidence Readiness, Decision Guide unification, Local Decision Intelligence Wave 4, provider activation, public-record retrieval, GIS runtime, public route/API work, protected-capability activation, production mutation, push, deploy, runtime changes, or another initiative without explicit authorization.
+- Exact next step: stop, or explicitly authorize Controlled Evidence Depth Integration implementation. Codex must not begin implementation, push, deploy, Controlled Evidence Depth Integration, Advisory Operating Readiness, Neighborhood/Submarket Intelligence, Property / Seller Evidence Readiness, Decision Guide unification, Local Decision Intelligence Wave 4, provider activation, public-record retrieval, GIS runtime, public route/API work, protected-capability activation, production mutation, CRM, tracking, telemetry, customer data, APIs, schema, persistence, runtime changes, or another initiative without explicit authorization.
+
+Prior REIE Advisory Handoff Readiness closure handoff retained below.
+
+PROJECT ATLAS(tm) / REIE Advisory Handoff Readiness(tm) Certification and Closure, July 31, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Current governed state:
+
+- REIE Advisory Handoff Readiness(tm) is production-certified and closed.
+- Final status: `ADVISORY_HANDOFF_READINESS_CERTIFIED_AND_CLOSED`.
+- Closure status: `CERTIFIED_AND_CLOSED`.
+- Primary certified surface: `/contact#advisory-readiness`.
+- Certified readiness exits: `/buy#financing-readiness` -> `/contact#advisory-readiness`; `/home-worth#seller-readiness` -> `/contact#advisory-readiness`.
+- Closure record: `docs/project-atlas/executive-library/REIE-ADVISORY-HANDOFF-READINESS-PROGRAM-CLOSURE.md`.
+- Required remediation: none.
 
 Prior REIE Post-Evidence Depth Strategic Next-Phase Review handoff retained below.
 
