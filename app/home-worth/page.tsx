@@ -4,6 +4,7 @@ import Link from 'next/link';
 
 import HomeValueEstimator from '@/components/HomeValueEstimator';
 import JourneyCohesionPanel from '@/components/JourneyCohesionPanel';
+import SellerReadinessGuide from '@/components/SellerReadinessGuide';
 import FAQSchema from '@/components/schema/FAQSchema';
 import { getJourneyMeasurementAttributes } from '@/lib/customerJourneyMeasurement';
 import { buildSellerDecisionWorkspace } from '@/lib/sellerDecisionWorkspace';
@@ -114,11 +115,12 @@ export default function HomeWorthPage() {
         className="min-h-screen bg-[#071017] text-white"
         data-testid="reie-home-worth-page"
         data-reie-sprint-2-seller-confidence="true"
-        data-reie-home-worth-automated-valuation="false"
-        data-reie-home-worth-ai="false"
-        data-reie-home-worth-gis="false"
-        data-reie-home-worth-provider-activation="false"
-      >
+          data-reie-home-worth-automated-valuation="false"
+          data-reie-home-worth-ai="false"
+          data-reie-home-worth-gis="false"
+          data-reie-home-worth-provider-activation="false"
+          data-seller-readiness-advancement="true"
+        >
         <section className="relative overflow-hidden" data-testid="home-worth-hero">
           <Image
             src={HERO_IMAGE}
@@ -154,16 +156,16 @@ export default function HomeWorthPage() {
                   Request Seller Review
                 </a>
                 <Link
-                  href="/market"
+                  href="#seller-readiness"
                   className={secondaryButtonClass}
                   {...getJourneyMeasurementAttributes({
                     surface: 'home-worth-hero',
                     stage: 'seller',
-                    action: 'view-market',
-                    destination: 'market',
+                    action: 'continue-journey',
+                    destination: 'seller',
                   })}
                 >
-                  View Market Context
+                  Seller Readiness
                 </Link>
               </div>
               <p className="mt-7 max-w-2xl text-sm font-bold leading-7 text-white/58">
@@ -234,6 +236,9 @@ export default function HomeWorthPage() {
               <div className="mt-9 flex flex-col gap-3 sm:flex-row">
                 <Link href="/market" className={primaryButtonClass}>
                   Explore Markets
+                </Link>
+                <Link href="#seller-readiness" className={secondaryButtonClass}>
+                  Seller Readiness
                 </Link>
                 <Link href="/sell" className={secondaryButtonClass}>
                   Seller Strategy
@@ -315,6 +320,8 @@ export default function HomeWorthPage() {
             </div>
           </div>
         </section>
+
+        <SellerReadinessGuide />
 
         <section id="home-worth-request" className={`${sectionShell} bg-[#0b1117]`} data-testid="home-worth-request">
           <div className={`${containerShell} grid gap-12 lg:grid-cols-[0.82fr_1.18fr] lg:items-start`}>

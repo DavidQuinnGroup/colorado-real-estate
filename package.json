@@ -108,6 +108,7 @@
     "check:reie-adjustments-traceability": "npm run worker:build && node dist/scripts/checkReieAdjustmentsTraceability.js",
     "check:reie-first-impression-experience-baseline": "npm run worker:build && node dist/scripts/checkReieFirstImpressionExperienceBaseline.js",
     "check:reie-seller-confidence-experience": "npm run worker:build && node dist/scripts/checkReieSellerConfidenceExperience.js",
+    "check:seller-readiness-advancement": "npm run worker:build && node dist/scripts/checkSellerReadinessAdvancement.js",
     "check:reie-buyer-confidence-experience": "npm run worker:build && node dist/scripts/checkReieBuyerConfidenceExperience.js",
     "check:reie-financing-confidence-education": "npm run worker:build && node dist/scripts/checkReieFinancingConfidenceEducation.js",
     "check:reie-guided-search-intelligence-v8": "npm run worker:build && node dist/scripts/checkReieGuidedSearchIntelligenceV8.js",

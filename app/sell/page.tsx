@@ -116,6 +116,21 @@ export default function SellPage() {
               { label: 'Advisory Guidance', href: '/contact', note: 'Ask seller questions', destination: 'advisory' },
             ]}
           />
+          <div className="rounded-[8px] border border-white/10 bg-white/[0.035] p-5" data-testid="seller-readiness-entry">
+            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-cyan-100/72">Prepare Before Pricing</p>
+            <div className="mt-3 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <p className="max-w-2xl text-sm leading-7 text-white/60">
+                Use Seller Readiness to organize property records, preparation questions, and qualified-review topics before requesting a
+                pricing conversation.
+              </p>
+              <Link
+                href="/home-worth#seller-readiness"
+                className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-full border border-white/18 px-4 py-2 text-[11px] font-black uppercase tracking-[0.13em] text-white transition hover:border-white/38 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-100 focus:ring-offset-2 focus:ring-offset-[#0b1117]"
+              >
+                Seller Readiness
+              </Link>
+            </div>
+          </div>
           <div className="grid gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
             <div>
               <p className="text-[11px] font-black uppercase tracking-[0.28em] text-cyan-100">Next Step</p>

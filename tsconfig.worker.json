@@ -50,6 +50,7 @@
     "scripts/checkReieAdjustmentsTraceability.ts",
     "scripts/checkReieFirstImpressionExperienceBaseline.ts",
     "scripts/checkReieSellerConfidenceExperience.ts",
+    "scripts/checkSellerReadinessAdvancement.ts",
     "scripts/checkReieBuyerConfidenceExperience.ts",
     "scripts/checkReieFinancingConfidenceEducation.ts",
     "scripts/checkReieGuidedSearchIntelligenceV8.ts",
