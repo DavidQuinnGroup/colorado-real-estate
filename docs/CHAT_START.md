@@ -10,6 +10,45 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE Strategic Priority Review(tm) Post Local Decision Intelligence Phase 2, July 31, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Current governed state:
+
+- Core Product Experience Optimization cycle is complete.
+- Product Cohesion Review(tm) Wave 1 is production-certified and closed.
+- Controlled Fixture Alert Dry-Run(tm) program is certified and closed.
+- Local Decision Intelligence(tm) Phase 1 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 1 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 2 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 3 is production-certified and closed.
+- REIE Strategic Priority Review(tm) Post Local Decision Intelligence Phase 2 is locally recorded.
+- Strategic priority finding: `PRIORITIZE_REIE_PRODUCT_EXPERIENCE_NEXT_WAVE`.
+- Local Decision Intelligence Phase 2 accomplishment: public Local Decision Intelligence backlog is complete at `ENHANCED_FOUNDATION` for Broomfield, Superior, Longmont, Denver, Erie, and Westminster; previously certified Decision Guides remain Boulder, Louisville, and Lafayette.
+- Primary recommendation: prioritize a bounded REIE Product Experience Next Cohesion Wave before continuing automatically into Local Decision Intelligence Wave 4.
+- Recommended rationale: the largest current customer/business gap is not city coverage; it is turning the expanded certified intelligence portfolio into one clearer, lower-friction customer decision journey across homepage, search, city, market, property, neighborhood, buyer, seller, financing, Grand Plan, and advisory surfaces.
+- Secondary priority: governed cross-city decision comparison after product-experience integration.
+- Queued only: Local Decision Intelligence Phase 2 Wave 4 / Niwot authority and search-support reconciliation, Decision Guide unification, neighborhood/submarket intelligence, evidence-depth/data integration, seller valuation route planning, and buyer financing readiness planning.
+- Deferred or paused: GIS/provider/customer activation, external data acquisition, neighborhood/submarket implementation, Gunbarrel city-level intelligence, Niwot public activation, Thornton/Brighton/Firestone/Frederick implementation, mortgage/lender implementation, telemetry, personalization, AI, ranking, valuation, forecasts, API/schema/search-ranking/map-boundary changes, alerts, queues, workers, email, and production mutation.
+- Planning record: `docs/project-atlas/executive-library/REIE-STRATEGIC-PRIORITY-REVIEW-POST-LOCAL-DECISION-INTELLIGENCE-PHASE-2.md`.
+- Required remediation: none.
+- Recommended next authorization: `REIE_PRODUCT_EXPERIENCE_NEXT_COHESION_WAVE_IMPLEMENTATION_AUTHORIZATION`.
+- This is a recommendation only. The product-experience wave is not authorized by the review record.
+- Exact next step: stop, or explicitly authorize the recommended REIE Product Experience Next Cohesion Wave. Codex must not implement product changes, begin Local Decision Intelligence Wave 4, create routes, change registry eligibility, activate protected capabilities, push, deploy, or modify production behavior without an explicit directive.
+
+Prior Local Decision Intelligence Phase 2 Wave 3 closure handoff retained below.
+
 PROJECT ATLAS(tm) / Local Decision Intelligence(tm) Phase 2 Wave 3 Certification and Closure, July 31, 2026:
 
 Workspace:
