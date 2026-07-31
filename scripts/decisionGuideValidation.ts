@@ -192,8 +192,13 @@ export async function assertDecisionGuidePlatformContract({
   );
   assertIncludes(
     cityMarketPage,
-    'Search {cityDecisionGuide.cityName} Homes',
-    `${cityName} guide must provide direct city search continuity.`,
+    '{item.label}',
+    `${cityName} guide must render governed continuity labels directly.`,
+  );
+  assertIncludes(
+    cityMarketPage,
+    'data-local-decision-continuity-destination={item.destination}',
+    `${cityName} guide must expose explicit continuity destination identity.`,
   );
   assertIncludes(
     cityMarketPage,
@@ -202,7 +207,17 @@ export async function assertDecisionGuidePlatformContract({
   );
   assertIncludes(
     platformSource,
-    "{ label: 'Financing Guidance', href: '/buy#financing-confidence', destination: 'inquiry' }",
+    "{ label: `Search ${guide.cityName} Homes`, href: searchHref, destination: 'city-search' }",
+    `${cityName} guide must preserve direct city search continuity.`,
+  );
+  assertIncludes(
+    platformSource,
+    "{ label: 'Buyer Guidance', href: '/buy', destination: 'buyer-guidance' }",
+    `${cityName} guide must preserve Buyer continuity with accurate destination identity.`,
+  );
+  assertIncludes(
+    platformSource,
+    "{ label: 'Financing Guidance', href: '/buy#financing-confidence', destination: 'financing-confidence' }",
     `${cityName} guide must preserve financing education continuity without adding lender workflow.`,
   );
   assertIncludes(platformSource, "href: '/grand-plan'", `${cityName} guide must preserve Grand Plan continuity.`);

@@ -57,6 +57,48 @@ function assertGuideTextIncludes(source: string, expected: RegExp, cityName: str
   assert.match(source, expected, `${cityName} ${message}`);
 }
 
+function assertContinuityContract({
+  cityName,
+  marketHref,
+  searchHref,
+  continuity,
+}: {
+  cityName: string;
+  marketHref: string;
+  searchHref: string;
+  continuity: ReturnType<typeof buildDecisionGuideContinuityLinks>;
+}) {
+  const expectedLinks = [
+    { label: 'Market Context', href: marketHref, destination: 'market' },
+    { label: `Search ${cityName} Homes`, href: searchHref, destination: 'city-search' },
+    { label: 'Buyer Guidance', href: '/buy', destination: 'buyer-guidance' },
+    { label: 'Seller Guidance', href: '/sell', destination: 'seller-guidance' },
+    { label: 'Financing Guidance', href: '/buy#financing-confidence', destination: 'financing-confidence' },
+    { label: 'Grand Plan', href: '/grand-plan', destination: 'grand-plan' },
+    { label: 'Advisory Guidance', href: '/contact', destination: 'advisory' },
+  ] as const;
+
+  assert.equal(continuity.length, expectedLinks.length, `${cityName} must expose the complete shared Decision Guide continuity contract.`);
+
+  for (const expected of expectedLinks) {
+    assert(
+      continuity.some(
+        (item) => item.label === expected.label && item.href === expected.href && item.destination === expected.destination,
+      ),
+      `${cityName} continuity must render ${expected.label} with ${expected.href} and ${expected.destination}.`,
+    );
+  }
+
+  assert(
+    !continuity.some((item) => item.href === '/buy' && /^Search .+ Homes$/.test(item.label)),
+    `${cityName} /buy continuity must not render with the city-search label.`,
+  );
+  assert(
+    !continuity.some((item) => item.destination === 'city-search' && item.href !== searchHref),
+    `${cityName} city-search destination identity must only be used for the city-search URL.`,
+  );
+}
+
 async function main() {
   const [platformSource, registrySource, cityMarketPage, packageJson, workerConfig, citySource, searchControls] = await Promise.all([
     readFile('lib/decisionGuidePlatform.ts', 'utf8'),
@@ -123,13 +165,12 @@ async function main() {
       marketHref: `/market/${city.marketSlug}`,
       searchHref: `/search?city=${encodeURIComponent(city.name)}`,
     });
-    assert(continuity.some((item) => item.href === `/market/${city.marketSlug}`), `${cityName} must preserve market context continuity.`);
-    assert(continuity.some((item) => item.href === `/search?city=${encodeURIComponent(city.name)}`), `${cityName} must preserve Search Continuity.`);
-    assert(continuity.some((item) => item.href === '/buy'), `${cityName} must preserve Buyer Guidance continuity.`);
-    assert(continuity.some((item) => item.href === '/sell'), `${cityName} must preserve Seller Guidance continuity.`);
-    assert(continuity.some((item) => item.href === '/buy#financing-confidence'), `${cityName} must preserve Financing Continuity.`);
-    assert(continuity.some((item) => item.href === '/grand-plan'), `${cityName} must preserve Grand Plan Continuity.`);
-    assert(continuity.some((item) => item.href === '/contact'), `${cityName} must preserve Advisory Continuity.`);
+    assertContinuityContract({
+      cityName,
+      marketHref: `/market/${city.marketSlug}`,
+      searchHref: `/search?city=${encodeURIComponent(city.name)}`,
+      continuity,
+    });
   }
 
   for (const cityName of PRESERVED_FOUNDATION_CITIES) {
@@ -155,6 +196,17 @@ async function main() {
   assert.match(searchControls, /City or town/, 'Search must remain generic city text input without ranking or search-ranking mutation.');
   assert.match(cityMarketPage, /data-local-decision-intelligence-phase=/, 'City page must expose Phase 2 metadata.');
   assert.match(cityMarketPage, /DECISION_GUIDE_ENHANCED_FOUNDATION_SOURCE/, 'City page must expose enhanced foundation source metadata.');
+  assert.match(
+    cityMarketPage,
+    /data-local-decision-continuity-destination=\{item\.destination\}/,
+    'City page must expose explicit continuity destination identity.',
+  );
+  assert.match(cityMarketPage, /\{item\.label\}/, 'City page must render continuity labels from the governed contract.');
+  assert.doesNotMatch(
+    cityMarketPage,
+    /item\.destination === 'search'\s*\?\s*<>\s*Search/,
+    'Continuity label rendering must not depend on the overloaded search measurement destination.',
+  );
 
   assert.equal(DECISION_GUIDE_TRUST_BOUNDARIES.ai, false, 'Phase 2 must not activate AI.');
   assert.equal(DECISION_GUIDE_TRUST_BOUNDARIES.gis, false, 'Phase 2 must not activate public GIS.');

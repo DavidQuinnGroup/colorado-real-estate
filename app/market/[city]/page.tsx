@@ -15,10 +15,11 @@ import RelatedArticles from '@/components/RelatedArticles';
 import FAQSchema from '@/components/schema/FAQSchema';
 import { cities, getCityByMarketSlug, type CityData } from '@/lib/cities';
 import { getDecisionGuideRegistryEntry } from '@/lib/coloradoDecisionGuideRegistry';
-import { getJourneyMeasurementAttributes } from '@/lib/customerJourneyMeasurement';
+import { getJourneyMeasurementAttributes, type CustomerJourneyStage } from '@/lib/customerJourneyMeasurement';
 import {
   buildDecisionGuide,
   buildDecisionGuideContinuityLinks,
+  type DecisionGuideContinuityDestination,
   DECISION_GUIDE_ENHANCED_FOUNDATION_SOURCE,
   DECISION_GUIDE_FOUNDATION_SOURCE,
   DECISION_GUIDE_FRAMEWORK,
@@ -45,6 +46,19 @@ type CityAuthoritySignals = {
   neighborhoodCount: number;
   firstNeighborhood?: Neighborhood;
 };
+
+function getContinuityMeasurementDestination(destination: DecisionGuideContinuityDestination): CustomerJourneyStage {
+  if (destination === 'market') {
+    return 'market';
+  }
+  if (destination === 'seller-guidance') {
+    return 'seller';
+  }
+  if (destination === 'city-search' || destination === 'buyer-guidance') {
+    return 'search';
+  }
+  return 'inquiry';
+}
 
 const SITE_URL = 'https://davidquinngroup.com';
 
@@ -621,10 +635,12 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
                     surface: cityDecisionGuide.continuitySurface,
                     stage: 'market',
                     action: 'continue-journey',
-                    destination: item.destination,
+                    destination: getContinuityMeasurementDestination(item.destination),
                   })}
+                  data-local-decision-continuity-destination={item.destination}
+                  data-local-decision-continuity-href={item.href}
                 >
-                  {item.destination === 'search' ? <>Search {cityDecisionGuide.cityName} Homes</> : item.label}
+                  {item.label}
                   <ArrowUpRight className="h-4 w-4" />
                 </Link>
               ))}

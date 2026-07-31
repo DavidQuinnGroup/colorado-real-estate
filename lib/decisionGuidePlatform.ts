@@ -11,6 +11,21 @@ export type DecisionGuideEligibility = {
   publicEligibility: boolean;
 };
 
+export type DecisionGuideContinuityDestination =
+  | 'market'
+  | 'city-search'
+  | 'buyer-guidance'
+  | 'seller-guidance'
+  | 'financing-confidence'
+  | 'grand-plan'
+  | 'advisory';
+
+export type DecisionGuideContinuityLink = {
+  label: string;
+  href: string;
+  destination: DecisionGuideContinuityDestination;
+};
+
 type DecisionGuideItem = {
   label: string;
   explanation: string;
@@ -1064,16 +1079,16 @@ export function buildDecisionGuideContinuityLinks({
   guide: DecisionGuide;
   marketHref: string;
   searchHref: string;
-}) {
-  const baseLinks = [
+}): readonly DecisionGuideContinuityLink[] {
+  const baseLinks: readonly DecisionGuideContinuityLink[] = [
     { label: 'Market Context', href: marketHref, destination: 'market' },
-    { label: `Search ${guide.cityName} Homes`, href: searchHref, destination: 'search' },
-    { label: 'Buyer Guidance', href: '/buy', destination: 'search' },
-    { label: 'Seller Guidance', href: '/sell', destination: 'seller' },
-    { label: 'Financing Guidance', href: '/buy#financing-confidence', destination: 'inquiry' },
-    { label: 'Grand Plan', href: '/grand-plan', destination: 'inquiry' },
-    { label: 'Advisory Guidance', href: '/contact', destination: 'inquiry' },
-  ] as const;
+    { label: `Search ${guide.cityName} Homes`, href: searchHref, destination: 'city-search' },
+    { label: 'Buyer Guidance', href: '/buy', destination: 'buyer-guidance' },
+    { label: 'Seller Guidance', href: '/sell', destination: 'seller-guidance' },
+    { label: 'Financing Guidance', href: '/buy#financing-confidence', destination: 'financing-confidence' },
+    { label: 'Grand Plan', href: '/grand-plan', destination: 'grand-plan' },
+    { label: 'Advisory Guidance', href: '/contact', destination: 'advisory' },
+  ];
 
   return baseLinks;
 }

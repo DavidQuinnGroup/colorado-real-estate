@@ -47,6 +47,39 @@ function assertNoProhibitedClaims(source: string) {
   }
 }
 
+function assertContinuityContract({
+  cityName,
+  marketHref,
+  searchHref,
+  continuity,
+}: {
+  cityName: string;
+  marketHref: string;
+  searchHref: string;
+  continuity: ReturnType<typeof buildDecisionGuideContinuityLinks>;
+}) {
+  const expectedLinks = [
+    { label: 'Market Context', href: marketHref, destination: 'market' },
+    { label: `Search ${cityName} Homes`, href: searchHref, destination: 'city-search' },
+    { label: 'Buyer Guidance', href: '/buy', destination: 'buyer-guidance' },
+    { label: 'Seller Guidance', href: '/sell', destination: 'seller-guidance' },
+    { label: 'Financing Guidance', href: '/buy#financing-confidence', destination: 'financing-confidence' },
+    { label: 'Grand Plan', href: '/grand-plan', destination: 'grand-plan' },
+    { label: 'Advisory Guidance', href: '/contact', destination: 'advisory' },
+  ] as const;
+
+  assert.equal(continuity.length, expectedLinks.length, `${cityName} must expose the complete shared Decision Guide continuity contract.`);
+
+  for (const expected of expectedLinks) {
+    assert(
+      continuity.some(
+        (item) => item.label === expected.label && item.href === expected.href && item.destination === expected.destination,
+      ),
+      `${cityName} continuity must render ${expected.label} with ${expected.href} and ${expected.destination}.`,
+    );
+  }
+}
+
 async function main() {
   const [platformSource, registrySource, cityMarketPage, packageJson, workerConfig] = await Promise.all([
     readFile('lib/decisionGuidePlatform.ts', 'utf8'),
@@ -114,10 +147,12 @@ async function main() {
       marketHref: `/market/${city.marketSlug}`,
       searchHref: `/search?city=${encodeURIComponent(city.name)}`,
     });
-    assert(continuity.some((item) => item.href.startsWith('/search?city=')), `${cityName} must preserve Search Continuity.`);
-    assert(continuity.some((item) => item.href === '/buy#financing-confidence'), `${cityName} must preserve Financing Continuity.`);
-    assert(continuity.some((item) => item.href === '/grand-plan'), `${cityName} must preserve Grand Plan Continuity.`);
-    assert(continuity.some((item) => item.href === '/contact'), `${cityName} must provide Advisory Continuity.`);
+    assertContinuityContract({
+      cityName,
+      marketHref: `/market/${city.marketSlug}`,
+      searchHref: `/search?city=${encodeURIComponent(city.name)}`,
+      continuity,
+    });
   }
 
   assertIncludes(cityMarketPage, 'data-testid={`${cityDecisionGuide.key}-decision-snapshot`}', 'City page must render the Decision Snapshot component.');
