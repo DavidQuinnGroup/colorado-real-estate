@@ -10,6 +10,52 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE Post-Cohesion Wave Strategic Next-Phase Review, July 31, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Current governed state:
+
+- Core Product Experience Optimization cycle is complete.
+- Product Cohesion Review(tm) Wave 1 is production-certified and closed.
+- Controlled Fixture Alert Dry-Run(tm) program is certified and closed.
+- Local Decision Intelligence(tm) Phase 1 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 1 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 2 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 3 is production-certified and closed.
+- REIE Product Experience(tm) Next Cohesion Wave is production-certified and closed.
+- REIE Post-Cohesion Wave Strategic Next-Phase Review is locally recorded.
+- Strategic next-phase finding: `PRIORITIZE_CROSS_CITY_DECISION_COMPARISON`.
+- Primary recommendation: implement a governed Cross-City Decision Comparison experience.
+- Recommended next authorization: `CROSS_CITY_DECISION_COMPARISON_IMPLEMENTATION_AUTHORIZATION`.
+- This is a recommendation only. Cross-City Decision Comparison implementation is not authorized by the review record.
+- Current certified Local Decision Intelligence maturity inventory: `ENHANCED_FOUNDATION` for Broomfield, Superior, Longmont, Denver, Erie, and Westminster; previously certified editorial Decision Guides for Boulder, Louisville, and Lafayette.
+- Current certified product-experience position: Homepage, Buy, Sell, Home Worth, Grand Plan, Contact / Advisory, and shared `JourneyCohesionPanel` cohesion are certified; Search, market/city, property, neighborhood, financing, trust, disclosure, and certified city continuity are preserved.
+- Post-cohesion interpretation: the prior journey-friction gap is materially resolved, so the largest remaining customer-value gap is cross-city synthesis across already certified public city intelligence.
+- Cross-city comparison should use existing certified public city and Decision Guide records only, disclose mixed maturity, and compare through neutral decision dimensions.
+- Initial recommended comparison scope: Broomfield, Superior, Longmont, Denver, Erie, Westminster, Boulder, Louisville, and Lafayette.
+- Decision Guide unification finding: companion consideration, not a prerequisite. Boulder, Louisville, and Lafayette should remain `EDITORIALLY_CERTIFIED` unless a later migration standard is explicitly approved.
+- Evidence-depth finding: not required before a bounded comparison experience; source-rights/provider/public-record/GIS activation remains gated.
+- Local Decision Intelligence cadence: remain paused and slower-governed; Niwot and later candidates require authority/search-support/classification review before activation.
+- Secondary priority: `PRIORITIZE_SELLER_READINESS_ADVANCEMENT`.
+- Queued only: seller readiness advancement, Decision Guide unification planning, buyer financing-readiness advancement, neighborhood/submarket architecture planning, evidence-depth/source-rights readiness, and Local Decision Intelligence Phase 2 Wave 4 planning.
+- Deferred or paused: Local Decision Intelligence Wave 4 implementation, Niwot activation, Gunbarrel city-level intelligence, Thornton/Brighton/Firestone/Frederick implementation, neighborhood/submarket route creation, provider activation, public GIS activation, external data acquisition, seller valuation logic, mortgage calculators, rates, qualification, lender workflows, AI, personalization, telemetry, ranking, forecasts, valuation, APIs, schema changes, search-ranking changes, map-boundary changes, alerts, queues, workers, email, and production mutation.
+- Strategic review record: `docs/project-atlas/executive-library/REIE-POST-COHESION-WAVE-STRATEGIC-NEXT-PHASE-REVIEW.md`.
+- Required remediation: none.
+- Exact next step: stop, or explicitly authorize Cross-City Decision Comparison implementation. Codex must not implement comparison, begin another initiative, modify runtime code, create routes, change eligibility, activate protected capabilities, push, deploy, or modify production behavior without an explicit directive.
+
+Prior REIE Product Experience Next Cohesion Wave closure handoff retained below.
+
 PROJECT ATLAS(tm) / REIE Product Experience(tm) Next Cohesion Wave Certification and Closure, July 31, 2026:
 
 Workspace:
