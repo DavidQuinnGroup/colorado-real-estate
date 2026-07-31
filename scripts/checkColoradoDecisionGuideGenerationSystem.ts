@@ -101,27 +101,35 @@ async function main() {
 
   assert(editorialCity, 'At least one editorially certified city must remain available.');
   assert(enhancedFoundationCity, 'At least one enhanced foundation city must remain available.');
-  assert(foundationCity, 'At least one foundation city must be publicly eligible.');
+  assert.equal(foundationCity, null, 'No public foundation city should remain after Phase 2 Wave 3 upgrades.');
   assert(ineligibleCity, 'At least one market city must fail closed when minimum guide requirements are absent.');
 
-  const foundationCityData = cities.find((city) => normalize(city.name) === normalize(foundationCity.canonicalName));
-  assert(foundationCityData, 'Representative foundation city must resolve to city market data.');
+  const enhancedFoundationCityData = cities.find((city) => normalize(city.name) === normalize(enhancedFoundationCity.canonicalName));
+  assert(enhancedFoundationCityData, 'Representative enhanced foundation city must resolve to city market data.');
 
-  const generatedFoundationGuide = buildDecisionGuide({
-    city: foundationCityData,
-    cityNeighborhoods: neighborhoods.filter((neighborhood) => normalize(neighborhood.city) === normalize(foundationCityData.name)),
+  const generatedEnhancedFoundationGuide = buildDecisionGuide({
+    city: enhancedFoundationCityData,
+    cityNeighborhoods: neighborhoods.filter((neighborhood) => normalize(neighborhood.city) === normalize(enhancedFoundationCityData.name)),
     marketSignal: 'Balanced conditions',
-    eligibility: getDecisionGuideRegistryEntry(foundationCityData),
+    eligibility: getDecisionGuideRegistryEntry(enhancedFoundationCityData),
   });
 
-  assert(generatedFoundationGuide, 'Representative foundation city must generate a guide.');
-  assert.equal(generatedFoundationGuide.maturity, 'FOUNDATION', 'Representative foundation guide must retain FOUNDATION maturity.');
-  assert.equal(generatedFoundationGuide.publicEligibility, true, 'Representative foundation guide must be publicly eligible.');
-  assert.match(generatedFoundationGuide.identity, /foundation Colorado Decision Guide/i, 'Foundation guide must visibly disclose its bounded maturity.');
+  assert(generatedEnhancedFoundationGuide, 'Representative enhanced foundation city must generate a guide.');
+  assert.equal(
+    generatedEnhancedFoundationGuide.maturity,
+    'ENHANCED_FOUNDATION',
+    'Representative enhanced foundation guide must retain ENHANCED_FOUNDATION maturity.',
+  );
+  assert.equal(generatedEnhancedFoundationGuide.publicEligibility, true, 'Representative enhanced foundation guide must be publicly eligible.');
   assert.match(
-    generatedFoundationGuide.summaryIntro,
-    /does not add unsupported local interpretation/i,
-    'Foundation guide must avoid unsupported city-specific interpretation.',
+    generatedEnhancedFoundationGuide.identity,
+    /Enhanced Foundation Local Decision Intelligence/i,
+    'Enhanced foundation guide must visibly disclose its bounded maturity.',
+  );
+  assert.match(
+    generatedEnhancedFoundationGuide.summaryIntro,
+    /non-predictive|citywide|limitation-forward/i,
+    'Enhanced foundation guide must preserve non-predictive and limitation-forward interpretation.',
   );
 
   const ineligibleCityData = cities.find((city) => normalize(city.name) === normalize(ineligibleCity.canonicalName));

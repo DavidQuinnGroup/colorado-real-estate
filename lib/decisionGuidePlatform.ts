@@ -3,7 +3,7 @@ import type { Neighborhood } from './neighborhoods.js';
 
 export type DecisionGuideKey = string;
 type EditorialDecisionGuideKey = 'boulder' | 'louisville' | 'lafayette';
-type EnhancedFoundationDecisionGuideKey = 'broomfield' | 'longmont' | 'denver' | 'superior';
+type EnhancedFoundationDecisionGuideKey = 'broomfield' | 'erie' | 'longmont' | 'denver' | 'superior' | 'westminster';
 export type DecisionGuideMaturity = 'FOUNDATION' | 'ENHANCED_FOUNDATION' | 'EVIDENCE_BACKED' | 'EDITORIALLY_CERTIFIED';
 
 export type DecisionGuideEligibility = {
@@ -460,6 +460,163 @@ export const ENHANCED_FOUNDATION_CITY_CONFIGS: Record<EnhancedFoundationDecision
       'If established housing matters, what systems, remodel quality, exterior, drainage, and maintenance records need review?',
       'If urban services matter, which commercial, recreation, municipal, and daily-use assumptions should be verified?',
       'What property-specific due diligence belongs with a qualified inspector, insurance advisor, title professional, municipal source, HOA document review, or real estate advisor?',
+    ],
+  },
+  erie: {
+    key: 'erie',
+    cityName: 'Erie',
+    identityPattern:
+      'northern corridor decision market where municipal growth, attached and detached housing options, newer development, regional access, and property-specific diligence should be evaluated separately',
+    summaryHeadline: 'Use Erie as a structured local decision, not one growth-market shorthand.',
+    summaryIntro:
+      'Erie guidance now adds durable local context to the certified foundation route. It remains non-predictive, limitation-forward, and dependent on property-specific verification.',
+    distinctValue:
+      'A Front Range community spanning Boulder and Weld County context, with established areas, newer subdivisions, attached and detached housing, regional routes, and growth-related review questions',
+    attentionValue:
+      'Housing age, subdivision pattern, attached or detached form, county and municipal records, commute routes, HOA obligations, nearby development context, and property-specific condition review',
+    verificationValue:
+      'Property records, systems and remodel history, builder or warranty documents where applicable, HOA documents, municipal and county requirements, insurance questions, commute assumptions, and advisory review',
+    localCharacter: [
+      {
+        label: 'Municipal and county context',
+        explanation:
+          'Erie decisions can involve municipal records and Boulder or Weld County context. Verify jurisdiction, taxes, services, permits, title, and property-record details for the specific address.',
+      },
+      {
+        label: 'Development pattern',
+        explanation:
+          'Erie includes established residential areas, newer subdivisions, attached housing, and growth-edge settings. Compare the immediate setting before relying on a broad citywide signal.',
+      },
+      {
+        label: 'Regional access',
+        explanation:
+          'Many Erie decisions involve routes toward Boulder, Longmont, Broomfield, Denver-area corridors, and northern Front Range services. Route usefulness depends on address, timing, destination, and daily pattern.',
+      },
+    ],
+    housingContext: [
+      {
+        label: 'Varied housing forms',
+        explanation:
+          'Erie inventory can include detached homes, townhomes, newer subdivisions, established properties, and properties with different lot or HOA structures. Compare property type, age, documents, and maintenance exposure before narrowing options.',
+      },
+      {
+        label: 'Established and newer areas',
+        explanation:
+          'Established homes may raise systems, exterior, drainage, remodel, and record-review questions. Newer homes may shift diligence toward builder history, warranty status, HOA documents, lot exposure, and nearby development context.',
+      },
+      {
+        label: 'Location tradeoffs',
+        explanation:
+          'Properties can sit closer to regional corridors, newer development edges, commercial services, open-space access, or established residential interiors. Verify the practical effect from the address rather than treating the city as uniform.',
+      },
+    ],
+    practicalContext: [
+      {
+        label: 'If commuting matters',
+        explanation:
+          'Compare actual routes toward Boulder, Longmont, Broomfield, Denver-area corridors, and northern Front Range destinations at the times they would be used. This guide does not certify commute performance.',
+      },
+      {
+        label: 'If newer construction matters',
+        explanation:
+          'Review builder history, warranty status, HOA obligations, lot exposure, nearby construction context, municipal records, and county-specific records before comparing newer homes against established alternatives.',
+      },
+      {
+        label: 'If lot size matters',
+        explanation:
+          'Review lot pattern, exterior exposure, drainage, landscaping, fencing, irrigation, HOA rules, and maintenance responsibilities as address-specific questions.',
+      },
+    ],
+    marketContext: [
+      {
+        label: 'Inventory structure',
+        explanation:
+          'Erie market context can span established homes, newer detached homes, attached options, and different lot patterns. Compare similar property types before drawing conclusions from a citywide inventory signal.',
+      },
+      {
+        label: 'Growth and development review',
+        explanation:
+          'New construction, nearby development, and municipal planning can influence comparison questions, but this page does not forecast demand, future development outcomes, or investment performance.',
+      },
+      {
+        label: 'Jurisdictional verification',
+        explanation:
+          'Planning, permitting, property records, county context, HOA obligations, and service assumptions should be checked through municipal or county sources, documents, inspections, and advisor review before decisions are made.',
+      },
+    ],
+    communityContext: [
+      {
+        label: 'Local character',
+        explanation:
+          'Erie should be reviewed through property age, immediate surroundings, municipal and county context, commercial access, recreation access, and regional connections rather than demographic assumptions.',
+      },
+      {
+        label: 'Evidence boundary',
+        explanation:
+          'The current page provides Enhanced Foundation citywide context. It does not replace property inspections, municipal or county research, title review, insurance review, or professional advice.',
+      },
+    ],
+    buyerConsiderations: [
+      {
+        label: 'Before search',
+        explanation:
+          'Decide whether housing form, property age, commute route, HOA structure, lot pattern, jurisdictional context, or proximity to daily services matters most, then use search to test those criteria against active inventory.',
+      },
+      {
+        label: 'Before offer decisions',
+        explanation:
+          'Verify records, condition, systems, HOA documents where applicable, municipal and county requirements, insurance questions, route assumptions, and nearby development context through qualified sources.',
+      },
+    ],
+    sellerConsiderations: [
+      {
+        label: 'Property differentiation',
+        explanation:
+          'Document updates, systems, HOA details where applicable, lot features, location context, maintenance history, and jurisdictional details so buyers can compare the home against similar Erie options.',
+      },
+      {
+        label: 'Preparation review',
+        explanation:
+          'Use local competition, property condition, documentation, presentation, and timing as advisor-review topics. This guide does not promise pricing results or market response.',
+      },
+    ],
+    evidenceLimitations: [
+      {
+        label: 'Enhanced Foundation maturity',
+        explanation:
+          'This page is ENHANCED_FOUNDATION maturity. It adds durable Erie context to governed market data, but it is not editorial, predictive, regulatory, or provider certification.',
+      },
+      {
+        label: 'Qualified-source review',
+        explanation:
+          'Construction, insurance, environmental, title, municipal, county, HOA, and property-record questions should be verified through qualified sources or professionals before decisions are made.',
+      },
+      {
+        label: 'No protected activation',
+        explanation:
+          'No AI, public GIS, telemetry, provider activation, ranking, valuation, school rating, safety rating, or investment guidance is used.',
+      },
+    ],
+    tradeoffs: [
+      {
+        strength: 'Growth-area context with established and newer housing options',
+        tradeoff: 'Age, systems, HOA obligations, builder history, nearby development, and maintenance exposure should be compared by property type.',
+      },
+      {
+        strength: 'Regional access across Boulder, Weld, and northern metro decisions',
+        tradeoff: 'Actual route usefulness depends on address, timing, destination, and daily pattern rather than citywide labels.',
+      },
+      {
+        strength: 'Municipal and county context can support more specific diligence',
+        tradeoff: 'Jurisdiction, records, title, taxes, services, and requirements still need address-specific verification.',
+      },
+    ],
+    verificationQuestions: [
+      'If commuting matters, which routes, destinations, and time-of-day assumptions should be checked from the specific address?',
+      'If newer construction matters, what builder, warranty, HOA, lot, nearby development, and municipal-record questions should be verified?',
+      'If established housing matters, what systems, remodel quality, exterior, drainage, and maintenance records need review?',
+      'If county or municipal context matters, what jurisdiction, title, tax, service, permit, or record questions should be verified?',
+      'What Erie-specific due diligence belongs with a qualified inspector, insurance advisor, title professional, municipal or county source, HOA document review, or real estate advisor?',
     ],
   },
   longmont: {
@@ -933,6 +1090,163 @@ export const ENHANCED_FOUNDATION_CITY_CONFIGS: Record<EnhancedFoundationDecision
       'What Superior-specific due diligence belongs with a qualified inspector, insurance advisor, title professional, municipal source, public-record source, HOA document review, or real estate advisor?',
     ],
   },
+  westminster: {
+    key: 'westminster',
+    cityName: 'Westminster',
+    identityPattern:
+      'northwest metro decision market where housing age, city geography, regional corridors, attached and detached options, and jurisdictional due diligence should be evaluated separately',
+    summaryHeadline: 'Use Westminster as a structured local decision across different city contexts.',
+    summaryIntro:
+      'Westminster guidance now adds durable local context to the certified foundation route. It remains non-predictive, limitation-forward, and dependent on property-specific verification.',
+    distinctValue:
+      'A northwest metro city with varied housing eras, attached and detached options, regional transportation corridors, commercial centers, recreation access, and county-context questions',
+    attentionValue:
+      'Property age, housing form, location within the city, corridor access, HOA structure, municipal and county records, maintenance exposure, and property-specific condition review',
+    verificationValue:
+      'Property records, systems and remodel history, HOA documents where applicable, municipal and county requirements, insurance questions, commute assumptions, and advisory review',
+    localCharacter: [
+      {
+        label: 'Metro corridor context',
+        explanation:
+          'Westminster decisions can involve access toward Denver, Boulder, Broomfield, and northwest metro corridors. Route usefulness depends on address, timing, destination, and daily-use assumptions.',
+      },
+      {
+        label: 'Development pattern',
+        explanation:
+          'Westminster includes established residential areas, attached housing, newer or updated homes, commercial corridors, and recreation-adjacent settings. Compare the immediate setting before relying on citywide context.',
+      },
+      {
+        label: 'Jurisdictional review',
+        explanation:
+          'Property decisions may involve city records and county context. Verify permits, title, taxes, services, HOA obligations where applicable, and property records for the specific address.',
+      },
+    ],
+    housingContext: [
+      {
+        label: 'Mixed housing eras',
+        explanation:
+          'Westminster inventory can include older homes, established subdivisions, townhomes, condos, and newer or renovated properties. Compare property type, age, systems, HOA structure, and maintenance exposure before narrowing options.',
+      },
+      {
+        label: 'Established and updated properties',
+        explanation:
+          'Established homes may raise questions about systems, remodel quality, exterior condition, drainage, and records. Updated homes should still be reviewed for permit history, workmanship, disclosures, and inspection scope.',
+      },
+      {
+        label: 'Location tradeoffs',
+        explanation:
+          'Properties can sit closer to regional corridors, commercial centers, open-space or recreation access, transit-oriented areas, or quieter residential interiors. Verify the practical effect from the address rather than treating the city as uniform.',
+      },
+    ],
+    practicalContext: [
+      {
+        label: 'If commuting matters',
+        explanation:
+          'Compare actual routes toward Denver, Boulder, Broomfield, and northwest metro destinations at the times they would be used. This guide does not certify commute performance.',
+      },
+      {
+        label: 'If urban services matter',
+        explanation:
+          'Review access to services, retail corridors, transit or route options, recreation, and municipal resources based on the property location and daily pattern.',
+      },
+      {
+        label: 'If established housing matters',
+        explanation:
+          'Verify construction age, systems, remodel history, exterior condition, drainage, insurance questions, and maintenance exposure through records and qualified review.',
+      },
+    ],
+    marketContext: [
+      {
+        label: 'Inventory structure',
+        explanation:
+          'Westminster market context can span different housing forms, age bands, and local settings. Compare similar property types before drawing conclusions from a citywide inventory signal.',
+      },
+      {
+        label: 'Transportation and commercial influences',
+        explanation:
+          'Regional corridors, employment access, commercial centers, transit options, and recreation access can influence buyer attention, but this page does not forecast demand or assign investment value.',
+      },
+      {
+        label: 'Municipal and county verification',
+        explanation:
+          'Planning, permitting, records, HOA, county, and jurisdictional questions should be checked through municipal or county sources, documents, inspections, and advisor review before decisions are made.',
+      },
+    ],
+    communityContext: [
+      {
+        label: 'Local character',
+        explanation:
+          'Westminster should be reviewed through property age, immediate surroundings, city services, commercial access, recreation access, county context, and regional connections rather than demographic assumptions.',
+      },
+      {
+        label: 'Evidence boundary',
+        explanation:
+          'The current page provides Enhanced Foundation citywide context. It does not replace property inspections, municipal or county research, title review, insurance review, or professional advice.',
+      },
+    ],
+    buyerConsiderations: [
+      {
+        label: 'Before search',
+        explanation:
+          'Decide whether housing form, property age, commute route, HOA structure, location within the city, recreation access, or proximity to daily services matters most, then use search to test those criteria against active inventory.',
+      },
+      {
+        label: 'Before offer decisions',
+        explanation:
+          'Verify records, condition, systems, HOA documents where applicable, municipal and county requirements, insurance questions, route assumptions, and local setting through qualified sources.',
+      },
+    ],
+    sellerConsiderations: [
+      {
+        label: 'Property differentiation',
+        explanation:
+          'Document updates, systems, HOA details where applicable, location context, lot features, maintenance history, and relevant records so buyers can compare the home against similar Westminster options.',
+      },
+      {
+        label: 'Preparation review',
+        explanation:
+          'Use local competition, property condition, presentation, documentation, and timing as advisor-review topics. This guide does not promise pricing results or market response.',
+      },
+    ],
+    evidenceLimitations: [
+      {
+        label: 'Enhanced Foundation maturity',
+        explanation:
+          'This page is ENHANCED_FOUNDATION maturity. It adds durable Westminster context to governed market data, but it is not editorial, predictive, regulatory, or provider certification.',
+      },
+      {
+        label: 'Qualified-source review',
+        explanation:
+          'Construction, insurance, environmental, title, municipal, county, HOA, and property-record questions should be verified through qualified sources or professionals before decisions are made.',
+      },
+      {
+        label: 'No protected activation',
+        explanation:
+          'No AI, public GIS, telemetry, provider activation, ranking, valuation, school rating, safety rating, or investment guidance is used.',
+      },
+    ],
+    tradeoffs: [
+      {
+        strength: 'Varied northwest metro access and housing options',
+        tradeoff: 'Property type, age, route assumptions, HOA obligations, and local setting must be compared before conclusions are drawn.',
+      },
+      {
+        strength: 'Established areas, updated homes, and attached options can coexist',
+        tradeoff: 'Systems, remodel history, exterior condition, records, and maintenance exposure should be verified by property.',
+      },
+      {
+        strength: 'Commercial, recreation, and regional corridor access can be decision factors',
+        tradeoff: 'Actual usefulness depends on address, timing, destination, and daily pattern rather than citywide labels.',
+      },
+    ],
+    verificationQuestions: [
+      'If commuting matters, which routes, destinations, transit or parking assumptions, and time-of-day details should be checked from the specific address?',
+      'If established housing matters, what systems, remodel quality, exterior, drainage, and maintenance records need review?',
+      'If urban services matter, which commercial, recreation, municipal, transit, and daily-use assumptions should be verified?',
+      'If county or municipal context matters, what jurisdiction, title, tax, service, permit, HOA, or record questions should be verified?',
+      'What Westminster-specific due diligence belongs with a qualified inspector, insurance advisor, title professional, municipal or county source, HOA document review, or real estate advisor?',
+    ],
+  },
 };
 
 function normalize(value: string) {
@@ -948,7 +1262,7 @@ function isEditorialDecisionGuideKey(key: DecisionGuideKey): key is EditorialDec
 }
 
 function isEnhancedFoundationDecisionGuideKey(key: DecisionGuideKey): key is EnhancedFoundationDecisionGuideKey {
-  return key === 'broomfield' || key === 'longmont' || key === 'denver' || key === 'superior';
+  return key === 'broomfield' || key === 'erie' || key === 'longmont' || key === 'denver' || key === 'superior' || key === 'westminster';
 }
 
 function getEditorialDecisionGuideKey(city: CityData): EditorialDecisionGuideKey | null {

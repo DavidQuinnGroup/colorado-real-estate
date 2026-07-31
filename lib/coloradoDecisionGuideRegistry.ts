@@ -144,7 +144,7 @@ export const COLORADO_DECISION_GUIDE_REGISTRY: DecisionGuideRegistryEntry[] = [
     routeSlug: 'erie-co-real-estate',
     marketRoute: '/market/erie-co-housing-market',
     neighborhoodCount: 0,
-    guideMaturity: 'FOUNDATION',
+    guideMaturity: 'ENHANCED_FOUNDATION',
   }),
   ineligibleEntry({
     canonicalName: 'Firestone',
@@ -211,7 +211,7 @@ export const COLORADO_DECISION_GUIDE_REGISTRY: DecisionGuideRegistryEntry[] = [
     routeSlug: 'westminster-co-real-estate',
     marketRoute: '/market/westminster-co-housing-market',
     neighborhoodCount: 0,
-    guideMaturity: 'FOUNDATION',
+    guideMaturity: 'ENHANCED_FOUNDATION',
   }),
 ];
 

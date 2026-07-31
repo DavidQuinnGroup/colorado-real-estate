@@ -11,9 +11,10 @@ import {
 } from '../lib/decisionGuidePlatform.js';
 import { neighborhoods } from '../lib/neighborhoods.js';
 
-const PHASE_2_WAVE_2_CITIES = ['Broomfield', 'Superior'] as const;
-const PRESERVED_ENHANCED_FOUNDATION_CITIES = ['Longmont', 'Denver', 'Erie', 'Westminster'] as const;
+const PHASE_2_WAVE_3_CITIES = ['Erie', 'Westminster'] as const;
+const PRESERVED_ENHANCED_FOUNDATION_CITIES = ['Broomfield', 'Superior', 'Longmont', 'Denver'] as const;
 const PRESERVED_EDITORIAL_CITIES = ['Boulder', 'Louisville', 'Lafayette'] as const;
+const PRESERVED_INELIGIBLE_CITIES = ['Niwot', 'Gunbarrel', 'Thornton', 'Brighton', 'Firestone', 'Frederick'] as const;
 
 const PROHIBITED_PATTERNS = [
   /best place/i,
@@ -49,7 +50,7 @@ function slugifyCity(value: string) {
 
 function assertNoProhibitedClaims(source: string) {
   for (const pattern of PROHIBITED_PATTERNS) {
-    assert(!pattern.test(source), `Local Decision Intelligence Phase 2 Wave 2 must not include prohibited claim or activation text: ${pattern}`);
+    assert(!pattern.test(source), `Local Decision Intelligence Phase 2 Wave 3 must not include prohibited claim or activation text: ${pattern}`);
   }
 }
 
@@ -99,14 +100,14 @@ function assertContinuityContract({
   );
 }
 
-function assertEnhancedFoundationCity(cityName: (typeof PHASE_2_WAVE_2_CITIES)[number]) {
+function assertEnhancedFoundationCity(cityName: (typeof PHASE_2_WAVE_3_CITIES)[number]) {
   const city = cities.find((candidate) => normalize(candidate.name) === normalize(cityName));
   assert(city, `${cityName} must exist in governed city data.`);
   assert.equal(city.marketSlug, `${slugifyCity(cityName)}-co-housing-market`, `${cityName} must use the canonical market route convention.`);
 
   const registryEntry = getDecisionGuideRegistryEntry(city);
   assert(registryEntry, `${cityName} must have a Decision Guide registry entry.`);
-  assert.equal(registryEntry.publicEligibility, true, `${cityName} must be public eligible after Wave 2 implementation.`);
+  assert.equal(registryEntry.publicEligibility, true, `${cityName} must be public eligible after Wave 3 implementation.`);
   assert.equal(registryEntry.guideMaturity, 'ENHANCED_FOUNDATION', `${cityName} must disclose ENHANCED_FOUNDATION maturity.`);
   assert.notEqual(registryEntry.guideMaturity, 'EVIDENCE_BACKED', `${cityName} must not be promoted to EVIDENCE_BACKED.`);
   assert.notEqual(registryEntry.guideMaturity, 'EDITORIALLY_CERTIFIED', `${cityName} must not be promoted to EDITORIALLY_CERTIFIED.`);
@@ -147,15 +148,14 @@ function assertEnhancedFoundationCity(cityName: (typeof PHASE_2_WAVE_2_CITIES)[n
   assertGuideTextIncludes(guideText, /qualified (sources|review|inspector|professional|professionals)/i, cityName, 'must direct due diligence to qualified sources.');
   assertGuideTextIncludes(guideText, /does not forecast|not a forecast|does not forecast demand|does not promise|does not rate|does not certify/i, cityName, 'must avoid predictive or definitive conclusions.');
 
-  if (cityName === 'Broomfield') {
-    assertGuideTextIncludes(guideText, /city and county|municipal structure|Boulder and Denver corridors/i, cityName, 'must include city-specific municipal and regional-access context.');
+  if (cityName === 'Erie') {
+    assertGuideTextIncludes(guideText, /Boulder and Weld County|growth|newer subdivisions|northern Front Range/i, cityName, 'must include city-specific municipal, county, growth, and regional-access context.');
+    assertGuideTextIncludes(guideText, /county|jurisdiction|municipal/i, cityName, 'must preserve jurisdictional verification context.');
   }
 
-  if (cityName === 'Superior') {
-    assert.equal(cityNeighborhoods.length, 3, 'Superior must preserve its three governed neighborhood records.');
-    assertGuideTextIncludes(guideText, /planned-community|Boulder County|rebuilding|redevelopment/i, cityName, 'must include city-specific durable context.');
-    assertGuideTextIncludes(guideText, /citywide page does not certify|property-specific|public records|municipalities|insurers/i, cityName, 'must preserve sensitive-context verification boundaries.');
-    assertGuideTextIncludes(guideText, /hazard certification|insurance advice|hazard service/i, cityName, 'must explicitly avoid sensitive-context activation.');
+  if (cityName === 'Westminster') {
+    assertGuideTextIncludes(guideText, /northwest metro|Denver|Boulder|Broomfield|regional corridors/i, cityName, 'must include city-specific northwest metro and regional-access context.');
+    assertGuideTextIncludes(guideText, /county|jurisdiction|municipal/i, cityName, 'must preserve jurisdictional verification context.');
   }
 
   const continuity = buildDecisionGuideContinuityLinks({
@@ -172,7 +172,7 @@ function assertEnhancedFoundationCity(cityName: (typeof PHASE_2_WAVE_2_CITIES)[n
 }
 
 async function main() {
-  const [platformSource, registrySource, cityMarketPage, packageJson, workerConfig, citySource, searchControls] = await Promise.all([
+  const [platformSource, registrySource, cityMarketPage, packageJson, workerConfig, citySource, searchControls, searchPageSource] = await Promise.all([
     readFile('lib/decisionGuidePlatform.ts', 'utf8'),
     readFile('lib/coloradoDecisionGuideRegistry.ts', 'utf8'),
     readFile('app/market/[city]/page.tsx', 'utf8'),
@@ -180,9 +180,10 @@ async function main() {
     readFile('tsconfig.worker.json', 'utf8'),
     readFile('lib/cities.ts', 'utf8'),
     readFile('components/search/SearchControls.tsx', 'utf8'),
+    readFile('data/searchPages.ts', 'utf8'),
   ]);
 
-  for (const cityName of PHASE_2_WAVE_2_CITIES) {
+  for (const cityName of PHASE_2_WAVE_3_CITIES) {
     assertEnhancedFoundationCity(cityName);
   }
 
@@ -204,14 +205,28 @@ async function main() {
   }
 
   assert(ENHANCED_FOUNDATION_CITY_CONFIGS.broomfield, 'Broomfield must have an enhanced foundation configuration.');
+  assert(ENHANCED_FOUNDATION_CITY_CONFIGS.erie, 'Erie must have an enhanced foundation configuration.');
   assert(ENHANCED_FOUNDATION_CITY_CONFIGS.superior, 'Superior must have an enhanced foundation configuration.');
   assert(ENHANCED_FOUNDATION_CITY_CONFIGS.longmont, 'Longmont must preserve its enhanced foundation configuration.');
   assert(ENHANCED_FOUNDATION_CITY_CONFIGS.denver, 'Denver must preserve its enhanced foundation configuration.');
-  assert.match(citySource, /superior-co-housing-market/, 'Superior route must exist in governed city market data.');
-  assert.match(registrySource, /marketRoute: '\/market\/superior-co-housing-market'/, 'Superior registry route must be public and canonical.');
-  assert.doesNotMatch(registrySource, /canonicalName: 'Superior'[\s\S]{0,220}missing-market-route/, 'Superior must no longer carry missing-market-route.');
-  assert.doesNotMatch(registrySource, /canonicalName: 'Superior'[\s\S]{0,220}missing-market-data/, 'Superior must no longer carry missing-market-data.');
+  assert(ENHANCED_FOUNDATION_CITY_CONFIGS.westminster, 'Westminster must have an enhanced foundation configuration.');
+  assert.match(citySource, /erie-co-housing-market/, 'Erie route must exist in governed city market data.');
+  assert.match(citySource, /westminster-co-housing-market/, 'Westminster route must exist in governed city market data.');
+  assert.match(registrySource, /marketRoute: '\/market\/erie-co-housing-market'/, 'Erie registry route must be public and canonical.');
+  assert.match(registrySource, /marketRoute: '\/market\/westminster-co-housing-market'/, 'Westminster registry route must be public and canonical.');
   assert.match(searchControls, /City or town/, 'Search must remain generic city text input without ranking or search-ranking mutation.');
+  assert.match(searchPageSource, /"erie"/, 'Erie must remain search-supported through existing search city support.');
+  assert.match(searchPageSource, /"westminster"/, 'Westminster must remain search-supported through existing search city support.');
+
+  for (const cityName of PRESERVED_INELIGIBLE_CITIES) {
+    const city = cities.find((candidate) => normalize(candidate.name) === normalize(cityName));
+    assert(city, `${cityName} must remain in governed city data for later-wave evaluation.`);
+    const registryEntry = getDecisionGuideRegistryEntry(city);
+    assert(registryEntry, `${cityName} must remain registered for fail-closed evaluation.`);
+    assert.equal(registryEntry.publicEligibility, false, `${cityName} must remain fail-closed during Wave 3.`);
+    assert.notEqual(registryEntry.guideMaturity, 'ENHANCED_FOUNDATION', `${cityName} must not be promoted during Wave 3.`);
+    assert(registryEntry.ineligibilityReasons.length > 0, `${cityName} must retain ineligibility reasons during Wave 3.`);
+  }
   assert.match(cityMarketPage, /phase-2-enhanced-foundation/, 'City page must expose wave-agnostic enhanced foundation metadata.');
   assert.match(cityMarketPage, /DECISION_GUIDE_ENHANCED_FOUNDATION_SOURCE/, 'City page must expose enhanced foundation source metadata.');
   assert.match(
@@ -226,34 +241,34 @@ async function main() {
     'Continuity label rendering must not depend on an overloaded search measurement destination.',
   );
 
-  assert.equal(DECISION_GUIDE_TRUST_BOUNDARIES.ai, false, 'Wave 2 must not activate AI.');
-  assert.equal(DECISION_GUIDE_TRUST_BOUNDARIES.gis, false, 'Wave 2 must not activate public GIS.');
-  assert.equal(DECISION_GUIDE_TRUST_BOUNDARIES.telemetry, false, 'Wave 2 must not activate telemetry.');
-  assert.equal(DECISION_GUIDE_TRUST_BOUNDARIES.ranking, false, 'Wave 2 must not activate rankings.');
-  assert.equal(DECISION_GUIDE_TRUST_BOUNDARIES.demographicTargeting, false, 'Wave 2 must not activate demographic targeting.');
-  assert.equal(DECISION_GUIDE_TRUST_BOUNDARIES.schoolRanking, false, 'Wave 2 must not activate school rankings.');
-  assert.equal(DECISION_GUIDE_TRUST_BOUNDARIES.safetyRanking, false, 'Wave 2 must not activate safety rankings.');
-  assert.equal(DECISION_GUIDE_TRUST_BOUNDARIES.investmentRecommendation, false, 'Wave 2 must not activate investment recommendations.');
+  assert.equal(DECISION_GUIDE_TRUST_BOUNDARIES.ai, false, 'Wave 3 must not activate AI.');
+  assert.equal(DECISION_GUIDE_TRUST_BOUNDARIES.gis, false, 'Wave 3 must not activate public GIS.');
+  assert.equal(DECISION_GUIDE_TRUST_BOUNDARIES.telemetry, false, 'Wave 3 must not activate telemetry.');
+  assert.equal(DECISION_GUIDE_TRUST_BOUNDARIES.ranking, false, 'Wave 3 must not activate rankings.');
+  assert.equal(DECISION_GUIDE_TRUST_BOUNDARIES.demographicTargeting, false, 'Wave 3 must not activate demographic targeting.');
+  assert.equal(DECISION_GUIDE_TRUST_BOUNDARIES.schoolRanking, false, 'Wave 3 must not activate school rankings.');
+  assert.equal(DECISION_GUIDE_TRUST_BOUNDARIES.safetyRanking, false, 'Wave 3 must not activate safety rankings.');
+  assert.equal(DECISION_GUIDE_TRUST_BOUNDARIES.investmentRecommendation, false, 'Wave 3 must not activate investment recommendations.');
 
   const packageData = JSON.parse(packageJson) as { scripts?: Record<string, string> };
   assert(
-    packageData.scripts?.['check:local-decision-intelligence-phase-2-wave-2'],
-    'package.json must expose the Local Decision Intelligence Phase 2 Wave 2 validation check.',
+    packageData.scripts?.['check:local-decision-intelligence-phase-2-wave-3'],
+    'package.json must expose the Local Decision Intelligence Phase 2 Wave 3 validation check.',
   );
   assert.match(
     workerConfig,
-    /checkLocalDecisionIntelligencePhase2Wave2\.ts/,
-    'Worker config must compile the Local Decision Intelligence Phase 2 Wave 2 validation check.',
+    /checkLocalDecisionIntelligencePhase2Wave3\.ts/,
+    'Worker config must compile the Local Decision Intelligence Phase 2 Wave 3 validation check.',
   );
 
   assertNoProhibitedClaims(`${platformSource}\n${registrySource}\n${cityMarketPage}\n${citySource}`);
 
   console.log(
-    `[local-decision-intelligence-phase-2-wave-2] ok: ${PHASE_2_WAVE_2_CITIES.length} Wave 2 enhanced foundation cities, Superior canonical route and registry reconciliation, preserved Wave 1 and editorial maturities, exact continuity contract, fair-housing boundaries, sensitive-context safeguards, and protected-capability exclusions verified.`,
+    `[local-decision-intelligence-phase-2-wave-3] ok: ${PHASE_2_WAVE_3_CITIES.length} Wave 3 enhanced foundation cities, preserved prior enhanced and editorial maturities, later-wave candidates remain fail-closed, exact continuity contract, fair-housing boundaries, and protected-capability exclusions verified.`,
   );
 }
 
 main().catch((error) => {
-  console.error('[local-decision-intelligence-phase-2-wave-2] failed:', error instanceof Error ? error.message : error);
+  console.error('[local-decision-intelligence-phase-2-wave-3] failed:', error instanceof Error ? error.message : error);
   process.exitCode = 1;
 });

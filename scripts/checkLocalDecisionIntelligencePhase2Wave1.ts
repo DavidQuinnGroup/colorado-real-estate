@@ -12,7 +12,7 @@ import {
 import { neighborhoods } from '../lib/neighborhoods.js';
 
 const PHASE_2_WAVE_1_CITIES = ['Longmont', 'Denver'] as const;
-const PRESERVED_FOUNDATION_CITIES = ['Erie', 'Westminster'] as const;
+const PRESERVED_ENHANCED_FOUNDATION_CITIES = ['Broomfield', 'Superior', 'Erie', 'Westminster'] as const;
 const PRESERVED_EDITORIAL_CITIES = ['Boulder', 'Louisville', 'Lafayette'] as const;
 
 const PROHIBITED_PATTERNS = [
@@ -173,12 +173,12 @@ async function main() {
     });
   }
 
-  for (const cityName of PRESERVED_FOUNDATION_CITIES) {
+  for (const cityName of PRESERVED_ENHANCED_FOUNDATION_CITIES) {
     const city = cities.find((candidate) => normalize(candidate.name) === normalize(cityName));
     assert(city, `${cityName} must remain in city data.`);
     const registryEntry = getDecisionGuideRegistryEntry(city);
     assert(registryEntry, `${cityName} must remain registered.`);
-    assert.equal(registryEntry.guideMaturity, 'FOUNDATION', `${cityName} must remain FOUNDATION maturity.`);
+    assert.equal(registryEntry.guideMaturity, 'ENHANCED_FOUNDATION', `${cityName} must preserve ENHANCED_FOUNDATION maturity.`);
   }
 
   for (const cityName of PRESERVED_EDITORIAL_CITIES) {
