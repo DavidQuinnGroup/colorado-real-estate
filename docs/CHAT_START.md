@@ -10,6 +10,71 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / Local Decision Intelligence(tm) Phase 2 Wave 3 Certification and Closure, July 31, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Current governed state:
+
+- Core Product Experience Optimization cycle is complete.
+- Product Cohesion Review(tm) Wave 1 is production-certified and closed.
+- Controlled Fixture Alert Dry-Run(tm) program is certified and closed.
+- Local Decision Intelligence(tm) Phase 1 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 1 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 2 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 3 is production-certified and closed.
+- Final status: `LOCAL_DECISION_INTELLIGENCE_PHASE_2_WAVE_3_CERTIFIED_AND_CLOSED`.
+- Closure status: `CERTIFIED_AND_CLOSED`.
+- Phase 2 Wave 3 certified cities: Erie and Westminster.
+- Certified city routes: `/market/erie-co-housing-market` and `/market/westminster-co-housing-market`.
+- Erie was upgraded from `FOUNDATION` to `ENHANCED_FOUNDATION` while preserving the certified route, prior limitation posture, evidence boundaries, search continuity, and protected-boundary metadata.
+- Westminster was upgraded from `FOUNDATION` to `ENHANCED_FOUNDATION` while preserving the certified route, prior limitation posture, evidence boundaries, search continuity, and protected-boundary metadata.
+- Current certified maturity inventory: `ENHANCED_FOUNDATION` for Broomfield, Superior, Longmont, Denver, Erie, and Westminster; previously certified Decision Guides for Boulder, Louisville, and Lafayette; no public Local Decision Intelligence city remains at `FOUNDATION` after Wave 3.
+- Later candidate communities remain recommendation-only and were not activated: Niwot, Gunbarrel, Thornton, Brighton, Firestone, and Frederick.
+- Planning SHA: `7c161b506110d1790253fdd4accc851406bd7e86`.
+- Planning commit message: `Plan Local Decision Intelligence Phase 2 Wave 3`.
+- Implementation SHA: `43fd14c7c3b988d46c8d9e894bcae9312a7ae295`.
+- Implementation commit message: `Implement Local Decision Intelligence Phase 2 Wave 3`.
+- Final certified production SHA: `43fd14c7c3b988d46c8d9e894bcae9312a7ae295`.
+- Final production deployment status: `success`.
+- GitHub/Vercel status ID: `51441516301`.
+- GitHub deployment ID: `5693972621`.
+- Deployment status ID: `16191305223`.
+- Deployment description: `Deployment has completed`.
+- Deployment timestamp: `2026-07-31T15:28:21Z`.
+- Vercel deployment target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/HTmDMg18Z3i3NmdTGoM1ZgCHtWBN`.
+- Production deployment URL: `https://david-quinn-group-8rde-duihpsjaa-david-quinns-projects-a0953600.vercel.app`.
+- Production domain: `https://davidquinngroup.com`.
+- Supersession status: not superseded during certification.
+- Production certification result: `LOCAL_DECISION_INTELLIGENCE_PHASE_2_WAVE_3_PRODUCTION_CERTIFIED`.
+- Production route checks returned HTTP 200 for Homepage, Search, Market, Buyer, Seller, Home Worth, Grand Plan, Contact, Privacy, Terms, Brokerage Disclosures, Erie, Westminster, Broomfield, Superior, Longmont, Denver, Boulder, Louisville, and Lafayette market routes, representative neighborhood route `/market/boulder/downtown-boulder`, and representative property route `/properties/32224-poudre-canyon-rd-bellvue-co-ire1363681`.
+- Production browser review passed for Erie and Westminster at desktop `1440 x 1100`, tablet `768 x 1024`, and mobile `390 x 844`.
+- Exact continuity labels and destinations passed: `Search Erie Homes -> /search?city=Erie`, `Search Westminster Homes -> /search?city=Westminster`, `Buyer Guidance -> /buy`, `Seller Guidance -> /sell`, `Financing Guidance -> /buy#financing-confidence`, `Grand Plan -> /grand-plan`, and `Advisory Guidance -> /contact`.
+- Browser Back behavior passed from Erie and Westminster city routes to city-filtered search and back.
+- Content, fair-housing, prohibited-claim, maturity, evidence-boundary, city-relevance, responsive, and regression reviews passed.
+- Previously certified product, route, property, neighborhood, search, buyer, seller, financing, Grand Plan, advisory, disclosure, alert, unsubscribe, and public-trust experiences remained intact.
+- Protected capabilities remained inactive.
+- No production rows, SavedSearch records, queue jobs, workers, emails, notifications, environment variables, schema, Prisma models, migrations, APIs, customer data, dependencies, deployment configuration, search ranking, or map boundaries were changed.
+- No manual deployment occurred.
+- Planning record: `docs/project-atlas/executive-library/LOCAL-DECISION-INTELLIGENCE-PHASE-2-WAVE-3-EXECUTIVE-ROADMAP.md`.
+- Certification and closure record: `docs/project-atlas/executive-library/LOCAL-DECISION-INTELLIGENCE-PHASE-2-WAVE-3-PROGRAM-CLOSURE.md`.
+- Required remediation: none.
+- Recommended next authorization: `LOCAL_DECISION_INTELLIGENCE_PHASE_2_WAVE_4_PLANNING`.
+- This is a recommendation only. Wave 4 planning is not authorized.
+- Exact next step: stop, or explicitly authorize Wave 4 planning. Codex must not begin Wave 4 planning, implement additional cities, modify runtime code, activate protected capabilities, push, deploy, or modify production behavior without an explicit directive.
+
+Prior Local Decision Intelligence Phase 2 Wave 3 roadmap handoff retained below.
+
 PROJECT ATLAS(tm) / Local Decision Intelligence(tm) Phase 2 Wave 3 Executive Roadmap, July 31, 2026:
 
 Workspace:
