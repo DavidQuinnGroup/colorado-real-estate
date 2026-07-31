@@ -92,6 +92,15 @@ function firstExplanations(items: Array<{ explanation: string }>, count: number)
     .join(' ');
 }
 
+function buildComparisonSafeDueDiligence(city: CityData, guide: DecisionGuide) {
+  const evidenceStructure =
+    guide.maturity === 'EDITORIALLY_CERTIFIED'
+      ? 'editorial guide context'
+      : 'Enhanced Foundation guide context';
+
+  return `${city.name}: Use the ${evidenceStructure} to identify property records, condition documentation, location-specific tradeoffs, financing assumptions, insurance review, title or HOA documents where applicable, and advisory questions that require deeper verification. Citywide guidance cannot replace neighborhood or property-specific review.`;
+}
+
 function getMaturityLabel(maturity: DecisionGuideMaturity) {
   if (maturity === 'ENHANCED_FOUNDATION') return 'Enhanced Foundation';
   if (maturity === 'EDITORIALLY_CERTIFIED') return 'Editorially Certified';
@@ -149,7 +158,7 @@ function buildComparisonMarket(entry: DecisionGuideRegistryEntry): CrossCityComp
       marketDrivers: firstExplanations(guide.marketContext, 2),
       buyerConsiderations: firstExplanations(guide.buyerConsiderations, 2),
       sellerConsiderations: firstExplanations(guide.sellerConsiderations, 2),
-      dueDiligence: guide.verificationQuestions.slice(0, 3).join(' '),
+      dueDiligence: buildComparisonSafeDueDiligence(city, guide),
       nextInvestigation: guide.decisionSnapshot.bestNextStep,
     },
     continuityLinks,

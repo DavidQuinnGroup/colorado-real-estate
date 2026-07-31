@@ -26,6 +26,7 @@ function assertNotIncludes(source: string, value: string, message: string) {
 
 const comparePage = read('app/compare/page.tsx');
 const comparisonContract = read('lib/crossCityComparison.ts');
+const decisionGuidePlatform = read('lib/decisionGuidePlatform.ts');
 const marketPage = read('app/market/page.tsx');
 const cohesionPanel = read('components/JourneyCohesionPanel.tsx');
 const packageJson = JSON.parse(read('package.json')) as { scripts?: Record<string, string> };
@@ -41,9 +42,16 @@ assertIncludes(comparePage, 'data-cross-city-comparison-storage="false"', 'Compa
 assertIncludes(comparePage, 'data-cross-city-comparison-api="false"', 'Comparison route must disclose no public API activation.');
 assertIncludes(comparePage, 'data-cross-city-comparison-map-change="false"', 'Comparison route must disclose no map behavior change.');
 assertIncludes(comparePage, 'JourneyCohesionPanel', 'Comparison route must connect to the certified journey cohesion architecture.');
+assertIncludes(comparePage, 'data-cross-city-search-navigation="document"', 'Comparison-to-search links must use document navigation for reliable browser Back URL restoration.');
+assertIncludes(comparePage, 'data-cross-city-navigation-mode="document"', 'Comparison outbound continuity links must preserve normal document navigation semantics.');
 assertIncludes(cohesionPanel, "| 'compare'", 'Journey cohesion panel must support an explicit comparison surface identity.');
 assertIncludes(marketPage, 'data-testid="cross-city-comparison-market-entry"', 'Market hub must provide the restrained discovery entry point.');
 assertNotIncludes(marketPage, 'href="/market/compare"', 'Implementation must not create a competing market comparison route.');
+assertIncludes(
+  decisionGuidePlatform,
+  'Which Boulder neighborhood pattern best matches the way I would use the city day to day?',
+  'Original Boulder Decision Guide source content must remain unchanged while comparison output is neutralized.',
+);
 
 const eligibleMarkets = getCrossCityComparisonEligibleMarkets();
 const eligibleSlugs = eligibleMarkets.map((market) => market.slug).sort();
@@ -102,6 +110,25 @@ assert(
   'Mixed maturity workspace must preserve Enhanced Foundation maturity.',
 );
 
+const comparisonUnsafePatterns = [
+  /best match(?:es)?/i,
+  /ideal for/i,
+  /best fit/i,
+  /right for you/i,
+  /suitable city/i,
+  /recommended market/i,
+  /winner/i,
+  /superiority/i,
+  /desirability/i,
+  /customer preference inference/i,
+];
+
+function assertComparisonSafeText(value: string, context: string) {
+  for (const pattern of comparisonUnsafePatterns) {
+    assert.doesNotMatch(value, pattern, `${context} must not expose suitability, superiority, or preference-inference wording: ${pattern}`);
+  }
+}
+
 for (const market of eligibleMarkets) {
   assert.equal(market.marketRoute, `/market/${market.slug}-co-housing-market`, `${market.name} must preserve canonical city guide route.`);
   assert.equal(market.searchHref, `/search?city=${encodeURIComponent(market.name)}`, `${market.name} must preserve city-filtered search path.`);
@@ -110,6 +137,12 @@ for (const market of eligibleMarkets) {
   assert(market.dimensions.housingForm.length > 80, `${market.name} must expose housing-form context.`);
   assert(market.dimensions.marketDrivers.length > 80, `${market.name} must expose market-driver context.`);
   assert(market.dimensions.dueDiligence.length > 80, `${market.name} must expose due-diligence prompts.`);
+  assertComparisonSafeText(market.evidencePosture, `${market.name} evidence posture`);
+  assertComparisonSafeText(market.decisionSnapshot.mattersMost, `${market.name} decision snapshot`);
+
+  for (const [dimensionKey, dimensionValue] of Object.entries(market.dimensions)) {
+    assertComparisonSafeText(dimensionValue, `${market.name} ${dimensionKey}`);
+  }
 
   for (const expected of [
     { label: 'Market Context', href: market.marketRoute, destination: 'market' },
@@ -131,14 +164,31 @@ assert(twoCityWorkspace.dimensions.length >= 8, 'Comparison must expose a comple
 for (const dimension of twoCityWorkspace.dimensions) {
   assert.equal(dimension.values.length, 2, `${dimension.label} must give selected cities equivalent treatment.`);
   assert(dimension.prompt.length > 40, `${dimension.label} must include a decision-oriented prompt.`);
+  assertComparisonSafeText(dimension.prompt, `${dimension.label} prompt`);
+  for (const value of dimension.values) {
+    assertComparisonSafeText(value.value, `${dimension.label} value for ${value.cityName}`);
+  }
+}
+
+for (const dimension of mixedMaturityWorkspace.dimensions) {
+  for (const value of dimension.values) {
+    assertComparisonSafeText(value.value, `mixed maturity ${dimension.label} value for ${value.cityName}`);
+  }
 }
 
 for (const forbiddenPublicPhrase of [
+  'best match',
+  'best matches',
   'best city',
+  'best fit',
   'worst city',
   'winner',
   'loser',
   'ideal for',
+  'right for you',
+  'suitable city',
+  'recommended market',
+  'desirability',
   'perfect for',
   'more desirable',
   'safer',

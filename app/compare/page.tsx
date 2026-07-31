@@ -203,13 +203,23 @@ export default async function CrossCityDecisionComparisonPage({ searchParams }: 
                     <h3 className="mt-3 text-2xl font-black uppercase tracking-normal text-white">{market.name}</h3>
                     <p className="mt-4 text-sm leading-7 text-white/58">{market.decisionSnapshot.mattersMost}</p>
                     <div className="mt-5 flex flex-wrap gap-2">
-                      <Link href={market.marketRoute} className="market-secondary-cta text-[10px]" data-testid="cross-city-full-guide-link">
+                      <a
+                        href={market.marketRoute}
+                        className="market-secondary-cta text-[10px]"
+                        data-testid="cross-city-full-guide-link"
+                        data-cross-city-navigation-mode="document"
+                      >
                         Full City Guide
-                      </Link>
-                      <Link href={market.searchHref} className="market-secondary-cta text-[10px]" data-testid="cross-city-search-link">
+                      </a>
+                      <a
+                        href={market.searchHref}
+                        className="market-secondary-cta text-[10px]"
+                        data-testid="cross-city-search-link"
+                        data-cross-city-search-navigation="document"
+                      >
                         <Search size={13} aria-hidden="true" />
                         Search {market.name} Homes
-                      </Link>
+                      </a>
                     </div>
                   </article>
                 ))}
@@ -242,7 +252,7 @@ export default async function CrossCityDecisionComparisonPage({ searchParams }: 
                       <h3 className="text-lg font-black uppercase tracking-normal text-white">{market.name}</h3>
                       <div className="mt-3 grid gap-2">
                         {market.continuityLinks.map((link) => (
-                          <Link
+                          <a
                             key={`${market.slug}-${link.destination}`}
                             href={link.href}
                             className="group flex min-h-12 items-center justify-between gap-3 rounded-[6px] bg-[#071017]/72 px-4 py-3 text-xs font-black uppercase tracking-[0.1em] text-cyan-100 no-underline transition hover:bg-cyan-100/[0.11] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
@@ -250,10 +260,11 @@ export default async function CrossCityDecisionComparisonPage({ searchParams }: 
                             data-cross-city-continuity-city={market.slug}
                             data-cross-city-continuity-destination={link.destination}
                             data-cross-city-continuity-href={link.href}
+                            data-cross-city-navigation-mode="document"
                           >
                             <span>{getCityActionLabel(link.destination, link.label)}</span>
                             <ArrowRight size={14} aria-hidden="true" />
-                          </Link>
+                          </a>
                         ))}
                       </div>
                     </div>
