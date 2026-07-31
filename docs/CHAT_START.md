@@ -10,6 +10,76 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE Advisory Handoff Readiness(tm) Local Implementation, July 31, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Current governed state:
+
+- Core Product Experience Optimization cycle is complete.
+- Product Cohesion Review(tm) Wave 1 is production-certified and closed.
+- Controlled Fixture Alert Dry-Run(tm) program is certified and closed.
+- Local Decision Intelligence(tm) Phase 1 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 1 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 2 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 3 is production-certified and closed.
+- REIE Product Experience(tm) Next Cohesion Wave is production-certified and closed.
+- REIE Cross-City Decision Comparison(tm) is production-certified and closed.
+- REIE Seller Readiness Advancement(tm) is production-certified and closed.
+- REIE Buyer Financing Readiness Advancement(tm) is production-certified and closed.
+- REIE Evidence Depth and Data Integration(tm) foundation is production-certified and closed.
+- REIE Post-Evidence Depth Strategic Next-Phase Review is pushed and reconciled.
+- Strategic priority SHA: `580397c9181b111317a22a68512736270f5bd15e`.
+- Strategic priority commit message: `Prioritize REIE post-evidence next phase`.
+- Strategic priority finding: `PRIORITIZE_ADVISORY_HANDOFF_READINESS`.
+- Strategic review commit was pushed to origin/main before implementation.
+- Documentation deployment status for the strategic-review push: `success`.
+- Documentation deployment commit status ID: `51465335626`.
+- Documentation deployment ID: `5699302863`.
+- Documentation deployment status ID: `16208297029`.
+- Documentation deployment timestamp: `2026-07-31T23:01:26Z`.
+- Documentation deployment target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/tCH8L35tJaBKRjQ1QxeFrD8pCd4A`.
+- Documentation deployment URL: `https://david-quinn-group-8rde-23p99jt86-david-quinns-projects-a0953600.vercel.app`.
+- Local implementation status: `ADVISORY_HANDOFF_READINESS_READY_FOR_PUSH`.
+- Implementation commit message: `Implement Advisory Handoff Readiness`.
+- Implementation SHA: current local `HEAD` after `Implement Advisory Handoff Readiness`.
+- Primary certified local surface: `/contact#advisory-readiness`.
+- One authoritative Advisory Handoff surface was implemented inside the existing Contact / Advisory route.
+- No new Advisory Handoff route, public API, contact form, hidden form field, customer profile, saved advisory profile, persistence, tracking, telemetry, CRM task, lead scoring, lead routing, queue, worker, email, notification, provider activation, GIS runtime, Evidence Depth public integration, or internal evidence-metadata exposure was introduced.
+- Advisory Handoff remains presentational, non-persistent, non-automated, non-personalized, limitation-forward, and privacy-safe.
+- The handoff helps customers prepare a human advisory conversation by organizing decision context, REIE surfaces already explored, unresolved assumptions, property-specific questions, timing questions, financing or seller-readiness topics, and facts or documents to have available.
+- Certified local journey-context groups: Compare, Buy, Finance, Sell, Prepare, Verify, and Discuss.
+- Groups are non-evaluative and do not indicate lead priority, readiness quality, urgency, conversion probability, suitability, financial strength, or transaction likelihood.
+- Questions-to-bring guidance covers buyer and financing, seller preparation, comparison and market, and Grand Plan topics without generating personalized answers.
+- Evidence-aware framing uses only public-safe concepts: evidence may differ in freshness, available support, permitted use, and completeness; citywide context may not apply to a specific property; incomplete or conflicting information may require further review.
+- Internal Evidence Depth IDs, source-rights enums, support-level classifications, provenance chains, conflict-state codes, public-use evaluator output, fixture data, and internal metadata labels remain unexposed.
+- Advisor-role boundary is explicit: advisors can help organize the decision, explain process, connect certified REIE context to customer questions, identify where qualified specialists may be needed, and sequence next actions.
+- Professional boundaries are explicit: advisory support does not replace legal, tax, lending, appraisal, inspection, engineering, insurance, title, or other qualified professional review.
+- Contact and privacy boundaries are preserved; the existing public contact page still avoids publishing unverified phone, office, or branded contact email values and warns users not to submit confidential negotiating positions, personal motivation, financial limits, or client-confidential information before the applicable brokerage relationship and disclosures are discussed.
+- Restrained readiness-specific entry points now route to `/contact#advisory-readiness` from Seller Readiness and Buyer Financing Readiness.
+- Existing certified Journey Cohesion advisory links to `/contact` remain intact for Buyer, Seller, Compare, Grand Plan, and other certified surfaces.
+- Local production-mode browser review passed for `/contact#advisory-readiness` at desktop `1440 x 1100`, tablet `768 x 1024`, and mobile `390 x 844`.
+- Local browser review found no horizontal overflow, hidden fields, input fields, forms, internal evidence metadata, prohibited advisory claims, console errors, broken layout, excessive form pattern, or crowding regression.
+- Browser Back and Forward passed for `/buy#financing-readiness` -> `/contact#advisory-readiness` and `/home-worth#seller-readiness` -> `/contact#advisory-readiness`.
+- Local production-mode route smoke returned HTTP 200 for homepage, Contact, Advisory Handoff anchor, Buy, Buyer Financing Readiness anchor, Home Worth Seller Readiness anchor, Sell, Grand Plan, Compare, Market, Search, Privacy, Terms, Brokerage Disclosures, representative city route, representative neighborhood route, and representative property route.
+- Deterministic validation command: `npm run check:advisory-handoff-readiness`.
+- Required remediation: none.
+- Recommended next authorization: `ADVISORY_HANDOFF_READINESS_PUSH_AND_PRODUCTION_CERTIFICATION`.
+- This is local implementation only. The implementation commit must not be pushed or deployed without explicit push and production-certification authorization.
+- Exact next step: stop, or explicitly authorize Advisory Handoff Readiness push and production certification. Codex must not push the implementation commit, deploy runtime changes, begin documentation closure, Controlled Evidence Depth Integration, Neighborhood/Submarket Intelligence, Property / Seller Evidence Readiness, Decision Guide unification, Local Decision Intelligence Wave 4, provider activation, public-record retrieval, GIS runtime, public route/API work, protected-capability activation, production mutation, or another initiative without explicit authorization.
+
+Prior REIE Post-Evidence Depth Strategic Next-Phase Review handoff retained below.
+
 PROJECT ATLAS(tm) / REIE Post-Evidence Depth Strategic Next-Phase Review, July 31, 2026:
 
 Workspace:

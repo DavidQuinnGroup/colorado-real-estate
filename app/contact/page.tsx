@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
 
+import AdvisoryHandoffGuide from '@/components/AdvisoryHandoffGuide';
 import JourneyCohesionPanel from '@/components/JourneyCohesionPanel';
 import { PublicTrustPage, StandardTrustIntro, TrustList, TrustSection } from '@/components/PublicTrustPage';
 import { PUBLIC_CONTACT_EMAIL_STATUS, PUBLIC_NOTIFICATION_EMAIL, PUBLIC_TRUST_REVIEW_STATUS, SITE_NAME, SITE_URL } from '@/lib/publicTrust';
@@ -41,6 +42,8 @@ export default function ContactPage() {
           sender is not presented as the public contact channel.
         </p>
       </TrustSection>
+
+      <AdvisoryHandoffGuide />
 
       <TrustSection title="Current Contact Routing">
         <JourneyCohesionPanel

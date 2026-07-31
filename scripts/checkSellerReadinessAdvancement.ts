@@ -95,7 +95,7 @@ for (const [label, href, destination] of [
   ['Seller Guidance', '/sell', 'seller-guidance'],
   ['Market Context', '/market', 'market-context'],
   ['Grand Plan', '/grand-plan', 'grand-plan'],
-  ['Advisory Guidance', '/contact', 'advisory'],
+  ['Advisory Guidance', '/contact#advisory-readiness', 'advisory'],
 ] as const) {
   assertIncludes(sellerReadinessGuide, `href="${href}"`, `${label} must route to ${href}.`);
   assertIncludes(sellerReadinessGuide, `data-seller-readiness-destination="${destination}"`, `${label} must expose ${destination} destination metadata.`);

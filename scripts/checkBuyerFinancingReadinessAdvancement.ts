@@ -124,7 +124,7 @@ for (const [label, href, destination] of [
   ['Search Homes', '/search', 'search'],
   ['Market Context', '/market', 'market-context'],
   ['Grand Plan', '/grand-plan', 'grand-plan'],
-  ['Advisory Guidance', '/contact', 'advisory'],
+  ['Advisory Guidance', '/contact#advisory-readiness', 'advisory'],
 ] as const) {
   assertIncludes(readinessGuide, `label: '${label}'`, `${label} must be a governed readiness CTA.`);
   assertIncludes(readinessGuide, `href: '${href}'`, `${label} must route to ${href}.`);

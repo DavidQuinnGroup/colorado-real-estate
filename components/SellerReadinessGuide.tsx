@@ -219,7 +219,7 @@ export default function SellerReadinessGuide() {
             <Link className="home-btn home-btn-secondary" href="/grand-plan" data-testid="seller-readiness-cta" data-seller-readiness-destination="grand-plan">
               Grand Plan
             </Link>
-            <Link className="home-btn home-btn-secondary" href="/contact" data-testid="seller-readiness-cta" data-seller-readiness-destination="advisory">
+            <Link className="home-btn home-btn-secondary" href="/contact#advisory-readiness" data-testid="seller-readiness-cta" data-seller-readiness-destination="advisory">
               Advisory Guidance
             </Link>
           </nav>

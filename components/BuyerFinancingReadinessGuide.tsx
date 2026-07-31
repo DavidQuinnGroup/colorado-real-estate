@@ -82,7 +82,7 @@ const continuityLinks = [
   },
   {
     label: 'Advisory Guidance',
-    href: '/contact',
+    href: '/contact#advisory-readiness',
     destination: 'advisory',
     note: 'Prepare focused questions for human review',
   },
