@@ -10,6 +10,77 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / Local Decision Intelligence(tm) Phase 2 Wave 1 Certification and Closure, July 31, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Current governed state:
+
+- Core Product Experience Optimization cycle is complete.
+- Product Cohesion Review(tm) Wave 1 is production-certified and closed.
+- Controlled Fixture Alert Dry-Run(tm) program is certified and closed.
+- Local Decision Intelligence(tm) Phase 1 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 1 is production-certified and closed.
+- Final status: `LOCAL_DECISION_INTELLIGENCE_PHASE_2_WAVE_1_CERTIFIED_AND_CLOSED`.
+- Closure status: `CERTIFIED_AND_CLOSED`.
+- Phase 2 Wave 1 certified cities: Longmont and Denver.
+- Certified city routes: `/market/longmont-co-housing-market` and `/market/denver-co-housing-market`.
+- Longmont was enhanced from `FOUNDATION` to `ENHANCED_FOUNDATION` while preserving the certified route, prior evidence limitations, and limitation-forward presentation.
+- Denver was implemented as a new `ENHANCED_FOUNDATION` Local Decision Intelligence city with explicit citywide limitation and internal-market-diversity language.
+- Final certified maturity: `ENHANCED_FOUNDATION` for Longmont and Denver.
+- Initial implementation SHA: `4afd4b843f57ffacdbb1be1449468d4188b9713a`.
+- Initial implementation commit message: `Implement Local Decision Intelligence Phase 2 Wave 1`.
+- Initial implementation production deployment status: `success`.
+- Initial implementation commit status ID: `51433369960`.
+- Initial implementation deployment timestamp: `2026-07-31T13:13:13Z`.
+- Initial implementation Vercel target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/6xKwrZHhB3WgG5nNDEa15VKLNfMN`.
+- Initial production certification identified one continuity-label defect: the shared Decision Guide continuity row rendered the `/buy` destination with city-search labels (`Search Longmont Homes` / `Search Denver Homes`) instead of `Buyer Guidance`.
+- Defect cause: overloaded continuity destination identity.
+- Remediation SHA: `6f0c987872c7b52f8103afbc482313c4ca05886c`.
+- Remediation commit message: `Fix Decision Guide continuity labels`.
+- Corrected governed continuity identities: `city-search`, `buyer-guidance`, `seller-guidance`, `financing-confidence`, `grand-plan`, and `advisory`.
+- Certified label-to-destination results: `Search Longmont Homes -> /search?city=Longmont`, `Search Denver Homes -> /search?city=Denver`, `Buyer Guidance -> /buy`, `Seller Guidance -> /sell`, `Financing Guidance -> /buy#financing-confidence`, `Grand Plan -> /grand-plan`, and `Advisory Guidance -> /contact`.
+- Final certified production SHA: `6f0c987872c7b52f8103afbc482313c4ca05886c`.
+- Final production deployment status: `success`.
+- GitHub commit status ID: `51434781487`.
+- GitHub deployment ID: `5692432789`.
+- Deployment status ID: `16186907991`.
+- Deployment description: `Deployment has completed`.
+- Deployment timestamp: `2026-07-31T13:38:54Z`.
+- Vercel deployment target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/djxL1P4h3mMkNaefYCQTEs464UYJ`.
+- Production deployment URL: `https://david-quinn-group-8rde-bqypoanvi-david-quinns-projects-a0953600.vercel.app`.
+- Production domain: `https://davidquinngroup.com`.
+- Supersession status: not superseded during certification.
+- Production certification result: `LOCAL_DECISION_INTELLIGENCE_PHASE_2_WAVE_1_PRODUCTION_CERTIFIED`.
+- Production browser review passed for Longmont and Denver at desktop `1440 x 1100`, tablet `768 x 1024`, and mobile `390 x 844`.
+- Production route checks returned HTTP 200 for Homepage, Search, Market, Buyer, Seller, Home Worth, Grand Plan, Contact, Privacy, Terms, Brokerage Disclosures, Longmont, Denver, Broomfield, Erie, Westminster, Boulder market routes, representative neighborhood route `/market/boulder/downtown-boulder`, and representative property route `/properties/32224-poudre-canyon-rd-bellvue-co-ire1363681`.
+- Decision Snapshot, Local Character, Market Drivers, conditional Lifestyle Decision Considerations, Buyer Guidance, Seller Guidance, due-diligence considerations, maturity/evidence transparency, and Decision Journey continuity rendered for Longmont and Denver.
+- Denver browser Back behavior passed from `/market/denver-co-housing-market` to `/search?city=Denver` and back.
+- Content quality was certified as acceptable for `ENHANCED_FOUNDATION` maturity.
+- Unsupported and prohibited claims were absent.
+- Fair-housing and protected-content boundaries passed.
+- Previously certified experiences remained intact.
+- Protected capabilities remained inactive.
+- No production rows, SavedSearch records, queues, workers, alerts, emails, notifications, customer data, environment variables, schema, Prisma models, migrations, APIs, public route conventions, dependencies, deployment configuration, search ranking, or map boundaries were changed.
+- No manual deployment occurred.
+- Certification and closure record: `docs/project-atlas/executive-library/LOCAL-DECISION-INTELLIGENCE-PHASE-2-WAVE-1-PROGRAM-CLOSURE.md`.
+- Required remediation: none.
+- Recommended next authorization: `LOCAL_DECISION_INTELLIGENCE_PHASE_2_WAVE_2_PLANNING`.
+- This is a recommendation only. Wave 2 planning is not authorized.
+- Exact next step: stop, or explicitly authorize a new governed planning program. Codex must not begin Wave 2 planning, implement additional cities, activate protected capabilities, deploy again, or modify production behavior without an explicit directive.
+
+Prior Local Decision Intelligence Phase 1 handoff retained below.
+
 PROJECT ATLAS(tm) / Local Decision Intelligence(tm) Phase 1 Certification and Closure, July 31, 2026:
 
 Workspace:
