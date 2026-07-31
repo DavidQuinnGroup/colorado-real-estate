@@ -135,6 +135,7 @@
     "check:local-decision-intelligence-phase-2-wave-1": "npm run worker:build && node dist/scripts/checkLocalDecisionIntelligencePhase2Wave1.js",
     "check:local-decision-intelligence-phase-2-wave-2": "npm run worker:build && node dist/scripts/checkLocalDecisionIntelligencePhase2Wave2.js",
     "check:local-decision-intelligence-phase-2-wave-3": "npm run worker:build && node dist/scripts/checkLocalDecisionIntelligencePhase2Wave3.js",
+    "check:cross-city-decision-comparison": "npm run worker:build && node dist/scripts/checkCrossCityDecisionComparison.js",
     "check:production-media-resilience": "npm run worker:build && node dist/scripts/checkProductionMediaResilience.js",
     "check:launch-readiness": "npm run worker:build && node dist/scripts/launchReadiness.js",
     "worker:build": "tsc -p tsconfig.worker.json --pretty false",

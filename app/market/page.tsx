@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { BarChart3, Home, MapPinned, Search, ShieldCheck, TrendingUp } from 'lucide-react';
+import { ArrowUpRight, BarChart3, Home, MapPinned, Search, ShieldCheck, TrendingUp } from 'lucide-react';
 
 import ContinueYourDecision from '@/components/ContinueYourDecision';
 import FinancingConfidenceEducation from '@/components/FinancingConfidenceEducation';
@@ -333,6 +333,20 @@ export default function MarketIndexPage() {
                   These guides have city-specific editorial review, neighborhood continuity, search paths, market context, and next-step
                   guidance. Foundation market pages remain available below, but they are not presented as completed local-authority guides.
                 </p>
+                <Link
+                  href="/compare"
+                  className="mt-6 inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.16em] text-cyan-100 no-underline transition hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-200"
+                  data-testid="cross-city-comparison-market-entry"
+                  {...getJourneyMeasurementAttributes({
+                    surface: 'market-index-certified-guides',
+                    stage: 'market',
+                    action: 'view-market',
+                    destination: 'market',
+                  })}
+                >
+                  Compare certified market context
+                  <ArrowUpRight size={14} aria-hidden="true" />
+                </Link>
               </div>
 
               <div className="grid gap-4 md:grid-cols-3">

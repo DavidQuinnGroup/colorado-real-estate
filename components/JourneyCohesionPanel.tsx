@@ -25,6 +25,7 @@ type JourneyCohesionPanelProps = {
     | 'home'
     | 'search'
     | 'market'
+    | 'compare'
     | 'city'
     | 'property'
     | 'neighborhood'
