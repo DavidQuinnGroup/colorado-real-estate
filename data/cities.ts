@@ -7,6 +7,7 @@ export type City = {
 export const cities: City[] = [
 
   { slug: "boulder", name: "Boulder", county: "Boulder County" },
+  { slug: "denver", name: "Denver", county: "Denver County" },
   { slug: "louisville", name: "Louisville", county: "Boulder County" },
   { slug: "lafayette", name: "Lafayette", county: "Boulder County" },
   { slug: "superior", name: "Superior", county: "Boulder County" },

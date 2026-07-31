@@ -19,6 +19,7 @@ import { getJourneyMeasurementAttributes } from '@/lib/customerJourneyMeasuremen
 import {
   buildDecisionGuide,
   buildDecisionGuideContinuityLinks,
+  DECISION_GUIDE_ENHANCED_FOUNDATION_SOURCE,
   DECISION_GUIDE_FOUNDATION_SOURCE,
   DECISION_GUIDE_FRAMEWORK,
   DECISION_GUIDE_FRAMEWORK_STEPS,
@@ -203,6 +204,8 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
     ...cityData.stats,
     medianPrice: parseCurrency(cityData.stats.medianPrice),
   };
+  const cityDecisionGuideLocalContextLabel =
+    cityDecisionGuide?.maturity === 'ENHANCED_FOUNDATION' ? 'Local Context' : 'Neighborhood Context';
 
   return (
     <main className="market-surface min-h-screen bg-[#030303] text-white">
@@ -315,7 +318,7 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
                 data-testid={`${cityDecisionGuide.key}-decision-guide-neighborhoods-cta`}
               >
                 <MapPinned className="h-4 w-4" />
-                Neighborhood Context
+                {cityDecisionGuideLocalContextLabel}
               </Link>
             </div>
           ) : null}
@@ -349,6 +352,7 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
               className="mt-8 grid gap-3 rounded-[8px] bg-white/[0.045] p-5 md:grid-cols-5"
               data-testid={`${cityDecisionGuide.key}-decision-snapshot`}
               data-local-decision-intelligence="phase-1"
+              data-local-decision-intelligence-phase={cityDecisionGuide.maturity === 'ENHANCED_FOUNDATION' ? 'phase-2-wave-1' : 'phase-1'}
               data-local-decision-intelligence-city={cityDecisionGuide.cityName}
               data-local-decision-intelligence-maturity={cityDecisionGuide.maturity}
               data-local-decision-intelligence-ai="false"
@@ -398,7 +402,11 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
               data-testid={`${cityDecisionGuide.key}-decision-guide-summary`}
               data-city-decision-guide-framework={DECISION_GUIDE_FRAMEWORK}
               data-city-decision-guide-source={
-                cityDecisionGuide.maturity === 'FOUNDATION' ? DECISION_GUIDE_FOUNDATION_SOURCE : DECISION_GUIDE_SOURCE
+                cityDecisionGuide.maturity === 'FOUNDATION'
+                  ? DECISION_GUIDE_FOUNDATION_SOURCE
+                  : cityDecisionGuide.maturity === 'ENHANCED_FOUNDATION'
+                    ? DECISION_GUIDE_ENHANCED_FOUNDATION_SOURCE
+                    : DECISION_GUIDE_SOURCE
               }
               data-city-decision-guide-school-ranking={String(DECISION_GUIDE_TRUST_BOUNDARIES.schoolRanking)}
               data-city-decision-guide-safety-ranking={String(DECISION_GUIDE_TRUST_BOUNDARIES.safetyRanking)}
@@ -560,23 +568,36 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
                   <ArrowUpRight className="h-4 w-4" />
                 </Link>
               </div>
-              <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-                {cityNeighborhoods.slice(0, 8).map((neighborhood) => (
-                  <Link
-                    key={neighborhood.slug}
-                    href={getNeighborhoodPath(neighborhood)}
-                    className="reie-decision-link reie-decision-link--card group rounded-[8px] bg-white/[0.045] p-5 text-white no-underline transition hover:bg-white/[0.075]"
-                  >
-                    <p className="text-lg font-black uppercase tracking-tight transition group-hover:text-cyan-100">
-                      {neighborhood.name}
-                    </p>
-                    <p className="mt-2 text-[10px] font-black uppercase tracking-[0.18em] text-white/34">
-                      {neighborhood.primaryAnchor}
-                    </p>
-                    <p className="mt-4 text-sm leading-6 text-white/50">{neighborhood.tacticalLever}</p>
-                  </Link>
-                ))}
-              </div>
+              {cityNeighborhoods.length > 0 ? (
+                <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+                  {cityNeighborhoods.slice(0, 8).map((neighborhood) => (
+                    <Link
+                      key={neighborhood.slug}
+                      href={getNeighborhoodPath(neighborhood)}
+                      className="reie-decision-link reie-decision-link--card group rounded-[8px] bg-white/[0.045] p-5 text-white no-underline transition hover:bg-white/[0.075]"
+                    >
+                      <p className="text-lg font-black uppercase tracking-tight transition group-hover:text-cyan-100">
+                        {neighborhood.name}
+                      </p>
+                      <p className="mt-2 text-[10px] font-black uppercase tracking-[0.18em] text-white/34">
+                        {neighborhood.primaryAnchor}
+                      </p>
+                      <p className="mt-4 text-sm leading-6 text-white/50">{neighborhood.tacticalLever}</p>
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                <article className="rounded-[8px] bg-white/[0.045] p-5" data-testid={`${cityDecisionGuide.key}-decision-guide-local-context-fallback`}>
+                  <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/70">
+                    Citywide Context Boundary
+                  </p>
+                  <p className="mt-3 text-sm leading-7 text-white/55">
+                    Governed neighborhood links are not yet certified for {cityDecisionGuide.cityName}. Use the citywide context, active search,
+                    property facts, municipal records, qualified professional review, and advisory guidance before drawing location-specific
+                    conclusions.
+                  </p>
+                </article>
+              )}
             </section>
 
             <section

@@ -11,6 +11,7 @@ import {
 import { neighborhoods } from '../lib/neighborhoods.js';
 
 const PHASE_1_FOUNDATION_CITIES = ['Broomfield', 'Erie', 'Longmont', 'Westminster'] as const;
+const PHASE_2_ENHANCEMENT_CANDIDATES = ['Longmont'] as const;
 const PROHIBITED_PATTERNS = [
   /best place/i,
   /best neighborhood/i,
@@ -60,9 +61,14 @@ async function main() {
     assert(city, `${cityName} must exist in governed city data.`);
 
     const registryEntry = getDecisionGuideRegistryEntry(city);
+    const isPhase2EnhancementCandidate = PHASE_2_ENHANCEMENT_CANDIDATES.some((candidate) => normalize(candidate) === normalize(cityName));
     assert(registryEntry, `${cityName} must have a Decision Guide registry entry.`);
     assert.equal(registryEntry.publicEligibility, true, `${cityName} must remain public eligible for Phase 1.`);
-    assert.equal(registryEntry.guideMaturity, 'FOUNDATION', `${cityName} must remain FOUNDATION maturity.`);
+    assert.equal(
+      registryEntry.guideMaturity,
+      isPhase2EnhancementCandidate ? 'ENHANCED_FOUNDATION' : 'FOUNDATION',
+      `${cityName} must preserve its authorized maturity.`,
+    );
     assert.equal(registryEntry.optionalEditorialOverride, false, `${cityName} must not be promoted to editorial certification.`);
     assert.deepEqual(registryEntry.ineligibilityReasons, [], `${cityName} must not carry fail-closed reasons.`);
 
@@ -76,9 +82,18 @@ async function main() {
 
     assert(guide, `${cityName} must instantiate a foundation Local Decision Intelligence guide.`);
     assert.equal(guide.key, normalize(cityName).replace(/[^a-z0-9]+/g, '-'), `${cityName} guide key must stay slug-derived.`);
-    assert.equal(guide.maturity, 'FOUNDATION', `${cityName} guide must disclose FOUNDATION maturity.`);
-    assert.match(guide.identity, /foundation Colorado Decision Guide/i, `${cityName} identity must disclose foundation status.`);
-    assert.match(guide.summaryIntro, /does not add unsupported local interpretation/i, `${cityName} must preserve foundation limitations.`);
+    assert.equal(
+      guide.maturity,
+      isPhase2EnhancementCandidate ? 'ENHANCED_FOUNDATION' : 'FOUNDATION',
+      `${cityName} guide must disclose authorized maturity.`,
+    );
+    if (isPhase2EnhancementCandidate) {
+      assert.match(guide.identity, /Enhanced Foundation Local Decision Intelligence/i, `${cityName} identity must disclose enhanced status.`);
+      assert.match(guide.summaryIntro, /non-predictive/i, `${cityName} must preserve limitation-forward enhanced language.`);
+    } else {
+      assert.match(guide.identity, /foundation Colorado Decision Guide/i, `${cityName} identity must disclose foundation status.`);
+      assert.match(guide.summaryIntro, /does not add unsupported local interpretation/i, `${cityName} must preserve foundation limitations.`);
+    }
 
     assert(guide.decisionSnapshot.whereAmI.includes(cityName), `${cityName} Decision Snapshot must identify the city.`);
     assert(guide.decisionSnapshot.mattersMost.length > 0, `${cityName} Decision Snapshot must state what matters most.`);
@@ -141,7 +156,7 @@ async function main() {
   );
 
   console.log(
-    `[local-decision-intelligence-phase-1] ok: ${PHASE_1_FOUNDATION_CITIES.length} foundation cities, Decision Snapshot, required sections, continuity paths, maturity boundaries, and protected-capability exclusions verified.`,
+    `[local-decision-intelligence-phase-1] ok: ${PHASE_1_FOUNDATION_CITIES.length} Phase 1 city routes, Decision Snapshot, required sections, continuity paths, maturity boundaries, and protected-capability exclusions verified.`,
   );
 }
 

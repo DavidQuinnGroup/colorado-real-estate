@@ -3,7 +3,8 @@ import type { Neighborhood } from './neighborhoods.js';
 
 export type DecisionGuideKey = string;
 type EditorialDecisionGuideKey = 'boulder' | 'louisville' | 'lafayette';
-export type DecisionGuideMaturity = 'FOUNDATION' | 'EVIDENCE_BACKED' | 'EDITORIALLY_CERTIFIED';
+type EnhancedFoundationDecisionGuideKey = 'longmont' | 'denver';
+export type DecisionGuideMaturity = 'FOUNDATION' | 'ENHANCED_FOUNDATION' | 'EVIDENCE_BACKED' | 'EDITORIALLY_CERTIFIED';
 
 export type DecisionGuideEligibility = {
   guideMaturity: DecisionGuideMaturity;
@@ -81,9 +82,31 @@ type DecisionGuideCityConfig = {
   verificationQuestions: string[];
 };
 
+type EnhancedFoundationCityConfig = {
+  key: EnhancedFoundationDecisionGuideKey;
+  cityName: string;
+  identityPattern: string;
+  summaryHeadline: string;
+  summaryIntro: string;
+  distinctValue: string;
+  attentionValue: string;
+  verificationValue: string;
+  localCharacter: DecisionGuideItem[];
+  housingContext: DecisionGuideItem[];
+  practicalContext: DecisionGuideItem[];
+  marketContext: DecisionGuideItem[];
+  communityContext: DecisionGuideItem[];
+  buyerConsiderations: DecisionGuideItem[];
+  sellerConsiderations: DecisionGuideItem[];
+  evidenceLimitations: DecisionGuideItem[];
+  tradeoffs: DecisionGuideTradeoff[];
+  verificationQuestions: string[];
+};
+
 export const DECISION_GUIDE_FRAMEWORK = 'context-tradeoffs-questions-evidence-next-step';
 export const DECISION_GUIDE_SOURCE = 'governed-city-and-neighborhood-data';
 export const DECISION_GUIDE_FOUNDATION_SOURCE = 'governed-city-market-registry';
+export const DECISION_GUIDE_ENHANCED_FOUNDATION_SOURCE = 'governed-city-market-registry-and-durable-local-context';
 
 export const DECISION_GUIDE_TRUST_BOUNDARIES = {
   ai: false,
@@ -266,6 +289,323 @@ export const DECISION_GUIDE_CITY_CONFIGS: Record<EditorialDecisionGuideKey, Deci
   },
 };
 
+export const ENHANCED_FOUNDATION_CITY_CONFIGS: Record<EnhancedFoundationDecisionGuideKey, EnhancedFoundationCityConfig> = {
+  longmont: {
+    key: 'longmont',
+    cityName: 'Longmont',
+    identityPattern:
+      'northern Front Range decision market where varied housing stock, established areas, newer development, employment access, and Boulder County connections should be evaluated separately',
+    summaryHeadline: 'Use Longmont as a structured local decision, not one uniform market.',
+    summaryIntro:
+      'Longmont guidance now adds durable local context to the certified foundation path. It remains non-predictive, limitation-forward, and dependent on property-specific verification.',
+    distinctValue:
+      'A Boulder County city with established neighborhoods, historic core context, newer edges, employment centers, and northern Front Range access',
+    attentionValue:
+      'Housing age, lot pattern, redevelopment context, new-construction differences, commuting routes, and property-specific condition review',
+    verificationValue:
+      'Property records, age, systems, remodel history, insurance questions, municipal requirements, commute pattern, and advisory review',
+    localCharacter: [
+      {
+        label: 'Development pattern',
+        explanation:
+          'Longmont combines an older downtown and established residential areas with newer subdivision and employment-area growth. Evaluate the immediate setting before treating the citywide market signal as enough.',
+      },
+      {
+        label: 'Transportation framework',
+        explanation:
+          'Regional decisions often involve north-south and east-west Front Range routes, access toward Boulder, and connections to northern Colorado employment or service centers.',
+      },
+      {
+        label: 'Recreation and geography',
+        explanation:
+          'Open-space access, parks, trail connections, and views toward the Front Range can shape day-to-day questions, but they should be verified at the property and location level.',
+      },
+    ],
+    housingContext: [
+      {
+        label: 'Varied housing stock',
+        explanation:
+          'Longmont includes older homes, established subdivisions, attached housing, infill, and newer construction. Compare age, systems, lot context, HOA structure where applicable, and maintenance history before narrowing choices.',
+      },
+      {
+        label: 'Historic and established areas',
+        explanation:
+          'Older areas can carry different diligence questions around remodel quality, sewer or utility records, roof and exterior systems, drainage, and compatibility between updates and original construction.',
+      },
+      {
+        label: 'Newer development',
+        explanation:
+          'Newer areas may shift the review toward builder history, warranty status, HOA documents, lot exposure, commute route, and future municipal or nearby development context.',
+      },
+    ],
+    practicalContext: [
+      {
+        label: 'If commuting matters',
+        explanation:
+          'Compare actual routes toward Boulder, Denver, and northern Front Range destinations at the times the household would use them. This guide does not certify commute performance.',
+      },
+      {
+        label: 'If lot size matters',
+        explanation:
+          'Review how lot size, alley or driveway pattern, exterior exposure, irrigation, landscaping, and maintenance responsibilities affect the specific property.',
+      },
+      {
+        label: 'If access to recreation matters',
+        explanation:
+          'Use parks, trails, open-space access, and regional recreation as questions to verify from the address, not as citywide conclusions.',
+      },
+    ],
+    marketContext: [
+      {
+        label: 'Inventory structure',
+        explanation:
+          'Longmont inventory can include older detached homes, newer detached homes, attached options, and infill or redevelopment candidates. Compare like property types before drawing conclusions.',
+      },
+      {
+        label: 'Employment and commercial influences',
+        explanation:
+          'Local employment centers, retail corridors, and regional access can influence buyer attention, but this page does not forecast demand or assign investment value.',
+      },
+      {
+        label: 'Growth considerations',
+        explanation:
+          'Redevelopment and growth questions should be checked through municipal planning materials, property records, inspections, and advisor review before a buyer or seller relies on them.',
+      },
+    ],
+    communityContext: [
+      {
+        label: 'Local character',
+        explanation:
+          'Longmont should be reviewed through property age, immediate surroundings, city services, commercial access, recreation access, and regional connections rather than demographic assumptions.',
+      },
+      {
+        label: 'Evidence boundary',
+        explanation:
+          'The current page provides Enhanced Foundation citywide context. It does not replace neighborhood-level certification, property inspections, municipal research, or professional advice.',
+      },
+    ],
+    buyerConsiderations: [
+      {
+        label: 'Before search',
+        explanation:
+          'Decide whether established area, newer construction, attached housing, lot pattern, or commute route matters most, then use search to test those criteria against actual inventory.',
+      },
+      {
+        label: 'Before offer decisions',
+        explanation:
+          'Verify property records, age, systems, maintenance exposure, HOA documents where applicable, insurance questions, and municipal context through qualified sources.',
+      },
+    ],
+    sellerConsiderations: [
+      {
+        label: 'Property differentiation',
+        explanation:
+          'Document updates, systems, lot features, location context, and maintenance history so buyers can compare the home against similar Longmont options without relying on broad city assumptions.',
+      },
+      {
+        label: 'Preparation review',
+        explanation:
+          'Use local competition, condition documentation, presentation, and timing as advisor-review topics. This guide does not promise pricing results or market response.',
+      },
+    ],
+    evidenceLimitations: [
+      {
+        label: 'Enhanced Foundation maturity',
+        explanation:
+          'This page is ENHANCED_FOUNDATION maturity. It adds durable city-specific context to governed market data, but it is not editorial, predictive, regulatory, or provider certification.',
+      },
+      {
+        label: 'Qualified-source review',
+        explanation:
+          'Construction, insurance, environmental, title, municipal, and property-record questions should be verified through qualified sources or professionals before decisions are made.',
+      },
+      {
+        label: 'No protected activation',
+        explanation:
+          'No AI, public GIS, telemetry, provider activation, ranking, valuation, school rating, safety rating, or investment guidance is used.',
+      },
+    ],
+    tradeoffs: [
+      {
+        strength: 'Range of housing eras and product types',
+        tradeoff: 'Buyers and sellers should compare property age, updates, systems, and lot context instead of relying on citywide labels.',
+      },
+      {
+        strength: 'Boulder County and northern Front Range access',
+        tradeoff: 'Actual route usefulness depends on address, timing, destination, and transportation assumptions that need separate review.',
+      },
+      {
+        strength: 'Established areas and newer growth both appear in the city pattern',
+        tradeoff: 'Redevelopment, municipal planning, and nearby construction questions require direct verification.',
+      },
+    ],
+    verificationQuestions: [
+      'If historic housing matters, what records, systems, remodel quality, and maintenance items need review for this property?',
+      'If newer construction matters, what builder, warranty, HOA, lot, and nearby development questions should be verified?',
+      'If commuting matters, which routes and travel times should be checked from the specific address?',
+      'If access to recreation matters, which parks, trails, or open-space assumptions should be verified before relying on them?',
+      'What property-specific due diligence belongs with a qualified inspector, insurance advisor, title professional, municipal source, or real estate advisor?',
+    ],
+  },
+  denver: {
+    key: 'denver',
+    cityName: 'Denver',
+    identityPattern:
+      'large citywide decision market where housing type, age, density, transportation access, redevelopment, and local submarket conditions vary materially',
+    summaryHeadline: 'Treat Denver as a citywide frame that requires local follow-up.',
+    summaryIntro:
+      'Denver guidance provides a governed citywide starting point while explicitly avoiding neighborhood rankings or unsupported submarket claims. Citywide context cannot replace address-level and neighborhood-level review.',
+    distinctValue:
+      'A large Colorado city with varied density, housing age, redevelopment patterns, transportation corridors, employment centers, and urban services',
+    attentionValue:
+      'Housing type, age, density, parking, transit or route access, redevelopment context, municipal requirements, and neighborhood-specific review',
+    verificationValue:
+      'Property records, title, zoning or municipal questions, inspection scope, insurance review, local submarket context, and advisor discussion',
+    localCharacter: [
+      {
+        label: 'Development pattern',
+        explanation:
+          'Denver includes urban core, established residential areas, attached housing, multifamily settings, newer infill, and redevelopment corridors. A citywide page cannot substitute for local submarket review.',
+      },
+      {
+        label: 'Transportation framework',
+        explanation:
+          'Decisions may involve highways, arterial streets, transit access, parking, bike or pedestrian access, and commute timing. Those assumptions should be checked from the specific address.',
+      },
+      {
+        label: 'Municipal structure',
+        explanation:
+          'Denver property decisions can involve city permitting, records, zoning, historic-area considerations, or redevelopment context. Verify requirements through municipal and qualified professional sources.',
+      },
+    ],
+    housingContext: [
+      {
+        label: 'Housing-type variation',
+        explanation:
+          'Denver includes detached homes, attached homes, condos, townhomes, multifamily-adjacent settings, and new or renovated inventory. Compare property type before interpreting market context.',
+      },
+      {
+        label: 'Age and condition spread',
+        explanation:
+          'Older homes, remodeled properties, newer infill, and condominium buildings can carry different inspection, HOA, insurance, record, and maintenance questions.',
+      },
+      {
+        label: 'Density and local setting',
+        explanation:
+          'Density, parking, street pattern, nearby commercial activity, and redevelopment can vary block by block. Verify the immediate context before relying on a citywide impression.',
+      },
+    ],
+    practicalContext: [
+      {
+        label: 'If walkability matters',
+        explanation:
+          'Check the specific address, route comfort, daily destinations, parking context, and seasonal practicality. This guide does not rate walkability or rank locations.',
+      },
+      {
+        label: 'If urban services matter',
+        explanation:
+          'Review access to services, transit, employment centers, retail corridors, and municipal resources based on the property location and daily pattern.',
+      },
+      {
+        label: 'If historic housing matters',
+        explanation:
+          'Verify construction age, records, renovations, systems, historic-area considerations where applicable, and maintenance exposure through qualified review.',
+      },
+    ],
+    marketContext: [
+      {
+        label: 'Citywide signal limitation',
+        explanation:
+          'Denver market context is a citywide orientation. It should not be used as a conclusion about any one neighborhood, building type, or property condition.',
+      },
+      {
+        label: 'Redevelopment and density',
+        explanation:
+          'Redevelopment, infill, and density patterns may influence local comparison questions, but this page does not forecast demand or recommend investment actions.',
+      },
+      {
+        label: 'Submarket variation',
+        explanation:
+          'Housing type, age, price band, parking, transit access, and local inventory can vary materially. Use citywide context to decide what to verify next.',
+      },
+    ],
+    communityContext: [
+      {
+        label: 'Citywide context only',
+        explanation:
+          'Denver is internally diverse. This page intentionally avoids neighborhood-by-neighborhood claims, rankings, or suitability comparisons until governed local evidence supports them.',
+      },
+      {
+        label: 'Local follow-up required',
+        explanation:
+          'Use search, property facts, existing Denver neighborhood context where available, municipal records, and advisor review to move from citywide orientation into a specific decision.',
+      },
+    ],
+    buyerConsiderations: [
+      {
+        label: 'Before search',
+        explanation:
+          'Clarify whether property type, age, density, parking, commute route, transit access, outdoor space, or building structure matters most before narrowing inventory.',
+      },
+      {
+        label: 'Before offer decisions',
+        explanation:
+          'Verify HOA documents, records, inspection scope, insurance questions, title items, municipal requirements, and local submarket context through qualified sources.',
+      },
+    ],
+    sellerConsiderations: [
+      {
+        label: 'Presentation and documentation',
+        explanation:
+          'Document condition, updates, systems, HOA or building details where applicable, parking, outdoor space, and local setting so buyers can compare the property accurately.',
+      },
+      {
+        label: 'Competition review',
+        explanation:
+          'Compare the home against similar Denver property types and locations without assuming citywide metrics determine response. Use advisor review before pricing or timing decisions.',
+      },
+    ],
+    evidenceLimitations: [
+      {
+        label: 'Enhanced Foundation maturity',
+        explanation:
+          'This page is ENHANCED_FOUNDATION maturity. It adds durable citywide Denver context to governed market data, but it is not neighborhood certification, prediction, valuation, or regulatory advice.',
+      },
+      {
+        label: 'Neighborhood review boundary',
+        explanation:
+          'Denver citywide context cannot substitute for neighborhood-level, building-level, property-record, title, inspection, insurance, municipal, or advisor review.',
+      },
+      {
+        label: 'No protected activation',
+        explanation:
+          'No AI, public GIS, telemetry, provider activation, ranking, valuation, school rating, safety rating, or investment guidance is used.',
+      },
+    ],
+    tradeoffs: [
+      {
+        strength: 'Broad range of urban and residential housing options',
+        tradeoff: 'Property type, age, building structure, parking, and local context must be compared before conclusions are drawn.',
+      },
+      {
+        strength: 'Access to employment centers, services, transit, and regional routes',
+        tradeoff: 'Actual usefulness depends on address, route, timing, parking, and daily-use assumptions that require separate verification.',
+      },
+      {
+        strength: 'Multiple development eras and redevelopment patterns',
+        tradeoff: 'Municipal records, construction history, title, HOA, insurance, and inspection questions should be reviewed through qualified sources.',
+      },
+    ],
+    verificationQuestions: [
+      'If walkability matters, what routes, destinations, parking assumptions, and daily-use details should be checked from this address?',
+      'If housing age matters, what systems, records, renovation history, and inspection questions need qualified review?',
+      'If urban services matter, which transit, route, employment, retail, or municipal-access assumptions should be verified?',
+      'If density or redevelopment matters, what nearby construction, zoning, title, HOA, or municipal records should be reviewed?',
+      'What Denver-specific questions belong with a qualified inspector, insurance advisor, title professional, municipal source, or real estate advisor?',
+    ],
+  },
+};
+
 function normalize(value: string) {
   return value.trim().toLowerCase();
 }
@@ -276,6 +616,10 @@ function slugifyCity(value: string) {
 
 function isEditorialDecisionGuideKey(key: DecisionGuideKey): key is EditorialDecisionGuideKey {
   return key === 'boulder' || key === 'louisville' || key === 'lafayette';
+}
+
+function isEnhancedFoundationDecisionGuideKey(key: DecisionGuideKey): key is EnhancedFoundationDecisionGuideKey {
+  return key === 'longmont' || key === 'denver';
 }
 
 function getEditorialDecisionGuideKey(city: CityData): EditorialDecisionGuideKey | null {
@@ -477,6 +821,71 @@ function buildFoundationDecisionGuide({
   };
 }
 
+function buildEnhancedFoundationDecisionGuide({
+  city,
+  marketSignal,
+  guideKey,
+}: {
+  city: CityData;
+  marketSignal: string;
+  guideKey: EnhancedFoundationDecisionGuideKey;
+}): DecisionGuide {
+  const config = ENHANCED_FOUNDATION_CITY_CONFIGS[guideKey];
+
+  return {
+    key: config.key,
+    maturity: 'ENHANCED_FOUNDATION',
+    publicEligibility: true,
+    cityName: city.name,
+    identity: `${city.name} is published as an Enhanced Foundation Local Decision Intelligence guide: ${config.identityPattern}. It is a decision starting point, not a forecast, valuation, ranking, or substitute for property-specific review.`,
+    decisionSnapshot: {
+      whereAmI: `${city.name} Enhanced Foundation Local Decision Intelligence.`,
+      mattersMost: config.distinctValue,
+      payAttention: config.attentionValue,
+      verify: config.verificationValue,
+      bestNextStep: `Search ${city.name} homes with market context, then bring address-specific questions into advisor review.`,
+    },
+    summaryEyebrow: `${city.name} Decision Snapshot`,
+    summaryHeadline: config.summaryHeadline,
+    summaryIntro: config.summaryIntro,
+    neighborhoodsEyebrow: `${city.name} Local Context`,
+    neighborhoodsHeadline:
+      city.name === 'Denver'
+        ? 'Use citywide context before neighborhood-level review.'
+        : 'Move from citywide context into property-level review.',
+    neighborhoodSectionId: `${guideKey}-neighborhoods`,
+    continuitySurface: `${guideKey}-decision-guide-continuity`,
+    decisionSummary: [
+      {
+        label: `What materially shapes ${city.name}`,
+        value: config.distinctValue,
+        explanation: `Current market context shows ${city.stats.medianPrice} median price, ${city.stats.inventory} active inventory signal, and ${marketSignal.toLowerCase()} as bounded citywide orientation.`,
+      },
+      {
+        label: 'What deserves deeper review',
+        value: config.attentionValue,
+        explanation:
+          'Use the citywide signal to decide what to investigate next, then separate property condition, records, municipal questions, insurance review, and advisor context.',
+      },
+      {
+        label: 'What the platform can conclude',
+        value: 'Citywide context is useful, but property-specific conclusions require more evidence',
+        explanation:
+          'The platform can organize durable local considerations and market orientation. It cannot certify a specific property condition, forecast an outcome, rank locations, or replace qualified review.',
+      },
+    ],
+    housingContext: config.housingContext,
+    practicalContext: config.practicalContext,
+    marketContext: config.marketContext,
+    communityContext: [...config.localCharacter, ...config.communityContext],
+    buyerConsiderations: config.buyerConsiderations,
+    sellerConsiderations: config.sellerConsiderations,
+    evidenceLimitations: config.evidenceLimitations,
+    tradeoffs: config.tradeoffs,
+    verificationQuestions: config.verificationQuestions,
+  };
+}
+
 export function buildDecisionGuide({
   city,
   cityNeighborhoods,
@@ -494,6 +903,14 @@ export function buildDecisionGuide({
   const guideMaturity = eligibility?.guideMaturity ?? 'EDITORIALLY_CERTIFIED';
   const publicEligibility = eligibility?.publicEligibility ?? true;
   if (!publicEligibility) return null;
+
+  if (guideMaturity === 'ENHANCED_FOUNDATION' && isEnhancedFoundationDecisionGuideKey(guideKey)) {
+    return buildEnhancedFoundationDecisionGuide({
+      city,
+      marketSignal,
+      guideKey,
+    });
+  }
 
   if (!isEditorialDecisionGuideKey(guideKey)) {
     return buildFoundationDecisionGuide({
@@ -655,9 +1072,8 @@ export function buildDecisionGuideContinuityLinks({
     { label: 'Seller Guidance', href: '/sell', destination: 'seller' },
     { label: 'Financing Guidance', href: '/buy#financing-confidence', destination: 'inquiry' },
     { label: 'Grand Plan', href: '/grand-plan', destination: 'inquiry' },
+    { label: 'Advisory Guidance', href: '/contact', destination: 'inquiry' },
   ] as const;
 
-  return guide.maturity === 'FOUNDATION'
-    ? ([...baseLinks, { label: 'Advisory Guidance', href: '/contact', destination: 'inquiry' }] as const)
-    : baseLinks;
+  return baseLinks;
 }

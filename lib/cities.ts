@@ -69,6 +69,19 @@ export const cities: CityData[] = [
     },
   }),
   createCity({
+    name: "Denver",
+    slug: "denver-co-real-estate",
+    marketSlug: "denver-co-housing-market",
+    stats: {
+      medianPrice: "$720,000",
+      pricePerSqFt: "$455",
+      daysOnMarket: "29",
+      inventory: "640",
+      marketHealthScore: 76,
+      avgEfficiency: 78,
+    },
+  }),
+  createCity({
     name: "Niwot",
     slug: "niwot-co-real-estate",
     marketSlug: "niwot-co-housing-market",

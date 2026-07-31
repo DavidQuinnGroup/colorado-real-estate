@@ -1,4 +1,4 @@
-export type DecisionGuideMaturity = 'FOUNDATION' | 'EVIDENCE_BACKED' | 'EDITORIALLY_CERTIFIED';
+export type DecisionGuideMaturity = 'FOUNDATION' | 'ENHANCED_FOUNDATION' | 'EVIDENCE_BACKED' | 'EDITORIALLY_CERTIFIED';
 
 type CityLike = {
   name: string;
@@ -132,13 +132,12 @@ export const COLORADO_DECISION_GUIDE_REGISTRY: DecisionGuideRegistryEntry[] = [
     marketRoute: '/market/brighton-co-housing-market',
     ineligibilityReasons: ['missing-search-city-support'],
   }),
-  ineligibleEntry({
+  publicEntry({
     canonicalName: 'Denver',
     routeSlug: 'denver-co-real-estate',
-    marketRoute: null,
+    marketRoute: '/market/denver-co-housing-market',
     neighborhoodCount: 1,
-    guideMaturity: 'EVIDENCE_BACKED',
-    ineligibilityReasons: ['missing-canonical-content-city', 'missing-market-route', 'missing-search-city-support', 'missing-market-data'],
+    guideMaturity: 'ENHANCED_FOUNDATION',
   }),
   publicEntry({
     canonicalName: 'Erie',
@@ -178,7 +177,7 @@ export const COLORADO_DECISION_GUIDE_REGISTRY: DecisionGuideRegistryEntry[] = [
     routeSlug: 'longmont-co-real-estate',
     marketRoute: '/market/longmont-co-housing-market',
     neighborhoodCount: 0,
-    guideMaturity: 'FOUNDATION',
+    guideMaturity: 'ENHANCED_FOUNDATION',
   }),
   publicEntry({
     canonicalName: 'Louisville',

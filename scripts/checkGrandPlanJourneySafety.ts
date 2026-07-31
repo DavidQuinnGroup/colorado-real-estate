@@ -50,7 +50,10 @@ const forbiddenPublicClaims = [
 assert.ok(existsSync('app/grand-plan/page.tsx'), 'Expected /grand-plan page to exist.');
 assert.ok(!existsSync('app/api/grand-plan/route.ts'), 'Grand Plan must reuse the existing strategy-intake API, not create a duplicate API.');
 assert.ok(publicNavigation.includes("{ label: 'Grand Plan', href: '/grand-plan' }"), 'Expected shared public navigation to discover /grand-plan.');
-assert.ok(homePage.includes("href: '/grand-plan'"), 'Expected Home Portal Grand Plan CTAs to route to /grand-plan.');
+assert.ok(
+  homePage.includes("href: '/grand-plan'") || homePage.includes('href="/grand-plan"'),
+  'Expected Home Portal Grand Plan CTAs to route to /grand-plan.',
+);
 
 assert.ok(grandPlanPage.includes('data-testid="grand-plan-page"'), 'Expected stable Grand Plan page test handle.');
 assert.ok(grandPlanPage.includes('data-testid="grand-plan-landing"'), 'Expected stable Grand Plan landing test handle.');
