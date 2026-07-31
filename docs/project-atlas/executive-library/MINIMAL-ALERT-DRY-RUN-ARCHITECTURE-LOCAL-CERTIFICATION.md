@@ -18,7 +18,11 @@ Commit and push are authorized for this local implementation and governance reco
 
 ## 3. Baseline
 
-Baseline SHA: 3326db33a6a8cde9b1ea21e724093bd0edf7b70e
+Pre-implementation baseline SHA: 3326db33a6a8cde9b1ea21e724093bd0edf7b70e
+
+Certified implementation commit SHA: 8fc84ea76e9a3436188c2de416079ff57d75b506
+
+Fixture certification baseline SHA: 8fc84ea76e9a3436188c2de416079ff57d75b506
 
 Certified runtime implementation reference: f92b2e1e086daca99c05605ab1b7742426cfaa04
 
@@ -117,7 +121,7 @@ Fixture certification result:
 {
   "status": "SUCCESS",
   "mode": "FIXTURE_ONLY_NO_SIDE_EFFECT",
-  "baselineSha": "3326db33a6a8cde9b1ea21e724093bd0edf7b70e",
+  "baselineSha": "8fc84ea76e9a3436188c2de416079ff57d75b506",
   "casesEvaluated": 17,
   "reasonCodeCounts": {
     "PROPERTY_INVALID": 1,

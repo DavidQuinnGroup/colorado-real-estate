@@ -9,7 +9,7 @@ import type {
   AlertIntentUser,
 } from './types.js';
 
-export const ALERT_INTENT_BASELINE_SHA = '3326db33a6a8cde9b1ea21e724093bd0edf7b70e';
+export const ALERT_INTENT_BASELINE_SHA = '8fc84ea76e9a3436188c2de416079ff57d75b506';
 export const ALERT_INTENT_EVALUATED_AT = '2026-07-31T12:00:00.000Z';
 export const ALERT_INTENT_PROPERTY_TIMESTAMP = '2026-07-31T10:00:00.000Z';
 export const ALERT_INTENT_PUBLIC_BASE_URL = 'https://davidquinngroup.com';
