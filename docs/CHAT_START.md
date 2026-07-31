@@ -37,11 +37,13 @@ Current governed state:
 - REIE Cross-City Decision Comparison(tm) is production-certified and closed.
 - REIE Seller Readiness Advancement(tm) is production-certified and closed.
 - REIE Buyer Financing Readiness Advancement(tm) is production-certified and closed.
-- REIE Post-Buyer Financing Readiness Strategic Next-Phase Review is locally recorded.
+- REIE Post-Buyer Financing Readiness Strategic Next-Phase Review is pushed and reconciled.
+- REIE Evidence Depth and Data Integration(tm) foundation is locally implemented and awaiting push authorization after local certification.
 - Strategic next-phase finding: `PRIORITIZE_EVIDENCE_DEPTH_AND_DATA_INTEGRATION`.
-- Primary recommendation: implement a bounded protected-boundary-safe Evidence Depth and Data Integration foundation.
-- Recommended next authorization: `EVIDENCE_DEPTH_AND_DATA_INTEGRATION_IMPLEMENTATION_AUTHORIZATION`.
-- This is a recommendation only. Evidence Depth and Data Integration implementation is not authorized by this review record.
+- Authorized implementation scope: bounded protected-boundary-safe Evidence Depth and Data Integration foundation.
+- Local foundation status: `EVIDENCE_DEPTH_AND_DATA_INTEGRATION_FOUNDATION_LOCALLY_CERTIFIED`.
+- Local certification finding: `EVIDENCE_DEPTH_AND_DATA_INTEGRATION_READY_FOR_PUSH`.
+- Recommended next authorization: `EVIDENCE_DEPTH_AND_DATA_INTEGRATION_PUSH_AND_PRODUCTION_CERTIFICATION`.
 - Current certified Local Decision Intelligence maturity inventory: `ENHANCED_FOUNDATION` for Broomfield, Superior, Longmont, Denver, Erie, and Westminster; editorial Decision Guides for Boulder, Louisville, and Lafayette.
 - Current certified Product Experience position: Homepage, Buy, Sell, Home Worth, Grand Plan, Contact / Advisory, shared `JourneyCohesionPanel`, and Cross-City Decision Comparison are certified.
 - Current certified Cross-City Decision Comparison position: `/compare` is certified for nine governed markets with safe mixed-maturity comparison, deterministic 2 to 3 city query-state behavior, neutral dimensions, Back and Forward history behavior, and no ranking, scoring, personalization, persistence, or tracking.
@@ -58,8 +60,15 @@ Current governed state:
 - Local Decision Intelligence cadence: remain paused and slower-governed; Niwot activation remains unauthorized and should be considered through later geographic or neighborhood/submarket governance.
 - Product Experience finding: another broad cohesion wave is not justified now; targeted fixes should proceed only if new production evidence identifies a specific friction point.
 - Strategic review record: `docs/project-atlas/executive-library/REIE-POST-BUYER-FINANCING-READINESS-STRATEGIC-NEXT-PHASE-REVIEW.md`.
+- Implementation governance record: `docs/project-atlas/executive-library/REIE-EVIDENCE-DEPTH-AND-DATA-INTEGRATION-FOUNDATION-IMPLEMENTATION.md`.
+- New foundation contracts: `lib/evidence-depth/evidencePosture.ts`.
+- New synthetic fixture set: `lib/evidence-depth/evidenceDepthFixtures.ts`.
+- New deterministic validation: `scripts/checkEvidenceDepthDataIntegrationFoundation.ts` and `npm run check:evidence-depth-data-integration-foundation`.
+- Foundation contract covers evidence identity, source identity, source rights, acquisition context, provenance, freshness, support level, limitations, conflict state, supersession, lineage, and public-use eligibility.
+- Fixture coverage includes public-use eligible evidence, attribution-required evidence, internal-only evidence, unknown-rights evidence, stale evidence, undated evidence, conflicting evidence, superseded evidence, evidence eligible only with limitations, and blocked evidence.
+- Read-only inspection reports posture summary and activation flags only; no UI, public route, public API, database read, production write, provider call, external acquisition, customer data, or public conclusion was introduced.
 - Required remediation: none.
-- Exact next step: stop, or explicitly authorize Evidence Depth and Data Integration implementation. Codex must not implement Evidence Depth, begin another initiative, modify runtime code, create routes or anchors, change eligibility, activate providers, activate public-record retrieval, activate GIS runtime, collect customer data, push, deploy, or modify production behavior without an explicit directive.
+- Exact next step: stop, or explicitly authorize push and production certification for the Evidence Depth and Data Integration foundation implementation commit. Codex must not push runtime changes, deploy, begin production certification, begin Advisory Handoff Readiness, begin another initiative, create routes or anchors, change eligibility, activate providers, activate public-record retrieval, activate GIS runtime, collect customer data, or modify production behavior without an explicit directive.
 
 Prior REIE Buyer Financing Readiness Advancement closure handoff retained below.
 

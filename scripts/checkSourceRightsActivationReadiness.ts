@@ -48,9 +48,18 @@ async function main() {
     ['Boulder', 'Lafayette', 'Louisville'],
     'Only Boulder, Lafayette, and Louisville may appear as certified Decision Guides.',
   );
-  assert(
-    getPublicDecisionGuideRegistryEntries().some((entry) => entry.guideMaturity === 'FOUNDATION'),
-    'Registry must still include foundation market pages for negative discovery checks.',
+  assert.equal(
+    getPublicDecisionGuideRegistryEntries().filter((entry) => entry.guideMaturity === 'FOUNDATION').length,
+    0,
+    'Public FOUNDATION Local Decision Intelligence backlog must remain closed after Phase 2 Wave 3.',
+  );
+  assert.deepEqual(
+    getPublicDecisionGuideRegistryEntries()
+      .filter((entry) => entry.guideMaturity === 'ENHANCED_FOUNDATION')
+      .map((entry) => entry.canonicalName)
+      .sort(),
+    ['Broomfield', 'Denver', 'Erie', 'Longmont', 'Superior', 'Westminster'],
+    'Enhanced Foundation city inventory must match the certified Phase 2 closure state.',
   );
   assert.match(marketPage, /decision-guide-discovery-certified/, 'Market page must expose certified guide discovery section.');
   assert.match(marketPage, /data-decision-guide-discovery-foundation-promoted="false"/, 'Market page must explicitly block foundation promotion.');
