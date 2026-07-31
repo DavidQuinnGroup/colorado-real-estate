@@ -124,7 +124,7 @@ export const COLORADO_DECISION_GUIDE_REGISTRY: DecisionGuideRegistryEntry[] = [
     routeSlug: 'broomfield-co-real-estate',
     marketRoute: '/market/broomfield-co-housing-market',
     neighborhoodCount: 0,
-    guideMaturity: 'FOUNDATION',
+    guideMaturity: 'ENHANCED_FOUNDATION',
   }),
   ineligibleEntry({
     canonicalName: 'Brighton',
@@ -193,13 +193,12 @@ export const COLORADO_DECISION_GUIDE_REGISTRY: DecisionGuideRegistryEntry[] = [
     marketRoute: '/market/niwot-co-housing-market',
     ineligibilityReasons: ['missing-search-city-support'],
   }),
-  ineligibleEntry({
+  publicEntry({
     canonicalName: 'Superior',
     routeSlug: 'superior-co-real-estate',
-    marketRoute: null,
+    marketRoute: '/market/superior-co-housing-market',
     neighborhoodCount: 3,
-    guideMaturity: 'EVIDENCE_BACKED',
-    ineligibilityReasons: ['missing-market-route', 'missing-market-data'],
+    guideMaturity: 'ENHANCED_FOUNDATION',
   }),
   ineligibleEntry({
     canonicalName: 'Thornton',

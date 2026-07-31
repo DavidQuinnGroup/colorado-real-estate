@@ -12,7 +12,7 @@ import {
 import { neighborhoods } from '../lib/neighborhoods.js';
 
 const PHASE_2_WAVE_1_CITIES = ['Longmont', 'Denver'] as const;
-const PRESERVED_FOUNDATION_CITIES = ['Broomfield', 'Erie', 'Westminster'] as const;
+const PRESERVED_FOUNDATION_CITIES = ['Erie', 'Westminster'] as const;
 const PRESERVED_EDITORIAL_CITIES = ['Boulder', 'Louisville', 'Lafayette'] as const;
 
 const PROHIBITED_PATTERNS = [

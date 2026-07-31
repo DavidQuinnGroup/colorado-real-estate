@@ -75,6 +75,7 @@
     "scripts/checkLafayetteDecisionGuide.ts",
     "scripts/checkLocalDecisionIntelligencePhase1.ts",
     "scripts/checkLocalDecisionIntelligencePhase2Wave1.ts",
+    "scripts/checkLocalDecisionIntelligencePhase2Wave2.ts",
     "scripts/checkProductionMediaResilience.ts",
     "scripts/checkPrismaClientParity.ts",
     "scripts/checkProductionDependencies.ts",

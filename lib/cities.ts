@@ -121,6 +121,19 @@ export const cities: CityData[] = [
     },
   }),
   createCity({
+    name: "Superior",
+    slug: "superior-co-real-estate",
+    marketSlug: "superior-co-housing-market",
+    stats: {
+      medianPrice: "$865,000",
+      pricePerSqFt: "$525",
+      daysOnMarket: "16",
+      inventory: "28",
+      marketHealthScore: 84,
+      avgEfficiency: 82,
+    },
+  }),
+  createCity({
     name: "Erie",
     slug: "erie-co-real-estate",
     marketSlug: "erie-co-housing-market",

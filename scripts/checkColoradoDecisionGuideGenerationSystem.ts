@@ -95,12 +95,12 @@ async function main() {
   }
 
   const editorialCity = getRepresentativeDecisionGuideCity({ maturity: 'EDITORIALLY_CERTIFIED', publicEligibility: true });
-  const evidenceBackedCity = getRepresentativeDecisionGuideCity({ maturity: 'EVIDENCE_BACKED' });
+  const enhancedFoundationCity = getRepresentativeDecisionGuideCity({ maturity: 'ENHANCED_FOUNDATION', publicEligibility: true });
   const foundationCity = getRepresentativeDecisionGuideCity({ maturity: 'FOUNDATION', publicEligibility: true });
   const ineligibleCity = registry.find((entry) => !entry.publicEligibility && entry.marketRoute);
 
   assert(editorialCity, 'At least one editorially certified city must remain available.');
-  assert(evidenceBackedCity, 'At least one evidence-backed registry city must be represented when neighborhood/search evidence exists.');
+  assert(enhancedFoundationCity, 'At least one enhanced foundation city must remain available.');
   assert(foundationCity, 'At least one foundation city must be publicly eligible.');
   assert(ineligibleCity, 'At least one market city must fail closed when minimum guide requirements are absent.');
 

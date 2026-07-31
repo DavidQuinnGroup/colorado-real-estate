@@ -3,7 +3,7 @@ import type { Neighborhood } from './neighborhoods.js';
 
 export type DecisionGuideKey = string;
 type EditorialDecisionGuideKey = 'boulder' | 'louisville' | 'lafayette';
-type EnhancedFoundationDecisionGuideKey = 'longmont' | 'denver';
+type EnhancedFoundationDecisionGuideKey = 'broomfield' | 'longmont' | 'denver' | 'superior';
 export type DecisionGuideMaturity = 'FOUNDATION' | 'ENHANCED_FOUNDATION' | 'EVIDENCE_BACKED' | 'EDITORIALLY_CERTIFIED';
 
 export type DecisionGuideEligibility = {
@@ -305,6 +305,163 @@ export const DECISION_GUIDE_CITY_CONFIGS: Record<EditorialDecisionGuideKey, Deci
 };
 
 export const ENHANCED_FOUNDATION_CITY_CONFIGS: Record<EnhancedFoundationDecisionGuideKey, EnhancedFoundationCityConfig> = {
+  broomfield: {
+    key: 'broomfield',
+    cityName: 'Broomfield',
+    identityPattern:
+      'regional corridor decision market where municipal structure, mixed housing eras, transportation access, commercial centers, and property-specific diligence should be evaluated separately',
+    summaryHeadline: 'Use Broomfield as a structured local decision, not one broad corridor label.',
+    summaryIntro:
+      'Broomfield guidance now adds durable local context to the certified foundation route. It remains non-predictive, limitation-forward, and dependent on property-specific verification.',
+    distinctValue:
+      'A city and county with established areas, newer development, regional commercial centers, and practical access questions between Boulder and Denver corridors',
+    attentionValue:
+      'Housing age, location within the city, attached or detached form, transportation routes, municipal records, maintenance exposure, and property-specific context',
+    verificationValue:
+      'Property records, systems and remodel history, HOA documents where applicable, municipal requirements, insurance questions, commute assumptions, and advisory review',
+    localCharacter: [
+      {
+        label: 'Municipal structure',
+        explanation:
+          'Broomfield functions as both a city and county, so property decisions can involve local records, municipal requirements, and service questions that should be checked for the specific address.',
+      },
+      {
+        label: 'Development pattern',
+        explanation:
+          'Broomfield includes established residential areas, attached housing, newer subdivisions, and commercial or employment-area edges. Compare the immediate setting before relying on citywide context.',
+      },
+      {
+        label: 'Regional access',
+        explanation:
+          'Many decisions involve access toward Boulder, Denver, and northern metro corridors. Route usefulness depends on address, timing, destination, and daily-use assumptions.',
+      },
+    ],
+    housingContext: [
+      {
+        label: 'Mixed housing forms',
+        explanation:
+          'Broomfield inventory can include detached homes, townhomes, condos, established subdivisions, and newer construction. Compare property type, age, HOA structure, and maintenance exposure before narrowing options.',
+      },
+      {
+        label: 'Established and newer areas',
+        explanation:
+          'Established homes may raise questions about systems, remodel quality, exterior condition, drainage, and records. Newer homes may shift review toward builder history, warranties, HOA documents, and nearby development context.',
+      },
+      {
+        label: 'Location tradeoffs',
+        explanation:
+          'Properties can sit closer to regional corridors, commercial centers, quieter residential interiors, or open-space edges. Verify the practical effect from the address rather than treating the city as uniform.',
+      },
+    ],
+    practicalContext: [
+      {
+        label: 'If commuting matters',
+        explanation:
+          'Compare actual routes toward Boulder, Denver, airport-area, and northern metro destinations at the times they would be used. This guide does not certify commute performance.',
+      },
+      {
+        label: 'If newer construction matters',
+        explanation:
+          'Review builder history, warranty status, HOA obligations, lot exposure, nearby construction context, and municipal records before comparing newer homes against established alternatives.',
+      },
+      {
+        label: 'If urban services matter',
+        explanation:
+          'Use commercial access, city services, recreation access, and daily errands as address-specific questions to verify rather than as a citywide suitability conclusion.',
+      },
+    ],
+    marketContext: [
+      {
+        label: 'Inventory structure',
+        explanation:
+          'Broomfield market context can span different housing forms and ages. Compare similar property types before drawing conclusions from a citywide inventory signal.',
+      },
+      {
+        label: 'Commercial and employment influences',
+        explanation:
+          'Regional employment centers, retail corridors, and transportation access can influence buyer attention, but this page does not forecast demand or assign investment value.',
+      },
+      {
+        label: 'Municipal verification',
+        explanation:
+          'Planning, permitting, records, HOA, and jurisdictional questions should be checked through municipal sources, documents, inspections, and advisor review before decisions are made.',
+      },
+    ],
+    communityContext: [
+      {
+        label: 'Local character',
+        explanation:
+          'Broomfield should be reviewed through property age, immediate surroundings, city services, commercial access, recreation access, and regional connections rather than demographic assumptions.',
+      },
+      {
+        label: 'Evidence boundary',
+        explanation:
+          'The current page provides Enhanced Foundation citywide context. It does not replace property inspections, municipal research, title review, insurance review, or professional advice.',
+      },
+    ],
+    buyerConsiderations: [
+      {
+        label: 'Before search',
+        explanation:
+          'Decide whether housing form, property age, commute route, HOA structure, lot pattern, or proximity to daily services matters most, then use search to test those criteria against active inventory.',
+      },
+      {
+        label: 'Before offer decisions',
+        explanation:
+          'Verify records, condition, systems, HOA documents where applicable, municipal requirements, insurance questions, and route assumptions through qualified sources.',
+      },
+    ],
+    sellerConsiderations: [
+      {
+        label: 'Property differentiation',
+        explanation:
+          'Document updates, systems, HOA details where applicable, lot features, location context, and maintenance history so buyers can compare the home against similar Broomfield options.',
+      },
+      {
+        label: 'Preparation review',
+        explanation:
+          'Use local competition, property condition, presentation, documentation, and timing as advisor-review topics. This guide does not promise pricing results or market response.',
+      },
+    ],
+    evidenceLimitations: [
+      {
+        label: 'Enhanced Foundation maturity',
+        explanation:
+          'This page is ENHANCED_FOUNDATION maturity. It adds durable Broomfield context to governed market data, but it is not editorial, predictive, regulatory, or provider certification.',
+      },
+      {
+        label: 'Qualified-source review',
+        explanation:
+          'Construction, insurance, environmental, title, municipal, HOA, and property-record questions should be verified through qualified sources or professionals before decisions are made.',
+      },
+      {
+        label: 'No protected activation',
+        explanation:
+          'No AI, public GIS, telemetry, provider activation, ranking, valuation, school rating, safety rating, or investment guidance is used.',
+      },
+    ],
+    tradeoffs: [
+      {
+        strength: 'City-county structure with regional access',
+        tradeoff: 'Municipal records, route assumptions, and address-specific service context still require direct verification.',
+      },
+      {
+        strength: 'Range of established and newer housing options',
+        tradeoff: 'Age, systems, HOA obligations, builder history, and maintenance exposure should be compared by property type.',
+      },
+      {
+        strength: 'Access to Boulder and Denver corridor decisions',
+        tradeoff: 'Actual route usefulness depends on address, timing, destination, and daily pattern rather than citywide labels.',
+      },
+    ],
+    verificationQuestions: [
+      'If commuting matters, which routes, destinations, and time-of-day assumptions should be checked from the specific address?',
+      'If newer construction matters, what builder, warranty, HOA, lot, and nearby development questions should be verified?',
+      'If established housing matters, what systems, remodel quality, exterior, drainage, and maintenance records need review?',
+      'If urban services matter, which commercial, recreation, municipal, and daily-use assumptions should be verified?',
+      'What property-specific due diligence belongs with a qualified inspector, insurance advisor, title professional, municipal source, HOA document review, or real estate advisor?',
+    ],
+  },
   longmont: {
     key: 'longmont',
     cityName: 'Longmont',
@@ -619,6 +776,163 @@ export const ENHANCED_FOUNDATION_CITY_CONFIGS: Record<EnhancedFoundationDecision
       'What Denver-specific questions belong with a qualified inspector, insurance advisor, title professional, municipal source, or real estate advisor?',
     ],
   },
+  superior: {
+    key: 'superior',
+    cityName: 'Superior',
+    identityPattern:
+      'Boulder County decision market where planned-community patterns, housing form, redevelopment context, regional access, and sensitive property-specific verification must be kept separate',
+    summaryHeadline: 'Use Superior as a governed local decision with explicit verification boundaries.',
+    summaryIntro:
+      'Superior guidance reconciles the canonical city-market route before publishing Enhanced Foundation context. It remains citywide, non-predictive, and unable to certify specific property, hazard, insurance, or condition facts.',
+    distinctValue:
+      'A Boulder County municipality with planned-community patterns, established and newer housing, redevelopment and rebuilding context, regional access, and nearby-market relationships',
+    attentionValue:
+      'Housing age and form, rebuilt or redeveloped context, HOA documents, lot and drainage questions, transportation routes, municipal records, and property-specific condition review',
+    verificationValue:
+      'Property records, permits, disclosures, inspections, insurance review, HOA documents, public records, municipal sources, and qualified professional review',
+    localCharacter: [
+      {
+        label: 'Development pattern',
+        explanation:
+          'Superior includes planned-community and established residential patterns, attached and detached housing, and areas where redevelopment or rebuilding context may affect the questions to verify.',
+      },
+      {
+        label: 'Regional access',
+        explanation:
+          'Decisions often involve access toward Boulder County, nearby employment centers, US 36 corridor destinations, and adjoining communities. Actual usefulness depends on the address and daily pattern.',
+      },
+      {
+        label: 'Geographic setting',
+        explanation:
+          'Open-space edges, topography, drainage, and local setting can matter for individual properties, but this citywide page does not certify conditions at any specific address.',
+      },
+    ],
+    housingContext: [
+      {
+        label: 'Planned-community and varied housing',
+        explanation:
+          'Superior inventory can include planned neighborhoods, detached homes, attached homes, and newer or updated construction. Compare property type, age, HOA structure, records, and maintenance exposure before narrowing choices.',
+      },
+      {
+        label: 'Rebuilding and redevelopment context',
+        explanation:
+          'Some properties may require extra attention to permits, construction history, disclosures, warranties, insurance review, and records. Verify those facts for the specific property through qualified sources.',
+      },
+      {
+        label: 'Condition before assumptions',
+        explanation:
+          'Citywide context cannot determine roof, foundation, drainage, soil, environmental, structural, or insurance conditions. Treat each item as a question for records, inspections, insurers, municipalities, and qualified professionals.',
+      },
+    ],
+    practicalContext: [
+      {
+        label: 'If commuting matters',
+        explanation:
+          'Compare routes toward Boulder, Denver, nearby employment centers, and regional services from the specific address. This guide does not certify commute performance.',
+      },
+      {
+        label: 'If newer construction matters',
+        explanation:
+          'Review permits, builder or contractor history where available, warranty status, HOA documents, lot exposure, drainage, and municipal records before relying on surface presentation.',
+      },
+      {
+        label: 'If access to recreation matters',
+        explanation:
+          'Use parks, open space, trail access, and local geography as address-specific questions to verify, not as citywide rankings or suitability conclusions.',
+      },
+    ],
+    marketContext: [
+      {
+        label: 'Citywide signal limitation',
+        explanation:
+          'Superior market context is a citywide orientation. It should not be used as a conclusion about any one neighborhood, property type, rebuild status, or property condition.',
+      },
+      {
+        label: 'Housing-type distribution',
+        explanation:
+          'Attached homes, detached homes, established properties, newer construction, and rebuilt or redeveloped properties can require different comparison sets and diligence questions.',
+      },
+      {
+        label: 'Nearby-market relationships',
+        explanation:
+          'Superior decisions may be compared against Boulder County and nearby market alternatives, but this page does not forecast demand, recommend investment actions, or rank communities.',
+      },
+    ],
+    communityContext: [
+      {
+        label: 'Citywide context only',
+        explanation:
+          'Superior should not be treated as one homogeneous answer. This page intentionally avoids neighborhood rankings, suitability comparisons, safety ratings, and unsupported neighborhood-level conclusions.',
+      },
+      {
+        label: 'Sensitive context boundary',
+        explanation:
+          'Rebuilding, hazard, insurance, environmental, drainage, soil, structural, and property-condition topics must be verified through public records, municipalities, insurers, inspections, and qualified professionals.',
+      },
+    ],
+    buyerConsiderations: [
+      {
+        label: 'Before search',
+        explanation:
+          'Clarify whether housing form, property age, HOA structure, commute route, lot context, rebuilt or redeveloped history, or access to daily services matters most before narrowing inventory.',
+      },
+      {
+        label: 'Before offer decisions',
+        explanation:
+          'Verify records, disclosures, permits, construction history, inspection scope, insurance questions, HOA documents, title items, and municipal requirements through qualified sources.',
+      },
+    ],
+    sellerConsiderations: [
+      {
+        label: 'Documentation matters',
+        explanation:
+          'Document condition, updates, permits, warranties where applicable, systems, HOA details, maintenance history, and property-specific context so buyers can compare the home accurately.',
+      },
+      {
+        label: 'Competition review',
+        explanation:
+          'Compare the home against similar Superior property types and conditions without assuming citywide metrics determine response. Use advisor review before pricing or timing decisions.',
+      },
+    ],
+    evidenceLimitations: [
+      {
+        label: 'Enhanced Foundation maturity',
+        explanation:
+          'This page is ENHANCED_FOUNDATION maturity. It adds durable Superior context to governed market data, but it is not neighborhood certification, prediction, valuation, regulatory advice, hazard certification, or insurance advice.',
+      },
+      {
+        label: 'Sensitive-context verification',
+        explanation:
+          'Wildfire, rebuilding, insurance, environmental, soil, drainage, structural, title, municipal, and property-record questions should be verified through qualified sources or professionals before decisions are made.',
+      },
+      {
+        label: 'No protected activation',
+        explanation:
+          'No AI, public GIS, telemetry, provider activation, ranking, valuation, school rating, safety rating, hazard service, or investment guidance is used.',
+      },
+    ],
+    tradeoffs: [
+      {
+        strength: 'Planned-community structure and Boulder County context',
+        tradeoff: 'HOA documents, municipal records, lot context, and property-specific records still require direct review.',
+      },
+      {
+        strength: 'Established, newer, and rebuilt or redeveloped housing contexts may coexist',
+        tradeoff: 'Construction history, permits, warranties, inspections, insurance questions, and disclosures should be verified by property.',
+      },
+      {
+        strength: 'Regional access to Boulder County and nearby markets',
+        tradeoff: 'Actual usefulness depends on address, route, timing, destination, and daily-use assumptions that require separate verification.',
+      },
+    ],
+    verificationQuestions: [
+      'If commuting matters, which routes, destinations, and time-of-day assumptions should be checked from this address?',
+      'If newer construction or rebuilding context matters, what permits, warranties, disclosures, contractor history, and municipal records should be verified?',
+      'If lot or geographic context matters, what drainage, soil, environmental, open-space edge, or exterior-exposure questions belong with qualified professionals?',
+      'If HOA structure matters, what documents, reserves, rules, insurance, fees, and maintenance responsibilities should be reviewed?',
+      'What Superior-specific due diligence belongs with a qualified inspector, insurance advisor, title professional, municipal source, public-record source, HOA document review, or real estate advisor?',
+    ],
+  },
 };
 
 function normalize(value: string) {
@@ -634,7 +948,7 @@ function isEditorialDecisionGuideKey(key: DecisionGuideKey): key is EditorialDec
 }
 
 function isEnhancedFoundationDecisionGuideKey(key: DecisionGuideKey): key is EnhancedFoundationDecisionGuideKey {
-  return key === 'longmont' || key === 'denver';
+  return key === 'broomfield' || key === 'longmont' || key === 'denver' || key === 'superior';
 }
 
 function getEditorialDecisionGuideKey(city: CityData): EditorialDecisionGuideKey | null {

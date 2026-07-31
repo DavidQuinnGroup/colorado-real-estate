@@ -366,7 +366,7 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
               className="mt-8 grid gap-3 rounded-[8px] bg-white/[0.045] p-5 md:grid-cols-5"
               data-testid={`${cityDecisionGuide.key}-decision-snapshot`}
               data-local-decision-intelligence="phase-1"
-              data-local-decision-intelligence-phase={cityDecisionGuide.maturity === 'ENHANCED_FOUNDATION' ? 'phase-2-wave-1' : 'phase-1'}
+              data-local-decision-intelligence-phase={cityDecisionGuide.maturity === 'ENHANCED_FOUNDATION' ? 'phase-2-enhanced-foundation' : 'phase-1'}
               data-local-decision-intelligence-city={cityDecisionGuide.cityName}
               data-local-decision-intelligence-maturity={cityDecisionGuide.maturity}
               data-local-decision-intelligence-ai="false"

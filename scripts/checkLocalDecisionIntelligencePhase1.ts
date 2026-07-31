@@ -11,7 +11,7 @@ import {
 import { neighborhoods } from '../lib/neighborhoods.js';
 
 const PHASE_1_FOUNDATION_CITIES = ['Broomfield', 'Erie', 'Longmont', 'Westminster'] as const;
-const PHASE_2_ENHANCEMENT_CANDIDATES = ['Longmont'] as const;
+const PHASE_2_ENHANCEMENT_CANDIDATES = ['Broomfield', 'Longmont'] as const;
 const PROHIBITED_PATTERNS = [
   /best place/i,
   /best neighborhood/i,
