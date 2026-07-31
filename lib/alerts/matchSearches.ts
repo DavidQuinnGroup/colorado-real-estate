@@ -1,5 +1,11 @@
 import { Prisma } from '@prisma/client';
 
+import {
+  buildAlertPayloadIntent,
+  isValidAlertProperty,
+  matchesAlertSearch,
+  toCleanAlertString,
+} from './intent/evaluateAlertIntent.js';
 import { enqueueAlert } from '../queue/enqueueAlert.js';
 import { prisma } from '../prisma.js';
 
@@ -14,6 +20,7 @@ type SearchWithUser = {
   south: number | null;
   east: number | null;
   west: number | null;
+  isActive: boolean;
   user: {
     id: string;
     email: string;
@@ -67,108 +74,17 @@ function getMaxSearches() {
   return toPositiveInteger(process.env.ALERT_MATCH_MAX_SEARCHES, DEFAULT_MAX_SEARCHES, 1, 25000);
 }
 
-function toCleanString(value: unknown, fallback = '') {
-  if (value === undefined || value === null) return fallback;
-
-  const cleaned = String(value).trim();
-  return cleaned || fallback;
-}
-
-function toNumber(value: unknown) {
-  if (value === undefined || value === null || value === '') return null;
-
-  const parsed = Number(value);
-  return Number.isFinite(parsed) ? parsed : null;
-}
-
-function sameValue(left: unknown, right: unknown) {
-  return toCleanString(left).toLowerCase() === toCleanString(right).toLowerCase();
-}
-
-function hasCompleteBounds(search: SearchWithUser) {
-  return search.north !== null && search.south !== null && search.east !== null && search.west !== null;
-}
-
-function matchesBounds(search: SearchWithUser, property: AlertMatchProperty) {
-  if (!hasCompleteBounds(search)) return true;
-
-  const lat = toNumber(property.lat);
-  const lng = toNumber(property.lng);
-
-  if (lat === null || lng === null) return false;
-
-  return lat <= search.north! && lat >= search.south! && lng <= search.east! && lng >= search.west!;
-}
-
-function matchesSearch(search: SearchWithUser, property: AlertMatchProperty) {
-  const propertyPrice = toNumber(property.price) ?? 0;
-  const propertyBeds = toNumber(property.beds) ?? 0;
-
-  if (!sameValue(search.city, property.city)) return false;
-  if (search.minPrice !== null && propertyPrice < search.minPrice) return false;
-  if (search.beds !== null && propertyBeds < search.beds) return false;
-  if (search.type && !sameValue(search.type, property.propertyType)) return false;
-
-  return matchesBounds(search, property);
-}
-
 function getPublicBaseUrl() {
   const configuredUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.PUBLIC_SITE_URL || 'https://davidquinngroup.com';
   return configuredUrl.replace(/\/+$/, '');
 }
 
-function isValidProperty(property: AlertMatchProperty) {
-  return Boolean(property.id && property.city);
-}
-
-function isJsonPrimitive(value: unknown): value is string | number | boolean {
-  return typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean';
-}
-
-function addOptionalPayloadValue(payload: Record<string, Prisma.InputJsonValue>, key: string, value: unknown) {
-  if (value === undefined || value === null || value === '') return;
-
-  if (isJsonPrimitive(value)) {
-    payload[key] = value;
-    return;
-  }
-
-  payload[key] = String(value);
-}
-
-function buildAlertPayload(property: AlertMatchProperty): Prisma.InputJsonObject {
-  const identity = toCleanString(property.slug || property.id || property.mlsId);
-  const propertyUrl = identity
-    ? `${getPublicBaseUrl()}/properties/${encodeURIComponent(identity)}`
-    : `${getPublicBaseUrl()}/search`;
-  const payload: Record<string, Prisma.InputJsonValue> = {
-    id: String(property.id),
-    propertyId: String(property.id),
-    address: toCleanString(property.address, 'Colorado property'),
-    city: toCleanString(property.city, 'Colorado'),
-    state: toCleanString(property.state, 'CO'),
-    price: toNumber(property.price) ?? 0,
-    url: propertyUrl,
-  };
-
-  addOptionalPayloadValue(payload, 'mlsId', property.mlsId);
-  addOptionalPayloadValue(payload, 'slug', property.slug);
-  addOptionalPayloadValue(payload, 'beds', toNumber(property.beds));
-  addOptionalPayloadValue(payload, 'baths', toNumber(property.baths));
-  addOptionalPayloadValue(payload, 'sqft', toNumber(property.sqft));
-  addOptionalPayloadValue(payload, 'propertyType', property.propertyType);
-  addOptionalPayloadValue(payload, 'image', property.image);
-  addOptionalPayloadValue(payload, 'efficiencyScore', toNumber(property.efficiencyScore));
-  addOptionalPayloadValue(payload, 'resilienceScore', toNumber(property.resilienceScore));
-  addOptionalPayloadValue(payload, 'altitude', toNumber(property.altitude));
-  addOptionalPayloadValue(payload, 'soilType', property.soilType);
-  addOptionalPayloadValue(payload, 'hasPolybutyleneRisk', property.hasPolybutyleneRisk);
-
-  return payload;
+export function buildAlertPayload(property: AlertMatchProperty): Prisma.InputJsonObject {
+  return buildAlertPayloadIntent(property, getPublicBaseUrl()) as Prisma.InputJsonObject;
 }
 
 async function fetchCandidateSearches(property: AlertMatchProperty): Promise<SearchWithUser[]> {
-  const city = toCleanString(property.city);
+  const city = toCleanAlertString(property.city);
 
   if (!city) return [];
 
@@ -262,7 +178,7 @@ function emptySummary(): AlertMatchSummary {
 export async function matchAndNotify(property: AlertMatchProperty): Promise<AlertMatchSummary> {
   const summary = emptySummary();
 
-  if (!isValidProperty(property)) {
+  if (!isValidAlertProperty(property)) {
     summary.skippedInvalidProperty = 1;
     console.warn('Saved-search matching skipped because property is missing id or city.');
     return summary;
@@ -274,7 +190,7 @@ export async function matchAndNotify(property: AlertMatchProperty): Promise<Aler
   summary.scannedSearches = candidateSearches.length;
 
   for (const search of candidateSearches) {
-    if (!matchesSearch(search, property)) continue;
+    if (!matchesAlertSearch(search, property)) continue;
 
     summary.matchedSearches++;
 

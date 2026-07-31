@@ -25,6 +25,14 @@ type SendEmailOptions = {
   unsubscribeUrl?: string;
   userId?: string;
   source?: string;
+  publicBaseUrl?: string;
+};
+
+export type RenderedPropertyAlertEmail = {
+  subject: string;
+  html: string;
+  text: string;
+  listingCount: number;
 };
 
 type NormalizedListing = {
@@ -111,8 +119,8 @@ function getReviewSignal(listing: DigestListing) {
   return 'REIE Verified';
 }
 
-function getPublicBaseUrl() {
-  const configuredUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.PUBLIC_SITE_URL || 'https://davidquinngroup.com';
+function getPublicBaseUrl(options: Pick<SendEmailOptions, 'publicBaseUrl'> = {}) {
+  const configuredUrl = options.publicBaseUrl || process.env.NEXT_PUBLIC_SITE_URL || process.env.PUBLIC_SITE_URL || 'https://davidquinngroup.com';
   return configuredUrl.replace(/\/+$/, '');
 }
 
@@ -124,12 +132,12 @@ function getListingPathIdentity(listing: DigestListing) {
   return normalizeText(listing.slug || listing.id || listing.propertyId || listing.mlsId) || null;
 }
 
-function safeUrl(value: string | undefined, fallback: string) {
+function safeUrl(value: string | undefined, fallback: string, options: Pick<SendEmailOptions, 'publicBaseUrl'> = {}) {
   const trimmed = normalizeText(value);
   if (!trimmed) return fallback;
 
   try {
-    const url = new URL(trimmed, getPublicBaseUrl());
+    const url = new URL(trimmed, getPublicBaseUrl(options));
     if (url.protocol === 'http:' || url.protocol === 'https:') return url.toString();
   } catch {
     return fallback;
@@ -138,17 +146,18 @@ function safeUrl(value: string | undefined, fallback: string) {
   return fallback;
 }
 
-function getListingUrl(listing: DigestListing) {
+function getListingUrl(listing: DigestListing, options: Pick<SendEmailOptions, 'publicBaseUrl'> = {}) {
   const identity = getListingPathIdentity(listing);
-  const fallback = identity ? `${getPublicBaseUrl()}/properties/${encodeURIComponent(identity)}` : `${getPublicBaseUrl()}/search`;
+  const baseUrl = getPublicBaseUrl(options);
+  const fallback = identity ? `${baseUrl}/properties/${encodeURIComponent(identity)}` : `${baseUrl}/search`;
 
-  return safeUrl(listing.url, fallback);
+  return safeUrl(listing.url, fallback, options);
 }
 
 function getTrackedListingUrl(listing: NormalizedListing, options: SendEmailOptions) {
   if (!options.userId || !listing.id) return listing.url;
 
-  const trackingUrl = new URL('/api/track-click', getPublicBaseUrl());
+  const trackingUrl = new URL('/api/track-click', getPublicBaseUrl(options));
   trackingUrl.searchParams.set('u', options.userId);
   trackingUrl.searchParams.set('l', listing.id);
   trackingUrl.searchParams.set('src', normalizeText(options.source, 'email').replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 48) || 'email');
@@ -157,12 +166,12 @@ function getTrackedListingUrl(listing: NormalizedListing, options: SendEmailOpti
   return trackingUrl.toString();
 }
 
-function normalizeImageUrl(value: string | undefined) {
-  const normalized = safeUrl(value, '');
+function normalizeImageUrl(value: string | undefined, options: Pick<SendEmailOptions, 'publicBaseUrl'> = {}) {
+  const normalized = safeUrl(value, '', options);
   return normalized || null;
 }
 
-function normalizeListing(listing: DigestListing): NormalizedListing {
+function normalizeListing(listing: DigestListing, options: Pick<SendEmailOptions, 'publicBaseUrl'> = {}): NormalizedListing {
   const state = normalizeText(listing.state, 'CO');
   const city = normalizeText(listing.city);
   const location = [city, state].filter(Boolean).join(', ') || 'Colorado';
@@ -175,8 +184,8 @@ function normalizeListing(listing: DigestListing): NormalizedListing {
     beds: normalizeFiniteNumber(listing.beds),
     baths: normalizeFiniteNumber(listing.baths),
     sqft: normalizeFiniteNumber(listing.sqft),
-    image: normalizeImageUrl(listing.image),
-    url: getListingUrl(listing),
+    image: normalizeImageUrl(listing.image, options),
+    url: getListingUrl(listing, options),
     efficiencyScore: normalizeFiniteNumber(listing.efficiencyScore),
     resilienceScore: normalizeFiniteNumber(listing.resilienceScore),
     reviewSignal: getReviewSignal(listing),
@@ -245,7 +254,7 @@ function renderFooter(options: SendEmailOptions) {
   const unsubscribeLink = options.unsubscribeUrl
     ? `
       <br />
-      <a href="${escapeHtml(safeUrl(options.unsubscribeUrl, `${getPublicBaseUrl()}/search`))}" style="color: #67e8f9; text-decoration: underline;">
+      <a href="${escapeHtml(safeUrl(options.unsubscribeUrl, `${getPublicBaseUrl(options)}/search`, options))}" style="color: #67e8f9; text-decoration: underline;">
         Unsubscribe from David Quinn Group property intelligence emails
       </a>
     `
@@ -314,7 +323,7 @@ function renderDigestText(listings: NormalizedListing[], options: SendEmailOptio
   ];
 
   if (options.unsubscribeUrl) {
-    lines.push(`Unsubscribe: ${safeUrl(options.unsubscribeUrl, `${getPublicBaseUrl()}/search`)}`);
+    lines.push(`Unsubscribe: ${safeUrl(options.unsubscribeUrl, `${getPublicBaseUrl(options)}/search`, options)}`);
   }
 
   return lines.join('\n');
@@ -329,15 +338,31 @@ function getReplyTo() {
   return replyTo || undefined;
 }
 
+export function renderPropertyAlertEmail(
+  listings: DigestListing[],
+  options: SendEmailOptions = {},
+): RenderedPropertyAlertEmail | null {
+  const normalizedListings = listings.map((listing) => normalizeListing(listing, options)).filter((listing) => listing.id || listing.address);
+
+  if (normalizedListings.length === 0) return null;
+
+  return {
+    subject: getSubject(normalizedListings.length),
+    html: renderDigestHtml(normalizedListings, options),
+    text: renderDigestText(normalizedListings, options),
+    listingCount: normalizedListings.length,
+  };
+}
+
 export async function sendEmail(
   to: string,
   listings: DigestListing[],
   options: SendEmailOptions = {},
 ): Promise<Awaited<ReturnType<Resend['emails']['send']>> | SendEmailSkippedResult> {
   const recipient = normalizeText(to);
-  const normalizedListings = listings.map(normalizeListing).filter((listing) => listing.id || listing.address);
+  const rendered = renderPropertyAlertEmail(listings, options);
 
-  if (!recipient || normalizedListings.length === 0) {
+  if (!recipient || !rendered) {
     return { sent: false, reason: 'missing-recipient-or-listings' };
   }
 
@@ -345,9 +370,9 @@ export async function sendEmail(
     from: process.env.RESEND_FROM_EMAIL || 'David Quinn Group <alerts@davidquinngroup.com>',
     to: recipient,
     replyTo: getReplyTo(),
-    subject: getSubject(normalizedListings.length),
-    html: renderDigestHtml(normalizedListings, options),
-    text: renderDigestText(normalizedListings, options),
+    subject: rendered.subject,
+    html: rendered.html,
+    text: rendered.text,
   });
 }
 
