@@ -10,6 +10,59 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE Post-Seller Readiness Strategic Next-Phase Review, July 31, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Current governed state:
+
+- Core Product Experience Optimization cycle is complete.
+- Product Cohesion Review(tm) Wave 1 is production-certified and closed.
+- Controlled Fixture Alert Dry-Run(tm) program is certified and closed.
+- Local Decision Intelligence(tm) Phase 1 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 1 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 2 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 3 is production-certified and closed.
+- REIE Product Experience(tm) Next Cohesion Wave is production-certified and closed.
+- REIE Cross-City Decision Comparison(tm) is production-certified and closed.
+- REIE Seller Readiness Advancement(tm) is production-certified and closed.
+- REIE Post-Seller Readiness Strategic Next-Phase Review is locally recorded.
+- Strategic next-phase finding: `PRIORITIZE_BUYER_FINANCING_READINESS_ADVANCEMENT`.
+- Primary recommendation: implement protected-boundary-safe Buyer Financing Readiness Advancement.
+- Recommended next authorization: `BUYER_FINANCING_READINESS_ADVANCEMENT_IMPLEMENTATION_AUTHORIZATION`.
+- This is a recommendation only. Buyer Financing Readiness Advancement implementation is not authorized by this review record.
+- Current certified Local Decision Intelligence maturity inventory: `ENHANCED_FOUNDATION` for Broomfield, Superior, Longmont, Denver, Erie, and Westminster; editorial Decision Guides for Boulder, Louisville, and Lafayette.
+- Current certified Product Experience position: Homepage, Buy, Sell, Home Worth, Grand Plan, Contact / Advisory, and shared `JourneyCohesionPanel` cohesion are certified; Search, market/city, property, neighborhood, financing, trust, disclosure, and certified city continuity are preserved.
+- Current certified Cross-City Decision Comparison position: `/compare` is certified for nine governed markets with safe mixed-maturity comparison, deterministic 2 to 3 city query-state behavior, neutral dimensions, Back and Forward history behavior, and no ranking, scoring, personalization, persistence, or tracking.
+- Current certified Seller Readiness position: `/home-worth#seller-readiness` is certified with `/sell` entry point, preparation, documentation, verification, market-context, property-context, and advisory framing; no valuation, pricing, scoring, uploads, persistence, automation, or personalization.
+- Post-Seller Readiness interpretation: the seller-side readiness bridge is now closed. The largest remaining customer-value gap is the buyer-side financing-readiness bridge between Buyer Guidance, Financing Confidence education, Search, market context, Grand Plan, and Advisory.
+- Buyer Financing Readiness scope recommendation: financing readiness orientation, document and question preparation checklist, lender-question prompts, budget-planning prompts without calculations, Financing Confidence review path, Search/Buyer/Market/Grand Plan/Advisory continuity, and explicit education-not-qualification boundaries.
+- Buyer Financing Readiness exclusions: no mortgage calculator, loan calculator, rates, rate quotes, qualification, prequalification, affordability determination, payment quote, lender matching, lender integration, loan products, personal financial intake, customer-data persistence, provider activation, external acquisition, schema/API/Prisma/migration changes, queues/workers/email/alerts, telemetry, personalization, or production-data mutation.
+- Secondary priority: `PRIORITIZE_EVIDENCE_DEPTH_AND_DATA_INTEGRATION`.
+- Decision Guide unification finding: mixed-maturity comparison continues to reduce the need for immediate unification; Boulder, Louisville, and Lafayette should not be mechanically migrated or relabeled without separate authorization.
+- Evidence-depth finding: not required before an education-only buyer readiness implementation; required before any property-specific, provider-backed, valuation, public-record, or neighborhood intelligence.
+- Property / Seller Evidence finding: important later but not next; source-rights, professional-boundary, and no-valuation risks remain material.
+- Neighborhood/submarket finding: not implementation-ready; object-type, route, evidence, fair-housing, and certification-scale risks remain unresolved.
+- Local Decision Intelligence cadence: remain paused and slower-governed; Niwot activation remains unauthorized.
+- Product Experience finding: another broad cohesion wave is not justified now unless new production evidence identifies a specific friction point.
+- Queued only: Evidence Depth and Data Integration readiness, Decision Guide unification planning, Property / Seller Evidence Readiness, Neighborhood/Submarket Intelligence architecture, Local Decision Intelligence Phase 2 Wave 4 planning, and targeted Product Experience follow-up only if evidence supports it.
+- Deferred or paused: mortgage calculators, loan calculators, rates/rate quotes, qualification, prequalification, affordability conclusions, lender matching/integration, personal financial intake, automated valuation, seller price output, appraisal substitute flows, comparable-sale calculations, seller net sheets, Decision Guide unification implementation, neighborhood/submarket public routes, Gunbarrel public intelligence activation, Niwot activation, provider activation, public GIS, external acquisition, public-record ingestion, rankings/scoring, AI/personalization, telemetry, customer-data activation, alerts, queues, workers, email, schema/API/search-ranking/map-boundary/environment/deployment-configuration changes, and production-data mutation.
+- Strategic review record: `docs/project-atlas/executive-library/REIE-POST-SELLER-READINESS-STRATEGIC-NEXT-PHASE-REVIEW.md`.
+- Required remediation: none.
+- Exact next step: stop, or explicitly authorize Buyer Financing Readiness Advancement implementation. Codex must not implement buyer financing readiness, begin another initiative, modify runtime code, create routes, change eligibility, activate protected capabilities, push, deploy, or modify production behavior without an explicit directive.
+
+Prior REIE Seller Readiness Advancement closure handoff retained below.
+
 PROJECT ATLAS(tm) / REIE Seller Readiness Advancement(tm) Certification and Closure, July 31, 2026:
 
 Workspace:
