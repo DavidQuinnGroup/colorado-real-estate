@@ -24,12 +24,21 @@ type DecisionGuideTradeoff = {
   tradeoff: string;
 };
 
+type DecisionGuideSnapshot = {
+  whereAmI: string;
+  mattersMost: string;
+  payAttention: string;
+  verify: string;
+  bestNextStep: string;
+};
+
 export type DecisionGuide = {
   key: DecisionGuideKey;
   maturity: DecisionGuideMaturity;
   publicEligibility: boolean;
   cityName: string;
   identity: string;
+  decisionSnapshot: DecisionGuideSnapshot;
   summaryEyebrow: string;
   summaryHeadline: string;
   summaryIntro: string;
@@ -40,6 +49,11 @@ export type DecisionGuide = {
   decisionSummary: DecisionGuideSummaryItem[];
   housingContext: DecisionGuideItem[];
   practicalContext: DecisionGuideItem[];
+  marketContext: DecisionGuideItem[];
+  communityContext: DecisionGuideItem[];
+  buyerConsiderations: DecisionGuideItem[];
+  sellerConsiderations: DecisionGuideItem[];
+  evidenceLimitations: DecisionGuideItem[];
   tradeoffs: DecisionGuideTradeoff[];
   verificationQuestions: string[];
 };
@@ -310,6 +324,13 @@ function buildFoundationDecisionGuide({
     publicEligibility: true,
     cityName: city.name,
     identity: `${city.name} is published as a ${evidenceLabel.toLowerCase()} Colorado Decision Guide using governed city-market data, existing search continuity, and standard verification language. Use it as a starting point, then confirm property-specific facts before narrowing into individual homes.`,
+    decisionSnapshot: {
+      whereAmI: `${city.name} foundation Local Decision Intelligence.`,
+      mattersMost: 'Use the city market signal as orientation before narrowing into properties.',
+      payAttention: 'Price, inventory, timing, property facts, financing readiness, and the absence of certified neighborhood interpretation.',
+      verify: 'Confirm individual listing facts, disclosures, records, condition, costs, insurance questions, and advisor context before acting.',
+      bestNextStep: `Search ${city.name} homes with market context, then bring specific property questions into advisor review.`,
+    },
     summaryEyebrow: `${city.name} Decision Summary`,
     summaryHeadline: `Start with a bounded ${city.name} decision foundation.`,
     summaryIntro:
@@ -371,6 +392,66 @@ function buildFoundationDecisionGuide({
         label: 'Research discipline',
         explanation:
           'Use market context, search results, property records, disclosures, inspection review, insurance questions, financing preparation, and advisor discussion as separate evidence layers.',
+      },
+    ],
+    marketContext: [
+      {
+        label: 'Current market signal',
+        explanation: `${city.name} is represented with governed city-market data, including ${city.stats.medianPrice} median price context, ${city.stats.inventory} inventory signal, and ${marketSignal.toLowerCase()}.`,
+      },
+      {
+        label: 'How to use the signal',
+        explanation:
+          'Treat market context as orientation for search discipline and seller preparation. It is not a forecast, valuation, ranking, or statement about a specific property.',
+      },
+    ],
+    communityContext: [
+      {
+        label: hasNeighborhoodEvidence ? 'Neighborhood continuity' : 'Foundation community context',
+        explanation: hasNeighborhoodEvidence
+          ? `${city.name} has existing governed neighborhood paths that can help customers move from city context into local anchors.`
+          : `${city.name} does not yet have certified neighborhood-level community interpretation in the repository, so community context must stay broad and verification-focused.`,
+      },
+      {
+        label: 'Assumptions to avoid',
+        explanation:
+          'Do not treat a city name as a complete answer. Access, property condition, costs, records, and daily-use assumptions still need property-specific review.',
+      },
+    ],
+    buyerConsiderations: [
+      {
+        label: 'Before search',
+        explanation:
+          'Use the foundation guide to decide whether the city market context is relevant enough to open active inventory.',
+      },
+      {
+        label: 'Before touring',
+        explanation:
+          'Compare each property against records, condition, costs, financing readiness, and the questions this guide surfaces.',
+      },
+    ],
+    sellerConsiderations: [
+      {
+        label: 'Before pricing',
+        explanation:
+          'Use the city signal to frame preparation questions, but do not treat it as a property valuation or pricing recommendation.',
+      },
+      {
+        label: 'Before requesting review',
+        explanation:
+          'Bring property condition, timing, competing inventory, and preparation questions into a seller strategy conversation.',
+      },
+    ],
+    evidenceLimitations: [
+      {
+        label: 'Foundation maturity',
+        explanation:
+          'This page is FOUNDATION maturity. It uses existing governed city data and standard verification language without claiming complete local authority.',
+      },
+      {
+        label: 'No protected activation',
+        explanation:
+          'No AI, public GIS, telemetry, provider activation, ranking, valuation, school rating, safety rating, or investment guidance is used.',
       },
     ],
     tradeoffs: [
@@ -437,6 +518,13 @@ export function buildDecisionGuide({
     publicEligibility,
     cityName: city.name,
     identity: `${city.name} should be evaluated as a ${config.identityPattern} before a customer narrows into individual homes.`,
+    decisionSnapshot: {
+      whereAmI: `${city.name} editorially certified Local Decision Intelligence.`,
+      mattersMost: config.distinctValue,
+      payAttention: config.attentionValue,
+      verify: config.verificationValue,
+      bestNextStep: `Compare ${city.name} neighborhood context, search active homes, or bring specific questions into advisory review.`,
+    },
     summaryEyebrow: `${city.name} Decision Summary`,
     summaryHeadline: config.summaryHeadline,
     summaryIntro: config.summaryIntro,
@@ -489,6 +577,63 @@ export function buildDecisionGuide({
         explanation: config.researchExplanation,
       },
     ],
+    marketContext: [
+      {
+        label: 'Current market signal',
+        explanation: `Current market context shows ${city.stats.medianPrice} median price, ${city.stats.inventory} active inventory signal, and ${marketSignal.toLowerCase()} as the city-market interpretation.`,
+      },
+      {
+        label: 'How to use the signal',
+        explanation:
+          'Use the signal to compare timing, inventory, preparation, and search discipline. It does not replace property-specific verification.',
+      },
+    ],
+    communityContext: [
+      {
+        label: 'Local decision context',
+        explanation: config.accessExplanation,
+      },
+      {
+        label: 'Assumptions to avoid',
+        explanation: config.specificityExplanation,
+      },
+    ],
+    buyerConsiderations: [
+      {
+        label: 'Before search',
+        explanation:
+          'Use the guide to decide which neighborhood pattern and property questions should shape active inventory review.',
+      },
+      {
+        label: 'Before touring',
+        explanation:
+          'Compare property facts, records, condition, financing readiness, and daily-use assumptions before giving a home more attention.',
+      },
+    ],
+    sellerConsiderations: [
+      {
+        label: 'Before pricing',
+        explanation:
+          'Use the city and neighborhood context to frame preparation and competing-inventory questions, not as a valuation conclusion.',
+      },
+      {
+        label: 'Before requesting review',
+        explanation:
+          'Bring property condition, timing, location context, and preparation questions into a seller strategy conversation.',
+      },
+    ],
+    evidenceLimitations: [
+      {
+        label: 'Editorial certification',
+        explanation:
+          'This guide is editorially certified for local decision framing, but individual property facts, costs, records, disclosures, and financing assumptions still require verification.',
+      },
+      {
+        label: 'No protected activation',
+        explanation:
+          'No AI, public GIS, telemetry, provider activation, ranking, valuation, school rating, safety rating, or investment guidance is used.',
+      },
+    ],
     tradeoffs: config.tradeoffs,
     verificationQuestions: config.verificationQuestions,
   };
@@ -503,7 +648,7 @@ export function buildDecisionGuideContinuityLinks({
   marketHref: string;
   searchHref: string;
 }) {
-  return [
+  const baseLinks = [
     { label: 'Market Context', href: marketHref, destination: 'market' },
     { label: `Search ${guide.cityName} Homes`, href: searchHref, destination: 'search' },
     { label: 'Buyer Guidance', href: '/buy', destination: 'search' },
@@ -511,4 +656,8 @@ export function buildDecisionGuideContinuityLinks({
     { label: 'Financing Guidance', href: '/buy#financing-confidence', destination: 'inquiry' },
     { label: 'Grand Plan', href: '/grand-plan', destination: 'inquiry' },
   ] as const;
+
+  return guide.maturity === 'FOUNDATION'
+    ? ([...baseLinks, { label: 'Advisory Guidance', href: '/contact', destination: 'inquiry' }] as const)
+    : baseLinks;
 }

@@ -73,6 +73,7 @@
     "scripts/checkBoulderDecisionGuide.ts",
     "scripts/checkLouisvilleDecisionGuide.ts",
     "scripts/checkLafayetteDecisionGuide.ts",
+    "scripts/checkLocalDecisionIntelligencePhase1.ts",
     "scripts/checkProductionMediaResilience.ts",
     "scripts/checkPrismaClientParity.ts",
     "scripts/checkProductionDependencies.ts",

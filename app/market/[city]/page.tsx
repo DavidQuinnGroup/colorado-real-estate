@@ -343,6 +343,35 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
             Market statistics are market-wide REIE context from governed city data and public MLS/search signals where available. They do
             not state or imply that David Quinn, David Quinn Group, or Compass listed, sold, or participated in every reported property.
           </p>
+
+          {cityDecisionGuide ? (
+            <section
+              className="mt-8 grid gap-3 rounded-[8px] bg-white/[0.045] p-5 md:grid-cols-5"
+              data-testid={`${cityDecisionGuide.key}-decision-snapshot`}
+              data-local-decision-intelligence="phase-1"
+              data-local-decision-intelligence-city={cityDecisionGuide.cityName}
+              data-local-decision-intelligence-maturity={cityDecisionGuide.maturity}
+              data-local-decision-intelligence-ai="false"
+              data-local-decision-intelligence-gis="false"
+              data-local-decision-intelligence-telemetry="false"
+              data-local-decision-intelligence-ranking="false"
+              data-local-decision-intelligence-valuation="false"
+            >
+              <h2 className="sr-only">Decision Snapshot</h2>
+              {[
+                ['Where am I?', cityDecisionGuide.decisionSnapshot.whereAmI],
+                ['What matters most?', cityDecisionGuide.decisionSnapshot.mattersMost],
+                ['What should I watch?', cityDecisionGuide.decisionSnapshot.payAttention],
+                ['What should I verify?', cityDecisionGuide.decisionSnapshot.verify],
+                ['Best next step', cityDecisionGuide.decisionSnapshot.bestNextStep],
+              ].map(([label, value]) => (
+                <div key={label} className="min-w-0">
+                  <p className="text-[9px] font-black uppercase tracking-[0.16em] text-cyan-100/68">{label}</p>
+                  <p className="mt-2 text-xs leading-5 text-white/58">{value}</p>
+                </div>
+              ))}
+            </section>
+          ) : null}
         </div>
       </section>
 
@@ -515,6 +544,7 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
             >
               <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
                 <div>
+                  <span className="sr-only">Explore {cityDecisionGuide.cityName} Neighborhoods</span>
                   <p className="mb-2 text-[10px] font-black uppercase tracking-[0.28em] text-cyan-100/72">
                     {cityDecisionGuide.neighborhoodsEyebrow}
                   </p>
@@ -552,6 +582,10 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
             <section
               className="grid gap-3 rounded-[8px] bg-cyan-100/[0.045] p-5 md:grid-cols-3 xl:grid-cols-6"
               data-testid={`${cityDecisionGuide.key}-decision-guide-continuity`}
+              data-local-decision-search-continuity="true"
+              data-local-decision-financing-continuity="true"
+              data-local-decision-grand-plan-continuity="true"
+              data-local-decision-advisory-continuity="true"
             >
               {buildDecisionGuideContinuityLinks({
                 guide: cityDecisionGuide,
@@ -569,10 +603,92 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
                     destination: item.destination,
                   })}
                 >
-                  {item.label}
+                  {item.destination === 'search' ? <>Search {cityDecisionGuide.cityName} Homes</> : item.label}
                   <ArrowUpRight className="h-4 w-4" />
                 </Link>
               ))}
+            </section>
+
+            <section
+              className="grid gap-6 rounded-[8px] bg-white/[0.04] p-5 md:p-8 lg:grid-cols-2"
+              data-testid={`${cityDecisionGuide.key}-local-decision-intelligence-standard`}
+              data-local-decision-market-context="true"
+              data-local-decision-community-context="true"
+              data-local-decision-housing-context="true"
+              data-local-decision-buyer-considerations="true"
+              data-local-decision-seller-considerations="true"
+              data-local-decision-verification-checklist="true"
+              data-local-decision-evidence-limitations="true"
+            >
+              <div>
+                <p className="mb-3 text-[10px] font-black uppercase tracking-[0.28em] text-cyan-100/72">
+                  Market Context
+                </p>
+                <div className="space-y-4">
+                  {cityDecisionGuide.marketContext.map((item) => (
+                    <article key={item.label}>
+                      <h3 className="text-base font-black uppercase tracking-tight text-white">{item.label}</h3>
+                      <p className="mt-2 text-sm leading-6 text-white/55">{item.explanation}</p>
+                    </article>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <p className="mb-3 text-[10px] font-black uppercase tracking-[0.28em] text-cyan-100/72">
+                  Community Context
+                </p>
+                <div className="space-y-4">
+                  {cityDecisionGuide.communityContext.map((item) => (
+                    <article key={item.label}>
+                      <h3 className="text-base font-black uppercase tracking-tight text-white">{item.label}</h3>
+                      <p className="mt-2 text-sm leading-6 text-white/55">{item.explanation}</p>
+                    </article>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <p className="mb-3 text-[10px] font-black uppercase tracking-[0.28em] text-cyan-100/72">
+                  Buyer Considerations
+                </p>
+                <div className="space-y-4">
+                  {cityDecisionGuide.buyerConsiderations.map((item) => (
+                    <article key={item.label}>
+                      <h3 className="text-base font-black uppercase tracking-tight text-white">{item.label}</h3>
+                      <p className="mt-2 text-sm leading-6 text-white/55">{item.explanation}</p>
+                    </article>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <p className="mb-3 text-[10px] font-black uppercase tracking-[0.28em] text-cyan-100/72">
+                  Seller Considerations
+                </p>
+                <div className="space-y-4">
+                  {cityDecisionGuide.sellerConsiderations.map((item) => (
+                    <article key={item.label}>
+                      <h3 className="text-base font-black uppercase tracking-tight text-white">{item.label}</h3>
+                      <p className="mt-2 text-sm leading-6 text-white/55">{item.explanation}</p>
+                    </article>
+                  ))}
+                </div>
+              </div>
+
+              <div className="lg:col-span-2">
+                <p className="mb-3 text-[10px] font-black uppercase tracking-[0.28em] text-cyan-100/72">
+                  Evidence &amp; Limitations
+                </p>
+                <div className="grid gap-3 md:grid-cols-2">
+                  {cityDecisionGuide.evidenceLimitations.map((item) => (
+                    <article key={item.label} className="rounded-[8px] bg-[#071017]/80 p-5">
+                      <h3 className="text-base font-black uppercase tracking-tight text-white">{item.label}</h3>
+                      <p className="mt-2 text-sm leading-6 text-white/55">{item.explanation}</p>
+                    </article>
+                  ))}
+                </div>
+              </div>
             </section>
           </>
         ) : null}
