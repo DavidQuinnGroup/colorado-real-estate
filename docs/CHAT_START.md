@@ -10,6 +10,43 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / Local Decision Intelligence(tm) Phase 2 Wave 3 Executive Roadmap, July 31, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Current governed state:
+
+- Core Product Experience Optimization cycle is complete.
+- Product Cohesion Review(tm) Wave 1 is production-certified and closed.
+- Controlled Fixture Alert Dry-Run(tm) program is certified and closed.
+- Local Decision Intelligence(tm) Phase 1 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 1 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 2 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 3 executive planning and roadmap is locally recorded.
+- Final roadmap finding: `LOCAL_DECISION_INTELLIGENCE_PHASE_2_WAVE_3_READY_FOR_IMPLEMENTATION`.
+- Current certified maturity inventory: `ENHANCED_FOUNDATION` for Broomfield, Superior, Longmont, and Denver; `FOUNDATION` for Erie and Westminster; previously certified Decision Guides for Boulder, Louisville, and Lafayette.
+- Recommended Wave 3 implementation scope: Erie and Westminster.
+- Wave 3 rationale: Erie and Westminster are the remaining public `FOUNDATION` Local Decision Intelligence cities with existing canonical market routes and supported city-search continuity, making them the lowest-risk next implementation pair.
+- Recommended later sequence: Niwot authority/search-support reconciliation; Brighton, Firestone, and Frederick municipal expansion; Thornton later after canonical-content and search-support blockers are resolved; Gunbarrel deferred to neighborhood/submarket or enterprise object-type resolution unless governance explicitly resolves its city/neighborhood/market-area ambiguity.
+- Planning baseline SHA: `ef6ff227f9122ccbeb0d0232ffbba6edb18f208d`.
+- Planning record: `docs/project-atlas/executive-library/LOCAL-DECISION-INTELLIGENCE-PHASE-2-WAVE-3-EXECUTIVE-ROADMAP.md`.
+- Required remediation: none.
+- Recommended next authorization: `LOCAL_DECISION_INTELLIGENCE_PHASE_2_WAVE_3_IMPLEMENTATION_AUTHORIZATION`.
+- This is a recommendation only. Wave 3 implementation is not authorized by the roadmap record.
+- Exact next step: stop, or explicitly authorize Wave 3 implementation. Codex must not implement Erie, implement Westminster, begin Niwot/Gunbarrel/Thornton/Brighton/Firestone/Frederick work, modify runtime code, create routes, change registry eligibility, activate protected capabilities, push, deploy, or modify production behavior without an explicit directive.
+
+Prior Local Decision Intelligence Phase 2 Wave 2 handoff retained below.
+
 PROJECT ATLAS(tm) / Local Decision Intelligence(tm) Phase 2 Wave 2 Certification and Closure, July 31, 2026:
 
 Workspace:
