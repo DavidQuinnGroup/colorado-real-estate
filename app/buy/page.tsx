@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
+import BuyerFinancingReadinessGuide from '@/components/BuyerFinancingReadinessGuide';
 import FinancingConfidenceEducation from '@/components/FinancingConfidenceEducation';
 import JourneyCohesionPanel from '@/components/JourneyCohesionPanel';
 import { buildBuyerDecisionWorkspace } from '@/lib/buyerDecisionWorkspace';
@@ -76,6 +77,9 @@ export default function BuyPage() {
               <Link href="/search" className={primaryButtonClass}>
                 Start Buyer Search
               </Link>
+              <Link href="#financing-readiness" className={secondaryButtonClass}>
+                Financing Readiness
+              </Link>
               <Link href="/market" className={secondaryButtonClass}>
                 Understand the Market
               </Link>
@@ -147,7 +151,10 @@ export default function BuyPage() {
 
       <section className="px-5 pb-24 sm:px-8 lg:px-12">
         <div className="mx-auto grid w-full max-w-[1180px] gap-6">
-          <FinancingConfidenceEducation surface="buy" />
+          <BuyerFinancingReadinessGuide />
+          <div id="financing-confidence" className="scroll-mt-24">
+            <FinancingConfidenceEducation surface="buy" />
+          </div>
           <JourneyCohesionPanel
             surface="buyer"
             title="Move from buyer guidance into the right workspace."
