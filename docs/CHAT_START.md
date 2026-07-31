@@ -10,7 +10,7 @@ Product:
 
 ## Latest New-Chat Handoff
 
-PROJECT ATLAS(tm) / Local Decision Intelligence(tm) Phase 2 Wave 2 Planning and Architecture, July 31, 2026:
+PROJECT ATLAS(tm) / Local Decision Intelligence(tm) Phase 2 Wave 2 Certification and Closure, July 31, 2026:
 
 Workspace:
 
@@ -31,23 +31,44 @@ Current governed state:
 - Controlled Fixture Alert Dry-Run(tm) program is certified and closed.
 - Local Decision Intelligence(tm) Phase 1 is production-certified and closed.
 - Local Decision Intelligence(tm) Phase 2 Wave 1 is production-certified and closed.
-- Local Decision Intelligence(tm) Phase 2 Wave 2 planning and architecture is complete.
-- Phase 2 Wave 2 planning finding: `LOCAL_DECISION_INTELLIGENCE_PHASE_2_WAVE_2_READY_FOR_IMPLEMENTATION`.
-- Planning status: `PLANNING_READY_FOR_IMPLEMENTATION`.
-- Approved Wave 2 planning pair: Broomfield and Superior.
-- City-pairing decision: `APPROVE_BROOMFIELD_AND_SUPERIOR`.
-- Broomfield scope: upgrade existing certified `/market/broomfield-co-housing-market` from `FOUNDATION` to `ENHANCED_FOUNDATION` only after full Phase 2 completeness validation.
-- Superior scope: implement new `ENHANCED_FOUNDATION` Local Decision Intelligence city only after canonical city-market route and registry eligibility are reconciled.
-- Expected Superior route: `/market/superior-co-housing-market`.
-- Superior planning prerequisite: current registry marks Superior ineligible because `marketRoute` is `null` and reasons include `missing-market-route` and `missing-market-data`; implementation must resolve this before public eligibility or maturity promotion.
-- Wave 2 must preserve the Wave 1 remediation continuity identities: `city-search`, `buyer-guidance`, `seller-guidance`, `financing-confidence`, `grand-plan`, and `advisory`.
-- Required continuity results: city search -> `/search?city={City}`, `Buyer Guidance -> /buy`, `Seller Guidance -> /sell`, `Financing Guidance -> /buy#financing-confidence`, `Grand Plan -> /grand-plan`, and `Advisory Guidance -> /contact`.
-- Wave 2 standard remains the Wave 1 `ENHANCED_FOUNDATION` standard: Decision Snapshot, Local Character, Market Drivers, conditional lifestyle criteria, Buyer Guidance, Seller Guidance, due-diligence prompts, maturity transparency, evidence limitations, CTA continuity, responsive quality, prohibited-claim/fair-housing safety, reusable architecture, and deterministic certification.
+- Local Decision Intelligence(tm) Phase 2 Wave 2 is production-certified and closed.
+- Final status: `LOCAL_DECISION_INTELLIGENCE_PHASE_2_WAVE_2_CERTIFIED_AND_CLOSED`.
+- Closure status: `CERTIFIED_AND_CLOSED`.
+- Phase 2 Wave 2 certified cities: Broomfield and Superior.
+- Certified city routes: `/market/broomfield-co-housing-market` and `/market/superior-co-housing-market`.
+- Broomfield was upgraded from `FOUNDATION` to `ENHANCED_FOUNDATION` while preserving the certified route, prior limitation posture, evidence boundaries, search continuity, and protected-boundary metadata.
+- Superior was added to canonical city data and activated at `/market/superior-co-housing-market` through governed city and registry conventions.
+- Superior's prior fail-closed blockers `missing-market-route` and `missing-market-data` were resolved only after route and data prerequisites were satisfied; registry eligibility safeguards for other ineligible cities were preserved.
+- Superior sensitive rebuilding, hazard, insurance, environmental, structural, drainage, soil, and property-condition topics remain limitation-forward and qualified-source framed.
+- Current certified maturity inventory: `ENHANCED_FOUNDATION` for Broomfield, Superior, Longmont, and Denver; `FOUNDATION` for Erie and Westminster; previously certified Decision Guides for Boulder, Louisville, and Lafayette.
+- Planning SHA: `2e5e192df6bce1a032236d8f79c4e91d27d9b2c5`.
+- Planning commit message: `Plan Local Decision Intelligence Phase 2 Wave 2`.
+- Implementation SHA: `8a6823fb87fc8ca54592443bf8e6b8c63543e5f6`.
+- Implementation commit message: `Implement Local Decision Intelligence Phase 2 Wave 2`.
+- Final certified production SHA: `8a6823fb87fc8ca54592443bf8e6b8c63543e5f6`.
+- Final production deployment status: `success`.
+- GitHub/Vercel status ID: `51437744838`.
+- Deployment description: `Deployment has completed`.
+- Deployment timestamp: `2026-07-31T14:28:40Z`.
+- Vercel deployment target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/2xUc2FU9LWaPXFBrrWGsWJiD7uC6`.
+- Production domain: `https://davidquinngroup.com`.
+- Supersession status: not superseded during certification.
+- Production certification result: `LOCAL_DECISION_INTELLIGENCE_PHASE_2_WAVE_2_PRODUCTION_CERTIFIED`.
+- Production route checks returned HTTP 200 for Homepage, Search, Market, Buyer, Seller, Home Worth, Grand Plan, Contact, Privacy, Terms, Brokerage Disclosures, Broomfield, Superior, Longmont, Denver, Erie, Westminster, Boulder market routes, representative neighborhood route `/market/boulder/downtown-boulder`, and representative property route `/properties/32224-poudre-canyon-rd-bellvue-co-ire1363681`.
+- Production browser review passed for Broomfield and Superior at desktop `1440 x 1100`, tablet `768 x 1024`, and mobile `390 x 844`.
+- Exact continuity labels and destinations passed: `Search Broomfield Homes -> /search?city=Broomfield`, `Search Superior Homes -> /search?city=Superior`, `Buyer Guidance -> /buy`, `Seller Guidance -> /sell`, `Financing Guidance -> /buy#financing-confidence`, `Grand Plan -> /grand-plan`, and `Advisory Guidance -> /contact`.
+- Browser Back behavior passed from Broomfield and Superior city routes to city-filtered search and back.
+- Content, fair-housing, prohibited-claim, maturity, evidence-boundary, city-relevance, responsive, regression, and sensitive Superior context reviews passed.
+- Previously certified product, route, property, neighborhood, search, buyer, seller, financing, Grand Plan, advisory, disclosure, alert, unsubscribe, and public-trust experiences remained intact.
+- Protected capabilities remained inactive.
+- No production rows, SavedSearch records, queue jobs, workers, emails, notifications, environment variables, schema, Prisma models, migrations, APIs, customer data, dependencies, deployment configuration, search ranking, or map boundaries were changed.
+- No manual deployment occurred.
 - Planning record: `docs/project-atlas/executive-library/LOCAL-DECISION-INTELLIGENCE-PHASE-2-WAVE-2-PLANNING-CHARTER.md`.
+- Certification and closure record: `docs/project-atlas/executive-library/LOCAL-DECISION-INTELLIGENCE-PHASE-2-WAVE-2-PROGRAM-CLOSURE.md`.
 - Required remediation: none.
-- Recommended next authorization: `LOCAL_DECISION_INTELLIGENCE_PHASE_2_WAVE_2_IMPLEMENTATION_AUTHORIZATION`.
-- This is a recommendation only. Wave 2 implementation is not authorized.
-- Exact next step: stop, or explicitly authorize Wave 2 implementation. Codex must not implement Broomfield, implement Superior, modify runtime code, activate protected capabilities, push, deploy, or begin another city/wave without an explicit directive.
+- Recommended next authorization: `LOCAL_DECISION_INTELLIGENCE_PHASE_2_WAVE_3_PLANNING`.
+- This is a recommendation only. Wave 3 planning is not authorized.
+- Exact next step: stop, or explicitly authorize Wave 3 planning. Codex must not begin Wave 3 planning, implement additional cities, modify runtime code, activate protected capabilities, push, deploy, or modify production behavior without an explicit directive.
 
 Prior Local Decision Intelligence Phase 2 Wave 1 handoff retained below.
 
