@@ -10,6 +10,57 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE Post-Cross-City Comparison Strategic Next-Phase Review, July 31, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Current governed state:
+
+- Core Product Experience Optimization cycle is complete.
+- Product Cohesion Review(tm) Wave 1 is production-certified and closed.
+- Controlled Fixture Alert Dry-Run(tm) program is certified and closed.
+- Local Decision Intelligence(tm) Phase 1 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 1 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 2 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 3 is production-certified and closed.
+- REIE Product Experience(tm) Next Cohesion Wave is production-certified and closed.
+- REIE Post-Cohesion Wave Strategic Next-Phase Review is complete.
+- REIE Cross-City Decision Comparison(tm) is production-certified and closed.
+- REIE Post-Cross-City Comparison Strategic Next-Phase Review is locally recorded.
+- Strategic next-phase finding: `PRIORITIZE_SELLER_READINESS_ADVANCEMENT`.
+- Primary recommendation: implement protected-boundary-safe Seller Readiness Advancement.
+- Recommended next authorization: `SELLER_READINESS_ADVANCEMENT_IMPLEMENTATION_AUTHORIZATION`.
+- This is a recommendation only. Seller Readiness Advancement implementation is not authorized by this review record.
+- Current certified Local Decision Intelligence maturity inventory: `ENHANCED_FOUNDATION` for Broomfield, Superior, Longmont, Denver, Erie, and Westminster; editorial Decision Guides for Boulder, Louisville, and Lafayette.
+- Current certified Product Experience position: Homepage, Buy, Sell, Home Worth, Grand Plan, Contact / Advisory, and shared `JourneyCohesionPanel` cohesion are certified; Search, market/city, property, neighborhood, financing, trust, disclosure, and certified city continuity are preserved.
+- Current certified Cross-City Decision Comparison position: `/compare` is certified for nine governed markets with safe mixed-maturity comparison, deterministic 2 to 3 city query-state behavior, neutral dimensions, Back and Forward history behavior, and no ranking, scoring, personalization, persistence, or tracking.
+- Post-comparison interpretation: city comparison resolved the largest synthesis gap. The largest remaining customer and business gap is now seller readiness between Home Worth/Sell interest and organized advisory preparation.
+- Seller Readiness scope recommendation: readiness profile or guided readiness surface, preparation checklist, documentation inventory, property-condition and improvement-history prompts, market-context and comparable-listing review prompts without valuation conclusions, Home Worth/Sell continuity, Grand Plan/Advisory continuity, and explicit readiness-not-valuation boundaries.
+- Seller Readiness exclusions: no automated valuation, price range output, appraisal substitution, pricing conclusion, guaranteed sale outcome, forecast, investment recommendation, seller-lead automation beyond existing authorized contact/request posture, provider activation, external data acquisition, schema/API/Prisma/migration changes, queues/workers/email/alerts, telemetry, personalization, or production-data mutation.
+- Secondary priority: `PRIORITIZE_BUYER_FINANCING_READINESS_ADVANCEMENT`.
+- Decision Guide unification finding: mixed-maturity comparison reduces the need for immediate unification; Boulder, Louisville, and Lafayette should not be mechanically migrated or relabeled without separate authorization.
+- Evidence-depth finding: not required before a readiness-only seller implementation; required before any deeper valuation, public-record, provider, GIS, or automated pricing capability.
+- Neighborhood/submarket finding: not implementation-ready; object-type, route, evidence, and fair-housing risks remain unresolved.
+- Local Decision Intelligence cadence: remain paused and slower-governed; Niwot activation remains unauthorized.
+- Product Experience finding: another broad cohesion wave is not justified now unless new production evidence identifies a specific friction point.
+- Queued only: Buyer Financing Readiness Advancement, Decision Guide unification planning, Evidence Depth and Data Integration readiness, Neighborhood/Submarket Intelligence architecture, Local Decision Intelligence Phase 2 Wave 4 planning, and targeted Product Experience discovery only if evidence supports it.
+- Deferred or paused: automated valuation, seller price output, appraisal substitute flows, mortgage calculators, lender integrations, qualification or affordability conclusions, Decision Guide unification implementation, neighborhood/submarket public routes, Gunbarrel public intelligence activation, Niwot activation, provider activation, public GIS, external data acquisition, public-record ingestion, rankings/scoring, AI/personalization, telemetry, customer-data activation, alerts, queues, workers, email, schema/API/search-ranking/map-boundary/environment/deployment-configuration changes, and production-data mutation.
+- Strategic review record: `docs/project-atlas/executive-library/REIE-POST-CROSS-CITY-COMPARISON-STRATEGIC-NEXT-PHASE-REVIEW.md`.
+- Required remediation: none.
+- Exact next step: stop, or explicitly authorize Seller Readiness Advancement implementation. Codex must not implement seller readiness, begin another initiative, modify runtime code, create routes, change eligibility, activate protected capabilities, push, deploy, or modify production behavior without an explicit directive.
+
+Prior REIE Cross-City Decision Comparison closure handoff retained below.
+
 PROJECT ATLAS(tm) / REIE Cross-City Decision Comparison(tm) Certification and Closure, July 31, 2026:
 
 Workspace:
