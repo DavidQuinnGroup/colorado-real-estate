@@ -10,7 +10,7 @@ Product:
 
 ## Latest New-Chat Handoff
 
-PROJECT ATLAS(tm) / REIE Evidence Depth and Data Integration(tm) Foundation Certification and Closure, July 31, 2026:
+PROJECT ATLAS(tm) / REIE Post-Evidence Depth Strategic Next-Phase Review, July 31, 2026:
 
 Workspace:
 
@@ -39,6 +39,7 @@ Current governed state:
 - REIE Buyer Financing Readiness Advancement(tm) is production-certified and closed.
 - REIE Post-Buyer Financing Readiness Strategic Next-Phase Review is pushed and reconciled.
 - REIE Evidence Depth and Data Integration(tm) foundation is production-certified and closed.
+- REIE Post-Evidence Depth Strategic Next-Phase Review is locally recorded.
 - Final status: `EVIDENCE_DEPTH_AND_DATA_INTEGRATION_CERTIFIED_AND_CLOSED`.
 - Closure status: `CERTIFIED_AND_CLOSED`.
 - Strategic priority SHA: `bfdcff95df8e90675cd58936660c80a835286ebc`.
@@ -82,14 +83,19 @@ Current governed state:
 - Post-readiness interpretation: the buyer and seller preparation layer is balanced and certified, and the Evidence Depth foundation now provides the internal governed evidence posture layer needed before deeper public evidence integrations.
 - Future governed integrations may include Local Decision Intelligence, Decision Guides, Cross-City Comparison, Market Intelligence, Property Intelligence, Neighborhood Intelligence, Seller Readiness, Buyer Financing Readiness, and Advisory preparation. None were activated during this foundation phase.
 - Evidence Depth exclusions preserved: no live provider calls, source acquisition, public-record retrieval, production writes, public route changes, customer-facing conclusions, APIs, schema or migration changes, GIS runtime, customer-data collection, valuation, affordability, qualification, rankings, forecasts, or recommendations.
-- Secondary priority: `PRIORITIZE_ADVISORY_HANDOFF_READINESS`.
-- Advisory Handoff finding: valuable for conversion and customer clarity, but should follow Evidence Depth so handoffs are grounded in clearer provenance, freshness, support level, and limitation framing. No forms, CRM tasks, lead scoring, email, notifications, queues, tracking, cookies, or customer-data workflows are authorized.
-- Property / Seller Evidence finding: should follow Evidence Depth or be included only as a non-public, non-conclusive evidence-category use case; no property lookup, ownership lookup, uploads, provider calls, valuation, or condition conclusions are authorized.
-- Neighborhood/Submarket finding: strategically important but not public-implementation ready; object type, Gunbarrel-like ambiguity, route, registry, source-rights, fair-housing, and certification-scale questions remain prerequisites.
-- Decision Guide unification finding: mixed-maturity comparison continues to reduce immediate unification need; Boulder, Louisville, and Lafayette should not be mechanically migrated or relabeled without separate authorization.
+- Strategic next-phase finding: `PRIORITIZE_ADVISORY_HANDOFF_READINESS`.
+- Primary recommendation: implement protected-boundary-safe Advisory Handoff Readiness.
+- Recommended next authorization: `ADVISORY_HANDOFF_READINESS_IMPLEMENTATION_AUTHORIZATION`.
+- This is recommendation-only. Advisory Handoff Readiness implementation is not authorized by this review record.
+- Advisory Handoff finding: now the strongest next candidate because certified Comparison, Seller Readiness, Buyer Financing Readiness, Grand Plan, Market Context, and Contact already lead toward human guidance, and Evidence Depth now supports clearer limitation and question-preparation framing. No forms, CRM tasks, lead scoring, email, notifications, queues, tracking, cookies, customer-data workflows, AI, personalization, or high-pressure funnel behavior are authorized.
+- Controlled Evidence Depth Integration finding: second priority. A one-domain controlled integration is architecturally ready, but it should follow Advisory Handoff unless separately justified; safest first target is Advisory preparation with limitation and question-preparation framing rather than raw public evidence metadata.
+- Property / Seller Evidence finding: should not begin as a public product now; a later internal, non-public, non-conclusive evidence-category phase may be appropriate. No property lookup, ownership lookup, address lookup, uploads, provider calls, public-record retrieval, valuation, or condition conclusions are authorized.
+- Neighborhood/Submarket finding: strategically important but not the next implementation; object type, Gunbarrel-like ambiguity, route, registry, source-rights, fair-housing, and certification-scale questions remain prerequisites before public route work.
+- Decision Guide unification finding: Evidence Depth does not materially change the need for immediate unification; mixed-maturity comparison remains certified and Boulder, Louisville, and Lafayette should not be mechanically migrated or relabeled without separate authorization.
 - Local Decision Intelligence cadence: remain paused and slower-governed; Niwot activation remains unauthorized and should be considered through later geographic or neighborhood/submarket governance.
-- Product Experience finding: another broad cohesion wave is not justified now; targeted fixes should proceed only if new production evidence identifies a specific friction point.
+- Product Experience finding: no broad wave is justified; targeted product follow-up is justified only as Advisory Handoff Readiness or if new production evidence identifies a specific friction point.
 - Strategic review record: `docs/project-atlas/executive-library/REIE-POST-BUYER-FINANCING-READINESS-STRATEGIC-NEXT-PHASE-REVIEW.md`.
+- Post-Evidence Depth strategic review record: `docs/project-atlas/executive-library/REIE-POST-EVIDENCE-DEPTH-STRATEGIC-NEXT-PHASE-REVIEW.md`.
 - Implementation governance record: `docs/project-atlas/executive-library/REIE-EVIDENCE-DEPTH-AND-DATA-INTEGRATION-FOUNDATION-IMPLEMENTATION.md`.
 - Closure record: `docs/project-atlas/executive-library/REIE-EVIDENCE-DEPTH-AND-DATA-INTEGRATION-FOUNDATION-PROGRAM-CLOSURE.md`.
 - Foundation contracts: `lib/evidence-depth/evidencePosture.ts`.
@@ -97,11 +103,8 @@ Current governed state:
 - Deterministic validation: `scripts/checkEvidenceDepthDataIntegrationFoundation.ts` and `npm run check:evidence-depth-data-integration-foundation`.
 - Read-only inspection reports posture summary and activation flags only; no UI, public route, public API, database read, production write, provider call, external acquisition, customer data, or public conclusion was introduced.
 - Required remediation: none.
-- Recommended next authorization: `REIE_POST_EVIDENCE_DEPTH_STRATEGIC_NEXT_PHASE_REVIEW`.
-- This is recommendation-only. The next strategic review is not authorized by this closure.
-- The next review should reassess queued initiatives after Evidence Depth foundation completion, including Advisory Handoff Readiness, Neighborhood / Submarket Intelligence Architecture, Property / Seller Evidence Readiness, Boulder / Louisville / Lafayette Decision Guide unification, Local Decision Intelligence Wave 4 / Niwot reconciliation, targeted Product Experience work only if production evidence supports it, and a controlled Evidence Depth integration phase only if explicitly justified.
-- Advisory Handoff Readiness is not automatically authorized solely because it previously tied in score.
-- Exact next step: stop, or explicitly authorize the recommended post-Evidence Depth strategic next-phase review. Codex must not begin another strategic review, implementation initiative, Advisory Handoff Readiness, Neighborhood/Submarket Intelligence, Property / Seller Evidence Readiness, Decision Guide unification, Local Decision Intelligence Wave 4, evidence integration, provider activation, public-record retrieval, GIS runtime, public route/API work, protected-capability activation, production mutation, push, deploy, or runtime change without explicit authorization.
+- Required remediation: none.
+- Exact next step: stop, or explicitly authorize Advisory Handoff Readiness implementation. Codex must not begin implementation, another strategic review, Controlled Evidence Depth Integration, Neighborhood/Submarket Intelligence, Property / Seller Evidence Readiness, Decision Guide unification, Local Decision Intelligence Wave 4, evidence integration, provider activation, public-record retrieval, GIS runtime, public route/API work, protected-capability activation, production mutation, push, deploy, or runtime change without explicit authorization.
 
 Prior REIE Buyer Financing Readiness Advancement closure handoff retained below.
 
