@@ -10,6 +10,47 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / Local Decision Intelligence(tm) Phase 2 Wave 2 Planning and Architecture, July 31, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Current governed state:
+
+- Core Product Experience Optimization cycle is complete.
+- Product Cohesion Review(tm) Wave 1 is production-certified and closed.
+- Controlled Fixture Alert Dry-Run(tm) program is certified and closed.
+- Local Decision Intelligence(tm) Phase 1 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 1 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 2 planning and architecture is complete.
+- Phase 2 Wave 2 planning finding: `LOCAL_DECISION_INTELLIGENCE_PHASE_2_WAVE_2_READY_FOR_IMPLEMENTATION`.
+- Planning status: `PLANNING_READY_FOR_IMPLEMENTATION`.
+- Approved Wave 2 planning pair: Broomfield and Superior.
+- City-pairing decision: `APPROVE_BROOMFIELD_AND_SUPERIOR`.
+- Broomfield scope: upgrade existing certified `/market/broomfield-co-housing-market` from `FOUNDATION` to `ENHANCED_FOUNDATION` only after full Phase 2 completeness validation.
+- Superior scope: implement new `ENHANCED_FOUNDATION` Local Decision Intelligence city only after canonical city-market route and registry eligibility are reconciled.
+- Expected Superior route: `/market/superior-co-housing-market`.
+- Superior planning prerequisite: current registry marks Superior ineligible because `marketRoute` is `null` and reasons include `missing-market-route` and `missing-market-data`; implementation must resolve this before public eligibility or maturity promotion.
+- Wave 2 must preserve the Wave 1 remediation continuity identities: `city-search`, `buyer-guidance`, `seller-guidance`, `financing-confidence`, `grand-plan`, and `advisory`.
+- Required continuity results: city search -> `/search?city={City}`, `Buyer Guidance -> /buy`, `Seller Guidance -> /sell`, `Financing Guidance -> /buy#financing-confidence`, `Grand Plan -> /grand-plan`, and `Advisory Guidance -> /contact`.
+- Wave 2 standard remains the Wave 1 `ENHANCED_FOUNDATION` standard: Decision Snapshot, Local Character, Market Drivers, conditional lifestyle criteria, Buyer Guidance, Seller Guidance, due-diligence prompts, maturity transparency, evidence limitations, CTA continuity, responsive quality, prohibited-claim/fair-housing safety, reusable architecture, and deterministic certification.
+- Planning record: `docs/project-atlas/executive-library/LOCAL-DECISION-INTELLIGENCE-PHASE-2-WAVE-2-PLANNING-CHARTER.md`.
+- Required remediation: none.
+- Recommended next authorization: `LOCAL_DECISION_INTELLIGENCE_PHASE_2_WAVE_2_IMPLEMENTATION_AUTHORIZATION`.
+- This is a recommendation only. Wave 2 implementation is not authorized.
+- Exact next step: stop, or explicitly authorize Wave 2 implementation. Codex must not implement Broomfield, implement Superior, modify runtime code, activate protected capabilities, push, deploy, or begin another city/wave without an explicit directive.
+
+Prior Local Decision Intelligence Phase 2 Wave 1 handoff retained below.
+
 PROJECT ATLAS(tm) / Local Decision Intelligence(tm) Phase 2 Wave 1 Certification and Closure, July 31, 2026:
 
 Workspace:
