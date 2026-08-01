@@ -10,6 +10,77 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE Post-Niwot Governance Reconciliation Strategic Next-Phase Review, August 1, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Current certified and closed portfolio:
+
+- REIE South Boulder Neighborhood Route Enhancement(tm) remains certified and closed.
+- REIE Property / Seller Evidence Continuation(tm) remains certified and closed.
+- REIE Table Mesa Existing Neighborhood Route Enhancement(tm) remains certified and closed.
+- Niwot Governance-Only Reconciliation remains certified and closed.
+- Legacy Niwot city-market route remains retired and fail-closed.
+
+Strategic review completion:
+
+- review record: `docs/project-atlas/executive-library/REIE-POST-NIWOT-GOVERNANCE-RECONCILIATION-STRATEGIC-NEXT-PHASE-REVIEW.md`
+- status: `REIE_POST_NIWOT_STRATEGIC_NEXT_PHASE_SELECTED`
+- selected recommendation: `LOCAL_DECISION_INTELLIGENCE_WAVE_4_BOUNDED_PLANNING`
+- exact next authorization gate: `READY_FOR_BOUNDED_IMPLEMENTATION_PLANNING`
+
+Recommendation rationale:
+
+- Niwot, the strongest repeated governance blocker, is now reconciled and fail-closed.
+- Local Decision Intelligence Phase 2 Waves 1-3 are certified and closed; the prior public `FOUNDATION` backlog is complete.
+- The prior Wave 4 assumption set is stale because Niwot can no longer be treated as a simple city-market activation candidate.
+- Gunbarrel remains unresolved and should be assessed as a blocker, dependency, exclusion, or later governance candidate during planning.
+- Additional public neighborhood-route enhancements should pause because South Boulder and Table Mesa have already proved the route-enhancement pattern and geographic-route work shows early diminishing returns.
+- Product Experience, Property / Seller Evidence, Search, and map work were not selected because current repository and production evidence does not identify a stronger concrete defect, friction finding, or bounded existing surface.
+
+Selected planning scope:
+
+- inventory current Local Decision Intelligence Wave 4 candidates and blockers after Niwot closure
+- determine whether Wave 4 should remain paused, proceed toward a bounded candidate set, or sequence behind Gunbarrel governance
+- preserve Niwot non-activation and retired-route behavior
+- assess Gunbarrel only as a blocker or dependency unless separately authorized
+- assess remaining repository-supported candidates only from repository evidence
+- evaluate route, registry, Search, map/GIS, sitemap, canonical, evidence, source-rights, fair-housing, and production-safety posture
+- define one later implementation plan only if repository evidence supports it
+
+Protected boundaries:
+
+- implementation remains unauthorized
+- Local Decision Intelligence Wave 4 implementation remains unauthorized
+- Niwot activation remains unauthorized
+- Gunbarrel reconciliation or activation remains unauthorized
+- no public routes, redirects, aliases, route eligibility, registry eligibility, canonical behavior, sitemap behavior, Search, maps/GIS, providers, acquisition, public-record lookup, uploads, APIs, Prisma, migrations, persistence, customer data, CRM, telemetry, personalization, valuation, pricing, scoring, ranking, forecasting, AI, alerts, queues, workers, email, notifications, deployment configuration, production certification, or production-data mutation is authorized
+
+Current repository state after this strategic review:
+
+- branch: `main`
+- expected HEAD after review commit: this documentation-only strategic review commit
+- expected origin/main after push: this documentation-only strategic review commit
+- expected ahead / behind after push: `0 ahead / 0 behind`
+- expected working tree after validation: clean
+
+Exact next step:
+
+- Stop, or explicitly authorize `LOCAL_DECISION_INTELLIGENCE_WAVE_4_BOUNDED_PLANNING`.
+- Codex must not begin planning, implementation, deployment, production certification, Niwot activation, Gunbarrel reconciliation, Search/map work, Product Experience work, Property / Seller Evidence work, or any unrelated initiative without explicit authorization.
+
+Prior Niwot closure handoff retained below.
+
 PROJECT ATLAS(tm) / Niwot Governance-Only Reconciliation Certified Closure, August 1, 2026:
 
 Workspace:
