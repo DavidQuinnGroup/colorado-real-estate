@@ -112,6 +112,7 @@
     "check:buyer-financing-readiness-advancement": "npm run worker:build && node dist/scripts/checkBuyerFinancingReadinessAdvancement.js",
     "check:evidence-depth-data-integration-foundation": "npm run worker:build && node dist/scripts/checkEvidenceDepthDataIntegrationFoundation.js",
     "check:advisory-handoff-readiness": "npm run worker:build && node dist/scripts/checkAdvisoryHandoffReadiness.js",
+    "check:controlled-evidence-depth-integration": "npm run worker:build && node dist/scripts/checkControlledEvidenceDepthIntegration.js",
     "check:reie-buyer-confidence-experience": "npm run worker:build && node dist/scripts/checkReieBuyerConfidenceExperience.js",
     "check:reie-financing-confidence-education": "npm run worker:build && node dist/scripts/checkReieFinancingConfidenceEducation.js",
     "check:reie-guided-search-intelligence-v8": "npm run worker:build && node dist/scripts/checkReieGuidedSearchIntelligenceV8.js",

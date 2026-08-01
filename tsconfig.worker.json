@@ -54,6 +54,7 @@
     "scripts/checkBuyerFinancingReadinessAdvancement.ts",
     "scripts/checkEvidenceDepthDataIntegrationFoundation.ts",
     "scripts/checkAdvisoryHandoffReadiness.ts",
+    "scripts/checkControlledEvidenceDepthIntegration.ts",
     "scripts/checkReieBuyerConfidenceExperience.ts",
     "scripts/checkReieFinancingConfidenceEducation.ts",
     "scripts/checkReieGuidedSearchIntelligenceV8.ts",
