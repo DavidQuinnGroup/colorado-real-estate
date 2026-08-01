@@ -10,6 +10,61 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE Post-Controlled Evidence Integration Strategic Next-Phase Review, August 1, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Current governed state:
+
+- Core Product Experience Optimization cycle is complete.
+- Product Cohesion Review(tm) Wave 1 is production-certified and closed.
+- Controlled Fixture Alert Dry-Run(tm) program is certified and closed.
+- Local Decision Intelligence(tm) Phase 1 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 1 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 2 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 3 is production-certified and closed.
+- REIE Product Experience(tm) Next Cohesion Wave is production-certified and closed.
+- REIE Cross-City Decision Comparison(tm) is production-certified and closed.
+- REIE Seller Readiness Advancement(tm) is production-certified and closed.
+- REIE Buyer Financing Readiness Advancement(tm) is production-certified and closed.
+- REIE Evidence Depth and Data Integration(tm) foundation is production-certified and closed.
+- REIE Advisory Handoff Readiness(tm) is production-certified and closed.
+- REIE Controlled Evidence Depth Integration(tm) is production-certified and closed.
+- Final prior status: `CONTROLLED_EVIDENCE_DEPTH_INTEGRATION_CERTIFIED_AND_CLOSED`.
+- REIE Post-Controlled Evidence Integration Strategic Next-Phase Review is locally recorded.
+- Strategic next-phase finding: `PRIORITIZE_ADVISORY_OPERATING_READINESS`.
+- Primary recommendation: implement internal Advisory Operating Readiness.
+- Recommended next authorization: `ADVISORY_OPERATING_READINESS_IMPLEMENTATION_AUTHORIZATION`.
+- This is recommendation-only. Advisory Operating Readiness implementation is not authorized by this review record.
+- Controlled Evidence Depth Integration proved that certified Evidence Depth posture can create internal Advisory preparation value without public exposure, customer-facing conclusions, providers, acquisition, persistence, APIs, schema, CRM, tracking, telemetry, customer data, or production writes.
+- Evidence foundation proof finding: sufficient operating validation now exists for internal standards and future bounded integrations, but not for public evidence labels, provider activation, acquisition, customer-specific evidence packets, or substantive real-estate conclusions.
+- Largest remaining gap: consistent human operating use of REIE. The customer-facing guidance, readiness, comparison, and handoff layer is certified; the next bottleneck is internal advisor consistency around evidence limitations, question categories, professional escalation, and non-overstatement.
+- Recommended Advisory Operating Readiness scope: internal advisory conversation framework, evidence-aware preparation checklist, standard limitation handling, question-category guidance, professional-escalation boundaries, and consistent sequencing of Compare, Buy, Finance, Sell, Prepare, Verify, and Discuss.
+- Advisory Operating Readiness must remain internal, non-customer-specific, documentation/contract/checklist/fixture oriented, and non-persistent.
+- Advisory Operating Readiness must not implement CRM workflows, customer records, lead scoring, lead routing, tracking, telemetry, automated outreach, saved customer preparation, transaction management, advisor dashboards, advisor performance scoring, or customer-specific output.
+- Secondary priority: `PRIORITIZE_NEIGHBORHOOD_SUBMARKET_INTELLIGENCE_ARCHITECTURE`.
+- Neighborhood / Submarket finding: strategically strong and ready for future architecture-only work, but not the next primary implementation and not ready for public routes; object-type taxonomy, canonical identity, parent/child geography, Gunbarrel/Niwot ambiguity, route/registry governance, evidence requirements, source-rights integration, fair-housing controls, and certification scale remain prerequisites.
+- Property / Seller Evidence finding: feasible later as an internal, fixture-backed evidence-category contract, but not ready to outrank Advisory Operating Readiness because property identity, ownership/privacy, provider/public-record, valuation, condition, and professional-boundary risks remain material.
+- Second Controlled Evidence Integration finding: not necessary as a standalone next phase because the first integration sufficiently proved the Evidence Depth foundation; future integrations should be tied to a concrete domain need.
+- Decision Guide unification finding: Evidence architecture does not create an immediate need to migrate Boulder, Louisville, or Lafayette; mixed-maturity comparison remains governed and certified.
+- Local Decision Intelligence cadence: Niwot, Gunbarrel, and Wave 4 remain paused pending Neighborhood / Submarket or geographic-object governance.
+- Product Experience finding: targeted follow-up is not justified without specific production evidence of discoverability, CTA, mobile, duplicate-path, or cognitive-load friction.
+- Strategic review record: `docs/project-atlas/executive-library/REIE-POST-CONTROLLED-EVIDENCE-INTEGRATION-STRATEGIC-NEXT-PHASE-REVIEW.md`.
+- Required remediation: none.
+- Exact next step: stop, or explicitly authorize Advisory Operating Readiness implementation. Codex must not begin implementation, push, deploy, Neighborhood/Submarket Intelligence, Property / Seller Evidence Readiness, another evidence integration, Decision Guide unification, Local Decision Intelligence Wave 4, provider activation, public-record retrieval, GIS runtime, public route/API work, protected-capability activation, production mutation, CRM, tracking, telemetry, customer data, APIs, schema, persistence, runtime changes, or another initiative without explicit authorization.
+
+Prior REIE Controlled Evidence Depth Integration closure handoff retained below.
+
 PROJECT ATLAS(tm) / REIE Controlled Evidence Depth Integration(tm) Certification and Closure, August 1, 2026:
 
 Workspace:
