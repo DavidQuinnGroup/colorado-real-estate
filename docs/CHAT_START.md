@@ -10,6 +10,55 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE Property / Seller Evidence Continuation Discovery And Implementation Plan, August 1, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Current governed state:
+
+- Core Product Experience Optimization cycle is complete.
+- Product Cohesion Review(tm) Wave 1 is production-certified and closed.
+- Controlled Fixture Alert Dry-Run(tm) program is certified and closed.
+- Local Decision Intelligence(tm) Phase 1 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 1 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 2 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 3 is production-certified and closed.
+- REIE Product Experience(tm) Next Cohesion Wave is production-certified and closed.
+- REIE Cross-City Decision Comparison(tm) is production-certified and closed.
+- REIE Seller Readiness Advancement(tm) is production-certified and closed.
+- REIE Buyer Financing Readiness Advancement(tm) is production-certified and closed.
+- REIE Evidence Depth and Data Integration(tm) foundation is production-certified and closed.
+- REIE Advisory Handoff Readiness(tm) is production-certified and closed.
+- REIE Controlled Evidence Depth Integration(tm) is production-certified and closed.
+- REIE Advisory Operating Readiness(tm) is production-certified and closed.
+- REIE Neighborhood / Submarket Intelligence Architecture(tm) is production-certified and closed.
+- REIE Decision Guide Evidence Transparency(tm) is production-certified and closed.
+- REIE First Governed Neighborhood / Submarket Implementation Wave(tm) is production-certified and closed.
+- REIE Property / Seller Evidence Readiness(tm) is production-certified and closed.
+- REIE Second Governed Neighborhood / Submarket Wave(tm) is production-certified and closed.
+- REIE South Boulder Neighborhood Route Enhancement(tm) is production-certified and closed.
+- South Boulder final closure status: `SOUTH_BOULDER_NEIGHBORHOOD_ROUTE_ENHANCEMENT_CERTIFIED_AND_CLOSED`.
+- Current planning phase: `PROPERTY_SELLER_EVIDENCE_CONTINUATION_DISCOVERY_AND_IMPLEMENTATION_PLAN_COMPLETE`.
+- Planning record: `docs/project-atlas/executive-library/REIE-PROPERTY-SELLER-EVIDENCE-CONTINUATION-DISCOVERY-AND-IMPLEMENTATION-PLAN.md`.
+- Implementation authorization status: `NOT_AUTHORIZED`.
+- Recommended existing surface: `/home-worth#seller-readiness`.
+- Recommended bounded experience: add one public-copy-only Seller Evidence Readiness section inside the existing Seller Readiness guide, translating certified Property / Seller Evidence categories into homeowner preparation groups without uploads, persistence, source activation, public-record lookup, AI, valuation, scoring, ranking, prediction, personalization, or internal evidence metadata exposure.
+- Proposed minimum future implementation files, if separately authorized: `components/SellerReadinessGuide.tsx`, `scripts/checkSellerReadinessAdvancement.ts`, and optionally `scripts/checkPropertySellerEvidenceReadiness.ts` only if public non-exposure assertions need to be extended.
+- Recommended next authorization gate: `READY_FOR_BOUNDED_IMPLEMENTATION_AUTHORIZATION`.
+- Exact next step: stop, or explicitly authorize `READY_FOR_BOUNDED_IMPLEMENTATION_AUTHORIZATION`. Codex must not implement, modify public routes, change property-route behavior, change seller-route behavior, change Search or maps, create APIs, change canonical or sitemap logic, add providers, acquire data, scrape, perform public-record lookups, integrate external data tools, upload documents, add AI, add valuation/pricing/condition/ownership/title/permit/HOA/insurance/financing/investment conclusions, expose internal evidence metadata, modify Prisma or persistence, modify customer data, activate CRM or telemetry, run queues or workers, send email or notifications, deploy manually, begin Table Mesa, activate Niwot, begin Local Decision Intelligence Wave 4, or begin another initiative without explicit authorization.
+
+Prior REIE South Boulder Neighborhood Route Enhancement certification and closure handoff retained below.
+
 PROJECT ATLAS(tm) / REIE South Boulder Neighborhood Route Enhancement Certification And Closure, August 1, 2026:
 
 Workspace:
