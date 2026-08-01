@@ -10,7 +10,7 @@ Product:
 
 ## Latest New-Chat Handoff
 
-PROJECT ATLAS(tm) / REIE Homepage Product Experience Phase 1 Local Implementation, August 1, 2026:
+PROJECT ATLAS(tm) / REIE Homepage Product Experience Phase 1 Certified Closure, August 1, 2026:
 
 Workspace:
 
@@ -33,23 +33,33 @@ Current certified and closed portfolio:
 - Legacy Niwot city-market route remains retired and fail-closed.
 - Local Decision Intelligence Phase 1 and Phase 2 Waves 1-3 remain certified.
 - Local Decision Intelligence Wave 4 planning remains blocked.
+- REIE Homepage Product Experience Phase 1 is production-certified and closed.
 
-Homepage Product Experience Phase 1 local implementation:
+Homepage Product Experience Phase 1 closure:
 
 - planning record: `docs/project-atlas/executive-library/REIE-HOMEPAGE-PRODUCT-EXPERIENCE-ARCHITECTURE-PLAN.md`
 - implementation record: `docs/project-atlas/executive-library/REIE-HOMEPAGE-PRODUCT-EXPERIENCE-PHASE-1-IMPLEMENTATION.md`
+- closure record: `docs/project-atlas/executive-library/REIE-HOMEPAGE-PRODUCT-EXPERIENCE-PHASE-1-PROGRAM-CLOSURE.md`
 - selected phase: `REIE_HOMEPAGE_PHASE_1_STRUCTURAL_SIMPLIFICATION_AND_MOBILE_HIERARCHY`
-- implementation status: local implementation validated
-- implementation commit: final local commit with message `Simplify REIE homepage experience`
-- push remains unauthorized
-- manual deployment remains unauthorized
-- production certification remains unauthorized
+- implementation status: production-certified and closed
+- implementation commit: `54989200e9b13a2ce947d00a630b5fc763dbef45`
+- implementation message: `Simplify REIE homepage experience`
+- closure commit: to be recorded in the documentation-only closure commit
+- deployment status: success
+- GitHub/Vercel status ID: `51491675945`
+- Vercel target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/4MwTdCPu3BRsfp7aZkZtpWg2JhSs`
+- completion timestamp: `2026-08-01T23:12:55Z`
+- latest production deployment ID: `5709126349`
+- production domain: `https://davidquinngroup.com`
+- remediation required: none
+- Phase 2 remains unauthorized
 - destination-page creation remains unauthorized
 - Mortgage Calculator implementation remains unauthorized
 - site-wide design-system implementation remains unauthorized
-- exact next authorization gate: `READY_FOR_REIE_HOMEPAGE_PHASE_1_LOCAL_CERTIFICATION_AND_PUSH_REVIEW`
+- no new initiative is automatically authorized
+- exact next handoff: `REIE_POST_HOMEPAGE_PHASE_1_PRODUCT_EXPERIENCE_STRATEGIC_REVIEW`
 
-Implemented local scope:
+Certified implementation scope:
 
 - `app/page.tsx` simplifies the existing homepage only.
 - `app/globals.css` adds homepage-scoped Phase 1 spacing, hierarchy, and container treatment.
@@ -63,7 +73,48 @@ Implemented local scope:
 - The long Communities grid and generated authority links were removed from the homepage; market continuity remains through `/market`.
 - Grand Plan and advisory close remain concise existing-route handoffs.
 
-Preserved boundaries:
+Certified homepage outcome:
+
+- `/` returned `200` in production.
+- The first-screen purpose is clear.
+- Primary CTA points to `/search`.
+- Visible Search is CTA-led and no competing visible Search form appears.
+- Long Communities grid is removed.
+- No community-card wall appears.
+- `/market`, `/grand-plan`, `/about`, and `/contact` continuity are preserved.
+- No new route or destination page appears.
+- No saved state, personalization, dashboard behavior, or scorecard behavior appears.
+- Production layout uses whitespace, typography, and restrained tonal fields.
+- Ordinary explanatory border-heavy containers are materially reduced.
+- Functional controls retain clear boundaries and focus states.
+
+Responsive and interaction certification:
+
+- mobile review at approximately `390x844` passed with no overflow, overlap, clipped content, broken images, long Communities section, dashboard appearance, or scorecard appearance.
+- tablet and desktop review at approximately `768x1024` and `1440x1100` passed with no overflow, overlap, broken images, or clean-load console errors.
+- primary Search CTA navigated to `/search`.
+- Back returned to `/`.
+- Forward returned to `/search`.
+- retained journey links remained accessible.
+- keyboard navigation, visible focus states, semantic heading order, and image alternative text were certified.
+
+Regression certification:
+
+- `/`, `/search`, `/market`, `/buy`, `/sell`, `/home-worth`, `/grand-plan`, `/about`, `/contact`, `/market/boulder/south-boulder`, `/market/boulder/table-mesa`, `/market/boulder/downtown-boulder`, `/market/boulder-co-housing-market`, and `/sitemap.xml` returned successful responses as appropriate.
+- South Boulder remained correct.
+- Table Mesa remained correct.
+- Downtown Boulder remained unenhanced.
+- Boulder city-market route remained intact.
+- retired Niwot route remained `404` with no redirect or canonical.
+- production public-experience smoke passed against `https://davidquinngroup.com`.
+
+Mortgage Calculator boundary:
+
+- no calculator component, calculator route, mortgage inputs, payment estimates, rate fields, affordability outputs, financing recommendations, lending CTAs, persistence, or saved scenarios were introduced.
+- approved future strategy remains `BUYER_FINANCING_READINESS_INTEGRATION`.
+- Mortgage Calculator planning and implementation require separate explicit authorization.
+
+Protected boundaries:
 
 - no new routes or destination pages
 - no route eligibility, registry eligibility, canonical, or sitemap changes
@@ -73,15 +124,15 @@ Preserved boundaries:
 - no Mortgage Calculator, mortgage inputs, payment estimates, interest-rate fields, affordability outputs, lending recommendations, or financing CTAs
 - no providers, acquisition, public-record lookup, APIs, Prisma, migrations, persistence, customer data, CRM, telemetry, personalization, AI, alerts, queues, workers, email, notifications, deployment configuration, or production-data mutation
 
-Current repository state after this local implementation:
+Current repository state after production certification:
 
 - branch: `main`
-- expected HEAD before local commit: `6304ffca9fc7a2b9b04c75d05a1d0916114210c4`
-- expected origin/main before local commit: `6304ffca9fc7a2b9b04c75d05a1d0916114210c4`
-- expected ahead / behind before local commit: `0 ahead / 0 behind`
-- expected working tree after local commit: clean
+- HEAD: `54989200e9b13a2ce947d00a630b5fc763dbef45`
+- origin/main: `54989200e9b13a2ce947d00a630b5fc763dbef45`
+- ahead / behind: `0 ahead / 0 behind`
+- working tree: clean
 
-Local validation passed:
+Validation and certification passed:
 
 - focused homepage Phase 1 check
 - Product Cohesion
@@ -114,34 +165,14 @@ Local validation passed:
 - typecheck
 - lint
 - build
-- local public-experience smoke
-
-Responsive and interaction review passed locally at approximately:
-
-- `390x844`
-- `768x1024`
-- `1440x1100`
-
-Findings:
-
-- no horizontal overflow
-- no broken images
-- no console errors during page-load review
-- mobile scroll height reduced to about `5676px`
-- Communities grid count: `0`
-- market teaser height about `283px` on mobile
-- scoped hero Search action navigated to `/search`
-- Back returned to `/`
-- Forward returned to `/search`
-- no retired Niwot route links
-- no Mortgage Calculator copy
-- no dashboard or scorecard copy
+- local public-experience smoke during local certification
+- production public-experience smoke during production certification
 
 Exact next step:
 
-- Complete local certification for Phase 1.
-- If certified, create one local commit only.
-- Do not push, deploy, perform production certification, begin Phase 2, create destination pages, implement Mortgage Calculator work, alter Search/map behavior, or begin another initiative without explicit authorization.
+- Conduct the strategic Product Experience review only if explicitly authorized.
+- The future review may assess Homepage Phase 2 visual refinement, reusable design-system work, destination-page extraction, buyer financing readiness and Mortgage Calculator planning, production-supported navigation refinements, whether Phase 1 already resolved the primary homepage problem, and whether further Product Experience work has sufficient incremental value.
+- Do not begin Phase 2, create destination pages, implement Mortgage Calculator work, alter Search/map behavior, perform production certification, or begin another initiative without explicit authorization.
 
 Prior LDI Wave 4 planning handoff retained below.
 
