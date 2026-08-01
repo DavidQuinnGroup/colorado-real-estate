@@ -10,7 +10,7 @@ Product:
 
 ## Latest New-Chat Handoff
 
-PROJECT ATLAS(tm) / REIE Property / Seller Evidence Continuation Discovery And Implementation Plan, August 1, 2026:
+PROJECT ATLAS(tm) / REIE Bounded Seller Evidence Readiness Local Implementation, August 1, 2026:
 
 Workspace:
 
@@ -48,14 +48,18 @@ Current governed state:
 - REIE Second Governed Neighborhood / Submarket Wave(tm) is production-certified and closed.
 - REIE South Boulder Neighborhood Route Enhancement(tm) is production-certified and closed.
 - South Boulder final closure status: `SOUTH_BOULDER_NEIGHBORHOOD_ROUTE_ENHANCEMENT_CERTIFIED_AND_CLOSED`.
-- Current planning phase: `PROPERTY_SELLER_EVIDENCE_CONTINUATION_DISCOVERY_AND_IMPLEMENTATION_PLAN_COMPLETE`.
+- Current implementation phase: `PROPERTY_SELLER_EVIDENCE_CONTINUATION_LOCAL_IMPLEMENTATION_COMPLETE`.
 - Planning record: `docs/project-atlas/executive-library/REIE-PROPERTY-SELLER-EVIDENCE-CONTINUATION-DISCOVERY-AND-IMPLEMENTATION-PLAN.md`.
-- Implementation authorization status: `NOT_AUTHORIZED`.
-- Recommended existing surface: `/home-worth#seller-readiness`.
-- Recommended bounded experience: add one public-copy-only Seller Evidence Readiness section inside the existing Seller Readiness guide, translating certified Property / Seller Evidence categories into homeowner preparation groups without uploads, persistence, source activation, public-record lookup, AI, valuation, scoring, ranking, prediction, personalization, or internal evidence metadata exposure.
-- Proposed minimum future implementation files, if separately authorized: `components/SellerReadinessGuide.tsx`, `scripts/checkSellerReadinessAdvancement.ts`, and optionally `scripts/checkPropertySellerEvidenceReadiness.ts` only if public non-exposure assertions need to be extended.
-- Recommended next authorization gate: `READY_FOR_BOUNDED_IMPLEMENTATION_AUTHORIZATION`.
-- Exact next step: stop, or explicitly authorize `READY_FOR_BOUNDED_IMPLEMENTATION_AUTHORIZATION`. Codex must not implement, modify public routes, change property-route behavior, change seller-route behavior, change Search or maps, create APIs, change canonical or sitemap logic, add providers, acquire data, scrape, perform public-record lookups, integrate external data tools, upload documents, add AI, add valuation/pricing/condition/ownership/title/permit/HOA/insurance/financing/investment conclusions, expose internal evidence metadata, modify Prisma or persistence, modify customer data, activate CRM or telemetry, run queues or workers, send email or notifications, deploy manually, begin Table Mesa, activate Niwot, begin Local Decision Intelligence Wave 4, or begin another initiative without explicit authorization.
+- Implementation authorization status: `IMPLEMENTATION_AUTHORIZED`.
+- Push authorization status: `NOT_AUTHORIZED`.
+- Production certification authorization status: `NOT_AUTHORIZED`.
+- Documentation closure authorization status: `NOT_AUTHORIZED`.
+- Selected existing surface: `/home-worth#seller-readiness`.
+- Local implementation summary: added one public-copy-only Seller Evidence Readiness section inside the existing Seller Readiness guide, translating certified Property / Seller Evidence categories into homeowner preparation groups without uploads, persistence, source activation, public-record lookup, AI, valuation, scoring, ranking, prediction, personalization, or internal evidence metadata exposure.
+- Local implementation files: `components/SellerReadinessGuide.tsx` and `scripts/checkSellerReadinessAdvancement.ts`.
+- Optional public non-exposure check file not modified: `scripts/checkPropertySellerEvidenceReadiness.ts`.
+- Recommended next authorization gate: `READY_FOR_LOCAL_CERTIFICATION_AND_PUSH_REVIEW`.
+- Exact next step: stop, or explicitly authorize `READY_FOR_LOCAL_CERTIFICATION_AND_PUSH_REVIEW`. Codex must not push, deploy manually, perform production certification, perform documentation closure, modify public routes, change property-route behavior, change seller-route behavior, change Search or maps, create APIs, change canonical or sitemap logic, add providers, acquire data, scrape, perform public-record lookups, integrate external data tools, upload documents, add AI, add valuation/pricing/condition/ownership/title/permit/HOA/insurance/financing/investment conclusions, expose internal evidence metadata, modify Prisma or persistence, modify customer data, activate CRM or telemetry, run queues or workers, send email or notifications, begin Table Mesa, activate Niwot, begin Local Decision Intelligence Wave 4, or begin another initiative without explicit authorization.
 
 Prior REIE South Boulder Neighborhood Route Enhancement certification and closure handoff retained below.
 

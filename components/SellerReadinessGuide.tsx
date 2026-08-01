@@ -58,6 +58,42 @@ const documentationInventory: ReadinessGroup[] = [
   },
 ];
 
+const sellerEvidenceReadinessGroups: ReadinessGroup[] = [
+  {
+    title: 'Information to organize',
+    description: 'Start with facts and records supplied by the homeowner before asking for advisory interpretation.',
+    items: [
+      'property basics to confirm, including address, access, occupancy, measurements, and known-use details',
+      'improvements, maintenance, repair records, warranties, utility notes, energy information, and operating history',
+      'disclosures, known property history, surveys, plans, HOA or community documents where applicable',
+    ],
+  },
+  {
+    title: 'Verification sources',
+    description: 'Separate personal records from public or third-party records that may need independent verification.',
+    items: [
+      'county, assessor, title, permit, HOA, insurance, utility, tax, and municipal record classes',
+      'permits and approvals to verify before relying on them in a seller review',
+      'unresolved, conflicting, incomplete, or outdated information that should not be assumed accurate',
+    ],
+  },
+  {
+    title: 'Professional review topics',
+    description: 'Use qualified review for questions that REIE cannot determine from preparation materials.',
+    items: [
+      'licensed, legal, inspection, engineering, insurance, title, tax, HOA, municipal, and contractor questions',
+      'condition, compliance, ownership, title status, permit status, insurability, financing, and disclosure questions',
+      'questions to discuss with the advisory team before treating any record as decision-ready',
+    ],
+  },
+];
+
+const unsupportedConclusions = [
+  'accuracy, completeness, condition, compliance, ownership, title status, permit status, or insurability',
+  'value, recommended pricing, marketability, suitability, sale outcome, sale timing, or transaction likelihood',
+  'a score, grade, ranking, investment result, financing result, legal result, or professional determination',
+];
+
 const propertyContextPrompts = [
   'Which systems, components, additions, conversions, or updates deserve review before a pricing conversation?',
   'Which known maintenance items should be documented, repaired, monitored, or discussed with a qualified professional?',
@@ -157,6 +193,53 @@ export default function SellerReadinessGuide() {
               </ul>
             </article>
           ))}
+        </div>
+
+        <div
+          className="mt-14 rounded-[8px] border border-cyan-100/14 bg-[#0d151c] p-6 sm:p-7"
+          data-testid="seller-evidence-readiness"
+          data-seller-evidence-readiness-static="true"
+          data-seller-evidence-readiness-metadata-exposure="false"
+          data-seller-evidence-readiness-conclusions="false"
+          data-seller-evidence-readiness-source-activation="false"
+        >
+          <div className="grid gap-8 lg:grid-cols-[0.78fr_1.22fr] lg:items-start">
+            <div>
+              <p className="text-[11px] font-black uppercase tracking-[0.24em] text-cyan-100">Seller Evidence Readiness</p>
+              <h3 className="mt-4 text-3xl font-black leading-tight text-white">Organize records before relying on them.</h3>
+              <p className="mt-4 text-sm leading-7 text-white/62">
+                This readiness step helps separate information supplied by the homeowner, public or third-party record classes,
+                independent verification needs, and topics requiring licensed or qualified professional review.
+              </p>
+              <p className="mt-4 text-sm font-bold leading-7 text-white/54">
+                Organizing information does not establish accuracy, completeness, condition, compliance, ownership, title status, permit
+                status, insurability, value, recommended pricing, marketability, suitability, or sale outcome.
+              </p>
+            </div>
+
+            <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))' }}>
+              {sellerEvidenceReadinessGroups.map((group) => (
+                <article key={group.title} className="rounded-[8px] bg-white/[0.045] p-5 ring-1 ring-white/10">
+                  <h4 className="text-lg font-black leading-tight text-white">{group.title}</h4>
+                  <p className="mt-3 text-sm leading-7 text-white/58">{group.description}</p>
+                  <ul className="mt-4 grid gap-3 text-sm leading-7 text-white/64">
+                    {group.items.map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
+                </article>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-7 rounded-[8px] bg-black/18 p-5 ring-1 ring-white/10">
+            <h4 className="text-base font-black leading-tight text-white">Conclusions REIE does not make</h4>
+            <ul className="mt-4 grid gap-2 text-sm leading-7 text-white/62" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))' }}>
+              {unsupportedConclusions.map((conclusion) => (
+                <li key={conclusion}>{conclusion}</li>
+              ))}
+            </ul>
+          </div>
         </div>
 
         <div className="mt-14 grid gap-5 lg:grid-cols-3">

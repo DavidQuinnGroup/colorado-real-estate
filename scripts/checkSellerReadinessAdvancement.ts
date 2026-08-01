@@ -65,6 +65,16 @@ for (const marker of [
   assertIncludes(sellerReadinessGuide, marker, `Seller Readiness guide must expose marker: ${marker}`);
 }
 
+for (const marker of [
+  'data-testid="seller-evidence-readiness"',
+  'data-seller-evidence-readiness-static="true"',
+  'data-seller-evidence-readiness-metadata-exposure="false"',
+  'data-seller-evidence-readiness-conclusions="false"',
+  'data-seller-evidence-readiness-source-activation="false"',
+]) {
+  assertIncludes(sellerReadinessGuide, marker, `Seller Evidence Readiness section must expose marker: ${marker}`);
+}
+
 for (const phrase of [
   'Readiness means organizing facts',
   'not a valuation, appraisal, pricing recommendation',
@@ -87,6 +97,20 @@ for (const phrase of [
   'Market Context',
   'Grand Plan',
   'Advisory Guidance',
+  'Seller Evidence Readiness',
+  'Information to organize',
+  'supplied by the homeowner',
+  'Verification sources',
+  'public or third-party records',
+  'independent verification',
+  'Professional review topics',
+  'licensed or qualified professional review',
+  'Conclusions REIE does not make',
+  'Organizing information does not establish accuracy, completeness, condition, compliance, ownership, title status, permit',
+  'status, insurability, value, recommended pricing, marketability, suitability, or sale outcome',
+  'county, assessor, title, permit, HOA, insurance, utility, tax, and municipal record classes',
+  'questions to discuss with the advisory team',
+  'a score, grade, ranking, investment result, financing result, legal result, or professional determination',
 ]) {
   assertIncludes(sellerReadinessGuide, phrase, `Seller Readiness guide must include required readiness content: ${phrase}`);
 }
@@ -127,6 +151,27 @@ for (const prohibited of [
   'saved readiness profile',
 ]) {
   assertNotIncludes(sellerReadinessGuide, prohibited, `Seller Readiness guide must not expose prohibited wording: ${prohibited}`);
+}
+
+for (const internalEvidenceExposure of [
+  'PROPERTY_SELLER_EVIDENCE_READINESS',
+  'propertySellerEvidenceReadiness',
+  'propertySellerEvidenceReadinessFixtures',
+  'evidenceId',
+  'sourceId',
+  'providerId',
+  'rights enum',
+  'support level',
+  'freshness label',
+  'conflict label',
+  'eligibility outcome',
+  'confidence percentage',
+]) {
+  assertNotIncludes(
+    sellerReadinessGuide,
+    internalEvidenceExposure,
+    `Seller Evidence Readiness public copy must not expose internal evidence metadata: ${internalEvidenceExposure}`,
+  );
 }
 
 for (const runtimeActivation of [
