@@ -10,7 +10,7 @@ Product:
 
 ## Latest New-Chat Handoff
 
-PROJECT ATLAS(tm) / REIE Homepage Product Experience Phase 1 Certified Closure, August 1, 2026:
+PROJECT ATLAS(tm) / REIE Post-Homepage Phase 1 Strategic Portfolio Review, August 1, 2026:
 
 Workspace:
 
@@ -34,6 +34,41 @@ Current certified and closed portfolio:
 - Local Decision Intelligence Phase 1 and Phase 2 Waves 1-3 remain certified.
 - Local Decision Intelligence Wave 4 planning remains blocked.
 - REIE Homepage Product Experience Phase 1 is production-certified and closed.
+
+Strategic review completion:
+
+- review record: `docs/project-atlas/executive-library/REIE-POST-HOMEPAGE-PHASE-1-STRATEGIC-PORTFOLIO-REVIEW.md`
+- status: `REIE_POST_HOMEPAGE_STRATEGIC_DIRECTION_SELECTED`
+- selected recommendation: `REIE_BUYER_FINANCING_READINESS_MORTGAGE_CALCULATOR_GOVERNANCE_PLANNING`
+- implementation remains unauthorized
+- Mortgage Calculator implementation remains unauthorized
+- Phase 2 remains unauthorized
+- destination-page extraction remains unauthorized
+- broader design-system work remains unauthorized
+- exact next authorization gate: `READY_FOR_REIE_BUYER_FINANCING_MORTGAGE_CALCULATOR_BOUNDED_PLANNING_AUTHORIZATION`
+
+Strategic findings:
+
+- Homepage Phase 1 solved the primary homepage problem: density was reduced, first-screen purpose clarified, `/search` became the dominant action, the long Communities grid was removed, ordinary bordered explanatory containers were materially reduced, and responsive/interaction/accessibility certification passed.
+- Homepage Phase 2 may still have value, but no material remaining production defect was recorded after Phase 1 certification.
+- Destination-page extraction is not urgent because Phase 1 preserved governed journeys without creating stranded homepage content.
+- Local Decision Intelligence Wave 4 remains blocked by route, registry, Search, map/GIS, evidence, provenance, source-rights, and public-maturity readiness.
+- Buyer Financing Readiness is already certified at `/buy#financing-readiness`, and repository traceability still identifies Mortgage Calculator as an open future buyer-financing requirement.
+- The Homepage Product Experience architecture selected `BUYER_FINANCING_READINESS_INTEGRATION` as the future Mortgage Calculator strategy.
+- The selected next step is planning only: determine whether a Mortgage Calculator can be safely governed, where it belongs, what inputs/outputs are allowed, what disclosures are required, and whether implementation should remain deferred.
+
+Selected initiative boundaries:
+
+- no calculator component
+- no calculator route
+- no mortgage inputs
+- no payment estimates
+- no rate fields
+- no affordability outputs
+- no qualification, approval, lender recommendation, or personalized financial advice
+- no persistence or saved scenarios
+- no provider integration
+- no Search, map/GIS, route, navigation, footer, API, Prisma, telemetry, CRM, AI, queue, worker, email, deployment, or production-data changes
 
 Homepage Product Experience Phase 1 closure:
 
