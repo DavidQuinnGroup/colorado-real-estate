@@ -10,7 +10,7 @@ Product:
 
 ## Latest New-Chat Handoff
 
-PROJECT ATLAS(tm) / REIE Homepage Product Experience Architecture Planning, August 1, 2026:
+PROJECT ATLAS(tm) / REIE Homepage Product Experience Phase 1 Local Implementation, August 1, 2026:
 
 Workspace:
 
@@ -34,57 +34,114 @@ Current certified and closed portfolio:
 - Local Decision Intelligence Phase 1 and Phase 2 Waves 1-3 remain certified.
 - Local Decision Intelligence Wave 4 planning remains blocked.
 
-Homepage Product Experience planning completion:
+Homepage Product Experience Phase 1 local implementation:
 
 - planning record: `docs/project-atlas/executive-library/REIE-HOMEPAGE-PRODUCT-EXPERIENCE-ARCHITECTURE-PLAN.md`
-- status: `REIE_HOMEPAGE_PRODUCT_EXPERIENCE_READY_FOR_BOUNDED_IMPLEMENTATION_AUTHORIZATION`
-- selected first implementation phase: `REIE_HOMEPAGE_PHASE_1_STRUCTURAL_SIMPLIFICATION_AND_MOBILE_HIERARCHY`
-- implementation remains unauthorized
-- design-system implementation remains unauthorized
-- route creation remains unauthorized
+- implementation record: `docs/project-atlas/executive-library/REIE-HOMEPAGE-PRODUCT-EXPERIENCE-PHASE-1-IMPLEMENTATION.md`
+- selected phase: `REIE_HOMEPAGE_PHASE_1_STRUCTURAL_SIMPLIFICATION_AND_MOBILE_HIERARCHY`
+- implementation status: local implementation validated
+- implementation commit: final local commit with message `Simplify REIE homepage experience`
+- push remains unauthorized
+- manual deployment remains unauthorized
+- production certification remains unauthorized
+- destination-page creation remains unauthorized
 - Mortgage Calculator implementation remains unauthorized
-- exact next authorization gate: `READY_FOR_REIE_HOMEPAGE_PHASE_1_BOUNDED_IMPLEMENTATION_AUTHORIZATION`
+- site-wide design-system implementation remains unauthorized
+- exact next authorization gate: `READY_FOR_REIE_HOMEPAGE_PHASE_1_LOCAL_CERTIFICATION_AND_PUSH_REVIEW`
 
-Planning findings:
+Implemented local scope:
 
-- Current homepage implementation is in `app/page.tsx`, with global navigation from `components/PublicNavigation.tsx`, footer from `components/Footer.tsx`, journey continuity from `components/ContinueYourDecision.tsx`, and homepage styling in `app/globals.css`.
-- Current homepage sections: brokerage attribution, public navigation, hero, Why REIE, Continue Your Decision, Choose Your Journey, Search preview form, Communities, Grand Plan, David Quinn/advisory close, and footer.
-- Production responsive review at approximately desktop `1440x1100`, tablet `768x1024`, and mobile `390x844` found no horizontal overflow, no broken images, and no console errors.
-- Mobile scroll height is long, with many first-screen route choices and a very tall Communities section; the issue is hierarchy and CTA competition rather than broken rendering.
-- Homepage primary purpose should be to orient visitors to the REIE and guide them into one clear decision-starting path.
-- Primary homepage action should remain `/search`.
-- The homepage should not remain a summary of the entire platform.
-- Communities depth should move to `/market` or become a concise Market Context teaser.
-- The Mortgage Calculator strategy is `BUYER_FINANCING_READINESS_INTEGRATION`, not homepage embed; no calculator is authorized.
+- `app/page.tsx` simplifies the existing homepage only.
+- `app/globals.css` adds homepage-scoped Phase 1 spacing, hierarchy, and container treatment.
+- `scripts/checkHomepageProductExperiencePhase1.ts` adds focused deterministic validation.
+- `package.json` and `tsconfig.worker.json` register the focused deterministic check.
+- The hero remains oriented around `/search` as the primary action.
+- The first post-hero section is now a simpler Search / Buy / Sell decision entry.
+- Certified Decision Journey continuity remains present through `ContinueYourDecision`.
+- The visible embedded homepage Search form was removed; users continue to `/search` for the full workspace.
+- A hidden Search handoff contract remains only to preserve existing route-safety validation.
+- The long Communities grid and generated authority links were removed from the homepage; market continuity remains through `/market`.
+- Grand Plan and advisory close remain concise existing-route handoffs.
 
-Selected implementation concept:
+Preserved boundaries:
 
-- Phase 1 should simplify homepage structure and mobile hierarchy only.
-- Phase 1 should preserve route `/`, canonical behavior, Search, Market, Buy, Sell, Home Worth, Grand Plan, About, Contact, market/neighborhood routes, buyer/seller flows, public trust, fair-housing, and evidence boundaries.
-- Likely Phase 1 files, if separately authorized: `app/page.tsx`, `app/globals.css`, one implementation record, and `docs/CHAT_START.md`.
-- Do not create routes, destination pages, a Mortgage Calculator, Search changes, map/GIS changes, navigation refactors, APIs, Prisma/migrations, persistence, telemetry, deployment configuration, or production-data mutation.
+- no new routes or destination pages
+- no route eligibility, registry eligibility, canonical, or sitemap changes
+- no global navigation or footer architecture changes
+- no Search API, filter, ranking, result, or map/GIS changes
+- no market, neighborhood, buyer, seller, Grand Plan, or advisory backend behavior changes
+- no Mortgage Calculator, mortgage inputs, payment estimates, interest-rate fields, affordability outputs, lending recommendations, or financing CTAs
+- no providers, acquisition, public-record lookup, APIs, Prisma, migrations, persistence, customer data, CRM, telemetry, personalization, AI, alerts, queues, workers, email, notifications, deployment configuration, or production-data mutation
 
-Protected boundaries:
-
-- implementation remains unauthorized
-- homepage implementation remains unauthorized
-- Local Decision Intelligence Wave 4 implementation remains unauthorized and blocked
-- Niwot activation remains unauthorized
-- Gunbarrel reconciliation or activation remains unauthorized
-- no public routes, redirects, aliases, destination pages, Mortgage Calculator, route eligibility, registry eligibility, canonical behavior, sitemap behavior, Search, maps/GIS, navigation refactor, buyer/seller flow change, providers, acquisition, public-record lookup, uploads, APIs, Prisma, migrations, persistence, customer data, CRM, telemetry, personalization, valuation, pricing, scoring, ranking, forecasting, AI, alerts, queues, workers, email, notifications, deployment configuration, production certification, or production-data mutation is authorized
-
-Current repository state after this homepage planning review:
+Current repository state after this local implementation:
 
 - branch: `main`
-- expected HEAD after homepage planning commit: this documentation-only planning commit
-- expected origin/main after push: this documentation-only planning commit
-- expected ahead / behind after push: `0 ahead / 0 behind`
-- expected working tree after validation: clean
+- expected HEAD before local commit: `6304ffca9fc7a2b9b04c75d05a1d0916114210c4`
+- expected origin/main before local commit: `6304ffca9fc7a2b9b04c75d05a1d0916114210c4`
+- expected ahead / behind before local commit: `0 ahead / 0 behind`
+- expected working tree after local commit: clean
+
+Local validation passed:
+
+- focused homepage Phase 1 check
+- Product Cohesion
+- Decision Journey
+- public runtime
+- Search runtime
+- market-route regression
+- South Boulder and Table Mesa route-enhancement regression
+- unenhanced neighborhood-route regression via neighborhood/submarket architecture and local route review
+- buyer financing readiness
+- seller readiness
+- Property / Seller Evidence Readiness
+- Advisory Handoff
+- Grand Plan
+- public trust
+- map rendering
+- property-route safety
+- Neighborhood / Submarket Architecture
+- First and Second Governed Neighborhood / Submarket Waves
+- Niwot governance preservation
+- Geographic Intelligence Architecture, Objects, and provenance
+- Local Decision Intelligence Phase 1 and Phase 2 Waves 1-3
+- Decision Guide generation and evidence transparency
+- Evidence Depth
+- Controlled Evidence
+- source-rights readiness
+- GMA preview, queue, and decision fixture
+- unsubscribe safety
+- alert readiness
+- typecheck
+- lint
+- build
+- local public-experience smoke
+
+Responsive and interaction review passed locally at approximately:
+
+- `390x844`
+- `768x1024`
+- `1440x1100`
+
+Findings:
+
+- no horizontal overflow
+- no broken images
+- no console errors during page-load review
+- mobile scroll height reduced to about `5676px`
+- Communities grid count: `0`
+- market teaser height about `283px` on mobile
+- scoped hero Search action navigated to `/search`
+- Back returned to `/`
+- Forward returned to `/search`
+- no retired Niwot route links
+- no Mortgage Calculator copy
+- no dashboard or scorecard copy
 
 Exact next step:
 
-- Stop, or explicitly authorize `REIE_HOMEPAGE_PHASE_1_BOUNDED_IMPLEMENTATION_AUTHORIZATION`.
-- Codex must not begin homepage implementation, site-wide redesign, route creation, Mortgage Calculator work, Search/map work, Gunbarrel reconciliation, Niwot activation, LDI Wave 4, Product Experience work beyond the authorized homepage phase, deployment, production certification, or any unrelated initiative without explicit authorization.
+- Complete local certification for Phase 1.
+- If certified, create one local commit only.
+- Do not push, deploy, perform production certification, begin Phase 2, create destination pages, implement Mortgage Calculator work, alter Search/map behavior, or begin another initiative without explicit authorization.
 
 Prior LDI Wave 4 planning handoff retained below.
 

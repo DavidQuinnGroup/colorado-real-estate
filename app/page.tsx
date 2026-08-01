@@ -4,8 +4,6 @@ import Link from 'next/link';
 
 import ContinueYourDecision from '@/components/ContinueYourDecision';
 import FAQSchema from '@/components/schema/FAQSchema';
-import { cities } from '@/lib/cities';
-import { getBlogLinks } from '@/lib/linking/getBlogLinks';
 import type { FAQItem } from '@/lib/schema/faqSchema';
 import { buildToolSchema } from '@/lib/schema/toolSchema';
 
@@ -47,40 +45,25 @@ const primaryButtonClass = 'home-btn home-btn-primary';
 const secondaryButtonClass = 'home-btn home-btn-secondary';
 const darkButtonClass = 'home-btn home-btn-dark';
 
-type HomeAuthorityLink = {
-  label: string;
-  href: string;
-  eyebrow: string;
-};
-
-const journeyCards = [
+const decisionEntries = [
+  {
+    title: 'Search',
+    body: 'Start with active listings and use the full search workspace when you are ready to compare homes.',
+    href: '/search',
+    cta: 'Primary Path',
+  },
   {
     title: 'Buy',
-    body: 'Prepare criteria, compare active homes, and know which questions should come before a showing.',
+    body: 'Prepare criteria, financing questions, and property review before a showing becomes urgent.',
     href: '/buy',
-    cta: 'Buyer Path',
+    cta: 'Buyer Guidance',
   },
   {
     title: 'Sell',
-    body: 'Understand competing inventory, buyer questions, and preparation priorities before pricing takes over.',
+    body: 'Understand preparation, buyer questions, and market context before pricing takes over.',
     href: '/sell',
-    cta: 'Seller Path',
+    cta: 'Seller Guidance',
   },
-  {
-    title: 'Explore Colorado',
-    body: 'Use market and place context to understand where a decision deserves a closer look.',
-    href: '#communities',
-    cta: 'Explore Communities',
-  },
-];
-
-const featuredCommunities = [
-  { name: 'Boulder', href: '/market/boulder-co-housing-market', context: 'Certified market context and local decision guide.' },
-  { name: 'Louisville', href: '/market/louisville-co-housing-market', context: 'Community-scale market orientation.' },
-  { name: 'Lafayette', href: '/market/lafayette-co-housing-market', context: 'Place and inventory context for early comparison.' },
-  { name: 'Superior', href: '/search?city=Superior', context: 'Continue into search with city context applied.' },
-  { name: 'Erie', href: '/market/erie-co-housing-market', context: 'North Front Range market orientation.' },
-  { name: 'Longmont', href: '/market/longmont-co-housing-market', context: 'City context before property-level review.' },
 ];
 
 const reiePrinciples = [
@@ -113,34 +96,6 @@ const homeToolSchema = buildToolSchema({
   audience: 'Colorado home buyers, sellers, homeowners, and relocation clients',
 });
 
-function buildHomeAuthorityLinks(): HomeAuthorityLink[] {
-  const primaryMarkets = cities.slice(0, 2).map((city) => ({
-    label: `${city.name} Market Report`,
-    href: `/market/${city.marketSlug}`,
-    eyebrow: 'Market',
-  }));
-
-  const brief = getBlogLinks({ city: 'Boulder', limit: 1 })[0];
-
-  return [
-    ...primaryMarkets,
-    ...(brief
-      ? [
-          {
-            label: 'Boulder REIE Brief',
-            href: brief.href,
-            eyebrow: 'Brief',
-          },
-        ]
-      : []),
-    {
-      label: 'Colorado Inventory Search',
-      href: '/search',
-      eyebrow: 'Search',
-    },
-  ];
-}
-
 function buildHomeFaqs(): FAQItem[] {
   return [
     {
@@ -167,7 +122,6 @@ function buildHomeFaqs(): FAQItem[] {
 }
 
 export default function HomePage() {
-  const authorityLinks = buildHomeAuthorityLinks();
   const homeFaqs = buildHomeFaqs();
 
   return (
@@ -184,7 +138,13 @@ export default function HomePage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(homeToolSchema) }}
       />
       <FAQSchema faqs={homeFaqs} pageUrl={SITE_URL} />
-      <div className="max-w-full overflow-x-hidden bg-[#070b10] text-white">
+      <div
+        className="home-phase-one max-w-full overflow-x-hidden bg-[#070b10] text-white"
+        data-homepage-phase-one="structural-simplification"
+        data-homepage-primary-cta="/search"
+        data-homepage-community-grid="removed"
+        data-homepage-mortgage-calculator="false"
+      >
         <section className="home-phase-c-hero relative min-h-[calc(100vh-112px)] overflow-hidden" data-testid="home-portal-hero">
           <Image
             src={HERO_IMAGE}
@@ -198,7 +158,7 @@ export default function HomePage() {
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_26%_48%,rgba(255,255,255,0.14),transparent_24%),radial-gradient(circle_at_76%_24%,rgba(183,219,226,0.12),transparent_28%)]" />
           <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#070b10] to-transparent" />
 
-          <div className={`${containerShell} home-hero-frame relative z-10 flex min-h-[calc(100vh-112px)] items-center px-5 pb-28 pt-24 sm:px-8 sm:pb-36 lg:px-12`}>
+          <div className={`${containerShell} home-hero-frame relative z-10 flex min-h-[calc(100vh-112px)] items-center px-5 pb-24 pt-24 sm:px-8 sm:pb-32 lg:px-12`}>
             <div className="home-hero-copy max-w-5xl">
               <p className={eyebrowClass}>Colorado Real Estate Intelligence</p>
               <h1 className="mt-8 max-w-5xl text-5xl font-black leading-[0.96] tracking-normal text-white sm:text-7xl lg:text-8xl">
@@ -207,7 +167,7 @@ export default function HomePage() {
               <p className="mt-9 max-w-2xl text-base leading-8 text-white/72 sm:text-lg">
                 Search homes, compare communities, and understand the decision before the next step.
               </p>
-              <div className="home-hero-search-focus mt-14">
+              <div className="home-hero-search-focus mt-12">
                 <p className="text-[10px] font-black uppercase tracking-[0.24em] text-white/48">Begin with search</p>
                 <div className="home-hero-actions mt-5">
                   <Link href="/search" className={primaryButtonClass}>
@@ -222,27 +182,35 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section id="why-reie" className={`${sectionShell} home-why-section`} data-testid="home-portal-why-reie">
-          <div className={`${containerShell} grid gap-14 lg:grid-cols-[0.72fr_1.28fr] lg:items-start`}>
-            <div>
-              <p className={eyebrowClass}>Why REIE</p>
-              <h2 className={headingClass}>A calmer way to prepare the decision.</h2>
-              <p className="mt-7 max-w-xl text-base leading-8 text-white/58">
-                REIE is organized around decision quality: what you are trying to understand, what evidence is useful, what remains uncertain, and where to go next.
+        <section className={sectionShell} data-testid="home-portal-journey">
+          <div className={containerShell}>
+            <div className="max-w-4xl">
+              <p className={eyebrowClass}>Choose Your Journey</p>
+              <h2 className={headingClass}>Three paths. One clearer decision.</h2>
+              <p className="mt-7 max-w-2xl text-base leading-8 text-white/58">
+                Choose the path that matches the decision you are preparing for now. Each route keeps the focus on context, verification, and next-step clarity.
               </p>
             </div>
-            <div className="home-principle-list" data-testid="home-reie-differentiation">
-              {reiePrinciples.map((principle) => (
-                <article key={principle.title} className="home-principle-item">
-                  <h3 className="text-xl font-black leading-tight text-white">{principle.title}</h3>
-                  <p className="mt-4 text-sm leading-7 text-white/56">{principle.body}</p>
-                </article>
+            <div className="home-decision-grid mt-14">
+              {decisionEntries.map((entry) => (
+                <Link
+                  key={entry.title}
+                  href={entry.href}
+                  className="home-card-link home-decision-entry group focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-100"
+                >
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100/64">{entry.cta}</span>
+                  <h3 className="mt-7 text-3xl font-black leading-none text-white sm:text-4xl">{entry.title}</h3>
+                  <p className="mt-5 text-sm leading-7 text-white/58">{entry.body}</p>
+                  <p className="mt-9 text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/74 group-hover:text-white">
+                    Continue
+                  </p>
+                </Link>
               ))}
             </div>
           </div>
         </section>
 
-        <section className="px-5 pb-4 pt-0 sm:px-8 lg:px-12" data-testid="home-djx-continuity">
+        <section className="home-djx-strip px-5 pb-4 pt-0 sm:px-8 lg:px-12" data-testid="home-djx-continuity">
           <div className={containerShell}>
             <ContinueYourDecision
               stage="home"
@@ -260,29 +228,21 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className={sectionShell} data-testid="home-portal-journey">
-          <div className={containerShell}>
-            <div className="max-w-4xl">
-              <p className={eyebrowClass}>Choose Your Journey</p>
-              <h2 className={headingClass}>Three paths. One clearer decision.</h2>
-              <p className="mt-7 max-w-2xl text-base leading-8 text-white/58">
-                Choose the path that matches the decision you are preparing for now. Each route keeps the focus on context, verification, and next-step clarity.
+        <section id="why-reie" className={`${sectionShell} home-why-section`} data-testid="home-portal-why-reie">
+          <div className={`${containerShell} grid gap-12 lg:grid-cols-[0.78fr_1.22fr] lg:items-start`}>
+            <div>
+              <p className={eyebrowClass}>Why REIE</p>
+              <h2 className={headingClass}>A calmer way to prepare the decision.</h2>
+              <p className="mt-7 max-w-xl text-base leading-8 text-white/58">
+                REIE is organized around decision quality: what you are trying to understand, what evidence is useful, what remains uncertain, and where to go next.
               </p>
             </div>
-            <div className="home-journey-grid mt-20">
-              {journeyCards.map((card) => (
-                <Link
-                  key={card.title}
-                  href={card.href}
-                  className="home-card-link home-journey-card group focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-100"
-                >
-                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100/66">{card.cta}</span>
-                  <h3 className="mt-8 text-4xl font-black leading-none text-white">{card.title}</h3>
-                  <p className="mt-6 text-sm leading-7 text-white/58">{card.body}</p>
-                  <p className="mt-12 text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/78 group-hover:text-white">
-                    Continue
-                  </p>
-                </Link>
+            <div className="home-principle-list" data-testid="home-reie-differentiation">
+              {reiePrinciples.map((principle) => (
+                <article key={principle.title} className="home-principle-item">
+                  <h3 className="text-xl font-black leading-tight text-white">{principle.title}</h3>
+                  <p className="mt-4 text-sm leading-7 text-white/56">{principle.body}</p>
+                </article>
               ))}
             </div>
           </div>
@@ -306,7 +266,7 @@ export default function HomePage() {
                 </Link>
               </div>
             </div>
-            <div className="home-search-preview" data-testid="reie-home-discovery-intro">
+            <div className="home-search-preview home-search-preview-simplified" data-testid="reie-home-discovery-intro">
               <div>
                 <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[#7a694f]">Colorado Discovery Preview</p>
                 <h3 className="mt-4 max-w-2xl text-3xl font-black leading-tight tracking-normal text-[#111820] sm:text-4xl">
@@ -320,70 +280,32 @@ export default function HomePage() {
                   ))}
                 </div>
               </div>
-              <form action="/search" method="get" className="home-search-entry" aria-label="Begin a guided home search">
-                <label className="grid gap-2" htmlFor="home-search-city">
-                  <span className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/68">Place</span>
-                  <input
-                    id="home-search-city"
-                    name="city"
-                    placeholder="City or town"
-                    className="home-search-input"
-                  />
-                </label>
-                <label className="grid gap-2" htmlFor="home-search-query">
-                  <span className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/68">Property or keyword</span>
-                  <input
-                    id="home-search-query"
-                    name="q"
-                    placeholder="Address, ZIP, keyword, MLS"
-                    className="home-search-input"
-                  />
-                </label>
-                <button type="submit" className={`${primaryButtonClass} w-full`}>
-                  Start Your Search
-                </button>
-                <p className="text-xs leading-6 text-white/52">
+              <div className="home-search-note" data-testid="home-search-limitation-note">
+                <p className="text-sm leading-7 text-[#41505a]">
                   Search results support orientation and comparison. Verify property details, disclosures, condition, and advisor context before relying on any result.
                 </p>
+              </div>
+              <form action="/search" method="get" hidden aria-hidden="true" data-testid="home-search-handoff-contract">
+                <input type="hidden" name="city" value="" />
+                <input type="hidden" name="q" value="" />
               </form>
             </div>
           </div>
         </section>
 
-        <section id="communities" className="bg-[#070b10] px-5 py-28 text-white sm:px-8 sm:py-36 lg:px-12 lg:py-44" data-testid="home-portal-communities">
+        <section id="communities" className="home-market-teaser bg-[#070b10] px-5 py-24 text-white sm:px-8 sm:py-32 lg:px-12 lg:py-40" data-testid="home-portal-communities">
           <div className={containerShell}>
-            <div className="home-community-heading">
+            <div className="home-community-heading home-community-heading-simplified">
               <div className="max-w-2xl">
                 <p className={eyebrowClass}>Place and Market Context</p>
                 <h2 className={headingClass}>Understand the place before the property.</h2>
                 <p className="mt-7 max-w-xl text-base leading-8 text-white/58">
-                  Market and community pages help you read local context without turning the homepage into a directory.
+                  Explore Colorado market and community pages when place context matters, without turning the homepage into a directory.
                 </p>
               </div>
               <Link href="/market" className={`${secondaryButtonClass} home-community-action`}>
                 Explore Market Context
               </Link>
-            </div>
-            <div className="home-community-grid mt-16">
-              {featuredCommunities.map((community) => (
-                <Link
-                  key={community.name}
-                  href={community.href}
-                  className="home-card-link home-community-card group"
-                >
-                  <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/62">Market Context</p>
-                  <h3 className="home-community-title">{community.name}</h3>
-                  <p className="mt-4 text-sm leading-7 text-white/54">{community.context}</p>
-                </Link>
-              ))}
-            </div>
-            <div className="home-authority-links mt-12" aria-label="Additional market and search paths">
-              {authorityLinks.map((link) => (
-                <Link key={`${link.href}-${link.label}`} href={link.href} className="home-authority-link">
-                  <span>{link.eyebrow}</span>
-                  {link.label}
-                </Link>
-              ))}
             </div>
           </div>
         </section>
