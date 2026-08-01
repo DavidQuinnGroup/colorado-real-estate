@@ -48,6 +48,31 @@ type DecisionGuideSnapshot = {
   bestNextStep: string;
 };
 
+export type DecisionGuideEvidenceTransparencyDimension =
+  | 'geographic-scope'
+  | 'evidence-scope'
+  | 'recency'
+  | 'source-use-boundary'
+  | 'conflict-uncertainty'
+  | 'property-professional-boundary';
+
+export type DecisionGuideEvidenceTransparencyItem = {
+  dimension: DecisionGuideEvidenceTransparencyDimension;
+  label: string;
+  explanation: string;
+};
+
+export type DecisionGuideEvidenceTransparency = {
+  contract: typeof DECISION_GUIDE_EVIDENCE_TRANSPARENCY;
+  maturityLabel: string;
+  maturityExplanation: string;
+  heading: string;
+  introduction: string;
+  items: readonly DecisionGuideEvidenceTransparencyItem[];
+  decisionBoundary: string;
+  nextStepGuidance: string;
+};
+
 export type DecisionGuide = {
   key: DecisionGuideKey;
   maturity: DecisionGuideMaturity;
@@ -70,6 +95,7 @@ export type DecisionGuide = {
   buyerConsiderations: DecisionGuideItem[];
   sellerConsiderations: DecisionGuideItem[];
   evidenceLimitations: DecisionGuideItem[];
+  evidenceTransparency?: DecisionGuideEvidenceTransparency;
   tradeoffs: DecisionGuideTradeoff[];
   verificationQuestions: string[];
 };
@@ -119,6 +145,7 @@ type EnhancedFoundationCityConfig = {
 };
 
 export const DECISION_GUIDE_FRAMEWORK = 'context-tradeoffs-questions-evidence-next-step';
+export const DECISION_GUIDE_EVIDENCE_TRANSPARENCY = 'decision-guide-evidence-transparency';
 export const DECISION_GUIDE_SOURCE = 'governed-city-and-neighborhood-data';
 export const DECISION_GUIDE_FOUNDATION_SOURCE = 'governed-city-market-registry';
 export const DECISION_GUIDE_ENHANCED_FOUNDATION_SOURCE = 'governed-city-market-registry-and-durable-local-context';
@@ -200,7 +227,7 @@ export const DECISION_GUIDE_CITY_CONFIGS: Record<EditorialDecisionGuideKey, Deci
       },
     ],
     verificationQuestions: [
-      'Which Boulder neighborhood pattern best matches the way I would use the city day to day?',
+      'Which Boulder neighborhood pattern should I compare against the way I would use the city day to day?',
       'What property-specific condition, records, insurance, or cost questions should be answered before I compare this home against alternatives?',
       'Does the current market signal change my timing, search discipline, or seller-preparation plan without creating urgency?',
       'Which neighborhood page, market evidence, property facts, and advisor questions should I review before the next step?',
@@ -248,7 +275,7 @@ export const DECISION_GUIDE_CITY_CONFIGS: Record<EditorialDecisionGuideKey, Deci
       },
     ],
     verificationQuestions: [
-      'Which Louisville neighborhood pattern best matches the way I would use the city day to day?',
+      'Which Louisville neighborhood pattern should I compare against the way I would use the city day to day?',
       'What property-specific condition, records, insurance, cost, or financing-readiness questions should be answered before I compare this home against alternatives?',
       'Does the current market signal change my search discipline or seller-preparation plan without creating urgency?',
       'Which neighborhood page, market evidence, property facts, financing preparation items, and advisor questions should I review before the next step?',
@@ -296,7 +323,7 @@ export const DECISION_GUIDE_CITY_CONFIGS: Record<EditorialDecisionGuideKey, Deci
       },
     ],
     verificationQuestions: [
-      'Which Lafayette neighborhood pattern best matches the way I would use the city day to day?',
+      'Which Lafayette neighborhood pattern should I compare against the way I would use the city day to day?',
       'What property-specific condition, records, insurance, cost, or financing-readiness questions should be answered before I compare this home against alternatives?',
       'Does the current market signal change my search discipline or seller-preparation plan without creating urgency?',
       'Which neighborhood page, market evidence, property facts, financing preparation items, and advisor questions should I review before the next step?',
@@ -1529,6 +1556,62 @@ function buildEnhancedFoundationDecisionGuide({
   };
 }
 
+export function buildDecisionGuideEvidenceTransparency(guide: {
+  key: EditorialDecisionGuideKey;
+  cityName: string;
+}): DecisionGuideEvidenceTransparency {
+  return {
+    contract: DECISION_GUIDE_EVIDENCE_TRANSPARENCY,
+    maturityLabel: 'Editorially Certified',
+    maturityExplanation:
+      'Editorially Certified means this guide has passed the platform\'s governed editorial and product review. It is not a guarantee, ranking, recommendation, or statement that every topic has complete evidence.',
+    heading: 'How to read this guide',
+    introduction: `${guide.cityName} guidance is a structured decision aid. It explains city context, trade-offs, and questions to verify while preserving limits around evidence, timing, property facts, and professional review.`,
+    items: [
+      {
+        dimension: 'geographic-scope',
+        label: 'Citywide scope',
+        explanation:
+          'Guide context is generally citywide. Neighborhoods, subdivisions, HOAs, districts, overlapping jurisdictions, and individual properties may differ and still need their own review.',
+      },
+      {
+        dimension: 'evidence-scope',
+        label: 'Topic support varies',
+        explanation:
+          'Some topics have direct support, while others are contextual or incomplete. Missing information is not proof that a condition does or does not exist.',
+      },
+      {
+        dimension: 'recency',
+        label: 'Timing can vary',
+        explanation:
+          'Information may reflect different observation or effective dates. Current market, municipal, financing, and property conditions should be verified when timing matters.',
+      },
+      {
+        dimension: 'source-use-boundary',
+        label: 'Public-use boundary',
+        explanation:
+          'REIE presents only information it is permitted to show publicly. Some material may be summarized, limited, internally reviewed, unavailable, or excluded from public display.',
+      },
+      {
+        dimension: 'conflict-uncertainty',
+        label: 'Unresolved information',
+        explanation:
+          'Public sources and records may differ. When support conflicts or remains unavailable, the guide preserves that uncertainty instead of choosing an unsupported answer.',
+      },
+      {
+        dimension: 'property-professional-boundary',
+        label: 'Property and professional review',
+        explanation:
+          'City context does not establish condition, title, insurance, structural, environmental, HOA, municipal, permit, value, financing, legal, tax, inspection, engineering, or appraisal conclusions.',
+      },
+    ],
+    decisionBoundary:
+      'Use this guide to prepare better questions. It does not decide whether a city, neighborhood, property, listing decision, financing path, or investment outcome is appropriate for a person.',
+    nextStepGuidance:
+      'Continue with city search, buyer guidance, seller guidance, financing guidance, Grand Plan, or advisory support when a question needs property-specific or qualified review.',
+  };
+}
+
 export function buildDecisionGuide({
   city,
   cityNeighborhoods,
@@ -1694,6 +1777,10 @@ export function buildDecisionGuide({
           'No AI, public GIS, telemetry, provider activation, ranking, valuation, school rating, safety rating, or investment guidance is used.',
       },
     ],
+    evidenceTransparency: buildDecisionGuideEvidenceTransparency({
+      key: config.key,
+      cityName: city.name,
+    }),
     tradeoffs: config.tradeoffs,
     verificationQuestions: config.verificationQuestions,
   };

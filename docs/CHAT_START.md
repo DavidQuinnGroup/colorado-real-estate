@@ -10,7 +10,7 @@ Product:
 
 ## Latest New-Chat Handoff
 
-PROJECT ATLAS(tm) / REIE Post-Neighborhood / Submarket Architecture Strategic Next-Phase Review, August 1, 2026:
+PROJECT ATLAS(tm) / REIE Decision Guide Evidence Transparency Local Implementation, August 1, 2026:
 
 Workspace:
 
@@ -43,32 +43,35 @@ Current governed state:
 - REIE Advisory Operating Readiness(tm) is production-certified and closed.
 - REIE Neighborhood / Submarket Intelligence Architecture(tm) is production-certified and closed.
 - Final prior status: `NEIGHBORHOOD_SUBMARKET_INTELLIGENCE_ARCHITECTURE_CERTIFIED_AND_CLOSED`.
-- REIE Post-Neighborhood / Submarket Architecture Strategic Next-Phase Review is locally complete.
-- Current strategic review commit status: local documentation-only commit authorized after validation; not pushed unless explicitly authorized.
-- Baseline reviewed: `3743fd06a6bb18ebe676b868e5123e0c0696addb`.
+- REIE Post-Neighborhood / Submarket Architecture Strategic Next-Phase Review is pushed to origin/main.
+- Strategic priority SHA: `9eb61ab3a138c71bae7a5afbca97f3e42e493af2`.
+- Strategic priority commit message: `Prioritize REIE post-neighborhood-architecture next phase`.
 - Strategic next-phase finding: `PRIORITIZE_DECISION_GUIDE_EVIDENCE_TRANSPARENCY`.
-- Primary recommendation: implement Decision Guide Evidence Transparency.
-- Recommended next authorization: `DECISION_GUIDE_EVIDENCE_TRANSPARENCY_IMPLEMENTATION_AUTHORIZATION`.
-- This is recommendation-only. Decision Guide Evidence Transparency implementation is not authorized by this review record.
+- Documentation-only Vercel deployment for the strategic review completed successfully. GitHub commit status ID: `51473016010`; GitHub deployment ID: `5701721141`; deployment status ID: `16215639695`; deployment URL: `https://david-quinn-group-8rde-nqn11r5sq-david-quinns-projects-a0953600.vercel.app`.
+- REIE Decision Guide Evidence Transparency(tm) local implementation is complete and locally certified.
+- Current local implementation status: `DECISION_GUIDE_EVIDENCE_TRANSPARENCY_READY_FOR_PUSH`.
+- Authoritative contract: `DECISION_GUIDE_EVIDENCE_TRANSPARENCY`.
+- Implementation commit: current local HEAD after the `Implement Decision Guide evidence transparency` commit.
+- Implementation commit message: `Implement Decision Guide evidence transparency`.
+- Recommended next authorization: `DECISION_GUIDE_EVIDENCE_TRANSPARENCY_PUSH_AND_PRODUCTION_CERTIFICATION`.
 - Strategic review record: `docs/project-atlas/executive-library/REIE-POST-NEIGHBORHOOD-SUBMARKET-ARCHITECTURE-STRATEGIC-NEXT-PHASE-REVIEW.md`.
+- Implementation record: `docs/project-atlas/executive-library/REIE-DECISION-GUIDE-EVIDENCE-TRANSPARENCY-IMPLEMENTATION.md`.
 - Neighborhood / Submarket Architecture accomplishment: certified internal geographic-object foundation with object types, canonical identity, relationships, boundary and authority posture, route/registry/Search readiness, evidence and source-rights requirements, ambiguity preservation, fair-housing safeguards, and Gunbarrel/Niwot fail-closed governance.
-- Geographic foundation completeness finding: complete enough for bounded planning, evidence transparency, and internal readiness work; not sufficient by itself for public neighborhood or submarket activation.
-- Public implementation readiness finding: public neighborhood implementation remains premature. Architecture readiness creates no route, registry readiness creates no public registry entry, Search support creates no recommendation authority, and map/boundary/content/source-rights certification remains separate.
-- Diminishing-returns finding: another standalone internal architecture phase would be lower value unless attached to a concrete customer-facing or domain-specific need.
-- Largest remaining gap: public, limitation-forward evidence transparency on the existing Boulder, Louisville, and Lafayette editorial Decision Guides.
-- Decision Guide Evidence Transparency finding: strongest next initiative because it can improve trust, authority, mixed-maturity clarity, and customer understanding through public-safe copy without exposing Evidence Depth metadata or activating providers, APIs, schema, Search, maps, routes, CRM, tracking, customer data, or production writes.
-- Secondary priority: `PRIORITIZE_FIRST_NEIGHBORHOOD_SUBMARKET_IMPLEMENTATION_WAVE`.
-- First Neighborhood / Submarket wave finding: queued behind Decision Guide transparency; safest later scope is internal readiness or existing-route preservation, not new public route creation.
-- Safest future object types: existing governed `NEIGHBORHOOD` contexts, internal `SUBDIVISION` readiness, internal `MARKET_AREA` context, and governance-only `UNINCORPORATED_COMMUNITY` classification. `HOA`, special districts, parcels, properties, Gunbarrel-like, and Niwot-like ambiguous objects remain unsafe for first public activation.
-- Route and registry activation finding: preserve existing routes or evaluate readiness only; do not create new routes or alter route, registry, Search, map, sitemap, canonical, or public eligibility behavior.
-- Property / Seller Evidence finding: feasible later as an internal, fixture-backed evidence-category phase, but not next primary due to address, ownership, privacy, public-record, provider, valuation, condition, title, permit, disclosure, insurance, structural, environmental, HOA, municipal, and professional-boundary risks.
-- Niwot governance finding: architecture improves vocabulary but does not resolve or activate Niwot. Niwot remains blocked from Local Decision Intelligence Wave 4 and public route activation pending separate governance.
-- Gunbarrel governance finding: remains blocked as an unresolved governance case; no public route, registry, Search, map, Local Decision Intelligence, or definitive object-type activation.
-- Decision Guide unification finding: remain deferred. Evidence transparency is more valuable than full unification because it preserves Boulder, Louisville, and Lafayette editorial depth while addressing the actual trust gap.
-- Embedded evidence integration finding: evidence integration should be embedded inside the selected Decision Guide transparency domain and remain public-copy-only, deterministic, non-dynamic, and non-metadata-exposing.
-- Product Experience finding: not justified without concrete production evidence of CTA, mobile, duplicate-path, discoverability, cognitive-load, or conversion friction.
+- Authorized public scope: existing Boulder, Louisville, and Lafayette editorial Decision Guides only.
+- Preserved maturity: Boulder, Louisville, and Lafayette remain `EDITORIALLY_CERTIFIED`.
+- Scope decision: public-copy-only, deterministic, non-dynamic, non-personalized, limitation-forward, non-ranking, non-predictive, source-rights safe, fair-housing safe, and editorial-depth preserving.
+- Shared transparency dimensions: geographic scope, evidence scope, recency, source-use boundary, conflict and uncertainty, property/professional limitation, decision boundary, and next-step continuity guidance.
+- Public placement: a restrained `How to read this guide` transparency section renders after the guide verification questions and before neighborhood and journey-continuity sections.
+- Editorial preservation: Boulder, Louisville, and Lafayette substantive guide narratives, Decision Snapshot, Local Character, Market Drivers, buyer/seller guidance, due-diligence questions, continuity links, and maturity identity are preserved. One narrow wording correction removed prohibited best-match language from verification questions.
+- Public evidence non-exposure: no evidence IDs, source IDs, provider IDs, version IDs, rights enums, support levels, freshness enums, conflict enums, lineage records, eligibility outcomes, fixture names, internal summaries, Advisory preparation prompts, or Neighborhood / Submarket readiness states are exposed.
+- Deterministic validation command: `npm run check:decision-guide-evidence-transparency`.
+- Local validation: new transparency check, Boulder Decision Guide, Louisville Decision Guide, Lafayette Decision Guide, Decision Guide generation, Cross-City Comparison, LDI Phase 1 and Phase 2 Waves 1-3, Neighborhood / Submarket Architecture, Evidence Depth, Controlled Evidence Integration, Advisory Operating Readiness, Product Cohesion, Decision Journey, Grand Plan, public runtime safety, search runtime safety, property route safety, public trust readiness, unsubscribe safety, source-rights activation readiness, alert readiness, `npm run typecheck`, `npm run lint`, and `npm run build` passed.
+- Local route smoke returned HTTP 200 for `/`, Boulder/Louisville/Lafayette Decision Guide routes, Compare, Market, Search, Buy, Sell, Home Worth, Grand Plan, Contact, Privacy, Terms, Brokerage Disclosures, representative property route `/properties/6137-baseline-rd-boulder-co-ire1349635`, and representative neighborhood route `/market/boulder/downtown-boulder`.
+- Public non-exposure route checks returned HTTP 404 for `/evidence-transparency`, `/decision-guide-evidence`, `/api/evidence-transparency`, and `/api/decision-guide-evidence`.
+- Local responsive browser review passed for Boulder, Louisville, and Lafayette at approximately `1440x1100`, `768x1024`, and `390x844`; transparency section was present, maturity remained visible, substantive content was preserved, no horizontal overflow or overlapping content was found, no broken images were found, and no console/runtime errors appeared.
+- Interaction review passed: city Search continuity link and browser Back behavior returned correctly for Boulder, Louisville, and Lafayette.
 - Required remediation: none.
-- Exact next step: stop, or explicitly authorize Decision Guide Evidence Transparency implementation. Codex must not begin implementation, push, deploy, public neighborhood routes, route eligibility, registry eligibility, Niwot activation, Gunbarrel activation, Local Decision Intelligence Wave 4, full Decision Guide unification, Property / Seller Evidence Readiness, provider activation, acquisition, public-record retrieval, GIS runtime, Search changes, map changes, public evidence labels, internal metadata exposure, persistence, APIs, schema, CRM, tracking, telemetry, customer data, queues, workers, email, production writes, or another initiative without explicit authorization.
+- Exact next step: stop, or explicitly authorize Decision Guide Evidence Transparency push and production certification. Codex must not push the local implementation commit, deploy it, begin production certification, begin Decision Guide unification, begin Neighborhood / Submarket implementation, create public neighborhood routes, change route eligibility, registry eligibility, Search, maps, sitemap, canonical URLs, Niwot, Gunbarrel, Local Decision Intelligence Wave 4, Property / Seller Evidence Readiness, provider activation, acquisition, public-record retrieval, GIS runtime, public evidence labels, internal metadata exposure, persistence, APIs, schema, CRM, tracking, telemetry, customer data, queues, workers, email, production writes, or another initiative without explicit authorization.
 
 Prior REIE Neighborhood / Submarket Intelligence Architecture closure handoff retained below.
 

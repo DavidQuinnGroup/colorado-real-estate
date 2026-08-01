@@ -49,7 +49,7 @@ assertIncludes(marketPage, 'data-testid="cross-city-comparison-market-entry"', '
 assertNotIncludes(marketPage, 'href="/market/compare"', 'Implementation must not create a competing market comparison route.');
 assertIncludes(
   decisionGuidePlatform,
-  'Which Boulder neighborhood pattern best matches the way I would use the city day to day?',
+  'Which Boulder neighborhood pattern should I compare against the way I would use the city day to day?',
   'Original Boulder Decision Guide source content must remain unchanged while comparison output is neutralized.',
 );
 

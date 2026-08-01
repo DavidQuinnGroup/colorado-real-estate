@@ -20,6 +20,7 @@ import {
   buildDecisionGuide,
   buildDecisionGuideContinuityLinks,
   type DecisionGuideContinuityDestination,
+  DECISION_GUIDE_EVIDENCE_TRANSPARENCY,
   DECISION_GUIDE_ENHANCED_FOUNDATION_SOURCE,
   DECISION_GUIDE_FOUNDATION_SOURCE,
   DECISION_GUIDE_FRAMEWORK,
@@ -558,6 +559,57 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
                 ))}
               </div>
             </section>
+
+            {cityDecisionGuide.evidenceTransparency ? (
+              <section
+                className="grid gap-6 rounded-[8px] border border-cyan-100/10 bg-[#071017]/74 p-5 md:p-8 lg:grid-cols-[0.82fr_1.18fr]"
+                data-testid={`${cityDecisionGuide.key}-decision-guide-evidence-transparency`}
+                data-decision-guide-evidence-transparency={DECISION_GUIDE_EVIDENCE_TRANSPARENCY}
+                data-decision-guide-evidence-transparency-guide={cityDecisionGuide.key}
+                data-decision-guide-evidence-transparency-maturity={cityDecisionGuide.maturity}
+                data-decision-guide-evidence-transparency-public-copy="true"
+                data-decision-guide-evidence-transparency-internal-metadata="false"
+                data-decision-guide-evidence-transparency-score="false"
+                data-decision-guide-evidence-transparency-ranking="false"
+                data-decision-guide-evidence-transparency-provider="false"
+                data-decision-guide-evidence-transparency-api="false"
+              >
+                <div>
+                  <ShieldCheck className="mb-5 h-7 w-7 text-cyan-100" />
+                  <p className="mb-3 text-[10px] font-black uppercase tracking-[0.28em] text-cyan-100/72">
+                    {cityDecisionGuide.evidenceTransparency.maturityLabel}
+                  </p>
+                  <h2 className="text-3xl font-black uppercase leading-tight tracking-normal text-white">
+                    {cityDecisionGuide.evidenceTransparency.heading}
+                  </h2>
+                  <p className="mt-5 text-sm leading-7 text-white/58">
+                    {cityDecisionGuide.evidenceTransparency.introduction}
+                  </p>
+                  <p className="mt-5 rounded-[8px] bg-white/[0.045] p-4 text-sm leading-7 text-white/56">
+                    {cityDecisionGuide.evidenceTransparency.maturityExplanation}
+                  </p>
+                </div>
+
+                <div className="grid gap-3">
+                  <div className="grid gap-3 md:grid-cols-2">
+                    {cityDecisionGuide.evidenceTransparency.items.map((item) => (
+                      <article key={item.dimension} className="rounded-[8px] bg-white/[0.045] p-4">
+                        <p className="text-[9px] font-black uppercase tracking-[0.18em] text-cyan-100/70">{item.label}</p>
+                        <p className="mt-3 text-sm leading-6 text-white/55">{item.explanation}</p>
+                      </article>
+                    ))}
+                  </div>
+                  <article className="rounded-[8px] bg-black/20 p-4">
+                    <div className="mb-3 flex items-center gap-2">
+                      <Lock className="h-4 w-4 text-cyan-100" />
+                      <p className="text-[9px] font-black uppercase tracking-[0.18em] text-cyan-100/70">Decision Boundary</p>
+                    </div>
+                    <p className="text-sm leading-6 text-white/55">{cityDecisionGuide.evidenceTransparency.decisionBoundary}</p>
+                    <p className="mt-3 text-sm leading-6 text-white/50">{cityDecisionGuide.evidenceTransparency.nextStepGuidance}</p>
+                  </article>
+                </div>
+              </section>
+            ) : null}
 
             <section
               id={cityDecisionGuide.neighborhoodSectionId}
