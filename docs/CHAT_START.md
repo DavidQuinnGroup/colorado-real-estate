@@ -10,6 +10,65 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE Post-First Governed Neighborhood / Submarket Wave Strategic Next-Phase Review, August 1, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Current governed state:
+
+- Core Product Experience Optimization cycle is complete.
+- Product Cohesion Review(tm) Wave 1 is production-certified and closed.
+- Controlled Fixture Alert Dry-Run(tm) program is certified and closed.
+- Local Decision Intelligence(tm) Phase 1 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 1 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 2 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 3 is production-certified and closed.
+- REIE Product Experience(tm) Next Cohesion Wave is production-certified and closed.
+- REIE Cross-City Decision Comparison(tm) is production-certified and closed.
+- REIE Seller Readiness Advancement(tm) is production-certified and closed.
+- REIE Buyer Financing Readiness Advancement(tm) is production-certified and closed.
+- REIE Evidence Depth and Data Integration(tm) foundation is production-certified and closed.
+- REIE Advisory Handoff Readiness(tm) is production-certified and closed.
+- REIE Controlled Evidence Depth Integration(tm) is production-certified and closed.
+- REIE Advisory Operating Readiness(tm) is production-certified and closed.
+- REIE Neighborhood / Submarket Intelligence Architecture(tm) is production-certified and closed.
+- REIE Decision Guide Evidence Transparency(tm) is production-certified and closed.
+- REIE First Governed Neighborhood / Submarket Implementation Wave(tm) is production-certified and closed.
+- Final prior status: `FIRST_GOVERNED_NEIGHBORHOOD_SUBMARKET_WAVE_CERTIFIED_AND_CLOSED`.
+- REIE Post-First Governed Neighborhood / Submarket Wave Strategic Next-Phase Review is complete locally.
+- Strategic review status: `PRIORITIZE_PROPERTY_SELLER_EVIDENCE_READINESS`.
+- Strategic review record: `docs/project-atlas/executive-library/REIE-POST-FIRST-GOVERNED-NEIGHBORHOOD-SUBMARKET-WAVE-STRATEGIC-NEXT-PHASE-REVIEW.md`.
+- Current local commit status: strategic-review commit is local only until explicitly pushed in a later authorization.
+- First Governed Neighborhood / Submarket Wave accomplishment: proved the certified Neighborhood / Submarket architecture can govern real repository-supported neighborhood contexts without public activation, covering 18 candidates and guards, 14 included wave candidates, 4 protected guards, 14 route-preservation cases, 2 internal-readiness cases, 22 relationships, 8 blocked cases, 9 fail-closed rights cases, Gunbarrel blocked, Niwot blocked, and prohibited-output assertions passing.
+- Operating-value finding: the first wave created meaningful internal operating value through candidate inventory, route preservation, internal readiness, object identity, relationships, authority and boundary posture, evidence posture, source-rights posture, Search and map posture, maturity, ambiguity, blockers, and fair-housing governance.
+- Second internal-wave finding: technically justified later, but not the next primary initiative because a second similar wave would produce lower marginal value unless attached to a specific route, certification, or activation problem.
+- Existing neighborhood route enhancement finding: no existing route is ready for bounded public enhancement as the next primary initiative. Existing `NEIGHBORHOOD` routes such as `/market/boulder/downtown-boulder`, Mapleton Hill, and North Boulder are future candidates only after separate evidence, source-rights, content, responsive, fair-housing, and certification authorization.
+- New public route finding: new public neighborhood routes remain premature. No route, registry, sitemap, canonical, Search, map, public metadata, public maturity, or public content activation is recommended.
+- Primary priority: `PROPERTY_SELLER_EVIDENCE_READINESS`.
+- Recommended next authorization: `PROPERTY_SELLER_EVIDENCE_READINESS_IMPLEMENTATION_AUTHORIZATION`.
+- Recommended implementation posture: internal, fixture-backed, deterministic, read-only, non-public, non-persistent, non-mutating, source-rights-aware, privacy-preserving, non-evaluative, and conclusion-free.
+- Property / Seller Evidence Readiness rationale: it is now the strongest customer/business priority because Seller Readiness, Home Worth, Property Intelligence, Advisory Operating Readiness, Evidence Depth, Controlled Evidence, and source-rights governance are certified, while the repository still lacks a governed internal evidence-category foundation for property and seller preparation.
+- Recommended first-version scope: canonical property-identity posture without address or ownership lookup; evidence categories for title, permits, improvements, disclosures, insurance, HOA, municipal, structural, environmental, and specialist-review materials; source-rights, freshness, provenance, conflict, attribution, limitation, professional-verification, privacy, and ownership boundaries; valuation, appraisal-substitution, condition-conclusion, affordability, qualification, and customer-specific-analysis exclusions; deterministic fixtures and public non-exposure checks.
+- Secondary priority: `SECOND_GOVERNED_NEIGHBORHOOD_SUBMARKET_WAVE`.
+- Queued initiatives: second governed Neighborhood / Submarket wave, existing neighborhood route enhancement readiness, Niwot governance reconciliation, Gunbarrel governance reconciliation, Local Decision Intelligence Wave 4 reassessment, embedded evidence integration by domain, and targeted Product Experience follow-up only if evidenced.
+- Deferred or paused: new public neighborhood/submarket routes, route eligibility, registry eligibility, public neighborhood maturity, sitemap/canonical changes, Search or map changes, Niwot activation, Gunbarrel activation, Local Decision Intelligence Wave 4, public GIS, providers, acquisition, public records, property lookup, ownership lookup, uploads, valuation, appraisal substitution, condition conclusions, affordability, qualification, recommendations, rankings, scores, forecasts, investment advice, demographic targeting, school or safety ratings, desirability claims, AI, CRM, tracking, telemetry, queues, workers, email, schema, APIs, persistence, production writes, and production data mutation.
+- Evidence integration finding: embed Evidence Depth inside Property / Seller Evidence Readiness; do not create another generic evidence foundation.
+- Product Experience finding: targeted Product Experience work is not justified by current production evidence.
+- Required remediation: none.
+- Exact next step: stop, or explicitly authorize `PROPERTY_SELLER_EVIDENCE_READINESS_IMPLEMENTATION_AUTHORIZATION`. Codex must not implement Property / Seller Evidence Readiness, push, deploy, activate public routes, activate neighborhood/submarket routes, activate Niwot, activate Gunbarrel, begin Local Decision Intelligence Wave 4, change Search or maps, activate providers, public records, APIs, schema, persistence, CRM, customer data, queues, workers, email, production writes, or begin another initiative without explicit authorization.
+
+Prior REIE First Governed Neighborhood / Submarket Implementation Wave closure handoff retained below.
+
 PROJECT ATLAS(tm) / REIE First Governed Neighborhood / Submarket Implementation Wave Certification and Closure, August 1, 2026:
 
 Workspace:
