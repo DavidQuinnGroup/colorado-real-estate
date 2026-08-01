@@ -10,6 +10,43 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / Niwot Governance-Only Reconciliation Planning, August 1, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Current governed state:
+
+- REIE South Boulder Neighborhood Route Enhancement(tm) remains certified and closed.
+- REIE Property / Seller Evidence Continuation(tm) remains certified and closed.
+- REIE Table Mesa Existing Neighborhood Route Enhancement(tm) remains certified and closed.
+- REIE Post-Table Mesa Strategic Next-Phase Review remains complete.
+- Niwot Governance-Only Reconciliation Planning is complete.
+- Planning outcome: `NIWOT_READY_FOR_GOVERNANCE_ONLY_IMPLEMENTATION_AUTHORIZATION`.
+- Planning record: `docs/project-atlas/executive-library/REIE-NIWOT-GOVERNANCE-ONLY-RECONCILIATION-PLAN.md`.
+- Recommended final Niwot posture: non-public, Boulder County-context `UNINCORPORATED_COMMUNITY` governance object, canonical name `Niwot`, internal slug `niwot`, Boulder/Longmont market context only, route blocked, registry public activation prohibited, Search unresolved, map/GIS blocked, Local Decision Intelligence Wave 4 unauthorized, evidence unresolved, source-rights unknown or unresolved, public activation not authorized.
+- Governance finding: older city-style and market-route records exist in repository data, but current governance records require fail-closed non-public posture and authoritative evidence before any activation, alias, canonical public route, Search, map, or LDI decision.
+- Gunbarrel finding: Niwot can be reconciled independently; Gunbarrel remains unchanged, unresolved, blocked, non-public, route-ineligible, registry-ineligible, Search-ambiguous, map-blocked, and unauthorized for Local Decision Intelligence Wave 4.
+- Drive dependency finding: no Drive-only source is required for non-public governance-only implementation planning; external or Drive-only authority would be required before any future public activation decision.
+- Implementation remains unauthorized.
+- Public activation remains unauthorized.
+- Protected-boundary finding: the plan does not authorize Niwot activation, Gunbarrel activation or reconciliation, Local Decision Intelligence Wave 4, public routes, route eligibility, registry eligibility, public maturity, canonical or sitemap behavior, Search, maps or GIS, boundaries, providers, acquisition, scraping, public-record lookup, uploads, APIs, Prisma, migrations, persistence, customer data, CRM, telemetry, AI, alerts, queues, workers, email, notifications, deployment configuration, production certification, production-data mutation, or any next initiative.
+- Planning commit: this documentation-only commit; verify exact SHA after pulling latest `main`.
+- Current repository state at planning start: `main`, HEAD `a34014fd53d2b181755798a8d44f19b1e0ce0c07`, origin/main `a34014fd53d2b181755798a8d44f19b1e0ce0c07`, `0 ahead / 0 behind`, clean working tree.
+- Next authorization gate: `READY_FOR_NIWOT_GOVERNANCE_ONLY_IMPLEMENTATION_AUTHORIZATION`.
+- Exact next step: stop, or explicitly authorize `NIWOT_GOVERNANCE_ONLY_IMPLEMENTATION_AUTHORIZATION`. Codex must not implement Niwot reconciliation, activate Niwot, activate or reconcile Gunbarrel, begin Local Decision Intelligence Wave 4, create public routes, change route or registry eligibility, change public maturity, change Search or maps, change canonical or sitemap logic, activate boundaries or GIS, activate providers, acquire data, scrape, perform public-record lookups, upload documents, add AI, add valuation/pricing/scoring/ranking/prediction/personalization/condition/ownership/title/permit/HOA/insurance/financing/investment conclusions, expose internal evidence metadata, modify Prisma or persistence, modify customer data, activate CRM or telemetry, run queues or workers, send email or notifications, deploy manually, perform production certification, or begin any new implementation without explicit authorization.
+
+Prior REIE Post-Table Mesa Strategic Next-Phase Review handoff retained below.
+
 PROJECT ATLAS(tm) / REIE Post-Table Mesa Strategic Next-Phase Review, August 1, 2026:
 
 Workspace:
