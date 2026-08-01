@@ -10,6 +10,69 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE Post-Decision Guide Evidence Transparency Strategic Next-Phase Review, August 1, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Current governed state:
+
+- Core Product Experience Optimization cycle is complete.
+- Product Cohesion Review(tm) Wave 1 is production-certified and closed.
+- Controlled Fixture Alert Dry-Run(tm) program is certified and closed.
+- Local Decision Intelligence(tm) Phase 1 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 1 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 2 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 3 is production-certified and closed.
+- REIE Product Experience(tm) Next Cohesion Wave is production-certified and closed.
+- REIE Cross-City Decision Comparison(tm) is production-certified and closed.
+- REIE Seller Readiness Advancement(tm) is production-certified and closed.
+- REIE Buyer Financing Readiness Advancement(tm) is production-certified and closed.
+- REIE Evidence Depth and Data Integration(tm) foundation is production-certified and closed.
+- REIE Advisory Handoff Readiness(tm) is production-certified and closed.
+- REIE Controlled Evidence Depth Integration(tm) is production-certified and closed.
+- REIE Advisory Operating Readiness(tm) is production-certified and closed.
+- REIE Neighborhood / Submarket Intelligence Architecture(tm) is production-certified and closed.
+- REIE Decision Guide Evidence Transparency(tm) is production-certified and closed.
+- Final prior status: `DECISION_GUIDE_EVIDENCE_TRANSPARENCY_CERTIFIED_AND_CLOSED`.
+- REIE Post-Decision Guide Evidence Transparency Strategic Next-Phase Review is locally recorded.
+- Strategic review record: `docs/project-atlas/executive-library/REIE-POST-DECISION-GUIDE-EVIDENCE-TRANSPARENCY-STRATEGIC-NEXT-PHASE-REVIEW.md`.
+- Strategic next-phase finding: `PRIORITIZE_FIRST_NEIGHBORHOOD_SUBMARKET_IMPLEMENTATION_WAVE`.
+- Primary recommendation: implement a first governed Neighborhood / Submarket implementation wave.
+- Recommended next authorization: `FIRST_GOVERNED_NEIGHBORHOOD_SUBMARKET_IMPLEMENTATION_WAVE_AUTHORIZATION`.
+- This is recommendation-only. Neighborhood / Submarket implementation is not authorized by this review record.
+- Decision Guide Evidence Transparency completed the public-copy trust and evidence-limitation layer for Boulder, Louisville, and Lafayette while preserving `EDITORIALLY_CERTIFIED` maturity, editorial depth, Cross-City mixed-maturity behavior, public evidence non-exposure, fair-housing safety, and Neighborhood / Submarket non-activation.
+- Public trust and evidence-limitation completeness finding: current Decision Guide transparency is sufficiently complete for existing editorial guides.
+- Decision Guide unification finding: remain deferred. Evidence Transparency solved the material trust and limitation problem without relabeling or mechanically migrating Boulder, Louisville, or Lafayette.
+- Diminishing-returns finding: another standalone internal foundation or generic evidence-only phase would be lower value unless tied to a concrete product or geographic domain.
+- Largest remaining customer-value gap: governed sub-city intelligence between citywide guidance and property-specific review.
+- First Neighborhood / Submarket wave finding: the certified architecture is ready for a bounded first implementation wave, but only as internal readiness and existing-route preservation. It must not create new public routes.
+- Recommended first-wave scope: internal candidate inventory, object-type reconciliation, evidence/source-rights readiness posture, route/registry/Search/map/maturity/boundary/ambiguity/public-eligibility posture, existing-route preservation review, limitation-forward and fair-housing-safe readiness records, and deterministic validation proving non-activation.
+- Safest first object types: existing `NEIGHBORHOOD` contexts already represented in current public neighborhood routes, internal-only `SUBDIVISION`, internal `MARKET_AREA`, and governance-only `UNINCORPORATED_COMMUNITY`.
+- Existing-route candidates may include already-public neighborhood routes and records such as `/market/boulder/downtown-boulder`, Boulder neighborhood records, Louisville neighborhood records, and Lafayette neighborhood records. Gunbarrel is excluded because it remains an ambiguity case.
+- New public route creation remains premature. Route, registry, Search, map, boundary, evidence, source-rights, content, responsive, fair-housing, and production certification prerequisites require separate authorization.
+- Property / Seller Evidence Readiness finding: strong secondary business priority, feasible later as an internal fixture-backed evidence-category foundation, but not the next primary initiative because of privacy, ownership, public-record, valuation, condition, and professional-boundary risk.
+- Niwot governance finding: ready later as governance-only, not activation. Niwot remains blocked from public route, registry, Search, map, city Decision Guide, and Local Decision Intelligence Wave 4 activation.
+- Gunbarrel governance finding: remain blocked and governance-only until object type, authority, parentage, boundary, route, registry, Search, rights, and fair-housing posture are separately reconciled.
+- Local Decision Intelligence cadence: Wave 4 remains paused. Sub-city depth has higher immediate strategic value than another city expansion wave.
+- Embedded evidence integration finding: embed Evidence Depth/source-rights posture inside the selected Neighborhood / Submarket wave; do not create another standalone evidence foundation.
+- Product Experience finding: targeted follow-up is not justified without concrete production evidence of discovery, CTA, mobile, duplicate-path, cognitive-load, or conversion friction.
+- Queued initiatives: first governed Neighborhood / Submarket implementation wave, Property / Seller Evidence Readiness, Niwot governance reconciliation, Gunbarrel governance reconciliation, embedded Neighborhood / Submarket evidence integration, LDI Wave 4 planning after object-type/Search-support resolution, and targeted Product Experience only if production evidence supports it.
+- Deferred or paused: new public neighborhood or submarket route creation, route or registry eligibility expansion, Niwot activation, Gunbarrel activation, LDI Wave 4, Decision Guide unification, public property/seller evidence products, property lookup, ownership lookup, uploads, valuation, appraisal substitution, public records, provider activation, Search behavior, maps, GIS, CRM, tracking, telemetry, customer data, queues, workers, or production writes.
+- Required remediation: none.
+- Exact next step: stop, or explicitly authorize `FIRST_GOVERNED_NEIGHBORHOOD_SUBMARKET_IMPLEMENTATION_WAVE_AUTHORIZATION`. Codex must not implement the wave, push, deploy, create public neighborhood routes, alter route or registry eligibility, activate Niwot, activate Gunbarrel, begin Local Decision Intelligence Wave 4, change Search or maps, begin Property / Seller Evidence Readiness, begin Decision Guide unification, activate providers, acquisition, public-record retrieval, GIS runtime, persistence, APIs, schema, CRM, tracking, telemetry, customer data, queues, workers, email, production writes, or another initiative without explicit authorization.
+
+Prior REIE Decision Guide Evidence Transparency closure handoff retained below.
+
 PROJECT ATLAS(tm) / REIE Decision Guide Evidence Transparency Certification and Closure, August 1, 2026:
 
 Workspace:
