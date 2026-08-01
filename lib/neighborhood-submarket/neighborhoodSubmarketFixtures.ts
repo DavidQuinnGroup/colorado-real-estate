@@ -1,0 +1,653 @@
+import {
+  type NeighborhoodSubmarketActivationBlocker,
+  type NeighborhoodSubmarketAmbiguity,
+  type NeighborhoodSubmarketArchitectureFixture,
+  type NeighborhoodSubmarketBoundaryPosture,
+  type NeighborhoodSubmarketCanonicalObject,
+  type NeighborhoodSubmarketEvidenceRequirement,
+  type NeighborhoodSubmarketMaturity,
+  type NeighborhoodSubmarketObjectType,
+  type NeighborhoodSubmarketRegistryReadiness,
+  type NeighborhoodSubmarketRelationship,
+  type NeighborhoodSubmarketRelationshipType,
+  type NeighborhoodSubmarketRouteReadiness,
+  type NeighborhoodSubmarketSearchSupport,
+} from "./neighborhoodSubmarketArchitecture.js";
+import {
+  type EvidenceDepthConflictStatus,
+  type EvidenceDepthFreshnessStatus,
+  type EvidenceDepthLimitationCategory,
+  type EvidenceDepthRightsStatus,
+  type EvidenceDepthSupportLevel,
+} from "../evidence-depth/evidencePosture.js";
+import {
+  type GkcKnowledgeClassification,
+  type GkcSourceClass,
+} from "../gkc/fixtureGovernance.js";
+
+type ObjectInput = Readonly<{
+  id: string;
+  type: NeighborhoodSubmarketObjectType;
+  name: string;
+  slug?: string;
+  aliases?: readonly string[];
+  parents?: readonly string[];
+  jurisdiction?: string | null;
+  counties?: readonly string[];
+  authority?: GkcSourceClass;
+  identity?: "GOVERNED" | "CANDIDATE" | "UNRESOLVED" | "BLOCKED";
+  boundary?: NeighborhoodSubmarketBoundaryPosture;
+  route?: NeighborhoodSubmarketRouteReadiness;
+  registry?: NeighborhoodSubmarketRegistryReadiness;
+  search?: NeighborhoodSubmarketSearchSupport;
+  rights?: EvidenceDepthRightsStatus;
+  freshness?: EvidenceDepthFreshnessStatus;
+  support?: EvidenceDepthSupportLevel;
+  conflict?: EvidenceDepthConflictStatus;
+  limitations?: readonly EvidenceDepthLimitationCategory[];
+  classification?: GkcKnowledgeClassification;
+  maturity?: NeighborhoodSubmarketMaturity;
+  ambiguity?: NeighborhoodSubmarketAmbiguity;
+  publicEligibility?: "BLOCKED" | "UNRESOLVED" | "ELIGIBLE_ONLY_AFTER_SEPARATE_AUTHORIZATION";
+  notes?: readonly string[];
+}>;
+
+const defaultLimitations: readonly EvidenceDepthLimitationCategory[] = [
+  "INCOMPLETE_GEOGRAPHIC_COVERAGE",
+  "PROFESSIONAL_VERIFICATION_REQUIRED",
+];
+
+const defaultEvidenceRequirements: readonly NeighborhoodSubmarketEvidenceRequirement[] = [
+  "CANONICAL_IDENTITY_EVIDENCE",
+  "JURISDICTION_EVIDENCE",
+  "PARENT_CHILD_RELATIONSHIP_EVIDENCE",
+  "GEOGRAPHIC_SCOPE_OR_BOUNDARY_EVIDENCE",
+  "NAMING_AND_ALIAS_EVIDENCE",
+  "SOURCE_RIGHTS_POSTURE",
+  "FRESHNESS",
+  "PROVENANCE",
+  "CONFLICT_STATUS",
+  "LIMITATIONS",
+];
+
+function object(input: ObjectInput): NeighborhoodSubmarketCanonicalObject {
+  return Object.freeze({
+    objectId: input.id,
+    objectType: input.type,
+    canonicalName: input.name,
+    normalizedSlug: input.slug ?? input.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""),
+    alternateNames: input.aliases ?? [],
+    parentObjectIds: input.parents ?? [],
+    jurisdiction: input.jurisdiction ?? null,
+    counties: input.counties ?? ["Boulder County"],
+    state: "Colorado",
+    authoritySource: input.authority ?? "FIRST_PARTY_REIE",
+    identityStatus: input.identity ?? "CANDIDATE",
+    boundaryStatus: input.boundary ?? "DESCRIPTIVE_AREA_ONLY",
+    routePosture: input.route ?? "BLOCKED",
+    registryPosture: input.registry ?? "PUBLIC_ACTIVATION_PROHIBITED",
+    searchSupportPosture: input.search ?? "UNSUPPORTED",
+    evidenceRequirements: defaultEvidenceRequirements,
+    sourceRightsPosture: input.rights ?? "UNKNOWN_OR_UNRESOLVED",
+    evidenceFreshness: input.freshness ?? "UNDATED",
+    evidenceSupportLevel: input.support ?? "CONTEXTUAL",
+    evidenceConflictStatus: input.conflict ?? "INSUFFICIENT_INFORMATION_TO_RECONCILE",
+    evidenceLimitations: input.limitations ?? defaultLimitations,
+    gkcClassification: input.classification ?? "PROVISIONAL_KNOWLEDGE",
+    maturityPosture: input.maturity ?? "ARCHITECTURE_FOUNDATION",
+    ambiguityStatus: input.ambiguity ?? "INSUFFICIENT_EVIDENCE",
+    publicEligibility: input.publicEligibility ?? "BLOCKED",
+    limitations: input.notes ?? ["Architecture fixture only; no public activation."],
+    publicRouteCreated: false,
+    publicRegistryEntryCreated: false,
+    searchBehaviorChanged: false,
+    mapBoundaryChanged: false,
+    publicConclusionGenerated: false,
+  });
+}
+
+function relationship(
+  fromObjectId: string,
+  toObjectId: string,
+  relationshipType: NeighborhoodSubmarketRelationshipType,
+  suffix: string,
+  options: Readonly<{
+    direction?: "DIRECTED" | "SYMMETRIC";
+    rights?: EvidenceDepthRightsStatus;
+    conflict?: EvidenceDepthConflictStatus;
+    limitations?: readonly string[];
+  }> = {},
+): NeighborhoodSubmarketRelationship {
+  return Object.freeze({
+    relationshipId: `nsi-rel-${suffix}`,
+    fromObjectId,
+    toObjectId,
+    relationshipType,
+    direction: options.direction ?? (relationshipType === "OVERLAPS" || relationshipType === "ADJACENT_TO" ? "SYMMETRIC" : "DIRECTED"),
+    evidenceRequirement: "PARENT_CHILD_RELATIONSHIP_EVIDENCE",
+    sourceRightsPosture: options.rights ?? "UNKNOWN_OR_UNRESOLVED",
+    conflictStatus: options.conflict ?? "INSUFFICIENT_INFORMATION_TO_RECONCILE",
+    limitations: options.limitations ?? ["Relationship is fixture-backed and does not authorize public hierarchy."],
+    forcesExclusiveParent: false,
+  });
+}
+
+const blocked: readonly NeighborhoodSubmarketActivationBlocker[] = [
+  "PUBLIC_ROUTE_NOT_AUTHORIZED",
+  "PUBLIC_REGISTRY_NOT_AUTHORIZED",
+  "SEARCH_SUPPORT_NOT_AUTHORIZED",
+  "MAP_BOUNDARY_NOT_AUTHORIZED",
+  "SEPARATE_AUTHORIZATION_REQUIRED",
+];
+
+const unresolvedRights: readonly NeighborhoodSubmarketActivationBlocker[] = [
+  ...blocked,
+  "SOURCE_RIGHTS_UNRESOLVED",
+];
+
+const unresolvedAmbiguity: readonly NeighborhoodSubmarketActivationBlocker[] = [
+  ...blocked,
+  "OBJECT_TYPE_UNRESOLVED",
+  "AUTHORITY_UNRESOLVED",
+  "BOUNDARY_UNRESOLVED",
+  "FAIR_HOUSING_REVIEW_REQUIRED",
+];
+
+export const NEIGHBORHOOD_SUBMARKET_ARCHITECTURE_FIXTURES: readonly NeighborhoodSubmarketArchitectureFixture[] = Object.freeze([
+  {
+    fixtureId: "fixture-incorporated-municipality",
+    label: "Incorporated municipality architecture fixture",
+    objects: [
+      object({
+        id: "nsi-obj-synthetic-county",
+        type: "COUNTY",
+        name: "Synthetic County Context",
+        authority: "AUTHORITATIVE_GOVERNMENT",
+        boundary: "AUTHORITATIVE_BOUNDARY",
+        route: "BLOCKED",
+        registry: "PUBLIC_ACTIVATION_PROHIBITED",
+        search: "UNSUPPORTED",
+        rights: "INTERNAL_ANALYSIS_ONLY",
+        ambiguity: "INSUFFICIENT_EVIDENCE",
+        publicEligibility: "BLOCKED",
+      }),
+      object({
+        id: "nsi-obj-municipality",
+        type: "MUNICIPALITY",
+        name: "Synthetic Incorporated Municipality",
+        parents: ["nsi-obj-synthetic-county"],
+        jurisdiction: "incorporated municipality",
+        authority: "AUTHORITATIVE_GOVERNMENT",
+        boundary: "AUTHORITATIVE_BOUNDARY",
+        route: "ARCHITECTURE_READY",
+        registry: "IDENTITY_GOVERNED",
+        search: "CITY_FILTER_COMPATIBLE",
+        rights: "PUBLIC_DISPLAY_PERMITTED_WITH_ATTRIBUTION",
+        freshness: "CURRENT",
+        support: "AUTHORITATIVE",
+        conflict: "NO_KNOWN_CONFLICT",
+        classification: "AUTHORITATIVE_FACT",
+        maturity: "IDENTITY_ONLY",
+        ambiguity: "NO_KNOWN_AMBIGUITY",
+        publicEligibility: "ELIGIBLE_ONLY_AFTER_SEPARATE_AUTHORIZATION",
+      }),
+    ],
+    relationships: [relationship("nsi-obj-municipality", "nsi-obj-synthetic-county", "WITHIN", "municipality-within-county")],
+    expectedBlockers: blocked,
+    fairHousingProbe: false,
+    prohibitedOutputProbe: false,
+  },
+  {
+    fixtureId: "fixture-census-designated-place",
+    label: "Census-designated place fixture",
+    objects: [
+      object({
+        id: "nsi-obj-cdp",
+        type: "CENSUS_DESIGNATED_PLACE",
+        name: "Synthetic Census Place",
+        parents: ["nsi-obj-synthetic-county"],
+        authority: "AUTHORITATIVE_GOVERNMENT",
+        boundary: "GOVERNED_DERIVED_BOUNDARY",
+        route: "EVIDENCE_PREREQUISITES_INCOMPLETE",
+        registry: "CANDIDATE",
+        search: "ALIAS_ONLY",
+        rights: "DERIVED_OR_SUMMARY_USE_ONLY",
+        freshness: "AGING",
+        support: "DIRECT",
+        classification: "AUTHORITATIVE_FACT",
+        ambiguity: "OBJECT_TYPE_AMBIGUITY",
+        publicEligibility: "UNRESOLVED",
+      }),
+    ],
+    relationships: [relationship("nsi-obj-cdp", "nsi-obj-synthetic-county", "WITHIN", "cdp-within-county")],
+    expectedBlockers: unresolvedAmbiguity,
+    fairHousingProbe: false,
+    prohibitedOutputProbe: false,
+  },
+  {
+    fixtureId: "fixture-unincorporated-community",
+    label: "Unincorporated community fixture",
+    objects: [
+      object({
+        id: "nsi-obj-unincorporated-community",
+        type: "UNINCORPORATED_COMMUNITY",
+        name: "Synthetic Unincorporated Community",
+        parents: ["nsi-obj-synthetic-county"],
+        authority: "SECONDARY_PUBLIC",
+        boundary: "DESCRIPTIVE_AREA_ONLY",
+        route: "EVIDENCE_PREREQUISITES_INCOMPLETE",
+        registry: "AUTHORITY_UNRESOLVED",
+        search: "AMBIGUOUS",
+        rights: "UNKNOWN_OR_UNRESOLVED",
+        ambiguity: "LOCALLY_RECOGNIZED_BUT_UNOFFICIAL",
+      }),
+    ],
+    relationships: [relationship("nsi-obj-unincorporated-community", "nsi-obj-synthetic-county", "ASSOCIATED_WITH", "unincorporated-associated-county")],
+    expectedBlockers: unresolvedAmbiguity,
+    fairHousingProbe: false,
+    prohibitedOutputProbe: false,
+  },
+  {
+    fixtureId: "fixture-neighborhood-one-municipality",
+    label: "Neighborhood within one municipality fixture",
+    objects: [
+      object({
+        id: "nsi-obj-single-city-neighborhood",
+        type: "NEIGHBORHOOD",
+        name: "Synthetic Single City Neighborhood",
+        parents: ["nsi-obj-municipality"],
+        jurisdiction: "municipal context",
+        boundary: "DESCRIPTIVE_AREA_ONLY",
+        route: "CONTENT_PREREQUISITES_INCOMPLETE",
+        registry: "CANDIDATE",
+        search: "NEIGHBORHOOD_FILTER_COMPATIBLE",
+        rights: "PUBLIC_DISPLAY_PERMITTED_WITH_ATTRIBUTION",
+        freshness: "AGING",
+        support: "CONTEXTUAL",
+        conflict: "COMPATIBLE_EVIDENCE",
+        classification: "EDITORIAL_KNOWLEDGE",
+        ambiguity: "NO_KNOWN_AMBIGUITY",
+        publicEligibility: "ELIGIBLE_ONLY_AFTER_SEPARATE_AUTHORIZATION",
+      }),
+    ],
+    relationships: [relationship("nsi-obj-single-city-neighborhood", "nsi-obj-municipality", "WITHIN", "neighborhood-within-municipality")],
+    expectedBlockers: blocked,
+    fairHousingProbe: false,
+    prohibitedOutputProbe: false,
+  },
+  {
+    fixtureId: "fixture-neighborhood-spanning-jurisdictions",
+    label: "Neighborhood spanning or ambiguously associated with jurisdictions",
+    objects: [
+      object({
+        id: "nsi-obj-spanning-neighborhood",
+        type: "NEIGHBORHOOD",
+        name: "Synthetic Spanning Neighborhood",
+        parents: ["nsi-obj-municipality", "nsi-obj-synthetic-county"],
+        boundary: "OVERLAPPING_BOUNDARY",
+        route: "BOUNDARY_PREREQUISITES_INCOMPLETE",
+        registry: "CLASSIFICATION_UNRESOLVED",
+        search: "AMBIGUOUS",
+        rights: "UNKNOWN_OR_UNRESOLVED",
+        conflict: "UNRESOLVED_CONFLICT",
+        ambiguity: "PARENT_AMBIGUITY",
+      }),
+    ],
+    relationships: [
+      relationship("nsi-obj-spanning-neighborhood", "nsi-obj-municipality", "OVERLAPS", "spanning-overlaps-municipality"),
+      relationship("nsi-obj-spanning-neighborhood", "nsi-obj-synthetic-county", "PART_OF", "spanning-part-county"),
+    ],
+    expectedBlockers: unresolvedAmbiguity,
+    fairHousingProbe: false,
+    prohibitedOutputProbe: false,
+  },
+  {
+    fixtureId: "fixture-recorded-subdivision",
+    label: "Recorded subdivision fixture",
+    objects: [
+      object({
+        id: "nsi-obj-recorded-subdivision",
+        type: "SUBDIVISION",
+        name: "Synthetic Recorded Subdivision",
+        parents: ["nsi-obj-municipality"],
+        authority: "AUTHORITATIVE_GOVERNMENT",
+        boundary: "AUTHORITATIVE_BOUNDARY",
+        route: "SOURCE_RIGHTS_PREREQUISITES_INCOMPLETE",
+        registry: "EVIDENCE_INCOMPLETE",
+        search: "SUBDIVISION_FILTER_COMPATIBLE",
+        rights: "RESTRICTED",
+        freshness: "CURRENT",
+        support: "AUTHORITATIVE",
+        classification: "AUTHORITATIVE_FACT",
+        ambiguity: "NO_KNOWN_AMBIGUITY",
+      }),
+    ],
+    relationships: [relationship("nsi-obj-recorded-subdivision", "nsi-obj-municipality", "WITHIN", "subdivision-within-municipality", { rights: "RESTRICTED" })],
+    expectedBlockers: unresolvedRights,
+    fairHousingProbe: false,
+    prohibitedOutputProbe: false,
+  },
+  {
+    fixtureId: "fixture-planned-community",
+    label: "Planned community fixture",
+    objects: [
+      object({
+        id: "nsi-obj-planned-community",
+        type: "PLANNED_COMMUNITY",
+        name: "Synthetic Planned Community",
+        parents: ["nsi-obj-unincorporated-community"],
+        boundary: "GOVERNED_DERIVED_BOUNDARY",
+        route: "EVIDENCE_PREREQUISITES_INCOMPLETE",
+        registry: "CANDIDATE",
+        search: "DATA_COVERAGE_INCOMPLETE",
+        rights: "DERIVED_OR_SUMMARY_USE_ONLY",
+        support: "CORROBORATIVE",
+        ambiguity: "NO_KNOWN_AMBIGUITY",
+        publicEligibility: "ELIGIBLE_ONLY_AFTER_SEPARATE_AUTHORIZATION",
+      }),
+    ],
+    relationships: [relationship("nsi-obj-planned-community", "nsi-obj-unincorporated-community", "PART_OF", "planned-part-unincorporated")],
+    expectedBlockers: blocked,
+    fairHousingProbe: false,
+    prohibitedOutputProbe: false,
+  },
+  {
+    fixtureId: "fixture-corridor-crossing-places",
+    label: "Corridor crossing multiple places fixture",
+    objects: [
+      object({
+        id: "nsi-obj-corridor",
+        type: "CORRIDOR",
+        name: "Synthetic Access Corridor",
+        parents: ["nsi-obj-municipality", "nsi-obj-unincorporated-community"],
+        boundary: "DESCRIPTIVE_AREA_ONLY",
+        route: "BOUNDARY_PREREQUISITES_INCOMPLETE",
+        registry: "CLASSIFICATION_UNRESOLVED",
+        search: "ALIAS_ONLY",
+        rights: "UNKNOWN_OR_UNRESOLVED",
+        ambiguity: "OVERLAPPING_IDENTITY",
+      }),
+    ],
+    relationships: [
+      relationship("nsi-obj-corridor", "nsi-obj-municipality", "CROSSES", "corridor-crosses-municipality"),
+      relationship("nsi-obj-corridor", "nsi-obj-unincorporated-community", "CROSSES", "corridor-crosses-community"),
+    ],
+    expectedBlockers: unresolvedAmbiguity,
+    fairHousingProbe: false,
+    prohibitedOutputProbe: false,
+  },
+  {
+    fixtureId: "fixture-platform-market-area",
+    label: "Platform-defined market area fixture",
+    objects: [
+      object({
+        id: "nsi-obj-market-area",
+        type: "MARKET_AREA",
+        name: "Synthetic Market Area",
+        parents: ["nsi-obj-synthetic-county"],
+        authority: "FIRST_PARTY_REIE",
+        boundary: "DESCRIPTIVE_AREA_ONLY",
+        route: "FAIR_HOUSING_REVIEW_REQUIRED",
+        registry: "CERTIFICATION_PENDING",
+        search: "DATA_COVERAGE_INCOMPLETE",
+        rights: "PUBLIC_DISPLAY_PERMITTED_WITH_ATTRIBUTION",
+        support: "CONTEXTUAL",
+        classification: "EDITORIAL_KNOWLEDGE",
+        ambiguity: "OVERLAPPING_IDENTITY",
+      }),
+    ],
+    relationships: [relationship("nsi-obj-market-area", "nsi-obj-synthetic-county", "HAS_MARKET_CONTEXT", "market-has-county-context")],
+    expectedBlockers: unresolvedAmbiguity,
+    fairHousingProbe: true,
+    prohibitedOutputProbe: false,
+  },
+  {
+    fixtureId: "fixture-zip-not-community",
+    label: "ZIP code area must not be treated as a community",
+    objects: [
+      object({
+        id: "nsi-obj-zip-area",
+        type: "ZIP_CODE_AREA",
+        name: "Synthetic ZIP Code Area",
+        boundary: "APPROXIMATE_BOUNDARY",
+        route: "BLOCKED",
+        registry: "PUBLIC_ACTIVATION_PROHIBITED",
+        search: "ALIAS_ONLY",
+        rights: "INTERNAL_ANALYSIS_ONLY",
+        classification: "PROVISIONAL_KNOWLEDGE",
+        maturity: "BLOCKED",
+        ambiguity: "OBJECT_TYPE_AMBIGUITY",
+        publicEligibility: "BLOCKED",
+        notes: ["Postal geography is not a community, municipality, or neighborhood."],
+      }),
+    ],
+    relationships: [relationship("nsi-obj-zip-area", "nsi-obj-municipality", "OVERLAPS", "zip-overlaps-municipality", { rights: "INTERNAL_ANALYSIS_ONLY" })],
+    expectedBlockers: unresolvedAmbiguity,
+    fairHousingProbe: false,
+    prohibitedOutputProbe: false,
+  },
+  {
+    fixtureId: "fixture-authoritative-identity-no-boundary-rights",
+    label: "Authoritative identity with no public boundary display rights",
+    objects: [
+      object({
+        id: "nsi-obj-no-boundary-rights",
+        type: "DISTRICT",
+        name: "Synthetic District With Restricted Boundary",
+        authority: "AUTHORITATIVE_GOVERNMENT",
+        boundary: "PROHIBITED_FOR_PUBLIC_USE",
+        route: "BOUNDARY_PREREQUISITES_INCOMPLETE",
+        registry: "EVIDENCE_INCOMPLETE",
+        search: "UNSUPPORTED",
+        rights: "RESTRICTED",
+        support: "DIRECT",
+        conflict: "NO_KNOWN_CONFLICT",
+        classification: "AUTHORITATIVE_FACT",
+        ambiguity: "NO_KNOWN_AMBIGUITY",
+      }),
+    ],
+    relationships: [relationship("nsi-obj-no-boundary-rights", "nsi-obj-municipality", "WITHIN", "restricted-district-within-municipality", { rights: "RESTRICTED" })],
+    expectedBlockers: unresolvedRights,
+    fairHousingProbe: false,
+    prohibitedOutputProbe: false,
+  },
+  {
+    fixtureId: "fixture-conflicting-names-boundaries",
+    label: "Conflicting names or boundaries fixture",
+    objects: [
+      object({
+        id: "nsi-obj-conflicting-place",
+        type: "COMMUNITY",
+        name: "Synthetic Conflicting Place",
+        aliases: ["Synthetic Legacy Place", "Synthetic Market Label"],
+        boundary: "DISPUTED_OR_CONFLICTING_BOUNDARY",
+        route: "BLOCKED",
+        registry: "CLASSIFICATION_UNRESOLVED",
+        search: "AMBIGUOUS",
+        rights: "UNKNOWN_OR_UNRESOLVED",
+        conflict: "MATERIAL_CONFLICT",
+        ambiguity: "UNRESOLVED_CONFLICT",
+      }),
+    ],
+    relationships: [
+      relationship("nsi-obj-conflicting-place", "nsi-obj-municipality", "ASSOCIATED_WITH", "conflict-associated-municipality", { conflict: "MATERIAL_CONFLICT" }),
+      relationship("nsi-obj-conflicting-place", "nsi-obj-market-area", "HAS_MARKET_CONTEXT", "conflict-market-context", { conflict: "MATERIAL_CONFLICT" }),
+    ],
+    expectedBlockers: unresolvedAmbiguity,
+    fairHousingProbe: false,
+    prohibitedOutputProbe: false,
+  },
+  {
+    fixtureId: "fixture-gunbarrel-ambiguity",
+    label: "Gunbarrel governance fixture",
+    objects: [
+      object({
+        id: "nsi-obj-gunbarrel-governance",
+        type: "COMMUNITY",
+        name: "Gunbarrel",
+        aliases: ["Gunbarrel area", "Gunbarrel market context"],
+        parents: ["nsi-obj-synthetic-county", "nsi-obj-market-area"],
+        jurisdiction: "Boulder County context unresolved",
+        boundary: "UNRESOLVED",
+        route: "BLOCKED",
+        registry: "PUBLIC_ACTIVATION_PROHIBITED",
+        search: "UNRESOLVED",
+        rights: "UNKNOWN_OR_UNRESOLVED",
+        conflict: "INSUFFICIENT_INFORMATION_TO_RECONCILE",
+        maturity: "UNRESOLVED",
+        ambiguity: "OBJECT_TYPE_AMBIGUITY",
+        publicEligibility: "BLOCKED",
+        notes: ["Architecture fixture only; no conclusion that Gunbarrel is definitively one object type."],
+      }),
+    ],
+    relationships: [
+      relationship("nsi-obj-gunbarrel-governance", "nsi-obj-synthetic-county", "ASSOCIATED_WITH", "gunbarrel-county-context"),
+      relationship("nsi-obj-gunbarrel-governance", "nsi-obj-market-area", "HAS_MARKET_CONTEXT", "gunbarrel-market-context"),
+    ],
+    expectedBlockers: unresolvedAmbiguity,
+    fairHousingProbe: true,
+    prohibitedOutputProbe: true,
+  },
+  {
+    fixtureId: "fixture-niwot-governance",
+    label: "Niwot governance fixture",
+    objects: [
+      object({
+        id: "nsi-obj-niwot-governance",
+        type: "UNINCORPORATED_COMMUNITY",
+        name: "Niwot",
+        aliases: ["Niwot area", "Niwot community context"],
+        parents: ["nsi-obj-synthetic-county", "nsi-obj-market-area"],
+        jurisdiction: "Boulder County context",
+        boundary: "UNRESOLVED",
+        route: "BLOCKED",
+        registry: "PUBLIC_ACTIVATION_PROHIBITED",
+        search: "UNRESOLVED",
+        rights: "UNKNOWN_OR_UNRESOLVED",
+        conflict: "INSUFFICIENT_INFORMATION_TO_RECONCILE",
+        maturity: "UNRESOLVED",
+        ambiguity: "JURISDICTION_AMBIGUITY",
+        publicEligibility: "BLOCKED",
+        notes: ["Architecture fixture only; no Niwot route, registry, search, or LDI activation."],
+      }),
+    ],
+    relationships: [
+      relationship("nsi-obj-niwot-governance", "nsi-obj-synthetic-county", "WITHIN", "niwot-within-county"),
+      relationship("nsi-obj-niwot-governance", "nsi-obj-market-area", "HAS_MARKET_CONTEXT", "niwot-market-context"),
+      relationship("nsi-obj-niwot-governance", "nsi-obj-municipality", "HAS_MUNICIPAL_CONTEXT", "niwot-nearby-municipal-context"),
+    ],
+    expectedBlockers: unresolvedAmbiguity,
+    fairHousingProbe: true,
+    prohibitedOutputProbe: true,
+  },
+  {
+    fixtureId: "fixture-public-route-blocked",
+    label: "Public route blocked object fixture",
+    objects: [
+      object({
+        id: "nsi-obj-route-blocked",
+        type: "NEIGHBORHOOD",
+        name: "Synthetic Route Blocked Neighborhood",
+        route: "BLOCKED",
+        registry: "ROUTE_BLOCKED",
+        search: "NEIGHBORHOOD_FILTER_COMPATIBLE",
+        rights: "PUBLIC_DISPLAY_PERMITTED_WITH_ATTRIBUTION",
+        ambiguity: "NO_KNOWN_AMBIGUITY",
+        publicEligibility: "BLOCKED",
+      }),
+    ],
+    relationships: [relationship("nsi-obj-route-blocked", "nsi-obj-municipality", "WITHIN", "route-blocked-within-municipality")],
+    expectedBlockers: blocked,
+    fairHousingProbe: false,
+    prohibitedOutputProbe: false,
+  },
+  {
+    fixtureId: "fixture-search-unsupported",
+    label: "Search unsupported object fixture",
+    objects: [
+      object({
+        id: "nsi-obj-search-unsupported",
+        type: "SUBDIVISION",
+        name: "Synthetic Search Unsupported Subdivision",
+        route: "SEARCH_SUPPORT_PREREQUISITES_INCOMPLETE",
+        registry: "SEARCH_UNSUPPORTED",
+        search: "UNSUPPORTED",
+        rights: "PUBLIC_DISPLAY_PERMITTED_WITH_ATTRIBUTION",
+        ambiguity: "NO_KNOWN_AMBIGUITY",
+        publicEligibility: "BLOCKED",
+      }),
+    ],
+    relationships: [relationship("nsi-obj-search-unsupported", "nsi-obj-neighborhood", "PART_OF", "search-unsupported-part-neighborhood")],
+    expectedBlockers: blocked,
+    fairHousingProbe: false,
+    prohibitedOutputProbe: false,
+  },
+  {
+    fixtureId: "fixture-fair-housing-prohibited-output-guard",
+    label: "Fair-housing prohibited-output guard",
+    objects: [
+      object({
+        id: "nsi-obj-fair-housing-guard",
+        type: "NEIGHBORHOOD",
+        name: "Synthetic Fair Housing Guard Area",
+        route: "FAIR_HOUSING_REVIEW_REQUIRED",
+        registry: "CERTIFICATION_PENDING",
+        search: "DATA_COVERAGE_INCOMPLETE",
+        rights: "DERIVED_OR_SUMMARY_USE_ONLY",
+        classification: "EDITORIAL_KNOWLEDGE",
+        ambiguity: "NO_KNOWN_AMBIGUITY",
+        publicEligibility: "UNRESOLVED",
+        notes: ["Used only to assert no best, ideal, demographic, school, safety, ranking, suitability, or desirability outputs."],
+      }),
+    ],
+    relationships: [relationship("nsi-obj-fair-housing-guard", "nsi-obj-municipality", "WITHIN", "fair-housing-guard-within-municipality")],
+    expectedBlockers: ["FAIR_HOUSING_REVIEW_REQUIRED", ...blocked],
+    fairHousingProbe: true,
+    prohibitedOutputProbe: true,
+  },
+  {
+    fixtureId: "fixture-mixed-object-graph-overlaps",
+    label: "Mixed object graph with overlapping relationships",
+    objects: [
+      object({
+        id: "nsi-obj-mixed-neighborhood",
+        type: "NEIGHBORHOOD",
+        name: "Synthetic Mixed Graph Neighborhood",
+        parents: ["nsi-obj-municipality", "nsi-obj-market-area"],
+        route: "CERTIFICATION_READY",
+        registry: "CERTIFICATION_PENDING",
+        search: "NEIGHBORHOOD_FILTER_COMPATIBLE",
+        rights: "PUBLIC_DISPLAY_PERMITTED_WITH_ATTRIBUTION",
+        freshness: "CURRENT",
+        support: "CORROBORATIVE",
+        conflict: "COMPATIBLE_EVIDENCE",
+        classification: "EDITORIAL_KNOWLEDGE",
+        maturity: "EVIDENCE_FOUNDATION",
+        ambiguity: "OVERLAPPING_IDENTITY",
+        publicEligibility: "ELIGIBLE_ONLY_AFTER_SEPARATE_AUTHORIZATION",
+      }),
+      object({
+        id: "nsi-obj-mixed-hoa",
+        type: "HOA",
+        name: "Synthetic HOA Context",
+        parents: ["nsi-obj-recorded-subdivision"],
+        route: "BLOCKED",
+        registry: "PUBLIC_ACTIVATION_PROHIBITED",
+        search: "UNSUPPORTED",
+        rights: "INTERNAL_ANALYSIS_ONLY",
+        classification: "RESTRICTED_KNOWLEDGE",
+        maturity: "BLOCKED",
+        ambiguity: "OBJECT_TYPE_AMBIGUITY",
+        publicEligibility: "BLOCKED",
+      }),
+    ],
+    relationships: [
+      relationship("nsi-obj-mixed-neighborhood", "nsi-obj-municipality", "WITHIN", "mixed-neighborhood-within-municipality"),
+      relationship("nsi-obj-mixed-neighborhood", "nsi-obj-market-area", "OVERLAPS", "mixed-neighborhood-overlaps-market"),
+      relationship("nsi-obj-mixed-hoa", "nsi-obj-recorded-subdivision", "SERVED_BY", "mixed-hoa-served-by-subdivision", { rights: "INTERNAL_ANALYSIS_ONLY" }),
+    ],
+    expectedBlockers: unresolvedAmbiguity,
+    fairHousingProbe: true,
+    prohibitedOutputProbe: true,
+  },
+]);

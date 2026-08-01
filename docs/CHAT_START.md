@@ -10,6 +10,83 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE Neighborhood / Submarket Intelligence Architecture Local Certification, August 1, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Current governed state:
+
+- Core Product Experience Optimization cycle is complete.
+- Product Cohesion Review(tm) Wave 1 is production-certified and closed.
+- Controlled Fixture Alert Dry-Run(tm) program is certified and closed.
+- Local Decision Intelligence(tm) Phase 1 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 1 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 2 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 3 is production-certified and closed.
+- REIE Product Experience(tm) Next Cohesion Wave is production-certified and closed.
+- REIE Cross-City Decision Comparison(tm) is production-certified and closed.
+- REIE Seller Readiness Advancement(tm) is production-certified and closed.
+- REIE Buyer Financing Readiness Advancement(tm) is production-certified and closed.
+- REIE Evidence Depth and Data Integration(tm) foundation is production-certified and closed.
+- REIE Advisory Handoff Readiness(tm) is production-certified and closed.
+- REIE Controlled Evidence Depth Integration(tm) is production-certified and closed.
+- REIE Advisory Operating Readiness(tm) is production-certified and closed.
+- Final prior status: `ADVISORY_OPERATING_READINESS_CERTIFIED_AND_CLOSED`.
+- REIE Post-Advisory Operating Readiness Strategic Next-Phase Review is pushed to origin/main.
+- Strategic priority SHA: `6d529976789e9dc14df6799f4861629e1e59627b`.
+- Strategic priority commit message: `Prioritize REIE post-advisory-operating next phase`.
+- Strategic review commit was pushed before implementation.
+- Strategic next-phase finding: `PRIORITIZE_NEIGHBORHOOD_SUBMARKET_INTELLIGENCE_ARCHITECTURE`.
+- REIE Neighborhood / Submarket Intelligence Architecture is locally implemented and certified.
+- Final local status: `NEIGHBORHOOD_SUBMARKET_INTELLIGENCE_ARCHITECTURE_READY_FOR_PUSH`.
+- Authoritative architecture: `NEIGHBORHOOD_SUBMARKET_INTELLIGENCE_ARCHITECTURE`.
+- Certified posture: internal, contract-based, fixture-backed, deterministic, read-only, non-public, non-mutating, fail-closed, non-ranking, and conclusion-free.
+- Created files: `lib/neighborhood-submarket/neighborhoodSubmarketArchitecture.ts`, `lib/neighborhood-submarket/neighborhoodSubmarketFixtures.ts`, `scripts/checkNeighborhoodSubmarketIntelligenceArchitecture.ts`, and `docs/project-atlas/executive-library/REIE-NEIGHBORHOOD-SUBMARKET-INTELLIGENCE-ARCHITECTURE-IMPLEMENTATION.md`.
+- Updated files: `docs/CHAT_START.md`, `package.json`, and `tsconfig.worker.json`.
+- Deterministic validation command: `npm run check:neighborhood-submarket-intelligence-architecture`.
+- Advisory Operating Readiness completed the internal human-use layer for consistent REIE advisory preparation without customer data, CRM, tracking, saved preparation, automation, public metadata exposure, or conclusions.
+- Current foundation completeness finding: public guidance, readiness, handoff, Evidence Depth, Controlled Evidence Integration, and Advisory Operating foundations are sufficiently complete for the next phase to return to geographic and customer-facing product depth.
+- Diminishing-returns finding: another standalone internal foundation or generic evidence integration would be lower value unless tied to a concrete product or geographic domain.
+- Largest remaining gap: governed sub-city geographic intelligence. REIE has strong city-level, readiness, comparison, advisory, and evidence foundations, but neighborhoods, subdivisions, districts, corridors, market areas, and unincorporated communities remain unresolved as governed objects.
+- Neighborhood / Submarket finding: implemented as architecture-only. The foundation defines object-type taxonomy, canonical identity, parent/child and overlap relationships, route readiness, registry readiness, search-support posture, evidence requirements, source-rights integration, ambiguity handling, fair-housing controls, certification scale, and future activation gates without public routes.
+- Governed object types include `NEIGHBORHOOD`, `SUBDIVISION`, `DISTRICT`, `CORRIDOR`, `MARKET_AREA`, `UNINCORPORATED_COMMUNITY`, `COMMUNITY`, `PLANNED_COMMUNITY`, `CENSUS_DESIGNATED_PLACE`, `ZIP_CODE_AREA`, `MUNICIPALITY`, `CITY`, and `TOWN`.
+- Future or restricted object types include `COUNTY`, `HOA`, `METROPOLITAN_DISTRICT`, `SPECIAL_DISTRICT`, `IMPROVEMENT_DISTRICT`, `PROPERTY_CLUSTER`, `PARCEL`, and `PROPERTY`. These are not publicly eligible during this phase.
+- Object-type distinctions are preserved between municipality and unincorporated community, city and census-designated place, neighborhood and subdivision, subdivision and HOA, district and special district, corridor and neighborhood, market area and administrative geography, community label and legal jurisdiction, ZIP code and community, planned community and municipality, and property-specific geography and public market context.
+- Canonical identity requires object ID, object type, canonical name, normalized slug, alternate names, parent object ID, jurisdiction, county or counties, state, authority source, identity status, boundary status, route posture, search-support posture, evidence posture, source-rights posture, maturity posture, ambiguity status, public eligibility, and limitations.
+- Relationship types include `WITHIN`, `OVERLAPS`, `PART_OF`, `CONTAINS`, `ADJACENT_TO`, `ASSOCIATED_WITH`, `SERVED_BY`, `CROSSES`, `HAS_MARKET_CONTEXT`, `HAS_MUNICIPAL_CONTEXT`, and `HAS_COUNTY_CONTEXT`.
+- Boundary posture remains distinct from identity, route readiness, registry readiness, search support, and map readiness. No unsupported polygon is treated as authoritative.
+- Route readiness creates no public route, registry readiness creates no public registry entry, search-support posture changes no Search behavior, and maturity creates no automatic public eligibility.
+- Evidence and source-rights requirements reuse certified Evidence Depth and source-rights contracts. Unknown and unresolved rights fail closed.
+- Ambiguity remains visible, blocks activation where material, and preserves competing interpretations without silent normalization.
+- Fair-housing and steering safeguards prohibit demographic targeting, protected-class proxies, coded preference language, desirability labels, suitability conclusions, best-neighborhood claims, ideal-for claims, school ratings or rankings, safety ratings or crime-based steering, socioeconomic ranking, cultural or demographic profiling, family-status steering, investment recommendations, appreciation forecasts, and neighborhood superiority claims.
+- Gunbarrel governance finding: fixture-only, deferred, public activation blocked, route ineligible, registry ineligible, search-support uncertain, and no definitive object-type conclusion made.
+- Niwot governance finding: fixture-only, deferred, public activation blocked pending separate governance and certification, with unincorporated-community or census-place posture preserved and relationship to Boulder County, Boulder, and Longmont market context represented.
+- Fixture coverage includes 18 synthetic or repository-governed cases: incorporated municipality, official census-designated place, unincorporated community, neighborhood within one municipality, neighborhood spanning or ambiguously associated with jurisdictions, recorded subdivision, planned community, corridor crossing multiple places, platform-defined market area, ZIP code that must not be treated as a community, authoritative identity without public boundary rights, conflicting names or boundaries, Gunbarrel ambiguity, Niwot governance, public-route-blocked object, search-unsupported object, fair-housing prohibited-output guard, and mixed object graph with overlapping relationships.
+- The read-only inspection reports object types, fixtures, object graph coverage, relationships, ambiguity states, route-readiness states, registry-readiness states, search-support states, blocked activation cases, source-rights fail-closed cases, fair-housing prohibited-output assertions, and Gunbarrel/Niwot outcomes.
+- Implementation governance record: `docs/project-atlas/executive-library/REIE-NEIGHBORHOOD-SUBMARKET-INTELLIGENCE-ARCHITECTURE-IMPLEMENTATION.md`.
+- Strategic review record: `docs/project-atlas/executive-library/REIE-POST-ADVISORY-OPERATING-READINESS-STRATEGIC-NEXT-PHASE-REVIEW.md`.
+- Property / Seller Evidence finding: valuable later as internal, contract-level, fixture-backed work, but not the next primary initiative because property identity, address/ownership, public records, provider, privacy, valuation, condition, title, insurance, disclosure, permit, environmental, municipal, HOA, and specialist-boundary risks remain higher.
+- Decision Guide Evidence Transparency finding: secondary priority and more valuable than full unification. It should preserve Boulder, Louisville, and Lafayette editorial depth while making evidence limitations clearer, but it does not outrank sub-city object governance.
+- Decision Guide Unification finding: remain deferred. Mixed-maturity comparison is certified; Boulder, Louisville, and Lafayette should not be mechanically migrated or relabeled without separate evidence.
+- Local Decision Intelligence cadence: Wave 4, Niwot, Gunbarrel, Thornton, Brighton, Firestone, Frederick, and other candidates remain paused pending object-type and geographic governance.
+- Second Controlled Integration finding: do not run as a standalone proof program; embed future evidence integration inside selected domain architecture.
+- Product Experience finding: targeted follow-up is not justified without concrete production evidence of CTA, mobile, duplication, discoverability, cognitive-load, or conversion friction.
+- Required remediation: none.
+- Recommended next authorization: `NEIGHBORHOOD_SUBMARKET_INTELLIGENCE_ARCHITECTURE_PUSH_AND_PRODUCTION_CERTIFICATION`.
+- Exact next step: stop, or explicitly authorize push and production certification for the local implementation commit. Codex must not push runtime changes, deploy, create public routes, alter route eligibility, alter city eligibility, activate Niwot, activate Gunbarrel, activate Local Decision Intelligence Wave 4, activate GIS runtime, activate providers, acquire data, create persistence, create APIs, modify schema, alter Search behavior, alter map behavior, create CRM/tracking/telemetry/customer-data behavior, write production data, begin Property / Seller Evidence Readiness, begin Decision Guide evidence transparency, begin Decision Guide unification, begin Local Decision Intelligence Wave 4, begin targeted Product Experience work, or begin another initiative without explicit authorization.
+
+Prior REIE Post-Advisory Operating Readiness Strategic Next-Phase Review handoff retained below.
+
 PROJECT ATLAS(tm) / REIE Post-Advisory Operating Readiness Strategic Next-Phase Review, August 1, 2026:
 
 Workspace:

@@ -114,6 +114,7 @@
     "check:advisory-handoff-readiness": "npm run worker:build && node dist/scripts/checkAdvisoryHandoffReadiness.js",
     "check:controlled-evidence-depth-integration": "npm run worker:build && node dist/scripts/checkControlledEvidenceDepthIntegration.js",
     "check:advisory-operating-readiness": "npm run worker:build && node dist/scripts/checkAdvisoryOperatingReadiness.js",
+    "check:neighborhood-submarket-intelligence-architecture": "npm run worker:build && node dist/scripts/checkNeighborhoodSubmarketIntelligenceArchitecture.js",
     "check:reie-buyer-confidence-experience": "npm run worker:build && node dist/scripts/checkReieBuyerConfidenceExperience.js",
     "check:reie-financing-confidence-education": "npm run worker:build && node dist/scripts/checkReieFinancingConfidenceEducation.js",
     "check:reie-guided-search-intelligence-v8": "npm run worker:build && node dist/scripts/checkReieGuidedSearchIntelligenceV8.js",
