@@ -10,6 +10,144 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / Niwot Governance-Only Reconciliation Certified Closure, August 1, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Current certified and closed portfolio:
+
+- REIE South Boulder Neighborhood Route Enhancement(tm) remains certified and closed.
+- REIE Property / Seller Evidence Continuation(tm) remains certified and closed.
+- REIE Table Mesa Existing Neighborhood Route Enhancement(tm) remains certified and closed.
+- Niwot Governance-Only Reconciliation is production-certified and closed.
+- Legacy Niwot city-market route is retired and fail-closed.
+- No remediation is required.
+- No next initiative is automatically authorized.
+
+Niwot final governed posture:
+
+- canonical internal identity: `unincorporated-community:boulder-county:niwot`
+- canonical name: `Niwot`
+- object type: `UNINCORPORATED_COMMUNITY`
+- internal slug: `niwot`
+- geographic context: Boulder County
+- Boulder and Longmont: surrounding market context only
+- public activation: `NOT_ACTIVATED`
+- route: `BLOCKED`
+- registry: `PUBLIC_ACTIVATION_PROHIBITED`
+- Search: `UNRESOLVED_AND_INACTIVE`
+- map/GIS: `BLOCKED_AND_INACTIVE`
+- Local Decision Intelligence: `PAUSED_AND_UNAUTHORIZED`
+- evidence maturity: `UNRESOLVED / INSUFFICIENT_FOR_PUBLIC_ACTIVATION`
+- source-rights posture: `UNRESOLVED`
+- authoritative record: `wave2-niwot-non-activation-guard`
+
+Governance implementation:
+
+- commit: `8f35ee4acf06b86861e9011cb6a9c24dd42626d4`
+- message: `Reconcile Niwot governance posture`
+- deployment status: `success`
+- GitHub status ID: `51489550785`
+- GitHub deployment ID: `5708267618`
+- deployment status ID: `16233552566`
+- Vercel target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/Bqqj3rCSW88CeAST5sx2NXPQgKLn`
+- completion timestamp: `2026-08-01T21:01:11Z`
+
+Legacy route remediation:
+
+- commit: `f13fde4ad5017ba3d699017a913d57aee60d71f0`
+- message: `Retire legacy Niwot market route`
+- deployment status: `success`
+- GitHub/Vercel status ID: `51490317323`
+- Vercel target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/5rmsw6GdnJDZqjChXCYrehCuSnne`
+- completion timestamp: `2026-08-01T21:46:36Z`
+- production domain: `https://davidquinngroup.com`
+- supersession status: not superseded during certification
+
+Final production certification:
+
+- `/market/niwot-co-housing-market` returned `404`
+- no redirect, alias, replacement route, public Niwot market content, Niwot metadata, Niwot canonical, sitemap entry, generated internal link, or public Decision Guide link remained
+- `/market` returned `200` and contained no retired Niwot link
+- Search remained generic and inactive for Niwot
+- map/GIS remained inactive
+- Local Decision Intelligence Wave 4 remained unauthorized
+- evidence remained insufficient for public activation
+- source rights remained unresolved
+- no internal evidence metadata, confidence, score, grade, support level, or eligibility outcome was published
+
+Regression and preservation:
+
+- Gunbarrel remains unchanged, unresolved, non-public, route-ineligible, registry-ineligible, Search-ambiguous and inactive, map/GIS blocked, and unauthorized for Local Decision Intelligence Wave 4.
+- South Boulder returned `200`; identity, enhancement, canonical, and Search continuity were preserved.
+- Table Mesa returned `200`; identity, enhancement, canonical, and Search continuity were preserved.
+- Downtown Boulder returned `200` and remained unenhanced.
+- `/market/boulder-co-housing-market` returned `200`; canonical and route behavior were preserved.
+- Responsive and interaction certification passed at approximately desktop `1440x1100`, tablet `768x1024`, and mobile `390x844`.
+- Browser review found no horizontal overflow, no overlap, no broken images, no console errors, no retired Niwot links, readable hierarchy, and correct Back/Forward synchronization.
+
+Regression validation:
+
+- Niwot governance reconciliation, route eligibility, Decision Guide registry, sitemap, public runtime, Search runtime, map rendering, property-route safety, public trust, Neighborhood / Submarket Architecture, First Governed Neighborhood / Submarket Wave, Second Governed Neighborhood / Submarket Wave, GMA preview, GMA queue, GMA decision fixture, Geographic Intelligence Architecture, Geographic Intelligence Objects, Geographic Intelligence provenance, Local Decision Intelligence Phase 1, Local Decision Intelligence Phase 2 Waves 1-3, Decision Guide Evidence Transparency, Property / Seller Evidence Readiness, Evidence Depth, Controlled Evidence, source-rights readiness, South Boulder and Table Mesa regression, unsubscribe safety, alert readiness, typecheck, lint, build, and production-domain public-experience smoke passed.
+- Default localhost public-experience smoke failed only because no local server was running; production-domain smoke passed.
+
+Closure record:
+
+- `docs/project-atlas/executive-library/REIE-NIWOT-GOVERNANCE-ONLY-RECONCILIATION-PROGRAM-CLOSURE.md`
+- closure commit: this documentation-only closure commit; verify exact SHA after pulling latest `main`
+
+Protected boundaries:
+
+- no new Niwot public route
+- no redirect or alias
+- no replacement route
+- Gunbarrel unchanged
+- unrelated route eligibility unchanged
+- unrelated registry eligibility unchanged
+- Search unchanged
+- maps and GIS unchanged
+- Local Decision Intelligence Wave 4 inactive
+- providers, acquisition, public-record lookup, APIs, Prisma, migrations, persistence, customer data, CRM, tracking, telemetry, personalization, valuation, pricing, scoring, ranking, forecasting, AI, alerts, queues, workers, email, notifications, deployment configuration, and production data unchanged
+
+Current repository state after closure:
+
+- branch: `main`
+- expected HEAD after closure: this documentation-only closure commit
+- expected origin/main after push: this documentation-only closure commit
+- expected ahead / behind after push: `0 ahead / 0 behind`
+- expected working tree after validation: clean
+
+Next handoff:
+
+- `REIE_POST_NIWOT_GOVERNANCE_RECONCILIATION_STRATEGIC_NEXT_PHASE_REVIEW`
+
+Future strategic review may reassess, without automatically selecting:
+
+- continued pause on neighborhood enhancements
+- Local Decision Intelligence Wave 4
+- targeted Product Experience work supported by concrete production evidence
+- another bounded Property / Seller Evidence surface
+- Search or map work only if a concrete defect exists
+- Gunbarrel governance planning
+- whether geographic work has reached material diminishing returns
+
+Exact next step:
+
+- Stop, or explicitly authorize `REIE_POST_NIWOT_GOVERNANCE_RECONCILIATION_STRATEGIC_NEXT_PHASE_REVIEW`.
+- Codex must not begin strategic review, implement any initiative, activate Niwot, create a route, create a redirect, modify Gunbarrel, begin Local Decision Intelligence Wave 4, change Search or maps, modify Prisma or persistence, modify customer data, activate CRM or telemetry, deploy manually, perform production certification, or begin any unrelated work without explicit authorization.
+
+Prior Niwot legacy public route remediation handoff retained below.
+
 PROJECT ATLAS(tm) / Niwot Legacy Public Route Remediation Local Implementation, August 1, 2026:
 
 Workspace:
