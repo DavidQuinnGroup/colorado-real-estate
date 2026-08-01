@@ -10,6 +10,63 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE Post-Property / Seller Evidence Strategic Next-Phase Review, August 1, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Current governed state:
+
+- Core Product Experience Optimization cycle is complete.
+- Product Cohesion Review(tm) Wave 1 is production-certified and closed.
+- Controlled Fixture Alert Dry-Run(tm) program is certified and closed.
+- Local Decision Intelligence(tm) Phase 1 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 1 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 2 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 3 is production-certified and closed.
+- REIE Product Experience(tm) Next Cohesion Wave is production-certified and closed.
+- REIE Cross-City Decision Comparison(tm) is production-certified and closed.
+- REIE Seller Readiness Advancement(tm) is production-certified and closed.
+- REIE Buyer Financing Readiness Advancement(tm) is production-certified and closed.
+- REIE Evidence Depth and Data Integration(tm) foundation is production-certified and closed.
+- REIE Advisory Handoff Readiness(tm) is production-certified and closed.
+- REIE Controlled Evidence Depth Integration(tm) is production-certified and closed.
+- REIE Advisory Operating Readiness(tm) is production-certified and closed.
+- REIE Neighborhood / Submarket Intelligence Architecture(tm) is production-certified and closed.
+- REIE Decision Guide Evidence Transparency(tm) is production-certified and closed.
+- REIE First Governed Neighborhood / Submarket Implementation Wave(tm) is production-certified and closed.
+- REIE Property / Seller Evidence Readiness(tm) is production-certified and closed.
+- REIE Second Governed Neighborhood / Submarket Wave(tm) is production-certified and closed.
+- REIE South Boulder Neighborhood Route Enhancement(tm) is production-certified and closed.
+- South Boulder final closure status: `SOUTH_BOULDER_NEIGHBORHOOD_ROUTE_ENHANCEMENT_CERTIFIED_AND_CLOSED`.
+- REIE Property / Seller Evidence Continuation(tm) is production-certified and closed.
+- Property / Seller Evidence Continuation final status: `PROPERTY_SELLER_EVIDENCE_CONTINUATION_CERTIFIED_AND_CLOSED`.
+- REIE Post-Property / Seller Evidence Strategic Next-Phase Review is complete.
+- Strategic review status: `REIE_STRATEGIC_NEXT_PHASE_SELECTED`.
+- Strategic review record: `docs/project-atlas/executive-library/REIE-POST-PROPERTY-SELLER-EVIDENCE-STRATEGIC-NEXT-PHASE-REVIEW.md`.
+- Selected recommendation: `TABLE_MESA_EXISTING_NEIGHBORHOOD_ROUTE_ENHANCEMENT_PLANNING`.
+- Selected existing surface for next planning: `/market/boulder/table-mesa`.
+- Implementation remains unauthorized.
+- Strategic review finding: Table Mesa is the strongest next planning target because it is the prior fallback existing-route enhancement candidate after South Boulder, has an existing route, resolved identity and object type, governed Boulder parent context, acceptable authority posture, sufficient source-rights posture for summary use, and identified Search/map dependencies.
+- Diminishing-returns finding: broad geographic expansion, a third internal wave, Local Decision Intelligence Wave 4, or automatic neighborhood sequencing would likely add less value now than one bounded Table Mesa planning phase; another neighborhood enhancement should not proceed unless Table Mesa planning later passes its boundary and evidence gates.
+- Candidate deferrals: another existing neighborhood route deferred behind Table Mesa; Niwot remains governance-only and non-public; Local Decision Intelligence Wave 4 remains paused; targeted Product Experience work is deferred until concrete production friction evidence exists; another Property / Seller Evidence continuation is premature without a new concrete surface; a full geographic pause is not selected because Table Mesa remains a bounded existing-route planning target.
+- Protected-boundary finding: no implementation, runtime code, public route, route eligibility, registry eligibility, canonical, sitemap, Search, map, GIS, API, provider, data acquisition, upload, AI, Prisma, persistence, customer data, CRM, telemetry, alert, queue, worker, email, deployment configuration, production certification, manual deployment, or next initiative was authorized by the review.
+- Strategic review commit: this documentation-only commit; verify exact SHA after pulling latest `main`.
+- Current repository state at review start: `main`, HEAD `c5418378520094234eb012e6b6e007926876331f`, origin/main `c5418378520094234eb012e6b6e007926876331f`, `0 ahead / 0 behind`, clean working tree.
+- Next authorization gate: `READY_FOR_BOUNDED_IMPLEMENTATION_PLANNING`.
+- Exact next step: stop, or explicitly authorize bounded implementation planning for `TABLE_MESA_EXISTING_NEIGHBORHOOD_ROUTE_ENHANCEMENT_PLANNING`. Codex must not implement Table Mesa, modify public routes, create routes, change route or registry eligibility, change Search or maps, change canonical or sitemap logic, activate Niwot or Gunbarrel, begin Local Decision Intelligence Wave 4, modify Product Experience, modify Property / Seller Evidence, create APIs, activate providers, acquire data, scrape, perform public-record lookups, upload documents, add AI, add valuation/pricing/scoring/ranking/prediction/personalization/condition/ownership/title/permit/HOA/insurance/financing/investment conclusions, expose internal evidence metadata, modify Prisma or persistence, modify customer data, activate CRM or telemetry, run queues or workers, send email or notifications, deploy manually, perform production certification, or begin any new implementation without explicit authorization.
+
+Prior REIE Property / Seller Evidence Continuation certification and closure handoff retained below.
+
 PROJECT ATLAS(tm) / REIE Property / Seller Evidence Continuation Certification And Closure, August 1, 2026:
 
 Workspace:
