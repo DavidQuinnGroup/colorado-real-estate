@@ -58,6 +58,7 @@
     "scripts/checkAdvisoryOperatingReadiness.ts",
     "scripts/checkNeighborhoodSubmarketIntelligenceArchitecture.ts",
     "scripts/checkDecisionGuideEvidenceTransparency.ts",
+    "scripts/checkFirstGovernedNeighborhoodSubmarketWave.ts",
     "scripts/checkReieBuyerConfidenceExperience.ts",
     "scripts/checkReieFinancingConfidenceEducation.ts",
     "scripts/checkReieGuidedSearchIntelligenceV8.ts",
