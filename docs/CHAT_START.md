@@ -10,6 +10,67 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE Second Governed Neighborhood / Submarket Wave Local Implementation, August 1, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Current governed state:
+
+- Core Product Experience Optimization cycle is complete.
+- Product Cohesion Review(tm) Wave 1 is production-certified and closed.
+- Controlled Fixture Alert Dry-Run(tm) program is certified and closed.
+- Local Decision Intelligence(tm) Phase 1 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 1 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 2 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 3 is production-certified and closed.
+- REIE Product Experience(tm) Next Cohesion Wave is production-certified and closed.
+- REIE Cross-City Decision Comparison(tm) is production-certified and closed.
+- REIE Seller Readiness Advancement(tm) is production-certified and closed.
+- REIE Buyer Financing Readiness Advancement(tm) is production-certified and closed.
+- REIE Evidence Depth and Data Integration(tm) foundation is production-certified and closed.
+- REIE Advisory Handoff Readiness(tm) is production-certified and closed.
+- REIE Controlled Evidence Depth Integration(tm) is production-certified and closed.
+- REIE Advisory Operating Readiness(tm) is production-certified and closed.
+- REIE Neighborhood / Submarket Intelligence Architecture(tm) is production-certified and closed.
+- REIE Decision Guide Evidence Transparency(tm) is production-certified and closed.
+- REIE First Governed Neighborhood / Submarket Implementation Wave(tm) is production-certified and closed.
+- REIE Property / Seller Evidence Readiness(tm) is production-certified and closed.
+- Final prior status: `PRIORITIZE_SECOND_GOVERNED_NEIGHBORHOOD_SUBMARKET_WAVE`.
+- REIE Post-Property / Seller Evidence Readiness Strategic Next-Phase Review was pushed to origin/main.
+- Strategic priority SHA: `2774230b4f8a1f8aa5d5cee1f5c4d2f2c9ef0b11`.
+- Strategic priority commit message: `Prioritize REIE post-property-seller-evidence next phase`.
+- Strategic review status: `PRIORITIZE_SECOND_GOVERNED_NEIGHBORHOOD_SUBMARKET_WAVE`.
+- Strategic review record: `docs/project-atlas/executive-library/REIE-POST-PROPERTY-SELLER-EVIDENCE-READINESS-STRATEGIC-NEXT-PHASE-REVIEW.md`.
+- REIE Second Governed Neighborhood / Submarket Wave(tm) is complete locally and not pushed.
+- Current local implementation status: `SECOND_GOVERNED_NEIGHBORHOOD_SUBMARKET_WAVE_READY_FOR_PUSH`.
+- Implementation commit message: `Implement second governed Neighborhood Submarket wave`.
+- Implementation record: `docs/project-atlas/executive-library/REIE-SECOND-GOVERNED-NEIGHBORHOOD-SUBMARKET-WAVE-IMPLEMENTATION.md`.
+- Authoritative contract: `SECOND_GOVERNED_NEIGHBORHOOD_SUBMARKET_IMPLEMENTATION_WAVE`.
+- Reused architecture: `NEIGHBORHOOD_SUBMARKET_INTELLIGENCE_ARCHITECTURE`.
+- Preserved Wave 1 contract: `FIRST_GOVERNED_NEIGHBORHOOD_SUBMARKET_IMPLEMENTATION_WAVE`.
+- Certified local implementation scope: internal-first, contract-based, fixture-backed, deterministic, read-only, non-public, non-mutating, non-ranking, non-predictive, non-personalized, fail-closed, limitation-forward, fair-housing safe, source-rights governed, and conclusion-free.
+- Wave 2 differentiation: 22 bounded candidates and guards, expanded existing-route preservation, route-enhancement-readiness review, deeper alias and identity reconciliation, expanded relationships including child, overlap, corridor, market, municipal, county, and service context, authority and boundary conflict cases, protected Niwot and Gunbarrel guards, object-type conversion guard, and prohibited-output guard. Wave 2 does not duplicate Wave 1 totals.
+- Candidate inventory includes South Boulder, Table Mesa, Chautauqua, Wonderland Hills, Rock Creek, Sagmore, Original Superior, Washington Park, Washington Park Search Context, South Boulder Certification Candidate, US 36 Boulder-Denver Context, Central Denver Context, Rock Creek Subareas, North Boulder Context, Wave 2 Internal Portfolio Summary, Wave 2 Differentiation Guard, and protected fair-housing, public-activation, Niwot, Gunbarrel, object-type conversion, and prohibited-output guards.
+- Read-only inspection command: `npm run check:second-governed-neighborhood-submarket-wave`.
+- Certified local inspection output: 22 candidates, 17 included candidates, 11 existing-route preservation cases, 4 route-enhancement-readiness cases, 6 internal-readiness cases, 27 relationships, 12 identity conflicts, 6 authority or boundary conflicts, 15 fail-closed rights cases, 17 Search/map separation cases, 2 future certification candidates, Niwot blocked, Gunbarrel blocked, and prohibited-output assertions passing.
+- Explicit non-activation: no public neighborhood or submarket route, route eligibility, registry eligibility, public content, public metadata, public maturity, sitemap entry, canonical URL, Search behavior, map behavior, boundary layer, GIS result, provider call, network acquisition, persistence, API, schema change, migration, environment variable, customer data access, CRM workflow, telemetry, valuation, pricing, condition conclusion, neighborhood conclusion, ranking, score, forecast, recommendation, queue, worker, email, notification, production write, Niwot activation, Gunbarrel activation, or Local Decision Intelligence Wave 4 activation occurred.
+- Existing public experience preservation: public neighborhood routes, city routes, Decision Guides, property routes, Search, maps, sitemap, canonical URLs, public metadata, public content, maturity labels, Cross-City Comparison, Seller Readiness, Home Worth, Property Intelligence, Advisory experiences, and public runtime behavior remain unchanged.
+- Required remediation: none.
+- Recommended next authorization: `SECOND_GOVERNED_NEIGHBORHOOD_SUBMARKET_WAVE_PUSH_AND_PRODUCTION_CERTIFICATION`.
+- Exact next step: stop, or explicitly authorize `SECOND_GOVERNED_NEIGHBORHOOD_SUBMARKET_WAVE_PUSH_AND_PRODUCTION_CERTIFICATION`. Codex must not push the implementation commit, deploy, begin production certification, activate public routes, change route or registry eligibility, change Search or maps, activate Niwot, activate Gunbarrel, begin Local Decision Intelligence Wave 4, activate providers or public records, create APIs, change schema or persistence, use customer data, activate CRM or telemetry, run queues or workers, send email, mutate production systems, or begin another initiative without explicit authorization.
+
+Prior REIE Post-Property / Seller Evidence Readiness strategic review handoff retained below.
+
 PROJECT ATLAS(tm) / REIE Post-Property / Seller Evidence Readiness Strategic Next-Phase Review, August 1, 2026:
 
 Workspace:

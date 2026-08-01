@@ -59,6 +59,7 @@
     "scripts/checkNeighborhoodSubmarketIntelligenceArchitecture.ts",
     "scripts/checkDecisionGuideEvidenceTransparency.ts",
     "scripts/checkFirstGovernedNeighborhoodSubmarketWave.ts",
+    "scripts/checkSecondGovernedNeighborhoodSubmarketWave.ts",
     "scripts/checkPropertySellerEvidenceReadiness.ts",
     "scripts/checkReieBuyerConfidenceExperience.ts",
     "scripts/checkReieFinancingConfidenceEducation.ts",
