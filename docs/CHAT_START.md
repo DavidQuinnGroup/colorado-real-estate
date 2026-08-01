@@ -10,6 +10,46 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE Post-Table Mesa Strategic Next-Phase Review, August 1, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Current governed state:
+
+- REIE South Boulder Neighborhood Route Enhancement(tm) remains certified and closed.
+- REIE Property / Seller Evidence Continuation(tm) remains certified and closed.
+- REIE Table Mesa Existing Neighborhood Route Enhancement(tm) remains certified and closed.
+- Table Mesa final status: `TABLE_MESA_NEIGHBORHOOD_ROUTE_ENHANCEMENT_CERTIFIED_AND_CLOSED`.
+- REIE Post-Table Mesa Strategic Next-Phase Review is complete.
+- Strategic review status: `REIE_POST_TABLE_MESA_STRATEGIC_NEXT_PHASE_SELECTED`.
+- Strategic review record: `docs/project-atlas/executive-library/REIE-POST-TABLE-MESA-STRATEGIC-NEXT-PHASE-REVIEW.md`.
+- Selected recommendation: `NIWOT_GOVERNANCE_ONLY_RECONCILIATION_PLANNING`.
+- Selected governed internal scope: Niwot governance-only reconciliation across existing Neighborhood / Submarket and Local Decision Intelligence records.
+- Implementation remains unauthorized.
+- Recommendation rationale: two consecutive neighborhood-route enhancements are now certified and closed; another immediate route enhancement would create early diminishing returns, while Niwot remains a repeated protected governance blocker with unresolved object type, authority, boundary, route, registry, Search, map, evidence, source-rights, maturity, and fair-housing questions.
+- Diminishing-returns finding: current geographic-route enhancement work has reached early diminishing returns. Public neighborhood-route work should pause while Niwot receives governance-only planning.
+- Product Experience finding: targeted Product Experience work is not selected because no concrete repository or production friction finding currently supports it.
+- Search/map finding: Search and map refinement is not selected because recent certifications passed and no actual defect is recorded.
+- Local Decision Intelligence Wave 4 finding: Wave 4 remains paused until Niwot and similar object-type, Search, route, evidence, source-rights, and boundary dependencies are resolved.
+- Property / Seller Evidence finding: another continuation is deferred because no new existing surface is currently singled out by repository evidence.
+- Protected-boundary finding: the review does not authorize Niwot activation, Gunbarrel activation, Local Decision Intelligence Wave 4, public routes, route eligibility, registry eligibility, canonical or sitemap changes, Search behavior, map or GIS behavior, APIs, providers, acquisition, public-record lookup, uploads, Prisma, persistence, customer data, CRM, telemetry, AI, alerts, queues, workers, email, notifications, deployment configuration, production certification, or implementation.
+- Strategic review commit: this documentation-only commit; verify exact SHA after pulling latest `main`.
+- Current repository state at review start: `main`, HEAD `cf3e63f59152549d4d8bd2d50debddd29a06bd16`, origin/main `cf3e63f59152549d4d8bd2d50debddd29a06bd16`, `0 ahead / 0 behind`, clean working tree.
+- Next authorization gate: `READY_FOR_BOUNDED_IMPLEMENTATION_PLANNING`.
+- Exact next step: stop, or explicitly authorize bounded implementation planning for `NIWOT_GOVERNANCE_ONLY_RECONCILIATION_PLANNING`. Codex must not implement Niwot reconciliation, activate Niwot, activate Gunbarrel, begin Local Decision Intelligence Wave 4, modify public routes, create routes, change route or registry eligibility, change Search or maps, change canonical or sitemap logic, activate providers, acquire data, perform public-record lookups, upload documents, add AI, add valuation/pricing/scoring/ranking/prediction/personalization/condition/ownership/title/permit/HOA/insurance/financing/investment conclusions, expose internal evidence metadata, modify Prisma or persistence, modify customer data, activate CRM or telemetry, run queues or workers, send email or notifications, deploy manually, perform production certification, or begin any new implementation without explicit authorization.
+
+Prior Table Mesa certification and closure handoff retained below.
+
 PROJECT ATLAS(tm) / Table Mesa Existing Neighborhood Route Enhancement Certification And Closure, August 1, 2026:
 
 Workspace:
