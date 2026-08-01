@@ -10,6 +10,85 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE Controlled Evidence Depth Integration(tm) Certification and Closure, August 1, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Current governed state:
+
+- Core Product Experience Optimization cycle is complete.
+- Product Cohesion Review(tm) Wave 1 is production-certified and closed.
+- Controlled Fixture Alert Dry-Run(tm) program is certified and closed.
+- Local Decision Intelligence(tm) Phase 1 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 1 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 2 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 3 is production-certified and closed.
+- REIE Product Experience(tm) Next Cohesion Wave is production-certified and closed.
+- REIE Cross-City Decision Comparison(tm) is production-certified and closed.
+- REIE Seller Readiness Advancement(tm) is production-certified and closed.
+- REIE Buyer Financing Readiness Advancement(tm) is production-certified and closed.
+- REIE Evidence Depth and Data Integration(tm) foundation is production-certified and closed.
+- REIE Advisory Handoff Readiness(tm) is production-certified and closed.
+- REIE Controlled Evidence Depth Integration(tm) is production-certified and closed.
+- Final status: `CONTROLLED_EVIDENCE_DEPTH_INTEGRATION_CERTIFIED_AND_CLOSED`.
+- Closure status: `CERTIFIED_AND_CLOSED`.
+- Certified integration target: `ADVISORY_PREPARATION_INTERNAL_EVIDENCE_POSTURE`.
+- Strategic priority SHA: `0e351c53e375703ff25f8bf1c610a5d6966596db`.
+- Strategic priority commit message: `Prioritize REIE post-advisory next phase`.
+- Strategic priority finding: `PRIORITIZE_CONTROLLED_EVIDENCE_DEPTH_INTEGRATION`.
+- Strategic review commit was pushed to origin/main before implementation.
+- Implementation SHA: `9c85a77c9feb972afc4e9490717cb53822cc8351`.
+- Implementation commit message: `Implement controlled Evidence Depth integration`.
+- Final certified production SHA: `9c85a77c9feb972afc4e9490717cb53822cc8351`.
+- Production certification result: `CONTROLLED_EVIDENCE_DEPTH_INTEGRATION_PRODUCTION_CERTIFIED`.
+- Production deployment status: `success`.
+- GitHub commit status ID: `51467956568`.
+- GitHub deployment ID: `5699962255`.
+- Deployment status ID: `16210503422`.
+- Deployment timestamp: `2026-08-01T00:29:28Z`.
+- Vercel deployment target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/EZNuHVF2GFFpXXvGUxrtYMToGWuc`.
+- Production deployment URL: `https://david-quinn-group-8rde-ckikte150-david-quinns-projects-a0953600.vercel.app`.
+- Production domain: `https://davidquinngroup.com`.
+- Supersession status: not superseded during certification.
+- The certified integration is internal, fixture-backed, deterministic, read-only, non-public, non-mutating, conclusion-free, source-rights governed, and derived from the certified Evidence Depth foundation.
+- Existing certified Evidence Depth identity, versioning, source/provider separation, source-rights, provenance, freshness, support, conflict, supersession, lineage, limitations, eligibility, summaries, fixtures, and inspection contracts were reused.
+- No parallel evidence-posture architecture was created.
+- The integration maps certified evidence posture into bounded internal preparation outputs only: question categories, limitation prompts, verification prompts, attribution reminders, freshness-review notices, unresolved-conflict notices, professional-review categories, internal-only restrictions, and blocked-use warnings.
+- The integration produces no substantive real-estate answer, customer recommendation, city recommendation, property conclusion, valuation, pricing, forecast, condition determination, affordability conclusion, qualification conclusion, suitability conclusion, urgency, lead score, or composite evidence score.
+- Internal question categories include source and rights, freshness, provenance, conflicting evidence, geographic scope, temporal scope, citywide versus property-specific applicability, property-specific verification, professional verification, attribution, unresolved evidence, internal-only evidence, and blocked evidence.
+- Question categories organize preparation only and do not establish certainty, ranking, priority, urgency, suitability, transaction probability, investment value, property condition, or market outcome.
+- Unknown and unresolved rights fail closed; restricted and prohibited evidence remain blocked from public use; attribution-required evidence preserves attribution guidance; internal-only evidence remains internal; eligible evidence does not become certainty or a substantive conclusion.
+- Stale, undated, and aging evidence create review prompts only. No live freshness retrieval occurs.
+- Conflicting evidence preserves both sides, versions, dates, rights, limitations, and conflict state. No winner, weighting, source-prestige resolution, or silent collapse was introduced.
+- Citywide and aggregated evidence creates property-specific limitation prompts without professional or property conclusions.
+- Support levels remain categorical, internal, non-ranking, non-scoring, non-weighted, and non-conclusive.
+- Professional-review prompts identify categories for qualified review without providing conclusions.
+- Internal Advisory preparation summaries report posture and limitation categories only.
+- Fixture certification covered 11 evidence items and mixed-set behavior, producing 46 bounded prompts with no recommendation, substantive conclusion, or composite score.
+- Deterministic validation command: `npm run check:controlled-evidence-depth-integration`.
+- Production non-exposure returned `404` for `/controlled-evidence-depth-integration`, `/evidence-depth-integration`, `/advisory-evidence-preparation`, `/api/controlled-evidence-depth-integration`, `/api/advisory-evidence-preparation`, and `/api/evidence-depth`.
+- No internal contract name, evidence ID, rights enum, support level, freshness code, conflict code, eligibility state, fixture, prompt, summary, public-use evaluator output, or internal metadata appeared publicly.
+- Public Advisory Handoff remained unchanged; `/contact#advisory-readiness`, Buyer readiness exit, Seller readiness exit, Contact behavior, and privacy boundaries were preserved.
+- Future Advisory Operating Readiness remains future-only. This phase did not implement advisor dashboards, CRM workflows, customer records, lead assignments, saved preparation, customer-specific evidence packets, automated recommendations, tracking, telemetry, or outreach.
+- Closure record: `docs/project-atlas/executive-library/REIE-CONTROLLED-EVIDENCE-DEPTH-INTEGRATION-PROGRAM-CLOSURE.md`.
+- Implementation record: `docs/project-atlas/executive-library/REIE-CONTROLLED-EVIDENCE-DEPTH-INTEGRATION-IMPLEMENTATION.md`.
+- Required remediation: none.
+- Recommended next authorization: `REIE_POST_CONTROLLED_EVIDENCE_INTEGRATION_STRATEGIC_NEXT_PHASE_REVIEW`.
+- This is recommendation-only. The next review is not authorized by this closure.
+- Exact next step: stop, or explicitly authorize the post-Controlled Evidence Integration strategic next-phase review. Codex must not begin that review, Advisory Operating Readiness, Neighborhood/Submarket Intelligence, Property / Seller Evidence Readiness, Decision Guide evidence work, Local Decision Intelligence Wave 4, implementation, push, deployment, provider activation, acquisition, persistence, public Evidence Depth integration, Contact changes, CRM, tracking, telemetry, customer data, APIs, schema, production writes, or another initiative without explicit authorization.
+
+Prior REIE Controlled Evidence Depth Integration implementation handoff retained below.
+
 PROJECT ATLAS(tm) / REIE Controlled Evidence Depth Integration(tm), July 31, 2026:
 
 Workspace:
