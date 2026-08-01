@@ -28,7 +28,7 @@ export type Neighborhood = {
 };
 
 export type NeighborhoodRouteEnhancement = {
-  contract: 'SOUTH_BOULDER_EXISTING_NEIGHBORHOOD_ROUTE_ENHANCEMENT';
+  contract: 'EXISTING_NEIGHBORHOOD_ROUTE_ENHANCEMENT';
   objectType: 'NEIGHBORHOOD';
   canonicalPath: string;
   canonicalUrl: string;
@@ -124,7 +124,7 @@ export const neighborhoods: Neighborhood[] = [
     constructionDNA: 'Postwar homes, later remodels, townhome and condo pockets, and infill-adjacent properties can differ materially by lot, association, improvements, and maintenance history.',
     tacticalLever: 'Separate neighborhood orientation from address-specific records, inspections, insurance questions, municipal review, HOA materials, and lender requirements.',
     routeEnhancement: {
-      contract: 'SOUTH_BOULDER_EXISTING_NEIGHBORHOOD_ROUTE_ENHANCEMENT',
+      contract: 'EXISTING_NEIGHBORHOOD_ROUTE_ENHANCEMENT',
       objectType: 'NEIGHBORHOOD',
       canonicalPath: '/market/boulder/south-boulder',
       canonicalUrl: 'https://davidquinngroup.com/market/boulder/south-boulder',
@@ -186,11 +186,78 @@ export const neighborhoods: Neighborhood[] = [
     city: 'Boulder',
     primaryAnchor: 'Boulder Reservoir',
   }),
-  createDefaultNeighborhood({
+  createNeighborhood({
     name: 'Table Mesa',
     slug: 'table-mesa',
     city: 'Boulder',
+    lifestyleVibe: 'Table Mesa is a neighborhood-level Boulder context with approximate boundary references, locally used labels, and property-by-property variation that should be verified before a decision depends on it.',
     primaryAnchor: 'Viele Lake',
+    resilienceScore: 80,
+    fireRisk: 'Moderate',
+    waterRights: false,
+    insuranceComplexity: 'Elevated',
+    avgEfficiencyScore: 86,
+    era: 'mixed-era residential',
+    altitude: 5400,
+    soilType: 'Front Range Mixed',
+    constructionDNA: 'Mixed residential properties, remodels, association questions, and address-specific records can differ materially by lot, improvements, maintenance history, and source.',
+    tacticalLever: 'Separate Table Mesa neighborhood orientation from address-specific records, inspections, insurance questions, municipal review, HOA materials, and lender requirements.',
+    routeEnhancement: {
+      contract: 'EXISTING_NEIGHBORHOOD_ROUTE_ENHANCEMENT',
+      objectType: 'NEIGHBORHOOD',
+      canonicalPath: '/market/boulder/table-mesa',
+      canonicalUrl: 'https://davidquinngroup.com/market/boulder/table-mesa',
+      parentContext: 'Boulder city context with Boulder County and Table Mesa neighborhood orientation.',
+      scopeClarification:
+        'Table Mesa is presented as neighborhood-level orientation within Boulder. It is not a legal boundary, subdivision map, HOA determination, school-assignment source, municipal-jurisdiction finding, insurance conclusion, or property-specific fact.',
+      decisionSnapshot:
+        'Use this page to frame Table Mesa questions, then verify the exact address, records, physical condition, insurance questions, financing fit, HOA materials, and municipal details before relying on neighborhood context for a property decision.',
+      localCharacter:
+        'Table Mesa context can be useful for orientation around a locally recognized Boulder neighborhood label and nearby place anchors. Exact meaning can vary by address, source, subdivision, association, and property record.',
+      geographicBoundaries:
+        'Neighborhood labels, subdivision names, school boundaries, HOA coverage, municipal records, access assumptions, and corridor references may not align. Treat this route as context and confirm property-specific facts through the appropriate source.',
+      housingAndPropertyContext:
+        'Housing context should be reviewed property by property. This page does not determine condition, title, permits, value, insurance, financing, HOA status, legal compliance, marketability, or suitability for any Table Mesa property.',
+      marketAndDecisionDrivers: [
+        'Confirm whether the address is being described by a neighborhood label, subdivision, HOA, district, corridor, or another locally used area name.',
+        'Separate Boulder citywide market context from property-specific listing facts, condition, ownership documents, and seller materials.',
+        'Review access, maintenance, financing, insurance, association, and municipal assumptions against the actual address rather than the neighborhood label alone.',
+      ],
+      buyerPrompts: [
+        'Verify the exact address context, property type, age, improvements, association status, and records before relying on neighborhood-level information.',
+        'Confirm school-boundary, insurance, financing, municipal, permit, title, HOA, and inspection questions with the qualified source for the specific property.',
+        'Use current search results as a discovery path, not as proof that every Table Mesa property shares the same condition, cost, constraints, or records posture.',
+      ],
+      sellerPrompts: [
+        'Prepare records for improvements, maintenance, permits, HOA materials, prior reports, disclosures, access details, and known property history before property-specific review.',
+        'Separate neighborhood context from pricing, value, timing, disclosure, legal-compliance, and marketability questions that require property-specific professional review.',
+        'Identify documentation gaps early so an advisor can help route questions to the appropriate municipality, HOA, title, insurance, inspection, lending, or legal source.',
+      ],
+      dueDiligencePrompts: [
+        'Use Boulder city and county records, HOA materials where applicable, title review, insurance review, inspection professionals, lenders, and legal counsel for address-specific questions.',
+        'Treat incomplete, stale, conflicting, approximate, or source-limited information as a prompt for qualified review rather than a conclusion.',
+        'Confirm boundaries, labels, records, and property facts before applying neighborhood-level context to an offer, listing decision, or advisory conversation.',
+      ],
+      evidenceTransparency: [
+        'This route uses public-facing neighborhood context and repository-supported route governance; it does not expose internal Evidence Depth metadata.',
+        'Table Mesa has approximate-boundary and incomplete-evidence limitations in repository governance, so public copy remains orientation and question preparation only.',
+        'Neighborhood context does not establish property condition, value, title, ownership, insurability, permits, HOA status, school assignment, financing eligibility, marketability, suitability, or sale outcome.',
+      ],
+      journeyLinks: [
+        { label: 'Boulder City Context', href: '/market/boulder-co-housing-market', note: 'Citywide market context' },
+        { label: 'Search Table Mesa', href: '/search?neighborhood=Table%20Mesa', note: 'Existing search path' },
+        { label: 'Buyer Guidance', href: '/buy', note: 'Buyer decision preparation' },
+        { label: 'Financing Readiness', href: '/buy#financing-readiness', note: 'Financing questions' },
+        { label: 'Seller Guidance', href: '/sell', note: 'Seller preparation' },
+        { label: 'Seller Readiness', href: '/home-worth#seller-readiness', note: 'Documentation preparation' },
+        { label: 'Grand Plan', href: '/grand-plan', note: 'Decision planning' },
+        { label: 'Advisory Readiness', href: '/contact#advisory-readiness', note: 'Advisor conversation' },
+      ],
+      sourceRightsBoundary:
+        'Public copy is limited to repository-backed route facts, general verification categories, and permitted neighborhood-orientation context; it does not publish internal evidence metadata or source-rights governance details.',
+      protectedBoundary:
+        'No new route, alias, redirect, registry entry, sitemap entry, Search behavior, map layer, GIS boundary, valuation output, comparative claim, prediction, protected public-content claim, Niwot activation, Gunbarrel activation, or Local Decision Intelligence Wave 4 activation is created.',
+    },
   }),
   createNeighborhood({
     name: 'Mapleton Hill',

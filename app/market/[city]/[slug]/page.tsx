@@ -581,18 +581,20 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
       {routeEnhancement ? (
         <section
           className="reie-neighborhood-route-enhancement mx-auto max-w-7xl px-6 py-10 md:px-12"
-          data-testid="south-boulder-route-enhancement"
-          data-south-boulder-route-enhancement="true"
-          data-south-boulder-route-enhancement-contract={routeEnhancement.contract}
-          data-south-boulder-route-enhancement-route={routeEnhancement.canonicalPath}
-          data-south-boulder-route-enhancement-object-type={routeEnhancement.objectType}
-          data-south-boulder-route-enhancement-canonical={routeEnhancement.canonicalUrl}
-          data-south-boulder-route-enhancement-search-preserved="true"
-          data-south-boulder-route-enhancement-map-preserved="true"
-          data-south-boulder-route-enhancement-sitemap-preserved="true"
-          data-south-boulder-route-enhancement-public-copy-only="true"
-          data-south-boulder-route-enhancement-no-internal-metadata="true"
-          data-south-boulder-route-enhancement-fair-housing="neutral-non-ranking"
+          data-testid="neighborhood-route-enhancement"
+          data-neighborhood-route-enhancement="true"
+          data-neighborhood-route-enhancement-name={neighborhood.name}
+          data-neighborhood-route-enhancement-slug={neighborhood.slug}
+          data-neighborhood-route-enhancement-contract={routeEnhancement.contract}
+          data-neighborhood-route-enhancement-route={routeEnhancement.canonicalPath}
+          data-neighborhood-route-enhancement-object-type={routeEnhancement.objectType}
+          data-neighborhood-route-enhancement-canonical={routeEnhancement.canonicalUrl}
+          data-neighborhood-route-enhancement-search-preserved="true"
+          data-neighborhood-route-enhancement-map-preserved="true"
+          data-neighborhood-route-enhancement-sitemap-preserved="true"
+          data-neighborhood-route-enhancement-public-copy-only="true"
+          data-neighborhood-route-enhancement-no-internal-metadata="true"
+          data-neighborhood-route-enhancement-fair-housing="neutral-non-ranking"
         >
           <div className="grid gap-8 lg:grid-cols-[0.82fr_1.18fr]">
             <div>
@@ -600,7 +602,7 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
                 Neighborhood Decision Snapshot
               </p>
               <h2 className="text-3xl font-black uppercase leading-tight tracking-normal text-white md:text-4xl">
-                Use South Boulder as orientation, then verify the address.
+                Use {neighborhood.name} as orientation, then verify the address.
               </h2>
               <p className="mt-5 text-sm leading-7 text-white/62 md:text-base">{routeEnhancement.decisionSnapshot}</p>
               <p className="mt-5 rounded-[6px] bg-cyan-100/[0.06] p-4 text-xs leading-6 text-cyan-100/72">
@@ -655,9 +657,9 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
           <div className="mt-8 grid gap-4 lg:grid-cols-[0.95fr_1.05fr]">
             <section
               className="rounded-[8px] bg-white/[0.04] p-5"
-              data-testid="south-boulder-evidence-limitation-transparency"
-              data-south-boulder-evidence-public-copy-only="true"
-              data-south-boulder-evidence-no-scores="true"
+              data-testid="neighborhood-evidence-limitation-transparency"
+              data-neighborhood-evidence-public-copy-only="true"
+              data-neighborhood-evidence-no-scores="true"
             >
               <p className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100/72">
                 Evidence And Limitation Transparency
@@ -672,7 +674,7 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
               </div>
             </section>
 
-            <section className="rounded-[8px] bg-white/[0.04] p-5" data-testid="south-boulder-journey-continuity">
+            <section className="rounded-[8px] bg-white/[0.04] p-5" data-testid="neighborhood-journey-continuity">
               <p className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100/72">Journey Continuity</p>
               <div className="mt-4 grid gap-3 sm:grid-cols-2">
                 {routeEnhancement.journeyLinks.map((link) => (
@@ -680,8 +682,8 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
                     key={link.href}
                     href={link.href}
                     className="reie-decision-link reie-decision-link--secondary flex min-h-[88px] flex-col justify-center rounded-[6px] px-4 py-3 text-white no-underline transition focus:outline-none focus:ring-2 focus:ring-cyan-100/70"
-                    data-testid="south-boulder-journey-link"
-                    data-south-boulder-journey-href={link.href}
+                    data-testid="neighborhood-route-enhancement-journey-link"
+                    data-neighborhood-route-enhancement-journey-href={link.href}
                   >
                     <span className="text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100/72">{link.label}</span>
                     <span className="mt-2 text-xs leading-5 text-white/48">{link.note}</span>
@@ -691,7 +693,7 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
             </section>
           </div>
 
-          <section className="mt-8 rounded-[8px] bg-cyan-100/[0.04] p-5" data-testid="south-boulder-due-diligence-guidance">
+          <section className="mt-8 rounded-[8px] bg-cyan-100/[0.04] p-5" data-testid="neighborhood-due-diligence-guidance">
             <p className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100/72">
               Due-Diligence And Verification Prompts
             </p>

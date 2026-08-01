@@ -10,6 +10,51 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / Table Mesa Existing Neighborhood Route Enhancement Local Implementation, August 1, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Current governed state:
+
+- Table Mesa bounded implementation planning is complete.
+- Planning outcome: `TABLE_MESA_READY_FOR_BOUNDED_IMPLEMENTATION_AUTHORIZATION`.
+- Planning record: `docs/project-atlas/executive-library/REIE-TABLE-MESA-EXISTING-NEIGHBORHOOD-ROUTE-ENHANCEMENT-PLAN.md`.
+- Prior documentation deployment for planning commit `b7f4fbcce358233864e7bc4687870c7b8a40c207`: success; GitHub status ID `51487119002`; Vercel target `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/4qhuQcUp1kiHtj9VyVc3wKbhYaGJ`; description `Deployment has completed`.
+- Table Mesa Existing Neighborhood Route Enhancement implementation is complete locally.
+- Implementation status: `READY_FOR_TABLE_MESA_LOCAL_CERTIFICATION_AND_PUSH_REVIEW`.
+- Implementation record: `docs/project-atlas/executive-library/REIE-TABLE-MESA-EXISTING-NEIGHBORHOOD-ROUTE-ENHANCEMENT-IMPLEMENTATION.md`.
+- Target route: `/market/boulder/table-mesa`.
+- Target object type: `NEIGHBORHOOD`.
+- Target canonical preserved: `https://davidquinngroup.com/market/boulder/table-mesa`.
+- Target Search continuity preserved: `/search?neighborhood=Table%20Mesa`.
+- Implementation summary: added one bounded `routeEnhancement` block to the existing Table Mesa neighborhood record, generalized the existing route-enhancement renderer so it is route-neutral, and generalized the existing South Boulder enhancement check so it validates both South Boulder regression and Table Mesa route-specific expectations.
+- Reused architecture: optional `Neighborhood.routeEnhancement`, existing dynamic neighborhood route template, South Boulder route-enhancement pattern, Neighborhood / Submarket Architecture, Decision Guide Evidence Transparency, Evidence Depth public non-exposure, source-rights readiness, Product Cohesion, Decision Journey, public trust, and fair-housing controls.
+- Route-neutral renderer finding: South Boulder-specific route-enhancement data markers and heading text were replaced with route-neutral `data-neighborhood-route-enhancement-*` markers and `Use {neighborhood.name} as orientation, then verify the address.`
+- Table Mesa boundary finding: public copy states that Table Mesa is neighborhood-level orientation within Boulder and does not establish a legal boundary, subdivision map, HOA determination, school-assignment source, municipal-jurisdiction finding, insurance conclusion, or property-specific fact.
+- Evidence and trust finding: public copy uses repository-supported route facts, generic verification categories, and limitation-forward copy only; no external factual claims, internal evidence metadata, valuation, pricing, scoring, ranking, prediction, personalization, school/safety claims, investment claims, or property-condition conclusions were added.
+- Protected-boundary finding: no new route, redirect, alias, route eligibility, registry eligibility, canonical behavior, sitemap behavior, Search behavior, map/GIS behavior, API, provider, acquisition, public-record lookup, upload, Prisma, migration, persistence, customer data, CRM, telemetry, AI, alerts, queues, workers, email, notifications, deployment configuration, manual deployment, production certification, documentation closure, Niwot, Gunbarrel, Local Decision Intelligence Wave 4, Product Experience work, another neighborhood route, or unrelated initiative was authorized or performed.
+- Local validation status: complete; see final response for exact commands and responsive/interaction findings.
+- Local implementation commit: this local implementation commit; verify exact SHA after commit.
+- Push remains unauthorized.
+- Manual deployment remains unauthorized.
+- Production certification remains unauthorized.
+- Documentation closure remains unauthorized.
+- Current repository state at implementation start: `main`, HEAD `b7f4fbcce358233864e7bc4687870c7b8a40c207`, origin/main `b7f4fbcce358233864e7bc4687870c7b8a40c207`, `0 ahead / 0 behind`, clean working tree.
+- Next authorization gate: `READY_FOR_TABLE_MESA_LOCAL_CERTIFICATION_AND_PUSH_REVIEW`.
+- Exact next step: stop, or explicitly authorize local certification and push review for the Table Mesa implementation. Codex must not push, deploy manually, perform production certification, perform documentation closure, begin Niwot, begin Gunbarrel, begin another neighborhood route, begin Local Decision Intelligence Wave 4, begin Product Experience work, begin another Property / Seller Evidence phase, or begin any unrelated initiative without explicit authorization.
+
+Prior Table Mesa planning handoff retained below.
+
 PROJECT ATLAS(tm) / Table Mesa Existing Neighborhood Route Enhancement Planning, August 1, 2026:
 
 Workspace:
