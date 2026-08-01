@@ -10,6 +10,48 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / Table Mesa Existing Neighborhood Route Enhancement Planning, August 1, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Current governed state:
+
+- REIE South Boulder Neighborhood Route Enhancement(tm) remains certified and closed.
+- South Boulder final closure status: `SOUTH_BOULDER_NEIGHBORHOOD_ROUTE_ENHANCEMENT_CERTIFIED_AND_CLOSED`.
+- REIE Property / Seller Evidence Continuation(tm) remains certified and closed.
+- Property / Seller Evidence Continuation final status: `PROPERTY_SELLER_EVIDENCE_CONTINUATION_CERTIFIED_AND_CLOSED`.
+- REIE Post-Property / Seller Evidence Strategic Next-Phase Review is complete.
+- Strategic review status: `REIE_STRATEGIC_NEXT_PHASE_SELECTED`.
+- Selected recommendation from strategic review: `TABLE_MESA_EXISTING_NEIGHBORHOOD_ROUTE_ENHANCEMENT_PLANNING`.
+- Table Mesa bounded implementation planning is complete.
+- Planning record: `docs/project-atlas/executive-library/REIE-TABLE-MESA-EXISTING-NEIGHBORHOOD-ROUTE-ENHANCEMENT-PLAN.md`.
+- Planning outcome: `TABLE_MESA_READY_FOR_BOUNDED_IMPLEMENTATION_AUTHORIZATION`.
+- Target route: `/market/boulder/table-mesa`.
+- Target object type: `NEIGHBORHOOD`.
+- Current Table Mesa route facts: existing public route, slug `table-mesa`, city `Boulder`, current default neighborhood record in `lib/neighborhoods.ts`, current Search destination `/search?neighborhood=Table%20Mesa`, current canonical `https://davidquinngroup.com/market/boulder/table-mesa`, sitemap behavior unchanged, map/GIS behavior unchanged.
+- Prior documentation deployment for strategic review commit `d3b65e667755ef7209427ab423004577341fbf52`: success; GitHub status ID `51486862903`; Vercel target `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/FwTLaiRXZW3VQDJidGFydL5CL2vz`; description `Deployment has completed`.
+- Planning finding: Table Mesa can safely receive one bounded route enhancement if separately authorized, using the certified South Boulder pattern while preserving route, slug, object type, canonical, sitemap, Search, map, route eligibility, registry eligibility, fair-housing, source-rights, and evidence-boundary protections.
+- Contract finding: the existing `Neighborhood.routeEnhancement` shape and route-enhancement rendering pattern should be reused; a new contract family is not justified. A later implementation must make the minimum route-neutral or Table Mesa-correct adjustments because the current renderer/check include South Boulder-specific labels, data markers, heading text, and contract literal.
+- Public-copy finding: Table Mesa requires approximate-boundary and incomplete-evidence limitation language; it must not present exact boundary, school, safety, desirability, suitability, investment, valuation, pricing, property-condition, title, ownership, permit, HOA, insurance, financing, or legal-compliance conclusions.
+- Source-rights finding: no separate source-rights review is needed for repository-backed route facts, current route facts, generic verification categories, and limitation-forward copy; separate source-rights review is required before adding new Table Mesa-specific facts from public, third-party, provider, GIS, school, safety, environmental, market, or records sources.
+- Implementation remains unauthorized.
+- Planning commit: this documentation-only commit; verify exact SHA after pulling latest `main`.
+- Current repository state at planning start: `main`, HEAD `d3b65e667755ef7209427ab423004577341fbf52`, origin/main `d3b65e667755ef7209427ab423004577341fbf52`, `0 ahead / 0 behind`, clean working tree.
+- Next authorization gate: `TABLE_MESA_EXISTING_NEIGHBORHOOD_ROUTE_ENHANCEMENT_IMPLEMENTATION_AUTHORIZATION`.
+- Exact next step: stop, or explicitly authorize `TABLE_MESA_EXISTING_NEIGHBORHOOD_ROUTE_ENHANCEMENT_IMPLEMENTATION_AUTHORIZATION`. Codex must not implement Table Mesa, modify `lib/neighborhoods.ts`, modify the route template, create routes, create redirects or aliases, change route or registry eligibility, change canonical or sitemap behavior, change Search, change maps or GIS, activate boundaries, activate providers, acquire data, scrape, perform public-record lookups, add uploads, create APIs, modify Prisma or persistence, modify customer data, activate CRM or telemetry, add AI, add valuation/pricing/scoring/ranking/forecasting/personalization/conclusions, modify alerts/queues/workers/email/notifications, change deployment configuration, deploy manually, perform production certification, begin Niwot, begin Local Decision Intelligence Wave 4, begin Product Experience work, begin another neighborhood route, or begin any unrelated initiative without explicit authorization.
+
+Prior REIE Post-Property / Seller Evidence Strategic Next-Phase Review handoff retained below.
+
 PROJECT ATLAS(tm) / REIE Post-Property / Seller Evidence Strategic Next-Phase Review, August 1, 2026:
 
 Workspace:
