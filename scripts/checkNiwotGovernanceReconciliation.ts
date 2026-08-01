@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { existsSync, readFileSync } from "node:fs";
 
+import { cities, getCityByMarketSlug, isCityMarketRoutePublic } from "../lib/cities.js";
 import { getColoradoDecisionGuideRegistry } from "../lib/coloradoDecisionGuideRegistry.js";
 import { COLORADO_CITY_INTELLIGENCE_RECORDS, isEvidenceComplete, synthesizeCityGuideIntelligence } from "../lib/coloradoCityIntelligenceFactory.js";
 import { getCrossCityComparisonIneligibleSlugs } from "../lib/crossCityComparison.js";
@@ -37,6 +38,13 @@ const implementationRecord = read("docs/project-atlas/executive-library/REIE-NIW
 const chatStart = read("docs/CHAT_START.md");
 const sitemapSource = read("app/sitemap.ts");
 const searchSource = read("app/search/page.tsx");
+const cityMarketRouteSource = read("app/market/[city]/page.tsx");
+const marketIndexSource = read("app/market/page.tsx");
+const internalLinksSource = read("lib/linking/getInternalLinks.ts");
+const propertyLinksSource = read("lib/linking/getPropertyLinks.ts");
+const citySource = read("lib/cities.ts");
+const registrySource = read("lib/coloradoDecisionGuideRegistry.ts");
+const retiredNiwotMarketRoute = "/market/niwot-co-housing-market";
 
 assert.equal(
   packageJson.scripts?.["check:niwot-governance-reconciliation"],
@@ -104,7 +112,28 @@ assert.equal(
 const registryEntry = getColoradoDecisionGuideRegistry().find((entry) => entry.canonicalName === "Niwot");
 assert(registryEntry, "Legacy Niwot Decision Guide registry entry must remain present for fail-closed compatibility.");
 assert.equal(registryEntry.publicEligibility, false, "Niwot registry entry must remain public-ineligible.");
+assert.equal(registryEntry.marketRoute, null, "Niwot registry entry must not expose a public market route.");
 assert(registryEntry.ineligibilityReasons.includes("missing-search-city-support"), "Niwot registry entry must remain fail-closed by Search support.");
+
+const niwotCity = cities.find((city) => city.name === "Niwot");
+assert(niwotCity, "Niwot city-style compatibility record must remain present.");
+assert.equal(niwotCity.marketSlug, "niwot-co-housing-market", "Niwot legacy market slug must remain compatibility data only.");
+assert.equal(isCityMarketRoutePublic(niwotCity), false, "Niwot city-market route must be explicitly non-public.");
+assert.equal(getCityByMarketSlug("niwot-co-housing-market"), niwotCity, "Niwot market slug may resolve only as compatibility data.");
+assert(
+  cities.filter((city) => city.marketSlug && isCityMarketRoutePublic(city)).every((city) => city.name !== "Niwot"),
+  "Niwot must not be included in generated public city-market routes.",
+);
+
+assertIncludes(citySource, "publicMarketRoute: false", "Niwot city record must carry explicit fail-closed market-route posture.");
+assertIncludes(cityMarketRouteSource, "isCityMarketRoutePublic", "City-market route must guard public route eligibility.");
+assertIncludes(cityMarketRouteSource, "city.marketSlug && isCityMarketRoutePublic(city)", "Static params must omit non-public city-market routes.");
+assertIncludes(cityMarketRouteSource, "!cityData || !isCityMarketRoutePublic(cityData)", "Dynamic route rendering must fail closed for non-public city-market routes.");
+assertIncludes(marketIndexSource, ".filter(isCityMarketRoutePublic)", "Market index must omit non-public city-market routes.");
+assertIncludes(internalLinksSource, ".filter(isCityMarketRoutePublic)", "Generated city links must omit non-public city-market routes.");
+assertIncludes(propertyLinksSource, "!isCityMarketRoutePublic(cityData)", "Generated property city links must fail closed for non-public city-market routes.");
+assertIncludes(registrySource, "canonicalName: 'Niwot'", "Niwot registry compatibility entry must remain present.");
+assertIncludes(registrySource, "marketRoute: null", "Niwot registry compatibility entry must not expose a public market route.");
 
 const cityIntelligence = COLORADO_CITY_INTELLIGENCE_RECORDS.find((record) => record.cityKey === "niwot");
 assert(cityIntelligence, "Niwot city-intelligence compatibility record must remain present.");
@@ -129,6 +158,9 @@ for (const path of [
 
 assertNotIncludes(sitemapSource, "niwot", "Sitemap source must not add Niwot.");
 assertNotIncludes(searchSource, "niwot", "Search source must not add Niwot behavior.");
+assertNotIncludes(marketIndexSource, "niwot-co-housing-market", "Market index source must not hard-code retired Niwot route.");
+assertNotIncludes(internalLinksSource, "niwot-co-housing-market", "Internal city links must not hard-code retired Niwot route.");
+assertNotIncludes(propertyLinksSource, "niwot-co-housing-market", "Property city links must not hard-code retired Niwot route.");
 assertIncludes(firstWaveFixtureSource, "protected-niwot-non-activation", "First wave Niwot guard must remain present.");
 assertIncludes(architectureFixtureSource, "fixture-niwot-governance", "Architecture Niwot fixture must remain present.");
 assertIncludes(gmaDecisionSource, "Niwot requires authoritative identity evidence", "GMA decision must preserve Niwot evidence requirement.");
@@ -151,6 +183,7 @@ console.log(
     "canonical=unincorporated-community:boulder-county:niwot",
     "objectType=UNINCORPORATED_COMMUNITY",
     "route=blocked",
+    "legacyMarketRoute=retired-fail-closed",
     "registry=prohibited",
     "search=unresolved-inactive",
     "mapGis=blocked-inactive",

@@ -190,7 +190,7 @@ export const COLORADO_DECISION_GUIDE_REGISTRY: DecisionGuideRegistryEntry[] = [
   ineligibleEntry({
     canonicalName: 'Niwot',
     routeSlug: 'niwot-co-real-estate',
-    marketRoute: '/market/niwot-co-housing-market',
+    marketRoute: null,
     ineligibilityReasons: ['missing-search-city-support'],
   }),
   publicEntry({

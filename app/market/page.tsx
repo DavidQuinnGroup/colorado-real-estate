@@ -6,7 +6,7 @@ import ContinueYourDecision from '@/components/ContinueYourDecision';
 import FinancingConfidenceEducation from '@/components/FinancingConfidenceEducation';
 import MarketProduct3VisualIntelligence from '@/components/MarketProduct3VisualIntelligence';
 import FAQSchema from '@/components/schema/FAQSchema';
-import { cities, type CityData } from '@/lib/cities';
+import { cities, isCityMarketRoutePublic, type CityData } from '@/lib/cities';
 import { getPublicDecisionGuideRegistryEntries } from '@/lib/coloradoDecisionGuideRegistry';
 import { getJourneyMeasurementAttributes } from '@/lib/customerJourneyMeasurement';
 import { buildMarketDecisionWorkspace } from '@/lib/marketDecisionWorkspace';
@@ -67,18 +67,20 @@ function getCityNeighborhoodCount(city: CityData) {
 }
 
 function buildCitySummaries(): CityMarketSummary[] {
-  return cities.map((city) => {
-    const neighborhoodCount = getCityNeighborhoodCount(city);
-    const experience = buildCityMarketExperience(city, neighborhoodCount);
+  return cities
+    .filter(isCityMarketRoutePublic)
+    .map((city) => {
+      const neighborhoodCount = getCityNeighborhoodCount(city);
+      const experience = buildCityMarketExperience(city, neighborhoodCount);
 
-    return {
-      city,
-      neighborhoodCount,
-      direction: experience.directionLabel,
-      pricing: experience.pricingLabel,
-      timing: experience.timingLabel,
-    };
-  });
+      return {
+        city,
+        neighborhoodCount,
+        direction: experience.directionLabel,
+        pricing: experience.pricingLabel,
+        timing: experience.timingLabel,
+      };
+    });
 }
 
 function getFeaturedMarkets(markets: CityMarketSummary[]) {

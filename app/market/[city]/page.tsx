@@ -13,7 +13,7 @@ import MarketProduct3VisualIntelligence from '@/components/MarketProduct3VisualI
 import ResilienceDashboard from '@/components/ResilienceDashboard';
 import RelatedArticles from '@/components/RelatedArticles';
 import FAQSchema from '@/components/schema/FAQSchema';
-import { cities, getCityByMarketSlug, type CityData } from '@/lib/cities';
+import { cities, getCityByMarketSlug, isCityMarketRoutePublic, type CityData } from '@/lib/cities';
 import { getDecisionGuideRegistryEntry } from '@/lib/coloradoDecisionGuideRegistry';
 import { getJourneyMeasurementAttributes, type CustomerJourneyStage } from '@/lib/customerJourneyMeasurement';
 import {
@@ -138,7 +138,7 @@ function getCityFaqs(city: CityData) {
 
 export function generateStaticParams() {
   return cities
-    .filter((city) => city.marketSlug)
+    .filter((city) => city.marketSlug && isCityMarketRoutePublic(city))
     .map((city) => ({
       city: city.marketSlug,
     }));
@@ -148,7 +148,7 @@ export async function generateMetadata({ params }: MarketPageProps): Promise<Met
   const { city } = await params;
   const cityData = getCityData(city);
 
-  if (!cityData) {
+  if (!cityData || !isCityMarketRoutePublic(cityData)) {
     return {
       title: 'Colorado Market Report Not Found',
     };
@@ -179,7 +179,7 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
   const { city } = await params;
   const cityData = getCityData(city);
 
-  if (!cityData) return notFound();
+  if (!cityData || !isCityMarketRoutePublic(cityData)) return notFound();
 
   const cityNeighborhoods = getCityNeighborhoods(cityData);
   const featuredNeighborhood = cityNeighborhoods[0];

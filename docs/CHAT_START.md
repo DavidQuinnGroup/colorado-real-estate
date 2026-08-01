@@ -10,6 +10,54 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / Niwot Legacy Public Route Remediation Local Implementation, August 1, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Current governed state:
+
+- REIE South Boulder Neighborhood Route Enhancement(tm) remains certified and closed.
+- REIE Property / Seller Evidence Continuation(tm) remains certified and closed.
+- REIE Table Mesa Existing Neighborhood Route Enhancement(tm) remains certified and closed.
+- Niwot Governance-Only Reconciliation has been implemented, locally certified, pushed, and deployed.
+- Niwot production-preservation certification was blocked by the legacy public route `/market/niwot-co-housing-market`.
+- Legacy route diagnosis and remediation planning is complete.
+- Selected route outcome: `RETIRE_AND_FAIL_CLOSE`.
+- Legacy Niwot route remediation has been implemented locally.
+- Intended route behavior: `/market/niwot-co-housing-market` returns repository-supported `404`.
+- Redirect posture: no redirect, alias, or replacement route.
+- Market-index treatment: generated market index links to `/market/niwot-co-housing-market` are suppressed.
+- Internal-link treatment: generated city and property links to `/market/niwot-co-housing-market` are suppressed.
+- Decision Guide registry treatment: Niwot compatibility entry remains public-ineligible and exposes no public `marketRoute`.
+- Niwot governance posture remains non-public: canonical internal identity `unincorporated-community:boulder-county:niwot`, object type `UNINCORPORATED_COMMUNITY`, Boulder County context, public activation `NOT_ACTIVATED`, route `BLOCKED`, registry public eligibility `PUBLIC_ACTIVATION_PROHIBITED`, Search `UNRESOLVED_AND_INACTIVE`, map/GIS `BLOCKED_AND_INACTIVE`, Local Decision Intelligence Wave 4 `PAUSED_AND_UNAUTHORIZED`, evidence unresolved, source-rights unresolved.
+- Gunbarrel remains unchanged, unresolved, non-public, route-ineligible, registry-ineligible, Search-ambiguous and inactive, map/GIS blocked, and unauthorized for Local Decision Intelligence Wave 4.
+- South Boulder and Table Mesa remain unchanged.
+- Implementation record: `docs/project-atlas/executive-library/REIE-NIWOT-LEGACY-PUBLIC-ROUTE-REMEDIATION-IMPLEMENTATION.md`.
+- Deterministic check: `npm run check:niwot-governance-reconciliation`.
+- Local validation status: passed.
+- Implementation commit: this local commit; verify exact SHA after local commit creation.
+- Push remains unauthorized.
+- Manual deployment remains unauthorized.
+- Production certification remains unauthorized.
+- Documentation closure remains unauthorized.
+- Public activation remains unauthorized.
+- Protected-boundary finding: this remediation does not create a Niwot route, create a redirect or alias, activate Niwot, modify Gunbarrel, change unrelated route or registry eligibility, redesign the market index, change Search behavior, change maps or GIS, begin Local Decision Intelligence Wave 4, add providers or acquisition, infer source rights, add public Niwot content, modify Prisma or persistence, modify customer data, activate CRM or telemetry, add valuation, pricing, scoring, ranking, or forecasting, modify AI, alerts, queues, workers, email, notifications, deployment configuration, mutate production data, or begin another initiative.
+- Current repository baseline for remediation: `main`, HEAD `f3632ca065555dd51e15ccaf0a5dcf6275b53ffb`, origin/main `f3632ca065555dd51e15ccaf0a5dcf6275b53ffb`, `0 ahead / 0 behind`, clean working tree.
+- Next authorization gate: `READY_FOR_NIWOT_LEGACY_ROUTE_LOCAL_CERTIFICATION_AND_PUSH_REVIEW`.
+- Exact next step: finish local validation and create one local commit only if validation passes. Codex must not push, deploy manually, perform production certification, close documentation, activate Niwot, create a redirect or replacement route, modify Gunbarrel, change Search or maps, begin Local Decision Intelligence Wave 4, begin another neighborhood enhancement, begin Product Experience work, begin another Property / Seller Evidence phase, or begin any unrelated initiative without explicit authorization.
+
+Prior Niwot legacy public route reconciliation planning handoff retained below.
+
 PROJECT ATLAS(tm) / Niwot Legacy Public Route Reconciliation Planning, August 1, 2026:
 
 Workspace:

@@ -17,6 +17,7 @@ export type CityData = {
   name: string;
   slug: string;
   marketSlug: string;
+  publicMarketRoute?: boolean;
   stats: CityStats;
 };
 
@@ -85,6 +86,7 @@ export const cities: CityData[] = [
     name: "Niwot",
     slug: "niwot-co-real-estate",
     marketSlug: "niwot-co-housing-market",
+    publicMarketRoute: false,
     stats: {
       medianPrice: "$1,850,000",
       pricePerSqFt: "$720",
@@ -234,6 +236,10 @@ export function getCityByName(cityName: string) {
 export function getCityByMarketSlug(marketSlug: string) {
   const normalizedMarketSlug = normalize(marketSlug);
   return cities.find((city) => normalize(city.marketSlug) === normalizedMarketSlug) || null;
+}
+
+export function isCityMarketRoutePublic(city: CityData) {
+  return city.publicMarketRoute !== false;
 }
 
 // /Users/davidquinn/david-quinn-group/colorado-real-estate/lib/cities.ts

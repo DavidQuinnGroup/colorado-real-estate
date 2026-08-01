@@ -1,4 +1,4 @@
-import { cities } from "@/lib/cities";
+import { cities, isCityMarketRoutePublic } from "@/lib/cities";
 import { getBlogLinks } from "@/lib/linking/getBlogLinks";
 
 export type CityInternalLink = {
@@ -19,6 +19,7 @@ export function getCityLinks(currentCity: string, limit = 5): CityInternalLink[]
   const safeLimit = Math.max(1, Math.min(limit, 12));
 
   return cities
+    .filter(isCityMarketRoutePublic)
     .filter((city) => {
       const candidates = [city.name, city.slug, city.marketSlug].map(normalize);
       return !candidates.includes(normalizedCurrent);

@@ -1,6 +1,6 @@
 import { Prisma } from "@prisma/client";
 
-import { getCityByName } from "@/lib/cities";
+import { getCityByName, isCityMarketRoutePublic } from "@/lib/cities";
 import { getBlogLinks } from "@/lib/linking/getBlogLinks";
 import { neighborhoods } from "@/lib/neighborhoods";
 import { prisma } from "@/lib/prisma";
@@ -72,6 +72,7 @@ function buildBaseWhere(property: PropertyLinkSource): Prisma.PropertyWhereInput
 
 function getCityMarketHref(city: string) {
   const cityData = getCityByName(city);
+  if (cityData && !isCityMarketRoutePublic(cityData)) return null;
   const marketSlug = cityData?.marketSlug ?? `${city.toLowerCase().replace(/\s+/g, "-")}-co-housing-market`;
 
   return `/market/${marketSlug}`;
@@ -95,12 +96,15 @@ function buildAuthorityLinks(city: string | null, neighborhood: string | null): 
   const links: PropertyAuthorityLink[] = [];
 
   if (city) {
-    links.push({
-      label: `${city} Market Intelligence`,
-      href: getCityMarketHref(city),
-      description: "City market report, inventory posture, pricing context, evidence, and verification prompts",
-      status: "Market",
-    });
+    const cityMarketHref = getCityMarketHref(city);
+    if (cityMarketHref) {
+      links.push({
+        label: `${city} Market Intelligence`,
+        href: cityMarketHref,
+        description: "City market report, inventory posture, pricing context, evidence, and verification prompts",
+        status: "Market",
+      });
+    }
   }
 
   const neighborhoodHref = getNeighborhoodHref(city, neighborhood);
