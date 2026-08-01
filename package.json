@@ -117,6 +117,7 @@
     "check:neighborhood-submarket-intelligence-architecture": "npm run worker:build && node dist/scripts/checkNeighborhoodSubmarketIntelligenceArchitecture.js",
     "check:decision-guide-evidence-transparency": "npm run worker:build && node dist/scripts/checkDecisionGuideEvidenceTransparency.js",
     "check:first-governed-neighborhood-submarket-wave": "npm run worker:build && node dist/scripts/checkFirstGovernedNeighborhoodSubmarketWave.js",
+    "check:property-seller-evidence-readiness": "npm run worker:build && node dist/scripts/checkPropertySellerEvidenceReadiness.js",
     "check:reie-buyer-confidence-experience": "npm run worker:build && node dist/scripts/checkReieBuyerConfidenceExperience.js",
     "check:reie-financing-confidence-education": "npm run worker:build && node dist/scripts/checkReieFinancingConfidenceEducation.js",
     "check:reie-guided-search-intelligence-v8": "npm run worker:build && node dist/scripts/checkReieGuidedSearchIntelligenceV8.js",
