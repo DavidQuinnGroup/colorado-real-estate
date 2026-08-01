@@ -10,6 +10,66 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE Advisory Operating Readiness(tm), August 1, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Current governed state:
+
+- Core Product Experience Optimization cycle is complete.
+- Product Cohesion Review(tm) Wave 1 is production-certified and closed.
+- Controlled Fixture Alert Dry-Run(tm) program is certified and closed.
+- Local Decision Intelligence(tm) Phase 1 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 1 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 2 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 3 is production-certified and closed.
+- REIE Product Experience(tm) Next Cohesion Wave is production-certified and closed.
+- REIE Cross-City Decision Comparison(tm) is production-certified and closed.
+- REIE Seller Readiness Advancement(tm) is production-certified and closed.
+- REIE Buyer Financing Readiness Advancement(tm) is production-certified and closed.
+- REIE Evidence Depth and Data Integration(tm) foundation is production-certified and closed.
+- REIE Advisory Handoff Readiness(tm) is production-certified and closed.
+- REIE Controlled Evidence Depth Integration(tm) is production-certified and closed.
+- REIE Post-Controlled Evidence Integration Strategic Next-Phase Review is pushed and reconciled.
+- Strategic next-phase finding: `PRIORITIZE_ADVISORY_OPERATING_READINESS`.
+- Strategic priority SHA: `390eb3f84dfe199b1a4778f84fca209bf8545c22`.
+- Strategic priority commit message: `Prioritize REIE post-controlled-evidence next phase`.
+- Strategic review commit was pushed to origin/main before implementation.
+- Advisory Operating Readiness(tm) is locally implemented and certified.
+- Final status: `ADVISORY_OPERATING_READINESS_READY_FOR_PUSH`.
+- Authoritative internal standard: `ADVISORY_OPERATING_READINESS_STANDARD`.
+- Implementation posture: internal, non-customer-specific, contract-based, fixture-backed, deterministic, non-public, non-persistent, non-automated, non-evaluative, and conclusion-free.
+- Created files: `lib/advisory-operating/advisoryOperatingReadiness.ts`, `lib/advisory-operating/advisoryOperatingReadinessFixtures.ts`, `lib/advisory-operating/fixtureHelpers.ts`, `scripts/checkAdvisoryOperatingReadiness.ts`, and `docs/project-atlas/executive-library/REIE-ADVISORY-OPERATING-READINESS-IMPLEMENTATION.md`.
+- Updated files: `docs/CHAT_START.md`, `package.json`, and `tsconfig.worker.json`.
+- Deterministic validation command: `npm run check:advisory-operating-readiness`.
+- The standard defines internal stages: Orient, Review REIE Context, Identify Open Questions, Review Evidence Posture, Apply Professional Boundaries, Prepare Conversation, Sequence Next Steps, and Record No Customer Data.
+- The standard reuses Controlled Evidence Depth Integration and certified Evidence Depth contracts. No duplicate evidence-posture, source-rights, freshness, conflict, support-level, or Advisory Handoff architecture was created.
+- Internal REIE context categories include Cross-City Comparison, city or Decision Guide context, Search, Buyer Guidance, Buyer Financing Readiness, Seller Guidance, Seller Readiness, Market Context, certified Property/Neighborhood context, Grand Plan, and Advisory Handoff.
+- Open-question categories include goals and decision context, market and geographic context, property-specific review, financing, seller preparation, timing and sequencing, evidence limitations, source and rights, professional verification, and next actions.
+- Professional-escalation categories are internal categories only: lending, legal, tax, appraisal, inspection, engineering, insurance, title, environmental, municipal, HOA, property-condition specialist, and evidence-rights review.
+- The model does not assign providers, recommend firms, route customers, create tasks, initiate outreach, save records, or provide professional conclusions.
+- Conversation preparation remains bounded and non-scripted. It does not generate persuasive scripts, objection handling, urgency language, closing language, lead scoring, or recommendations.
+- Next-step sequencing remains categorical only and does not automatically choose a path for a real customer.
+- Fixture certification covers 12 synthetic or repository-governed cases: cross-city comparison limitations, buyer/financing lender escalation, seller readiness document questions, stale/undated evidence, conflicting evidence, internal-only evidence, attribution-required evidence, property-specific specialist review, Grand Plan sequencing, insufficient information, mixed journey context without profiling, and prohibited-output guard.
+- The implementation produces no customer recommendation, transaction recommendation, city or property recommendation, lead score, urgency, conversion probability, sales script, personalized action plan, valuation, pricing, affordability, qualification, forecast, suitability, property-condition conclusion, or investment advice.
+- No public UI, public routes, public APIs, Contact UI, Contact fields, Contact submission behavior, customer context transfer, customer data, advisor dashboards, advisor accounts, CRM tasks, lead scoring, lead routing, tracking, telemetry, profiling, personalization, cookies, local storage, saved preparation, providers, acquisition, public-record retrieval, GIS runtime, network fetching, credentials, environment variables, persistence, database reads or writes, Prisma schema, migrations, production writes, evidence observations, public evidence labels, valuation, pricing, affordability, qualification, property-condition conclusions, neighborhood conclusions, ranking or scoring, forecasts, investment recommendations, demographic targeting, school or safety ratings, AI, alerts, queues, workers, email, search ranking, map behavior, deployment configuration, or production data were activated.
+- Browser review was not required because no UI changed.
+- Required remediation: none.
+- Recommended next authorization: `ADVISORY_OPERATING_READINESS_PUSH_AND_PRODUCTION_CERTIFICATION`.
+- Exact next step: stop, or explicitly authorize Advisory Operating Readiness push and production certification. Codex must not push the implementation commit, deploy runtime changes, begin production certification, begin Neighborhood/Submarket Intelligence, Property / Seller Evidence Readiness, another evidence integration, Decision Guide unification, Local Decision Intelligence Wave 4, provider activation, public-record retrieval, GIS runtime, public route/API work, protected-capability activation, production mutation, CRM, tracking, telemetry, customer data, APIs, schema, persistence, runtime changes, or another initiative without explicit authorization.
+
+Prior REIE Post-Controlled Evidence Integration Strategic Next-Phase Review handoff retained below.
+
 PROJECT ATLAS(tm) / REIE Post-Controlled Evidence Integration Strategic Next-Phase Review, August 1, 2026:
 
 Workspace:
