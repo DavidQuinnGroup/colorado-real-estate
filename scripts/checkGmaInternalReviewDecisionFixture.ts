@@ -48,9 +48,9 @@ assert.equal(gunbarrel.preservedAmbiguity, "OBJECT_TYPE_AMBIGUITY");
 assert.match(gunbarrel.rationale, /cannot receive an automated final object type/);
 
 const superior = mustFindFixture("GMA_DECISION_FIXTURE|V1|003");
-assert.equal(superior.reviewStatus, "CONFLICT_PRESERVED");
-assert.equal(superior.preservedConflicts, "CONFLICT");
-assert.match(superior.rationale, /registry mismatch/);
+assert.equal(superior.reviewStatus, "DUPLICATE_CANDIDATE");
+assert.equal(superior.preservedConflicts, "DUPLICATE");
+assert.match(superior.rationale, /cannot be merged/);
 
 const niwot = mustFindFixture("GMA_DECISION_FIXTURE|V1|004");
 assert.equal(niwot.reviewStatus, "NEEDS_MORE_EVIDENCE");
@@ -125,8 +125,9 @@ assertThrowsInvalid(mutatedFixture(exactMunicipality, {
   authoritativeStatus: "AUTHORITATIVE" as InternalReviewDecisionFixture["authoritativeStatus"],
 }), /cannot become authoritative/);
 assertThrowsInvalid(mutatedFixture(superior, {
-  preservedConflicts: "NONE",
-}), /failed to preserve conflict state/);
+  reviewStatus: "APPROVED_AS_PREVIEW_CANDIDATE",
+  selectedAction: "CONFIRM_PREVIEW_CANDIDATE",
+}), /Only unambiguous, non-conflicting, non-editorial items/);
 
 const schema = fs.readFileSync("prisma/schema.prisma", "utf8");
 const packageJson = fs.readFileSync("package.json", "utf8");

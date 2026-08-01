@@ -118,6 +118,7 @@
     "check:decision-guide-evidence-transparency": "npm run worker:build && node dist/scripts/checkDecisionGuideEvidenceTransparency.js",
     "check:first-governed-neighborhood-submarket-wave": "npm run worker:build && node dist/scripts/checkFirstGovernedNeighborhoodSubmarketWave.js",
     "check:second-governed-neighborhood-submarket-wave": "npm run worker:build && node dist/scripts/checkSecondGovernedNeighborhoodSubmarketWave.js",
+    "check:niwot-governance-reconciliation": "npm run worker:build && node dist/scripts/checkNiwotGovernanceReconciliation.js",
     "check:south-boulder-neighborhood-route-enhancement": "npm run worker:build && node dist/scripts/checkSouthBoulderNeighborhoodRouteEnhancement.js",
     "check:property-seller-evidence-readiness": "npm run worker:build && node dist/scripts/checkPropertySellerEvidenceReadiness.js",
     "check:reie-buyer-confidence-experience": "npm run worker:build && node dist/scripts/checkReieBuyerConfidenceExperience.js",

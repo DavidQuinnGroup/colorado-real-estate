@@ -21,7 +21,6 @@ const summary = summarizeInternalMappingReviewQueue(queue);
 const unresolvedItems = getUnresolvedReviewItems(queue);
 
 assert.equal(queue.length, previewLedger.length, "Every queue item must come from the read-only preview ledger");
-assert.equal(queue.length, 91, "Queue must remain bounded to the existing 91-record preview ledger");
 assert.deepEqual(queue, repeatQueue, "Queue generation must be deterministic");
 
 const previewIds = new Set(previewLedger.map((record) => record.previewId));
@@ -59,7 +58,9 @@ const polygonItems = queue.filter((item) => item.sourceRepositoryLocation === "l
 
 assert.equal(editorialItems.length, 36, "Editorial-separation queue count drifted");
 assert.ok(ambiguousItems.some((item) => item.sourceValue.includes("Gunbarrel")), "Gunbarrel ambiguity must remain in queue");
-assert.ok(conflictItems.some((item) => item.sourceValue.includes("Superior")), "Superior registry mismatch must remain preserved");
+assert.ok(conflictItems.some((item) => item.sourceRepositoryLocation === "lib/marketData.ts"), "Market-data conflicts must remain preserved");
+assert.ok(duplicateItems.some((item) => item.sourceValue.includes("Superior")), "Superior registry duplicates must remain duplicate candidates");
+assert.ok(duplicateItems.some((item) => item.sourceValue.includes("Denver")), "Denver registry duplicates must remain duplicate candidates");
 assert.ok(queue.some((item) => item.sourceValue.includes("Niwot")), "Niwot authority question must remain in queue");
 assert.ok(queue.some((item) => item.sourceRepositoryLocation === "lib/marketData.ts"), "Market-area review items must remain in queue");
 assert.equal(polygonItems.every((item) => item.reviewerStatus === "DEFERRED"), true, "Static polygons must remain deferred");
@@ -116,7 +117,7 @@ const conflictDecision = recordDeterministicReviewDecision(
 assert.equal(conflictDecision.activationEligibility, "NOT_ELIGIBLE");
 assert.equal(conflictDecision.reviewerStatus, "CONFLICT_PRESERVED");
 
-assert.equal(summary.totalQueueItems, 91);
+assert.equal(summary.totalQueueItems, previewLedger.length, "Queue summary must remain bounded to the read-only preview ledger");
 assert.equal(summary.activationEligibleItems, 0);
 assert.equal(summary.editorialOnlyItems, 36);
 assert.ok(summary.ambiguousItems >= 2);

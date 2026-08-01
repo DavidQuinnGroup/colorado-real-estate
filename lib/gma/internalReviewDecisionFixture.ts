@@ -61,10 +61,10 @@ export function generateInternalReviewDecisionFixtures(
     item.sourceValue === "Gunbarrel" &&
     item.ambiguityType === "OBJECT_TYPE_AMBIGUITY"
   );
-  const superiorMismatch = mustFind(queue, (item) =>
+  const superiorDuplicate = mustFind(queue, (item) =>
     item.sourceRepositoryLocation === "data/cities.ts" &&
     item.sourceValue === "Superior" &&
-    item.conflictType === "CONFLICT"
+    item.conflictType === "DUPLICATE"
   );
   const niwotAuthority = mustFind(queue, (item) =>
     item.sourceRepositoryLocation === "data/cities.ts" &&
@@ -115,12 +115,12 @@ export function generateInternalReviewDecisionFixtures(
       rationale: "Gunbarrel appears across municipality, neighborhood, and polygon contexts and cannot receive an automated final object type.",
       requestedAdditionalEvidence: "architectural object-type decision and authoritative identity evidence",
     }),
-    decision("GMA_DECISION_FIXTURE|V1|003", superiorMismatch, {
+    decision("GMA_DECISION_FIXTURE|V1|003", superiorDuplicate, {
       reviewerRole: "GMA_ARCHITECTURE_REVIEWER",
-      reviewStatus: "CONFLICT_PRESERVED",
-      selectedAction: "PRESERVE_CONFLICT",
-      rationale: "Superior remains a registry mismatch between legacy/search/neighborhood contexts and the primary city registry.",
-      requestedAdditionalEvidence: "primary registry decision and legal or administrative source",
+      reviewStatus: "DUPLICATE_CANDIDATE",
+      selectedAction: "REQUEST_ADDITIONAL_EVIDENCE",
+      rationale: "Superior remains a primary and legacy registry duplicate candidate and cannot be merged by fixture decision.",
+      requestedAdditionalEvidence: "duplicate disposition, alias policy review, and authoritative identity source before persistence",
     }),
     decision("GMA_DECISION_FIXTURE|V1|004", niwotAuthority, {
       reviewerRole: "GMA_GOVERNANCE_REVIEWER",

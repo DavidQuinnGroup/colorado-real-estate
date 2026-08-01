@@ -60,6 +60,7 @@
     "scripts/checkDecisionGuideEvidenceTransparency.ts",
     "scripts/checkFirstGovernedNeighborhoodSubmarketWave.ts",
     "scripts/checkSecondGovernedNeighborhoodSubmarketWave.ts",
+    "scripts/checkNiwotGovernanceReconciliation.ts",
     "scripts/checkSouthBoulderNeighborhoodRouteEnhancement.ts",
     "scripts/checkPropertySellerEvidenceReadiness.ts",
     "scripts/checkReieBuyerConfidenceExperience.ts",

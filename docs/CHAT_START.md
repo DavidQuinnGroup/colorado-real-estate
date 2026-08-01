@@ -10,6 +10,46 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / Niwot Governance-Only Reconciliation Local Implementation, August 1, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Current governed state:
+
+- REIE South Boulder Neighborhood Route Enhancement(tm) remains certified and closed.
+- REIE Property / Seller Evidence Continuation(tm) remains certified and closed.
+- REIE Table Mesa Existing Neighborhood Route Enhancement(tm) remains certified and closed.
+- Niwot Governance-Only Reconciliation Planning is complete.
+- Niwot Governance-Only Reconciliation has been implemented locally.
+- Local implementation status: `READY_FOR_NIWOT_GOVERNANCE_LOCAL_CERTIFICATION_AND_PUSH_REVIEW`.
+- Implementation record: `docs/project-atlas/executive-library/REIE-NIWOT-GOVERNANCE-ONLY-RECONCILIATION-IMPLEMENTATION.md`.
+- Final non-public Niwot posture: canonical internal identity `unincorporated-community:boulder-county:niwot`, canonical name `Niwot`, object type `UNINCORPORATED_COMMUNITY`, internal slug `niwot`, Boulder County context, Boulder/Longmont surrounding market context only, public activation `NOT_ACTIVATED`, route `BLOCKED`, registry public eligibility `PUBLIC_ACTIVATION_PROHIBITED`, Search `UNRESOLVED_AND_INACTIVE`, map/GIS `BLOCKED_AND_INACTIVE`, Local Decision Intelligence Wave 4 `PAUSED_AND_UNAUTHORIZED`, evidence unresolved, source-rights unknown or unresolved.
+- Authoritative record: Wave 2 protected non-activation guard `wave2-niwot-non-activation-guard`.
+- Legacy treatment: city-style and market-route records remain preserved as compatibility or fail-closed records; they are non-authoritative for public activation.
+- Gunbarrel preservation: Gunbarrel was not reconciled, activated, reclassified, or expanded.
+- Deterministic check: `npm run check:niwot-governance-reconciliation`.
+- Public activation remains unauthorized.
+- Push remains unauthorized.
+- Production certification remains unauthorized.
+- Documentation closure remains unauthorized.
+- Protected-boundary finding: no Niwot public route, Gunbarrel public route, route eligibility, registry eligibility, public maturity, canonical URL behavior, sitemap inclusion, Search behavior, Search filters or ranking, maps, boundaries, layers, GIS, Local Decision Intelligence Wave 4, providers, acquisition, scraping, public-record lookup, uploads, APIs, Prisma, migrations, persistence, customer data, CRM, tracking, telemetry, personalization, valuation, pricing, scoring, ranking, forecasting, AI, alerts, queues, workers, email, notifications, deployment configuration, production data, Gunbarrel reconciliation, neighborhood enhancement, Product Experience work, Search/map refinement, Property / Seller Evidence phase, or unrelated initiative was authorized or performed.
+- Implementation commit: this local commit; verify exact SHA after local commit creation.
+- Current repository state at implementation start: `main`, HEAD `e3ac62aeb1034d3c4fab048e5a298d0a876998c2`, origin/main `e3ac62aeb1034d3c4fab048e5a298d0a876998c2`, `0 ahead / 0 behind`, clean working tree.
+- Next authorization gate: `READY_FOR_NIWOT_GOVERNANCE_LOCAL_CERTIFICATION_AND_PUSH_REVIEW`.
+- Exact next step: stop, or explicitly authorize Niwot governance local certification and push review. Codex must not push, deploy manually, perform production certification, activate Niwot, reconcile or activate Gunbarrel, begin Local Decision Intelligence Wave 4, create routes, change route or registry eligibility, change Search or maps, change canonical or sitemap behavior, activate providers, acquire data, perform public-record lookups, add APIs, modify Prisma or persistence, modify customer data, activate CRM or telemetry, run queues or workers, send email or notifications, begin documentation closure, or begin any new implementation without explicit authorization.
+
+Prior Niwot governance planning handoff retained below.
+
 PROJECT ATLAS(tm) / Niwot Governance-Only Reconciliation Planning, August 1, 2026:
 
 Workspace:
