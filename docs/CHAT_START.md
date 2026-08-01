@@ -10,6 +10,62 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE Post-Advisory Operating Readiness Strategic Next-Phase Review, August 1, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Current governed state:
+
+- Core Product Experience Optimization cycle is complete.
+- Product Cohesion Review(tm) Wave 1 is production-certified and closed.
+- Controlled Fixture Alert Dry-Run(tm) program is certified and closed.
+- Local Decision Intelligence(tm) Phase 1 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 1 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 2 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 3 is production-certified and closed.
+- REIE Product Experience(tm) Next Cohesion Wave is production-certified and closed.
+- REIE Cross-City Decision Comparison(tm) is production-certified and closed.
+- REIE Seller Readiness Advancement(tm) is production-certified and closed.
+- REIE Buyer Financing Readiness Advancement(tm) is production-certified and closed.
+- REIE Evidence Depth and Data Integration(tm) foundation is production-certified and closed.
+- REIE Advisory Handoff Readiness(tm) is production-certified and closed.
+- REIE Controlled Evidence Depth Integration(tm) is production-certified and closed.
+- REIE Advisory Operating Readiness(tm) is production-certified and closed.
+- Final prior status: `ADVISORY_OPERATING_READINESS_CERTIFIED_AND_CLOSED`.
+- REIE Post-Advisory Operating Readiness Strategic Next-Phase Review is locally recorded.
+- Strategic next-phase finding: `PRIORITIZE_NEIGHBORHOOD_SUBMARKET_INTELLIGENCE_ARCHITECTURE`.
+- Primary recommendation: implement Neighborhood / Submarket Intelligence Architecture.
+- Recommended next authorization: `NEIGHBORHOOD_SUBMARKET_INTELLIGENCE_ARCHITECTURE_IMPLEMENTATION_AUTHORIZATION`.
+- This is recommendation-only. Neighborhood / Submarket Intelligence Architecture implementation is not authorized by this review record.
+- Advisory Operating Readiness completed the internal human-use layer for consistent REIE advisory preparation without customer data, CRM, tracking, saved preparation, automation, public metadata exposure, or conclusions.
+- Current foundation completeness finding: public guidance, readiness, handoff, Evidence Depth, Controlled Evidence Integration, and Advisory Operating foundations are sufficiently complete for the next phase to return to geographic and customer-facing product depth.
+- Diminishing-returns finding: another standalone internal foundation or generic evidence integration would be lower value unless tied to a concrete product or geographic domain.
+- Largest remaining gap: governed sub-city geographic intelligence. REIE has strong city-level, readiness, comparison, advisory, and evidence foundations, but neighborhoods, subdivisions, districts, corridors, market areas, and unincorporated communities remain unresolved as governed objects.
+- Neighborhood / Submarket finding: strongest next initiative, but architecture-only. The safe first phase should define object-type taxonomy, canonical identity, parent/child and overlap relationships, route and registry eligibility, evidence requirements, source-rights integration, fair-housing controls, certification scale, and future activation gates without public routes.
+- Geographic object-type finding: govern `NEIGHBORHOOD`, `SUBDIVISION`, `DISTRICT`, `CORRIDOR`, `MARKET_AREA`, `UNINCORPORATED_COMMUNITY`, `COMMUNITY`, `MUNICIPALITY`, `CITY`, `TOWN`, `ZIP_CODE`, `CENSUS_DESIGNATED_PLACE`, `PLANNED_COMMUNITY`, future restricted `HOA`, and future property-to-place relationships.
+- Gunbarrel and Niwot governance finding: both remain deferred pending Neighborhood/Submarket object governance. Niwot should not be activated as city-level Local Decision Intelligence until classification, parent/child geography, route, registry, search, evidence, source-rights, and fair-housing questions are resolved. Gunbarrel remains deferred on the same basis.
+- Property / Seller Evidence finding: valuable later as internal, contract-level, fixture-backed work, but not the next primary initiative because property identity, address/ownership, public records, provider, privacy, valuation, condition, title, insurance, disclosure, permit, environmental, municipal, HOA, and specialist-boundary risks remain higher.
+- Decision Guide Evidence Transparency finding: secondary priority and more valuable than full unification. It should preserve Boulder, Louisville, and Lafayette editorial depth while making evidence limitations clearer, but it does not outrank sub-city object governance.
+- Decision Guide Unification finding: remain deferred. Mixed-maturity comparison is certified; Boulder, Louisville, and Lafayette should not be mechanically migrated or relabeled without separate evidence.
+- Local Decision Intelligence cadence: Wave 4, Niwot, Gunbarrel, Thornton, Brighton, Firestone, Frederick, and other candidates remain paused pending object-type and geographic governance.
+- Second Controlled Integration finding: do not run as a standalone proof program; embed future evidence integration inside selected domain architecture.
+- Product Experience finding: targeted follow-up is not justified without concrete production evidence of CTA, mobile, duplication, discoverability, cognitive-load, or conversion friction.
+- Strategic review record: `docs/project-atlas/executive-library/REIE-POST-ADVISORY-OPERATING-READINESS-STRATEGIC-NEXT-PHASE-REVIEW.md`.
+- Required remediation: none.
+- Exact next step: stop, or explicitly authorize Neighborhood / Submarket Intelligence Architecture implementation. Codex must not begin implementation, push, deploy, public routes, route eligibility, city eligibility, Niwot activation, Gunbarrel activation, GIS runtime, provider activation, acquisition, persistence, APIs, schema, search behavior, map behavior, CRM, tracking, telemetry, customer data, production writes, Property / Seller Evidence Readiness, Decision Guide evidence transparency, Decision Guide unification, Local Decision Intelligence Wave 4, targeted Product Experience work, or another initiative without explicit authorization.
+
+Prior REIE Advisory Operating Readiness closure handoff retained below.
+
 PROJECT ATLAS(tm) / REIE Advisory Operating Readiness(tm) Certification and Closure, August 1, 2026:
 
 Workspace:
