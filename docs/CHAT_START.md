@@ -10,6 +10,65 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE Post-Property / Seller Evidence Readiness Strategic Next-Phase Review, August 1, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Current governed state:
+
+- Core Product Experience Optimization cycle is complete.
+- Product Cohesion Review(tm) Wave 1 is production-certified and closed.
+- Controlled Fixture Alert Dry-Run(tm) program is certified and closed.
+- Local Decision Intelligence(tm) Phase 1 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 1 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 2 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 3 is production-certified and closed.
+- REIE Product Experience(tm) Next Cohesion Wave is production-certified and closed.
+- REIE Cross-City Decision Comparison(tm) is production-certified and closed.
+- REIE Seller Readiness Advancement(tm) is production-certified and closed.
+- REIE Buyer Financing Readiness Advancement(tm) is production-certified and closed.
+- REIE Evidence Depth and Data Integration(tm) foundation is production-certified and closed.
+- REIE Advisory Handoff Readiness(tm) is production-certified and closed.
+- REIE Controlled Evidence Depth Integration(tm) is production-certified and closed.
+- REIE Advisory Operating Readiness(tm) is production-certified and closed.
+- REIE Neighborhood / Submarket Intelligence Architecture(tm) is production-certified and closed.
+- REIE Decision Guide Evidence Transparency(tm) is production-certified and closed.
+- REIE First Governed Neighborhood / Submarket Implementation Wave(tm) is production-certified and closed.
+- REIE Property / Seller Evidence Readiness(tm) is production-certified and closed.
+- Final prior status: `PROPERTY_SELLER_EVIDENCE_READINESS_CERTIFIED_AND_CLOSED`.
+- REIE Post-Property / Seller Evidence Readiness Strategic Next-Phase Review is complete locally and not pushed.
+- Current local strategic review status: `PRIORITIZE_SECOND_GOVERNED_NEIGHBORHOOD_SUBMARKET_WAVE`.
+- Strategic review commit message: `Prioritize REIE post-property-seller-evidence next phase`.
+- Strategic review record: `docs/project-atlas/executive-library/REIE-POST-PROPERTY-SELLER-EVIDENCE-READINESS-STRATEGIC-NEXT-PHASE-REVIEW.md`.
+- Property / Seller Evidence Readiness proved that certified Evidence Depth and source-rights contracts can govern property and seller preparation categories internally without lookup, providers, uploads, customer data, valuation, pricing, condition analysis, APIs, persistence, CRM, or public exposure.
+- Property / Seller Evidence should remain internal for now; a second Property / Seller evidence phase is deferred unless tied to a specific authorized operating surface.
+- Strategic finding: the largest remaining customer and business gap is governed neighborhood/submarket depth between city-level intelligence and property-level experiences.
+- Primary priority: implement a second governed internal Neighborhood / Submarket wave.
+- Secondary priority: prepare existing neighborhood route enhancement readiness only after the second wave identifies a specific route-ready candidate.
+- Required implementation posture for the recommended next initiative: internal-only, fixture-backed, deterministic, read-only, non-public, non-mutating, non-ranking, non-predictive, limitation-forward, evidence-embedded, source-rights governed, and fair-housing safe.
+- The second wave should expand repository-supported candidate inventory, deepen identity and alias reconciliation, improve relationships, authority, boundary, evidence, source-rights, Search, map, maturity, ambiguity, blocker, and future-certification readiness, and preserve existing route behavior.
+- Existing neighborhood route enhancement is not authorized by this review.
+- New public neighborhood routes remain premature.
+- Niwot is ready only for future governance-only reconciliation and remains non-public, route-ineligible, registry-ineligible, Search-unresolved, map-blocked, and unauthorized for Local Decision Intelligence Wave 4.
+- Gunbarrel remains blocked, non-public, route-ineligible, registry-ineligible, Search-ambiguous, map-blocked, and unauthorized for Local Decision Intelligence Wave 4.
+- Local Decision Intelligence Wave 4 remains paused.
+- Explicit non-activation: no runtime code, public property evidence, property lookup, ownership lookup, parcel lookup, title lookup, public-record retrieval, providers, acquisition, uploads, customer data, CRM, telemetry, valuation, pricing, condition analysis, public neighborhood routes, route eligibility, registry eligibility, sitemap changes, canonical changes, Search changes, map changes, Niwot activation, Gunbarrel activation, Local Decision Intelligence Wave 4, schema, migrations, persistence, APIs, queues, workers, email, production writes, push, or deployment occurred.
+- Required remediation: none.
+- Recommended next authorization: `SECOND_GOVERNED_NEIGHBORHOOD_SUBMARKET_WAVE_IMPLEMENTATION_AUTHORIZATION`.
+- Exact next step: stop, or explicitly authorize `SECOND_GOVERNED_NEIGHBORHOOD_SUBMARKET_WAVE_IMPLEMENTATION_AUTHORIZATION`. Codex must not implement, push, deploy, activate public routes, change Search or maps, activate Niwot, activate Gunbarrel, begin Local Decision Intelligence Wave 4, activate providers or public records, create APIs, change schema or persistence, use customer data, activate CRM or telemetry, run queues or workers, send email, mutate production systems, or begin another initiative without explicit authorization.
+
+Prior REIE Property / Seller Evidence Readiness certification and closure handoff retained below.
+
 PROJECT ATLAS(tm) / REIE Property / Seller Evidence Readiness Certification and Closure, August 1, 2026:
 
 Workspace:
