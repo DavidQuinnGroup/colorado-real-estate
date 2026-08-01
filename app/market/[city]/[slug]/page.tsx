@@ -403,6 +403,7 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
   const housingContext = getHousingContext(neighborhood);
   const tradeoffSummary = getTradeoffSummary(neighborhood);
   const verificationQuestions = getVerificationQuestions(neighborhood);
+  const routeEnhancement = neighborhood.routeEnhancement;
   const neighborhoodFramework = getNeighborhoodFramework(neighborhood, searchHref, cityMarketHref, inventoryState);
   const marketDecisionWorkspace = buildMarketDecisionWorkspace({
     scope: 'neighborhood',
@@ -576,6 +577,132 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
       </section>
 
       <NeighborhoodProduct3Experience model={neighborhoodProduct3Model} />
+
+      {routeEnhancement ? (
+        <section
+          className="reie-neighborhood-route-enhancement mx-auto max-w-7xl px-6 py-10 md:px-12"
+          data-testid="south-boulder-route-enhancement"
+          data-south-boulder-route-enhancement="true"
+          data-south-boulder-route-enhancement-contract={routeEnhancement.contract}
+          data-south-boulder-route-enhancement-route={routeEnhancement.canonicalPath}
+          data-south-boulder-route-enhancement-object-type={routeEnhancement.objectType}
+          data-south-boulder-route-enhancement-canonical={routeEnhancement.canonicalUrl}
+          data-south-boulder-route-enhancement-search-preserved="true"
+          data-south-boulder-route-enhancement-map-preserved="true"
+          data-south-boulder-route-enhancement-sitemap-preserved="true"
+          data-south-boulder-route-enhancement-public-copy-only="true"
+          data-south-boulder-route-enhancement-no-internal-metadata="true"
+          data-south-boulder-route-enhancement-fair-housing="neutral-non-ranking"
+        >
+          <div className="grid gap-8 lg:grid-cols-[0.82fr_1.18fr]">
+            <div>
+              <p className="mb-3 text-[10px] font-black uppercase tracking-[0.24em] text-cyan-100/72">
+                Neighborhood Decision Snapshot
+              </p>
+              <h2 className="text-3xl font-black uppercase leading-tight tracking-normal text-white md:text-4xl">
+                Use South Boulder as orientation, then verify the address.
+              </h2>
+              <p className="mt-5 text-sm leading-7 text-white/62 md:text-base">{routeEnhancement.decisionSnapshot}</p>
+              <p className="mt-5 rounded-[6px] bg-cyan-100/[0.06] p-4 text-xs leading-6 text-cyan-100/72">
+                {routeEnhancement.scopeClarification}
+              </p>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              {[
+                ['Local Character', routeEnhancement.localCharacter],
+                ['Geographic And Context Boundaries', routeEnhancement.geographicBoundaries],
+                ['Housing And Property Context', routeEnhancement.housingAndPropertyContext],
+                ['Source-Rights Boundary', routeEnhancement.sourceRightsBoundary],
+              ].map(([label, body]) => (
+                <article key={label} className="rounded-[8px] bg-white/[0.045] p-5">
+                  <p className="text-[9px] font-black uppercase tracking-[0.18em] text-cyan-100/70">{label}</p>
+                  <p className="mt-3 text-xs leading-6 text-white/55">{body}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-8 grid gap-4 lg:grid-cols-3">
+            <article className="rounded-[8px] bg-[#071017]/78 p-5">
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100/72">Market And Decision Drivers</p>
+              <div className="mt-4 grid gap-3">
+                {routeEnhancement.marketAndDecisionDrivers.map((prompt) => (
+                  <p key={prompt} className="text-xs leading-6 text-white/58">{prompt}</p>
+                ))}
+              </div>
+            </article>
+
+            <article className="rounded-[8px] bg-[#071017]/78 p-5">
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100/72">Buyer Considerations</p>
+              <div className="mt-4 grid gap-3">
+                {routeEnhancement.buyerPrompts.map((prompt) => (
+                  <p key={prompt} className="text-xs leading-6 text-white/58">{prompt}</p>
+                ))}
+              </div>
+            </article>
+
+            <article className="rounded-[8px] bg-[#071017]/78 p-5">
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100/72">Seller Considerations</p>
+              <div className="mt-4 grid gap-3">
+                {routeEnhancement.sellerPrompts.map((prompt) => (
+                  <p key={prompt} className="text-xs leading-6 text-white/58">{prompt}</p>
+                ))}
+              </div>
+            </article>
+          </div>
+
+          <div className="mt-8 grid gap-4 lg:grid-cols-[0.95fr_1.05fr]">
+            <section
+              className="rounded-[8px] bg-white/[0.04] p-5"
+              data-testid="south-boulder-evidence-limitation-transparency"
+              data-south-boulder-evidence-public-copy-only="true"
+              data-south-boulder-evidence-no-scores="true"
+            >
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100/72">
+                Evidence And Limitation Transparency
+              </p>
+              <div className="mt-4 grid gap-3">
+                {routeEnhancement.evidenceTransparency.map((item) => (
+                  <p key={item} className="text-xs leading-6 text-white/58">{item}</p>
+                ))}
+              </div>
+              <div className="mt-5 rounded-[6px] bg-black/24 p-4 text-xs leading-6 text-white/48">
+                {routeEnhancement.protectedBoundary}
+              </div>
+            </section>
+
+            <section className="rounded-[8px] bg-white/[0.04] p-5" data-testid="south-boulder-journey-continuity">
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100/72">Journey Continuity</p>
+              <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                {routeEnhancement.journeyLinks.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className="reie-decision-link reie-decision-link--secondary flex min-h-[88px] flex-col justify-center rounded-[6px] px-4 py-3 text-white no-underline transition focus:outline-none focus:ring-2 focus:ring-cyan-100/70"
+                    data-testid="south-boulder-journey-link"
+                    data-south-boulder-journey-href={link.href}
+                  >
+                    <span className="text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100/72">{link.label}</span>
+                    <span className="mt-2 text-xs leading-5 text-white/48">{link.note}</span>
+                  </Link>
+                ))}
+              </div>
+            </section>
+          </div>
+
+          <section className="mt-8 rounded-[8px] bg-cyan-100/[0.04] p-5" data-testid="south-boulder-due-diligence-guidance">
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100/72">
+              Due-Diligence And Verification Prompts
+            </p>
+            <div className="mt-4 grid gap-3 md:grid-cols-3">
+              {routeEnhancement.dueDiligencePrompts.map((prompt) => (
+                <p key={prompt} className="text-xs leading-6 text-white/58">{prompt}</p>
+              ))}
+            </div>
+          </section>
+        </section>
+      ) : null}
 
       <section className="reie-neighborhood-continuation mx-auto max-w-7xl px-6 pb-4 pt-10 md:px-12" data-testid="neighborhood-djx-continuity">
         <ContinueYourDecision

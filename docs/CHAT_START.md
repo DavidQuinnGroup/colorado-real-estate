@@ -10,6 +10,73 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE South Boulder Existing Neighborhood Route Enhancement Local Certification, August 1, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Current governed state:
+
+- Core Product Experience Optimization cycle is complete.
+- Product Cohesion Review(tm) Wave 1 is production-certified and closed.
+- Controlled Fixture Alert Dry-Run(tm) program is certified and closed.
+- Local Decision Intelligence(tm) Phase 1 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 1 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 2 is production-certified and closed.
+- Local Decision Intelligence(tm) Phase 2 Wave 3 is production-certified and closed.
+- REIE Product Experience(tm) Next Cohesion Wave is production-certified and closed.
+- REIE Cross-City Decision Comparison(tm) is production-certified and closed.
+- REIE Seller Readiness Advancement(tm) is production-certified and closed.
+- REIE Buyer Financing Readiness Advancement(tm) is production-certified and closed.
+- REIE Evidence Depth and Data Integration(tm) foundation is production-certified and closed.
+- REIE Advisory Handoff Readiness(tm) is production-certified and closed.
+- REIE Controlled Evidence Depth Integration(tm) is production-certified and closed.
+- REIE Advisory Operating Readiness(tm) is production-certified and closed.
+- REIE Neighborhood / Submarket Intelligence Architecture(tm) is production-certified and closed.
+- REIE Decision Guide Evidence Transparency(tm) is production-certified and closed.
+- REIE First Governed Neighborhood / Submarket Implementation Wave(tm) is production-certified and closed.
+- REIE Property / Seller Evidence Readiness(tm) is production-certified and closed.
+- REIE Second Governed Neighborhood / Submarket Wave(tm) is production-certified and closed.
+- Closure commit SHA: `495df322d912822f0d45719b9f04b20c670f3b34`.
+- Closure record: `docs/project-atlas/executive-library/REIE-SECOND-GOVERNED-NEIGHBORHOOD-SUBMARKET-WAVE-PROGRAM-CLOSURE.md`.
+- REIE Post-Second Governed Neighborhood / Submarket Wave Strategic Next-Phase Review was pushed to origin/main.
+- Strategic review SHA: `73dc3736eeecbc6619846e8ba2de70aaa055ebae`.
+- Strategic review status: `PRIORITIZE_EXISTING_NEIGHBORHOOD_ROUTE_ENHANCEMENT`.
+- Strategic review record: `docs/project-atlas/executive-library/REIE-POST-SECOND-GOVERNED-NEIGHBORHOOD-SUBMARKET-WAVE-STRATEGIC-NEXT-PHASE-REVIEW.md`.
+- Strategic review documentation deployment status: success; Vercel target `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/ESwggKCG1gj5FZCSU9s3MbLS91jd`; GitHub commit status ID `51484317262`.
+- REIE South Boulder Existing Neighborhood Route Enhancement(tm) is complete locally and not pushed.
+- Local implementation status: `SOUTH_BOULDER_NEIGHBORHOOD_ROUTE_ENHANCEMENT_READY_FOR_PUSH`.
+- Implementation commit message: `Enhance South Boulder neighborhood route`.
+- Implementation record: `docs/project-atlas/executive-library/REIE-SOUTH-BOULDER-NEIGHBORHOOD-ROUTE-ENHANCEMENT-IMPLEMENTATION.md`.
+- Authoritative implementation contract: `SOUTH_BOULDER_EXISTING_NEIGHBORHOOD_ROUTE_ENHANCEMENT`.
+- Enhanced route: `/market/boulder/south-boulder`.
+- Object type: `NEIGHBORHOOD`.
+- The implementation adds a bounded `routeEnhancement` block to the existing South Boulder neighborhood record and renders it through the existing neighborhood route template only when present.
+- Route preservation: no replacement route, alias route, redirect, duplicate South Boulder route, API, registry entry, new sitemap entry, Search behavior change, map behavior change, public maturity change, or metadata change was introduced.
+- Public content added or clarified: Neighborhood Decision Snapshot, Local Character, Geographic And Context Boundaries, Housing And Property Context, Market And Decision Drivers, Buyer Considerations, Seller Considerations, Evidence And Limitation Transparency, Journey Continuity, and Due-Diligence And Verification Prompts.
+- Evidence transparency remains public-copy-only and exposes no internal Evidence Depth metadata, source IDs, provider IDs, rights enums, support levels, freshness codes, conflict codes, provenance chains, eligibility outcomes, fixture content, confidence percentages, scores, or grades.
+- Search preservation: South Boulder continues to use the existing destination `/search?neighborhood=South%20Boulder`; no Search API, filter, ranking, result ordering, geographic lookup, alias handling, or route-generation change was made.
+- Map preservation: no map controls, markers, layers, clustering, boundaries, polygons, geographic lookup, GIS behavior, or South Boulder boundary display changed.
+- Journey continuity now links to Boulder city context, South Boulder Search, Buyer Guidance, Financing Readiness, Seller Guidance, Seller Readiness, Grand Plan, and Advisory Readiness.
+- Deterministic validation command: `npm run check:south-boulder-neighborhood-route-enhancement`.
+- Certified deterministic output: `[south-boulder-neighborhood-route-enhancement] ok route=/market/boulder/south-boulder objectType=NEIGHBORHOOD canonical=preserved sitemap=preserved search=preserved map=preserved publicCopyOnly=true fairHousing=neutral protectedActivations=none`.
+- Local route, responsive, and browser review covered `/market/boulder/south-boulder`, `/market/boulder/downtown-boulder`, `/market/boulder/table-mesa`, `/market/boulder-co-housing-market`, `/market`, `/search`, a representative property route, `/buy`, `/sell`, `/home-worth`, `/grand-plan`, and `/contact`.
+- Browser review covered desktop `1440x1100`, tablet `768x1024`, and mobile `390x844`; direct route load, enhanced section rendering, link destinations, Search navigation, Back/Forward behavior, anchors, console, and horizontal overflow passed.
+- Required remediation: none.
+- Recommended next authorization: `SOUTH_BOULDER_NEIGHBORHOOD_ROUTE_ENHANCEMENT_PUSH_AND_PRODUCTION_CERTIFICATION`.
+- Exact next step: stop, or explicitly authorize `SOUTH_BOULDER_NEIGHBORHOOD_ROUTE_ENHANCEMENT_PUSH_AND_PRODUCTION_CERTIFICATION`. Codex must not push the implementation commit, deploy manually, begin production certification, create routes, change route or registry eligibility, change Search or maps, activate Niwot, activate Gunbarrel, begin Local Decision Intelligence Wave 4, activate providers or public records, create APIs, change schema or persistence, use customer data, activate CRM or telemetry, run queues or workers, send email, mutate production systems, or begin another initiative without explicit authorization.
+
+Prior REIE Post-Second Governed Neighborhood / Submarket Wave strategic review handoff retained below.
+
 PROJECT ATLAS(tm) / REIE Post-Second Governed Neighborhood / Submarket Wave Strategic Next-Phase Review, August 1, 2026:
 
 Workspace:
@@ -114,6 +181,7 @@ Current governed state:
 - Strategic priority SHA: `2774230b4f8a1f8aa5d5cee1f5c4d2f2c9ef0b11`.
 - Implementation SHA: `bec1e8ca6eb5151b743a686d3f360f178e095c94`.
 - Closure SHA: `495df322d912822f0d45719b9f04b20c670f3b34`.
+- Historical local implementation status retained for deterministic validation: `SECOND_GOVERNED_NEIGHBORHOOD_SUBMARKET_WAVE_READY_FOR_PUSH`.
 - Implementation record: `docs/project-atlas/executive-library/REIE-SECOND-GOVERNED-NEIGHBORHOOD-SUBMARKET-WAVE-IMPLEMENTATION.md`.
 - Closure record: `docs/project-atlas/executive-library/REIE-SECOND-GOVERNED-NEIGHBORHOOD-SUBMARKET-WAVE-PROGRAM-CLOSURE.md`.
 - Authoritative contract: `SECOND_GOVERNED_NEIGHBORHOOD_SUBMARKET_IMPLEMENTATION_WAVE`.
