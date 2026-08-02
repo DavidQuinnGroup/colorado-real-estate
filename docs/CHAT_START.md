@@ -10,6 +10,77 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE Advisory Experience Product Specification, August 2, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Current certified product portfolio:
+
+- South Boulder Neighborhood Enhancement is certified and closed.
+- Property / Seller Evidence Continuation is certified and closed.
+- Table Mesa Neighborhood Enhancement is certified and closed.
+- Niwot Governance Reconciliation is certified and closed.
+- Niwot Legacy Public Route Retirement is certified and closed.
+- Homepage Product Experience Phase 1 is certified and closed.
+- Buyer Financing Decision Planner Phase 1 is certified and closed.
+- Local Decision Intelligence Wave 4 remains blocked.
+- No implementation initiative is currently authorized.
+
+Advisory Experience specification completion:
+
+- specification record: `docs/project-atlas/executive-library/REIE-ADVISORY-EXPERIENCE-PRODUCT-SPECIFICATION.md`
+- planning record: `docs/project-atlas/executive-library/REIE-ADVISORY-EXPERIENCE-PRODUCTIZATION-PLAN.md`
+- status: `REIE_ADVISORY_EXPERIENCE_READY_FOR_BOUNDED_IMPLEMENTATION_AUTHORIZATION`
+- selected advisory model: `SINGLE_ADVISORY_EXPERIENCE`
+- selected journey-context model: `GENERIC_SINGLE_EXPERIENCE_WITH_STATIC_TOPICS`
+- selected contact strategy: `PREPARATION_THEN_CONTACT`
+- selected route strategy: keep `/contact#advisory-readiness`
+- selected first implementation phase: `REIE_ADVISORY_EXPERIENCE_PHASE_1_STRUCTURAL_PRODUCTIZATION_AND_MOBILE_HIERARCHY`
+- implementation remains unauthorized
+- route creation remains unauthorized
+- Contact backend changes remain unauthorized
+- CRM implementation remains unauthorized
+- scheduling remains unauthorized
+- persistence remains unauthorized
+- production certification remains unauthorized
+- no next initiative is automatically authorized
+
+Planning findings:
+
+- The Advisory Experience should be the final experience of the REIE Decision Journey, not a generic Contact-page redesign.
+- Primary purpose: help customers move from REIE research into a prepared professional conversation.
+- Target customer state: prepared, calm, organized, trust-aware, and clear on what needs professional verification.
+- All certified journeys should converge on one advisory experience rather than separate buyer/seller advisory routes.
+- Customers should review preparation, expectations, privacy, and professional boundaries before contact.
+- The future first screen should explain Advisory purpose, include one primary CTA, one optional secondary CTA, and avoid dense Contact/Public Trust blocks above the fold.
+- Preparation themes are decision goal, timeline, property or market context, unresolved professional questions, optional financing assumptions, optional seller readiness, optional evidence gaps, optional documents to organize, and optional next-decision priorities.
+- Current Advisory Handoff content should be kept but simplified, merged, and visually elevated around a mobile-first advisory hierarchy.
+
+Future implementation concept:
+
+- likely required files if separately authorized: `app/contact/page.tsx`, `components/AdvisoryHandoffGuide.tsx`, implementation documentation, and `docs/CHAT_START.md`
+- conditional files: possible bounded advisory component, possible focused deterministic check, `package.json`, and `tsconfig.worker.json` only if registering a check
+- no new route should be created in the recommended first implementation path
+- no Contact backend, form-field, CRM, scheduling, persistence, telemetry, Search, map/GIS, API, Prisma, provider, email, queue, worker, or production-data change is authorized
+
+Next authorization gate:
+
+`READY_FOR_REIE_ADVISORY_EXPERIENCE_PHASE_1_BOUNDED_IMPLEMENTATION_AUTHORIZATION`
+
+Do not begin implementation, route creation, Contact changes, CRM, scheduling, telemetry, persistence, provider work, production certification, Phase 2 work, or another initiative without explicit authorization.
+
+Prior Advisory Experience productization planning handoff retained below.
+
 PROJECT ATLAS(tm) / REIE Advisory Experience Productization Planning, August 2, 2026:
 
 Workspace:
