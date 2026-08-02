@@ -10,7 +10,7 @@ Product:
 
 ## Latest New-Chat Handoff
 
-PROJECT ATLAS(tm) / REIE Hard Launch Readiness Certification, August 2, 2026:
+PROJECT ATLAS(tm) / REIE Hard Launch Authorization Planning, August 2, 2026:
 
 Workspace:
 
@@ -37,13 +37,16 @@ Current certified status:
 - No implementation initiative is currently authorized.
 - Launch is not authorized until the next gate is explicitly granted.
 
-Hard launch readiness certification:
+Hard launch authorization planning:
 
 - Launch-readiness review: `docs/project-atlas/executive-library/REIE-LAUNCH-READINESS-AND-PRODUCT-ROADMAP-REVIEW.md`
 - Operational readiness plan: `docs/project-atlas/executive-library/REIE-PRE-LAUNCH-OPERATIONAL-READINESS-PLAN.md`
 - Launch-readiness certification: `docs/project-atlas/executive-library/REIE-HARD-LAUNCH-READINESS-CERTIFICATION.md`
+- Hard-launch authorization plan: `docs/project-atlas/executive-library/REIE-HARD-LAUNCH-AUTHORIZATION-PLAN.md`
 - Certification status: `REIE_HARD_LAUNCH_READY`
 - Go / No-Go recommendation: `READY_FOR_HARD_LAUNCH`
+- Authorization-planning status: `REIE_HARD_LAUNCH_AUTHORIZATION_PLAN_READY`
+- Recommended launch type: `CONTROLLED_LAUNCH_ANNOUNCEMENT_WITHOUT_RUNTIME_OR_DEPLOYMENT_CHANGE`
 - Hard launch blockers: none.
 - Required bounded remediation: none.
 - Implementation remains unauthorized.
@@ -65,6 +68,9 @@ Certification evidence:
 Operational constraints:
 
 - launch authorization must explicitly name launch ownership, contact-response ownership, support ownership, monitoring expectations, rollback authority, and launch-day verification requirements;
+- unresolved ownership assignments remain human operational acknowledgments, not product remediation blockers;
+- the recommended launch model uses the current production deployment at `https://davidquinngroup.com` and avoids unnecessary runtime or deployment changes;
+- public launch announcement content must be separately approved during execution if a public announcement is made;
 - live email sends, live workers, CRM mutation, queue retries, provider activation, MLS requests, Typesense reset/reindex, telemetry, AI, production changes, and launch activity remain unauthorized until an explicit launch gate is granted.
 
 Protected boundaries:
@@ -100,9 +106,9 @@ Protected boundaries:
 
 Next authorization gate:
 
-`READY_FOR_REIE_HARD_LAUNCH_AUTHORIZATION`
+`READY_FOR_REIE_HARD_LAUNCH_EXECUTION_AUTHORIZATION`
 
-This gate should authorize launch activity only if explicitly granted. Do not begin implementation, runtime changes, deployment changes, production changes, route creation, component work, style changes, governance enforcement, Contact backend work, CRM, scheduling, persistence, personalization, telemetry, uploads, APIs, Prisma, Search, map/GIS, provider integrations, live email sends, live workers, queue retries, production certification, launch activity, Phase 2, or another initiative without explicit authorization.
+This gate should authorize launch execution only if explicitly granted. Do not begin implementation, runtime changes, deployment changes, production changes, route creation, component work, style changes, governance enforcement, Contact backend work, CRM, scheduling, persistence, personalization, telemetry, uploads, APIs, Prisma, Search, map/GIS, provider integrations, live email sends, live workers, queue retries, production certification, launch activity, Phase 2, or another initiative without explicit authorization.
 
 Prior Advisory Experience product specification handoff retained below.
 
