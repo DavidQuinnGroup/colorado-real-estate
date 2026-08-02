@@ -10,7 +10,7 @@ Product:
 
 ## Latest New-Chat Handoff
 
-PROJECT ATLAS(tm) / REIE DXT Wave 1A Local Implementation And Wave 1C Specification, August 2, 2026:
+PROJECT ATLAS(tm) / REIE DXT Wave 1A Pushed And Wave 1C Shared Hierarchy Plan Local, August 2, 2026:
 
 Workspace:
 
@@ -24,24 +24,25 @@ git rev-parse HEAD origin/main
 git log -8 --oneline
 ```
 
-DXT Wave 1A implementation status:
+DXT Wave 1A push and certification-review status:
 
-- Authorized baseline: `417f253579d27af53bca04d14771a8a9bd14e1a5`
-- Baseline deployment status: `success`
-- GitHub/Vercel status ID: `51512702836`
-- Context: `Vercel`
-- Description: `Deployment has completed`
-- Target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/EGLU2LqaY5yT7uvsYtYJJL6KaC5B`
-- Updated: `2026-08-02T20:41:44Z`
-- Wave 1B remains certified and closed.
-- Selected Wave 1A phase: `HOMEPAGE_INVITATION_AND_POST_HERO_SIMPLIFICATION`
-- Wave 1A homepage implementation completed locally.
-- Runtime scope: `app/page.tsx`
-- Validation scope: `scripts/checkDxtWave1aHomepageInvitation.ts`, `package.json`, `tsconfig.worker.json`
-- Documentation scope: `docs/project-atlas/executive-library/REIE-DXT-WAVE-1A-HOMEPAGE-INVITATION-AND-POST-HERO-SIMPLIFICATION-IMPLEMENTATION.md`, `docs/project-atlas/executive-library/REIE-DXT-WAVE-1C-BUYER-AND-SELLER-JOURNEY-SIMPLIFICATION-PRODUCT-SPECIFICATION.md`, `docs/CHAT_START.md`
-- Deterministic check: `npm run check:dxt-wave-1a-homepage-invitation`
-- Push remains unauthorized until local certification and push review is separately authorized.
-- Production certification remains unauthorized.
+- Prior authorized baseline: `417f253579d27af53bca04d14771a8a9bd14e1a5`
+- Prior baseline deployment status: `success`
+- Prior GitHub/Vercel status ID: `51512702836`
+- Prior target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/EGLU2LqaY5yT7uvsYtYJJL6KaC5B`
+- Prior deployment updated: `2026-08-02T20:41:44Z`
+- Wave 1A implementation commit: `4b5dfdcd56a40e4e3e2efdb1b44c24ad4f005b39`
+- Wave 1A commit message: `Simplify Homepage and specify Buyer Seller journeys`
+- Wave 1A pushed to `origin/main`.
+- Post-push repository state at push review: HEAD and origin/main both `4b5dfdcd56a40e4e3e2efdb1b44c24ad4f005b39`, `0 ahead / 0 behind`, working tree clean.
+- Automatic deployment evidence for Wave 1A observed:
+  - GitHub/Vercel status ID: `51513249171`
+  - Context: `Vercel`
+  - State: `success`
+  - Description: `Deployment has completed`
+  - Target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/8n7EZw2fJcXX5uv3LwwyS8ikhAXy`
+  - Updated: `2026-08-02T21:10:31Z`
+- Wave 1A production certification remains unauthorized and is the primary active gate.
 
 Wave 1A implementation outcomes:
 
@@ -57,8 +58,17 @@ DXT Wave 1C specification status:
 - Specification record: `docs/project-atlas/executive-library/REIE-DXT-WAVE-1C-BUYER-AND-SELLER-JOURNEY-SIMPLIFICATION-PRODUCT-SPECIFICATION.md`
 - Status: `REIE_DXT_WAVE_1C_BUYER_AND_SELLER_JOURNEY_SIMPLIFICATION_SPECIFICATION_COMPLETE`
 - Selected first Wave 1C phase: `BUYER_SELLER_SHARED_HIERARCHY_FOUNDATION`
-- Wave 1C runtime implementation remains unauthorized.
-- Future Wave 1C gate recorded but not activated: `READY_FOR_REIE_DXT_WAVE_1C_BUYER_SELLER_SHARED_HIERARCHY_FOUNDATION_BOUNDED_IMPLEMENTATION_AUTHORIZATION`
+
+DXT Wave 1C shared hierarchy foundation plan status:
+
+- Plan record: `docs/project-atlas/executive-library/REIE-DXT-WAVE-1C-BUYER-SELLER-SHARED-HIERARCHY-FOUNDATION-IMPLEMENTATION-PLAN.md`
+- Status: `REIE_DXT_WAVE_1C_BUYER_SELLER_SHARED_HIERARCHY_FOUNDATION_PLAN_COMPLETE_LOCAL_ONLY`
+- Selected foundation model: `DOCUMENTATION_AND_DETERMINISTIC_CONTRACT_ONLY`
+- The plan recommends a shared hierarchy contract and deterministic validation before Buyer or Seller runtime changes.
+- No shared runtime component, shared journey schema, Buyer runtime edit, Seller runtime edit, route change, API, persistence, CRM, telemetry, provider, or brokerage disclosure change is authorized.
+- Wave 1C local documentation commit exists in the current repository history after this handoff is finalized; see final response for SHA.
+- Wave 1C plan push remains unauthorized.
+- Buyer and Seller runtime implementation remains unauthorized.
 
 Brokerage disclosure hold:
 
@@ -71,9 +81,15 @@ Protected boundaries:
 
 Exact next authorization gate:
 
-`READY_FOR_REIE_DXT_WAVE_1A_HOMEPAGE_INVITATION_LOCAL_CERTIFICATION_AND_PUSH_REVIEW`
+`READY_FOR_REIE_DXT_WAVE_1A_HOMEPAGE_INVITATION_PRODUCTION_CERTIFICATION`
 
-That gate may authorize local certification and push review only. Do not push, deploy manually, perform production certification, begin Wave 1C runtime work, begin Phase 2, or start another initiative without explicit authorization.
+That gate may authorize Wave 1A production certification only. Do not deploy manually, begin Wave 1C runtime work, begin Buyer or Seller runtime implementation, push the Wave 1C local planning commit, begin Phase 2, modify brokerage disclosure, or start another initiative without explicit authorization.
+
+Future Wave 1C gate:
+
+`READY_FOR_REIE_DXT_WAVE_1C_BUYER_SELLER_SHARED_HIERARCHY_FOUNDATION_BOUNDED_IMPLEMENTATION_AUTHORIZATION`
+
+That future gate may authorize bounded shared hierarchy foundation implementation only if explicitly granted after Wave 1A production-certification handling. It must not authorize Buyer runtime, Seller runtime, shared components, schemas, route changes, APIs, persistence, telemetry, CRM, providers, brokerage disclosure, production certification, or another DXT phase unless explicitly stated.
 
 Prior DXT Wave 1B closed and Wave 1A specification-ready handoff retained below.
 
