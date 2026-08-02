@@ -10,6 +10,84 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE DXT Wave 1B Map Visual-Language Normalization Certified Closure, August 2, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+DXT Wave 1B Map Visual-Language Normalization closure status:
+
+- Closure record: `docs/project-atlas/executive-library/REIE-DXT-WAVE-1B-MAP-VISUAL-LANGUAGE-NORMALIZATION-PROGRAM-CLOSURE.md`
+- Program status: `REIE_DXT_WAVE_1B_MAP_VISUAL_LANGUAGE_CERTIFIED_AND_CLOSED`
+- Product model certified: `CURRENT_PROVIDER_CONFIGURATION_NORMALIZATION`
+- Certified surface: existing `/search` Search map only.
+- Implementation commit: `96754546ff57bad7a992079094f80894a643fe77`
+- Implementation message: `Normalize Search map visual language`
+- Required remediation: none.
+- Runtime provider posture: OpenTopoMap remains active.
+- Active tile URL remains `https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png`.
+- Optional Mapbox behavior remains inactive and fail-closed.
+- Observed production Mapbox requests during certification: `0`.
+- Search map maximum zoom remains aligned to OpenTopoMap native maximum `17`.
+- Search basemap presentation treatment remains scoped to the Search map tile pane.
+- Search tile pane filter: `saturate(0.74) contrast(0.9) brightness(0.96) sepia(0.04)`.
+- Search tile pane opacity: `0.96`.
+- Attribution remains visible and includes OpenStreetMap, SRTM, OpenTopoMap, and CC-BY-SA references.
+- Search workspace shell certification remains preserved.
+- Marker/preview certification remains preserved.
+- Search return context certification remains preserved.
+- Non-Search maps remain out of scope and unchanged.
+- Brokerage disclosure remains on hold: `EXTERNAL_COMPASS_MARKETING_REVIEW_PENDING`.
+- Provider replacement, Mapbox activation, tile-source changes, tokens, environment changes, route changes, Search API changes, property API changes, persistence, telemetry, CRM, brokerage disclosure changes, deployment changes, production-data mutation, and non-Search map changes remain unauthorized.
+- Property Detail Context Preservation Phase 2 remains deferred and unauthorized.
+- No next DXT phase is automatically authorized.
+
+Deployment evidence for implementation certification:
+
+- Implementation SHA: `96754546ff57bad7a992079094f80894a643fe77`
+- Status: `success`
+- GitHub/Vercel status ID: `51512134962`
+- Context: `Vercel`
+- Description: `Deployment has completed`
+- Target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/7KdrCZsDgovE2HaLdWEL7AB4Wv3s`
+- Completion timestamp: `2026-08-02T20:12:16Z`
+- Production domain: `https://davidquinngroup.com`
+- Supersession status during production certification: not superseded.
+
+Production certification summary:
+
+- `/search` certified at mobile, tablet, and desktop review sizes.
+- OpenTopoMap tile hosts observed: `a.tile.opentopomap.org`, `b.tile.opentopomap.org`, and `c.tile.opentopomap.org`.
+- Tile status reached `ready`.
+- Search zoom review covered `8` through `17`.
+- Marker, cluster, selected-property drawer, attribution, loading/fallback messaging, responsive layout, and clean-load console posture passed.
+- Production route matrix passed for `/`, `/search`, `/search?city=Boulder`, `/market`, `/buy`, `/sell`, `/home-worth`, `/grand-plan`, `/compare`, `/contact`, South Boulder, Table Mesa, Downtown Boulder, Boulder city-market, and `/sitemap.xml`.
+- Retired Niwot route remained `404` with no redirect.
+- Production Search API returned `200`.
+- No score, grade, ranking, confidence percentage, readiness label, suitability claim, affordability claim, school/safety claim, protected-class language, provider diagnostic, evidence identifier, rights enum, maturity code, or internal eligibility outcome was introduced.
+
+Validation posture recorded:
+
+- Focused checks included `npm run check:dxt-map-visual-language-normalization`, `npm run check:map-rendering-safety`, `npm run check:cep-search-map-baseline`, `npm run check:dxt-search-marker-preview-interaction`, `npm run check:dxt-search-workspace-shell`, `npm run check:dxt-search-return-context-handoff`, `npm run check:search-runtime-safety`, `npm run check:search-listing-quality`, `npm run typecheck`, `npm run lint`, `npm run build`, and production-domain public-experience smoke against `https://davidquinngroup.com`.
+- Immediate prior local certification covered the broader regression family, including property-route safety, Property Product 3.1, Product Cohesion, Decision Journey, public runtime, public trust, source-rights, unsubscribe, alert, market and neighborhood, GMA, Geographic Intelligence, Local Decision Intelligence, buyer, seller, financing, advisory, property/seller evidence, and Grand Plan checks.
+
+Exact next strategic review gate:
+
+`REIE_DXT_WAVE_1B_POST_MAP_VISUAL_LANGUAGE_NORMALIZATION_NEXT_PHASE_REVIEW`
+
+That gate may review the next bounded DXT direction only if explicitly authorized. Candidate paths may include Property Detail Context Preservation Phase 2, another bounded Search/property decision-experience phase, DXT Wave 1C, or a deliberate pause. Do not begin the review, implementation, runtime changes, provider changes, Mapbox activation, tile-source changes, non-Search map changes, route changes, API changes, persistence, telemetry, CRM, brokerage disclosure changes, production certification, or another DXT phase without explicit authorization.
+
+Prior DXT Wave 1B current-provider style constraint remediation handoff retained below.
+
 PROJECT ATLAS(tm) / REIE DXT Wave 1B Current Provider Style Constraint Remediation Local Implementation, August 2, 2026:
 
 Workspace:
