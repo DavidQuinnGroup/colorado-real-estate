@@ -10,6 +10,103 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE DXT Wave 1B Closed And Wave 1A Specification Ready, August 2, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+DXT Wave 1B and Wave 1A documentation status:
+
+- Wave 1B closure record: `docs/project-atlas/executive-library/REIE-DXT-WAVE-1B-PROGRAM-CLOSURE.md`
+- Wave 1B status: `REIE_DXT_WAVE_1B_CERTIFIED_AND_CLOSED`
+- Wave 1A product specification: `docs/project-atlas/executive-library/REIE-DXT-WAVE-1A-HOMEPAGE-INVITATION-AND-GLOBAL-HIERARCHY-PRODUCT-SPECIFICATION.md`
+- Wave 1A specification status: `REIE_DXT_WAVE_1A_HOMEPAGE_INVITATION_AND_GLOBAL_HIERARCHY_SPECIFICATION_READY`
+- Selected first Wave 1A implementation phase: `HOMEPAGE_INVITATION_AND_POST_HERO_SIMPLIFICATION`
+- Wave 1A runtime implementation remains unauthorized.
+- Buyer/Seller Wave 1C remains deferred and unauthorized.
+- Property Detail Context Preservation Phase 2 remains deferred and unauthorized.
+- Brokerage disclosure remains on hold: `EXTERNAL_COMPASS_MARKETING_REVIEW_PENDING`.
+- Provider changes, tile-source changes, Mapbox activation, Search changes, map changes, property changes, route changes, API changes, persistence, telemetry, CRM, production-data mutation, navigation replacement, footer changes, and brokerage disclosure changes remain unauthorized.
+
+Certified Wave 1B portfolio:
+
+1. Search Marker and Preview Interaction Remediation
+2. Search Workspace Information Hierarchy and Shell
+3. Search Return URL and Context Handoff
+4. Map Visual-Language Normalization
+
+Certified Wave 1B outcomes:
+
+- click-first marker interaction;
+- pinned interactive property preview;
+- no essential hover dependency;
+- synchronized card, marker, selected state, and preview;
+- coherent Search workspace shell;
+- core and advanced criteria hierarchy;
+- visible result and criteria status;
+- unified list/map relationship;
+- bounded Search-origin return context;
+- validated internal Search return URL;
+- safe direct property entry;
+- coherent browser Back and Forward behavior;
+- bounded selected-property and mobile-mode restoration;
+- normalized Search map visual language;
+- OpenTopoMap retained;
+- provider, tile URL, attribution, Search APIs, ranking, routes, and property routes preserved;
+- no persistence, telemetry, CRM, provider activation, or brokerage-disclosure change.
+
+Accepted Wave 1B limitations and deferred Search/property work:
+
+- map bounds restoration;
+- map zoom restoration;
+- list-scroll restoration;
+- automatic full preview reopening;
+- selected-card focus restoration;
+- Property Detail Context Preservation Phase 2;
+- property overlay or side-panel architecture;
+- `Search this area`;
+- provider replacement;
+- Mapbox activation;
+- custom map style;
+- non-Search map normalization;
+- telemetry, persistence, personalization, CRM, and provider strategy expansion.
+
+Wave 1A product decision:
+
+- Governing question: why should I begin here, and what should I do next?
+- The homepage should function as invitation, orientation, one primary discovery action, a small number of differentiated decision paths, selective proof of REIE value, calm transition into deeper destinations, appropriately placed trust boundaries, and a restrained close.
+- The first implementation phase should simplify the homepage invitation and post-hero sequence before broader Buyer/Seller Wave 1C or additional Search/property refinement.
+- The specification defines current Homepage inventory, section dispositions, first viewport, post-hero sequence, three-paths model, REIE value proof, global hierarchy standard, directional-heading standard, CTA hierarchy, whitespace, progressive disclosure, desktop/tablet/mobile behavior, accessibility, header/navigation evaluation, brokerage disclosure hold, file scope, acceptance criteria, deterministic validation, responsive certification, protected boundaries, deferred work, and open questions.
+
+Prior deployment status for reviewed baseline:
+
+- Baseline commit: `2a90379a2a3be91c407e212bfe9e281b8c1e90ab`
+- Baseline message: `Select post Search transformation direction`
+- Deployment status: `success`
+- GitHub/Vercel status ID: `51512503251`
+- Context: `Vercel`
+- Description: `Deployment has completed`
+- Target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/EYHL1N47tbJRzPSxHonDauYv7E8M`
+- Updated: `2026-08-02T20:31:18Z`
+- Pending status ID `51512471050` completed through the later successful Vercel status for the same SHA.
+
+Exact next authorization gate:
+
+`READY_FOR_REIE_DXT_WAVE_1A_HOMEPAGE_INVITATION_AND_POST_HERO_SIMPLIFICATION_BOUNDED_IMPLEMENTATION_AUTHORIZATION`
+
+That gate may authorize bounded Wave 1A implementation only if explicitly granted. Do not begin implementation, runtime changes, Wave 1C, Search/map changes, property changes, route changes, API changes, provider changes, persistence, telemetry, CRM, brokerage disclosure changes, navigation changes, footer changes, production certification, or another DXT phase without explicit authorization.
+
+Prior DXT Wave 1B post map visual-language normalization next-phase review retained below.
+
 PROJECT ATLAS(tm) / REIE DXT Wave 1B Post Map Visual-Language Normalization Next-Phase Review, August 2, 2026:
 
 Workspace:
