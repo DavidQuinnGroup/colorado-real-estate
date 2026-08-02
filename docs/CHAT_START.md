@@ -10,7 +10,7 @@ Product:
 
 ## Latest New-Chat Handoff
 
-PROJECT ATLAS(tm) / REIE Post-Advisory Experience Phase 1 Strategic Review, August 2, 2026:
+PROJECT ATLAS(tm) / REIE Product Experience Standardization Planning, August 2, 2026:
 
 Workspace:
 
@@ -33,30 +33,37 @@ Current certified status:
 - Local Decision Intelligence Wave 4 remains blocked.
 - No implementation initiative is currently authorized.
 
-Strategic review completion:
+Product Experience standardization planning:
 
-- Review record: `docs/project-atlas/executive-library/REIE-POST-ADVISORY-EXPERIENCE-PHASE-1-STRATEGIC-REVIEW.md`
-- Review status: `REIE_POST_ADVISORY_STRATEGIC_DIRECTION_SELECTED`
-- Selected outcome: `READY_FOR_BOUNDED_PLANNING_AUTHORIZATION`
-- Selected initiative: `REIE_PRODUCT_EXPERIENCE_STANDARDIZATION_PLANNING`
+- Standardization plan: `docs/project-atlas/executive-library/REIE-PRODUCT-EXPERIENCE-STANDARDIZATION-PLAN.md`
+- Planning status: `REIE_PRODUCT_EXPERIENCE_STANDARDIZATION_READY_FOR_IMPLEMENTATION_AUTHORIZATION`
 - Implementation remains unauthorized.
 - Runtime changes remain unauthorized.
 - Production certification remains unauthorized.
 - No next initiative is automatically authorized.
 
-Selected rationale:
+Enterprise standards identified:
 
-- Advisory Phase 1 resolved the primary advisory-product problem and no post-certification advisory defect is recorded.
-- Homepage Phase 1 resolved the primary homepage density and hierarchy problem.
-- Buyer Financing Decision Planner Phase 1 resolved the clearest buyer-financing journey gap.
-- Search, market, neighborhood, buyer, seller, and LDI candidates lack stronger current repository evidence.
-- The completed Homepage, Financing, and Advisory programs now reveal repeated Product Experience patterns that should be standardized before more isolated refinements create drift.
+- one clear surface purpose;
+- first-screen hierarchy with one dominant action;
+- mobile-first decision narrative;
+- restrained CTA hierarchy;
+- preparation before high-commitment action;
+- concise editorial rhythm and meaningful whitespace;
+- prompt-only questions where uncertainty is explored;
+- readable trust, privacy, disclosure, and professional-boundary placement;
+- no hidden state transfer;
+- no unauthorized persistence, provider dependency, CRM, personalization, telemetry, uploads, or scoring;
+- no dashboard, scorecard, intake-portal, financial-institution, or CRM appearance;
+- deterministic product-boundary validation.
 
 Protected boundaries:
 
 - no implementation;
 - no runtime changes;
 - no route creation;
+- no component changes;
+- no style changes;
 - no Contact backend changes;
 - no CRM;
 - no scheduling;
@@ -80,9 +87,9 @@ Protected boundaries:
 
 Next authorization gate:
 
-`READY_FOR_REIE_PRODUCT_EXPERIENCE_STANDARDIZATION_PLANNING_AUTHORIZATION`
+`READY_FOR_REIE_PRODUCT_EXPERIENCE_STANDARDS_BOUNDED_IMPLEMENTATION_AUTHORIZATION`
 
-This gate authorizes planning only. Do not begin implementation, runtime changes, route creation, design-system implementation, Contact backend work, CRM, scheduling, persistence, personalization, telemetry, uploads, APIs, Prisma, Search, map/GIS, provider integrations, production certification, Phase 2, or another initiative without explicit authorization.
+This gate does not authorize implementation by itself. Do not begin implementation, runtime changes, route creation, component work, style changes, design-system implementation, Contact backend work, CRM, scheduling, persistence, personalization, telemetry, uploads, APIs, Prisma, Search, map/GIS, provider integrations, production certification, Phase 2, or another initiative without explicit authorization.
 
 Prior Advisory Experience product specification handoff retained below.
 
