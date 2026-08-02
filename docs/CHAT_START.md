@@ -10,6 +10,82 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE Buyer Financing Decision Planner Product Specification, August 2, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Current certified and closed portfolio:
+
+- REIE South Boulder Neighborhood Route Enhancement(tm) remains certified and closed.
+- REIE Property / Seller Evidence Continuation(tm) remains certified and closed.
+- REIE Table Mesa Existing Neighborhood Route Enhancement(tm) remains certified and closed.
+- Niwot Governance-Only Reconciliation remains certified and closed.
+- Legacy Niwot city-market route remains retired and fail-closed.
+- Local Decision Intelligence Phase 1 and Phase 2 Waves 1-3 remain certified.
+- Local Decision Intelligence Wave 4 planning remains blocked.
+- REIE Homepage Product Experience Phase 1 remains production-certified and closed.
+- REIE Buyer Financing Experience Governance Planning selected `REIE_BUYER_FINANCING_DECISION_PLANNER`.
+
+Buyer Financing Decision Planner product specification completion:
+
+- specification record: `docs/project-atlas/executive-library/REIE-BUYER-FINANCING-DECISION-PLANNER-PRODUCT-SPECIFICATION.md`
+- status: `REIE_BUYER_FINANCING_DECISION_PLANNER_READY_FOR_IMPLEMENTATION_AUTHORIZATION`
+- product: `REIE_BUYER_FINANCING_DECISION_PLANNER`
+- implementation remains unauthorized
+- route creation remains unauthorized
+- calculator implementation remains unauthorized
+- production certification remains unauthorized
+- no next initiative is automatically authorized
+- exact next authorization gate: `READY_FOR_REIE_BUYER_FINANCING_DECISION_PLANNER_BOUNDED_IMPLEMENTATION_AUTHORIZATION`
+
+Specification summary:
+
+- The planner lives inside `/buy#financing-readiness`.
+- It is a decision-support and conversation-preparation experience, not a traditional mortgage calculator.
+- Complete flow: Entry, Introduction, Core Assumption Inputs, Optional Assumptions, Assumption Summary, Questions To Verify, Decision Guidance, Advisory Transition, Exit.
+- Core inputs: purchase price, down payment, interest rate, loan term.
+- Optional inputs: taxes, insurance, HOA, PMI as user-entered monthly assumption only, closing costs, maintenance, utilities, other ownership costs.
+- Required output: assumption summary, missing assumptions, verification questions, readiness prompts, and advisory transition.
+- Limited educational arithmetic may be considered only as subordinate principal-and-interest and user-entered monthly assumption subtotal if all required assumptions exist.
+- Outputs that must never appear include approval, qualification, affordability range, buying power, maximum purchase price, lender recommendation, loan recommendation, rate recommendation, score, grade, confidence percentage, underwriting prediction, tax advice, legal advice, or insurance advice.
+- Persistence strategy: `SESSION_ONLY_STATE_NO_PERSISTENCE`.
+- Provider strategy: `USER_ENTERED_ASSUMPTIONS_ONLY_NO_PROVIDER`.
+
+Implementation remains prohibited until separately authorized:
+
+- no new route
+- no dedicated calculator page
+- no homepage calculator
+- no provider rates
+- no live rate feed
+- no API
+- no Prisma or persistence
+- no CRM
+- no telemetry
+- no uploads
+- no saved scenarios
+- no lender workflow
+- no Search, map/GIS, navigation, footer, deployment, or production-data change
+
+Likely first implementation phase if authorized:
+
+- Phase 1: Core Planner under `/buy#financing-readiness`
+- likely files: `app/buy/page.tsx`, `components/BuyerFinancingReadinessGuide.tsx`, possible new bounded planner component, focused deterministic check, package/config only if a new check is registered, implementation record, and `docs/CHAT_START.md`
+
+Do not begin implementation, route creation, calculator work, provider work, persistence, production certification, or another initiative without explicit authorization.
+
+Prior buyer financing governance planning handoff retained below.
+
 PROJECT ATLAS(tm) / REIE Buyer Financing Experience Governance Planning, August 1, 2026:
 
 Workspace:
