@@ -10,6 +10,93 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE Decision Experience Transformation Charter, August 2, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+DXT charter status:
+
+- Charter record: `docs/project-atlas/executive-library/REIE-DECISION-EXPERIENCE-TRANSFORMATION-CHARTER.md`
+- Status: `REIE_DECISION_EXPERIENCE_TRANSFORMATION_READY`
+- DXT is planning-only and documentation-only.
+- Implementation remains unauthorized.
+- Runtime changes remain unauthorized.
+- Visual redesign remains unauthorized.
+- Route, component, CSS, Search, map, API, Prisma, telemetry, CRM, persistence, provider, AI, and production-data changes remain unauthorized.
+
+Governing principle:
+
+- Every page exists to help someone make one better decision.
+
+Primary design question:
+
+- What should the customer feel, understand, and do next?
+
+Transformation waves:
+
+1. Wave 1 - Decision Architecture
+2. Wave 2 - Decision Journeys
+3. Wave 3 - Interaction Design
+4. Wave 4 - Visual Language
+
+Recommended next authorization gate:
+
+`READY_FOR_REIE_DXT_WAVE_1_DECISION_ARCHITECTURE_PLANNING`
+
+That gate should authorize planning only unless separately expanded. Do not begin implementation, runtime changes, route creation, component work, CSS changes, Search changes, map changes, provider work, telemetry, CRM, persistence, AI, production-data mutation, or production certification without explicit authorization.
+
+Prior production UX assessment handoff retained below.
+
+PROJECT ATLAS(tm) / REIE Production UX Remediation Assessment, August 2, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Current launch status:
+
+- REIE remains formally hard-launched on the certified production deployment.
+- Hard-launch execution record: `docs/project-atlas/executive-library/REIE-HARD-LAUNCH-EXECUTION-RECORD.md`
+- No runtime implementation is currently authorized.
+- No post-launch feature work is automatically authorized.
+
+Production UX assessment:
+
+- Assessment record: `docs/project-atlas/executive-library/REIE-PRODUCTION-UX-REMEDIATION-ASSESSMENT.md`
+- Status: `REIE_PRODUCTION_UX_REMEDIATION_ASSESSMENT_COMPLETE`
+- Assessment-only and documentation-only; no implementation was performed.
+- Primary finding: REIE is launch-capable and governed, but it does not yet feel like a premium decision platform because its strongest intelligence is often delivered as dense explanation or inventory rather than a staged, emotionally coherent decision flow.
+- Highest-priority issue: Search, map, and property discovery are too inventory-forward and cognitively dense for a first-time customer.
+- Recommended first remediation program: `REIE_SEARCH_AND_PROPERTY_DISCOVERY_PREMIUM_DECISION_FLOW_REMEDIATION`
+- Recommended next gate: `READY_FOR_REIE_SEARCH_AND_PROPERTY_DISCOVERY_PREMIUM_DECISION_FLOW_REMEDIATION_PLANNING`
+
+Protected boundaries:
+
+- implementation remains unauthorized;
+- runtime changes remain unauthorized;
+- Search, map, API, provider, Prisma, CRM, telemetry, persistence, scheduling, route creation, and production-data changes remain unauthorized;
+- destination-page extraction, Homepage Phase 2, Advisory Phase 2, Buyer Financing Phase 2, Product Experience enforcement, and broader redesign remain deferred unless separately authorized.
+
+Prior hard-launch handoff retained below.
+
 PROJECT ATLAS(tm) / REIE Hard Launch Executed, August 2, 2026:
 
 Workspace:
