@@ -10,6 +10,86 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE Buyer Financing Experience Governance Planning, August 1, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Current certified and closed portfolio:
+
+- REIE South Boulder Neighborhood Route Enhancement(tm) remains certified and closed.
+- REIE Property / Seller Evidence Continuation(tm) remains certified and closed.
+- REIE Table Mesa Existing Neighborhood Route Enhancement(tm) remains certified and closed.
+- Niwot Governance-Only Reconciliation remains certified and closed.
+- Legacy Niwot city-market route remains retired and fail-closed.
+- Local Decision Intelligence Phase 1 and Phase 2 Waves 1-3 remain certified.
+- Local Decision Intelligence Wave 4 planning remains blocked.
+- REIE Homepage Product Experience Phase 1 remains production-certified and closed.
+- REIE Post-Homepage Phase 1 Strategic Portfolio Review selected buyer-financing governance planning and remains closed.
+
+Buyer financing governance planning completion:
+
+- planning record: `docs/project-atlas/executive-library/REIE-BUYER-FINANCING-EXPERIENCE-GOVERNANCE-PLAN.md`
+- status: `REIE_BUYER_FINANCING_EXPERIENCE_READY_FOR_IMPLEMENTATION_AUTHORIZATION`
+- selected strategy: `REIE_BUYER_FINANCING_DECISION_PLANNER`
+- selected product option: `Decision-oriented financing planner`
+- implementation remains unauthorized
+- route creation remains unauthorized
+- calculator implementation remains unauthorized
+- provider integration remains unauthorized
+- persistence and saved scenarios remain unauthorized
+- production certification remains unauthorized
+- no next initiative is automatically authorized
+- exact next authorization gate: `READY_FOR_REIE_BUYER_FINANCING_DECISION_PLANNER_BOUNDED_IMPLEMENTATION_AUTHORIZATION`
+
+Planning findings:
+
+- REIE should not proceed with a traditional mortgage calculator as the next product.
+- The customer problem is not simply "calculate a payment"; the customer needs to organize financing assumptions, unknowns, professional-review questions, and next steps before relying on a search range or property decision.
+- The recommended product is a readiness-first decision planner integrated into the existing Buyer Financing Readiness surface at `/buy#financing-readiness`.
+- The future planner should use user-entered assumptions only and should not use provider rates, lender feeds, quote APIs, lender rankings, lender comparisons, or partner recommendations.
+- The recommended route strategy is no new route for the first implementation path.
+- The recommended persistence strategy is no persistence; no saved scenarios, customer financial profile, CRM integration, telemetry personalization, uploads, or authenticated storage.
+- Mobile experience should use progressive disclosure, a small number of visible fields, adjacent disclosures, and a conversation-preparation transition rather than application, approval, qualification, or affordability language.
+
+Protected financing boundaries:
+
+- no lender recommendations
+- no lender comparisons or rankings
+- no loan-product recommendations
+- no loan qualification or approval implication
+- no preapproval substitute
+- no affordability conclusion
+- no personalized financial, tax, legal, insurance, investment, or lending advice
+- no rate guarantee
+- no provider integration
+- no persistent financial profile
+- no customer-data collection
+- no AI-generated financing conclusion
+- no Search, map/GIS, API, Prisma, persistence, CRM, telemetry, deployment, or production-data change
+
+Likely future implementation scope if separately authorized:
+
+- `app/buy/page.tsx`
+- a bounded buyer financing planner component if needed
+- a focused deterministic validation script
+- `package.json` and `tsconfig.worker.json` only if a new check is registered
+- one implementation record under `docs/project-atlas/executive-library/`
+- `docs/CHAT_START.md`
+
+Do not begin implementation, route creation, calculator work, provider work, persistence, Search/map changes, production certification, or another initiative without explicit authorization.
+
+Prior post-homepage strategic review handoff retained below.
+
 PROJECT ATLAS(tm) / REIE Post-Homepage Phase 1 Strategic Portfolio Review, August 1, 2026:
 
 Workspace:
