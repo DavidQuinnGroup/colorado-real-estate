@@ -10,6 +10,102 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE DXT Wave 1A Closed, Wave 1C Foundation Implemented, And Wave 1D Planning Ready, August 2, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Verified starting baseline for this session:
+
+- Branch: `main`
+- Starting HEAD: `337402dbf5a7918a230b57801a5fe14594d75ac6`
+- Starting origin/main: `337402dbf5a7918a230b57801a5fe14594d75ac6`
+- Starting ahead/behind: `0 ahead / 0 behind`
+- Starting working tree: clean
+
+Deployment verification:
+
+- Commit: `337402dbf5a7918a230b57801a5fe14594d75ac6`
+- GitHub/Vercel status ID `51513584772` was the earlier pending status for the same target.
+- Terminal success status ID: `51513615041`
+- Context: `Vercel`
+- State: `success`
+- Description: `Deployment has completed`
+- Target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/8y85wWqHLj5Rbgs19mUPBMzxArLS`
+- Updated: `2026-08-02T21:30:13Z`
+- Remote `refs/heads/main` was verified at `337402dbf5a7918a230b57801a5fe14594d75ac6` before repository edits, so no newer commit had superseded the baseline.
+
+DXT Wave 1A closure status:
+
+- Closure record: `docs/project-atlas/executive-library/REIE-DXT-WAVE-1A-HOMEPAGE-INVITATION-PROGRAM-CLOSURE.md`
+- Implementation commit: `4b5dfdcd56a40e4e3e2efdb1b44c24ad4f005b39`
+- Implementation message: `Simplify Homepage and specify Buyer Seller journeys`
+- Production certification result: `REIE_DXT_WAVE_1A_HOMEPAGE_INVITATION_PRODUCTION_CERTIFIED_READY_FOR_DOCUMENTATION_AND_GOVERNANCE_CLOSURE`
+- Final closure status: `DXT_WAVE_1A_CERTIFIED_AND_CLOSED`
+- No remediation was required.
+- No runtime, Homepage UI, route, styling, component, API, Search, map, property, Buyer, Seller, navigation, footer, provider, CRM, telemetry, persistence, production-data, or brokerage disclosure change was made during closure.
+
+DXT Wave 1C foundation status:
+
+- Plan record: `docs/project-atlas/executive-library/REIE-DXT-WAVE-1C-BUYER-SELLER-SHARED-HIERARCHY-FOUNDATION-IMPLEMENTATION-PLAN.md`
+- Contract record: `docs/project-atlas/executive-library/REIE-DXT-WAVE-1C-BUYER-SELLER-SHARED-HIERARCHY-FOUNDATION-CONTRACT.md`
+- Implementation record: `docs/project-atlas/executive-library/REIE-DXT-WAVE-1C-BUYER-SELLER-SHARED-HIERARCHY-FOUNDATION-IMPLEMENTATION.md`
+- Validation: `npm run check:dxt-wave-1c-buyer-seller-shared-hierarchy-foundation`
+- Final foundation status: `BUYER_SELLER_SHARED_HIERARCHY_FOUNDATION_IMPLEMENTED`
+- Foundation model: `DOCUMENTATION_AND_DETERMINISTIC_CONTRACT_ONLY`
+- No Buyer runtime, Seller runtime, shared React component, shared rendering abstraction, route, navigation, Search, map, property, API, Prisma, persistence, CRM, telemetry, provider, AI, production-data, or brokerage disclosure change was made.
+
+DXT Wave 1D planning status:
+
+- Planning record: `docs/project-atlas/executive-library/REIE-DXT-WAVE-1D-MARKET-NEIGHBORHOOD-DISCOVERY-PLANNING.md`
+- Final planning status: `DXT_WAVE_1D_PLANNING_READY`
+- Work was documentation only.
+- Market and neighborhood runtime surfaces were inventoried but not modified.
+
+Brokerage disclosure hold:
+
+- Brokerage disclosure remains on hold: `EXTERNAL_COMPASS_MARKETING_REVIEW_PENDING`.
+- Do not modify brokerage disclosure without explicit external-review authorization.
+
+Protected boundaries:
+
+- Do not modify runtime code, Homepage UI, Buyer runtime, Seller runtime, Market runtime, Neighborhood runtime, routes, styling, components, Search, maps, property pages, APIs, Prisma, persistence, telemetry, CRM, providers, AI, navigation, footer, deployment configuration, production data, or brokerage disclosure unless explicitly authorized.
+
+Required validation for this completed documentation/contract session:
+
+- `npm run check:dxt-wave-1a-homepage-invitation`
+- `npm run check:dxt-wave-1c-buyer-seller-shared-hierarchy-foundation`
+- `npm run check:public-runtime-safety`
+- `npm run check:public-trust-readiness`
+- `npm run check:search-runtime-safety`
+- `npm run check:map-rendering-safety`
+- `npm run typecheck`
+- `npm run lint`
+- `npm run build`
+
+Recommended next implementation gate:
+
+`READY_FOR_REIE_DXT_WAVE_1C_BUYER_JOURNEY_SIMPLIFICATION_BOUNDED_IMPLEMENTATION_AUTHORIZATION`
+
+That future gate may authorize Buyer runtime simplification only if explicitly granted. It must not authorize Seller runtime, Market runtime, Neighborhood runtime, shared rendering abstractions, Search, maps, property pages, routes, APIs, Prisma, persistence, telemetry, CRM, providers, AI, brokerage disclosure, deployment changes, production-data mutation, or another DXT phase unless explicitly stated.
+
+Future planning-only gate:
+
+`READY_FOR_REIE_DXT_WAVE_1D_MARKET_NEIGHBORHOOD_DISCOVERY_CONTRACT_AUTHORIZATION`
+
+That future gate should authorize documentation and deterministic contract work only. Runtime implementation should remain a later separate gate.
+
+Prior stale handoff retained below for audit history.
+
 PROJECT ATLAS(tm) / REIE DXT Wave 1A Pushed And Wave 1C Shared Hierarchy Plan Local, August 2, 2026:
 
 Workspace:

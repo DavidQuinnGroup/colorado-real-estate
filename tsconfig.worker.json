@@ -90,6 +90,7 @@
     "scripts/checkReieProductExperienceCohesionWave.ts",
     "scripts/checkHomepageProductExperiencePhase1.ts",
     "scripts/checkDxtWave1aHomepageInvitation.ts",
+    "scripts/checkDxtWave1cBuyerSellerSharedHierarchyFoundation.ts",
     "scripts/decisionGuideValidation.ts",
     "scripts/checkBoulderDecisionGuide.ts",
     "scripts/checkLouisvilleDecisionGuide.ts",
