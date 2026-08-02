@@ -10,6 +10,53 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE DXT Wave 1B Search And Property Workspace Specification, August 2, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+DXT Wave 1B specification status:
+
+- Specification record: `docs/project-atlas/executive-library/REIE-DXT-WAVE-1B-SEARCH-AND-PROPERTY-PERSISTENT-DECISION-WORKSPACE-SPECIFICATION.md`
+- Status: `REIE_DXT_WAVE_1B_SEARCH_AND_PROPERTY_SPECIFICATION_READY`
+- Product-specification-only and documentation-only.
+- Implementation remains unauthorized.
+- Runtime changes remain unauthorized.
+- Search changes remain unauthorized.
+- Map changes remain unauthorized.
+- Property-route changes remain unauthorized.
+- API changes remain unauthorized.
+- Brokerage disclosure changes remain unauthorized.
+
+Selected workspace model:
+
+`CLICK_PINNED_PREVIEW_WITH_PERSISTENT_MAP`
+
+Selected first bounded implementation phase:
+
+`SEARCH_MARKER_AND_PREVIEW_INTERACTION_REMEDIATION`
+
+Brokerage disclosure hold:
+
+`EXTERNAL_COMPASS_MARKETING_REVIEW_PENDING`
+
+Exact next authorization gate:
+
+`READY_FOR_REIE_DXT_WAVE_1B_SEARCH_MARKER_AND_PREVIEW_INTERACTION_REMEDIATION_BOUNDED_IMPLEMENTATION_AUTHORIZATION`
+
+That gate may authorize bounded implementation only if explicitly granted. Do not begin implementation, runtime changes, Search behavior changes, map behavior changes, property-route changes, route creation, API changes, provider changes, persistence, telemetry, CRM, brokerage disclosure changes, deployment changes, production certification, broader Search/property redesign, or the next DXT phase without explicit authorization.
+
+Prior DXT Wave 1 decision architecture handoff retained below.
+
 PROJECT ATLAS(tm) / REIE DXT Wave 1 Decision Architecture Planning, August 2, 2026:
 
 Workspace:
