@@ -10,7 +10,7 @@ Product:
 
 ## Latest New-Chat Handoff
 
-PROJECT ATLAS(tm) / REIE DXT Wave 1B Search Marker And Preview Interaction Remediation, August 2, 2026:
+PROJECT ATLAS(tm) / REIE DXT Wave 1B Search Marker And Preview Interaction Remediation Closed, August 2, 2026:
 
 Workspace:
 
@@ -24,23 +24,44 @@ git rev-parse HEAD origin/main
 git log -8 --oneline
 ```
 
-DXT Wave 1B bounded remediation status:
+DXT Wave 1B Search marker/preview remediation status:
 
 - Implementation record: `docs/project-atlas/executive-library/REIE-DXT-WAVE-1B-SEARCH-MARKER-AND-PREVIEW-INTERACTION-REMEDIATION-IMPLEMENTATION.md`
-- Status: `LOCAL_IMPLEMENTATION_COMPLETE_PUSH_UNAUTHORIZED`
-- Local implementation commit: created locally; exact final SHA is reported in the completion response.
-- Push remains unauthorized.
-- Production certification remains unauthorized.
+- Closure record: `docs/project-atlas/executive-library/REIE-DXT-WAVE-1B-SEARCH-MARKER-AND-PREVIEW-INTERACTION-REMEDIATION-PROGRAM-CLOSURE.md`
+- Status: `REIE_DXT_WAVE_1B_SEARCH_MARKER_AND_PREVIEW_CERTIFIED_AND_CLOSED`
+- Implementation commit: `8211c34b5fc1a6de6cf684062d5a15d987059c67`
+- Closure commit: created by `Close Search marker preview remediation`; use Git history for the exact SHA.
+- Production certification: complete.
+- Required remediation: none.
 
-Bounded implementation scope:
+Certified interaction model:
+
+`CLICK_PINNED_PREVIEW_WITH_PERSISTENT_MAP`
+
+Certified outcomes:
 
 - marker click selects a property;
-- hover is supplemental only;
 - the existing selected-property drawer is the pinned interactive preview;
+- hover is supplemental only;
 - preview lifetime is independent of pointer leaving the marker;
-- explicit close and Escape dismissal are implemented;
-- selected marker state is visually and accessibly distinct;
-- list/card synchronization and stale-selection clearing are preserved.
+- pointer movement does not dismiss the pinned preview;
+- `View Property` remains reliably reachable;
+- property CTA uses the existing `/properties/[id]` route architecture;
+- explicit close and Escape dismissal work where supported;
+- selected marker state is visually and accessibly distinct through marker metadata and `aria-pressed`;
+- list/card synchronization and stale-selection clearing are preserved;
+- touch interaction works at mobile viewport;
+- Back and Forward return between Search and the property route without route/render-state desynchronization.
+
+Deployment evidence:
+
+- Status: `success`
+- GitHub/Vercel status ID: `51506945610`
+- Context: `Vercel`
+- Description: `Deployment has completed`
+- Target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/9P8xz8jsY4nRYt6G1hJwK83X6SGZ`
+- Updated: `2026-08-02T15:40:03Z`
+- Production domain: `https://davidquinngroup.com`
 
 Files changed:
 
@@ -67,9 +88,9 @@ Brokerage disclosure hold:
 
 Exact next authorization gate:
 
-`READY_FOR_REIE_DXT_WAVE_1B_SEARCH_MARKER_AND_PREVIEW_LOCAL_CERTIFICATION_AND_PUSH_REVIEW`
+`REIE_DXT_WAVE_1B_POST_MARKER_PREVIEW_REMEDIATION_NEXT_PHASE_REVIEW`
 
-That gate may authorize local certification and push review only if explicitly granted. Do not push, deploy manually, perform production certification, begin the full persistent property workspace, normalize map visual language, change routes or APIs, add persistence, telemetry, CRM, provider changes, brokerage disclosure changes, or begin the next DXT phase without explicit authorization.
+That gate may review the next bounded Wave 1B program only if explicitly granted. Candidate areas may include persistent Search workspace shell, property-detail context preservation, map visual-language normalization, or another repository-supported bounded phase. Do not begin implementation, documentation closure, runtime changes, Search changes, map changes, property-route changes, route creation, API changes, provider changes, persistence, telemetry, CRM, brokerage disclosure changes, deployment changes, production certification, full property workspace, map visual-language normalization, or another DXT phase without explicit authorization.
 
 Prior DXT Wave 1B specification handoff retained below.
 
