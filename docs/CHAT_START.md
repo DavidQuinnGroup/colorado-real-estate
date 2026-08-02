@@ -10,7 +10,7 @@ Product:
 
 ## Latest New-Chat Handoff
 
-PROJECT ATLAS(tm) / REIE Advisory Experience Phase 1 Closure, August 2, 2026:
+PROJECT ATLAS(tm) / REIE Post-Advisory Experience Phase 1 Strategic Review, August 2, 2026:
 
 Workspace:
 
@@ -26,89 +26,63 @@ git log -8 --oneline
 
 Current certified status:
 
-- REIE Advisory Experience Phase 1 is production-certified and closed.
-- Closure record: `docs/project-atlas/executive-library/REIE-ADVISORY-EXPERIENCE-PHASE-1-PROGRAM-CLOSURE.md`
-- Implementation record: `docs/project-atlas/executive-library/REIE-ADVISORY-EXPERIENCE-PHASE-1-IMPLEMENTATION.md`
-- Productization plan: `docs/project-atlas/executive-library/REIE-ADVISORY-EXPERIENCE-PRODUCTIZATION-PLAN.md`
-- Product specification: `docs/project-atlas/executive-library/REIE-ADVISORY-EXPERIENCE-PRODUCT-SPECIFICATION.md`
-- Implementation commit: `76e7c572d6db58d2e12ed4758c0de26f8e4f2b2f`
-- Implementation message: `Productize REIE advisory experience`
-- Closure commit: this documentation-only closure commit; exact SHA is recorded in the closure final response after commit creation.
-- Route remains `/contact#advisory-readiness`.
-- Selected model remains `SINGLE_ADVISORY_EXPERIENCE`.
-- Selected journey-context model remains `GENERIC_SINGLE_EXPERIENCE_WITH_STATIC_TOPICS`.
-- Selected contact strategy remains `PREPARATION_THEN_CONTACT`.
-- Contact backend remains unchanged.
-- No remediation is required.
-- Phase 2 is not automatically authorized.
+- Advisory Experience Phase 1 remains production-certified and closed.
+- Advisory closure record: `docs/project-atlas/executive-library/REIE-ADVISORY-EXPERIENCE-PHASE-1-PROGRAM-CLOSURE.md`
+- Homepage Product Experience Phase 1 remains production-certified and closed.
+- Buyer Financing Decision Planner Phase 1 remains production-certified and closed.
+- Local Decision Intelligence Wave 4 remains blocked.
+- No implementation initiative is currently authorized.
+
+Strategic review completion:
+
+- Review record: `docs/project-atlas/executive-library/REIE-POST-ADVISORY-EXPERIENCE-PHASE-1-STRATEGIC-REVIEW.md`
+- Review status: `REIE_POST_ADVISORY_STRATEGIC_DIRECTION_SELECTED`
+- Selected outcome: `READY_FOR_BOUNDED_PLANNING_AUTHORIZATION`
+- Selected initiative: `REIE_PRODUCT_EXPERIENCE_STANDARDIZATION_PLANNING`
+- Implementation remains unauthorized.
+- Runtime changes remain unauthorized.
+- Production certification remains unauthorized.
 - No next initiative is automatically authorized.
 
-Deployment evidence:
+Selected rationale:
 
-- status: success
-- GitHub/Vercel status ID: `51494037811`
-- context: `Vercel`
-- description: `Deployment has completed`
-- Vercel target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/9n9Q8SHKBefhcQiY8z6mhGhVoREv`
-- completion timestamp: `2026-08-02T01:52:24Z`
-- production domain: `https://davidquinngroup.com`
-- supersession status during certification: not superseded
-
-Certified product outcome:
-
-- Advisory Experience is the final customer-facing step of the REIE Decision Journey.
-- The experience helps customers move from REIE research into a prepared professional conversation.
-- Production certification confirmed one coherent advisory experience, preparation before contact, static journey topics, prompt-only verification questions, readable privacy and professional boundaries, fair-housing-safe language, responsive integrity, accessibility, and governed journey continuity.
-- Production route checks passed for `/`, `/contact`, `/buy`, `/sell`, `/search`, `/market`, `/home-worth`, `/grand-plan`, `/compare`, South Boulder, Table Mesa, Downtown Boulder, Boulder city-market, and `/sitemap.xml`.
-- Retired Niwot route remained `404` with no redirect.
+- Advisory Phase 1 resolved the primary advisory-product problem and no post-certification advisory defect is recorded.
+- Homepage Phase 1 resolved the primary homepage density and hierarchy problem.
+- Buyer Financing Decision Planner Phase 1 resolved the clearest buyer-financing journey gap.
+- Search, market, neighborhood, buyer, seller, and LDI candidates lack stronger current repository evidence.
+- The completed Homepage, Financing, and Advisory programs now reveal repeated Product Experience patterns that should be standardized before more isolated refinements create drift.
 
 Protected boundaries:
 
-- no new route;
-- no alias or redirect;
-- no modal, workspace, buyer/seller split, or context-specific advisory page;
-- no Contact backend or form submission change;
+- no implementation;
+- no runtime changes;
+- no route creation;
+- no Contact backend changes;
 - no CRM;
 - no scheduling;
 - no persistence;
 - no personalization;
-- no tracking or telemetry;
+- no telemetry;
 - no uploads;
 - no APIs;
-- no Prisma or migration changes;
-- no email or notification changes;
-- no AI advisory;
-- no qualification;
-- no automated recommendations;
-- no valuation;
-- no hidden lead scoring;
-- no hidden context transfer;
-- no Search, map/GIS, Homepage, Buyer, Seller, Buyer Financing Planner, Property / Seller Evidence, Market, Neighborhood, Grand Plan, Compare, navigation, footer, deployment configuration, or production-data change.
+- no Prisma or migrations;
+- no Search changes;
+- no map/GIS changes;
+- no new public intelligence claims;
+- no provider integrations;
+- no production certification;
+- no Phase 2 implementation;
+- no site-wide redesign;
+- no global CSS rewrite;
+- no navigation or footer change;
+- no generated-file drift;
+- no next initiative begun.
 
-Current repository state after closure commit should be:
+Next authorization gate:
 
-- branch: `main`
-- HEAD: closure commit created by `Close REIE advisory experience Phase 1`
-- origin/main: same closure commit after push
-- ahead / behind: `0 ahead / 0 behind`
-- working tree: clean
+`READY_FOR_REIE_PRODUCT_EXPERIENCE_STANDARDIZATION_PLANNING_AUTHORIZATION`
 
-Next strategic review gate:
-
-`REIE_POST_ADVISORY_EXPERIENCE_PHASE_1_STRATEGIC_REVIEW`
-
-Future review may assess, without automatically selecting:
-
-- whether Phase 1 fully resolves the advisory product need;
-- bounded Phase 2 visual refinement supported by production evidence;
-- Contact infrastructure only if a concrete need is proven;
-- Homepage Phase 2;
-- destination-page extraction;
-- broader Product Experience standards;
-- another customer-facing intelligence surface;
-- continued pause where evidence does not support more work.
-
-Do not manually deploy, perform another product certification, begin Phase 2, add contact infrastructure, create routes, modify Contact backend behavior, add CRM/scheduling/persistence/personalization/telemetry/uploads/APIs/hidden context transfer, or begin another initiative without explicit authorization.
+This gate authorizes planning only. Do not begin implementation, runtime changes, route creation, design-system implementation, Contact backend work, CRM, scheduling, persistence, personalization, telemetry, uploads, APIs, Prisma, Search, map/GIS, provider integrations, production certification, Phase 2, or another initiative without explicit authorization.
 
 Prior Advisory Experience product specification handoff retained below.
 
