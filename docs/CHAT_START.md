@@ -10,7 +10,7 @@ Product:
 
 ## Latest New-Chat Handoff
 
-PROJECT ATLAS(tm) / REIE Launch Readiness And Product Roadmap Review, August 2, 2026:
+PROJECT ATLAS(tm) / REIE Pre-Launch Operational Readiness Planning, August 2, 2026:
 
 Workspace:
 
@@ -33,33 +33,35 @@ Current certified status:
 - Local Decision Intelligence Wave 4 remains blocked.
 - No implementation initiative is currently authorized.
 
-Launch-readiness review:
+Operational readiness planning:
 
 - Launch-readiness review: `docs/project-atlas/executive-library/REIE-LAUNCH-READINESS-AND-PRODUCT-ROADMAP-REVIEW.md`
+- Operational readiness plan: `docs/project-atlas/executive-library/REIE-PRE-LAUNCH-OPERATIONAL-READINESS-PLAN.md`
 - Standardization plan: `docs/project-atlas/executive-library/REIE-PRODUCT-EXPERIENCE-STANDARDIZATION-PLAN.md`
 - Operationalization plan: `docs/project-atlas/executive-library/REIE-PRODUCT-EXPERIENCE-STANDARDS-OPERATIONALIZATION-PLAN.md`
-- Review status: `REIE_LAUNCH_READINESS_DIRECTION_SELECTED`
+- Planning status: `REIE_PRE_LAUNCH_OPERATIONAL_READINESS_READY`
 - Launch recommendation: `READY_AFTER_BOUNDED_PRE_LAUNCH_WORK`
 - Recommended launch path: `COMPLETE_ONLY_HARD_LAUNCH_BLOCKERS_THEN_LAUNCH`
-- Selected next planning phase: `REIE_PRE_LAUNCH_OPERATIONAL_READINESS_PLANNING`
 - Implementation remains unauthorized.
 - Runtime changes remain unauthorized.
 - Governance enforcement remains unauthorized.
+- Production changes remain unauthorized.
+- Launch remains unauthorized.
 - Production certification remains unauthorized.
 - No next initiative is automatically authorized.
 
-Launch-readiness finding:
+Operational readiness finding:
 
-- the certified public product portfolio is launch-capable;
-- no additional customer-facing feature is required before launch;
-- Local Decision Intelligence Wave 4 remains blocked and post-launch;
-- Product Experience standards enforcement is post-launch unless separately authorized;
-- the remaining hard-launch work is operational readiness, current non-mutating readiness verification, support/monitoring/rollback planning, contact-response readiness, and launch go/no-go criteria.
+- hard launch requires explicit launch ownership, contact-response ownership, support workflow, smoke checklist, rollback criteria, monitoring expectations, launch-day and post-launch verification, and objective go/no-go gates;
+- current non-mutating readiness checks must be refreshed under later certification authorization before relying on historical watch/ready states;
+- live email sends, live workers, CRM mutation, queue retries, provider activation, MLS requests, Typesense reset/reindex, telemetry, AI, production changes, and launch activity remain unauthorized.
 
 Protected boundaries:
 
 - no implementation;
 - no runtime changes;
+- no production changes;
+- no launch activity;
 - no governance enforcement;
 - no route creation;
 - no component changes;
@@ -87,9 +89,9 @@ Protected boundaries:
 
 Next authorization gate:
 
-`READY_FOR_REIE_PRE_LAUNCH_OPERATIONAL_READINESS_PLANNING_AUTHORIZATION`
+`READY_FOR_REIE_PRE_LAUNCH_OPERATIONAL_READINESS_CERTIFICATION_AUTHORIZATION`
 
-This gate authorizes planning only unless future instructions explicitly expand scope. Do not begin implementation, runtime changes, route creation, component work, style changes, governance enforcement, Contact backend work, CRM, scheduling, persistence, personalization, telemetry, uploads, APIs, Prisma, Search, map/GIS, provider integrations, production certification, launch activity, Phase 2, or another initiative without explicit authorization.
+This gate should authorize certification and non-mutating verification only if explicitly granted. Do not begin implementation, runtime changes, production changes, route creation, component work, style changes, governance enforcement, Contact backend work, CRM, scheduling, persistence, personalization, telemetry, uploads, APIs, Prisma, Search, map/GIS, provider integrations, live email sends, live workers, queue retries, production certification, launch activity, Phase 2, or another initiative without explicit authorization.
 
 Prior Advisory Experience product specification handoff retained below.
 
