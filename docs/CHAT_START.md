@@ -10,6 +10,79 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE DXT Wave 1B Post Marker Preview Next Phase Review, August 2, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+DXT Wave 1B post-marker/preview review status:
+
+- Review record: `docs/project-atlas/executive-library/REIE-DXT-WAVE-1B-POST-MARKER-PREVIEW-NEXT-PHASE-REVIEW.md`
+- Status: `REIE_DXT_WAVE_1B_NEXT_PHASE_SELECTED`
+- Selected outcome: `READY_FOR_PERSISTENT_SEARCH_WORKSPACE_SHELL_PRODUCT_SPECIFICATION`
+- Selected next phase: `REIE_DXT_WAVE_1B_PERSISTENT_SEARCH_WORKSPACE_SHELL`
+- Implementation remains unauthorized.
+- Runtime changes remain unauthorized.
+- Search, map, property-route, provider, API, persistence, telemetry, CRM, brokerage disclosure, deployment, and production-certification changes remain unauthorized.
+
+Current certified Wave 1B state:
+
+- Marker/preview remediation remains certified and closed.
+- Implementation commit: `8211c34b5fc1a6de6cf684062d5a15d987059c67`
+- Closure commit: `a44509621af294b34c5306bd6c70b4cf65d5510d`
+- Production certification: complete.
+- Required remediation: none.
+
+Certified marker/preview interaction model:
+
+`CLICK_PINNED_PREVIEW_WITH_PERSISTENT_MAP`
+
+Latest deployment evidence for review baseline:
+
+- Status: `success`
+- GitHub/Vercel status ID: `51507248585`
+- Context: `Vercel`
+- Description: `Deployment has completed`
+- Target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/F24CVxbVLhZPV8Y3h1AH4KPKb3WB`
+- Updated: `2026-08-02T15:57:30Z`
+- Production domain: `https://davidquinngroup.com`
+
+Candidate review result:
+
+- Persistent Search Workspace Shell: selected for product specification.
+- Property Detail Context Preservation: deferred until the Search workspace state model and shell are specified.
+- Map Visual Language Normalization: deferred pending provider/style/licensing feasibility and authorization.
+- Another Wave 1B phase: not selected.
+
+Protected boundaries:
+
+- implementation remains unauthorized;
+- full persistent Search workspace implementation remains unauthorized;
+- property-detail workspace remains unauthorized;
+- map visual-language normalization remains unauthorized;
+- route, API, provider, ranking, persistence, telemetry, CRM, brokerage disclosure, Search redesign, property-page redesign, and deployment changes remain unauthorized.
+
+Brokerage disclosure hold:
+
+`EXTERNAL_COMPASS_MARKETING_REVIEW_PENDING`
+
+Exact next authorization gate:
+
+`READY_FOR_REIE_DXT_WAVE_1B_PERSISTENT_SEARCH_WORKSPACE_SHELL_PRODUCT_SPECIFICATION`
+
+That gate may authorize product specification and interaction model only if explicitly granted. Do not begin implementation, runtime changes, Search changes, map changes, property-route changes, route creation, API changes, provider changes, persistence, telemetry, CRM, brokerage disclosure changes, deployment changes, production certification, property context preservation, map visual-language normalization, or another DXT phase without explicit authorization.
+
+Prior DXT Wave 1B Search marker/preview remediation handoff retained below.
+
 PROJECT ATLAS(tm) / REIE DXT Wave 1B Search Marker And Preview Interaction Remediation Closed, August 2, 2026:
 
 Workspace:
@@ -30,7 +103,7 @@ DXT Wave 1B Search marker/preview remediation status:
 - Closure record: `docs/project-atlas/executive-library/REIE-DXT-WAVE-1B-SEARCH-MARKER-AND-PREVIEW-INTERACTION-REMEDIATION-PROGRAM-CLOSURE.md`
 - Status: `REIE_DXT_WAVE_1B_SEARCH_MARKER_AND_PREVIEW_CERTIFIED_AND_CLOSED`
 - Implementation commit: `8211c34b5fc1a6de6cf684062d5a15d987059c67`
-- Closure commit: created by `Close Search marker preview remediation`; use Git history for the exact SHA.
+- Closure commit: `a44509621af294b34c5306bd6c70b4cf65d5510d`
 - Production certification: complete.
 - Required remediation: none.
 
