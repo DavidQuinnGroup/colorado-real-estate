@@ -10,6 +10,69 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE Product Evolution Executive Review, August 2, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Current certified product portfolio:
+
+- South Boulder Neighborhood Enhancement is certified and closed.
+- Property / Seller Evidence Continuation is certified and closed.
+- Table Mesa Neighborhood Enhancement is certified and closed.
+- Niwot Governance Reconciliation is certified and closed.
+- Niwot Legacy Public Route Retirement is certified and closed.
+- Homepage Product Experience Phase 1 is certified and closed.
+- Buyer Financing Decision Planner Phase 1 is certified and closed.
+- Local Decision Intelligence Wave 4 remains blocked.
+- No implementation initiative is currently authorized.
+
+Executive review completion:
+
+- review record: `docs/project-atlas/executive-library/REIE-PRODUCT-EVOLUTION-REVIEW.md`
+- status: `REIE_PRODUCT_EVOLUTION_DIRECTION_SELECTED`
+- selected recommendation: `REIE_ADVISORY_EXPERIENCE_PRODUCTIZATION_PLANNING`
+- implementation remains unauthorized
+- production certification remains unauthorized
+- no next initiative is automatically authorized
+
+Selected rationale:
+
+- Homepage Phase 1 resolved the primary homepage density and hierarchy problem.
+- Buyer Financing Decision Planner Phase 1 closed the clearest buyer-financing readiness gap.
+- Advisory Handoff is already the governed endpoint for decision context and readiness exits.
+- Advisory Operating Readiness already provides an internal advisor-preparation standard.
+- The next highest-leverage question is how Advisory should productize the now-certified journey system for customers without CRM, scheduling, persistence, hidden transfer, automation, or professional-advice behavior.
+
+Deferred candidates:
+
+- Homepage Phase 2 is deferred because Phase 1 resolved the primary homepage problem and no material post-Phase 1 defect is recorded.
+- Destination-page extraction is deferred because no specific current section requires a new route.
+- A reusable Product Experience design system is deferred because broad site-wide change needs a concrete component pattern or defect.
+- Buyer journey expansion is deferred because Buyer Financing Decision Planner Phase 1 just closed the concrete buyer gap.
+- Seller journey expansion is deferred because no current seller-surface defect outranks advisory productization and seller work carries valuation/pricing/provider-risk boundaries.
+- Search refinement is deferred because no verified Search defect is recorded.
+- Market intelligence enhancement is deferred because geographic and LDI readiness remain constrained.
+- Local Decision Intelligence prerequisite work is deferred because Wave 4 remains blocked.
+- A deliberate pause is not selected because advisory productization has a clear planning-only value case.
+
+Next authorization gate:
+
+`READY_FOR_REIE_ADVISORY_EXPERIENCE_PRODUCTIZATION_PLANNING_AUTHORIZATION`
+
+Do not begin planning, implementation, route creation, Contact changes, CRM, scheduling, telemetry, persistence, provider work, production certification, or another initiative without explicit authorization.
+
+Prior Buyer Financing Decision Planner closure handoff retained below.
+
 PROJECT ATLAS(tm) / REIE Buyer Financing Decision Planner Phase 1 Program Closure, August 2, 2026:
 
 Workspace:
@@ -49,7 +112,7 @@ Implementation commit:
 
 Closure commit:
 
-- documentation-only closure commit: verify latest `main` after pulling this handoff
+- SHA: `e361dc510a4a2cc2c02adc4003a1fdbc07b29c4a`
 - message: `Close buyer financing decision planner Phase 1`
 
 Deployment evidence:
@@ -107,10 +170,6 @@ Mortgage Calculator posture:
 - A standalone Mortgage Calculator remains rejected as the controlling product direction.
 - Buyer financing work remains governed by the Buyer Financing Decision Planner posture.
 - Any Phase 2 refinement, provider work, persistence, or calculator expansion requires separate authorization.
-
-Next strategic handoff:
-
-`REIE_POST_BUYER_FINANCING_DECISION_PLANNER_PHASE_1_STRATEGIC_REVIEW`
 
 Prior Buyer Financing Decision Planner product specification handoff retained below.
 
