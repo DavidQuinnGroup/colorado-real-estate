@@ -10,7 +10,7 @@ Product:
 
 ## Latest New-Chat Handoff
 
-PROJECT ATLAS(tm) / REIE DXT Wave 1B Post Search Workspace Shell Next-Phase Review, August 2, 2026:
+PROJECT ATLAS(tm) / REIE DXT Wave 1B Property Detail Context Preservation Specification, August 2, 2026:
 
 Workspace:
 
@@ -24,13 +24,14 @@ git rev-parse HEAD origin/main
 git log -8 --oneline
 ```
 
-DXT Wave 1B post Search workspace shell next-phase review status:
+DXT Wave 1B Property Detail Context Preservation specification status:
 
 - Implementation record: `docs/project-atlas/executive-library/REIE-DXT-WAVE-1B-SEARCH-WORKSPACE-INFORMATION-HIERARCHY-AND-SHELL-IMPLEMENTATION.md`
 - Closure record: `docs/project-atlas/executive-library/REIE-DXT-WAVE-1B-SEARCH-WORKSPACE-INFORMATION-HIERARCHY-AND-SHELL-PROGRAM-CLOSURE.md`
 - Next-phase review record: `docs/project-atlas/executive-library/REIE-DXT-WAVE-1B-POST-SEARCH-WORKSPACE-SHELL-NEXT-PHASE-REVIEW.md`
+- Property Detail Context Preservation specification: `docs/project-atlas/executive-library/REIE-DXT-WAVE-1B-PROPERTY-DETAIL-CONTEXT-PRESERVATION-SPECIFICATION.md`
 - Search workspace shell status: `REIE_DXT_WAVE_1B_SEARCH_WORKSPACE_SHELL_CERTIFIED_AND_CLOSED`
-- Review status: `REIE_DXT_WAVE_1B_POST_SEARCH_SHELL_NEXT_PHASE_SELECTED`
+- Specification status: `REIE_DXT_WAVE_1B_PROPERTY_DETAIL_CONTEXT_PRESERVATION_SPECIFICATION_READY`
 - Implemented and certified surface: existing `/search`
 - Certified model: `PERSISTENT_SEARCH_WORKSPACE_SHELL`
 - Implementation commit: `a4acf1703f62d0f4a6addb1d85fda7649e2bdab7`
@@ -41,6 +42,8 @@ DXT Wave 1B post Search workspace shell next-phase review status:
 - Marker/preview certification remains preserved.
 - Selected next Wave 1B phase: `PROPERTY_DETAIL_CONTEXT_PRESERVATION`
 - Selected outcome: `READY_FOR_PROPERTY_DETAIL_CONTEXT_PRESERVATION_PRODUCT_SPECIFICATION`
+- Selected context-preservation model: `HYBRID_URL_AND_HISTORY_STATE`
+- Selected first bounded implementation phase: `SEARCH_RETURN_URL_AND_CONTEXT_HANDOFF`
 - Map Visual-Language Normalization remains deferred as `PREREQUISITE_DEPENDENT`.
 - Implementation remains unauthorized.
 - Brokerage disclosure remains on hold pending external Compass marketing review.
@@ -79,19 +82,19 @@ Protected boundaries:
 Deployment evidence:
 
 - Status: `success`
-- GitHub/Vercel status ID: `51508730275`
+- GitHub/Vercel status ID: `51508862902`
 - Context: `Vercel`
 - Description: `Deployment has completed`
-- Target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/BWkyk7i8sv7NfbPHjWPqrtfTTUjk`
-- Updated: `2026-08-02T17:14:32Z`
+- Target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/HH685BbESMAHw5XYPwUYCcPGiMLH`
+- Updated: `2026-08-02T17:21:38Z`
 - Production domain: `https://davidquinngroup.com`
-- Supersession status during review: not superseded.
+- Supersession status during specification: not superseded.
 
 Exact next authorization gate:
 
-`READY_FOR_REIE_DXT_WAVE_1B_PROPERTY_DETAIL_CONTEXT_PRESERVATION_PRODUCT_SPECIFICATION`
+`READY_FOR_REIE_DXT_WAVE_1B_SEARCH_RETURN_URL_AND_CONTEXT_HANDOFF_BOUNDED_IMPLEMENTATION_AUTHORIZATION`
 
-That gate may authorize product specification only if explicitly granted. Do not implement Property Detail Context Preservation, begin Map Visual-Language Normalization, modify brokerage disclosure copy, create routes, change APIs, add persistence, add telemetry, change providers, perform implementation, or begin another DXT phase without explicit authorization.
+That gate may authorize bounded implementation only if explicitly granted. Do not implement without authorization, begin full Property Detail Context Preservation, begin Map Visual-Language Normalization, modify brokerage disclosure copy, create routes, change APIs, add persistence, add telemetry, change providers, or begin another DXT phase without explicit authorization.
 
 Prior DXT Wave 1B persistent Search workspace shell specification handoff retained below.
 
