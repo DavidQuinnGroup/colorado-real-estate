@@ -10,6 +10,80 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE DXT Wave 1B Current Provider Style Constraint Remediation Local Implementation, August 2, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+DXT Wave 1B current-provider style constraint remediation status:
+
+- Implementation record: `docs/project-atlas/executive-library/REIE-DXT-WAVE-1B-CURRENT-PROVIDER-STYLE-CONSTRAINT-REMEDIATION-IMPLEMENTATION.md`
+- Status: `READY_FOR_REIE_DXT_WAVE_1B_MAP_VISUAL_LANGUAGE_LOCAL_CERTIFICATION_AND_PUSH_REVIEW`
+- Authorized product model: `CURRENT_PROVIDER_CONFIGURATION_NORMALIZATION`
+- Implemented phase: `CURRENT_PROVIDER_STYLE_CONSTRAINT_REMEDIATION`
+- Implemented surface: existing `/search` Search map only.
+- Runtime provider posture: OpenTopoMap remains active.
+- Active tile URL remains `https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png`.
+- Optional Mapbox overlay path remains present but fail-closed by default with `OPTIONAL_MAPBOX_OVERLAY_ENABLED=false`.
+- No Mapbox token, environment, provider activation, provider replacement, tile-source change, route change, API change, persistence, telemetry, CRM, or brokerage disclosure change was introduced.
+- Search map maximum zoom is aligned to OpenTopoMap native maximum `17`.
+- Search basemap presentation treatment is scoped to the Search map tile pane.
+- Attribution remains visible and includes OpenStreetMap, SRTM, OpenTopoMap, and CC-BY-SA references.
+- Tile loading and unavailable states use customer-safe fallback messaging.
+- Marker, cluster, and selected-property hierarchy were normalized without adding scores, rankings, recommendations, suitability claims, affordability claims, school/safety claims, or protected-class language.
+- Non-Search maps remain out of scope and unchanged.
+- Brokerage disclosure remains on hold: `EXTERNAL_COMPASS_MARKETING_REVIEW_PENDING`.
+- Push remains unauthorized.
+- Manual deployment remains unauthorized.
+- Production certification remains unauthorized.
+- Wave 1B closure remains unauthorized.
+- Property Detail Context Preservation Phase 2 remains deferred.
+
+Implementation file scope:
+
+- `components/maps/SearchMap.tsx`
+- `app/globals.css`
+- `scripts/checkDxtMapVisualLanguageNormalization.ts`
+- `package.json`
+- `tsconfig.worker.json`
+- `docs/project-atlas/executive-library/REIE-DXT-WAVE-1B-CURRENT-PROVIDER-STYLE-CONSTRAINT-REMEDIATION-IMPLEMENTATION.md`
+- `docs/CHAT_START.md`
+
+Baseline and prior deployment status:
+
+- Baseline commit: `4fb474c514cee0307fc6dba78ab9d6890cfa31af`
+- Baseline message: `Specify REIE map visual language`
+- Deployment status: `success`
+- GitHub/Vercel status ID: `51510970808`
+- Context: `Vercel`
+- Description: `Deployment has completed`
+- Target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/CK4pipGTLDvHziffzBRs279SfAXc`
+- Updated: `2026-08-02T19:11:43Z`
+- Supersession status during implementation baseline verification: not superseded.
+
+Validation posture:
+
+- Focused deterministic check: `npm run check:dxt-map-visual-language-normalization`
+- Required regression family includes Search workspace shell, marker/preview interaction, Search return context, map rendering, Search runtime, property-route safety, Product Cohesion, Decision Journey, Public Trust, source-rights readiness, market/neighborhood regressions, Geographic Intelligence, Local Decision Intelligence, buyer/seller/financing/advisory/Grand Plan, unsubscribe safety, alert readiness, typecheck, lint, build, and local production smoke.
+- Local browser review must verify mobile, tablet, and desktop Search map behavior, OpenTopoMap-only tile hosts, visible attribution, no Mapbox tile requests, selected-property behavior, no horizontal overflow, and no clean-load console errors.
+
+Exact next authorization gate:
+
+`READY_FOR_REIE_DXT_WAVE_1B_MAP_VISUAL_LANGUAGE_LOCAL_CERTIFICATION_AND_PUSH_REVIEW`
+
+That gate may authorize independent local certification and push review only if explicitly granted. Do not push, deploy, perform production certification, perform documentation closure, change providers, change tile sources, activate Mapbox, add tokens or environment variables, modify non-Search maps, change routes, add APIs, add persistence, add telemetry, modify CRM, change brokerage disclosure copy, begin Property Detail Context Preservation Phase 2, or begin another DXT phase without explicit authorization.
+
+Prior DXT Wave 1B map visual-language normalization product specification retained below.
+
 PROJECT ATLAS(tm) / REIE DXT Wave 1B Map Visual-Language Normalization Product Specification, August 2, 2026:
 
 Workspace:

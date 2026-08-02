@@ -33,6 +33,7 @@
     "scripts/checkDxtSearchWorkspaceShell.ts",
     "scripts/checkDxtSearchMarkerPreviewInteraction.ts",
     "scripts/checkDxtSearchReturnContextHandoff.ts",
+    "scripts/checkDxtMapVisualLanguageNormalization.ts",
     "scripts/checkCepSearchMapBaseline.ts",
     "scripts/checkCepConversionSellerAcquisitionBaseline.ts",
     "scripts/checkCepMarketIntelligenceBaseline.ts",

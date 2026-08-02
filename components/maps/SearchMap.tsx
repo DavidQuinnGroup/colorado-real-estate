@@ -95,6 +95,15 @@ type SearchMapProps = {
 
 const CLUSTER_GRID_SIZE = 86;
 const CLUSTER_DISABLE_ZOOM = 15;
+const SEARCH_MAP_MIN_ZOOM = 8;
+const SEARCH_MAP_MAX_ZOOM = 17;
+const SEARCH_MAP_INITIAL_ZOOM = 12;
+const OPENTOPO_TILE_URL = 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png';
+const OPTIONAL_MAPBOX_OVERLAY_ENABLED = false;
+const OPENTOPO_ATTRIBUTION =
+  'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, SRTM | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)';
+const MAPBOX_ATTRIBUTION =
+  '&copy; <a href="https://www.mapbox.com/about/maps/">Mapbox</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
 
 function hasCoordinates(property: MapSidebarListing): property is CoordinateListing {
   return (
@@ -107,6 +116,8 @@ function hasCoordinates(property: MapSidebarListing): property is CoordinateList
 }
 
 function getMapboxTileUrl() {
+  if (!OPTIONAL_MAPBOX_OVERLAY_ENABLED) return null;
+
   const token = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
   if (!token) return null;
 
@@ -293,13 +304,13 @@ function fitCluster(map: L.Map, cluster: ClusterBucket) {
   if (bounds.isValid() && cluster.listings.length > 1) {
     map.fitBounds(bounds.pad(0.22), {
       animate: true,
-      maxZoom: Math.max(map.getZoom() + 2, CLUSTER_DISABLE_ZOOM),
+      maxZoom: Math.min(Math.max(map.getZoom() + 2, CLUSTER_DISABLE_ZOOM), SEARCH_MAP_MAX_ZOOM),
       padding: [72, 72],
     });
     return;
   }
 
-  map.setView([cluster.lat, cluster.lng], Math.min(map.getZoom() + 2, 18), { animate: true });
+  map.setView([cluster.lat, cluster.lng], Math.min(map.getZoom() + 2, SEARCH_MAP_MAX_ZOOM), { animate: true });
 }
 
 export default function SearchMap({
@@ -318,8 +329,12 @@ export default function SearchMap({
   const markerLayerRef = useRef<MarkerLayerGroup | null>(null);
   const onBoundsChangeRef = useRef<SearchMapProps['onBoundsChange']>(onBoundsChange);
   const boundsTimerRef = useRef<number | null>(null);
+  const tileLoadDelayTimerRef = useRef<number | null>(null);
+  const pendingTileCountRef = useRef(0);
+  const failedTileCountRef = useRef(0);
   const selectedPanIdRef = useRef<string | null>(null);
   const [mapReady, setMapReady] = useState(false);
+  const [tileStatus, setTileStatus] = useState<'initial' | 'loading' | 'delayed' | 'ready' | 'unavailable'>('initial');
   const [markerStats, setMarkerStats] = useState<MarkerStats>({
     activeMarkers: 0,
     clusterMarkers: 0,
@@ -348,11 +363,11 @@ export default function SearchMap({
 
     const map = L.map(container, {
       center,
-      zoom: 12,
-      minZoom: 8,
-      maxZoom: 18,
+      zoom: SEARCH_MAP_INITIAL_ZOOM,
+      minZoom: SEARCH_MAP_MIN_ZOOM,
+      maxZoom: SEARCH_MAP_MAX_ZOOM,
       zoomControl: false,
-      attributionControl: false,
+      attributionControl: true,
     });
 
     const emitBounds = () => {
@@ -381,15 +396,63 @@ export default function SearchMap({
 
     const mapboxTileUrl = getMapboxTileUrl();
 
-    L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-      className: 'reie-saturday-topo-tiles',
-      maxZoom: 17,
-    }).addTo(map);
+    const clearTileDelayTimer = () => {
+      if (tileLoadDelayTimerRef.current) {
+        window.clearTimeout(tileLoadDelayTimerRef.current);
+        tileLoadDelayTimerRef.current = null;
+      }
+    };
+
+    const scheduleTileDelay = () => {
+      clearTileDelayTimer();
+      tileLoadDelayTimerRef.current = window.setTimeout(() => {
+        if (pendingTileCountRef.current > 0) {
+          setTileStatus('delayed');
+        }
+      }, 1400);
+    };
+
+    const updateTileReadyState = () => {
+      if (pendingTileCountRef.current > 0) return;
+      clearTileDelayTimer();
+      setTileStatus(failedTileCountRef.current > 0 ? 'unavailable' : 'ready');
+    };
+
+    const openTopoLayer = L.tileLayer(OPENTOPO_TILE_URL, {
+      attribution: OPENTOPO_ATTRIBUTION,
+      className: 'reie-search-basemap-tile',
+      maxNativeZoom: SEARCH_MAP_MAX_ZOOM,
+      maxZoom: SEARCH_MAP_MAX_ZOOM,
+      updateWhenIdle: true,
+      updateWhenZooming: false,
+      keepBuffer: 2,
+      opacity: 0.96,
+    });
+
+    openTopoLayer.on('tileloadstart', () => {
+      pendingTileCountRef.current += 1;
+      setTileStatus('loading');
+      scheduleTileDelay();
+    });
+
+    openTopoLayer.on('tileload', () => {
+      pendingTileCountRef.current = Math.max(0, pendingTileCountRef.current - 1);
+      updateTileReadyState();
+    });
+
+    openTopoLayer.on('tileerror', () => {
+      pendingTileCountRef.current = Math.max(0, pendingTileCountRef.current - 1);
+      failedTileCountRef.current += 1;
+      updateTileReadyState();
+    });
+
+    openTopoLayer.addTo(map);
 
     if (mapboxTileUrl) {
       L.tileLayer(mapboxTileUrl, {
         className: 'reie-mapbox-detail-tiles',
-        maxZoom: 18,
+        attribution: MAPBOX_ATTRIBUTION,
+        maxZoom: SEARCH_MAP_MAX_ZOOM,
         opacity: 0.18,
         tileSize: 256,
       }).addTo(map);
@@ -425,6 +488,9 @@ export default function SearchMap({
         window.clearTimeout(boundsTimerRef.current);
         boundsTimerRef.current = null;
       }
+      clearTileDelayTimer();
+      pendingTileCountRef.current = 0;
+      failedTileCountRef.current = 0;
 
       map.off('moveend', handleMapMove);
       map.off('zoomend resize', handleMapViewportChange);
@@ -548,7 +614,7 @@ export default function SearchMap({
     }
 
     if (coordinateListings.length === 1) {
-      map.setView([coordinateListings[0].lat, coordinateListings[0].lng], Math.max(map.getZoom(), 13), { animate: true });
+      map.setView([coordinateListings[0].lat, coordinateListings[0].lng], Math.min(Math.max(map.getZoom(), 13), SEARCH_MAP_MAX_ZOOM), { animate: true });
     }
   }, [listings, mapReady, selectedId, hoveredId, setSelectedId, setHoveredId, viewportVersion]);
 
@@ -578,6 +644,10 @@ export default function SearchMap({
         data-search-generated-at={searchMeta?.generatedAt || ''}
         data-search-smoke-ready={smokeReady === undefined ? 'unknown' : smokeReady ? 'true' : 'false'}
         data-search-smoke-blockers={smokeBlockerCount}
+        data-search-map-provider="opentopomap"
+        data-search-map-tile-url={OPENTOPO_TILE_URL}
+        data-search-map-max-zoom={SEARCH_MAP_MAX_ZOOM}
+        data-search-map-tile-status={tileStatus}
       />
 
       {shouldShowSearchDiagnostics ? (
@@ -642,6 +712,19 @@ export default function SearchMap({
         </p>
       </div>
 
+      {tileStatus === 'delayed' || tileStatus === 'unavailable' ? (
+        <div
+          className="reie-map-tile-status pointer-events-none absolute bottom-4 left-4 z-[715] max-w-[min(340px,calc(100%-2rem))] rounded-[8px] border border-white/10 bg-[#071017]/82 px-3 py-2 text-[11px] font-bold leading-5 text-white/72 shadow-[0_18px_48px_rgba(0,0,0,0.42)] backdrop-blur"
+          data-testid="reie-search-map-tile-status"
+          data-tile-status={tileStatus}
+          aria-live="polite"
+        >
+          {tileStatus === 'unavailable'
+            ? 'Map tiles are not fully available. The list remains ready for comparing homes.'
+            : 'Map detail is still loading. The list and selected property remain available.'}
+        </div>
+      ) : null}
+
       <style jsx global>{`
         .leaflet-container {
           background: #071017 !important;
@@ -649,8 +732,15 @@ export default function SearchMap({
         }
 
         .reie-map-canvas {
+          background: radial-gradient(circle at 50% 42%, rgba(37, 58, 52, 0.3), rgba(7, 16, 23, 0.92) 68%) !important;
           isolation: isolate;
           position: relative;
+        }
+
+        .reie-map-canvas .leaflet-tile-pane {
+          background: #0a1518;
+          filter: saturate(0.74) contrast(0.9) brightness(0.96) sepia(0.04);
+          opacity: 0.96;
         }
 
         .reie-map-orientation {
@@ -683,13 +773,30 @@ export default function SearchMap({
           border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
         }
 
-        .reie-saturday-topo-tiles {
-          filter: saturate(0.72) contrast(1.03) brightness(0.96) sepia(0.04) !important;
+        .reie-map-canvas .reie-search-basemap-tile.leaflet-tile {
+          opacity: 0.96 !important;
         }
 
         .reie-mapbox-detail-tiles {
-          filter: saturate(0.7) contrast(1.04) brightness(0.94) sepia(0.04) !important;
+          filter: saturate(0.7) contrast(0.94) brightness(0.95) sepia(0.04) !important;
           mix-blend-mode: soft-light;
+        }
+
+        .reie-map-canvas .leaflet-control-attribution {
+          border-radius: 6px 0 0 0;
+          background: rgba(7, 16, 23, 0.78) !important;
+          color: rgba(255, 255, 255, 0.72) !important;
+          font-size: 10px !important;
+          line-height: 1.4 !important;
+          max-width: min(74vw, 520px);
+          padding: 3px 7px !important;
+        }
+
+        .reie-map-canvas .leaflet-control-attribution a {
+          color: rgba(207, 250, 254, 0.9) !important;
+          text-decoration: underline;
+          text-decoration-thickness: 1px;
+          text-underline-offset: 2px;
         }
 
         .luxury-marker-container,
@@ -703,8 +810,8 @@ export default function SearchMap({
           min-width: 78px;
           border: 0;
           border-radius: 999px;
-          background: linear-gradient(135deg, rgba(246, 248, 242, 0.96), rgba(207, 250, 254, 0.92));
-          box-shadow: 0 10px 28px rgba(0, 0, 0, 0.42), 0 0 0 2px rgba(7, 16, 23, 0.72);
+          background: linear-gradient(135deg, rgba(250, 248, 238, 0.98), rgba(224, 244, 241, 0.94));
+          box-shadow: 0 10px 28px rgba(0, 0, 0, 0.46), 0 0 0 2px rgba(7, 16, 23, 0.78);
           color: #071017;
           cursor: pointer;
           display: block;
@@ -734,20 +841,20 @@ export default function SearchMap({
         }
 
         .luxury-marker:hover {
-          box-shadow: 0 14px 38px rgba(207, 250, 254, 0.24), 0 18px 48px rgba(0, 0, 0, 0.62), 0 0 0 3px rgba(207, 250, 254, 0.22);
+          box-shadow: 0 14px 38px rgba(207, 250, 254, 0.2), 0 18px 48px rgba(0, 0, 0, 0.62), 0 0 0 3px rgba(207, 250, 254, 0.2);
           color: #061017;
           transform: translateY(-3px);
         }
 
         .luxury-marker.hovered {
-          box-shadow: 0 14px 38px rgba(207, 250, 254, 0.24), 0 18px 48px rgba(0, 0, 0, 0.62), 0 0 0 3px rgba(207, 250, 254, 0.22);
+          box-shadow: 0 14px 38px rgba(207, 250, 254, 0.2), 0 18px 48px rgba(0, 0, 0, 0.62), 0 0 0 3px rgba(207, 250, 254, 0.2);
           color: #061017;
           transform: translateY(-3px);
         }
 
         .luxury-marker.selected {
           background: #f8f3df;
-          box-shadow: 0 0 0 3px rgba(8, 17, 23, 0.76), 0 0 0 7px rgba(207, 250, 254, 0.32), 0 20px 54px rgba(0, 0, 0, 0.7);
+          box-shadow: 0 0 0 3px rgba(8, 17, 23, 0.84), 0 0 0 7px rgba(207, 250, 254, 0.36), 0 20px 54px rgba(0, 0, 0, 0.72);
           color: #061017;
           transform: translateY(-4px);
         }
@@ -763,8 +870,8 @@ export default function SearchMap({
 
         .luxury-cluster {
           align-items: center;
-          background: rgba(7, 16, 23, 0.92);
-          border: 1px solid rgba(207, 250, 254, 0.38);
+          background: rgba(7, 16, 23, 0.9);
+          border: 1px solid rgba(207, 250, 254, 0.34);
           border-radius: 999px;
           box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08), 0 14px 36px rgba(0, 0, 0, 0.48), 0 0 0 5px rgba(207, 250, 254, 0.1);
           color: #fff;
@@ -809,6 +916,17 @@ export default function SearchMap({
             right: 12px;
             max-width: none;
             padding: 10px 11px;
+          }
+
+          .reie-map-tile-status {
+            bottom: 12px;
+            left: 12px;
+            right: 12px;
+            max-width: none;
+          }
+
+          .reie-map-canvas .leaflet-control-attribution {
+            max-width: calc(100vw - 96px);
           }
         }
       `}</style>

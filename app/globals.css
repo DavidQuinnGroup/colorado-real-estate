@@ -1609,6 +1609,9 @@ html, body {
   height: 256px !important;
   max-width: none !important;
   object-fit: fill !important;
+}
+
+.reie-map-canvas .leaflet-tile:not(.reie-search-basemap-tile) {
   filter: none !important;
 }
 
