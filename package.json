@@ -87,6 +87,7 @@
     "check:map-rendering-safety": "npm run worker:build && node dist/scripts/checkMapRenderingSafety.js",
     "check:search-listing-quality": "npm run worker:build && node dist/scripts/checkSearchListingQuality.js",
     "check:search-runtime-safety": "npm run worker:build && node dist/scripts/checkSearchRuntimeSafety.js",
+    "check:dxt-search-workspace-shell": "npm run worker:build && node dist/scripts/checkDxtSearchWorkspaceShell.js",
     "check:dxt-search-marker-preview-interaction": "npm run worker:build && node dist/scripts/checkDxtSearchMarkerPreviewInteraction.js",
     "check:cep-search-map-baseline": "npm run worker:build && node dist/scripts/checkCepSearchMapBaseline.js",
     "check:cep-property-intelligence-experience": "npm run worker:build && node dist/scripts/checkCepPropertyIntelligenceExperience.js",

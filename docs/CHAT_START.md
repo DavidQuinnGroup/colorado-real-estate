@@ -10,6 +10,80 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE DXT Wave 1B Search Workspace Information Hierarchy And Shell Local Implementation, August 2, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+DXT Wave 1B Search workspace shell implementation status:
+
+- Implementation record: `docs/project-atlas/executive-library/REIE-DXT-WAVE-1B-SEARCH-WORKSPACE-INFORMATION-HIERARCHY-AND-SHELL-IMPLEMENTATION.md`
+- Status: `READY_FOR_REIE_DXT_WAVE_1B_SEARCH_WORKSPACE_SHELL_LOCAL_CERTIFICATION_AND_PUSH_REVIEW`
+- Implemented surface: existing `/search`
+- Implemented model: bounded persistent Search workspace information hierarchy and shell
+- Local implementation commit: current local HEAD for `Improve persistent Search workspace shell`
+- Push remains unauthorized until local certification and push review are explicitly authorized.
+- Production certification remains unauthorized.
+- Full persistent workspace remains unauthorized.
+- Property Detail Context Preservation remains deferred.
+- Map Visual-Language Normalization remains deferred.
+- Brokerage disclosure changes remain on hold pending external Compass marketing review.
+
+Implemented scope:
+
+- first-screen decision hierarchy;
+- compact decision strip;
+- result-status treatment;
+- active criteria summary treatment;
+- core criteria metadata for `city` and `query`;
+- advanced criteria metadata for `minPrice`, `maxPrice`, `propertyType`, `beds`, and `baths`;
+- list/map shell region metadata;
+- selected-property orientation while preserving the existing click-pinned drawer;
+- focused deterministic validation through `npm run check:dxt-search-workspace-shell`.
+
+Protected boundaries:
+
+- no new route;
+- no Search API change;
+- no property-route change;
+- no Search provider change;
+- no map provider change;
+- no persistence;
+- no telemetry;
+- no CRM;
+- no personalization;
+- no brokerage disclosure copy change;
+- no affordability, approval, qualification, recommendation, suitability, ranking, school, safety, or protected-class claim;
+- no deployment configuration change;
+- no production mutation.
+
+Prior deployment status for implementation baseline:
+
+- Baseline commit: `18e842db3e94287620527ccb073c86f191e24ea4`
+- Status: `success`
+- GitHub/Vercel status ID: `51507524673`
+- Context: `Vercel`
+- Description: `Deployment has completed`
+- Target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/6FkoecWNwHmtb21dVWQcHwouYF3G`
+- Updated: `2026-08-02T16:11:26Z`
+
+Exact next authorization gate:
+
+`READY_FOR_REIE_DXT_WAVE_1B_SEARCH_WORKSPACE_SHELL_LOCAL_CERTIFICATION_AND_PUSH_REVIEW`
+
+That gate may authorize local certification and push review only if explicitly granted. Do not push, deploy, perform production certification, begin Property Detail Context Preservation, begin Map Visual-Language Normalization, modify brokerage disclosure copy, or begin another DXT phase without explicit authorization.
+
+Prior DXT Wave 1B persistent Search workspace shell specification handoff retained below.
+
 PROJECT ATLAS(tm) / REIE DXT Wave 1B Persistent Search Workspace Shell Specification, August 2, 2026:
 
 Workspace:

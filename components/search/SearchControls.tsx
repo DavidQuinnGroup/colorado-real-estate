@@ -49,13 +49,15 @@ function RefinementSection({
   eyebrow,
   title,
   children,
+  tier = 'advanced',
 }: {
   eyebrow: string;
   title: string;
   children: ReactNode;
+  tier?: 'core' | 'advanced';
 }) {
   return (
-    <section className="rounded-[8px] bg-white/[0.032] p-3" aria-label={title}>
+    <section className="rounded-[8px] bg-white/[0.032] p-3" aria-label={title} data-search-criteria-tier={tier}>
       <p className="text-[9px] font-black uppercase tracking-[0.18em] text-cyan-100/66">{eyebrow}</p>
       <p className="mt-1 text-[12px] font-black leading-5 text-white/72">{title}</p>
       <div className="mt-3">{children}</div>
@@ -189,6 +191,9 @@ export default function SearchControls({
     <form
       onSubmit={onSubmit}
       data-testid="reie-search-controls"
+      data-search-shell-region="criteria-entry"
+      data-search-core-criteria="city,query"
+      data-search-advanced-criteria="minPrice,maxPrice,propertyType,beds,baths"
       className="overflow-hidden rounded-[8px] border border-white/8 bg-[#071017]/72 shadow-[0_14px_42px_rgba(0,0,0,0.16)]"
       aria-labelledby={`${formId}-title`}
       aria-describedby={`${formId}-description ${formId}-status`}
@@ -260,7 +265,12 @@ export default function SearchControls({
         </div>
 
       <div className="mt-2 grid gap-2">
-        <section className="rounded-[8px] bg-cyan-100/[0.045] p-3" aria-label="Primary search criteria">
+        <section
+          className="rounded-[8px] bg-cyan-100/[0.045] p-3"
+          aria-label="Primary search criteria"
+          data-testid="reie-search-core-criteria"
+          data-search-criteria-tier="core"
+        >
           <p className="text-[9px] font-black uppercase tracking-[0.18em] text-cyan-100/66">Start Here</p>
           <p className="sr-only">Where would you like to live?</p>
           <p className="sr-only">Already have a property in mind?</p>
@@ -304,9 +314,13 @@ export default function SearchControls({
           </p>
         </section>
 
-        <details className="rounded-[8px] border border-white/8 bg-white/[0.026] p-3">
+        <details
+          className="rounded-[8px] border border-white/8 bg-white/[0.026] p-3"
+          data-testid="reie-search-advanced-criteria"
+          data-search-criteria-tier="advanced-disclosure"
+        >
           <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-[10px] font-black uppercase tracking-[0.16em] text-white/54">
-            Refine budget and home details
+            Advanced criteria: refine budget and home details
             <span className="text-cyan-100/70">+</span>
           </summary>
           <div className="mt-3 grid gap-2">

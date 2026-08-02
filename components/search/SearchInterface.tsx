@@ -253,6 +253,8 @@ export default function SearchInterface({
   const mapMovementLabel = getMapMovementLabel(lastMapBounds, hasMovedMap);
   const criteriaLine = getCriteriaLine(activeFilterChips);
   const evidenceLabel = getEvidenceLabel(isSearching, isSearchDegraded, hasZeroResults);
+  const selectedPropertyLabel = selectedProperty?.address || 'No property selected';
+  const workspaceModeLabel = mobileView === 'map' ? 'Map view' : 'List view';
   const searchStateAnnouncement = isSearching
     ? 'Search is updating.'
     : searchError
@@ -419,6 +421,12 @@ export default function SearchInterface({
       data-search-map-movement={mapMovementLabel}
       data-search-preview-model="click-pinned"
       data-search-preview-hover-dependent="false"
+      data-search-workspace-shell="persistent-search-workspace-shell"
+      data-search-first-screen-hierarchy="decision-status-criteria-list-map-selection"
+      data-search-property-context-restoration="deferred"
+      data-search-map-visual-normalization="deferred"
+      data-search-brokerage-disclosure-hold="EXTERNAL_COMPASS_MARKETING_REVIEW_PENDING"
+      data-search-persistence="false"
       onKeyDown={handleWorkspaceKeyDown}
     >
       <p className="sr-only" aria-live="polite" data-testid="reie-search-state-announcement">
@@ -469,17 +477,20 @@ export default function SearchInterface({
         data-mobile-view={mobileView}
         data-visible-listing-count={visibleListings.length}
         data-selected-listing-id={visibleSelectedId || ''}
+        data-search-shell-region="list-and-criteria"
       >
         <section
           className="reie-search-discovery-intro"
           data-testid="reie-search-discovery-intro"
           data-discovery-listing-count={visibleListings.length}
           data-discovery-filter-state={hasFilters ? 'focused' : 'open'}
+          data-search-shell-region="orientation"
+          aria-labelledby="reie-search-decision-prompt"
         >
           <div className="reie-search-product-hero">
             <div className="min-w-0">
               <p className="text-[10px] font-black uppercase tracking-[0.24em] text-cyan-100/76">Guided Property Search</p>
-              <h2 className="mt-2 font-serif text-[1.85rem] font-black leading-[1.03] tracking-normal text-white">
+              <h2 id="reie-search-decision-prompt" className="mt-2 font-serif text-[1.85rem] font-black leading-[1.03] tracking-normal text-white">
                 Which homes deserve your attention?
               </h2>
               <p className="sr-only">Explore Colorado homes with criteria, context, and confidence.</p>
@@ -503,12 +514,35 @@ export default function SearchInterface({
           </div>
 
           <div
+            className="reie-search-decision-strip"
+            data-testid="reie-search-decision-strip"
+            data-search-shell-hierarchy="decision-status-criteria-list-map-selection"
+            data-search-result-label={searchResultLabel}
+            data-search-criteria-summary={criteriaLine}
+            data-search-mobile-view={mobileView}
+            data-search-selected-property={selectedPropertyLabel}
+          >
+            {[
+              ['Decision', 'Compare homes worth attention'],
+              ['Results', isSearching ? 'Updating results' : searchResultLabel],
+              ['Criteria', activeFilterChips.length ? criteriaLine : 'Open criteria'],
+              ['Workspace', `${workspaceModeLabel} / map context`],
+            ].map(([label, body]) => (
+              <div key={label} className="reie-search-decision-strip-item" data-search-shell-step={label.toLowerCase()}>
+                <p>{label}</p>
+                <span>{body}</span>
+              </div>
+            ))}
+          </div>
+
+          <div
             className="reie-search-state-panel reie-search-product-state"
             data-testid="reie-search-state-panel"
             data-search-result-label={searchResultLabel}
             data-search-degraded={String(isSearchDegraded)}
             data-search-map-movement={mapMovementLabel}
             data-search-zero-results={String(hasZeroResults)}
+            data-search-shell-region="result-status"
           >
             <div>
               <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.16em] text-cyan-100/72">
@@ -534,6 +568,7 @@ export default function SearchInterface({
             data-search-criteria-summary={criteriaLine}
             data-search-evidence-state={evidenceLabel}
             data-search-active-filter-count={activeFilterChips.length}
+            data-search-shell-region="active-criteria"
           >
             <div className="min-w-0">
               <p className="text-[9px] font-black uppercase tracking-[0.18em] text-white/38">Current Criteria</p>
@@ -577,7 +612,7 @@ export default function SearchInterface({
             </div>
           ) : null}
 
-          <ol className="reie-search-orientation" data-testid="reie-search-orientation" aria-label="How to begin guided search">
+          <ol className="reie-search-orientation" data-testid="reie-search-orientation" aria-label="How to begin guided search" data-search-shell-region="workspace-steps">
             <li>
               <span>Refine</span>
               Start with place or a specific property.
@@ -729,6 +764,7 @@ export default function SearchInterface({
         data-mobile-view={mobileView}
         data-selected-listing-id={visibleSelectedId || ''}
         data-search-source={effectiveSearchMeta?.source || 'initial'}
+        data-search-shell-region="map-and-preview"
       >
         <MapInner
           listings={visibleListings}
