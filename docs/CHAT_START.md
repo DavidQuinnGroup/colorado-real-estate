@@ -10,6 +10,62 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE DXT Wave 1B Persistent Search Workspace Shell Specification, August 2, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+DXT Wave 1B persistent Search workspace shell specification status:
+
+- Specification record: `docs/project-atlas/executive-library/REIE-DXT-WAVE-1B-PERSISTENT-SEARCH-WORKSPACE-SHELL-SPECIFICATION.md`
+- Status: `REIE_DXT_WAVE_1B_PERSISTENT_SEARCH_WORKSPACE_SHELL_SPECIFICATION_READY`
+- Selected shell model: `PERSISTENT_SEARCH_WORKSPACE_SHELL`
+- Selected first bounded implementation phase: `SEARCH_WORKSPACE_INFORMATION_HIERARCHY_AND_SHELL`
+- Implementation remains unauthorized.
+- Runtime changes remain unauthorized.
+- Search, map, property-route, API, provider, persistence, telemetry, CRM, brokerage disclosure, deployment, production-certification, and next-phase changes remain unauthorized.
+
+Prior deployment status for baseline:
+
+- Baseline commit: `e028d33270c6b9bbe56944686ffb70ad658d556a`
+- Status: `success`
+- GitHub/Vercel status ID: `51507391072`
+- Context: `Vercel`
+- Description: `Deployment has completed`
+- Target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/84QaK6deEizWZMLmA5AWt7T96Gu8`
+- Updated: `2026-08-02T16:04:37Z`
+
+Specification boundaries:
+
+- `/search` remains the authoritative workspace surface.
+- Existing Search APIs remain unchanged.
+- Existing `/properties/[id]` routes remain unchanged.
+- Certified click-pinned selected-property preview remains the interaction model.
+- No persistent customer profile, localStorage, cookies, CRM, telemetry, provider change, or new route is authorized.
+- Property Detail Context Preservation remains deferred.
+- Map Visual-Language Normalization remains deferred.
+
+Brokerage disclosure hold:
+
+`EXTERNAL_COMPASS_MARKETING_REVIEW_PENDING`
+
+Exact next authorization gate:
+
+`READY_FOR_REIE_DXT_WAVE_1B_SEARCH_WORKSPACE_INFORMATION_HIERARCHY_AND_SHELL_BOUNDED_IMPLEMENTATION_AUTHORIZATION`
+
+That gate may authorize bounded implementation only if explicitly granted. Do not begin implementation, runtime changes, Search changes, map changes, property-route changes, route creation, API changes, provider changes, persistence, telemetry, CRM, brokerage disclosure changes, deployment changes, production certification, full persistent workspace implementation, Property Detail Context Preservation, Map Visual-Language Normalization, or another DXT phase without explicit authorization.
+
+Prior DXT Wave 1B post-marker/preview review handoff retained below.
+
 PROJECT ATLAS(tm) / REIE DXT Wave 1B Post Marker Preview Next Phase Review, August 2, 2026:
 
 Workspace:
