@@ -10,6 +10,62 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE DXT Wave 1B Post Search Return Context Next-Phase Review, August 2, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+DXT Wave 1B post Search return context next-phase review status:
+
+- Review record: `docs/project-atlas/executive-library/REIE-DXT-WAVE-1B-POST-SEARCH-RETURN-CONTEXT-NEXT-PHASE-REVIEW.md`
+- Status: `REIE_DXT_WAVE_1B_POST_SEARCH_RETURN_CONTEXT_NEXT_PHASE_SELECTED`
+- Selected outcome: `READY_FOR_REIE_DXT_WAVE_1B_MAP_VISUAL_LANGUAGE_NORMALIZATION_PRODUCT_SPECIFICATION`
+- Recommended program: `REIE_DXT_WAVE_1B_MAP_VISUAL_LANGUAGE_NORMALIZATION`
+- Implementation remains unauthorized.
+- Runtime changes remain unauthorized.
+- Map provider changes, tile-source changes, route changes, API changes, persistence, telemetry, brokerage disclosure changes, production certification, and next-phase execution remain unauthorized.
+- Search return handoff remains certified and closed at implementation commit `30c42ff86036637c4db6c324756ecfc16b0c7d43`.
+- Marker/preview certification remains preserved.
+- Search workspace shell certification remains preserved.
+- Property Detail Context Preservation Phase 2 remains deferred and unauthorized.
+- Wave 1B closure is not recommended until the map visual-language gap is specified and either implemented/certified or formally deferred with clear provider/licensing blockers.
+- Brokerage disclosure remains on hold: `EXTERNAL_COMPASS_MARKETING_REVIEW_PENDING`.
+
+Review findings:
+
+- Search map architecture uses Leaflet with OpenTopoMap default tiles and an optional low-opacity Mapbox outdoors overlay when `NEXT_PUBLIC_MAPBOX_TOKEN` exists.
+- Repository evidence does not yet prove exact basemap color, water, road, label, boundary, or land-style control under the current tile posture.
+- Provider documentation, attribution obligations, current production tile behavior, and source-rights constraints must be verified during product specification before any implementation authorization.
+- The map visual-language gap is the highest-value remaining Wave 1B issue because the map is the dominant Search decision surface and materially affects trust, usability, and perceived product quality.
+
+Prior deployment status for the reviewed baseline:
+
+- Baseline commit: `1e2bedda52d4c7357d89e74b60091cd6fb66fa24`
+- Status: `success`
+- GitHub/Vercel status ID: `51510182222`
+- Context: `Vercel`
+- Description: `Deployment has completed`
+- Target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/CQz4hdieQT1RToupvFYoBESvu5PS`
+- Updated: `2026-08-02T18:30:37Z`
+- Supersession status during baseline verification: not superseded.
+
+Exact next authorization gate:
+
+`READY_FOR_REIE_DXT_WAVE_1B_MAP_VISUAL_LANGUAGE_NORMALIZATION_PRODUCT_SPECIFICATION_AUTHORIZATION`
+
+That gate may authorize product specification and feasibility review only if explicitly granted. Do not begin implementation, map visual-language runtime changes, provider changes, tile-source changes, route changes, API changes, persistence, telemetry, CRM, brokerage disclosure changes, deployment changes, production certification, Wave 1B closure, Property Detail Context Preservation Phase 2, or another DXT phase without explicit authorization.
+
+Prior DXT Wave 1B Search Return URL and Context Handoff certified closure retained below.
+
 PROJECT ATLAS(tm) / REIE DXT Wave 1B Search Return URL and Context Handoff Certified Closure, August 2, 2026:
 
 Workspace:
@@ -34,7 +90,7 @@ DXT Wave 1B Search Return URL and Context Handoff certified closure status:
 - Certified handoff model: `HYBRID_URL_AND_HISTORY_STATE`
 - Implementation commit: `30c42ff86036637c4db6c324756ecfc16b0c7d43`
 - Implementation message: `Preserve Search return context`
-- Closure commit: this documentation closure commit; exact SHA is recorded in the closure final response after commit creation.
+- Closure commit: `1e2bedda52d4c7357d89e74b60091cd6fb66fa24`
 - Production certification: complete.
 - Required remediation: none.
 - Marker/preview certification remains preserved.
@@ -86,12 +142,6 @@ Protected boundaries:
 - no affordability, approval, qualification, recommendation, suitability, ranking, school, safety, or protected-class claim;
 - no deployment configuration change;
 - no production mutation.
-
-Exact next authorization gate:
-
-`REIE_DXT_WAVE_1B_POST_SEARCH_RETURN_CONTEXT_NEXT_PHASE_REVIEW`
-
-That gate may authorize strategic review only if explicitly granted. It may evaluate whether the next bounded Wave 1B phase should be another Property Detail Context Preservation increment, Map Visual-Language Normalization feasibility/specification, another repository-supported bounded Search/property phase, or Wave 1B closure. Do not begin implementation, full Property Detail Context Preservation, Map Visual-Language Normalization, route changes, API changes, provider changes, persistence, telemetry, CRM, brokerage disclosure changes, deployment changes, product recertification, or another DXT phase without explicit authorization.
 
 Prior DXT Wave 1B persistent Search workspace shell specification handoff retained below.
 
