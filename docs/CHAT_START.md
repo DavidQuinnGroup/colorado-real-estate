@@ -10,6 +10,98 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE Buyer Financing Decision Planner Phase 1 Local Implementation, August 2, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Current implementation status:
+
+- Phase 1 implemented locally.
+- Push remains unauthorized.
+- Manual deployment remains unauthorized.
+- Production certification remains unauthorized.
+- Phase 2 remains unauthorized.
+- No next initiative is automatically authorized.
+
+Implemented product:
+
+- `REIE_BUYER_FINANCING_DECISION_PLANNER`
+- surface: `/buy#financing-readiness`
+- product posture: decision-support and conversation-preparation planner, not a traditional mortgage calculator
+- implementation record: `docs/project-atlas/executive-library/REIE-BUYER-FINANCING-DECISION-PLANNER-PHASE-1-IMPLEMENTATION.md`
+
+Local implementation scope:
+
+- `components/BuyerFinancingDecisionPlanner.tsx`
+- `components/BuyerFinancingReadinessGuide.tsx`
+- `scripts/checkBuyerFinancingDecisionPlanner.ts`
+- `package.json`
+- `tsconfig.worker.json`
+- `docs/project-atlas/executive-library/REIE-BUYER-FINANCING-DECISION-PLANNER-PHASE-1-IMPLEMENTATION.md`
+- `docs/CHAT_START.md`
+
+Implemented planner behavior:
+
+- core inputs: purchase price, down payment, user-entered interest rate, loan term
+- loan terms: 15 years, 20 years, 30 years
+- optional monthly assumptions: property taxes, homeowners insurance, HOA dues, monthly mortgage-insurance assumption, maintenance, utilities, other recurring ownership costs
+- non-monthly assumption: closing-cost assumption, excluded from monthly subtotal
+- arithmetic: estimated loan amount, educational principal-and-interest estimate, user-entered optional monthly subtotal, combined monthly assumption estimate
+- missing assumptions become items to verify
+- deterministic questions to verify support lender, professional, property-specific, insurance, HOA, tax, closing-cost, and timing conversations
+- advisory transition preserved through `/contact#advisory-readiness`
+- financing education transition preserved through `/buy#financing-confidence`
+- reset clears in-memory assumptions
+
+Product boundaries:
+
+- no new route
+- no dedicated calculator page
+- no homepage calculator
+- no provider integration
+- no live rates
+- no lender feed
+- no quote API
+- no public-record lookup
+- no uploads
+- no loan application
+- no credit collection
+- no Prisma or persistence
+- no customer financial profile
+- no CRM
+- no tracking or telemetry
+- no personalization
+- no AI conclusion
+- no lender recommendation
+- no loan recommendation
+- no qualification
+- no approval
+- no affordability output
+- no buying-power output
+- no score, grade, confidence percentage, or approval meter
+
+Validation status:
+
+- local validation passed; see current authorization final response for exact commands and browser evidence
+- focused check: `npm run check:buyer-financing-decision-planner`
+- implementation commit: to be recorded once created
+
+Next authorization gate after local validation and local commit:
+
+`READY_FOR_REIE_BUYER_FINANCING_DECISION_PLANNER_LOCAL_CERTIFICATION_AND_PUSH_REVIEW`
+
+Prior Buyer Financing Decision Planner product specification handoff retained below.
+
 PROJECT ATLAS(tm) / REIE Buyer Financing Decision Planner Product Specification, August 2, 2026:
 
 Workspace:

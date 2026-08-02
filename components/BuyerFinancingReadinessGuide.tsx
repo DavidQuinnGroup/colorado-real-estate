@@ -1,5 +1,7 @@
 import Link from 'next/link';
 
+import BuyerFinancingDecisionPlanner from './BuyerFinancingDecisionPlanner';
+
 const preparationGroups = [
   {
     label: 'Review',
@@ -174,6 +176,8 @@ export default function BuyerFinancingReadinessGuide() {
           </ul>
         </section>
       </div>
+
+      <BuyerFinancingDecisionPlanner />
 
       <div className="mt-4 grid gap-4 lg:grid-cols-[0.82fr_1fr]">
         <section
