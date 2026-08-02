@@ -10,6 +10,49 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE DXT Wave 1 Decision Architecture Planning, August 2, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+DXT Wave 1 planning status:
+
+- Plan record: `docs/project-atlas/executive-library/REIE-DXT-WAVE-1-DECISION-ARCHITECTURE-PLAN.md`
+- Status: `REIE_DXT_WAVE_1_DECISION_ARCHITECTURE_READY`
+- Planning-only and documentation-only.
+- Implementation remains unauthorized.
+- Runtime changes remain unauthorized.
+- Visual redesign remains unauthorized.
+- DXT Wave 2, Wave 3, and Wave 4 remain unauthorized.
+
+Active production UX findings:
+
+- Production UX findings remain active.
+- Search, map interaction, and property discovery remain the highest-priority customer-experience friction.
+- Homepage, Buyer, Seller, Market, Neighborhood, Advisory, Contact, navigation, footer, Public Trust, and mobile decision architecture were assessed.
+- Brokerage disclosure treatment remains protected as `EXTERNAL_COMPASS_MARKETING_REVIEW_PENDING`.
+
+Selected first bounded implementation program:
+
+`REIE_DXT_WAVE_1B_SEARCH_AND_PROPERTY_PERSISTENT_DECISION_WORKSPACE`
+
+Exact next authorization gate:
+
+`READY_FOR_REIE_DXT_WAVE_1B_SEARCH_AND_PROPERTY_PERSISTENT_DECISION_WORKSPACE_PRODUCT_SPECIFICATION`
+
+That gate should authorize product specification and interaction model only unless explicitly expanded. Do not begin implementation, runtime changes, route creation, component work, CSS changes, brokerage disclosure changes, Search behavior changes, map behavior changes, property behavior changes, APIs, Prisma, telemetry, CRM, persistence, provider work, deployment changes, production-data mutation, production certification, or later DXT waves without explicit authorization.
+
+Prior DXT charter handoff retained below.
+
 PROJECT ATLAS(tm) / REIE Decision Experience Transformation Charter, August 2, 2026:
 
 Workspace:
