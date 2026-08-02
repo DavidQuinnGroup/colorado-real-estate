@@ -89,6 +89,7 @@
     "scripts/checkDecisionJourneyExperience.ts",
     "scripts/checkReieProductExperienceCohesionWave.ts",
     "scripts/checkHomepageProductExperiencePhase1.ts",
+    "scripts/checkDxtWave1aHomepageInvitation.ts",
     "scripts/decisionGuideValidation.ts",
     "scripts/checkBoulderDecisionGuide.ts",
     "scripts/checkLouisvilleDecisionGuide.ts",

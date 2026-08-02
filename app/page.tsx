@@ -47,22 +47,25 @@ const darkButtonClass = 'home-btn home-btn-dark';
 
 const decisionEntries = [
   {
-    title: 'Search',
-    body: 'Start with active listings and use the full search workspace when you are ready to compare homes.',
+    title: 'Discover Homes',
+    body: 'Start with active listings, then use map, list, and property context when a home is worth a closer look.',
     href: '/search',
-    cta: 'Primary Path',
+    cta: 'Primary discovery path',
+    priority: 'primary',
   },
   {
-    title: 'Buy',
-    body: 'Prepare criteria, financing questions, and property review before a showing becomes urgent.',
+    title: 'Prepare to Buy',
+    body: 'Organize criteria, financing questions, and property review before a showing becomes urgent.',
     href: '/buy',
-    cta: 'Buyer Guidance',
+    cta: 'Buyer preparation',
+    priority: 'secondary',
   },
   {
-    title: 'Sell',
-    body: 'Understand preparation, buyer questions, and market context before pricing takes over.',
+    title: 'Prepare to Sell',
+    body: 'Understand preparation, buyer questions, and market context before pricing becomes the whole conversation.',
     href: '/sell',
-    cta: 'Seller Guidance',
+    cta: 'Seller preparation',
+    priority: 'secondary',
   },
 ];
 
@@ -82,9 +85,9 @@ const reiePrinciples = [
 ];
 
 const searchPreviewSteps = [
-  'Start broad with the place, property, or criteria already on your mind.',
-  'Use the full search experience when you are ready for map, list, and deeper comparison.',
-  'Treat results as a decision starting point, then verify property details before relying on them.',
+  'Start with the place, property, or criteria already on your mind.',
+  'Move into the full search workspace when comparison matters.',
+  'Verify details before relying on any property result.',
 ];
 
 const homeToolSchema = buildToolSchema({
@@ -144,8 +147,15 @@ export default function HomePage() {
         data-homepage-primary-cta="/search"
         data-homepage-community-grid="removed"
         data-homepage-mortgage-calculator="false"
+        data-dxt-wave-1a-homepage-invitation="true"
+        data-dxt-wave-1a-selected-phase="homepage-invitation-and-post-hero-simplification"
+        data-homepage-brokerage-disclosure-change="false"
       >
-        <section className="home-phase-c-hero relative min-h-[calc(100vh-112px)] overflow-hidden" data-testid="home-portal-hero">
+        <section
+          className="home-phase-c-hero relative min-h-[calc(100vh-112px)] overflow-hidden"
+          data-testid="home-portal-hero"
+          data-dxt-first-viewport="invitation"
+        >
           <Image
             src={HERO_IMAGE}
             alt="Colorado Front Range residential landscape at golden hour"
@@ -167,11 +177,11 @@ export default function HomePage() {
               <p className="mt-9 max-w-2xl text-base leading-8 text-white/72 sm:text-lg">
                 Search homes, compare communities, and understand the decision before the next step.
               </p>
-              <div className="home-hero-search-focus mt-12">
+              <div className="home-hero-search-focus mt-12" data-dxt-primary-action="/search">
                 <p className="text-[10px] font-black uppercase tracking-[0.24em] text-white/48">Begin with search</p>
                 <div className="home-hero-actions mt-5">
                   <Link href="/search" className={primaryButtonClass}>
-                    Start Your Search
+                    Discover Homes
                   </Link>
                   <Link href="#why-reie" className={secondaryButtonClass}>
                     Why REIE
@@ -182,91 +192,33 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className={sectionShell} data-testid="home-portal-journey">
-          <div className={containerShell}>
-            <div className="max-w-4xl">
-              <p className={eyebrowClass}>Choose Your Journey</p>
-              <h2 className={headingClass}>Three paths. One clearer decision.</h2>
-              <p className="mt-7 max-w-2xl text-base leading-8 text-white/58">
-                Choose the path that matches the decision you are preparing for now. Each route keeps the focus on context, verification, and next-step clarity.
-              </p>
-            </div>
-            <div className="home-decision-grid mt-14">
-              {decisionEntries.map((entry) => (
-                <Link
-                  key={entry.title}
-                  href={entry.href}
-                  className="home-card-link home-decision-entry group focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-100"
-                >
-                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100/64">{entry.cta}</span>
-                  <h3 className="mt-7 text-3xl font-black leading-none text-white sm:text-4xl">{entry.title}</h3>
-                  <p className="mt-5 text-sm leading-7 text-white/58">{entry.body}</p>
-                  <p className="mt-9 text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/74 group-hover:text-white">
-                    Continue
-                  </p>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section className="home-djx-strip px-5 pb-4 pt-0 sm:px-8 lg:px-12" data-testid="home-djx-continuity">
-          <div className={containerShell}>
-            <ContinueYourDecision
-              stage="home"
-              cameFrom="Broad orientation"
-              currentDecision="Choose the right starting path."
-              whyHere="The homepage connects search, market context, neighborhood orientation, and property review before you narrow the decision."
-              nextStep="Open guided search or compare market context."
-              density="compact"
-              links={[
-                { label: 'Search', href: '/search', note: 'Compare active homes' },
-                { label: 'Market Context', href: '/market', note: 'Review city context' },
-                { label: 'Grand Plan', href: '/grand-plan', note: 'Organize priorities' },
-              ]}
-            />
-          </div>
-        </section>
-
-        <section id="why-reie" className={`${sectionShell} home-why-section`} data-testid="home-portal-why-reie">
-          <div className={`${containerShell} grid gap-12 lg:grid-cols-[0.78fr_1.22fr] lg:items-start`}>
-            <div>
-              <p className={eyebrowClass}>Why REIE</p>
-              <h2 className={headingClass}>A calmer way to prepare the decision.</h2>
-              <p className="mt-7 max-w-xl text-base leading-8 text-white/58">
-                REIE is organized around decision quality: what you are trying to understand, what evidence is useful, what remains uncertain, and where to go next.
-              </p>
-            </div>
-            <div className="home-principle-list" data-testid="home-reie-differentiation">
-              {reiePrinciples.map((principle) => (
-                <article key={principle.title} className="home-principle-item">
-                  <h3 className="text-xl font-black leading-tight text-white">{principle.title}</h3>
-                  <p className="mt-4 text-sm leading-7 text-white/56">{principle.body}</p>
-                </article>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section id="search" className="home-search-section bg-[#f5f1e8] px-5 py-28 text-[#111820] sm:px-8 sm:py-36 lg:px-12 lg:py-44" data-testid="home-portal-search-section">
+        <section
+          id="search"
+          className="home-search-section bg-[#f5f1e8] px-5 py-24 text-[#111820] sm:px-8 sm:py-32 lg:px-12 lg:py-40"
+          data-testid="home-portal-search-section"
+          data-dxt-post-hero-sequence="primary-search"
+        >
           <div className={`${containerShell} home-discovery-container`}>
-            <div className="mb-14 grid gap-8 lg:grid-cols-[0.82fr_1.18fr] lg:items-end">
+            <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
               <div className="max-w-3xl text-left">
                 <p className="text-[10px] font-black uppercase tracking-[0.34em] text-[#7a694f]">This Is Where You Begin</p>
                 <h2 className="mt-6 max-w-4xl text-5xl font-black leading-[0.98] tracking-normal text-[#111820] sm:text-6xl lg:text-7xl">
                   Start with criteria, context, and confidence.
                 </h2>
                 <p className="mt-7 max-w-xl text-base leading-8 text-[#41505a]">
-                  The full search product is where map, list, and property comparison belong. Home gives you a calmer place to begin.
+                  The full search product is where map, list, and property comparison belong. Home gives you one clear place to begin.
                 </p>
               </div>
-              <div className="flex flex-col gap-3 sm:flex-row lg:justify-end">
+              <div className="flex flex-col gap-4 lg:items-end">
                 <Link href="/search" className={darkButtonClass} data-testid="home-discovery-continuation">
                   Continue to Guided Search
                 </Link>
+                <p className="max-w-sm text-sm leading-7 text-[#5e6b72] lg:text-right">
+                  Start broad. Narrow only when the next comparison is worth your attention.
+                </p>
               </div>
             </div>
-            <div className="home-search-preview home-search-preview-simplified" data-testid="reie-home-discovery-intro">
+            <div className="home-search-preview home-search-preview-simplified mt-14" data-testid="reie-home-discovery-intro">
               <div>
                 <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[#7a694f]">Colorado Discovery Preview</p>
                 <h3 className="mt-4 max-w-2xl text-3xl font-black leading-tight tracking-normal text-[#111820] sm:text-4xl">
@@ -293,7 +245,93 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section id="communities" className="home-market-teaser bg-[#070b10] px-5 py-24 text-white sm:px-8 sm:py-32 lg:px-12 lg:py-40" data-testid="home-portal-communities">
+        <section
+          className={sectionShell}
+          data-testid="home-portal-journey"
+          data-dxt-post-hero-sequence="decision-paths"
+          data-dxt-path-model="search-primary-buyer-seller-secondary"
+        >
+          <div className={containerShell}>
+            <div className="max-w-4xl">
+              <p className={eyebrowClass}>Choose Your Journey</p>
+              <h2 className={headingClass}>One discovery path, two preparation paths.</h2>
+              <p className="mt-7 max-w-2xl text-base leading-8 text-white/58">
+                Search is the primary doorway. Buyer and Seller guidance help when the question is less about listings and more about readiness.
+              </p>
+            </div>
+            <div className="home-decision-grid mt-14">
+              {decisionEntries.map((entry) => (
+                <Link
+                  key={entry.title}
+                  href={entry.href}
+                  className="home-card-link home-decision-entry group focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-100"
+                  data-homepage-path-priority={entry.priority}
+                >
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100/64">{entry.cta}</span>
+                  <h3 className="mt-7 text-3xl font-black leading-none text-white sm:text-4xl">{entry.title}</h3>
+                  <p className="mt-5 text-sm leading-7 text-white/58">{entry.body}</p>
+                  <p className="mt-9 text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/74 group-hover:text-white">
+                    Continue
+                  </p>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section
+          className="home-djx-strip px-5 pb-4 pt-0 sm:px-8 lg:px-12"
+          data-testid="home-djx-continuity"
+          data-dxt-post-hero-sequence="decision-continuity"
+        >
+          <div className={containerShell}>
+            <ContinueYourDecision
+              stage="home"
+              cameFrom="Broad orientation"
+              currentDecision="Choose the right starting path."
+              whyHere="The homepage connects search, market context, neighborhood orientation, and property review before you narrow the decision."
+              nextStep="Open guided search or compare market context."
+              density="compact"
+              links={[
+                { label: 'Search', href: '/search', note: 'Compare active homes' },
+                { label: 'Market Context', href: '/market', note: 'Review city context' },
+                { label: 'Grand Plan', href: '/grand-plan', note: 'Organize priorities' },
+              ]}
+            />
+          </div>
+        </section>
+
+        <section
+          id="why-reie"
+          className={`${sectionShell} home-why-section`}
+          data-testid="home-portal-why-reie"
+          data-dxt-post-hero-sequence="selective-proof"
+        >
+          <div className={`${containerShell} grid gap-12 lg:grid-cols-[0.78fr_1.22fr] lg:items-start`}>
+            <div>
+              <p className={eyebrowClass}>Why REIE</p>
+              <h2 className={headingClass}>A calmer way to prepare the decision.</h2>
+              <p className="mt-7 max-w-xl text-base leading-8 text-white/58">
+                REIE is organized around decision quality: what you are trying to understand, what evidence is useful, what remains uncertain, and where to go next.
+              </p>
+            </div>
+            <div className="home-principle-list" data-testid="home-reie-differentiation">
+              {reiePrinciples.map((principle) => (
+                <article key={principle.title} className="home-principle-item">
+                  <h3 className="text-xl font-black leading-tight text-white">{principle.title}</h3>
+                  <p className="mt-4 text-sm leading-7 text-white/56">{principle.body}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section
+          id="communities"
+          className="home-market-teaser bg-[#070b10] px-5 py-24 text-white sm:px-8 sm:py-32 lg:px-12 lg:py-40"
+          data-testid="home-portal-communities"
+          data-dxt-post-hero-sequence="market-context"
+        >
           <div className={containerShell}>
             <div className="home-community-heading home-community-heading-simplified">
               <div className="max-w-2xl">
