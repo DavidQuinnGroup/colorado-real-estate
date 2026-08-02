@@ -10,6 +10,78 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE DXT Wave 1B Post Map Visual-Language Normalization Next-Phase Review, August 2, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+DXT Wave 1B post Search transformation next-direction review status:
+
+- Review record: `docs/project-atlas/executive-library/REIE-DXT-WAVE-1B-POST-MAP-VISUAL-LANGUAGE-NORMALIZATION-NEXT-PHASE-REVIEW.md`
+- Status: `REIE_DXT_POST_SEARCH_TRANSFORMATION_NEXT_DIRECTION_SELECTED`
+- Selected outcome: `READY_FOR_REIE_DXT_WAVE_1B_PROGRAM_CLOSURE_REVIEW_AND_WAVE_1A_TRANSITION`
+- Recommended program: `REIE_DXT_WAVE_1B_PROGRAM_CLOSURE_REVIEW_AND_WAVE_1A_TRANSITION`
+- Implementation remains unauthorized.
+- Runtime changes remain unauthorized.
+- Wave 1B closure is not automatically authorized by this review.
+- Wave 1A implementation remains unauthorized.
+- Wave 1C implementation remains unauthorized.
+- Property Detail Context Preservation Phase 2 remains deferred and unauthorized.
+- Provider changes, tile-source changes, Mapbox activation, Search changes, map changes, property changes, route changes, API changes, persistence, telemetry, CRM, production-data mutation, navigation replacement, footer changes, and brokerage disclosure changes remain unauthorized.
+- Brokerage disclosure remains on hold: `EXTERNAL_COMPASS_MARKETING_REVIEW_PENDING`.
+
+Current certified DXT Wave 1B portfolio:
+
+1. Search Marker and Preview Interaction Remediation
+2. Search Workspace Information Hierarchy and Shell
+3. Search Return URL and Context Handoff
+4. Map Visual-Language Normalization
+
+Review finding:
+
+- Wave 1B has reached an appropriate strategic closure point.
+- The original high-risk Search/property interaction defects are materially resolved.
+- Remaining Search/property work, including full map-bounds, zoom, scroll, preview reopening, and selected-card restoration, remains valid but now has diminishing incremental value.
+- The highest-value next DXT direction is Wave 1A: Homepage Invitation and Global Hierarchy.
+- Wave 1A should address homepage invitation architecture, post-hero simplification, global directional-heading hierarchy, shared page orientation, CTA hierarchy, whitespace and pacing, progressive disclosure, mobile-first page rhythm, restrained containers, and consistent customer-facing headers.
+- Wave 1A must not become a site-wide redesign by default and must not modify brokerage disclosure.
+
+Deferred or rejected candidates:
+
+- `PROPERTY_DETAIL_CONTEXT_PRESERVATION_PHASE_2`: deferred until production evidence proves remaining return-context friction materially outranks global hierarchy.
+- `ANOTHER_BOUNDED_SEARCH_OR_PROPERTY_PHASE`: rejected for now because no concrete Search/property defect currently outranks homepage/global hierarchy.
+- `DXT_WAVE_1C_BUYER_SELLER_JOURNEY_PRODUCT_SPECIFICATION`: deferred until Wave 1A establishes reusable global hierarchy and page-orientation standards.
+- `DXT_PROGRAM_PAUSE`: rejected because a repository-supported next problem remains clear.
+
+Prior deployment status for reviewed baseline:
+
+- Baseline commit: `2e48a4d47e8ac3af5bf2d54e3643d412ae438430`
+- Baseline message: `Close Search map visual normalization`
+- Deployment status: `success`
+- GitHub/Vercel status ID: `51512380459`
+- Context: `Vercel`
+- Description: `Deployment has completed`
+- Target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/DkoESNTCB1duXJTSYSKFw3Stxmow`
+- Updated: `2026-08-02T20:24:54Z`
+- Pending status ID `51512348393` completed through the later successful Vercel status for the same SHA.
+
+Exact next authorization gate:
+
+`READY_FOR_REIE_DXT_WAVE_1B_PROGRAM_CLOSURE_REVIEW_AND_WAVE_1A_TRANSITION_AUTHORIZATION`
+
+That gate may authorize documentation-only Wave 1B closure review and Wave 1A transition planning. Do not begin implementation, runtime changes, Wave 1A implementation, Wave 1C implementation, Property Context Phase 2, provider changes, tile-source changes, Search changes, map changes, property changes, route changes, API changes, persistence, telemetry, CRM, brokerage disclosure changes, production certification, or another DXT phase without explicit authorization.
+
+Prior DXT Wave 1B Map Visual-Language Normalization certified closure retained below.
+
 PROJECT ATLAS(tm) / REIE DXT Wave 1B Map Visual-Language Normalization Certified Closure, August 2, 2026:
 
 Workspace:
