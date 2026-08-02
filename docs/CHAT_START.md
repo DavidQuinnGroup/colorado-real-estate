@@ -10,7 +10,7 @@ Product:
 
 ## Latest New-Chat Handoff
 
-PROJECT ATLAS(tm) / REIE DXT Wave 1B Property Detail Context Preservation Specification, August 2, 2026:
+PROJECT ATLAS(tm) / REIE DXT Wave 1B Search Return URL and Context Handoff Local Implementation, August 2, 2026:
 
 Workspace:
 
@@ -24,28 +24,45 @@ git rev-parse HEAD origin/main
 git log -8 --oneline
 ```
 
-DXT Wave 1B Property Detail Context Preservation specification status:
+DXT Wave 1B Search Return URL and Context Handoff local implementation status:
 
 - Implementation record: `docs/project-atlas/executive-library/REIE-DXT-WAVE-1B-SEARCH-WORKSPACE-INFORMATION-HIERARCHY-AND-SHELL-IMPLEMENTATION.md`
 - Closure record: `docs/project-atlas/executive-library/REIE-DXT-WAVE-1B-SEARCH-WORKSPACE-INFORMATION-HIERARCHY-AND-SHELL-PROGRAM-CLOSURE.md`
 - Next-phase review record: `docs/project-atlas/executive-library/REIE-DXT-WAVE-1B-POST-SEARCH-WORKSPACE-SHELL-NEXT-PHASE-REVIEW.md`
 - Property Detail Context Preservation specification: `docs/project-atlas/executive-library/REIE-DXT-WAVE-1B-PROPERTY-DETAIL-CONTEXT-PRESERVATION-SPECIFICATION.md`
+- Search return handoff implementation record: `docs/project-atlas/executive-library/REIE-DXT-WAVE-1B-SEARCH-RETURN-URL-AND-CONTEXT-HANDOFF-IMPLEMENTATION.md`
 - Search workspace shell status: `REIE_DXT_WAVE_1B_SEARCH_WORKSPACE_SHELL_CERTIFIED_AND_CLOSED`
 - Specification status: `REIE_DXT_WAVE_1B_PROPERTY_DETAIL_CONTEXT_PRESERVATION_SPECIFICATION_READY`
+- Local implementation status: `READY_FOR_REIE_DXT_WAVE_1B_SEARCH_RETURN_CONTEXT_LOCAL_CERTIFICATION_AND_PUSH_REVIEW`
 - Implemented and certified surface: existing `/search`
+- Updated property detail surface: existing `/properties/[id]`
 - Certified model: `PERSISTENT_SEARCH_WORKSPACE_SHELL`
+- Implemented handoff model: `HYBRID_URL_AND_HISTORY_STATE`
+- Implemented first bounded phase: `SEARCH_RETURN_URL_AND_CONTEXT_HANDOFF`
 - Implementation commit: `a4acf1703f62d0f4a6addb1d85fda7649e2bdab7`
 - Implementation message: `Improve persistent Search workspace shell`
 - Closure commit: `689f1ae3f7e8100445474a3abca44b6270219503`
+- Search return handoff local implementation commit: pending until validation commit is created
+- Search return handoff local implementation message: `Preserve Search return context`
 - Production certification: complete.
+- Search return handoff production certification: not authorized.
 - Required remediation: none.
 - Marker/preview certification remains preserved.
 - Selected next Wave 1B phase: `PROPERTY_DETAIL_CONTEXT_PRESERVATION`
 - Selected outcome: `READY_FOR_PROPERTY_DETAIL_CONTEXT_PRESERVATION_PRODUCT_SPECIFICATION`
 - Selected context-preservation model: `HYBRID_URL_AND_HISTORY_STATE`
 - Selected first bounded implementation phase: `SEARCH_RETURN_URL_AND_CONTEXT_HANDOFF`
+- Search return URL and context handoff has been implemented locally and remains unpushed.
+- URL state is the transparent authoritative return context.
+- Browser history remains subordinate and may support natural Back/Forward behavior.
+- Supported return criteria are bounded to `q`, `city`, `minPrice`, `maxPrice`, `propertyType`, `beds`, and `baths`.
+- The property detail return action appears only with valid Search-origin context and points only to a validated internal `/search` URL.
+- Direct property entry remains independent and does not fabricate a Search-origin return action.
+- No localStorage, sessionStorage, cookies, database persistence, CRM, telemetry, API change, provider change, route creation, or production mutation was introduced.
+- Full context restoration remains deferred.
 - Map Visual-Language Normalization remains deferred as `PREREQUISITE_DEPENDENT`.
-- Implementation remains unauthorized.
+- Push remains unauthorized until local certification and push review.
+- Production certification remains unauthorized.
 - Brokerage disclosure remains on hold pending external Compass marketing review.
 
 Certified outcome:
@@ -79,22 +96,22 @@ Protected boundaries:
 - no deployment configuration change;
 - no production mutation.
 
-Deployment evidence:
+Latest prior deployment evidence:
 
 - Status: `success`
-- GitHub/Vercel status ID: `51508862902`
+- GitHub/Vercel status ID: `51508972659`
 - Context: `Vercel`
 - Description: `Deployment has completed`
-- Target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/HH685BbESMAHw5XYPwUYCcPGiMLH`
-- Updated: `2026-08-02T17:21:38Z`
+- Target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/DoUSuA6EJsZWQX1ctNnjPJeTp523`
+- Updated: `2026-08-02T17:27:27Z`
 - Production domain: `https://davidquinngroup.com`
-- Supersession status during specification: not superseded.
+- Supersession status before local implementation: not superseded.
 
 Exact next authorization gate:
 
-`READY_FOR_REIE_DXT_WAVE_1B_SEARCH_RETURN_URL_AND_CONTEXT_HANDOFF_BOUNDED_IMPLEMENTATION_AUTHORIZATION`
+`READY_FOR_REIE_DXT_WAVE_1B_SEARCH_RETURN_CONTEXT_LOCAL_CERTIFICATION_AND_PUSH_REVIEW`
 
-That gate may authorize bounded implementation only if explicitly granted. Do not implement without authorization, begin full Property Detail Context Preservation, begin Map Visual-Language Normalization, modify brokerage disclosure copy, create routes, change APIs, add persistence, add telemetry, change providers, or begin another DXT phase without explicit authorization.
+That gate may authorize independent local certification and push review only if explicitly granted. Do not push, deploy, perform production certification, begin full Property Detail Context Preservation, begin Map Visual-Language Normalization, modify brokerage disclosure copy, create routes, change APIs, add persistence, add telemetry, change providers, or begin another DXT phase without explicit authorization.
 
 Prior DXT Wave 1B persistent Search workspace shell specification handoff retained below.
 

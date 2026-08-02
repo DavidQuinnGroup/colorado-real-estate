@@ -21,6 +21,7 @@ import SearchControls, {
 import type { SearchMapMeta } from '@/components/maps/SearchMap';
 import { getJourneyMeasurementAttributes } from '@/lib/customerJourneyMeasurement';
 import type { FAQItem } from '@/lib/schema/faqSchema';
+import { parseSearchReturnContext } from '@/lib/search/searchReturnContext';
 
 const MapInner = dynamic(() => import('@/components/maps/MapInner'), {
   ssr: false,
@@ -159,6 +160,16 @@ function updateBrowserSearchUrl(filters: SearchFilters, mode: 'push' | 'replace'
   window.history[mode === 'replace' ? 'replaceState' : 'pushState']({}, '', nextUrl);
 }
 
+function getBrowserSearchReturnContext() {
+  if (typeof window === 'undefined') return null;
+  return parseSearchReturnContext(new URLSearchParams(window.location.search));
+}
+
+function getVisibleSelectionId(listings: MapSidebarListing[], selectedPropertyId: string | null) {
+  if (!selectedPropertyId) return null;
+  return listings.some((listing) => listing.id === selectedPropertyId && !listing.isPrivateExclusive) ? selectedPropertyId : null;
+}
+
 function normalizeSearchMeta(data: SearchApiResponse) {
   if (!data.meta) return null;
 
@@ -271,7 +282,10 @@ export default function SearchInterface({
     return () => window.removeEventListener('DQG_STRATEGY_TOGGLE', handleToggle);
   }, []);
 
-  async function runSearch(nextFilters: SearchFilters, options: { updateUrl?: boolean; urlMode?: 'push' | 'replace' } = {}) {
+  async function runSearch(
+    nextFilters: SearchFilters,
+    options: { updateUrl?: boolean; urlMode?: 'push' | 'replace'; restoreSelectedId?: string | null } = {},
+  ) {
     setIsSearching(true);
     setSearchError(null);
 
@@ -282,7 +296,11 @@ export default function SearchInterface({
 
       setListings(nextListings);
       setSearchMeta(normalizeSearchMeta(data));
-      setSelectedId((current) => (current && nextListings.some((listing) => listing.id === current) ? current : null));
+      setSelectedId((current) => {
+        const requested = getVisibleSelectionId(nextListings, options.restoreSelectedId || null);
+        if (requested) return requested;
+        return current && nextListings.some((listing) => listing.id === current) ? current : null;
+      });
       if (options.updateUrl) updateBrowserSearchUrl(nextFilters, options.urlMode);
 
       if (!response.ok) {
@@ -356,28 +374,41 @@ export default function SearchInterface({
 
   useEffect(() => {
     const browserFilters = getBrowserFilters();
-    if (!hasActiveSearchFilters(browserFilters)) return;
+    const returnContext = getBrowserSearchReturnContext();
 
-    const initialFilterTimer = window.setTimeout(() => {
+    const initialReturnContextTimer = window.setTimeout(() => {
+      if (returnContext?.view) setMobileView(returnContext.view);
+
+      if (!hasActiveSearchFilters(browserFilters)) {
+        setSelectedId(getVisibleSelectionId(initialListings, returnContext?.selectedPropertyId || null));
+        return;
+      }
+
       setFilters(browserFilters);
-      void runSearch(browserFilters, { updateUrl: true, urlMode: 'replace' });
+      void runSearch(browserFilters, {
+        updateUrl: !returnContext,
+        urlMode: 'replace',
+        restoreSelectedId: returnContext?.selectedPropertyId || null,
+      });
     }, 0);
 
-    return () => window.clearTimeout(initialFilterTimer);
-  }, []);
+    return () => window.clearTimeout(initialReturnContextTimer);
+  }, [initialListings]);
 
   useEffect(() => {
     const handlePopState = () => {
       const nextFilters = getBrowserFilters();
+      const returnContext = getBrowserSearchReturnContext();
+      if (returnContext?.view) setMobileView(returnContext.view);
       setFilters(nextFilters);
       if (hasActiveSearchFilters(nextFilters)) {
-        void runSearch(nextFilters, { updateUrl: false });
+        void runSearch(nextFilters, { updateUrl: false, restoreSelectedId: returnContext?.selectedPropertyId || null });
         return;
       }
 
       setListings(initialListings);
       setSearchMeta(initialSearchMeta);
-      setSelectedId(null);
+      setSelectedId(getVisibleSelectionId(initialListings, returnContext?.selectedPropertyId || null));
       setHoveredId(null);
       setSearchError(null);
     };
@@ -424,6 +455,7 @@ export default function SearchInterface({
       data-search-workspace-shell="persistent-search-workspace-shell"
       data-search-first-screen-hierarchy="decision-status-criteria-list-map-selection"
       data-search-property-context-restoration="deferred"
+      data-search-return-context-handoff="bounded-url-and-history-state"
       data-search-map-visual-normalization="deferred"
       data-search-brokerage-disclosure-hold="EXTERNAL_COMPASS_MARKETING_REVIEW_PENDING"
       data-search-persistence="false"

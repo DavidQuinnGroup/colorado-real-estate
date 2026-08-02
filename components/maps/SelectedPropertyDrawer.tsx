@@ -2,12 +2,13 @@
 
 import Link from 'next/link';
 import { ArrowUpRight, Bath, BedDouble, Home, Mail, MapPin, Ruler, ShieldCheck, Sparkles, X } from 'lucide-react';
-import { useEffect, useRef, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 
 import type { MapSidebarListing } from '@/components/maps/MapSidebar';
 import ResilientListingImage from '@/components/ResilientListingImage';
 import { getCityByName } from '@/lib/cities';
 import { getListingFallbackPhotoUrl, getListingPhotoUrl } from '@/lib/listingVisuals';
+import { buildPropertyHrefWithSearchReturn, buildSearchReturnPath } from '@/lib/search/searchReturnContext';
 import { formatLuxuryPrice } from '@/lib/utils/formatters';
 
 type SelectedPropertyDrawerProps = {
@@ -78,6 +79,8 @@ function hasCoordinates(property: MapSidebarListing) {
 
 export default function SelectedPropertyDrawer({ property, onClose }: SelectedPropertyDrawerProps) {
   const drawerRef = useRef<HTMLElement>(null);
+  const basePropertyHref = `/properties/${property.id}`;
+  const [detailHref, setDetailHref] = useState(basePropertyHref);
   const address = property.address || 'Address Available by Request';
   const city = property.city || 'Colorado';
   const state = property.state || 'CO';
@@ -85,7 +88,7 @@ export default function SelectedPropertyDrawer({ property, onClose }: SelectedPr
   const hasReviewFlag = Boolean(property.hasPolybutyleneRisk);
   const hasPhoto = hasListingPhoto(property);
   const hasCoordinatesFlag = hasCoordinates(property);
-  const propertyHref = `/properties/${property.id}`;
+  const propertyHref = detailHref.startsWith(basePropertyHref) ? detailHref : basePropertyHref;
   const inquiryHref = `${propertyHref}#property-contact`;
   const marketHref = getCityMarketHref(city);
   const imageSrc = getListingPhotoUrl(property);
@@ -99,6 +102,19 @@ export default function SelectedPropertyDrawer({ property, onClose }: SelectedPr
   useEffect(() => {
     drawerRef.current?.focus({ preventScroll: true });
   }, [property.id]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const returnHandoffTimer = window.setTimeout(() => {
+      const searchShell = document.querySelector<HTMLElement>('[data-testid="reie-search-interface"]');
+      const view = searchShell?.dataset.mobileView || null;
+      const returnPath = buildSearchReturnPath(new URLSearchParams(window.location.search), property.id, view);
+      setDetailHref(buildPropertyHrefWithSearchReturn(basePropertyHref, returnPath));
+    }, 0);
+
+    return () => window.clearTimeout(returnHandoffTimer);
+  }, [basePropertyHref, property.id]);
 
   return (
     <aside
@@ -128,6 +144,8 @@ export default function SelectedPropertyDrawer({ property, onClose }: SelectedPr
       data-selected-property-detail-href={propertyHref}
       data-selected-property-inquiry-href={inquiryHref}
       data-selected-property-market-href={marketHref}
+      data-search-return-handoff="bounded-url"
+      data-search-return-source="search"
     >
       <div
         className="relative aspect-[16/9] overflow-hidden border-b border-white/10 bg-[#10151b]"
@@ -257,6 +275,8 @@ export default function SelectedPropertyDrawer({ property, onClose }: SelectedPr
             data-testid="reie-selected-property-detail-link"
             data-selected-property-id={property.id}
             data-selected-property-detail-href={propertyHref}
+            data-search-return-handoff="bounded-url"
+            data-search-return-source="search"
             className="reie-decision-link reie-decision-link--primary inline-flex h-11 w-full items-center justify-center gap-1.5 rounded-[6px] text-[10px] font-black uppercase tracking-[0.14em] transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
           >
             View Property

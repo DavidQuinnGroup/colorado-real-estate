@@ -43,6 +43,7 @@ import { LISTING_ADVERTISING_CLASSIFICATION } from '@/lib/publicTrust';
 import type { FAQItem } from '@/lib/schema/faqSchema';
 import { generateFAQs } from '@/lib/schema/generateFAQs';
 import { buildPropertySchema } from '@/lib/schema/propertySchema';
+import { parsePropertySearchReturnContext } from '@/lib/search/searchReturnContext';
 
 const SITE_URL = 'https://davidquinngroup.com';
 
@@ -50,6 +51,7 @@ type PropertyPageProps = {
   params: Promise<{
     id: string;
   }>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
 };
 
 type PropertyWithPhotos = Prisma.PropertyGetPayload<{
@@ -748,8 +750,9 @@ export async function generateMetadata({ params }: PropertyPageProps): Promise<M
   };
 }
 
-export default async function PropertyPage({ params }: PropertyPageProps) {
+export default async function PropertyPage({ params, searchParams }: PropertyPageProps) {
   const { id } = await params;
+  const resolvedSearchParams = searchParams ? await searchParams : {};
   const property = await getProperty(id);
 
   if (!property) notFound();
@@ -771,6 +774,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
   const propertySchemaGraph = propertySchema['@graph'];
   const propertyFaqs = getPropertyFaqs(property);
   const canonicalUrl = getPropertyUrl(property);
+  const searchReturnContext = parsePropertySearchReturnContext(resolvedSearchParams);
   const marketPathway = getMarketPathway(property);
   const neighborhoodHref = getNeighborhoodHref(property);
   const briefHref = getPropertyBriefHref(property);
@@ -980,9 +984,34 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                 <p className="text-sm leading-6 text-white/70">
                   {decisionNextStep}
                 </p>
-                <p className="mt-3 text-xs leading-5 text-white/46">
-                  Arrived from Search? Use the browser Back button or return to the local search view below; no search history is stored here.
-                </p>
+                {searchReturnContext ? (
+                  <div
+                    className="mt-3 rounded-[6px] border border-cyan-100/18 bg-cyan-100/[0.055] p-3"
+                    data-testid="reie-property-search-return-context"
+                    data-search-return-context="bounded-url"
+                    data-search-return-source="search"
+                    data-search-return-href={searchReturnContext.returnTo}
+                  >
+                    <p className="text-[10px] font-black uppercase tracking-[0.16em] text-cyan-100/72">Opened from Search</p>
+                    <p className="mt-1.5 text-xs leading-5 text-white/58">
+                      Return to the same criteria-backed Search view. Only supported Search criteria and the selected-property hint are carried forward.
+                    </p>
+                    <Link
+                      href={searchReturnContext.returnTo}
+                      data-testid="reie-property-return-to-search"
+                      data-search-return-context="bounded-url"
+                      className="mt-3 inline-flex min-h-10 items-center justify-center gap-1.5 rounded-[6px] border border-cyan-100/24 bg-cyan-100/[0.09] px-3 text-[10px] font-black uppercase tracking-[0.12em] text-cyan-100 transition hover:border-cyan-100/50 hover:bg-cyan-100/[0.14] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
+                      aria-label="Return to Search Results with your previous criteria"
+                    >
+                      <ArrowLeft size={13} aria-hidden="true" />
+                      Return to Search Results
+                    </Link>
+                  </div>
+                ) : (
+                  <p className="mt-3 text-xs leading-5 text-white/46" data-testid="reie-property-direct-entry-context" data-search-return-context="none">
+                    Arrived from Search? Use the browser Back button or return to the local search view below; no search history is stored here.
+                  </p>
+                )}
                 <div className="mt-4 grid gap-2">
                   <DecisionRow label="Calculated Price / Sq Ft" value={pricePerSquareFoot} />
                   <DecisionRow label="Review Focus" value={diligencePosture} />
