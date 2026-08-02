@@ -3,7 +3,7 @@
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { AlertTriangle, List, Map as MapIcon, RotateCcw, SlidersHorizontal } from 'lucide-react';
-import { type FormEvent, useEffect, useMemo, useState } from 'react';
+import { type FormEvent, type KeyboardEvent, useEffect, useMemo, useState } from 'react';
 
 import ContinueYourDecision from '@/components/ContinueYourDecision';
 import FinancingConfidenceEducation from '@/components/FinancingConfidenceEducation';
@@ -340,6 +340,13 @@ export default function SearchInterface({
     setSelectedId(id);
   }
 
+  function handleWorkspaceKeyDown(event: KeyboardEvent<HTMLDivElement>) {
+    if (event.key !== 'Escape' || !selectedId) return;
+    event.stopPropagation();
+    setSelectedId(null);
+    setHoveredId(null);
+  }
+
   function handleBoundsChange(bounds: MapBounds) {
     setLastMapBounds(bounds);
     if (bounds) setHasMovedMap(true);
@@ -410,6 +417,9 @@ export default function SearchInterface({
       data-search-zero-results={String(hasZeroResults)}
       data-search-degraded={String(isSearchDegraded)}
       data-search-map-movement={mapMovementLabel}
+      data-search-preview-model="click-pinned"
+      data-search-preview-hover-dependent="false"
+      onKeyDown={handleWorkspaceKeyDown}
     >
       <p className="sr-only" aria-live="polite" data-testid="reie-search-state-announcement">
         {searchStateAnnouncement}

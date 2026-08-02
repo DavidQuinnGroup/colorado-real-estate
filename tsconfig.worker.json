@@ -30,6 +30,7 @@
     "scripts/alertNotificationReadiness.ts",
     "scripts/checkNextSecurityVersion.ts",
     "scripts/checkMapRenderingSafety.ts",
+    "scripts/checkDxtSearchMarkerPreviewInteraction.ts",
     "scripts/checkCepSearchMapBaseline.ts",
     "scripts/checkCepConversionSellerAcquisitionBaseline.ts",
     "scripts/checkCepMarketIntelligenceBaseline.ts",

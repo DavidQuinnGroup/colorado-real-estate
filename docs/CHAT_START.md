@@ -10,6 +10,69 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE DXT Wave 1B Search Marker And Preview Interaction Remediation, August 2, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+DXT Wave 1B bounded remediation status:
+
+- Implementation record: `docs/project-atlas/executive-library/REIE-DXT-WAVE-1B-SEARCH-MARKER-AND-PREVIEW-INTERACTION-REMEDIATION-IMPLEMENTATION.md`
+- Status: `LOCAL_IMPLEMENTATION_COMPLETE_PUSH_UNAUTHORIZED`
+- Local implementation commit: created locally; exact final SHA is reported in the completion response.
+- Push remains unauthorized.
+- Production certification remains unauthorized.
+
+Bounded implementation scope:
+
+- marker click selects a property;
+- hover is supplemental only;
+- the existing selected-property drawer is the pinned interactive preview;
+- preview lifetime is independent of pointer leaving the marker;
+- explicit close and Escape dismissal are implemented;
+- selected marker state is visually and accessibly distinct;
+- list/card synchronization and stale-selection clearing are preserved.
+
+Files changed:
+
+- `components/maps/SearchMap.tsx`
+- `components/search/SearchInterface.tsx`
+- `components/maps/SelectedPropertyDrawer.tsx`
+- `scripts/checkDxtSearchMarkerPreviewInteraction.ts`
+- `scripts/checkMapRenderingSafety.ts`
+- `package.json`
+- `tsconfig.worker.json`
+- `docs/project-atlas/executive-library/REIE-DXT-WAVE-1B-SEARCH-MARKER-AND-PREVIEW-INTERACTION-REMEDIATION-IMPLEMENTATION.md`
+- `docs/CHAT_START.md`
+
+Protected boundaries:
+
+- full persistent property workspace remains unauthorized;
+- property-detail workspace remains unauthorized;
+- map visual-language normalization remains unauthorized;
+- route, API, provider, ranking, persistence, telemetry, CRM, brokerage disclosure, Search redesign, property-page redesign, and deployment changes remain unauthorized.
+
+Brokerage disclosure hold:
+
+`EXTERNAL_COMPASS_MARKETING_REVIEW_PENDING`
+
+Exact next authorization gate:
+
+`READY_FOR_REIE_DXT_WAVE_1B_SEARCH_MARKER_AND_PREVIEW_LOCAL_CERTIFICATION_AND_PUSH_REVIEW`
+
+That gate may authorize local certification and push review only if explicitly granted. Do not push, deploy manually, perform production certification, begin the full persistent property workspace, normalize map visual language, change routes or APIs, add persistence, telemetry, CRM, provider changes, brokerage disclosure changes, or begin the next DXT phase without explicit authorization.
+
+Prior DXT Wave 1B specification handoff retained below.
+
 PROJECT ATLAS(tm) / REIE DXT Wave 1B Search And Property Workspace Specification, August 2, 2026:
 
 Workspace:

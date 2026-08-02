@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { ArrowUpRight, Bath, BedDouble, Home, Mail, MapPin, Ruler, ShieldCheck, Sparkles, X } from 'lucide-react';
-import type { ReactNode } from 'react';
+import { useEffect, useRef, type ReactNode } from 'react';
 
 import type { MapSidebarListing } from '@/components/maps/MapSidebar';
 import ResilientListingImage from '@/components/ResilientListingImage';
@@ -77,6 +77,7 @@ function hasCoordinates(property: MapSidebarListing) {
 }
 
 export default function SelectedPropertyDrawer({ property, onClose }: SelectedPropertyDrawerProps) {
+  const drawerRef = useRef<HTMLElement>(null);
   const address = property.address || 'Address Available by Request';
   const city = property.city || 'Colorado';
   const state = property.state || 'CO';
@@ -95,13 +96,22 @@ export default function SelectedPropertyDrawer({ property, onClose }: SelectedPr
   const locationFit = getLocationFit(property);
   const headingId = `selected-property-${property.id}-heading`;
 
+  useEffect(() => {
+    drawerRef.current?.focus({ preventScroll: true });
+  }, [property.id]);
+
   return (
     <aside
-      className="reie-selected-property-drawer pointer-events-auto absolute z-[720] max-h-[calc(100%-2rem)] overflow-hidden rounded-[8px] border border-white/14 bg-[#071017]/96 shadow-2xl backdrop-blur-md"
+      ref={drawerRef}
+      className="reie-selected-property-drawer pointer-events-auto fixed z-[1200] max-h-[calc(100%-2rem)] overflow-hidden rounded-[8px] border border-white/14 bg-[#071017]/96 shadow-2xl backdrop-blur-md"
       role="dialog"
       aria-labelledby={headingId}
+      tabIndex={-1}
       data-testid="reie-selected-property-drawer"
       data-selected-property-id={property.id}
+      data-selected-property-preview-model="click-pinned"
+      data-selected-property-preview-hover-dependent="false"
+      data-selected-property-preview-dismissible="close-or-escape"
       data-selected-property-address={address}
       data-selected-property-city={city}
       data-selected-property-state={state}
@@ -154,7 +164,8 @@ export default function SelectedPropertyDrawer({ property, onClose }: SelectedPr
           data-testid="reie-selected-property-close"
           data-selected-property-id={property.id}
           aria-label="Close selected listing"
-          className="absolute right-4 top-4 z-20 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-[6px] border border-white/16 bg-black/52 text-white/72 backdrop-blur transition hover:border-white/34 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
+          className="absolute z-20 inline-flex shrink-0 items-center justify-center rounded-[6px] border border-white/16 bg-black/52 text-white/72 backdrop-blur transition hover:border-white/34 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
+          style={{ height: '44px', right: '1rem', top: '1rem', width: '44px' }}
         >
           <X size={15} aria-hidden="true" />
         </button>

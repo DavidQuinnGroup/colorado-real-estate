@@ -122,13 +122,6 @@ function escapeHtml(value: unknown) {
     .replaceAll("'", '&#039;');
 }
 
-function formatFeature(value: unknown, label: string) {
-  const numericValue = Number(value);
-  if (!Number.isFinite(numericValue) || numericValue <= 0) return null;
-
-  return `${numericValue.toLocaleString()} ${label}`;
-}
-
 function formatMetaCount(value: number | undefined, fallback: number) {
   return Number.isFinite(value) ? Number(value) : fallback;
 }
@@ -149,34 +142,6 @@ function getCustomerSearchLabel(searchMeta: SearchMapMeta | null) {
   if (!searchMeta) return 'initial';
   if (searchMeta.customerExperience?.usable === false) return 'review';
   return 'search ready';
-}
-
-function getReviewSignal(property: MapSidebarListing) {
-  if (property.hasPolybutyleneRisk) return 'Plumbing review suggested';
-  if (property.soilType?.trim()) return 'Property signals available';
-
-  const altitude = Number(property.altitude);
-  if (Number.isFinite(altitude) && altitude > 0) return 'Elevation context available';
-
-  return 'Public listing context';
-}
-
-function getAdvisoryNote(property: MapSidebarListing) {
-  if (property.hasPolybutyleneRisk) return 'Plumbing review suggested.';
-  if (typeof property.resilienceScore === 'number' && property.resilienceScore >= 80) return 'Worth a closer look.';
-  if (typeof property.efficiencyScore === 'number' && property.efficiencyScore >= 80) return 'Compare public location context.';
-  if (property.isPrivateExclusive) return 'Additional listing context available through inquiry.';
-
-  return 'Review facts and location.';
-}
-
-function getLocationFit(property: MapSidebarListing) {
-  return hasCoordinates(property) ? 'Shown on this map' : 'Map location needs review';
-}
-
-function getPropertyTypeLabel(value: string | null | undefined) {
-  const cleaned = value?.trim();
-  return cleaned || 'Residential';
 }
 
 function getFallbackBounds(map: L.Map): MapBounds {
@@ -210,37 +175,6 @@ function getFallbackBounds(map: L.Map): MapBounds {
     swLat: south,
     swLng: west,
   };
-}
-
-function buildPopupHtml(property: MapSidebarListing) {
-  const price = formatLuxuryPrice(Number(property.price));
-  const address = escapeHtml(property.address || 'Address Available by Request');
-  const city = escapeHtml(property.city || 'Colorado');
-  const propertyType = escapeHtml(getPropertyTypeLabel(property.propertyType));
-  const beds = formatFeature(property.beds, 'Beds');
-  const baths = formatFeature(property.baths, 'Baths');
-  const sqft = formatFeature(property.sqft, 'Sq Ft');
-  const features = [beds, baths, sqft].filter(Boolean).join(' / ');
-  const reviewSignal = escapeHtml(getReviewSignal(property));
-  const advisoryNote = escapeHtml(getAdvisoryNote(property));
-  const locationFit = escapeHtml(getLocationFit(property));
-  const detailHref = escapeHtml(`/properties/${property.id}`);
-
-  return `
-    <article class="reie-map-popup-card" data-testid="reie-property-map-popup" data-popup-property-id="${escapeHtml(property.id)}">
-      <div class="reie-map-popup-body">
-        <p class="reie-map-popup-kicker">${propertyType}</p>
-        <p class="reie-map-popup-price">${price}</p>
-        <h2 class="reie-map-popup-address">${address}</h2>
-        <p class="reie-map-popup-city">${city}, CO</p>
-        ${features ? `<p class="reie-map-popup-features" aria-label="Core property facts">${escapeHtml(features)}</p>` : ''}
-        <p class="reie-map-popup-note"><span>Review context</span> ${advisoryNote}</p>
-        <p class="reie-map-popup-context"><span>Map Context</span> ${locationFit}</p>
-        <p class="reie-map-popup-context"><span>Property Signals</span> ${reviewSignal}</p>
-        <a class="reie-map-popup-cta" href="${detailHref}" aria-label="View property details for ${address}">View Property</a>
-      </div>
-    </article>
-  `;
 }
 
 function getMapBounds(map: L.Map): MapBounds {
@@ -320,11 +254,19 @@ function getClusterBuckets(map: L.Map, listings: CoordinateListing[], activeIds:
   });
 }
 
-function createListingMarker(property: CoordinateListing, isActive: boolean) {
+type ListingMarkerState = 'selected' | 'hovered' | null;
+
+function createListingMarker(property: CoordinateListing, state: ListingMarkerState) {
+  const isSelected = state === 'selected';
+  const isHovered = state === 'hovered';
+  const markerStateClass = isSelected ? ' selected' : isHovered ? ' hovered' : '';
+  const address = escapeHtml(property.address || 'Colorado property');
+  const price = escapeHtml(formatLuxuryPrice(Number(property.price)));
+
   return L.marker([property.lat, property.lng], {
     icon: L.divIcon({
       className: 'luxury-marker-container',
-      html: `<button class="luxury-marker${isActive ? ' active' : ''}" type="button"><span>${formatLuxuryPrice(Number(property.price))}</span></button>`,
+      html: `<button class="luxury-marker${markerStateClass}" type="button" data-testid="reie-search-map-marker-button" data-marker-property-id="${escapeHtml(property.id)}" data-marker-state="${state || 'default'}" aria-label="${isSelected ? 'Selected listing' : 'Select listing'}: ${address}" aria-pressed="${isSelected ? 'true' : 'false'}"><span>${price}</span></button>`,
       iconAnchor: [42, 19],
     }),
     keyboard: true,
@@ -544,80 +486,52 @@ export default function SearchMap({
       }
 
       const property = cluster.listings[0];
-      const isActive = selectedId === property.id || hoveredId === property.id;
-      const marker = createListingMarker(property, isActive);
-
-      marker.bindPopup(buildPopupHtml(property), {
-        autoPan: true,
-        autoPanPadding: L.point(28, 28),
-        className: 'reie-map-popup',
-        closeButton: false,
-        closeOnClick: false,
-        keepInView: true,
-        offset: L.point(0, -12),
-      });
+      const markerState: ListingMarkerState = selectedId === property.id ? 'selected' : hoveredId === property.id ? 'hovered' : null;
+      const marker = createListingMarker(property, markerState);
 
       marker.on('click', () => {
         setSelectedId(property.id);
-        marker.openPopup();
+        setHoveredId(null);
       });
 
       marker.on('mouseover', () => {
         setHoveredId(property.id);
-        marker.openPopup();
       });
 
       marker.on('mouseout', () => {
         if (selectedId !== property.id) {
           setHoveredId(null);
-          marker.closePopup();
         }
       });
 
       if (selectedId === property.id) {
         selectedMarker = marker;
-      } else if (hoveredId === property.id) {
-        marker.openPopup();
       }
 
       markerLayer.addLayer(marker);
     }
 
     for (const property of activeListings) {
-      const isActive = selectedId === property.id || hoveredId === property.id;
-      const marker = createListingMarker(property, isActive);
-
-      marker.bindPopup(buildPopupHtml(property), {
-        autoPan: true,
-        autoPanPadding: L.point(28, 28),
-        className: 'reie-map-popup',
-        closeButton: false,
-        closeOnClick: false,
-        keepInView: true,
-        offset: L.point(0, -12),
-      });
+      const markerState: ListingMarkerState = selectedId === property.id ? 'selected' : hoveredId === property.id ? 'hovered' : null;
+      const marker = createListingMarker(property, markerState);
 
       marker.on('click', () => {
         setSelectedId(property.id);
-        marker.openPopup();
+        setHoveredId(null);
       });
 
       marker.on('mouseover', () => {
         setHoveredId(property.id);
-        marker.openPopup();
       });
 
       marker.on('mouseout', () => {
         if (selectedId !== property.id) {
           setHoveredId(null);
-          marker.closePopup();
         }
       });
 
       if (selectedId === property.id) {
         selectedMarker = marker;
-      } else if (hoveredId === property.id) {
-        marker.openPopup();
       }
 
       markerLayer.addLayer(marker);
@@ -631,7 +545,6 @@ export default function SearchMap({
         map.panTo(markerToShow.getLatLng(), { animate: true });
       }
 
-      markerToShow.openPopup();
     }
 
     if (coordinateListings.length === 1) {
@@ -826,11 +739,26 @@ export default function SearchMap({
           transform: translateY(-3px);
         }
 
-        .luxury-marker.active {
+        .luxury-marker.hovered {
+          box-shadow: 0 14px 38px rgba(207, 250, 254, 0.24), 0 18px 48px rgba(0, 0, 0, 0.62), 0 0 0 3px rgba(207, 250, 254, 0.22);
+          color: #061017;
+          transform: translateY(-3px);
+        }
+
+        .luxury-marker.selected {
           background: #f8f3df;
           box-shadow: 0 0 0 3px rgba(8, 17, 23, 0.76), 0 0 0 7px rgba(207, 250, 254, 0.32), 0 20px 54px rgba(0, 0, 0, 0.7);
           color: #061017;
           transform: translateY(-4px);
+        }
+
+        .luxury-marker.selected::before {
+          border: 2px solid #071017;
+          border-radius: 999px;
+          content: '';
+          inset: 3px;
+          pointer-events: none;
+          position: absolute;
         }
 
         .luxury-cluster {
@@ -870,143 +798,9 @@ export default function SearchMap({
 
         @media (prefers-reduced-motion: reduce) {
           .luxury-marker,
-          .luxury-cluster,
-          .reie-map-popup-cta {
+          .luxury-cluster {
             transition: none;
           }
-        }
-
-        .reie-map-popup {
-          margin-bottom: 12px;
-        }
-
-        .reie-map-popup .leaflet-popup-content-wrapper {
-          background: transparent;
-          border-radius: 0;
-          box-shadow: none;
-          padding: 0;
-        }
-
-        .reie-map-popup .leaflet-popup-content {
-          margin: 0;
-          max-width: min(300px, calc(100vw - 44px));
-          width: 300px !important;
-        }
-
-        .reie-map-popup .leaflet-popup-tip-container {
-          display: none;
-        }
-
-        .reie-map-popup-card {
-          background: rgba(7, 16, 23, 0.97);
-          border-radius: 8px;
-          box-shadow: 0 28px 80px rgba(0, 0, 0, 0.72), 0 0 0 1px rgba(207, 250, 254, 0.14);
-          color: #fff;
-          overflow: hidden;
-          width: 100%;
-        }
-
-        .reie-map-popup-body {
-          padding: 13px;
-        }
-
-        .reie-map-popup-kicker {
-          color: rgba(207, 250, 254, 0.72);
-          font-size: 8px;
-          font-weight: 900;
-          letter-spacing: 0.2em;
-          line-height: 1;
-          margin: 0 0 8px;
-          text-transform: uppercase;
-        }
-
-        .reie-map-popup-price {
-          font-family: Georgia, serif;
-          font-size: 24px;
-          font-style: italic;
-          font-weight: 900;
-          letter-spacing: 0;
-          line-height: 0.92;
-          margin: 0;
-        }
-
-        .reie-map-popup-address {
-          font-size: 11px;
-          font-weight: 900;
-          letter-spacing: 0.04em;
-          line-height: 1.32;
-          margin: 10px 0 0;
-          text-transform: uppercase;
-        }
-
-        .reie-map-popup-city,
-        .reie-map-popup-features {
-          color: rgba(255, 255, 255, 0.72);
-          font-size: 8px;
-          font-weight: 900;
-          letter-spacing: 0.22em;
-          line-height: 1.4;
-          margin: 7px 0 0;
-          text-transform: uppercase;
-        }
-
-        .reie-map-popup-features span {
-          color: rgba(207, 250, 254, 0.74);
-        }
-
-        .reie-map-popup-note,
-        .reie-map-popup-context {
-          background: rgba(207, 250, 254, 0.07);
-          border-radius: 6px;
-          color: rgba(255, 255, 255, 0.74);
-          font-size: 10px;
-          font-weight: 800;
-          line-height: 1.28;
-          margin: 10px 0 0;
-          padding: 8px 9px;
-        }
-
-        .reie-map-popup-context {
-          margin-top: 6px;
-        }
-
-        .reie-map-popup-note span,
-        .reie-map-popup-context span {
-          color: rgba(207, 250, 254, 0.74);
-          font-size: 8px;
-          font-weight: 900;
-          letter-spacing: 0.14em;
-          margin-right: 4px;
-          text-transform: uppercase;
-        }
-
-        .reie-map-popup-cta {
-          align-items: center;
-          background: rgb(207, 250, 254);
-          border-radius: 6px;
-          color: #061017 !important;
-          display: flex;
-          font-size: 10px;
-          font-weight: 900;
-          height: 34px;
-          justify-content: center;
-          letter-spacing: 0.14em;
-          margin-top: 9px;
-          text-decoration: none;
-          text-transform: uppercase;
-          transition: background 180ms ease, transform 180ms ease;
-          width: 100%;
-        }
-
-        .reie-map-popup-cta:hover,
-        .reie-map-popup-cta:focus-visible {
-          background: #fff;
-          transform: translateY(-1px);
-        }
-
-        .reie-map-popup-cta:focus-visible {
-          outline: 2px solid rgb(207, 250, 254);
-          outline-offset: 2px;
         }
 
         @media (max-width: 640px) {
@@ -1015,18 +809,6 @@ export default function SearchMap({
             right: 12px;
             max-width: none;
             padding: 10px 11px;
-          }
-
-          .reie-map-popup .leaflet-popup-content {
-            width: min(286px, calc(100vw - 44px)) !important;
-          }
-
-          .reie-map-popup-price {
-            font-size: 23px;
-          }
-
-          .reie-map-popup-body {
-            padding: 12px;
           }
         }
       `}</style>
