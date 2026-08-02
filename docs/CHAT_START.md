@@ -10,7 +10,7 @@ Product:
 
 ## Latest New-Chat Handoff
 
-PROJECT ATLAS(tm) / REIE Product Experience Standardization Planning, August 2, 2026:
+PROJECT ATLAS(tm) / REIE Product Experience Standards Operationalization Planning, August 2, 2026:
 
 Workspace:
 
@@ -33,29 +33,26 @@ Current certified status:
 - Local Decision Intelligence Wave 4 remains blocked.
 - No implementation initiative is currently authorized.
 
-Product Experience standardization planning:
+Product Experience standards operationalization planning:
 
 - Standardization plan: `docs/project-atlas/executive-library/REIE-PRODUCT-EXPERIENCE-STANDARDIZATION-PLAN.md`
-- Planning status: `REIE_PRODUCT_EXPERIENCE_STANDARDIZATION_READY_FOR_IMPLEMENTATION_AUTHORIZATION`
+- Operationalization plan: `docs/project-atlas/executive-library/REIE-PRODUCT-EXPERIENCE-STANDARDS-OPERATIONALIZATION-PLAN.md`
+- Planning status: `REIE_PRODUCT_EXPERIENCE_STANDARDS_OPERATIONALIZATION_READY`
+- Selected enterprise execution model: `ENTERPRISE_PROGRAM_OFFICE_WITH_BOUNDED_PARALLEL_WORKSTREAMS`
 - Implementation remains unauthorized.
 - Runtime changes remain unauthorized.
 - Production certification remains unauthorized.
 - No next initiative is automatically authorized.
 
-Enterprise standards identified:
+Operational model:
 
-- one clear surface purpose;
-- first-screen hierarchy with one dominant action;
-- mobile-first decision narrative;
-- restrained CTA hierarchy;
-- preparation before high-commitment action;
-- concise editorial rhythm and meaningful whitespace;
-- prompt-only questions where uncertainty is explored;
-- readable trust, privacy, disclosure, and professional-boundary placement;
-- no hidden state transfer;
-- no unauthorized persistence, provider dependency, CRM, personalization, telemetry, uploads, or scoring;
-- no dashboard, scorecard, intake-portal, financial-institution, or CRM appearance;
-- deterministic product-boundary validation.
+- mandatory standards apply to every customer-facing implementation unless explicitly excepted;
+- deterministic standards become focused checks where implementation scope warrants them;
+- advisory standards remain certification review criteria;
+- documentation-only standards remain planning prompts until proven mature;
+- parallel workstreams may operate only on bounded, non-overlapping scopes;
+- shared-file edits require sequencing and explicit authorization;
+- future implementation charters must reference the Product Experience Standards and declare standards consumption.
 
 Protected boundaries:
 
@@ -87,7 +84,7 @@ Protected boundaries:
 
 Next authorization gate:
 
-`READY_FOR_REIE_PRODUCT_EXPERIENCE_STANDARDS_BOUNDED_IMPLEMENTATION_AUTHORIZATION`
+`READY_FOR_REIE_PRODUCT_EXPERIENCE_STANDARDS_GOVERNANCE_ENFORCEMENT_AUTHORIZATION`
 
 This gate does not authorize implementation by itself. Do not begin implementation, runtime changes, route creation, component work, style changes, design-system implementation, Contact backend work, CRM, scheduling, persistence, personalization, telemetry, uploads, APIs, Prisma, Search, map/GIS, provider integrations, production certification, Phase 2, or another initiative without explicit authorization.
 
