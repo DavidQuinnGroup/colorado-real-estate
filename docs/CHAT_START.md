@@ -10,6 +10,61 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE Advisory Experience Phase 1 Local Implementation, August 2, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Current implementation status:
+
+- Advisory Experience Phase 1 has been implemented locally.
+- Implementation record: `docs/project-atlas/executive-library/REIE-ADVISORY-EXPERIENCE-PHASE-1-IMPLEMENTATION.md`
+- Productization plan: `docs/project-atlas/executive-library/REIE-ADVISORY-EXPERIENCE-PRODUCTIZATION-PLAN.md`
+- Product specification: `docs/project-atlas/executive-library/REIE-ADVISORY-EXPERIENCE-PRODUCT-SPECIFICATION.md`
+- Route remains `/contact#advisory-readiness`.
+- Selected model remains `SINGLE_ADVISORY_EXPERIENCE`.
+- Selected journey-context model remains `GENERIC_SINGLE_EXPERIENCE_WITH_STATIC_TOPICS`.
+- Selected contact strategy remains `PREPARATION_THEN_CONTACT`.
+- No new route was created.
+- No Contact backend behavior changed.
+- No CRM, scheduling, persistence, personalization, telemetry, upload, hidden context transfer, provider integration, API, Prisma, Search, map/GIS, navigation, footer, or production-data change is authorized or intended.
+- Push remains unauthorized until local certification and push review.
+- Production certification remains unauthorized.
+- Phase 2 remains unauthorized.
+- No next initiative is automatically authorized.
+
+Implemented scope:
+
+- `app/contact/page.tsx` now places `AdvisoryHandoffGuide` before denser Production Status and Public Contact sections while preserving those sections on the same page.
+- `components/AdvisoryHandoffGuide.tsx` now presents a preparation-before-contact advisory hierarchy with first-screen purpose, advisor role, preparation themes, static journey topics, prompt-only verification questions, evidence/professional boundaries, privacy expectations, contact transition, and compact research continuations.
+- `scripts/checkAdvisoryHandoffReadiness.ts` was extended as the focused Phase 1 deterministic check under the existing `check:advisory-handoff-readiness` command.
+- `docs/project-atlas/executive-library/REIE-ADVISORY-EXPERIENCE-PHASE-1-IMPLEMENTATION.md` records implementation scope and boundaries.
+
+Local validation status:
+
+- Focused Advisory Handoff, Advisory Operating Readiness, Product Cohesion, Decision Journey, Homepage Phase 1, Buyer Financing Planner, Buyer/Seller readiness, Property / Seller Evidence, public runtime, Search/map, market/neighborhood, Niwot, Compare, Grand Plan, public trust, source-rights, property-route, unsubscribe, alert, GMA, Geographic Intelligence, LDI, evidence-depth, typecheck, lint, build, and local public-experience smoke validations passed.
+- Responsive review passed at `390x844`, `768x1024`, and `1440x1100`.
+- Interaction/accessibility review passed for direct anchor entry, retained links, Back/Forward synchronization, focus visibility, semantic headings, accessible names, and absence of hidden forms or saved state.
+- Generated validation drift must be cleaned before commit.
+- Implementation commit is pending.
+
+Next authorization gate:
+
+`READY_FOR_REIE_ADVISORY_EXPERIENCE_PHASE_1_LOCAL_CERTIFICATION_AND_PUSH_REVIEW`
+
+Do not push, manually deploy, perform production certification, begin Phase 2, add contact infrastructure, create routes, modify Contact backend behavior, or begin another initiative without explicit authorization.
+
+Prior Advisory Experience product specification handoff retained below.
+
 PROJECT ATLAS(tm) / REIE Advisory Experience Product Specification, August 2, 2026:
 
 Workspace:

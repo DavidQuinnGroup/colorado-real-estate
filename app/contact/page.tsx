@@ -27,6 +27,8 @@ export default function ContactPage() {
       title="Contact"
       summary="Production contact routing for public inquiries, privacy requests, and accessibility requests without publishing unverified phone or office details."
     >
+      <AdvisoryHandoffGuide />
+
       <TrustSection title="Production Status">
         <StandardTrustIntro />
         <p>Classification: {PUBLIC_TRUST_REVIEW_STATUS}.</p>
@@ -42,8 +44,6 @@ export default function ContactPage() {
           sender is not presented as the public contact channel.
         </p>
       </TrustSection>
-
-      <AdvisoryHandoffGuide />
 
       <TrustSection title="Current Contact Routing">
         <JourneyCohesionPanel

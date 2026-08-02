@@ -1,88 +1,71 @@
 import Link from 'next/link';
 
-const journeyContextGroups = [
+const preparationThemes = [
   {
-    label: 'Compare',
-    body: 'Bring the city or market tradeoffs that still need neighborhood, property, or qualified-source review.',
+    label: 'Goals and next decision',
+    body: 'Name the decision you are trying to make before asking anyone to solve it for you.',
   },
   {
-    label: 'Buy',
-    body: 'Name the search, property, timing, inspection, and offer questions that should be clarified before acting.',
+    label: 'Timeline',
+    body: 'Separate time-sensitive questions from items that can wait for professional review.',
   },
   {
-    label: 'Finance',
-    body: 'Keep lender, insurance, tax, and cash-planning questions ready for the qualified professionals who handle them.',
+    label: 'Property, market, or neighborhood context',
+    body: 'Bring the REIE context that still needs property-specific or qualified-source verification.',
   },
   {
-    label: 'Sell',
-    body: 'Separate preparation, records, property details, and pricing-conversation topics before requesting seller guidance.',
+    label: 'Financing or seller readiness',
+    body: 'List assumptions to verify without turning them into approval, pricing, or readiness conclusions.',
   },
   {
-    label: 'Prepare',
-    body: 'Organize facts, documents, and assumptions without uploading them or asking REIE to decide the outcome.',
+    label: 'Evidence gaps',
+    body: 'Identify incomplete, conflicting, or unsupported facts that should be clarified before relying on them.',
   },
   {
-    label: 'Verify',
-    body: 'Identify which citywide, property-specific, legal, title, inspection, lending, or insurance questions need review.',
-  },
-  {
-    label: 'Discuss',
-    body: 'Use the conversation to sequence next steps, understand process, and decide what requires specialist input.',
+    label: 'Unresolved professional questions',
+    body: 'Flag legal, tax, lending, title, insurance, HOA, permit, condition, or environmental questions early.',
   },
 ];
 
-const conversationPrompts = [
-  'What decision am I trying to make?',
-  'Which markets, properties, or paths am I considering?',
-  'What did I learn from REIE that still needs human context?',
-  'Which assumptions remain uncertain?',
-  'Which property-specific issues need verification?',
-  'Which timing, financing, or seller-readiness topics need professional review?',
-  'Which documents or facts may be useful to have available?',
-  'What outcome am I trying to understand without presuming a decision for me?',
-];
-
-const questionsToBring = [
+const journeyTopics = [
   {
-    title: 'Buyer and financing',
-    items: [
-      'Which search or financing assumptions should be verified?',
-      'Which questions belong with a lender or other qualified professional?',
-      'Which market, property, condition, insurance, HOA, or offer questions need further review?',
-    ],
+    label: 'Buy and finance',
+    body: 'Search, offer, timing, lender, insurance, and cash-planning questions belong in the conversation without implying qualification.',
   },
   {
-    title: 'Seller preparation',
-    items: [
-      'Which preparation steps matter for this property?',
-      'Which records or property details should be reviewed before pricing discussions?',
-      'Which specialists may be appropriate before a listing plan is shaped?',
-    ],
+    label: 'Sell and prepare',
+    body: 'Seller readiness, property records, repairs, and pricing discussions should be organized before a listing plan is shaped.',
   },
   {
-    title: 'Comparison and market',
-    items: [
-      'Which tradeoffs deserve deeper investigation?',
-      'Which citywide context requires neighborhood or property-specific review?',
-      'Which evidence limitations, incomplete facts, or conflicting details should be clarified?',
-    ],
+    label: 'Search, market, and place',
+    body: 'Use search, city, market, and neighborhood context as starting points for review, not as suitability conclusions.',
   },
   {
-    title: 'Grand Plan',
-    items: [
-      'Which sequencing, timing, buy-sell coordination, or advisory questions remain?',
-      'Which next step should be considered before moving from research into action?',
-    ],
+    label: 'Property and evidence',
+    body: 'Property-specific facts, source limitations, and evidence gaps should be verified before they guide action.',
+  },
+  {
+    label: 'Grand Plan and timing',
+    body: 'Sequencing, buy-sell coordination, and next-step timing can be discussed without forcing a decision.',
+  },
+  {
+    label: 'Compare and decide',
+    body: 'Bring tradeoffs from Compare or other REIE surfaces so the conversation can clarify what still matters.',
   },
 ];
 
-const continuityLinks = [
-  { label: 'Contact / Advisory', href: '/contact', destination: 'contact' },
-  { label: 'Compare Cities', href: '/compare', destination: 'comparison' },
+const verificationQuestions = [
+  'Which property-specific facts should be verified before relying on this context?',
+  'Which financing assumptions belong with a qualified lender or other professional?',
+  'Which title, ownership, HOA, insurance, permit, zoning, condition, or environmental questions remain open?',
+  'Which market or pricing context needs professional interpretation rather than a certainty claim?',
+  'Which timing, contingency, or transaction-strategy questions should be discussed before action?',
+];
+
+const researchLinks = [
   { label: 'Buyer Guidance', href: '/buy', destination: 'buyer' },
-  { label: 'Financing Readiness', href: '/buy#financing-readiness', destination: 'financing-readiness' },
   { label: 'Seller Guidance', href: '/sell', destination: 'seller' },
-  { label: 'Seller Readiness', href: '/home-worth#seller-readiness', destination: 'seller-readiness' },
+  { label: 'Search Homes', href: '/search', destination: 'search' },
   { label: 'Market Context', href: '/market', destination: 'market' },
   { label: 'Grand Plan', href: '/grand-plan', destination: 'grand-plan' },
 ];
@@ -91,8 +74,12 @@ export default function AdvisoryHandoffGuide() {
   return (
     <section
       id="advisory-readiness"
-      className="public-trust-card scroll-mt-24 min-w-0 break-words bg-white/[0.03] p-5 ring-1 ring-white/[0.06] sm:p-6"
+      className="scroll-mt-24 min-w-0 break-words rounded-[8px] bg-white/[0.03] px-5 py-8 ring-1 ring-white/[0.06] sm:px-7 sm:py-10 lg:px-10"
       data-testid="advisory-handoff-readiness-guide"
+      data-advisory-experience-phase="phase-1-structural-productization"
+      data-advisory-experience-model="single-advisory-experience"
+      data-advisory-journey-context-model="generic-single-experience-with-static-topics"
+      data-advisory-contact-strategy="preparation-then-contact"
       data-advisory-handoff-surface="contact"
       data-advisory-handoff-route="/contact#advisory-readiness"
       data-advisory-handoff-presentational="true"
@@ -110,97 +97,163 @@ export default function AdvisoryHandoffGuide() {
       data-advisory-handoff-provider-activation="false"
       data-advisory-handoff-evidence-metadata-exposure="false"
     >
-      <p className="public-trust-card-title text-sm font-black uppercase tracking-[0.16em] text-cyan-100/78">
-        Advisory Readiness
-      </p>
-      <div className="mt-4 grid gap-7 text-sm leading-7 text-white/62">
-        <div className="grid gap-4 lg:grid-cols-[0.82fr_1.18fr] lg:items-start">
+      <div className="mx-auto grid max-w-5xl gap-10 text-sm leading-7 text-white/66">
+        <div className="grid gap-7 lg:grid-cols-[1.04fr_0.96fr] lg:items-end">
           <div>
-            <h2 className="text-2xl font-black leading-tight tracking-normal text-white">
-              Prepare the conversation without turning preparation into a decision.
+            <p className="text-sm font-black uppercase tracking-[0.16em] text-cyan-100/78">Advisory Readiness</p>
+            <h2 className="mt-4 max-w-3xl text-3xl font-black leading-tight tracking-normal text-white sm:text-4xl">
+              Prepare the conversation before you contact an advisor.
             </h2>
-            <p className="mt-4">
-              Advisory support can help connect market and city context, comparison tradeoffs, buyer readiness,
-              financing-readiness questions, seller preparation, property-specific questions, due-diligence priorities,
-              and next-step sequencing.
+            <p className="mt-5 max-w-2xl text-base leading-8 text-white/68">
+              Advisory is the next step after REIE research: organize what you know, identify what remains unresolved,
+              and decide which questions need a qualified professional before you move from research into conversation.
             </p>
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+              <Link
+                href="/contact"
+                className="inline-flex min-h-12 items-center justify-center rounded-[6px] bg-cyan-100 px-5 py-3 text-xs font-black uppercase tracking-[0.12em] text-[#041018] transition hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
+                data-advisory-handoff-destination="contact"
+              >
+                Talk Through The Decision
+              </Link>
+              <Link
+                href="#advisory-preparation-themes"
+                className="inline-flex min-h-12 items-center justify-center rounded-[6px] bg-white/[0.06] px-5 py-3 text-xs font-black uppercase tracking-[0.12em] text-cyan-100 transition hover:bg-white/[0.11] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
+                data-advisory-handoff-destination="preparation"
+              >
+                Review Preparation
+              </Link>
+            </div>
           </div>
+
           <div
-            className="rounded-[8px] border border-amber-100/16 bg-amber-100/[0.055] p-4 text-xs font-bold leading-6 text-white/58"
+            className="rounded-[8px] bg-amber-100/[0.055] p-5 text-xs font-bold leading-6 text-white/62 ring-1 ring-amber-100/14"
             data-testid="advisory-handoff-boundary"
           >
-            REIE provides informational decision support. Customer priorities are not inferred, and an advisor
-            conversation does not replace legal, tax, lending, appraisal, inspection, engineering, insurance, title,
-            or other qualified professional review.
+            You do not need every answer before reaching out. REIE helps organize questions; it does not determine legal,
+            tax, lending, appraisal, inspection, engineering, insurance, title, valuation, suitability, or investment
+            outcomes.
           </div>
         </div>
 
-        <div data-testid="advisory-handoff-conversation-prompts">
-          <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">
-            Conversation Preparation
+        <div className="grid gap-5 lg:grid-cols-[0.86fr_1.14fr]" data-testid="advisory-handoff-advisor-role">
+          <div>
+            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">Advisor Role</p>
+            <h3 className="mt-3 text-xl font-black leading-tight text-white">
+              Turn research into a prepared conversation.
+            </h3>
+          </div>
+          <p className="max-w-2xl text-sm leading-7 text-white/62">
+            A real-estate advisor can help interpret choices, organize questions, connect your REIE research to the
+            conversation, identify where specialists may be needed, and clarify next steps without guaranteeing an
+            outcome or replacing qualified professional review.
           </p>
-          <ul className="mt-3 grid gap-2 sm:grid-cols-2">
-            {conversationPrompts.map((prompt) => (
-              <li key={prompt} className="border-l border-cyan-100/24 pl-3">
-                {prompt}
+        </div>
+
+        <div id="advisory-preparation-themes" className="grid gap-4" data-testid="advisory-handoff-preparation-themes">
+          <div className="max-w-2xl">
+            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">
+              Conversation Preparation
+            </p>
+            <h3 className="mt-3 text-2xl font-black leading-tight text-white">Bring the right questions, not a perfect answer.</h3>
+          </div>
+          <div className="grid gap-3 md:grid-cols-2">
+            {preparationThemes.map((theme) => (
+              <article key={theme.label} className="rounded-[8px] bg-white/[0.035] p-4">
+                <p className="text-xs font-black uppercase tracking-[0.14em] text-cyan-100/72">{theme.label}</p>
+                <p className="mt-2 text-sm leading-7 text-white/58">{theme.body}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+
+        <div className="grid gap-4" data-testid="advisory-handoff-journey-context-groups">
+          <div className="max-w-2xl">
+            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">Journey Topics</p>
+            <h3 className="mt-3 text-2xl font-black leading-tight text-white">A single advisory path for the decisions REIE supports.</h3>
+          </div>
+          <div className="grid gap-3 lg:grid-cols-3">
+            {journeyTopics.map((topic) => (
+              <article key={topic.label} className="rounded-[8px] bg-white/[0.035] p-4">
+                <p className="text-xs font-black uppercase tracking-[0.14em] text-cyan-100/72">{topic.label}</p>
+                <p className="mt-2 text-sm leading-7 text-white/58">{topic.body}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+
+        <div className="grid gap-5 lg:grid-cols-[0.78fr_1.22fr]" data-testid="advisory-handoff-questions-to-bring">
+          <div>
+            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">Items To Verify</p>
+            <h3 className="mt-3 text-2xl font-black leading-tight text-white">Separate prompts from conclusions.</h3>
+          </div>
+          <ul className="grid gap-3 text-sm leading-7 text-white/62">
+            {verificationQuestions.map((question) => (
+              <li key={question} className="rounded-[8px] bg-white/[0.035] px-4 py-3">
+                {question}
               </li>
             ))}
           </ul>
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-2" data-testid="advisory-handoff-journey-context-groups">
-          {journeyContextGroups.map((group) => (
-            <article key={group.label} className="rounded-[8px] border border-white/10 bg-white/[0.035] p-4">
-              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/70">{group.label}</p>
-              <p className="mt-2 text-xs font-bold leading-6 text-white/56">{group.body}</p>
-            </article>
-          ))}
-        </div>
-
-        <div className="grid gap-4 lg:grid-cols-2" data-testid="advisory-handoff-questions-to-bring">
-          {questionsToBring.map((group) => (
-            <section key={group.title} className="rounded-[8px] border border-white/10 bg-white/[0.035] p-4">
-              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-white/68">{group.title}</p>
-              <ul className="mt-3 grid gap-2 text-xs font-bold leading-6 text-white/58">
-                {group.items.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            </section>
-          ))}
-        </div>
-
         <div
-          className="grid gap-4 rounded-[8px] border border-cyan-100/14 bg-cyan-100/[0.045] p-4 lg:grid-cols-[0.86fr_1.14fr]"
+          className="grid gap-5 rounded-[8px] bg-cyan-100/[0.045] p-5 lg:grid-cols-2"
           data-testid="advisory-handoff-evidence-aware-framing"
         >
           <div>
             <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">
-              Evidence-Aware Framing
+              Evidence And Professional Boundaries
             </p>
-            <p className="mt-3 text-xs font-bold leading-6 text-white/58">
-              Evidence may differ in freshness, available support, permitted use, and completeness. Citywide context
-              may not apply to a specific property, and incomplete or conflicting information may require further review.
+            <p className="mt-3 text-sm leading-7 text-white/62">
+              Evidence may differ in freshness, available support, permitted use, and completeness. Citywide context may
+              not apply to a specific property, and incomplete or conflicting information may require title, municipal,
+              insurance, lending, inspection, legal, tax, environmental, or other qualified professional review.
             </p>
           </div>
-          <div>
+          <div data-testid="advisory-handoff-privacy-expectations">
             <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">
-              Advisor Role
+              Privacy Expectations
             </p>
-            <p className="mt-3 text-xs font-bold leading-6 text-white/58">
-              A real-estate advisor can help organize the decision, explain process, connect certified REIE context to
-              your questions, identify where specialists may be needed, and sequence next actions without guaranteeing
-              an outcome.
+            <p className="mt-3 text-sm leading-7 text-white/62">
+              This public preparation experience does not create a saved workspace, automatically transfer planner inputs,
+              require uploads, present a hidden lead score, or create an inferred financial profile. Preparation can happen
+              before sharing sensitive details.
             </p>
           </div>
         </div>
 
-        <nav className="grid gap-2 sm:grid-cols-2" aria-label="Advisory handoff next steps" data-testid="advisory-handoff-continuity">
-          {continuityLinks.map((link) => (
+        <div
+          className="grid gap-5 rounded-[8px] bg-white/[0.04] p-5 lg:grid-cols-[1fr_0.82fr] lg:items-center"
+          data-testid="advisory-handoff-contact-transition"
+        >
+          <div>
+            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">Contact Transition</p>
+            <h3 className="mt-3 text-2xl font-black leading-tight text-white">Contact when the questions are organized.</h3>
+            <p className="mt-3 text-sm leading-7 text-white/62">
+              Use the existing contact path when you are ready to discuss the research, unresolved items, and professional
+              verification needs. Submitting an inquiry is for follow-up routing only and does not automatically create a
+              brokerage relationship.
+            </p>
+          </div>
+          <Link
+            href="/contact"
+            className="inline-flex min-h-12 items-center justify-center rounded-[6px] bg-cyan-100 px-5 py-3 text-xs font-black uppercase tracking-[0.12em] text-[#041018] transition hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
+            data-advisory-handoff-destination="contact"
+          >
+            Contact David Quinn Group
+          </Link>
+        </div>
+
+        <nav
+          className="flex flex-wrap gap-2"
+          aria-label="Advisory handoff research continuations"
+          data-testid="advisory-handoff-continuity"
+        >
+          {researchLinks.map((link) => (
             <Link
               key={link.destination}
               href={link.href}
-              className="rounded-[6px] border border-white/10 bg-[#071017]/72 px-4 py-3 text-xs font-black uppercase tracking-[0.12em] text-cyan-100 transition hover:bg-cyan-100/[0.11] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
+              className="rounded-[6px] bg-[#071017]/72 px-4 py-3 text-xs font-black uppercase tracking-[0.12em] text-cyan-100 transition hover:bg-cyan-100/[0.11] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
               data-advisory-handoff-destination={link.destination}
             >
               {link.label}
