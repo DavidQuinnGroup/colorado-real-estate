@@ -10,6 +10,61 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE DXT Wave 1B Map Visual-Language Normalization Product Specification, August 2, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+DXT Wave 1B Map Visual-Language Normalization specification status:
+
+- Specification record: `docs/project-atlas/executive-library/REIE-DXT-WAVE-1B-MAP-VISUAL-LANGUAGE-NORMALIZATION-PRODUCT-SPECIFICATION.md`
+- Status: `REIE_DXT_WAVE_1B_MAP_VISUAL_LANGUAGE_NORMALIZATION_SPECIFICATION_READY`
+- Root-cause classification: `COMBINED_CAUSE`
+- Selected product model: `CURRENT_PROVIDER_CONFIGURATION_NORMALIZATION`
+- Provider/licensing classification: `READY_FOR_BOUNDED_IMPLEMENTATION`
+- Selected first bounded implementation phase: `CURRENT_PROVIDER_STYLE_CONSTRAINT_REMEDIATION`
+- Implementation remains unauthorized.
+- Runtime changes remain unauthorized.
+- Map provider changes, tile-source changes, token/environment changes, route/API changes, persistence, telemetry, CRM, brokerage disclosure changes, production certification, and next-phase execution remain unauthorized.
+- Property Detail Context Preservation Phase 2 remains deferred.
+- Brokerage disclosure remains on hold: `EXTERNAL_COMPASS_MARKETING_REVIEW_PENDING`.
+
+Specification findings:
+
+- Production observation of `https://davidquinngroup.com/search` verified OpenTopoMap tile requests only across observed zoom interactions; no Mapbox tile requests were observed.
+- Repository code keeps OpenTopoMap as the default Search tile layer and conditionally configures a Mapbox outdoors overlay only when `NEXT_PUBLIC_MAPBOX_TOKEN` exists.
+- The proven production root cause is provider-controlled OpenTopoMap raster zoom styling combined with current application/CSS constraints that do not impose a consistent effective REIE visual language on the actual loaded tile images.
+- The next implementation may only normalize current-provider styling constraints, marker/cluster hierarchy, loading/fallback treatment, and active-provider attribution posture if separately authorized.
+- Any provider replacement, tile-source change, token/environment change, Mapbox activation, route/API change, persistence, telemetry, or brokerage disclosure change requires separate authorization.
+
+Prior deployment status for the specification baseline:
+
+- Baseline commit: `b69521a7d140889cf60962c1bdde7ef979a12918`
+- Status: `success`
+- GitHub/Vercel status ID: `51510654403`
+- Context: `Vercel`
+- Description: `Deployment has completed`
+- Target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/DnS1rCoqwLNrNW69h6aGg7NHYqQ6`
+- Updated: `2026-08-02T18:55:12Z`
+- Supersession status during baseline verification: not superseded.
+
+Exact next authorization gate:
+
+`READY_FOR_REIE_DXT_WAVE_1B_MAP_VISUAL_LANGUAGE_NORMALIZATION_BOUNDED_IMPLEMENTATION_AUTHORIZATION`
+
+That gate may authorize bounded implementation only if explicitly granted. Do not begin implementation, provider changes, tile-source changes, token/environment changes, route changes, API changes, persistence, telemetry, CRM, brokerage disclosure changes, deployment changes, production certification, Wave 1B closure, Property Detail Context Preservation Phase 2, or another DXT phase without explicit authorization.
+
+Prior DXT Wave 1B post Search return context next-phase review retained below.
+
 PROJECT ATLAS(tm) / REIE DXT Wave 1B Post Search Return Context Next-Phase Review, August 2, 2026:
 
 Workspace:
