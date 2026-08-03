@@ -318,6 +318,52 @@ export default function MarketIndexPage() {
         </div>
       </section>
 
+      <section
+        className="px-5 py-12 sm:px-8 lg:px-12"
+        data-testid="dxt-market-index-continuity-implementation"
+        data-dxt-market-family-continuity="market-index"
+        data-dxt-market-family-hidden-context="false"
+        data-dxt-market-family-persistence="false"
+        data-dxt-market-family-telemetry="false"
+        data-dxt-market-family-shared-state="false"
+        data-dxt-market-family-map-provider-change="false"
+      >
+        <div className="mx-auto grid max-w-6xl gap-6 lg:grid-cols-[0.82fr_1.18fr]">
+          <div>
+            <p className="text-[10px] font-black uppercase tracking-[0.28em] text-cyan-100/72">Decision Continuity</p>
+            <h2 className="mt-4 text-3xl font-black uppercase leading-tight tracking-normal text-white md:text-4xl">
+              Use Market to choose the next evidence layer, not to rank places.
+            </h2>
+            <p className="mt-5 text-sm leading-7 text-white/58 md:text-base">
+              Market owns broad briefing context. City Market owns city-level evidence. Neighborhood owns place orientation.
+              Search owns active property inventory, and Property owns address-level evaluation.
+            </p>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-2">
+            {[
+              ['Search inventory', 'Dominant when the customer is ready to compare active homes.', '/search', 'Search With Market Context'],
+              ['Open city evidence', 'Use a city briefing before narrowing a market-wide signal.', '/market/boulder-co-housing-market', 'Open Boulder Market'],
+              ['Review place context', 'Use neighborhood orientation before treating local evidence as property evidence.', '/market/boulder/mapleton-hill', 'Open Neighborhood Context'],
+              ['Verify professionally', 'Use Advisory after the customer knows which market assumption needs review.', '/contact#advisory-readiness', 'Prepare Advisory Questions'],
+            ].map(([label, body, href, action]) => (
+              <Link
+                key={label}
+                href={href}
+                className="reie-market-action-link group rounded-[8px] bg-white/[0.035] p-5 text-white no-underline ring-1 ring-white/[0.06] transition hover:bg-white/[0.055] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-200"
+                data-testid="dxt-market-index-continuity-link"
+              >
+                <p className="text-[9px] font-black uppercase tracking-[0.18em] text-cyan-100/68">{label}</p>
+                <p className="mt-3 text-sm leading-6 text-white/56">{body}</p>
+                <span className="mt-5 inline-flex text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100 transition group-hover:text-white">
+                  {action}
+                </span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <section className="px-5 py-16 sm:px-8 lg:px-12" data-dxt-market-briefing-role="questions-to-investigate">
         <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[1fr_0.8fr] lg:items-end">
           <div>

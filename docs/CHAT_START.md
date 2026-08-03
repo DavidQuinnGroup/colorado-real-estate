@@ -10,7 +10,7 @@ Product:
 
 ## Latest New-Chat Handoff
 
-PROJECT ATLAS(tm) / REIE Buyer/Seller -> Advisory -> Contact Continuity Certified And Market Continuity Plan Closed, August 3, 2026:
+PROJECT ATLAS(tm) / REIE Market -> City Market -> Neighborhood -> Property Continuity Local Implementation, August 3, 2026:
 
 Workspace:
 
@@ -24,94 +24,96 @@ git rev-parse HEAD origin/main
 git log -8 --oneline
 ```
 
-Verified certification baseline:
+Verified implementation baseline:
 
 - Branch: `main`
-- Starting HEAD before implementation push: `081ea0575815afcada24a399bc27d3fd9895f67c`
-- Starting origin/main before implementation push: `e3eb4c5807c72550ab7ab1780cb73428df3216e5`
-- Implementation commit: `081ea0575815afcada24a399bc27d3fd9895f67c`
-- Implementation commit message: `Clarify Buyer Seller professional handoff`
-- Documentation closure commit: created by this closure session; run `git rev-parse HEAD` for exact SHA after the closure commit lands.
-- Repository state after closure: expected clean and aligned with `origin/main`.
+- Starting HEAD before implementation: `8be70506bae25e9172e0acbb3be58205ad9f0877`
+- Starting origin/main before implementation: `8be70506bae25e9172e0acbb3be58205ad9f0877`
+- Expected implementation commit message: `Complete Market route continuity`
+- Repository state after local implementation: one commit ahead of `origin/main`, clean working tree.
 
-Production deployment evidence for implementation:
+Prior production deployment evidence before local implementation:
 
-- Pending status ID: `51556701199`
-- Terminal status ID: `51556815665`
-- Deployment ID: `5729683376`
-- Deployment-status ID: `16292843977`
+- Terminal status ID: `51557372534`
+- Deployment ID: `5729814095`
+- Deployment-status ID: `16293203767`
 - Terminal state: `success`
 - Description: `Deployment has completed`
-- Commit-status target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/3NSg2GCH1rN6M9dZbiFJKY3zuPZx`
-- Deployment target: `https://david-quinn-group-8rde-l2r7m8vuu-david-quinns-projects-a0953600.vercel.app`
+- Commit-status target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/39Jvka5rF6cnsjN3LTg6V545iXMw`
+- Deployment target: `https://david-quinn-group-8rde-kq52sr67m-david-quinns-projects-a0953600.vercel.app`
 - Production domain: `https://davidquinngroup.com`
-- Completion timestamp: `2026-08-03T16:17:28Z`
-- SHA association: `081ea0575815afcada24a399bc27d3fd9895f67c`
+- Completion timestamp: `2026-08-03T16:26:19Z`
+- SHA association: `8be70506bae25e9172e0acbb3be58205ad9f0877`
 
-Certified records:
+Governing records:
 
 - Buyer -> Advisory -> Contact Continuity implementation: `docs/project-atlas/executive-library/REIE-DXT-BUYER-ADVISORY-CONTACT-CONTINUITY-IMPLEMENTATION.md`
 - Seller -> Advisory -> Contact Continuity implementation: `docs/project-atlas/executive-library/REIE-DXT-SELLER-ADVISORY-CONTACT-CONTINUITY-IMPLEMENTATION.md`
 - Market -> City Market -> Neighborhood -> Property Continuity plan: `docs/project-atlas/executive-library/REIE-DXT-MARKET-CITY-MARKET-NEIGHBORHOOD-PROPERTY-CONTINUITY-PLAN.md`
 - Buyer/Seller -> Advisory -> Contact Continuity production certification: `docs/project-atlas/executive-library/REIE-DXT-BUYER-SELLER-ADVISORY-CONTACT-CONTINUITY-PRODUCTION-CERTIFICATION.md`
 - Market -> City Market -> Neighborhood -> Property Continuity plan certification: `docs/project-atlas/executive-library/REIE-DXT-MARKET-CITY-MARKET-NEIGHBORHOOD-PROPERTY-CONTINUITY-PLAN-CERTIFICATION.md`
-- Prior Property -> Advisory -> Contact Continuity production certification: `docs/project-atlas/executive-library/REIE-DXT-PROPERTY-ADVISORY-CONTACT-CONTINUITY-PRODUCTION-CERTIFICATION.md`
-- Prior Buyer/Seller -> Advisory -> Contact Continuity plan certification: `docs/project-atlas/executive-library/REIE-DXT-BUYER-SELLER-ADVISORY-CONTACT-CONTINUITY-PLAN-CERTIFICATION.md`
+- Market-family continuity implementation: `docs/project-atlas/executive-library/REIE-DXT-MARKET-FAMILY-CONTINUITY-IMPLEMENTATION.md`
+- DXT completion assessment: `docs/project-atlas/executive-library/REIE-DXT-COMPLETION-ASSESSMENT.md`
 
-Certified statuses:
+Local implementation status:
 
 - Buyer/Seller -> Advisory -> Contact Continuity: `REIE_DXT_BUYER_SELLER_ADVISORY_CONTACT_CONTINUITY_CERTIFIED_AND_CLOSED`
 - Buyer/Seller -> Advisory -> Contact Continuity production: `REIE_DXT_BUYER_SELLER_ADVISORY_CONTACT_CONTINUITY_PRODUCTION_CERTIFIED`
+- Satisfied Buyer/Seller continuity planning gate: `READY_FOR_REIE_DXT_BUYER_SELLER_ADVISORY_CONTACT_CONTINUITY_PLANNING_CERTIFICATION`
 - Market -> City Market -> Neighborhood -> Property Continuity plan: `REIE_DXT_MARKET_CITY_MARKET_NEIGHBORHOOD_PROPERTY_CONTINUITY_PLAN_CERTIFIED_AND_CLOSED`
 - Satisfied Market continuity planning gate: `READY_FOR_REIE_DXT_MARKET_CITY_MARKET_NEIGHBORHOOD_PROPERTY_CONTINUITY_PLAN_CERTIFICATION`
+- Market-family continuity local implementation: `MARKET_FAMILY_CONTINUITY_IMPLEMENTED_LOCAL`
+- DXT completion assessment: `DXT_COMPLETION_ASSESSMENT_READY`
 
 Runtime scope:
 
-- Buyer runtime file: `app/buy/page.tsx`
-- Seller runtime file: `app/sell/page.tsx`
-- Buyer preparation remains the primary `/buy` purpose.
-- Seller preparation remains the primary `/sell` purpose.
-- Advisory remains a preparation continuation.
-- Contact remains a subordinate general conversation-starting path.
-- No Buyer or Seller context is transferred automatically to Advisory or Contact.
-- Buyer financing tools remain unchanged.
-- Seller Home Value Estimator and valuation behavior remain unchanged.
+- Market index runtime file: `app/market/page.tsx`
+- City Market runtime file: `app/market/[city]/page.tsx`
+- Neighborhood runtime file: `app/market/[city]/[slug]/page.tsx`
+- Market owns broad market briefing.
+- City Market owns city-level evidence.
+- Neighborhood owns place orientation.
+- Search owns active property inventory.
+- Property owns address-level evaluation.
+- Advisory owns preparation for a focused professional conversation.
+- No Search, Property, Advisory, Contact, Buyer, Seller, API, map, provider, persistence, telemetry, navigation, footer, or brokerage-disclosure runtime was modified.
 
 Protected-system boundary:
 
-- No Advisory runtime, Contact runtime, form, field, financing-planner behavior, Home Value Estimator behavior, Search runtime, Property runtime, Market runtime, Neighborhood runtime, API, CRM, email, scheduling, persistence, localStorage, cookie, telemetry, analytics, hidden context, automatic customer-data transfer, shared CTA abstraction, shared continuity state, navigation, footer, route, canonical, brokerage-disclosure, provider, Prisma, or deployment configuration change was authorized or performed.
+- No Search runtime, Search API, Search ranking, Property runtime, Advisory runtime, Contact runtime, Buyer runtime, Seller runtime, form, field, map, provider, API, CRM, email, scheduling, persistence, localStorage, cookie, telemetry, analytics, hidden context, shared route state, shared CTA abstraction, navigation, footer, route, canonical, brokerage-disclosure, Prisma, or deployment configuration change was authorized or performed.
 - Brokerage disclosure remains on hold: `EXTERNAL_COMPASS_MARKETING_REVIEW_PENDING`.
 
-Production certification evidence:
+Local implementation evidence:
 
-- Buyer professional handoff section renders the question: `After preparing to buy, what should I understand before beginning a focused professional conversation?`
-- Buyer action priority: `Continue Buyer Search` primary, `Prepare Advisory Questions` to `/contact#advisory-readiness`, `Start General Contact` to `/contact#contact-route-choice`.
-- Seller professional handoff section renders the question: `After preparing for market exposure, what should I understand before beginning a focused professional conversation?`
-- Seller action priority: `Request Seller Review` primary, `Prepare Advisory Questions` to `/contact#advisory-readiness`, `Start General Contact` to `/contact#contact-route-choice`.
-- Production `/buy` canonical: `https://davidquinngroup.com/buy`; H1: `Am I prepared to buy?`
-- Production `/sell` canonical: `https://davidquinngroup.com/sell`; H1: `What must be understood before market exposure?`
-- Market/Neighborhood/Property continuity was certified as planning only; no Market, City Market, Neighborhood, Search, or Property runtime was modified.
+- Market index adds `dxt-market-index-continuity-implementation` with route-ownership guidance and Search, City Market, Neighborhood, and Advisory continuations.
+- City Market adds `dxt-city-market-continuity-implementation` with Search inventory, Neighborhood place, Property address-fact, and Advisory preparation ownership.
+- Neighborhood adds `dxt-neighborhood-continuity-implementation` with Neighborhood-to-Search/Property continuity and no hidden context transfer.
+- The DXT completion assessment records material gap count `0` after Market-family continuity production certification, absent production defects.
 
 Validation to rerun if future continuity work resumes:
 
 ```bash
 git diff --check
+npm run check:dxt-market-continuity-implementation
+npm run check:dxt-city-market-continuity-implementation
+npm run check:dxt-neighborhood-continuity-implementation
+npm run check:dxt-completion-assessment
+npm run check:dxt-market-neighborhood-property-continuity-plan
 npm run check:dxt-property-advisory-contact-continuity-implementation
 npm run check:dxt-next-continuity-phase-plan
 npm run check:dxt-buyer-advisory-contact-continuity-implementation
 npm run check:dxt-seller-advisory-contact-continuity-implementation
-npm run check:dxt-market-neighborhood-property-continuity-plan
 npm run check:dxt-cross-route-cta-destination-inventory
 npm run check:dxt-decision-context-continuity-contract
 npm run check:dxt-cross-route-continuity-implementation-readiness
-npm run check:buyer-financing-readiness-advancement
-npm run check:buyer-financing-decision-planner
-npm run check:seller-journey-safety
-npm run check:seller-readiness-advancement
-npm run check:reie-seller-confidence-experience-v8
+npm run check:dxt-wave-1d-market-briefing-foundation
+npm run check:dxt-wave-1d-city-market-briefing-implementation
+npm run check:dxt-wave-1d-neighborhood-place-orientation-implementation
+npm run check:property-route-safety
 npm run check:search-runtime-safety
 npm run check:public-runtime-safety
 npm run check:public-trust-readiness
+npm run check:map-rendering-safety
 npm run check:dxt-wave-1e-advisory-handoff-implementation
 npm run check:dxt-wave-1e-contact-decision-flow-implementation
 npm run typecheck
@@ -122,9 +124,11 @@ npm run build
 
 Next gate:
 
-`READY_FOR_REIE_DXT_MARKET_CITY_MARKET_NEIGHBORHOOD_PROPERTY_CONTINUITY_BOUNDED_IMPLEMENTATION_AUTHORIZATION`
+Primary: `READY_FOR_REIE_DXT_MARKET_CITY_MARKET_NEIGHBORHOOD_PROPERTY_CONTINUITY_LOCAL_CERTIFICATION_AND_PUSH_AUTHORIZATION`
 
-Do not begin Market/City Market/Neighborhood/Property runtime implementation, modify Contact or Advisory runtime, change forms/APIs/CRM/email/scheduling, add hidden context, or create shared CTA abstractions without explicit authorization.
+Secondary: `READY_FOR_REIE_DXT_COMPLETION_ASSESSMENT_CERTIFICATION`
+
+Do not push, deploy, production-certify, close DXT, begin the next program, modify Search or Property runtime, modify Contact or Advisory runtime, change forms/APIs/CRM/email/scheduling, add hidden context, or create shared CTA abstractions without explicit authorization.
 
 Prior handoff retained below for audit history.
 

@@ -494,6 +494,71 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
           ]}
         />
 
+        <section
+          className="grid gap-6 rounded-[8px] bg-white/[0.04] p-5 md:p-8 lg:grid-cols-[0.82fr_1.18fr]"
+          data-testid="dxt-city-market-continuity-implementation"
+          data-dxt-market-family-continuity="city-market"
+          data-dxt-market-family-hidden-context="false"
+          data-dxt-market-family-persistence="false"
+          data-dxt-market-family-telemetry="false"
+          data-dxt-market-family-shared-state="false"
+          data-dxt-market-family-map-provider-change="false"
+          data-dxt-city-market-neighborhood-ranking="false"
+        >
+          <div>
+            <p className="mb-3 text-[10px] font-black uppercase tracking-[0.28em] text-cyan-100/72">Route Ownership</p>
+            <h2 className="text-3xl font-black uppercase leading-tight tracking-normal text-white md:text-4xl">
+              Move from {cityData.name} evidence to the right next surface.
+            </h2>
+            <p className="mt-5 text-sm leading-7 text-white/58 md:text-base">
+              This city briefing explains the city-level signal. It does not rank neighborhoods, predict appreciation, or decide
+              whether a property is suitable. Search remains the inventory path; Neighborhood remains the place-orientation path.
+            </p>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-2">
+            {[
+              {
+                label: 'Search owns inventory',
+                body: `Use active ${cityData.name} listings when the next question is what is available now.`,
+                href: `/search?city=${encodeURIComponent(cityData.name)}`,
+                action: 'Search With Market Context',
+              },
+              {
+                label: 'Neighborhood owns place',
+                body: 'Use local context to understand organization and verification questions without ranking places.',
+                href: featuredNeighborhood ? getNeighborhoodPath(featuredNeighborhood) : '#market-neighborhood-context',
+                action: 'Open Neighborhood Context',
+              },
+              {
+                label: 'Property owns address facts',
+                body: 'Open a listing from Search when the decision needs condition, records, taxes, HOA, inspection, and contract review.',
+                href: `/search?city=${encodeURIComponent(cityData.name)}`,
+                action: 'Find Properties In Search',
+              },
+              {
+                label: 'Advisory owns preparation',
+                body: 'Use Advisory only after the customer knows which market or property assumption needs professional discussion.',
+                href: '/contact#advisory-readiness',
+                action: 'Prepare Advisory Questions',
+              },
+            ].map((item) => (
+              <Link
+                key={item.label}
+                href={item.href}
+                className="reie-market-action-link group rounded-[8px] bg-[#071017]/82 p-5 text-white no-underline ring-1 ring-white/[0.06] transition hover:bg-white/[0.055] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-200"
+                data-testid="dxt-city-market-continuity-link"
+              >
+                <p className="text-[9px] font-black uppercase tracking-[0.18em] text-cyan-100/68">{item.label}</p>
+                <p className="mt-3 text-sm leading-6 text-white/56">{item.body}</p>
+                <span className="mt-5 inline-flex text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100 transition group-hover:text-white">
+                  {item.action}
+                </span>
+              </Link>
+            ))}
+          </div>
+        </section>
+
         {cityDecisionGuide ? (
           <>
             <section

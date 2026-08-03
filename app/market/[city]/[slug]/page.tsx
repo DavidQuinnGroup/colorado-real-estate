@@ -879,6 +879,72 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
         </section>
 
         <section
+          className="reie-neighborhood-route-continuity grid gap-6 rounded-[8px] bg-white/[0.04] p-5 md:col-span-12 md:grid-cols-[0.82fr_1.18fr] md:p-8"
+          data-testid="dxt-neighborhood-continuity-implementation"
+          data-dxt-market-family-continuity="neighborhood"
+          data-dxt-market-family-hidden-context="false"
+          data-dxt-market-family-persistence="false"
+          data-dxt-market-family-telemetry="false"
+          data-dxt-market-family-shared-state="false"
+          data-dxt-market-family-map-provider-change="false"
+          data-dxt-neighborhood-ranking="false"
+          data-dxt-neighborhood-suitability="false"
+        >
+          <div>
+            <p className="mb-3 text-[10px] font-black uppercase tracking-[0.24em] text-cyan-100/72">Continuity To Property</p>
+            <h2 className="text-3xl font-black uppercase leading-tight tracking-normal text-white md:text-4xl">
+              Let the neighborhood orient the review, then verify the address.
+            </h2>
+            <p className="mt-5 text-sm leading-7 text-white/58 md:text-base">
+              Neighborhood context explains place organization and local verification questions. It does not rank places, determine fit, or
+              transfer hidden context into Search, Property, Advisory, or Contact.
+            </p>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-2">
+            {[
+              {
+                label: 'Search owns property inventory',
+                body: `Use the ${neighborhood.name} Search path to find active listings before opening address-level evidence.`,
+                href: searchHref,
+                action: 'Search This Neighborhood',
+              },
+              {
+                label: 'Property owns address evaluation',
+                body: 'Open a property from Search when the next decision depends on condition, records, costs, inspection, or contract facts.',
+                href: searchHref,
+                action: 'Find Properties In Search',
+              },
+              {
+                label: 'City Market owns broad context',
+                body: `Return to ${neighborhood.city} market evidence when the place signal needs city-level comparison.`,
+                href: cityMarketHref,
+                action: 'City Market Context',
+              },
+              {
+                label: 'Advisory owns preparation',
+                body: 'Bring verification questions into Advisory only after the place and property questions are clear.',
+                href: '/contact#advisory-readiness',
+                action: 'Prepare Advisory Questions',
+              },
+            ].map((item) => (
+              <Link
+                key={item.label}
+                href={item.href}
+                className="reie-neighborhood-framework-link group rounded-[8px] bg-[#071017]/78 p-5 text-white no-underline ring-1 ring-white/[0.06] transition hover:bg-white/[0.07] focus:outline-none focus:ring-2 focus:ring-cyan-100/70"
+                data-testid="dxt-neighborhood-continuity-link"
+              >
+                <p className="text-[9px] font-black uppercase tracking-[0.18em] text-cyan-100/68">{item.label}</p>
+                <p className="mt-3 text-sm leading-6 text-white/56">{item.body}</p>
+                <span className="mt-5 inline-flex text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100 transition group-hover:text-white">
+                  {item.action}
+                </span>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        <section
           className="reie-neighborhood-market-workspace rounded-[8px] bg-cyan-100/[0.055] p-5 shadow-[0_24px_80px_rgba(0,0,0,0.22)] md:col-span-12 md:p-8"
           data-testid="reie-market-v8-decision-workspace"
           data-market-v8-scope="neighborhood"
