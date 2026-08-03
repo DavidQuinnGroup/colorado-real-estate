@@ -10,7 +10,7 @@ Product:
 
 ## Latest New-Chat Handoff
 
-PROJECT ATLAS(tm) / REIE Search -> Property -> Search Return Continuity Local Implementation, August 3, 2026:
+PROJECT ATLAS(tm) / REIE Search -> Property -> Search Return Continuity Certified And Property Advisory Contact Plan Closed, August 3, 2026:
 
 Workspace:
 
@@ -24,43 +24,47 @@ git rev-parse HEAD origin/main
 git log -8 --oneline
 ```
 
-Verified starting baseline before local implementation:
+Verified certification baseline:
 
 - Branch: `main`
-- Planning baseline commit: `9fa4015653b9912ae3736f15d3918e0f178c1629`
-- Planning baseline message: `Plan cross-route decision continuity`
-- Planning parent / origin baseline: `9758fda17b49083ace1b401cd339fd476fe298e6`
-- Baseline ahead/behind before implementation: `1 ahead / 0 behind`
-- Baseline working tree before implementation: clean
-- Implementation commit: local commit created by this implementation session; run `git rev-parse HEAD` for exact SHA.
+- Planning commit: `9fa4015653b9912ae3736f15d3918e0f178c1629`
+- Planning commit message: `Plan cross-route decision continuity`
+- Planning parent / original production baseline: `9758fda17b49083ace1b401cd339fd476fe298e6`
+- Implementation commit: `6e705d24e5ec2f8d82d8555ab1e591cc827f55ad`
 - Implementation commit message: `Improve Property return continuity`
+- Documentation closure commit: created by this documentation-only closure; run `git rev-parse HEAD` for exact SHA after the closure commit lands.
+- Repository state after closure: expected clean and aligned with `origin/main`.
 
-Latest production deployment evidence verified before implementation:
+Production deployment evidence for implementation:
 
-- Commit-status ID: `51544112197`
-- Deployment-status ID: `16284326637`
+- Pending status ID: `51547863581`
+- Terminal status ID: `51547984290`
+- Deployment ID: `5727646194`
+- Deployment-status ID: `16287154465`
 - Terminal state: `success`
 - Description: `Deployment has completed`
-- Commit-status target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/Ctoq9FGExnRrQnMEYMR8rztipJio`
-- Deployment target: `https://david-quinn-group-8rde-2l8ufkhi1-david-quinns-projects-a0953600.vercel.app`
+- Commit-status target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/8iNts9nsaKrNGQohHif2Eta4fw93`
+- Deployment target: `https://david-quinn-group-8rde-jbz4ed1s9-david-quinns-projects-a0953600.vercel.app`
 - Production domain: `https://davidquinngroup.com`
-- Completion timestamp: `2026-08-03T13:03:20Z`
-- SHA association: `9758fda17b49083ace1b401cd339fd476fe298e6`
+- Completion timestamp: `2026-08-03T14:06:41Z`
+- SHA association: `6e705d24e5ec2f8d82d8555ab1e591cc827f55ad`
 
-Local implementation records:
+Certified and closure records:
 
 - Search -> Property -> Search Return Continuity implementation: `docs/project-atlas/executive-library/REIE-DXT-SEARCH-PROPERTY-RETURN-CONTINUITY-IMPLEMENTATION.md`
 - Property -> Advisory -> Contact Continuity implementation plan: `docs/project-atlas/executive-library/REIE-DXT-PROPERTY-ADVISORY-CONTACT-CONTINUITY-IMPLEMENTATION-PLAN.md`
+- Search -> Property -> Search Return Continuity production certification: `docs/project-atlas/executive-library/REIE-DXT-SEARCH-PROPERTY-RETURN-CONTINUITY-PRODUCTION-CERTIFICATION.md`
+- Property -> Advisory -> Contact Continuity plan certification: `docs/project-atlas/executive-library/REIE-DXT-PROPERTY-ADVISORY-CONTACT-CONTINUITY-PLAN-CERTIFICATION.md`
 
-Local implementation statuses:
+Program statuses:
 
-- Search -> Property -> Search Return Continuity: `DXT_SEARCH_PROPERTY_RETURN_CONTINUITY_IMPLEMENTED_LOCAL_COMMIT_ONLY`
-- Property -> Advisory -> Contact Continuity planning: `PROPERTY_ADVISORY_CONTACT_CONTINUITY_PLAN_READY`
-- Executive recommendation: `READY_FOR_SEARCH_PROPERTY_RETURN_CONTINUITY_LOCAL_CERTIFICATION`
+- Search -> Property -> Search Return Continuity: `REIE_DXT_SEARCH_PROPERTY_RETURN_CONTINUITY_CERTIFIED_AND_CLOSED`
+- Property -> Advisory -> Contact Continuity plan: `REIE_DXT_PROPERTY_ADVISORY_CONTACT_CONTINUITY_PLAN_CERTIFIED_AND_CLOSED`
+- Prior secondary planning gate satisfied: `READY_FOR_REIE_DXT_PROPERTY_ADVISORY_CONTACT_CONTINUITY_PLAN_CERTIFICATION`
 
 Runtime scope:
 
-- Changed runtime file: `app/properties/[id]/page.tsx`
+- Certified runtime file: `app/properties/[id]/page.tsx`
 - Search return context uses only the existing `lib/search/searchReturnContext.ts` allowlist.
 - Valid Search return context renders a visible customer-facing return action.
 - Direct Property entry remains independent.
@@ -73,7 +77,19 @@ Protected-system boundary:
 - No Search runtime, Search API, ranking, map, bounds, zoom, list-scroll, selected-card, preview, persistence, localStorage, cookies, telemetry, analytics, customer profile, hidden context, PropertyInquiryForm, inquiry API, Advisory runtime, Contact runtime, shared CTA abstraction, navigation, footer, route, canonical, brokerage-disclosure, CRM, email, scheduling, provider, Prisma, or deployment configuration change was authorized or performed.
 - Brokerage disclosure remains on hold: `EXTERNAL_COMPASS_MARKETING_REVIEW_PENDING`.
 
-Validation to rerun when resuming:
+Production certification evidence:
+
+- Direct Property route, valid Search-return context route, and malformed external-context route all returned HTTP 200.
+- Canonical remained the clean Property URL.
+- Exactly one Property H1 rendered.
+- Valid context rendered `Return to Bellvue Search` with a sanitized internal Search URL.
+- Direct and malformed entry fell back to normal Search continuation.
+- No raw return URL was displayed.
+- Browser Back and Forward remained native.
+- Mobile, tablet, and desktop reviews found no document-level horizontal overflow.
+- Regression passed for Homepage, Search, Buyer, Seller, Market, City Market, Neighborhood, Property, Contact, brokerage disclosures, and `/api/search?limit=1`.
+
+Validation to rerun if future continuity work resumes:
 
 ```bash
 git diff --check
@@ -97,15 +113,44 @@ Next gates:
 
 Primary:
 
-`READY_FOR_REIE_DXT_SEARCH_PROPERTY_RETURN_CONTINUITY_LOCAL_CERTIFICATION_AND_PUSH_AUTHORIZATION`
+`READY_FOR_REIE_DXT_PROPERTY_ADVISORY_CONTACT_CONTINUITY_BOUNDED_IMPLEMENTATION_AUTHORIZATION`
 
-Secondary:
-
-`READY_FOR_REIE_DXT_PROPERTY_ADVISORY_CONTACT_CONTINUITY_PLAN_CERTIFICATION`
-
-Do not push, deploy, production-certify, modify Search, add new URL context, introduce hidden state, implement Property/Advisory/Contact runtime continuity, change Property inquiry, alter Contact or Advisory runtime, or begin a shared continuity abstraction without explicit authorization.
+Do not modify Search, add new URL context, introduce hidden state, implement Property/Advisory/Contact runtime continuity, change Property inquiry, alter Contact or Advisory runtime, or begin a shared continuity abstraction without explicit authorization.
 
 Prior handoff retained below for audit history.
+
+PROJECT ATLAS(tm) / REIE Search -> Property -> Search Return Continuity Local Implementation, August 3, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Verified starting baseline before local implementation:
+
+- Branch: `main`
+- Planning baseline commit: `9fa4015653b9912ae3736f15d3918e0f178c1629`
+- Planning baseline message: `Plan cross-route decision continuity`
+- Planning parent / origin baseline: `9758fda17b49083ace1b401cd339fd476fe298e6`
+- Baseline ahead/behind before implementation: `1 ahead / 0 behind`
+- Baseline working tree before implementation: clean
+- Implementation commit: `6e705d24e5ec2f8d82d8555ab1e591cc827f55ad`
+- Implementation commit message: `Improve Property return continuity`
+
+Local implementation statuses:
+
+- Search -> Property -> Search Return Continuity: `DXT_SEARCH_PROPERTY_RETURN_CONTINUITY_IMPLEMENTED_LOCAL_COMMIT_ONLY`
+- Property -> Advisory -> Contact Continuity planning: `PROPERTY_ADVISORY_CONTACT_CONTINUITY_PLAN_READY`
+- Executive recommendation: `READY_FOR_SEARCH_PROPERTY_RETURN_CONTINUITY_LOCAL_CERTIFICATION`
+
+Do not use this archived handoff as current authorization.
 
 PROJECT ATLAS(tm) / REIE Cross-Route Decision Continuity Planning Ready For Certification, August 3, 2026:
 
