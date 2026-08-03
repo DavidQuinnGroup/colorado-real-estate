@@ -4,19 +4,35 @@ Program: REIE Decision Experience Transformation (DXT 1.0)
 
 Phase: Wave 1C - Seller Journey Simplification Implementation-Ready Plan
 
-Status: `DXT_WAVE_1C_SELLER_JOURNEY_SIMPLIFICATION_IMPLEMENTATION_PLAN_READY`
+Status: `DXT_WAVE_1C_SELLER_JOURNEY_SIMPLIFICATION_IMPLEMENTATION_PLAN_RECONCILED_AFTER_BUYER_PRODUCTION_CERTIFICATION`
 
 Date: August 2, 2026
 
+Reconciled: August 2, 2026, after production certification of Buyer Journey Simplification implementation SHA `8922792dcbf3edc4c90eb7b8f11cdcfaa80e99b5`.
+
+Prior planning status preserved for deterministic validation continuity:
+
+`DXT_WAVE_1C_SELLER_JOURNEY_SIMPLIFICATION_IMPLEMENTATION_PLAN_READY`
+
 ## 1. Planning Decision
 
-The Seller Journey Simplification implementation plan is ready for future authorization.
+The Seller Journey Simplification implementation plan is ready for future authorization and has been reconciled against the production-certified Buyer Journey Simplification evidence.
 
 Governing seller question:
 
 `What must be understood before market exposure?`
 
 This plan is inspection and planning only. Seller runtime remains unauthorized. No Seller customer-facing copy, styling, components, routes, shared components, runtime abstractions, or data-driven journey schema were modified.
+
+Production-certified Buyer evidence incorporated into this Seller plan:
+
+- the first viewport should answer one governing decision question before tool density appears;
+- one dominant first action should be visually and semantically clearer than supporting continuations;
+- preparation themes should appear before tools and intake;
+- questions to verify should sit between preparation and deeper tool/evidence sections;
+- professional and trust boundaries should be adjacent to readiness and intake moments, not buried after conversion;
+- compact next-decision continuations should appear after the advisory transition;
+- mobile stacking should preserve the same decision sequence without dense repeated copy.
 
 ## 2. Current Seller Runtime Inventory
 
@@ -59,6 +75,8 @@ Problems to address in a future bounded implementation:
 - the advisory transition should feel like prepared professional review rather than generic contact routing;
 - mobile may present too many similarly weighted blocks before the seller reaches the key next step.
 
+Buyer production certification clarified that the Seller implementation should use tighter opening copy than the current page and should avoid equal-weight hero actions. The Seller page should not ask the customer to process preparation cards, intake, market context, and advisory routing in the same viewport.
+
 ## 4. Section Disposition Map
 
 | Current section or pattern | Disposition | Reason |
@@ -67,9 +85,9 @@ Problems to address in a future bounded implementation:
 | Hero headline | SIMPLIFY | Should directly answer what must be understood before exposure. |
 | Hero body copy | SIMPLIFY | Current copy is useful but should be shorter and less explanatory above the fold. |
 | Request Seller Review CTA | KEEP | It is the primary conversion path, but should be the single dominant first action. |
-| Market Context CTA | MOVE LOWER | Useful after preparation framing, not equal to seller review in the first viewport. |
-| Contact Routing CTA | MOVE LOWER | Advisory should appear after preparation and boundary context. |
-| Preparation service cards | KEEP_AND_RESEQUENCE | Valuable, but should become staged preparation themes. |
+| Market Context CTA | MOVE LOWER | Useful after preparation framing, not equal to seller review in the first viewport; Buyer production evidence supports one dominant next action. |
+| Contact Routing CTA | MOVE LOWER | Advisory should appear after preparation, questions to verify, and boundary context. |
+| Preparation service cards | KEEP_AND_RESEQUENCE | Valuable, but should become staged preparation themes before tools and intake. |
 | Pricing and positioning language | KEEP_WITH_BOUNDARY | Must avoid price recommendation, instant appraisal, or guaranteed sale implications. |
 | Construction-informed review | KEEP_WITH_BOUNDARY | Useful if framed as questions and preparation, not condition conclusions. |
 | Market strategy | KEEP_WITH_BOUNDARY | Useful if framed as market-exposure preparation, not predictive outcome. |
@@ -86,14 +104,16 @@ Recommended future sequence:
 
 1. Reframe first viewport around `What must be understood before market exposure?`
 2. Make `Request Seller Review` the single dominant first action.
-3. Move Market Context and Contact/Advisory continuations lower.
-4. Convert preparation cards into staged seller preparation themes.
-5. Add a concise evidence-gaps and buyer-objection section before intake.
-6. Place valuation, pricing, condition, legal, title, disclosure, tax, HOA, and insurance boundaries adjacent to seller readiness and intake.
-7. Preserve `HomeValueEstimator` behavior and `/api/valuation` route without modification unless separately authorized.
-8. Preserve `JourneyCohesionPanel` as compact continuations after preparation context.
-9. Add a Seller-specific deterministic DXT check.
-10. Certify mobile, tablet, desktop, heading order, keyboard focus, and protected-boundary behavior.
+3. Use a concise opening promise that names preparation, pricing context, property evidence, and advisory review without promising valuation certainty.
+4. Convert preparation cards into staged seller preparation themes before tools and intake.
+5. Add a concise questions-to-verify section after preparation themes and before the form.
+6. Move Market Context and Contact/Advisory continuations lower as supporting paths.
+7. Add a concise evidence-gaps and buyer-objection section before intake.
+8. Place valuation, pricing, condition, legal, title, disclosure, tax, HOA, and insurance boundaries adjacent to seller readiness and intake.
+9. Preserve `HomeValueEstimator` behavior and `/api/valuation` route without modification unless separately authorized.
+10. Preserve `JourneyCohesionPanel` as compact continuations after preparation context.
+11. Add a Seller-specific deterministic DXT check.
+12. Certify mobile, tablet, desktop, heading order, keyboard focus, and protected-boundary behavior.
 
 ## 6. Proposed File Ownership
 
@@ -113,6 +133,8 @@ Documentation and validation ownership:
 - Seller-specific deterministic check;
 - `package.json` and `tsconfig.worker.json` only if a check is added;
 - `docs/CHAT_START.md` after implementation.
+
+Buyer production evidence confirms the Seller implementation should remain page-owned where possible. The preferred runtime edit is `app/sell/page.tsx` only. `HomeValueEstimator`, `JourneyCohesionPanel`, measurement helpers, API routes, shared CSS, and shared components should remain unchanged unless future certification proves a narrow, separately authorized need.
 
 ## 7. Shared-File Risks
 
@@ -165,6 +187,10 @@ Future Seller check should verify:
 - one dominant first action exists;
 - market/advisory continuations are lower than first preparation framing;
 - seller preparation themes map to the Wave 1C shared hierarchy;
+- a questions-to-verify section appears between preparation themes and deeper tools or intake;
+- trust, pricing-context, valuation, condition, and professional-judgment boundaries are placed before or adjacent to intake;
+- compact next-decision continuations appear after the advisory transition;
+- mobile, tablet, and desktop layouts preserve the same decision sequence without horizontal overflow;
 - evidence gaps and buyer-objection preparation are present;
 - `HomeValueEstimator` remains bounded and does not become an automated valuation;
 - `/api/valuation` behavior is unchanged unless separately authorized;
@@ -173,9 +199,9 @@ Future Seller check should verify:
 
 ## 10. Final Planning Status
 
-Seller Journey Simplification is implementation-ready:
+Seller Journey Simplification is implementation-ready and reconciled after Buyer Journey production certification:
 
-`DXT_WAVE_1C_SELLER_JOURNEY_SIMPLIFICATION_IMPLEMENTATION_PLAN_READY`
+`DXT_WAVE_1C_SELLER_JOURNEY_SIMPLIFICATION_IMPLEMENTATION_PLAN_RECONCILED_AFTER_BUYER_PRODUCTION_CERTIFICATION`
 
 Recommended future gate:
 
