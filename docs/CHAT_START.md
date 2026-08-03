@@ -10,7 +10,7 @@ Product:
 
 ## Latest New-Chat Handoff
 
-PROJECT ATLAS(tm) / REIE Property -> Advisory -> Contact Continuity Certified And Buyer/Seller Plan Closed, August 3, 2026:
+PROJECT ATLAS(tm) / REIE Buyer/Seller -> Advisory -> Contact Continuity Local Implementation, August 3, 2026:
 
 Workspace:
 
@@ -24,69 +24,67 @@ git rev-parse HEAD origin/main
 git log -8 --oneline
 ```
 
-Verified certification baseline:
+Verified implementation baseline:
 
 - Branch: `main`
-- Implementation commit: `55da05ea3443c4dfdefa3a7710387fe0a967e97c`
-- Implementation commit message: `Clarify Property professional handoff`
-- Implementation parent: `d319d48e7ee166214308ac3d7ca919f8ccdfc1c5`
-- Documentation closure commit: created by this documentation-only closure; run `git rev-parse HEAD` for exact SHA after the closure commit lands.
-- Repository state after closure: expected clean and aligned with `origin/main`.
+- Starting HEAD: `e3eb4c5807c72550ab7ab1780cb73428df3216e5`
+- Starting origin/main: `e3eb4c5807c72550ab7ab1780cb73428df3216e5`
+- Implementation commit: created locally by this session; run `git rev-parse HEAD` for exact SHA after the commit lands.
+- Implementation commit message: `Clarify Buyer Seller professional handoff`
+- Repository state after local implementation: expected clean, `1 ahead / 0 behind`, and not pushed.
 
-Production deployment evidence for implementation:
+Latest production deployment evidence before local implementation:
 
-- Pending status ID: `51553911258`
-- Terminal status ID: `51554034831`
+- Pending status ID: `51554447712`
+- Terminal status ID: `51554560044`
 - Terminal state: `success`
 - Description: `Deployment has completed`
-- Commit-status target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/BsdYjkA1k6nf3oKScFRNxjLRZZDC`
+- Commit-status target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/C2XcjH8cof9AYjdKcMagz9F4pCAk`
 - Production domain: `https://davidquinngroup.com`
-- Completion timestamp: `2026-08-03T15:35:54Z`
-- SHA association: `55da05ea3443c4dfdefa3a7710387fe0a967e97c`
+- Completion timestamp: `2026-08-03T15:43:39Z`
+- SHA association: `e3eb4c5807c72550ab7ab1780cb73428df3216e5`
 
-Certified and closure records:
+Implementation and planning records:
 
-- Property -> Advisory -> Contact Continuity implementation: `docs/project-atlas/executive-library/REIE-DXT-PROPERTY-ADVISORY-CONTACT-CONTINUITY-IMPLEMENTATION.md`
-- Property -> Advisory -> Contact Continuity production certification: `docs/project-atlas/executive-library/REIE-DXT-PROPERTY-ADVISORY-CONTACT-CONTINUITY-PRODUCTION-CERTIFICATION.md`
-- Next continuity phase plan: `docs/project-atlas/executive-library/REIE-DXT-NEXT-CONTINUITY-PHASE-PLAN.md`
-- Buyer/Seller -> Advisory -> Contact Continuity plan certification: `docs/project-atlas/executive-library/REIE-DXT-BUYER-SELLER-ADVISORY-CONTACT-CONTINUITY-PLAN-CERTIFICATION.md`
+- Buyer -> Advisory -> Contact Continuity implementation: `docs/project-atlas/executive-library/REIE-DXT-BUYER-ADVISORY-CONTACT-CONTINUITY-IMPLEMENTATION.md`
+- Seller -> Advisory -> Contact Continuity implementation: `docs/project-atlas/executive-library/REIE-DXT-SELLER-ADVISORY-CONTACT-CONTINUITY-IMPLEMENTATION.md`
+- Market -> City Market -> Neighborhood -> Property Continuity plan: `docs/project-atlas/executive-library/REIE-DXT-MARKET-CITY-MARKET-NEIGHBORHOOD-PROPERTY-CONTINUITY-PLAN.md`
+- Prior Property -> Advisory -> Contact Continuity production certification: `docs/project-atlas/executive-library/REIE-DXT-PROPERTY-ADVISORY-CONTACT-CONTINUITY-PRODUCTION-CERTIFICATION.md`
+- Prior Buyer/Seller -> Advisory -> Contact Continuity plan certification: `docs/project-atlas/executive-library/REIE-DXT-BUYER-SELLER-ADVISORY-CONTACT-CONTINUITY-PLAN-CERTIFICATION.md`
 
-Program statuses:
+Local statuses:
 
-- Property -> Advisory -> Contact Continuity: `REIE_DXT_PROPERTY_ADVISORY_CONTACT_CONTINUITY_CERTIFIED_AND_CLOSED`
-- Property -> Advisory -> Contact Continuity production: `REIE_DXT_PROPERTY_ADVISORY_CONTACT_CONTINUITY_PRODUCTION_CERTIFIED`
-- Buyer/Seller -> Advisory -> Contact Continuity plan: `REIE_DXT_BUYER_SELLER_ADVISORY_CONTACT_CONTINUITY_PLAN_CERTIFIED_AND_CLOSED`
+- Buyer -> Advisory -> Contact Continuity: `REIE_DXT_BUYER_ADVISORY_CONTACT_CONTINUITY_LOCAL_CERTIFICATION_READY`
+- Seller -> Advisory -> Contact Continuity: `REIE_DXT_SELLER_ADVISORY_CONTACT_CONTINUITY_LOCAL_CERTIFICATION_READY`
+- Buyer/Seller continuity combined recommendation: `READY_FOR_BUYER_SELLER_ADVISORY_CONTACT_CONTINUITY_LOCAL_CERTIFICATION`
 - Satisfied Buyer/Seller planning gate: `READY_FOR_REIE_DXT_BUYER_SELLER_ADVISORY_CONTACT_CONTINUITY_PLANNING_CERTIFICATION`
+- Market -> City Market -> Neighborhood -> Property Continuity plan: `MARKET_CITY_MARKET_NEIGHBORHOOD_PROPERTY_CONTINUITY_PLAN_READY`
+- Recommended secondary gate: `READY_FOR_REIE_DXT_MARKET_CITY_MARKET_NEIGHBORHOOD_PROPERTY_CONTINUITY_PLAN_CERTIFICATION`
 
 Runtime scope:
 
-- Certified runtime file: `app/properties/[id]/page.tsx`
-- Property inquiry remains the dominant property-specific follow-up path.
+- Buyer runtime file: `app/buy/page.tsx`
+- Seller runtime file: `app/sell/page.tsx`
+- Buyer preparation remains the primary `/buy` purpose.
+- Seller preparation remains the primary `/sell` purpose.
 - Advisory remains a preparation continuation.
-- Contact remains a general conversation-starting destination.
-- No property context is transferred automatically to Advisory or Contact.
-- Search return continuity remains intact.
+- Contact remains a subordinate general conversation-starting path.
+- No Buyer or Seller context is transferred automatically to Advisory or Contact.
+- Buyer financing tools remain unchanged.
+- Seller Home Value Estimator and valuation behavior remain unchanged.
 
 Protected-system boundary:
 
-- No PropertyInquiryForm, inquiry API, Advisory runtime, Contact runtime, Search runtime, Search API, ranking, map, persistence, localStorage, cookies, telemetry, analytics, customer profile, hidden context, URL context expansion, shared CTA abstraction, navigation, footer, route, canonical, brokerage-disclosure, CRM, email, scheduling, provider, Prisma, or deployment configuration change was authorized or performed.
+- No Advisory runtime, Contact runtime, form, field, financing-planner behavior, Home Value Estimator behavior, Search runtime, Property runtime, Market runtime, Neighborhood runtime, API, CRM, email, scheduling, persistence, localStorage, cookie, telemetry, analytics, hidden context, automatic customer-data transfer, shared CTA abstraction, shared continuity state, navigation, footer, route, canonical, brokerage-disclosure, provider, Prisma, or deployment configuration change was authorized or performed.
 - Brokerage disclosure remains on hold: `EXTERNAL_COMPASS_MARKETING_REVIEW_PENDING`.
 
-Production certification evidence:
+Local implementation evidence:
 
-- Direct Property route, valid Search-return context route, and malformed external-context route returned HTTP 200.
-- Canonical remained the clean Property URL.
-- Exactly one Property H1 rendered.
-- Professional handoff section rendered with the certified governing question.
-- Dominant Property action rendered as `Ask About This Property` targeting `#property-contact`.
-- Advisory continuation rendered as `Prepare Advisory Questions` targeting `/contact#advisory-readiness`.
-- Contact continuation rendered as `Start General Contact` targeting `/contact#contact-route-choice`.
-- Action priority remained separated: Property inquiry primary, Advisory secondary, Contact tertiary.
-- No hidden property context rendered.
-- No property context was added to Advisory or Contact URLs.
-- PropertyInquiryForm remained present and was not submitted.
-- Mobile, tablet, and desktop browser review found no document-level horizontal overflow.
-- Regression passed for Homepage, Search, Property, Buyer, Seller, Market, City Market, Neighborhood, Advisory, Contact, brokerage disclosures, and `/api/search?limit=1`.
+- Buyer professional handoff section renders the question: `After preparing to buy, what should I understand before beginning a focused professional conversation?`
+- Buyer action priority: `Continue Buyer Search` primary, `Prepare Advisory Questions` to `/contact#advisory-readiness`, `Start General Contact` to `/contact#contact-route-choice`.
+- Seller professional handoff section renders the question: `After preparing for market exposure, what should I understand before beginning a focused professional conversation?`
+- Seller action priority: `Request Seller Review` primary, `Prepare Advisory Questions` to `/contact#advisory-readiness`, `Start General Contact` to `/contact#contact-route-choice`.
+- Market/Neighborhood/Property continuity was planned only; no Market, City Market, Neighborhood, Search, or Property runtime was modified.
 
 Validation to rerun if future continuity work resumes:
 
@@ -94,15 +92,17 @@ Validation to rerun if future continuity work resumes:
 git diff --check
 npm run check:dxt-property-advisory-contact-continuity-implementation
 npm run check:dxt-next-continuity-phase-plan
-npm run check:dxt-property-advisory-contact-continuity-plan
-npm run check:dxt-search-property-return-continuity-implementation
+npm run check:dxt-buyer-advisory-contact-continuity-implementation
+npm run check:dxt-seller-advisory-contact-continuity-implementation
+npm run check:dxt-market-neighborhood-property-continuity-plan
 npm run check:dxt-cross-route-cta-destination-inventory
 npm run check:dxt-decision-context-continuity-contract
 npm run check:dxt-cross-route-continuity-implementation-readiness
-npm run check:property-route-safety
-npm run check:cep-property-intelligence-experience
-npm run check:reie-property-intelligence-experience-v8
-npm run check:property-product-3-1
+npm run check:buyer-financing-readiness-advancement
+npm run check:buyer-financing-decision-planner
+npm run check:seller-journey-safety
+npm run check:seller-readiness-advancement
+npm run check:reie-seller-confidence-experience-v8
 npm run check:search-runtime-safety
 npm run check:public-runtime-safety
 npm run check:public-trust-readiness
@@ -118,11 +118,17 @@ Next gates:
 
 Primary:
 
-`READY_FOR_REIE_DXT_BUYER_SELLER_ADVISORY_CONTACT_CONTINUITY_BOUNDED_IMPLEMENTATION_AUTHORIZATION`
+`READY_FOR_REIE_DXT_BUYER_SELLER_ADVISORY_CONTACT_CONTINUITY_LOCAL_CERTIFICATION_AND_PUSH_AUTHORIZATION`
 
-Do not begin Buyer/Seller runtime implementation, modify Contact or Advisory runtime, change forms/APIs/CRM/email/scheduling, add hidden context, or create shared CTA abstractions without explicit authorization.
+Secondary:
+
+`READY_FOR_REIE_DXT_MARKET_CITY_MARKET_NEIGHBORHOOD_PROPERTY_CONTINUITY_PLAN_CERTIFICATION`
+
+Do not push, deploy, production-certify, begin Market/Neighborhood/Property runtime implementation, modify Contact or Advisory runtime, change forms/APIs/CRM/email/scheduling, add hidden context, or create shared CTA abstractions without explicit authorization.
 
 Prior handoff retained below for audit history.
+
+PROJECT ATLAS(tm) / REIE Property -> Advisory -> Contact Continuity Certified And Buyer/Seller Plan Closed, August 3, 2026:
 
 PROJECT ATLAS(tm) / REIE Property -> Advisory -> Contact Continuity Local Implementation, August 3, 2026:
 

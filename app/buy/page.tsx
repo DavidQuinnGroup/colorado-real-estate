@@ -45,6 +45,27 @@ const verificationQuestions = [
   'Which tradeoffs would make a home worth an advisor conversation before a tour or offer decision?',
 ];
 
+const BUYER_PROFESSIONAL_HANDOFF_STEPS = [
+  {
+    label: 'Bring the decision context',
+    body: 'Know which homes, financing assumptions, timing questions, and property tradeoffs still shape the buying decision.',
+  },
+  {
+    label: 'Separate preparation from the conversation',
+    body: 'Use Advisory to organize the questions a professional should discuss; use Contact only when the conversation is ready to begin.',
+  },
+  {
+    label: 'Keep financial questions with the right professional',
+    body: 'Carry lender, tax, insurance, title, inspection, and legal questions forward without treating this page as approval or advice.',
+  },
+];
+
+const BUYER_HANDOFF_BOUNDARIES = [
+  'Buyer preparation does not approve financing, determine affordability, calculate buying power, rank lenders, or provide underwriting guidance.',
+  'Advisory prepares the conversation; it does not create representation, legal advice, tax advice, lending approval, investment advice, suitability conclusions, or assured outcomes.',
+  'Contact begins a general conversation and does not receive hidden Buyer context, saved searches, planner inputs, financial assumptions, or customer information from this page.',
+];
+
 export default function BuyPage() {
   const buyerDecisionWorkspace = buildBuyerDecisionWorkspace({
     searchHref: '/search',
@@ -63,6 +84,15 @@ export default function BuyPage() {
       data-dxt-wave-1c-shared-contract="BUYER_SELLER_SHARED_HIERARCHY_FOUNDATION_IMPLEMENTED"
       data-dxt-wave-1c-buyer-runtime-only="true"
       data-dxt-wave-1c-seller-runtime-change="false"
+      data-buyer-advisory-contact-continuity="implemented"
+      data-buyer-advisory-contact-runtime-scope="app/buy/page.tsx"
+      data-buyer-advisory-contact-hidden-context="false"
+      data-buyer-advisory-contact-url-context="false"
+      data-buyer-advisory-contact-form-change="false"
+      data-buyer-advisory-contact-api-change="false"
+      data-buyer-advisory-contact-crm="false"
+      data-buyer-advisory-contact-email="false"
+      data-buyer-advisory-contact-scheduling="false"
     >
       <section
         className="px-5 py-20 sm:px-8 sm:py-24 lg:px-12"
@@ -201,6 +231,67 @@ export default function BuyPage() {
         </div>
       </section>
 
+      <section
+        className="px-5 pb-12 sm:px-8 lg:px-12"
+        data-testid="reie-buyer-professional-handoff"
+        data-buyer-handoff-question="After preparing to buy, what should I understand before beginning a focused professional conversation?"
+        data-buyer-handoff-primary-action="search-preparation"
+        data-buyer-handoff-advisory="/contact#advisory-readiness"
+        data-buyer-handoff-contact="/contact#contact-route-choice"
+        data-buyer-handoff-hidden-context="false"
+        data-buyer-handoff-url-context="false"
+        data-buyer-handoff-form-change="false"
+        data-buyer-handoff-api-change="false"
+        data-buyer-handoff-crm="false"
+        data-buyer-handoff-email="false"
+        data-buyer-handoff-scheduling="false"
+      >
+        <div className="mx-auto grid w-full max-w-[1180px] gap-8 border border-white/10 bg-white/[0.035] p-6 sm:p-8 lg:grid-cols-[0.7fr_1fr] lg:items-start">
+          <div>
+            <p className="text-[10px] font-black uppercase text-cyan-100/72">Professional Handoff</p>
+            <h2 className="mt-3 text-3xl font-black leading-tight tracking-normal text-white">
+              After preparing to buy, what should I understand before beginning a focused professional conversation?
+            </h2>
+            <p className="mt-4 text-sm leading-7 text-white/62">
+              Keep Buyer preparation focused on the buying decision. Continue searching when criteria still need comparison, use Advisory
+              when assumptions need organizing, and use Contact only when the general conversation is ready to begin.
+            </p>
+            <div className="mt-6 flex flex-wrap gap-3" data-testid="buyer-handoff-actions">
+              <Link href="/search" className={primaryButtonClass} data-buyer-handoff-action="search-preparation">
+                Continue Buyer Search
+              </Link>
+              <Link href="/contact#advisory-readiness" className={secondaryButtonClass} data-buyer-handoff-action="advisory-preparation">
+                Prepare Advisory Questions
+              </Link>
+              <Link href="/contact#contact-route-choice" className={secondaryButtonClass} data-buyer-handoff-action="general-contact">
+                Start General Contact
+              </Link>
+            </div>
+            <p className="mt-4 text-xs leading-6 text-white/46">
+              These links do not attach Buyer context to Advisory or Contact. Keep confidential financial limits, lender details, and private
+              notes out of any public URL.
+            </p>
+          </div>
+          <div className="grid gap-4">
+            <div className="grid gap-3 sm:grid-cols-3">
+              {BUYER_PROFESSIONAL_HANDOFF_STEPS.map((step) => (
+                <article key={step.label} className="border border-cyan-100/12 bg-cyan-100/[0.045] p-4">
+                  <h3 className="text-sm font-black leading-tight text-white">{step.label}</h3>
+                  <p className="mt-3 text-xs leading-6 text-white/58">{step.body}</p>
+                </article>
+              ))}
+            </div>
+            <div className="grid gap-2">
+              {BUYER_HANDOFF_BOUNDARIES.map((boundary) => (
+                <p key={boundary} className="border border-white/10 bg-black/18 p-3 text-xs font-bold leading-6 text-white/52">
+                  {boundary}
+                </p>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section className="px-5 pb-24 sm:px-8 lg:px-12">
         <div className="mx-auto grid w-full max-w-[1180px] gap-6">
           <div data-dxt-buyer-hierarchy-role="professional-and-trust-boundaries">
@@ -218,7 +309,7 @@ export default function BuyPage() {
                 { label: 'Search Homes', href: '/search', note: 'Apply buyer criteria', destination: 'search' },
                 { label: 'Financing Guidance', href: '/buy#buyer-financing-confidence', note: 'Review assumptions', destination: 'financing' },
                 { label: 'Market Context', href: '/market', note: 'Compare local conditions', destination: 'market' },
-                { label: 'Advisory Guidance', href: '/contact', note: 'Ask focused questions', destination: 'advisory' },
+                { label: 'Advisory Guidance', href: '/contact#advisory-readiness', note: 'Prepare questions', destination: 'advisory' },
               ]}
             />
           </div>

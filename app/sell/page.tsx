@@ -69,6 +69,27 @@ const nextDecisions = [
   },
 ];
 
+const SELLER_PROFESSIONAL_HANDOFF_STEPS = [
+  {
+    label: 'Bring property evidence',
+    body: 'Organize condition, records, preparation gaps, and buyer-objection questions before a pricing or exposure conversation.',
+  },
+  {
+    label: 'Use Advisory for preparation',
+    body: 'Advisory is the place to prepare what needs professional interpretation before a seller conversation begins.',
+  },
+  {
+    label: 'Keep Contact general',
+    body: 'Contact remains the simplest general starting point and does not replace seller review, Home Worth, or property-specific preparation.',
+  },
+];
+
+const SELLER_HANDOFF_BOUNDARIES = [
+  'Seller preparation does not create an appraisal, valuation certainty, listing-price recommendation, guaranteed pricing, or guaranteed sale outcome.',
+  'Advisory prepares the conversation; it does not create representation, legal advice, tax advice, investment advice, suitability conclusions, or assured outcomes.',
+  'Contact begins a general conversation and does not receive hidden Seller context, Home Worth inputs, property records, pricing assumptions, or customer information from this page.',
+];
+
 export default function SellPage() {
   return (
     <main
@@ -79,6 +100,15 @@ export default function SellPage() {
       data-dxt-wave-1c-buyer-runtime-change="false"
       data-dxt-wave-1d-market-runtime-change="false"
       data-dxt-wave-1d-neighborhood-runtime-change="false"
+      data-seller-advisory-contact-continuity="implemented"
+      data-seller-advisory-contact-runtime-scope="app/sell/page.tsx"
+      data-seller-advisory-contact-hidden-context="false"
+      data-seller-advisory-contact-url-context="false"
+      data-seller-advisory-contact-form-change="false"
+      data-seller-advisory-contact-api-change="false"
+      data-seller-advisory-contact-crm="false"
+      data-seller-advisory-contact-email="false"
+      data-seller-advisory-contact-scheduling="false"
     >
       <section
         className="px-5 py-20 sm:px-8 sm:py-24 lg:px-12"
@@ -216,6 +246,79 @@ export default function SellPage() {
                 <p className="text-sm leading-7 text-white/70">{boundary}</p>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      <section
+        className="px-5 py-16 sm:px-8 sm:py-20 lg:px-12"
+        data-testid="reie-seller-professional-handoff"
+        data-seller-handoff-question="After preparing for market exposure, what should I understand before beginning a focused professional conversation?"
+        data-seller-handoff-primary-action="#seller-intake"
+        data-seller-handoff-advisory="/contact#advisory-readiness"
+        data-seller-handoff-contact="/contact#contact-route-choice"
+        data-seller-handoff-hidden-context="false"
+        data-seller-handoff-url-context="false"
+        data-seller-handoff-form-change="false"
+        data-seller-handoff-api-change="false"
+        data-seller-handoff-crm="false"
+        data-seller-handoff-email="false"
+        data-seller-handoff-scheduling="false"
+      >
+        <div className="mx-auto grid w-full max-w-[1180px] gap-8 border border-white/10 bg-white/[0.035] p-6 sm:p-8 lg:grid-cols-[0.72fr_1fr] lg:items-start">
+          <div>
+            <p className="text-[11px] font-black uppercase tracking-[0.26em] text-cyan-100">Professional Handoff</p>
+            <h2 className="mt-4 text-3xl font-black leading-tight text-white sm:text-4xl">
+              After preparing for market exposure, what should I understand before beginning a focused professional conversation?
+            </h2>
+            <p className="mt-5 text-sm leading-7 text-white/62">
+              Keep Seller preparation focused on property evidence, market context, and unresolved exposure questions. Request Seller Review
+              for seller-specific follow-up, use Advisory to prepare the conversation, and use Contact only as the general starting point.
+            </p>
+            <div className="mt-7 flex flex-wrap gap-3" data-testid="seller-handoff-actions">
+              <a
+                href="#seller-intake"
+                className="inline-flex min-h-12 items-center justify-center rounded-full bg-cyan-100 px-6 py-3 text-sm font-black uppercase tracking-[0.14em] text-[#101820] transition hover:-translate-y-0.5 hover:bg-white focus:outline-none focus:ring-2 focus:ring-cyan-100 focus:ring-offset-2 focus:ring-offset-[#0b1117]"
+                data-seller-handoff-action="seller-review"
+              >
+                Request Seller Review
+              </a>
+              <Link
+                href="/contact#advisory-readiness"
+                className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/18 px-6 py-3 text-sm font-black uppercase tracking-[0.14em] text-white transition hover:-translate-y-0.5 hover:border-white/38 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-100 focus:ring-offset-2 focus:ring-offset-[#0b1117]"
+                data-seller-handoff-action="advisory-preparation"
+              >
+                Prepare Advisory Questions
+              </Link>
+              <Link
+                href="/contact#contact-route-choice"
+                className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/18 px-6 py-3 text-sm font-black uppercase tracking-[0.14em] text-white transition hover:-translate-y-0.5 hover:border-white/38 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-100 focus:ring-offset-2 focus:ring-offset-[#0b1117]"
+                data-seller-handoff-action="general-contact"
+              >
+                Start General Contact
+              </Link>
+            </div>
+            <p className="mt-4 text-xs leading-6 text-white/46">
+              These links do not attach Seller context to Advisory or Contact. Keep private records, pricing assumptions, and customer
+              information out of any public URL.
+            </p>
+          </div>
+          <div className="grid gap-4">
+            <div className="grid gap-3 sm:grid-cols-3">
+              {SELLER_PROFESSIONAL_HANDOFF_STEPS.map((step) => (
+                <article key={step.label} className="rounded-[8px] border border-cyan-100/12 bg-cyan-100/[0.045] p-4">
+                  <h3 className="text-sm font-black leading-tight text-white">{step.label}</h3>
+                  <p className="mt-3 text-xs leading-6 text-white/58">{step.body}</p>
+                </article>
+              ))}
+            </div>
+            <div className="grid gap-2">
+              {SELLER_HANDOFF_BOUNDARIES.map((boundary) => (
+                <p key={boundary} className="rounded-[8px] border border-white/10 bg-black/18 p-3 text-xs font-bold leading-6 text-white/52">
+                  {boundary}
+                </p>
+              ))}
+            </div>
           </div>
         </div>
       </section>
