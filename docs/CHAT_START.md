@@ -10,6 +10,110 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE Property -> Advisory -> Contact Continuity Local Implementation, August 3, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Verified local implementation baseline:
+
+- Branch: `main`
+- Baseline HEAD / origin/main before implementation: `d319d48e7ee166214308ac3d7ca919f8ccdfc1c5`
+- Baseline message: `Certify Property continuity planning`
+- Baseline ahead/behind before implementation: `0 ahead / 0 behind`
+- Baseline working tree before implementation: clean
+- Implementation commit: created by this local implementation session; run `git rev-parse HEAD` for exact SHA after the commit is created.
+- Implementation commit message: `Clarify Property professional handoff`
+
+Verified deployment baseline before local implementation:
+
+- Pending status ID: `51548564339`
+- Terminal status ID: `51548673286`
+- Deployment ID: `5727813491`
+- Deployment-status ID: `16287621092`
+- Terminal state: `success`
+- Commit-status target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/HJEu4aNW8G36xCdTHiYwse4EAeMp`
+- Completion timestamp: `2026-08-03T14:17:12Z`
+
+Certified predecessor states:
+
+- Search -> Property -> Search Return Continuity: `REIE_DXT_SEARCH_PROPERTY_RETURN_CONTINUITY_CERTIFIED_AND_CLOSED`
+- Property -> Advisory -> Contact Continuity plan: `REIE_DXT_PROPERTY_ADVISORY_CONTACT_CONTINUITY_PLAN_CERTIFIED_AND_CLOSED`
+
+Local implementation records:
+
+- Property -> Advisory -> Contact Continuity implementation: `docs/project-atlas/executive-library/REIE-DXT-PROPERTY-ADVISORY-CONTACT-CONTINUITY-IMPLEMENTATION.md`
+- Next continuity phase plan: `docs/project-atlas/executive-library/REIE-DXT-NEXT-CONTINUITY-PHASE-PLAN.md`
+
+Local implementation statuses:
+
+- Property -> Advisory -> Contact Continuity: `DXT_PROPERTY_ADVISORY_CONTACT_CONTINUITY_IMPLEMENTED_LOCAL_COMMIT_ONLY`
+- Next continuity phase plan: `DXT_NEXT_CONTINUITY_PHASE_PLAN_READY`
+- Executive recommendation: `READY_FOR_PROPERTY_ADVISORY_CONTACT_CONTINUITY_LOCAL_CERTIFICATION`
+
+Runtime scope:
+
+- Local runtime file: `app/properties/[id]/page.tsx`
+- Property inquiry remains the dominant property-specific follow-up path.
+- Advisory remains a preparation continuation.
+- Contact remains a general conversation-starting destination.
+- No property context is transferred automatically to Advisory or Contact.
+- Search return continuity remains intact.
+
+Protected-system boundary:
+
+- No PropertyInquiryForm, inquiry API, Advisory runtime, Contact runtime, Search runtime, Search API, ranking, map, persistence, localStorage, cookies, telemetry, analytics, customer profile, hidden context, URL context expansion, shared CTA abstraction, navigation, footer, route, canonical, brokerage-disclosure, CRM, email, scheduling, provider, Prisma, or deployment configuration change was authorized or performed.
+- Brokerage disclosure remains on hold: `EXTERNAL_COMPASS_MARKETING_REVIEW_PENDING`.
+
+Validation to rerun for local certification:
+
+```bash
+git diff --check
+npm run check:dxt-search-property-return-continuity-implementation
+npm run check:dxt-property-advisory-contact-continuity-plan
+npm run check:dxt-property-advisory-contact-continuity-implementation
+npm run check:dxt-next-continuity-phase-plan
+npm run check:dxt-cross-route-cta-destination-inventory
+npm run check:dxt-decision-context-continuity-contract
+npm run check:dxt-cross-route-continuity-implementation-readiness
+npm run check:property-route-safety
+npm run check:cep-property-intelligence-experience
+npm run check:reie-property-intelligence-experience-v8
+npm run check:property-product-3-1
+npm run check:search-runtime-safety
+npm run check:public-runtime-safety
+npm run check:public-trust-readiness
+npm run check:dxt-wave-1e-advisory-handoff-implementation
+npm run check:dxt-wave-1e-contact-decision-flow-implementation
+npm run typecheck
+npm run lint
+npm run check:fast
+npm run build
+```
+
+Next gates:
+
+Primary:
+
+`READY_FOR_REIE_DXT_PROPERTY_ADVISORY_CONTACT_CONTINUITY_LOCAL_CERTIFICATION_AND_PUSH_AUTHORIZATION`
+
+Secondary:
+
+`READY_FOR_REIE_DXT_BUYER_SELLER_ADVISORY_CONTACT_CONTINUITY_PLANNING_CERTIFICATION`
+
+Do not push, deploy, production-certify, modify Property inquiry, alter Contact or Advisory runtime, add hidden property context, or begin Buyer/Seller runtime continuity without explicit authorization.
+
+Prior handoff retained below for audit history.
+
 PROJECT ATLAS(tm) / REIE Search -> Property -> Search Return Continuity Certified And Property Advisory Contact Plan Closed, August 3, 2026:
 
 Workspace:
@@ -89,35 +193,7 @@ Production certification evidence:
 - Mobile, tablet, and desktop reviews found no document-level horizontal overflow.
 - Regression passed for Homepage, Search, Buyer, Seller, Market, City Market, Neighborhood, Property, Contact, brokerage disclosures, and `/api/search?limit=1`.
 
-Validation to rerun if future continuity work resumes:
-
-```bash
-git diff --check
-npm run check:dxt-cross-route-cta-destination-inventory
-npm run check:dxt-decision-context-continuity-contract
-npm run check:dxt-cross-route-continuity-implementation-readiness
-npm run check:dxt-search-property-return-continuity-implementation
-npm run check:dxt-property-advisory-contact-continuity-plan
-npm run check:dxt-search-return-context-handoff
-npm run check:property-route-safety
-npm run check:search-runtime-safety
-npm run check:public-runtime-safety
-npm run check:public-trust-readiness
-npm run typecheck
-npm run lint
-npm run check:fast
-npm run build
-```
-
-Next gates:
-
-Primary:
-
-`READY_FOR_REIE_DXT_PROPERTY_ADVISORY_CONTACT_CONTINUITY_BOUNDED_IMPLEMENTATION_AUTHORIZATION`
-
-Do not modify Search, add new URL context, introduce hidden state, implement Property/Advisory/Contact runtime continuity, change Property inquiry, alter Contact or Advisory runtime, or begin a shared continuity abstraction without explicit authorization.
-
-Prior handoff retained below for audit history.
+Do not use this archived handoff as current authorization.
 
 PROJECT ATLAS(tm) / REIE Search -> Property -> Search Return Continuity Local Implementation, August 3, 2026:
 

@@ -647,6 +647,28 @@ const QUESTIONS_TO_CARRY_FORWARD = [
   { label: 'Market', value: 'Which public listing facts and local context are useful for comparison, and which need interpretation?' },
 ];
 
+const PROPERTY_PROFESSIONAL_HANDOFF_STEPS = [
+  {
+    label: 'Property-specific question',
+    body: 'Use the property inquiry when the question depends on this address, listing facts, photos, records, condition signals, tour timing, or availability.',
+  },
+  {
+    label: 'Advisory preparation',
+    body: 'Use Advisory when public evidence is reviewed but assumptions still need to be organized before a focused professional conversation.',
+  },
+  {
+    label: 'General Contact',
+    body: 'Use Contact when the question is broader than this property or when you need the simplest general starting point.',
+  },
+];
+
+const PROPERTY_HANDOFF_BOUNDARIES = [
+  'No property details are sent to Advisory or Contact automatically.',
+  'Property inquiry remains the only property-specific follow-up workflow on this page.',
+  'Advisory prepares the conversation; it does not create representation, valuation certainty, legal advice, tax advice, lending approval, investment advice, suitability conclusions, or promised outcomes.',
+  'Contact begins a general conversation and does not replace property inquiry, change fields, submit information, schedule a meeting, send email, create CRM work, or pass hidden context.',
+];
+
 const BUYER_CONFIDENCE_FRAMEWORK = [
   { label: 'Known', value: 'Start with the public listing facts available on this page.' },
   { label: 'Compare', value: 'Use related listings, search context, and broader market context before relying on a conclusion.' },
@@ -913,6 +935,16 @@ export default async function PropertyPage({ params, searchParams }: PropertyPag
       data-search-property-return-telemetry="false"
       data-search-property-return-search-runtime-change="false"
       data-search-property-return-context={searchReturnPresentation ? 'visible-url' : 'direct-entry'}
+      data-property-advisory-contact-continuity="implemented"
+      data-property-advisory-contact-runtime-scope="app/properties/[id]/page.tsx"
+      data-property-advisory-contact-property-inquiry-change="false"
+      data-property-advisory-contact-advisory-runtime-change="false"
+      data-property-advisory-contact-contact-runtime-change="false"
+      data-property-advisory-contact-hidden-context="false"
+      data-property-advisory-contact-url-context="false"
+      data-property-advisory-contact-persistence="false"
+      data-property-advisory-contact-telemetry="false"
+      data-property-advisory-contact-api-change="false"
     >
       <script
         type="application/ld+json"
@@ -1788,6 +1820,100 @@ export default async function PropertyPage({ params, searchParams }: PropertyPag
                     <p className="mt-3 text-sm leading-6 text-white/58">{item.value}</p>
                   </div>
                 ))}
+              </div>
+            </section>
+
+            <section
+              className="overflow-hidden rounded-[8px] border border-cyan-100/20 bg-[#0d141c]"
+              data-testid="reie-property-professional-handoff"
+              data-property-handoff-question="After evaluating this property, what should I prepare before beginning a property-specific professional conversation?"
+              data-property-handoff-primary-action="property-inquiry"
+              data-property-handoff-property-inquiry="#property-contact"
+              data-property-handoff-advisory="/contact#advisory-readiness"
+              data-property-handoff-contact="/contact#contact-route-choice"
+              data-property-handoff-hidden-context="false"
+              data-property-handoff-url-context="false"
+              data-property-handoff-form-change="false"
+              data-property-handoff-api-change="false"
+              data-property-handoff-crm="false"
+              data-property-handoff-email="false"
+              data-property-handoff-scheduling="false"
+            >
+              <div className="border-b border-white/10 bg-cyan-100/[0.045] p-5 md:p-6">
+                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-cyan-100/76">
+                  Professional Handoff
+                </p>
+                <h2 className="mt-3 max-w-3xl text-xl font-black uppercase tracking-tight text-white md:text-2xl">
+                  What should I prepare before a property-specific conversation?
+                </h2>
+                <p className="mt-3 max-w-3xl text-sm leading-6 text-white/58">
+                  Keep the next step tied to the question. Ask about this property when the question depends on this
+                  listing, use Advisory to organize what the evidence means, and use Contact only when the conversation is
+                  broader than this property.
+                </p>
+              </div>
+
+              <div className="grid gap-px bg-white/10 md:grid-cols-3">
+                {PROPERTY_PROFESSIONAL_HANDOFF_STEPS.map((step) => (
+                  <article key={step.label} className="bg-[#0d141c] p-5">
+                    <h3 className="text-[11px] font-black uppercase tracking-[0.18em] text-white/70">
+                      {step.label}
+                    </h3>
+                    <p className="mt-3 text-sm leading-6 text-white/58">{step.body}</p>
+                  </article>
+                ))}
+              </div>
+
+              <div className="grid gap-5 border-t border-white/10 p-5 md:grid-cols-[1.1fr_0.9fr] md:p-6">
+                <div>
+                  <h3 className="text-[11px] font-black uppercase tracking-[0.18em] text-amber-100">
+                    Boundaries Before Outreach
+                  </h3>
+                  <ul className="mt-4 grid gap-3 text-xs leading-5 text-white/58 md:text-sm md:leading-6">
+                    {PROPERTY_HANDOFF_BOUNDARIES.map((boundary) => (
+                      <li key={boundary} className="rounded-[6px] border border-white/10 bg-white/[0.035] p-3">
+                        {boundary}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className="rounded-[8px] border border-cyan-100/18 bg-cyan-100/[0.055] p-4">
+                  <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/78">
+                    Choose By Intent
+                  </p>
+                  <div className="mt-4 grid gap-2">
+                    <Link
+                      href="#property-contact"
+                      className="reie-decision-link reie-decision-link--primary inline-flex min-h-11 items-center justify-center rounded-[6px] px-4 py-3 text-[10px] font-black uppercase tracking-[0.12em] transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
+                      data-property-handoff-action="property-inquiry"
+                      data-property-handoff-priority="primary"
+                    >
+                      Ask About This Property
+                    </Link>
+                    <Link
+                      href="/contact#advisory-readiness"
+                      className="reie-decision-link reie-decision-link--secondary inline-flex min-h-10 items-center justify-center rounded-[6px] px-3 py-2 text-[10px] font-black uppercase tracking-[0.12em] transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
+                      data-property-handoff-action="advisory-preparation"
+                      data-property-handoff-priority="secondary"
+                    >
+                      Prepare Advisory Questions
+                    </Link>
+                    <Link
+                      href="/contact#contact-route-choice"
+                      className="reie-decision-link reie-decision-link--secondary inline-flex min-h-10 items-center justify-center rounded-[6px] px-3 py-2 text-[10px] font-black uppercase tracking-[0.12em] transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
+                      data-property-handoff-action="general-contact"
+                      data-property-handoff-priority="tertiary"
+                    >
+                      Start General Contact
+                    </Link>
+                  </div>
+                  <p className="mt-4 text-xs leading-5 text-white/48">
+                    These links do not attach this property to Contact or Advisory. Keep confidential financial limits,
+                    negotiating positions, and private motivation out of public forms until the applicable relationship and
+                    disclosures are discussed.
+                  </p>
+                </div>
               </div>
             </section>
 

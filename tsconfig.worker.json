@@ -108,6 +108,8 @@
     "scripts/checkDxtCrossRouteContinuityImplementationReadiness.ts",
     "scripts/checkDxtSearchPropertyReturnContinuityImplementation.ts",
     "scripts/checkDxtPropertyAdvisoryContactContinuityPlan.ts",
+    "scripts/checkDxtPropertyAdvisoryContactContinuityImplementation.ts",
+    "scripts/checkDxtNextContinuityPhasePlan.ts",
     "scripts/decisionGuideValidation.ts",
     "scripts/checkBoulderDecisionGuide.ts",
     "scripts/checkLouisvilleDecisionGuide.ts",
