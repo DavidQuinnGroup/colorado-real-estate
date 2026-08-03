@@ -10,6 +10,99 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE DXT Wave 1D Neighborhood Certified And City Market Plan Closed, August 3, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Current certified runtime implementation:
+
+- Branch: `main`
+- Neighborhood implementation SHA: `f5e03a9b4934ffae2d3701e9451edf633cd139c0`
+- Neighborhood implementation message: `Implement Neighborhood place orientation`
+- Neighborhood implementation parent: `4b1b2cf56475dff19b74602fb3774fe9dd22c263`
+- Neighborhood implementation record: `docs/project-atlas/executive-library/REIE-DXT-WAVE-1D-NEIGHBORHOOD-PLACE-ORIENTATION-IMPLEMENTATION.md`
+- City Market plan closure record: `docs/project-atlas/executive-library/REIE-DXT-WAVE-1D-CITY-MARKET-BRIEFING-PLAN-CLOSURE.md`
+
+Neighborhood implementation deployment evidence:
+
+- Pending GitHub/Vercel status ID: `51534556293`
+- Terminal GitHub/Vercel status ID: `51534639119`
+- Context: `Vercel`
+- State: `success`
+- Description: `Deployment has completed`
+- Target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/9VK33EXod2BDAKY8csnLicH3kJuK`
+- Completion timestamp: `2026-08-03T09:52:37Z`
+- Production domain certified: `https://davidquinngroup.com`
+- Remote `refs/heads/main` still matched `f5e03a9b4934ffae2d3701e9451edf633cd139c0` before production certification, so no newer commit superseded the Neighborhood deployment before certification.
+
+Neighborhood production certification completed:
+
+- `/market/boulder/mapleton-hill` returns `200`;
+- `/market/boulder/south-boulder` also returns `200`;
+- canonical remains `https://davidquinngroup.com/market/boulder/mapleton-hill` on the primary certification route;
+- exactly one H1 is present: `What kind of place is this, how is it organized, and what should I verify next?`;
+- place orientation, neutral geography, housing context, evidence hierarchy, verification questions, freshness/limitation/professional boundaries, Search continuation, Market continuation, Property continuation, and Advisory continuation are present;
+- mobile, tablet, and desktop browser checks found one H1, coherent heading order, focusable controls, visible focus styling, and no document-level horizontal overflow;
+- no affirmative protected-class steering, demographic suitability, best-neighborhood claim, safety guarantee, school conclusion, investment guarantee, appreciation prediction, AI advisory, or provider-ranking claim was found;
+- brokerage disclosure remains unchanged.
+
+Production regression completed:
+
+- `/`: main content, H1, navigation signals, brokerage text, no horizontal overflow;
+- `/search`: main content, H1, navigation signals, brokerage text, no horizontal overflow;
+- `/buy`: Buyer H1 `Am I prepared to buy?`, no horizontal overflow;
+- `/sell`: Seller H1 `What must be understood before market exposure?`, no horizontal overflow;
+- `/market`: Market H1 `What is happening here, what evidence matters, and what should I investigate next?`, no horizontal overflow;
+- `/market/boulder-co-housing-market`: city Market route rendered, no horizontal overflow;
+- `/market/boulder/mapleton-hill`: Neighborhood route rendered with certified governing question, no horizontal overflow;
+- `/contact`: main content, H1, no horizontal overflow;
+- `/brokerage-disclosures`: brokerage content, no horizontal overflow;
+- `/properties/32224-poudre-canyon-rd-bellvue-co-ire1363681`: live property route rendered;
+- `/api/search?limit=1`: `200`, existing Search API behavior remained usable with existing database fallback/degraded-provider posture.
+
+City Market Briefing plan certification completed:
+
+- Plan record: `docs/project-atlas/executive-library/REIE-DXT-WAVE-1D-CITY-MARKET-BRIEFING-IMPLEMENTATION-PLAN.md`
+- Closure record: `docs/project-atlas/executive-library/REIE-DXT-WAVE-1D-CITY-MARKET-BRIEFING-PLAN-CLOSURE.md`
+- Deterministic validation: `npm run check:dxt-wave-1d-city-market-briefing-plan`
+- Status: `REIE_DXT_WAVE_1D_CITY_MARKET_BRIEFING_PLAN_CERTIFIED_AND_CLOSED`
+- City Market runtime remains unauthorized.
+
+Protected boundaries preserved:
+
+- Neighborhood implementation runtime scope was limited to `app/market/[city]/[slug]/page.tsx`.
+- Market index runtime remains unchanged.
+- City Market runtime remains unchanged.
+- Buyer runtime remains unchanged.
+- Seller runtime remains unchanged.
+- Search runtime remains unchanged.
+- Shared runtime remains unchanged.
+- No route, canonical URL, navigation, footer, Search API, Search ranking, map provider, map behavior, property route, Prisma schema, migration, persistence, localStorage, cookie, telemetry, analytics, CRM, scheduling, email, queue, worker, customer profile, provider integration, AI advisory, production data, deployment configuration, or brokerage disclosure change was made by closure.
+- Brokerage disclosure remains on hold: `EXTERNAL_COMPASS_MARKETING_REVIEW_PENDING`.
+
+Final governed statuses:
+
+- Neighborhood: `REIE_DXT_WAVE_1D_NEIGHBORHOOD_PLACE_ORIENTATION_CERTIFIED_AND_CLOSED`
+- City Market Plan: `REIE_DXT_WAVE_1D_CITY_MARKET_BRIEFING_PLAN_CERTIFIED_AND_CLOSED`
+
+Recommended next gate:
+
+`READY_FOR_REIE_DXT_WAVE_1D_CITY_MARKET_BRIEFING_BOUNDED_IMPLEMENTATION_AUTHORIZATION`
+
+Do not begin City Market runtime implementation without explicit authorization.
+
+Prior handoff retained below for audit history.
+
 PROJECT ATLAS(tm) / REIE DXT Wave 1D Neighborhood Place-Orientation Local Implementation, August 3, 2026:
 
 Workspace:
