@@ -808,6 +808,127 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
         </section>
 
         <section
+          className="reie-neighborhood-readiness-depth grid gap-8 rounded-[8px] bg-[#071017]/78 p-5 md:col-span-12 md:grid-cols-[0.84fr_1.16fr] md:p-8"
+          data-testid="dxt-2-neighborhood-decision-readiness-depth"
+          data-dxt-2-neighborhood-readiness-depth="implemented"
+          data-dxt-2-neighborhood-readiness-runtime-scope="app/market/[city]/[slug]/page.tsx"
+          data-dxt-2-neighborhood-readiness-existing-evidence-only="true"
+          data-dxt-2-neighborhood-readiness-market-change="false"
+          data-dxt-2-neighborhood-readiness-city-market-change="false"
+          data-dxt-2-neighborhood-readiness-search-change="false"
+          data-dxt-2-neighborhood-readiness-property-change="false"
+          data-dxt-2-neighborhood-readiness-product-3-preserved="true"
+          data-dxt-2-neighborhood-readiness-related-content-preserved="true"
+          data-dxt-2-neighborhood-readiness-nearby-neighborhoods-preserved="true"
+          data-dxt-2-neighborhood-readiness-schema-preserved="true"
+          data-dxt-2-neighborhood-readiness-faq-preserved="true"
+          data-dxt-2-neighborhood-readiness-provider-activation="false"
+          data-dxt-2-neighborhood-readiness-api-change="false"
+          data-dxt-2-neighborhood-readiness-hidden-context="false"
+          data-dxt-2-neighborhood-readiness-persistence="false"
+          data-dxt-2-neighborhood-readiness-telemetry="false"
+          data-dxt-2-neighborhood-readiness-ai="false"
+          data-dxt-2-neighborhood-readiness-scoring="false"
+          data-dxt-2-neighborhood-readiness-ranking="false"
+        >
+          <div>
+            <p className="mb-3 text-[10px] font-black uppercase tracking-[0.24em] text-cyan-100/72">
+              Neighborhood Decision Readiness
+            </p>
+            <h2 className="text-3xl font-black uppercase leading-tight tracking-normal text-white md:text-4xl">
+              Decide what this place evidence can support before opening the next surface.
+            </h2>
+            <p className="mt-5 text-sm leading-7 text-white/58 md:text-base">
+              This readiness layer uses existing neighborhood evidence only. It helps separate directional place context,
+              assumptions, unknowns, and verification needs before moving to Search, Property, City Market, Market, or Advisory.
+            </p>
+            <p className="mt-5 rounded-[6px] bg-cyan-100/[0.06] p-4 text-xs leading-6 text-cyan-100/72">
+              Confidence is qualitative and descriptive, not a score. Freshness depends on current Search signals, governed
+              neighborhood context, and property-specific verification that still needs to happen before reliance.
+            </p>
+          </div>
+
+          <div className="grid gap-3">
+            <div className="grid gap-3 sm:grid-cols-2">
+              {[
+                {
+                  label: 'Evidence available now',
+                  body: `${neighborhood.primaryAnchor}, ${housingContext.toLowerCase()}, ${neighborhood.soilType.toLowerCase()} soil context, ${neighborhood.fireRisk.toLowerCase()} fire context, ${neighborhood.insuranceComplexity.toLowerCase()} insurance complexity, ${getInventoryDecisionSignal(inventoryState).toLowerCase()}, and current Neighborhood market signals are visible here.`,
+                },
+                {
+                  label: 'Evidence unavailable here',
+                  body:
+                    'Parcel condition, interior systems, title, HOA details, insurance terms, inspection results, lending facts, and contract risk still require property-specific verification.',
+                },
+                {
+                  label: 'Directional context',
+                  body: `${neighborhood.name} can orient place organization and questions to ask; it does not determine personal fit, suitability, safety, school quality, investment merit, or future appreciation.`,
+                },
+                {
+                  label: 'Assumptions to separate',
+                  body: `Treat access to ${neighborhood.primaryAnchor}, ${neighborhood.era.toLowerCase()} housing patterns, commute use, maintenance expectations, and market timing as assumptions to verify against a specific property.`,
+                },
+              ].map((item) => (
+                <article key={item.label} className="rounded-[8px] bg-white/[0.045] p-5">
+                  <p className="text-[9px] font-black uppercase tracking-[0.18em] text-cyan-100/70">{item.label}</p>
+                  <p className="mt-3 text-xs leading-6 text-white/55">{item.body}</p>
+                </article>
+              ))}
+            </div>
+
+            <div className="grid gap-3 rounded-[8px] bg-black/22 p-5 sm:grid-cols-3">
+              {[
+                {
+                  label: 'Unknowns',
+                  body: 'What the address condition, inspection, insurance, title, financing, and contract facts will show.',
+                },
+                {
+                  label: 'Verification needs',
+                  body: 'Confirm place assumptions, property condition, carrying costs, insurance, taxes, HOA details, and professional boundaries before relying on the signal.',
+                },
+                {
+                  label: 'Questions to carry forward',
+                  body: `Ask whether the property evidence supports the ${neighborhood.name} place story, not whether the neighborhood is ranked or recommended.`,
+                },
+              ].map((item) => (
+                <article key={item.label}>
+                  <p className="text-[9px] font-black uppercase tracking-[0.18em] text-white/34">{item.label}</p>
+                  <p className="mt-3 text-xs leading-6 text-white/55">{item.body}</p>
+                </article>
+              ))}
+            </div>
+
+            <div className="rounded-[8px] border border-cyan-100/10 bg-cyan-100/[0.035] p-5">
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100/72">Next-decision thresholds</p>
+              <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                {[
+                  { label: 'Review City Market evidence', href: cityMarketHref, note: 'Use when neighborhood signals need city-level context.' },
+                  { label: 'Refine Search inventory', href: searchHref, note: 'Use when the next question is current property availability.' },
+                  { label: 'Open a specific Property', href: searchHref, note: 'Use when condition, records, or costs now drive the decision.' },
+                  { label: 'Prepare professional review', href: '/contact#advisory-readiness', note: 'Use when assumptions and verification questions are ready for Advisory.' },
+                ].map((item) => (
+                  <Link
+                    key={item.label}
+                    href={item.href}
+                    className="reie-neighborhood-readiness-link rounded-[6px] bg-[#071017]/78 p-4 text-white no-underline transition hover:bg-white/[0.07] focus:outline-none focus:ring-2 focus:ring-cyan-100/70"
+                  >
+                    <span className="text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100/72">{item.label}</span>
+                    <span className="mt-2 block text-xs leading-5 text-white/48">{item.note}</span>
+                  </Link>
+                ))}
+              </div>
+              <p className="mt-5 text-xs leading-6 text-white/42">
+                Use the Market overview for broad comparison, and use Nearby Neighborhoods below to compare another Neighborhood
+                without changing this page into a ranking or recommendation.
+              </p>
+              <p className="mt-3 text-xs leading-6 text-white/42">
+                No ranking, suitability, safety, school-quality, investment, appreciation, provider, or AI conclusion is made here.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section
           id="neighborhood-verification-questions"
               className="reie-neighborhood-verification grid gap-6 rounded-[8px] bg-[#071017]/70 p-5 md:col-span-12 md:grid-cols-[0.78fr_1.22fr] md:p-8"
           data-testid="neighborhood-product-2-verification"
