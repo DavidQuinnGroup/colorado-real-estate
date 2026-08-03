@@ -65,10 +65,18 @@ assertIncludes(home, "href: '/buy'", 'Home must route buyer education to the ded
 assertIncludes(buyerPage, 'data-testid="reie-buyer-confidence-orientation"', 'Buy page must include buyer confidence orientation.');
 assertIncludes(buyerPage, 'data-testid="reie-buyer-confidence-path"', 'Buy page must expose buyer confidence path.');
 assertIncludes(buyerPage, 'data-reie-sprint-3-buyer-confidence="true"', 'Buy page must expose governed Sprint 3 marker.');
-for (const step of ['orient', 'compare', 'verify', 'decide']) {
-  assertIncludes(buyerPage, `data-buyer-confidence-step={item.step.toLowerCase()}`, 'Buy page buyer confidence steps must be data-marked.');
+assertIncludes(
+  buyerPage,
+  'data-dxt-wave-1c-buyer-journey="true"',
+  'Buy page must expose DXT Wave 1C buyer journey marker.',
+);
+for (const step of ['readiness', 'comparison', 'verification']) {
+  assertIncludes(buyerPage, `data-buyer-confidence-step={theme.label.toLowerCase()}`, 'Buy page buyer confidence themes must be data-marked.');
+  assertIncludes(buyerPage, `data-dxt-buyer-preparation-theme={theme.label.toLowerCase()}`, 'Buy page buyer confidence themes must expose DXT preparation markers.');
   assertIncludes(buyerPage, step[0].toUpperCase() + step.slice(1), `Buy page buyer confidence path must include ${step}.`);
 }
+assertIncludes(buyerPage, 'Am I prepared to buy?', 'Buy page must state the DXT buyer governing question.');
+assertIncludes(buyerPage, 'A prepared buyer knows what is still unresolved.', 'Buy page must include buyer verification framing.');
 
 assertIncludes(searchInterface, 'data-testid="reie-buyer-search-confidence-framework"', 'Search must include buyer confidence framework.');
 assertIncludes(searchInterface, 'known-compare-verify-ask-next', 'Search must expose Known / Compare / Verify / Ask / Next framework.');

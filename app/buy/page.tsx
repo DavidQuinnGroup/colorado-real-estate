@@ -15,33 +15,35 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 };
 
-const buyerConfidencePath = [
+const primaryButtonClass =
+  'inline-flex min-h-12 items-center justify-center rounded-full bg-cyan-100 px-6 py-3 text-sm font-black text-[#101820] transition hover:-translate-y-0.5 hover:bg-white focus:outline-none focus:ring-2 focus:ring-cyan-100 focus:ring-offset-2 focus:ring-offset-[#0b1117]';
+const secondaryButtonClass =
+  'inline-flex min-h-12 items-center justify-center rounded-full border border-white/18 px-6 py-3 text-sm font-black text-white transition hover:-translate-y-0.5 hover:border-white/38 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-100 focus:ring-offset-2 focus:ring-offset-[#0b1117]';
+
+const preparationThemes = [
   {
-    step: 'Orient',
-    title: 'Know where to begin',
-    body: 'Start with place, budget range, daily-life fit, and the type of home you are trying to evaluate before the search becomes too narrow.',
+    label: 'Readiness',
+    title: 'Know what is still assumed.',
+    body: 'Separate budget range, timing, daily-life needs, decision partners, and financing assumptions before the search starts to narrow.',
   },
   {
-    step: 'Compare',
-    title: 'Understand the tradeoffs',
-    body: 'Use search, property briefs, market context, and neighborhood signals together so price, condition, timing, and fit are not evaluated in isolation.',
+    label: 'Comparison',
+    title: 'Compare the home, not only the list price.',
+    body: 'Use Search, property facts, market context, condition signals, HOA questions, insurance exposure, and neighborhood fit together.',
   },
   {
-    step: 'Verify',
-    title: 'Know what to ask',
-    body: 'Carry forward the assumptions that need professional review, including financing terms, taxes, insurance, HOA, condition, systems, and records.',
-  },
-  {
-    step: 'Decide',
-    title: 'Choose the next step',
-    body: 'Continue searching, open market context, ask a focused question, or schedule a tour when the property deserves closer review.',
+    label: 'Verification',
+    title: 'Name what a professional must confirm.',
+    body: 'Carry forward questions for lending, taxes, insurance, inspection, records, title, HOA, condition, offer timing, and advisor review.',
   },
 ];
 
-const primaryButtonClass =
-  'inline-flex min-h-12 items-center justify-center rounded-full bg-cyan-100 px-6 py-3 text-sm font-black uppercase tracking-[0.14em] text-[#101820] transition hover:-translate-y-0.5 hover:bg-white focus:outline-none focus:ring-2 focus:ring-cyan-100 focus:ring-offset-2 focus:ring-offset-[#0b1117]';
-const secondaryButtonClass =
-  'inline-flex min-h-12 items-center justify-center rounded-full border border-white/18 px-6 py-3 text-sm font-black uppercase tracking-[0.14em] text-white transition hover:-translate-y-0.5 hover:border-white/38 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-100 focus:ring-offset-2 focus:ring-offset-[#0b1117]';
+const verificationQuestions = [
+  'Which financing assumptions need lender review before they shape a search range?',
+  'Which property facts are missing from the listing and need inspection, records, HOA, title, insurance, or specialist review?',
+  'Which market signals create urgency, and which should be treated as context rather than a conclusion?',
+  'Which tradeoffs would make a home worth an advisor conversation before a tour or offer decision?',
+];
 
 export default function BuyPage() {
   const buyerDecisionWorkspace = buildBuyerDecisionWorkspace({
@@ -53,51 +55,79 @@ export default function BuyPage() {
   });
 
   return (
-    <main className="min-h-screen bg-[#0b1117] text-white" data-testid="buyer-page">
+    <main
+      className="min-h-screen bg-[#0b1117] text-white"
+      data-testid="buyer-page"
+      data-dxt-wave-1c-buyer-journey="true"
+      data-dxt-wave-1c-buyer-hierarchy="page-orientation-governing-question-opening-promise-preparation-tools-verify-boundaries-advisory-continuations"
+      data-dxt-wave-1c-shared-contract="BUYER_SELLER_SHARED_HIERARCHY_FOUNDATION_IMPLEMENTED"
+      data-dxt-wave-1c-buyer-runtime-only="true"
+      data-dxt-wave-1c-seller-runtime-change="false"
+    >
       <section
-        className="px-5 py-24 sm:px-8 sm:py-28 lg:px-12"
+        className="px-5 py-20 sm:px-8 sm:py-24 lg:px-12"
         data-testid="reie-buyer-confidence-orientation"
+        data-dxt-buyer-hierarchy-role="page-orientation-governing-decision-question-concise-opening-promise"
         data-reie-sprint-3-buyer-confidence="true"
         data-buyer-confidence-ai="false"
         data-buyer-confidence-gis="false"
         data-buyer-confidence-provider-activation="false"
         data-buyer-confidence-financing-workflow="false"
       >
-        <div className="mx-auto grid w-full max-w-[1180px] gap-12 lg:grid-cols-[0.72fr_1fr] lg:items-start">
+        <div className="mx-auto grid w-full max-w-[1180px] gap-10 lg:grid-cols-[0.78fr_0.52fr] lg:items-end">
           <div>
-            <p className="text-[11px] font-black uppercase tracking-[0.28em] text-cyan-100">Buyer Confidence</p>
-            <h1 className="mt-6 max-w-3xl text-5xl font-black leading-[0.98] tracking-normal text-white sm:text-6xl">
-              Know what matters before the market asks you to move.
+            <p className="text-[11px] font-black uppercase text-cyan-100">Buyer Journey</p>
+            <h1 className="mt-5 max-w-4xl text-5xl font-black leading-[0.98] tracking-normal text-white sm:text-6xl lg:text-7xl">
+              Am I prepared to buy?
             </h1>
-            <p className="mt-7 max-w-2xl text-lg leading-9 text-white/70">
-              REIE helps buyers reduce uncertainty by organizing search, property facts, neighborhood context,
-              market timing, financing assumptions, and questions to verify into one guided decision path.
+            <p className="mt-7 max-w-2xl text-xl font-semibold leading-9 text-white/76">
+              Prepare the search, financing assumptions, property questions, and advisor conversation before the market asks you to move.
             </p>
-            <div className="mt-10 flex flex-wrap gap-3">
-              <Link href="/search" className={primaryButtonClass}>
-                Start Buyer Search
+            <div className="mt-9 flex flex-wrap gap-3" data-testid="buyer-page-primary-actions">
+              <Link href="/search" className={primaryButtonClass} data-dxt-buyer-primary-action="/search">
+                Start With Search
               </Link>
               <Link href="#financing-readiness" className={secondaryButtonClass}>
-                Financing Readiness
-              </Link>
-              <Link href="/market" className={secondaryButtonClass}>
-                Understand the Market
+                Review Financing Assumptions
               </Link>
             </div>
           </div>
-          <div className="grid gap-3" data-testid="reie-buyer-confidence-path">
-            {buyerConfidencePath.map((item) => (
+          <aside className="border border-cyan-100/16 bg-cyan-100/[0.055] p-5" data-testid="dxt-buyer-opening-boundary">
+            <p className="text-[10px] font-black uppercase text-cyan-100/76">Preparation, not qualification</p>
+            <p className="mt-3 text-sm font-bold leading-7 text-white/62">
+              This page helps organize buyer readiness. It does not approve, qualify, rank lenders, calculate affordability,
+              determine buying power, or recommend a loan.
+            </p>
+          </aside>
+        </div>
+      </section>
+
+      <section
+        className="px-5 pb-12 sm:px-8 lg:px-12"
+        data-testid="reie-buyer-confidence-path"
+        data-dxt-buyer-hierarchy-role="preparation-themes"
+      >
+        <div className="mx-auto grid w-full max-w-[1180px] gap-6">
+          <div className="max-w-3xl">
+            <p className="text-[10px] font-black uppercase text-cyan-100/72">Prepare First</p>
+            <h2 className="mt-3 text-3xl font-black leading-tight tracking-normal text-white sm:text-4xl">
+              Three things need to be clear before a home becomes serious.
+            </h2>
+          </div>
+          <div className="grid gap-3 md:grid-cols-3">
+            {preparationThemes.map((theme, index) => (
               <article
-                key={item.step}
-                className="grid gap-4 bg-white/[0.045] p-5 sm:grid-cols-[7rem_1fr]"
+                key={theme.label}
+                className="border border-white/10 bg-white/[0.04] p-5"
                 data-testid="reie-buyer-confidence-path-step"
-                data-buyer-confidence-step={item.step.toLowerCase()}
+                data-buyer-confidence-step={theme.label.toLowerCase()}
+                data-dxt-buyer-preparation-theme={theme.label.toLowerCase()}
               >
-                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-cyan-100/72">{item.step}</p>
-                <div>
-                  <h2 className="text-lg font-black leading-tight text-white">{item.title}</h2>
-                  <p className="mt-2 text-sm leading-7 text-white/60">{item.body}</p>
-                </div>
+                <p className="text-[10px] font-black uppercase text-cyan-100/72">
+                  {String(index + 1).padStart(2, '0')} / {theme.label}
+                </p>
+                <h3 className="mt-4 text-xl font-black leading-tight text-white">{theme.title}</h3>
+                <p className="mt-3 text-sm leading-7 text-white/60">{theme.body}</p>
               </article>
             ))}
           </div>
@@ -108,6 +138,7 @@ export default function BuyPage() {
         id="buyer-financing-confidence"
         className="px-5 pb-12 sm:px-8 lg:px-12"
         data-testid="reie-buyer-v8-decision-workspace"
+        data-dxt-buyer-hierarchy-role="tool-or-evidence-continuation"
         data-buyer-v8-item-count={buyerDecisionWorkspace.items.length}
         data-buyer-v8-ai="false"
         data-buyer-v8-accounts="false"
@@ -117,14 +148,14 @@ export default function BuyPage() {
         data-buyer-v8-lender-workflow="false"
         data-buyer-v8-recommendation-engine="false"
       >
-        <div className="mx-auto grid w-full max-w-[1180px] gap-8 bg-cyan-100/[0.045] p-6 sm:p-8 lg:grid-cols-[0.72fr_1fr] lg:items-start">
+        <div className="mx-auto grid w-full max-w-[1180px] gap-8 border border-cyan-100/14 bg-cyan-100/[0.045] p-6 sm:p-8 lg:grid-cols-[0.62fr_1fr] lg:items-start">
           <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.24em] text-cyan-100/72">Buyer Decision Workspace</p>
+            <p className="text-[10px] font-black uppercase text-cyan-100/72">Buyer Decision Workspace</p>
             <h2 className="mt-3 max-w-xl text-3xl font-black leading-tight tracking-normal text-white">
               {buyerDecisionWorkspace.headline}
             </h2>
             <p className="mt-4 max-w-xl text-sm leading-7 text-white/62">{buyerDecisionWorkspace.orientation}</p>
-            <p className="mt-5 max-w-xl bg-black/16 p-4 text-xs font-bold leading-6 text-white/48">
+            <p className="mt-5 max-w-xl border border-white/10 bg-black/16 p-4 text-xs font-bold leading-6 text-white/50">
               {buyerDecisionWorkspace.trustBoundary}
             </p>
           </div>
@@ -138,9 +169,9 @@ export default function BuyPage() {
                 data-buyer-v8-lens={item.lens}
                 data-buyer-v8-action={item.action}
               >
-                <p className="text-[9px] font-black uppercase tracking-[0.18em] text-cyan-100/66">{item.label}</p>
+                <p className="text-[9px] font-black uppercase text-cyan-100/66">{item.label}</p>
                 <p className="mt-2 text-xs leading-6 text-white/58">{item.guidance}</p>
-                <span className="mt-3 block text-[10px] font-black uppercase tracking-[0.16em] text-cyan-100/76 group-hover:text-white">
+                <span className="mt-3 block text-[10px] font-black uppercase text-cyan-100/76 group-hover:text-white">
                   {item.action}
                 </span>
               </Link>
@@ -149,22 +180,48 @@ export default function BuyPage() {
         </div>
       </section>
 
+      <section className="px-5 pb-12 sm:px-8 lg:px-12" data-dxt-buyer-hierarchy-role="questions-to-verify">
+        <div className="mx-auto grid w-full max-w-[1180px] gap-6 lg:grid-cols-[0.62fr_1fr] lg:items-start">
+          <div>
+            <p className="text-[10px] font-black uppercase text-cyan-100/72">Questions To Verify</p>
+            <h2 className="mt-3 text-3xl font-black leading-tight tracking-normal text-white">
+              A prepared buyer knows what is still unresolved.
+            </h2>
+          </div>
+          <div className="grid gap-3">
+            {verificationQuestions.map((question) => (
+              <article key={question} className="border border-white/10 bg-white/[0.035] p-4" data-testid="dxt-buyer-verification-question">
+                <p className="text-sm font-bold leading-7 text-white/64">{question}</p>
+              </article>
+            ))}
+            <Link href="/market" className={secondaryButtonClass}>
+              Understand Market Context
+            </Link>
+          </div>
+        </div>
+      </section>
+
       <section className="px-5 pb-24 sm:px-8 lg:px-12">
         <div className="mx-auto grid w-full max-w-[1180px] gap-6">
-          <BuyerFinancingReadinessGuide />
+          <div data-dxt-buyer-hierarchy-role="professional-and-trust-boundaries">
+            <BuyerFinancingReadinessGuide />
+          </div>
           <div id="financing-confidence" className="scroll-mt-24">
             <FinancingConfidenceEducation surface="buy" />
           </div>
-          <JourneyCohesionPanel
-            surface="buyer"
-            title="Move from buyer guidance into the right workspace."
-            body="Buyer confidence improves when search, market context, financing assumptions, and advisor questions stay connected instead of becoming separate tasks."
-            links={[
-              { label: 'Search Homes', href: '/search', note: 'Apply buyer criteria', destination: 'search' },
-              { label: 'Financing Guidance', href: '/buy#buyer-financing-confidence', note: 'Review assumptions', destination: 'financing' },
-              { label: 'Advisory Guidance', href: '/contact', note: 'Ask focused questions', destination: 'advisory' },
-            ]}
-          />
+          <div data-dxt-buyer-hierarchy-role="advisory-transition-compact-continuations">
+            <JourneyCohesionPanel
+              surface="buyer"
+              title="Move from buyer preparation into the right next decision."
+              body="When your assumptions are organized, continue to Search, review financing education, or bring focused questions into an advisory conversation."
+              links={[
+                { label: 'Search Homes', href: '/search', note: 'Apply buyer criteria', destination: 'search' },
+                { label: 'Financing Guidance', href: '/buy#buyer-financing-confidence', note: 'Review assumptions', destination: 'financing' },
+                { label: 'Market Context', href: '/market', note: 'Compare local conditions', destination: 'market' },
+                { label: 'Advisory Guidance', href: '/contact', note: 'Ask focused questions', destination: 'advisory' },
+              ]}
+            />
+          </div>
         </div>
       </section>
     </main>
