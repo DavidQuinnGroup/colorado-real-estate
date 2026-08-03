@@ -10,6 +10,78 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE DXT 2 Market And City Market Decision Readiness Depth Certified And Neighborhood Depth Plan Closed, August 3, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Verified production checkpoint:
+
+- Branch: `main`
+- Market / City Market implementation SHA: `fd4235a1e9eea84e0f28f2edb942f795775e6c9e`
+- Market / City Market implementation commit message: `Implement Market decision readiness depth`
+- Original local SHA before whitespace amendment: `ce84418c840197ae76c1e131635a5a4d862b1487`
+- Production deployment pending status ID: `51575667705`
+- Production deployment terminal status ID: `51575768780`
+- Production deployment state: `success`
+- Production deployment target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/97DYyUvv1h2KD9Sf9sd5W96oGnp5`
+- Production deployment completion: `2026-08-03T21:23:25Z`
+- Production domain certified: `https://davidquinngroup.com`
+
+Certified records:
+
+- DXT 2 route-readiness inventory: `docs/project-atlas/executive-library/REIE-DXT-2-DECISION-READINESS-ROUTE-INVENTORY.md`
+- DXT 2 Decision Readiness Depth architecture: `docs/project-atlas/executive-library/REIE-DXT-2-DECISION-READINESS-ARCHITECTURE.md`
+- DXT 2 first-phase implementation-readiness record: `docs/project-atlas/executive-library/REIE-DXT-2-FIRST-PHASE-IMPLEMENTATION-READINESS.md`
+- DXT 2 Property Decision Readiness Depth production certification: `docs/project-atlas/executive-library/REIE-DXT-2-PROPERTY-DECISION-READINESS-DEPTH-PRODUCTION-CERTIFICATION.md`
+- DXT 2 Search Decision Workspace Depth production certification: `docs/project-atlas/executive-library/REIE-DXT-2-SEARCH-DECISION-WORKSPACE-DEPTH-PRODUCTION-CERTIFICATION.md`
+- DXT 2 Market and City Market Decision Readiness Depth plan certification: `docs/project-atlas/executive-library/REIE-DXT-2-MARKET-CITY-MARKET-DECISION-READINESS-DEPTH-PLAN-CERTIFICATION.md`
+- DXT 2 Market Decision Readiness Depth implementation: `docs/project-atlas/executive-library/REIE-DXT-2-MARKET-DECISION-READINESS-DEPTH-IMPLEMENTATION.md`
+- DXT 2 City Market Decision Readiness Depth implementation: `docs/project-atlas/executive-library/REIE-DXT-2-CITY-MARKET-DECISION-READINESS-DEPTH-IMPLEMENTATION.md`
+- DXT 2 Market / City Market Decision Readiness Depth production certification: `docs/project-atlas/executive-library/REIE-DXT-2-MARKET-CITY-MARKET-DECISION-READINESS-DEPTH-PRODUCTION-CERTIFICATION.md`
+- DXT 2 next-phase plan: `docs/project-atlas/executive-library/REIE-DXT-2-NEXT-PHASE-PLAN.md`
+- DXT 2 Neighborhood Decision Readiness Depth plan certification: `docs/project-atlas/executive-library/REIE-DXT-2-NEIGHBORHOOD-DECISION-READINESS-DEPTH-PLAN-CERTIFICATION.md`
+
+Certified statuses:
+
+- DXT 2 Market / City Market Decision Readiness Depth: `REIE_DXT_2_MARKET_CITY_MARKET_DECISION_READINESS_DEPTH_CERTIFIED_AND_CLOSED`
+- DXT 2 Market / City Market Decision Readiness Depth production: `REIE_DXT_2_MARKET_CITY_MARKET_DECISION_READINESS_DEPTH_PRODUCTION_CERTIFIED`
+- DXT 2 Neighborhood Decision Readiness Depth plan: `REIE_DXT_2_NEIGHBORHOOD_DECISION_READINESS_DEPTH_PLAN_CERTIFIED_AND_CLOSED`
+
+Runtime certification findings:
+
+- Certified runtime files: `app/market/page.tsx`, `app/market/[city]/page.tsx`
+- `/market` remains the broad market briefing and continues answering: `What is happening here, what evidence matters, and what should I investigate next?`
+- City Market routes remain city-level evidence experiences and continue answering: `What is happening in this city market, what evidence matters, and what should I investigate next?`
+- Production certification covered `/market`, `/market/boulder-co-housing-market`, `/market/louisville-co-housing-market`, `/market/lafayette-co-housing-market`, responsive mobile/tablet/desktop review, and production regression routes.
+- Product 3, Search, Search API, Property, Property Inquiry, Neighborhood, maps, providers, schema, FAQ, Buyer, Seller, Advisory, Contact, navigation, footer, brokerage disclosure, persistence, telemetry, CRM, email, scheduling, and deployment configuration remained unchanged.
+- Existing evidence only is used; available and unavailable evidence are distinguished; assumptions, freshness, verification requirements, qualitative confidence, and next-decision thresholds remain visible.
+- No rankings, scores, recommendations, suitability conclusions, investment conclusions, appreciation predictions, market timing certainty, buy/sell recommendations, provider activation, API changes, hidden context, persistence, telemetry, or AI advice were introduced.
+
+Neighborhood plan closure finding:
+
+- Selected next bounded phase: `NEIGHBORHOOD_DECISION_READINESS_DEPTH`
+- Future runtime ownership: `app/market/[city]/[slug]/page.tsx`
+- Neighborhood remains documentation-and-plan certified only.
+- Neighborhood runtime implementation, shared readiness abstractions, URL context expansion, Search/Property changes, map/provider changes, API changes, persistence, telemetry, AI advice, rankings, scores, and recommendations remain unauthorized.
+
+Next gate:
+
+`READY_FOR_REIE_DXT_2_NEIGHBORHOOD_DECISION_READINESS_DEPTH_BOUNDED_IMPLEMENTATION_AUTHORIZATION`
+
+Do not begin Neighborhood runtime implementation, change Search API/ranking/map/provider behavior, change Property or Market runtime, add URL-state expansion, add hidden context, add persistence, add telemetry/analytics, activate providers, add AI advice, add scores/rankings/recommendations, change forms/APIs/CRM/email/scheduling, change navigation/footer, change brokerage disclosure, introduce shared runtime abstractions, push, deploy, or upgrade dependencies without explicit authorization.
+
+Prior handoff retained below for audit history.
+
 PROJECT ATLAS(tm) / REIE DXT 2 Market And City Market Decision Readiness Depth Local Implementation, August 3, 2026:
 
 Workspace:
