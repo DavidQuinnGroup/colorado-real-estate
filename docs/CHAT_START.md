@@ -10,6 +10,102 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE DXT Wave 1E Advisory And Contact Planning Local Commit, August 3, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Verified starting baseline:
+
+- Branch: `main`
+- Starting HEAD: `5337c7d40307b11c8107443d5c293eefb5d2d3f7`
+- Starting origin/main: `5337c7d40307b11c8107443d5c293eefb5d2d3f7`
+- Starting ahead/behind: `0 ahead / 0 behind`
+- Starting working tree: clean
+- Latest deployment status ID: `51537527772`
+- Latest deployment state: `success`
+- Latest deployment target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/AMu3KBdvq4ny5U9khjN3WF2mZGM2`
+- Latest deployment completion: `2026-08-03T10:51:29Z`
+
+Certified governing program states verified before planning:
+
+- `REIE_DXT_WAVE_1A_HOMEPAGE_INVITATION_CERTIFIED_AND_CLOSED`
+- `REIE_DXT_WAVE_1B_CERTIFIED_AND_CLOSED`
+- `REIE_DXT_WAVE_1C_BUYER_JOURNEY_CERTIFIED_AND_CLOSED`
+- `REIE_DXT_WAVE_1C_SELLER_JOURNEY_CERTIFIED_AND_CLOSED`
+- `REIE_DXT_WAVE_1D_MARKET_AND_NEIGHBORHOOD_DISCOVERY_CERTIFIED_AND_CLOSED`
+- Wave 1D program closure record: `docs/project-atlas/executive-library/REIE-DXT-WAVE-1D-MARKET-AND-NEIGHBORHOOD-DISCOVERY-PROGRAM-CLOSURE.md`
+
+DXT Wave 1E planning result:
+
+- Advisory Handoff plan status: `DXT_WAVE_1E_ADVISORY_HANDOFF_PLAN_READY`
+- Contact Decision Flow plan status: `DXT_WAVE_1E_CONTACT_DECISION_FLOW_PLAN_READY`
+- Cross-workstream architecture status: `DXT_WAVE_1E_ADVISORY_CONTACT_ARCHITECTURE_READY`
+- Executive recommendation: `READY_FOR_WAVE_1E_PLANNING_CERTIFICATION`
+
+Planning records:
+
+- Advisory plan: `docs/project-atlas/executive-library/REIE-DXT-WAVE-1E-ADVISORY-HANDOFF-IMPLEMENTATION-PLAN.md`
+- Contact plan: `docs/project-atlas/executive-library/REIE-DXT-WAVE-1E-CONTACT-DECISION-FLOW-IMPLEMENTATION-PLAN.md`
+- Architecture readiness: `docs/project-atlas/executive-library/REIE-DXT-WAVE-1E-ADVISORY-CONTACT-ARCHITECTURE-READINESS.md`
+
+Deterministic planning checks:
+
+- `npm run check:dxt-wave-1e-advisory-handoff-plan`
+- `npm run check:dxt-wave-1e-contact-decision-flow-plan`
+
+Current Advisory/Contact architecture finding:
+
+- No standalone `/advisory` route was found in the inspected public route set.
+- Advisory currently functions as a preparation layer hosted on `/contact` through `components/AdvisoryHandoffGuide.tsx`.
+- Contact currently functions as an informational routing page, not a generic Contact submission form.
+- Property-specific inquiries remain owned by `components/PropertyInquiryForm.tsx` and `/api/property-inquiry`.
+- City Market strategy-intake requests remain owned by `components/LeadCapture.tsx` and `/api/save-search`.
+- Existing CRM task creation, email notification, saved-search persistence, schema checks, and notification systems remain protected and unchanged.
+
+Wave 1E governing questions:
+
+- Advisory: `What should I understand and prepare before beginning a focused professional conversation?`
+- Contact: `What is the simplest appropriate way to begin this conversation?`
+
+Recommended implementation order:
+
+1. Advisory Handoff foundation
+2. Contact Decision Flow simplification
+3. Cross-route CTA reconciliation
+4. Production certification
+5. Documentation closure
+
+Protected boundaries preserved:
+
+- No runtime implementation was performed.
+- No route, canonical URL, navigation, footer, form, CRM, email, scheduling, persistence, telemetry, analytics, lead-routing, provider, Search, map, API, schema, Prisma, production data, deployment configuration, shared runtime abstraction, or brokerage disclosure change was made.
+- No form submission, test lead creation, CRM mutation, email sending, scheduling mutation, secret access, customer-record access, or production-data inspection was performed.
+- Brokerage disclosure remains on hold: `EXTERNAL_COMPASS_MARKETING_REVIEW_PENDING`.
+
+Next gates:
+
+Primary:
+
+`READY_FOR_REIE_DXT_WAVE_1E_ADVISORY_HANDOFF_FOUNDATION_BOUNDED_IMPLEMENTATION_AUTHORIZATION`
+
+Secondary:
+
+`READY_FOR_REIE_DXT_WAVE_1E_CONTACT_DECISION_FLOW_FOUNDATION_CERTIFICATION`
+
+Do not push, deploy, begin runtime implementation, modify forms, submit test leads, modify CRM/email/scheduling/persistence/telemetry/analytics, change routes/navigation/footer/Search/maps/providers/APIs/schema, alter brokerage disclosure, or introduce shared runtime abstractions without explicit authorization.
+
+Prior handoff retained below for audit history.
+
 PROJECT ATLAS(tm) / REIE DXT Wave 1D City Market Certified And Program Closed, August 3, 2026:
 
 Workspace:
