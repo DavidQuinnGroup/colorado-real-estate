@@ -248,6 +248,13 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
 
       <section
         className="border-b border-white/5 bg-[radial-gradient(circle_at_82%_14%,rgba(207,250,254,0.12),transparent_30%),linear-gradient(180deg,#071017,#030303)]"
+        data-city-market-briefing-hero="true"
+        data-city-market-briefing-status="implemented"
+        data-city-market-briefing-question="What is happening in this city market, what evidence matters, and what should I investigate next?"
+        data-city-market-briefing-ai="false"
+        data-city-market-briefing-provider-change="false"
+        data-city-market-briefing-telemetry="false"
+        data-city-market-briefing-ranking="false"
         data-testid={cityDecisionGuide ? `${cityDecisionGuide.key}-decision-guide-hero` : undefined}
         data-city-decision-guide={cityDecisionGuide ? 'true' : undefined}
         data-city-decision-guide-key={cityDecisionGuide?.key}
@@ -277,31 +284,27 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
         data-lafayette-decision-guide-ranking={cityDecisionGuide?.key === 'lafayette' ? String(DECISION_GUIDE_TRUST_BOUNDARIES.ranking) : undefined}
         data-lafayette-decision-guide-demographic-targeting={cityDecisionGuide?.key === 'lafayette' ? String(DECISION_GUIDE_TRUST_BOUNDARIES.demographicTargeting) : undefined}
       >
-        <div className="mx-auto max-w-6xl px-6 pb-10 pt-12 md:pt-16">
+        <div className="mx-auto max-w-6xl px-6 pb-12 pt-12 md:pt-16">
           <div className="mb-4 flex items-center gap-3">
             <div className="h-2 w-2 rounded-full bg-cyan-100 shadow-[0_0_18px_rgba(207,250,254,0.45)]" />
             <span className="text-[10px] font-black uppercase tracking-[0.32em] text-cyan-100/78">
-              Colorado Market Intelligence
+              {cityData.name} City Market Briefing
             </span>
           </div>
 
-          <h1 className="mb-6 max-w-5xl text-5xl font-black uppercase leading-[0.9] tracking-normal md:text-7xl">
-            {cityData.name}
-            <br />
-            <span className="text-white/32">{cityDecisionGuide ? 'Decision Guide' : 'Market Context'}</span>
+          <h1 className="mb-6 max-w-5xl text-4xl font-black uppercase leading-[0.96] tracking-normal md:text-6xl">
+            What is happening in this city market, what evidence matters, and what should I investigate next?
           </h1>
 
-          <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr] lg:items-end">
+          <div className="grid gap-6 lg:grid-cols-[1.12fr_0.88fr] lg:items-end">
             <p className="max-w-2xl text-base leading-8 text-white/64 md:text-lg">
-              {cityDecisionGuide
-                ? cityDecisionGuide.identity
-                : `Understand what the ${cityData.name} market may mean before you compare homes, prepare a seller plan, or narrow into a
-              neighborhood. Start with the primary signal, then verify property-specific context.`}
+              Use this {cityData.name} briefing to understand the current signal, decide which evidence deserves attention, and choose the next
+              Search, Neighborhood, Property, or Advisory step without treating market context as a prediction.
             </p>
 
             <div className="grid grid-cols-2 overflow-hidden rounded-[8px] bg-white/[0.07] shadow-[0_20px_70px_rgba(0,0,0,0.28)]">
               <div className="p-5">
-                <p className="mb-2 text-[9px] font-black uppercase tracking-[0.18em] text-white/38">Primary Signal</p>
+                <p className="mb-2 text-[9px] font-black uppercase tracking-[0.18em] text-white/38">Current Signal</p>
                 <p className="text-xl font-black uppercase tracking-tight text-white">{marketExperience.directionLabel}</p>
               </div>
               <div className="p-5">
@@ -338,7 +341,11 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
             </div>
           ) : null}
 
-          <div className="mt-8 grid gap-3 md:grid-cols-3">
+          <div
+            className="mt-8 grid gap-3 md:grid-cols-3"
+            data-testid="city-market-current-signals"
+            data-city-market-signal-count="3"
+          >
             <div className="rounded-[8px] bg-white/[0.055] p-4">
               <p className="mb-2 text-[9px] font-black uppercase tracking-[0.18em] text-white/36">Median Price</p>
               <p className="text-lg font-black uppercase tracking-tight text-white">{cityData.stats.medianPrice}</p>
@@ -366,6 +373,7 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
             <section
               className="mt-8 grid gap-3 rounded-[8px] bg-white/[0.045] p-5 md:grid-cols-5"
               data-testid={`${cityDecisionGuide.key}-decision-snapshot`}
+              data-city-market-briefing-snapshot="true"
               data-local-decision-intelligence="phase-1"
               data-local-decision-intelligence-phase={cityDecisionGuide.maturity === 'ENHANCED_FOUNDATION' ? 'phase-2-enhanced-foundation' : 'phase-1'}
               data-local-decision-intelligence-city={cityDecisionGuide.cityName}
@@ -395,6 +403,82 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
       </section>
 
       <div className="mx-auto max-w-6xl space-y-16 px-6 pb-24 pt-10">
+        <section
+          className="grid gap-6 rounded-[8px] bg-white/[0.04] p-5 md:p-8 lg:grid-cols-[0.86fr_1.14fr]"
+          data-testid="city-market-briefing-decision-evidence"
+          data-city-market-briefing-evidence="decision-relevance"
+          data-city-market-directional-versus-verified="present"
+          data-city-market-fair-housing-boundary="present"
+          data-city-market-professional-boundary="present"
+        >
+          <div>
+            <p className="mb-3 text-[10px] font-black uppercase tracking-[0.28em] text-cyan-100/72">
+              Evidence That Matters
+            </p>
+            <h2 className="text-3xl font-black uppercase leading-tight tracking-normal text-white md:text-4xl">
+              Read {cityData.name} as context for investigation, not a conclusion.
+            </h2>
+            <p className="mt-5 text-sm leading-7 text-white/58 md:text-base">
+              The useful question is not whether a city is right for every customer. It is which current signals, neighborhood paths,
+              property facts, and professional verification steps should shape the next review.
+            </p>
+          </div>
+
+          <div className="grid gap-3">
+            {[
+              {
+                label: 'Current market signals',
+                value: `${marketExperience.directionLabel}; ${marketExperience.competitivenessLabel}`,
+                explanation: 'Use the citywide signal to frame inventory and pace before comparing individual homes.',
+              },
+              {
+                label: 'Evidence to inspect',
+                value: `${cityData.stats.inventory} inventory signal; ${authoritySignals.neighborhoodCount} neighborhood paths`,
+                explanation: 'Compare active inventory, neighborhood context, property condition, records, and route-specific facts before relying on the overview.',
+              },
+              {
+                label: 'Directional versus verified',
+                value: 'Briefing first, verification next',
+                explanation: 'Market context is directional. Property condition, pricing strategy, financing, legal, tax, and timing questions require source review and qualified professional judgment.',
+              },
+            ].map((item) => (
+              <article key={item.label} className="rounded-[8px] bg-[#071017]/82 p-5">
+                <p className="text-[9px] font-black uppercase tracking-[0.18em] text-cyan-100/70">{item.label}</p>
+                <h3 className="mt-3 text-lg font-black uppercase leading-6 tracking-tight text-white">{item.value}</h3>
+                <p className="mt-3 text-sm leading-6 text-white/55">{item.explanation}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section
+          className="grid gap-6 rounded-[8px] bg-cyan-100/[0.045] p-5 md:p-8 lg:grid-cols-[1fr_0.9fr]"
+          data-testid="city-market-briefing-investigation-paths"
+          data-city-market-neighborhood-paths="investigation"
+          data-city-market-neighborhood-ranking="false"
+        >
+          <div>
+            <p className="mb-3 text-[10px] font-black uppercase tracking-[0.28em] text-cyan-100/72">
+              What To Investigate Next
+            </p>
+            <h2 className="text-3xl font-black uppercase leading-tight tracking-normal text-white md:text-4xl">
+              Move from city signal to the evidence source.
+            </h2>
+          </div>
+
+          <div className="grid gap-3">
+            {[
+              'Which active listings match the current inventory signal, and which facts need property-level verification?',
+              'Which neighborhood pages clarify geography, housing context, and local questions without ranking places?',
+              'Which market assumptions should be reviewed with an advisor before making a buying or selling decision?',
+            ].map((question) => (
+              <p key={question} className="rounded-[8px] bg-[#071017]/80 p-4 text-sm leading-7 text-white/58">
+                {question}
+              </p>
+            ))}
+          </div>
+        </section>
+
         <MarketProduct3VisualIntelligence experience={marketProduct3Experience} />
 
         <ContinueYourDecision
