@@ -122,6 +122,8 @@
     "scripts/checkDxt2FirstPhaseImplementationReadiness.ts",
     "scripts/checkDxt2PropertyDecisionReadinessDepthImplementation.ts",
     "scripts/checkDxt2SearchDecisionWorkspaceDepthPlan.ts",
+    "scripts/checkDxt2SearchDecisionWorkspaceDepthImplementation.ts",
+    "scripts/checkDxt2MarketCityMarketDecisionReadinessDepthPlan.ts",
     "scripts/decisionGuideValidation.ts",
     "scripts/checkBoulderDecisionGuide.ts",
     "scripts/checkLouisvilleDecisionGuide.ts",

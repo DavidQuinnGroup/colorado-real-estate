@@ -10,6 +10,111 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE DXT 2 Search Decision Workspace Depth Local Implementation, August 3, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Verified starting baseline:
+
+- Branch: `main`
+- Starting HEAD: `fff9e6c0668fc4484fa220b4a2df639f15281d75`
+- Starting origin/main: `fff9e6c0668fc4484fa220b4a2df639f15281d75`
+- Starting ahead/behind: `0 ahead / 0 behind`
+- Starting working tree: clean
+- Latest deployment status ID: `51562952945`
+- Latest deployment state: `success`
+- Latest deployment target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/BfF5m8FHKRmqCSBh4NE2KerSksrS`
+
+Local implementation commit:
+
+- DXT 2 Search Decision Workspace Depth implementation commit: created by this local implementation session; run `git rev-parse HEAD` for exact SHA.
+- Expected local state after implementation: `1 ahead / 0 behind`, clean working tree.
+- Push, deployment, and production certification authorization: `false`.
+
+Governing records:
+
+- DXT 2 route-readiness inventory: `docs/project-atlas/executive-library/REIE-DXT-2-DECISION-READINESS-ROUTE-INVENTORY.md`
+- DXT 2 Decision Readiness Depth architecture: `docs/project-atlas/executive-library/REIE-DXT-2-DECISION-READINESS-ARCHITECTURE.md`
+- DXT 2 first-phase implementation-readiness record: `docs/project-atlas/executive-library/REIE-DXT-2-FIRST-PHASE-IMPLEMENTATION-READINESS.md`
+- DXT 2 Property Decision Readiness Depth production certification: `docs/project-atlas/executive-library/REIE-DXT-2-PROPERTY-DECISION-READINESS-DEPTH-PRODUCTION-CERTIFICATION.md`
+- DXT 2 Search Decision Workspace Depth plan certification: `docs/project-atlas/executive-library/REIE-DXT-2-SEARCH-DECISION-WORKSPACE-DEPTH-PLAN-CERTIFICATION.md`
+- DXT 2 Search Decision Workspace Depth implementation: `docs/project-atlas/executive-library/REIE-DXT-2-SEARCH-DECISION-WORKSPACE-DEPTH-IMPLEMENTATION.md`
+- DXT 2 Market and City Market Decision Readiness Depth plan: `docs/project-atlas/executive-library/REIE-DXT-2-MARKET-CITY-MARKET-DECISION-READINESS-DEPTH-PLAN.md`
+
+Certified and local statuses:
+
+- DXT 2 Property Decision Readiness Depth: `REIE_DXT_2_PROPERTY_DECISION_READINESS_DEPTH_CERTIFIED_AND_CLOSED`
+- DXT 2 Property Decision Readiness Depth production: `REIE_DXT_2_PROPERTY_DECISION_READINESS_DEPTH_PRODUCTION_CERTIFIED`
+- DXT 2 Search Decision Workspace Depth plan: `REIE_DXT_2_SEARCH_DECISION_WORKSPACE_DEPTH_PLAN_CERTIFIED_AND_CLOSED`
+- DXT 2 Search Decision Workspace Depth local implementation: `DXT_2_SEARCH_DECISION_WORKSPACE_DEPTH_IMPLEMENTED_LOCAL_COMMIT_ONLY`
+- DXT 2 Search Decision Workspace local certification recommendation: `READY_FOR_SEARCH_WORKSPACE_LOCAL_CERTIFICATION`
+- DXT 2 Market and City Market Decision Readiness Depth plan readiness: `DXT_2_MARKET_CITY_MARKET_DECISION_READINESS_DEPTH_PLAN_READY`
+- Next local-certification and push gate: `READY_FOR_REIE_DXT_2_SEARCH_DECISION_WORKSPACE_DEPTH_LOCAL_CERTIFICATION_AND_PUSH_AUTHORIZATION`
+
+Runtime scope:
+
+- Authorized Search runtime file changed: `components/search/SearchInterface.tsx`
+- Conditional Search runtime files not changed: `components/PropertyCard.tsx`, `components/search/SearchControls.tsx`
+- Search API, Search ranking, maps, map providers, Property, Buyer, Seller, Market, City Market, Neighborhood, Advisory, Contact, shared runtime, navigation, footer, brokerage disclosure, persistence, telemetry, CRM, email, scheduling, and deployment configuration remained unchanged.
+- No URL-state expansion, hidden context, localStorage, cookies, provider activation, AI advice, scores, rankings, recommendations, suitability conclusions, investment conclusions, financial conclusions, valuation certainty, or professional conclusions were introduced.
+
+Search implementation findings:
+
+- Search continues answering: `Do these results give me enough reliable context to decide what to inspect, compare, refine, or open next?`
+- The Search workspace now includes a bounded `Search Decision Readiness` layer using existing visible criteria, public result count, list/map context, listing-card facts, degraded-provider posture, and existing Search -> Property return continuity.
+- The layer separates visible criteria, evidence available now, evidence not available from Search, qualitative confidence, comparison readiness, refinement threshold, and Property-opening threshold.
+- Confidence is qualitative and explicitly not a score, recommendation, suitability conclusion, valuation opinion, financing conclusion, or professional advice.
+- Degraded provider status remains an evidence boundary; provider behavior and Search API behavior are unchanged.
+- Search return continuity remains intact and unchanged.
+
+Next-phase planning findings:
+
+- Selected next phase: `MARKET_CITY_MARKET_DECISION_READINESS_DEPTH`
+- Preferred future ownership: `app/market/page.tsx` and `app/market/[city]/page.tsx`
+- Follow-on inspection-only candidate: `app/market/[city]/[slug]/page.tsx`
+- Planning prohibits neighborhood rankings, best-neighborhood claims, safety conclusions, school-quality conclusions, protected-class steering, investment guarantees, appreciation predictions, pricing certainty, suitability conclusions, provider activation, AI advice, persistence, telemetry, hidden context, Search API changes, map/provider changes, and shared runtime abstraction.
+- Runtime implementation of Market and City Market readiness depth remains unauthorized.
+
+Validation to rerun before push authorization:
+
+```bash
+git diff --check
+npm run check:dxt-2-decision-readiness-route-inventory
+npm run check:dxt-2-decision-readiness-architecture
+npm run check:dxt-2-first-phase-implementation-readiness
+npm run check:dxt-2-property-decision-readiness-depth-implementation
+npm run check:dxt-2-search-decision-workspace-depth-plan
+npm run check:dxt-2-search-decision-workspace-depth-implementation
+npm run check:dxt-2-market-city-market-decision-readiness-depth-plan
+npm run check:search-runtime-safety
+npm run check:property-route-safety
+npm run check:public-runtime-safety
+npm run check:public-trust-readiness
+npm run check:map-rendering-safety
+npm run typecheck
+npm run lint
+npm run check:fast
+npm run build
+```
+
+Next gate:
+
+`READY_FOR_REIE_DXT_2_SEARCH_DECISION_WORKSPACE_DEPTH_LOCAL_CERTIFICATION_AND_PUSH_AUTHORIZATION`
+
+Do not push, deploy, production-certify, begin Market/City Market runtime implementation, change Search API/ranking/map/provider behavior, change PropertyCard/SearchControls, add URL-state expansion, add hidden context, add persistence, add telemetry/analytics, activate providers, add AI advice, add scores/rankings/recommendations, change forms/APIs/CRM/email/scheduling, change navigation/footer, change brokerage disclosure, introduce shared runtime abstractions, or upgrade dependencies without explicit authorization.
+
+Prior handoff retained below for audit history.
+
 PROJECT ATLAS(tm) / REIE DXT 2 Property Decision Readiness Depth Certified And Search Plan Closed, August 3, 2026:
 
 Workspace:

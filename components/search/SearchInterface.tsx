@@ -212,6 +212,14 @@ function getEvidenceLabel(isSearching: boolean, isDegraded: boolean, hasZeroResu
   return 'Complete evidence';
 }
 
+function getDecisionConfidenceLabel(isSearching: boolean, isDegraded: boolean, hasZeroResults: boolean, hasFilters: boolean) {
+  if (isSearching) return 'Updating';
+  if (hasZeroResults) return 'Insufficient for comparison';
+  if (isDegraded) return 'Useful with fallback limits';
+  if (hasFilters) return 'Useful for focused comparison';
+  return 'Useful for broad orientation';
+}
+
 export default function SearchInterface({
   initialListings = [],
   initialSearchMeta = null,
@@ -266,6 +274,7 @@ export default function SearchInterface({
   const evidenceLabel = getEvidenceLabel(isSearching, isSearchDegraded, hasZeroResults);
   const selectedPropertyLabel = selectedProperty?.address || 'No property selected';
   const workspaceModeLabel = mobileView === 'map' ? 'Map view' : 'List view';
+  const decisionConfidenceLabel = getDecisionConfidenceLabel(isSearching, isSearchDegraded, hasZeroResults, hasFilters);
   const searchStateAnnouncement = isSearching
     ? 'Search is updating.'
     : searchError
@@ -643,6 +652,96 @@ export default function SearchInterface({
               ))}
             </div>
           ) : null}
+
+          <section
+            className="reie-search-confidence-framework"
+            data-testid="dxt-2-search-decision-workspace-depth"
+            data-dxt-2-search-workspace-depth="implemented"
+            data-dxt-2-search-workspace-runtime-scope="components/search/SearchInterface.tsx"
+            data-dxt-2-search-workspace-existing-evidence-only="true"
+            data-dxt-2-search-workspace-api-change="false"
+            data-dxt-2-search-workspace-ranking-change="false"
+            data-dxt-2-search-workspace-map-provider-change="false"
+            data-dxt-2-search-workspace-provider-activation="false"
+            data-dxt-2-search-workspace-url-state-change="false"
+            data-dxt-2-search-workspace-hidden-context="false"
+            data-dxt-2-search-workspace-persistence="false"
+            data-dxt-2-search-workspace-telemetry="false"
+            data-dxt-2-search-workspace-ai="false"
+            aria-labelledby="dxt-2-search-decision-question"
+          >
+            <div className="flex flex-col gap-4">
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">Search Decision Readiness</p>
+                <h2 id="dxt-2-search-decision-question" className="mt-2 font-serif text-2xl font-black leading-tight tracking-normal text-white">
+                  Do these results give me enough reliable context to decide what to inspect, compare, refine, or open next?
+                </h2>
+                <p className="mt-2 max-w-[36rem] text-xs font-bold leading-5 text-white/56">
+                  Use the visible criteria, current inventory, and map/list evidence as a preparation layer before relying on any single property.
+                </p>
+              </div>
+
+              <div className="grid gap-2 sm:grid-cols-3" data-testid="dxt-2-search-readiness-summary">
+                {[
+                  ['Visible Criteria', activeFilterChips.length ? criteriaLine : 'Open criteria'],
+                  ['Evidence Posture', evidenceLabel],
+                  ['Confidence', decisionConfidenceLabel],
+                ].map(([label, body]) => (
+                  <article key={label} className="rounded-[8px] border border-white/10 bg-black/18 p-3">
+                    <p className="text-[9px] font-black uppercase tracking-[0.16em] text-white/38">{label}</p>
+                    <p className="mt-1 text-[12px] font-black uppercase leading-5 tracking-[0.08em] text-white/76">{body}</p>
+                  </article>
+                ))}
+              </div>
+
+              <div className="grid gap-3 lg:grid-cols-2">
+                <article className="rounded-[8px] bg-white/[0.035] p-3" data-testid="dxt-2-search-evidence-available">
+                  <p className="text-[9px] font-black uppercase tracking-[0.18em] text-cyan-100/70">Evidence Available Now</p>
+                  <ul className="mt-2 space-y-1.5 text-[11px] font-bold leading-5 text-white/56">
+                    <li>{searchResultLabel} from the current public Search result set.</li>
+                    <li>{activeFilterChips.length ? `${activeFilterChips.length} visible criteria are shaping this view.` : 'No visible criteria are narrowing the open Colorado view.'}</li>
+                    <li>Listing cards expose public facts such as price, location, beds, baths, square footage, status, and property type where available.</li>
+                    <li>List and map context can be compared before opening a Property decision view.</li>
+                  </ul>
+                </article>
+
+                <article className="rounded-[8px] bg-white/[0.035] p-3" data-testid="dxt-2-search-evidence-missing">
+                  <p className="text-[9px] font-black uppercase tracking-[0.18em] text-amber-100/78">Evidence Not Available From Search</p>
+                  <ul className="mt-2 space-y-1.5 text-[11px] font-bold leading-5 text-white/56">
+                    <li>Condition, inspection findings, records, disclosures, HOA details, insurance, taxes, and total ownership costs still require verification.</li>
+                    <li>Search does not determine affordability, financing readiness, suitability, appreciation, safety, school quality, or investment fit.</li>
+                    <li>Provider or fallback limits should be treated as evidence boundaries, not as property recommendations.</li>
+                  </ul>
+                </article>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-3" data-testid="dxt-2-search-comparison-thresholds">
+                <article className="rounded-[8px] border border-cyan-100/12 bg-cyan-100/[0.055] p-3">
+                  <p className="text-[9px] font-black uppercase tracking-[0.16em] text-cyan-100/72">Compare</p>
+                  <p className="mt-1 text-[11px] font-bold leading-5 text-white/58">
+                    Compare visible facts and map context. Do not treat order, position, or visual prominence as a ranking.
+                  </p>
+                </article>
+                <article className="rounded-[8px] border border-cyan-100/12 bg-cyan-100/[0.055] p-3">
+                  <p className="text-[9px] font-black uppercase tracking-[0.16em] text-cyan-100/72">Refine</p>
+                  <p className="mt-1 text-[11px] font-bold leading-5 text-white/58">
+                    Refine when the current results are too broad, too narrow, or missing the criteria you can clearly name.
+                  </p>
+                </article>
+                <article className="rounded-[8px] border border-cyan-100/12 bg-cyan-100/[0.055] p-3">
+                  <p className="text-[9px] font-black uppercase tracking-[0.16em] text-cyan-100/72">Open Next</p>
+                  <p className="mt-1 text-[11px] font-bold leading-5 text-white/58">
+                    Open a Property view when a result still fits your visible criteria and you can name what remains to verify.
+                  </p>
+                </article>
+              </div>
+
+              <p className="text-[11px] font-bold leading-5 text-white/48" data-testid="dxt-2-search-readiness-boundary">
+                Confidence here means the Search view is organized enough to guide the next comparison question. It is not a score,
+                recommendation, suitability conclusion, valuation opinion, financing conclusion, or professional advice.
+              </p>
+            </div>
+          </section>
 
           <ol className="reie-search-orientation" data-testid="reie-search-orientation" aria-label="How to begin guided search" data-search-shell-region="workspace-steps">
             <li>
