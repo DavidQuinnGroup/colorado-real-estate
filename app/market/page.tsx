@@ -151,6 +151,38 @@ export default function MarketIndexPage() {
     'Which property-specific facts must be verified before relying on the signal?',
     'Which professional question should be asked before treating market context as strategy?',
   ];
+  const marketReadinessEvidence = [
+    {
+      label: 'Evidence available now',
+      body: `${marketSummaries.length} city market paths, ${totalNeighborhoodCount} neighborhood paths, certified local guides, current market signals, and existing Search continuations are available for broad comparison.`,
+    },
+    {
+      label: 'Evidence not yet available',
+      body: 'Market cannot confirm property condition, inspection findings, taxes, HOA costs, insurance, seller motivation, buyer financing, title, contract risk, or personal suitability.',
+    },
+    {
+      label: 'Assumptions to separate',
+      body: 'A city signal may explain pace or context, but it does not prove appreciation, timing certainty, a buy-now answer, a sell-now answer, or investment fit.',
+    },
+  ];
+  const marketReadinessThresholds = [
+    {
+      label: 'Move to Search',
+      body: 'Use Search when the customer can name a market signal and wants to compare active inventory against visible criteria.',
+    },
+    {
+      label: 'Open City Market',
+      body: 'Open a city briefing when statewide or Front Range context is too broad to decide which evidence deserves attention.',
+    },
+    {
+      label: 'Inspect Neighborhood',
+      body: 'Open neighborhood context when the next question is place organization, access, housing pattern, or verification conditions.',
+    },
+    {
+      label: 'Open Property',
+      body: 'Open a property only after the customer can identify which public facts still need address-level verification.',
+    },
+  ];
 
   return (
     <main
@@ -297,6 +329,61 @@ export default function MarketIndexPage() {
       <section id="market-core-synthesis" className="px-5 py-12 sm:px-8 lg:px-12">
         <div className="mx-auto max-w-6xl">
           <MarketProduct3VisualIntelligence experience={marketProduct3Experience} />
+        </div>
+      </section>
+
+      <section
+        className="px-5 py-12 sm:px-8 lg:px-12"
+        data-testid="dxt-2-market-decision-readiness-depth"
+        data-dxt-2-market-readiness-depth="implemented"
+        data-dxt-2-market-readiness-runtime-scope="app/market/page.tsx"
+        data-dxt-2-market-readiness-existing-evidence-only="true"
+        data-dxt-2-market-readiness-search-change="false"
+        data-dxt-2-market-readiness-product-3-preserved="true"
+        data-dxt-2-market-readiness-provider-change="false"
+        data-dxt-2-market-readiness-api-change="false"
+        data-dxt-2-market-readiness-persistence="false"
+        data-dxt-2-market-readiness-telemetry="false"
+        data-dxt-2-market-readiness-scoring="false"
+        data-dxt-2-market-readiness-ranking="false"
+        data-dxt-2-market-readiness-ai="false"
+      >
+        <div className="mx-auto grid max-w-6xl gap-6 lg:grid-cols-[0.88fr_1.12fr]">
+          <div>
+            <p className="text-[10px] font-black uppercase tracking-[0.28em] text-cyan-100/72">
+              Market Decision Readiness
+            </p>
+            <h2 className="mt-4 text-3xl font-black uppercase leading-tight tracking-normal text-white md:text-4xl">
+              Decide whether the broad market signal is ready for a narrower investigation.
+            </h2>
+            <p className="mt-5 text-sm leading-7 text-white/58 md:text-base">
+              Market readiness means the available evidence is organized enough to choose the next investigation surface. It is not a
+              prediction, ranking, score, buy or sell recommendation, valuation opinion, investment conclusion, or suitability finding.
+            </p>
+            <p className="mt-5 rounded-[8px] bg-cyan-100/[0.055] p-4 text-xs leading-6 text-white/50">
+              Freshness and confidence are descriptive. Confidence is descriptive and qualitative, not a score. Treat the market signal
+              as directional until a city, neighborhood, property, financing, inspection, record, or professional review verifies the
+              specific question.
+            </p>
+          </div>
+
+          <div className="grid gap-3">
+            {marketReadinessEvidence.map((item) => (
+              <article key={item.label} className="rounded-[8px] bg-white/[0.04] p-5 ring-1 ring-white/[0.06]">
+                <p className="text-[9px] font-black uppercase tracking-[0.18em] text-cyan-100/70">{item.label}</p>
+                <p className="mt-3 text-sm leading-6 text-white/56">{item.body}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+
+        <div className="mx-auto mt-6 grid max-w-6xl gap-3 md:grid-cols-4" data-testid="dxt-2-market-readiness-thresholds">
+          {marketReadinessThresholds.map((item) => (
+            <article key={item.label} className="rounded-[8px] bg-[#071017]/80 p-5 ring-1 ring-white/[0.055]">
+              <p className="text-[9px] font-black uppercase tracking-[0.18em] text-cyan-100/70">{item.label}</p>
+              <p className="mt-3 text-sm leading-6 text-white/54">{item.body}</p>
+            </article>
+          ))}
         </div>
       </section>
 

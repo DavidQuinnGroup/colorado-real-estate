@@ -221,6 +221,38 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
   };
   const cityDecisionGuideLocalContextLabel =
     cityDecisionGuide?.maturity === 'ENHANCED_FOUNDATION' ? 'Local Context' : 'Neighborhood Context';
+  const cityReadinessEvidence = [
+    {
+      label: 'Evidence available now',
+      body: `${cityData.name} has current city signals, ${cityData.stats.inventory} inventory context, ${authoritySignals.neighborhoodCount} neighborhood paths, Search continuation, and existing Property investigation paths.`,
+    },
+    {
+      label: 'Evidence unavailable here',
+      body: 'This city briefing cannot verify property condition, inspections, taxes, HOA details, insurance, financing readiness, seller motivation, contract risk, or personal suitability.',
+    },
+    {
+      label: 'Assumptions to keep separate',
+      body: 'City direction, pricing, competitiveness, and timing are directional context. They are not appreciation predictions, investment conclusions, or neighborhood rankings.',
+    },
+  ];
+  const cityReadinessThresholds = [
+    {
+      label: 'Search threshold',
+      body: `Move to Search when ${cityData.name} context gives the customer visible criteria to compare against active inventory.`,
+    },
+    {
+      label: 'Neighborhood threshold',
+      body: 'Open neighborhood context when the customer needs place organization, housing pattern, access, or verification questions without ranking places.',
+    },
+    {
+      label: 'Property threshold',
+      body: 'Open Property from Search when a listing still fits the visible criteria and the customer can name what remains to verify.',
+    },
+    {
+      label: 'Professional threshold',
+      body: 'Prepare Advisory questions when market assumptions affect timing, pricing, preparation, or negotiation strategy.',
+    },
+  ];
 
   return (
     <main className="market-surface min-h-screen bg-[#030303] text-white">
@@ -475,6 +507,63 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
               <p key={question} className="rounded-[8px] bg-[#071017]/80 p-4 text-sm leading-7 text-white/58">
                 {question}
               </p>
+            ))}
+          </div>
+        </section>
+
+        <section
+          className="grid gap-6 rounded-[8px] bg-white/[0.04] p-5 md:p-8 lg:grid-cols-[0.88fr_1.12fr]"
+          data-testid="dxt-2-city-market-decision-readiness-depth"
+          data-dxt-2-city-market-readiness-depth="implemented"
+          data-dxt-2-city-market-readiness-runtime-scope="app/market/[city]/page.tsx"
+          data-dxt-2-city-market-readiness-existing-evidence-only="true"
+          data-dxt-2-city-market-readiness-search-change="false"
+          data-dxt-2-city-market-readiness-neighborhood-change="false"
+          data-dxt-2-city-market-readiness-property-change="false"
+          data-dxt-2-city-market-readiness-product-3-preserved="true"
+          data-dxt-2-city-market-readiness-schema-preserved="true"
+          data-dxt-2-city-market-readiness-faq-preserved="true"
+          data-dxt-2-city-market-readiness-provider-activation="false"
+          data-dxt-2-city-market-readiness-api-change="false"
+          data-dxt-2-city-market-readiness-hidden-context="false"
+          data-dxt-2-city-market-readiness-persistence="false"
+          data-dxt-2-city-market-readiness-telemetry="false"
+          data-dxt-2-city-market-readiness-ranking="false"
+          data-dxt-2-city-market-readiness-ai="false"
+        >
+          <div>
+            <p className="mb-3 text-[10px] font-black uppercase tracking-[0.28em] text-cyan-100/72">
+              City Market Decision Readiness
+            </p>
+            <h2 className="text-3xl font-black uppercase leading-tight tracking-normal text-white md:text-4xl">
+              Decide whether {cityData.name} evidence is ready for Search, neighborhood, or property investigation.
+            </h2>
+            <p className="mt-5 text-sm leading-7 text-white/58 md:text-base">
+              City Market readiness means the current city signal is organized enough to choose the next evidence source. Confidence is
+              qualitative and descriptive; it is not a score, recommendation, forecast, pricing certainty, investment conclusion, or
+              suitability finding.
+            </p>
+            <p className="mt-5 rounded-[8px] bg-cyan-100/[0.055] p-4 text-xs leading-6 text-white/50">
+              Freshness and verification stay near the decision point: use city evidence to frame the question, then verify neighborhood
+              context, property facts, records, financing assumptions, and professional questions before relying on it.
+            </p>
+          </div>
+
+          <div className="grid gap-3">
+            {cityReadinessEvidence.map((item) => (
+              <article key={item.label} className="rounded-[8px] bg-[#071017]/82 p-5 ring-1 ring-white/[0.055]">
+                <p className="text-[9px] font-black uppercase tracking-[0.18em] text-cyan-100/70">{item.label}</p>
+                <p className="mt-3 text-sm leading-6 text-white/56">{item.body}</p>
+              </article>
+            ))}
+          </div>
+
+          <div className="grid gap-3 md:grid-cols-4 lg:col-span-2" data-testid="dxt-2-city-market-readiness-thresholds">
+            {cityReadinessThresholds.map((item) => (
+              <article key={item.label} className="rounded-[8px] bg-black/20 p-4">
+                <p className="text-[9px] font-black uppercase tracking-[0.18em] text-cyan-100/70">{item.label}</p>
+                <p className="mt-3 text-sm leading-6 text-white/54">{item.body}</p>
+              </article>
             ))}
           </div>
         </section>
