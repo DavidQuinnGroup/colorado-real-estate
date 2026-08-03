@@ -120,6 +120,8 @@
     "scripts/checkDxt2DecisionReadinessRouteInventory.ts",
     "scripts/checkDxt2DecisionReadinessArchitecture.ts",
     "scripts/checkDxt2FirstPhaseImplementationReadiness.ts",
+    "scripts/checkDxt2PropertyDecisionReadinessDepthImplementation.ts",
+    "scripts/checkDxt2SearchDecisionWorkspaceDepthPlan.ts",
     "scripts/decisionGuideValidation.ts",
     "scripts/checkBoulderDecisionGuide.ts",
     "scripts/checkLouisvilleDecisionGuide.ts",

@@ -10,7 +10,7 @@ Product:
 
 ## Latest New-Chat Handoff
 
-PROJECT ATLAS(tm) / REIE DXT 2 Decision Readiness Depth Planning Local Commit, August 3, 2026:
+PROJECT ATLAS(tm) / REIE DXT 2 Property Decision Readiness Depth Local Implementation, August 3, 2026:
 
 Workspace:
 
@@ -24,15 +24,16 @@ git rev-parse HEAD origin/main
 git log -8 --oneline
 ```
 
-Verified planning baseline:
+Verified implementation baseline:
 
 - Branch: `main`
-- Starting HEAD: `ef0de37bdc03c720833340f9940fb6c1e6323027`
+- Starting HEAD: `a136e4cec3051ebbe4c97cfeca7d1a6dfd7cfc39`
 - Starting origin/main: `ef0de37bdc03c720833340f9940fb6c1e6323027`
-- Starting ahead/behind: `0 ahead / 0 behind`
+- Starting ahead/behind: `1 ahead / 0 behind`
 - Starting working tree: clean
-- DXT 2 planning commit: created by the planning session; run `git rev-parse HEAD` for exact SHA.
-- Repository state after local planning: expected clean and `1 ahead / 0 behind`.
+- DXT 2 planning commit: `a136e4cec3051ebbe4c97cfeca7d1a6dfd7cfc39`
+- DXT 2 implementation commit: created by the implementation session; run `git rev-parse HEAD` for exact SHA.
+- Repository state after local implementation: expected clean and `2 ahead / 0 behind`.
 
 Latest documentation deployment evidence:
 
@@ -53,6 +54,8 @@ Governing records:
 - DXT 2 route-readiness inventory: `docs/project-atlas/executive-library/REIE-DXT-2-DECISION-READINESS-ROUTE-INVENTORY.md`
 - DXT 2 Decision Readiness Depth architecture: `docs/project-atlas/executive-library/REIE-DXT-2-DECISION-READINESS-ARCHITECTURE.md`
 - DXT 2 first-phase implementation-readiness record: `docs/project-atlas/executive-library/REIE-DXT-2-FIRST-PHASE-IMPLEMENTATION-READINESS.md`
+- DXT 2 Property Decision Readiness Depth implementation: `docs/project-atlas/executive-library/REIE-DXT-2-PROPERTY-DECISION-READINESS-DEPTH-IMPLEMENTATION.md`
+- DXT 2 Search Decision Workspace Depth plan: `docs/project-atlas/executive-library/REIE-DXT-2-SEARCH-DECISION-WORKSPACE-DEPTH-PLAN.md`
 - Buyer -> Advisory -> Contact Continuity implementation: `docs/project-atlas/executive-library/REIE-DXT-BUYER-ADVISORY-CONTACT-CONTINUITY-IMPLEMENTATION.md`
 - Seller -> Advisory -> Contact Continuity implementation: `docs/project-atlas/executive-library/REIE-DXT-SELLER-ADVISORY-CONTACT-CONTINUITY-IMPLEMENTATION.md`
 - Market -> City Market -> Neighborhood -> Property Continuity plan: `docs/project-atlas/executive-library/REIE-DXT-MARKET-CITY-MARKET-NEIGHBORHOOD-PROPERTY-CONTINUITY-PLAN.md`
@@ -68,6 +71,10 @@ Certified statuses:
 - DXT 2 Decision Readiness route inventory: `DXT_2_DECISION_READINESS_ROUTE_INVENTORY_READY`
 - DXT 2 Decision Readiness architecture: `DXT_2_DECISION_READINESS_ARCHITECTURE_READY`
 - DXT 2 first-phase implementation readiness: `DXT_2_FIRST_PHASE_IMPLEMENTATION_READINESS_READY`
+- DXT 2 Property Decision Readiness Depth: `DXT_2_PROPERTY_DECISION_READINESS_DEPTH_IMPLEMENTED_LOCAL_COMMIT_ONLY`
+- DXT 2 Search Decision Workspace Depth plan: `DXT_2_SEARCH_DECISION_WORKSPACE_DEPTH_PLAN_READY`
+- Satisfied DXT 2 Property implementation authorization gate: `READY_FOR_REIE_DXT_2_PROPERTY_DECISION_READINESS_DEPTH_BOUNDED_IMPLEMENTATION_AUTHORIZATION`
+- Satisfied DXT 2 Search planning authorization gate: `READY_FOR_REIE_DXT_2_SEARCH_DECISION_WORKSPACE_DEPTH_PLANNING_AUTHORIZATION`
 - Buyer/Seller -> Advisory -> Contact Continuity: `REIE_DXT_BUYER_SELLER_ADVISORY_CONTACT_CONTINUITY_CERTIFIED_AND_CLOSED`
 - Buyer/Seller -> Advisory -> Contact Continuity production: `REIE_DXT_BUYER_SELLER_ADVISORY_CONTACT_CONTINUITY_PRODUCTION_CERTIFIED`
 - Satisfied Buyer/Seller continuity planning gate: `READY_FOR_REIE_DXT_BUYER_SELLER_ADVISORY_CONTACT_CONTINUITY_PLANNING_CERTIFICATION`
@@ -82,6 +89,8 @@ Certified statuses:
 Runtime scope:
 
 - DXT 2 planning runtime authorization: `false`
+- DXT 2 Property Decision Readiness Depth implementation runtime authorization: `app/properties/[id]/page.tsx` only.
+- DXT 2 Search Decision Workspace Depth runtime authorization: `false`
 - DXT 2 selected first phase: `PROPERTY_DECISION_READINESS_DEPTH`
 - DXT 2 selected secondary planning phase: `SEARCH_DECISION_WORKSPACE_DEPTH`
 - DXT 2 deferred phase: `MARKET_AND_CITY_MARKET_DECISION_READINESS_DEPTH`
@@ -94,12 +103,13 @@ Runtime scope:
 - Search owns active property inventory.
 - Property owns address-level evaluation.
 - Advisory owns preparation for a focused professional conversation.
-- No Search, Property, Advisory, Contact, Buyer, Seller, API, map, provider, persistence, telemetry, navigation, footer, or brokerage-disclosure runtime was modified.
+- Property runtime file changed locally: `app/properties/[id]/page.tsx`.
+- No Search, Advisory, Contact, Buyer, Seller, Market/Neighborhood, API, map, provider, persistence, telemetry, navigation, footer, or brokerage-disclosure runtime was modified.
 
 Protected-system boundary:
 
-- The DXT 2 planning session authorized documentation and deterministic planning checks only. It did not authorize runtime implementation, route or canonical changes, provider activation, Search changes, map/GIS changes, Property changes, Buyer/Seller changes, Market/Neighborhood changes, Advisory/Contact changes, AI advice, financial logic, valuation logic, persistence, telemetry, CRM, email, scheduling, customer profiles, shared runtime abstractions, push, deployment, or production certification.
-- No Search runtime, Search API, Search ranking, Property runtime, Advisory runtime, Contact runtime, Buyer runtime, Seller runtime, form, field, map, provider, API, CRM, email, scheduling, persistence, localStorage, cookie, telemetry, analytics, hidden context, shared route state, shared CTA abstraction, navigation, footer, route, canonical, brokerage-disclosure, Prisma, or deployment configuration change was authorized or performed.
+- The DXT 2 implementation session authorized bounded Property presentation only and Search planning documentation only. It did not authorize push, deployment, production certification, Search runtime changes, Search API or ranking changes, map/GIS changes, provider activation, PropertyInquiryForm changes, Advisory/Contact runtime changes, Buyer/Seller changes, Market/Neighborhood changes, AI advice, scoring, recommendations, financial logic, valuation logic, persistence, telemetry, CRM, email, scheduling, customer profiles, shared runtime abstractions, or brokerage-disclosure changes.
+- No Search runtime, Search API, Search ranking, Advisory runtime, Contact runtime, Buyer runtime, Seller runtime, Market/Neighborhood runtime, form, field, map, provider, API, CRM, email, scheduling, persistence, localStorage, cookie, telemetry, analytics, hidden context, shared route state, shared CTA abstraction, navigation, footer, route, canonical, brokerage-disclosure, Prisma, or deployment configuration change was authorized or performed.
 - Brokerage disclosure remains on hold: `EXTERNAL_COMPASS_MARKETING_REVIEW_PENDING`.
 
 DXT 2 planning findings:
@@ -112,6 +122,17 @@ DXT 2 planning findings:
 - Secondary planning phase: `SEARCH_DECISION_WORKSPACE_DEPTH`.
 - Deferred phase: `MARKET_AND_CITY_MARKET_DECISION_READINESS_DEPTH` because deeper provenance may require provider-boundary review.
 
+DXT 2 local implementation findings:
+
+- Property Decision Readiness Depth was implemented route-locally in `app/properties/[id]/page.tsx`.
+- The implemented Property readiness layer answers: `Is this property sufficiently understood to justify more time, inquiry, touring, comparison, or professional preparation?`
+- The implemented layer organizes evidence available now, evidence still missing, assumptions, unknowns, confidence boundaries, verification requirements, questions to carry forward, and next-decision threshold.
+- The layer uses existing public listing facts, Product 3.1, related listings, market pathway, Search return context, and existing verification prompts only.
+- Property inquiry remains property-specific and unchanged.
+- Search return continuity remains unchanged.
+- Advisory prepares and Contact begins; no property context is added to Advisory or Contact URLs.
+- Search Decision Workspace Depth is planning-ready only and remains a future bounded phase.
+
 Validation to rerun if future continuity work resumes:
 
 ```bash
@@ -119,6 +140,8 @@ git diff --check
 npm run check:dxt-2-decision-readiness-route-inventory
 npm run check:dxt-2-decision-readiness-architecture
 npm run check:dxt-2-first-phase-implementation-readiness
+npm run check:dxt-2-property-decision-readiness-depth-implementation
+npm run check:dxt-2-search-decision-workspace-depth-plan
 npm run check:dxt-market-continuity-implementation
 npm run check:dxt-city-market-continuity-implementation
 npm run check:dxt-neighborhood-continuity-implementation
@@ -147,15 +170,15 @@ npm run check:fast
 npm run build
 ```
 
-Next gate:
+Next primary gate:
 
-`READY_FOR_REIE_DXT_2_PROPERTY_DECISION_READINESS_DEPTH_BOUNDED_IMPLEMENTATION_AUTHORIZATION`
+`READY_FOR_REIE_DXT_2_PROPERTY_DECISION_READINESS_DEPTH_LOCAL_CERTIFICATION_AND_PUSH_AUTHORIZATION`
 
-Secondary gate:
+Next secondary gate:
 
-`READY_FOR_REIE_DXT_2_SEARCH_DECISION_WORKSPACE_DEPTH_PLANNING_AUTHORIZATION`
+`READY_FOR_REIE_DXT_2_SEARCH_DECISION_WORKSPACE_DEPTH_PLAN_CERTIFICATION`
 
-Do not begin DXT 2 runtime implementation, push, deployment, production certification, Search runtime changes, Property runtime changes, Buyer/Seller changes, Market/Neighborhood changes, Advisory/Contact changes, forms/APIs/CRM/email/scheduling changes, provider activation, AI advice, financial logic, valuation logic, hidden context, telemetry, analytics, persistence, navigation/footer changes, brokerage-disclosure changes, shared runtime abstractions, or dependency upgrades without explicit authorization.
+Do not push, deploy, production-certify, begin Search runtime implementation, begin Market/City Market readiness work, change Search/API/ranking/map behavior, change PropertyInquiryForm, change Advisory/Contact, change Buyer/Seller, change Market/Neighborhood, change forms/APIs/CRM/email/scheduling, activate providers, add AI advice, add financial or valuation logic, add hidden context, add telemetry/analytics/persistence, change navigation/footer, change brokerage disclosure, introduce shared runtime abstractions, or upgrade dependencies without explicit authorization.
 
 Prior handoff retained below for audit history.
 

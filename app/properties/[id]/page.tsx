@@ -629,6 +629,44 @@ function getPropertyIntelligenceSourceItems({
   ];
 }
 
+function getPropertyReadinessAvailableEvidence({
+  property,
+  pricePerSquareFoot,
+  marketPathway,
+  relatedListingCount,
+}: {
+  property: PropertyWithPhotos;
+  pricePerSquareFoot: string;
+  marketPathway: MarketPathway;
+  relatedListingCount: number;
+}) {
+  return [
+    {
+      label: 'Listing facts',
+      value: `${formatCurrency(property.price)} / ${property.status || 'Status not provided'}`,
+      detail: `${property.beds ?? 'N/A'} beds, ${property.baths ?? 'N/A'} baths, ${formatNumber(property.sqft)} sqft, and ${property.propertyType || 'residential'} public listing context.`,
+    },
+    {
+      label: 'Property DNA',
+      value: property.neighborhood || property.city || 'Colorado context',
+      detail: 'Product 3.1 organizes address-level public facts, confidence boundaries, comparable context, and verification prompts.',
+    },
+    {
+      label: 'Comparison basis',
+      value: pricePerSquareFoot,
+      detail:
+        relatedListingCount > 0
+          ? `${relatedListingCount} related listings are available for comparison context.`
+          : 'Search remains available for comparison context.',
+    },
+    {
+      label: 'Market pathway',
+      value: marketPathway.label,
+      detail: marketPathway.note,
+    },
+  ];
+}
+
 const SUMMARY_VERIFY_CATEGORIES = [
   { label: 'Ownership costs', value: 'Taxes, HOA, insurance, financing terms, closing costs, and maintenance assumptions.' },
   { label: 'Systems and records', value: 'Roof, mechanical, electrical, plumbing, drainage, permits, windows, and exterior records.' },
@@ -667,6 +705,43 @@ const PROPERTY_HANDOFF_BOUNDARIES = [
   'Property inquiry remains the only property-specific follow-up workflow on this page.',
   'Advisory prepares the conversation; it does not create representation, valuation certainty, legal advice, tax advice, lending approval, investment advice, suitability conclusions, or promised outcomes.',
   'Contact begins a general conversation and does not replace property inquiry, change fields, submit information, schedule a meeting, send email, create CRM work, or pass hidden context.',
+];
+
+const PROPERTY_READINESS_MISSING_EVIDENCE = [
+  {
+    label: 'Condition',
+    value: 'Not verified here',
+    detail: 'Photos and remarks can orient review, but inspections, records, and on-site observations are still needed.',
+  },
+  {
+    label: 'Costs',
+    value: 'Assumptions only',
+    detail: 'Taxes, insurance, HOA, financing, closing costs, and maintenance assumptions require independent confirmation.',
+  },
+  {
+    label: 'Records',
+    value: 'Carry forward',
+    detail: 'Permits, improvements, mechanical age, title, disclosures, and site constraints remain professional-review topics.',
+  },
+];
+
+const PROPERTY_READINESS_ASSUMPTIONS = [
+  'Public listing facts are treated as orientation, not as complete due diligence.',
+  'Calculated metrics use listed price and listed square footage only.',
+  'Market context is directional education and not a property-specific pricing opinion.',
+  'Professional review is still required before relying on condition, financial, legal, tax, lending, insurance, or valuation assumptions.',
+];
+
+const PROPERTY_READINESS_UNKNOWNS = [
+  'Whether property condition, systems, records, disclosures, and site context support the public presentation.',
+  'Whether total ownership costs fit the customer after lender, insurer, tax, and maintenance review.',
+  'Whether comparable properties, timing, and local context change how the property should be interpreted.',
+];
+
+const PROPERTY_READINESS_CONFIDENCE_BOUNDARIES = [
+  'Confidence means the evidence is organized enough to guide the next question; it is not a score.',
+  'Readiness does not mean the property is recommended, suitable, fairly priced, safe, complete, or financially appropriate.',
+  'No AI advice, automated valuation, prediction, ranking, provider expansion, telemetry, or hidden customer context is used.',
 ];
 
 const BUYER_CONFIDENCE_FRAMEWORK = [
@@ -923,6 +998,12 @@ export default async function PropertyPage({ params, searchParams }: PropertyPag
     photoCount: property.photos.length,
     relatedListings,
   });
+  const propertyReadinessAvailableEvidence = getPropertyReadinessAvailableEvidence({
+    property,
+    pricePerSquareFoot,
+    marketPathway,
+    relatedListingCount: relatedListings.length,
+  });
 
   return (
     <main
@@ -945,6 +1026,17 @@ export default async function PropertyPage({ params, searchParams }: PropertyPag
       data-property-advisory-contact-persistence="false"
       data-property-advisory-contact-telemetry="false"
       data-property-advisory-contact-api-change="false"
+      data-dxt-2-property-readiness-depth="implemented"
+      data-dxt-2-property-readiness-runtime-scope="app/properties/[id]/page.tsx"
+      data-dxt-2-property-readiness-existing-evidence-only="true"
+      data-dxt-2-property-readiness-search-change="false"
+      data-dxt-2-property-readiness-inquiry-change="false"
+      data-dxt-2-property-readiness-provider-activation="false"
+      data-dxt-2-property-readiness-ai="false"
+      data-dxt-2-property-readiness-scoring="false"
+      data-dxt-2-property-readiness-persistence="false"
+      data-dxt-2-property-readiness-telemetry="false"
+      data-dxt-2-property-readiness-api-change="false"
     >
       <script
         type="application/ld+json"
@@ -1244,6 +1336,161 @@ export default async function PropertyPage({ params, searchParams }: PropertyPag
             { label: 'Ask About This Property', href: '#property-contact', note: 'Focused question' },
           ]}
         />
+      </section>
+
+      <section
+        className="mx-auto max-w-7xl px-5 py-8 sm:px-8 lg:px-10"
+        data-testid="dxt-2-property-decision-readiness-depth"
+        data-property-readiness-question="Is this property sufficiently understood to justify more time, inquiry, touring, comparison, or professional preparation?"
+        data-property-readiness-existing-evidence-only="true"
+        data-property-readiness-available-count={propertyReadinessAvailableEvidence.length}
+        data-property-readiness-missing-count={PROPERTY_READINESS_MISSING_EVIDENCE.length}
+        data-property-readiness-verification-count={SUMMARY_VERIFY_CATEGORIES.length}
+        data-property-readiness-question-count={QUESTIONS_TO_CARRY_FORWARD.length}
+        data-property-readiness-ai="false"
+        data-property-readiness-scoring="false"
+        data-property-readiness-recommendation="false"
+        data-property-readiness-provider-activation="false"
+        data-property-readiness-persistence="false"
+        data-property-readiness-telemetry="false"
+        data-property-readiness-search-change="false"
+        data-property-readiness-inquiry-change="false"
+        data-property-readiness-api-change="false"
+      >
+        <div className="overflow-hidden rounded-[8px] border border-cyan-100/20 bg-[#0d141c]">
+          <div className="border-b border-white/10 bg-cyan-100/[0.055] p-5 md:p-7">
+            <div className="flex flex-col justify-between gap-5 lg:flex-row lg:items-start">
+              <div className="max-w-4xl">
+                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-cyan-100/76">
+                  Property Decision Readiness
+                </p>
+                <h2 className="mt-3 text-2xl font-black uppercase tracking-tight text-white md:text-3xl">
+                  Is this property sufficiently understood to justify more time, inquiry, touring, comparison, or professional preparation?
+                </h2>
+                <p className="mt-4 max-w-3xl text-sm leading-6 text-white/58 md:text-base md:leading-7">
+                  Use the evidence already on this page to separate what is available now from what still needs verification before relying on the property.
+                </p>
+              </div>
+              <span className="inline-flex min-h-8 shrink-0 items-center rounded-[6px] border border-cyan-100/24 bg-black/22 px-3 py-2 text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100">
+                Existing evidence only
+              </span>
+            </div>
+          </div>
+
+          <div className="grid gap-px bg-white/10 lg:grid-cols-2">
+            <div className="bg-[#0d141c] p-5 md:p-6">
+              <h3 className="text-[11px] font-black uppercase tracking-[0.18em] text-white/70">
+                Evidence available now
+              </h3>
+              <div className="mt-4 grid gap-3">
+                {propertyReadinessAvailableEvidence.map((item) => (
+                  <article key={item.label} className="rounded-[6px] border border-white/10 bg-white/[0.035] p-4">
+                    <p className="text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100/56">{item.label}</p>
+                    <p className="mt-2 text-sm font-black uppercase tracking-[0.06em] text-white/80">{item.value}</p>
+                    <p className="mt-2 text-xs leading-5 text-white/50 md:text-sm md:leading-6">{item.detail}</p>
+                  </article>
+                ))}
+              </div>
+            </div>
+
+            <div className="bg-[#0d141c] p-5 md:p-6">
+              <h3 className="text-[11px] font-black uppercase tracking-[0.18em] text-white/70">
+                Evidence still missing
+              </h3>
+              <div className="mt-4 grid gap-3">
+                {PROPERTY_READINESS_MISSING_EVIDENCE.map((item) => (
+                  <article key={item.label} className="rounded-[6px] border border-amber-100/14 bg-amber-100/[0.055] p-4">
+                    <p className="text-[10px] font-black uppercase tracking-[0.14em] text-amber-100/78">{item.label}</p>
+                    <p className="mt-2 text-sm font-black uppercase tracking-[0.06em] text-white/80">{item.value}</p>
+                    <p className="mt-2 text-xs leading-5 text-white/54 md:text-sm md:leading-6">{item.detail}</p>
+                  </article>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="grid gap-px border-t border-white/10 bg-white/10 lg:grid-cols-3">
+            <div className="bg-[#0d141c] p-5 md:p-6">
+              <h3 className="text-[11px] font-black uppercase tracking-[0.18em] text-white/70">
+                Assumptions to separate
+              </h3>
+              <ul className="mt-4 space-y-3 text-xs leading-5 text-white/58 md:text-sm md:leading-6">
+                {PROPERTY_READINESS_ASSUMPTIONS.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </div>
+            <div className="bg-[#0d141c] p-5 md:p-6">
+              <h3 className="text-[11px] font-black uppercase tracking-[0.18em] text-white/70">
+                Unknowns to verify
+              </h3>
+              <ul className="mt-4 space-y-3 text-xs leading-5 text-white/58 md:text-sm md:leading-6">
+                {PROPERTY_READINESS_UNKNOWNS.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </div>
+            <div className="bg-[#0d141c] p-5 md:p-6">
+              <h3 className="text-[11px] font-black uppercase tracking-[0.18em] text-white/70">
+                Confidence boundaries
+              </h3>
+              <ul className="mt-4 space-y-3 text-xs leading-5 text-white/58 md:text-sm md:leading-6">
+                {PROPERTY_READINESS_CONFIDENCE_BOUNDARIES.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          <div className="grid gap-px border-t border-white/10 bg-white/10 lg:grid-cols-[0.9fr_1.1fr]">
+            <div className="bg-[#0d141c] p-5 md:p-6">
+              <h3 className="text-[11px] font-black uppercase tracking-[0.18em] text-amber-100">
+                What must be verified
+              </h3>
+              <ul className="mt-4 space-y-3 text-xs leading-5 text-white/58 md:text-sm md:leading-6">
+                {SUMMARY_VERIFY_CATEGORIES.map((item) => (
+                  <li key={item.label}>
+                    <span className="font-black uppercase tracking-[0.08em] text-white/78">{item.label}: </span>
+                    {item.value}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="bg-[#0d141c] p-5 md:p-6">
+              <h3 className="text-[11px] font-black uppercase tracking-[0.18em] text-amber-100">
+                Questions to carry forward
+              </h3>
+              <div className="mt-4 grid gap-3 md:grid-cols-3">
+                {QUESTIONS_TO_CARRY_FORWARD.map((item) => (
+                  <article key={item.label} className="rounded-[6px] border border-white/10 bg-white/[0.035] p-3">
+                    <p className="text-[10px] font-black uppercase tracking-[0.12em] text-cyan-100/54">{item.label}</p>
+                    <p className="mt-2 text-xs leading-5 text-white/54">{item.value}</p>
+                  </article>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="grid gap-5 border-t border-white/10 p-5 md:grid-cols-[1fr_auto] md:items-center md:p-6">
+            <p className="text-sm leading-6 text-white/58">
+              The next step is justified when the customer can name what is known, what remains unverified, and which specific question needs Search comparison, property inquiry, Advisory preparation, or general Contact.
+            </p>
+            <div className="grid gap-2 sm:grid-cols-2 md:min-w-[360px]">
+              <Link
+                href={propertySearchHref}
+                className="reie-decision-link reie-decision-link--secondary inline-flex min-h-10 items-center justify-center rounded-[6px] px-3 py-2 text-[10px] font-black uppercase tracking-[0.12em] transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
+              >
+                {propertySearchLabel}
+              </Link>
+              <Link
+                href="#property-contact"
+                className="reie-decision-link reie-decision-link--primary inline-flex min-h-10 items-center justify-center rounded-[6px] px-3 py-2 text-[10px] font-black uppercase tracking-[0.12em] transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
+              >
+                Ask a Property Question
+              </Link>
+            </div>
+          </div>
+        </div>
       </section>
 
       <section className="mx-auto max-w-7xl px-5 py-12 sm:px-8 lg:px-10">

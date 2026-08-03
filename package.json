@@ -178,6 +178,8 @@
     "check:dxt-2-decision-readiness-route-inventory": "npm run worker:build && node dist/scripts/checkDxt2DecisionReadinessRouteInventory.js",
     "check:dxt-2-decision-readiness-architecture": "npm run worker:build && node dist/scripts/checkDxt2DecisionReadinessArchitecture.js",
     "check:dxt-2-first-phase-implementation-readiness": "npm run worker:build && node dist/scripts/checkDxt2FirstPhaseImplementationReadiness.js",
+    "check:dxt-2-property-decision-readiness-depth-implementation": "npm run worker:build && node dist/scripts/checkDxt2PropertyDecisionReadinessDepthImplementation.js",
+    "check:dxt-2-search-decision-workspace-depth-plan": "npm run worker:build && node dist/scripts/checkDxt2SearchDecisionWorkspaceDepthPlan.js",
     "check:boulder-decision-guide": "npm run worker:build && node dist/scripts/checkBoulderDecisionGuide.js",
     "check:louisville-decision-guide": "npm run worker:build && node dist/scripts/checkLouisvilleDecisionGuide.js",
     "check:lafayette-decision-guide": "npm run worker:build && node dist/scripts/checkLafayetteDecisionGuide.js",
