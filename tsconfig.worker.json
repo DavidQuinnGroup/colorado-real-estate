@@ -130,6 +130,8 @@
     "scripts/checkDxt2NeighborhoodDecisionReadinessDepthImplementation.ts",
     "scripts/checkDxt2NextPhasePlan.ts",
     "scripts/checkDxt2NextPhaseAfterNeighborhoodPlan.ts",
+    "scripts/checkDxt2BuyerDecisionReadinessDepthExpansionImplementation.ts",
+    "scripts/checkDxt2NextPhaseAfterBuyerPlan.ts",
     "scripts/decisionGuideValidation.ts",
     "scripts/checkBoulderDecisionGuide.ts",
     "scripts/checkLouisvilleDecisionGuide.ts",

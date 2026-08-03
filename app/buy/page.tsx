@@ -45,6 +45,73 @@ const verificationQuestions = [
   'Which tradeoffs would make a home worth an advisor conversation before a tour or offer decision?',
 ];
 
+const BUYER_READINESS_EVIDENCE = [
+  {
+    label: 'Available now',
+    body: 'Buyer preparation themes, the Buyer Decision Workspace, financing-readiness education, Search paths, Market context, Property verification prompts, and professional handoff guidance are visible here.',
+  },
+  {
+    label: 'Needs verification',
+    body: 'Lender requirements, final rate and terms, taxes, insurance, HOA obligations, inspection findings, title matters, contract terms, closing costs, and final cash requirements need source or professional review.',
+  },
+  {
+    label: 'Assumption',
+    body: 'Budget range, timing, search criteria, decision partners, financing readiness, and property tradeoffs are preparation assumptions until verified against a lender, property, and transaction.',
+  },
+  {
+    label: 'Unknown from current evidence',
+    body: 'The Buyer route does not confirm approval, qualification, affordability, buying power, credit readiness, underwriting outcome, lender fit, or whether a specific property is the right next step.',
+  },
+];
+
+const BUYER_READINESS_VERIFICATION = [
+  {
+    label: 'Financing-readiness verification',
+    body: 'Use the financing education to name questions for a lender or financial professional; do not treat this route as approval, preapproval, affordability, buying power, underwriting, credit, rate, or closing-cost certainty.',
+  },
+  {
+    label: 'Property and transaction verification',
+    body: 'Open Property evidence when condition, taxes, insurance, HOA, title, inspection, records, disclosures, contract timing, or offer strategy becomes the decision point.',
+  },
+  {
+    label: 'Questions to carry forward',
+    body: 'Carry forward what is known, what is assumed, what remains unverified, which evidence is stale or incomplete, and which professional needs to review the next question.',
+  },
+];
+
+const BUYER_READINESS_THRESHOLDS = [
+  {
+    label: 'Continue Search',
+    href: '/search',
+    note: 'Use when criteria, location, inventory, or comparison still needs visible alternatives.',
+  },
+  {
+    label: 'Review financing assumptions',
+    href: '#buyer-financing-confidence',
+    note: 'Use when lender, cash, payment, timing, or closing-cost assumptions need clearer questions.',
+  },
+  {
+    label: 'Open a Property',
+    href: '/search',
+    note: 'Use when the next decision depends on address-level condition, records, costs, or tradeoffs.',
+  },
+  {
+    label: 'Understand Market context',
+    href: '/market',
+    note: 'Use when current inventory, timing, or local alternatives need broader context.',
+  },
+  {
+    label: 'Prepare Advisory questions',
+    href: '/contact#advisory-readiness',
+    note: 'Use when the assumptions and unknowns are clear enough for a focused professional discussion.',
+  },
+  {
+    label: 'Begin general Contact',
+    href: '/contact#contact-route-choice',
+    note: 'Use only when the customer is ready to begin a general conversation without hidden Buyer context.',
+  },
+];
+
 const BUYER_PROFESSIONAL_HANDOFF_STEPS = [
   {
     label: 'Bring the decision context',
@@ -93,6 +160,27 @@ export default function BuyPage() {
       data-buyer-advisory-contact-crm="false"
       data-buyer-advisory-contact-email="false"
       data-buyer-advisory-contact-scheduling="false"
+      data-dxt-2-buyer-readiness-depth="implemented"
+      data-dxt-2-buyer-readiness-runtime-scope="app/buy/page.tsx"
+      data-dxt-2-buyer-readiness-existing-evidence-only="true"
+      data-dxt-2-buyer-readiness-financing-tool-change="false"
+      data-dxt-2-buyer-readiness-search-change="false"
+      data-dxt-2-buyer-readiness-property-change="false"
+      data-dxt-2-buyer-readiness-seller-change="false"
+      data-dxt-2-buyer-readiness-advisory-change="false"
+      data-dxt-2-buyer-readiness-contact-change="false"
+      data-dxt-2-buyer-readiness-provider-activation="false"
+      data-dxt-2-buyer-readiness-api-change="false"
+      data-dxt-2-buyer-readiness-hidden-context="false"
+      data-dxt-2-buyer-readiness-persistence="false"
+      data-dxt-2-buyer-readiness-telemetry="false"
+      data-dxt-2-buyer-readiness-ai="false"
+      data-dxt-2-buyer-readiness-scoring="false"
+      data-dxt-2-buyer-readiness-ranking="false"
+      data-dxt-2-buyer-readiness-recommendation="false"
+      data-dxt-2-buyer-readiness-qualification="false"
+      data-dxt-2-buyer-readiness-affordability="false"
+      data-dxt-2-buyer-readiness-buying-power="false"
     >
       <section
         className="px-5 py-20 sm:px-8 sm:py-24 lg:px-12"
@@ -206,6 +294,75 @@ export default function BuyPage() {
                 </span>
               </Link>
             ))}
+          </div>
+        </div>
+      </section>
+
+      <section
+        className="px-5 pb-12 sm:px-8 lg:px-12"
+        data-testid="dxt-2-buyer-decision-readiness-depth-expansion"
+        data-dxt-buyer-hierarchy-role="decision-readiness-depth"
+      >
+        <div className="mx-auto grid w-full max-w-[1180px] gap-8 border border-cyan-100/14 bg-[#071017]/86 p-5 sm:p-8 lg:grid-cols-[0.82fr_1.18fr]">
+          <div>
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100/72">Buyer Decision Readiness</p>
+            <h2 className="mt-3 text-3xl font-black leading-tight tracking-normal text-white sm:text-4xl">
+              Decide what is prepared, what is assumed, and what must be verified before the next buying step.
+            </h2>
+            <p className="mt-5 text-sm leading-7 text-white/62">
+              This readiness frame organizes existing Buyer preparation evidence only. It does not use customer-specific financial data,
+              create a score, change financing tools, or determine whether a customer is qualified, approved, able to afford, or ready to buy.
+            </p>
+            <p className="mt-5 border border-cyan-100/12 bg-cyan-100/[0.045] p-4 text-xs font-bold leading-6 text-cyan-100/70">
+              Confidence is qualitative and preparation-focused: evidence completeness, assumption visibility, verification status,
+              freshness, and limitation severity. It is not an approval probability, affordability score, buying-power score, lender
+              score, credit interpretation, or recommendation.
+            </p>
+          </div>
+
+          <div className="grid gap-4">
+            <div className="grid gap-3 sm:grid-cols-2">
+              {BUYER_READINESS_EVIDENCE.map((item) => (
+                <article key={item.label} className="border border-white/10 bg-white/[0.04] p-4">
+                  <p className="text-[9px] font-black uppercase tracking-[0.18em] text-cyan-100/70">{item.label}</p>
+                  <p className="mt-3 text-xs leading-6 text-white/58">{item.body}</p>
+                </article>
+              ))}
+            </div>
+
+            <div className="grid gap-3 border border-white/10 bg-black/18 p-4 md:grid-cols-3">
+              {BUYER_READINESS_VERIFICATION.map((item) => (
+                <article key={item.label}>
+                  <h3 className="text-sm font-black leading-tight text-white">{item.label}</h3>
+                  <p className="mt-3 text-xs leading-6 text-white/56">{item.body}</p>
+                </article>
+              ))}
+            </div>
+
+            <div className="border border-cyan-100/12 bg-cyan-100/[0.035] p-4">
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100/72">Next-decision thresholds</p>
+              <p className="mt-3 text-xs leading-6 text-white/50">
+                Continue when the remaining assumptions and unknowns are clear enough to identify what requires deeper Search,
+                Property, lender, Market, Advisory, or professional review. Do not treat this as a recommendation to buy or make an offer.
+              </p>
+              <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {BUYER_READINESS_THRESHOLDS.map((item) => (
+                  <Link
+                    key={item.label}
+                    href={item.href}
+                    className="border border-white/10 bg-[#071017]/78 p-4 text-white no-underline transition hover:bg-white/[0.07] focus:outline-none focus:ring-2 focus:ring-cyan-100/70"
+                  >
+                    <span className="text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100/72">{item.label}</span>
+                    <span className="mt-2 block text-xs leading-5 text-white/50">{item.note}</span>
+                  </Link>
+                ))}
+              </div>
+              <p className="mt-4 text-xs leading-6 text-white/42">
+                No loan approval, lending eligibility decision, affordability result, buying-capacity conclusion, underwriting outcome,
+                credit interpretation, lender ordering, loan-product recommendation, individual financial advice, investment advice, tax advice,
+                legal advice, suitability conclusion, hidden context, persistence, telemetry, or AI advice is created here.
+              </p>
+            </div>
           </div>
         </div>
       </section>
