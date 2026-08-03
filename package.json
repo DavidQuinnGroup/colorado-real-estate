@@ -154,6 +154,8 @@
     "check:dxt-wave-1d-market-neighborhood-discovery-foundation": "npm run worker:build && node dist/scripts/checkDxtWave1dMarketNeighborhoodDiscoveryFoundation.js",
     "check:dxt-wave-1d-market-briefing-foundation": "npm run worker:build && node dist/scripts/checkDxtWave1dMarketBriefingFoundation.js",
     "check:dxt-wave-1d-neighborhood-place-orientation-plan": "npm run worker:build && node dist/scripts/checkDxtWave1dNeighborhoodPlaceOrientationPlan.js",
+    "check:dxt-wave-1d-neighborhood-place-orientation-implementation": "npm run worker:build && node dist/scripts/checkDxtWave1dNeighborhoodPlaceOrientationImplementation.js",
+    "check:dxt-wave-1d-city-market-briefing-plan": "npm run worker:build && node dist/scripts/checkDxtWave1dCityMarketBriefingPlan.js",
     "check:boulder-decision-guide": "npm run worker:build && node dist/scripts/checkBoulderDecisionGuide.js",
     "check:louisville-decision-guide": "npm run worker:build && node dist/scripts/checkLouisvilleDecisionGuide.js",
     "check:lafayette-decision-guide": "npm run worker:build && node dist/scripts/checkLafayetteDecisionGuide.js",

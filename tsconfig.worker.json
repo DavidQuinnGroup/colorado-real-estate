@@ -96,6 +96,8 @@
     "scripts/checkDxtWave1dMarketNeighborhoodDiscoveryFoundation.ts",
     "scripts/checkDxtWave1dMarketBriefingFoundation.ts",
     "scripts/checkDxtWave1dNeighborhoodPlaceOrientationPlan.ts",
+    "scripts/checkDxtWave1dNeighborhoodPlaceOrientationImplementation.ts",
+    "scripts/checkDxtWave1dCityMarketBriefingPlan.ts",
     "scripts/decisionGuideValidation.ts",
     "scripts/checkBoulderDecisionGuide.ts",
     "scripts/checkLouisvilleDecisionGuide.ts",

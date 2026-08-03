@@ -306,7 +306,7 @@ function getNeighborhoodFaqs(neighborhood: Neighborhood): FAQItem[] {
 }
 
 function getNeighborhoodStory(neighborhood: Neighborhood) {
-  return `${neighborhood.name} is anchored by ${neighborhood.primaryAnchor} and should be evaluated through daily access, housing pattern, construction condition, and verification questions before a customer narrows into individual listings.`;
+  return `${neighborhood.name} sits within ${neighborhood.city} around ${neighborhood.primaryAnchor}. Use this page to understand the place, the housing context, the available evidence, and what should be verified before comparing individual homes.`;
 }
 
 function getHousingContext(neighborhood: Neighborhood) {
@@ -320,6 +320,18 @@ function getTradeoffSummary(neighborhood: Neighborhood) {
       : `${neighborhood.insuranceComplexity.toLowerCase()} insurance complexity should be checked early`;
 
   return `${neighborhood.primaryAnchor} may be the practical place anchor, while ${neighborhood.soilType.toLowerCase()} soil context, ${neighborhood.fireRisk.toLowerCase()} fire context, and ${insuranceContext} define what to verify property by property.`;
+}
+
+function getPlaceOrientationPromise(neighborhood: Neighborhood) {
+  return `Start with neutral place orientation, then compare housing context, evidence, and verification questions before deciding which ${neighborhood.name} properties deserve time.`;
+}
+
+function getGeographicOrganization(neighborhood: Neighborhood) {
+  return `${neighborhood.name} is organized around ${neighborhood.primaryAnchor} within ${neighborhood.city}. Treat geography as orientation for touring, search filters, and professional review, not as a conclusion about personal fit.`;
+}
+
+function getNeighborhoodBoundary(neighborhood: Neighborhood) {
+  return `${neighborhood.name} context is not a ranking, suitability conclusion, safety conclusion, school-quality conclusion, investment guidance, appreciation forecast, or substitute for property-specific professional review.`;
 }
 
 function getVerificationQuestions(neighborhood: Neighborhood) {
@@ -400,6 +412,9 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
   const cityMarketHref = `/market/${normalizeRouteSegment(neighborhood.city)}-co-housing-market`;
   const searchHref = `/search?neighborhood=${encodeURIComponent(neighborhood.name)}`;
   const neighborhoodStory = getNeighborhoodStory(neighborhood);
+  const orientationPromise = getPlaceOrientationPromise(neighborhood);
+  const geographicOrganization = getGeographicOrganization(neighborhood);
+  const neighborhoodBoundary = getNeighborhoodBoundary(neighborhood);
   const housingContext = getHousingContext(neighborhood);
   const tradeoffSummary = getTradeoffSummary(neighborhood);
   const verificationQuestions = getVerificationQuestions(neighborhood);
@@ -432,7 +447,14 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
   });
 
   return (
-    <main className="reie-neighborhood-page min-h-screen bg-[#050505] font-inter text-white">
+    <main
+      className="reie-neighborhood-page min-h-screen overflow-x-hidden bg-[#050505] font-inter text-white"
+      data-dxt-wave-1d-neighborhood-place-orientation="true"
+      data-dxt-wave-1d-neighborhood-plan="REIE_DXT_WAVE_1D_NEIGHBORHOOD_PLACE_ORIENTATION_PLAN_CERTIFIED_AND_CLOSED"
+      data-dxt-wave-1d-market-runtime-change="false"
+      data-dxt-wave-1c-buyer-runtime-change="false"
+      data-dxt-wave-1c-seller-runtime-change="false"
+    >
       <script
         type="application/ld+json"
         data-testid="reie-neighborhood-schema"
@@ -468,12 +490,13 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
         data-neighborhood-product-2-ai="false"
         data-neighborhood-product-2-gis="false"
         data-neighborhood-product-2-telemetry="false"
+        data-dxt-neighborhood-hierarchy-role="place-orientation-governing-question-concise-overview"
       >
         <div className="absolute inset-0 z-10 bg-gradient-to-t from-[#050505] via-transparent to-transparent" />
         <div className="relative z-20 mx-auto w-full max-w-7xl">
           <div className="reie-neighborhood-hero-eyebrow mb-5 flex flex-wrap items-center gap-3">
             <span className="h-2 w-2 rounded-full bg-cyan-100 shadow-[0_0_18px_rgba(207,250,254,0.45)]" />
-            <span className="text-[10px] font-black uppercase tracking-[0.32em] text-cyan-100/78">Neighborhood Decision Workspace</span>
+            <span className="text-[10px] font-black uppercase tracking-[0.32em] text-cyan-100/78">Neighborhood Place Orientation</span>
             <span className="rounded-full bg-white/[0.08] px-3 py-1 text-[9px] font-black uppercase tracking-[0.18em] text-white/50">
               {neighborhood.city}
             </span>
@@ -481,15 +504,16 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
 
           <div className="reie-neighborhood-hero-layout grid gap-10 lg:grid-cols-[1.06fr_0.94fr] lg:items-end">
             <div>
-              <h1 className="max-w-5xl text-5xl font-black uppercase leading-[0.9] tracking-normal md:text-7xl">
-                {neighborhood.name}
+              <p className="mb-4 text-[11px] font-black uppercase tracking-[0.24em] text-white/42">{neighborhood.name}</p>
+              <h1 className="max-w-5xl break-words text-4xl font-black uppercase leading-[0.94] tracking-normal md:text-6xl">
+                What kind of place is this, how is it organized, and what should I verify next?
               </h1>
               <p
                 className="mt-6 max-w-3xl text-base leading-8 text-white/70 md:text-lg"
                 data-testid="neighborhood-product-2-first-value"
                 data-neighborhood-product-2-first-value-position="hero"
               >
-                {neighborhoodStory}
+                {orientationPromise}
               </p>
               <div className="reie-neighborhood-hero-actions mt-7 flex flex-col gap-3 sm:flex-row">
                 <Link
@@ -525,13 +549,13 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
             <div className="reie-neighborhood-hero-card rounded-[8px] bg-white/[0.07] p-5 shadow-[0_24px_90px_rgba(0,0,0,0.28)]">
               <p className="text-[10px] font-black uppercase tracking-[0.22em] text-cyan-100/72">What to understand first</p>
               <p className="mt-4 text-2xl font-black uppercase leading-tight tracking-normal text-white">
-                Character first. Then trade-offs. Then property evidence.
+                Place first. Then housing context. Then property evidence.
               </p>
               <div className="mt-6 grid gap-3">
                 {[
-                  ['Anchor', neighborhood.primaryAnchor],
+                  ['Place anchor', neighborhood.primaryAnchor],
+                  ['Geographic context', `${neighborhood.name} in ${neighborhood.city}`],
                   ['Housing pattern', neighborhood.era],
-                  ['Verify early', `${neighborhood.soilType} / ${neighborhood.insuranceComplexity} insurance`],
                 ].map(([label, value]) => (
                   <div key={label} className="reie-neighborhood-hero-fact rounded-[6px] bg-black/20 p-4">
                     <p className="text-[9px] font-black uppercase tracking-[0.18em] text-white/35">{label}</p>
@@ -576,7 +600,34 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
         </div>
       </section>
 
-      <NeighborhoodProduct3Experience model={neighborhoodProduct3Model} />
+      <section
+        className="reie-neighborhood-place-foundation mx-auto grid max-w-7xl gap-6 px-6 py-10 md:grid-cols-[0.78fr_1.22fr] md:px-12"
+        data-testid="dxt-wave-1d-neighborhood-place-foundation"
+        data-dxt-neighborhood-hierarchy-role="geographic-organization-housing-context"
+      >
+        <div>
+          <p className="mb-3 text-[10px] font-black uppercase tracking-[0.24em] text-cyan-100/72">
+            Place, Geography, Housing
+          </p>
+          <h2 className="text-3xl font-black uppercase leading-tight tracking-normal text-white md:text-4xl">
+            Understand the place before the property comparison.
+          </h2>
+          <p className="mt-5 text-sm leading-7 text-white/62 md:text-base">{neighborhoodStory}</p>
+          <p className="mt-5 text-sm leading-7 text-white/58 md:text-base">{geographicOrganization}</p>
+        </div>
+        <div className="grid gap-3 sm:grid-cols-3">
+          {[
+            ['Geography', `${neighborhood.name} within ${neighborhood.city}`],
+            ['Housing Context', housingContext],
+            ['Verify Next', tradeoffSummary],
+          ].map(([label, body]) => (
+            <article key={label} className="rounded-[8px] bg-white/[0.045] p-5">
+              <p className="text-[9px] font-black uppercase tracking-[0.18em] text-cyan-100/70">{label}</p>
+              <p className="mt-3 text-xs leading-6 text-white/55">{body}</p>
+            </article>
+          ))}
+        </div>
+      </section>
 
       {routeEnhancement ? (
         <section
@@ -604,7 +655,10 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
               <h2 className="text-3xl font-black uppercase leading-tight tracking-normal text-white md:text-4xl">
                 Use {neighborhood.name} as orientation, then verify the address.
               </h2>
-              <p className="mt-5 text-sm leading-7 text-white/62 md:text-base">{routeEnhancement.decisionSnapshot}</p>
+              <p className="mt-5 text-sm leading-7 text-white/62 md:text-base">
+                Understand the place before the property comparison. {neighborhoodStory}
+              </p>
+              <p className="mt-5 text-sm leading-7 text-white/58 md:text-base">{geographicOrganization}</p>
               <p className="mt-5 rounded-[6px] bg-cyan-100/[0.06] p-4 text-xs leading-6 text-cyan-100/72">
                 {routeEnhancement.scopeClarification}
               </p>
@@ -706,20 +760,7 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
         </section>
       ) : null}
 
-      <section className="reie-neighborhood-continuation mx-auto max-w-7xl px-6 pb-4 pt-10 md:px-12" data-testid="neighborhood-djx-continuity">
-        <ContinueYourDecision
-          stage="neighborhood"
-          cameFrom={`${neighborhood.city} market context or property search`}
-          currentDecision={`Decide what ${neighborhood.name} evidence can and cannot support.`}
-          whyHere="This neighborhood page connects place orientation, market context, available property paths, confidence, and verification without scoring or recommending where someone should live."
-          nextStep="Review confidence, search current properties, or return to the city market."
-          links={[
-            { label: 'City Market Context', href: cityMarketHref, note: 'Broader context' },
-            { label: 'Search This Neighborhood', href: searchHref, note: 'Current inventory path' },
-            { label: 'What to Verify', href: '#neighborhood-verification-questions', note: 'Carry questions forward' },
-          ]}
-        />
-      </section>
+      <NeighborhoodProduct3Experience model={neighborhoodProduct3Model} />
 
       <section className="reie-neighborhood-context mx-auto grid max-w-7xl gap-8 px-6 py-10 md:grid-cols-12 md:p-12">
         <section
@@ -731,6 +772,7 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
           data-neighborhood-product-2-safety-ranking="false"
           data-neighborhood-product-2-demographic-targeting="false"
           data-neighborhood-product-2-investment-projection="false"
+          data-dxt-neighborhood-hierarchy-role="evidence-that-matters"
         >
           <div className="mb-6 max-w-3xl">
             <p className="mb-3 text-[10px] font-black uppercase tracking-[0.26em] text-cyan-100/72">Local Authority Framework</p>
@@ -770,6 +812,7 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
               className="reie-neighborhood-verification grid gap-6 rounded-[8px] bg-[#071017]/70 p-5 md:col-span-12 md:grid-cols-[0.78fr_1.22fr] md:p-8"
           data-testid="neighborhood-product-2-verification"
           data-neighborhood-product-2-verification-count={verificationQuestions.length}
+          data-dxt-neighborhood-hierarchy-role="questions-to-verify"
         >
           <div>
             <p className="mb-3 text-[10px] font-black uppercase tracking-[0.24em] text-cyan-100/72">Verification Guidance</p>
@@ -786,6 +829,53 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
               </article>
             ))}
           </div>
+        </section>
+
+        <section
+          className="reie-neighborhood-boundaries grid gap-5 rounded-[8px] border border-cyan-100/10 bg-cyan-100/[0.04] p-5 md:col-span-12 md:grid-cols-[0.78fr_1.22fr] md:p-8"
+          data-testid="dxt-wave-1d-neighborhood-place-orientation-boundaries"
+          data-dxt-neighborhood-hierarchy-role="freshness-limitations-professional-boundaries"
+          data-neighborhood-fair-housing-boundary="neutral-non-ranking"
+          data-neighborhood-ai-advisory="false"
+          data-neighborhood-provider-expansion="false"
+          data-neighborhood-telemetry="false"
+        >
+          <div>
+            <p className="mb-3 text-[10px] font-black uppercase tracking-[0.24em] text-cyan-100/72">Freshness And Boundaries</p>
+            <h2 className="text-2xl font-black uppercase leading-tight tracking-normal text-white">
+              Use neighborhood context as orientation, not a personal conclusion.
+            </h2>
+          </div>
+          <div className="grid gap-3">
+            {[
+              neighborhoodBoundary,
+              'Housing context, inventory signals, soil, insurance, altitude, access, and market context are prompts for verification at the address level.',
+              'Confirm boundaries, condition, title, insurance, taxes, HOA details, inspection findings, financing assumptions, and contract risk through the appropriate professional review before relying on the signal.',
+            ].map((boundary) => (
+              <p key={boundary} className="rounded-[6px] bg-black/20 p-4 text-sm leading-7 text-white/58">
+                {boundary}
+              </p>
+            ))}
+          </div>
+        </section>
+
+        <section
+          className="reie-neighborhood-continuation md:col-span-12"
+          data-testid="neighborhood-djx-continuity"
+          data-dxt-neighborhood-hierarchy-role="property-market-advisory-continuations"
+        >
+          <ContinueYourDecision
+            stage="neighborhood"
+            cameFrom={`${neighborhood.city} market context or property search`}
+            currentDecision={`Decide what ${neighborhood.name} evidence can and cannot support.`}
+            whyHere="This neighborhood page connects place orientation, market context, available property paths, confidence, and verification without scoring or recommending where someone should live."
+            nextStep="Search current properties, compare the city market, or bring the verification questions into advisory review."
+            links={[
+              { label: 'Search This Neighborhood', href: searchHref, note: 'Current property path' },
+              { label: 'City Market Context', href: cityMarketHref, note: 'Broader market context' },
+              { label: 'Advisory Guidance', href: '/contact', note: 'Professional review' },
+            ]}
+          />
         </section>
 
         <section

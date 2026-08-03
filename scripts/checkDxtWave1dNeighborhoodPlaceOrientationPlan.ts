@@ -16,6 +16,9 @@ function assertNotIncludes(source: string, value: string, message: string): void
 const neighborhoodPlan = read(
   'docs/project-atlas/executive-library/REIE-DXT-WAVE-1D-NEIGHBORHOOD-PLACE-ORIENTATION-IMPLEMENTATION-PLAN.md',
 );
+const implementationRecord = read(
+  'docs/project-atlas/executive-library/REIE-DXT-WAVE-1D-NEIGHBORHOOD-PLACE-ORIENTATION-IMPLEMENTATION.md',
+);
 const foundationContract = read(
   'docs/project-atlas/executive-library/REIE-DXT-WAVE-1D-MARKET-NEIGHBORHOOD-DISCOVERY-FOUNDATION-CONTRACT.md',
 );
@@ -106,15 +109,20 @@ assertNotIncludes(
   'DXT_WAVE_1D_NEIGHBORHOOD_PLACE_ORIENTATION_PLAN_READY',
   'Neighborhood runtime must not receive planning status copy.',
 );
-assertNotIncludes(
+assertIncludes(
   neighborhoodPage,
   'data-dxt-wave-1d-neighborhood-place-orientation',
-  'Neighborhood runtime must not receive new place-orientation runtime markers.',
+  'Neighborhood runtime must expose the authorized place-orientation implementation marker after implementation.',
 );
 assertNotIncludes(
   marketIndex,
   'data-dxt-wave-1d-neighborhood-place-orientation',
   'Market runtime must not receive Neighborhood runtime markers.',
+);
+assertIncludes(
+  implementationRecord,
+  'DXT_WAVE_1D_NEIGHBORHOOD_PLACE_ORIENTATION_IMPLEMENTED_LOCAL_COMMIT_ONLY',
+  'Neighborhood implementation record must exist after bounded runtime implementation.',
 );
 
 assert.equal(

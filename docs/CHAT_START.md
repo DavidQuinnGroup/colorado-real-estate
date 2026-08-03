@@ -10,6 +10,94 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE DXT Wave 1D Neighborhood Place-Orientation Local Implementation, August 3, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Verified starting baseline:
+
+- Branch: `main`
+- Starting HEAD: `4b1b2cf56475dff19b74602fb3774fe9dd22c263`
+- Starting origin/main: `4b1b2cf56475dff19b74602fb3774fe9dd22c263`
+- Starting ahead/behind: `0 ahead / 0 behind`
+- Starting working tree: clean
+
+Latest deployment verified before edits:
+
+- Commit: `4b1b2cf56475dff19b74602fb3774fe9dd22c263`
+- GitHub/Vercel status ID: `51533164774`
+- Context: `Vercel`
+- State: `success`
+- Description: `Deployment has completed`
+- Target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/GoZA91RcDFMtLukQe85o9E2McsCn`
+- Completion timestamp: `2026-08-03T09:23:35Z`
+- Remote `refs/heads/main` matched `4b1b2cf56475dff19b74602fb3774fe9dd22c263` before repository edits, so no newer commit had superseded the baseline.
+
+Certified governing states verified:
+
+- `REIE_DXT_WAVE_1D_MARKET_BRIEFING_FOUNDATION_CERTIFIED_AND_CLOSED`
+- `REIE_DXT_WAVE_1D_NEIGHBORHOOD_PLACE_ORIENTATION_PLAN_CERTIFIED_AND_CLOSED`
+
+Completed local Neighborhood implementation:
+
+- Neighborhood implementation record: `docs/project-atlas/executive-library/REIE-DXT-WAVE-1D-NEIGHBORHOOD-PLACE-ORIENTATION-IMPLEMENTATION.md`
+- Neighborhood runtime scope: `app/market/[city]/[slug]/page.tsx`
+- Neighborhood deterministic validation: `npm run check:dxt-wave-1d-neighborhood-place-orientation-implementation`
+- Status: `DXT_WAVE_1D_NEIGHBORHOOD_PLACE_ORIENTATION_IMPLEMENTED_LOCAL_COMMIT_ONLY`
+- Certification recommendation: `READY_FOR_NEIGHBORHOOD_LOCAL_CERTIFICATION`
+
+Neighborhood implementation outcomes:
+
+- Neighborhood routes now open with the governing question `What kind of place is this, how is it organized, and what should I verify next?`
+- the first viewport orients around place before evidence;
+- geography is neutral and positioned as orientation for touring, search filters, and professional review;
+- housing context is framed as available context and a prompt for property-specific verification, not a personal fit conclusion;
+- Product 3 visual intelligence, Search continuation, city Market continuation, Property exploration, Advisory Guidance, related content, schema, and FAQ behavior remain available;
+- freshness, limitations, fair-housing, and professional-boundary guidance now appears before compact continuations;
+- no neighborhood ranking, best-neighborhood claim, demographic suitability, protected-class steering, school-quality conclusion, safety guarantee, investment guarantee, appreciation prediction, AI advisory, provider integration, persistence, telemetry, CRM, new map, new GIS, or new API was introduced.
+
+Completed City Market planning:
+
+- City Market plan: `docs/project-atlas/executive-library/REIE-DXT-WAVE-1D-CITY-MARKET-BRIEFING-IMPLEMENTATION-PLAN.md`
+- City Market deterministic planning validation: `npm run check:dxt-wave-1d-city-market-briefing-plan`
+- Status: `DXT_WAVE_1D_CITY_MARKET_BRIEFING_PLAN_READY`
+- City Market runtime remains unauthorized.
+
+Protected boundaries preserved:
+
+- Buyer runtime was not modified.
+- Seller runtime was not modified.
+- Market index runtime was not modified.
+- City Market runtime was not modified.
+- Search runtime was not modified.
+- Shared runtime was not modified.
+- No route, canonical URL, navigation, footer, Search API, Search ranking, map provider, map behavior, property route, Prisma schema, migration, persistence, localStorage, cookie, telemetry, analytics, CRM, scheduling, email, queue, worker, customer profile, provider integration, AI advisory, production data, deployment configuration, brokerage disclosure, shared Market/Neighborhood runtime abstraction, site-wide design system, runtime schema, or data-driven journey schema change was made.
+- Brokerage disclosure remains on hold: `EXTERNAL_COMPASS_MARKETING_REVIEW_PENDING`.
+
+Recommended next gates:
+
+Primary:
+
+`READY_FOR_REIE_DXT_WAVE_1D_NEIGHBORHOOD_PLACE_ORIENTATION_LOCAL_CERTIFICATION_AND_PUSH_AUTHORIZATION`
+
+Secondary:
+
+`READY_FOR_REIE_DXT_WAVE_1D_CITY_MARKET_BRIEFING_PLAN_CERTIFICATION`
+
+Do not push, deploy, production-certify, or begin City Market runtime implementation without explicit authorization.
+
+Prior handoff retained below for audit history.
+
 PROJECT ATLAS(tm) / REIE DXT Wave 1D Market Briefing Certified And Neighborhood Plan Closed, August 3, 2026:
 
 Workspace:
