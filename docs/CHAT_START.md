@@ -10,7 +10,7 @@ Product:
 
 ## Latest New-Chat Handoff
 
-PROJECT ATLAS(tm) / REIE DXT 2 Neighborhood Decision Readiness Depth Local Implementation, August 3, 2026:
+PROJECT ATLAS(tm) / REIE DXT 2 Neighborhood Decision Readiness Depth Production Certification and Buyer Depth Plan Closure, August 3, 2026:
 
 Workspace:
 
@@ -24,19 +24,17 @@ git rev-parse HEAD origin/main
 git log -8 --oneline
 ```
 
-Verified baseline checkpoint:
+Verified closure checkpoint:
 
 - Branch: `main`
-- Starting HEAD: `f9113fd55868b1055fdd564694f25c37a28feb5f`
-- Starting origin/main: `f9113fd55868b1055fdd564694f25c37a28feb5f`
-- Starting ahead/behind: `0 ahead / 0 behind`
-- Starting working tree: clean
-- Latest deployment terminal status ID: `51576181540`
+- Implementation SHA: `c2daba9168df29e6ff4490ecaed83ef043f43f3b`
+- Implementation commit message: `Implement Neighborhood decision readiness depth`
+- Implementation parent: `f9113fd55868b1055fdd564694f25c37a28feb5f`
+- Production deployment terminal status ID: `51578202148`
 - Latest deployment state: `success`
-- Latest deployment target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/Ag3Vt2xoxZkHC5apxi4RMCi3wEPq`
-- Latest deployment completion: `2026-08-03T21:30:54Z`
-- Local implementation commit: pending this session
-- Local implementation commit message: `Implement Neighborhood decision readiness depth`
+- Production deployment target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/CZiCaXfXRGDTjcxtxkqG2C1zxi9T`
+- Production deployment completion: `2026-08-03T22:08:40Z`
+- Documentation closure commit: assigned by the closure session
 
 Certified records:
 
@@ -52,7 +50,9 @@ Certified records:
 - DXT 2 next-phase plan: `docs/project-atlas/executive-library/REIE-DXT-2-NEXT-PHASE-PLAN.md`
 - DXT 2 Neighborhood Decision Readiness Depth plan certification: `docs/project-atlas/executive-library/REIE-DXT-2-NEIGHBORHOOD-DECISION-READINESS-DEPTH-PLAN-CERTIFICATION.md`
 - DXT 2 Neighborhood Decision Readiness Depth implementation: `docs/project-atlas/executive-library/REIE-DXT-2-NEIGHBORHOOD-DECISION-READINESS-DEPTH-IMPLEMENTATION.md`
+- DXT 2 Neighborhood Decision Readiness Depth production certification: `docs/project-atlas/executive-library/REIE-DXT-2-NEIGHBORHOOD-DECISION-READINESS-DEPTH-PRODUCTION-CERTIFICATION.md`
 - DXT 2 next-phase after Neighborhood plan: `docs/project-atlas/executive-library/REIE-DXT-2-NEXT-PHASE-AFTER-NEIGHBORHOOD-PLAN.md`
+- DXT 2 Buyer Decision Readiness Depth Expansion plan certification: `docs/project-atlas/executive-library/REIE-DXT-2-BUYER-DECISION-READINESS-DEPTH-EXPANSION-PLAN-CERTIFICATION.md`
 
 Certified statuses:
 
@@ -60,18 +60,22 @@ Certified statuses:
 - DXT 2 Market / City Market Decision Readiness Depth production: `REIE_DXT_2_MARKET_CITY_MARKET_DECISION_READINESS_DEPTH_PRODUCTION_CERTIFIED`
 - DXT 2 Neighborhood Decision Readiness Depth plan: `REIE_DXT_2_NEIGHBORHOOD_DECISION_READINESS_DEPTH_PLAN_CERTIFIED_AND_CLOSED`
 - DXT 2 Neighborhood Decision Readiness Depth local implementation: `DXT_2_NEIGHBORHOOD_DECISION_READINESS_DEPTH_IMPLEMENTED_LOCAL_COMMIT_ONLY`
+- DXT 2 Neighborhood Decision Readiness Depth: `REIE_DXT_2_NEIGHBORHOOD_DECISION_READINESS_DEPTH_CERTIFIED_AND_CLOSED`
+- DXT 2 Neighborhood Decision Readiness Depth production: `REIE_DXT_2_NEIGHBORHOOD_DECISION_READINESS_DEPTH_PRODUCTION_CERTIFIED`
 - DXT 2 next-phase after Neighborhood plan: `DXT_2_NEXT_PHASE_AFTER_NEIGHBORHOOD_PLAN_READY`
+- DXT 2 Buyer Decision Readiness Depth Expansion plan: `REIE_DXT_2_BUYER_DECISION_READINESS_DEPTH_EXPANSION_PLAN_CERTIFIED_AND_CLOSED`
 
-Runtime implementation findings:
+Production certification findings:
 
 - Runtime file changed: `app/market/[city]/[slug]/page.tsx`
 - Neighborhood routes continue answering: `What kind of place is this, how is it organized, and what should I verify next?`
-- The bounded route-local `Neighborhood Decision Readiness` layer uses existing Neighborhood evidence only.
+- Production routes `/market/boulder/mapleton-hill`, `/market/boulder/south-boulder`, and `/market/boulder/downtown-boulder` returned HTTP `200`, retained clean canonicals, rendered exactly one H1, and rendered the bounded route-local `Neighborhood Decision Readiness` layer.
 - Available evidence, unavailable evidence, directional context, assumptions, unknowns, verification needs, questions to carry forward, qualitative confidence, freshness, and next-decision thresholds are visible.
+- Responsive production review at `390 x 844`, `768 x 1024`, and `1440 x 1100` found no document-level horizontal overflow on the primary certified Neighborhood routes.
 - Product 3, RelatedContent, NearbyNeighborhoods, schema, FAQ, Search, Search API, Property, Property Inquiry, Market, City Market, maps, providers, Buyer, Seller, Advisory, Contact, navigation, footer, brokerage disclosure, persistence, telemetry, CRM, email, scheduling, and deployment configuration remained unchanged.
 - No rankings, scores, recommendations, suitability conclusions, safety conclusions, school-quality conclusions, protected-class steering, investment conclusions, appreciation predictions, provider activation, API changes, hidden context, persistence, telemetry, or AI advice were introduced.
 
-Next-phase plan finding:
+Buyer depth plan closure finding:
 
 - Selected next bounded phase: `BUYER_DECISION_READINESS_DEPTH_EXPANSION`
 - Future runtime ownership: `app/buy/page.tsx`
@@ -79,16 +83,14 @@ Next-phase plan finding:
 - Cross-route Evidence Consistency and DXT 2 completion assessment remain deferred and require separate authorization.
 - Buyer runtime implementation, Seller runtime implementation, shared readiness abstractions, URL context expansion, Search/Property changes, map/provider changes, API changes, persistence, telemetry, AI advice, rankings, scores, recommendations, CRM, email, scheduling, navigation, footer, and brokerage-disclosure changes remain unauthorized.
 
-Validation commands to rerun before push authorization:
+Validation commands to rerun before next authorization:
 
 ```bash
 npm run check:dxt-2-neighborhood-decision-readiness-depth-implementation
 npm run check:dxt-2-neighborhood-decision-readiness-depth-plan
 npm run check:dxt-2-next-phase-after-neighborhood-plan
-npm run check:dxt-2-market-city-market-decision-readiness-depth-plan
 npm run check:dxt-2-market-decision-readiness-depth-implementation
 npm run check:dxt-2-city-market-decision-readiness-depth-implementation
-npm run check:dxt-2-next-phase-plan
 npm run check:dxt-2-decision-readiness-route-inventory
 npm run check:dxt-2-decision-readiness-architecture
 npm run check:dxt-2-first-phase-implementation-readiness
@@ -109,13 +111,13 @@ Next gate:
 
 Primary:
 
-`READY_FOR_REIE_DXT_2_NEIGHBORHOOD_DECISION_READINESS_DEPTH_LOCAL_CERTIFICATION_AND_PUSH_AUTHORIZATION`
+`READY_FOR_REIE_DXT_2_BUYER_DECISION_READINESS_DEPTH_EXPANSION_BOUNDED_IMPLEMENTATION_AUTHORIZATION`
 
 Secondary:
 
-`READY_FOR_REIE_DXT_2_BUYER_DECISION_READINESS_DEPTH_EXPANSION_PLAN_CERTIFICATION`
+`READY_FOR_REIE_DXT_2_SELLER_DECISION_READINESS_DEPTH_EXPANSION_PLANNING_OR_AUTHORIZATION_REVIEW`
 
-Do not push, deploy, production-certify, begin Buyer runtime implementation, begin Seller runtime implementation, change Search API/ranking/map/provider behavior, change Property or Market runtime, add URL-state expansion, add hidden context, add persistence, add telemetry/analytics, activate providers, add AI advice, add scores/rankings/recommendations, change forms/APIs/CRM/email/scheduling, change navigation/footer, change brokerage disclosure, introduce shared runtime abstractions, or upgrade dependencies without explicit authorization.
+Do not begin Buyer runtime implementation, begin Seller runtime implementation, change Search API/ranking/map/provider behavior, change Property, Market, City Market, or Neighborhood runtime, add URL-state expansion, add hidden context, add persistence, add telemetry/analytics, activate providers, add AI advice, add scores/rankings/recommendations, change forms/APIs/CRM/email/scheduling, change navigation/footer, change brokerage disclosure, introduce shared runtime abstractions, push, deploy, production-certify, or upgrade dependencies without explicit authorization.
 
 Prior handoff retained below for audit history.
 
