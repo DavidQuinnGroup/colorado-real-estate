@@ -10,6 +10,98 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE DXT Wave 1E Advisory Handoff Foundation Local Implementation, August 3, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Verified starting baseline:
+
+- Branch: `main`
+- Starting HEAD / planning commit: `4f7c9808d055ac6374b286f7822e58c3cd078087`
+- Starting origin/main: `5337c7d40307b11c8107443d5c293eefb5d2d3f7`
+- Starting ahead/behind: `1 ahead / 0 behind`
+- Starting working tree: clean
+- Planning commit message: `Plan Advisory and Contact decision flow`
+- Planning commit parent: `5337c7d40307b11c8107443d5c293eefb5d2d3f7`
+- Planning commit scope: eight authorized Wave 1E planning, deterministic-check, registration, and CHAT_START files only.
+- Prior deployment status ID: `51537527772`
+- Prior deployment state: `success`
+- Prior deployment target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/AMu3KBdvq4ny5U9khjN3WF2mZGM2`
+- Prior deployment completion: `2026-08-03T10:51:29Z`
+
+Wave 1E local implementation result:
+
+- Advisory Handoff Foundation status: `DXT_WAVE_1E_ADVISORY_HANDOFF_FOUNDATION_IMPLEMENTED_LOCAL_COMMIT_ONLY`
+- Contact Decision Flow Foundation status: `REIE_DXT_WAVE_1E_CONTACT_DECISION_FLOW_FOUNDATION_CERTIFIED`
+- Executive recommendation: `READY_FOR_ADVISORY_HANDOFF_LOCAL_CERTIFICATION`
+
+Implementation and certification records:
+
+- Advisory implementation: `docs/project-atlas/executive-library/REIE-DXT-WAVE-1E-ADVISORY-HANDOFF-FOUNDATION-IMPLEMENTATION.md`
+- Contact foundation certification: `docs/project-atlas/executive-library/REIE-DXT-WAVE-1E-CONTACT-DECISION-FLOW-FOUNDATION-CERTIFICATION.md`
+- Advisory plan: `docs/project-atlas/executive-library/REIE-DXT-WAVE-1E-ADVISORY-HANDOFF-IMPLEMENTATION-PLAN.md`
+- Contact plan: `docs/project-atlas/executive-library/REIE-DXT-WAVE-1E-CONTACT-DECISION-FLOW-IMPLEMENTATION-PLAN.md`
+- Advisory/Contact architecture readiness: `docs/project-atlas/executive-library/REIE-DXT-WAVE-1E-ADVISORY-CONTACT-ARCHITECTURE-READINESS.md`
+
+Runtime scope:
+
+- Changed runtime file: `components/AdvisoryHandoffGuide.tsx`
+- `app/contact/page.tsx` remains unchanged.
+- `components/PropertyInquiryForm.tsx` remains unchanged.
+- `components/LeadCapture.tsx` remains unchanged.
+- `components/JourneyCohesionPanel.tsx` remains unchanged.
+- APIs, CRM, email, scheduling, persistence, Search, maps, routes, navigation, footer, and brokerage disclosure remain unchanged.
+
+Advisory implementation summary:
+
+- The Advisory section now prominently uses the governing question: `What should I understand and prepare before beginning a focused professional conversation?`
+- Advisory is framed as preparation before Contact begins the conversation.
+- One dominant Advisory action is present: `Begin A Focused Conversation`.
+- The dominant action scrolls to the non-mutating in-page transition `#advisory-contact-transition`.
+- The existing `/contact#advisory-readiness` anchor remains the route entry point.
+- Decision contexts remain static and presentational only: Buyer preparation, Seller preparation, Market interpretation, Neighborhood investigation, Property evaluation, and General decision review.
+- Evidence preparation is prompt-based only and does not infer prior activity or customer-specific evidence.
+- Boundaries state that Advisory does not create a generic form, change fields, submit customer information, create CRM work, send email, schedule a meeting, pass hidden context, establish representation, approve financing, determine affordability, publish an appraisal, certify valuation, guarantee pricing, guarantee outcomes, rank providers, or make suitability conclusions.
+
+Deterministic checks:
+
+- `npm run check:dxt-wave-1e-advisory-handoff-implementation`
+- `npm run check:dxt-wave-1e-advisory-handoff-plan`
+- `npm run check:dxt-wave-1e-contact-decision-flow-plan`
+
+Protected boundaries preserved:
+
+- No Contact runtime simplification was performed.
+- No generic Contact form was created.
+- No Contact field changed.
+- No form submission, test lead creation, CRM mutation, email sending, scheduling mutation, secret access, customer-record access, or production-data inspection was performed.
+- No route, canonical URL, navigation, footer, Search API, Search ranking, map provider, map behavior, property route, Prisma schema, migration, persistence, localStorage, cookie, telemetry, analytics, CRM, scheduling, email, queue, worker, customer profile, provider integration, AI advisory, production data, deployment configuration, cross-route CTA reconciliation, shared runtime abstraction, or brokerage disclosure change was made.
+- Brokerage disclosure remains on hold: `EXTERNAL_COMPASS_MARKETING_REVIEW_PENDING`.
+
+Next gates:
+
+Primary:
+
+`READY_FOR_REIE_DXT_WAVE_1E_ADVISORY_HANDOFF_FOUNDATION_LOCAL_CERTIFICATION_AND_PUSH_AUTHORIZATION`
+
+Secondary:
+
+`READY_FOR_REIE_DXT_WAVE_1E_CONTACT_DECISION_FLOW_BOUNDED_IMPLEMENTATION_AUTHORIZATION`
+
+Do not push, deploy, production-certify, modify Contact runtime, create or change forms, submit leads, modify CRM/email/scheduling/persistence/telemetry/analytics, change routes/navigation/footer/Search/maps/providers/APIs/schema, alter brokerage disclosure, begin cross-route CTA reconciliation, or introduce shared runtime abstractions without explicit authorization.
+
+Prior handoff retained below for audit history.
+
 PROJECT ATLAS(tm) / REIE DXT Wave 1E Advisory And Contact Planning Local Commit, August 3, 2026:
 
 Workspace:

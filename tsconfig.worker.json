@@ -101,6 +101,7 @@
     "scripts/checkDxtWave1dCityMarketBriefingImplementation.ts",
     "scripts/checkDxtWave1eAdvisoryHandoffPlan.ts",
     "scripts/checkDxtWave1eContactDecisionFlowPlan.ts",
+    "scripts/checkDxtWave1eAdvisoryHandoffImplementation.ts",
     "scripts/decisionGuideValidation.ts",
     "scripts/checkBoulderDecisionGuide.ts",
     "scripts/checkLouisvilleDecisionGuide.ts",

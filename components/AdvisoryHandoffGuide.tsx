@@ -2,56 +2,63 @@ import Link from 'next/link';
 
 const preparationThemes = [
   {
-    label: 'Goals and next decision',
-    body: 'Name the decision you are trying to make before asking anyone to solve it for you.',
+    label: 'Decision to discuss',
+    body: 'Name the choice in front of you: buy, sell, evaluate a property, interpret a market, or compare places.',
   },
   {
-    label: 'Timeline',
-    body: 'Separate time-sensitive questions from items that can wait for professional review.',
+    label: 'Timing and pressure',
+    body: 'Separate practical timing from items that should wait for qualified review before action.',
   },
   {
-    label: 'Property, market, or neighborhood context',
-    body: 'Bring the REIE context that still needs property-specific or qualified-source verification.',
+    label: 'Evidence already reviewed',
+    body: 'Bring the property, search, market, city, or neighborhood context that shaped your question.',
   },
   {
-    label: 'Financing or seller readiness',
-    body: 'List assumptions to verify without turning them into approval, pricing, or readiness conclusions.',
+    label: 'Assumptions to verify',
+    body: 'List financing, pricing, condition, timing, or readiness assumptions without treating them as conclusions.',
   },
   {
-    label: 'Evidence gaps',
-    body: 'Identify incomplete, conflicting, or unsupported facts that should be clarified before relying on them.',
+    label: 'Open evidence gaps',
+    body: 'Identify incomplete, stale, conflicting, or unsupported facts that should be clarified before reliance.',
   },
   {
-    label: 'Unresolved professional questions',
-    body: 'Flag legal, tax, lending, title, insurance, HOA, permit, condition, or environmental questions early.',
+    label: 'Professional questions',
+    body: 'Flag legal, tax, lending, title, insurance, HOA, permit, condition, environmental, or valuation questions early.',
   },
 ];
 
 const journeyTopics = [
   {
-    label: 'Buy and finance',
-    body: 'Search, offer, timing, lender, insurance, and cash-planning questions belong in the conversation without implying qualification.',
+    label: 'Buyer preparation',
+    body: 'Search, offer, financing, insurance, and cash-planning assumptions can be discussed without implying approval or qualification.',
   },
   {
-    label: 'Sell and prepare',
-    body: 'Seller readiness, property records, repairs, and pricing discussions should be organized before a listing plan is shaped.',
+    label: 'Seller preparation',
+    body: 'Property records, preparation, buyer objections, pricing context, and timing should be organized before market exposure.',
   },
   {
-    label: 'Search, market, and place',
-    body: 'Use search, city, market, and neighborhood context as starting points for review, not as suitability conclusions.',
+    label: 'Market interpretation',
+    body: 'Use Market and City Market evidence as briefing context, not timing certainty, investment advice, or a buy/sell conclusion.',
   },
   {
-    label: 'Property and evidence',
-    body: 'Property-specific facts, source limitations, and evidence gaps should be verified before they guide action.',
+    label: 'Neighborhood investigation',
+    body: 'Use place orientation and housing context to form neutral verification questions, not fit, safety, school, or ranking claims.',
   },
   {
-    label: 'Grand Plan and timing',
-    body: 'Sequencing, buy-sell coordination, and next-step timing can be discussed without forcing a decision.',
+    label: 'Property evaluation',
+    body: 'Property-specific facts, records, condition signals, and source limits should be verified before they guide action.',
   },
   {
-    label: 'Compare and decide',
-    body: 'Bring tradeoffs from Compare or other REIE surfaces so the conversation can clarify what still matters.',
+    label: 'General decision review',
+    body: 'Bring tradeoffs from REIE planning surfaces so the conversation can clarify what still matters without forcing a decision.',
   },
+];
+
+const reviewedEvidence = [
+  'Search criteria, saved views, or listings that raised a specific question.',
+  'Property facts, photos, records, condition signals, and source limitations.',
+  'Buyer or seller preparation assumptions that need qualified interpretation.',
+  'Market, City Market, or Neighborhood context that should be verified before reliance.',
 ];
 
 const verificationQuestions = [
@@ -102,26 +109,21 @@ export default function AdvisoryHandoffGuide() {
           <div>
             <p className="text-sm font-black uppercase tracking-[0.16em] text-cyan-100/78">Advisory Readiness</p>
             <h2 className="mt-4 max-w-3xl text-3xl font-black leading-tight tracking-normal text-white sm:text-4xl">
-              Prepare the conversation before you contact an advisor.
+              What should I understand and prepare before beginning a focused professional conversation?
             </h2>
             <p className="mt-5 max-w-2xl text-base leading-8 text-white/68">
-              Advisory is the next step after REIE research: organize what you know, identify what remains unresolved,
-              and decide which questions need a qualified professional before you move from research into conversation.
+              Advisory prepares the conversation before Contact begins it. Use this handoff to organize what you know,
+              identify what remains unresolved, and decide which questions need a qualified professional before you
+              share sensitive details or ask for next-step guidance.
             </p>
-            <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+            <div className="mt-7 flex">
               <Link
-                href="/contact"
+                href="#advisory-contact-transition"
                 className="inline-flex min-h-12 items-center justify-center rounded-[6px] bg-cyan-100 px-5 py-3 text-xs font-black uppercase tracking-[0.12em] text-[#041018] transition hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
                 data-advisory-handoff-destination="contact"
+                data-advisory-handoff-primary-action="begin-focused-conversation"
               >
-                Talk Through The Decision
-              </Link>
-              <Link
-                href="#advisory-preparation-themes"
-                className="inline-flex min-h-12 items-center justify-center rounded-[6px] bg-white/[0.06] px-5 py-3 text-xs font-black uppercase tracking-[0.12em] text-cyan-100 transition hover:bg-white/[0.11] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
-                data-advisory-handoff-destination="preparation"
-              >
-                Review Preparation
+                Begin A Focused Conversation
               </Link>
             </div>
           </div>
@@ -140,13 +142,13 @@ export default function AdvisoryHandoffGuide() {
           <div>
             <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">Advisor Role</p>
             <h3 className="mt-3 text-xl font-black leading-tight text-white">
-              Turn research into a prepared conversation.
+              Turn REIE research into the first useful discussion.
             </h3>
           </div>
           <p className="max-w-2xl text-sm leading-7 text-white/62">
-            A real-estate advisor can help interpret choices, organize questions, connect your REIE research to the
-            conversation, identify where specialists may be needed, and clarify next steps without guaranteeing an
-            outcome or replacing qualified professional review.
+            A real-estate advisor can help interpret choices, organize open questions, identify where specialists may
+            be needed, and clarify next steps. Advisory does not create representation by itself, guarantee a result,
+            or replace qualified professional review.
           </p>
         </div>
 
@@ -155,7 +157,7 @@ export default function AdvisoryHandoffGuide() {
             <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">
               Conversation Preparation
             </p>
-            <h3 className="mt-3 text-2xl font-black leading-tight text-white">Bring the right questions, not a perfect answer.</h3>
+            <h3 className="mt-3 text-2xl font-black leading-tight text-white">Bring a clear decision, not a perfect answer.</h3>
           </div>
           <div className="grid gap-3 md:grid-cols-2">
             {preparationThemes.map((theme) => (
@@ -169,8 +171,8 @@ export default function AdvisoryHandoffGuide() {
 
         <div className="grid gap-4" data-testid="advisory-handoff-journey-context-groups">
           <div className="max-w-2xl">
-            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">Journey Topics</p>
-            <h3 className="mt-3 text-2xl font-black leading-tight text-white">A single advisory path for the decisions REIE supports.</h3>
+            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">Decision Context</p>
+            <h3 className="mt-3 text-2xl font-black leading-tight text-white">Static contexts only, chosen by the customer.</h3>
           </div>
           <div className="grid gap-3 lg:grid-cols-3">
             {journeyTopics.map((topic) => (
@@ -182,9 +184,26 @@ export default function AdvisoryHandoffGuide() {
           </div>
         </div>
 
+        <div
+          className="grid gap-5 rounded-[8px] bg-white/[0.035] p-5 lg:grid-cols-[0.78fr_1.22fr]"
+          data-testid="advisory-handoff-reviewed-evidence"
+        >
+          <div>
+            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">Evidence Already Reviewed</p>
+            <h3 className="mt-3 text-2xl font-black leading-tight text-white">Bring the evidence that shaped the question.</h3>
+          </div>
+          <ul className="grid gap-3 text-sm leading-7 text-white/62">
+            {reviewedEvidence.map((item) => (
+              <li key={item} className="rounded-[8px] bg-[#071017]/72 px-4 py-3">
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
+
         <div className="grid gap-5 lg:grid-cols-[0.78fr_1.22fr]" data-testid="advisory-handoff-questions-to-bring">
           <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">Items To Verify</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">Professional Discussion</p>
             <h3 className="mt-3 text-2xl font-black leading-tight text-white">Separate prompts from conclusions.</h3>
           </div>
           <ul className="grid gap-3 text-sm leading-7 text-white/62">
@@ -212,32 +231,32 @@ export default function AdvisoryHandoffGuide() {
           </div>
           <div data-testid="advisory-handoff-privacy-expectations">
             <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">
-              Privacy Expectations
+              What Advisory Does Not Establish
             </p>
             <p className="mt-3 text-sm leading-7 text-white/62">
               This public preparation experience does not create a saved workspace, automatically transfer planner inputs,
-              require uploads, present a hidden lead score, or create an inferred financial profile. Preparation can happen
-              before sharing sensitive details.
+              require uploads, present a hidden lead score, create an inferred financial profile, establish a brokerage relationship, create representation, approve financing, determine affordability, publish an appraisal,
+              certify valuation, guarantee pricing, guarantee outcomes, rank providers, or make suitability conclusions.
             </p>
           </div>
         </div>
 
         <div
+          id="advisory-contact-transition"
           className="grid gap-5 rounded-[8px] bg-white/[0.04] p-5 lg:grid-cols-[1fr_0.82fr] lg:items-center"
           data-testid="advisory-handoff-contact-transition"
         >
           <div>
             <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">Contact Transition</p>
-            <h3 className="mt-3 text-2xl font-black leading-tight text-white">Contact when the questions are organized.</h3>
+            <h3 className="mt-3 text-2xl font-black leading-tight text-white">Use Contact when the questions are organized.</h3>
             <p className="mt-3 text-sm leading-7 text-white/62">
-              Use the existing contact path when you are ready to discuss the research, unresolved items, and professional
-              verification needs. Submitting an inquiry is for follow-up routing only and does not automatically create a
-              brokerage relationship.
+              This handoff uses the existing Contact behavior. It does not create a generic form, change fields, submit customer information, create CRM work, send email, schedule a meeting, or pass hidden context. Submitting
+              any existing inquiry is for follow-up routing only and does not automatically create a brokerage relationship.
             </p>
           </div>
           <Link
             href="/contact"
-            className="inline-flex min-h-12 items-center justify-center rounded-[6px] bg-cyan-100 px-5 py-3 text-xs font-black uppercase tracking-[0.12em] text-[#041018] transition hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
+            className="inline-flex min-h-12 items-center justify-center rounded-[6px] bg-white/[0.06] px-5 py-3 text-xs font-black uppercase tracking-[0.12em] text-cyan-100 transition hover:bg-white/[0.11] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
             data-advisory-handoff-destination="contact"
           >
             Contact David Quinn Group

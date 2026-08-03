@@ -88,24 +88,25 @@ for (const marker of [
 
 for (const phrase of [
   'Advisory Readiness',
-  'Prepare the conversation before you contact an advisor.',
-  'Advisory is the next step after REIE research',
+  'What should I understand and prepare before beginning a focused professional conversation?',
+  'Advisory prepares the conversation before Contact begins it.',
   'organize what you know',
   'identify what remains unresolved',
   'qualified professional',
-  'Talk Through The Decision',
-  'Review Preparation',
-  'Turn research into a prepared conversation.',
+  'Begin A Focused Conversation',
+  'Turn REIE research into the first useful discussion.',
   'Conversation Preparation',
-  'Bring the right questions, not a perfect answer.',
-  'Journey Topics',
-  'A single advisory path for the decisions REIE supports.',
-  'Items To Verify',
+  'Bring a clear decision, not a perfect answer.',
+  'Decision Context',
+  'Static contexts only, chosen by the customer.',
+  'Evidence Already Reviewed',
+  'Bring the evidence that shaped the question.',
+  'Professional Discussion',
   'Separate prompts from conclusions.',
   'Evidence And Professional Boundaries',
-  'Privacy Expectations',
+  'What Advisory Does Not Establish',
   'Contact Transition',
-  'Contact when the questions are organized.',
+  'Use Contact when the questions are organized.',
   'does not automatically create',
   'brokerage relationship',
 ]) {
@@ -113,23 +114,23 @@ for (const phrase of [
 }
 
 for (const theme of [
-  'Goals and next decision',
-  'Timeline',
-  'Property, market, or neighborhood context',
-  'Financing or seller readiness',
-  'Evidence gaps',
-  'Unresolved professional questions',
+  'Decision to discuss',
+  'Timing and pressure',
+  'Evidence already reviewed',
+  'Assumptions to verify',
+  'Open evidence gaps',
+  'Professional questions',
 ]) {
   assertIncludes(advisoryGuide, `label: '${theme}'`, `Preparation theme must remain present: ${theme}`);
 }
 
 for (const topic of [
-  'Buy and finance',
-  'Sell and prepare',
-  'Search, market, and place',
-  'Property and evidence',
-  'Grand Plan and timing',
-  'Compare and decide',
+  'Buyer preparation',
+  'Seller preparation',
+  'Market interpretation',
+  'Neighborhood investigation',
+  'Property evaluation',
+  'General decision review',
 ]) {
   assertIncludes(advisoryGuide, `label: '${topic}'`, `Static journey topic must remain present: ${topic}`);
 }
@@ -161,6 +162,14 @@ for (const boundary of [
   'require uploads',
   'hidden lead score',
   'inferred financial profile',
+  'establish a brokerage relationship',
+  'approve financing',
+  'determine affordability',
+  'certify valuation',
+  'guarantee pricing',
+  'guarantee outcomes',
+  'rank providers',
+  'suitability conclusions',
 ]) {
   assertIncludes(advisoryGuide, boundary, `Privacy or professional boundary must remain present: ${boundary}`);
 }
@@ -168,6 +177,8 @@ for (const boundary of [
 assertIncludes(advisoryGuide, 'Contact David Quinn Group', 'Contact David Quinn Group must be a governed advisory CTA.');
 assertIncludes(advisoryGuide, 'href="/contact"', 'Contact David Quinn Group must route to /contact.');
 assertIncludes(advisoryGuide, 'data-advisory-handoff-destination="contact"', 'Contact CTA must expose destination metadata.');
+assertIncludes(advisoryGuide, 'href="#advisory-contact-transition"', 'Primary Advisory action must scroll to the safe Contact transition.');
+assertIncludes(advisoryGuide, 'data-advisory-handoff-primary-action="begin-focused-conversation"', 'Primary Advisory action must expose certified action metadata.');
 
 for (const [label, href, destination] of [
   ['Buyer Guidance', '/buy', 'buyer'],
@@ -181,9 +192,9 @@ for (const [label, href, destination] of [
   assertIncludes(advisoryGuide, `destination: '${destination}'`, `${label} must expose destination metadata.`);
 }
 
-assertIncludes(advisoryGuide, 'href="#advisory-preparation-themes"', 'First-screen secondary CTA must stay on-page.');
 assertIncludes(advisoryGuide, 'data-testid="advisory-handoff-advisor-role"', 'Advisor role section must be elevated.');
 assertIncludes(advisoryGuide, 'data-testid="advisory-handoff-preparation-themes"', 'Preparation section must be inspectable.');
+assertIncludes(advisoryGuide, 'data-testid="advisory-handoff-reviewed-evidence"', 'Reviewed evidence section must be inspectable.');
 assertIncludes(advisoryGuide, 'data-testid="advisory-handoff-privacy-expectations"', 'Privacy section must be inspectable.');
 assertIncludes(advisoryGuide, 'data-testid="advisory-handoff-contact-transition"', 'Contact transition must be inspectable.');
 assertIncludes(advisoryGuide, 'data-testid="advisory-handoff-continuity"', 'Research continuations must be inspectable.');
@@ -219,7 +230,9 @@ for (const runtimeActivation of [
   'createCRM',
   'sendEmail',
   'queue',
-  'schedule',
+  'scheduleMeeting(',
+  'createAppointment',
+  'Calendly',
 ]) {
   assertNotIncludes(advisoryGuide, runtimeActivation, `Advisory Handoff guide must not introduce intake, persistence, tracking, or automation: ${runtimeActivation}`);
 }
