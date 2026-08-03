@@ -121,6 +121,36 @@ export default function MarketIndexPage() {
     marketHref: '/market',
     sellerHref: '/sell',
   });
+  const marketBriefingPromise =
+    'Use current market signals, verified paths, and limitation-aware guidance to decide where to search, which neighborhood context to open, and what deserves professional review.';
+  const briefingSignals = [
+    {
+      label: 'Market direction',
+      value: primaryMarket?.direction || 'Mixed local conditions',
+      body: 'Use direction as context for pace and comparison, not as a prediction.',
+    },
+    {
+      label: 'Pricing context',
+      value: primaryMarket?.pricing || 'City-specific pricing context',
+      body: 'Treat pricing language as a starting point for verified property review.',
+    },
+    {
+      label: 'Timing context',
+      value: primaryMarket?.timing || 'Preparation matters',
+      body: 'Compare timing signals before deciding which search path deserves attention.',
+    },
+  ];
+  const evidenceRows = [
+    ['City market paths', `${marketSummaries.length} public paths`, 'Open the city context before narrowing to a property.'],
+    ['Neighborhood paths', `${totalNeighborhoodCount} place paths`, 'Use neighborhood context to understand local organization and verification questions.'],
+    ['Certified guides', `${certifiedDecisionGuides.length} reviewed guides`, 'Prefer certified local guides where editorial review is already complete.'],
+  ];
+  const investigationQuestions = [
+    'Which market signal changes the next search?',
+    'Which neighborhood context should be opened before comparing homes?',
+    'Which property-specific facts must be verified before relying on the signal?',
+    'Which professional question should be asked before treating market context as strategy?',
+  ];
 
   return (
     <main
@@ -129,6 +159,12 @@ export default function MarketIndexPage() {
       data-cep-market-count={marketSummaries.length}
       data-cep-measurement-ready="true"
       data-cep-measurement-active="false"
+      data-dxt-wave-1d-market-briefing="true"
+      data-dxt-wave-1d-briefing-contract="REIE_DXT_WAVE_1D_MARKET_NEIGHBORHOOD_DISCOVERY_FOUNDATION_CERTIFIED_AND_CLOSED"
+      data-dxt-wave-1d-selected-runtime-scope="market-index"
+      data-dxt-wave-1d-neighborhood-runtime-change="false"
+      data-dxt-wave-1c-buyer-runtime-change="false"
+      data-dxt-wave-1c-seller-runtime-change="false"
     >
       <FAQSchema faqs={marketFaqs} pageUrl={MARKET_URL} />
 
@@ -143,13 +179,13 @@ export default function MarketIndexPage() {
         data-market-v8-telemetry="false"
       >
         <div className="mx-auto max-w-6xl">
-          <p className="text-[10px] font-black uppercase tracking-[0.28em] text-cyan-100/76">Colorado Market Intelligence</p>
+          <p className="text-[10px] font-black uppercase tracking-[0.28em] text-cyan-100/76">Market Briefing Foundation</p>
           <div className="mt-4 grid gap-5 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
-            <div>
+            <div data-dxt-market-briefing-role="market-orientation-governing-question-briefing-promise">
               <h1 className="text-3xl font-black uppercase leading-tight tracking-normal text-white md:text-5xl">
-                {marketDecisionWorkspace.headline}
+                What is happening here, what evidence matters, and what should I investigate next?
               </h1>
-              <p className="mt-4 max-w-3xl text-sm leading-7 text-white/58">{marketDecisionWorkspace.orientation}</p>
+              <p className="mt-4 max-w-3xl text-sm leading-7 text-white/62">{marketBriefingPromise}</p>
               <p className="mt-4 rounded-[6px] bg-cyan-100/[0.07] p-3 text-xs leading-5 text-white/50">
                 {marketDecisionWorkspace.trustBoundary}
               </p>
@@ -157,6 +193,7 @@ export default function MarketIndexPage() {
                 <Link
                   href="/search"
                   className="market-primary-cta"
+                  data-dxt-market-briefing-role="dominant-next-action"
                   {...getJourneyMeasurementAttributes({
                     surface: 'market-index-orientation',
                     stage: 'market',
@@ -168,10 +205,10 @@ export default function MarketIndexPage() {
                   Search With Market Context
                 </Link>
                 <Link
-                  href="#market-core-synthesis"
+                  href="#market-evidence-that-matters"
                   className="market-secondary-cta"
                 >
-                  Review the signals
+                  Review Evidence
                 </Link>
               </div>
             </div>
@@ -204,6 +241,59 @@ export default function MarketIndexPage() {
         </div>
       </section>
 
+      <section className="px-5 py-12 sm:px-8 lg:px-12" data-testid="dxt-wave-1d-market-briefing-foundation">
+        <div className="mx-auto grid max-w-6xl gap-5 lg:grid-cols-[0.95fr_1.05fr]">
+          <div className="rounded-[8px] bg-white/[0.035] p-5 ring-1 ring-white/[0.07]" data-dxt-market-briefing-role="current-market-signals">
+            <p className="text-[10px] font-black uppercase tracking-[0.24em] text-cyan-100/72">Current Market Signals</p>
+            <h2 className="mt-4 text-3xl font-black uppercase leading-tight tracking-normal text-white">
+              Read the signal before choosing the next path.
+            </h2>
+            <div className="mt-6 grid gap-3">
+              {briefingSignals.map((signal) => (
+                <article key={signal.label} className="rounded-[6px] bg-black/24 p-4">
+                  <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
+                    <p className="text-[10px] font-black uppercase tracking-[0.18em] text-white/38">{signal.label}</p>
+                    <p className="text-sm font-black uppercase leading-5 text-cyan-100/82">{signal.value}</p>
+                  </div>
+                  <p className="mt-3 text-xs leading-6 text-white/54">{signal.body}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+
+          <div id="market-evidence-that-matters" className="grid gap-5">
+            <div className="rounded-[8px] bg-white/[0.035] p-5 ring-1 ring-white/[0.07]" data-dxt-market-briefing-role="evidence-that-matters">
+              <p className="text-[10px] font-black uppercase tracking-[0.24em] text-cyan-100/72">Evidence That Matters</p>
+              <h2 className="mt-4 text-2xl font-black uppercase leading-tight tracking-normal text-white">
+                Group evidence by what it helps the customer decide.
+              </h2>
+              <div className="mt-5 grid gap-3">
+                {evidenceRows.map(([label, value, body]) => (
+                  <article key={label} className="rounded-[6px] bg-black/24 p-4">
+                    <div className="flex items-start justify-between gap-4">
+                      <p className="text-[10px] font-black uppercase tracking-[0.18em] text-white/40">{label}</p>
+                      <p className="text-xs font-black uppercase leading-5 text-white/76">{value}</p>
+                    </div>
+                    <p className="mt-3 text-xs leading-6 text-white/52">{body}</p>
+                  </article>
+                ))}
+              </div>
+            </div>
+
+            <div
+              className="rounded-[8px] bg-cyan-100/[0.055] p-5 ring-1 ring-cyan-100/10"
+              data-dxt-market-briefing-role="directional-versus-verified"
+            >
+              <p className="text-[10px] font-black uppercase tracking-[0.24em] text-cyan-100/72">Directional Versus Verified</p>
+              <p className="mt-3 text-sm leading-7 text-white/58">
+                Market direction, pricing context, timing, and inventory signals are directional. Property condition, taxes, HOA details,
+                insurance, title, inspection findings, lending assumptions, and contract risk require source or professional verification.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section id="market-core-synthesis" className="px-5 py-12 sm:px-8 lg:px-12">
         <div className="mx-auto max-w-6xl">
           <MarketProduct3VisualIntelligence experience={marketProduct3Experience} />
@@ -215,64 +305,43 @@ export default function MarketIndexPage() {
           <ContinueYourDecision
             stage="market"
             cameFrom="Homepage, search, or a city decision guide"
-            currentDecision="Decide which market context should guide the next search."
-            whyHere="The market view connects city signals, certified guides, neighborhood paths, and property search without forecasting or ranking locations."
-            nextStep="Open a city guide, search active inventory, or move into a neighborhood page."
+            currentDecision="Decide which market evidence should guide the next investigation."
+            whyHere="The market briefing connects city signals, certified guides, neighborhood paths, property exploration, and advisory review without forecasting, ranking, or suitability conclusions."
+            nextStep="Search active inventory, open a certified guide, continue into a neighborhood page, or ask what should be verified."
             links={[
               { label: 'Search With Market Context', href: '/search', note: 'Apply criteria' },
               { label: 'Boulder Market Context', href: '/market/boulder-co-housing-market', note: 'Certified guide' },
               { label: 'Neighborhood Context', href: '/market/boulder/mapleton-hill', note: 'Mapleton Hill' },
+              { label: 'Advisory Guidance', href: '/contact', note: 'Verify next question' },
             ]}
           />
         </div>
       </section>
 
-      <section className="px-5 py-16 sm:px-8 lg:px-12">
+      <section className="px-5 py-16 sm:px-8 lg:px-12" data-dxt-market-briefing-role="questions-to-investigate">
         <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[1fr_0.8fr] lg:items-end">
           <div>
-            <p className="text-[11px] font-black uppercase tracking-[0.28em] text-cyan-100">Colorado Market Intelligence</p>
-            <h2 className="mt-6 max-w-4xl text-5xl font-black uppercase leading-[0.95] tracking-normal text-white sm:text-6xl">
-              Choose the market context before the next property decision.
+            <p className="text-[11px] font-black uppercase tracking-[0.28em] text-cyan-100">Questions To Investigate</p>
+            <h2 className="mt-6 max-w-4xl text-4xl font-black uppercase leading-tight tracking-normal text-white sm:text-5xl">
+              Use the market briefing to decide what needs a closer look.
             </h2>
-            <p className="mt-7 max-w-2xl text-base leading-8 text-white/62 sm:text-lg">
-              Move from search into city market reports, neighborhood context, property review, or seller strategy without changing the
-              certified search, property, inquiry, or evidence behavior.
-            </p>
-            <div className="mt-10 flex flex-wrap gap-3" data-testid="cep-market-discovery-primary-actions">
-              <Link
-                href="/search"
-                className="market-primary-cta"
-                {...getJourneyMeasurementAttributes({
-                  surface: 'market-index-primary-actions',
-                  stage: 'market',
-                  action: 'start-search',
-                  destination: 'search',
-                })}
-              >
-                <Search size={15} aria-hidden="true" />
-                Search With Market Context
-              </Link>
-              <Link
-                href="/sell"
-                className="reie-decision-link reie-decision-link--secondary inline-flex min-h-12 items-center justify-center gap-2 rounded-[6px] px-5 py-3 text-xs font-black uppercase tracking-[0.14em] transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-200"
-                {...getJourneyMeasurementAttributes({
-                  surface: 'market-index-primary-actions',
-                  stage: 'market',
-                  action: 'request-seller-review',
-                  destination: 'seller',
-                })}
-              >
-                <Home size={15} aria-hidden="true" />
-                Seller Review
-              </Link>
+            <div className="mt-7 grid max-w-3xl gap-3">
+              {investigationQuestions.map((question) => (
+                <p key={question} className="rounded-[6px] bg-white/[0.035] p-4 text-sm leading-6 text-white/62 ring-1 ring-white/[0.06]">
+                  {question}
+                </p>
+              ))}
             </div>
           </div>
 
-          <div className="grid gap-3 rounded-[8px] bg-white/[0.035] p-5 shadow-[0_24px_80px_rgba(0,0,0,0.22)] ring-1 ring-white/[0.06]">
+          <div
+            className="grid gap-3 rounded-[8px] bg-white/[0.035] p-5 shadow-[0_24px_80px_rgba(0,0,0,0.22)] ring-1 ring-white/[0.06]"
+            data-dxt-market-briefing-role="freshness-uncertainty-professional-boundaries"
+          >
             {[
               ['Markets', marketSummaries.length],
               ['Neighborhood paths', marketSummaries.reduce((total, market) => total + market.neighborhoodCount, 0)],
-              ['Measurement', 'Prepared'],
+              ['Evidence posture', 'Directional'],
             ].map(([label, value]) => (
               <div key={label} className="flex items-center justify-between py-3">
                 <p className="text-[10px] font-black uppercase tracking-[0.18em] text-white/40">{label}</p>
@@ -280,7 +349,9 @@ export default function MarketIndexPage() {
               </div>
             ))}
             <p className="pt-4 text-xs leading-6 text-white/42" data-testid="cep-market-measurement-boundary">
-              Measurement handles are present for future review. No analytics vendor, cookie, tracking system, or new persistence is active.
+              Market context is not a forecast, valuation, ranking, investment recommendation, pricing certainty, suitability conclusion,
+              safety conclusion, school-quality conclusion, AI advisory, or provider-fed analysis. Measurement handles are present for
+              future review only; no analytics vendor, cookie, tracking system, or new persistence is active.
             </p>
           </div>
         </div>
@@ -472,12 +543,14 @@ export default function MarketIndexPage() {
         </div>
       </section>
 
-      <section className="px-5 py-16 sm:px-8 lg:px-12" data-testid="cep-market-discovery-continuity">
-        <div className="mx-auto grid max-w-6xl gap-4 md:grid-cols-3">
+      <section className="px-5 py-16 sm:px-8 lg:px-12" data-testid="cep-market-discovery-continuity" data-dxt-market-briefing-role="compact-continuations">
+        <div className="mx-auto grid max-w-6xl gap-4 md:grid-cols-5">
           {[
             { label: 'Search', body: 'Use current filters and market links to compare active inventory.', href: '/search', icon: Search },
             { label: 'Property', body: 'Open a listing when public facts deserve closer review.', href: '/search', icon: Home },
+            { label: 'Neighborhood', body: 'Open place context before treating evidence as local understanding.', href: '/market/boulder/mapleton-hill', icon: MapPinned },
             { label: 'Seller', body: 'Request a review when timing, preparation, and positioning matter.', href: '/sell', icon: BarChart3 },
+            { label: 'Advisory', body: 'Ask which market signal needs professional verification.', href: '/contact', icon: ShieldCheck },
           ].map((step) => (
             <Link
               key={step.label}
@@ -488,7 +561,16 @@ export default function MarketIndexPage() {
                 surface: 'market-index-continuity',
                 stage: 'market',
                 action: 'continue-journey',
-                destination: step.label === 'Seller' ? 'seller' : step.label === 'Property' ? 'property' : 'search',
+                destination:
+                  step.label === 'Seller'
+                    ? 'seller'
+                    : step.label === 'Property'
+                      ? 'property'
+                      : step.label === 'Neighborhood'
+                        ? 'market'
+                        : step.label === 'Advisory'
+                          ? 'inquiry'
+                          : 'search',
               })}
             >
               <step.icon className="h-5 w-5 text-cyan-100/64 transition group-hover:text-white" aria-hidden="true" />
