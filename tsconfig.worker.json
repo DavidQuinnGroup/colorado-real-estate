@@ -106,6 +106,8 @@
     "scripts/checkDxtCrossRouteCtaDestinationInventory.ts",
     "scripts/checkDxtDecisionContextContinuityContract.ts",
     "scripts/checkDxtCrossRouteContinuityImplementationReadiness.ts",
+    "scripts/checkDxtSearchPropertyReturnContinuityImplementation.ts",
+    "scripts/checkDxtPropertyAdvisoryContactContinuityPlan.ts",
     "scripts/decisionGuideValidation.ts",
     "scripts/checkBoulderDecisionGuide.ts",
     "scripts/checkLouisvilleDecisionGuide.ts",

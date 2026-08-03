@@ -164,6 +164,8 @@
     "check:dxt-cross-route-cta-destination-inventory": "npm run worker:build && node dist/scripts/checkDxtCrossRouteCtaDestinationInventory.js",
     "check:dxt-decision-context-continuity-contract": "npm run worker:build && node dist/scripts/checkDxtDecisionContextContinuityContract.js",
     "check:dxt-cross-route-continuity-implementation-readiness": "npm run worker:build && node dist/scripts/checkDxtCrossRouteContinuityImplementationReadiness.js",
+    "check:dxt-search-property-return-continuity-implementation": "npm run worker:build && node dist/scripts/checkDxtSearchPropertyReturnContinuityImplementation.js",
+    "check:dxt-property-advisory-contact-continuity-plan": "npm run worker:build && node dist/scripts/checkDxtPropertyAdvisoryContactContinuityPlan.js",
     "check:boulder-decision-guide": "npm run worker:build && node dist/scripts/checkBoulderDecisionGuide.js",
     "check:louisville-decision-guide": "npm run worker:build && node dist/scripts/checkLouisvilleDecisionGuide.js",
     "check:lafayette-decision-guide": "npm run worker:build && node dist/scripts/checkLafayetteDecisionGuide.js",

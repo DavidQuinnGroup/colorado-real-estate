@@ -284,6 +284,52 @@ function getCitySearchHref(cityName: string | null | undefined) {
   return city ? `/search?city=${encodeURIComponent(city)}` : '/search';
 }
 
+type PropertySearchReturnPresentation = {
+  href: string;
+  label: string;
+  compactLabel: string;
+  note: string;
+  contextLabel: string;
+  detail: string;
+};
+
+function getPropertySearchReturnPresentation(returnTo: string | null | undefined): PropertySearchReturnPresentation | null {
+  if (!returnTo) return null;
+
+  try {
+    const parsed = new URL(returnTo, 'https://davidquinngroup.com');
+    const city = parsed.searchParams.get('city')?.trim();
+    const hasVisibleCriteria = ['q', 'minPrice', 'maxPrice', 'beds', 'baths', 'propertyType'].some((key) =>
+      Boolean(parsed.searchParams.get(key)?.trim()),
+    );
+
+    if (city) {
+      return {
+        href: returnTo,
+        label: `Return to ${city} Search`,
+        compactLabel: 'Return',
+        note: 'Resume visible Search criteria',
+        contextLabel: `Opened from ${city} Search`,
+        detail:
+          'Return to the same criteria-backed city Search view. Only supported Search criteria and the selected-property hint are carried forward.',
+      };
+    }
+
+    return {
+      href: returnTo,
+      label: 'Return to Search Results',
+      compactLabel: 'Return',
+      note: hasVisibleCriteria ? 'Resume visible Search criteria' : 'Resume Search results',
+      contextLabel: 'Opened from Search',
+      detail: hasVisibleCriteria
+        ? 'Return to the same criteria-backed Search view. Only supported Search criteria and the selected-property hint are carried forward.'
+        : 'Return to the same Search results view. No hidden search history is stored by this property page.',
+    };
+  } catch {
+    return null;
+  }
+}
+
 function getNeighborhoodHref(property: PropertyWithPhotos) {
   const city = normalize(property.city);
   const neighborhoodName = normalize(property.neighborhood);
@@ -775,6 +821,11 @@ export default async function PropertyPage({ params, searchParams }: PropertyPag
   const propertyFaqs = getPropertyFaqs(property);
   const canonicalUrl = getPropertyUrl(property);
   const searchReturnContext = parsePropertySearchReturnContext(resolvedSearchParams);
+  const searchReturnPresentation = getPropertySearchReturnPresentation(searchReturnContext?.returnTo);
+  const citySearchHref = getCitySearchHref(property.city);
+  const propertySearchHref = searchReturnPresentation?.href ?? citySearchHref;
+  const propertySearchLabel = searchReturnPresentation?.label ?? 'Back to Search';
+  const propertySearchNote = searchReturnPresentation?.note ?? 'Return to local results';
   const marketPathway = getMarketPathway(property);
   const neighborhoodHref = getNeighborhoodHref(property);
   const briefHref = getPropertyBriefHref(property);
@@ -852,7 +903,17 @@ export default async function PropertyPage({ params, searchParams }: PropertyPag
   });
 
   return (
-    <main className="min-h-screen overflow-y-auto bg-[#070b10] text-white">
+    <main
+      className="min-h-screen overflow-y-auto bg-[#070b10] text-white"
+      data-search-property-return-continuity="implemented"
+      data-search-property-return-runtime-scope="app/properties/[id]/page.tsx"
+      data-search-property-return-new-params="false"
+      data-search-property-return-hidden-state="false"
+      data-search-property-return-persistence="false"
+      data-search-property-return-telemetry="false"
+      data-search-property-return-search-runtime-change="false"
+      data-search-property-return-context={searchReturnPresentation ? 'visible-url' : 'direct-entry'}
+    >
       <script
         type="application/ld+json"
         data-testid="reie-property-schema"
@@ -916,11 +977,11 @@ export default async function PropertyPage({ params, searchParams }: PropertyPag
 
             <div className="absolute left-4 right-4 top-4 hidden items-center justify-between gap-4 sm:flex md:left-8 md:right-8 md:top-5">
               <Link
-                href="/search"
+                href={propertySearchHref}
                 className="inline-flex items-center gap-2 rounded-[6px] border border-white/14 bg-[#071017]/76 px-3 py-2 text-[10px] font-black uppercase tracking-[0.16em] text-white/70 backdrop-blur transition hover:border-cyan-100/40 hover:text-cyan-100"
               >
                 <ArrowLeft size={14} aria-hidden="true" />
-                Back to Search
+                {propertySearchLabel}
               </Link>
               <span className="max-w-[calc(100vw-2rem)] rounded-[6px] border border-white/14 bg-[#071017]/76 px-3 py-2 text-[10px] font-black uppercase tracking-[0.12em] text-cyan-100 backdrop-blur md:tracking-[0.16em]">
                 Property Decision Workspace
@@ -984,27 +1045,30 @@ export default async function PropertyPage({ params, searchParams }: PropertyPag
                 <p className="text-sm leading-6 text-white/70">
                   {decisionNextStep}
                 </p>
-                {searchReturnContext ? (
+                {searchReturnPresentation ? (
                   <div
                     className="mt-3 rounded-[6px] border border-cyan-100/18 bg-cyan-100/[0.055] p-3"
                     data-testid="reie-property-search-return-context"
                     data-search-return-context="bounded-url"
                     data-search-return-source="search"
-                    data-search-return-href={searchReturnContext.returnTo}
+                    data-search-return-href={searchReturnPresentation.href}
+                    data-search-return-visible-label={searchReturnPresentation.label}
                   >
-                    <p className="text-[10px] font-black uppercase tracking-[0.16em] text-cyan-100/72">Opened from Search</p>
+                    <p className="text-[10px] font-black uppercase tracking-[0.16em] text-cyan-100/72">
+                      {searchReturnPresentation.contextLabel}
+                    </p>
                     <p className="mt-1.5 text-xs leading-5 text-white/58">
-                      Return to the same criteria-backed Search view. Only supported Search criteria and the selected-property hint are carried forward.
+                      {searchReturnPresentation.detail}
                     </p>
                     <Link
-                      href={searchReturnContext.returnTo}
+                      href={searchReturnPresentation.href}
                       data-testid="reie-property-return-to-search"
                       data-search-return-context="bounded-url"
                       className="mt-3 inline-flex min-h-10 items-center justify-center gap-1.5 rounded-[6px] border border-cyan-100/24 bg-cyan-100/[0.09] px-3 text-[10px] font-black uppercase tracking-[0.12em] text-cyan-100 transition hover:border-cyan-100/50 hover:bg-cyan-100/[0.14] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
                       aria-label="Return to Search Results with your previous criteria"
                     >
                       <ArrowLeft size={13} aria-hidden="true" />
-                      Return to Search Results
+                      {searchReturnPresentation.label}
                     </Link>
                   </div>
                 ) : (
@@ -1143,7 +1207,7 @@ export default async function PropertyPage({ params, searchParams }: PropertyPag
           whyHere="This property view brings listing facts, Property DNA, confidence, comparable context, and verification prompts together without scoring, valuing, forecasting, or recommending the property."
           nextStep="Return to search, inspect market context, or ask a focused property question."
           links={[
-            { label: 'Back to Search', href: getCitySearchHref(property.city), note: 'Return to results' },
+            { label: propertySearchLabel, href: propertySearchHref, note: propertySearchNote },
             { label: 'Market Context', href: marketPathway.href, note: 'Broader context' },
             { label: 'Ask About This Property', href: '#property-contact', note: 'Focused question' },
           ]}
@@ -1390,10 +1454,10 @@ export default async function PropertyPage({ params, searchParams }: PropertyPag
                       Ask a Property Question
                     </Link>
                     <Link
-                      href={getCitySearchHref(property.city)}
+                      href={propertySearchHref}
                       className="reie-decision-link reie-decision-link--secondary inline-flex min-h-10 items-center justify-center rounded-[6px] px-3 py-2 text-[10px] font-black uppercase tracking-[0.12em] transition"
                     >
-                      Back to Search
+                      {propertySearchLabel}
                     </Link>
                     <Link
                       href={marketPathway.href}
@@ -1919,12 +1983,12 @@ export default async function PropertyPage({ params, searchParams }: PropertyPag
       >
         <div className="grid grid-cols-3 gap-2" style={{ display: 'grid', gap: 8, gridTemplateColumns: 'repeat(3, minmax(0, 1fr))' }}>
           <Link
-            href="/search"
+            href={propertySearchHref}
             className="reie-decision-link reie-decision-link--secondary inline-flex h-11 items-center justify-center gap-1.5 rounded-[6px] text-[10px] font-black uppercase tracking-[0.12em]"
             style={{ alignItems: 'center', display: 'inline-flex', height: 44, justifyContent: 'center' }}
           >
             <ArrowLeft size={13} aria-hidden="true" />
-            <span className="reie-property-mobile-action-label">Search</span>
+            <span className="reie-property-mobile-action-label">{searchReturnPresentation?.compactLabel ?? 'Search'}</span>
           </Link>
           <Link
             href={marketPathway.href}
