@@ -102,6 +102,7 @@
     "scripts/checkDxtWave1eAdvisoryHandoffPlan.ts",
     "scripts/checkDxtWave1eContactDecisionFlowPlan.ts",
     "scripts/checkDxtWave1eAdvisoryHandoffImplementation.ts",
+    "scripts/checkDxtWave1eContactDecisionFlowImplementation.ts",
     "scripts/decisionGuideValidation.ts",
     "scripts/checkBoulderDecisionGuide.ts",
     "scripts/checkLouisvilleDecisionGuide.ts",
