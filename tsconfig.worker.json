@@ -92,6 +92,8 @@
     "scripts/checkDxtWave1aHomepageInvitation.ts",
     "scripts/checkDxtWave1cBuyerSellerSharedHierarchyFoundation.ts",
     "scripts/checkDxtWave1cBuyerJourneySimplification.ts",
+    "scripts/checkDxtWave1cSellerJourneySimplification.ts",
+    "scripts/checkDxtWave1dMarketNeighborhoodDiscoveryFoundation.ts",
     "scripts/decisionGuideValidation.ts",
     "scripts/checkBoulderDecisionGuide.ts",
     "scripts/checkLouisvilleDecisionGuide.ts",

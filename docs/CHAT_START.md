@@ -10,6 +10,125 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE DXT Wave 1C Seller Journey Local Implementation And Wave 1D Foundation, August 2, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Verified starting baseline for this local implementation session:
+
+- Branch: `main`
+- Starting HEAD: `b28f3c8a91f4b56c1c94f9041f2c8b642500448e`
+- Starting origin/main: `b28f3c8a91f4b56c1c94f9041f2c8b642500448e`
+- Starting ahead/behind: `0 ahead / 0 behind`
+- Starting working tree: clean
+
+Deployment verification before edits:
+
+- Commit: `b28f3c8a91f4b56c1c94f9041f2c8b642500448e`
+- GitHub/Vercel status ID: `51518048093`
+- Context: `Vercel`
+- State: `success`
+- Description: `Deployment has completed`
+- Target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/BVqWvimXpKarFeE3aH5ZKb97QnEA`
+- Updated: `2026-08-03T01:14:31Z`
+- Remote `refs/heads/main` was verified at `b28f3c8a91f4b56c1c94f9041f2c8b642500448e` before repository edits, so no newer commit had superseded the baseline.
+
+Buyer certified baseline preserved:
+
+- Buyer implementation SHA: `8922792dcbf3edc4c90eb7b8f11cdcfaa80e99b5`
+- Buyer closure/documentation SHA: `b28f3c8a91f4b56c1c94f9041f2c8b642500448e`
+- Buyer program status: `REIE_DXT_WAVE_1C_BUYER_JOURNEY_CERTIFIED_AND_CLOSED`
+
+Completed local Seller implementation:
+
+- Seller implementation record: `docs/project-atlas/executive-library/REIE-DXT-WAVE-1C-SELLER-JOURNEY-SIMPLIFICATION-IMPLEMENTATION.md`
+- Seller runtime file: `app/sell/page.tsx`
+- Seller deterministic validation: `npm run check:dxt-wave-1c-seller-journey-simplification`
+- Status: `DXT_WAVE_1C_SELLER_JOURNEY_SIMPLIFICATION_IMPLEMENTED_LOCAL_COMMIT_ONLY`
+- Certification recommendation: `READY_FOR_SELLER_JOURNEY_LOCAL_CERTIFICATION`
+
+Seller implementation outcomes:
+
+- `/sell` now opens with the governing question `What must be understood before market exposure?`
+- first viewport has one dominant action: `Request Seller Review`;
+- preparation themes are property condition and presentation, evidence and information gaps, pricing context and market exposure, buyer objections and transaction readiness;
+- Seller Readiness, Home Worth, Market Context, Search Inventory, Home Value Estimator, Journey Cohesion, and Advisory Guidance remain reachable;
+- Home Value Estimator remains context-setting only and was not modified;
+- pricing, valuation, evidence, legal, tax, insurance, title, inspection, engineering, investment, suitability, and professional-judgment boundaries are visible before intake;
+- no appraisal, automated valuation, listing-price recommendation, guaranteed sale price, guaranteed timing, guaranteed outcome, predictive pricing, CRM expansion, telemetry, persistence, provider feed, AI advisory, or new valuation system was introduced.
+
+Completed Wave 1D documentation and deterministic foundation:
+
+- Contract record: `docs/project-atlas/executive-library/REIE-DXT-WAVE-1D-MARKET-NEIGHBORHOOD-DISCOVERY-FOUNDATION-CONTRACT.md`
+- Readiness record: `docs/project-atlas/executive-library/REIE-DXT-WAVE-1D-MARKET-NEIGHBORHOOD-DISCOVERY-IMPLEMENTATION-READINESS.md`
+- Deterministic validation: `npm run check:dxt-wave-1d-market-neighborhood-discovery-foundation`
+- Status: `DXT_WAVE_1D_MARKET_NEIGHBORHOOD_DISCOVERY_FOUNDATION_IMPLEMENTED_LOCAL_COMMIT_ONLY`
+- Market runtime and Neighborhood runtime were inspection-only and remain unchanged.
+
+Protected boundaries preserved:
+
+- Buyer runtime was not modified.
+- Market runtime was not modified.
+- Neighborhood runtime was not modified.
+- Shared runtime was not modified.
+- No route, canonical URL, navigation, footer, Search API, Search ranking, map provider, map behavior, property route, Prisma schema, migration, persistence, localStorage, cookie, telemetry, analytics, CRM, scheduling, email, queue, worker, customer profile, provider integration, AI advisory, valuation engine, production data, deployment configuration, brokerage disclosure, shared Buyer/Seller runtime abstraction, site-wide design system, runtime schema, or data-driven journey schema change was made.
+- Brokerage disclosure remains on hold: `EXTERNAL_COMPASS_MARKETING_REVIEW_PENDING`.
+
+Required validation for local certification review:
+
+- `git diff --check`
+- `npm run check:dxt-wave-1c-seller-journey-simplification`
+- `npm run check:dxt-wave-1d-market-neighborhood-discovery-foundation`
+- `npm run check:seller-journey-safety`
+- `npm run check:reie-seller-confidence-experience`
+- `npm run check:reie-seller-confidence-experience-v8`
+- `npm run check:seller-readiness-advancement`
+- `npm run check:property-seller-evidence-readiness`
+- `npm run check:seller-lead-schema-safety`
+- `npm run check:dxt-wave-1a-homepage-invitation`
+- `npm run check:dxt-wave-1c-buyer-seller-shared-hierarchy-foundation`
+- `npm run check:dxt-wave-1c-buyer-journey-simplification`
+- `npm run check:reie-buyer-confidence-experience`
+- `npm run check:public-runtime-safety`
+- `npm run check:public-trust-readiness`
+- `npm run check:search-runtime-safety`
+- `npm run check:map-rendering-safety`
+- `npm run check:fast`
+- `npm run typecheck`
+- `npm run lint`
+- `npm run build`
+- local `/sell` browser review at mobile, tablet, and desktop sizes;
+- route/canonical, keyboard/focus, heading order, overflow, regression, brokerage-disclosure, and protected-boundary review.
+
+Current authorization boundary:
+
+- Local commit only is authorized.
+- Push, deployment, production certification, Seller production remediation, Market runtime implementation, Neighborhood runtime implementation, and unrelated cleanup remain unauthorized.
+
+Recommended next gates:
+
+Primary:
+
+`READY_FOR_REIE_DXT_WAVE_1C_SELLER_JOURNEY_SIMPLIFICATION_LOCAL_CERTIFICATION_AND_PUSH_AUTHORIZATION`
+
+Secondary:
+
+`READY_FOR_REIE_DXT_WAVE_1D_MARKET_AND_NEIGHBORHOOD_DISCOVERY_FOUNDATION_CERTIFICATION`
+
+Do not push or deploy without subsequent explicit authorization.
+
+Prior handoff retained below for audit history.
+
 PROJECT ATLAS(tm) / REIE DXT Wave 1C Buyer Journey Certified And Seller Plan Reconciled, August 2, 2026:
 
 Workspace:

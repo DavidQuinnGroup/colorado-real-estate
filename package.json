@@ -150,6 +150,8 @@
     "check:dxt-wave-1a-homepage-invitation": "npm run worker:build && node dist/scripts/checkDxtWave1aHomepageInvitation.js",
     "check:dxt-wave-1c-buyer-seller-shared-hierarchy-foundation": "npm run worker:build && node dist/scripts/checkDxtWave1cBuyerSellerSharedHierarchyFoundation.js",
     "check:dxt-wave-1c-buyer-journey-simplification": "npm run worker:build && node dist/scripts/checkDxtWave1cBuyerJourneySimplification.js",
+    "check:dxt-wave-1c-seller-journey-simplification": "npm run worker:build && node dist/scripts/checkDxtWave1cSellerJourneySimplification.js",
+    "check:dxt-wave-1d-market-neighborhood-discovery-foundation": "npm run worker:build && node dist/scripts/checkDxtWave1dMarketNeighborhoodDiscoveryFoundation.js",
     "check:boulder-decision-guide": "npm run worker:build && node dist/scripts/checkBoulderDecisionGuide.js",
     "check:louisville-decision-guide": "npm run worker:build && node dist/scripts/checkLouisvilleDecisionGuide.js",
     "check:lafayette-decision-guide": "npm run worker:build && node dist/scripts/checkLafayetteDecisionGuide.js",
