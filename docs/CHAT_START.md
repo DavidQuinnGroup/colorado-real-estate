@@ -10,6 +10,103 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE DXT Wave 1D City Market Certified And Program Closed, August 3, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Current production-certified implementation:
+
+- Branch: `main`
+- City Market implementation SHA: `0ced811e5b4fea6038a9d182ae34a7ecfb460fd3`
+- City Market implementation message: `Implement City Market briefing`
+- City Market implementation parent: `24438466b77a6e7539c518ab5805fc04a685c839`
+- City Market implementation record: `docs/project-atlas/executive-library/REIE-DXT-WAVE-1D-CITY-MARKET-BRIEFING-IMPLEMENTATION.md`
+- City Market production certification record: `docs/project-atlas/executive-library/REIE-DXT-WAVE-1D-CITY-MARKET-BRIEFING-PRODUCTION-CERTIFICATION.md`
+- Wave 1D completion assessment: `docs/project-atlas/executive-library/REIE-DXT-WAVE-1D-COMPLETION-ASSESSMENT.md`
+- Wave 1D program closure record: `docs/project-atlas/executive-library/REIE-DXT-WAVE-1D-MARKET-AND-NEIGHBORHOOD-DISCOVERY-PROGRAM-CLOSURE.md`
+
+City Market deployment evidence:
+
+- Pending GitHub/Vercel status ID: `51537069452`
+- Terminal GitHub/Vercel status ID: `51537150250`
+- Context: `Vercel`
+- State: `success`
+- Description: `Deployment has completed`
+- Target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/peUdK76fZJETvfCTWJammJBjv7PV`
+- Completion timestamp: `2026-08-03T10:43:31Z`
+- Production domain certified: `https://davidquinngroup.com`
+- Remote `refs/heads/main` still matched `0ced811e5b4fea6038a9d182ae34a7ecfb460fd3` before production certification, so no newer commit superseded the City Market deployment before certification.
+
+City Market production certification completed:
+
+- `/market/boulder-co-housing-market`, `/market/louisville-co-housing-market`, and `/market/lafayette-co-housing-market` return `200`;
+- canonical URLs remain correct;
+- exactly one H1 is present on representative City Market routes: `What is happening in this city market, what evidence matters, and what should I investigate next?`;
+- concise briefing promise, current market signals, evidence grouped by customer decision relevance, directional-versus-verified treatment, investigation questions, freshness/uncertainty/professional boundaries, Product 3, Search continuation, Neighborhood continuation, Property continuation, Seller continuation, Advisory continuation, LeadCapture, schema, and FAQ behavior remain present;
+- mobile, tablet, and desktop browser checks found one H1, one dominant `Search With Market Context` action, focusable controls, visible focus styling, usable continuations, and no document-level horizontal overflow;
+- no affirmative market-timing certainty, appreciation guarantee, investment recommendation, buy-now conclusion, sell-now conclusion, suitability conclusion, predictive pricing certainty, personalized financial or investment advice, neighborhood ranking, safety conclusion, school-quality conclusion, protected-class steering, demographic desirability, provider ranking, or AI advisory claim was found;
+- brokerage disclosure remains unchanged.
+
+Production regression completed:
+
+- `/`: main content, H1, brokerage text, no document-level horizontal overflow;
+- `/search`: main content, H1, brokerage text, no document-level horizontal overflow;
+- `/buy`: Buyer H1 `Am I prepared to buy?`, no document-level horizontal overflow;
+- `/sell`: Seller H1 `What must be understood before market exposure?`, no document-level horizontal overflow;
+- `/market`: Market index H1 `What is happening here, what evidence matters, and what should I investigate next?`, no document-level horizontal overflow;
+- `/market/boulder-co-housing-market` and `/market/louisville-co-housing-market`: City Market routes rendered with certified governing question;
+- `/market/boulder/mapleton-hill` and `/market/boulder/south-boulder`: Neighborhood routes rendered with certified governing question;
+- `/contact`: main content, H1, no document-level horizontal overflow;
+- `/brokerage-disclosures`: brokerage content, no document-level horizontal overflow;
+- `/properties/32224-poudre-canyon-rd-bellvue-co-ire1363681`: live property route rendered;
+- `/api/search?limit=1`: `200`, existing Search API behavior remained usable with existing database fallback/degraded-provider posture.
+
+Wave 1D program closure completed:
+
+- Market & Neighborhood Discovery Foundation: `REIE_DXT_WAVE_1D_MARKET_NEIGHBORHOOD_DISCOVERY_FOUNDATION_CERTIFIED_AND_CLOSED`
+- Market Briefing Foundation: `REIE_DXT_WAVE_1D_MARKET_BRIEFING_FOUNDATION_CERTIFIED_AND_CLOSED`
+- Neighborhood Place-Orientation Plan: `REIE_DXT_WAVE_1D_NEIGHBORHOOD_PLACE_ORIENTATION_PLAN_CERTIFIED_AND_CLOSED`
+- Neighborhood Place-Orientation runtime: `REIE_DXT_WAVE_1D_NEIGHBORHOOD_PLACE_ORIENTATION_CERTIFIED_AND_CLOSED`
+- City Market Briefing Plan: `REIE_DXT_WAVE_1D_CITY_MARKET_BRIEFING_PLAN_CERTIFIED_AND_CLOSED`
+- City Market Briefing runtime: `REIE_DXT_WAVE_1D_CITY_MARKET_BRIEFING_CERTIFIED_AND_CLOSED`
+- Wave 1D Program: `REIE_DXT_WAVE_1D_MARKET_AND_NEIGHBORHOOD_DISCOVERY_CERTIFIED_AND_CLOSED`
+- No additional Wave 1D runtime phase is required absent production defects.
+
+Protected boundaries preserved:
+
+- City Market implementation runtime scope was limited to `app/market/[city]/page.tsx`.
+- Market index runtime remains unchanged by the City Market implementation.
+- Neighborhood runtime remains unchanged by the City Market implementation.
+- Buyer runtime remains unchanged.
+- Seller runtime remains unchanged.
+- Search runtime remains unchanged.
+- Shared runtime remains unchanged.
+- No route, canonical URL, navigation, footer, Search API, Search ranking, map provider, map behavior, property route, Prisma schema, migration, persistence, localStorage, cookie, telemetry, analytics, CRM, scheduling, email, queue, worker, customer profile, provider integration, AI advisory, production data, deployment configuration, or brokerage disclosure change was made by closure.
+- Brokerage disclosure remains on hold: `EXTERNAL_COMPASS_MARKETING_REVIEW_PENDING`.
+
+Final governed statuses:
+
+- City Market: `REIE_DXT_WAVE_1D_CITY_MARKET_BRIEFING_CERTIFIED_AND_CLOSED`
+- Wave 1D Program: `REIE_DXT_WAVE_1D_MARKET_AND_NEIGHBORHOOD_DISCOVERY_CERTIFIED_AND_CLOSED`
+
+Recommended next gate:
+
+`READY_FOR_REIE_DXT_WAVE_1E_ADVISORY_HANDOFF_AND_CONTACT_DECISION_FLOW_PLANNING_AUTHORIZATION`
+
+Do not begin the next DXT phase, runtime remediation, provider activation, Search changes, map changes, persistence, telemetry, CRM, AI advisory, or shared runtime abstraction without explicit authorization.
+
+Prior handoff retained below for audit history.
+
 PROJECT ATLAS(tm) / REIE DXT Wave 1D City Market Briefing Local Implementation, August 3, 2026:
 
 Workspace:
