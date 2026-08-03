@@ -10,7 +10,7 @@ Product:
 
 ## Latest New-Chat Handoff
 
-PROJECT ATLAS(tm) / REIE Market-Family Continuity Certified And DXT Continuity Program Closed, August 3, 2026:
+PROJECT ATLAS(tm) / REIE DXT 2 Decision Readiness Depth Planning Local Commit, August 3, 2026:
 
 Workspace:
 
@@ -24,32 +24,35 @@ git rev-parse HEAD origin/main
 git log -8 --oneline
 ```
 
-Verified certification baseline:
+Verified planning baseline:
 
 - Branch: `main`
-- Starting HEAD before implementation push: `5886a3321799e8e0cb1d23188f60e584c43dffb5`
-- Starting origin/main before implementation push: `8be70506bae25e9172e0acbb3be58205ad9f0877`
-- Implementation commit: `5886a3321799e8e0cb1d23188f60e584c43dffb5`
-- Implementation commit message: `Complete Market route continuity`
-- Documentation closure commit: created by this closure session; run `git rev-parse HEAD` for exact SHA after the closure commit lands.
-- Repository state after closure: expected clean and aligned with `origin/main`.
+- Starting HEAD: `ef0de37bdc03c720833340f9940fb6c1e6323027`
+- Starting origin/main: `ef0de37bdc03c720833340f9940fb6c1e6323027`
+- Starting ahead/behind: `0 ahead / 0 behind`
+- Starting working tree: clean
+- DXT 2 planning commit: created by the planning session; run `git rev-parse HEAD` for exact SHA.
+- Repository state after local planning: expected clean and `1 ahead / 0 behind`.
 
-Production deployment evidence for implementation:
+Latest documentation deployment evidence:
 
-- Pending status ID: `51559145483`
-- Terminal status ID: `51559261378`
-- Deployment ID: `5730243203`
-- Deployment-status ID: `16294373433`
+- Pending status ID: `51559622550`
+- Terminal status ID: `51559731232`
+- Deployment ID: `5730349375`
+- Deployment-status ID: `16294663302`
 - Terminal state: `success`
 - Description: `Deployment has completed`
-- Commit-status target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/DyCViFV4APV4BR84yVcPAn5cWriz`
-- Deployment target: `https://david-quinn-group-8rde-1v2dmay9m-david-quinns-projects-a0953600.vercel.app`
+- Commit-status target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/B9gJYXtpKaMtWC9BbKGucuX6EEbW`
+- Deployment target: `https://david-quinn-group-8rde-rlfqmni86-david-quinns-projects-a0953600.vercel.app`
 - Production domain: `https://davidquinngroup.com`
-- Completion timestamp: `2026-08-03T16:56:26Z`
-- SHA association: `5886a3321799e8e0cb1d23188f60e584c43dffb5`
+- Completion timestamp: `2026-08-03T17:03:42Z`
+- SHA association: `ef0de37bdc03c720833340f9940fb6c1e6323027`
 
 Governing records:
 
+- DXT 2 route-readiness inventory: `docs/project-atlas/executive-library/REIE-DXT-2-DECISION-READINESS-ROUTE-INVENTORY.md`
+- DXT 2 Decision Readiness Depth architecture: `docs/project-atlas/executive-library/REIE-DXT-2-DECISION-READINESS-ARCHITECTURE.md`
+- DXT 2 first-phase implementation-readiness record: `docs/project-atlas/executive-library/REIE-DXT-2-FIRST-PHASE-IMPLEMENTATION-READINESS.md`
 - Buyer -> Advisory -> Contact Continuity implementation: `docs/project-atlas/executive-library/REIE-DXT-BUYER-ADVISORY-CONTACT-CONTINUITY-IMPLEMENTATION.md`
 - Seller -> Advisory -> Contact Continuity implementation: `docs/project-atlas/executive-library/REIE-DXT-SELLER-ADVISORY-CONTACT-CONTINUITY-IMPLEMENTATION.md`
 - Market -> City Market -> Neighborhood -> Property Continuity plan: `docs/project-atlas/executive-library/REIE-DXT-MARKET-CITY-MARKET-NEIGHBORHOOD-PROPERTY-CONTINUITY-PLAN.md`
@@ -62,6 +65,9 @@ Governing records:
 
 Certified statuses:
 
+- DXT 2 Decision Readiness route inventory: `DXT_2_DECISION_READINESS_ROUTE_INVENTORY_READY`
+- DXT 2 Decision Readiness architecture: `DXT_2_DECISION_READINESS_ARCHITECTURE_READY`
+- DXT 2 first-phase implementation readiness: `DXT_2_FIRST_PHASE_IMPLEMENTATION_READINESS_READY`
 - Buyer/Seller -> Advisory -> Contact Continuity: `REIE_DXT_BUYER_SELLER_ADVISORY_CONTACT_CONTINUITY_CERTIFIED_AND_CLOSED`
 - Buyer/Seller -> Advisory -> Contact Continuity production: `REIE_DXT_BUYER_SELLER_ADVISORY_CONTACT_CONTINUITY_PRODUCTION_CERTIFIED`
 - Satisfied Buyer/Seller continuity planning gate: `READY_FOR_REIE_DXT_BUYER_SELLER_ADVISORY_CONTACT_CONTINUITY_PLANNING_CERTIFICATION`
@@ -75,6 +81,10 @@ Certified statuses:
 
 Runtime scope:
 
+- DXT 2 planning runtime authorization: `false`
+- DXT 2 selected first phase: `PROPERTY_DECISION_READINESS_DEPTH`
+- DXT 2 selected secondary planning phase: `SEARCH_DECISION_WORKSPACE_DEPTH`
+- DXT 2 deferred phase: `MARKET_AND_CITY_MARKET_DECISION_READINESS_DEPTH`
 - Market index runtime file: `app/market/page.tsx`
 - City Market runtime file: `app/market/[city]/page.tsx`
 - Neighborhood runtime file: `app/market/[city]/[slug]/page.tsx`
@@ -88,22 +98,27 @@ Runtime scope:
 
 Protected-system boundary:
 
+- The DXT 2 planning session authorized documentation and deterministic planning checks only. It did not authorize runtime implementation, route or canonical changes, provider activation, Search changes, map/GIS changes, Property changes, Buyer/Seller changes, Market/Neighborhood changes, Advisory/Contact changes, AI advice, financial logic, valuation logic, persistence, telemetry, CRM, email, scheduling, customer profiles, shared runtime abstractions, push, deployment, or production certification.
 - No Search runtime, Search API, Search ranking, Property runtime, Advisory runtime, Contact runtime, Buyer runtime, Seller runtime, form, field, map, provider, API, CRM, email, scheduling, persistence, localStorage, cookie, telemetry, analytics, hidden context, shared route state, shared CTA abstraction, navigation, footer, route, canonical, brokerage-disclosure, Prisma, or deployment configuration change was authorized or performed.
 - Brokerage disclosure remains on hold: `EXTERNAL_COMPASS_MARKETING_REVIEW_PENDING`.
 
-Production certification evidence:
+DXT 2 planning findings:
 
-- `/market` returned `200`; canonical remained `https://davidquinngroup.com/market`; H1 remained `What is happening here, what evidence matters, and what should I investigate next?`; route ownership, Search inventory, Property address-level evaluation, City Market, Neighborhood, Product 3, schema, FAQ, no-hidden-context, and boundary evidence were present.
-- `/market/boulder-co-housing-market`, `/market/louisville-co-housing-market`, and `/market/lafayette-co-housing-market` returned `200`; expected canonicals and H1s were present; City Market remained city-level evidence with Search inventory, Neighborhood place, Property address-fact, Advisory preparation, Product 3, schema, FAQ, and no-hidden-context evidence present.
-- `/market/boulder/mapleton-hill` and `/market/boulder/south-boulder` returned `200`; expected canonicals and H1s were present; Neighborhood remained place orientation with Search property inventory, Property address evaluation, City Market context, Advisory preparation, no-hidden-context, and fair-housing boundary evidence present.
-- Regression routes `/`, `/search`, representative Property, `/buy`, `/sell`, `/contact`, `/contact#advisory-readiness`, `/brokerage-disclosures`, and `/api/search?limit=1` passed HTTP/DOM checks.
-- Browser launch for pixel-level responsive screenshots was blocked by the app process with `kill EPERM`; production DOM and source-level responsive/focusability evidence were used and no blocker was identified.
-- DXT continuity program closure confirms remaining material continuity gaps: `0`.
+- DXT 1 continuity is certified and closed with material continuity gaps: `0`.
+- DXT 2 is not another routing or CTA program. Its governing question is: `Does each certified experience help the customer become sufficiently prepared to make the next real decision?`
+- Route inventory covered `/`, `/search`, representative Property, `/buy`, `/sell`, `/market`, representative City Market, representative Neighborhood, `/contact`, `/contact#advisory-readiness`, `/grand-plan`, `/home-worth`, and `/compare`.
+- Selected first phase: `PROPERTY_DECISION_READINESS_DEPTH`.
+- Rationale: Property is the highest-value route-local first phase because it is where customers most directly decide whether to spend more time, ask a property-specific question, tour, compare, or prepare a professional conversation. It can use existing public listing facts and Product 3.1 evidence without providers, persistence, AI, telemetry, Search changes, or shared runtime abstractions.
+- Secondary planning phase: `SEARCH_DECISION_WORKSPACE_DEPTH`.
+- Deferred phase: `MARKET_AND_CITY_MARKET_DECISION_READINESS_DEPTH` because deeper provenance may require provider-boundary review.
 
 Validation to rerun if future continuity work resumes:
 
 ```bash
 git diff --check
+npm run check:dxt-2-decision-readiness-route-inventory
+npm run check:dxt-2-decision-readiness-architecture
+npm run check:dxt-2-first-phase-implementation-readiness
 npm run check:dxt-market-continuity-implementation
 npm run check:dxt-city-market-continuity-implementation
 npm run check:dxt-neighborhood-continuity-implementation
@@ -134,9 +149,13 @@ npm run build
 
 Next gate:
 
-`READY_FOR_REIE_DXT_2_DECISION_READINESS_DEPTH_PLANNING_AUTHORIZATION`
+`READY_FOR_REIE_DXT_2_PROPERTY_DECISION_READINESS_DEPTH_BOUNDED_IMPLEMENTATION_AUTHORIZATION`
 
-Do not begin DXT 2 planning or implementation, runtime remediation, another continuity phase, shared CTA abstraction, shared route state, Search or Property runtime changes, Contact or Advisory runtime changes, forms/APIs/CRM/email/scheduling changes, hidden context, telemetry, analytics, persistence, navigation/footer changes, brokerage-disclosure changes, or dependency upgrades without explicit authorization.
+Secondary gate:
+
+`READY_FOR_REIE_DXT_2_SEARCH_DECISION_WORKSPACE_DEPTH_PLANNING_AUTHORIZATION`
+
+Do not begin DXT 2 runtime implementation, push, deployment, production certification, Search runtime changes, Property runtime changes, Buyer/Seller changes, Market/Neighborhood changes, Advisory/Contact changes, forms/APIs/CRM/email/scheduling changes, provider activation, AI advice, financial logic, valuation logic, hidden context, telemetry, analytics, persistence, navigation/footer changes, brokerage-disclosure changes, shared runtime abstractions, or dependency upgrades without explicit authorization.
 
 Prior handoff retained below for audit history.
 
