@@ -10,6 +10,108 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE DXT Wave 1C Seller Journey Certified And Wave 1D Foundation Closed, August 2, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Current certified baseline:
+
+- Branch: `main`
+- Seller implementation SHA: `7b9412b63c86167561b5a2bf7646bb95879e08bd`
+- Seller implementation message: `Simplify Seller decision journey`
+- Seller implementation parent: `b28f3c8a91f4b56c1c94f9041f2c8b642500448e`
+- Seller production certification record: `docs/project-atlas/executive-library/REIE-DXT-WAVE-1C-SELLER-JOURNEY-PRODUCTION-CERTIFICATION.md`
+- Wave 1D closure record: `docs/project-atlas/executive-library/REIE-DXT-WAVE-1D-MARKET-NEIGHBORHOOD-DISCOVERY-FOUNDATION-CLOSURE.md`
+
+Seller implementation deployment evidence:
+
+- Initial pending GitHub/Vercel status ID: `51519792280`
+- Terminal GitHub/Vercel status ID: `51519830963`
+- Context: `Vercel`
+- State: `success`
+- Description: `Deployment has completed`
+- Target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/CQgWWcjoJK9Q2nJ8jKkg5B8jm2up`
+- Completion timestamp: `2026-08-03T02:33:26Z`
+- Production domain certified: `https://davidquinngroup.com`
+- Remote `refs/heads/main` still matched `7b9412b63c86167561b5a2bf7646bb95879e08bd` before production certification, so no newer commit superseded the Seller deployment before certification.
+
+Seller production certification completed:
+
+- `/sell` returns `200`;
+- canonical remains `https://davidquinngroup.com/sell`;
+- one H1 is present: `What must be understood before market exposure?`;
+- opening promise is present;
+- dominant action is `Request Seller Review`;
+- Home Value Estimator remains reachable and functional;
+- Home Value Estimator remains context-setting only;
+- Seller Readiness or Home Worth, Market Context, Search Inventory, and Advisory Guidance continuations remain available;
+- property-preparation, evidence-gap, pricing-context, buyer-objection, transaction-readiness, questions-to-verify, professional-boundary, and trust-boundary guidance remain present;
+- no affirmative valuation certainty, appraisal equivalence, guaranteed pricing, guaranteed sale outcome, guaranteed timing, automated listing-price recommendation, predictive pricing certainty, investment conclusion, suitability conclusion, definitive renovation return, personalized tax advice, personalized legal advice, or AI-advisory claim was found;
+- mobile, tablet, and desktop browser checks found one H1, coherent heading order, focusable controls, visible primary-action focus styling, and no document-level horizontal overflow;
+- brokerage disclosure link and treatment remain unchanged.
+
+Production regression completed:
+
+- `/`: `200`, main content, H1, navigation signals, brokerage text, no horizontal overflow;
+- `/search`: `200`, main content, H1, navigation signals, brokerage text, no horizontal overflow;
+- `/buy`: `200`, Buyer marker, H1 `Am I prepared to buy?`, no horizontal overflow;
+- `/sell`: `200`, Seller marker, H1 `What must be understood before market exposure?`, no horizontal overflow;
+- `/contact`: `200`, main content, H1, no horizontal overflow;
+- `/brokerage-disclosures`: `200`, brokerage content, no horizontal overflow;
+- `/properties/32224-poudre-canyon-rd-bellvue-co-ire1363681`: `200`, live property route rendered;
+- `/api/search?limit=1`: `200`, existing Search API behavior remained usable and unchanged.
+
+Wave 1D foundation certification completed:
+
+- Planning record: `docs/project-atlas/executive-library/REIE-DXT-WAVE-1D-MARKET-NEIGHBORHOOD-DISCOVERY-PLANNING.md`
+- Contract record: `docs/project-atlas/executive-library/REIE-DXT-WAVE-1D-MARKET-NEIGHBORHOOD-DISCOVERY-FOUNDATION-CONTRACT.md`
+- Readiness record: `docs/project-atlas/executive-library/REIE-DXT-WAVE-1D-MARKET-NEIGHBORHOOD-DISCOVERY-IMPLEMENTATION-READINESS.md`
+- Closure record: `docs/project-atlas/executive-library/REIE-DXT-WAVE-1D-MARKET-NEIGHBORHOOD-DISCOVERY-FOUNDATION-CLOSURE.md`
+- Deterministic validation: `npm run check:dxt-wave-1d-market-neighborhood-discovery-foundation`
+- Foundation status: `REIE_DXT_WAVE_1D_MARKET_NEIGHBORHOOD_DISCOVERY_FOUNDATION_CERTIFIED_AND_CLOSED`
+
+Wave 1D certified foundation findings:
+
+- Market pages are established as concise customer briefings, not governance reports, internal KPI dashboards, raw data dumps, predictive certainty engines, or investment recommendation systems.
+- Neighborhood pages are established as place-orientation experiences before dense evidence.
+- The foundation defines a coherent transition from place understanding to property, Search, Market, Neighborhood, Buyer, Seller, and Advisory continuations.
+- Evidence, limitation, freshness, and professional-boundary placement is defined at the point where customers are asked to rely on context.
+- Future Market and Neighborhood implementation phases remain separate and bounded.
+- No shared Market/Neighborhood runtime abstraction, runtime schema, component framework, route change, provider activation, Search change, persistence, telemetry, CRM expansion, or production-data change was introduced.
+
+Protected boundaries preserved:
+
+- Seller runtime was modified only in implementation SHA `7b9412b63c86167561b5a2bf7646bb95879e08bd`, with customer-facing runtime scope limited to `app/sell/page.tsx`.
+- Buyer runtime remains unchanged from certified Buyer production baseline.
+- Market runtime remains unchanged.
+- Neighborhood runtime remains unchanged.
+- Shared runtime remains unchanged.
+- No route, canonical URL, navigation, footer, Search API, Search ranking, map provider, map behavior, property route, Prisma schema, migration, persistence, localStorage, cookie, telemetry, analytics, CRM, scheduling, email, queue, worker, customer profile, provider integration, AI advisory, valuation engine, production data, deployment configuration, or brokerage disclosure change was made by certification closure.
+- Brokerage disclosure remains on hold: `EXTERNAL_COMPASS_MARKETING_REVIEW_PENDING`.
+
+Final governed statuses:
+
+- Seller: `REIE_DXT_WAVE_1C_SELLER_JOURNEY_CERTIFIED_AND_CLOSED`
+- Wave 1D Foundation: `REIE_DXT_WAVE_1D_MARKET_NEIGHBORHOOD_DISCOVERY_FOUNDATION_CERTIFIED_AND_CLOSED`
+
+Recommended next gate:
+
+`READY_FOR_REIE_DXT_WAVE_1D_MARKET_BRIEFING_FOUNDATION_BOUNDED_IMPLEMENTATION_AUTHORIZATION`
+
+Do not begin Market or Neighborhood runtime implementation without explicit authorization.
+
+Prior handoff retained below for audit history.
+
 PROJECT ATLAS(tm) / REIE DXT Wave 1C Seller Journey Local Implementation And Wave 1D Foundation, August 2, 2026:
 
 Workspace:
