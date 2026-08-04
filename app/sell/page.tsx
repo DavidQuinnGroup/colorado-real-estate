@@ -161,6 +161,65 @@ const SELLER_READINESS_THRESHOLDS = [
   },
 ];
 
+const SELLER_PROFESSIONAL_PREPARATION = [
+  {
+    label: 'Evidence currently available',
+    body: 'Seller preparation themes, Seller Decision Readiness, Seller Review, Home Worth context, Market context, Search inventory, Advisory preparation, and Contact path selection are visible in this public experience.',
+  },
+  {
+    label: 'Evidence requiring verification',
+    body: 'Property condition, repairs, permits, maintenance records, disclosure materials, title, HOA, insurance, tax, inspection, appraisal, contract, pricing-context, and closing questions still require source or professional review.',
+  },
+  {
+    label: 'Property-condition assumptions',
+    body: 'Preparation assumes the property, records, access, showing readiness, repair status, documentation, and buyer-visible friction need confirmation before exposure.',
+  },
+  {
+    label: 'Pricing-context assumptions',
+    body: 'Home Worth, Market, and Search context can frame questions, but pricing context depends on property evidence, competition, timing, and professional review.',
+  },
+  {
+    label: 'Material unknowns',
+    body: 'This page does not confirm buyer response, final condition impact, repair scope, disclosure sufficiency, net proceeds, contract terms, legal or tax requirements, or closing obligations.',
+  },
+  {
+    label: 'What REIE cannot determine',
+    body: 'REIE cannot determine value, listing price, sale price, timing, negotiation strategy, tax position, legal position, investment merit, representation status, or professional conclusions from this page.',
+  },
+];
+
+const SELLER_PROFESSIONAL_PRIORITIES = [
+  'Property condition and evidence gaps',
+  'Pricing-context assumptions',
+  'Buyer-objection preparation',
+  'Market-exposure preparation',
+  'Transaction and closing preparation',
+  'Legal, tax, title, insurance, HOA, inspection, appraisal, or professional review',
+];
+
+const SELLER_PROFESSIONAL_PATHWAYS = [
+  {
+    label: 'Seller Review',
+    href: '#seller-intake',
+    body: 'Use first when property evidence, preparation gaps, or market-exposure questions are ready for seller-specific review.',
+  },
+  {
+    label: 'Advisory',
+    href: '/contact#advisory-readiness',
+    body: 'Use when the next step is organizing professional questions before a focused conversation.',
+  },
+  {
+    label: 'General Contact',
+    href: '/contact#contact-route-choice',
+    body: 'Use only when the customer wants to begin a general conversation without transferring Seller context.',
+  },
+  {
+    label: 'Continue Research',
+    href: '/market',
+    body: 'Use when Market, Search, or Home Worth context should be reviewed before beginning a conversation.',
+  },
+];
+
 export default function SellPage() {
   return (
     <main
@@ -203,6 +262,20 @@ export default function SellPage() {
       data-dxt-2-seller-readiness-valuation="false"
       data-dxt-2-seller-readiness-pricing-recommendation="false"
       data-dxt-2-seller-readiness-sale-prediction="false"
+      data-dxt-3-seller-professional-preparation="implemented-local"
+      data-dxt-3-seller-professional-runtime-scope="app/sell/page.tsx"
+      data-dxt-3-seller-professional-existing-evidence-only="true"
+      data-dxt-3-seller-professional-estimator-change="false"
+      data-dxt-3-seller-professional-advisory-change="false"
+      data-dxt-3-seller-professional-contact-change="false"
+      data-dxt-3-seller-professional-api-change="false"
+      data-dxt-3-seller-professional-form-change="false"
+      data-dxt-3-seller-professional-hidden-context="false"
+      data-dxt-3-seller-professional-url-context="false"
+      data-dxt-3-seller-professional-persistence="false"
+      data-dxt-3-seller-professional-telemetry="false"
+      data-dxt-3-seller-professional-customer-profile="false"
+      data-dxt-3-seller-professional-shared-runtime="false"
     >
       <section
         className="px-5 py-20 sm:px-8 sm:py-24 lg:px-12"
@@ -346,6 +419,86 @@ export default function SellPage() {
                 No appraisal equivalence, valuation certainty, listing-price recommendation, sale-price prediction, guaranteed
                 pricing, guaranteed sale, guaranteed timing, market-timing recommendation, automated pricing strategy, investment
                 advice, legal advice, tax advice, suitability conclusion, or AI valuation or professional advice is provided here.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section
+        className="border-b border-white/8 bg-[#0c141c] px-5 py-16 sm:px-8 sm:py-20 lg:px-12"
+        data-testid="dxt-3-seller-professional-preparation"
+        data-dxt-3-seller-professional-role="evidence-questions-priorities-pathways-boundaries"
+        data-dxt-3-seller-professional-conclusion="false"
+      >
+        <div className="mx-auto grid w-full max-w-[1180px] gap-8 lg:grid-cols-[0.78fr_1.22fr] lg:items-start">
+          <div>
+            <p className="text-[11px] font-black uppercase tracking-[0.26em] text-cyan-100">Seller Professional Preparation</p>
+            <h2 className="mt-4 text-3xl font-black leading-tight text-white sm:text-4xl">
+              What should I organize before beginning a professional conversation about selling?
+            </h2>
+            <p className="mt-5 text-sm leading-7 text-white/64">
+              Use this frame to carry existing Seller evidence, assumptions, unknowns, and verification questions into the right next
+              conversation without creating a valuation, pricing decision, representation, or hidden customer profile.
+            </p>
+            <div className="mt-6 rounded-[8px] border border-cyan-100/16 bg-cyan-100/[0.055] p-5">
+              <p className="text-[11px] font-black uppercase tracking-[0.2em] text-cyan-100">Next preparation steps</p>
+              <p className="mt-3 text-sm leading-7 text-white/64">
+                Gather public evidence, separate assumptions from unknowns, choose the right pathway, and keep private records,
+                estimator inputs, pricing assumptions, and customer information out of public URLs.
+              </p>
+            </div>
+          </div>
+
+          <div className="grid gap-5">
+            <div className="grid gap-4 md:grid-cols-2">
+              {SELLER_PROFESSIONAL_PREPARATION.map((item) => (
+                <article key={item.label} className="rounded-[8px] border border-white/10 bg-white/[0.035] p-5">
+                  <h3 className="text-sm font-black uppercase tracking-[0.16em] text-cyan-100">{item.label}</h3>
+                  <p className="mt-3 text-sm leading-7 text-white/62">{item.body}</p>
+                </article>
+              ))}
+            </div>
+
+            <div className="grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">
+              <div className="rounded-[8px] border border-white/10 bg-black/18 p-5">
+                <p className="text-[11px] font-black uppercase tracking-[0.22em] text-cyan-100/72">Questions to carry forward</p>
+                <p className="mt-3 text-sm leading-7 text-white/62">
+                  Which evidence is ready, which items need source review, which condition or pricing assumptions matter, and which
+                  professional should review title, HOA, insurance, inspection, appraisal, contract, legal, tax, or closing questions?
+                </p>
+              </div>
+              <div className="rounded-[8px] border border-white/10 bg-black/18 p-5">
+                <p className="text-[11px] font-black uppercase tracking-[0.22em] text-cyan-100/72">Conversation priorities</p>
+                <ul className="mt-3 grid gap-2 text-sm leading-6 text-white/62 sm:grid-cols-2">
+                  {SELLER_PROFESSIONAL_PRIORITIES.map((priority) => (
+                    <li key={priority}>{priority}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            <div>
+              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-cyan-100/72">Appropriate professional pathway</p>
+              <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                {SELLER_PROFESSIONAL_PATHWAYS.map((pathway) => (
+                  <Link
+                    key={pathway.label}
+                    href={pathway.href}
+                    className="rounded-[8px] border border-white/10 bg-white/[0.035] p-4 text-white transition hover:border-white/24 hover:bg-white/[0.06] focus:outline-none focus:ring-2 focus:ring-cyan-100 focus:ring-offset-2 focus:ring-offset-[#0b1117]"
+                  >
+                    <span className="block text-[11px] font-black uppercase tracking-[0.14em] text-cyan-100">{pathway.label}</span>
+                    <span className="mt-2 block text-xs leading-6 text-white/58">{pathway.body}</span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-[8px] border border-cyan-100/16 bg-cyan-100/[0.055] p-5">
+              <p className="text-sm font-bold leading-7 text-white/66">
+                Privacy, consent, representation, valuation, legal, tax, and professional boundaries remain unchanged. This section does not
+                collect answers, save choices, prefill forms, expand URLs, transfer hidden Seller context, change consent, create
+                representation, or provide professional advice.
               </p>
             </div>
           </div>

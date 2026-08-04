@@ -144,6 +144,8 @@
     "scripts/checkDxt3ContactPathSelectionQualityImplementation.ts",
     "scripts/checkDxt3NextPhaseAfterContactPlan.ts",
     "scripts/checkDxt3BuyerProfessionalPreparationImplementation.ts",
+    "scripts/checkDxt3SellerProfessionalPreparationImplementation.ts",
+    "scripts/checkDxt3NextPhaseAfterSellerPlan.ts",
     "scripts/decisionGuideValidation.ts",
     "scripts/checkBoulderDecisionGuide.ts",
     "scripts/checkLouisvilleDecisionGuide.ts",

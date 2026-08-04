@@ -10,6 +10,131 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE DXT 3 Seller Professional Preparation Local Implementation, August 4, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Current local baseline:
+
+- Branch: `main`
+- Pre-implementation HEAD: `e9ed8b1effee604342dc1bbdcb15fdea37db8b2c`
+- Pre-implementation origin/main: `e9ed8b1effee604342dc1bbdcb15fdea37db8b2c`
+- Buyer Professional Preparation certification status: `REIE_DXT_3_BUYER_PROFESSIONAL_PREPARATION_CERTIFIED_AND_CLOSED`
+- Seller Professional Preparation plan status: `REIE_DXT_3_SELLER_PROFESSIONAL_PREPARATION_PLAN_CERTIFIED_AND_CLOSED`
+- Seller implementation SHA: assigned by the local implementation commit
+- Production domain: `https://davidquinngroup.com`
+
+Governing records:
+
+- DXT 3 route inventory: `docs/project-atlas/executive-library/REIE-DXT-3-DECISION-QUALITY-PROFESSIONAL-PREPARATION-ROUTE-INVENTORY.md`
+- DXT 3 professional-preparation architecture: `docs/project-atlas/executive-library/REIE-DXT-3-DECISION-QUALITY-PROFESSIONAL-PREPARATION-ARCHITECTURE.md`
+- Buyer Professional Preparation production certification: `docs/project-atlas/executive-library/REIE-DXT-3-BUYER-PROFESSIONAL-PREPARATION-PRODUCTION-CERTIFICATION.md`
+- Seller Professional Preparation plan certification: `docs/project-atlas/executive-library/REIE-DXT-3-SELLER-PROFESSIONAL-PREPARATION-PLAN-CERTIFICATION.md`
+- Seller Professional Preparation implementation record: `docs/project-atlas/executive-library/REIE-DXT-3-SELLER-PROFESSIONAL-PREPARATION-IMPLEMENTATION.md`
+- Next phase after Seller plan: `docs/project-atlas/executive-library/REIE-DXT-3-NEXT-PHASE-AFTER-SELLER-PLAN.md`
+
+Workstream A local implementation:
+
+- Runtime file changed: `app/sell/page.tsx`
+- Runtime scope: `ROUTE_LOCAL_SELLER_ONLY`
+- Deterministic implementation check: `scripts/checkDxt3SellerProfessionalPreparationImplementation.ts`
+- Implementation status: `DXT_3_SELLER_PROFESSIONAL_PREPARATION_IMPLEMENTED_LOCAL_COMMIT_ONLY`
+- Local certification recommendation: `READY_FOR_DXT_3_SELLER_PROFESSIONAL_PREPARATION_LOCAL_CERTIFICATION`
+
+Seller professional-preparation behavior:
+
+- Existing Seller H1 remains: `What must be understood before market exposure?`
+- Governing preparation question: `What should I organize before beginning a professional conversation about selling?`
+- The Seller route includes one concise `Seller Professional Preparation` frame.
+- The frame distinguishes evidence currently available, evidence requiring verification, property-condition assumptions, pricing-context assumptions, material unknowns, questions to carry forward, conversation priorities, appropriate professional pathway, what REIE cannot determine, next preparation steps, and privacy, consent, representation, valuation, legal, tax, and professional boundaries.
+- Home Value Estimator remains unchanged and context-setting only.
+- Seller Review remains seller-specific through `#seller-intake`.
+- Advisory remains focused preparation through `/contact#advisory-readiness`.
+- Contact remains general conversation initiation through `/contact#contact-route-choice`.
+- Market and Search remain continued evidence-gathering paths.
+- No form, field, consent, submission behavior, API, CRM, email, scheduling, URL-context expansion, automatic routing, inferred intent, hidden context, persistence, telemetry, customer profile, shared runtime component, pricing logic, valuation logic, or Home Value Estimator change was added.
+
+Workstream B next-phase planning:
+
+- Selected primary next phase: `CROSS_ROUTE_PROFESSIONAL_PREPARATION_CONSISTENCY`
+- Selected secondary planning phase: `DXT_3_COMPLETION_ASSESSMENT`
+- Deferred or protected phase: `PROPERTY_INQUIRY_PREPARATION_QUALITY`
+- Proposed runtime ownership: `documentation-and-deterministic-validation-only`
+- Shared runtime finding: `ROUTE_LOCAL_OR_EXISTING_COMPONENTS_PREFERRED`
+- DXT 3 completion assessment remains premature until cross-route professional preparation consistency is certified or explicitly declined.
+
+Protected systems:
+
+- Home Value Estimator changed: `false`
+- Seller intake or review behavior changed: `false`
+- Buyer changed: `false`
+- Search changed: `false`
+- Property changed: `false`
+- Market changed: `false`
+- Neighborhood changed: `false`
+- Advisory changed: `false`
+- Contact changed: `false`
+- forms, fields, consent, submissions changed: `false`
+- APIs changed: `false`
+- CRM/email/scheduling changed: `false`
+- persistence, localStorage, cookies, telemetry, analytics changed: `false`
+- URL-context expansion, inferred intent, automatic routing, or form prefill added: `false`
+- hidden context or automatic route-context transfer added: `false`
+- customer profile added: `false`
+- shared runtime component or schema added: `false`
+- navigation, footer, brokerage disclosure changed: `false`
+
+Validation commands for this local implementation:
+
+```bash
+git diff --check
+npm run check:dxt-3-seller-professional-preparation-implementation
+npm run check:dxt-3-next-phase-after-seller-plan
+npm run check:dxt-3-professional-preparation-architecture
+npm run check:dxt-3-buyer-professional-preparation-implementation
+npm run check:dxt-3-next-phase-after-contact-plan
+npm run check:dxt-2-seller-decision-readiness-depth-expansion-implementation
+npm run check:dxt-seller-advisory-contact-continuity-implementation
+npm run check:dxt-wave-1c-seller-journey-simplification
+npm run check:seller-journey-safety
+npm run check:seller-readiness-advancement
+npm run check:reie-seller-confidence-experience
+npm run check:reie-seller-confidence-experience-v8
+npm run check:property-seller-evidence-readiness
+npm run check:seller-lead-schema-safety
+npm run check:cim-privacy-consent-data-minimization-gate
+npm run check:search-runtime-safety
+npm run check:property-route-safety
+npm run check:map-rendering-safety
+npm run check:public-runtime-safety
+npm run check:public-trust-readiness
+npm run check:dxt-wave-1e-advisory-handoff-implementation
+npm run check:dxt-wave-1e-contact-decision-flow-implementation
+npm run typecheck
+npm run lint
+npm run check:fast
+npm run build
+```
+
+Next gates:
+
+- Primary: `READY_FOR_REIE_DXT_3_SELLER_PROFESSIONAL_PREPARATION_LOCAL_CERTIFICATION_AND_PUSH_AUTHORIZATION`
+- Secondary: `READY_FOR_REIE_DXT_3_CROSS_ROUTE_PROFESSIONAL_PREPARATION_CONSISTENCY_PLAN_CERTIFICATION`
+
+Do not push, deploy, production-certify, begin cross-route consistency certification, begin DXT 3 completion assessment, change Home Value Estimator, modify Seller intake/forms/APIs/CRM/email/scheduling, add persistence or telemetry, introduce hidden context, create customer profiles, or create shared runtime abstractions without explicit authorization.
+
+Prior handoff retained below for audit history.
+
 PROJECT ATLAS(tm) / REIE DXT 3 Buyer Professional Preparation Production Certification And Seller Professional Preparation Plan Closure, August 4, 2026:
 
 Workspace:
