@@ -133,6 +133,65 @@ const BUYER_HANDOFF_BOUNDARIES = [
   'Contact begins a general conversation and does not receive hidden Buyer context, saved searches, planner inputs, financial assumptions, or customer information from this page.',
 ];
 
+const BUYER_PROFESSIONAL_PREPARATION_EVIDENCE = [
+  {
+    label: 'Evidence available now',
+    body: 'Buyer preparation themes, the Buyer Decision Workspace, financing-readiness education, Search paths, Market context, Property verification prompts, and Advisory and Contact continuations are available in this public Buyer experience.',
+  },
+  {
+    label: 'Evidence still needing verification',
+    body: 'Lender requirements, loan terms, taxes, insurance, HOA obligations, inspection findings, title matters, contract terms, closing costs, cash needed, and Property-specific facts require source or professional review.',
+  },
+  {
+    label: 'Assumptions',
+    body: 'Budget range, timing, criteria, decision partners, financing readiness, daily-life tradeoffs, and Property priorities remain preparation assumptions until reviewed with the appropriate professional or source.',
+  },
+  {
+    label: 'Unknowns',
+    body: 'This page does not confirm lender requirements, Property condition, insurability, title status, appraisal review, contract obligations, legal or tax issues, or whether a specific home is the right next step.',
+  },
+];
+
+const BUYER_PROFESSIONAL_PREPARATION_QUESTIONS = [
+  'Which financing assumptions should be reviewed by a lender or financial professional before they shape a search?',
+  'Which Property facts, condition signals, HOA details, title matters, insurance questions, or inspection issues need source review?',
+  'Which Search or Market signals are context only, and which raise questions for a focused conversation?',
+  'Which contract, timing, legal, tax, appraisal, or closing questions should be carried to the appropriate professional?',
+];
+
+const BUYER_PROFESSIONAL_PREPARATION_PRIORITIES = [
+  {
+    label: 'Financing assumptions',
+    body: 'Prepare questions about lender review, cash needed, payment assumptions, closing costs, and documentation without treating this page as a financing decision.',
+  },
+  {
+    label: 'Property verification',
+    body: 'Prepare questions about condition, records, inspection, title, HOA, insurance, and other address-level facts before relying on a specific home.',
+  },
+  {
+    label: 'Transaction preparation',
+    body: 'Prepare questions about timing, contract terms, contingencies, professional review, and what remains unresolved before the next step.',
+  },
+];
+
+const BUYER_PROFESSIONAL_PREPARATION_PATHWAYS = [
+  {
+    label: 'Advisory',
+    href: '/contact#advisory-readiness',
+    body: 'Use when the Buyer evidence, assumptions, unknowns, and questions need focused organization before a professional conversation.',
+  },
+  {
+    label: 'General Contact',
+    href: '/contact#contact-route-choice',
+    body: 'Use when the conversation is ready to begin and the need is not limited to one Property or a single verification topic.',
+  },
+  {
+    label: 'Continue Search',
+    href: '/search',
+    body: 'Use when more inventory, comparison, or Property-level evidence should be reviewed before outreach.',
+  },
+];
+
 export default function BuyPage() {
   const buyerDecisionWorkspace = buildBuyerDecisionWorkspace({
     searchHref: '/search',
@@ -361,6 +420,103 @@ export default function BuyPage() {
                 No loan approval, lending eligibility decision, affordability result, buying-capacity conclusion, underwriting outcome,
                 credit interpretation, lender ordering, loan-product recommendation, individual financial advice, investment advice, tax advice,
                 legal advice, suitability conclusion, hidden context, persistence, telemetry, or AI advice is created here.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section
+        className="px-5 pb-12 sm:px-8 lg:px-12"
+        data-testid="dxt-3-buyer-professional-preparation"
+        data-dxt-3-buyer-professional-preparation="implemented-local"
+        data-dxt-3-buyer-professional-runtime-scope="app/buy/page.tsx"
+        data-dxt-3-buyer-professional-existing-evidence-only="true"
+        data-dxt-3-buyer-professional-financing-planner-change="false"
+        data-dxt-3-buyer-professional-search-change="false"
+        data-dxt-3-buyer-professional-property-change="false"
+        data-dxt-3-buyer-professional-seller-change="false"
+        data-dxt-3-buyer-professional-advisory-change="false"
+        data-dxt-3-buyer-professional-contact-change="false"
+        data-dxt-3-buyer-professional-api-change="false"
+        data-dxt-3-buyer-professional-form-change="false"
+        data-dxt-3-buyer-professional-hidden-context="false"
+        data-dxt-3-buyer-professional-url-context="false"
+        data-dxt-3-buyer-professional-persistence="false"
+        data-dxt-3-buyer-professional-telemetry="false"
+        data-dxt-3-buyer-professional-customer-profile="false"
+        data-dxt-3-buyer-professional-shared-runtime="false"
+        data-dxt-buyer-hierarchy-role="professional-preparation"
+      >
+        <div className="mx-auto grid w-full max-w-[1180px] gap-8 border border-cyan-100/14 bg-white/[0.035] p-5 sm:p-8 lg:grid-cols-[0.78fr_1.22fr]">
+          <div>
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100/72">Buyer Professional Preparation</p>
+            <h2 className="mt-3 text-3xl font-black leading-tight tracking-normal text-white sm:text-4xl">
+              What should I organize before beginning a professional conversation about buying?
+            </h2>
+            <p className="mt-5 text-sm leading-7 text-white/62">
+              Use this preparation frame to organize public Buyer evidence, assumptions, unknowns, and questions before Advisory or
+              Contact. It does not collect answers, save choices, transfer hidden context, prefill forms, or use Buyer Financing Planner inputs.
+            </p>
+            <p className="mt-5 border border-cyan-100/12 bg-cyan-100/[0.045] p-4 text-xs font-bold leading-6 text-cyan-100/70">
+              What REIE cannot determine: lender decisions, loan terms, approval, qualification, affordability, buying power, underwriting,
+              credit readiness, lender fit, legal or tax outcomes, valuation, investment merit, suitability, representation, or professional advice.
+            </p>
+          </div>
+
+          <div className="grid gap-4">
+            <div className="grid gap-3 sm:grid-cols-2">
+              {BUYER_PROFESSIONAL_PREPARATION_EVIDENCE.map((item) => (
+                <article key={item.label} className="border border-white/10 bg-[#071017]/72 p-4">
+                  <p className="text-[9px] font-black uppercase tracking-[0.18em] text-cyan-100/70">{item.label}</p>
+                  <p className="mt-3 text-xs leading-6 text-white/58">{item.body}</p>
+                </article>
+              ))}
+            </div>
+
+            <div className="grid gap-3 border border-white/10 bg-black/18 p-4">
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100/72">Questions to carry forward</p>
+              <div className="grid gap-2">
+                {BUYER_PROFESSIONAL_PREPARATION_QUESTIONS.map((question) => (
+                  <p key={question} className="border border-white/10 bg-white/[0.035] p-3 text-xs font-bold leading-6 text-white/58">
+                    {question}
+                  </p>
+                ))}
+              </div>
+            </div>
+
+            <div className="grid gap-3 md:grid-cols-3">
+              {BUYER_PROFESSIONAL_PREPARATION_PRIORITIES.map((priority) => (
+                <article key={priority.label} className="border border-cyan-100/12 bg-cyan-100/[0.04] p-4">
+                  <p className="text-[9px] font-black uppercase tracking-[0.16em] text-cyan-100/70">Conversation priority</p>
+                  <h3 className="mt-2 text-sm font-black leading-tight text-white">{priority.label}</h3>
+                  <p className="mt-3 text-xs leading-6 text-white/56">{priority.body}</p>
+                </article>
+              ))}
+            </div>
+
+            <div className="border border-cyan-100/12 bg-[#071017]/78 p-4">
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100/72">Appropriate professional pathway</p>
+              <p className="mt-3 text-xs leading-6 text-white/50">
+                Next preparation steps depend on what remains unresolved. Advisory organizes the focused conversation, Contact begins a
+                general conversation, and Search continues evidence gathering. Property-specific questions still belong with the Property route.
+              </p>
+              <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                {BUYER_PROFESSIONAL_PREPARATION_PATHWAYS.map((pathway) => (
+                  <Link
+                    key={pathway.label}
+                    href={pathway.href}
+                    className="border border-white/10 bg-white/[0.035] p-4 text-white no-underline transition hover:bg-white/[0.07] focus:outline-none focus:ring-2 focus:ring-cyan-100/70"
+                  >
+                    <span className="text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100/72">{pathway.label}</span>
+                    <span className="mt-2 block text-xs leading-5 text-white/50">{pathway.body}</span>
+                  </Link>
+                ))}
+              </div>
+              <p className="mt-4 text-xs leading-6 text-white/42">
+                Privacy, representation, and professional boundaries: this page uses visible public context only and does not create
+                consent, representation, fiduciary duties, customer records, CRM classification, email, scheduling, persistence, telemetry,
+                customer profiles, URL context, hidden transfer, recommendations, scores, or professional conclusions.
               </p>
             </div>
           </div>
