@@ -10,7 +10,7 @@ Product:
 
 ## Latest New-Chat Handoff
 
-PROJECT ATLAS(tm) / REIE DXT 3 Property Professional Preparation Local Implementation, August 4, 2026:
+PROJECT ATLAS(tm) / REIE DXT 3 Property Professional Preparation Production Certification And Advisory Plan Closure, August 4, 2026:
 
 Workspace:
 
@@ -24,23 +24,24 @@ git rev-parse HEAD origin/main
 git log -8 --oneline
 ```
 
-Verified implementation baseline:
+Current certified baseline:
 
 - Branch: `main`
-- Pre-implementation HEAD: `72f4949fe367f8a79304bd8e208466baa61c9cd6`
-- Pre-implementation origin/main: `a1671b21892a7f0302703197c757e5e93c2c840a`
-- Pre-implementation ahead/behind: `1 ahead / 0 behind`
-- Pre-implementation working tree: clean
-- DXT 3 planning commit: `72f4949fe367f8a79304bd8e208466baa61c9cd6`
-- Planning commit message: `Plan DXT 3 professional preparation`
-- Planning commit parent: `a1671b21892a7f0302703197c757e5e93c2c840a`
-- Planning commit file count: `9`
-- Latest production deployment pending status ID: `51585793525`
-- Latest production deployment terminal status ID: `51585851353`
-- Latest production deployment state: `success`
-- Latest production deployment target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/FTcs83NPhUXgAam3jcEX9XehHmG3`
-- Latest production deployment completion: `2026-08-04T01:15:04Z`
-- Implementation commit: assigned by this local implementation session
+- Planning SHA: `72f4949fe367f8a79304bd8e208466baa61c9cd6`
+- Planning message: `Plan DXT 3 professional preparation`
+- Property implementation SHA: `e012c2543d2018e46b8848d981b651378a2c2ec4`
+- Property implementation message: `Implement Property professional preparation`
+- Documentation closure SHA: assigned by the documentation-only closure commit
+- Pre-closure remote SHA: `e012c2543d2018e46b8848d981b651378a2c2ec4`
+- Property implementation deployment pending status ID: `51588085397`
+- Property implementation deployment terminal status ID: `51588141024`
+- Property implementation deployment ID: `5736867034`
+- Property implementation deployment-status ID: `16314758162`
+- Property implementation deployment state: `success`
+- Property implementation deployment target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/FBJA63sxtoaGqJftzJvFJrWHQtJB`
+- Property implementation deployment URL: `https://david-quinn-group-8rde-ev4uevgvk-david-quinns-projects-a0953600.vercel.app`
+- Property implementation deployment completion: `2026-08-04T02:24:43Z`
+- Production domain: `https://davidquinngroup.com`
 
 Governing records:
 
@@ -53,14 +54,15 @@ Governing records:
 - Advisory Handoff Foundation certification and Contact Decision Flow certification are preserved.
 - Property Inquiry protected architecture and boundaries are preserved.
 
-Workstream A implementation:
+Workstream A production certification:
 
 - Runtime file changed: `app/properties/[id]/page.tsx`
 - Runtime scope: `ROUTE_LOCAL_PROPERTY_ONLY`
 - Property Professional Preparation implementation record: `docs/project-atlas/executive-library/REIE-DXT-3-PROPERTY-PROFESSIONAL-PREPARATION-IMPLEMENTATION.md`
+- Property Professional Preparation production-certification record: `docs/project-atlas/executive-library/REIE-DXT-3-PROPERTY-PROFESSIONAL-PREPARATION-PRODUCTION-CERTIFICATION.md`
 - Deterministic implementation check: `scripts/checkDxt3PropertyProfessionalPreparationImplementation.ts`
-- Implementation status: `DXT_3_PROPERTY_PROFESSIONAL_PREPARATION_IMPLEMENTED_LOCAL_COMMIT_ONLY`
-- Local certification recommendation: `READY_FOR_DXT_3_PROPERTY_PROFESSIONAL_PREPARATION_LOCAL_CERTIFICATION`
+- Production certification status: `REIE_DXT_3_PROPERTY_PROFESSIONAL_PREPARATION_CERTIFIED_AND_CLOSED`
+- Production certification finding: `REIE_DXT_3_PROPERTY_PROFESSIONAL_PREPARATION_PRODUCTION_CERTIFIED`
 
 Property preparation behavior:
 
@@ -71,6 +73,8 @@ Property preparation behavior:
 - Advisory remains preparation before a focused conversation at `/contact#advisory-readiness`.
 - Contact remains a subordinate general conversation path at `/contact#contact-route-choice`.
 - Product 3.1, Property Decision Readiness, Search return continuity, direct entry, canonical behavior, Market context, related listings, and brokerage disclosure remain preserved.
+- Production certification covered direct Property entry, valid Search-return context, and malformed external return context at `390x844`, `768x1024`, and `1440x1100`.
+- Headless Chrome DOM/focusability/overflow evidence found one H1, no document-level horizontal overflow, no unsafe rendered external URL, no context-bearing Contact links, focusable pathway links, Product 3.1 present, Property Decision Readiness present, and Property Inquiry form present.
 
 Protected systems:
 
@@ -89,22 +93,23 @@ Protected systems:
 - shared runtime component or schema added: `false`
 - navigation, footer, brokerage disclosure changed: `false`
 
-Workstream B plan:
+Workstream B plan closure:
 
 - Plan identifier: `ADVISORY_CONVERSATION_PREPARATION`
 - Plan record: `docs/project-atlas/executive-library/REIE-DXT-3-ADVISORY-CONVERSATION-PREPARATION-PLAN.md`
+- Plan certification record: `docs/project-atlas/executive-library/REIE-DXT-3-ADVISORY-CONVERSATION-PREPARATION-PLAN-CERTIFICATION.md`
 - Deterministic plan check: `scripts/checkDxt3AdvisoryConversationPreparationPlan.ts`
-- Planning status: `DXT_3_ADVISORY_CONVERSATION_PREPARATION_PLAN_READY`
+- Plan closure status: `REIE_DXT_3_ADVISORY_CONVERSATION_PREPARATION_PLAN_CERTIFIED_AND_CLOSED`
 - Preferred future runtime owner: `components/AdvisoryHandoffGuide.tsx`
 - Conditional future host file: `app/contact/page.tsx`
-- Contact-host finding: `CONTACT_HOST_CHANGE_NOT_REQUIRED_FOR_PLAN`
+- Contact-host finding: `CONTACT_HOST_CHANGE_NOT_REQUIRED`
 - Shared-runtime finding: `ROUTE_LOCAL_OR_EXISTING_COMPONENTS_PREFERRED`
 - Advisory runtime implementation remains unauthorized.
 
-Validation commands for this implementation session:
+Pre-push and closure validation commands:
 
 ```bash
-git diff --check
+git diff --check origin/main..HEAD
 npm run check:dxt-3-property-professional-preparation-implementation
 npm run check:dxt-3-advisory-conversation-preparation-plan
 npm run check:dxt-3-route-inventory
@@ -137,12 +142,30 @@ npm run check:fast
 npm run build
 ```
 
-Next gates:
+Documentation-only closure validation also includes:
 
-- Primary: `READY_FOR_REIE_DXT_3_PROPERTY_PROFESSIONAL_PREPARATION_LOCAL_CERTIFICATION_AND_PUSH_AUTHORIZATION`
-- Secondary: `READY_FOR_REIE_DXT_3_ADVISORY_CONVERSATION_PREPARATION_PLAN_CERTIFICATION`
+```bash
+git diff --check
+npm run check:dxt-3-property-professional-preparation-implementation
+npm run check:dxt-3-advisory-conversation-preparation-plan
+npm run check:dxt-3-professional-preparation-architecture
+npm run check:property-route-safety
+npm run check:property-product-3-1
+npm run check:cim-privacy-consent-data-minimization-gate
+npm run check:public-runtime-safety
+npm run check:public-trust-readiness
+```
 
-Do not push either local commit, deploy, production-certify, modify Property Inquiry, change Advisory or Contact runtime, add forms/APIs/CRM/email/scheduling, create hidden context, add persistence or telemetry, create customer profiles, begin Advisory runtime implementation, or alter navigation, footer, or brokerage disclosure without explicit authorization.
+Next gate:
+
+- `READY_FOR_REIE_DXT_3_ADVISORY_CONVERSATION_PREPARATION_BOUNDED_IMPLEMENTATION_AUTHORIZATION`
+
+Closed gates retained for deterministic continuity checks:
+
+- `READY_FOR_REIE_DXT_3_PROPERTY_PROFESSIONAL_PREPARATION_LOCAL_CERTIFICATION_AND_PUSH_AUTHORIZATION`
+- `READY_FOR_REIE_DXT_3_ADVISORY_CONVERSATION_PREPARATION_PLAN_CERTIFICATION`
+
+Do not begin Advisory runtime implementation, change Advisory or Contact runtime, modify Property Inquiry, add forms/APIs/CRM/email/scheduling, create hidden context, add persistence or telemetry, create customer profiles, alter navigation/footer/brokerage disclosure, or start another DXT 3 runtime phase without explicit authorization.
 
 Prior handoff retained below for audit history.
 
