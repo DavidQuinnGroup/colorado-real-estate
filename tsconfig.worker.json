@@ -137,6 +137,8 @@
     "scripts/checkDxt3RouteInventory.ts",
     "scripts/checkDxt3ProfessionalPreparationArchitecture.ts",
     "scripts/checkDxt3FirstPhaseImplementationReadiness.ts",
+    "scripts/checkDxt3PropertyProfessionalPreparationImplementation.ts",
+    "scripts/checkDxt3AdvisoryConversationPreparationPlan.ts",
     "scripts/decisionGuideValidation.ts",
     "scripts/checkBoulderDecisionGuide.ts",
     "scripts/checkLouisvilleDecisionGuide.ts",

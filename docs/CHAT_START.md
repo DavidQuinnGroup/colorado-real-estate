@@ -10,6 +10,142 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE DXT 3 Property Professional Preparation Local Implementation, August 4, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Verified implementation baseline:
+
+- Branch: `main`
+- Pre-implementation HEAD: `72f4949fe367f8a79304bd8e208466baa61c9cd6`
+- Pre-implementation origin/main: `a1671b21892a7f0302703197c757e5e93c2c840a`
+- Pre-implementation ahead/behind: `1 ahead / 0 behind`
+- Pre-implementation working tree: clean
+- DXT 3 planning commit: `72f4949fe367f8a79304bd8e208466baa61c9cd6`
+- Planning commit message: `Plan DXT 3 professional preparation`
+- Planning commit parent: `a1671b21892a7f0302703197c757e5e93c2c840a`
+- Planning commit file count: `9`
+- Latest production deployment pending status ID: `51585793525`
+- Latest production deployment terminal status ID: `51585851353`
+- Latest production deployment state: `success`
+- Latest production deployment target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/FTcs83NPhUXgAam3jcEX9XehHmG3`
+- Latest production deployment completion: `2026-08-04T01:15:04Z`
+- Implementation commit: assigned by this local implementation session
+
+Governing records:
+
+- DXT 3 route inventory: `docs/project-atlas/executive-library/REIE-DXT-3-DECISION-QUALITY-PROFESSIONAL-PREPARATION-ROUTE-INVENTORY.md`
+- DXT 3 professional-preparation architecture: `docs/project-atlas/executive-library/REIE-DXT-3-DECISION-QUALITY-PROFESSIONAL-PREPARATION-ARCHITECTURE.md`
+- DXT 3 first-phase implementation readiness: `docs/project-atlas/executive-library/REIE-DXT-3-FIRST-PHASE-IMPLEMENTATION-READINESS.md`
+- DXT 2 Property Decision Readiness certification: `docs/project-atlas/executive-library/REIE-DXT-2-PROPERTY-DECISION-READINESS-DEPTH-PRODUCTION-CERTIFICATION.md`
+- Search -> Property -> Search Return certification: `docs/project-atlas/executive-library/REIE-DXT-SEARCH-PROPERTY-RETURN-CONTINUITY-PRODUCTION-CERTIFICATION.md`
+- Property -> Advisory -> Contact certification: `docs/project-atlas/executive-library/REIE-DXT-PROPERTY-ADVISORY-CONTACT-CONTINUITY-PRODUCTION-CERTIFICATION.md`
+- Advisory Handoff Foundation certification and Contact Decision Flow certification are preserved.
+- Property Inquiry protected architecture and boundaries are preserved.
+
+Workstream A implementation:
+
+- Runtime file changed: `app/properties/[id]/page.tsx`
+- Runtime scope: `ROUTE_LOCAL_PROPERTY_ONLY`
+- Property Professional Preparation implementation record: `docs/project-atlas/executive-library/REIE-DXT-3-PROPERTY-PROFESSIONAL-PREPARATION-IMPLEMENTATION.md`
+- Deterministic implementation check: `scripts/checkDxt3PropertyProfessionalPreparationImplementation.ts`
+- Implementation status: `DXT_3_PROPERTY_PROFESSIONAL_PREPARATION_IMPLEMENTED_LOCAL_COMMIT_ONLY`
+- Local certification recommendation: `READY_FOR_DXT_3_PROPERTY_PROFESSIONAL_PREPARATION_LOCAL_CERTIFICATION`
+
+Property preparation behavior:
+
+- Governing question: `After evaluating this property, what should I organize before asking a property-specific question or beginning a focused professional conversation?`
+- The Property route now includes one concise `Property Professional Preparation` layer.
+- The layer organizes existing visible Property evidence, evidence still needed, assumptions, unknowns, questions to verify, conversation priority, and pathway choice.
+- Property Inquiry remains dominant for property-specific questions at `#property-contact`.
+- Advisory remains preparation before a focused conversation at `/contact#advisory-readiness`.
+- Contact remains a subordinate general conversation path at `/contact#contact-route-choice`.
+- Product 3.1, Property Decision Readiness, Search return continuity, direct entry, canonical behavior, Market context, related listings, and brokerage disclosure remain preserved.
+
+Protected systems:
+
+- PropertyInquiryForm changed: `false`
+- Property Inquiry API changed: `false`
+- submission behavior changed: `false`
+- consent or privacy changed: `false`
+- CRM/email/scheduling changed: `false`
+- Advisory runtime changed: `false`
+- Contact runtime changed: `false`
+- Search, Buyer, Seller, Market, City Market, Neighborhood runtime changed: `false`
+- forms, APIs, schema, providers, or data sources changed: `false`
+- persistence, localStorage, cookies, telemetry, analytics changed: `false`
+- hidden context or automatic Property-context transfer added: `false`
+- customer profile added: `false`
+- shared runtime component or schema added: `false`
+- navigation, footer, brokerage disclosure changed: `false`
+
+Workstream B plan:
+
+- Plan identifier: `ADVISORY_CONVERSATION_PREPARATION`
+- Plan record: `docs/project-atlas/executive-library/REIE-DXT-3-ADVISORY-CONVERSATION-PREPARATION-PLAN.md`
+- Deterministic plan check: `scripts/checkDxt3AdvisoryConversationPreparationPlan.ts`
+- Planning status: `DXT_3_ADVISORY_CONVERSATION_PREPARATION_PLAN_READY`
+- Preferred future runtime owner: `components/AdvisoryHandoffGuide.tsx`
+- Conditional future host file: `app/contact/page.tsx`
+- Contact-host finding: `CONTACT_HOST_CHANGE_NOT_REQUIRED_FOR_PLAN`
+- Shared-runtime finding: `ROUTE_LOCAL_OR_EXISTING_COMPONENTS_PREFERRED`
+- Advisory runtime implementation remains unauthorized.
+
+Validation commands for this implementation session:
+
+```bash
+git diff --check
+npm run check:dxt-3-property-professional-preparation-implementation
+npm run check:dxt-3-advisory-conversation-preparation-plan
+npm run check:dxt-3-route-inventory
+npm run check:dxt-3-professional-preparation-architecture
+npm run check:dxt-3-first-phase-implementation-readiness
+npm run check:dxt-2-property-decision-readiness-depth-implementation
+npm run check:dxt-search-property-return-continuity-implementation
+npm run check:dxt-property-advisory-contact-continuity-implementation
+npm run check:property-route-safety
+npm run check:cep-property-intelligence-experience
+npm run check:reie-property-intelligence-experience-v8
+npm run check:property-product-3-1
+npm run check:dxt-wave-1e-advisory-handoff-implementation
+npm run check:dxt-wave-1e-contact-decision-flow-implementation
+npm run check:advisory-handoff-readiness
+npm run check:advisory-operating-readiness
+npm run check:cim-privacy-consent-data-minimization-gate
+npm run check:property-inquiry-notification
+npm run check:property-inquiry-notification:readiness
+npm run check:notification-readiness
+npm run check:notification-readiness:strict-contract
+npm run check:unsubscribe-safety
+npm run check:search-runtime-safety
+npm run check:map-rendering-safety
+npm run check:public-runtime-safety
+npm run check:public-trust-readiness
+npm run typecheck
+npm run lint
+npm run check:fast
+npm run build
+```
+
+Next gates:
+
+- Primary: `READY_FOR_REIE_DXT_3_PROPERTY_PROFESSIONAL_PREPARATION_LOCAL_CERTIFICATION_AND_PUSH_AUTHORIZATION`
+- Secondary: `READY_FOR_REIE_DXT_3_ADVISORY_CONVERSATION_PREPARATION_PLAN_CERTIFICATION`
+
+Do not push either local commit, deploy, production-certify, modify Property Inquiry, change Advisory or Contact runtime, add forms/APIs/CRM/email/scheduling, create hidden context, add persistence or telemetry, create customer profiles, begin Advisory runtime implementation, or alter navigation, footer, or brokerage disclosure without explicit authorization.
+
+Prior handoff retained below for audit history.
+
 PROJECT ATLAS(tm) / REIE DXT 3 Decision Quality And Professional Preparation Planning, August 4, 2026:
 
 Workspace:

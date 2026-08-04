@@ -707,6 +707,72 @@ const PROPERTY_HANDOFF_BOUNDARIES = [
   'Contact begins a general conversation and does not replace property inquiry, change fields, submit information, schedule a meeting, send email, create CRM work, or pass hidden context.',
 ];
 
+const PROPERTY_PROFESSIONAL_PREPARATION_QUESTIONS = [
+  {
+    label: 'Property facts',
+    body: 'Which listing facts, photos, remarks, records, availability details, or showing questions need property-specific clarification?',
+    pathway: 'Property Inquiry',
+  },
+  {
+    label: 'Condition and inspections',
+    body: 'Which systems, permits, site conditions, disclosures, repairs, or construction questions need inspection or specialist review?',
+    pathway: 'Professional review',
+  },
+  {
+    label: 'Financing assumptions',
+    body: 'Which taxes, insurance, HOA, lending terms, closing costs, or monthly-cost assumptions need lender, insurer, tax, or professional verification?',
+    pathway: 'Advisory preparation',
+  },
+  {
+    label: 'Market context',
+    body: 'Which comparison facts, timing signals, neighborhood context, or market assumptions should be interpreted before relying on the property?',
+    pathway: 'Advisory preparation',
+  },
+  {
+    label: 'Title, HOA, or transaction',
+    body: 'Which title, HOA, disclosure, contract, insurance, legal, tax, appraisal, or closing questions need the appropriate professional?',
+    pathway: 'Professional review',
+  },
+  {
+    label: 'General professional preparation',
+    body: 'Which question is broader than this property and belongs in a general conversation after the public evidence is organized?',
+    pathway: 'General Contact',
+  },
+];
+
+const PROPERTY_PROFESSIONAL_PREPARATION_PATHWAYS = [
+  {
+    label: 'Property Inquiry',
+    priority: 'Dominant for property-specific questions',
+    body: 'Use when the question depends on this address, listing facts, photos, records, availability, tour timing, condition signals, or Property-specific evidence.',
+    href: '#property-contact',
+    action: 'Ask About This Property',
+    variant: 'primary',
+  },
+  {
+    label: 'Advisory',
+    priority: 'Preparation before a focused conversation',
+    body: 'Use when public evidence, assumptions, unknowns, and professional-review questions need organization before the conversation begins.',
+    href: '/contact#advisory-readiness',
+    action: 'Prepare Advisory Questions',
+    variant: 'secondary',
+  },
+  {
+    label: 'Contact',
+    priority: 'General conversation only',
+    body: 'Use when the question is broader than one property and the customer wants the simplest general starting point without hidden property transfer.',
+    href: '/contact#contact-route-choice',
+    action: 'Start General Contact',
+    variant: 'tertiary',
+  },
+];
+
+const PROPERTY_PROFESSIONAL_PREPARATION_LIMITS = [
+  'REIE can organize public evidence and questions, but it cannot determine legal, tax, lending, appraisal, valuation, pricing, investment, suitability, or representation outcomes.',
+  'No Property context, private notes, saved searches, planner inputs, inquiry contents, financial assumptions, customer identity, protected characteristics, or unsubmitted form content is sent to Advisory or Contact.',
+  'Preparation does not create representation, fiduciary duties, professional advice, promised outcomes, response-time promises, AI professional conclusions, CRM work, email, scheduling, persistence, telemetry, or customer profiles.',
+];
+
 const PROPERTY_READINESS_MISSING_EVIDENCE = [
   {
     label: 'Condition',
@@ -1489,6 +1555,167 @@ export default async function PropertyPage({ params, searchParams }: PropertyPag
                 Ask a Property Question
               </Link>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section
+        className="mx-auto max-w-7xl px-5 py-8 sm:px-8 lg:px-10"
+        data-testid="dxt-3-property-professional-preparation"
+        data-property-professional-preparation-question="After evaluating this property, what should I organize before asking a property-specific question or beginning a focused professional conversation?"
+        data-property-professional-preparation-existing-evidence-only="true"
+        data-property-professional-preparation-route-owner="property"
+        data-property-professional-preparation-property-inquiry="#property-contact"
+        data-property-professional-preparation-advisory="/contact#advisory-readiness"
+        data-property-professional-preparation-contact="/contact#contact-route-choice"
+        data-property-professional-preparation-primary-pathway="property-inquiry"
+        data-property-professional-preparation-hidden-context="false"
+        data-property-professional-preparation-url-context="false"
+        data-property-professional-preparation-form-prefill="false"
+        data-property-professional-preparation-persistence="false"
+        data-property-professional-preparation-telemetry="false"
+        data-property-professional-preparation-customer-profile="false"
+        data-property-professional-preparation-form-change="false"
+        data-property-professional-preparation-api-change="false"
+      >
+        <div className="overflow-hidden rounded-[8px] border border-white/10 bg-[#0d141c]">
+          <div className="border-b border-white/10 bg-white/[0.035] p-5 md:p-7">
+            <div className="grid gap-5 lg:grid-cols-[1fr_auto] lg:items-start">
+              <div className="max-w-4xl">
+                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-cyan-100/76">
+                  Property Professional Preparation
+                </p>
+                <h2 className="mt-3 text-2xl font-black uppercase tracking-tight text-white md:text-3xl">
+                  After evaluating this property, what should I organize before asking or reaching out?
+                </h2>
+                <p className="mt-4 max-w-3xl text-sm leading-6 text-white/58 md:text-base md:leading-7">
+                  Use the public evidence on this property page to separate what is available now, what still needs
+                  verification, and which conversation path fits the question. This preparation does not transfer hidden
+                  Property context and does not replace Property Inquiry.
+                </p>
+              </div>
+              <span className="inline-flex min-h-8 shrink-0 items-center rounded-[6px] border border-cyan-100/24 bg-black/22 px-3 py-2 text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100">
+                Visible context only
+              </span>
+            </div>
+          </div>
+
+          <div className="grid gap-px bg-white/10 lg:grid-cols-[0.95fr_1.05fr]">
+            <div className="bg-[#0d141c] p-5 md:p-6">
+              <h3 className="text-[11px] font-black uppercase tracking-[0.18em] text-white/70">
+                Evidence reviewed in this experience
+              </h3>
+              <div className="mt-4 grid gap-3">
+                {propertyReadinessAvailableEvidence.map((item) => (
+                  <article key={item.label} className="rounded-[6px] border border-white/10 bg-white/[0.035] p-4">
+                    <p className="text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100/56">{item.label}</p>
+                    <p className="mt-2 text-sm font-black uppercase tracking-[0.06em] text-white/80">{item.value}</p>
+                    <p className="mt-2 text-xs leading-5 text-white/50 md:text-sm md:leading-6">{item.detail}</p>
+                  </article>
+                ))}
+              </div>
+            </div>
+
+            <div className="bg-[#0d141c] p-5 md:p-6">
+              <h3 className="text-[11px] font-black uppercase tracking-[0.18em] text-white/70">
+                Evidence still needed
+              </h3>
+              <div className="mt-4 grid gap-3">
+                {PROPERTY_READINESS_MISSING_EVIDENCE.map((item) => (
+                  <article key={item.label} className="rounded-[6px] border border-amber-100/14 bg-amber-100/[0.055] p-4">
+                    <p className="text-[10px] font-black uppercase tracking-[0.14em] text-amber-100/78">{item.label}</p>
+                    <p className="mt-2 text-sm font-black uppercase tracking-[0.06em] text-white/80">{item.value}</p>
+                    <p className="mt-2 text-xs leading-5 text-white/54 md:text-sm md:leading-6">{item.detail}</p>
+                  </article>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="grid gap-px border-t border-white/10 bg-white/10 lg:grid-cols-3">
+            <div className="bg-[#0d141c] p-5 md:p-6">
+              <h3 className="text-[11px] font-black uppercase tracking-[0.18em] text-white/70">
+                Assumptions
+              </h3>
+              <ul className="mt-4 space-y-3 text-xs leading-5 text-white/58 md:text-sm md:leading-6">
+                {PROPERTY_READINESS_ASSUMPTIONS.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </div>
+            <div className="bg-[#0d141c] p-5 md:p-6">
+              <h3 className="text-[11px] font-black uppercase tracking-[0.18em] text-white/70">
+                Unknowns
+              </h3>
+              <ul className="mt-4 space-y-3 text-xs leading-5 text-white/58 md:text-sm md:leading-6">
+                {PROPERTY_READINESS_UNKNOWNS.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </div>
+            <div className="bg-[#0d141c] p-5 md:p-6">
+              <h3 className="text-[11px] font-black uppercase tracking-[0.18em] text-white/70">
+                What REIE cannot determine
+              </h3>
+              <ul className="mt-4 space-y-3 text-xs leading-5 text-white/58 md:text-sm md:leading-6">
+                {PROPERTY_PROFESSIONAL_PREPARATION_LIMITS.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          <div className="border-t border-white/10 bg-[#0d141c] p-5 md:p-6">
+            <div className="max-w-3xl">
+              <h3 className="text-[11px] font-black uppercase tracking-[0.18em] text-amber-100">
+                Questions to verify and prioritize
+              </h3>
+              <p className="mt-3 text-sm leading-6 text-white/58">
+                Choose the conversation priority by topic. These are static preparation categories, not saved choices,
+                recommendations, risk findings, scores, or lead classifications.
+              </p>
+            </div>
+            <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+              {PROPERTY_PROFESSIONAL_PREPARATION_QUESTIONS.map((item) => (
+                <article key={item.label} className="rounded-[6px] border border-white/10 bg-white/[0.035] p-4">
+                  <p className="text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100/58">{item.label}</p>
+                  <p className="mt-2 text-sm leading-6 text-white/58">{item.body}</p>
+                  <p className="mt-3 text-[10px] font-black uppercase tracking-[0.12em] text-amber-100/72">
+                    Pathway: {item.pathway}
+                  </p>
+                </article>
+              ))}
+            </div>
+          </div>
+
+          <div className="grid gap-px border-t border-white/10 bg-white/10 lg:grid-cols-3">
+            {PROPERTY_PROFESSIONAL_PREPARATION_PATHWAYS.map((pathway) => (
+              <article key={pathway.label} className="bg-[#0d141c] p-5 md:p-6">
+                <p className="text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100/56">{pathway.priority}</p>
+                <h3 className="mt-3 text-lg font-black uppercase tracking-tight text-white">{pathway.label}</h3>
+                <p className="mt-3 text-sm leading-6 text-white/58">{pathway.body}</p>
+                <Link
+                  href={pathway.href}
+                  className={`mt-5 inline-flex min-h-10 items-center justify-center rounded-[6px] px-3 py-2 text-[10px] font-black uppercase tracking-[0.12em] transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200 ${
+                    pathway.variant === 'primary'
+                      ? 'reie-decision-link reie-decision-link--primary'
+                      : 'reie-decision-link reie-decision-link--secondary'
+                  }`}
+                  data-property-professional-preparation-action={pathway.variant}
+                >
+                  {pathway.action}
+                </Link>
+              </article>
+            ))}
+          </div>
+
+          <div className="border-t border-white/10 bg-cyan-100/[0.045] p-5 md:p-6">
+            <p className="max-w-4xl text-sm leading-6 text-white/58">
+              What happens next: use Property Inquiry for a question about {property.address}; use Advisory when the
+              evidence, assumptions, and professional-review questions need organization; use Contact only when the
+              conversation is general. Continue through Search or Market context when comparison is still the next
+              decision.
+            </p>
           </div>
         </div>
       </section>

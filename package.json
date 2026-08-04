@@ -195,6 +195,8 @@
     "check:dxt-3-route-inventory": "npm run worker:build && node dist/scripts/checkDxt3RouteInventory.js",
     "check:dxt-3-professional-preparation-architecture": "npm run worker:build && node dist/scripts/checkDxt3ProfessionalPreparationArchitecture.js",
     "check:dxt-3-first-phase-implementation-readiness": "npm run worker:build && node dist/scripts/checkDxt3FirstPhaseImplementationReadiness.js",
+    "check:dxt-3-property-professional-preparation-implementation": "npm run worker:build && node dist/scripts/checkDxt3PropertyProfessionalPreparationImplementation.js",
+    "check:dxt-3-advisory-conversation-preparation-plan": "npm run worker:build && node dist/scripts/checkDxt3AdvisoryConversationPreparationPlan.js",
     "check:boulder-decision-guide": "npm run worker:build && node dist/scripts/checkBoulderDecisionGuide.js",
     "check:louisville-decision-guide": "npm run worker:build && node dist/scripts/checkLouisvilleDecisionGuide.js",
     "check:lafayette-decision-guide": "npm run worker:build && node dist/scripts/checkLafayetteDecisionGuide.js",
