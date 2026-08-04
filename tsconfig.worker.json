@@ -141,6 +141,8 @@
     "scripts/checkDxt3AdvisoryConversationPreparationPlan.ts",
     "scripts/checkDxt3AdvisoryConversationPreparationImplementation.ts",
     "scripts/checkDxt3NextPhaseAfterAdvisoryPlan.ts",
+    "scripts/checkDxt3ContactPathSelectionQualityImplementation.ts",
+    "scripts/checkDxt3NextPhaseAfterContactPlan.ts",
     "scripts/decisionGuideValidation.ts",
     "scripts/checkBoulderDecisionGuide.ts",
     "scripts/checkLouisvilleDecisionGuide.ts",

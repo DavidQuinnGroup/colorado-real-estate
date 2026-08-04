@@ -10,6 +10,142 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / REIE DXT 3 Contact Path Selection Quality Local Implementation, August 4, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Start by running:
+
+```bash
+git status --short --branch --untracked-files=all
+git rev-parse HEAD origin/main
+git log -8 --oneline
+```
+
+Current local baseline:
+
+- Branch: `main`
+- Pre-implementation HEAD: `b3f195e5867edaaf1890fa26bb0c9c2e42642d0f`
+- Pre-implementation origin/main: `b3f195e5867edaaf1890fa26bb0c9c2e42642d0f`
+- Latest documentation deployment pending status ID: `51607580403`
+- Latest documentation deployment terminal status ID: `51607672203`
+- Latest documentation deployment state: `success`
+- Latest documentation deployment target: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/5S2i6X888AHX7wRRJ52Riq1Qxy5n`
+- Latest documentation deployment URL: `https://david-quinn-group-8rde-8n53a7004-david-quinns-projects-a0953600.vercel.app`
+- Latest documentation deployment completion: `2026-08-04T10:27:27Z`
+- Contact implementation SHA: assigned by the local implementation commit
+- Production domain: `https://davidquinngroup.com`
+
+Governing records:
+
+- DXT 3 route inventory: `docs/project-atlas/executive-library/REIE-DXT-3-DECISION-QUALITY-PROFESSIONAL-PREPARATION-ROUTE-INVENTORY.md`
+- DXT 3 professional-preparation architecture: `docs/project-atlas/executive-library/REIE-DXT-3-DECISION-QUALITY-PROFESSIONAL-PREPARATION-ARCHITECTURE.md`
+- DXT 3 first-phase implementation readiness: `docs/project-atlas/executive-library/REIE-DXT-3-FIRST-PHASE-IMPLEMENTATION-READINESS.md`
+- Property Professional Preparation certification: `docs/project-atlas/executive-library/REIE-DXT-3-PROPERTY-PROFESSIONAL-PREPARATION-PRODUCTION-CERTIFICATION.md`
+- Advisory Conversation Preparation certification: `docs/project-atlas/executive-library/REIE-DXT-3-ADVISORY-CONVERSATION-PREPARATION-PRODUCTION-CERTIFICATION.md`
+- Contact Path Selection Quality plan certification: `docs/project-atlas/executive-library/REIE-DXT-3-CONTACT-PATH-SELECTION-QUALITY-PLAN-CERTIFICATION.md`
+- Contact Decision Flow certification and Property Inquiry protected architecture remain preserved.
+
+Workstream A local implementation:
+
+- Runtime file changed: `app/contact/page.tsx`
+- Runtime scope: `ROUTE_LOCAL_CONTACT_ONLY`
+- Contact Path Selection Quality implementation record: `docs/project-atlas/executive-library/REIE-DXT-3-CONTACT-PATH-SELECTION-QUALITY-IMPLEMENTATION.md`
+- Deterministic implementation check: `scripts/checkDxt3ContactPathSelectionQualityImplementation.ts`
+- Implementation status: `DXT_3_CONTACT_PATH_SELECTION_QUALITY_IMPLEMENTED_LOCAL_COMMIT_ONLY`
+- Local certification recommendation: `READY_FOR_DXT_3_CONTACT_PATH_SELECTION_QUALITY_LOCAL_CERTIFICATION`
+
+Contact path-selection behavior:
+
+- Existing Contact governing question remains: `What is the simplest appropriate way to begin this conversation?`
+- DXT 3 path-selection question: `What is the safest and simplest path to begin the right professional conversation?`
+- The Contact route now includes one concise `Contact Path Selection Quality` frame.
+- The frame distinguishes public context available, what remains unconfirmed, assumptions and unknowns, static path-selection questions, Property Inquiry, Advisory, general Contact, Buyer preparation, Seller preparation, and continued research.
+- Property Inquiry remains first for Property-specific questions through existing Property route behavior.
+- Advisory remains focused preparation through `#advisory-readiness`.
+- Contact remains general conversation initiation through `#contact-route-choice`.
+- Buyer remains preparation to buy at `/buy`.
+- Seller remains preparation before market exposure at `/sell`.
+- Search and Market remain continued research at `/search` and `/market`.
+- One dominant Contact action remains: `Choose The Starting Point`.
+- No form, field, consent, submission behavior, API, CRM, email, scheduling, URL-context expansion, automatic routing, inferred intent, hidden context, persistence, telemetry, customer profile, or shared runtime component was added.
+
+Workstream B next-phase plan:
+
+- Selected next-phase identifier: `BUYER_PROFESSIONAL_PREPARATION`
+- Next-phase planning record: `docs/project-atlas/executive-library/REIE-DXT-3-NEXT-PHASE-AFTER-CONTACT-PLAN.md`
+- Deterministic next-phase planning check: `scripts/checkDxt3NextPhaseAfterContactPlan.ts`
+- Planning status: `DXT_3_NEXT_PHASE_AFTER_CONTACT_PLAN_READY`
+- Proposed runtime ownership: `app/buy/page.tsx`
+- Selected secondary planning phase: `SELLER_PROFESSIONAL_PREPARATION`
+- Deferred or protected phase: `PROPERTY_INQUIRY_PREPARATION_QUALITY`
+- Shared-runtime finding: `ROUTE_LOCAL_OR_EXISTING_COMPONENTS_PREFERRED`
+- DXT 3 completion implication: completion assessment remains premature until Buyer and Seller professional preparation are assessed or explicitly declined.
+
+Protected systems:
+
+- Advisory runtime changed: `false`
+- PropertyInquiryForm changed: `false`
+- LeadCapture changed: `false`
+- Property Inquiry changed: `false`
+- forms, fields, consent, submissions changed: `false`
+- APIs changed: `false`
+- CRM/email/scheduling changed: `false`
+- persistence, localStorage, cookies, telemetry, analytics changed: `false`
+- URL-context expansion, inferred intent, automatic routing, or form prefill added: `false`
+- hidden context or automatic route-context transfer added: `false`
+- customer profile added: `false`
+- shared runtime component or schema added: `false`
+- navigation, footer, brokerage disclosure changed: `false`
+
+Validation commands for this local implementation:
+
+```bash
+git diff --check
+npm run check:dxt-3-contact-path-selection-quality-implementation
+npm run check:dxt-3-next-phase-after-contact-plan
+npm run check:dxt-3-next-phase-after-advisory-plan
+npm run check:dxt-3-advisory-conversation-preparation-implementation
+npm run check:dxt-3-advisory-conversation-preparation-plan
+npm run check:dxt-3-property-professional-preparation-implementation
+npm run check:dxt-3-route-inventory
+npm run check:dxt-3-professional-preparation-architecture
+npm run check:dxt-3-first-phase-implementation-readiness
+npm run check:dxt-wave-1e-contact-decision-flow-implementation
+npm run check:dxt-wave-1e-advisory-handoff-implementation
+npm run check:advisory-handoff-readiness
+npm run check:advisory-operating-readiness
+npm run check:cim-privacy-consent-data-minimization-gate
+npm run check:property-inquiry-notification
+npm run check:property-inquiry-notification:readiness
+npm run check:notification-readiness
+npm run check:notification-readiness:strict-contract
+npm run check:unsubscribe-safety
+npm run check:dxt-property-advisory-contact-continuity-implementation
+npm run check:dxt-buyer-advisory-contact-continuity-implementation
+npm run check:dxt-seller-advisory-contact-continuity-implementation
+npm run check:property-route-safety
+npm run check:search-runtime-safety
+npm run check:map-rendering-safety
+npm run check:public-runtime-safety
+npm run check:public-trust-readiness
+npm run typecheck
+npm run lint
+npm run check:fast
+npm run build
+```
+
+Next gates:
+
+- Primary: `READY_FOR_REIE_DXT_3_CONTACT_PATH_SELECTION_QUALITY_LOCAL_CERTIFICATION_AND_PUSH_AUTHORIZATION`
+- Secondary: `READY_FOR_REIE_DXT_3_BUYER_PROFESSIONAL_PREPARATION_PLAN_CERTIFICATION`
+
+Do not push, deploy, production-certify, begin Buyer Professional Preparation implementation, change Advisory runtime, alter Property Inquiry, add forms/APIs/CRM/email/scheduling, create hidden context, infer intent, add automatic routing, add persistence or telemetry, create customer profiles, alter navigation/footer/brokerage disclosure, or start another DXT 3 runtime phase without explicit authorization.
+
+Prior handoff retained below for audit history.
+
 PROJECT ATLAS(tm) / REIE DXT 3 Advisory Conversation Preparation Production Certification And Contact Path Selection Quality Plan Closure, August 4, 2026:
 
 Workspace:

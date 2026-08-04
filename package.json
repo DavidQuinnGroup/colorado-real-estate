@@ -199,6 +199,8 @@
     "check:dxt-3-advisory-conversation-preparation-plan": "npm run worker:build && node dist/scripts/checkDxt3AdvisoryConversationPreparationPlan.js",
     "check:dxt-3-advisory-conversation-preparation-implementation": "npm run worker:build && node dist/scripts/checkDxt3AdvisoryConversationPreparationImplementation.js",
     "check:dxt-3-next-phase-after-advisory-plan": "npm run worker:build && node dist/scripts/checkDxt3NextPhaseAfterAdvisoryPlan.js",
+    "check:dxt-3-contact-path-selection-quality-implementation": "npm run worker:build && node dist/scripts/checkDxt3ContactPathSelectionQualityImplementation.js",
+    "check:dxt-3-next-phase-after-contact-plan": "npm run worker:build && node dist/scripts/checkDxt3NextPhaseAfterContactPlan.js",
     "check:boulder-decision-guide": "npm run worker:build && node dist/scripts/checkBoulderDecisionGuide.js",
     "check:louisville-decision-guide": "npm run worker:build && node dist/scripts/checkLouisvilleDecisionGuide.js",
     "check:lafayette-decision-guide": "npm run worker:build && node dist/scripts/checkLafayetteDecisionGuide.js",

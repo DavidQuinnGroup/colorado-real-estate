@@ -35,6 +35,54 @@ const contactContexts = [
   },
 ];
 
+const pathSelectionQuestions = [
+  'Is the question about one specific Property?',
+  'Do I need to organize evidence and questions before speaking with someone?',
+  'Am I beginning a general conversation?',
+  'Do I need Buyer preparation?',
+  'Do I need Seller preparation?',
+  'Do I need more research before beginning a conversation?',
+];
+
+const routeChoiceCards = [
+  {
+    label: 'Property Inquiry',
+    href: '/search',
+    priority: 'Use first for Property-specific questions.',
+    body: 'Open the specific Property and use its existing inquiry path when the question depends on an address, listing fact, record, photo, feature, or condition signal.',
+  },
+  {
+    label: 'Advisory',
+    href: '#advisory-readiness',
+    priority: 'Use for focused preparation.',
+    body: 'Use Advisory when you need to organize visible evidence, assumptions, unknowns, and questions before beginning a focused professional conversation.',
+  },
+  {
+    label: 'General Contact',
+    href: '#contact-route-choice',
+    priority: 'Use when the conversation is ready to begin.',
+    body: 'Use Contact for general conversation initiation when the question is not limited to one Property and no hidden route context needs to transfer.',
+  },
+  {
+    label: 'Buyer Preparation',
+    href: '/buy',
+    priority: 'Use when readiness to buy is the real question.',
+    body: 'Return to Buyer when the next step is understanding financing assumptions, verification needs, Property review, or preparation before professional discussion.',
+  },
+  {
+    label: 'Seller Preparation',
+    href: '/sell',
+    priority: 'Use before market exposure.',
+    body: 'Return to Seller when the next step is property-condition readiness, pricing-context assumptions, buyer-objection preparation, or transaction questions.',
+  },
+  {
+    label: 'Continued Research',
+    href: '/market',
+    priority: 'Use when evidence is still thin.',
+    body: 'Continue with Search or Market when more inventory, market context, freshness, or place evidence is needed before beginning a conversation.',
+  },
+];
+
 const minimumInfo = [
   'The decision or question you want to discuss.',
   'The property, market, neighborhood, Buyer, Seller, or Advisory context that shaped it.',
@@ -93,6 +141,102 @@ export default function ContactPage() {
               </article>
             ))}
           </div>
+
+          <section
+            data-testid="dxt-3-contact-path-selection-quality"
+            data-dxt-3-contact-path-selection-quality="implemented-local"
+            data-dxt-3-contact-runtime-scope="app/contact/page.tsx"
+            data-dxt-3-contact-advisory-change="false"
+            data-dxt-3-contact-property-inquiry-change="false"
+            data-dxt-3-contact-lead-capture-change="false"
+            data-dxt-3-contact-form-change="false"
+            data-dxt-3-contact-field-change="false"
+            data-dxt-3-contact-api-change="false"
+            data-dxt-3-contact-consent-change="false"
+            data-dxt-3-contact-url-context="false"
+            data-dxt-3-contact-automatic-routing="false"
+            data-dxt-3-contact-inferred-intent="false"
+            data-dxt-3-contact-hidden-context="false"
+            data-dxt-3-contact-customer-profile="false"
+            data-dxt-3-contact-persistence="false"
+            data-dxt-3-contact-telemetry="false"
+            className="mt-8 rounded-lg border border-neutral-200 bg-neutral-50 p-6"
+          >
+            <div className="max-w-3xl">
+              <p className="text-sm font-bold uppercase tracking-[0.2em] text-neutral-500">Contact Path Selection Quality</p>
+              <h3 className="mt-3 text-2xl font-serif text-neutral-950">
+                What is the safest and simplest path to begin the right professional conversation?
+              </h3>
+              <p className="mt-4 text-sm leading-6 text-neutral-700">
+                Use this static route-choice frame to separate public context from what remains unconfirmed. Contact
+                does not infer intent, choose a path automatically, save a choice, prefill a form, or transfer hidden
+                context into Advisory, Property Inquiry, Buyer, Seller, Search, or Market.
+              </p>
+            </div>
+
+            <div className="mt-6 grid gap-4 lg:grid-cols-3">
+              <div className="rounded-lg border border-neutral-200 bg-white p-5">
+                <h4 className="text-base font-semibold text-neutral-950">Public context available</h4>
+                <TrustList
+                  items={[
+                    'The current Contact route.',
+                    'Public pathway labels for Property Inquiry, Advisory, general Contact, Buyer, Seller, Search, and Market.',
+                    'Visible destinations already available from public REIE pages.',
+                  ]}
+                />
+              </div>
+              <div className="rounded-lg border border-neutral-200 bg-white p-5">
+                <h4 className="text-base font-semibold text-neutral-950">What remains unconfirmed</h4>
+                <TrustList
+                  items={[
+                    'Prior evidence review is not confirmed here.',
+                    'Customer intent and professional need are not determined automatically.',
+                    'Representation status is not established by choosing a pathway.',
+                  ]}
+                />
+              </div>
+              <div className="rounded-lg border border-neutral-200 bg-white p-5">
+                <h4 className="text-base font-semibold text-neutral-950">Assumptions and unknowns</h4>
+                <TrustList
+                  items={[
+                    'The customer may still need route-owned preparation before outreach.',
+                    'Specialized Property questions belong with the existing Property Inquiry flow.',
+                    'Legal, tax, lending, valuation, inspection, title, insurance, HOA, and contract needs require appropriate review.',
+                  ]}
+                />
+              </div>
+            </div>
+
+            <div className="mt-6 rounded-lg border border-neutral-200 bg-white p-5">
+              <h4 className="text-base font-semibold text-neutral-950">Path-selection questions</h4>
+              <TrustList items={pathSelectionQuestions} />
+            </div>
+
+            <div className="mt-6 grid gap-4 lg:grid-cols-3" data-testid="dxt-3-contact-pathway-options">
+              {routeChoiceCards.map((card) => (
+                <article key={card.label} className="rounded-lg border border-neutral-200 bg-white p-5">
+                  <p className="text-xs font-bold uppercase tracking-[0.18em] text-neutral-500">{card.priority}</p>
+                  <h4 className="mt-2 text-lg font-semibold text-neutral-950">{card.label}</h4>
+                  <p className="mt-3 text-sm leading-6 text-neutral-700">{card.body}</p>
+                  <Link
+                    href={card.href}
+                    className="mt-4 inline-flex text-sm font-bold text-neutral-950 underline underline-offset-4 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:ring-offset-2"
+                  >
+                    Review {card.label}
+                  </Link>
+                </article>
+              ))}
+            </div>
+
+            <div className="mt-6 rounded-lg border border-neutral-300 bg-white p-5">
+              <h4 className="text-base font-semibold text-neutral-950">What REIE cannot determine</h4>
+              <p className="mt-3 text-sm leading-6 text-neutral-700">
+                Route choice does not create advice, representation, fiduciary duties, marketing consent, professional
+                conclusions, response-time certainty, lending approval, affordability, appraisal, valuation, pricing,
+                legal, tax, investment, suitability, neighborhood-fit, or fair-housing conclusions.
+              </p>
+            </div>
+          </section>
 
           <div className="mt-8 grid gap-6 lg:grid-cols-3">
             <div
