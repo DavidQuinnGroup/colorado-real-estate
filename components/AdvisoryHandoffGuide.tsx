@@ -55,10 +55,62 @@ const journeyTopics = [
 ];
 
 const reviewedEvidence = [
-  'Search criteria, saved views, or listings that raised a specific question.',
+  'Search criteria, public views, or listings that raised a specific question.',
   'Property facts, photos, records, condition signals, and source limitations.',
   'Buyer or seller preparation assumptions that need qualified interpretation.',
   'Market, City Market, or Neighborhood context that should be verified before reliance.',
+];
+
+const preparationFrame = [
+  {
+    label: 'Decision being prepared',
+    body: 'Name whether the conversation is about a property, search comparison, buyer readiness, seller preparation, market context, or general next steps.',
+  },
+  {
+    label: 'Evidence reviewed or available',
+    body: 'Use only visible public context from REIE surfaces, such as property facts, readiness prompts, search context, market evidence, or route-specific questions.',
+  },
+  {
+    label: 'Evidence still needed',
+    body: 'Separate what is not confirmed here from what may require source review, updated records, specialist review, or direct professional discussion.',
+  },
+  {
+    label: 'Assumptions',
+    body: 'Keep financing, pricing, timing, condition, market, or transaction assumptions visible without treating them as advice or conclusions.',
+  },
+  {
+    label: 'Unknowns',
+    body: 'Call out unresolved facts, stale context, missing documents, source limits, and items that depend on the specific property, market, financing, or transaction.',
+  },
+  {
+    label: 'Questions to verify',
+    body: 'Organize questions for source, property, lender, inspection, title, HOA, insurance, legal, tax, appraisal, contract, or other professional review.',
+  },
+];
+
+const conversationPriorities = [
+  'Property facts and condition',
+  'Search and comparison questions',
+  'Financing assumptions',
+  'Market evidence',
+  'Seller preparation',
+  'Title, HOA, insurance, inspection, or contract questions',
+  'General professional preparation',
+];
+
+const pathwayChoices = [
+  {
+    label: 'Advisory prepares',
+    body: 'Use Advisory to organize evidence, assumptions, unknowns, questions, and conversation priorities before reaching out.',
+  },
+  {
+    label: 'Contact begins',
+    body: 'Use Contact when the question is ready for a general conversation and no hidden route context needs to transfer.',
+  },
+  {
+    label: 'Property Inquiry stays specialized',
+    body: 'Use the existing property-page inquiry path for address-specific questions, fields, consent, and submission behavior.',
+  },
 ];
 
 const verificationQuestions = [
@@ -103,6 +155,15 @@ export default function AdvisoryHandoffGuide() {
       data-advisory-handoff-telemetry="false"
       data-advisory-handoff-provider-activation="false"
       data-advisory-handoff-evidence-metadata-exposure="false"
+      data-dxt-3-advisory-conversation-preparation="implemented-local"
+      data-dxt-3-advisory-runtime-scope="components/AdvisoryHandoffGuide.tsx"
+      data-dxt-3-advisory-contact-host-change="false"
+      data-dxt-3-advisory-property-inquiry-change="false"
+      data-dxt-3-advisory-form-change="false"
+      data-dxt-3-advisory-api-change="false"
+      data-dxt-3-advisory-url-context="false"
+      data-dxt-3-advisory-form-prefill="false"
+      data-dxt-3-advisory-customer-profile="false"
     >
       <div className="mx-auto grid max-w-5xl gap-10 text-sm leading-7 text-white/66">
         <div className="grid gap-7 lg:grid-cols-[1.04fr_0.96fr] lg:items-end">
@@ -147,9 +208,70 @@ export default function AdvisoryHandoffGuide() {
           </div>
           <p className="max-w-2xl text-sm leading-7 text-white/62">
             A real-estate advisor can help interpret choices, organize open questions, identify where specialists may
-            be needed, and clarify next steps. Advisory does not create representation by itself, guarantee a result,
-            or replace qualified professional review.
+            be needed, and clarify next steps. Advisory does not create representation by itself, create outcome
+            certainty, or replace qualified professional review.
           </p>
+        </div>
+
+        <div
+          className="grid gap-5 rounded-[8px] bg-white/[0.035] p-5"
+          data-testid="dxt-3-advisory-conversation-preparation"
+        >
+          <div className="max-w-3xl">
+            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">
+              Advisory Conversation Preparation
+            </p>
+            <h3 className="mt-3 text-2xl font-black leading-tight text-white">
+              Organize the conversation before the conversation begins.
+            </h3>
+            <p className="mt-3 text-sm leading-7 text-white/62">
+              Use this public preparation frame to distinguish visible evidence from assumptions, unknowns, and
+              questions. It is static, does not save choices, does not prefill forms, and does not transfer hidden
+              route context into Contact or Property Inquiry.
+            </p>
+          </div>
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+            {preparationFrame.map((item) => (
+              <article key={item.label} className="rounded-[8px] bg-[#071017]/72 p-4">
+                <p className="text-xs font-black uppercase tracking-[0.14em] text-cyan-100/72">{item.label}</p>
+                <p className="mt-2 text-sm leading-7 text-white/58">{item.body}</p>
+              </article>
+            ))}
+          </div>
+          <div className="grid gap-4 lg:grid-cols-[0.82fr_1.18fr]" data-testid="dxt-3-advisory-conversation-priorities">
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">
+                Conversation Priorities
+              </p>
+              <p className="mt-3 text-sm leading-7 text-white/62">
+                Pick a static topic to focus the discussion. Advisory does not create selection state, scoring, lead
+                classification, customer profiling, or telemetry.
+              </p>
+            </div>
+            <ul className="grid gap-2 text-sm leading-7 text-white/62 sm:grid-cols-2">
+              {conversationPriorities.map((priority) => (
+                <li key={priority} className="rounded-[8px] bg-white/[0.035] px-4 py-3">
+                  {priority}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="grid gap-3 lg:grid-cols-3" data-testid="dxt-3-advisory-pathway-choice">
+            {pathwayChoices.map((pathway) => (
+              <article key={pathway.label} className="rounded-[8px] bg-cyan-100/[0.045] p-4">
+                <p className="text-xs font-black uppercase tracking-[0.14em] text-cyan-100/72">{pathway.label}</p>
+                <p className="mt-2 text-sm leading-7 text-white/58">{pathway.body}</p>
+              </article>
+            ))}
+          </div>
+          <div
+            className="rounded-[8px] bg-amber-100/[0.055] p-4 text-sm leading-7 text-white/62 ring-1 ring-amber-100/14"
+            data-testid="dxt-3-advisory-reie-limits"
+          >
+            REIE cannot determine legal, tax, lending, affordability, qualification, appraisal, valuation, pricing,
+            investment, suitability, fair-housing, representation, fiduciary, or professional outcomes. It can organize
+            the questions that should be reviewed through the appropriate professional pathway.
+          </div>
         </div>
 
         <div id="advisory-preparation-themes" className="grid gap-4" data-testid="advisory-handoff-preparation-themes">
