@@ -132,6 +132,8 @@
     "scripts/checkDxt2NextPhaseAfterNeighborhoodPlan.ts",
     "scripts/checkDxt2BuyerDecisionReadinessDepthExpansionImplementation.ts",
     "scripts/checkDxt2NextPhaseAfterBuyerPlan.ts",
+    "scripts/checkDxt2SellerDecisionReadinessDepthExpansionImplementation.ts",
+    "scripts/checkDxt2CrossRouteEvidenceConsistencyPlan.ts",
     "scripts/decisionGuideValidation.ts",
     "scripts/checkBoulderDecisionGuide.ts",
     "scripts/checkLouisvilleDecisionGuide.ts",

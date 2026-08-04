@@ -190,6 +190,8 @@
     "check:dxt-2-next-phase-after-neighborhood-plan": "npm run worker:build && node dist/scripts/checkDxt2NextPhaseAfterNeighborhoodPlan.js",
     "check:dxt-2-buyer-decision-readiness-depth-expansion-implementation": "npm run worker:build && node dist/scripts/checkDxt2BuyerDecisionReadinessDepthExpansionImplementation.js",
     "check:dxt-2-next-phase-after-buyer-plan": "npm run worker:build && node dist/scripts/checkDxt2NextPhaseAfterBuyerPlan.js",
+    "check:dxt-2-seller-decision-readiness-depth-expansion-implementation": "npm run worker:build && node dist/scripts/checkDxt2SellerDecisionReadinessDepthExpansionImplementation.js",
+    "check:dxt-2-cross-route-evidence-consistency-plan": "npm run worker:build && node dist/scripts/checkDxt2CrossRouteEvidenceConsistencyPlan.js",
     "check:boulder-decision-guide": "npm run worker:build && node dist/scripts/checkBoulderDecisionGuide.js",
     "check:louisville-decision-guide": "npm run worker:build && node dist/scripts/checkLouisvilleDecisionGuide.js",
     "check:lafayette-decision-guide": "npm run worker:build && node dist/scripts/checkLafayetteDecisionGuide.js",

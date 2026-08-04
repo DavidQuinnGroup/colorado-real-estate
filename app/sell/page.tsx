@@ -90,6 +90,77 @@ const SELLER_HANDOFF_BOUNDARIES = [
   'Contact begins a general conversation and does not receive hidden Seller context, Home Worth inputs, property records, pricing assumptions, or customer information from this page.',
 ];
 
+const SELLER_READINESS_EVIDENCE = [
+  {
+    label: 'Available now',
+    body: 'Seller preparation themes, Seller Review, Home Worth context, Market context, Search inventory, Advisory preparation, and general Contact paths are visible here.',
+  },
+  {
+    label: 'Needs verification',
+    body: 'Property condition, repairs, permits, title matters, HOA obligations, disclosure completeness, insurance considerations, buyer objections, and final pricing strategy need source or professional review.',
+  },
+  {
+    label: 'Condition assumption',
+    body: 'Preparation depends on the actual property condition, access, records, repairs, presentation choices, and buyer-visible friction that are not confirmed by this page.',
+  },
+  {
+    label: 'Pricing-context assumption',
+    body: 'Home Worth and market context can frame questions, but they do not establish value, likely sale price, listing price, timing, or a pricing recommendation.',
+  },
+  {
+    label: 'Unknown from current evidence',
+    body: 'Current evidence does not confirm buyer response, competitive pressure, repair impact, disclosure sufficiency, final net proceeds, contract terms, or closing requirements.',
+  },
+];
+
+const SELLER_READINESS_VERIFICATION = [
+  {
+    label: 'Buyer-objection readiness',
+    body: 'Name condition, showing, documentation, inspection, HOA, insurance, disclosure, timing, and negotiation questions before buyers make them urgent.',
+  },
+  {
+    label: 'Market-exposure readiness',
+    body: 'Use Market context and competing inventory to understand exposure questions without turning directional context into a guaranteed pricing or timing conclusion.',
+  },
+  {
+    label: 'Transaction readiness',
+    body: 'Carry title, taxes, legal, contract, disclosure, inspection, repair, insurance, HOA, closing, and next-move questions to the right professional.',
+  },
+];
+
+const SELLER_READINESS_THRESHOLDS = [
+  {
+    label: 'Request Seller Review',
+    href: '#seller-intake',
+    note: 'Use when seller-specific preparation, property evidence, or exposure questions are ready for advisor review.',
+  },
+  {
+    label: 'Review Home Worth context',
+    href: '/home-worth',
+    note: 'Use when value context should frame questions without asking the site for a conclusion.',
+  },
+  {
+    label: 'Inspect Market context',
+    href: '/market',
+    note: 'Use when timing, competing inventory, and local alternatives need broader evidence.',
+  },
+  {
+    label: 'Review competing inventory',
+    href: '/search',
+    note: 'Use when buyer-side alternatives should inform positioning questions.',
+  },
+  {
+    label: 'Prepare Advisory questions',
+    href: '/contact#advisory-readiness',
+    note: 'Use when evidence gaps and assumptions are clear enough for focused professional preparation.',
+  },
+  {
+    label: 'Begin general Contact',
+    href: '/contact#contact-route-choice',
+    note: 'Use only when the customer is ready to begin a general conversation without hidden Seller context.',
+  },
+];
+
 export default function SellPage() {
   return (
     <main
@@ -109,6 +180,29 @@ export default function SellPage() {
       data-seller-advisory-contact-crm="false"
       data-seller-advisory-contact-email="false"
       data-seller-advisory-contact-scheduling="false"
+      data-dxt-2-seller-readiness-depth="implemented"
+      data-dxt-2-seller-readiness-runtime-scope="app/sell/page.tsx"
+      data-dxt-2-seller-readiness-existing-evidence-only="true"
+      data-dxt-2-seller-readiness-estimator-change="false"
+      data-dxt-2-seller-readiness-buyer-change="false"
+      data-dxt-2-seller-readiness-search-change="false"
+      data-dxt-2-seller-readiness-property-change="false"
+      data-dxt-2-seller-readiness-market-change="false"
+      data-dxt-2-seller-readiness-neighborhood-change="false"
+      data-dxt-2-seller-readiness-advisory-change="false"
+      data-dxt-2-seller-readiness-contact-change="false"
+      data-dxt-2-seller-readiness-provider-activation="false"
+      data-dxt-2-seller-readiness-api-change="false"
+      data-dxt-2-seller-readiness-hidden-context="false"
+      data-dxt-2-seller-readiness-persistence="false"
+      data-dxt-2-seller-readiness-telemetry="false"
+      data-dxt-2-seller-readiness-ai="false"
+      data-dxt-2-seller-readiness-scoring="false"
+      data-dxt-2-seller-readiness-ranking="false"
+      data-dxt-2-seller-readiness-recommendation="false"
+      data-dxt-2-seller-readiness-valuation="false"
+      data-dxt-2-seller-readiness-pricing-recommendation="false"
+      data-dxt-2-seller-readiness-sale-prediction="false"
     >
       <section
         className="px-5 py-20 sm:px-8 sm:py-24 lg:px-12"
@@ -171,6 +265,89 @@ export default function SellPage() {
                 <p className="mt-4 text-sm leading-7 text-white/62">{service.body}</p>
               </article>
             ))}
+          </div>
+        </div>
+      </section>
+
+      <section
+        className="border-y border-white/8 bg-[#0f171f] px-5 py-16 sm:px-8 sm:py-20 lg:px-12"
+        data-testid="dxt-2-seller-decision-readiness-depth-expansion"
+        data-dxt-2-seller-readiness-role="seller-evidence-verification-assumptions-unknowns-confidence-thresholds"
+        data-dxt-2-seller-readiness-confidence="qualitative-preparation-focused"
+        data-dxt-2-seller-readiness-conclusion="false"
+      >
+        <div className="mx-auto grid w-full max-w-[1180px] gap-8 lg:grid-cols-[0.78fr_1.22fr] lg:items-start">
+          <div>
+            <p className="text-[11px] font-black uppercase tracking-[0.26em] text-cyan-100">Seller Decision Readiness</p>
+            <h2 className="mt-4 text-3xl font-black leading-tight text-white sm:text-4xl">
+              Know what is ready, what is assumed, and what still needs review.
+            </h2>
+            <p className="mt-5 text-sm leading-7 text-white/64">
+              Continue when the remaining evidence gaps and assumptions are clear enough to identify what requires deeper Property,
+              Market, pricing, or professional review.
+            </p>
+            <div className="mt-6 rounded-[8px] border border-cyan-100/16 bg-cyan-100/[0.055] p-5">
+              <p className="text-[11px] font-black uppercase tracking-[0.2em] text-cyan-100">Qualitative confidence</p>
+              <p className="mt-3 text-sm leading-7 text-white/64">
+                Confidence is qualitative and preparation-focused. It reflects evidence completeness, assumption visibility,
+                verification status, freshness, and limitation severity. It is not a valuation score, pricing confidence score,
+                sale probability, time-to-sale prediction, buyer-demand score, investment score, suitability label, recommendation
+                score, or hidden composite indicator.
+              </p>
+            </div>
+          </div>
+
+          <div className="grid gap-4">
+            <div className="grid gap-4 md:grid-cols-2">
+              {SELLER_READINESS_EVIDENCE.map((item) => (
+                <article key={item.label} className="rounded-[8px] border border-white/10 bg-white/[0.035] p-5">
+                  <h3 className="text-sm font-black uppercase tracking-[0.16em] text-cyan-100">{item.label}</h3>
+                  <p className="mt-3 text-sm leading-7 text-white/62">{item.body}</p>
+                </article>
+              ))}
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-3">
+              {SELLER_READINESS_VERIFICATION.map((item) => (
+                <article key={item.label} className="rounded-[8px] border border-cyan-100/12 bg-cyan-100/[0.045] p-5">
+                  <h3 className="text-sm font-black leading-tight text-white">{item.label}</h3>
+                  <p className="mt-3 text-xs leading-6 text-white/58">{item.body}</p>
+                </article>
+              ))}
+            </div>
+
+            <div>
+              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-cyan-100/72">Next-decision thresholds</p>
+              <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {SELLER_READINESS_THRESHOLDS.map((item) => (
+                  <Link
+                    key={item.label}
+                    href={item.href}
+                    className="rounded-[8px] border border-white/10 bg-black/16 p-4 text-white transition hover:border-white/24 hover:bg-white/[0.06] focus:outline-none focus:ring-2 focus:ring-cyan-100 focus:ring-offset-2 focus:ring-offset-[#0b1117]"
+                  >
+                    <span className="block text-[11px] font-black uppercase tracking-[0.14em] text-cyan-100">{item.label}</span>
+                    <span className="mt-2 block text-xs leading-6 text-white/58">{item.note}</span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-[8px] border border-white/10 bg-white/[0.035] p-5">
+              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-cyan-100/72">Questions to carry forward</p>
+              <p className="mt-3 text-sm leading-7 text-white/62">
+                Carry forward what is known, what is assumed, what is not confirmed here, which evidence needs source review,
+                and which professional should verify the next question before exposure, pricing, contract, legal, tax, or closing
+                decisions are made.
+              </p>
+            </div>
+
+            <div className="rounded-[8px] border border-cyan-100/16 bg-cyan-100/[0.055] p-5">
+              <p className="text-sm font-bold leading-7 text-white/66">
+                No appraisal equivalence, valuation certainty, listing-price recommendation, sale-price prediction, guaranteed
+                pricing, guaranteed sale, guaranteed timing, market-timing recommendation, automated pricing strategy, investment
+                advice, legal advice, tax advice, suitability conclusion, or AI valuation or professional advice is provided here.
+              </p>
+            </div>
           </div>
         </div>
       </section>
