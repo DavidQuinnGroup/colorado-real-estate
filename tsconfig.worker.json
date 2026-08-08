@@ -86,6 +86,7 @@
     "scripts/checkReieVisualIntelligenceSystem.ts",
     "scripts/checkMarketProduct3.ts",
     "scripts/checkMarketAeoBoulderPilot.ts",
+    "scripts/checkMarketAeoMultiCityWave.ts",
     "scripts/checkPropertyProduct31.ts",
     "scripts/checkDecisionJourneyExperience.ts",
     "scripts/checkReieProductExperienceCohesionWave.ts",

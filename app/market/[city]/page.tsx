@@ -29,7 +29,7 @@ import {
   DECISION_GUIDE_TRUST_BOUNDARIES,
 } from '@/lib/decisionGuidePlatform';
 import { buildMarketDecisionWorkspace } from '@/lib/marketDecisionWorkspace';
-import { buildBoulderMarketAeoPilot } from '@/lib/marketAeoPilot';
+import { buildMarketAeoContract } from '@/lib/marketAeoPilot';
 import { buildCityMarketExperience } from '@/lib/marketIntelligenceExperience';
 import { buildCityMarketProduct3Experience } from '@/lib/marketProduct3';
 import { neighborhoods, type Neighborhood } from '@/lib/neighborhoods';
@@ -195,7 +195,7 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
     marketExperience,
     neighborhoodCount: cityNeighborhoods.length,
   });
-  const marketAeoPilot = buildBoulderMarketAeoPilot({
+  const marketAeoPilot = buildMarketAeoContract({
     city: cityData,
     marketExperience,
     neighborhoodCount: cityNeighborhoods.length,
@@ -410,12 +410,13 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
           {marketAeoPilot ? (
             <section
               className="mt-8 grid gap-5 rounded-[8px] bg-cyan-100/[0.05] p-5 ring-1 ring-cyan-100/10 lg:grid-cols-[0.82fr_1.18fr]"
-              data-testid="boulder-market-aeo-pilot"
-              data-market-aeo-pilot="boulder"
+              data-testid={marketAeoPilot.route === 'boulder-co-housing-market' ? 'boulder-market-aeo-pilot' : 'market-aeo-multi-city-contract'}
+              data-market-aeo-pilot={marketAeoPilot.route === 'boulder-co-housing-market' ? 'boulder' : undefined}
+              data-market-aeo-contract="multi-city"
               data-market-aeo-status={marketAeoPilot.status}
               data-market-aeo-route={marketAeoPilot.route}
               data-market-aeo-source-id={marketAeoPilot.source.id}
-              data-market-aeo-geography="Boulder, Colorado"
+              data-market-aeo-geography={`${marketAeoPilot.geography.city}, ${marketAeoPilot.geography.state}`}
               data-market-aeo-market-period={marketAeoPilot.marketPeriod}
               data-market-aeo-freshness={marketAeoPilot.freshness.status}
               data-market-aeo-visible-answer-count={marketAeoPilot.visibleAnswers.length}
@@ -432,10 +433,10 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
             >
               <div>
                 <p className="mb-3 text-[10px] font-black uppercase tracking-[0.28em] text-cyan-100/72">
-                  Boulder Market Answer Contract
+                  {marketAeoPilot.geography.city} Market Answer Contract
                 </p>
                 <h2 className="text-2xl font-black uppercase leading-tight tracking-normal text-white md:text-3xl">
-                  What this Boulder signal can safely answer.
+                  What this {marketAeoPilot.geography.city} signal can safely answer.
                 </h2>
                 <div className="mt-5 grid gap-3">
                   {[
@@ -466,7 +467,10 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
                     <p className="mt-3 text-xs leading-5 text-white/42">{item.limitation}</p>
                   </article>
                 ))}
-                <div className="rounded-[8px] bg-black/20 p-4" data-testid="boulder-market-aeo-limitations">
+                <div
+                  className="rounded-[8px] bg-black/20 p-4"
+                  data-testid={marketAeoPilot.route === 'boulder-co-housing-market' ? 'boulder-market-aeo-limitations' : 'market-aeo-limitations'}
+                >
                   <p className="text-[9px] font-black uppercase tracking-[0.18em] text-cyan-100/68">Limitations</p>
                   <ul className="mt-3 space-y-2 text-xs leading-5 text-white/48">
                     {marketAeoPilot.limitations.map((limitation) => (

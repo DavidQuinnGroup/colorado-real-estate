@@ -2,7 +2,13 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
 import { cities } from '../lib/cities.js';
-import { buildBoulderMarketAeoPilot, MARKET_AEO_BOULDER_PILOT_ROUTE, MARKET_AEO_BOULDER_PILOT_SOURCE_ID, MARKET_AEO_BOULDER_PILOT_STATUS } from '../lib/marketAeoPilot.js';
+import {
+  buildBoulderMarketAeoPilot,
+  buildMarketAeoContract,
+  MARKET_AEO_BOULDER_PILOT_ROUTE,
+  MARKET_AEO_BOULDER_PILOT_SOURCE_ID,
+  MARKET_AEO_BOULDER_PILOT_STATUS,
+} from '../lib/marketAeoPilot.js';
 import { buildCityMarketExperience } from '../lib/marketIntelligenceExperience.js';
 import { neighborhoods } from '../lib/neighborhoods.js';
 
@@ -38,7 +44,7 @@ const pilot = buildBoulderMarketAeoPilot({
   neighborhoodCount: boulderNeighborhoodCount,
 });
 
-assert(pilot, 'Boulder route must build a Market/AEO pilot.');
+assert(pilot, 'Boulder route must build a Market/AEO contract.');
 assert.equal(pilot.status, MARKET_AEO_BOULDER_PILOT_STATUS);
 assert.equal(pilot.geography.city, 'Boulder');
 assert.equal(pilot.geography.scope, 'city-market');
@@ -51,20 +57,29 @@ assert.match(pilot.marketPeriod, /Current published REIE Boulder city-market bri
 assert.match(pilot.limitations.join(' '), /not a live feed/i);
 assert.match(pilot.limitations.join(' '), /does not predict/i);
 
+const nonBoulderAuthorizedRoutes = new Set([
+  'louisville-co-housing-market',
+  'lafayette-co-housing-market',
+  'denver-co-housing-market',
+  'longmont-co-housing-market',
+]);
+
 for (const city of cities.filter((candidate) => candidate.marketSlug !== MARKET_AEO_BOULDER_PILOT_ROUTE)) {
   const cityNeighborhoodCount = neighborhoods.filter((neighborhood) => neighborhood.city === city.name).length;
   const experience = buildCityMarketExperience(city, cityNeighborhoodCount);
+  const contract = buildMarketAeoContract({ city, marketExperience: experience, neighborhoodCount: cityNeighborhoodCount });
   assert.equal(
-    buildBoulderMarketAeoPilot({ city, marketExperience: experience, neighborhoodCount: cityNeighborhoodCount }),
-    null,
-    `${city.name} must not receive the Boulder-only Market/AEO pilot.`,
+    Boolean(contract),
+    nonBoulderAuthorizedRoutes.has(city.marketSlug),
+    `${city.name} Market/AEO contract eligibility must match the authorized non-Boulder allowlist.`,
   );
 }
 
 for (const required of [
-  'buildBoulderMarketAeoPilot',
+  'buildMarketAeoContract',
   'marketAeoPilot?.structuredDataFaqs ?? cityFaqs',
-  'data-testid="boulder-market-aeo-pilot"',
+  'data-testid={marketAeoPilot.route ===',
+  'data-market-aeo-contract="multi-city"',
   'data-market-aeo-source-id={marketAeoPilot.source.id}',
   'data-market-aeo-market-period={marketAeoPilot.marketPeriod}',
   'data-market-aeo-freshness={marketAeoPilot.freshness.status}',
@@ -84,8 +99,8 @@ for (const required of [
 
 for (const required of [
   'SOURCE -> GEOGRAPHY -> MARKET PERIOD -> FRESHNESS -> LIMITATION -> CLAIM ELIGIBILITY -> VISIBLE ANSWER -> STRUCTURED DATA',
-  'REIE_MARKET_AEO_BOULDER_PILOT_IMPLEMENTED_AND_LOCALLY_CERTIFIED',
-  'READY_FOR_REIE_MARKET_AEO_BOULDER_PILOT_PUSH_AUTHORIZATION',
+  'REIE_MARKET_AEO_BOULDER_PILOT_PRODUCTION_CERTIFIED',
+  'READY_FOR_REIE_MARKET_AEO_MULTI_CITY_WAVE_PUSH_AUTHORIZATION',
 ]) {
   assertIncludes(chatStart, required, `CHAT_START must preserve governance marker ${required}.`);
 }
@@ -93,9 +108,15 @@ for (const required of [
 assert.equal(
   packageJson.scripts?.['check:market-aeo-boulder-pilot'],
   'npm run worker:build && node dist/scripts/checkMarketAeoBoulderPilot.js',
-  'package.json must expose Boulder Market/AEO pilot validation.',
+  'package.json must preserve Boulder Market/AEO validation.',
 );
-assertIncludes(tsconfig, 'scripts/checkMarketAeoBoulderPilot.ts', 'Worker build must compile Boulder Market/AEO pilot validation.');
+assert.equal(
+  packageJson.scripts?.['check:market-aeo-multi-city-wave'],
+  'npm run worker:build && node dist/scripts/checkMarketAeoMultiCityWave.js',
+  'package.json must expose multi-city Market/AEO wave validation.',
+);
+assertIncludes(tsconfig, 'scripts/checkMarketAeoBoulderPilot.ts', 'Worker build must compile Boulder Market/AEO validation.');
+assertIncludes(tsconfig, 'scripts/checkMarketAeoMultiCityWave.ts', 'Worker build must compile multi-city Market/AEO validation.');
 
 for (const forbidden of [
   'Address Points',
@@ -112,4 +133,4 @@ for (const forbidden of [
   assertNotIncludes(helper, forbidden, `Pilot helper must not include unauthorized capability or source: ${forbidden}`);
 }
 
-console.log('[market-aeo-boulder-pilot] ok: Boulder-only source, geography, period, freshness, limits, claim eligibility, visible answers, structured data, and protected boundaries verified.');
+console.log('[market-aeo-boulder-pilot] ok: Boulder source, geography, period, freshness, limits, claim eligibility, visible answers, structured data, and protected boundaries verified.');

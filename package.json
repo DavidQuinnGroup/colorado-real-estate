@@ -144,6 +144,7 @@
     "check:reie-visual-intelligence-system": "npm run worker:build && node dist/scripts/checkReieVisualIntelligenceSystem.js",
     "check:market-product-3": "npm run worker:build && node dist/scripts/checkMarketProduct3.js",
     "check:market-aeo-boulder-pilot": "npm run worker:build && node dist/scripts/checkMarketAeoBoulderPilot.js",
+    "check:market-aeo-multi-city-wave": "npm run worker:build && node dist/scripts/checkMarketAeoMultiCityWave.js",
     "check:property-product-3-1": "npm run worker:build && node dist/scripts/checkPropertyProduct31.js",
     "check:decision-journey-experience": "npm run worker:build && node dist/scripts/checkDecisionJourneyExperience.js",
     "check:reie-product-experience-cohesion-wave": "npm run worker:build && node dist/scripts/checkReieProductExperienceCohesionWave.js",

@@ -10,7 +10,7 @@ Product:
 
 ## Latest New-Chat Handoff
 
-PROJECT ATLAS(tm) / REIE Market AEO Production Certification and Lane 1 Boulder Open Data Package Integration, August 8, 2026:
+PROJECT ATLAS(tm) / REIE Market AEO Multi-City Wave Implemented Locally, August 8, 2026:
 
 Workspace:
 
@@ -19,23 +19,20 @@ Workspace:
 Baseline:
 
 - Branch: `main`
-- Baseline SHA: `ca4b824e4e71e3a456b7e55d4461b8ca8b495ddf`
-- origin/main at task start: `ca4b824e4e71e3a456b7e55d4461b8ca8b495ddf`
+- Baseline SHA: `d23f74b8c800adfe740ebf715e9a982f20852c2f`
+- origin/main at task start: `d23f74b8c800adfe740ebf715e9a982f20852c2f`
 - Task-start divergence: `0 ahead / 0 behind`
 
-Current Market/AEO production state:
+Phase A canonical governance state:
 
 - `REIE_MARKET_AEO_BOULDER_PILOT_PRODUCTION_CERTIFIED`
+- `PHASE_A_BOULDER_OPEN_DATA_GOVERNANCE_CANONICALIZED`
 - Implementation record: `docs/project-atlas/executive-library/REIE-MARKET-AEO-BOULDER-PILOT-IMPLEMENTATION.md`
 - Canonical pilot route: `/market/boulder-co-housing-market`
 - Architecture implemented: `SOURCE -> GEOGRAPHY -> MARKET PERIOD -> FRESHNESS -> LIMITATION -> CLAIM ELIGIBILITY -> VISIBLE ANSWER -> STRUCTURED DATA`
-- Source: existing REIE governed city-market data and certified public market-page context.
-- Geography: Boulder, Colorado city-market only.
-- Market period: current published REIE Boulder city-market briefing.
-- Freshness: current as published REIE context; not a live MLS or provider feed.
-- Claim eligibility: route-level market signal and evidence-orientation answers are eligible; valuation, prediction, ranking, suitability, and property-specific conclusions remain excluded.
-- FAQ structured data for Boulder is derived from the same visible answer contract; non-Boulder city-market FAQ generation remains unchanged.
-- Production certification verified canonical Boulder route `200`, visible answer contract, FAQ structured-data alignment, non-Boulder containment, public-experience smoke, and deterministic Market/AEO pilot checks after automatic deployment success.
+- Phase A push synchronized `main` and `origin/main` at `d23f74b8c800adfe740ebf715e9a982f20852c2f`.
+- Automatic Vercel deployment completed successfully for `d23f74b8c800adfe740ebf715e9a982f20852c2f`.
+- Production smoke passed against `https://davidquinngroup.com`.
 
 Lane 1 Boulder County Open Data provider/counsel package state:
 
@@ -61,6 +58,23 @@ Pilot containment:
 - No Boulder County Open Data Park Boundaries activation.
 - No external provider acquisition, provider API access, scraping, new source activation, Prisma/schema/database/persistence, Property Inquiry, Contact submission, CRM, email, notification, worker, MLS ingestion, telemetry, auth, customer-data, or production environment change.
 
+Phase B Market/AEO multi-city local implementation state:
+
+- `REIE_MARKET_AEO_MULTI_CITY_WAVE_IMPLEMENTED_AND_LOCALLY_CERTIFIED`
+- Generalized contract: `SOURCE -> GEOGRAPHY -> MARKET PERIOD -> FRESHNESS -> LIMITATION -> CLAIM ELIGIBILITY -> VISIBLE ANSWER -> STRUCTURED DATA`
+- Reusable helper: `lib/marketAeoPilot.ts`
+- Customer route integration: `app/market/[city]/page.tsx`
+- Deterministic validation: `scripts/checkMarketAeoMultiCityWave.ts`
+- Boulder remains the production-certified reference implementation and preserves `REIE_MARKET_AEO_BOULDER_PILOT_IMPLEMENTED`.
+- Authorized Market/AEO customer-facing routes: `/market/boulder-co-housing-market`, `/market/louisville-co-housing-market`, `/market/lafayette-co-housing-market`, `/market/denver-co-housing-market`, and `/market/longmont-co-housing-market`.
+- Louisville uses existing governed city-market data and certified Louisville Decision Guide context.
+- Lafayette passed focused source/freshness qualification using existing governed city-market data and certified Lafayette Decision Guide context; freshness remains current as published REIE context, not live provider feed data.
+- Denver uses existing governed city-market data and certified enhanced-foundation Denver context.
+- Longmont uses existing governed city-market data and certified enhanced-foundation Longmont context with explicit freshness limitation.
+- FAQ structured data mirrors eligible visible answer contract content for each authorized city and does not exceed visible claims.
+- Excluded cities remain outside the allowlist: Erie, Westminster, Broomfield, Superior, Niwot, Gunbarrel, Thornton, Brighton, Firestone, and Frederick.
+- No Boulder County Open Data dataset, new provider, scraped source, provider API, persistence, telemetry, AI, CRM/email, worker, MLS ingestion, auth, customer-data, or production environment change was introduced.
+
 Local validation required/recorded:
 
 - `git diff --check`
@@ -69,15 +83,17 @@ Local validation required/recorded:
 - `npm run check:public-trust-readiness`
 - `npm run check:public-runtime-safety`
 - `npm run check:market-aeo-boulder-pilot`
+- `npm run check:market-aeo-multi-city-wave`
 - `npm run build`
 
 Next gates:
 
-- `READY_FOR_REIE_MARKET_AEO_POST_PRODUCTION_GOVERNANCE_OR_NEXT_PILOT_AUTHORIZATION`
+- `READY_FOR_REIE_MARKET_AEO_MULTI_CITY_WAVE_PUSH_AUTHORIZATION`
+- `READY_FOR_REIE_MARKET_AEO_MULTI_CITY_WAVE_PRODUCTION_VERIFICATION_AUTHORIZATION`
 - `READY_FOR_BOULDER_COUNTY_OPEN_DATA_PROVIDER_COUNSEL_CONFIRMATION_DECISION`
 - `READY_FOR_REIE_POST_LAUNCH_MONITORING_RUNBOOK_OPERATION_AUTHORIZATION`
 
-Do not push, deploy, hard-launch, activate Boulder County Open Data, acquire datasets, add external providers, add persistence, mutate production, expand the Market/AEO pilot beyond Boulder, or begin multi-city Market/AEO implementation without separate Executive HQ authorization.
+Do not push Phase B, deploy Phase B, hard-launch, activate Boulder County Open Data, acquire datasets, add external providers, add persistence, mutate production, or expand Market/AEO beyond Boulder, Louisville, Lafayette, Denver, and Longmont without separate Executive HQ authorization.
 
 Prior handoff retained below for audit history.
 
