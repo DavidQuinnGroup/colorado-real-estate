@@ -10,6 +10,70 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / Authoritative Property Record Intelligence Locally Certified, August 8, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Baseline:
+
+- Branch: `main`
+- Starting canonical state: `HEAD = origin/main = dc26a9edbe73e8c7f5bb1644a1ae13fd112d6876`
+- Starting divergence: `0 ahead / 0 behind`
+- Prior closed status: `PROPERTY_GEOGRAPHIC_INTELLIGENCE_EXPANSION_PRODUCTION_CERTIFIED_AND_CLOSED`
+- Prior next gate: `READY_FOR_NEXT_REIE_EXECUTIVE_DEVELOPMENT_CYCLE`
+
+Implementation status:
+
+- `AUTHORITATIVE_PROPERTY_RECORD_INTELLIGENCE_LOCALLY_CERTIFIED`
+- Record: `docs/project-atlas/executive-library/REIE-AUTHORITATIVE-PROPERTY-RECORD-INTELLIGENCE-IMPLEMENTATION.md`
+- Property Product 3.1 now exposes a deterministic public-record evidence profile for assessor, tax, and permit domains.
+- Assessor, tax, and permit domains each carry explicit disposition `ARCHITECTURE_READY_SOURCE_CONFIRMATION_REQUIRED`.
+- Assessor, tax, and permit source-readiness items remain `FAIL_CLOSED_REVIEW_REQUIRED`.
+- Assessor, tax, and permit claim eligibility remains `false`.
+- The implementation records official-source candidates, jurisdiction certainty, correlation limitations, missing record identifiers, source blockers, verification requirements, and deterministic evidence fingerprints.
+- Existing property route fields can route record questions but do not establish a verified parcel, tax account, permit record, owner identity, legal record, value, condition, or suitability conclusion.
+- Existing seven-item source-readiness contract is preserved: listing data, municipal planning/place context, assessor, treasurer/tax, permits, BCOD Address Points, and BCOD Park Boundaries.
+- BCOD Address Points and BCOD Park Boundaries remain blocked/not authorized.
+
+Validation recorded locally:
+
+- `git diff --check`
+- `npm run typecheck`
+- `npm run check:authoritative-property-record-intelligence`
+- `npm run check:property-geographic-source-intelligence`
+- `npm run check:property-product-3-1`
+- `npm run check:property-route-safety`
+- `npm run check:public-runtime-safety`
+- `npm run check:public-trust-readiness`
+- `npm run check:geographic-intelligence-architecture-safety`
+- `npm run build`
+
+Protected boundaries:
+
+- No push.
+- No deployment.
+- No production verification.
+- No production mutation.
+- No BCOD acquisition or activation.
+- No BCOD API calls, datasets, persistence, transformation, geometry, map rendering, derived property intelligence, customer display, or provider activation.
+- No provider activation, scraping, external API use, persistence, Prisma/database/schema change, Property Inquiry mutation, Contact mutation, CRM/email, worker/queue activation, MLS ingestion/sync, notifications, saved-search mutation, auth, telemetry/customer tracking, credentials/secrets, or unrelated remediation.
+
+Source dispositions:
+
+- Assessor: `ARCHITECTURE_READY_SOURCE_CONFIRMATION_REQUIRED`
+- Tax: `ARCHITECTURE_READY_SOURCE_CONFIRMATION_REQUIRED`
+- Permit: `ARCHITECTURE_READY_SOURCE_CONFIRMATION_REQUIRED`
+
+Next gate:
+
+- `READY_FOR_AUTHORITATIVE_PROPERTY_RECORD_INTELLIGENCE_PUSH_AUTHORIZATION`
+
+Do not push, deploy, activate BCOD, contact providers, acquire datasets, add persistence, mutate production, run production certification, activate public-record retrieval, or display assessor/tax/permit facts unless explicitly authorized.
+
+Prior handoff retained below for audit history.
+
 PROJECT ATLAS(tm) / Property Geographic Source Intelligence Production Certified and Closed, August 8, 2026:
 
 Workspace:

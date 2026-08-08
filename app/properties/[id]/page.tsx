@@ -1047,7 +1047,10 @@ export default async function PropertyPage({ params, searchParams }: PropertyPag
   const propertyProduct31Model = buildPropertyProduct31Model({
     address: property.address,
     city: property.city,
+    state: property.state,
+    zip: property.zip,
     neighborhood: property.neighborhood,
+    subdivision: property.subdivision,
     propertyType: property.propertyType,
     status: property.status,
     price: property.price,

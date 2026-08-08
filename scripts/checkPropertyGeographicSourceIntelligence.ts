@@ -20,6 +20,7 @@ function assertNotIncludes(source: string, value: string, message: string) {
 }
 
 const sourceModel = read('lib/property/propertyAuthoritativeSourceIntelligence.ts');
+const publicRecordModel = read('lib/property/propertyPublicRecordEvidence.ts');
 const propertyProductModel = read('lib/propertyProduct31.ts');
 const component = read('components/PropertyProduct31Experience.tsx');
 const propertyPage = read('app/properties/[id]/page.tsx');
@@ -76,6 +77,8 @@ assert.equal(boulderModel.status, PROPERTY_GEOGRAPHIC_SOURCE_INTELLIGENCE_STATUS
 assert.equal(boulderModel.geography.city, 'Boulder');
 assert.equal(boulderModel.selectedSources.length, 7);
 assert.equal(boulderModel.selectedSources.filter((source) => source.claimEligible).length, 2);
+assert.equal(boulderModel.publicRecordEvidence.status, 'AUTHORITATIVE_PROPERTY_RECORD_INTELLIGENCE_ARCHITECTURE_READY_SOURCE_CONFIRMATION_REQUIRED');
+assert.equal(boulderModel.publicRecordEvidence.domainProfiles.length, 3);
 assert(boulderModel.selectedSources.some((source) => source.category === 'MLS_LISTING_DATA' && source.readiness === 'READY_EXISTING_REPOSITORY_DATA'));
 assert(boulderModel.selectedSources.some((source) => source.category === 'MUNICIPAL_PLANNING' && source.readiness === 'GOVERNED_REFERENCE_ONLY'));
 assert(boulderModel.selectedSources.some((source) => source.category === 'COUNTY_ASSESSOR' && source.readiness === 'FAIL_CLOSED_REVIEW_REQUIRED'));
@@ -83,6 +86,18 @@ assert(boulderModel.selectedSources.some((source) => source.category === 'COUNTY
 assert(boulderModel.selectedSources.some((source) => source.category === 'BUILDING_PERMITS' && source.readiness === 'FAIL_CLOSED_REVIEW_REQUIRED'));
 assert(boulderModel.selectedSources.some((source) => source.category === 'BCOD_ADDRESS_POINTS' && source.readiness === 'BLOCKED_NOT_AUTHORIZED'));
 assert(boulderModel.selectedSources.some((source) => source.category === 'BCOD_PARK_BOUNDARIES' && source.readiness === 'BLOCKED_NOT_AUTHORIZED'));
+
+for (const [category, domain] of [
+  ['COUNTY_ASSESSOR', 'ASSESSOR'],
+  ['COUNTY_TREASURER_TAX', 'TAX'],
+  ['BUILDING_PERMITS', 'PERMIT'],
+] as const) {
+  const source = boulderModel.selectedSources.find((candidate) => candidate.category === category);
+  assert(source, `${category} source must exist.`);
+  assert.equal(source.recordDomain, domain);
+  assert.equal(source.implementationDisposition, 'ARCHITECTURE_READY_SOURCE_CONFIRMATION_REQUIRED');
+  assert.equal(source.claimEligible, false);
+}
 
 for (const [boundary, value] of Object.entries(boulderModel.protectedBoundaries)) {
   assert.equal(value, false, `${boundary} must remain false.`);
@@ -99,8 +114,11 @@ assert.equal(unknownCityModel.selectedSources.filter((source) => source.claimEli
 
 for (const requiredSurface of [
   'data-testid="property-geographic-source-intelligence"',
+  'data-testid="property-public-record-evidence-profile"',
   'data-testid="property-geographic-source-item"',
   'data-property-source-readiness-contract="source-geography-subject-freshness-evidence-limitation-claim-intelligence-presentation"',
+  'data-property-record-intelligence={recordEvidence.status}',
+  'data-property-record-disposition-assessor={recordDisposition',
   'data-property-geographic-source-provider-activation={String(model.authoritativeSources.protectedBoundaries.providerActivation)}',
   'data-property-geographic-source-bcod-address-points={String(model.authoritativeSources.protectedBoundaries.bcodAddressPoints)}',
   'data-property-geographic-source-public-gis={String(model.authoritativeSources.protectedBoundaries.publicGis)}',
@@ -110,6 +128,9 @@ for (const requiredSurface of [
 
 assertIncludes(propertyProductModel, 'authoritativeSources', 'Property Product 3.1 model must expose authoritative source intelligence.');
 assertIncludes(propertyPage, 'buildPropertyProduct31Model', 'Property page must use the integrated Property Product 3.1 model.');
+assertIncludes(publicRecordModel, 'PropertyRecordDomainDisposition', 'Public-record evidence contract must expose explicit domain dispositions.');
+assertIncludes(publicRecordModel, 'recordRetrieval: false', 'Public-record evidence contract must prevent record retrieval.');
+assertIncludes(publicRecordModel, 'customerRecordDisplay: false', 'Public-record evidence contract must prevent customer record display.');
 
 for (const forbidden of [
   'fetch(',
@@ -135,5 +156,6 @@ assert.equal(
 );
 assertIncludes(tsconfig, 'scripts/checkPropertyGeographicSourceIntelligence.ts', 'Worker build must compile the property/geographic source intelligence check.');
 assertIncludes(tsconfig, 'lib/property/propertyAuthoritativeSourceIntelligence.ts', 'Worker build must compile the property source intelligence contract.');
+assertIncludes(tsconfig, 'lib/property/propertyPublicRecordEvidence.ts', 'Worker build must compile the property public-record evidence contract.');
 
 console.log('[property-geographic-source-intelligence] ok: property source readiness, geographic source reuse, BCOD fail-closed gates, and protected-system boundaries verified.');

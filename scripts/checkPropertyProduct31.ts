@@ -33,6 +33,7 @@ for (const expectedSurface of [
   'data-testid="property-product-3-1-property-dna"',
   'data-testid="property-product-3-1-confidence-layer"',
   'data-testid="property-geographic-source-intelligence"',
+  'data-testid="property-public-record-evidence-profile"',
   'data-testid="property-geographic-source-item"',
   'data-testid="property-product-3-1-comparable-context"',
   'data-testid="property-product-3-1-verification-checklist"',
@@ -50,6 +51,12 @@ for (const expectedBoundary of [
   'data-property-product-3-1-valuation-model="false"',
   'data-property-product-3-1-rankings="false"',
   'data-property-product-3-1-fixture-data="false"',
+  'data-property-record-intelligence={recordEvidence.status}',
+  'data-property-record-disposition-assessor={recordDisposition',
+  'data-property-record-disposition-tax={recordDisposition',
+  'data-property-record-disposition-permit={recordDisposition',
+  'data-property-record-customer-display={String(recordEvidence.protectedBoundaries.customerRecordDisplay)}',
+  'data-property-record-retrieval={String(recordEvidence.protectedBoundaries.recordRetrieval)}',
   'data-property-geographic-source-bcod-address-points={String(model.authoritativeSources.protectedBoundaries.bcodAddressPoints)}',
   'data-property-geographic-source-bcod-park-boundaries={String(model.authoritativeSources.protectedBoundaries.bcodParkBoundaries)}',
   'data-property-geographic-source-provider-activation={String(model.authoritativeSources.protectedBoundaries.providerActivation)}',
@@ -131,6 +138,10 @@ assert.equal(readyModel.checklist.length, 4, 'Verification checklist must includ
 assert(readyModel.comparables.every((item) => item.similarities.length > 0 && item.differences.length > 0), 'Comparable items must explain factual similarities and differences.');
 assert(readyModel.profile.some((item) => item.state === 'well-supported'), 'Complete facts must produce a well-supported profile signal.');
 assert.equal(readyModel.authoritativeSources.status, 'PROPERTY_GEOGRAPHIC_SOURCE_INTELLIGENCE_IMPLEMENTED');
+assert.equal(
+  readyModel.authoritativeSources.publicRecordEvidence.status,
+  'AUTHORITATIVE_PROPERTY_RECORD_INTELLIGENCE_ARCHITECTURE_READY_SOURCE_CONFIRMATION_REQUIRED',
+);
 assert.equal(readyModel.authoritativeSources.geography.city, 'Boulder');
 assert.equal(readyModel.authoritativeSources.protectedBoundaries.bcodAddressPoints, false);
 assert.equal(readyModel.authoritativeSources.protectedBoundaries.bcodParkBoundaries, false);
@@ -141,6 +152,9 @@ assert(readyModel.authoritativeSources.selectedSources.some((source) => source.c
 assert(readyModel.authoritativeSources.selectedSources.some((source) => source.category === 'COUNTY_ASSESSOR' && !source.claimEligible), 'Assessor source must fail closed.');
 assert(readyModel.authoritativeSources.selectedSources.some((source) => source.category === 'COUNTY_TREASURER_TAX' && !source.claimEligible), 'Tax source must fail closed.');
 assert(readyModel.authoritativeSources.selectedSources.some((source) => source.category === 'BUILDING_PERMITS' && !source.claimEligible), 'Permit source must fail closed.');
+assert(readyModel.authoritativeSources.publicRecordEvidence.domainProfiles.every((profile) => profile.implementationDisposition === 'ARCHITECTURE_READY_SOURCE_CONFIRMATION_REQUIRED'), 'Assessor, tax, and permit dispositions must require source confirmation.');
+assert.equal(readyModel.authoritativeSources.publicRecordEvidence.protectedBoundaries.recordRetrieval, false);
+assert.equal(readyModel.authoritativeSources.publicRecordEvidence.protectedBoundaries.customerRecordDisplay, false);
 assert(readyModel.authoritativeSources.selectedSources.some((source) => source.category === 'BCOD_ADDRESS_POINTS' && source.readiness === 'BLOCKED_NOT_AUTHORIZED'), 'BCOD Address Points must remain blocked.');
 assert(readyModel.authoritativeSources.selectedSources.some((source) => source.category === 'BCOD_PARK_BOUNDARIES' && source.readiness === 'BLOCKED_NOT_AUTHORIZED'), 'BCOD Park Boundaries must remain blocked.');
 

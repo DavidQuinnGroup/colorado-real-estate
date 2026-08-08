@@ -4,6 +4,12 @@ import {
   type CityIntelligenceSourceCategory,
   type CitySourceDomainProfile,
 } from '../coloradoCityIntelligenceFactory.js';
+import {
+  buildPropertyPublicRecordEvidenceProfile,
+  type PropertyPublicRecordEvidenceProfile,
+  type PropertyRecordDomain,
+  type PropertyRecordDomainDisposition,
+} from './propertyPublicRecordEvidence.js';
 
 export const PROPERTY_GEOGRAPHIC_SOURCE_INTELLIGENCE_STATUS = 'PROPERTY_GEOGRAPHIC_SOURCE_INTELLIGENCE_IMPLEMENTED';
 export const PROPERTY_GEOGRAPHIC_SOURCE_INTELLIGENCE_VERSION = '1.0.0';
@@ -23,6 +29,11 @@ export type PropertyAuthoritativeSourceItem = {
   limitation: string;
   customerUse: string;
   claimEligible: boolean;
+  recordDomain?: PropertyRecordDomain;
+  implementationDisposition?: PropertyRecordDomainDisposition;
+  jurisdiction?: string;
+  verificationRequirement?: string;
+  evidenceFingerprint?: string;
 };
 
 export type PropertyGeographicSourceIntelligence = {
@@ -36,6 +47,7 @@ export type PropertyGeographicSourceIntelligence = {
   };
   summary: string;
   selectedSources: PropertyAuthoritativeSourceItem[];
+  publicRecordEvidence: PropertyPublicRecordEvidenceProfile;
   verificationPrompts: string[];
   protectedBoundaries: {
     bcodAddressPoints: false;
@@ -51,8 +63,12 @@ export type PropertyGeographicSourceIntelligence = {
 };
 
 export type PropertyGeographicSourceInput = {
+  address?: string | null;
   city?: string | null;
+  state?: string | null;
+  zip?: string | null;
   neighborhood?: string | null;
+  subdivision?: string | null;
   propertyType?: string | null;
   status?: string | null;
   price?: number | null;
@@ -145,6 +161,34 @@ function blockedBcodItem(category: 'BCOD_ADDRESS_POINTS' | 'BCOD_PARK_BOUNDARIES
   };
 }
 
+function publicRecordSourceItem({
+  profile,
+  publicRecordProfile,
+}: {
+  profile: CitySourceDomainProfile;
+  publicRecordProfile: PropertyPublicRecordEvidenceProfile['domainProfiles'][number];
+}): PropertyAuthoritativeSourceItem {
+  const candidateSummary = publicRecordProfile.candidates
+    .map((candidate) => `${candidate.sourceName}: ${candidate.classification.toLowerCase().replace(/_/g, ' ')}`)
+    .join('; ');
+
+  return {
+    category: profile.category,
+    label: publicRecordProfile.label,
+    readiness: 'FAIL_CLOSED_REVIEW_REQUIRED',
+    sourcePath: `${profile.category} / ${profile.accessMethod} / ${profile.adapterReadiness}`,
+    evidence: `${candidateSummary}. Architecture is ready to route this domain, but no property-specific record is authorized or retrieved.`,
+    limitation: publicRecordProfile.candidates.map((candidate) => candidate.blocker).join(' '),
+    customerUse: publicRecordProfile.customerUse,
+    claimEligible: false,
+    recordDomain: publicRecordProfile.domain,
+    implementationDisposition: publicRecordProfile.implementationDisposition,
+    jurisdiction: publicRecordProfile.jurisdiction,
+    verificationRequirement: publicRecordProfile.verificationRequirement,
+    evidenceFingerprint: publicRecordProfile.evidenceFingerprint,
+  };
+}
+
 export function buildPropertyGeographicSourceIntelligence(
   input: PropertyGeographicSourceInput,
 ): PropertyGeographicSourceIntelligence {
@@ -156,6 +200,15 @@ export function buildPropertyGeographicSourceIntelligence(
   const planningProfile = findSourceProfile('MUNICIPAL_PLANNING');
   const cityLabel = input.city?.trim() || cityRecord?.canonicalName || 'Colorado';
   const neighborhoodLabel = input.neighborhood?.trim() || null;
+  const publicRecordEvidence = buildPropertyPublicRecordEvidenceProfile(input);
+  const publicRecordDomain = (domain: PropertyRecordDomain) => {
+    const profile = publicRecordEvidence.domainProfiles.find((candidate) => candidate.domain === domain);
+    if (!profile) {
+      throw new Error(`Missing property public-record profile: ${domain}`);
+    }
+
+    return profile;
+  };
 
   const selectedSources: PropertyAuthoritativeSourceItem[] = [
     sourceItem({
@@ -182,33 +235,9 @@ export function buildPropertyGeographicSourceIntelligence(
         : 'Use only as a prompt to verify place context through supported routes.',
       claimEligible: Boolean(cityRecord),
     }),
-    sourceItem({
-      profile: assessorProfile,
-      label: 'Assessor and parcel records',
-      readiness: 'FAIL_CLOSED_REVIEW_REQUIRED',
-      evidence: 'County assessor and parcel source classes exist in geographic intelligence governance but are not activated for this property route.',
-      limitation: 'Parcel, owner, assessment, subdivision, boundary, and account-level facts require source, licensing, field, retention, and display review before use.',
-      customerUse: 'Carry assessor and parcel questions into professional or source review; do not present parcel facts here.',
-      claimEligible: false,
-    }),
-    sourceItem({
-      profile: taxProfile,
-      label: 'Tax and ownership-cost records',
-      readiness: 'FAIL_CLOSED_REVIEW_REQUIRED',
-      evidence: 'County treasurer tax records are a governed future source category, not an activated customer-facing property feed.',
-      limitation: 'Tax amounts, transfer effects, special assessments, and ownership-cost facts require current source or professional verification.',
-      customerUse: 'Treat taxes and ownership costs as verification questions, not conclusions.',
-      claimEligible: false,
-    }),
-    sourceItem({
-      profile: permitProfile,
-      label: 'Permit and construction records',
-      readiness: 'FAIL_CLOSED_REVIEW_REQUIRED',
-      evidence: 'Building permit sources are represented as future adapters with jurisdiction-specific availability and rights review.',
-      limitation: 'Permit status, remodel legality, system age, structural condition, and construction quality are not determined by this page.',
-      customerUse: 'Use public listing construction cues to prepare records questions for qualified review.',
-      claimEligible: false,
-    }),
+    publicRecordSourceItem({ profile: assessorProfile, publicRecordProfile: publicRecordDomain('ASSESSOR') }),
+    publicRecordSourceItem({ profile: taxProfile, publicRecordProfile: publicRecordDomain('TAX') }),
+    publicRecordSourceItem({ profile: permitProfile, publicRecordProfile: publicRecordDomain('PERMIT') }),
     blockedBcodItem('BCOD_ADDRESS_POINTS'),
     blockedBcodItem('BCOD_PARK_BOUNDARIES'),
   ];
@@ -225,6 +254,7 @@ export function buildPropertyGeographicSourceIntelligence(
     summary:
       'Authoritative-source readiness separates existing property facts from geographic context and blocked public-record source classes before customer reliance.',
     selectedSources,
+    publicRecordEvidence,
     verificationPrompts: [
       'Which listing facts are current enough to compare, and which need direct confirmation?',
       'Which place context belongs at city or neighborhood level rather than being treated as a parcel fact?',

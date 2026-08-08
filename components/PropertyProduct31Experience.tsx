@@ -26,6 +26,10 @@ function stateClass(state: string) {
 }
 
 export default function PropertyProduct31Experience({ model }: PropertyProduct31ExperienceProps) {
+  const recordEvidence = model.authoritativeSources.publicRecordEvidence;
+  const recordDisposition = (domain: 'ASSESSOR' | 'TAX' | 'PERMIT') =>
+    recordEvidence.domainProfiles.find((profile) => profile.domain === domain)?.implementationDisposition ?? 'REMAINS_FAIL_CLOSED';
+
   return (
     <section
       id="property-decision-profile"
@@ -49,6 +53,12 @@ export default function PropertyProduct31Experience({ model }: PropertyProduct31
       data-property-geographic-source-version={model.authoritativeSources.version}
       data-property-geographic-source-city={model.authoritativeSources.geography.city}
       data-property-geographic-source-count={model.authoritativeSources.selectedSources.length}
+      data-property-record-intelligence={recordEvidence.status}
+      data-property-record-disposition-assessor={recordDisposition('ASSESSOR')}
+      data-property-record-disposition-tax={recordDisposition('TAX')}
+      data-property-record-disposition-permit={recordDisposition('PERMIT')}
+      data-property-record-customer-display={String(recordEvidence.protectedBoundaries.customerRecordDisplay)}
+      data-property-record-retrieval={String(recordEvidence.protectedBoundaries.recordRetrieval)}
       data-property-geographic-source-bcod-address-points={String(model.authoritativeSources.protectedBoundaries.bcodAddressPoints)}
       data-property-geographic-source-bcod-park-boundaries={String(model.authoritativeSources.protectedBoundaries.bcodParkBoundaries)}
       data-property-geographic-source-provider-activation={String(model.authoritativeSources.protectedBoundaries.providerActivation)}
@@ -220,6 +230,27 @@ export default function PropertyProduct31Experience({ model }: PropertyProduct31
             <p className="mt-3 text-sm leading-6 text-white/56">
               Property geography comes from listing fields and existing governed place context. It is not a parcel boundary, legal description, zoning conclusion, or public GIS activation.
             </p>
+            <div
+              className="mt-5 rounded-[6px] border border-white/10 bg-white/[0.035] p-4"
+              data-testid="property-public-record-evidence-profile"
+              data-property-record-correlation-confidence={recordEvidence.propertyCorrelation.correlationConfidence}
+              data-property-record-jurisdiction-certainty={recordEvidence.jurisdictionCertainty}
+            >
+              <p className="reie-property-product-31-mini-label text-[10px] font-black uppercase tracking-[0.14em] text-white/40">Public Record Correlation</p>
+              <p className="mt-3 text-xs leading-5 text-white/54">
+                {recordEvidence.propertyCorrelation.limitation}
+              </p>
+              <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                <div>
+                  <p className="text-[9px] font-black uppercase tracking-[0.13em] text-cyan-100/70">Available fields</p>
+                  <p className="mt-2 text-xs leading-5 text-white/50">{recordEvidence.propertyCorrelation.availableIdentifiers.join(', ') || 'Listing field review required'}</p>
+                </div>
+                <div>
+                  <p className="text-[9px] font-black uppercase tracking-[0.13em] text-amber-100/70">Missing record keys</p>
+                  <p className="mt-2 text-xs leading-5 text-white/50">{recordEvidence.propertyCorrelation.missingIdentifiers.join(', ')}</p>
+                </div>
+              </div>
+            </div>
             <div className="mt-5 grid gap-2">
               {model.authoritativeSources.verificationPrompts.slice(0, 3).map((prompt) => (
                 <p key={prompt} className="rounded-[6px] border border-white/10 bg-white/[0.04] p-3 text-xs leading-5 text-white/50">
@@ -237,12 +268,19 @@ export default function PropertyProduct31Experience({ model }: PropertyProduct31
                 data-property-geographic-source-category={source.category}
                 data-property-geographic-source-readiness={source.readiness}
                 data-property-geographic-source-claim-eligible={String(source.claimEligible)}
+                data-property-record-domain={source.recordDomain ?? 'NONE'}
+                data-property-record-disposition={source.implementationDisposition ?? 'NONE'}
               >
                 <span className={`reie-property-product-31-confidence inline-flex rounded-[5px] border px-2 py-1 text-[9px] font-black uppercase tracking-[0.12em] ${source.claimEligible ? confidenceClass('moderate') : confidenceClass('limited')}`}>
                   {source.readiness.replace(/_/g, ' ').toLowerCase()}
                 </span>
                 <h4 className="reie-property-product-31-card-title mt-4 text-sm font-black uppercase leading-5 tracking-[0.08em] text-white">{source.label}</h4>
                 <p className="reie-property-product-31-copy mt-3 text-xs leading-5 text-white/56">{source.evidence}</p>
+                {source.implementationDisposition ? (
+                  <p className="mt-3 rounded-[5px] border border-amber-100/18 bg-amber-100/[0.055] p-3 text-[11px] leading-5 text-amber-50/68">
+                    {source.implementationDisposition.replace(/_/g, ' ').toLowerCase()}: {source.verificationRequirement}
+                  </p>
+                ) : null}
                 <p className="reie-property-product-31-note mt-3 border-t border-white/10 pt-3 text-xs leading-5 text-white/40">{source.limitation}</p>
               </article>
             ))}

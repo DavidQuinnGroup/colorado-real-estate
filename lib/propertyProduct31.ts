@@ -6,7 +6,10 @@ import {
 export type PropertyProduct31Input = {
   address?: string | null;
   city?: string | null;
+  state?: string | null;
+  zip?: string | null;
   neighborhood?: string | null;
+  subdivision?: string | null;
   propertyType?: string | null;
   status?: string | null;
   price?: number | null;
@@ -181,8 +184,12 @@ export function buildPropertyProduct31Model(input: PropertyProduct31Input): Prop
   const areaLabel = input.neighborhood || input.city || 'this Colorado market';
   const syncLabel = input.lastIntelligenceSync ? 'last intelligence sync' : input.updatedAt ? 'last listing update' : 'available public record';
   const authoritativeSources = buildPropertyGeographicSourceIntelligence({
+    address: input.address,
     city: input.city,
+    state: input.state,
+    zip: input.zip,
     neighborhood: input.neighborhood,
+    subdivision: input.subdivision,
     propertyType: input.propertyType,
     status: input.status,
     price: input.price,
