@@ -156,7 +156,11 @@ async function assertHomePortalPage() {
 async function assertBuyPage() {
   const html = await fetchHtml('/buy');
 
-  assert.ok(includesFoldedText(html, 'Know what matters before the market asks you to move'), 'Expected buyer page decision headline.');
+  assert.ok(includesFoldedText(html, 'Am I prepared to buy?'), 'Expected buyer page certified H1.');
+  assert.ok(
+    includesFoldedText(html, 'Prepare the decision before the market asks you to move.'),
+    'Expected buyer page certified decision workspace headline.',
+  );
   assert.ok(includesFoldedText(html, 'Buyer Decision Workspace'), 'Expected buyer decision workspace.');
   assert.ok(includesFoldedText(html, 'Financing Confidence'), 'Expected moved financing education on buyer page.');
   assert.ok(includesFoldedText(html, 'This is educational guidance only'), 'Expected financing education trust boundary.');
@@ -189,7 +193,7 @@ async function assertAboutAdvisorExperiencePage() {
 async function assertSellerPage() {
   const html = await fetchHtml('/sell');
 
-  assert.ok(includesFoldedText(html, 'Sell with preparation, pricing, and market context.'), 'Expected seller page headline.');
+  assert.ok(includesFoldedText(html, 'What must be understood before market exposure?'), 'Expected seller page certified H1.');
   assert.ok(includesFoldedText(html, 'Seller Analysis Request'), 'Expected seller intake form.');
   assert.ok(includesFoldedText(html, 'not an automated home-value estimate'), 'Expected seller page to avoid unsupported valuation claims.');
   assert.ok(html.includes('data-testid="seller-page"'), 'Expected seller page shell test handle.');
