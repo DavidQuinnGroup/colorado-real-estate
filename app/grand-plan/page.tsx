@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { CheckCircle2, Compass, Home, MapPinned } from 'lucide-react';
+import { CheckCircle2, Compass, FileSearch, Home, MapPinned } from 'lucide-react';
 
 import GrandPlanIntake from '@/components/GrandPlanIntake';
 import JourneyCohesionPanel from '@/components/JourneyCohesionPanel';
@@ -35,9 +35,58 @@ const grandPlanJourneySignals = [
   { icon: Compass, title: 'Next move', body: 'A guided advisory conversation instead of a generic search.' },
 ];
 
+const grandPlanDecisionAreas = [
+  {
+    area: 'Property',
+    question: 'What property facts are known, and which details still need verification?',
+    continuation: 'Use Property Product 3.1 and source-readiness prompts when a specific property matters.',
+  },
+  {
+    area: 'Place',
+    question: 'Which market, neighborhood, or daily-life context should frame the decision?',
+    continuation: 'Use market and neighborhood context as orientation, not as suitability or steering.',
+  },
+  {
+    area: 'Financing',
+    question: 'Which assumptions materially change the monthly scenario or cash planning conversation?',
+    continuation: 'Use financing tools as user-assumption planning, not lender quotes, approval, or advice.',
+  },
+  {
+    area: 'Comparison',
+    question: 'Which alternatives are meaningfully different, similar, unsupported, or verification-bound?',
+    continuation: 'Use comparison to organize differences and questions without ranking properties.',
+  },
+  {
+    area: 'Due diligence',
+    question: 'Which facts require source review, professional review, or a current document before reliance?',
+    continuation: 'Use evidence readiness and Sources & Methodology to understand what REIE can and cannot claim.',
+  },
+  {
+    area: 'Timing',
+    question: 'What must happen before the next step is practical?',
+    continuation: 'Use timing as preparation context, not pressure, urgency, or prediction.',
+  },
+];
+
+const certifiedContinuityLinks = [
+  { label: 'Search', href: '/search', note: 'Explore inventory with context', destination: 'search' },
+  { label: 'Property', href: '/search', note: 'Open a listing for Property Product 3.1', destination: 'property' },
+  { label: 'Compare', href: '/compare', note: 'Review differences without ranking', destination: 'compare' },
+  { label: 'Financing', href: '/buy#financing-readiness', note: 'Test user-entered assumptions', destination: 'financing' },
+  { label: 'Sources', href: '/sources', note: 'Understand evidence and methodology', destination: 'sources' },
+  { label: 'Advisor', href: '/contact', note: 'Discuss unresolved questions', destination: 'advisory' },
+];
+
 export default function GrandPlanPage() {
   return (
-    <main data-testid="grand-plan-page">
+    <main
+      data-testid="grand-plan-page"
+      data-grand-plan-advancement="SOURCE_REGISTRY_GRAND_PLAN_ADVANCEMENT"
+      data-grand-plan-hidden-state-transfer="false"
+      data-grand-plan-scoring="false"
+      data-grand-plan-protected-class-inference="false"
+      data-grand-plan-telemetry="false"
+    >
       <section data-testid="grand-plan-landing">
         <div>
           <div>
@@ -101,6 +150,64 @@ export default function GrandPlanPage() {
                 </article>
               );
             })}
+          </div>
+        </div>
+      </section>
+
+      <section className="px-5 py-16 sm:px-8 lg:px-12" data-testid="grand-plan-decision-orchestration">
+        <div className="mx-auto max-w-[1180px]">
+          <div className="max-w-3xl">
+            <p className="gp-eyebrow">Decision Orchestration</p>
+            <h2 className="gp-section-title">Use the Grand Plan to decide what deserves attention next.</h2>
+            <p className="gp-section-copy">
+              The Grand Plan organizes the decision into manageable areas. It does not score your choices, personalize search in the
+              background, or decide which property or place is right for you.
+            </p>
+          </div>
+          <div className="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {grandPlanDecisionAreas.map((item) => (
+              <article
+                key={item.area}
+                className="min-w-0 bg-white/[0.035] p-5 ring-1 ring-white/10"
+                data-testid="grand-plan-decision-area"
+                data-grand-plan-decision-area={item.area.toLowerCase().replace(/\s+/g, '-')}
+              >
+                <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/66">{item.area}</p>
+                <h3 className="mt-3 text-lg font-black leading-tight text-white">{item.question}</h3>
+                <p className="mt-3 text-sm leading-6 text-white/56">{item.continuation}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="px-5 py-16 sm:px-8 lg:px-12" data-testid="grand-plan-certified-continuity">
+        <div className="mx-auto max-w-[1180px]">
+          <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+            <div className="max-w-3xl">
+              <p className="gp-eyebrow">Certified REIE Tools</p>
+              <h2 className="gp-section-title">Continue without copying data between tools.</h2>
+              <p className="gp-section-copy">
+                These links move you to the right public surface. They do not pass hidden planner inputs, financing assumptions, saved
+                searches, property choices, or personal context across routes.
+              </p>
+            </div>
+            <FileSearch className="text-cyan-100/50" size={38} aria-hidden="true" />
+          </div>
+          <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3" data-testid="grand-plan-certified-tool-links">
+            {certifiedContinuityLinks.map((link) => (
+              <Link
+                key={`${link.destination}-${link.href}`}
+                href={link.href}
+                className="min-h-24 bg-black/18 p-4 text-sm font-bold leading-6 text-white/62 ring-1 ring-white/10 transition hover:bg-white/[0.055] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-200"
+                data-testid="grand-plan-certified-tool-link"
+                data-grand-plan-certified-destination={link.destination}
+                data-grand-plan-hidden-state-transfer="false"
+              >
+                <span className="block text-[10px] font-black uppercase tracking-[0.16em] text-cyan-100/70">{link.label}</span>
+                <span className="mt-2 block">{link.note}</span>
+              </Link>
+            ))}
           </div>
         </div>
       </section>

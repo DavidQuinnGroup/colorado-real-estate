@@ -1,0 +1,125 @@
+import type { Metadata } from 'next';
+
+import { PublicTrustPage, StandardTrustIntro, TrustList, TrustSection } from '@/components/PublicTrustPage';
+import { PUBLIC_TRUST_REVIEW_STATUS, SITE_NAME, SITE_URL } from '@/lib/publicTrust';
+import { getPublicSourceRegistryRecords, getReieSourceRegistry } from '@/lib/sourceRegistry';
+
+export const metadata: Metadata = {
+  title: `Sources & Methodology | ${SITE_NAME}`,
+  description: 'How REIE classifies sources, tracks limitations, and separates sourced evidence from REIE calculations.',
+  alternates: { canonical: `${SITE_URL}/sources` },
+  robots: { index: true, follow: true },
+};
+
+const sourceClassDescriptions = [
+  'Authoritative sources are official records or agencies, but they are not used automatically unless authorization and permitted use are clear.',
+  'Licensed professional sources include professional listing data and related controls that may support property and market context.',
+  'Supplemental sources can help orient a decision, but they do not replace the primary record authority.',
+  'REIE calculations are deterministic outputs from stated inputs or identified evidence, not external provider records.',
+];
+
+export default function SourcesPage() {
+  const registry = getReieSourceRegistry();
+  const records = getPublicSourceRegistryRecords();
+
+  return (
+    <PublicTrustPage
+      eyebrow="Sources & Methodology"
+      title="How REIE Uses Information"
+      summary="REIE separates identified sources, evidence limits, and REIE-derived calculations so customer-facing claims stay bounded by what is actually supported."
+    >
+      <TrustSection title="Production Status">
+        <StandardTrustIntro />
+        <p>Classification: {PUBLIC_TRUST_REVIEW_STATUS}.</p>
+        <p data-testid="sources-registry-status" data-source-registry-status={registry.status}>
+          Source Registry version {registry.version}, reference date {registry.referenceDate}.
+        </p>
+      </TrustSection>
+
+      <TrustSection title="Source Classes">
+        <TrustList items={sourceClassDescriptions} />
+      </TrustSection>
+
+      <TrustSection title="Methodology">
+        <TrustList items={registry.customerTrustContract} />
+      </TrustSection>
+
+      <TrustSection title="Current Source Records">
+        <div className="grid gap-4" data-testid="sources-registry-records" data-source-registry-record-count={records.length}>
+          {records.map((record) => (
+            <article
+              key={record.sourceId}
+              className="min-w-0 bg-black/18 p-4 ring-1 ring-white/10"
+              data-testid="sources-registry-record"
+              data-source-id={record.sourceId}
+              data-source-class={record.sourceClass}
+              data-source-activation-state={record.productionActivationState}
+              data-source-claim-eligible={String(record.claimEligible)}
+              data-source-customer-status={record.customerStatus}
+            >
+              <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/66">{record.customerStatus}</p>
+                  <h2 className="mt-2 text-lg font-black leading-tight text-white">{record.publicName}</h2>
+                  <p className="mt-2 text-xs font-bold leading-5 text-white/48">{record.responsibleOrganization}</p>
+                </div>
+                <span className="inline-flex min-h-8 shrink-0 items-center rounded-[6px] bg-cyan-100/[0.08] px-3 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-cyan-100">
+                  {record.sourceClass.replace(/_/g, ' ').toLowerCase()}
+                </span>
+              </div>
+              <dl className="mt-4 grid gap-3 text-xs leading-5 text-white/55 sm:grid-cols-2">
+                <div>
+                  <dt className="font-black uppercase tracking-[0.12em] text-white/35">Coverage</dt>
+                  <dd>{record.jurisdiction.coverage}</dd>
+                </div>
+                <div>
+                  <dt className="font-black uppercase tracking-[0.12em] text-white/35">Domains</dt>
+                  <dd>{record.domains.join(', ')}</dd>
+                </div>
+                <div>
+                  <dt className="font-black uppercase tracking-[0.12em] text-white/35">Access</dt>
+                  <dd>{record.accessMethod}</dd>
+                </div>
+                <div>
+                  <dt className="font-black uppercase tracking-[0.12em] text-white/35">Freshness</dt>
+                  <dd>{record.updateCadence}; {record.freshnessExpectation}</dd>
+                </div>
+                <div>
+                  <dt className="font-black uppercase tracking-[0.12em] text-white/35">Current REIE use</dt>
+                  <dd>{record.currentReieUse}</dd>
+                </div>
+                <div>
+                  <dt className="font-black uppercase tracking-[0.12em] text-white/35">Last verified</dt>
+                  <dd>{record.lastSourceVerificationDate}</dd>
+                </div>
+              </dl>
+              <div className="mt-4 border-t border-white/10 pt-4">
+                <p className="text-[10px] font-black uppercase tracking-[0.16em] text-white/35">Limitations</p>
+                <ul className="mt-2 grid gap-2 text-xs leading-5 text-white/52">
+                  {record.limitations.slice(0, 3).map((limitation) => (
+                    <li key={limitation}>{limitation}</li>
+                  ))}
+                </ul>
+              </div>
+            </article>
+          ))}
+        </div>
+      </TrustSection>
+
+      <TrustSection title="Colorado Scaling">
+        <TrustList items={registry.statewideScalingContract} />
+      </TrustSection>
+
+      <TrustSection title="What This Page Does Not Mean">
+        <p>
+          A public website, official portal, or named source is not the same thing as authorized automated use. Sources marked as awaiting
+          confirmation, blocked, reference-only, or review-required are not active customer evidence feeds.
+        </p>
+        <p>
+          REIE does not guarantee that external information is complete, current, or error-free. Important property, financing, tax, permit,
+          legal, insurance, and condition questions still require current source review and appropriate professional guidance.
+        </p>
+      </TrustSection>
+    </PublicTrustPage>
+  );
+}

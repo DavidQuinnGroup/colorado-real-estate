@@ -47,6 +47,12 @@ export const publicTrustRoutes = [
     description: 'Brokerage disclosure page for David Quinn Group public real estate experiences.',
   },
   {
+    href: '/sources',
+    label: 'Sources & Methodology',
+    title: 'Sources & Methodology',
+    description: 'Public methodology page for REIE source classification, freshness, limitations, and evidence boundaries.',
+  },
+  {
     href: '/contact',
     label: 'Contact',
     title: 'Contact',

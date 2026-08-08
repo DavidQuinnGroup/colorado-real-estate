@@ -13,6 +13,7 @@ const routes = [
   { href: '/fair-housing', file: 'app/fair-housing/page.tsx', title: 'Fair Housing' },
   { href: '/brokerage-disclosures', file: 'app/brokerage-disclosures/page.tsx', title: 'Brokerage Disclosures' },
   { href: '/contact', file: 'app/contact/page.tsx', title: 'Contact' },
+  { href: '/sources', file: 'app/sources/page.tsx', title: 'Sources & Methodology' },
 ];
 
 const publicExperienceRoutes = [
@@ -76,6 +77,12 @@ for (const route of routes) {
   assert.doesNotMatch(source, /CERTIFIED|APPROVED_BY_COUNSEL|FINAL_LEGAL/i, `${route.file} must not claim legal approval.`);
   assert.equal(source.includes(obsoleteDraftStatus), false, `${route.file} must not expose obsolete draft review markers.`);
 }
+
+const sourcesPage = read('app/sources/page.tsx');
+assert.match(sourcesPage, /getPublicSourceRegistryRecords/, 'Sources page must render governed public source registry records.');
+assert.match(sourcesPage, /data-testid="sources-registry-record"/, 'Sources page must expose source registry record handles.');
+assert.match(sourcesPage, /data-source-registry-status/, 'Sources page must expose source registry production status.');
+assert.match(sourcesPage, /authorized automated use/, 'Sources page must explain that public availability is not authorization.');
 
 for (const route of publicExperienceRoutes) {
   assertExists(route.file);
