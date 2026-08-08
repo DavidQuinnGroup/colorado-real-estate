@@ -85,6 +85,7 @@
     "scripts/checkBoulderCountyOpenDataActivationGate.ts",
     "scripts/checkReieVisualIntelligenceSystem.ts",
     "scripts/checkMarketProduct3.ts",
+    "scripts/checkMarketAeoBoulderPilot.ts",
     "scripts/checkPropertyProduct31.ts",
     "scripts/checkDecisionJourneyExperience.ts",
     "scripts/checkReieProductExperienceCohesionWave.ts",
