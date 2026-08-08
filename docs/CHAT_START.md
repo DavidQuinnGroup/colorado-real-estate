@@ -10,7 +10,7 @@ Product:
 
 ## Latest New-Chat Handoff
 
-PROJECT ATLAS(tm) / Market AEO Wave 2 Implemented Locally, August 8, 2026:
+PROJECT ATLAS(tm) / Market AEO Wave 2 Production Certified and Closed, August 8, 2026:
 
 Workspace:
 
@@ -20,9 +20,13 @@ Baseline:
 
 - Branch: `main`
 - Phase A base: `7d42cb0a59cd26e7842d118b5e8f05f985ebdba1`
-- Phase A local commit: `bdab54d6f0570c76b57ccbd7fa21ed8164895dfa`
+- Phase A commit: `bdab54d6f0570c76b57ccbd7fa21ed8164895dfa`
 - Phase A commit message: `Integrate BCOD decision and Market AEO wave 2 readiness`
-- Phase B implementation is local only and not pushed or deployed.
+- Phase B implementation commit: `a1f4d8257ee3a7efd2aefb3a0ee425daeaf72a28`
+- Phase B commit message: `Implement Market Intelligence AEO wave 2`
+- Post-push canonical state before documentation closure: `HEAD = origin/main = a1f4d8257ee3a7efd2aefb3a0ee425daeaf72a28`
+- Deployment status: GitHub/Vercel status `51892100029`, `success`, `Deployment has completed`, timestamp `2026-08-08T21:39:04Z`
+- Production certification record: `docs/project-atlas/executive-library/REIE-MARKET-AEO-WAVE-2-PRODUCTION-CERTIFICATION.md`
 
 Phase A governance integration:
 
@@ -32,9 +36,9 @@ Phase A governance integration:
 - Provider confirmation remains three questions; counsel interpretation remains two questions.
 - No BCOD acquisition, provider access, API use, persistence, geometry rendering, customer display, or activation is authorized.
 
-Phase B Market/AEO Wave 2 local implementation:
+Phase B Market/AEO Wave 2 production certification:
 
-- `REIE_MARKET_AEO_WAVE_2_IMPLEMENTED`
+- `REIE_MARKET_AEO_WAVE_2_PRODUCTION_CERTIFIED_AND_CLOSED`
 - Existing Wave 1 routes are preserved: Boulder, Louisville, Lafayette, Denver, and Longmont.
 - Wave 2 routes implemented: Broomfield, Superior, Erie, and Westminster.
 - Authorized Market/AEO route allowlist is exactly nine city-market routes: Boulder, Louisville, Lafayette, Denver, Longmont, Broomfield, Superior, Erie, and Westminster.
@@ -42,6 +46,8 @@ Phase B Market/AEO Wave 2 local implementation:
 - Superior uses explicit `AGING` freshness and `EXPLICIT_CONFLICT` evidence state; current certainty is not asserted, unsupported claims fail closed, and rebuilding, hazard, insurance, environmental, structural, drainage, soil, and property-condition topics remain verification-bound.
 - Erie and Westminster are additive city-market answer-contract layers and do not reopen certified Local Decision Intelligence Wave 3 architecture.
 - Visible Market/AEO answers and FAQ structured data remain mirrored; schema does not exceed visible eligible answers.
+- Production rendered browser verification passed for all nine authorized routes and confirmed no Market/AEO contract on Niwot, Gunbarrel, Thornton, Brighton, Firestone, or Frederick.
+- Production verification found no content-farm, doorway-page, keyword-stuffing, fabricated-expertise, fake-testimonial, predictive-certainty, valuation-certainty, or hidden-schema-overclaim behavior.
 
 Validation recorded locally:
 
@@ -62,12 +68,11 @@ Protected boundaries:
 
 Next gates:
 
-- `READY_FOR_REIE_MARKET_AEO_WAVE_2_PUSH_AUTHORIZATION`
-- `READY_FOR_REIE_MARKET_AEO_WAVE_2_PRODUCTION_VERIFICATION_AUTHORIZATION`
 - `READY_FOR_BOULDER_COUNTY_OPEN_DATA_PROVIDER_CONFIRMATION`
 - `READY_FOR_BOULDER_COUNTY_OPEN_DATA_COUNSEL_INTERPRETATION`
+- `READY_FOR_NEXT_EXECUTIVE_HQ_DECISION`
 
-Do not push, deploy, activate BCOD, contact providers, acquire datasets, add persistence, mutate production, or expand Market/AEO beyond the nine authorized routes without separate Executive HQ authorization.
+Do not activate BCOD, contact providers, acquire datasets, add persistence, mutate production, run another implementation workstream, or expand Market/AEO beyond the nine authorized routes without separate Executive HQ authorization.
 
 Prior handoff retained below for audit history.
 
