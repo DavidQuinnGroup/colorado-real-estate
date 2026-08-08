@@ -10,6 +10,36 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / BCOD Decision Resolution and Market/AEO Wave 2 Readiness, August 8, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Canonical baseline:
+
+- `origin/main`: `7d42cb0a59cd26e7842d118b5e8f05f985ebdba1`
+- Integration source: Secondary commit `9a341abea1ce1e8cc87361c089e25295c567eb55`
+
+Governance state:
+
+- `REIE_MARKET_AEO_WAVE_1_CLOSED_BCOD_DECISION_PACKET_READY_MARKET_AEO_WAVE_2_READINESS_RECONCILED`
+- Record: `docs/project-atlas/executive-library/REIE-BCOD-DECISION-AND-MARKET-AEO-WAVE-2-READINESS.md`
+- BCOD Address Points and Park Boundaries both remain `PROVIDER_CONFIRMATION_REQUIRED_FIRST`; no acquisition, API access, credentials, persistence, mapping, display, or activation is authorized.
+- The minimum provider/counsel packet is reduced to three provider questions, two counsel questions, and two Executive HQ decisions; catalog facts do not replace item-level confirmation or legal interpretation.
+- Market/AEO Wave 1 production certification/closure is accepted by Executive HQ for Boulder, Louisville, Lafayette, Denver, and Longmont. No Wave 1 route is reopened.
+- Broomfield, Superior, Erie, and Westminster are `FOUR_CITY_WAVE_READY` for a future bounded Wave 2 implementation. Superior requires explicit freshness/conflict fail-closed treatment; Erie and Westminster remain additive to certified LDI Wave 3.
+- No runtime, provider, data, protected-system, package, or production change was made.
+
+Next gates:
+
+- `READY_FOR_BOULDER_COUNTY_OPEN_DATA_PROVIDER_CONFIRMATION`
+- `READY_FOR_BOULDER_COUNTY_OPEN_DATA_COUNSEL_INTERPRETATION`
+- `READY_FOR_REIE_MARKET_AEO_WAVE_2_IMPLEMENTATION_AUTHORIZATION`
+- `READY_FOR_REIE_MARKET_AEO_WAVE_2_PRODUCTION_VERIFICATION_AUTHORIZATION`
+
+Prior handoff retained below for audit history.
+
 PROJECT ATLAS(tm) / REIE Market AEO Multi-City Wave Implemented Locally, August 8, 2026:
 
 Workspace:
