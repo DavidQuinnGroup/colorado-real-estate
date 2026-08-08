@@ -3,6 +3,8 @@
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
 
+import { buildFinancingScenario } from '@/lib/financingScenarioCalculator';
+
 type PlannerValues = {
   purchasePrice: string;
   downPayment: string;
@@ -128,19 +130,6 @@ function formatCurrency(value: number) {
   return currencyFormatter.format(Math.round(value));
 }
 
-function calculatePrincipalAndInterest(loanAmount: number, annualRate: number, loanTermYears: number) {
-  const months = loanTermYears * 12;
-
-  if (annualRate === 0) {
-    return loanAmount / months;
-  }
-
-  const monthlyRate = annualRate / 100 / 12;
-  const factor = (1 + monthlyRate) ** months;
-
-  return (loanAmount * monthlyRate * factor) / (factor - 1);
-}
-
 function getValidationMessages(values: PlannerValues) {
   const messages: string[] = [];
   const purchasePrice = parsePlannerNumber(values.purchasePrice);
@@ -204,68 +193,25 @@ function buildMissingAssumptions(values: PlannerValues) {
   return missing;
 }
 
-function buildQuestions(values: PlannerValues, missingAssumptions: string[]) {
-  const questions = new Set<string>();
-
-  questions.add('Which loan types, terms, lender fees, and timing rules should I review with a qualified lender?');
-  questions.add('Which assumptions are included or excluded from any lender estimate I receive?');
-  questions.add('Which property-specific facts could affect financing, insurance, HOA, timing, or offer strategy?');
-
-  if (missingAssumptions.some((item) => item.includes('Property taxes'))) {
-    questions.add('What current tax information should be verified before relying on this property-cost assumption?');
-  }
-
-  if (missingAssumptions.some((item) => item.includes('insurance'))) {
-    questions.add('What insurance assumptions should be confirmed before comparing monthly ownership costs?');
-  }
-
-  if (missingAssumptions.some((item) => item.includes('HOA'))) {
-    questions.add('Which HOA dues, reserves, transfer fees, rules, and included services should be reviewed?');
-  }
-
-  if (
-    missingAssumptions.some((item) => item.includes('mortgage-insurance')) ||
-    parsePlannerNumber(values.mortgageInsurance) !== null
-  ) {
-    questions.add('Does mortgage insurance apply, and how should the amount be verified with a qualified lender?');
-  }
-
-  if (missingAssumptions.some((item) => item.includes('Closing costs'))) {
-    questions.add('Which closing costs, prepaid expenses, reserves, and cash-to-close items should be verified?');
-  }
-
-  if (parsePlannerNumber(values.interestRate) !== null) {
-    questions.add('How would this user-entered rate assumption change if the lender quote, lock timing, or loan terms differ?');
-  }
-
-  return Array.from(questions);
-}
-
 export default function BuyerFinancingDecisionPlanner() {
   const [values, setValues] = useState<PlannerValues>(initialValues);
   const [optionalOpen, setOptionalOpen] = useState(false);
 
   const result = useMemo(() => {
-    const purchasePrice = parsePlannerNumber(values.purchasePrice);
-    const downPayment = parsePlannerNumber(values.downPayment);
-    const interestRate = parsePlannerNumber(values.interestRate);
-    const loanTermYears = Number(values.loanTermYears);
-    const validationMessages = getValidationMessages(values);
-    const requiredInputsComplete =
-      purchasePrice !== null &&
-      downPayment !== null &&
-      interestRate !== null &&
-      purchasePrice > 0 &&
-      downPayment >= 0 &&
-      downPayment <= purchasePrice &&
-      interestRate >= 0 &&
-      validationMessages.length === 0;
-
-    const loanAmount = requiredInputsComplete ? purchasePrice - downPayment : null;
-    const principalAndInterest =
-      requiredInputsComplete && loanAmount !== null
-        ? calculatePrincipalAndInterest(loanAmount, interestRate, loanTermYears)
-        : null;
+    const scenario = buildFinancingScenario({
+      purchasePrice: parsePlannerNumber(values.purchasePrice),
+      downPayment: parsePlannerNumber(values.downPayment),
+      interestRate: parsePlannerNumber(values.interestRate),
+      loanTermYears: Number(values.loanTermYears),
+      propertyTaxes: parsePlannerNumber(values.propertyTaxes),
+      homeownersInsurance: parsePlannerNumber(values.homeownersInsurance),
+      hoaDues: parsePlannerNumber(values.hoaDues),
+      mortgageInsurance: parsePlannerNumber(values.mortgageInsurance),
+      maintenance: parsePlannerNumber(values.maintenance),
+      utilities: parsePlannerNumber(values.utilities),
+      otherRecurringCosts: parsePlannerNumber(values.otherRecurringCosts),
+      closingCosts: parsePlannerNumber(values.closingCosts),
+    });
 
     const optionalEntries = optionalMonthlyFields
       .map((field) => ({
@@ -275,23 +221,19 @@ export default function BuyerFinancingDecisionPlanner() {
       }))
       .filter((entry): entry is { label: string; value: number; prompt: string } => entry.value !== null && entry.value >= 0);
 
-    const optionalMonthlySubtotal = optionalEntries.reduce((sum, entry) => sum + entry.value, 0);
-    const combinedMonthlyEstimate =
-      principalAndInterest !== null ? principalAndInterest + optionalMonthlySubtotal : null;
     const missingAssumptions = buildMissingAssumptions(values);
-    const questions = buildQuestions(values, missingAssumptions);
 
     return {
-      validationMessages,
-      requiredInputsComplete,
-      loanAmount,
-      principalAndInterest,
+      validationMessages: [...scenario.validationMessages, ...getValidationMessages(values)].filter((message, index, messages) => messages.indexOf(message) === index),
+      requiredInputsComplete: scenario.requiredInputsComplete,
+      loanAmount: scenario.loanAmount,
+      principalAndInterest: scenario.principalAndInterest,
       optionalEntries,
-      optionalMonthlySubtotal,
-      combinedMonthlyEstimate,
+      optionalMonthlySubtotal: scenario.optionalMonthlySubtotal,
+      combinedMonthlyEstimate: scenario.combinedMonthlyEstimate,
       missingAssumptions,
-      questions,
-      closingCosts: parsePlannerNumber(values.closingCosts),
+      questions: scenario.questions,
+      closingCosts: scenario.closingCosts,
     };
   }, [values]);
 
@@ -313,6 +255,7 @@ export default function BuyerFinancingDecisionPlanner() {
       data-buyer-financing-planner-persistence="session-only-no-persistence"
       data-buyer-financing-planner-new-route="false"
       data-buyer-financing-planner-live-rates="false"
+      data-buyer-financing-planner-scenario-calculator="true"
       data-buyer-financing-planner-approval="false"
       data-buyer-financing-planner-qualification="false"
       data-buyer-financing-planner-affordability="false"

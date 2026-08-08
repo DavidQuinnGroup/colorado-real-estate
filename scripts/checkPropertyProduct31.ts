@@ -36,6 +36,9 @@ for (const expectedSurface of [
   'data-testid="property-public-record-evidence-profile"',
   'data-testid="property-geographic-source-item"',
   'data-testid="property-product-3-1-comparable-context"',
+  'data-testid="property-comparison-intelligence"',
+  'data-testid="property-comparison-intelligence-item"',
+  'data-testid="property-comparison-dimension"',
   'data-testid="property-product-3-1-verification-checklist"',
   'data-testid="property-product-3-1-mobile-decision-rail"',
 ]) {
@@ -72,6 +75,12 @@ for (const expectedBoundary of [
   'data-comparable-context-ranking="false"',
   'data-comparable-context-valuation="false"',
   'data-comparable-context-investment-advice="false"',
+  'data-property-comparison-intelligence={model.comparisonIntelligence.status}',
+  'data-property-comparison-ranking={String(model.comparisonIntelligence.protectedBoundaries.ranking)}',
+  'data-property-comparison-scoring={String(model.comparisonIntelligence.protectedBoundaries.scoring)}',
+  'data-property-comparison-valuation={String(model.comparisonIntelligence.protectedBoundaries.valuation)}',
+  'data-property-comparison-suitability={String(model.comparisonIntelligence.protectedBoundaries.suitabilityRecommendation)}',
+  'data-property-comparison-financing-approval={String(model.comparisonIntelligence.protectedBoundaries.financingApproval)}',
 ]) {
   assertIncludes(component, expectedBoundary, `Property Product 3.1 boundary missing: ${expectedBoundary}`);
 }
@@ -138,6 +147,23 @@ assert.equal(readyModel.checklist.length, 4, 'Verification checklist must includ
 assert(readyModel.comparables.every((item) => item.similarities.length > 0 && item.differences.length > 0), 'Comparable items must explain factual similarities and differences.');
 assert(readyModel.profile.some((item) => item.state === 'well-supported'), 'Complete facts must produce a well-supported profile signal.');
 assert.equal(readyModel.authoritativeSources.status, 'PROPERTY_GEOGRAPHIC_SOURCE_INTELLIGENCE_IMPLEMENTED');
+assert.equal(readyModel.comparisonIntelligence.status, 'PROPERTY_COMPARISON_INTELLIGENCE_IMPLEMENTED');
+assert.equal(readyModel.comparisonIntelligence.canCompare, true, 'Comparison intelligence must use existing related listings when present.');
+assert.equal(readyModel.comparisonIntelligence.comparisons.length, 2, 'Comparison intelligence must not create additional properties.');
+assert(readyModel.comparisonIntelligence.comparisons.every((item) => item.dimensions.length >= 10), 'Comparison intelligence must expose factual dimensions and financing boundary context.');
+assert(readyModel.comparisonIntelligence.comparisons.some((item) => item.synthesis.materiallyDifferent > 0), 'Comparison intelligence must identify factual differences without ranking.');
+assert(readyModel.comparisonIntelligence.comparisons.some((item) => item.synthesis.evidenceUnavailable > 0), 'Comparison intelligence must surface missing evidence instead of filling gaps.');
+assert.equal(readyModel.comparisonIntelligence.protectedBoundaries.ranking, false);
+assert.equal(readyModel.comparisonIntelligence.protectedBoundaries.scoring, false);
+assert.equal(readyModel.comparisonIntelligence.protectedBoundaries.valuation, false);
+assert.equal(readyModel.comparisonIntelligence.protectedBoundaries.investmentAdvice, false);
+assert.equal(readyModel.comparisonIntelligence.protectedBoundaries.suitabilityRecommendation, false);
+assert.equal(readyModel.comparisonIntelligence.protectedBoundaries.fairHousingPreference, false);
+assert.equal(readyModel.comparisonIntelligence.protectedBoundaries.financingApproval, false);
+assert.equal(readyModel.comparisonIntelligence.protectedBoundaries.lenderQuote, false);
+assert.equal(readyModel.comparisonIntelligence.protectedBoundaries.providerActivation, false);
+assert.equal(readyModel.comparisonIntelligence.protectedBoundaries.persistence, false);
+assert.equal(readyModel.comparisonIntelligence.protectedBoundaries.telemetry, false);
 assert.equal(
   readyModel.authoritativeSources.publicRecordEvidence.status,
   'AUTHORITATIVE_PROPERTY_RECORD_INTELLIGENCE_ARCHITECTURE_READY_SOURCE_CONFIRMATION_REQUIRED',
@@ -166,6 +192,7 @@ const sparseModel = buildPropertyProduct31Model({
 
 assert(sparseModel.profile.some((item) => item.state === 'incomplete'), 'Sparse data must surface incomplete evidence.');
 assert.equal(sparseModel.comparables.length, 0, 'Sparse related-listing context must not invent comparable properties.');
+assert.equal(sparseModel.comparisonIntelligence.canCompare, false, 'Sparse related-listing context must not invent comparison intelligence.');
 assert.equal(sparseModel.authoritativeSources.geography.city, 'Broomfield', 'Sparse model must still carry city geography from listing fields.');
 assert(sparseModel.authoritativeSources.selectedSources.filter((source) => source.claimEligible).length <= 2, 'Sparse source model must keep claim eligibility narrow.');
 

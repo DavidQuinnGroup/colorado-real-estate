@@ -10,6 +10,72 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / Comparison and Financing Intelligence Locally Certified, August 8, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Baseline:
+
+- Branch: `main`
+- Starting canonical state: `HEAD = origin/main = 4c59a4bd338f3262c2042708cd4c8f26fdffb1f3`
+- Starting divergence: `0 ahead / 0 behind`
+- Prior closed status: `AUTHORITATIVE_PROPERTY_RECORD_INTELLIGENCE_PRODUCTION_CERTIFIED_AND_CLOSED`
+- Prior next gate: `READY_FOR_AUTHORITATIVE_PROPERTY_SOURCE_CONFIRMATION_AND_RETRIEVAL_DECISION`
+
+Implementation status:
+
+- `COMPARISON_FINANCING_INTELLIGENCE_LOCALLY_CERTIFIED`
+- Record: `docs/project-atlas/executive-library/REIE-COMPARISON-FINANCING-INTELLIGENCE-IMPLEMENTATION.md`
+- Workstream A implemented deterministic Property Product 3.1 comparison intelligence using existing property route facts and existing related-listing context.
+- Comparison Intelligence distinguishes factual differences, broad similarities, unavailable evidence, and verification-required fields.
+- Comparison Intelligence does not rank, score, value, recommend, infer suitability, make investment conclusions, or produce fair-housing-sensitive preference guidance.
+- Workstream B implemented deterministic Buyer Financing Decision Planner scenario calculation with user-entered assumptions only.
+- Financing / Mortgage Intelligence supports purchase price, down payment, annual interest-rate assumption, loan term, optional taxes, insurance, HOA, mortgage insurance, monthly P&I, optional monthly subtotal, combined monthly scenario estimate, and estimated closing-cost range.
+- Financing / Mortgage Intelligence does not provide current rates, lender quotes, pre-approval, qualification, affordability, buying-power conclusions, rate locks, tax advice, financial advice, provider activation, persistence, or telemetry.
+
+Validation recorded locally:
+
+- `git diff --check`
+- `npm run typecheck`
+- `npm run check:reie-comparison-financing-intelligence`
+- `npm run check:buyer-financing-decision-planner`
+- `npm run check:buyer-financing-readiness-advancement`
+- `npm run check:reie-financing-confidence-education`
+- `npm run check:reie-financing-confidence-v8`
+- `npm run check:cross-city-decision-comparison`
+- `npm run check:property-product-3-1`
+- `npm run check:property-geographic-source-intelligence`
+- `npm run check:authoritative-property-record-intelligence`
+- `npm run check:decision-journey-experience`
+- `npm run check:cim-privacy-consent-data-minimization-gate`
+- `npm run check:public-runtime-safety`
+- `npm run check:public-trust-readiness`
+- `npm run build`
+
+Protected boundaries:
+
+- No push.
+- No deployment.
+- No production verification.
+- No production mutation.
+- No assessor, tax, or permit record retrieval.
+- No scraping, browser automation for provider data, API/provider activation, credentials, BCOD acquisition or activation, persistence, Prisma/database/schema change, CRM/email, MLS ingestion/sync, worker/queue activation, telemetry/customer tracking, customer-data mutation, production configuration, or unrelated remediation.
+
+Source-confirmation state:
+
+- Boulder County Assessor: `AWAITING_BOULDER_COUNTY_ASSESSOR_CONFIRMATION`
+- Assessor, tax, permit, BCOD Address Points, and BCOD Park Boundaries remain blocked unless separately authorized.
+
+Next gate:
+
+- `READY_FOR_COMPARISON_FINANCING_INTELLIGENCE_PUSH_AUTHORIZATION`
+
+Do not push, deploy, run production certification, activate providers, acquire datasets, retrieve public records, activate BCOD, add persistence, mutate production, or expand comparison/financing intelligence unless explicitly authorized.
+
+Prior handoff retained below for audit history.
+
 PROJECT ATLAS(tm) / Authoritative Property Record Intelligence Production Certified and Closed, August 8, 2026:
 
 Workspace:

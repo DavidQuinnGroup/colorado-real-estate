@@ -22,6 +22,7 @@ const tsconfig = read('tsconfig.worker.json');
 const buyPage = read('app/buy/page.tsx');
 const readinessGuide = read('components/BuyerFinancingReadinessGuide.tsx');
 const planner = read('components/BuyerFinancingDecisionPlanner.tsx');
+const calculator = read('lib/financingScenarioCalculator.ts');
 const financingConfidence = read('components/FinancingConfidenceEducation.tsx');
 const specification = read(
   'docs/project-atlas/executive-library/REIE-BUYER-FINANCING-DECISION-PLANNER-PRODUCT-SPECIFICATION.md',
@@ -84,6 +85,7 @@ for (const marker of [
   'data-buyer-financing-planner-persistence="session-only-no-persistence"',
   'data-buyer-financing-planner-new-route="false"',
   'data-buyer-financing-planner-live-rates="false"',
+  'data-buyer-financing-planner-scenario-calculator="true"',
   'data-buyer-financing-planner-approval="false"',
   'data-buyer-financing-planner-qualification="false"',
   'data-buyer-financing-planner-affordability="false"',
@@ -138,14 +140,15 @@ for (const requiredCopy of [
 }
 
 for (const arithmetic of [
-  'calculatePrincipalAndInterest',
+  'buildFinancingScenario',
+  'calculateMonthlyPrincipalAndInterest',
   'purchasePrice - downPayment',
   'annualRate === 0',
   'Math.round(value)',
   'optionalMonthlySubtotal',
   'combinedMonthlyEstimate',
 ]) {
-  assertIncludes(planner, arithmetic, `Planner must include bounded arithmetic behavior: ${arithmetic}`);
+  assertIncludes(`${planner}\n${calculator}`, arithmetic, `Planner/calculator must include bounded arithmetic behavior: ${arithmetic}`);
 }
 
 for (const safeHandling of [

@@ -2,6 +2,10 @@ import {
   buildPropertyGeographicSourceIntelligence,
   type PropertyGeographicSourceIntelligence,
 } from './property/propertyAuthoritativeSourceIntelligence.js';
+import {
+  buildPropertyComparisonWorkspace,
+  type PropertyComparisonWorkspace,
+} from './propertyComparisonIntelligence.js';
 
 export type PropertyProduct31Input = {
   address?: string | null;
@@ -82,6 +86,7 @@ export type PropertyProduct31Model = {
   profile: PropertyProduct31ProfileItem[];
   dna: PropertyProduct31DnaDimension[];
   authoritativeSources: PropertyGeographicSourceIntelligence;
+  comparisonIntelligence: PropertyComparisonWorkspace;
   confidence: {
     summary: string;
     facets: PropertyProduct31ConfidenceFacet[];
@@ -200,6 +205,36 @@ export function buildPropertyProduct31Model(input: PropertyProduct31Input): Prop
     altitude: input.altitude,
     relatedListingCount: relatedListings.length,
   });
+  const comparisonIntelligence = buildPropertyComparisonWorkspace({
+    subject: {
+      id: 'subject-property',
+      address: input.address || 'Subject property',
+      city: input.city,
+      state: input.state,
+      neighborhood: input.neighborhood,
+      price: input.price,
+      beds: input.beds,
+      baths: input.baths,
+      sqft: input.sqft,
+      lotSize: input.lotSize,
+      yearBuilt: input.yearBuilt,
+      propertyType: input.propertyType,
+      status: input.status,
+    },
+    comparisons: relatedListings.map((listing) => ({
+      id: listing.id,
+      address: listing.address,
+      city: listing.city,
+      state: listing.state,
+      neighborhood: listing.neighborhood,
+      price: listing.price,
+      beds: listing.beds,
+      baths: listing.baths,
+      sqft: listing.sqft,
+      propertyType: 'Related listing',
+      status: listing.status,
+    })),
+  });
 
   const profile: PropertyProduct31ProfileItem[] = [
     {
@@ -300,6 +335,7 @@ export function buildPropertyProduct31Model(input: PropertyProduct31Input): Prop
     profile,
     dna,
     authoritativeSources,
+    comparisonIntelligence,
     confidence: {
       summary: 'Property Decision Profile uses existing public property data to reduce decision friction without scoring, ranking, valuing, forecasting, or recommending a property.',
       facets: confidenceFacets,

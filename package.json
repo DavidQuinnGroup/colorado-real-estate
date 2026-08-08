@@ -115,6 +115,7 @@
     "check:seller-readiness-advancement": "npm run worker:build && node dist/scripts/checkSellerReadinessAdvancement.js",
     "check:buyer-financing-readiness-advancement": "npm run worker:build && node dist/scripts/checkBuyerFinancingReadinessAdvancement.js",
     "check:buyer-financing-decision-planner": "npm run worker:build && node dist/scripts/checkBuyerFinancingDecisionPlanner.js",
+    "check:reie-comparison-financing-intelligence": "npm run worker:build && node dist/scripts/checkReieComparisonFinancingIntelligence.js",
     "check:evidence-depth-data-integration-foundation": "npm run worker:build && node dist/scripts/checkEvidenceDepthDataIntegrationFoundation.js",
     "check:advisory-handoff-readiness": "npm run worker:build && node dist/scripts/checkAdvisoryHandoffReadiness.js",
     "check:controlled-evidence-depth-integration": "npm run worker:build && node dist/scripts/checkControlledEvidenceDepthIntegration.js",

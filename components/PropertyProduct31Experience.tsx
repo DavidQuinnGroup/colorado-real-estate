@@ -49,6 +49,12 @@ export default function PropertyProduct31Experience({ model }: PropertyProduct31
       data-property-product-3-1-confidence-count={model.confidence.facets.length}
       data-property-product-3-1-comparable-count={model.comparables.length}
       data-property-product-3-1-checklist-count={model.checklist.length}
+      data-property-comparison-intelligence={model.comparisonIntelligence.status}
+      data-property-comparison-ranking={String(model.comparisonIntelligence.protectedBoundaries.ranking)}
+      data-property-comparison-scoring={String(model.comparisonIntelligence.protectedBoundaries.scoring)}
+      data-property-comparison-valuation={String(model.comparisonIntelligence.protectedBoundaries.valuation)}
+      data-property-comparison-suitability={String(model.comparisonIntelligence.protectedBoundaries.suitabilityRecommendation)}
+      data-property-comparison-financing-approval={String(model.comparisonIntelligence.protectedBoundaries.financingApproval)}
       data-property-geographic-source-intelligence={model.authoritativeSources.status}
       data-property-geographic-source-version={model.authoritativeSources.version}
       data-property-geographic-source-city={model.authoritativeSources.geography.city}
@@ -295,6 +301,7 @@ export default function PropertyProduct31Experience({ model }: PropertyProduct31
         data-comparable-context-ranking="false"
         data-comparable-context-valuation="false"
         data-comparable-context-investment-advice="false"
+        data-testid-property-comparison-intelligence={model.comparisonIntelligence.status}
       >
         <div className="border-b border-white/10 bg-white/[0.025] p-5 md:p-6">
           <p className="reie-property-product-31-eyebrow flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.22em] text-cyan-100/76">
@@ -344,6 +351,56 @@ export default function PropertyProduct31Experience({ model }: PropertyProduct31
             No related public listings are available from the existing property-link context. Use search and market context for comparison.
           </p>
         )}
+        <div
+          className="border-t border-white/10 bg-[#0d141c] p-5 md:p-6"
+          data-testid="property-comparison-intelligence"
+          data-property-comparison-can-compare={String(model.comparisonIntelligence.canCompare)}
+        >
+          <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+            <div>
+              <p className="reie-property-product-31-mini-label text-[10px] font-black uppercase tracking-[0.14em] text-white/40">Comparison Intelligence</p>
+              <p className="mt-3 max-w-3xl text-sm leading-6 text-white/56">{model.comparisonIntelligence.trustBoundary}</p>
+            </div>
+            <span className="inline-flex min-h-8 shrink-0 items-center rounded-[6px] border border-cyan-100/22 bg-cyan-100/[0.07] px-3 py-1 text-[10px] font-black uppercase tracking-[0.13em] text-cyan-100">
+              Facts, not ranking
+            </span>
+          </div>
+          {model.comparisonIntelligence.comparisons.length ? (
+            <div className="mt-5 grid gap-3 lg:grid-cols-2">
+              {model.comparisonIntelligence.comparisons.slice(0, 2).map((comparison) => (
+                <article
+                  key={comparison.propertyId}
+                  className="rounded-[6px] border border-white/10 bg-white/[0.035] p-4"
+                  data-testid="property-comparison-intelligence-item"
+                  data-property-comparison-materially-different={comparison.synthesis.materiallyDifferent}
+                  data-property-comparison-broadly-similar={comparison.synthesis.broadlySimilar}
+                  data-property-comparison-evidence-unavailable={comparison.synthesis.evidenceUnavailable}
+                  data-property-comparison-verification-required={comparison.synthesis.verificationRequired}
+                >
+                  <p className="text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100/66">{comparison.address}</p>
+                  <p className="mt-2 text-xs leading-5 text-white/50">{comparison.headline}</p>
+                  <div className="mt-4 grid gap-2 sm:grid-cols-2">
+                    {comparison.dimensions.slice(0, 6).map((dimension) => (
+                      <div
+                        key={`${comparison.propertyId}-${dimension.key}`}
+                        className="rounded-[5px] bg-black/18 p-3"
+                        data-testid="property-comparison-dimension"
+                        data-property-comparison-dimension={dimension.key}
+                        data-property-comparison-state={dimension.state}
+                      >
+                        <p className="text-[9px] font-black uppercase tracking-[0.12em] text-white/38">{dimension.label}</p>
+                        <p className="mt-2 text-xs font-bold leading-5 text-white/60">{dimension.subjectValue} / {dimension.comparisonValue}</p>
+                        <p className="mt-2 text-[11px] leading-5 text-white/42">{dimension.investigationPrompt}</p>
+                      </div>
+                    ))}
+                  </div>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <p className="mt-4 text-sm leading-6 text-white/50">Comparison intelligence activates when related public listings are available from the existing property-link context.</p>
+          )}
+        </div>
       </section>
 
       <section
