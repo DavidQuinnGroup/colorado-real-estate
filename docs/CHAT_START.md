@@ -10,7 +10,7 @@ Product:
 
 ## Latest New-Chat Handoff
 
-PROJECT ATLAS(tm) / REIE Market Intelligence + AEO Boulder Pilot Implemented Locally, August 8, 2026:
+PROJECT ATLAS(tm) / REIE Market AEO Production Certification and Lane 1 Boulder Open Data Package Integration, August 8, 2026:
 
 Workspace:
 
@@ -19,13 +19,13 @@ Workspace:
 Baseline:
 
 - Branch: `main`
-- Baseline SHA: `657b3b666b2a95989bc7bbbeaf0fa72ffc4cf6e7`
-- origin/main at task start: `657b3b666b2a95989bc7bbbeaf0fa72ffc4cf6e7`
+- Baseline SHA: `ca4b824e4e71e3a456b7e55d4461b8ca8b495ddf`
+- origin/main at task start: `ca4b824e4e71e3a456b7e55d4461b8ca8b495ddf`
 - Task-start divergence: `0 ahead / 0 behind`
 
-Current local implementation state:
+Current Market/AEO production state:
 
-- `REIE_MARKET_AEO_BOULDER_PILOT_IMPLEMENTED_AND_LOCALLY_CERTIFIED`
+- `REIE_MARKET_AEO_BOULDER_PILOT_PRODUCTION_CERTIFIED`
 - Implementation record: `docs/project-atlas/executive-library/REIE-MARKET-AEO-BOULDER-PILOT-IMPLEMENTATION.md`
 - Canonical pilot route: `/market/boulder-co-housing-market`
 - Architecture implemented: `SOURCE -> GEOGRAPHY -> MARKET PERIOD -> FRESHNESS -> LIMITATION -> CLAIM ELIGIBILITY -> VISIBLE ANSWER -> STRUCTURED DATA`
@@ -35,6 +35,25 @@ Current local implementation state:
 - Freshness: current as published REIE context; not a live MLS or provider feed.
 - Claim eligibility: route-level market signal and evidence-orientation answers are eligible; valuation, prediction, ranking, suitability, and property-specific conclusions remain excluded.
 - FAQ structured data for Boulder is derived from the same visible answer contract; non-Boulder city-market FAQ generation remains unchanged.
+- Production certification verified canonical Boulder route `200`, visible answer contract, FAQ structured-data alignment, non-Boulder containment, public-experience smoke, and deterministic Market/AEO pilot checks after automatic deployment success.
+
+Lane 1 Boulder County Open Data provider/counsel package state:
+
+- `BOULDER_OPEN_DATA_PROVIDER_COUNSEL_CONFIRMATION_PACKAGE_LOCALLY_INTEGRATED`
+- Package: `docs/project-atlas/executive-library/BOULDER-COUNTY-OPEN-DATA-PROVIDER-COUNSEL-CONFIRMATION-PACKAGE.md`
+- Boulder County Address Points: `READY_FOR_PROVIDER_COUNSEL_CONFIRMATION_DECISION`
+- Boulder County Park Boundaries: `READY_FOR_PROVIDER_COUNSEL_CONFIRMATION_DECISION`
+- Exact candidates: `BCOD-ADDRESS-POINTS` (`687530b74ad54686a98f50337574596f`) and `BCOD-PARK-BOUNDARIES` (`ffbeca86d075420cafc960bba6e5d4e8`).
+- Catalog-level license, attribution, and disclaimer facts remain separate from unresolved dataset-specific license, field, retention, access, geometry, display, and legal questions.
+- Provider/counsel confirmation is not legal approval and does not authorize product use.
+
+Lane 1 dataset boundaries:
+
+- Address Points potential future use is limited to internal city/postal/ZIP normalization and separately approved aggregate geographic context.
+- Address Points exclusions include full-address customer intelligence, precise coordinate display, parcel/account/tax data, owner/person data, raw customer-visible source data, property scoring, suitability/desirability, and property-linked intelligence.
+- Park Boundaries potential future use is limited to bounded internal community/open-space context.
+- Park Boundaries exclusions include raw customer-visible GIS geometry, ownership/easement inference, access/closure conclusions, safety conclusions, recreation-quality conclusions, desirability, suitability, and property-specific inference.
+- Provider/counsel confirmation does not authorize dataset acquisition, persistence, internal retrieval, derived intelligence, customer display, map rendering, or production activation. Each remains separately gated.
 
 Pilot containment:
 
@@ -54,11 +73,11 @@ Local validation required/recorded:
 
 Next gates:
 
-- `READY_FOR_REIE_MARKET_AEO_BOULDER_PILOT_PUSH_AUTHORIZATION`
+- `READY_FOR_REIE_MARKET_AEO_POST_PRODUCTION_GOVERNANCE_OR_NEXT_PILOT_AUTHORIZATION`
+- `READY_FOR_BOULDER_COUNTY_OPEN_DATA_PROVIDER_COUNSEL_CONFIRMATION_DECISION`
 - `READY_FOR_REIE_POST_LAUNCH_MONITORING_RUNBOOK_OPERATION_AUTHORIZATION`
-- `READY_FOR_BOULDER_COUNTY_OPEN_DATA_PROVIDER_COUNSEL_CONFIRMATION_AUTHORIZATION`
 
-Do not push, deploy, hard-launch, activate Boulder County Open Data, add external providers, add persistence, mutate production, or expand the pilot beyond Boulder without separate Executive HQ authorization.
+Do not push, deploy, hard-launch, activate Boulder County Open Data, acquire datasets, add external providers, add persistence, mutate production, expand the Market/AEO pilot beyond Boulder, or begin multi-city Market/AEO implementation without separate Executive HQ authorization.
 
 Prior handoff retained below for audit history.
 
