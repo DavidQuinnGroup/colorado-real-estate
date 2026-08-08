@@ -147,6 +147,7 @@
     "check:market-aeo-multi-city-wave": "npm run worker:build && node dist/scripts/checkMarketAeoMultiCityWave.js",
     "check:market-aeo-wave-2": "npm run worker:build && node dist/scripts/checkMarketAeoWave2.js",
     "check:property-product-3-1": "npm run worker:build && node dist/scripts/checkPropertyProduct31.js",
+    "check:property-geographic-source-intelligence": "npm run worker:build && node dist/scripts/checkPropertyGeographicSourceIntelligence.js",
     "check:decision-journey-experience": "npm run worker:build && node dist/scripts/checkDecisionJourneyExperience.js",
     "check:reie-product-experience-cohesion-wave": "npm run worker:build && node dist/scripts/checkReieProductExperienceCohesionWave.js",
     "check:homepage-product-experience-phase-1": "npm run worker:build && node dist/scripts/checkHomepageProductExperiencePhase1.js",

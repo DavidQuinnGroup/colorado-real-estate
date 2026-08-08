@@ -10,6 +10,68 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / Property Geographic Source Intelligence Expansion Locally Certified, August 8, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Baseline:
+
+- Branch: `main`
+- Starting canonical state: `HEAD = origin/main = 9627f87e89605604d4e225271f4836be6fff443a`
+- Starting divergence: `0 ahead / 0 behind`
+- Prior closed status: `REIE_MARKET_AEO_WAVE_2_PRODUCTION_CERTIFIED_AND_CLOSED`
+- Prior next gate: `READY_FOR_NEXT_EXECUTIVE_HQ_DECISION`
+
+Implementation status:
+
+- `PROPERTY_GEOGRAPHIC_INTELLIGENCE_EXPANSION_LOCALLY_CERTIFIED`
+- Record: `docs/project-atlas/executive-library/REIE-PROPERTY-GEOGRAPHIC-SOURCE-INTELLIGENCE-EXPANSION.md`
+- Property Product 3.1 now exposes governed property/geographic source-readiness intelligence.
+- The implementation reuses existing property/listing facts, existing Property Product 3.1 decision support, existing Colorado city intelligence records, and the certified source-domain matrix.
+- Customer-facing property pages now show source readiness, evidence, limitations, customer use, claim eligibility, geography, and verification prompts.
+- The source-readiness contract includes listing data, municipal planning/place context, county assessor, county treasurer/tax, building permits, BCOD Address Points, and BCOD Park Boundaries.
+- Existing listing facts are ready existing repository data.
+- Municipal planning/place context is governed reference context when an existing city record is present.
+- County assessor, county treasurer/tax, and building permits fail closed pending review/provider authorization.
+- BCOD Address Points and BCOD Park Boundaries are blocked/not authorized.
+
+Validation recorded locally:
+
+- `git diff --check`
+- `npm run typecheck`
+- `npm run check:property-geographic-source-intelligence`
+- `npm run check:property-product-3-1`
+- `npm run check:property-route-safety`
+- `npm run check:public-runtime-safety`
+- `npm run check:public-trust-readiness`
+- `npm run check:geographic-intelligence-architecture-safety`
+- `npm run build`
+
+Protected boundaries:
+
+- No push.
+- No deployment.
+- No production verification.
+- No production mutation.
+- No BCOD acquisition or activation.
+- No provider activation, scraping, external API use, persistence, Prisma/database/schema change, Property Inquiry, Contact, CRM/email, worker/queue, MLS ingestion, auth, telemetry, customer-data mutation, environment mutation, or unrelated remediation.
+
+BCOD state:
+
+- BCOD Address Points: `PROVIDER_CONFIRMATION_REQUIRED_FIRST`
+- BCOD Park Boundaries: `PROVIDER_CONFIRMATION_REQUIRED_FIRST`
+- Park Boundaries still requires focused counsel interpretation after provider confirmation.
+
+Next gate:
+
+- `READY_FOR_PROPERTY_GEOGRAPHIC_INTELLIGENCE_EXPANSION_PUSH_AUTHORIZATION`
+
+Do not push, deploy, activate BCOD, contact providers, acquire datasets, add persistence, mutate production, run production certification, or expand source activation beyond this local source-readiness contract unless explicitly authorized.
+
+Prior handoff retained below for audit history.
+
 PROJECT ATLAS(tm) / Market AEO Wave 2 Production Certified and Closed, August 8, 2026:
 
 Workspace:

@@ -18,9 +18,11 @@ function assertNotIncludes(source: string, value: string, message: string) {
 const propertyPage = read('app/properties/[id]/page.tsx');
 const component = read('components/PropertyProduct31Experience.tsx');
 const model = read('lib/propertyProduct31.ts');
+const sourceModel = read('lib/property/propertyAuthoritativeSourceIntelligence.ts');
 const packageJson = JSON.parse(read('package.json')) as { scripts?: Record<string, string> };
 
 assertIncludes(model, 'buildPropertyProduct31Model', 'Property Product 3.1 must expose a deterministic model builder.');
+assertIncludes(model, 'buildPropertyGeographicSourceIntelligence', 'Property Product 3.1 must consume governed geographic/source intelligence.');
 assertIncludes(propertyPage, 'buildPropertyProduct31Model', 'Property page must build the Property Product 3.1 model from existing data.');
 assertIncludes(propertyPage, 'relatedListings,', 'Property Product 3.1 must reuse existing related-listing context.');
 assertIncludes(propertyPage, '<PropertyProduct31Experience model={propertyProduct31Model} />', 'Property page must render the Property Product 3.1 experience.');
@@ -30,6 +32,8 @@ for (const expectedSurface of [
   'data-testid="property-product-3-1-decision-profile-item"',
   'data-testid="property-product-3-1-property-dna"',
   'data-testid="property-product-3-1-confidence-layer"',
+  'data-testid="property-geographic-source-intelligence"',
+  'data-testid="property-geographic-source-item"',
   'data-testid="property-product-3-1-comparable-context"',
   'data-testid="property-product-3-1-verification-checklist"',
   'data-testid="property-product-3-1-mobile-decision-rail"',
@@ -46,6 +50,14 @@ for (const expectedBoundary of [
   'data-property-product-3-1-valuation-model="false"',
   'data-property-product-3-1-rankings="false"',
   'data-property-product-3-1-fixture-data="false"',
+  'data-property-geographic-source-bcod-address-points={String(model.authoritativeSources.protectedBoundaries.bcodAddressPoints)}',
+  'data-property-geographic-source-bcod-park-boundaries={String(model.authoritativeSources.protectedBoundaries.bcodParkBoundaries)}',
+  'data-property-geographic-source-provider-activation={String(model.authoritativeSources.protectedBoundaries.providerActivation)}',
+  'data-property-geographic-source-public-gis={String(model.authoritativeSources.protectedBoundaries.publicGis)}',
+  'data-property-geographic-source-persistence={String(model.authoritativeSources.protectedBoundaries.persistence)}',
+  'data-property-geographic-source-prisma-change={String(model.authoritativeSources.protectedBoundaries.prismaChange)}',
+  'data-property-geographic-source-telemetry={String(model.authoritativeSources.protectedBoundaries.telemetry)}',
+  'data-property-geographic-source-customer-data-mutation={String(model.authoritativeSources.protectedBoundaries.customerDataMutation)}',
   'data-property-dna-scoring="false"',
   'data-property-dna-ranking="false"',
   'data-property-dna-valuation="false"',
@@ -62,6 +74,10 @@ assertIncludes(model, 'no AI', 'Trust boundary must preserve no-AI exclusion.');
 assertIncludes(model, 'no public GIS', 'Trust boundary must preserve no-public-GIS exclusion.');
 assertIncludes(model, 'no provider activation', 'Trust boundary must preserve provider exclusion.');
 assertIncludes(model, 'no fixture data', 'Trust boundary must preserve fixture exclusion.');
+assertIncludes(sourceModel, 'PROPERTY_GEOGRAPHIC_SOURCE_INTELLIGENCE_IMPLEMENTED', 'Source intelligence must expose an implementation status.');
+assertIncludes(sourceModel, 'CITY_INTELLIGENCE_SOURCE_DOMAIN_MATRIX', 'Source intelligence must reuse the certified geographic source matrix.');
+assertIncludes(sourceModel, 'COLORADO_CITY_INTELLIGENCE_RECORDS', 'Source intelligence must reuse existing city geographic records.');
+assertIncludes(sourceModel, 'PROVIDER_CONFIRMATION_REQUIRED_FIRST', 'Source intelligence must keep BCOD provider-confirmation gate explicit.');
 
 const readyModel = buildPropertyProduct31Model({
   address: '100 Main St',
@@ -108,11 +124,25 @@ const readyModel = buildPropertyProduct31Model({
 
 assert.equal(readyModel.profile.length, 3, 'Decision profile must expose three concise synthesis items.');
 assert.equal(readyModel.dna.length, 4, 'Property DNA must expose four deterministic dimensions.');
+assert.equal(readyModel.authoritativeSources.selectedSources.length, 7, 'Authoritative source readiness must expose listing, place, public-record, and BCOD gate items.');
 assert.equal(readyModel.confidence.facets.length, 4, 'Confidence layer must expose four customer-facing evidence facets.');
 assert.equal(readyModel.comparables.length, 2, 'Comparable Context Panel must reuse related properties without creating new source data.');
 assert.equal(readyModel.checklist.length, 4, 'Verification checklist must include financial, construction, market, and property categories.');
 assert(readyModel.comparables.every((item) => item.similarities.length > 0 && item.differences.length > 0), 'Comparable items must explain factual similarities and differences.');
 assert(readyModel.profile.some((item) => item.state === 'well-supported'), 'Complete facts must produce a well-supported profile signal.');
+assert.equal(readyModel.authoritativeSources.status, 'PROPERTY_GEOGRAPHIC_SOURCE_INTELLIGENCE_IMPLEMENTED');
+assert.equal(readyModel.authoritativeSources.geography.city, 'Boulder');
+assert.equal(readyModel.authoritativeSources.protectedBoundaries.bcodAddressPoints, false);
+assert.equal(readyModel.authoritativeSources.protectedBoundaries.bcodParkBoundaries, false);
+assert.equal(readyModel.authoritativeSources.protectedBoundaries.providerActivation, false);
+assert.equal(readyModel.authoritativeSources.protectedBoundaries.publicGis, false);
+assert.equal(readyModel.authoritativeSources.protectedBoundaries.persistence, false);
+assert(readyModel.authoritativeSources.selectedSources.some((source) => source.category === 'MLS_LISTING_DATA' && source.claimEligible), 'Existing listing facts must remain the only ready source.');
+assert(readyModel.authoritativeSources.selectedSources.some((source) => source.category === 'COUNTY_ASSESSOR' && !source.claimEligible), 'Assessor source must fail closed.');
+assert(readyModel.authoritativeSources.selectedSources.some((source) => source.category === 'COUNTY_TREASURER_TAX' && !source.claimEligible), 'Tax source must fail closed.');
+assert(readyModel.authoritativeSources.selectedSources.some((source) => source.category === 'BUILDING_PERMITS' && !source.claimEligible), 'Permit source must fail closed.');
+assert(readyModel.authoritativeSources.selectedSources.some((source) => source.category === 'BCOD_ADDRESS_POINTS' && source.readiness === 'BLOCKED_NOT_AUTHORIZED'), 'BCOD Address Points must remain blocked.');
+assert(readyModel.authoritativeSources.selectedSources.some((source) => source.category === 'BCOD_PARK_BOUNDARIES' && source.readiness === 'BLOCKED_NOT_AUTHORIZED'), 'BCOD Park Boundaries must remain blocked.');
 
 const sparseModel = buildPropertyProduct31Model({
   city: 'Broomfield',
@@ -122,6 +152,8 @@ const sparseModel = buildPropertyProduct31Model({
 
 assert(sparseModel.profile.some((item) => item.state === 'incomplete'), 'Sparse data must surface incomplete evidence.');
 assert.equal(sparseModel.comparables.length, 0, 'Sparse related-listing context must not invent comparable properties.');
+assert.equal(sparseModel.authoritativeSources.geography.city, 'Broomfield', 'Sparse model must still carry city geography from listing fields.');
+assert(sparseModel.authoritativeSources.selectedSources.filter((source) => source.claimEligible).length <= 2, 'Sparse source model must keep claim eligibility narrow.');
 
 for (const forbidden of [
   'OpenAI',
@@ -137,13 +169,18 @@ for (const forbidden of [
   'sessionStorage.setItem',
   'NON_PRODUCTION_FIXTURE',
   'GIS Sprint 9',
+  'BCOD API',
+  'BCOD dataset',
+  'parcel display',
+  'owner identity',
 ]) {
-  assertNotIncludes([propertyPage, component, model].join('\n'), forbidden, `Property Product 3.1 must not include forbidden activation or certainty copy: ${forbidden}`);
+  assertNotIncludes([propertyPage, component, model, sourceModel].join('\n'), forbidden, `Property Product 3.1 must not include forbidden activation or certainty copy: ${forbidden}`);
 }
 
 assert(!propertyPage.match(/INSERT INTO|UPDATE "|DELETE FROM|prisma\.[a-zA-Z]+\.create|prisma\.[a-zA-Z]+\.update|prisma\.[a-zA-Z]+\.delete/), 'Property page must remain read-only.');
 assert(!component.match(/fetch\(|XMLHttpRequest|navigator\.sendBeacon/), 'Property Product 3.1 component must not introduce API calls or telemetry.');
 assert(!model.match(/fetch\(|prisma\.|createClient\(/), 'Property Product 3.1 model must not introduce data fetching, provider calls, or Prisma usage.');
+assert(!sourceModel.match(/fetch\(|prisma\.|createClient\(|process\.env/), 'Source intelligence model must not introduce data fetching, provider calls, env access, or Prisma usage.');
 
 assert.equal(
   packageJson.scripts?.['check:property-product-3-1'],

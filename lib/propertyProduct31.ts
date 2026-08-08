@@ -1,3 +1,8 @@
+import {
+  buildPropertyGeographicSourceIntelligence,
+  type PropertyGeographicSourceIntelligence,
+} from './property/propertyAuthoritativeSourceIntelligence.js';
+
 export type PropertyProduct31Input = {
   address?: string | null;
   city?: string | null;
@@ -73,6 +78,7 @@ export type PropertyProduct31ChecklistItem = {
 export type PropertyProduct31Model = {
   profile: PropertyProduct31ProfileItem[];
   dna: PropertyProduct31DnaDimension[];
+  authoritativeSources: PropertyGeographicSourceIntelligence;
   confidence: {
     summary: string;
     facets: PropertyProduct31ConfidenceFacet[];
@@ -174,6 +180,19 @@ export function buildPropertyProduct31Model(input: PropertyProduct31Input): Prop
   const photoCount = input.photoCount ?? 0;
   const areaLabel = input.neighborhood || input.city || 'this Colorado market';
   const syncLabel = input.lastIntelligenceSync ? 'last intelligence sync' : input.updatedAt ? 'last listing update' : 'available public record';
+  const authoritativeSources = buildPropertyGeographicSourceIntelligence({
+    city: input.city,
+    neighborhood: input.neighborhood,
+    propertyType: input.propertyType,
+    status: input.status,
+    price: input.price,
+    sqft: input.sqft,
+    yearBuilt: input.yearBuilt,
+    lotSize: input.lotSize,
+    soilType: input.soilType,
+    altitude: input.altitude,
+    relatedListingCount: relatedListings.length,
+  });
 
   const profile: PropertyProduct31ProfileItem[] = [
     {
@@ -273,6 +292,7 @@ export function buildPropertyProduct31Model(input: PropertyProduct31Input): Prop
   return {
     profile,
     dna,
+    authoritativeSources,
     confidence: {
       summary: 'Property Decision Profile uses existing public property data to reduce decision friction without scoring, ranking, valuing, forecasting, or recommending a property.',
       facets: confidenceFacets,

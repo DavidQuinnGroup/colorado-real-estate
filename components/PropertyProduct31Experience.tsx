@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ClipboardCheck, Compass, FileSearch, Fingerprint, Layers3, ShieldCheck } from 'lucide-react';
+import { ClipboardCheck, Compass, FileSearch, Fingerprint, Layers3, ShieldCheck, Waypoints } from 'lucide-react';
 
 import type { PropertyProduct31Model, PropertyProduct31Confidence } from '@/lib/propertyProduct31';
 
@@ -45,6 +45,19 @@ export default function PropertyProduct31Experience({ model }: PropertyProduct31
       data-property-product-3-1-confidence-count={model.confidence.facets.length}
       data-property-product-3-1-comparable-count={model.comparables.length}
       data-property-product-3-1-checklist-count={model.checklist.length}
+      data-property-geographic-source-intelligence={model.authoritativeSources.status}
+      data-property-geographic-source-version={model.authoritativeSources.version}
+      data-property-geographic-source-city={model.authoritativeSources.geography.city}
+      data-property-geographic-source-count={model.authoritativeSources.selectedSources.length}
+      data-property-geographic-source-bcod-address-points={String(model.authoritativeSources.protectedBoundaries.bcodAddressPoints)}
+      data-property-geographic-source-bcod-park-boundaries={String(model.authoritativeSources.protectedBoundaries.bcodParkBoundaries)}
+      data-property-geographic-source-provider-activation={String(model.authoritativeSources.protectedBoundaries.providerActivation)}
+      data-property-geographic-source-external-acquisition={String(model.authoritativeSources.protectedBoundaries.externalAcquisition)}
+      data-property-geographic-source-public-gis={String(model.authoritativeSources.protectedBoundaries.publicGis)}
+      data-property-geographic-source-persistence={String(model.authoritativeSources.protectedBoundaries.persistence)}
+      data-property-geographic-source-prisma-change={String(model.authoritativeSources.protectedBoundaries.prismaChange)}
+      data-property-geographic-source-telemetry={String(model.authoritativeSources.protectedBoundaries.telemetry)}
+      data-property-geographic-source-customer-data-mutation={String(model.authoritativeSources.protectedBoundaries.customerDataMutation)}
     >
       <style>{`
         @media (min-width: 768px) {
@@ -179,6 +192,61 @@ export default function PropertyProduct31Experience({ model }: PropertyProduct31
               <p className="reie-property-product-31-note mt-3 border-t border-white/10 pt-3 text-xs leading-5 text-white/40">{facet.action}</p>
             </article>
           ))}
+        </div>
+      </section>
+
+      <section
+        id="property-source-readiness"
+        className="border-t border-white/10"
+        data-testid="property-geographic-source-intelligence"
+        data-property-source-readiness-contract="source-geography-subject-freshness-evidence-limitation-claim-intelligence-presentation"
+      >
+        <div className="border-b border-white/10 bg-white/[0.025] p-5 md:p-6">
+          <p className="reie-property-product-31-eyebrow flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.22em] text-cyan-100/76">
+            <Waypoints size={14} aria-hidden="true" />
+            Source Readiness
+          </p>
+          <h3 className="reie-property-product-31-section-title mt-3 text-xl font-black uppercase tracking-tight text-white">Authoritative sources, geography, and what stays unverified</h3>
+          <p className="reie-property-product-31-copy mt-3 max-w-3xl text-sm leading-6 text-white/56">
+            {model.authoritativeSources.summary}
+          </p>
+        </div>
+        <div className="grid gap-px bg-white/10 lg:grid-cols-[0.72fr_1.28fr]">
+          <div className="bg-[#0d141c] p-5 md:p-6">
+            <p className="reie-property-product-31-mini-label text-[10px] font-black uppercase tracking-[0.14em] text-white/40">Geography</p>
+            <h4 className="mt-3 text-lg font-black uppercase tracking-tight text-white">
+              {model.authoritativeSources.geography.neighborhood || model.authoritativeSources.geography.city}
+            </h4>
+            <p className="mt-3 text-sm leading-6 text-white/56">
+              Property geography comes from listing fields and existing governed place context. It is not a parcel boundary, legal description, zoning conclusion, or public GIS activation.
+            </p>
+            <div className="mt-5 grid gap-2">
+              {model.authoritativeSources.verificationPrompts.slice(0, 3).map((prompt) => (
+                <p key={prompt} className="rounded-[6px] border border-white/10 bg-white/[0.04] p-3 text-xs leading-5 text-white/50">
+                  {prompt}
+                </p>
+              ))}
+            </div>
+          </div>
+          <div className="grid gap-px bg-white/10 md:grid-cols-2">
+            {model.authoritativeSources.selectedSources.map((source) => (
+              <article
+                key={source.category}
+                className="reie-property-product-31-card bg-[#0d141c] p-4 md:p-5"
+                data-testid="property-geographic-source-item"
+                data-property-geographic-source-category={source.category}
+                data-property-geographic-source-readiness={source.readiness}
+                data-property-geographic-source-claim-eligible={String(source.claimEligible)}
+              >
+                <span className={`reie-property-product-31-confidence inline-flex rounded-[5px] border px-2 py-1 text-[9px] font-black uppercase tracking-[0.12em] ${source.claimEligible ? confidenceClass('moderate') : confidenceClass('limited')}`}>
+                  {source.readiness.replace(/_/g, ' ').toLowerCase()}
+                </span>
+                <h4 className="reie-property-product-31-card-title mt-4 text-sm font-black uppercase leading-5 tracking-[0.08em] text-white">{source.label}</h4>
+                <p className="reie-property-product-31-copy mt-3 text-xs leading-5 text-white/56">{source.evidence}</p>
+                <p className="reie-property-product-31-note mt-3 border-t border-white/10 pt-3 text-xs leading-5 text-white/40">{source.limitation}</p>
+              </article>
+            ))}
+          </div>
         </div>
       </section>
 
