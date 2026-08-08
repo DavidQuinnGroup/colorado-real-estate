@@ -419,6 +419,8 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
               data-market-aeo-geography={`${marketAeoPilot.geography.city}, ${marketAeoPilot.geography.state}`}
               data-market-aeo-market-period={marketAeoPilot.marketPeriod}
               data-market-aeo-freshness={marketAeoPilot.freshness.status}
+              data-market-aeo-evidence-state={marketAeoPilot.evidenceState}
+              data-market-aeo-conflict-state={marketAeoPilot.conflictState}
               data-market-aeo-visible-answer-count={marketAeoPilot.visibleAnswers.length}
               data-market-aeo-structured-data="FAQPage"
               data-market-aeo-schema-visible-alignment="true"

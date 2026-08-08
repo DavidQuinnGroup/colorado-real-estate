@@ -62,6 +62,10 @@ const nonBoulderAuthorizedRoutes = new Set([
   'lafayette-co-housing-market',
   'denver-co-housing-market',
   'longmont-co-housing-market',
+  'broomfield-co-housing-market',
+  'superior-co-housing-market',
+  'erie-co-housing-market',
+  'westminster-co-housing-market',
 ]);
 
 for (const city of cities.filter((candidate) => candidate.marketSlug !== MARKET_AEO_BOULDER_PILOT_ROUTE)) {

@@ -10,6 +10,8 @@ import {
   MARKET_AEO_MULTI_CITY_AUTHORIZED_ROUTES,
   MARKET_AEO_MULTI_CITY_SOURCE_ID,
   MARKET_AEO_MULTI_CITY_WAVE_STATUS,
+  MARKET_AEO_WAVE_2_ROUTES,
+  MARKET_AEO_WAVE_2_STATUS,
 } from '../lib/marketAeoPilot.js';
 import { buildCityMarketExperience } from '../lib/marketIntelligenceExperience.js';
 import { neighborhoods } from '../lib/neighborhoods.js';
@@ -37,14 +39,14 @@ const expectedRoutes = [
   'lafayette-co-housing-market',
   'denver-co-housing-market',
   'longmont-co-housing-market',
+  'broomfield-co-housing-market',
+  'superior-co-housing-market',
+  'erie-co-housing-market',
+  'westminster-co-housing-market',
 ];
 assert.deepEqual([...MARKET_AEO_MULTI_CITY_AUTHORIZED_ROUTES], expectedRoutes);
 
 const excludedRoutes = [
-  'erie-co-housing-market',
-  'westminster-co-housing-market',
-  'broomfield-co-housing-market',
-  'superior-co-housing-market',
   'niwot-co-housing-market',
   'gunbarrel-co-housing-market',
   'thornton-co-housing-market',
@@ -64,12 +66,27 @@ for (const city of cities) {
     assert.equal(contract.geography.city, city.name);
     assert.equal(contract.geography.state, 'Colorado');
     assert.equal(contract.geography.scope, 'city-market');
-    assert.equal(contract.freshness.status, 'CURRENT');
+    assert(['CURRENT', 'AGING', 'UNKNOWN'].includes(contract.freshness.status));
     assert.equal(contract.visibleAnswers.length, 3);
     assert.equal(contract.structuredDataFaqs.length, contract.visibleAnswers.length);
-    assert.equal(contract.visibleAnswers.filter((answer) => answer.claimEligible).length, 2);
-    assert.equal(contract.visibleAnswers.filter((answer) => !answer.claimEligible).length, 1);
-    assert.match(contract.marketPeriod, new RegExp(`Current published REIE ${city.name} city-market briefing`));
+    if (city.marketSlug === 'superior-co-housing-market') {
+      assert.equal(contract.freshness.status, 'AGING', 'Superior must not assert current certainty.');
+      assert.equal(contract.evidenceState, 'EXPLICIT_CONFLICT', 'Superior must preserve explicit conflict state.');
+      assert.equal(contract.conflictState, 'EXPLICIT_CONFLICT', 'Superior must fail closed on conflict.');
+      assert.equal(contract.visibleAnswers.filter((answer) => answer.claimEligible).length, 1);
+      assert.equal(contract.visibleAnswers.filter((answer) => !answer.claimEligible).length, 2);
+      assert.match(contract.marketPeriod, /Aging\/conflict-bounded published REIE Superior city-market briefing/);
+      assert.match(contract.limitations.join(' '), /current certainty is not asserted/i);
+      assert.match(contract.limitations.join(' '), /Rebuilding, hazard, insurance, environmental, structural, drainage, soil, and property-condition/i);
+      assert.match(contract.limitations.join(' '), /not converted into safety, suitability, desirability, prediction, or property-specific claims/i);
+    } else {
+      assert.equal(contract.freshness.status, 'CURRENT');
+      assert.equal(contract.evidenceState, 'CURRENT');
+      assert.equal(contract.conflictState, 'NONE');
+      assert.equal(contract.visibleAnswers.filter((answer) => answer.claimEligible).length, 2);
+      assert.equal(contract.visibleAnswers.filter((answer) => !answer.claimEligible).length, 1);
+      assert.match(contract.marketPeriod, new RegExp(`Current published REIE ${city.name} city-market briefing`));
+    }
     assert.match(contract.source.label, /Existing REIE governed city-market data/);
     assert.match(contract.source.label, /Qualification:/);
     assert.match(contract.limitations.join(' '), /not a live feed/i);
@@ -82,6 +99,9 @@ for (const city of cities) {
     );
     if (city.marketSlug === MARKET_AEO_BOULDER_PILOT_ROUTE) {
       assert.equal(contract.status, MARKET_AEO_BOULDER_PILOT_STATUS, 'Boulder must preserve the certified status marker.');
+    } else if (MARKET_AEO_WAVE_2_ROUTES.includes(city.marketSlug as (typeof MARKET_AEO_WAVE_2_ROUTES)[number])) {
+      assert.equal(contract.status, MARKET_AEO_WAVE_2_STATUS);
+      assert.equal(contract.source.id, MARKET_AEO_MULTI_CITY_SOURCE_ID);
     } else {
       assert.equal(contract.status, MARKET_AEO_MULTI_CITY_WAVE_STATUS);
       assert.equal(contract.source.id, MARKET_AEO_MULTI_CITY_SOURCE_ID);
@@ -104,8 +124,17 @@ for (const required of [
   'lafayette-co-housing-market',
   'denver-co-housing-market',
   'longmont-co-housing-market',
+  'broomfield-co-housing-market',
+  'superior-co-housing-market',
+  'erie-co-housing-market',
+  'westminster-co-housing-market',
   'focused source/freshness qualification',
   'explicit freshness limitation',
+  'source/freshness qualification and limitation-bound claims',
+  'explicit aging, unknown, and conflict fail-closed treatment',
+  'additive city-market answer contract preserving existing local decision context',
+  'data-market-aeo-evidence-state',
+  'data-market-aeo-conflict-state',
   'data-market-aeo-contract="multi-city"',
   'data-market-aeo-schema-visible-alignment="true"',
   'data-market-aeo-provider-activation="false"',
@@ -143,4 +172,4 @@ assert.equal(
 );
 assertIncludes(tsconfig, 'scripts/checkMarketAeoMultiCityWave.ts', 'Worker build must compile multi-city Market/AEO validation.');
 
-console.log('[market-aeo-multi-city-wave] ok: Boulder, Louisville, Lafayette, Denver, Longmont contracts, allowlist containment, schema alignment, and protected boundaries verified.');
+console.log('[market-aeo-multi-city-wave] ok: nine-city Market/AEO contracts, Wave 1 preservation, Wave 2 readiness implementation, allowlist containment, schema alignment, and protected boundaries verified.');

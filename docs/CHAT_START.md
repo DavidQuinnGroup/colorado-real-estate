@@ -10,6 +10,67 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / Market AEO Wave 2 Implemented Locally, August 8, 2026:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Baseline:
+
+- Branch: `main`
+- Phase A base: `7d42cb0a59cd26e7842d118b5e8f05f985ebdba1`
+- Phase A local commit: `bdab54d6f0570c76b57ccbd7fa21ed8164895dfa`
+- Phase A commit message: `Integrate BCOD decision and Market AEO wave 2 readiness`
+- Phase B implementation is local only and not pushed or deployed.
+
+Phase A governance integration:
+
+- `REIE_MARKET_AEO_WAVE_1_CLOSED_BCOD_DECISION_PACKET_READY_MARKET_AEO_WAVE_2_READINESS_RECONCILED`
+- Record: `docs/project-atlas/executive-library/REIE-BCOD-DECISION-AND-MARKET-AEO-WAVE-2-READINESS.md`
+- BCOD Address Points and Park Boundaries both remain `PROVIDER_CONFIRMATION_REQUIRED_FIRST`.
+- Provider confirmation remains three questions; counsel interpretation remains two questions.
+- No BCOD acquisition, provider access, API use, persistence, geometry rendering, customer display, or activation is authorized.
+
+Phase B Market/AEO Wave 2 local implementation:
+
+- `REIE_MARKET_AEO_WAVE_2_IMPLEMENTED`
+- Existing Wave 1 routes are preserved: Boulder, Louisville, Lafayette, Denver, and Longmont.
+- Wave 2 routes implemented: Broomfield, Superior, Erie, and Westminster.
+- Authorized Market/AEO route allowlist is exactly nine city-market routes: Boulder, Louisville, Lafayette, Denver, Longmont, Broomfield, Superior, Erie, and Westminster.
+- Broomfield uses existing governed city-market data and certified enhanced-foundation context with route-level source/freshness qualification and limitation-bound claims.
+- Superior uses explicit `AGING` freshness and `EXPLICIT_CONFLICT` evidence state; current certainty is not asserted, unsupported claims fail closed, and rebuilding, hazard, insurance, environmental, structural, drainage, soil, and property-condition topics remain verification-bound.
+- Erie and Westminster are additive city-market answer-contract layers and do not reopen certified Local Decision Intelligence Wave 3 architecture.
+- Visible Market/AEO answers and FAQ structured data remain mirrored; schema does not exceed visible eligible answers.
+
+Validation recorded locally:
+
+- `git diff --check`
+- `npm run typecheck`
+- `npm run check:market-product-3`
+- `npm run check:public-trust-readiness`
+- `npm run check:public-runtime-safety`
+- `npm run check:market-aeo-boulder-pilot`
+- `npm run check:market-aeo-multi-city-wave`
+- `npm run check:market-aeo-wave-2`
+- `npm run build`
+
+Protected boundaries:
+
+- No BCOD dataset use.
+- No new provider, scraping, API, persistence, Prisma/database, Property Inquiry, Contact, CRM/email, worker, MLS ingestion, auth, telemetry, customer-data, environment, deployment, or production mutation.
+
+Next gates:
+
+- `READY_FOR_REIE_MARKET_AEO_WAVE_2_PUSH_AUTHORIZATION`
+- `READY_FOR_REIE_MARKET_AEO_WAVE_2_PRODUCTION_VERIFICATION_AUTHORIZATION`
+- `READY_FOR_BOULDER_COUNTY_OPEN_DATA_PROVIDER_CONFIRMATION`
+- `READY_FOR_BOULDER_COUNTY_OPEN_DATA_COUNSEL_INTERPRETATION`
+
+Do not push, deploy, activate BCOD, contact providers, acquire datasets, add persistence, mutate production, or expand Market/AEO beyond the nine authorized routes without separate Executive HQ authorization.
+
+Prior handoff retained below for audit history.
+
 PROJECT ATLAS(tm) / BCOD Decision Resolution and Market/AEO Wave 2 Readiness, August 8, 2026:
 
 Workspace:
