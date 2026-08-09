@@ -1,5 +1,7 @@
 import Link from 'next/link';
 
+import { buildAdvisoryPreparationIntelligenceModel } from '@/lib/homeWorthAdvisoryIntelligence';
+
 const preparationThemes = [
   {
     label: 'Decision to discuss',
@@ -130,6 +132,8 @@ const researchLinks = [
 ];
 
 export default function AdvisoryHandoffGuide() {
+  const advisoryPreparation = buildAdvisoryPreparationIntelligenceModel();
+
   return (
     <section
       id="advisory-readiness"
@@ -164,6 +168,33 @@ export default function AdvisoryHandoffGuide() {
       data-dxt-3-advisory-url-context="false"
       data-dxt-3-advisory-form-prefill="false"
       data-dxt-3-advisory-customer-profile="false"
+      data-advisory-preparation-intelligence-status={advisoryPreparation.status}
+      data-advisory-preparation-context-count={advisoryPreparation.contexts.length}
+      data-advisory-preparation-domain-count={advisoryPreparation.professionalDomains.length}
+      data-advisory-hidden-search-transfer={String(advisoryPreparation.protectedBoundaries.hiddenSearchTransfer)}
+      data-advisory-hidden-comparison-transfer={String(advisoryPreparation.protectedBoundaries.hiddenComparisonTransfer)}
+      data-advisory-hidden-financing-transfer={String(advisoryPreparation.protectedBoundaries.hiddenFinancingTransfer)}
+      data-advisory-hidden-grand-plan-transfer={String(advisoryPreparation.protectedBoundaries.hiddenGrandPlanTransfer)}
+      data-advisory-hidden-seller-transfer={String(advisoryPreparation.protectedBoundaries.hiddenSellerTransfer)}
+      data-advisory-inferred-intent-transfer={String(advisoryPreparation.protectedBoundaries.inferredIntentTransfer)}
+      data-advisory-browsing-behavior-transfer={String(advisoryPreparation.protectedBoundaries.browsingBehaviorTransfer)}
+      data-advisory-protected-class-data-transfer={String(advisoryPreparation.protectedBoundaries.protectedClassDataTransfer)}
+      data-advisory-new-required-fields={String(advisoryPreparation.protectedBoundaries.newRequiredFields)}
+      data-advisory-contact-mutation={String(advisoryPreparation.protectedBoundaries.contactMutation)}
+      data-advisory-property-inquiry-mutation={String(advisoryPreparation.protectedBoundaries.propertyInquiryMutation)}
+      data-advisory-crm-email={String(advisoryPreparation.protectedBoundaries.crmEmail)}
+      data-advisory-scheduling={String(advisoryPreparation.protectedBoundaries.scheduling)}
+      data-advisory-lead-scoring={String(advisoryPreparation.protectedBoundaries.leadScoring)}
+      data-advisory-telemetry={String(advisoryPreparation.protectedBoundaries.telemetry)}
+      data-advisory-brokerage-relationship={String(advisoryPreparation.protectedBoundaries.brokerageRelationship)}
+      data-advisory-agency-relationship={String(advisoryPreparation.protectedBoundaries.agencyRelationship)}
+      data-advisory-representation={String(advisoryPreparation.protectedBoundaries.representation)}
+      data-advisory-fiduciary-relationship={String(advisoryPreparation.protectedBoundaries.fiduciaryRelationship)}
+      data-advisory-lender-relationship={String(advisoryPreparation.protectedBoundaries.lenderRelationship)}
+      data-advisory-legal-relationship={String(advisoryPreparation.protectedBoundaries.legalRelationship)}
+      data-advisory-tax-advisory-relationship={String(advisoryPreparation.protectedBoundaries.taxAdvisoryRelationship)}
+      data-advisory-appraisal-relationship={String(advisoryPreparation.protectedBoundaries.appraisalRelationship)}
+      data-advisory-provider-activation={String(advisoryPreparation.protectedBoundaries.providerActivation)}
     >
       <div className="mx-auto grid max-w-5xl gap-10 text-sm leading-7 text-white/66">
         <div className="grid gap-7 lg:grid-cols-[1.04fr_0.96fr] lg:items-end">
@@ -271,6 +302,53 @@ export default function AdvisoryHandoffGuide() {
             REIE cannot determine legal, tax, lending, affordability, qualification, appraisal, valuation, pricing,
             investment, suitability, fair-housing, representation, fiduciary, or professional outcomes. It can organize
             the questions that should be reviewed through the appropriate professional pathway.
+          </div>
+        </div>
+
+        <div className="grid gap-5 rounded-[8px] bg-white/[0.035] p-5" data-testid="advisory-preparation-intelligence">
+          <div className="max-w-3xl">
+            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">
+              Advisory Preparation Intelligence
+            </p>
+            <h3 className="mt-3 text-2xl font-black leading-tight text-white">
+              Route each open question to the right professional discussion.
+            </h3>
+            <p className="mt-3 text-sm leading-7 text-white/62">{advisoryPreparation.governingQuestion}</p>
+          </div>
+
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+            {advisoryPreparation.contexts.map((context) => (
+              <article key={context.key} className="rounded-[8px] bg-[#071017]/72 p-4" data-testid="advisory-decision-context">
+                <p className="text-xs font-black uppercase tracking-[0.14em] text-cyan-100/72">{context.label}</p>
+                <p className="mt-2 text-sm leading-7 text-white/58">{context.knownEvidence}</p>
+                <p className="mt-3 text-xs font-bold leading-6 text-white/48">{context.unresolved}</p>
+                <p className="mt-3 text-xs font-black uppercase tracking-[0.12em] text-white/66">{context.nextQuestion}</p>
+              </article>
+            ))}
+          </div>
+
+          <div className="grid gap-3 lg:grid-cols-2">
+            {advisoryPreparation.professionalDomains.map((domain) => (
+              <article
+                key={domain.key}
+                className="rounded-[8px] bg-cyan-100/[0.045] p-4"
+                data-testid="advisory-professional-domain-route"
+                data-advisory-professional-domain={domain.key}
+              >
+                <p className="text-xs font-black uppercase tracking-[0.14em] text-cyan-100/72">{domain.label}</p>
+                <p className="mt-2 text-sm leading-7 text-white/58">
+                  <span className="font-black text-white/76">Route by: </span>
+                  {domain.routeBy}
+                </p>
+                <p className="mt-2 text-sm leading-7 text-white/58">
+                  <span className="font-black text-white/76">Bring: </span>
+                  {domain.bring}
+                </p>
+                <p className="mt-3 rounded-[6px] bg-[#071017]/72 p-3 text-xs font-bold leading-6 text-white/48">
+                  {domain.boundary}
+                </p>
+              </article>
+            ))}
           </div>
         </div>
 

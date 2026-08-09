@@ -7,6 +7,7 @@ import JourneyCohesionPanel from '@/components/JourneyCohesionPanel';
 import SellerReadinessGuide from '@/components/SellerReadinessGuide';
 import FAQSchema from '@/components/schema/FAQSchema';
 import { getJourneyMeasurementAttributes } from '@/lib/customerJourneyMeasurement';
+import { buildHomeWorthIntelligenceModel } from '@/lib/homeWorthAdvisoryIntelligence';
 import { buildSellerDecisionWorkspace } from '@/lib/sellerDecisionWorkspace';
 import type { FAQItem } from '@/lib/schema/faqSchema';
 import { SITE_NAME, SITE_URL } from '@/lib/publicTrust';
@@ -101,6 +102,7 @@ const homeWorthFaqs: FAQItem[] = [
 ];
 
 export default function HomeWorthPage() {
+  const homeWorthIntelligence = buildHomeWorthIntelligenceModel();
   const sellerDecisionWorkspace = buildSellerDecisionWorkspace({
     marketHref: '/market',
     searchHref: '/search',
@@ -115,12 +117,13 @@ export default function HomeWorthPage() {
         className="min-h-screen bg-[#071017] text-white"
         data-testid="reie-home-worth-page"
         data-reie-sprint-2-seller-confidence="true"
-          data-reie-home-worth-automated-valuation="false"
-          data-reie-home-worth-ai="false"
-          data-reie-home-worth-gis="false"
-          data-reie-home-worth-provider-activation="false"
-          data-seller-readiness-advancement="true"
-        >
+        data-reie-home-worth-automated-valuation="false"
+        data-reie-home-worth-ai="false"
+        data-reie-home-worth-gis="false"
+        data-reie-home-worth-provider-activation="false"
+        data-seller-readiness-advancement="true"
+        data-home-worth-advisory-intelligence="implemented"
+      >
         <section className="relative overflow-hidden" data-testid="home-worth-hero">
           <Image
             src={HERO_IMAGE}
@@ -220,6 +223,114 @@ export default function HomeWorthPage() {
               <p className="mt-7 rounded-[8px] bg-[#101820]/6 p-4 text-xs font-bold leading-6 text-[#293542]/70">
                 This is not an automated home-value estimate, appraisal, guarantee, or forecast.
               </p>
+            </div>
+          </div>
+        </section>
+
+        <section
+          className={`${sectionShell} border-y border-white/10 bg-[#101820]`}
+          data-testid="home-worth-intelligence-advancement"
+          data-home-worth-intelligence-status={homeWorthIntelligence.status}
+          data-home-worth-intelligence-step-count={homeWorthIntelligence.steps.length}
+          data-home-worth-intelligence-automated-value={String(homeWorthIntelligence.protectedBoundaries.automatedHomeValue)}
+          data-home-worth-intelligence-avm={String(homeWorthIntelligence.protectedBoundaries.avm)}
+          data-home-worth-intelligence-appraisal={String(homeWorthIntelligence.protectedBoundaries.appraisal)}
+          data-home-worth-intelligence-guaranteed-sale-price={String(homeWorthIntelligence.protectedBoundaries.guaranteedSalePrice)}
+          data-home-worth-intelligence-definitive-listing-price={String(homeWorthIntelligence.protectedBoundaries.definitiveListingPrice)}
+          data-home-worth-intelligence-expected-appreciation={String(homeWorthIntelligence.protectedBoundaries.expectedAppreciation)}
+          data-home-worth-intelligence-predicted-buyer-demand={String(homeWorthIntelligence.protectedBoundaries.predictedBuyerDemand)}
+          data-home-worth-intelligence-predicted-days-on-market={String(homeWorthIntelligence.protectedBoundaries.predictedDaysOnMarket)}
+          data-home-worth-intelligence-guaranteed-net-proceeds={String(homeWorthIntelligence.protectedBoundaries.guaranteedNetProceeds)}
+          data-home-worth-intelligence-value-certainty={String(homeWorthIntelligence.protectedBoundaries.valueCertainty)}
+          data-home-worth-intelligence-listing-price-recommendation={String(homeWorthIntelligence.protectedBoundaries.listingPriceRecommendation)}
+          data-home-worth-intelligence-provider-activation={String(homeWorthIntelligence.protectedBoundaries.providerActivation)}
+          data-home-worth-intelligence-assessor-retrieval={String(homeWorthIntelligence.protectedBoundaries.assessorRetrieval)}
+          data-home-worth-intelligence-tax-retrieval={String(homeWorthIntelligence.protectedBoundaries.taxRetrieval)}
+          data-home-worth-intelligence-permit-retrieval={String(homeWorthIntelligence.protectedBoundaries.permitRetrieval)}
+          data-home-worth-intelligence-bcod-activation={String(homeWorthIntelligence.protectedBoundaries.bcodActivation)}
+          data-home-worth-intelligence-hidden-state-transfer={String(homeWorthIntelligence.protectedBoundaries.hiddenStateTransfer)}
+          data-home-worth-intelligence-crm-email={String(homeWorthIntelligence.protectedBoundaries.crmEmail)}
+          data-home-worth-intelligence-persistence={String(homeWorthIntelligence.protectedBoundaries.persistence)}
+          data-home-worth-intelligence-telemetry={String(homeWorthIntelligence.protectedBoundaries.telemetry)}
+          data-home-worth-intelligence-customer-data-mutation={String(homeWorthIntelligence.protectedBoundaries.customerDataMutation)}
+        >
+          <div className={containerShell}>
+            <div className="grid gap-10 lg:grid-cols-[0.76fr_1.24fr] lg:items-start">
+              <div>
+                <p className={eyebrowClass}>Home Worth Intelligence</p>
+                <h2 className={headingClass}>Prepare the evidence before you discuss value.</h2>
+                <p className={bodyClass}>{homeWorthIntelligence.governingQuestion}</p>
+                <p className="mt-6 rounded-[8px] border border-amber-100/16 bg-amber-100/[0.055] p-4 text-xs font-bold leading-6 text-white/56">
+                  REIE organizes property evidence, market context, unknowns, verification questions, and professional discussion prompts.
+                  It does not create automated value, appraisal, listing-price, demand, days-on-market, or net-proceeds certainty.
+                </p>
+              </div>
+
+              <div className="grid gap-4">
+                {homeWorthIntelligence.steps.map((step) => (
+                  <article
+                    key={step.key}
+                    className="grid gap-4 rounded-[8px] bg-white/[0.04] p-5 ring-1 ring-white/10 lg:grid-cols-[0.72fr_1.28fr]"
+                    data-testid="home-worth-intelligence-step"
+                    data-home-worth-intelligence-step-key={step.key}
+                    data-home-worth-intelligence-source-count={step.sourceIds.length}
+                  >
+                    <div>
+                      <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">{step.label}</p>
+                      <p className="mt-3 text-sm font-bold leading-7 text-white/70">{step.evidence}</p>
+                    </div>
+                    <div className="grid gap-3 text-sm leading-7 text-white/60">
+                      <p>
+                        <span className="font-black text-white/76">Meaning: </span>
+                        {step.meaning}
+                      </p>
+                      <p>
+                        <span className="font-black text-white/76">Unknown: </span>
+                        {step.unknown}
+                      </p>
+                      <p>
+                        <span className="font-black text-white/76">Verify: </span>
+                        {step.verify}
+                      </p>
+                      <Link href={step.href} className="w-fit text-xs font-black uppercase tracking-[0.14em] text-cyan-100 transition hover:text-white">
+                        Continue
+                      </Link>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-12 grid gap-5 lg:grid-cols-[1.15fr_0.85fr]">
+              <div className="rounded-[8px] bg-white/[0.035] p-5" data-testid="home-worth-intelligence-source-posture">
+                <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">Source Posture</p>
+                <div className="mt-4 grid gap-3 md:grid-cols-2">
+                  {homeWorthIntelligence.sourcePosture.map((source) => (
+                    <div key={source.sourceId} className="rounded-[8px] bg-[#071017]/72 p-4">
+                      <p className="text-xs font-black uppercase tracking-[0.12em] text-white/76">{source.label}</p>
+                      <p className="mt-2 text-sm font-bold leading-6 text-white/54">{source.customerStatus}</p>
+                      <p className="mt-2 text-xs leading-6 text-white/44">{source.use}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="rounded-[8px] bg-cyan-100/[0.045] p-5" data-testid="home-worth-advisory-continuity">
+                <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">User-Controlled Continuity</p>
+                <div className="mt-4 grid gap-3">
+                  {homeWorthIntelligence.continuityLinks.map((link) => (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      className="rounded-[8px] bg-[#071017]/72 p-4 transition hover:bg-[#0b1117]"
+                      data-testid="home-worth-advisory-continuity-link"
+                    >
+                      <span className="block text-xs font-black uppercase tracking-[0.12em] text-cyan-100/76">{link.label}</span>
+                      <span className="mt-2 block text-sm leading-7 text-white/58">{link.purpose}</span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </section>

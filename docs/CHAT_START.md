@@ -10,6 +10,98 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / Home Worth + Advisory Intelligence Locally Certified:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Local implementation state:
+
+- Branch: `main`
+- Base commit before local implementation: `295778ba05733af30ed5dd175d884032896fb190`
+- Local status: `HOME_WORTH_ADVISORY_INTELLIGENCE_LOCALLY_CERTIFIED`
+- Implementation record: `docs/project-atlas/executive-library/REIE-HOME-WORTH-ADVISORY-INTELLIGENCE-IMPLEMENTATION.md`
+
+Workstream A: Home Worth Intelligence Advancement:
+
+- Added deterministic Home Worth + Advisory model in `lib/homeWorthAdvisoryIntelligence.ts`.
+- Extended `/home-worth` with `data-testid="home-worth-intelligence-advancement"`.
+- Home Worth now organizes property evidence, market context, derived context, unknown/verification prompts, and professional value questions.
+- Customer-facing sequence is `PROPERTY EVIDENCE -> MARKET CONTEXT -> WHAT IS UNKNOWN -> WHAT TO VERIFY -> WHAT TO DISCUSS NEXT`.
+- Continuity remains visible and user-controlled across Home Worth, Seller Strategy, Search, Market, Source Registry, and Advisory.
+- No automated home value, AVM, appraisal, guaranteed sale price, definitive listing price, expected appreciation, predicted buyer demand, predicted days on market, guaranteed net proceeds, listing-price recommendation, or sale-outcome prediction was introduced.
+
+Workstream B: Advisory Handoff Intelligence Deepening:
+
+- Extended `components/AdvisoryHandoffGuide.tsx` with `data-testid="advisory-preparation-intelligence"`.
+- Advisory now organizes decision context, known evidence, unresolved questions, and professional next-discussion routing.
+- Professional routes cover real estate agent, lender, inspector / engineer, attorney, tax professional, and appraiser discussions.
+- Advisory remains presentational and does not create hidden transfer, new Contact fields, Contact mutation, Property Inquiry mutation, scheduling, CRM/email, lead scoring, telemetry, or professional relationship formation.
+
+Source-confirmation state:
+
+- Boulder County Assessor remains `AWAITING_PROVIDER_CONFIRMATION`.
+- BCOD Address Points remains `BLOCKED_NOT_AUTHORIZED`.
+- BCOD Park Boundaries remains `BLOCKED_NOT_AUTHORIZED`.
+- BCOD Park Boundaries still requires focused counsel interpretation after provider confirmation.
+- No Secondary Overflow county-research findings were used.
+
+Validation recorded locally:
+
+- `git diff --check`
+- `npm run typecheck`
+- `npm run check:home-worth-advisory-intelligence`
+- `npm run check:public-runtime-safety`
+- `npm run check:public-trust-readiness`
+- `npm run check:decision-journey-experience`
+- `npm run check:property-product-3-1`
+- `npm run check:seller-property-intelligence-advancement`
+- `npm run check:buyer-place-intelligence-advancement`
+- `npm run check:reie-comparison-financing-intelligence`
+- `npm run check:grand-plan-journey-safety`
+- `npm run check:reie-source-registry-grand-plan-advancement`
+- `npm run check:cim-privacy-consent-data-minimization-gate`
+- `npm run check:seller-lead-schema-safety`
+- `npm run check:seller-journey-safety`
+- `npm run check:reie-seller-confidence-experience`
+- `npm run check:seller-readiness-advancement`
+- `npm run check:property-seller-evidence-readiness`
+- `npm run check:reie-seller-confidence-experience-v8`
+- `npm run check:advisory-handoff-readiness`
+- `npm run check:advisory-operating-readiness`
+- `npm run check:dxt-wave-1e-advisory-handoff-implementation`
+- `npm run check:dxt-wave-1e-contact-decision-flow-implementation`
+- `npm run check:dxt-property-advisory-contact-continuity-implementation`
+- `npm run check:dxt-buyer-advisory-contact-continuity-implementation`
+- `npm run check:dxt-seller-advisory-contact-continuity-implementation`
+- `npm run check:dxt-3-advisory-conversation-preparation-implementation`
+- `npm run check:dxt-3-contact-path-selection-quality-implementation`
+- `npm run check:dxt-3-seller-professional-preparation-implementation`
+- `npm run check:property-geographic-source-intelligence`
+- `npm run check:market-product-3`
+- `npm run build`
+
+Protected boundaries:
+
+- No push occurred.
+- No deployment occurred.
+- No production verification occurred.
+- No provider/source activation.
+- No external dataset acquisition.
+- No assessor, tax, or permit record retrieval.
+- No BCOD activation, API use, geometry, persistence, derived intelligence, or customer display.
+- No Source Registry status change.
+- No Prisma/database/schema change, Property Inquiry/Contact mutation, CRM/email, scheduling, MLS ingestion/sync, worker/queue activation, telemetry/customer tracking, customer-data mutation, credentials/secrets change, production configuration mutation, or unrelated remediation.
+
+Next gate:
+
+- `READY_FOR_HOME_WORTH_ADVISORY_INTELLIGENCE_PRODUCTION_PUSH_AUTHORIZATION`
+
+The implementation commit is local until separate push/deployment authorization is granted. Do not push it, deploy, activate providers, acquire datasets, retrieve public records, activate BCOD, add persistence, mutate production, run production certification, or begin another implementation workstream unless explicitly authorized.
+
+Prior handoff retained below for audit history.
+
 PROJECT ATLAS(tm) / Buyer + Place Intelligence Advancement Production Certified and Closed:
 
 Workspace:
