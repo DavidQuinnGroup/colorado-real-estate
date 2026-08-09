@@ -158,6 +158,7 @@
     "check:property-geographic-source-intelligence": "npm run worker:build && node dist/scripts/checkPropertyGeographicSourceIntelligence.js",
     "check:authoritative-property-record-intelligence": "npm run worker:build && node dist/scripts/checkAuthoritativePropertyRecordIntelligence.js",
     "check:reie-source-registry-grand-plan-advancement": "npm run worker:build && node dist/scripts/checkReieSourceRegistryGrandPlanAdvancement.js",
+    "check:colorado-source-trust-experience": "npm run worker:build && node dist/scripts/checkColoradoSourceTrustExperience.js",
     "check:decision-journey-experience": "npm run worker:build && node dist/scripts/checkDecisionJourneyExperience.js",
     "check:reie-product-experience-cohesion-wave": "npm run worker:build && node dist/scripts/checkReieProductExperienceCohesionWave.js",
     "check:reie-decision-intelligence-cohesion": "npm run worker:build && node dist/scripts/checkReieDecisionIntelligenceCohesion.js",

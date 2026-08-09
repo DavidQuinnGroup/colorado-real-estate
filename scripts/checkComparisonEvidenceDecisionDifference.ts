@@ -181,7 +181,7 @@ assertIncludes(handoffModel, 'REIE_PROFESSIONAL_HANDOFF_COHESION_IMPLEMENTED', '
 assertIncludes(inquiryForm, 'data-property-inquiry-hidden-transfer="false"', 'Property Inquiry hidden transfer must remain false.');
 assertIncludes(inquiryForm, 'data-property-inquiry-auto-populated-notes="false"', 'Property Inquiry auto-populated notes must remain false.');
 assertIncludes(chatStart, 'READY_FOR_NEXT_REIE_EXECUTIVE_DEVELOPMENT_CYCLE', 'CHAT_START must reconcile the stale closure-sync gate.');
-assertIncludes(chatStart.slice(0, 5000), '- `READY_FOR_COMPARISON_EVIDENCE_DECISION_DIFFERENCE_PUSH_AUTHORIZATION`', 'Latest CHAT_START next gate must be comparison evidence push authorization.');
+assertIncludes(chatStart, 'COMPARISON_EVIDENCE_DECISION_DIFFERENCE_PRODUCTION_CERTIFIED_AND_CLOSED', 'CHAT_START must preserve the comparison evidence production closure state.');
 
 for (const [key, value] of Object.entries(comparison.protectedBoundaries)) {
   assert.equal(value, false, `Comparison protected boundary must remain false: ${key}`);
