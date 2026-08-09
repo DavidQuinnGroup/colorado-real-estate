@@ -22,6 +22,7 @@ import type { SearchMapMeta } from '@/components/maps/SearchMap';
 import { getJourneyMeasurementAttributes } from '@/lib/customerJourneyMeasurement';
 import type { FAQItem } from '@/lib/schema/faqSchema';
 import { buildSearchDiscoveryIntelligence } from '@/lib/searchDiscoveryIntelligence';
+import { buildSearchMapIntelligencePresentation } from '@/lib/searchMapLocalTrustAdvancement';
 import { parseSearchReturnContext } from '@/lib/search/searchReturnContext';
 
 const MapInner = dynamic(() => import('@/components/maps/MapInner'), {
@@ -449,6 +450,13 @@ export default function SearchInterface({
     isDegraded: isSearchDegraded,
     selectedPropertyLabel,
   });
+  const mappedListingCount = visibleListings.filter((listing) => Number.isFinite(listing.lat) && Number.isFinite(listing.lng)).length;
+  const searchMapIntelligence = buildSearchMapIntelligencePresentation({
+    visibleListingCount: visibleListings.length,
+    mappedListingCount,
+    selectedPropertyLabel,
+    generatedAt: effectiveSearchMeta?.generatedAt || null,
+  });
 
   return (
     <div
@@ -484,6 +492,16 @@ export default function SearchInterface({
       data-search-discovery-provider-activation={String(searchDiscoveryIntelligence.protectedBoundaries.providerActivation)}
       data-search-discovery-api-change={String(searchDiscoveryIntelligence.protectedBoundaries.searchApiChange)}
       data-search-discovery-map-behavior-change={String(searchDiscoveryIntelligence.protectedBoundaries.mapBehaviorChange)}
+      data-search-map-local-trust-advancement={searchMapIntelligence.status}
+      data-search-map-intelligence-cue-count={searchMapIntelligence.cues.length}
+      data-search-map-intelligence-methodology-href={searchMapIntelligence.methodologyHref}
+      data-search-map-intelligence-api-change={String(searchMapIntelligence.protectedBoundaries.searchApiChange)}
+      data-search-map-intelligence-map-behavior-change={String(searchMapIntelligence.protectedBoundaries.mapBehaviorChange)}
+      data-search-map-intelligence-ranking={String(searchMapIntelligence.protectedBoundaries.ranking)}
+      data-search-map-intelligence-scoring={String(searchMapIntelligence.protectedBoundaries.scoring)}
+      data-search-map-intelligence-persistence={String(searchMapIntelligence.protectedBoundaries.persistence)}
+      data-search-map-intelligence-telemetry={String(searchMapIntelligence.protectedBoundaries.telemetry)}
+      data-search-map-intelligence-provider-activation={String(searchMapIntelligence.protectedBoundaries.providerActivation)}
       data-search-workspace-shell="persistent-search-workspace-shell"
       data-search-first-screen-hierarchy="decision-status-criteria-list-map-selection"
       data-search-property-context-restoration="deferred"
@@ -889,6 +907,42 @@ export default function SearchInterface({
               </button>
             </div>
           ) : null}
+          <section
+            className="reie-search-state-panel"
+            data-testid="search-map-intelligence-presentation"
+            data-search-map-local-trust-status={searchMapIntelligence.status}
+            data-search-map-representation={searchMapIntelligence.representation}
+            data-search-map-continuity-path={searchMapIntelligence.continuityPath.join(' -> ')}
+          >
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">
+                  {searchMapIntelligence.title}
+                </p>
+                <p className="mt-2 text-xs font-bold leading-5 text-white/56">
+                  {searchMapIntelligence.mapListRelationship}
+                </p>
+              </div>
+              <Link
+                href={searchMapIntelligence.methodologyHref}
+                className="inline-flex min-h-8 shrink-0 items-center justify-center rounded-[6px] border border-cyan-100/24 px-2.5 text-[9px] font-black uppercase tracking-[0.12em] text-cyan-100 transition hover:border-cyan-100/48 hover:bg-cyan-100/[0.08] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
+                data-testid="search-map-intelligence-methodology-link"
+              >
+                Sources
+              </Link>
+            </div>
+            <div className="mt-3 grid gap-2">
+              {searchMapIntelligence.cues.map((cue) => (
+                <article key={cue.label} className="rounded-[6px] bg-black/20 p-3">
+                  <p className="text-[9px] font-black uppercase tracking-[0.14em] text-white/38">{cue.label}</p>
+                  <p className="mt-1 text-[11px] font-bold leading-5 text-white/52">{cue.body}</p>
+                </article>
+              ))}
+            </div>
+            <p className="mt-3 text-[11px] font-bold leading-5 text-white/44">
+              {searchMapIntelligence.source} {searchMapIntelligence.limitation}
+            </p>
+          </section>
         </section>
 
         <MapSidebar

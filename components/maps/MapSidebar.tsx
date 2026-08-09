@@ -312,6 +312,30 @@ function SearchIntelligenceStrip({ stats }: { stats: InventoryStats }) {
           <span className="truncate">{mediaLabel}</span>
         </div>
       </div>
+      <div
+        className="mt-3 rounded-[6px] border border-white/8 bg-black/20 p-3"
+        data-testid="reie-sidebar-map-local-trust-cue"
+        data-sidebar-local-source="visible-search-result-set"
+        data-sidebar-local-methodology-href="/sources"
+        data-sidebar-search-api-change="false"
+        data-sidebar-map-behavior-change="false"
+        data-sidebar-provider-activation="false"
+        data-sidebar-persistence="false"
+        data-sidebar-telemetry="false"
+      >
+        <p className="text-[9px] font-black uppercase tracking-[0.16em] text-cyan-100/62">Source / Freshness</p>
+        <p className="mt-2 text-[11px] font-bold leading-5 text-white/50">
+          This sidebar represents the current visible Search view. Map coordinates orient place; property facts and professional review
+          remain verification-bound.
+        </p>
+        <Link
+          href="/sources"
+          className="mt-2 inline-flex text-[9px] font-black uppercase tracking-[0.12em] text-cyan-100/76 transition hover:text-white"
+          data-testid="reie-sidebar-map-local-trust-methodology-link"
+        >
+          Sources & Methodology
+        </Link>
+      </div>
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { ArrowUpRight, BarChart3, Home, MapPinned, Search, ShieldCheck, Trending
 
 import ContinueYourDecision from '@/components/ContinueYourDecision';
 import FinancingConfidenceEducation from '@/components/FinancingConfidenceEducation';
+import LocalSourceFreshnessCue from '@/components/LocalSourceFreshnessCue';
 import MarketProduct3VisualIntelligence from '@/components/MarketProduct3VisualIntelligence';
 import FAQSchema from '@/components/schema/FAQSchema';
 import { cities, isCityMarketRoutePublic, type CityData } from '@/lib/cities';
@@ -13,6 +14,7 @@ import { buildMarketDecisionWorkspace } from '@/lib/marketDecisionWorkspace';
 import { buildCityMarketExperience } from '@/lib/marketIntelligenceExperience';
 import { buildStateMarketProduct3Experience } from '@/lib/marketProduct3';
 import { neighborhoods } from '@/lib/neighborhoods';
+import { buildLocalSourceFreshnessPresentation } from '@/lib/searchMapLocalTrustAdvancement';
 import type { FAQItem } from '@/lib/schema/faqSchema';
 
 const SITE_URL = 'https://davidquinngroup.com';
@@ -120,6 +122,15 @@ export default function MarketIndexPage() {
     searchHref: '/search',
     marketHref: '/market',
     sellerHref: '/sell',
+  });
+  const localSourceFreshness = buildLocalSourceFreshnessPresentation({
+    surface: 'market',
+    title: 'What the Colorado market view represents.',
+    source: 'Governed REIE city market routes, certified decision guides, neighborhood paths, and visible public product context.',
+    observedUpdated: 'Rendered from the current public market route and repository-governed route data.',
+    representation: `${marketSummaries.length} public city market paths and ${totalNeighborhoodCount} neighborhood paths.`,
+    limitation:
+      'Market context is directional and does not replace city, neighborhood, property, record, lending, inspection, or professional review.',
   });
   const marketBriefingPromise =
     'Use current market signals, verified paths, and limitation-aware guidance to decide where to search, which neighborhood context to open, and what deserves professional review.';
@@ -269,6 +280,9 @@ export default function MarketIndexPage() {
                 </Link>
               ))}
             </div>
+          </div>
+          <div className="mt-6">
+            <LocalSourceFreshnessCue presentation={localSourceFreshness} />
           </div>
         </div>
       </section>

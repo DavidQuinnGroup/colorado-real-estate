@@ -7,6 +7,7 @@ import CityMarketStats from '@/components/CityMarketStats';
 import ContinueYourDecision from '@/components/ContinueYourDecision';
 import FinancingConfidenceEducation from '@/components/FinancingConfidenceEducation';
 import LeadCapture from '@/components/LeadCapture';
+import LocalSourceFreshnessCue from '@/components/LocalSourceFreshnessCue';
 import MarketHomesLinks from '@/components/MarketHomesLinks';
 import MarketNeighborhoodLinks from '@/components/MarketNeighborhoodLinks';
 import MarketProduct3VisualIntelligence from '@/components/MarketProduct3VisualIntelligence';
@@ -33,6 +34,7 @@ import { buildMarketAeoContract } from '@/lib/marketAeoPilot';
 import { buildCityMarketExperience } from '@/lib/marketIntelligenceExperience';
 import { buildCityMarketProduct3Experience } from '@/lib/marketProduct3';
 import { neighborhoods, type Neighborhood } from '@/lib/neighborhoods';
+import { buildLocalSourceFreshnessPresentation } from '@/lib/searchMapLocalTrustAdvancement';
 import { generateFAQs } from '@/lib/schema/generateFAQs';
 import { buildCityMarketSchema } from '@/lib/schema/neighborhoodSchema';
 
@@ -221,6 +223,15 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
     marketHref: getCanonicalPath(cityData),
     sellerHref: '/sell',
   });
+  const localSourceFreshness = buildLocalSourceFreshnessPresentation({
+    surface: 'city',
+    title: `What the ${cityData.name} local signal represents.`,
+    source: 'Governed REIE city market route data, public decision-guide context, and visible market answer-contract evidence.',
+    observedUpdated: marketAeoPilot ? marketAeoPilot.freshness.label : 'Rendered from the current public city market route.',
+    representation: `${cityData.name} market context with ${cityNeighborhoods.length} neighborhood hubs and visible city-market statistics.`,
+    limitation:
+      'City context is directional. Property condition, records, taxes, HOA, insurance, title, lending, and contract questions require verification.',
+  });
   const transitionStats = {
     ...cityData.stats,
     medianPrice: parseCurrency(cityData.stats.medianPrice),
@@ -406,6 +417,9 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
             Market statistics are market-wide REIE context from governed city data and public MLS/search signals where available. They do
             not state or imply that David Quinn, David Quinn Group, or Compass listed, sold, or participated in every reported property.
           </p>
+          <div className="mt-6">
+            <LocalSourceFreshnessCue presentation={localSourceFreshness} />
+          </div>
 
           {marketAeoPilot ? (
             <section

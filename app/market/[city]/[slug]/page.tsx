@@ -6,6 +6,7 @@ import type { CollectionCreateSchema } from 'typesense/lib/Typesense/Collections
 
 import ContinueYourDecision from '@/components/ContinueYourDecision';
 import FinancingConfidenceEducation from '@/components/FinancingConfidenceEducation';
+import LocalSourceFreshnessCue from '@/components/LocalSourceFreshnessCue';
 import NearbyNeighborhoods from '@/components/NearbyNeighborhoods';
 import NeighborhoodProduct3Experience from '@/components/NeighborhoodProduct3Experience';
 import RelatedContent from '@/components/RelatedContent';
@@ -17,6 +18,7 @@ import { buildMarketDecisionWorkspace } from '@/lib/marketDecisionWorkspace';
 import { buildNeighborhoodMarketExperience } from '@/lib/marketIntelligenceExperience';
 import { getResilienceAdvice, neighborhoods, type Neighborhood } from '@/lib/neighborhoods';
 import { buildNeighborhoodProduct3Model } from '@/lib/neighborhoodProduct3';
+import { buildLocalSourceFreshnessPresentation } from '@/lib/searchMapLocalTrustAdvancement';
 import type { FAQItem } from '@/lib/schema/faqSchema';
 import { generateFAQs } from '@/lib/schema/generateFAQs';
 import { buildNeighborhoodSchema } from '@/lib/schema/neighborhoodSchema';
@@ -462,6 +464,18 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
       .map((link) => link.title.replace(/ Neighborhood Intelligence$/, ''))
       .slice(0, 3),
   });
+  const localSourceFreshness = buildLocalSourceFreshnessPresentation({
+    surface: 'neighborhood',
+    title: `What the ${neighborhood.name} place view represents.`,
+    source: 'Governed REIE neighborhood route context, visible housing and place attributes, and current route inventory posture.',
+    observedUpdated:
+      inventoryState.source === 'typesense'
+        ? 'Current public search index count was available for this route.'
+        : 'Rendered from governed route context with static inventory fallback.',
+    representation: `${neighborhood.name} place orientation within ${neighborhood.city}; inventory source state: ${inventoryState.source}.`,
+    limitation:
+      'Neighborhood context is not a personal fit, safety, school, investment, appreciation, or condition conclusion. Verify property-specific facts.',
+  });
 
   return (
     <main
@@ -614,6 +628,9 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
             where available. They do not state or imply that David Quinn, David Quinn Group, or Compass listed, sold, or participated in
             every reported property.
           </p>
+          <div className="mt-6">
+            <LocalSourceFreshnessCue presentation={localSourceFreshness} />
+          </div>
         </div>
       </section>
 

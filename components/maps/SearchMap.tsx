@@ -277,7 +277,7 @@ function createListingMarker(property: CoordinateListing, state: ListingMarkerSt
   return L.marker([property.lat, property.lng], {
     icon: L.divIcon({
       className: 'luxury-marker-container',
-      html: `<button class="luxury-marker${markerStateClass}" type="button" data-testid="reie-search-map-marker-button" data-marker-property-id="${escapeHtml(property.id)}" data-marker-state="${state || 'default'}" aria-label="${isSelected ? 'Selected listing' : 'Select listing'}: ${address}" aria-pressed="${isSelected ? 'true' : 'false'}"><span>${price}</span></button>`,
+      html: `<button class="luxury-marker${markerStateClass}" type="button" data-testid="reie-search-map-marker-button" data-marker-property-id="${escapeHtml(property.id)}" data-marker-state="${state || 'default'}" data-map-intelligence="selected-property-orientation" data-map-intelligence-source="public-listing-coordinate" aria-label="${isSelected ? 'Selected listing' : 'Select listing'}: ${address}" aria-pressed="${isSelected ? 'true' : 'false'}"><span>${price}</span></button>`,
       iconAnchor: [42, 19],
     }),
     keyboard: true,
@@ -289,7 +289,7 @@ function createClusterMarker(cluster: ClusterBucket) {
   return L.marker([cluster.lat, cluster.lng], {
     icon: L.divIcon({
       className: 'luxury-cluster-container',
-      html: `<button class="luxury-cluster" type="button"><span>${cluster.listings.length}</span><small>homes</small></button>`,
+      html: `<button class="luxury-cluster" type="button" data-testid="reie-search-map-cluster-button" data-map-intelligence="place-cluster-orientation" data-cluster-listing-count="${cluster.listings.length}" aria-label="Zoom to ${cluster.listings.length} properties in this area"><span>${cluster.listings.length}</span><small>homes</small></button>`,
       iconAnchor: [25, 25],
       iconSize: [50, 50],
     }),
@@ -619,7 +619,15 @@ export default function SearchMap({
   }, [listings, mapReady, selectedId, hoveredId, setSelectedId, setHoveredId, viewportVersion]);
 
   return (
-    <div className="relative h-full w-full" data-testid="reie-search-map-surface">
+    <div
+      className="relative h-full w-full"
+      data-testid="reie-search-map-surface"
+      data-search-map-local-trust-presentation="implemented"
+      data-search-map-local-trust-methodology-href="/sources"
+      data-search-map-provider-activation="false"
+      data-search-map-api-change="false"
+      data-search-map-behavior-change="false"
+    >
       <div
         ref={containerRef}
         className="reie-map-canvas h-full w-full"
@@ -703,12 +711,15 @@ export default function SearchMap({
       <div
         className="reie-map-orientation pointer-events-none z-[710] max-w-[min(360px,calc(100%-2rem))] rounded-[8px] bg-[#071017]/78 px-4 py-3 text-white shadow-[0_22px_60px_rgba(0,0,0,0.42)] backdrop-blur"
         data-testid="reie-search-map-orientation"
+        data-search-map-intelligence="place-context"
+        data-search-map-methodology-href="/sources"
         aria-hidden="true"
       >
         <p className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100/78">Colorado Map Guide</p>
         <p className="mt-1 text-[11px] font-bold leading-5 text-white/66">
           Properties shown here have public map coordinates. Select a marker to compare it with the list.
-          Read terrain, towns, and listing clusters together when an area deserves closer comparison.
+          Read terrain, towns, and listing clusters together when an area deserves closer comparison. Map context orients; property facts
+          and source review verify.
         </p>
       </div>
 
