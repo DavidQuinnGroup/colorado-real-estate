@@ -11,6 +11,7 @@ import NeighborhoodProduct3Experience from '@/components/NeighborhoodProduct3Exp
 import RelatedContent from '@/components/RelatedContent';
 import FAQSchema from '@/components/schema/FAQSchema';
 import { getJourneyMeasurementAttributes } from '@/lib/customerJourneyMeasurement';
+import { buildPlaceIntelligenceDeepeningModel } from '@/lib/buyerPlaceIntelligenceAdvancement';
 import { buildLinkGraph } from '@/lib/linking/buildLinkGraph';
 import { buildMarketDecisionWorkspace } from '@/lib/marketDecisionWorkspace';
 import { buildNeighborhoodMarketExperience } from '@/lib/marketIntelligenceExperience';
@@ -445,6 +446,22 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
     cityMarketHref,
     searchHref,
   });
+  const placeIntelligenceDeepening = buildPlaceIntelligenceDeepeningModel({
+    neighborhood,
+    inventoryState,
+    evidenceState: neighborhoodProduct3Model.evidenceState,
+    marketLabels: {
+      inventory: marketExperience.inventoryLabel,
+      competitiveness: marketExperience.competitivenessLabel,
+      timing: marketExperience.timingLabel,
+    },
+    cityMarketHref,
+    searchHref,
+    relatedPlaceNames: relatedLinks
+      .filter((link) => link.type === 'neighborhood')
+      .map((link) => link.title.replace(/ Neighborhood Intelligence$/, ''))
+      .slice(0, 3),
+  });
 
   return (
     <main
@@ -759,6 +776,90 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
           </section>
         </section>
       ) : null}
+
+      <section
+        className="reie-place-intelligence-deepening mx-auto grid max-w-7xl gap-8 px-6 py-10 md:px-12"
+        data-testid="place-intelligence-deepening"
+        data-place-intelligence-status={placeIntelligenceDeepening.status}
+        data-place-intelligence-subject={placeIntelligenceDeepening.subject}
+        data-place-intelligence-city={placeIntelligenceDeepening.city}
+        data-place-intelligence-evidence-state={placeIntelligenceDeepening.evidenceState}
+        data-place-intelligence-dimension-count={placeIntelligenceDeepening.dimensions.length}
+        data-place-intelligence-source-count={placeIntelligenceDeepening.sourceRecords.length}
+        data-place-intelligence-school-ranking={String(placeIntelligenceDeepening.protectedBoundaries.schoolRanking)}
+        data-place-intelligence-safety-ranking={String(placeIntelligenceDeepening.protectedBoundaries.safetyRanking)}
+        data-place-intelligence-crime-steering={String(placeIntelligenceDeepening.protectedBoundaries.crimeSteering)}
+        data-place-intelligence-family-suitability={String(placeIntelligenceDeepening.protectedBoundaries.familySuitability)}
+        data-place-intelligence-demographic-preference={String(placeIntelligenceDeepening.protectedBoundaries.demographicPreference)}
+        data-place-intelligence-socioeconomic-sorting={String(
+          placeIntelligenceDeepening.protectedBoundaries.socioeconomicSorting,
+        )}
+        data-place-intelligence-place-ordering={String(placeIntelligenceDeepening.protectedBoundaries.placeOrderingConclusion)}
+        data-place-intelligence-lifestyle-fit-scoring={String(placeIntelligenceDeepening.protectedBoundaries.lifestyleFitScoring)}
+        data-place-intelligence-investment-ranking={String(placeIntelligenceDeepening.protectedBoundaries.investmentRanking)}
+        data-place-intelligence-appreciation-prediction={String(placeIntelligenceDeepening.protectedBoundaries.appreciationPrediction)}
+        data-place-intelligence-fair-housing-proxy={String(placeIntelligenceDeepening.protectedBoundaries.fairHousingProxy)}
+        data-place-intelligence-public-gis={String(placeIntelligenceDeepening.protectedBoundaries.publicGisActivation)}
+        data-place-intelligence-provider-activation={String(placeIntelligenceDeepening.protectedBoundaries.providerActivation)}
+        data-place-intelligence-persistence={String(placeIntelligenceDeepening.protectedBoundaries.persistence)}
+        data-place-intelligence-telemetry={String(placeIntelligenceDeepening.protectedBoundaries.telemetry)}
+        data-place-intelligence-api-change={String(placeIntelligenceDeepening.protectedBoundaries.apiChange)}
+        data-dxt-neighborhood-hierarchy-role="place-identity-geographic-market-evidence-decision-questions"
+      >
+        <div className="grid gap-8 rounded-[8px] border border-cyan-100/12 bg-white/[0.035] p-5 md:p-8 lg:grid-cols-[0.72fr_1.28fr]">
+          <div>
+            <p className="mb-3 text-[10px] font-black uppercase tracking-[0.24em] text-cyan-100/72">Place Intelligence</p>
+            <h2 className="text-3xl font-black uppercase leading-tight tracking-normal text-white md:text-4xl">
+              What is this place, what evidence exists, and what should I investigate?
+            </h2>
+            <p className="mt-5 text-sm leading-7 text-white/58 md:text-base">{placeIntelligenceDeepening.governingQuestion}</p>
+            <p className="mt-5 rounded-[6px] bg-cyan-100/[0.06] p-4 text-xs leading-6 text-cyan-100/72">
+              This layer deepens existing neighborhood evidence without public GIS, new source activation, ranking, scoring, steering, or hidden
+              personalization. It keeps each place question user-controlled and verification-bound.
+            </p>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-2">
+            {placeIntelligenceDeepening.dimensions.map((dimension) => (
+              <Link
+                key={dimension.key}
+                href={dimension.href}
+                className="rounded-[8px] border border-white/10 bg-[#071017]/78 p-5 text-white no-underline transition hover:bg-white/[0.07] focus:outline-none focus:ring-2 focus:ring-cyan-100/70"
+                data-testid="place-intelligence-dimension"
+                data-place-intelligence-dimension={dimension.key}
+                data-place-intelligence-source-ids={dimension.sourceIds.join(',')}
+              >
+                <p className="text-[9px] font-black uppercase tracking-[0.18em] text-cyan-100/70">{dimension.label}</p>
+                <p className="mt-3 text-xs font-black uppercase tracking-[0.14em] text-white/36">Fact</p>
+                <p className="mt-1 text-xs leading-6 text-white/56">{dimension.fact}</p>
+                <p className="mt-3 text-xs font-black uppercase tracking-[0.14em] text-white/36">Meaning</p>
+                <p className="mt-1 text-xs leading-6 text-white/56">{dimension.meaning}</p>
+                <p className="mt-3 text-xs font-black uppercase tracking-[0.14em] text-cyan-100/72">Investigate</p>
+                <p className="mt-1 text-xs leading-6 text-white/56">{dimension.investigate}</p>
+                <p className="mt-3 text-xs leading-6 text-white/36">{dimension.sourcePosture}</p>
+              </Link>
+            ))}
+          </div>
+        </div>
+
+        <div className="grid gap-4 rounded-[8px] border border-white/10 bg-black/18 p-5 lg:grid-cols-[0.78fr_1.22fr]">
+          <div>
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100/72">Source Registry posture</p>
+            <p className="mt-3 text-xs leading-6 text-white/50">
+              Place intelligence uses only existing customer-disclosure eligible source records. Source status is disclosed; no source state is
+              changed by this route.
+            </p>
+          </div>
+          <div className="grid gap-2 sm:grid-cols-2">
+            {placeIntelligenceDeepening.sourceRecords.map((record) => (
+              <div key={record.sourceId} className="rounded-[6px] border border-white/10 bg-white/[0.035] p-3">
+                <p className="text-[9px] font-black uppercase tracking-[0.16em] text-cyan-100/68">{record.sourceId}</p>
+                <p className="mt-2 text-xs font-bold leading-5 text-white/58">{record.customerStatus}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       <NeighborhoodProduct3Experience model={neighborhoodProduct3Model} />
 

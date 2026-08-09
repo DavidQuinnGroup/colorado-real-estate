@@ -4,6 +4,7 @@ import Link from 'next/link';
 import BuyerFinancingReadinessGuide from '@/components/BuyerFinancingReadinessGuide';
 import FinancingConfidenceEducation from '@/components/FinancingConfidenceEducation';
 import JourneyCohesionPanel from '@/components/JourneyCohesionPanel';
+import { buildBuyerDecisionIntelligenceModel } from '@/lib/buyerPlaceIntelligenceAdvancement';
 import { buildBuyerDecisionWorkspace } from '@/lib/buyerDecisionWorkspace';
 import { SITE_NAME, SITE_URL } from '@/lib/publicTrust';
 
@@ -193,6 +194,7 @@ const BUYER_PROFESSIONAL_PREPARATION_PATHWAYS = [
 ];
 
 export default function BuyPage() {
+  const buyerDecisionIntelligence = buildBuyerDecisionIntelligenceModel();
   const buyerDecisionWorkspace = buildBuyerDecisionWorkspace({
     searchHref: '/search',
     marketHref: '/market',
@@ -240,6 +242,7 @@ export default function BuyPage() {
       data-dxt-2-buyer-readiness-qualification="false"
       data-dxt-2-buyer-readiness-affordability="false"
       data-dxt-2-buyer-readiness-buying-power="false"
+      data-buyer-place-intelligence-advancement="implemented"
     >
       <section
         className="px-5 py-20 sm:px-8 sm:py-24 lg:px-12"
@@ -351,6 +354,101 @@ export default function BuyPage() {
                 <span className="mt-3 block text-[10px] font-black uppercase text-cyan-100/76 group-hover:text-white">
                   {item.action}
                 </span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section
+        className="px-5 pb-12 sm:px-8 lg:px-12"
+        data-testid="buyer-intelligence-advancement"
+        data-buyer-intelligence-status={buyerDecisionIntelligence.status}
+        data-buyer-intelligence-lane-count={buyerDecisionIntelligence.lanes.length}
+        data-buyer-intelligence-source-count={buyerDecisionIntelligence.sourceRecords.length}
+        data-buyer-intelligence-offer-price-certainty={String(buyerDecisionIntelligence.protectedBoundaries.offerPriceCertainty)}
+        data-buyer-intelligence-guaranteed-acceptance={String(buyerDecisionIntelligence.protectedBoundaries.guaranteedAcceptanceStrategy)}
+        data-buyer-intelligence-valuation-appraisal-certainty={String(
+          buyerDecisionIntelligence.protectedBoundaries.valuationAppraisalCertainty,
+        )}
+        data-buyer-intelligence-affordability-judgment={String(buyerDecisionIntelligence.protectedBoundaries.affordabilityJudgment)}
+        data-buyer-intelligence-investment-recommendation={String(
+          buyerDecisionIntelligence.protectedBoundaries.investmentRecommendation,
+        )}
+        data-buyer-intelligence-legal-advice={String(buyerDecisionIntelligence.protectedBoundaries.legalAdvice)}
+        data-buyer-intelligence-inspection-conclusion={String(buyerDecisionIntelligence.protectedBoundaries.inspectionConclusion)}
+        data-buyer-intelligence-lending-qualification={String(buyerDecisionIntelligence.protectedBoundaries.lendingQualification)}
+        data-buyer-intelligence-hidden-suitability-scoring={String(
+          buyerDecisionIntelligence.protectedBoundaries.hiddenSuitabilityScoring,
+        )}
+        data-buyer-intelligence-hidden-state-transfer={String(buyerDecisionIntelligence.protectedBoundaries.hiddenStateTransfer)}
+        data-buyer-intelligence-persistence={String(buyerDecisionIntelligence.protectedBoundaries.persistence)}
+        data-buyer-intelligence-telemetry={String(buyerDecisionIntelligence.protectedBoundaries.telemetry)}
+        data-buyer-intelligence-crm-email={String(buyerDecisionIntelligence.protectedBoundaries.crmEmail)}
+        data-buyer-intelligence-provider-activation={String(buyerDecisionIntelligence.protectedBoundaries.providerActivation)}
+        data-buyer-intelligence-api-change={String(buyerDecisionIntelligence.protectedBoundaries.apiChange)}
+        data-dxt-buyer-hierarchy-role="buyer-property-comparison-financing-place-professional-intelligence"
+      >
+        <div className="mx-auto grid w-full max-w-[1180px] gap-8 border border-cyan-100/14 bg-white/[0.035] p-5 sm:p-8">
+          <div className="grid gap-6 lg:grid-cols-[0.72fr_1.28fr] lg:items-start">
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100/72">Buyer Intelligence</p>
+              <h2 className="mt-3 text-3xl font-black leading-tight tracking-normal text-white sm:text-4xl">
+                What should I understand, compare, verify, and prepare before deciding whether to pursue a property?
+              </h2>
+              <p className="mt-5 text-sm leading-7 text-white/62">{buyerDecisionIntelligence.governingQuestion}</p>
+              <p className="mt-5 border border-cyan-100/12 bg-cyan-100/[0.045] p-4 text-xs font-bold leading-6 text-cyan-100/70">
+                This layer uses visible REIE route context only. It organizes facts, meaning, open questions, and verification actions; it does not
+                carry private choices into Search, Compare, Grand Plan, Advisory, or Contact.
+              </p>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              {buyerDecisionIntelligence.lanes.map((lane) => (
+                <Link
+                  key={lane.key}
+                  href={lane.href}
+                  className="border border-white/10 bg-[#071017]/74 p-4 text-white no-underline transition hover:bg-white/[0.07] focus:outline-none focus:ring-2 focus:ring-cyan-100/70"
+                  data-testid="buyer-intelligence-lane"
+                  data-buyer-intelligence-lane={lane.key}
+                  data-buyer-intelligence-source-ids={lane.sourceIds.join(',')}
+                >
+                  <p className="text-[9px] font-black uppercase tracking-[0.18em] text-cyan-100/70">{lane.label}</p>
+                  <p className="mt-3 text-xs font-black uppercase tracking-[0.14em] text-white/36">Fact</p>
+                  <p className="mt-1 text-xs leading-6 text-white/58">{lane.fact}</p>
+                  <p className="mt-3 text-xs font-black uppercase tracking-[0.14em] text-white/36">Meaning</p>
+                  <p className="mt-1 text-xs leading-6 text-white/58">{lane.meaning}</p>
+                  <p className="mt-3 text-xs font-black uppercase tracking-[0.14em] text-white/36">Open question</p>
+                  <p className="mt-1 text-xs leading-6 text-white/58">{lane.openQuestion}</p>
+                  <p className="mt-3 text-xs font-black uppercase tracking-[0.14em] text-cyan-100/72">Verification / next action</p>
+                  <p className="mt-1 text-xs leading-6 text-white/58">{lane.verificationAction}</p>
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          <div className="grid gap-4 border border-white/10 bg-black/18 p-4 lg:grid-cols-[0.8fr_1.2fr]">
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100/72">Source posture</p>
+              <p className="mt-3 text-xs leading-6 text-white/50">
+                Source Registry records remain status-controlled. Boulder County Assessor stays awaiting provider confirmation and is used only as
+                a verification prompt, not retrieved evidence.
+              </p>
+            </div>
+            <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+              {buyerDecisionIntelligence.sourceRecords.map((record) => (
+                <div key={record.sourceId} className="border border-white/10 bg-white/[0.035] p-3">
+                  <p className="text-[9px] font-black uppercase tracking-[0.16em] text-cyan-100/68">{record.sourceId}</p>
+                  <p className="mt-2 text-xs font-bold leading-5 text-white/58">{record.customerStatus}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex flex-wrap gap-3" data-testid="buyer-intelligence-continuity">
+            {buyerDecisionIntelligence.continuityLinks.map((link) => (
+              <Link key={link.label} href={link.href} className={secondaryButtonClass} data-buyer-intelligence-destination={link.destination}>
+                {link.label}
               </Link>
             ))}
           </div>
