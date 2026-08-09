@@ -97,6 +97,7 @@
     "scripts/checkMarketAeoWave2.ts",
     "scripts/checkPropertyProduct31.ts",
     "scripts/checkPropertyEvidenceCompletenessVerification.ts",
+    "scripts/checkComparisonEvidenceDecisionDifference.ts",
     "scripts/checkPropertyInquiryDecisionContinuity.ts",
     "scripts/checkPropertyGeographicSourceIntelligence.ts",
     "scripts/checkAuthoritativePropertyRecordIntelligence.ts",

@@ -99,7 +99,12 @@ assert.equal(comparison.canCompare, true);
 assert.equal(comparison.comparisons.length, 1);
 assert(comparison.comparisons[0].synthesis.materiallyDifferent > 0, 'Comparison must surface factual differences.');
 assert(comparison.comparisons[0].synthesis.evidenceUnavailable > 0, 'Comparison must surface missing data.');
+assert(comparison.comparisons[0].synthesis.evidenceAsymmetry > 0, 'Comparison must surface evidence asymmetry.');
+assert(comparison.comparisons[0].dimensions.some((dimension) => dimension.evidenceIntegrity === 'EVIDENCE ASYMMETRY'), 'Comparison must classify one-sided evidence availability.');
+assert(comparison.comparisons[0].dimensions.some((dimension) => dimension.evidenceIntegrity === 'DERIVED / CALCULATED DIFFERENCE'), 'Comparison must classify calculated differences.');
+assert(comparison.comparisons[0].integrity.limitations.some((limitation) => limitation.state === 'PROFESSIONAL JUDGMENT'), 'Comparison must keep professional judgment limitations.');
 assert(comparison.comparisons[0].dimensions.every((dimension) => dimension.investigationPrompt.length > 20));
+assert(comparison.comparisons[0].dimensions.every((dimension) => dimension.comparisonLimitation.length > 20));
 assert.equal(comparison.protectedBoundaries.ranking, false);
 assert.equal(comparison.protectedBoundaries.scoring, false);
 assert.equal(comparison.protectedBoundaries.valuation, false);
@@ -144,6 +149,9 @@ for (const marker of [
   'data-testid="property-comparison-intelligence"',
   'data-testid="property-comparison-intelligence-item"',
   'data-testid="property-comparison-dimension"',
+  'data-testid="property-comparison-evidence-integrity-summary"',
+  'data-testid="property-comparison-limitation"',
+  'data-testid="property-comparison-source-methodology-link"',
   'data-property-comparison-ranking={String(model.comparisonIntelligence.protectedBoundaries.ranking)}',
   'data-property-comparison-scoring={String(model.comparisonIntelligence.protectedBoundaries.scoring)}',
   'data-property-comparison-financing-approval={String(model.comparisonIntelligence.protectedBoundaries.financingApproval)}',
@@ -153,6 +161,7 @@ for (const marker of [
 
 assertIncludes(productModel, 'comparisonIntelligence', 'Property Product 3.1 must expose comparison intelligence.');
 assertIncludes(productModel, 'buildPropertyComparisonWorkspace', 'Property Product 3.1 must build comparison intelligence from related listings.');
+assertIncludes(comparisonModel, 'More available data does not mean a better property', 'Comparison must preserve evidence asymmetry boundary.');
 assertIncludes(planner, "import { buildFinancingScenario } from '@/lib/financingScenarioCalculator';", 'Planner must consume the reusable financing scenario engine.');
 assertIncludes(planner, 'data-buyer-financing-planner-scenario-calculator="true"', 'Planner must mark the bounded scenario calculator as active.');
 assertIncludes(readinessGuide, 'data-buyer-financing-readiness-scenario-calculator="true"', 'Buyer readiness must expose scenario-calculator activation.');

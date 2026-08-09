@@ -182,6 +182,6 @@ assertIncludes(handoffModel, "'INSPECTOR / ENGINEER'", 'Professional handoff mus
 assertIncludes(handoffModel, "'ATTORNEY'", 'Professional handoff must retain attorney domain.');
 assertIncludes(handoffModel, "'TAX PROFESSIONAL'", 'Professional handoff must retain tax professional domain.');
 assertIncludes(handoffModel, "'APPRAISER'", 'Professional handoff must retain appraiser domain.');
-assertIncludes(comparisonModel, 'unavailable evidence, and verification prompts only; it does not rank, score, value, recommend, or infer suitability', 'Comparison behavior must retain evidence-gap boundary.');
+assertIncludes(comparisonModel, 'evidence asymmetry, unavailable evidence, professional-judgment boundaries, and verification prompts only; it does not rank, score, value, recommend, or infer suitability', 'Comparison behavior must retain evidence-gap boundary.');
 
 console.log('[property-evidence-completeness-verification] ok: domain status, verification actions, source containment, handoff boundaries, comparison boundary, and no-score protections verified.');

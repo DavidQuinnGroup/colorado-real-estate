@@ -10,6 +10,90 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / Comparison Evidence Integrity + Decision Difference Intelligence Locally Certified:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Canonical baseline before implementation:
+
+- Branch: `main`
+- Baseline commit: `1de122be73b9b3adb816d0f108698cd035364ab0`
+- Baseline origin/main: `1de122be73b9b3adb816d0f108698cd035364ab0`
+- Baseline divergence: `0 ahead / 0 behind`
+- Baseline working tree: clean
+- Remote main was fetched and reverified before editing.
+
+Gate reconciliation:
+
+- Prior active handoff gate was stale: `READY_FOR_PROPERTY_EVIDENCE_COMPLETENESS_VERIFICATION_CLOSURE_SYNC_AUTHORIZATION`
+- Git truth at baseline proved closure synchronization complete: `HEAD = origin/main = 1de122be73b9b3adb816d0f108698cd035364ab0`
+- This implementation cycle reconciled the active gate without a separate housekeeping commit.
+
+Local implementation status:
+
+- `COMPARISON_EVIDENCE_DECISION_DIFFERENCE_LOCALLY_CERTIFIED`
+- Local implementation commit: this committed implementation record.
+- Executive implementation record: `docs/project-atlas/executive-library/REIE-COMPARISON-EVIDENCE-DECISION-DIFFERENCE-IMPLEMENTATION.md`
+
+Implemented customer-facing surface:
+
+- Property Product 3.1 comparison now distinguishes supported differences, derived/calculated differences, evidence asymmetry, unavailable comparison evidence, verification-required differences, and professional-judgment limitations.
+- Comparison now explicitly states that more available data does not mean a better property.
+- Displayed comparison dimensions carry evidence integrity, evidence basis, comparison limitation, and a bounded verification action.
+- Compact limitation cards cover public records, tax, permit, HOA, condition/inspection, title/legal, and financing assumptions without forcing a giant comparison matrix.
+- `/sources` methodology continuity is preserved.
+
+Changed files:
+
+- `lib/propertyComparisonIntelligence.ts`
+- `components/PropertyProduct31Experience.tsx`
+- `scripts/checkComparisonEvidenceDecisionDifference.ts`
+- `scripts/checkReieComparisonFinancingIntelligence.ts`
+- `scripts/checkPropertyProduct31.ts`
+- `scripts/checkPropertyEvidenceCompletenessVerification.ts`
+- `package.json`
+- `tsconfig.worker.json`
+- `docs/project-atlas/executive-library/REIE-COMPARISON-EVIDENCE-DECISION-DIFFERENCE-IMPLEMENTATION.md`
+- `docs/CHAT_START.md`
+
+Validation:
+
+- `git diff --check`
+- `npm run typecheck`
+- `npm run check:comparison-evidence-decision-difference`
+- `npm run check:reie-comparison-financing-intelligence`
+- `npm run check:property-product-3-1`
+- `npm run check:property-evidence-completeness-verification`
+- `npm run check:professional-handoff-cohesion`
+- `npm run check:reie-decision-intelligence-cohesion`
+- `npm run check:public-runtime-safety`
+- `npm run check:public-trust-readiness`
+- `npm run check:reie-source-registry-grand-plan-advancement`
+- `npm run check:cim-privacy-consent-data-minimization-gate`
+- `npm run check:buyer-place-intelligence-advancement`
+- `npm run check:buyer-financing-readiness-advancement`
+- `npm run check:seller-property-intelligence-advancement`
+- `npm run check:home-worth-advisory-intelligence`
+- `npm run build`
+
+Protected boundaries:
+
+- No push occurred.
+- No deployment occurred.
+- No production verification occurred.
+- No winner selector, best-property claim, recommended property, property ranking, fit score, quality score, risk score, confidence score, investment score, completeness score, weighted ranking, red/yellow/green property grade, neighborhood ranking, school/safety ranking, demographic steering, protected-class inference, suitability conclusion, desirability conclusion, investment recommendation, valuation certainty, affordability judgment, lender qualification, loan recommendation, rate quote, or approval conclusion was introduced.
+- No Prisma/database/schema change, MLS ingestion change, API mutation, Contact mutation, Property Inquiry mutation, CRM/email behavior, notification change, worker/queue change, saved-search persistence, telemetry, customer profiling, customer-data expansion, provider activation, credentials/configuration change, source activation, BCOD activation, Yuma use, public-record retrieval, county-source activation, Secondary research consumption, or production mutation occurred.
+
+Next gate:
+
+- `READY_FOR_COMPARISON_EVIDENCE_DECISION_DIFFERENCE_PUSH_AUTHORIZATION`
+
+The implementation commit is local until separate push authorization is granted. Do not push, deploy, run production certification, reopen protected systems, consume Secondary research, activate sources/providers, acquire datasets, mutate customer data, or begin another implementation workstream unless explicitly authorized.
+
+Prior handoff retained below for audit history.
+
 PROJECT ATLAS(tm) / Property Evidence Completeness + Verification Intelligence Production Certified and Closed:
 
 Workspace:

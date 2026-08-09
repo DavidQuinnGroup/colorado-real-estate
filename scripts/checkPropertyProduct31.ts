@@ -43,6 +43,9 @@ for (const expectedSurface of [
   'data-testid="property-comparison-intelligence"',
   'data-testid="property-comparison-intelligence-item"',
   'data-testid="property-comparison-dimension"',
+  'data-testid="property-comparison-evidence-integrity-summary"',
+  'data-testid="property-comparison-limitation"',
+  'data-testid="property-comparison-source-methodology-link"',
   'data-testid="property-product-3-1-verification-checklist"',
   'data-testid="property-product-3-1-mobile-decision-rail"',
 ]) {
@@ -94,6 +97,8 @@ for (const expectedBoundary of [
   'data-property-comparison-valuation={String(model.comparisonIntelligence.protectedBoundaries.valuation)}',
   'data-property-comparison-suitability={String(model.comparisonIntelligence.protectedBoundaries.suitabilityRecommendation)}',
   'data-property-comparison-financing-approval={String(model.comparisonIntelligence.protectedBoundaries.financingApproval)}',
+  'data-property-comparison-evidence-integrity={dimension.evidenceIntegrity}',
+  'data-property-comparison-verification-action={dimension.verificationAction}',
 ]) {
   assertIncludes(component, expectedBoundary, `Property Product 3.1 boundary missing: ${expectedBoundary}`);
 }
@@ -168,6 +173,8 @@ assert.equal(readyModel.comparisonIntelligence.comparisons.length, 2, 'Compariso
 assert(readyModel.comparisonIntelligence.comparisons.every((item) => item.dimensions.length >= 10), 'Comparison intelligence must expose factual dimensions and financing boundary context.');
 assert(readyModel.comparisonIntelligence.comparisons.some((item) => item.synthesis.materiallyDifferent > 0), 'Comparison intelligence must identify factual differences without ranking.');
 assert(readyModel.comparisonIntelligence.comparisons.some((item) => item.synthesis.evidenceUnavailable > 0), 'Comparison intelligence must surface missing evidence instead of filling gaps.');
+assert(readyModel.comparisonIntelligence.comparisons.some((item) => item.synthesis.evidenceAsymmetry > 0), 'Comparison intelligence must surface one-sided evidence availability.');
+assert(readyModel.comparisonIntelligence.comparisons.some((item) => item.integrity.limitations.some((limitation) => limitation.state === 'PROFESSIONAL JUDGMENT')), 'Comparison intelligence must preserve professional judgment limitations.');
 assert.equal(readyModel.comparisonIntelligence.protectedBoundaries.ranking, false);
 assert.equal(readyModel.comparisonIntelligence.protectedBoundaries.scoring, false);
 assert.equal(readyModel.comparisonIntelligence.protectedBoundaries.valuation, false);

@@ -96,6 +96,8 @@ export default function PropertyProduct31Experience({ model }: PropertyProduct31
       data-property-comparison-valuation={String(model.comparisonIntelligence.protectedBoundaries.valuation)}
       data-property-comparison-suitability={String(model.comparisonIntelligence.protectedBoundaries.suitabilityRecommendation)}
       data-property-comparison-financing-approval={String(model.comparisonIntelligence.protectedBoundaries.financingApproval)}
+      data-property-comparison-evidence-asymmetry-boundary={model.comparisonIntelligence.evidenceAsymmetryBoundary}
+      data-property-comparison-source-href={model.comparisonIntelligence.sourceMethodologyHref}
       data-property-geographic-source-intelligence={model.authoritativeSources.status}
       data-property-geographic-source-version={model.authoritativeSources.version}
       data-property-geographic-source-city={model.authoritativeSources.geography.city}
@@ -658,10 +660,15 @@ export default function PropertyProduct31Experience({ model }: PropertyProduct31
             <div>
               <p className="reie-property-product-31-mini-label text-[10px] font-black uppercase tracking-[0.14em] text-white/40">Comparison Intelligence</p>
               <p className="mt-3 max-w-3xl text-sm leading-6 text-white/56">{model.comparisonIntelligence.trustBoundary}</p>
+              <p className="mt-2 max-w-3xl text-xs leading-5 text-amber-50/58">{model.comparisonIntelligence.evidenceAsymmetryBoundary}</p>
             </div>
-            <span className="inline-flex min-h-8 shrink-0 items-center rounded-[6px] border border-cyan-100/22 bg-cyan-100/[0.07] px-3 py-1 text-[10px] font-black uppercase tracking-[0.13em] text-cyan-100">
-              Facts, not ranking
-            </span>
+            <Link
+              href={model.comparisonIntelligence.sourceMethodologyHref}
+              className="inline-flex min-h-8 shrink-0 items-center justify-center rounded-[6px] border border-cyan-100/22 bg-cyan-100/[0.07] px-3 py-1 text-[10px] font-black uppercase tracking-[0.13em] text-cyan-100 transition hover:bg-cyan-100/[0.12] focus:outline-none focus:ring-2 focus:ring-cyan-100 focus:ring-offset-2 focus:ring-offset-[#0d141c]"
+              data-testid="property-comparison-source-methodology-link"
+            >
+              Sources & Methodology
+            </Link>
           </div>
           {model.comparisonIntelligence.comparisons.length ? (
             <div className="mt-5 grid gap-3 lg:grid-cols-2">
@@ -674,9 +681,39 @@ export default function PropertyProduct31Experience({ model }: PropertyProduct31
                   data-property-comparison-broadly-similar={comparison.synthesis.broadlySimilar}
                   data-property-comparison-evidence-unavailable={comparison.synthesis.evidenceUnavailable}
                   data-property-comparison-verification-required={comparison.synthesis.verificationRequired}
+                  data-property-comparison-supported-difference={comparison.synthesis.supportedDifference}
+                  data-property-comparison-derived-calculated-difference={comparison.synthesis.derivedCalculatedDifference}
+                  data-property-comparison-evidence-asymmetry={comparison.synthesis.evidenceAsymmetry}
+                  data-property-comparison-unavailable-comparison={comparison.synthesis.unavailableComparison}
+                  data-property-comparison-professional-judgment={comparison.synthesis.professionalJudgment}
                 >
                   <p className="text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100/66">{comparison.address}</p>
                   <p className="mt-2 text-xs leading-5 text-white/50">{comparison.headline}</p>
+                  <div
+                    className="mt-4 rounded-[6px] border border-amber-100/16 bg-amber-100/[0.055] p-3"
+                    data-testid="property-comparison-evidence-integrity-summary"
+                    data-property-comparison-evidence-asymmetry-summary={comparison.integrity.evidenceAsymmetry}
+                  >
+                    <p className="text-[9px] font-black uppercase tracking-[0.13em] text-amber-100/70">Evidence Integrity</p>
+                    <p className="mt-2 text-xs leading-5 text-white/56">{comparison.integrity.headline}</p>
+                    <p className="mt-2 text-[11px] leading-5 text-white/44">{comparison.integrity.decisionDifferenceSummary}</p>
+                  </div>
+                  <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                    {comparison.integrity.limitations.slice(0, 4).map((limitation) => (
+                      <div
+                        key={`${comparison.propertyId}-${limitation.domain}`}
+                        className="rounded-[5px] border border-white/10 bg-black/16 p-3"
+                        data-testid="property-comparison-limitation"
+                        data-property-comparison-limitation-domain={limitation.domain}
+                        data-property-comparison-limitation-state={limitation.state}
+                        data-property-comparison-limitation-action={limitation.verificationAction}
+                      >
+                        <p className="text-[9px] font-black uppercase tracking-[0.12em] text-white/38">{limitation.domain}</p>
+                        <p className="mt-2 text-[10px] font-black uppercase leading-4 tracking-[0.1em] text-amber-100/74">{limitation.state}</p>
+                        <p className="mt-2 text-[11px] leading-5 text-white/42">{limitation.verificationAction}</p>
+                      </div>
+                    ))}
+                  </div>
                   <div className="mt-4 grid gap-2 sm:grid-cols-2">
                     {comparison.dimensions.slice(0, 6).map((dimension) => (
                       <div
@@ -685,10 +722,15 @@ export default function PropertyProduct31Experience({ model }: PropertyProduct31
                         data-testid="property-comparison-dimension"
                         data-property-comparison-dimension={dimension.key}
                         data-property-comparison-state={dimension.state}
+                        data-property-comparison-evidence-integrity={dimension.evidenceIntegrity}
+                        data-property-comparison-evidence-basis={dimension.evidenceBasis}
+                        data-property-comparison-verification-action={dimension.verificationAction}
                       >
                         <p className="text-[9px] font-black uppercase tracking-[0.12em] text-white/38">{dimension.label}</p>
+                        <p className="mt-2 text-[10px] font-black uppercase leading-4 tracking-[0.1em] text-cyan-100/72">{dimension.evidenceIntegrity}</p>
                         <p className="mt-2 text-xs font-bold leading-5 text-white/60">{dimension.subjectValue} / {dimension.comparisonValue}</p>
-                        <p className="mt-2 text-[11px] leading-5 text-white/42">{dimension.investigationPrompt}</p>
+                        <p className="mt-2 text-[11px] leading-5 text-white/42">{dimension.comparisonLimitation}</p>
+                        <p className="mt-2 text-[11px] leading-5 text-white/42">{dimension.verificationAction}: {dimension.investigationPrompt}</p>
                       </div>
                     ))}
                   </div>
