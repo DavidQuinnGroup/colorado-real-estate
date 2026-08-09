@@ -5,6 +5,7 @@ import HomeValueEstimator from '@/components/HomeValueEstimator';
 import JourneyCohesionPanel from '@/components/JourneyCohesionPanel';
 import { getJourneyMeasurementAttributes } from '@/lib/customerJourneyMeasurement';
 import { SITE_NAME, SITE_URL } from '@/lib/publicTrust';
+import { buildSellerIntelligenceAdvancement } from '@/lib/sellerPropertyIntelligenceAdvancement';
 
 export const metadata: Metadata = {
   title: `Sell With Strategy | ${SITE_NAME}`,
@@ -221,6 +222,8 @@ const SELLER_PROFESSIONAL_PATHWAYS = [
 ];
 
 export default function SellPage() {
+  const sellerIntelligence = buildSellerIntelligenceAdvancement();
+
   return (
     <main
       className="min-h-screen bg-[#0b1117] text-white"
@@ -276,6 +279,18 @@ export default function SellPage() {
       data-dxt-3-seller-professional-telemetry="false"
       data-dxt-3-seller-professional-customer-profile="false"
       data-dxt-3-seller-professional-shared-runtime="false"
+      data-seller-intelligence-advancement={sellerIntelligence.status}
+      data-seller-intelligence-dimension-count={sellerIntelligence.dimensions.length}
+      data-seller-intelligence-source-trace-count={sellerIntelligence.sourceStates.length}
+      data-seller-intelligence-valuation-certainty={String(sellerIntelligence.protectedBoundaries.valuationCertainty)}
+      data-seller-intelligence-listing-price-recommendation={String(sellerIntelligence.protectedBoundaries.listingPriceRecommendation)}
+      data-seller-intelligence-sale-prediction={String(sellerIntelligence.protectedBoundaries.salePrediction)}
+      data-seller-intelligence-hidden-state-transfer={String(sellerIntelligence.protectedBoundaries.hiddenStateTransfer)}
+      data-seller-intelligence-protected-class-inference={String(sellerIntelligence.protectedBoundaries.protectedClassInference)}
+      data-seller-intelligence-source-activation={String(sellerIntelligence.protectedBoundaries.sourceActivation)}
+      data-seller-intelligence-persistence={String(sellerIntelligence.protectedBoundaries.persistence)}
+      data-seller-intelligence-telemetry={String(sellerIntelligence.protectedBoundaries.telemetry)}
+      data-seller-intelligence-customer-data-mutation={String(sellerIntelligence.protectedBoundaries.customerDataMutation)}
     >
       <section
         className="px-5 py-20 sm:px-8 sm:py-24 lg:px-12"
@@ -338,6 +353,94 @@ export default function SellPage() {
                 <p className="mt-4 text-sm leading-7 text-white/62">{service.body}</p>
               </article>
             ))}
+          </div>
+        </div>
+      </section>
+
+      <section
+        id="seller-intelligence-advancement"
+        className="border-y border-white/8 bg-[#0c141c] px-5 py-16 sm:px-8 sm:py-20 lg:px-12"
+        data-testid="seller-intelligence-advancement"
+        data-seller-intelligence-status={sellerIntelligence.status}
+        data-seller-intelligence-dimensions={sellerIntelligence.dimensions.length}
+        data-seller-intelligence-source-registry="true"
+        data-seller-intelligence-provider-activation={String(sellerIntelligence.protectedBoundaries.sourceActivation)}
+        data-seller-intelligence-hidden-state-transfer={String(sellerIntelligence.protectedBoundaries.hiddenStateTransfer)}
+        data-seller-intelligence-telemetry={String(sellerIntelligence.protectedBoundaries.telemetry)}
+      >
+        <div className="mx-auto grid w-full max-w-[1180px] gap-8 lg:grid-cols-[0.74fr_1.26fr] lg:items-start">
+          <div>
+            <p className="text-[11px] font-black uppercase tracking-[0.26em] text-cyan-100">Seller Intelligence Advancement</p>
+            <h2 className="mt-4 text-3xl font-black leading-tight text-white sm:text-4xl">
+              Connect property evidence to the seller decision before exposure.
+            </h2>
+            <p className="mt-5 text-sm leading-7 text-white/64">{sellerIntelligence.summary}</p>
+            <div className="mt-6 rounded-[8px] border border-cyan-100/16 bg-cyan-100/[0.055] p-5">
+              <p className="text-[11px] font-black uppercase tracking-[0.2em] text-cyan-100">Source and privacy boundary</p>
+              <p className="mt-3 text-sm leading-7 text-white/64">
+                This section uses existing public site context and source status only. It does not collect seller answers, activate
+                new records, transfer hidden context, or create a customer profile.
+              </p>
+            </div>
+            <div className="mt-5 grid gap-3">
+              {sellerIntelligence.sourceStates.map((source) => (
+                <div
+                  key={source.sourceId}
+                  className="rounded-[8px] border border-white/10 bg-black/18 p-4"
+                  data-testid="seller-intelligence-source-state"
+                  data-seller-intelligence-source-id={source.sourceId}
+                  data-seller-intelligence-source-state={source.state}
+                  data-seller-intelligence-source-claim-eligible={String(source.claimEligible)}
+                >
+                  <p className="text-[9px] font-black uppercase tracking-[0.13em] text-cyan-100/70">{source.customerStatus}</p>
+                  <p className="mt-2 text-sm font-black leading-5 text-white">{source.label}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="grid gap-5">
+            <div className="grid gap-4 md:grid-cols-2">
+              {sellerIntelligence.dimensions.map((dimension) => (
+                <Link
+                  key={dimension.key}
+                  href={dimension.href}
+                  className="rounded-[8px] border border-white/10 bg-white/[0.035] p-5 text-white transition hover:border-white/24 hover:bg-white/[0.06] focus:outline-none focus:ring-2 focus:ring-cyan-100 focus:ring-offset-2 focus:ring-offset-[#0c141c]"
+                  data-testid="seller-intelligence-dimension"
+                  data-seller-intelligence-dimension={dimension.key}
+                >
+                  <span className="text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100/72">{dimension.label}</span>
+                  <p className="mt-3 text-sm leading-7 text-white/62">{dimension.factFrame}</p>
+                  <p className="mt-3 text-xs leading-6 text-white/48">{dimension.interpretationFrame}</p>
+                  <p className="mt-4 border-t border-white/10 pt-3 text-xs font-bold leading-6 text-white/58">{dimension.reviewQuestion}</p>
+                </Link>
+              ))}
+            </div>
+
+            <div>
+              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-cyan-100/72">Decision continuity</p>
+              <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                {sellerIntelligence.continuityLinks.map((link) => (
+                  <Link
+                    key={link.label}
+                    href={link.href}
+                    className="rounded-[8px] border border-cyan-100/12 bg-cyan-100/[0.045] p-4 text-white transition hover:border-cyan-100/28 hover:bg-cyan-100/[0.07] focus:outline-none focus:ring-2 focus:ring-cyan-100 focus:ring-offset-2 focus:ring-offset-[#0c141c]"
+                    data-testid="seller-intelligence-continuity-link"
+                  >
+                    <span className="block text-[11px] font-black uppercase tracking-[0.14em] text-cyan-100">{link.label}</span>
+                    <span className="mt-2 block text-xs leading-6 text-white/58">{link.purpose}</span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-[8px] border border-cyan-100/16 bg-cyan-100/[0.055] p-5">
+              <p className="text-sm font-bold leading-7 text-white/66">
+                Seller intelligence remains evidence organization only. It does not provide valuation certainty, listing-price
+                recommendation, sale prediction, protected-class inference, hidden state transfer, telemetry, persistence, source
+                activation, or customer-data mutation.
+              </p>
+            </div>
           </div>
         </div>
       </section>

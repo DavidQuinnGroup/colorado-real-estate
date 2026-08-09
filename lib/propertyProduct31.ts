@@ -6,6 +6,10 @@ import {
   buildPropertyComparisonWorkspace,
   type PropertyComparisonWorkspace,
 } from './propertyComparisonIntelligence.js';
+import {
+  buildPropertyIntelligenceDeepening,
+  type PropertyIntelligenceDeepening,
+} from './sellerPropertyIntelligenceAdvancement.js';
 
 export type PropertyProduct31Input = {
   address?: string | null;
@@ -87,6 +91,7 @@ export type PropertyProduct31Model = {
   dna: PropertyProduct31DnaDimension[];
   authoritativeSources: PropertyGeographicSourceIntelligence;
   comparisonIntelligence: PropertyComparisonWorkspace;
+  deepening: PropertyIntelligenceDeepening;
   confidence: {
     summary: string;
     facets: PropertyProduct31ConfidenceFacet[];
@@ -235,6 +240,23 @@ export function buildPropertyProduct31Model(input: PropertyProduct31Input): Prop
       status: listing.status,
     })),
   });
+  const deepening = buildPropertyIntelligenceDeepening({
+    address: input.address,
+    city: input.city,
+    neighborhood: input.neighborhood,
+    propertyType: input.propertyType,
+    status: input.status,
+    price: input.price,
+    sqft: input.sqft,
+    beds: input.beds,
+    baths: input.baths,
+    yearBuilt: input.yearBuilt,
+    lotSize: input.lotSize,
+    updatedAt: input.updatedAt,
+    lastIntelligenceSync: input.lastIntelligenceSync,
+    photoCount,
+    relatedListingCount: relatedListings.length,
+  });
 
   const profile: PropertyProduct31ProfileItem[] = [
     {
@@ -336,6 +358,7 @@ export function buildPropertyProduct31Model(input: PropertyProduct31Input): Prop
     dna,
     authoritativeSources,
     comparisonIntelligence,
+    deepening,
     confidence: {
       summary: 'Property Decision Profile uses existing public property data to reduce decision friction without scoring, ranking, valuing, forecasting, or recommending a property.',
       facets: confidenceFacets,

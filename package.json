@@ -113,6 +113,7 @@
     "check:reie-first-impression-experience-baseline": "npm run worker:build && node dist/scripts/checkReieFirstImpressionExperienceBaseline.js",
     "check:reie-seller-confidence-experience": "npm run worker:build && node dist/scripts/checkReieSellerConfidenceExperience.js",
     "check:seller-readiness-advancement": "npm run worker:build && node dist/scripts/checkSellerReadinessAdvancement.js",
+    "check:seller-property-intelligence-advancement": "npm run worker:build && node dist/scripts/checkSellerPropertyIntelligenceAdvancement.js",
     "check:buyer-financing-readiness-advancement": "npm run worker:build && node dist/scripts/checkBuyerFinancingReadinessAdvancement.js",
     "check:buyer-financing-decision-planner": "npm run worker:build && node dist/scripts/checkBuyerFinancingDecisionPlanner.js",
     "check:reie-comparison-financing-intelligence": "npm run worker:build && node dist/scripts/checkReieComparisonFinancingIntelligence.js",

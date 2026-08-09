@@ -10,6 +10,96 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / Seller + Property Intelligence Advancement Locally Certified:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Baseline:
+
+- Branch: `main`
+- Starting canonical state: `HEAD = origin/main = a7eef453dc2cdd2240b914a0c9083d2da553a1c7`
+- Starting divergence: `0 ahead / 0 behind`
+- Prior closed status: `SOURCE_REGISTRY_GRAND_PLAN_ADVANCEMENT_PRODUCTION_CERTIFIED_AND_CLOSED`
+- Prior closure synchronization status: `SOURCE_REGISTRY_GRAND_PLAN_ADVANCEMENT_CLOSURE_SYNCHRONIZED`
+
+Implementation status:
+
+- `SELLER_PROPERTY_INTELLIGENCE_ADVANCEMENT_LOCALLY_CERTIFIED`
+- Record: `docs/project-atlas/executive-library/REIE-SELLER-PROPERTY-INTELLIGENCE-ADVANCEMENT-IMPLEMENTATION.md`
+- Workstream A implemented Seller Intelligence Advancement on `/sell`.
+- Workstream B implemented Property Intelligence Deepening on property detail pages through Property Product 3.1.
+- Shared deterministic model: `lib/sellerPropertyIntelligenceAdvancement.ts`
+- New deterministic gate: `npm run check:seller-property-intelligence-advancement`
+
+Seller Intelligence Advancement:
+
+- Public section: `/sell#seller-intelligence-advancement`
+- Status: `SELLER_INTELLIGENCE_ADVANCEMENT_IMPLEMENTED`
+- Dimensions: property evidence, market position context, property preparation, timing, selling-process readiness, and buy/sell interdependence.
+- Source traceability includes MLS/professional listing facts, REIE property comparison intelligence, Boulder County Assessor, BCOD Address Points, and BCOD Park Boundaries.
+- Continuity links include Source Registry, Grand Plan, Financing Readiness, and Advisory Readiness.
+- Boundaries remain false for valuation certainty, listing-price recommendation, sale prediction, hidden state transfer, protected-class inference, telemetry, persistence, source activation, and customer-data mutation.
+
+Property Intelligence Deepening:
+
+- Public section: `#property-intelligence-deepening` inside Property Product 3.1.
+- Status: `PROPERTY_INTELLIGENCE_DEEPENING_IMPLEMENTED`
+- Adds known-public-fact profile, deterministic derived context, property history prompts, source traceability, and seller carry-forward context.
+- Existing Property Product 3.1 profile, DNA, confidence, comparable, and checklist counts remain unchanged.
+- Boundaries remain false for valuation, appraisal, listing-price recommendation, sale prediction, ranking, scoring, provider activation, assessor/tax/permit retrieval, BCOD activation, persistence, telemetry, and customer-data mutation.
+
+Source-confirmation state:
+
+- Boulder County Assessor remains `AWAITING_PROVIDER_CONFIRMATION`.
+- BCOD Address Points remains `BLOCKED_NOT_AUTHORIZED`.
+- BCOD Park Boundaries remains `BLOCKED_NOT_AUTHORIZED`.
+- BCOD Park Boundaries still requires focused counsel interpretation after provider confirmation.
+
+Validation recorded locally:
+
+- `git diff --check`
+- `npm run typecheck`
+- `npm run check:seller-property-intelligence-advancement`
+- `npm run check:public-runtime-safety`
+- `npm run check:public-trust-readiness`
+- `npm run check:property-product-3-1`
+- `npm run check:property-geographic-source-intelligence`
+- `npm run check:authoritative-property-record-intelligence`
+- `npm run check:reie-comparison-financing-intelligence`
+- `npm run check:decision-journey-experience`
+- `npm run check:grand-plan-journey-safety`
+- `npm run check:reie-source-registry-grand-plan-advancement`
+- `npm run check:cim-privacy-consent-data-minimization-gate`
+- `npm run check:seller-journey-safety`
+- `npm run check:seller-readiness-advancement`
+- `npm run check:property-seller-evidence-readiness`
+- `npm run check:buyer-financing-decision-planner`
+- `npm run check:reie-financing-confidence-v8`
+- `npm run check:source-rights-activation-readiness`
+- `npm run check:geographic-intelligence-architecture-safety`
+- `npm run build`
+
+Protected boundaries:
+
+- No push.
+- No deployment.
+- No production verification.
+- No production mutation.
+- No provider/source activation.
+- No external dataset acquisition.
+- No assessor, tax, or permit record retrieval.
+- No scraping, browser automation for provider data, API/provider activation, credentials, BCOD activation, statewide county ingestion, persistence, Prisma/database/schema change, CRM/email, MLS ingestion/sync, worker/queue activation, telemetry/customer tracking, customer-data mutation, production configuration, or unrelated remediation.
+
+Next gate:
+
+- `READY_FOR_SELLER_PROPERTY_INTELLIGENCE_ADVANCEMENT_PUSH_AUTHORIZATION`
+
+Do not push, deploy, run production certification, activate providers, acquire datasets, retrieve public records, activate BCOD, add persistence, mutate production, or expand Seller / Property Intelligence beyond this locally certified scope unless explicitly authorized.
+
+Prior handoff retained below for audit history.
+
 PROJECT ATLAS(tm) / Source Registry and Grand Plan Advancement Production Certified and Closed, August 8, 2026:
 
 Workspace:

@@ -49,6 +49,19 @@ export default function PropertyProduct31Experience({ model }: PropertyProduct31
       data-property-product-3-1-confidence-count={model.confidence.facets.length}
       data-property-product-3-1-comparable-count={model.comparables.length}
       data-property-product-3-1-checklist-count={model.checklist.length}
+      data-property-intelligence-deepening={model.deepening.status}
+      data-property-intelligence-derived-count={model.deepening.derivedFacts.length}
+      data-property-intelligence-history-count={model.deepening.history.length}
+      data-property-intelligence-source-trace-count={model.deepening.sourceTrace.length}
+      data-property-intelligence-valuation={String(model.deepening.protectedBoundaries.valuation)}
+      data-property-intelligence-appraisal={String(model.deepening.protectedBoundaries.appraisal)}
+      data-property-intelligence-listing-price-recommendation={String(model.deepening.protectedBoundaries.listingPriceRecommendation)}
+      data-property-intelligence-sale-prediction={String(model.deepening.protectedBoundaries.salePrediction)}
+      data-property-intelligence-provider-activation={String(model.deepening.protectedBoundaries.providerActivation)}
+      data-property-intelligence-assessor-retrieval={String(model.deepening.protectedBoundaries.assessorRetrieval)}
+      data-property-intelligence-bcod-activation={String(model.deepening.protectedBoundaries.bcodActivation)}
+      data-property-intelligence-persistence={String(model.deepening.protectedBoundaries.persistence)}
+      data-property-intelligence-telemetry={String(model.deepening.protectedBoundaries.telemetry)}
       data-property-comparison-intelligence={model.comparisonIntelligence.status}
       data-property-comparison-ranking={String(model.comparisonIntelligence.protectedBoundaries.ranking)}
       data-property-comparison-scoring={String(model.comparisonIntelligence.protectedBoundaries.scoring)}
@@ -106,6 +119,7 @@ export default function PropertyProduct31Experience({ model }: PropertyProduct31
           {[
             ['Profile', '#property-decision-profile'],
             ['DNA', '#property-dna'],
+            ['Deepen', '#property-intelligence-deepening'],
             ['Compare', '#property-comparable-context'],
             ['Verify', '#property-verification-checklist'],
           ].map(([label, href]) => (
@@ -207,6 +221,117 @@ export default function PropertyProduct31Experience({ model }: PropertyProduct31
               <p className="reie-property-product-31-copy mt-3 text-xs leading-5 text-white/56">{facet.detail}</p>
               <p className="reie-property-product-31-note mt-3 border-t border-white/10 pt-3 text-xs leading-5 text-white/40">{facet.action}</p>
             </article>
+          ))}
+        </div>
+      </section>
+
+      <section
+        id="property-intelligence-deepening"
+        className="border-t border-white/10"
+        data-testid="property-intelligence-deepening"
+        data-property-intelligence-deepening-status={model.deepening.status}
+        data-property-intelligence-known-public-facts={model.deepening.evidenceProfile.knownPublicFacts}
+        data-property-intelligence-derived-facts={model.deepening.evidenceProfile.derivedFacts}
+        data-property-intelligence-unavailable-facts={model.deepening.evidenceProfile.unavailableFacts}
+        data-property-intelligence-verification-required={model.deepening.evidenceProfile.verificationRequired}
+        data-property-intelligence-source-confirmation-pending={model.deepening.evidenceProfile.sourceConfirmationPending}
+        data-property-intelligence-source-registry="true"
+        data-property-intelligence-tax-retrieval={String(model.deepening.protectedBoundaries.taxRetrieval)}
+        data-property-intelligence-permit-retrieval={String(model.deepening.protectedBoundaries.permitRetrieval)}
+        data-property-intelligence-customer-data-mutation={String(model.deepening.protectedBoundaries.customerDataMutation)}
+      >
+        <div className="border-b border-white/10 bg-white/[0.025] p-5 md:p-6">
+          <p className="reie-property-product-31-eyebrow flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.22em] text-cyan-100/76">
+            <FileSearch size={14} aria-hidden="true" />
+            Property Intelligence Deepening
+          </p>
+          <h3 className="reie-property-product-31-section-title mt-3 text-xl font-black uppercase tracking-tight text-white">Known facts, derived context, and source limits</h3>
+          <p className="reie-property-product-31-copy mt-3 max-w-3xl text-sm leading-6 text-white/56">
+            {model.deepening.summary}
+          </p>
+        </div>
+        <div className="grid gap-px bg-white/10 lg:grid-cols-[0.74fr_1.26fr]">
+          <div className="bg-[#0d141c] p-5 md:p-6">
+            <p className="reie-property-product-31-mini-label text-[10px] font-black uppercase tracking-[0.14em] text-white/40">Evidence profile</p>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              {[
+                ['Known public facts', model.deepening.evidenceProfile.knownPublicFacts],
+                ['Derived facts', model.deepening.evidenceProfile.derivedFacts],
+                ['Needs verification', model.deepening.evidenceProfile.verificationRequired],
+                ['Unavailable facts', model.deepening.evidenceProfile.unavailableFacts],
+              ].map(([label, value]) => (
+                <div key={label} className="rounded-[6px] border border-white/10 bg-white/[0.035] p-4">
+                  <p className="text-[9px] font-black uppercase tracking-[0.13em] text-cyan-100/70">{label}</p>
+                  <p className="mt-2 text-2xl font-black tracking-normal text-white">{value}</p>
+                </div>
+              ))}
+            </div>
+            <div className="mt-5 grid gap-3">
+              {model.deepening.sourceTrace.map((source) => (
+                <div
+                  key={source.sourceId}
+                  className="rounded-[6px] border border-white/10 bg-black/18 p-4"
+                  data-testid="property-intelligence-source-trace"
+                  data-property-intelligence-source-id={source.sourceId}
+                  data-property-intelligence-source-state={source.state}
+                  data-property-intelligence-source-claim-eligible={String(source.claimEligible)}
+                >
+                  <p className="text-[9px] font-black uppercase tracking-[0.13em] text-cyan-100/70">{source.customerStatus}</p>
+                  <p className="mt-2 text-sm font-black leading-5 text-white">{source.label}</p>
+                  <p className="mt-2 text-xs leading-5 text-white/50">{source.use}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="grid gap-px bg-white/10">
+            <div className="grid gap-px bg-white/10 md:grid-cols-2">
+              {model.deepening.history.map((event) => (
+                <article
+                  key={event.key}
+                  className="bg-[#0d141c] p-4 md:p-5"
+                  data-testid="property-intelligence-history-event"
+                  data-property-intelligence-history-key={event.key}
+                  data-property-intelligence-history-state={event.state}
+                >
+                  <span className="inline-flex rounded-[5px] border border-white/12 bg-white/[0.045] px-2 py-1 text-[9px] font-black uppercase tracking-[0.12em] text-white/60">
+                    {event.state.replace(/-/g, ' ')}
+                  </span>
+                  <h4 className="mt-4 text-sm font-black uppercase leading-5 tracking-[0.08em] text-white">{event.label}</h4>
+                  <p className="mt-3 text-xs leading-5 text-white/56">{event.evidence}</p>
+                  <p className="mt-3 border-t border-white/10 pt-3 text-xs leading-5 text-white/40">{event.interpretation}</p>
+                </article>
+              ))}
+            </div>
+            <div className="grid gap-px bg-white/10 md:grid-cols-2">
+              {model.deepening.derivedFacts.map((fact) => (
+                <article
+                  key={fact.key}
+                  className="bg-[#0d141c] p-4 md:p-5"
+                  data-testid="property-intelligence-derived-fact"
+                  data-property-intelligence-derived-key={fact.key}
+                  data-property-intelligence-derived-state={fact.state}
+                >
+                  <h4 className="text-sm font-black uppercase leading-5 tracking-[0.08em] text-white">{fact.label}</h4>
+                  <p className="mt-3 text-sm font-bold leading-6 text-cyan-100/80">{fact.value}</p>
+                  <p className="mt-3 text-xs leading-5 text-white/50">{fact.explanation}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </div>
+        <div className="grid gap-px bg-white/10 md:grid-cols-3">
+          {model.deepening.sellerContext.map((item) => (
+            <Link
+              key={item.label}
+              href={item.href}
+              className="bg-[#0d141c] p-4 text-white transition hover:bg-white/[0.04] focus:outline-none focus:ring-2 focus:ring-cyan-100 focus:ring-offset-2 focus:ring-offset-[#0d141c] md:p-5"
+              data-testid="property-intelligence-seller-context"
+            >
+              <span className="text-[9px] font-black uppercase tracking-[0.13em] text-cyan-100/70">Seller context</span>
+              <h4 className="mt-3 text-sm font-black uppercase leading-5 tracking-[0.08em] text-white">{item.label}</h4>
+              <p className="mt-3 text-xs leading-5 text-white/54">{item.interpretation}</p>
+              <p className="mt-3 border-t border-white/10 pt-3 text-xs leading-5 text-white/40">{item.professionalReview}</p>
+            </Link>
           ))}
         </div>
       </section>
