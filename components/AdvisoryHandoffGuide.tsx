@@ -1,5 +1,6 @@
 import Link from 'next/link';
 
+import ProfessionalHandoffCohesionPanel from '@/components/ProfessionalHandoffCohesionPanel';
 import { buildAdvisoryPreparationIntelligenceModel } from '@/lib/homeWorthAdvisoryIntelligence';
 
 const preparationThemes = [
@@ -304,6 +305,8 @@ export default function AdvisoryHandoffGuide() {
             the questions that should be reviewed through the appropriate professional pathway.
           </div>
         </div>
+
+        <ProfessionalHandoffCohesionPanel surface="advisory" density="compact" />
 
         <div className="grid gap-5 rounded-[8px] bg-white/[0.035] p-5" data-testid="advisory-preparation-intelligence">
           <div className="max-w-3xl">

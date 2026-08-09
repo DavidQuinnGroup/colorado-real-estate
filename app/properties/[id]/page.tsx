@@ -24,6 +24,7 @@ import {
 import ContinueYourDecision from '@/components/ContinueYourDecision';
 import EquityVision from '@/components/EquityVision';
 import FinancingConfidenceEducation from '@/components/FinancingConfidenceEducation';
+import ProfessionalHandoffCohesionPanel from '@/components/ProfessionalHandoffCohesionPanel';
 import PropertyInquiryForm from '@/components/PropertyInquiryForm';
 import PropertyProduct31Experience from '@/components/PropertyProduct31Experience';
 import RelatedPropertyLinks from '@/components/RelatedPropertyLinks';
@@ -1407,6 +1408,9 @@ export default async function PropertyPage({ params, searchParams }: PropertyPag
             { label: 'Ask About This Property', href: '#property-contact', note: 'Focused question' },
           ]}
         />
+        <div className="mt-4">
+          <ProfessionalHandoffCohesionPanel surface="property" density="compact" />
+        </div>
       </section>
 
       <section

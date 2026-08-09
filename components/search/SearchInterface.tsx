@@ -9,6 +9,7 @@ import ContinueYourDecision from '@/components/ContinueYourDecision';
 import FinancingConfidenceEducation from '@/components/FinancingConfidenceEducation';
 import MapSidebar, { type MapSidebarListing } from '@/components/maps/MapSidebar';
 import type { MapBounds } from '@/components/maps/MapInner';
+import ProfessionalHandoffCohesionPanel from '@/components/ProfessionalHandoffCohesionPanel';
 import SelectedPropertyDrawer from '@/components/maps/SelectedPropertyDrawer';
 import SearchControls, {
   buildSearchParams,
@@ -996,6 +997,7 @@ export default function SearchInterface({
                   { label: 'Ask an Advisor', href: '/contact', note: 'Bring focused questions' },
                 ]}
               />
+              <ProfessionalHandoffCohesionPanel surface="search" density="compact" />
               <div className="reie-search-continuity" data-testid="reie-search-grand-plan-continuity">
                 <div>
                   <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">Build on What Matters</p>

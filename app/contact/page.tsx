@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 
 import AdvisoryHandoffGuide from '@/components/AdvisoryHandoffGuide';
 import JourneyCohesionPanel from '@/components/JourneyCohesionPanel';
+import ProfessionalHandoffCohesionPanel from '@/components/ProfessionalHandoffCohesionPanel';
 import { PublicTrustPage, StandardTrustIntro, TrustList, TrustSection } from '@/components/PublicTrustPage';
 import { PUBLIC_CONTACT_EMAIL_STATUS, PUBLIC_NOTIFICATION_EMAIL, PUBLIC_TRUST_REVIEW_STATUS, SITE_NAME, SITE_URL } from '@/lib/publicTrust';
 
@@ -271,6 +272,10 @@ export default function ContactPage() {
               provider rankings, response-time promises, persistence, telemetry, hidden context, CRM behavior, email behavior,
               scheduling behavior, or form submission.
             </p>
+          </div>
+
+          <div className="mt-8">
+            <ProfessionalHandoffCohesionPanel surface="contact" tone="light" density="compact" />
           </div>
 
           <div
