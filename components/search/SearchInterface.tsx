@@ -21,6 +21,7 @@ import SearchControls, {
 import type { SearchMapMeta } from '@/components/maps/SearchMap';
 import { getJourneyMeasurementAttributes } from '@/lib/customerJourneyMeasurement';
 import type { FAQItem } from '@/lib/schema/faqSchema';
+import { buildSearchDiscoveryIntelligence } from '@/lib/searchDiscoveryIntelligence';
 import { parseSearchReturnContext } from '@/lib/search/searchReturnContext';
 
 const MapInner = dynamic(() => import('@/components/maps/MapInner'), {
@@ -439,6 +440,15 @@ export default function SearchInterface({
   );
   const discoveryFilterLabel = getDiscoveryFilterLabel(hasFilters);
   const discoveryCountLabel = visibleListings.length === 1 ? '1 property in view' : `${visibleListings.length} properties in view`;
+  const searchDiscoveryIntelligence = buildSearchDiscoveryIntelligence({
+    visibleListingCount: visibleListings.length,
+    activeCriteriaCount: activeFilterChips.length,
+    criteriaSummary: criteriaLine,
+    evidenceLabel,
+    hasZeroResults,
+    isDegraded: isSearchDegraded,
+    selectedPropertyLabel,
+  });
 
   return (
     <div
@@ -461,6 +471,19 @@ export default function SearchInterface({
       data-search-map-movement={mapMovementLabel}
       data-search-preview-model="click-pinned"
       data-search-preview-hover-dependent="false"
+      data-search-discovery-intelligence={searchDiscoveryIntelligence.status}
+      data-search-discovery-cue-count={searchDiscoveryIntelligence.cues.length}
+      data-search-discovery-ranking={String(searchDiscoveryIntelligence.protectedBoundaries.ranking)}
+      data-search-discovery-scoring={String(searchDiscoveryIntelligence.protectedBoundaries.scoring)}
+      data-search-discovery-recommendation={String(searchDiscoveryIntelligence.protectedBoundaries.recommendation)}
+      data-search-discovery-suitability-inference={String(searchDiscoveryIntelligence.protectedBoundaries.suitabilityInference)}
+      data-search-discovery-protected-class-inference={String(searchDiscoveryIntelligence.protectedBoundaries.protectedClassInference)}
+      data-search-discovery-hidden-personalization={String(searchDiscoveryIntelligence.protectedBoundaries.hiddenPersonalization)}
+      data-search-discovery-persistence={String(searchDiscoveryIntelligence.protectedBoundaries.persistence)}
+      data-search-discovery-telemetry={String(searchDiscoveryIntelligence.protectedBoundaries.telemetry)}
+      data-search-discovery-provider-activation={String(searchDiscoveryIntelligence.protectedBoundaries.providerActivation)}
+      data-search-discovery-api-change={String(searchDiscoveryIntelligence.protectedBoundaries.searchApiChange)}
+      data-search-discovery-map-behavior-change={String(searchDiscoveryIntelligence.protectedBoundaries.mapBehaviorChange)}
       data-search-workspace-shell="persistent-search-workspace-shell"
       data-search-first-screen-hierarchy="decision-status-criteria-list-map-selection"
       data-search-property-context-restoration="deferred"
@@ -652,6 +675,52 @@ export default function SearchInterface({
               ))}
             </div>
           ) : null}
+
+          <section
+            className="reie-search-confidence-framework"
+            data-testid="search-discovery-intelligence-advancement"
+            data-search-discovery-status={searchDiscoveryIntelligence.status}
+            data-search-discovery-cues={searchDiscoveryIntelligence.cues.length}
+            data-search-discovery-current-results={visibleListings.length}
+            data-search-discovery-active-criteria={activeFilterChips.length}
+            data-search-discovery-no-ranking={String(!searchDiscoveryIntelligence.protectedBoundaries.ranking)}
+            data-search-discovery-no-hidden-personalization={String(!searchDiscoveryIntelligence.protectedBoundaries.hiddenPersonalization)}
+            data-search-discovery-no-persistence={String(!searchDiscoveryIntelligence.protectedBoundaries.persistence)}
+            data-search-discovery-no-telemetry={String(!searchDiscoveryIntelligence.protectedBoundaries.telemetry)}
+          >
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">Discovery Intelligence</p>
+              <h2 className="mt-2 font-serif text-2xl font-black leading-tight tracking-normal text-white">
+                What does this search view make available to inspect next?
+              </h2>
+              <p className="mt-2 max-w-[36rem] text-xs font-bold leading-5 text-white/56">{searchDiscoveryIntelligence.summary}</p>
+            </div>
+            <div className="mt-4 grid gap-2 sm:grid-cols-2">
+              {searchDiscoveryIntelligence.cues.map((cue) => (
+                <Link
+                  key={cue.key}
+                  href={cue.href}
+                  className="rounded-[8px] border border-white/10 bg-white/[0.035] p-3 text-white transition hover:border-cyan-100/28 hover:bg-cyan-100/[0.07] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
+                  data-testid="search-discovery-intelligence-cue"
+                  data-search-discovery-cue={cue.key}
+                >
+                  <p className="text-[9px] font-black uppercase tracking-[0.16em] text-cyan-100/72">{cue.label}</p>
+                  <p className="mt-2 text-[11px] font-bold leading-5 text-white/64">
+                    <span className="text-white/88">Fact:</span> {cue.fact}
+                  </p>
+                  <p className="mt-2 text-[11px] leading-5 text-white/50">
+                    <span className="font-bold text-white/72">Interpretation:</span> {cue.interpretation}
+                  </p>
+                  <p className="mt-2 border-t border-white/10 pt-2 text-[11px] font-bold leading-5 text-white/54">
+                    {cue.nextStep}
+                  </p>
+                </Link>
+              ))}
+            </div>
+            <p className="mt-4 text-[11px] font-bold leading-5 text-white/44">
+              Discovery cues do not rank homes, score places, infer protected preferences, save a profile, or personalize hidden results.
+            </p>
+          </section>
 
           <section
             className="reie-search-confidence-framework"

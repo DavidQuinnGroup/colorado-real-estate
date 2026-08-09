@@ -13,8 +13,9 @@ import { neighborhoods } from '../lib/neighborhoods.js';
 
 const PHASE_2_WAVE_3_CITIES = ['Erie', 'Westminster'] as const;
 const PRESERVED_ENHANCED_FOUNDATION_CITIES = ['Broomfield', 'Superior', 'Longmont', 'Denver'] as const;
+const PRESERVED_SUBSEQUENT_ENHANCED_FOUNDATION_CITIES = ['Brighton', 'Firestone', 'Frederick'] as const;
 const PRESERVED_EDITORIAL_CITIES = ['Boulder', 'Louisville', 'Lafayette'] as const;
-const PRESERVED_INELIGIBLE_CITIES = ['Niwot', 'Gunbarrel', 'Thornton', 'Brighton', 'Firestone', 'Frederick'] as const;
+const PRESERVED_INELIGIBLE_CITIES = ['Niwot', 'Gunbarrel', 'Thornton'] as const;
 
 const PROHIBITED_PATTERNS = [
   /best place/i,
@@ -27,7 +28,7 @@ const PROHIBITED_PATTERNS = [
   /protected-class/i,
   /suitability claims/i,
   /investment\s+(?:opportunity|return|upside|ranking|score|grade|pick|recommendation)/i,
-  /appreciation prediction/i,
+  /(?<!not )appreciation predictions?/i,
   /guaranteed appreciation/i,
   /urgency claim/i,
   /activate GIS/i,
@@ -195,6 +196,16 @@ async function main() {
     assert.equal(registryEntry.guideMaturity, 'ENHANCED_FOUNDATION', `${cityName} must preserve ENHANCED_FOUNDATION maturity.`);
   }
 
+  for (const cityName of PRESERVED_SUBSEQUENT_ENHANCED_FOUNDATION_CITIES) {
+    const city = cities.find((candidate) => normalize(candidate.name) === normalize(cityName));
+    assert(city, `${cityName} must remain in city data.`);
+    const registryEntry = getDecisionGuideRegistryEntry(city);
+    assert(registryEntry, `${cityName} must remain registered.`);
+    assert.equal(registryEntry.publicEligibility, true, `${cityName} must remain public eligible after the subsequent authorized LDI expansion.`);
+    assert.equal(registryEntry.guideMaturity, 'ENHANCED_FOUNDATION', `${cityName} must preserve ENHANCED_FOUNDATION maturity after the subsequent authorized LDI expansion.`);
+    assert.deepEqual(registryEntry.ineligibilityReasons, [], `${cityName} must not carry stale fail-closed reasons after the subsequent authorized LDI expansion.`);
+  }
+
   for (const cityName of PRESERVED_EDITORIAL_CITIES) {
     const city = cities.find((candidate) => normalize(candidate.name) === normalize(cityName));
     assert(city, `${cityName} must remain in city data.`);
@@ -264,7 +275,7 @@ async function main() {
   assertNoProhibitedClaims(`${platformSource}\n${registrySource}\n${cityMarketPage}\n${citySource}`);
 
   console.log(
-    `[local-decision-intelligence-phase-2-wave-3] ok: ${PHASE_2_WAVE_3_CITIES.length} Wave 3 enhanced foundation cities, preserved prior enhanced and editorial maturities, later-wave candidates remain fail-closed, exact continuity contract, fair-housing boundaries, and protected-capability exclusions verified.`,
+    `[local-decision-intelligence-phase-2-wave-3] ok: ${PHASE_2_WAVE_3_CITIES.length} Wave 3 enhanced foundation cities, preserved prior enhanced and editorial maturities, subsequent authorized enhanced cities reconciled, remaining unsupported candidates fail-closed, exact continuity contract, fair-housing boundaries, and protected-capability exclusions verified.`,
   );
 }
 

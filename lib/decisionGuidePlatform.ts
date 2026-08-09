@@ -3,7 +3,16 @@ import type { Neighborhood } from './neighborhoods.js';
 
 export type DecisionGuideKey = string;
 type EditorialDecisionGuideKey = 'boulder' | 'louisville' | 'lafayette';
-type EnhancedFoundationDecisionGuideKey = 'broomfield' | 'erie' | 'longmont' | 'denver' | 'superior' | 'westminster';
+type EnhancedFoundationDecisionGuideKey =
+  | 'broomfield'
+  | 'erie'
+  | 'longmont'
+  | 'denver'
+  | 'superior'
+  | 'westminster'
+  | 'brighton'
+  | 'firestone'
+  | 'frederick';
 export type DecisionGuideMaturity = 'FOUNDATION' | 'ENHANCED_FOUNDATION' | 'EVIDENCE_BACKED' | 'EDITORIALLY_CERTIFIED';
 
 export type DecisionGuideEligibility = {
@@ -1274,6 +1283,198 @@ export const ENHANCED_FOUNDATION_CITY_CONFIGS: Record<EnhancedFoundationDecision
       'What Westminster-specific due diligence belongs with a qualified inspector, insurance advisor, title professional, municipal or county source, HOA document review, or real estate advisor?',
     ],
   },
+  brighton: {
+    key: 'brighton',
+    cityName: 'Brighton',
+    identityPattern:
+      'northeast metro decision market where Adams and Weld County context, established core areas, newer subdivisions, regional routes, and property-specific diligence should be evaluated separately',
+    summaryHeadline: 'Use Brighton as a structured local decision, not a generic northeast metro label.',
+    summaryIntro:
+      'Brighton guidance adds durable local context to the certified foundation route. It remains non-predictive, limitation-forward, and dependent on property-specific verification.',
+    distinctValue:
+      'A northeast metro city with Adams and Weld County context, established residential areas, newer subdivisions, agricultural-edge settings, and regional route questions',
+    attentionValue:
+      'Jurisdiction, housing age, subdivision pattern, lot context, commute routes, municipal or county records, HOA obligations, utilities, and property-specific condition review',
+    verificationValue:
+      'Property records, title and county context, systems and remodel history, HOA documents where applicable, insurance questions, route assumptions, utility context, and advisor review',
+    localCharacter: [
+      { label: 'Jurisdictional context', explanation: 'Brighton decisions can involve Adams and Weld County context. Verify jurisdiction, taxes, services, title, permits, and property-record details for the specific address.' },
+      { label: 'Development pattern', explanation: 'Brighton includes established core areas, newer subdivisions, attached and detached options, and agricultural-edge settings. Compare the immediate setting before relying on citywide context.' },
+      { label: 'Regional access', explanation: 'Many Brighton decisions involve routes toward Denver, airport-area employment, northern metro corridors, and local services. Route usefulness depends on address, timing, destination, and daily pattern.' },
+    ],
+    housingContext: [
+      { label: 'Varied housing forms', explanation: 'Brighton inventory can include older homes, newer detached homes, attached housing, and larger-lot or edge settings. Compare property type, age, lot, documents, and maintenance exposure before narrowing options.' },
+      { label: 'Established and newer areas', explanation: 'Established areas may raise systems, remodel, drainage, utility, and record-review questions. Newer areas may shift diligence toward builder history, warranty, HOA, lot exposure, and nearby development context.' },
+      { label: 'Address-specific tradeoffs', explanation: 'Properties can sit near downtown services, regional corridors, agricultural edges, newer development, or quieter residential interiors. Verify the practical effect from the address.' },
+    ],
+    practicalContext: [
+      { label: 'If commuting matters', explanation: 'Compare actual routes toward Denver, airport-area, northern metro, and local destinations at the times they would be used. This guide does not certify commute performance.' },
+      { label: 'If lot size matters', explanation: 'Review lot pattern, drainage, utilities, exterior exposure, fencing, irrigation, HOA rules, and maintenance responsibilities as address-specific questions.' },
+      { label: 'If newer construction matters', explanation: 'Review builder history, warranty status, HOA obligations, municipal records, lot exposure, and nearby development context before comparing newer homes against established alternatives.' },
+    ],
+    marketContext: [
+      { label: 'Inventory structure', explanation: 'Brighton market context can span established homes, newer subdivisions, attached options, and larger-lot settings. Compare similar property types before drawing conclusions from a citywide inventory signal.' },
+      { label: 'Growth and access review', explanation: 'New construction, regional routes, and nearby development can influence comparison questions, but this page does not forecast demand, future development outcomes, or investment performance.' },
+      { label: 'Jurisdictional verification', explanation: 'Planning, permitting, property records, county context, HOA obligations, utilities, and service assumptions should be checked through qualified sources, documents, inspections, and advisor review.' },
+    ],
+    communityContext: [
+      { label: 'Local character', explanation: 'Brighton should be reviewed through property age, immediate surroundings, municipal and county context, commercial access, route context, and services rather than demographic assumptions.' },
+      { label: 'Evidence boundary', explanation: 'The current page provides Enhanced Foundation citywide context. It does not replace property inspections, county or municipal research, title review, insurance review, or professional advice.' },
+    ],
+    buyerConsiderations: [
+      { label: 'Before search', explanation: 'Decide whether housing form, property age, route pattern, lot context, HOA structure, jurisdictional context, or proximity to daily services matters most, then use search to test those criteria against active inventory.' },
+      { label: 'Before offer decisions', explanation: 'Verify records, condition, systems, HOA documents where applicable, municipal and county requirements, insurance questions, utilities, route assumptions, and nearby development context through qualified sources.' },
+    ],
+    sellerConsiderations: [
+      { label: 'Property differentiation', explanation: 'Document updates, systems, HOA details where applicable, lot features, utility context, maintenance history, and jurisdictional details so buyers can compare the home against similar Brighton options.' },
+      { label: 'Preparation review', explanation: 'Use local competition, property condition, documentation, presentation, and timing as advisor-review topics. This guide does not promise pricing results or market response.' },
+    ],
+    evidenceLimitations: [
+      { label: 'Enhanced Foundation maturity', explanation: 'This page is ENHANCED_FOUNDATION maturity. It adds durable Brighton context to governed city data, but it is not editorial, predictive, regulatory, or provider certification.' },
+      { label: 'Qualified-source review', explanation: 'Construction, insurance, environmental, title, municipal, county, HOA, utility, and property-record questions should be verified through qualified sources or professionals before decisions are made.' },
+      { label: 'No protected activation', explanation: 'No AI, public GIS, telemetry, provider activation, ranking, valuation, school rating, safety rating, or investment guidance is used.' },
+    ],
+    tradeoffs: [
+      { strength: 'Northeast metro access with established and newer housing options', tradeoff: 'Age, systems, HOA obligations, builder history, lot context, utilities, and maintenance exposure should be compared by property type.' },
+      { strength: 'Adams and Weld County context can support more specific diligence', tradeoff: 'Jurisdiction, records, title, taxes, services, and requirements still need address-specific verification.' },
+      { strength: 'Regional route options can widen search context', tradeoff: 'Actual route usefulness depends on address, timing, destination, and daily pattern rather than citywide labels.' },
+    ],
+    verificationQuestions: [
+      'If commuting matters, which routes, destinations, and time-of-day assumptions should be checked from the specific address?',
+      'If newer construction matters, what builder, warranty, HOA, lot, nearby development, and municipal-record questions should be verified?',
+      'If established housing matters, what systems, remodel quality, exterior, drainage, utility, and maintenance records need review?',
+      'If county or municipal context matters, what jurisdiction, title, tax, service, permit, or record questions should be verified?',
+      'What Brighton-specific due diligence belongs with a qualified inspector, insurance advisor, title professional, municipal or county source, HOA document review, utility review, or real estate advisor?',
+    ],
+  },
+  firestone: {
+    key: 'firestone',
+    cityName: 'Firestone',
+    identityPattern:
+      'Weld County northern corridor decision market where newer subdivisions, established areas, lot context, route access, and property-specific diligence should be evaluated separately',
+    summaryHeadline: 'Use Firestone as a structured local decision, not one northern corridor shorthand.',
+    summaryIntro:
+      'Firestone guidance adds durable local context to the certified foundation route. It remains non-predictive, limitation-forward, and dependent on property-specific verification.',
+    distinctValue:
+      'A Weld County community with established areas, newer subdivisions, attached and detached housing, lot-pattern questions, and access considerations along northern Front Range routes',
+    attentionValue:
+      'Housing age, subdivision pattern, HOA documents, lot and exterior exposure, county and municipal records, utility context, commute routes, and property-specific condition review',
+    verificationValue:
+      'Property records, systems and builder or remodel history, HOA documents where applicable, municipal and county requirements, insurance questions, route assumptions, utility context, and advisor review',
+    localCharacter: [
+      { label: 'Weld County and municipal context', explanation: 'Firestone decisions can involve municipal and Weld County records. Verify jurisdiction, taxes, services, permits, title, and property-record details for the specific address.' },
+      { label: 'Development pattern', explanation: 'Firestone includes newer subdivisions, established residential pockets, attached housing, and lot-pattern differences. Compare the immediate setting before relying on a citywide signal.' },
+      { label: 'Regional access', explanation: 'Many decisions involve routes toward Longmont, Erie, Frederick, I-25, Boulder-area corridors, and northern metro destinations. Route usefulness depends on address, timing, destination, and daily pattern.' },
+    ],
+    housingContext: [
+      { label: 'Subdivision and lot context', explanation: 'Firestone inventory can include detached homes, townhomes, newer subdivisions, established properties, and different HOA or lot responsibilities. Compare property type, age, documents, and maintenance exposure.' },
+      { label: 'Established and newer areas', explanation: 'Established homes may raise systems, exterior, drainage, remodel, and record-review questions. Newer homes may shift diligence toward builder history, warranty status, HOA documents, lot exposure, and nearby development context.' },
+      { label: 'Location tradeoffs', explanation: 'Properties can sit closer to regional corridors, newer development edges, commercial services, larger-lot settings, or residential interiors. Verify the practical effect from the address.' },
+    ],
+    practicalContext: [
+      { label: 'If commuting matters', explanation: 'Compare actual routes toward Longmont, Boulder-area, I-25, Denver-area, and northern Front Range destinations at the times they would be used. This guide does not certify commute performance.' },
+      { label: 'If HOA structure matters', explanation: 'Review HOA obligations, architectural controls, fees, amenities, maintenance responsibilities, and document restrictions before comparing similar homes.' },
+      { label: 'If lot size matters', explanation: 'Review lot pattern, exterior exposure, drainage, landscaping, fencing, irrigation, and maintenance responsibilities as address-specific questions.' },
+    ],
+    marketContext: [
+      { label: 'Inventory structure', explanation: 'Firestone market context can span newer detached homes, established homes, attached options, and different lot patterns. Compare similar property types before drawing conclusions from a citywide inventory signal.' },
+      { label: 'Growth and corridor review', explanation: 'New construction, nearby development, and regional-route context can influence comparison questions, but this page does not forecast demand or investment performance.' },
+      { label: 'Jurisdictional verification', explanation: 'Planning, permitting, property records, county context, HOA obligations, utility context, and service assumptions should be checked through qualified sources, documents, inspections, and advisor review.' },
+    ],
+    communityContext: [
+      { label: 'Local character', explanation: 'Firestone should be reviewed through property age, immediate surroundings, municipal and county context, route access, commercial services, and property responsibilities rather than demographic assumptions.' },
+      { label: 'Evidence boundary', explanation: 'The current page provides Enhanced Foundation citywide context. It does not replace property inspections, municipal or county research, title review, insurance review, or professional advice.' },
+    ],
+    buyerConsiderations: [
+      { label: 'Before search', explanation: 'Decide whether housing form, property age, commute route, HOA structure, lot pattern, jurisdictional context, or proximity to daily services matters most, then use search to test those criteria against active inventory.' },
+      { label: 'Before offer decisions', explanation: 'Verify records, condition, systems, HOA documents where applicable, municipal and county requirements, insurance questions, route assumptions, utility context, and nearby development context through qualified sources.' },
+    ],
+    sellerConsiderations: [
+      { label: 'Property differentiation', explanation: 'Document updates, systems, HOA details where applicable, lot features, route context, maintenance history, and jurisdictional details so buyers can compare the home against similar Firestone options.' },
+      { label: 'Preparation review', explanation: 'Use local competition, property condition, documentation, presentation, and timing as advisor-review topics. This guide does not promise pricing results or market response.' },
+    ],
+    evidenceLimitations: [
+      { label: 'Enhanced Foundation maturity', explanation: 'This page is ENHANCED_FOUNDATION maturity. It adds durable Firestone context to governed city data, but it is not editorial, predictive, regulatory, or provider certification.' },
+      { label: 'Qualified-source review', explanation: 'Construction, insurance, environmental, title, municipal, county, HOA, utility, and property-record questions should be verified through qualified sources or professionals before decisions are made.' },
+      { label: 'No protected activation', explanation: 'No AI, public GIS, telemetry, provider activation, ranking, valuation, school rating, safety rating, or investment guidance is used.' },
+    ],
+    tradeoffs: [
+      { strength: 'Northern corridor context with newer and established housing options', tradeoff: 'Age, systems, HOA obligations, builder history, lot context, utilities, and maintenance exposure should be compared by property type.' },
+      { strength: 'Weld County and municipal context can support more specific diligence', tradeoff: 'Jurisdiction, records, title, taxes, services, and requirements still need address-specific verification.' },
+      { strength: 'Regional access can widen search alternatives', tradeoff: 'Actual route usefulness depends on address, timing, destination, and daily pattern rather than citywide labels.' },
+    ],
+    verificationQuestions: [
+      'If commuting matters, which routes, destinations, and time-of-day assumptions should be checked from the specific address?',
+      'If newer construction matters, what builder, warranty, HOA, lot, nearby development, and municipal-record questions should be verified?',
+      'If established housing matters, what systems, remodel quality, exterior, drainage, utility, and maintenance records need review?',
+      'If county or municipal context matters, what jurisdiction, title, tax, service, permit, or record questions should be verified?',
+      'What Firestone-specific due diligence belongs with a qualified inspector, insurance advisor, title professional, municipal or county source, HOA document review, utility review, or real estate advisor?',
+    ],
+  },
+  frederick: {
+    key: 'frederick',
+    cityName: 'Frederick',
+    identityPattern:
+      'Weld County small-city decision market where established town context, newer subdivisions, regional access, lot pattern, and property-specific diligence should be evaluated separately',
+    summaryHeadline: 'Use Frederick as a structured local decision, not one small-city shorthand.',
+    summaryIntro:
+      'Frederick guidance adds durable local context to the certified foundation route. It remains non-predictive, limitation-forward, and dependent on property-specific verification.',
+    distinctValue:
+      'A Weld County small-city context with established town areas, newer subdivisions, attached and detached housing, regional route questions, and lot or utility details to verify',
+    attentionValue:
+      'Housing age, subdivision pattern, town-center or edge context, HOA documents, county and municipal records, utility context, commute routes, and property-specific condition review',
+    verificationValue:
+      'Property records, systems and remodel or builder history, HOA documents where applicable, municipal and county requirements, insurance questions, route assumptions, utility context, and advisor review',
+    localCharacter: [
+      { label: 'Town and county context', explanation: 'Frederick decisions can involve municipal and Weld County records. Verify jurisdiction, taxes, services, permits, title, and property-record details for the specific address.' },
+      { label: 'Development pattern', explanation: 'Frederick includes established town context, newer subdivisions, attached housing, and edge settings. Compare the immediate setting before relying on a broad citywide signal.' },
+      { label: 'Regional access', explanation: 'Many Frederick decisions involve routes toward Longmont, Firestone, Erie, I-25, Boulder-area corridors, and northern metro destinations. Route usefulness depends on address, timing, destination, and daily pattern.' },
+    ],
+    housingContext: [
+      { label: 'Varied housing forms', explanation: 'Frederick inventory can include detached homes, townhomes, newer subdivisions, established properties, and different lot or HOA structures. Compare property type, age, documents, and maintenance exposure.' },
+      { label: 'Established and newer areas', explanation: 'Established homes may raise systems, exterior, drainage, remodel, and record-review questions. Newer homes may shift diligence toward builder history, warranty status, HOA documents, lot exposure, and nearby development context.' },
+      { label: 'Location tradeoffs', explanation: 'Properties can sit closer to town context, regional corridors, newer development edges, commercial services, or residential interiors. Verify the practical effect from the address.' },
+    ],
+    practicalContext: [
+      { label: 'If commuting matters', explanation: 'Compare actual routes toward Longmont, Boulder-area, I-25, Denver-area, and northern Front Range destinations at the times they would be used. This guide does not certify commute performance.' },
+      { label: 'If town context matters', explanation: 'Review proximity to local services, route assumptions, noise or access considerations, parking, utilities, and property-specific context from the address.' },
+      { label: 'If newer construction matters', explanation: 'Review builder history, warranty status, HOA obligations, lot exposure, nearby construction context, municipal records, and county-specific records before comparing newer homes against established alternatives.' },
+    ],
+    marketContext: [
+      { label: 'Inventory structure', explanation: 'Frederick market context can span established homes, newer detached homes, attached options, and different lot patterns. Compare similar property types before drawing conclusions from a citywide inventory signal.' },
+      { label: 'Growth and route review', explanation: 'New construction, nearby development, and regional-route context can influence comparison questions, but this page does not forecast demand or investment performance.' },
+      { label: 'Jurisdictional verification', explanation: 'Planning, permitting, property records, county context, HOA obligations, utilities, and service assumptions should be checked through qualified sources, documents, inspections, and advisor review.' },
+    ],
+    communityContext: [
+      { label: 'Local character', explanation: 'Frederick should be reviewed through property age, immediate surroundings, municipal and county context, route access, commercial services, and property responsibilities rather than demographic assumptions.' },
+      { label: 'Evidence boundary', explanation: 'The current page provides Enhanced Foundation citywide context. It does not replace property inspections, municipal or county research, title review, insurance review, or professional advice.' },
+    ],
+    buyerConsiderations: [
+      { label: 'Before search', explanation: 'Decide whether housing form, property age, commute route, HOA structure, lot pattern, jurisdictional context, or proximity to daily services matters most, then use search to test those criteria against active inventory.' },
+      { label: 'Before offer decisions', explanation: 'Verify records, condition, systems, HOA documents where applicable, municipal and county requirements, insurance questions, route assumptions, utility context, and nearby development context through qualified sources.' },
+    ],
+    sellerConsiderations: [
+      { label: 'Property differentiation', explanation: 'Document updates, systems, HOA details where applicable, lot features, route context, maintenance history, and jurisdictional details so buyers can compare the home against similar Frederick options.' },
+      { label: 'Preparation review', explanation: 'Use local competition, property condition, documentation, presentation, and timing as advisor-review topics. This guide does not promise pricing results or market response.' },
+    ],
+    evidenceLimitations: [
+      { label: 'Enhanced Foundation maturity', explanation: 'This page is ENHANCED_FOUNDATION maturity. It adds durable Frederick context to governed city data, but it is not editorial, predictive, regulatory, or provider certification.' },
+      { label: 'Qualified-source review', explanation: 'Construction, insurance, environmental, title, municipal, county, HOA, utility, and property-record questions should be verified through qualified sources or professionals before decisions are made.' },
+      { label: 'No protected activation', explanation: 'No AI, public GIS, telemetry, provider activation, ranking, valuation, school rating, safety rating, or investment guidance is used.' },
+    ],
+    tradeoffs: [
+      { strength: 'Small-city context with established and newer housing options', tradeoff: 'Age, systems, HOA obligations, builder history, lot context, utilities, and maintenance exposure should be compared by property type.' },
+      { strength: 'Weld County and municipal context can support more specific diligence', tradeoff: 'Jurisdiction, records, title, taxes, services, and requirements still need address-specific verification.' },
+      { strength: 'Regional access can widen search alternatives', tradeoff: 'Actual route usefulness depends on address, timing, destination, and daily pattern rather than citywide labels.' },
+    ],
+    verificationQuestions: [
+      'If commuting matters, which routes, destinations, and time-of-day assumptions should be checked from the specific address?',
+      'If newer construction matters, what builder, warranty, HOA, lot, nearby development, and municipal-record questions should be verified?',
+      'If established housing matters, what systems, remodel quality, exterior, drainage, utility, and maintenance records need review?',
+      'If county or municipal context matters, what jurisdiction, title, tax, service, permit, or record questions should be verified?',
+      'What Frederick-specific due diligence belongs with a qualified inspector, insurance advisor, title professional, municipal or county source, HOA document review, utility review, or real estate advisor?',
+    ],
+  },
 };
 
 function normalize(value: string) {
@@ -1289,7 +1490,17 @@ function isEditorialDecisionGuideKey(key: DecisionGuideKey): key is EditorialDec
 }
 
 function isEnhancedFoundationDecisionGuideKey(key: DecisionGuideKey): key is EnhancedFoundationDecisionGuideKey {
-  return key === 'broomfield' || key === 'erie' || key === 'longmont' || key === 'denver' || key === 'superior' || key === 'westminster';
+  return (
+    key === 'broomfield' ||
+    key === 'erie' ||
+    key === 'longmont' ||
+    key === 'denver' ||
+    key === 'superior' ||
+    key === 'westminster' ||
+    key === 'brighton' ||
+    key === 'firestone' ||
+    key === 'frederick'
+  );
 }
 
 function getEditorialDecisionGuideKey(city: CityData): EditorialDecisionGuideKey | null {

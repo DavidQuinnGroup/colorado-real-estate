@@ -126,11 +126,12 @@ export const COLORADO_DECISION_GUIDE_REGISTRY: DecisionGuideRegistryEntry[] = [
     neighborhoodCount: 0,
     guideMaturity: 'ENHANCED_FOUNDATION',
   }),
-  ineligibleEntry({
+  publicEntry({
     canonicalName: 'Brighton',
     routeSlug: 'brighton-co-real-estate',
     marketRoute: '/market/brighton-co-housing-market',
-    ineligibilityReasons: ['missing-search-city-support'],
+    neighborhoodCount: 0,
+    guideMaturity: 'ENHANCED_FOUNDATION',
   }),
   publicEntry({
     canonicalName: 'Denver',
@@ -146,17 +147,19 @@ export const COLORADO_DECISION_GUIDE_REGISTRY: DecisionGuideRegistryEntry[] = [
     neighborhoodCount: 0,
     guideMaturity: 'ENHANCED_FOUNDATION',
   }),
-  ineligibleEntry({
+  publicEntry({
     canonicalName: 'Firestone',
     routeSlug: 'firestone-co-real-estate',
     marketRoute: '/market/firestone-co-housing-market',
-    ineligibilityReasons: ['missing-search-city-support'],
+    neighborhoodCount: 0,
+    guideMaturity: 'ENHANCED_FOUNDATION',
   }),
-  ineligibleEntry({
+  publicEntry({
     canonicalName: 'Frederick',
     routeSlug: 'frederick-co-real-estate',
     marketRoute: '/market/frederick-co-housing-market',
-    ineligibilityReasons: ['missing-search-city-support'],
+    neighborhoodCount: 0,
+    guideMaturity: 'ENHANCED_FOUNDATION',
   }),
   ineligibleEntry({
     canonicalName: 'Gunbarrel',

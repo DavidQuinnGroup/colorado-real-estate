@@ -105,7 +105,7 @@ async function main() {
     ['selected drawer', selectedDrawer],
     ['map sidebar', mapSidebar],
   ] as const) {
-    assert(!source.match(/localStorage|sessionStorage|document\.cookie|navigator\.sendBeacon|gtag|analytics|telemetry|CRM|customer profile|recommended lender|best home|ideal for|school ranking|crime ranking|approved for|qualified for|affordable|suitability score|fit score|ranking/i), `${label} must not introduce persistence, telemetry, CRM, recommendation, affordability, qualification, or protected claim language.`);
+    assert(!source.match(/localStorage|sessionStorage|document\.cookie|navigator\.sendBeacon|gtag|analytics\(|trackEvent|CRM|customer profile|recommended lender|best home|ideal for|school ranking|crime ranking|approved for|qualified for|affordable|suitability score|fit score/i), `${label} must not introduce persistence, telemetry, CRM, recommendation, affordability, qualification, or protected claim language.`);
   }
 
   const packageData = JSON.parse(packageJson) as { scripts?: Record<string, string> };

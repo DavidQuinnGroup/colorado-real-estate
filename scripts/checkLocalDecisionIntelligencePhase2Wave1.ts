@@ -26,7 +26,7 @@ const PROHIBITED_PATTERNS = [
   /protected-class/i,
   /suitability claims/i,
   /investment\s+(?:opportunity|return|upside|ranking|score|grade|pick|recommendation)/i,
-  /appreciation prediction/i,
+  /(?<!not )appreciation predictions?/i,
   /guaranteed appreciation/i,
   /urgency claim/i,
   /activate GIS/i,

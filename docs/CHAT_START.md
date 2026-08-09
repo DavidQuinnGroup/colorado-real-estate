@@ -10,6 +10,91 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / Search + Local Decision Intelligence Advancement Locally Certified:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Current local implementation state:
+
+- Branch: `main`
+- Base commit before local implementation: `03973619fa66e069a2d67960f7273cb7c42cb5ba`
+- Prior closed status: `SELLER_PROPERTY_INTELLIGENCE_ADVANCEMENT_PRODUCTION_CERTIFIED_AND_CLOSED`
+- Prior closure synchronization status: `SELLER_PROPERTY_INTELLIGENCE_ADVANCEMENT_CLOSURE_SYNCHRONIZED`
+- Local status: `SEARCH_LDI_ADVANCEMENT_LOCALLY_CERTIFIED`
+- Implementation record: `docs/project-atlas/executive-library/REIE-SEARCH-LDI-ADVANCEMENT-IMPLEMENTATION.md`
+
+Workstream A: Search & Discovery Intelligence Advancement:
+
+- Added deterministic Search Discovery Intelligence in `lib/searchDiscoveryIntelligence.ts`.
+- Extended `components/search/SearchInterface.tsx` with a public Discovery Intelligence section.
+- Search cues cover property facts, place orientation, market context, evidence availability, comparison opportunity, and next decision step.
+- Search continuity remains customer-facing and routes toward Property, Compare, Market, Source Registry, Grand Plan, and Advisor paths.
+- Boundaries remain false for ranking, scoring, recommendations, suitability inference, protected-class inference, hidden personalization, persistence, telemetry, provider activation, Search API change, and map behavior change.
+
+Workstream B: Local Decision Intelligence Expansion:
+
+- Added Enhanced Foundation Local Decision Intelligence for Brighton, Firestone, and Frederick.
+- Updated governed city search support for Brighton, Firestone, and Frederick.
+- Preserved Niwot, Gunbarrel, and Thornton as fail-closed.
+- Preserved the existing Market/AEO Wave 2 nine-route allowlist; Brighton, Firestone, and Frederick were not added to Market/AEO.
+
+Source-confirmation state:
+
+- Boulder County Assessor remains `AWAITING_PROVIDER_CONFIRMATION`.
+- BCOD Address Points remains `BLOCKED_NOT_AUTHORIZED`.
+- BCOD Park Boundaries remains `BLOCKED_NOT_AUTHORIZED`.
+- BCOD Park Boundaries still requires focused counsel interpretation after provider confirmation.
+- No Secondary Overflow county-research findings were used.
+
+Validation recorded locally:
+
+- `git diff --check`
+- `npm run typecheck`
+- `npm run check:search-ldi-advancement`
+- `npm run check:public-runtime-safety`
+- `npm run check:public-trust-readiness`
+- `npm run check:decision-journey-experience`
+- `npm run check:reie-source-registry-grand-plan-advancement`
+- `npm run check:reie-comparison-financing-intelligence`
+- `npm run check:search-runtime-adapter-safety`
+- `npm run check:search-runtime-safety`
+- `npm run check:search-listing-quality`
+- `npm run check:map-rendering-safety`
+- `npm run check:dxt-search-workspace-shell`
+- `npm run check:dxt-search-marker-preview-interaction`
+- `npm run check:dxt-search-return-context-handoff`
+- `npm run check:dxt-map-visual-language-normalization`
+- `npm run check:cep-search-map-baseline`
+- `npm run check:reie-guided-search-intelligence-v8`
+- `npm run check:dxt-2-search-decision-workspace-depth-implementation`
+- `npm run check:property-product-3-1`
+- `npm run check:geographic-intelligence-architecture-safety`
+- `npm run check:local-decision-intelligence-phase-1`
+- `npm run check:local-decision-intelligence-phase-2-wave-1`
+- `npm run check:local-decision-intelligence-phase-2-wave-2`
+- `npm run check:local-decision-intelligence-phase-2-wave-3`
+- `npm run check:cross-city-decision-comparison`
+- `npm run check:market-aeo-wave-2`
+- `npm run check:market-product-3`
+- `npm run build`
+
+Protected boundaries:
+
+- No push has occurred.
+- No deployment has occurred.
+- No production verification has occurred.
+- No new Search API, saved-search persistence, MLS ingestion/sync, Prisma/database/schema change, CRM/email change, worker/queue activation, telemetry/customer tracking, customer-data expansion, provider/source activation, credentials, production configuration mutation, BCOD activation, county-source activation, Secondary Overflow county-research use, or unrelated remediation occurred.
+
+Next gate:
+
+- `READY_FOR_SEARCH_LDI_ADVANCEMENT_PUSH_AUTHORIZATION`
+
+Do not push, deploy, run production certification, activate providers, acquire datasets, retrieve public records, activate BCOD, add persistence, mutate production, expand Market/AEO, or begin another implementation workstream unless explicitly authorized.
+
+Prior handoff retained below for audit history.
+
 PROJECT ATLAS(tm) / Seller + Property Intelligence Advancement Production Certified and Closed:
 
 Workspace:

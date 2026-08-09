@@ -6,7 +6,10 @@ export const cities = [
 "erie",
 "longmont",
 "broomfield",
-"westminster"
+"westminster",
+"brighton",
+"firestone",
+"frederick"
 ];
 
 export const searches = [

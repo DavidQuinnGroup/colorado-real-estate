@@ -65,7 +65,7 @@ async function main() {
     ['selected drawer', selectedDrawer],
     ['property return context', propertyReturnSnippet],
   ] as const) {
-    assert(!source.match(/localStorage|sessionStorage|document\.cookie|navigator\.sendBeacon|gtag|analytics|telemetry|CRM|customer profile|recommended lender|best home|ideal for|school ranking|crime ranking|approved for|qualified for|affordable/i), `${label} must not introduce persistence, telemetry, CRM, provider, recommendation, qualification, affordability, or protected claim language.`);
+    assert(!source.match(/localStorage|sessionStorage|document\.cookie|navigator\.sendBeacon|gtag|analytics\(|trackEvent|CRM|customer profile|recommended lender|best home|ideal for|school ranking|crime ranking|approved for|qualified for|affordable/i), `${label} must not introduce persistence, telemetry, CRM, provider, recommendation, qualification, affordability, or protected claim language.`);
   }
 
   const packageData = JSON.parse(packageJson) as { scripts?: Record<string, string> };

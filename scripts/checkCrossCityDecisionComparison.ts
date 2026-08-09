@@ -57,13 +57,26 @@ const eligibleMarkets = getCrossCityComparisonEligibleMarkets();
 const eligibleSlugs = eligibleMarkets.map((market) => market.slug).sort();
 assert.deepEqual(
   eligibleSlugs,
-  ['boulder', 'broomfield', 'denver', 'erie', 'lafayette', 'longmont', 'louisville', 'superior', 'westminster'],
-  'Comparison eligibility must include the six Enhanced Foundation cities and the three editorial guides with distinct maturity.',
+  [
+    'boulder',
+    'brighton',
+    'broomfield',
+    'denver',
+    'erie',
+    'firestone',
+    'frederick',
+    'lafayette',
+    'longmont',
+    'louisville',
+    'superior',
+    'westminster',
+  ],
+  'Comparison eligibility must include the nine Enhanced Foundation cities and the three editorial guides with distinct maturity.',
 );
 assert.equal(
   eligibleMarkets.filter((market) => market.maturity === 'ENHANCED_FOUNDATION').length,
-  6,
-  'Six Enhanced Foundation cities must be eligible.',
+  9,
+  'Nine Enhanced Foundation cities must be eligible.',
 );
 assert.equal(
   eligibleMarkets.filter((market) => market.maturity === 'EDITORIALLY_CERTIFIED').length,
@@ -71,7 +84,7 @@ assert.equal(
   'Three editorially certified guides must remain eligible with their maturity preserved.',
 );
 
-for (const unsupportedSlug of ['niwot', 'gunbarrel', 'thornton', 'brighton', 'firestone', 'frederick']) {
+for (const unsupportedSlug of ['niwot', 'gunbarrel', 'thornton']) {
   assert(getCrossCityComparisonIneligibleSlugs().includes(unsupportedSlug), `${unsupportedSlug} must remain fail-closed for comparison.`);
 }
 

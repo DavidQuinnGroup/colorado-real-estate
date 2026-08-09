@@ -167,6 +167,7 @@
     "scripts/checkLocalDecisionIntelligencePhase2Wave1.ts",
     "scripts/checkLocalDecisionIntelligencePhase2Wave2.ts",
     "scripts/checkLocalDecisionIntelligencePhase2Wave3.ts",
+    "scripts/checkSearchLdiAdvancement.ts",
     "scripts/checkCrossCityDecisionComparison.ts",
     "scripts/checkProductionMediaResilience.ts",
     "scripts/checkPrismaClientParity.ts",

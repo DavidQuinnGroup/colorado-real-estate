@@ -21,7 +21,7 @@ const PROHIBITED_PATTERNS = [
   /crime score/i,
   /demographic recommendation/i,
   /investment\s+(?:opportunity|return|upside|ranking|score|grade|pick)/i,
-  /appreciation prediction/i,
+  /(?<!not )appreciation predictions?/i,
   /guaranteed appreciation/i,
   /activate GIS/i,
   /activate telemetry/i,

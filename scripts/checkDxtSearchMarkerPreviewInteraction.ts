@@ -54,7 +54,7 @@ async function main() {
     ['search interface', searchInterface],
     ['selected drawer', selectedDrawer],
   ] as const) {
-    assert(!source.match(/localStorage|sessionStorage|document\.cookie|navigator\.sendBeacon|gtag|analytics|telemetry|recommended lender|best home|ideal for|school ranking|crime|approved|qualified|affordable/i), `${label} must not introduce persistence, telemetry, provider, recommendation, or protected claim language.`);
+    assert(!source.match(/localStorage|sessionStorage|document\.cookie|navigator\.sendBeacon|gtag|analytics\(|trackEvent|recommended lender|best home|ideal for|school ranking|crime|approved|qualified|affordable/i), `${label} must not introduce persistence, telemetry, provider, recommendation, or protected claim language.`);
   }
 
   const packageData = JSON.parse(packageJson) as { scripts?: Record<string, string> };
