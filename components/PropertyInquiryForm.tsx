@@ -199,6 +199,14 @@ export default function PropertyInquiryForm({ propertyId, address, city, state }
         data-property-inquiry-notification-sent={notificationSent ? 'true' : 'false'}
         data-property-inquiry-notification-reason={notificationReason}
         data-property-inquiry-error=""
+        data-property-inquiry-required-field-contract="email-only"
+        data-property-inquiry-preparation-separated="true"
+        data-property-inquiry-hidden-transfer="false"
+        data-property-inquiry-auto-populated-notes="false"
+        data-property-inquiry-api-change="false"
+        data-property-inquiry-crm-email-change="false"
+        data-property-inquiry-persistence-change="false"
+        data-property-inquiry-notification-change="false"
       >
         <div className="border-b border-cyan-100/14 bg-cyan-100/[0.075] p-5">
           <CheckCircle2 className="text-cyan-100" size={26} aria-hidden="true" />
@@ -277,6 +285,14 @@ export default function PropertyInquiryForm({ propertyId, address, city, state }
       data-property-inquiry-notes-length={notes.length}
       data-property-inquiry-notes-max-length="600"
       data-property-inquiry-error={errorMessage}
+      data-property-inquiry-required-field-contract="email-only"
+      data-property-inquiry-preparation-separated="true"
+      data-property-inquiry-hidden-transfer="false"
+      data-property-inquiry-auto-populated-notes="false"
+      data-property-inquiry-api-change="false"
+      data-property-inquiry-crm-email-change="false"
+      data-property-inquiry-persistence-change="false"
+      data-property-inquiry-notification-change="false"
     >
       <div className="border-b border-cyan-100/14 bg-cyan-100/[0.075] p-5">
         <div className="flex items-start justify-between gap-4">
@@ -410,6 +426,19 @@ export default function PropertyInquiryForm({ propertyId, address, city, state }
               </button>
             ))}
           </div>
+        </div>
+
+        <div
+          className="rounded-[6px] border border-cyan-100/18 bg-cyan-100/[0.055] p-3"
+          data-testid="property-inquiry-customer-control-notice"
+          data-property-inquiry-customer-typed-only="true"
+          data-property-inquiry-preparation-auto-transfer="false"
+        >
+          <p className="text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100/72">You choose what to share</p>
+          <p className="mt-2 text-xs leading-5 text-white/48">
+            Use the preparation prompts above, then type only what you want included. REIE does not auto-fill notes, attach property
+            analysis, or pass comparison, financing, Grand Plan, browsing, or saved-search context into this inquiry.
+          </p>
         </div>
 
         <label className="relative block rounded-[6px] border border-white/10 bg-white/[0.035] p-3">

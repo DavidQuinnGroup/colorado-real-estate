@@ -1,7 +1,8 @@
 import Link from 'next/link';
-import { ClipboardCheck, Compass, FileSearch, Fingerprint, Layers3, ShieldCheck, Waypoints } from 'lucide-react';
+import { ClipboardCheck, Compass, FileSearch, Fingerprint, Layers3, MessageCircleQuestion, ShieldCheck, Waypoints } from 'lucide-react';
 
 import type { PropertyProduct31Model, PropertyProduct31Confidence } from '@/lib/propertyProduct31';
+import { buildPropertyInquiryPreparationIntelligence } from '@/lib/propertyInquiryDecisionContinuity';
 
 type PropertyProduct31ExperienceProps = {
   model: PropertyProduct31Model;
@@ -27,6 +28,12 @@ function stateClass(state: string) {
 
 export default function PropertyProduct31Experience({ model }: PropertyProduct31ExperienceProps) {
   const recordEvidence = model.authoritativeSources.publicRecordEvidence;
+  const inquiryPreparation = buildPropertyInquiryPreparationIntelligence({
+    deepening: model.deepening,
+    authoritativeSources: model.authoritativeSources,
+    comparisonIntelligence: model.comparisonIntelligence,
+    checklist: model.checklist,
+  });
   const recordDisposition = (domain: 'ASSESSOR' | 'TAX' | 'PERMIT') =>
     recordEvidence.domainProfiles.find((profile) => profile.domain === domain)?.implementationDisposition ?? 'REMAINS_FAIL_CLOSED';
 
@@ -87,6 +94,7 @@ export default function PropertyProduct31Experience({ model }: PropertyProduct31
       data-property-geographic-source-prisma-change={String(model.authoritativeSources.protectedBoundaries.prismaChange)}
       data-property-geographic-source-telemetry={String(model.authoritativeSources.protectedBoundaries.telemetry)}
       data-property-geographic-source-customer-data-mutation={String(model.authoritativeSources.protectedBoundaries.customerDataMutation)}
+      data-property-inquiry-preparation-intelligence={inquiryPreparation.status}
     >
       <style>{`
         @media (min-width: 768px) {
@@ -333,6 +341,77 @@ export default function PropertyProduct31Experience({ model }: PropertyProduct31
               <p className="mt-3 border-t border-white/10 pt-3 text-xs leading-5 text-white/40">{item.professionalReview}</p>
             </Link>
           ))}
+        </div>
+      </section>
+
+      <section
+        id="property-inquiry-preparation"
+        className="border-t border-white/10"
+        data-testid="property-inquiry-preparation-intelligence"
+        data-property-inquiry-preparation-status={inquiryPreparation.status}
+        data-property-inquiry-preparation-question={inquiryPreparation.governingQuestion}
+        data-property-inquiry-preparation-relationship={inquiryPreparation.relationship}
+        data-property-inquiry-preparation-category-count={inquiryPreparation.categories.length}
+        data-property-inquiry-preparation-api-mutation={String(inquiryPreparation.protectedBoundaries.apiMutation)}
+        data-property-inquiry-preparation-required-field-expansion={String(inquiryPreparation.protectedBoundaries.requiredFieldExpansion)}
+        data-property-inquiry-preparation-hidden-payload={String(inquiryPreparation.protectedBoundaries.hiddenPayloadExpansion)}
+        data-property-inquiry-preparation-auto-populate-notes={String(inquiryPreparation.protectedBoundaries.autoPopulateNotes)}
+        data-property-inquiry-preparation-crm-email-change={String(inquiryPreparation.protectedBoundaries.crmEmailChange)}
+        data-property-inquiry-preparation-persistence-change={String(inquiryPreparation.protectedBoundaries.persistenceChange)}
+        data-property-inquiry-preparation-notification-change={String(inquiryPreparation.protectedBoundaries.notificationChange)}
+        data-property-inquiry-preparation-property-analysis-transfer={String(inquiryPreparation.protectedBoundaries.propertyAnalysisTransfer)}
+        data-property-inquiry-preparation-comparison-transfer={String(inquiryPreparation.protectedBoundaries.comparisonStateTransfer)}
+        data-property-inquiry-preparation-financing-transfer={String(inquiryPreparation.protectedBoundaries.financingAssumptionTransfer)}
+        data-property-inquiry-preparation-grand-plan-transfer={String(inquiryPreparation.protectedBoundaries.grandPlanStateTransfer)}
+        data-property-inquiry-preparation-browsing-history-transfer={String(inquiryPreparation.protectedBoundaries.browsingHistoryTransfer)}
+        data-property-inquiry-preparation-lead-metadata-expansion={String(inquiryPreparation.protectedBoundaries.leadMetadataExpansion)}
+        data-property-inquiry-preparation-provider-activation={String(inquiryPreparation.protectedBoundaries.providerActivation)}
+        data-property-inquiry-preparation-telemetry={String(inquiryPreparation.protectedBoundaries.telemetry)}
+        data-property-inquiry-preparation-customer-data-expansion={String(inquiryPreparation.protectedBoundaries.customerDataExpansion)}
+      >
+        <div className="grid gap-px bg-white/10 lg:grid-cols-[0.72fr_1.28fr]">
+          <div className="bg-[#0d141c] p-5 md:p-6">
+            <p className="reie-property-product-31-eyebrow flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.22em] text-cyan-100/76">
+              <MessageCircleQuestion size={14} aria-hidden="true" />
+              Pre-Inquiry Preparation
+            </p>
+            <h3 className="reie-property-product-31-section-title mt-3 text-xl font-black uppercase tracking-tight text-white">
+              What should I ask before I contact someone?
+            </h3>
+            <p className="reie-property-product-31-copy mt-3 text-sm leading-6 text-white/56">
+              Organize known facts, derived context, source posture, unavailable items, and useful questions before using Property Inquiry.
+              Nothing here is copied into notes or sent unless you type it yourself.
+            </p>
+            <div className="mt-5 rounded-[6px] border border-cyan-100/18 bg-cyan-100/[0.055] p-4">
+              <p className="text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100/72">Customer control</p>
+              <p className="mt-2 text-xs leading-5 text-white/52">
+                Property Inquiry remains email-only for required fields, with optional name, phone, timing, and notes. This preparation
+                layer does not change routing, notification, CRM, persistence, or form submission behavior.
+              </p>
+            </div>
+          </div>
+          <div className="grid gap-px bg-white/10 md:grid-cols-2">
+            {inquiryPreparation.categories.map((category) => (
+              <Link
+                key={category.key}
+                href={category.href}
+                className="reie-property-product-31-card bg-[#0d141c] p-4 text-white transition hover:bg-white/[0.045] focus:outline-none focus:ring-2 focus:ring-cyan-100 focus:ring-offset-2 focus:ring-offset-[#0d141c] md:p-5"
+                data-testid="property-inquiry-preparation-category"
+                data-property-inquiry-preparation-category={category.key}
+                data-property-inquiry-preparation-professional-domain={category.professionalDomain}
+              >
+                <span className="inline-flex rounded-[5px] border border-cyan-100/20 bg-cyan-100/[0.07] px-2 py-1 text-[9px] font-black uppercase tracking-[0.12em] text-cyan-100">
+                  {category.professionalDomain.replace(/_/g, ' ').toLowerCase()}
+                </span>
+                <h4 className="reie-property-product-31-card-title mt-4 text-sm font-black uppercase leading-5 tracking-[0.08em] text-white">
+                  {category.label}
+                </h4>
+                <p className="reie-property-product-31-copy mt-3 text-xs leading-5 text-white/56">{category.known}</p>
+                <p className="mt-3 border-t border-white/10 pt-3 text-xs leading-5 text-white/50">{category.usefulAsk}</p>
+                <p className="mt-3 text-[11px] leading-5 text-white/38">{category.verification}</p>
+              </Link>
+            ))}
+          </div>
         </div>
       </section>
 

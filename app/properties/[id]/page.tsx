@@ -38,6 +38,7 @@ import { getDisplaySafeListingPhotoUrl, getListingFallbackPhotoUrl, getListingPh
 import { neighborhoods } from '@/lib/neighborhoods';
 import { prisma } from '@/lib/prisma';
 import { buildPropertyDecisionWorkspace } from '@/lib/property/propertyDecisionWorkspace';
+import { buildDecisionJourneyContinuityDeepening } from '@/lib/propertyInquiryDecisionContinuity';
 import { buildPropertyProduct31Model } from '@/lib/propertyProduct31';
 import { LISTING_ADVERTISING_CLASSIFICATION } from '@/lib/publicTrust';
 import type { FAQItem } from '@/lib/schema/faqSchema';
@@ -1067,6 +1068,7 @@ export default async function PropertyPage({ params, searchParams }: PropertyPag
     photoCount: property.photos.length,
     relatedListings,
   });
+  const decisionContinuityDeepening = buildDecisionJourneyContinuityDeepening();
   const propertyReadinessAvailableEvidence = getPropertyReadinessAvailableEvidence({
     property,
     pricePerSquareFoot,
@@ -1405,6 +1407,65 @@ export default async function PropertyPage({ params, searchParams }: PropertyPag
             { label: 'Ask About This Property', href: '#property-contact', note: 'Focused question' },
           ]}
         />
+      </section>
+
+      <section
+        className="mx-auto max-w-7xl px-5 pb-4 pt-2 sm:px-8 lg:px-10"
+        data-testid="property-decision-continuity-deepening"
+        data-decision-continuity-status={decisionContinuityDeepening.status}
+        data-decision-continuity-question={decisionContinuityDeepening.governingQuestion}
+        data-decision-continuity-standard={decisionContinuityDeepening.standard}
+        data-decision-continuity-action-count={decisionContinuityDeepening.primaryActions.length}
+        data-decision-continuity-preserved-alternatives={decisionContinuityDeepening.preservedAlternatives.join('|')}
+        data-decision-continuity-hidden-state-transfer={String(decisionContinuityDeepening.protectedBoundaries.hiddenStateTransfer)}
+        data-decision-continuity-profiling={String(decisionContinuityDeepening.protectedBoundaries.profiling)}
+        data-decision-continuity-personalization={String(decisionContinuityDeepening.protectedBoundaries.personalization)}
+        data-decision-continuity-browsing-history-transfer={String(decisionContinuityDeepening.protectedBoundaries.browsingHistoryTransfer)}
+        data-decision-continuity-comparison-state-transfer={String(decisionContinuityDeepening.protectedBoundaries.comparisonStateTransfer)}
+        data-decision-continuity-financing-state-transfer={String(decisionContinuityDeepening.protectedBoundaries.financingStateTransfer)}
+        data-decision-continuity-crm-state-transfer={String(decisionContinuityDeepening.protectedBoundaries.crmStateTransfer)}
+        data-decision-continuity-telemetry-expansion={String(decisionContinuityDeepening.protectedBoundaries.telemetryExpansion)}
+        data-decision-continuity-property-ranking={String(decisionContinuityDeepening.protectedBoundaries.propertyRanking)}
+        data-decision-continuity-neighborhood-ranking={String(decisionContinuityDeepening.protectedBoundaries.neighborhoodRanking)}
+        data-decision-continuity-suitability-scoring={String(decisionContinuityDeepening.protectedBoundaries.suitabilityScoring)}
+        data-decision-continuity-investment-scoring={String(decisionContinuityDeepening.protectedBoundaries.investmentScoring)}
+        data-decision-continuity-protected-class-inference={String(decisionContinuityDeepening.protectedBoundaries.protectedClassInference)}
+        data-decision-continuity-demographic-steering={String(decisionContinuityDeepening.protectedBoundaries.demographicSteering)}
+        data-decision-continuity-school-ranking={String(decisionContinuityDeepening.protectedBoundaries.schoolRanking)}
+        data-decision-continuity-safety-ranking={String(decisionContinuityDeepening.protectedBoundaries.safetyRanking)}
+        data-decision-continuity-valuation-certainty={String(decisionContinuityDeepening.protectedBoundaries.valuationCertainty)}
+        data-decision-continuity-financial-qualification={String(decisionContinuityDeepening.protectedBoundaries.financialQualification)}
+      >
+        <div className="overflow-hidden rounded-[8px] border border-white/10 bg-[#0d141c]">
+          <div className="border-b border-white/10 bg-white/[0.035] p-5 md:p-6">
+            <p className="text-[10px] font-black uppercase tracking-[0.22em] text-cyan-100/76">
+              Decision Continuity
+            </p>
+            <h2 className="mt-3 max-w-3xl text-xl font-black uppercase tracking-tight text-white md:text-2xl">
+              After this property, choose the next useful action
+            </h2>
+            <p className="mt-3 max-w-3xl text-sm leading-6 text-white/58">
+              Keep the next step tied to the question you just formed. Compare evidence, verify sources, or ask with context before
+              widening into financing, advisory, Grand Plan, Sources, Search, or market/place context.
+            </p>
+          </div>
+          <div className="grid gap-px bg-white/10 md:grid-cols-3">
+            {decisionContinuityDeepening.primaryActions.map((action) => (
+              <Link
+                key={action.label}
+                href={action.href}
+                className="bg-[#0d141c] p-5 text-white transition hover:bg-white/[0.045] focus:outline-none focus:ring-2 focus:ring-cyan-100 focus:ring-offset-2 focus:ring-offset-[#0d141c]"
+                data-testid="property-decision-continuity-action"
+                data-decision-continuity-tool={action.tool}
+              >
+                <p className="text-[10px] font-black uppercase tracking-[0.16em] text-cyan-100/70">{action.label}</p>
+                <h3 className="mt-3 text-sm font-black uppercase leading-5 tracking-[0.08em] text-white">{action.currentDecision}</h3>
+                <p className="mt-3 text-xs leading-5 text-white/54">{action.nextQuestion}</p>
+                <p className="mt-3 border-t border-white/10 pt-3 text-[11px] leading-5 text-white/38">{action.professionalHandoff}</p>
+              </Link>
+            ))}
+          </div>
+        </div>
       </section>
 
       <section

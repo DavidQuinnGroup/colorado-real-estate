@@ -152,6 +152,7 @@
     "check:market-aeo-wave-2": "npm run worker:build && node dist/scripts/checkMarketAeoWave2.js",
     "check:search-ldi-advancement": "npm run worker:build && node dist/scripts/checkSearchLdiAdvancement.js",
     "check:property-product-3-1": "npm run worker:build && node dist/scripts/checkPropertyProduct31.js",
+    "check:property-inquiry-decision-continuity": "npm run worker:build && node dist/scripts/checkPropertyInquiryDecisionContinuity.js",
     "check:property-geographic-source-intelligence": "npm run worker:build && node dist/scripts/checkPropertyGeographicSourceIntelligence.js",
     "check:authoritative-property-record-intelligence": "npm run worker:build && node dist/scripts/checkAuthoritativePropertyRecordIntelligence.js",
     "check:reie-source-registry-grand-plan-advancement": "npm run worker:build && node dist/scripts/checkReieSourceRegistryGrandPlanAdvancement.js",

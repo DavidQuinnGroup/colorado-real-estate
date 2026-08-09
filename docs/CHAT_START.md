@@ -10,6 +10,85 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / Property Inquiry + Decision Continuity Locally Certified:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Local implementation state:
+
+- Branch: `main`
+- Base commit before local implementation: `48385cff6aab3fea3e406f6fb4f42da1ebeabc99`
+- Local status: `PROPERTY_INQUIRY_DECISION_CONTINUITY_LOCALLY_CERTIFIED`
+- Implementation record: `docs/project-atlas/executive-library/REIE-PROPERTY-INQUIRY-DECISION-CONTINUITY-IMPLEMENTATION.md`
+
+Workstream A: Property Inquiry Preparation Intelligence:
+
+- Added deterministic model support in `lib/propertyInquiryDecisionContinuity.ts`.
+- Added `data-testid="property-inquiry-preparation-intelligence"` in `components/PropertyProduct31Experience.tsx`.
+- Preparation organizes existing public property intelligence into `PROPERTY_FACTS`, `DERIVED_CONTEXT`, `SOURCE_EVIDENCE_POSTURE`, `UNVERIFIED_UNAVAILABLE`, and `QUESTIONS_TO_CONSIDER`.
+- The customer-facing relationship is `SOURCE / EVIDENCE -> PROPERTY INTELLIGENCE -> PRE-INQUIRY PREPARATION -> USER-CONTROLLED INQUIRY`.
+- Professional routing domains cover real estate agent, lender, inspector / engineer, attorney, tax professional, and appraiser questions.
+- Property Inquiry remains user-controlled; preparation content is not copied into notes, not transferred as hidden context, and not submitted unless the customer types it.
+
+Workstream B: Decision Journey Continuity Deepening:
+
+- Added `data-testid="property-decision-continuity-deepening"` on the property route.
+- The governing continuity question is: `After learning something here, is the customer's next useful REIE action clear?`
+- The continuity standard is `CURRENT DECISION -> RELEVANT NEXT QUESTION -> RELEVANT REIE TOOL -> OPTIONAL PROFESSIONAL HANDOFF`.
+- The property route exposes three primary next actions: Compare evidence, Verify sources, and Ask with context.
+- Search, Market/Place, Financing, Advisory, Grand Plan, and Sources remain preserved alternatives without CTA overload.
+
+Property Inquiry contract:
+
+- Property Inquiry API changed: `false`
+- Property Inquiry required field contract changed: `false`
+- Required customer-entered field remains email only.
+- Name, phone, timing, and notes remain optional.
+- No hidden transfer was introduced for property analysis, comparison state, financing assumptions, Grand Plan state, browsing state, saved-search state, lead metadata, or unsubmitted customer context.
+- No Contact API, CRM/email, notification, persistence, Prisma/database/schema, worker/queue, telemetry, provider activation, BCOD, assessor/tax/permit retrieval, production configuration, or customer-data expansion occurred.
+
+Validation recorded locally:
+
+- `git diff --check`
+- `npm run typecheck`
+- `npm run check:property-inquiry-decision-continuity`
+- `npm run check:public-runtime-safety`
+- `npm run check:public-trust-readiness`
+- `npm run check:decision-journey-experience`
+- `npm run check:property-product-3-1`
+- `npm run check:reie-property-intelligence-experience-v8`
+- `npm run check:dxt-3-property-professional-preparation-implementation`
+- `npm run check:dxt-wave-1e-contact-decision-flow-implementation`
+- `npm run check:dxt-3-contact-path-selection-quality-implementation`
+- `npm run check:dxt-property-advisory-contact-continuity-implementation`
+- `npm run check:property-geographic-source-intelligence`
+- `npm run check:authoritative-property-record-intelligence`
+- `npm run check:property-seller-evidence-readiness`
+- `npm run check:home-worth-advisory-intelligence`
+- `npm run check:reie-comparison-financing-intelligence`
+- `npm run check:grand-plan-journey-safety`
+- `npm run check:reie-source-registry-grand-plan-advancement`
+- `npm run check:cim-privacy-consent-data-minimization-gate`
+- `npm run build`
+
+Protected boundaries:
+
+- No push occurred.
+- No deployment occurred.
+- No production verification occurred.
+- No new Property Inquiry API mutation, Contact API mutation, CRM/email change, database/Prisma/schema change, MLS ingestion, saved-search persistence change, workers/queues, notifications change, telemetry/customer tracking, customer-data expansion, provider activation, credentials/secrets, production configuration mutation, BCOD activation, or assessor/tax/permit retrieval occurred.
+- No property or neighborhood ranking, suitability scoring, investment scoring, protected-class inference, demographic steering, school ranking, safety ranking, valuation certainty, or financial qualification was introduced.
+
+Next gate:
+
+- `READY_FOR_PROPERTY_INQUIRY_DECISION_CONTINUITY_PUSH_AUTHORIZATION`
+
+Do not push, deploy, activate providers, retrieve records, activate BCOD, mutate production, add persistence, expand Property Inquiry/Contact/CRM/email, or begin a new implementation workstream unless explicitly authorized.
+
+Prior handoff retained below for audit history.
+
 PROJECT ATLAS(tm) / Home Worth + Advisory Intelligence Production Certified and Closed:
 
 Workspace:
