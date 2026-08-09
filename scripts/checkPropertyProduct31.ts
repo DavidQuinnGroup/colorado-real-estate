@@ -23,6 +23,7 @@ const packageJson = JSON.parse(read('package.json')) as { scripts?: Record<strin
 
 assertIncludes(model, 'buildPropertyProduct31Model', 'Property Product 3.1 must expose a deterministic model builder.');
 assertIncludes(model, 'buildPropertyGeographicSourceIntelligence', 'Property Product 3.1 must consume governed geographic/source intelligence.');
+assertIncludes(model, 'buildPropertyEvidenceCompletenessVerification', 'Property Product 3.1 must consume evidence completeness verification intelligence.');
 assertIncludes(propertyPage, 'buildPropertyProduct31Model', 'Property page must build the Property Product 3.1 model from existing data.');
 assertIncludes(propertyPage, 'relatedListings,', 'Property Product 3.1 must reuse existing related-listing context.');
 assertIncludes(propertyPage, '<PropertyProduct31Experience model={propertyProduct31Model} />', 'Property page must render the Property Product 3.1 experience.');
@@ -32,6 +33,9 @@ for (const expectedSurface of [
   'data-testid="property-product-3-1-decision-profile-item"',
   'data-testid="property-product-3-1-property-dna"',
   'data-testid="property-product-3-1-confidence-layer"',
+  'data-testid="property-evidence-completeness-verification"',
+  'data-testid="property-evidence-completeness-domain"',
+  'data-testid="property-evidence-completeness-methodology-link"',
   'data-testid="property-geographic-source-intelligence"',
   'data-testid="property-public-record-evidence-profile"',
   'data-testid="property-geographic-source-item"',
@@ -54,6 +58,15 @@ for (const expectedBoundary of [
   'data-property-product-3-1-valuation-model="false"',
   'data-property-product-3-1-rankings="false"',
   'data-property-product-3-1-fixture-data="false"',
+  'data-property-evidence-completeness-score={String(model.evidenceCompleteness.protectedBoundaries.score)}',
+  'data-property-evidence-completeness-ranking={String(model.evidenceCompleteness.protectedBoundaries.ranking)}',
+  'data-property-evidence-completeness-provider-activation={String(model.evidenceCompleteness.protectedBoundaries.providerActivation)}',
+  'data-property-evidence-completeness-county-activation={String(model.evidenceCompleteness.protectedBoundaries.countyActivation)}',
+  'data-property-evidence-completeness-bcod-activation={String(model.evidenceCompleteness.protectedBoundaries.bcodActivation)}',
+  'data-property-evidence-completeness-record-retrieval={String(model.evidenceCompleteness.protectedBoundaries.recordRetrieval)}',
+  'data-property-evidence-completeness-inquiry-mutation={String(model.evidenceCompleteness.protectedBoundaries.inquiryMutation)}',
+  'data-property-evidence-completeness-contact-mutation={String(model.evidenceCompleteness.protectedBoundaries.contactMutation)}',
+  'data-property-evidence-completeness-telemetry={String(model.evidenceCompleteness.protectedBoundaries.telemetry)}',
   'data-property-record-intelligence={recordEvidence.status}',
   'data-property-record-disposition-assessor={recordDisposition',
   'data-property-record-disposition-tax={recordDisposition',
@@ -142,6 +155,8 @@ assert.equal(readyModel.profile.length, 3, 'Decision profile must expose three c
 assert.equal(readyModel.dna.length, 4, 'Property DNA must expose four deterministic dimensions.');
 assert.equal(readyModel.authoritativeSources.selectedSources.length, 7, 'Authoritative source readiness must expose listing, place, public-record, and BCOD gate items.');
 assert.equal(readyModel.confidence.facets.length, 4, 'Confidence layer must expose four customer-facing evidence facets.');
+assert.equal(readyModel.evidenceCompleteness.status, 'PROPERTY_EVIDENCE_COMPLETENESS_VERIFICATION_IMPLEMENTED');
+assert.equal(readyModel.evidenceCompleteness.domains.length, 11, 'Evidence completeness must expose the authorized domain set.');
 assert.equal(readyModel.comparables.length, 2, 'Comparable Context Panel must reuse related properties without creating new source data.');
 assert.equal(readyModel.checklist.length, 4, 'Verification checklist must include financial, construction, market, and property categories.');
 assert(readyModel.comparables.every((item) => item.similarities.length > 0 && item.differences.length > 0), 'Comparable items must explain factual similarities and differences.');
@@ -164,6 +179,19 @@ assert.equal(readyModel.comparisonIntelligence.protectedBoundaries.lenderQuote, 
 assert.equal(readyModel.comparisonIntelligence.protectedBoundaries.providerActivation, false);
 assert.equal(readyModel.comparisonIntelligence.protectedBoundaries.persistence, false);
 assert.equal(readyModel.comparisonIntelligence.protectedBoundaries.telemetry, false);
+assert.equal(readyModel.evidenceCompleteness.protectedBoundaries.score, false);
+assert.equal(readyModel.evidenceCompleteness.protectedBoundaries.percentage, false);
+assert.equal(readyModel.evidenceCompleteness.protectedBoundaries.grade, false);
+assert.equal(readyModel.evidenceCompleteness.protectedBoundaries.rating, false);
+assert.equal(readyModel.evidenceCompleteness.protectedBoundaries.ranking, false);
+assert.equal(readyModel.evidenceCompleteness.protectedBoundaries.suitability, false);
+assert.equal(readyModel.evidenceCompleteness.protectedBoundaries.providerActivation, false);
+assert.equal(readyModel.evidenceCompleteness.protectedBoundaries.countyActivation, false);
+assert.equal(readyModel.evidenceCompleteness.protectedBoundaries.bcodActivation, false);
+assert.equal(readyModel.evidenceCompleteness.protectedBoundaries.recordRetrieval, false);
+assert.equal(readyModel.evidenceCompleteness.protectedBoundaries.inquiryMutation, false);
+assert.equal(readyModel.evidenceCompleteness.protectedBoundaries.contactMutation, false);
+assert.equal(readyModel.evidenceCompleteness.protectedBoundaries.telemetry, false);
 assert.equal(
   readyModel.authoritativeSources.publicRecordEvidence.status,
   'AUTHORITATIVE_PROPERTY_RECORD_INTELLIGENCE_ARCHITECTURE_READY_SOURCE_CONFIRMATION_REQUIRED',
@@ -195,6 +223,7 @@ assert.equal(sparseModel.comparables.length, 0, 'Sparse related-listing context 
 assert.equal(sparseModel.comparisonIntelligence.canCompare, false, 'Sparse related-listing context must not invent comparison intelligence.');
 assert.equal(sparseModel.authoritativeSources.geography.city, 'Broomfield', 'Sparse model must still carry city geography from listing fields.');
 assert(sparseModel.authoritativeSources.selectedSources.filter((source) => source.claimEligible).length <= 2, 'Sparse source model must keep claim eligibility narrow.');
+assert(sparseModel.evidenceCompleteness.domains.some((domain) => domain.key === 'PROPERTY_CHARACTERISTICS' && domain.state === 'VERIFICATION REQUIRED'), 'Sparse property characteristics must remain verification-bound.');
 
 for (const forbidden of [
   'OpenAI',

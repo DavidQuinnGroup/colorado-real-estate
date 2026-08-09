@@ -10,6 +10,86 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / Property Evidence Completeness + Verification Intelligence Locally Certified:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Canonical baseline before implementation:
+
+- Branch: `main`
+- Baseline commit: `63ab64b5d82ca3aa70165af596e75d7f18a57ed5`
+- Baseline origin/main: `63ab64b5d82ca3aa70165af596e75d7f18a57ed5`
+- Baseline divergence: `0 ahead / 0 behind`
+- Baseline working tree: clean
+- Remote main was fetched and reverified before editing.
+
+Local implementation status:
+
+- `PROPERTY_EVIDENCE_COMPLETENESS_VERIFICATION_LOCALLY_CERTIFIED`
+- Local implementation commit: this committed implementation record.
+- Executive implementation record: `docs/project-atlas/executive-library/REIE-PROPERTY-EVIDENCE-COMPLETENESS-VERIFICATION-IMPLEMENTATION.md`
+
+Implemented customer-facing surface:
+
+- Property Product 3.1 now includes a compact Evidence Completeness section.
+- The section answers what evidence is supported, what is missing or unverified, and what to verify before making a decision.
+- Evidence is organized by listing, property characteristics, price/listing history, location/place, public record, tax, permit, HOA, condition/inspection, title/legal, and financing-related domains.
+- Domain states use existing customer-facing vocabulary: `SUPPORTED FACT`, `DERIVED / CALCULATED`, `UNAVAILABLE`, `VERIFICATION REQUIRED`, and `PROFESSIONAL JUDGMENT`.
+- Verification actions include source checking, seller/listing-agent questions, county verification, HOA document review, and optional professional discussion with inspector, attorney, lender, tax professional, or appraiser where appropriate.
+- `/sources` methodology continuity is preserved.
+
+Changed files:
+
+- `lib/propertyEvidenceCompletenessVerification.ts`
+- `lib/propertyProduct31.ts`
+- `components/PropertyProduct31Experience.tsx`
+- `scripts/checkPropertyEvidenceCompletenessVerification.ts`
+- `scripts/checkPropertyProduct31.ts`
+- `package.json`
+- `tsconfig.worker.json`
+- `docs/project-atlas/executive-library/REIE-PROPERTY-EVIDENCE-COMPLETENESS-VERIFICATION-IMPLEMENTATION.md`
+- `docs/CHAT_START.md`
+
+Validation:
+
+- `git diff --check`
+- `npm run typecheck`
+- `npm run check:property-evidence-completeness-verification`
+- `npm run check:property-product-3-1`
+- `npm run check:property-inquiry-decision-continuity`
+- `npm run check:professional-handoff-cohesion`
+- `npm run check:reie-decision-intelligence-cohesion`
+- `npm run check:public-runtime-safety`
+- `npm run check:public-trust-readiness`
+- `npm run check:authoritative-property-record-intelligence`
+- `npm run check:property-geographic-source-intelligence`
+- `npm run check:reie-source-registry-grand-plan-advancement`
+- `npm run check:cim-privacy-consent-data-minimization-gate`
+- `npm run check:reie-comparison-financing-intelligence`
+- `npm run check:buyer-place-intelligence-advancement`
+- `npm run check:seller-property-intelligence-advancement`
+- `npm run check:home-worth-advisory-intelligence`
+- `npm run build`
+
+Protected boundaries:
+
+- No push occurred.
+- No deployment occurred.
+- No production verification occurred.
+- No property score, evidence score, completeness percentage, property grade, quality rating, suitability score, investment score, ranking, recommendation engine, valuation certainty, financing qualification, professional conclusion, protected-class inference, or demographic steering was introduced.
+- No Prisma/database/schema change, MLS ingestion/sync, API mutation, Property Inquiry mutation, Contact mutation, CRM/email behavior, notification change, worker/queue change, saved-search persistence, telemetry, customer profiling, customer-data expansion, provider activation, credentials/configuration change, public GIS activation, source activation, BCOD activation, public-record retrieval, county-source activation, or production mutation occurred.
+- No Secondary Overflow research, county response, pending county source, Yuma source material, BCOD material, provider material, or unapproved authoritative-source material was consumed.
+
+Next gate:
+
+- `READY_FOR_PROPERTY_EVIDENCE_COMPLETENESS_VERIFICATION_PUSH_AUTHORIZATION`
+
+The implementation commit is local until separate push authorization is granted. Do not push, deploy, run production certification, activate providers or county sources, acquire datasets, retrieve public records, activate BCOD, mutate customer data, consume Secondary research, or begin another implementation workstream unless explicitly authorized.
+
+Prior handoff retained below for audit history.
+
 PROJECT ATLAS(tm) / REIE Professional Handoff Cohesion Production Certified and Closed:
 
 Workspace:

@@ -10,6 +10,10 @@ import {
   buildPropertyIntelligenceDeepening,
   type PropertyIntelligenceDeepening,
 } from './sellerPropertyIntelligenceAdvancement.js';
+import {
+  buildPropertyEvidenceCompletenessVerification,
+  type PropertyEvidenceCompletenessVerification,
+} from './propertyEvidenceCompletenessVerification.js';
 
 export type PropertyProduct31Input = {
   address?: string | null;
@@ -92,6 +96,7 @@ export type PropertyProduct31Model = {
   authoritativeSources: PropertyGeographicSourceIntelligence;
   comparisonIntelligence: PropertyComparisonWorkspace;
   deepening: PropertyIntelligenceDeepening;
+  evidenceCompleteness: PropertyEvidenceCompletenessVerification;
   confidence: {
     summary: string;
     facets: PropertyProduct31ConfidenceFacet[];
@@ -257,6 +262,11 @@ export function buildPropertyProduct31Model(input: PropertyProduct31Input): Prop
     photoCount,
     relatedListingCount: relatedListings.length,
   });
+  const evidenceCompleteness = buildPropertyEvidenceCompletenessVerification({
+    property: input,
+    authoritativeSources,
+    comparisonIntelligence,
+  });
 
   const profile: PropertyProduct31ProfileItem[] = [
     {
@@ -359,6 +369,7 @@ export function buildPropertyProduct31Model(input: PropertyProduct31Input): Prop
     authoritativeSources,
     comparisonIntelligence,
     deepening,
+    evidenceCompleteness,
     confidence: {
       summary: 'Property Decision Profile uses existing public property data to reduce decision friction without scoring, ranking, valuing, forecasting, or recommending a property.',
       facets: confidenceFacets,

@@ -56,6 +56,27 @@ export default function PropertyProduct31Experience({ model }: PropertyProduct31
       data-property-product-3-1-confidence-count={model.confidence.facets.length}
       data-property-product-3-1-comparable-count={model.comparables.length}
       data-property-product-3-1-checklist-count={model.checklist.length}
+      data-property-evidence-completeness-status={model.evidenceCompleteness.status}
+      data-property-evidence-completeness-domain-count={model.evidenceCompleteness.domains.length}
+      data-property-evidence-completeness-score={String(model.evidenceCompleteness.protectedBoundaries.score)}
+      data-property-evidence-completeness-percentage={String(model.evidenceCompleteness.protectedBoundaries.percentage)}
+      data-property-evidence-completeness-grade={String(model.evidenceCompleteness.protectedBoundaries.grade)}
+      data-property-evidence-completeness-rating={String(model.evidenceCompleteness.protectedBoundaries.rating)}
+      data-property-evidence-completeness-ranking={String(model.evidenceCompleteness.protectedBoundaries.ranking)}
+      data-property-evidence-completeness-suitability={String(model.evidenceCompleteness.protectedBoundaries.suitability)}
+      data-property-evidence-completeness-valuation-certainty={String(model.evidenceCompleteness.protectedBoundaries.valuationCertainty)}
+      data-property-evidence-completeness-financial-qualification={String(model.evidenceCompleteness.protectedBoundaries.financialQualification)}
+      data-property-evidence-completeness-provider-activation={String(model.evidenceCompleteness.protectedBoundaries.providerActivation)}
+      data-property-evidence-completeness-county-activation={String(model.evidenceCompleteness.protectedBoundaries.countyActivation)}
+      data-property-evidence-completeness-bcod-activation={String(model.evidenceCompleteness.protectedBoundaries.bcodActivation)}
+      data-property-evidence-completeness-record-retrieval={String(model.evidenceCompleteness.protectedBoundaries.recordRetrieval)}
+      data-property-evidence-completeness-api-mutation={String(model.evidenceCompleteness.protectedBoundaries.apiMutation)}
+      data-property-evidence-completeness-inquiry-mutation={String(model.evidenceCompleteness.protectedBoundaries.inquiryMutation)}
+      data-property-evidence-completeness-contact-mutation={String(model.evidenceCompleteness.protectedBoundaries.contactMutation)}
+      data-property-evidence-completeness-crm-email={String(model.evidenceCompleteness.protectedBoundaries.crmEmail)}
+      data-property-evidence-completeness-persistence={String(model.evidenceCompleteness.protectedBoundaries.persistence)}
+      data-property-evidence-completeness-telemetry={String(model.evidenceCompleteness.protectedBoundaries.telemetry)}
+      data-property-evidence-completeness-customer-data-expansion={String(model.evidenceCompleteness.protectedBoundaries.customerDataExpansion)}
       data-property-intelligence-deepening={model.deepening.status}
       data-property-intelligence-derived-count={model.deepening.derivedFacts.length}
       data-property-intelligence-history-count={model.deepening.history.length}
@@ -127,6 +148,7 @@ export default function PropertyProduct31Experience({ model }: PropertyProduct31
           {[
             ['Profile', '#property-decision-profile'],
             ['DNA', '#property-dna'],
+            ['Evidence', '#property-evidence-completeness'],
             ['Deepen', '#property-intelligence-deepening'],
             ['Compare', '#property-comparable-context'],
             ['Verify', '#property-verification-checklist'],
@@ -230,6 +252,78 @@ export default function PropertyProduct31Experience({ model }: PropertyProduct31
               <p className="reie-property-product-31-note mt-3 border-t border-white/10 pt-3 text-xs leading-5 text-white/40">{facet.action}</p>
             </article>
           ))}
+        </div>
+      </section>
+
+      <section
+        id="property-evidence-completeness"
+        className="border-t border-white/10"
+        data-testid="property-evidence-completeness-verification"
+        data-property-evidence-completeness-source-href={model.evidenceCompleteness.sourceMethodologyHref}
+      >
+        <div className="border-b border-white/10 bg-white/[0.025] p-5 md:p-6">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+            <div className="max-w-4xl">
+              <p className="reie-property-product-31-eyebrow flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.22em] text-cyan-100/76">
+                <FileSearch size={14} aria-hidden="true" />
+                Evidence Completeness
+              </p>
+              <h3 className="reie-property-product-31-section-title mt-3 text-xl font-black uppercase tracking-tight text-white">
+                What is supported, missing, or verification-bound?
+              </h3>
+              <p className="reie-property-product-31-copy mt-3 text-sm leading-6 text-white/56">{model.evidenceCompleteness.question}</p>
+            </div>
+            <Link
+              href={model.evidenceCompleteness.sourceMethodologyHref}
+              className="inline-flex min-h-9 shrink-0 items-center justify-center rounded-[6px] border border-cyan-100/24 bg-cyan-100/[0.07] px-3 py-2 text-[10px] font-black uppercase tracking-[0.13em] text-cyan-100 transition hover:bg-cyan-100/[0.12] focus:outline-none focus:ring-2 focus:ring-cyan-100 focus:ring-offset-2 focus:ring-offset-[#0d141c]"
+              data-testid="property-evidence-completeness-methodology-link"
+            >
+              Sources & Methodology
+            </Link>
+          </div>
+        </div>
+        <div className="grid gap-px bg-white/10 lg:grid-cols-2">
+          {model.evidenceCompleteness.domains.map((domain) => (
+            <article
+              key={domain.key}
+              className="reie-property-product-31-card bg-[#0d141c] p-4 md:p-5"
+              data-testid="property-evidence-completeness-domain"
+              data-property-evidence-completeness-domain={domain.key}
+              data-property-evidence-completeness-state={domain.state}
+              data-property-evidence-completeness-action={domain.verificationAction}
+              data-property-evidence-completeness-professional={domain.optionalProfessionalHandoff}
+            >
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                <h4 className="reie-property-product-31-card-title text-sm font-black uppercase leading-5 tracking-[0.08em] text-white">{domain.label}</h4>
+                <span className="inline-flex shrink-0 rounded-[5px] border border-white/12 bg-white/[0.045] px-2 py-1 text-[9px] font-black uppercase tracking-[0.12em] text-white/64">
+                  {domain.state}
+                </span>
+              </div>
+              <p className="reie-property-product-31-copy mt-3 text-xs leading-5 text-white/56">{domain.evidenceAvailable}</p>
+              <p className="mt-3 border-t border-white/10 pt-3 text-xs leading-5 text-white/42">{domain.missingOrUnverified}</p>
+              <div className="mt-4 rounded-[6px] border border-amber-100/16 bg-amber-100/[0.055] p-3">
+                <p className="text-[9px] font-black uppercase tracking-[0.13em] text-amber-100/70">{domain.verificationAction}</p>
+                <p className="mt-2 text-xs leading-5 text-white/56">{domain.verificationQuestion}</p>
+              </div>
+              <p className="mt-3 text-[11px] leading-5 text-white/38">Optional handoff: {domain.optionalProfessionalHandoff}</p>
+            </article>
+          ))}
+        </div>
+        <div
+          className="grid gap-px border-t border-white/10 bg-white/10 md:grid-cols-[1.1fr_0.9fr]"
+          data-testid="property-evidence-completeness-trust-boundaries"
+        >
+          <div className="bg-[#0d141c] p-5 md:p-6">
+            <p className="text-[10px] font-black uppercase tracking-[0.14em] text-white/40">Comparison boundary</p>
+            <p className="mt-3 text-sm leading-6 text-white/56">{model.evidenceCompleteness.comparisonBoundary}</p>
+          </div>
+          <div className="grid gap-2 bg-[#0d141c] p-5 md:p-6">
+            {model.evidenceCompleteness.customerTrustBoundaries.map((boundary) => (
+              <p key={boundary} className="rounded-[6px] border border-white/10 bg-white/[0.035] p-3 text-[10px] font-black uppercase leading-4 tracking-[0.12em] text-white/54">
+                {boundary}
+              </p>
+            ))}
+          </div>
         </div>
       </section>
 
