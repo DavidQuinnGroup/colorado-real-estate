@@ -1,5 +1,7 @@
 import Link from 'next/link';
-import { ArrowRight, CheckCircle2, Compass, Route } from 'lucide-react';
+import { ArrowRight, CheckCircle2, Compass, FileSearch, Route } from 'lucide-react';
+
+import { buildReieDecisionIntelligenceCohesionProfile, type ReieDecisionCohesionSurface } from '@/lib/reieDecisionIntelligenceCohesion';
 
 export type ContinueYourDecisionLink = {
   label: string;
@@ -18,6 +20,11 @@ type ContinueYourDecisionProps = {
   density?: 'standard' | 'compact';
 };
 
+function surfaceForStage(stage: ContinueYourDecisionProps['stage']): ReieDecisionCohesionSurface {
+  if (stage === 'neighborhood') return 'neighborhood';
+  return stage;
+}
+
 export default function ContinueYourDecision({
   stage,
   cameFrom,
@@ -28,6 +35,7 @@ export default function ContinueYourDecision({
   tone = 'dark',
   density = 'standard',
 }: ContinueYourDecisionProps) {
+  const cohesionProfile = buildReieDecisionIntelligenceCohesionProfile(surfaceForStage(stage));
   const isLight = tone === 'light';
   const isCompact = density === 'compact';
   const shellClass = isLight
@@ -60,6 +68,14 @@ export default function ContinueYourDecision({
       data-djx-fixture-data="false"
       data-djx-density={density}
       data-djx-tone={tone}
+      data-reie-decision-intelligence-cohesion={cohesionProfile.status}
+      data-reie-evidence-language-model={cohesionProfile.evidenceLanguageModel}
+      data-reie-continuation-model={cohesionProfile.continuationModel}
+      data-reie-source-methodology-href={cohesionProfile.sourceMethodologyHref}
+      data-reie-hidden-transfer={String(cohesionProfile.protectedBoundaries.hiddenStateTransfer)}
+      data-reie-source-registry-change={String(cohesionProfile.protectedBoundaries.sourceRegistryChange)}
+      data-reie-professional-judgment-required="true"
+      data-reie-suitability-conclusion={String(cohesionProfile.protectedBoundaries.suitabilityConclusion)}
     >
       <div className={`grid gap-5 ${isCompact ? 'p-4 md:grid-cols-[0.92fr_1.08fr] md:p-5' : 'p-5 md:grid-cols-[0.82fr_1.18fr] md:p-6'}`}>
         <div>
@@ -114,6 +130,32 @@ export default function ContinueYourDecision({
             <Compass size={14} aria-hidden="true" />
             This is route context only. It does not personalize or make automated recommendations about a place or property.
           </p>
+
+          <div
+            className={`rounded-[8px] p-3 ring-1 ${panelClass}`}
+            data-testid="continue-your-decision-cohesion-cues"
+            data-reie-decision-intelligence-cue-count={cohesionProfile.cues.length}
+          >
+            <div className="grid gap-2 sm:grid-cols-3">
+              {cohesionProfile.cues.map((cue) => (
+                <div key={`${stage}-${cue.label}`} data-testid="reie-decision-intelligence-evidence-cue">
+                  <p className={`text-[9px] font-black uppercase tracking-[0.14em] ${eyebrowClass}`}>{cue.label}</p>
+                  <p className={`mt-1 text-[11px] leading-5 ${mutedTextClass}`}>{cue.body}</p>
+                </div>
+              ))}
+            </div>
+            <div className={`mt-3 flex flex-col gap-2 border-t pt-3 text-xs leading-5 sm:flex-row sm:items-center sm:justify-between ${isLight ? 'border-[#1f2d36]/10 text-[#41505a]' : 'border-white/10 text-white/52'}`}>
+              <p>{cohesionProfile.boundary}</p>
+              <Link
+                href={cohesionProfile.sourceMethodologyHref}
+                className={`inline-flex shrink-0 items-center gap-2 text-[10px] font-black uppercase tracking-[0.12em] no-underline ${isLight ? 'text-[#345f6b]' : 'text-cyan-100/78'}`}
+                data-testid="reie-decision-intelligence-source-methodology-link"
+              >
+                <FileSearch size={13} aria-hidden="true" />
+                Sources & Methodology
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     </section>

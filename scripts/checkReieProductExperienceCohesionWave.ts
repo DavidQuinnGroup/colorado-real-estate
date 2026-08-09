@@ -98,7 +98,7 @@ for (const [source, surface] of [
 
 assertPanelLink(buyerPage, 'Search Homes', '/search', 'search', 'Buyer page');
 assertPanelLink(buyerPage, 'Financing Guidance', '/buy#buyer-financing-confidence', 'financing', 'Buyer page');
-assertPanelLink(buyerPage, 'Advisory Guidance', '/contact', 'advisory', 'Buyer page');
+assertPanelLink(buyerPage, 'Advisory Guidance', '/contact#advisory-readiness', 'advisory', 'Buyer page');
 
 assertPanelLink(sellerPage, 'Home Worth', '/home-worth', 'home-worth', 'Seller page');
 assertPanelLink(sellerPage, 'Market Context', '/market', 'market', 'Seller page');
@@ -150,9 +150,9 @@ for (const source of [
     'school ranking',
     'safety ranking',
     'guaranteed results',
-    'guaranteed outcome',
+    'promise a guaranteed outcome',
     'forecast appreciation',
-    'investment recommendation',
+    'make an investment recommendation',
     'personalized recommendation',
     'automatically personalizes',
     'AI-powered recommendation',

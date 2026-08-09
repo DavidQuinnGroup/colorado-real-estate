@@ -158,6 +158,7 @@
     "check:reie-source-registry-grand-plan-advancement": "npm run worker:build && node dist/scripts/checkReieSourceRegistryGrandPlanAdvancement.js",
     "check:decision-journey-experience": "npm run worker:build && node dist/scripts/checkDecisionJourneyExperience.js",
     "check:reie-product-experience-cohesion-wave": "npm run worker:build && node dist/scripts/checkReieProductExperienceCohesionWave.js",
+    "check:reie-decision-intelligence-cohesion": "npm run worker:build && node dist/scripts/checkReieDecisionIntelligenceCohesion.js",
     "check:homepage-product-experience-phase-1": "npm run worker:build && node dist/scripts/checkHomepageProductExperiencePhase1.js",
     "check:dxt-wave-1a-homepage-invitation": "npm run worker:build && node dist/scripts/checkDxtWave1aHomepageInvitation.js",
     "check:dxt-wave-1c-buyer-seller-shared-hierarchy-foundation": "npm run worker:build && node dist/scripts/checkDxtWave1cBuyerSellerSharedHierarchyFoundation.js",
