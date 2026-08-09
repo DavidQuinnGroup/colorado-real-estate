@@ -10,6 +10,126 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / Search + Local Decision Intelligence Advancement Production Certified and Closed:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Canonical implementation state:
+
+- Branch: `main`
+- Implementation commit pushed: `e2c58474a3cc0f2d15158fcc8d44a870bf155006`
+- Implementation commit message: `Implement search and LDI advancement`
+- Post-push implementation state: `HEAD = origin/main = e2c58474a3cc0f2d15158fcc8d44a870bf155006`
+- Post-push divergence before documentation closure: `0 ahead / 0 behind`
+- Prior closed status: `SELLER_PROPERTY_INTELLIGENCE_ADVANCEMENT_PRODUCTION_CERTIFIED_AND_CLOSED`
+- Prior closure synchronization status: `SELLER_PROPERTY_INTELLIGENCE_ADVANCEMENT_CLOSURE_SYNCHRONIZED`
+- Deployment status: GitHub/Vercel status `51906935395`, `success`, `Deployment has completed`, timestamp `2026-08-09T13:27:55Z`
+- Production certification record: `docs/project-atlas/executive-library/REIE-SEARCH-LDI-ADVANCEMENT-PRODUCTION-CERTIFICATION.md`
+
+Production disposition:
+
+- `SEARCH_LDI_ADVANCEMENT_PRODUCTION_CERTIFIED_AND_CLOSED`
+- Workstream A implemented Search Discovery Intelligence on `/search`.
+- Workstream B implemented Enhanced Foundation Local Decision Intelligence for Brighton, Firestone, and Frederick.
+- Shared deterministic Search model: `lib/searchDiscoveryIntelligence.ts`
+- New deterministic gate: `npm run check:search-ldi-advancement`
+
+Search Discovery Intelligence:
+
+- Production route: `https://davidquinngroup.com/search`
+- Public section verified: `data-testid="search-discovery-intelligence-advancement"`
+- Status: `SEARCH_DISCOVERY_INTELLIGENCE_ADVANCEMENT_IMPLEMENTED`
+- Production Search Discovery section count: `1`
+- Production Search Discovery cue count: `6`
+- Verified cues: property facts, place orientation, market context, evidence availability, comparison opportunity, and next decision step.
+- Representative production result count: `250`
+- Map/list behavior verified with map pane, Leaflet container, and `250` visible listings.
+- Selected-property drawer verified on desktop and mobile with property detail and market continuity preserved.
+- Boundaries verified false for ranking, scoring, recommendation, suitability inference, protected-class inference, hidden personalization, persistence, telemetry, provider activation, Search API change, and map behavior change.
+
+LDI expansion:
+
+- Production routes verified:
+  - `https://davidquinngroup.com/market/brighton-co-housing-market`
+  - `https://davidquinngroup.com/market/firestone-co-housing-market`
+  - `https://davidquinngroup.com/market/frederick-co-housing-market`
+- Each route returned HTTP `200`.
+- Each route rendered `ENHANCED_FOUNDATION` maturity and `phase-2-enhanced-foundation` Local Decision Intelligence.
+- Each route rendered Decision Snapshot, summary, framework, context, tradeoffs, questions, standard, and continuity sections.
+- Continuity links verified for Market Context, city Search, Buyer Guidance, Seller Guidance, Financing Guidance, Grand Plan, and Advisory Guidance.
+- Desktop and mobile browser checks found no material horizontal overflow and no attributable console/page errors.
+
+Existing LDI containment:
+
+- Niwot remains fail-closed: production route returns HTTP `404`, no public Decision Guide, no Local Decision Intelligence snapshot.
+- Gunbarrel remains fail-closed for LDI: no public Decision Guide and no Local Decision Intelligence snapshot.
+- Thornton remains fail-closed for LDI: no public Decision Guide and no Local Decision Intelligence snapshot.
+
+Market/AEO containment:
+
+- Market/AEO Wave 2 remains limited to the existing certified nine-city allowlist.
+- Brighton, Firestone, and Frederick received LDI only and were not added to Market/AEO.
+
+Source-confirmation state:
+
+- Boulder County Assessor remains `AWAITING_PROVIDER_CONFIRMATION`.
+- BCOD Address Points remains `BLOCKED_NOT_AUTHORIZED`.
+- BCOD Park Boundaries remains `BLOCKED_NOT_AUTHORIZED`.
+- BCOD Park Boundaries still requires focused counsel interpretation after provider confirmation.
+- No Secondary Overflow county-research findings were consumed or activated.
+
+Validation recorded locally:
+
+- `git diff --check`
+- `npm run typecheck`
+- `npm run check:search-ldi-advancement`
+- `npm run check:public-runtime-safety`
+- `npm run check:public-trust-readiness`
+- `npm run check:decision-journey-experience`
+- `npm run check:reie-source-registry-grand-plan-advancement`
+- `npm run check:reie-comparison-financing-intelligence`
+- `npm run check:search-runtime-adapter-safety`
+- `npm run check:search-runtime-safety`
+- `npm run check:search-listing-quality`
+- `npm run check:map-rendering-safety`
+- `npm run check:dxt-search-workspace-shell`
+- `npm run check:dxt-search-marker-preview-interaction`
+- `npm run check:dxt-search-return-context-handoff`
+- `npm run check:dxt-map-visual-language-normalization`
+- `npm run check:cep-search-map-baseline`
+- `npm run check:reie-guided-search-intelligence-v8`
+- `npm run check:dxt-2-search-decision-workspace-depth-implementation`
+- `npm run check:property-product-3-1`
+- `npm run check:property-geographic-source-intelligence`
+- `npm run check:geographic-intelligence-architecture-safety`
+- `npm run check:decision-guide-evidence-transparency`
+- `npm run check:local-decision-intelligence-phase-1`
+- `npm run check:local-decision-intelligence-phase-2-wave-1`
+- `npm run check:local-decision-intelligence-phase-2-wave-2`
+- `npm run check:local-decision-intelligence-phase-2-wave-3`
+- `npm run check:cross-city-decision-comparison`
+- `npm run check:market-aeo-wave-2`
+- `npm run check:market-product-3`
+- `npm run build`
+
+Protected boundaries:
+
+- No implementation changes beyond the certified commit.
+- No provider/source activation.
+- No external dataset acquisition.
+- No assessor, tax, or permit record retrieval.
+- No BCOD activation, statewide county ingestion, Prisma/database/schema change, Search API change, saved-search persistence expansion, Property Inquiry/Contact mutation, CRM/email, MLS ingestion/sync, worker/queue activation, telemetry/customer tracking, customer-data mutation, credentials/secrets change, production configuration mutation, or unrelated remediation.
+
+Next gate:
+
+- `READY_FOR_SEARCH_LDI_ADVANCEMENT_PRODUCTION_CLOSURE_SYNC_AUTHORIZATION`
+
+The documentation-only production certification closure commit is local until separate synchronization authorization is granted. Do not push it, deploy again, activate providers, acquire datasets, retrieve public records, activate BCOD, add persistence, mutate production, run another production certification, or begin another implementation workstream unless explicitly authorized.
+
+Prior handoff retained below for audit history.
+
 PROJECT ATLAS(tm) / Search + Local Decision Intelligence Advancement Locally Certified:
 
 Workspace:
