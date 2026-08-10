@@ -65,6 +65,15 @@ type AdvisorJourneyStage = {
   body: string;
 };
 
+type DecisionPlanSection = {
+  id: 'place' | 'property' | 'timing' | 'financing' | 'verification' | 'professional-questions' | 'next-step';
+  label: string;
+  known: string;
+  assumed: string;
+  unresolved: string;
+  action: string;
+};
+
 type SubmitState = 'idle' | 'submitting' | 'success' | 'error';
 
 type StepId = 'priorities' | 'place' | 'timing' | 'context' | 'review';
@@ -442,6 +451,81 @@ function getStrategyPreviewSections(priorities: LifestylePriorityId[], selectedG
     .map((section) => ({ ...section, isRelevant: emphasized.has(section.id) }));
 }
 
+function getDecisionPlanSections(
+  priorities: string[],
+  goalLabel: string,
+  timelineLabel: string,
+  market: string,
+  places: ImportantPlace[],
+  prompts: string[],
+): DecisionPlanSection[] {
+  const placeSummary = places.length
+    ? places.map((place) => `${place.label} (${getCategoryLabel(place.category)})`).join('; ')
+    : 'At least one important place or routine needs to be named.';
+  const prioritySummary = priorities.length ? priorities.join(', ') : 'No lifestyle priorities selected yet.';
+  const primaryPlace = places[0]?.label || 'the first important place';
+  const firstPrompt = prompts[0] || 'Which decision should be clarified before the next step?';
+
+  return [
+    {
+      id: 'place',
+      label: 'Place',
+      known: `${market} is the starting market, with ${placeSummary}`,
+      assumed: 'Daily routines and place anchors should frame exploration before listings dominate the decision.',
+      unresolved: `Which place should carry the most weight when tradeoffs appear?`,
+      action: 'Open Search or Market context without passing hidden planner inputs.',
+    },
+    {
+      id: 'property',
+      label: 'Property',
+      known: `${goalLabel} is the ownership context and ${prioritySummary} are the selected priorities.`,
+      assumed: 'Property condition, layout, location, and source availability still need property-specific review.',
+      unresolved: 'Which facts are visible, which are assumed, and which require documents, inspection, or source review?',
+      action: 'Use property pages and comparison only to organize facts and questions, not to rank choices.',
+    },
+    {
+      id: 'timing',
+      label: 'Timing',
+      known: `${timelineLabel} is the current timing posture.`,
+      assumed: 'Timing is preparation context, not a pressure signal or prediction.',
+      unresolved: 'What must be true before the next move is practical?',
+      action: 'Use timing to sequence research, showings, selling preparation, or advisor review.',
+    },
+    {
+      id: 'financing',
+      label: 'Financing Assumptions',
+      known: 'No lender approval, rate quote, or qualification is created by the Grand Plan.',
+      assumed: 'Financing scenarios should use customer-entered assumptions and remain lender-neutral.',
+      unresolved: 'Which payment, cash, timing, or sale-proceeds assumption should be tested with qualified professionals?',
+      action: 'Continue to the certified financing readiness surface when assumptions need review.',
+    },
+    {
+      id: 'verification',
+      label: 'Verification Needs',
+      known: 'REIE separates source availability from property quality.',
+      assumed: 'More available evidence does not mean a better property, and missing county data does not mean a negative condition.',
+      unresolved: `Which source, record, document, or professional review is needed before relying on the plan?`,
+      action: 'Use Sources & Methodology before treating public records or REIE-derived context as decision evidence.',
+    },
+    {
+      id: 'professional-questions',
+      label: 'Professional Questions',
+      known: firstPrompt,
+      assumed: 'Advisor review can organize context without creating automated advice on this page.',
+      unresolved: 'Which question should be answered before you compare homes, prepare a sale, or pause the process?',
+      action: 'Bring the decision plan to the advisory conversation as a starting point.',
+    },
+    {
+      id: 'next-step',
+      label: 'Next Decision Step',
+      known: `${primaryPlace} and ${goalLabel.toLowerCase()} are the current anchors.`,
+      assumed: 'The next step should be customer-controlled and optional.',
+      unresolved: 'Should the next action be search, market review, property review, financing assumption review, or advisor follow-up?',
+      action: 'Choose one public REIE surface below; no hidden profile or cross-route state transfer occurs.',
+    },
+  ];
+}
+
 function createImportantPlace(index = 1): ImportantPlace {
   return {
     id: `anchor-${index}`,
@@ -492,6 +576,14 @@ export default function GrandPlanIntake() {
   const planningThemes = getPlanningThemes(selectedPriorities, goal, timeline, activeImportantPlaces);
   const discussionPrompts = getDiscussionPrompts(selectedGoalLabel, selectedTimelineLabel, activeImportantPlaces, selectedPriorityLabels);
   const strategyPreview = getStrategyPreviewSections(selectedPriorities, goal, timeline, activeImportantPlaces);
+  const decisionPlanSections = getDecisionPlanSections(
+    selectedPriorityLabels,
+    selectedGoalLabel,
+    selectedTimelineLabel,
+    normalizedCity,
+    activeImportantPlaces,
+    discussionPrompts,
+  );
   const currentStep = steps[currentStepIndex];
   const hasValidEmail = useMemo(() => isValidEmail(normalizedEmail), [normalizedEmail]);
   const isReviewStep = currentStep.id === 'review';
@@ -785,6 +877,55 @@ export default function GrandPlanIntake() {
             ))}
           </ul>
         </div>
+
+        <section
+          className="gp-result-section gp-decision-plan"
+          data-testid="grand-plan-decision-plan"
+          data-grand-plan-decision-plan-read-only="true"
+          data-grand-plan-decision-plan-hidden-state-transfer="false"
+          data-grand-plan-decision-plan-scoring="false"
+          data-grand-plan-decision-plan-section-count={decisionPlanSections.length}
+          aria-labelledby={`${formId}-decision-plan-title`}
+        >
+          <div>
+            <p className="gp-eyebrow">Decision Plan Summary</p>
+            <h3 id={`${formId}-decision-plan-title`}>Known, assumed, unresolved, and useful next steps</h3>
+            <p>
+              This summary organizes the context you entered. It does not rank properties, score places, predict outcomes, or move your
+              planner inputs into other routes.
+            </p>
+          </div>
+          <div className="gp-decision-plan-grid">
+            {decisionPlanSections.map((section) => (
+              <article
+                className="gp-decision-plan-card"
+                data-testid="grand-plan-decision-plan-section"
+                data-grand-plan-decision-domain={section.id}
+                key={section.id}
+              >
+                <h4>{section.label}</h4>
+                <dl>
+                  <div>
+                    <dt>Known</dt>
+                    <dd>{section.known}</dd>
+                  </div>
+                  <div>
+                    <dt>Assumed</dt>
+                    <dd>{section.assumed}</dd>
+                  </div>
+                  <div>
+                    <dt>Unresolved</dt>
+                    <dd>{section.unresolved}</dd>
+                  </div>
+                  <div>
+                    <dt>Useful Next Step</dt>
+                    <dd>{section.action}</dd>
+                  </div>
+                </dl>
+              </article>
+            ))}
+          </div>
+        </section>
 
         <section
           className="gp-result-section gp-strategy-preview"

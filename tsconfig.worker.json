@@ -103,6 +103,7 @@
     "scripts/checkAuthoritativePropertyRecordIntelligence.ts",
     "scripts/checkReieSourceRegistryGrandPlanAdvancement.ts",
     "scripts/checkColoradoSourceTrustExperience.ts",
+    "scripts/checkGrandPlanEditorialAuthorityAdvancement.ts",
     "scripts/checkDecisionJourneyExperience.ts",
     "scripts/checkReieProductExperienceCohesionWave.ts",
     "scripts/checkReieDecisionIntelligenceCohesion.ts",
