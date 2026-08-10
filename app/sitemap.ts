@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next';
 
+import { getCityOrientationGuideRoutes } from '@/lib/cityOrientationGuides';
 import { getPublicDecisionGuideRegistryEntries } from '@/lib/coloradoDecisionGuideRegistry';
 import { publicTrustRoutes } from '@/lib/publicTrust';
 
@@ -69,7 +70,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.7,
   }));
 
-  return [...staticRoutes, ...marketRoutes];
+  const cityOrientationGuideRoutes: MetadataRoute.Sitemap = getCityOrientationGuideRoutes().map((guide) => ({
+    url: url(guide.canonicalPath),
+    lastModified: now,
+    changeFrequency: guide.freshness.state === 'PERIODIC_MARKET_EVIDENCE' ? 'weekly' as const : 'monthly' as const,
+    priority: 0.55,
+  }));
+
+  return [...staticRoutes, ...marketRoutes, ...cityOrientationGuideRoutes];
 }
 
 // /Users/davidquinn/david-quinn-group/colorado-real-estate/app/sitemap.ts

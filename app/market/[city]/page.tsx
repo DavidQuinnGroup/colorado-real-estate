@@ -15,6 +15,7 @@ import ResilienceDashboard from '@/components/ResilienceDashboard';
 import RelatedArticles from '@/components/RelatedArticles';
 import FAQSchema from '@/components/schema/FAQSchema';
 import { cities, getCityByMarketSlug, isCityMarketRoutePublic, type CityData } from '@/lib/cities';
+import { getCityOrientationGuidesForCity } from '@/lib/cityOrientationGuides';
 import { getDecisionGuideRegistryEntry } from '@/lib/coloradoDecisionGuideRegistry';
 import { getJourneyMeasurementAttributes, type CustomerJourneyStage } from '@/lib/customerJourneyMeasurement';
 import {
@@ -202,6 +203,7 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
     marketExperience,
     neighborhoodCount: cityNeighborhoods.length,
   });
+  const cityOrientationGuides = getCityOrientationGuidesForCity(cityData.marketSlug);
   const decisionGuideEligibility = getDecisionGuideRegistryEntry(cityData);
   const cityDecisionGuide = buildDecisionGuide({
     city: cityData,
@@ -607,6 +609,55 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
             ))}
           </div>
         </section>
+
+        {cityOrientationGuides.length > 0 ? (
+          <section
+            className="grid gap-6 rounded-[8px] bg-white/[0.04] p-5 md:p-8 lg:grid-cols-[0.82fr_1.18fr]"
+            data-testid="city-orientation-guide-inventory"
+            data-city-orientation-guide-wave="five-city"
+            data-city-orientation-guide-city={cityData.name}
+            data-city-orientation-guide-count={cityOrientationGuides.length}
+            data-city-orientation-guide-hidden-state-transfer="false"
+            data-city-orientation-guide-ranking="false"
+            data-city-orientation-guide-scoring="false"
+            data-city-orientation-guide-county-source-dependency="false"
+          >
+            <div>
+              <p className="mb-3 text-[10px] font-black uppercase tracking-[0.28em] text-cyan-100/72">
+                Local Orientation Guides
+              </p>
+              <h2 className="text-3xl font-black uppercase leading-tight tracking-normal text-white md:text-4xl">
+                Use curated questions before narrowing the decision.
+              </h2>
+              <p className="mt-5 text-sm leading-7 text-white/58 md:text-base">
+                These guides connect {cityData.name} Market, Search, Property evidence, Grand Plan, Sources, and professional questions.
+                They do not rank places, score properties, transfer hidden customer state, or activate county-source evidence.
+              </p>
+            </div>
+
+            <div className="grid gap-3">
+              {cityOrientationGuides.map((guide) => (
+                <Link
+                  key={guide.intent.slug}
+                  href={guide.canonicalPath}
+                  className="reie-market-action-link group rounded-[8px] bg-[#071017]/82 p-5 text-white no-underline ring-1 ring-white/[0.06] transition hover:bg-white/[0.055] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-200"
+                  data-testid="city-orientation-guide-card"
+                  data-city-orientation-guide-intent={guide.intent.slug}
+                  data-city-orientation-guide-freshness={guide.freshness.state}
+                  data-city-orientation-guide-claim-eligibility={guide.claimEligibility}
+                  data-city-orientation-guide-schema-visible-alignment={String(guide.structuredDataEligible)}
+                >
+                  <p className="text-[9px] font-black uppercase tracking-[0.18em] text-cyan-100/70">{guide.intent.label}</p>
+                  <h3 className="mt-3 text-lg font-black uppercase leading-6 tracking-tight text-white">{guide.intent.customerQuestion}</h3>
+                  <p className="mt-3 text-sm leading-6 text-white/55">{guide.visibleAnswer}</p>
+                  <span className="mt-5 inline-flex text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100 transition group-hover:text-white">
+                    Open Guide
+                  </span>
+                </Link>
+              ))}
+            </div>
+          </section>
+        ) : null}
 
         <section
           className="grid gap-6 rounded-[8px] bg-white/[0.04] p-5 md:p-8 lg:grid-cols-[0.88fr_1.12fr]"
