@@ -10,8 +10,12 @@ type EnhancedRouteExpectation = {
   slug: string;
   city: string;
   route: string;
+  canonicalIdentity?: string;
+  alias?: string;
+  boundaryPosture?: string;
   canonicalUrl: string;
   searchHref: string;
+  requiredLinks: string[];
   requiredCopy: string[];
   forbiddenCopy: string[];
 };
@@ -44,6 +48,15 @@ function getEnhancedNeighborhood(expectation: EnhancedRouteExpectation) {
   assert.equal(neighborhood.routeEnhancement.objectType, "NEIGHBORHOOD", `${expectation.name} object type must remain NEIGHBORHOOD.`);
   assert.equal(neighborhood.routeEnhancement.canonicalPath, expectation.route, `${expectation.name} route path must remain exact.`);
   assert.equal(neighborhood.routeEnhancement.canonicalUrl, expectation.canonicalUrl, `${expectation.name} canonical URL must be preserved.`);
+  if (expectation.canonicalIdentity) {
+    assert.equal(neighborhood.routeEnhancement.canonicalIdentity, expectation.canonicalIdentity, `${expectation.name} canonical identity must be preserved.`);
+  }
+  if (expectation.alias) {
+    assert(neighborhood.routeEnhancement.aliases?.includes(expectation.alias), `${expectation.name} alias ${expectation.alias} must remain present.`);
+  }
+  if (expectation.boundaryPosture) {
+    assert.equal(neighborhood.routeEnhancement.boundaryPosture, expectation.boundaryPosture, `${expectation.name} boundary posture must remain descriptive.`);
+  }
 
   const records = neighborhoods.filter((item) => item.city === expectation.city && item.slug === expectation.slug);
   assert.equal(records.length, 1, `The enhancement must not create a duplicate ${expectation.name} route record.`);
@@ -66,6 +79,8 @@ function publicCopyFor(neighborhood: Neighborhood & { routeEnhancement: NonNulla
     neighborhood.routeEnhancement.sellerPrompts.join(" "),
     neighborhood.routeEnhancement.dueDiligencePrompts.join(" "),
     neighborhood.routeEnhancement.evidenceTransparency.join(" "),
+    neighborhood.routeEnhancement.evidenceContract?.map((item) => `${item.stage} ${item.treatment}`).join(" ") || "",
+    neighborhood.routeEnhancement.unavailableEvidence?.join(" ") || "",
     neighborhood.routeEnhancement.protectedBoundary,
   ].join("\n");
 }
@@ -84,11 +99,32 @@ const expectations: EnhancedRouteExpectation[] = [
     slug: "south-boulder",
     city: "Boulder",
     route: "/market/boulder/south-boulder",
+    canonicalIdentity: "neighborhood:boulder:south-boulder",
+    alias: "SoBo",
+    boundaryPosture: "DESCRIPTIVE_AREA_ONLY",
     canonicalUrl: "https://davidquinngroup.com/market/boulder/south-boulder",
     searchHref: "/search?neighborhood=South%20Boulder",
+    requiredLinks: [
+      "/market/boulder-co-housing-market",
+      "/search?neighborhood=South%20Boulder",
+      "/buy",
+      "/buy#financing-readiness",
+      "/sell",
+      "/home-worth#seller-readiness",
+      "/grand-plan",
+      "/sources",
+      "/contact#advisory-readiness",
+    ],
     requiredCopy: [
+      "canonical identity neighborhood:boulder:south-boulder",
+      "parent Boulder",
+      "alias SoBo",
+      "descriptive area only",
+      "static route orientation as durable context and current Search inventory as separately changing evidence",
       "South Boulder is presented as neighborhood-level orientation within Boulder",
       "does not expose internal Evidence Depth metadata",
+      "County Assessor and parcel evidence are not active on this route",
+      "No public GIS polygon or exact boundary geometry is active for South Boulder",
       "does not determine condition, title, permits, value, insurance, financing, or suitability",
       "does not establish property condition, value, title, ownership, insurability, permits, HOA status, school assignment, financing eligibility, or suitability",
     ],
@@ -101,6 +137,16 @@ const expectations: EnhancedRouteExpectation[] = [
     route: "/market/boulder/table-mesa",
     canonicalUrl: "https://davidquinngroup.com/market/boulder/table-mesa",
     searchHref: "/search?neighborhood=Table%20Mesa",
+    requiredLinks: [
+      "/market/boulder-co-housing-market",
+      "/search?neighborhood=Table%20Mesa",
+      "/buy",
+      "/buy#financing-readiness",
+      "/sell",
+      "/home-worth#seller-readiness",
+      "/grand-plan",
+      "/contact#advisory-readiness",
+    ],
     requiredCopy: [
       "Table Mesa is presented as neighborhood-level orientation within Boulder",
       "approximate-boundary and incomplete-evidence limitations",
@@ -131,6 +177,9 @@ assertIncludes(routeSource, "data-testid=\"neighborhood-route-enhancement\"", "P
 assertIncludes(routeSource, "data-neighborhood-route-enhancement-name={neighborhood.name}", "Route-neutral name marker must remain present.");
 assertIncludes(routeSource, "data-neighborhood-route-enhancement-slug={neighborhood.slug}", "Route-neutral slug marker must remain present.");
 assertIncludes(routeSource, "data-neighborhood-route-enhancement-contract={routeEnhancement.contract}", "Route enhancement contract marker must remain present.");
+assertIncludes(routeSource, "data-neighborhood-route-enhancement-canonical-identity={routeEnhancement.canonicalIdentity || ''}", "Canonical identity marker must remain optional and route-driven.");
+assertIncludes(routeSource, "data-neighborhood-route-enhancement-aliases={routeEnhancement.aliases?.join(',') || ''}", "Alias marker must remain optional and route-driven.");
+assertIncludes(routeSource, "data-neighborhood-route-enhancement-boundary-posture={routeEnhancement.boundaryPosture || ''}", "Boundary posture marker must remain optional and route-driven.");
 assertIncludes(routeSource, "data-neighborhood-route-enhancement-route={routeEnhancement.canonicalPath}", "Route enhancement route marker must remain present.");
 assertIncludes(routeSource, "data-neighborhood-route-enhancement-canonical={routeEnhancement.canonicalUrl}", "Route enhancement canonical marker must remain present.");
 assertIncludes(routeSource, "data-neighborhood-route-enhancement-search-preserved=\"true\"", "Search-preservation marker must remain present.");
@@ -150,6 +199,12 @@ assertIncludes(routeSource, "Seller Considerations", "Seller guidance section mu
 assertIncludes(routeSource, "Due-Diligence And Verification Prompts", "Due-diligence section must be present.");
 assertIncludes(routeSource, "Evidence And Limitation Transparency", "Evidence limitation section must be present.");
 assertIncludes(routeSource, "Journey Continuity", "Journey continuity section must be present.");
+assertIncludes(routeSource, "data-testid=\"neighborhood-route-enhancement-identity\"", "South Boulder identity treatment must render when aliases are provided.");
+assertIncludes(routeSource, "data-testid=\"neighborhood-route-enhancement-evidence-contract\"", "Evidence contract section must render when bounded contract rows are provided.");
+assertIncludes(routeSource, "data-neighborhood-route-enhancement-unavailable-fail-closed=\"true\"", "Unavailable evidence must fail closed.");
+assertIncludes(routeSource, "data-neighborhood-route-enhancement-county-assessor-active=\"false\"", "County Assessor dependency must remain inactive.");
+assertIncludes(routeSource, "data-neighborhood-route-enhancement-public-gis-active=\"false\"", "Public GIS must remain inactive.");
+assertIncludes(routeSource, "data-neighborhood-route-enhancement-schema-visible-alignment=\"true\"", "Schema-visible alignment marker must remain present.");
 
 for (const expectation of expectations) {
   const neighborhood = enhancedNeighborhoods.find((item) => item.slug === expectation.slug);
@@ -168,16 +223,7 @@ for (const expectation of expectations) {
     assertNotIncludes(publicCopy, forbidden, `${expectation.name} public copy must not include forbidden route-specific claim: ${forbidden}`);
   }
 
-  for (const link of [
-    "/market/boulder-co-housing-market",
-    expectation.searchHref,
-    "/buy",
-    "/buy#financing-readiness",
-    "/sell",
-    "/home-worth#seller-readiness",
-    "/grand-plan",
-    "/contact#advisory-readiness",
-  ]) {
+  for (const link of expectation.requiredLinks) {
     assert(
       neighborhood.routeEnhancement.journeyLinks.some((journeyLink) => journeyLink.href === link),
       `${expectation.name} journey continuity must preserve ${link}.`,
@@ -195,6 +241,23 @@ for (const expectation of expectations) {
     `${expectation.name} protected boundary must explicitly preserve Niwot, Gunbarrel, and LDI Wave 4 non-activation.`,
   );
 }
+
+const southBoulder = enhancedNeighborhoods.find((item) => item.slug === "south-boulder");
+assert(southBoulder, "South Boulder must be present for pilot validation.");
+assert.equal(southBoulder.routeEnhancement.evidenceContract?.length, 7, "South Boulder pilot must expose the seven-step evidence contract.");
+assert.equal(southBoulder.routeEnhancement.unavailableEvidence?.length, 3, "South Boulder pilot must expose unavailable evidence as fail-closed prompts.");
+assert.equal(
+  southBoulder.routeEnhancement.evidenceContract?.map((item) => item.stage).join(" -> "),
+  "SOURCE -> GEOGRAPHY / OBJECT TYPE -> PERIOD / FRESHNESS -> LIMITATION -> CLAIM ELIGIBILITY -> VISIBLE ANSWER -> STRUCTURED DATA",
+  "South Boulder evidence contract must preserve source-to-visible-answer sequence.",
+);
+
+const tableMesa = enhancedNeighborhoods.find((item) => item.slug === "table-mesa");
+assert(tableMesa, "Table Mesa must remain present for regression validation.");
+assert.equal(tableMesa.routeEnhancement.canonicalIdentity, undefined, "Table Mesa must not receive the South Boulder pilot canonical identity.");
+assert.equal(tableMesa.routeEnhancement.aliases, undefined, "Table Mesa must not receive the South Boulder pilot alias treatment.");
+assert.equal(tableMesa.routeEnhancement.evidenceContract, undefined, "Table Mesa must not receive the South Boulder pilot evidence contract.");
+assert.equal(tableMesa.routeEnhancement.unavailableEvidence, undefined, "Table Mesa must not receive the South Boulder pilot unavailable-evidence list.");
 
 for (const path of [
   "app/market/boulder/south-boulder/page.tsx",
@@ -292,5 +355,9 @@ console.log(
     "publicCopyOnly=true",
     "fairHousing=neutral",
     "protectedActivations=none",
+    "southBoulderIdentity=neighborhood:boulder:south-boulder",
+    "alias=SoBo",
+    "boundary=DESCRIPTIVE_AREA_ONLY",
+    "unavailableEvidence=fail-closed",
   ].join(" "),
 );

@@ -671,6 +671,9 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
           data-neighborhood-route-enhancement-name={neighborhood.name}
           data-neighborhood-route-enhancement-slug={neighborhood.slug}
           data-neighborhood-route-enhancement-contract={routeEnhancement.contract}
+          data-neighborhood-route-enhancement-canonical-identity={routeEnhancement.canonicalIdentity || ''}
+          data-neighborhood-route-enhancement-aliases={routeEnhancement.aliases?.join(',') || ''}
+          data-neighborhood-route-enhancement-boundary-posture={routeEnhancement.boundaryPosture || ''}
           data-neighborhood-route-enhancement-route={routeEnhancement.canonicalPath}
           data-neighborhood-route-enhancement-object-type={routeEnhancement.objectType}
           data-neighborhood-route-enhancement-canonical={routeEnhancement.canonicalUrl}
@@ -696,6 +699,19 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
               <p className="mt-5 rounded-[6px] bg-cyan-100/[0.06] p-4 text-xs leading-6 text-cyan-100/72">
                 {routeEnhancement.scopeClarification}
               </p>
+              {routeEnhancement.aliases?.length ? (
+                <p
+                  className="mt-4 rounded-[6px] bg-white/[0.04] p-4 text-xs leading-6 text-white/52"
+                  data-testid="neighborhood-route-enhancement-identity"
+                  data-neighborhood-route-enhancement-identity={routeEnhancement.canonicalIdentity}
+                  data-neighborhood-route-enhancement-object-type={routeEnhancement.objectType}
+                  data-neighborhood-route-enhancement-parent={neighborhood.city}
+                  data-neighborhood-route-enhancement-alias={routeEnhancement.aliases.join(',')}
+                >
+                  Canonical identity: {routeEnhancement.canonicalIdentity}. Public shorthand such as {routeEnhancement.aliases.join(', ')} is
+                  treated as an orientation label only, not a separate route, boundary, ranking, or property conclusion.
+                </p>
+              ) : null}
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2">
@@ -712,6 +728,38 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
               ))}
             </div>
           </div>
+
+          {routeEnhancement.evidenceContract?.length || routeEnhancement.unavailableEvidence?.length ? (
+            <section
+              className="mt-8 grid gap-4 rounded-[8px] bg-white/[0.04] p-5 lg:grid-cols-[1.05fr_0.95fr]"
+              data-testid="neighborhood-route-enhancement-evidence-contract"
+              data-neighborhood-route-enhancement-source-to-answer="true"
+              data-neighborhood-route-enhancement-unavailable-fail-closed="true"
+              data-neighborhood-route-enhancement-county-assessor-active="false"
+              data-neighborhood-route-enhancement-public-gis-active="false"
+              data-neighborhood-route-enhancement-schema-visible-alignment="true"
+            >
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100/72">Evidence Contract</p>
+                <div className="mt-4 grid gap-3">
+                  {routeEnhancement.evidenceContract?.map((item) => (
+                    <article key={item.stage} className="rounded-[6px] bg-black/18 p-4">
+                      <p className="text-[9px] font-black uppercase tracking-[0.16em] text-white/34">{item.stage}</p>
+                      <p className="mt-2 text-xs leading-6 text-white/58">{item.treatment}</p>
+                    </article>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100/72">Unavailable Evidence</p>
+                <div className="mt-4 grid gap-3">
+                  {routeEnhancement.unavailableEvidence?.map((item) => (
+                    <p key={item} className="rounded-[6px] bg-black/18 p-4 text-xs leading-6 text-white/58">{item}</p>
+                  ))}
+                </div>
+              </div>
+            </section>
+          ) : null}
 
           <div className="mt-8 grid gap-4 lg:grid-cols-3">
             <article className="rounded-[8px] bg-[#071017]/78 p-5">

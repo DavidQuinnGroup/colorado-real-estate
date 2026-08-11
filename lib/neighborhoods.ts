@@ -30,6 +30,9 @@ export type Neighborhood = {
 export type NeighborhoodRouteEnhancement = {
   contract: 'EXISTING_NEIGHBORHOOD_ROUTE_ENHANCEMENT';
   objectType: 'NEIGHBORHOOD';
+  canonicalIdentity?: string;
+  aliases?: readonly string[];
+  boundaryPosture?: 'DESCRIPTIVE_AREA_ONLY';
   canonicalPath: string;
   canonicalUrl: string;
   parentContext: string;
@@ -43,6 +46,11 @@ export type NeighborhoodRouteEnhancement = {
   sellerPrompts: string[];
   dueDiligencePrompts: string[];
   evidenceTransparency: string[];
+  evidenceContract?: readonly {
+    stage: 'SOURCE' | 'GEOGRAPHY / OBJECT TYPE' | 'PERIOD / FRESHNESS' | 'LIMITATION' | 'CLAIM ELIGIBILITY' | 'VISIBLE ANSWER' | 'STRUCTURED DATA';
+    treatment: string;
+  }[];
+  unavailableEvidence?: readonly string[];
   journeyLinks: ReadonlyArray<{
     label: string;
     href: string;
@@ -126,6 +134,9 @@ export const neighborhoods: Neighborhood[] = [
     routeEnhancement: {
       contract: 'EXISTING_NEIGHBORHOOD_ROUTE_ENHANCEMENT',
       objectType: 'NEIGHBORHOOD',
+      canonicalIdentity: 'neighborhood:boulder:south-boulder',
+      aliases: ['SoBo'],
+      boundaryPosture: 'DESCRIPTIVE_AREA_ONLY',
       canonicalPath: '/market/boulder/south-boulder',
       canonicalUrl: 'https://davidquinngroup.com/market/boulder/south-boulder',
       parentContext: 'Boulder city context with Boulder County and South Boulder market-area orientation.',
@@ -164,14 +175,51 @@ export const neighborhoods: Neighborhood[] = [
         'Evidence availability, recency, and permitted public use can vary by topic, and missing or conflicting information remains a limitation.',
         'Neighborhood context does not establish property condition, value, title, ownership, insurability, permits, HOA status, school assignment, financing eligibility, or suitability.',
       ],
+      evidenceContract: [
+        {
+          stage: 'SOURCE',
+          treatment: 'Use governed public route context, visible neighborhood attributes, and existing Search/Market continuity only; do not substitute inactive county or provider records.',
+        },
+        {
+          stage: 'GEOGRAPHY / OBJECT TYPE',
+          treatment: 'Treat South Boulder as canonical identity neighborhood:boulder:south-boulder, object type NEIGHBORHOOD, parent Boulder, alias SoBo, and descriptive area only.',
+        },
+        {
+          stage: 'PERIOD / FRESHNESS',
+          treatment: 'Treat static route orientation as durable context and current Search inventory as separately changing evidence that must be verified at use time.',
+        },
+        {
+          stage: 'LIMITATION',
+          treatment: 'Do not treat the route as a legal, HOA, school, safety, parcel, property, or exact GIS boundary.',
+        },
+        {
+          stage: 'CLAIM ELIGIBILITY',
+          treatment: 'Eligible claims are limited to orientation, Boulder relationship, evidence limits, verification questions, and neutral continuation paths.',
+        },
+        {
+          stage: 'VISIBLE ANSWER',
+          treatment: 'The customer-facing answer is preparation context: understand the South Boulder label, then verify the specific address and evidence source before relying on it.',
+        },
+        {
+          stage: 'STRUCTURED DATA',
+          treatment: 'Schema remains aligned to visible neighborhood place context and does not publish unsupported boundary, quality, ranking, scoring, or recommendation claims.',
+        },
+      ],
+      unavailableEvidence: [
+        'County Assessor and parcel evidence are not active on this route.',
+        'No public GIS polygon or exact boundary geometry is active for South Boulder.',
+        'School attendance, HOA coverage, insurance terms, permits, title, condition, and financing facts remain property-specific verification items.',
+      ],
       journeyLinks: [
         { label: 'Boulder City Context', href: '/market/boulder-co-housing-market', note: 'Citywide market context' },
         { label: 'Search South Boulder', href: '/search?neighborhood=South%20Boulder', note: 'Existing search path' },
+        { label: 'Property Evidence Path', href: '/search?neighborhood=South%20Boulder', note: 'Open a listing from Search for address-level review' },
         { label: 'Buyer Guidance', href: '/buy', note: 'Buyer decision preparation' },
         { label: 'Financing Readiness', href: '/buy#financing-readiness', note: 'Financing questions' },
         { label: 'Seller Guidance', href: '/sell', note: 'Seller preparation' },
         { label: 'Seller Readiness', href: '/home-worth#seller-readiness', note: 'Documentation preparation' },
         { label: 'Grand Plan', href: '/grand-plan', note: 'Decision planning' },
+        { label: 'Sources', href: '/sources', note: 'Source and methodology boundaries' },
         { label: 'Advisory Readiness', href: '/contact#advisory-readiness', note: 'Advisor conversation' },
       ],
       sourceRightsBoundary:
