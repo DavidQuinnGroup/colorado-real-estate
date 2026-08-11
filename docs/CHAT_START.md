@@ -10,6 +10,106 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / Advisory Handoff + Decision-Moment Source Transparency Production Certified and Closure Reconciled:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Canonical production implementation state:
+
+- Branch: `main`
+- Advisory implementation commit: `d2aafd3a0cae9537b5fd45c76a17243ba8cdb668`
+- Advisory implementation message: `Activate advisory handoff preparation across decision journeys`
+- Security baseline commit: `e49410e2106a08b6e3e9f8515e03fff3c4de19d9`
+- Security baseline message: `Patch Next.js security baseline to 15.5.22`
+- Source Transparency implementation commit: `3c5781ceee7efa63a3f12c7b6b6f5c6824c5c4be`
+- Source Transparency implementation message: `Add decision-moment source transparency`
+- Canonical origin/main before docs-only closure: `3c5781ceee7efa63a3f12c7b6b6f5c6824c5c4be`
+- Pre-closure divergence: `0 ahead / 0 behind`
+- Advisory production certification record: `docs/project-atlas/executive-library/REIE-ADVISORY-HANDOFF-VALUE-ACTIVATION-PRODUCTION-CERTIFICATION.md`
+- Source Transparency production certification record: `docs/project-atlas/executive-library/REIE-DECISION-MOMENT-SOURCE-TRANSPARENCY-PRODUCTION-CERTIFICATION.md`
+
+Production disposition:
+
+- `ADVISORY_HANDOFF_VALUE_ACTIVATION_PRODUCTION_CERTIFIED_AND_CLOSED`
+- `DECISION_MOMENT_SOURCE_TRANSPARENCY_PRODUCTION_CERTIFIED_AND_CLOSED`
+
+Advisory closure reconciliation:
+
+- Advisory Handoff Value Activation was previously production-certified on `d2aafd3a0cae9537b5fd45c76a17243ba8cdb668`.
+- Closure was deliberately deferred only because the separate Next.js security baseline commit had not yet completed its production promotion.
+- The security baseline `e49410e2106a08b6e3e9f8515e03fff3c4de19d9` is now canonical.
+- Current production regression verified `/contact#advisory-readiness`, `/search`, `/compare?cities=boulder,broomfield`, and `/grand-plan`.
+- `/contact#advisory-readiness` remains the authoritative advisory destination.
+- Prepare Next Conversation treatment remains healthy on Search, Compare, and Grand Plan.
+- No hidden customer context, prefill, identity transfer, customer-state transfer, local/session storage, console/page error, or horizontal overflow was observed.
+
+Decision-Moment Source Transparency certification:
+
+- Target surfaces: representative Property route and Compare.
+- Representative Property route: `/properties/32224-poudre-canyon-rd-bellvue-co-ire1363681`
+- Compare route: `/compare?cities=boulder,broomfield`
+- Property displays compact Source / Period-Freshness / Limitation / Verify treatment:
+  - Source: public listing facts.
+  - Period / Freshness: supported listing timestamp, with fail-closed unavailable behavior.
+  - Limitation: visible listing facts do not establish condition, title, taxes, permits, insurance, zoning or legal use, valuation, or parcel/account correlation.
+  - Verify: property question path plus `/sources`.
+- Compare displays compact Source / Period-Freshness / Limitation / Verify treatment:
+  - Source: public eligible Decision Guide context.
+  - Period / Freshness: existing Decision Guide Registry freshness.
+  - Limitation: citywide context is not a conclusion and does not establish a better city, property-specific facts, property condition/value, personal fit, or ranking.
+  - Verify: `/sources`.
+- Public-record domains remain verification-required / fail-closed.
+- No unsupported currentness, raw internal metadata, provider contacts, provider emails, credentials, rights/legal notes, raw lineage, fingerprints, activation-gate leakage, customer profile, hidden state, telemetry, or personalized source display was observed.
+
+Deployment evidence:
+
+- GitHub deployment id: `5856690231`
+- GitHub deployment status id: `16682094713`
+- GitHub/Vercel commit status id: `52048767148`
+- Deployment state: `success`
+- Deployment description: `Deployment has completed`
+- Deployment timestamp: `2026-08-11T18:54:38Z`
+- Deployed SHA: `3c5781ceee7efa63a3f12c7b6b6f5c6824c5c4be`
+- Vercel target URL: `https://david-quinn-group-8rde-d65nprsay-david-quinns-projects-a0953600.vercel.app`
+- Production domain verified: `https://davidquinngroup.com`
+
+Validation:
+
+- `git diff --check`
+- `npm run typecheck`
+- `npm run check:next-security-version`
+- `npm run check:decision-moment-source-transparency`
+- `npm run check:property-product-3-1`
+- `npm run check:property-evidence-completeness-verification`
+- `npm run check:offer-preparation-readiness`
+- `npm run check:comparison-evidence-decision-difference`
+- `npm run check:colorado-source-trust-experience`
+- `npm run check:advisory-handoff-value-activation`
+- `npm run check:professional-handoff-cohesion`
+- `npm run check:public-runtime-safety`
+- `npm run check:public-trust-readiness`
+- `npm run lint`
+- `npm run build`
+- `PUBLIC_EXPERIENCE_SMOKE_BASE_URL=https://davidquinngroup.com npm run smoke:public-experience`
+
+Protected boundaries:
+
+- Source Transparency was already canonical on origin/main before this closure package.
+- No runtime implementation occurred during post-push certification or closure.
+- No manual redeployment occurred.
+- No customer information was submitted.
+- No Contact submission, Property Inquiry mutation, Saved Search record, Grand Plan submission, CRM/email behavior, worker/queue action, telemetry action, database mutation, Prisma/schema change, API mutation, auth change, MLS/Typesense action, source activation, provider activation, county work, GIS activation, public-record retrieval, credentials/configuration change, or customer-data mutation occurred.
+
+Next gate:
+
+- `READY_FOR_POST_SOURCE_TRANSPARENCY_NEXT_PHASE_AUTHORIZATION`
+
+The docs-only closure/reconciliation commit is local until separate synchronization authorization is granted. Do not push it, deploy again, reopen Advisory Handoff or Source Transparency, begin Wave 2 City Orientation Guide Authority Expansion, activate sources/providers, acquire county datasets, mutate customer data, or begin another implementation workstream unless explicitly authorized.
+
+Prior handoff retained below for audit history.
+
 PROJECT ATLAS(tm) / Table Mesa Neighborhood Decision Intelligence Production Certified and Closed:
 
 Workspace:
