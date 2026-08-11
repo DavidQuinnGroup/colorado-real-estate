@@ -10,6 +10,127 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / Wave 2 City Orientation Guide Authority Expansion Production Certified and Closed:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Production implementation state:
+
+- Branch: `main`
+- Implementation commit pushed: `bbce47ae9f6d4bf3862d553e70f08e6292dd51e1`
+- Implementation commit message: `Expand Wave 2 city orientation guide authority`
+- Post-push implementation state before docs-only closure: `HEAD = origin/main = bbce47ae9f6d4bf3862d553e70f08e6292dd51e1`
+- Post-push divergence before documentation closure: `0 ahead / 0 behind`
+- Production certification record: `docs/project-atlas/executive-library/REIE-WAVE-2-CITY-ORIENTATION-GUIDE-AUTHORITY-PRODUCTION-CERTIFICATION.md`
+
+Production disposition:
+
+- `WAVE_2_CITY_ORIENTATION_GUIDE_AUTHORITY_EXPANSION_PRODUCTION_CERTIFIED_AND_CLOSED`
+
+Certified guide authority:
+
+- Target guide cities: `8`
+- Total guide routes: `24`
+- Original five guide cities remain intact: Boulder, Denver, Louisville, Lafayette, Longmont.
+- New Wave 2 guide cities: Broomfield, Erie, Westminster.
+- Authorized guide intents:
+  - `orienting-before-search`
+  - `reading-market-context`
+  - `place-questions-to-property-verification`
+- New Wave 2 guide route count: `9`
+
+Certified new route inventory:
+
+- `/market/broomfield-co-housing-market/guides/orienting-before-search`
+- `/market/broomfield-co-housing-market/guides/reading-market-context`
+- `/market/broomfield-co-housing-market/guides/place-questions-to-property-verification`
+- `/market/erie-co-housing-market/guides/orienting-before-search`
+- `/market/erie-co-housing-market/guides/reading-market-context`
+- `/market/erie-co-housing-market/guides/place-questions-to-property-verification`
+- `/market/westminster-co-housing-market/guides/orienting-before-search`
+- `/market/westminster-co-housing-market/guides/reading-market-context`
+- `/market/westminster-co-housing-market/guides/place-questions-to-property-verification`
+
+Deployment evidence:
+
+- GitHub/Vercel commit status id: `52051491595`
+- GitHub deployment id: `5857274591`
+- GitHub deployment status id: `16683567599`
+- Deployment state: `success`
+- Deployment description: `Deployment has completed`
+- Deployment timestamp: `2026-08-11T19:34:02Z`
+- Deployed SHA: `bbce47ae9f6d4bf3862d553e70f08e6292dd51e1`
+- Vercel target URL: `https://david-quinn-group-8rde-pmamph973-david-quinns-projects-a0953600.vercel.app`
+- Production domain verified: `https://davidquinngroup.com`
+
+Production certification:
+
+- All nine new guide routes returned HTTP `200`.
+- Representative excluded routes returned HTTP `404`: Superior, Brighton, Thornton.
+- Production sitemap includes each authorized new guide route exactly once.
+- Production sitemap contains no Superior, Brighton, Firestone, Frederick, Thornton, Gunbarrel, or Niwot guide routes.
+- Browser certified at desktop width `1440` and mobile width `390`.
+- Representative new guide routes certified: Broomfield, Erie, Westminster.
+- Original guide-city regression certified: Boulder, Denver, Louisville, Lafayette, Longmont.
+- Core route regression certified: `/search`, `/market`, `/grand-plan`, `/sources`, `/contact#advisory-readiness`.
+- No material horizontal overflow, browser console errors, or page exceptions were captured.
+- WebPage schema remains aligned to visible guide questions and answers.
+
+Eligibility and evidence boundaries:
+
+- Broomfield, Erie, and Westminster remain `ENHANCED_FOUNDATION`, public eligible, and current governed city-market contexts.
+- Claim posture remains `ELIGIBLE_LIMITED`.
+- Guides use existing certified city-market context only.
+- Guides disclose source, geography, period/freshness, limitation, claim eligibility, visible answer, and structured data.
+- Guides do not assert a live MLS feed, valuation, forecast, investment conclusion, property conclusion, city superiority, recommendation, or suitability.
+
+Superior fail-closed posture:
+
+- Superior remains excluded from the guide allowlist, guide static params, and guide sitemap routes.
+- Superior canonical Market AEO posture remains `AGING`.
+- Superior evidence state remains `EXPLICIT_CONFLICT`.
+- Superior current-signal claim eligibility remains `false`.
+- No conflict-hiding copy, freshness normalization, or claim-eligibility weakening occurred.
+
+Protected boundaries:
+
+- No provider/source activation, county/GIS work, API mutation, schema/database mutation, CRM/email action, worker/queue action, telemetry action, MLS action, Typesense action, auth change, customer persistence, credentials/config expansion, or customer-data mutation occurred.
+- Local pre-push smoke performed read-only Prisma SELECTs only.
+- No production form submission or customer data mutation occurred during production certification.
+
+Validation:
+
+- `git diff --check origin/main..HEAD`
+- `npm run typecheck`
+- `npm run check:five-city-decision-guide-authority-wave`
+- `npm run check:wave-2-city-orientation-guide-authority-expansion`
+- `npm run check:market-aeo-boulder-pilot`
+- `npm run check:market-aeo-wave-2`
+- `npm run check:colorado-decision-guide-generation-system`
+- `npm run check:search-map-local-trust-advancement`
+- `npm run check:property-product-3-1`
+- `npm run check:property-evidence-completeness-verification`
+- `npm run check:grand-plan-editorial-authority-advancement`
+- `npm run check:colorado-source-trust-experience`
+- `npm run check:advisory-handoff-value-activation`
+- `npm run check:professional-handoff-cohesion`
+- `npm run check:public-runtime-safety`
+- `npm run check:public-trust-readiness`
+- `npm run check:next-security-version`
+- `npm run lint`
+- `npm run build`
+- `npm run smoke:public-experience`
+
+Next gate:
+
+- `READY_FOR_WAVE_2_CITY_ORIENTATION_GUIDE_AUTHORITY_CLOSURE_SYNC_AUTHORIZATION`
+
+The docs-only production closure commit is local until separate synchronization authorization is granted. Do not push it, deploy again, begin Property Shortlist implementation, begin Superior guide activation, activate sources/providers, acquire county datasets, mutate customer data, or begin another implementation workstream unless explicitly authorized.
+
+Prior handoff retained below for audit history.
+
 PROJECT ATLAS(tm) / Advisory Handoff + Decision-Moment Source Transparency Production Certified and Closure Reconciled:
 
 Workspace:
