@@ -10,7 +10,7 @@ Product:
 
 ## Latest New-Chat Handoff
 
-PROJECT ATLAS(tm) / Wave 2 City Orientation Guide Authority Expansion Production Certified and Closed:
+PROJECT ATLAS(tm) / Customer-Controlled Property Shortlist Production Certified and Closed:
 
 Workspace:
 
@@ -19,115 +19,106 @@ Workspace:
 Production implementation state:
 
 - Branch: `main`
-- Implementation commit pushed: `bbce47ae9f6d4bf3862d553e70f08e6292dd51e1`
-- Implementation commit message: `Expand Wave 2 city orientation guide authority`
-- Post-push implementation state before docs-only closure: `HEAD = origin/main = bbce47ae9f6d4bf3862d553e70f08e6292dd51e1`
+- Original implementation commit pushed: `ad0e0ea37a69271d193187280f06c06c16746b91`
+- Original implementation commit message: `Add customer controlled property comparison workspace`
+- Hydration remediation commit pushed: `69cd49e1fffd531196b6e3a5e9624fdcf26e5402`
+- Hydration remediation commit message: `Fix shortlist direct entry hydration`
+- Post-push implementation state before docs-only closure: `HEAD = origin/main = 69cd49e1fffd531196b6e3a5e9624fdcf26e5402`
 - Post-push divergence before documentation closure: `0 ahead / 0 behind`
-- Production certification record: `docs/project-atlas/executive-library/REIE-WAVE-2-CITY-ORIENTATION-GUIDE-AUTHORITY-PRODUCTION-CERTIFICATION.md`
+- Production certification record: `docs/project-atlas/executive-library/REIE-CUSTOMER-CONTROLLED-PROPERTY-SHORTLIST-PRODUCTION-CERTIFICATION.md`
 
 Production disposition:
 
-- `WAVE_2_CITY_ORIENTATION_GUIDE_AUTHORITY_EXPANSION_PRODUCTION_CERTIFIED_AND_CLOSED`
+- `CUSTOMER_CONTROLLED_PROPERTY_SHORTLIST_PRODUCTION_CERTIFIED_AND_CLOSED`
 
-Certified guide authority:
+Hydration remediation:
 
-- Target guide cities: `8`
-- Total guide routes: `24`
-- Original five guide cities remain intact: Boulder, Denver, Louisville, Lafayette, Longmont.
-- New Wave 2 guide cities: Broomfield, Erie, Westminster.
-- Authorized guide intents:
-  - `orienting-before-search`
-  - `reading-market-context`
-  - `place-questions-to-property-verification`
-- New Wave 2 guide route count: `9`
+- Production certification previously stopped because direct `/search?compareIds=cmqln53qg09rvpi4jzrvdb33v,cmqln4jmh08s1pi4jrttirnmo` captured React hydration error `#418`.
+- Root cause: `compareIds` was read from browser URL state in the `useState` initializer, causing server/client first-render divergence.
+- Remediation: Search now initializes `compareIds` as deterministic empty state and restores URL-derived comparison state in the existing post-hydration initialization timer.
+- No `suppressHydrationWarning`, client-only Search rendering, reload workaround, storage/persistence, or compareIds dropping was used.
 
-Certified new route inventory:
+Certified production architecture:
 
-- `/market/broomfield-co-housing-market/guides/orienting-before-search`
-- `/market/broomfield-co-housing-market/guides/reading-market-context`
-- `/market/broomfield-co-housing-market/guides/place-questions-to-property-verification`
-- `/market/erie-co-housing-market/guides/orienting-before-search`
-- `/market/erie-co-housing-market/guides/reading-market-context`
-- `/market/erie-co-housing-market/guides/place-questions-to-property-verification`
-- `/market/westminster-co-housing-market/guides/orienting-before-search`
-- `/market/westminster-co-housing-market/guides/reading-market-context`
-- `/market/westminster-co-housing-market/guides/place-questions-to-property-verification`
+- Search route: `/search`
+- Property comparison route: `/properties/compare?ids=<id,id[,id]>`
+- City comparison remains separate: `/compare?cities=...`
+- Search `compareIds` remains browser URL state only.
+- Search API contract remains unaffected: `compareIds` is not sent to Search API.
+- Comparison workspace remains noindex/follow with generic metadata.
+- Minimum useful selection: `2` public Property IDs.
+- Maximum selection: `3` public Property IDs.
+- No hidden shortlist state, persistence, identity, account, dashboard, local/session storage, cookie shortlist, telemetry, CRM, email, savedSearchId, or userId was added.
+
+Production IDs used:
+
+- `cmqln53qg09rvpi4jzrvdb33v` - `102 S Cherry St`, Denver
+- `cmqln4jmh08s1pi4jrttirnmo` - `9773 Phillips Rd`, Lafayette
+- `cmqlnd3x1002sqqqp8reoku2v` - `3310 W County Road 80`, Wellington
 
 Deployment evidence:
 
-- GitHub/Vercel commit status id: `52051491595`
-- GitHub deployment id: `5857274591`
-- GitHub deployment status id: `16683567599`
+- GitHub/Vercel commit status id: `52057367334`
 - Deployment state: `success`
 - Deployment description: `Deployment has completed`
-- Deployment timestamp: `2026-08-11T19:34:02Z`
-- Deployed SHA: `bbce47ae9f6d4bf3862d553e70f08e6292dd51e1`
-- Vercel target URL: `https://david-quinn-group-8rde-pmamph973-david-quinns-projects-a0953600.vercel.app`
+- Deployment timestamp: `2026-08-11T21:01:32Z`
+- Deployed SHA: `69cd49e1fffd531196b6e3a5e9624fdcf26e5402`
+- Vercel target URL: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/FHK8K9G5j7AM5RQTvJH7z4Sh8X3v`
 - Production domain verified: `https://davidquinngroup.com`
 
 Production certification:
 
-- All nine new guide routes returned HTTP `200`.
-- Representative excluded routes returned HTTP `404`: Superior, Brighton, Thornton.
-- Production sitemap includes each authorized new guide route exactly once.
-- Production sitemap contains no Superior, Brighton, Firestone, Frederick, Thornton, Gunbarrel, or Niwot guide routes.
 - Browser certified at desktop width `1440` and mobile width `390`.
-- Representative new guide routes certified: Broomfield, Erie, Westminster.
-- Original guide-city regression certified: Boulder, Denver, Louisville, Lafayette, Longmont.
-- Core route regression certified: `/search`, `/market`, `/grand-plan`, `/sources`, `/contact#advisory-readiness`.
+- `/search` empty, direct two-ID, direct three-ID, filter-preserved, keyboard selection, explicit add, explicit remove, selected-count, map/list separation, and URL-only state were verified.
+- `/properties/compare` states verified: 0 IDs, 1 ID, 2 valid IDs, 3 valid IDs, duplicate input, malformed input, unavailable property, mixed valid/invalid, over-limit input, oversized query, direct URL entry, mobile two-ID rendering, Property link, and Back to comparison.
+- Valid comparison states rendered row count `12`, Source Transparency item count `4`, canonical lexical URL ordering, and no automatic related-listing substitution.
+- Representative regression routes certified: `/properties/cmqln4jmh08s1pi4jrttirnmo`, `/compare?cities=boulder,broomfield`, `/search`, `/grand-plan`, `/sources`, `/contact#advisory-readiness`.
 - No material horizontal overflow, browser console errors, or page exceptions were captured.
-- WebPage schema remains aligned to visible guide questions and answers.
 
-Eligibility and evidence boundaries:
+Trust and evidence boundaries:
 
-- Broomfield, Erie, and Westminster remain `ENHANCED_FOUNDATION`, public eligible, and current governed city-market contexts.
-- Claim posture remains `ELIGIBLE_LIMITED`.
-- Guides use existing certified city-market context only.
-- Guides disclose source, geography, period/freshness, limitation, claim eligibility, visible answer, and structured data.
-- Guides do not assert a live MLS feed, valuation, forecast, investment conclusion, property conclusion, city superiority, recommendation, or suitability.
-
-Superior fail-closed posture:
-
-- Superior remains excluded from the guide allowlist, guide static params, and guide sitemap routes.
-- Superior canonical Market AEO posture remains `AGING`.
-- Superior evidence state remains `EXPLICIT_CONFLICT`.
-- Superior current-signal claim eligibility remains `false`.
-- No conflict-hiding copy, freshness normalization, or claim-eligibility weakening occurred.
+- The comparison workspace remained equal-sided and factual.
+- Factual dimensions remain bounded to address, city/state, listed price, beds, baths, square footage, lot size, year built, property type, listing status, labelled price-per-square-foot arithmetic, and freshness / verification state.
+- Source Transparency remains bounded to Source, Period / Freshness, Limitation, and Verify.
+- Required trust boundaries remained visible:
+  - MORE AVAILABLE DATA does not mean a better property.
+  - SOURCE AVAILABILITY does not equal PROPERTY QUALITY.
+  - MISSING DATA does not equal NEGATIVE PROPERTY CONDITION.
+- No best property, winner, recommended property, fit score, ranking, recommendation, suitability, investment ranking, valuation, offer recommendation, financing advice, school/safety/demographic comparison, protected-class proxy, or customer identity/state leakage was observed.
 
 Protected boundaries:
 
-- No provider/source activation, county/GIS work, API mutation, schema/database mutation, CRM/email action, worker/queue action, telemetry action, MLS action, Typesense action, auth change, customer persistence, credentials/config expansion, or customer-data mutation occurred.
-- Local pre-push smoke performed read-only Prisma SELECTs only.
-- No production form submission or customer data mutation occurred during production certification.
+- No API expansion, database/schema change, write operation, provider/source activation, MLS/Typesense change, county/GIS work, CRM/email action, alerts/workers action, telemetry action, auth change, customer persistence, customer identity expansion, credentials change, or production mutation beyond the authorized remediation deployment occurred.
 
 Validation:
 
-- `git diff --check origin/main..HEAD`
+- `git diff --check`
 - `npm run typecheck`
-- `npm run check:five-city-decision-guide-authority-wave`
-- `npm run check:wave-2-city-orientation-guide-authority-expansion`
-- `npm run check:market-aeo-boulder-pilot`
-- `npm run check:market-aeo-wave-2`
-- `npm run check:colorado-decision-guide-generation-system`
-- `npm run check:search-map-local-trust-advancement`
+- `npm run check:customer-controlled-property-shortlist`
+- `npm run check:search-runtime-safety`
+- `npm run check:search-listing-quality`
+- `npm run check:map-rendering-safety`
+- `npm run check:dxt-search-return-context-handoff`
+- `npm run check:property-route-safety`
 - `npm run check:property-product-3-1`
-- `npm run check:property-evidence-completeness-verification`
-- `npm run check:grand-plan-editorial-authority-advancement`
-- `npm run check:colorado-source-trust-experience`
-- `npm run check:advisory-handoff-value-activation`
-- `npm run check:professional-handoff-cohesion`
+- `npm run check:reie-comparison-financing-intelligence`
+- `npm run check:decision-moment-source-transparency`
 - `npm run check:public-runtime-safety`
 - `npm run check:public-trust-readiness`
+- `npm run check:cross-city-decision-comparison`
+- `npm run check:advisory-handoff-value-activation`
 - `npm run check:next-security-version`
 - `npm run lint`
 - `npm run build`
 - `npm run smoke:public-experience`
+- Local production-like browser certification against `http://localhost:3000`
+- Production browser certification against `https://davidquinngroup.com`
 
 Next gate:
 
-- `READY_FOR_WAVE_2_CITY_ORIENTATION_GUIDE_AUTHORITY_CLOSURE_SYNC_AUTHORIZATION`
+- `READY_FOR_CUSTOMER_CONTROLLED_PROPERTY_SHORTLIST_CLOSURE_SYNC_AUTHORIZATION`
 
-The docs-only production closure commit is local until separate synchronization authorization is granted. Do not push it, deploy again, begin Property Shortlist implementation, begin Superior guide activation, activate sources/providers, acquire county datasets, mutate customer data, or begin another implementation workstream unless explicitly authorized.
+The docs-only production closure commit is local until separate synchronization authorization is granted. Do not push it, deploy again, begin Search Render and Fallback Certification, begin another customer feature, activate sources/providers, acquire county datasets, mutate customer data, or begin another implementation workstream unless explicitly authorized.
 
 Prior handoff retained below for audit history.
 
