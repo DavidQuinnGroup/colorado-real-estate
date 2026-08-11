@@ -168,6 +168,7 @@
     "check:colorado-source-trust-experience": "npm run worker:build && node dist/scripts/checkColoradoSourceTrustExperience.js",
     "check:grand-plan-editorial-authority-advancement": "npm run worker:build && node dist/scripts/checkGrandPlanEditorialAuthorityAdvancement.js",
     "check:five-city-decision-guide-authority-wave": "npm run worker:build && node --experimental-specifier-resolution=node dist/scripts/checkFiveCityDecisionGuideAuthorityWave.js",
+    "check:wave-2-city-orientation-guide-authority-expansion": "npm run worker:build && node --experimental-specifier-resolution=node dist/scripts/checkWave2CityOrientationGuideAuthorityExpansion.js",
     "check:decision-journey-experience": "npm run worker:build && node dist/scripts/checkDecisionJourneyExperience.js",
     "check:reie-product-experience-cohesion-wave": "npm run worker:build && node dist/scripts/checkReieProductExperienceCohesionWave.js",
     "check:reie-decision-intelligence-cohesion": "npm run worker:build && node dist/scripts/checkReieDecisionIntelligenceCohesion.js",

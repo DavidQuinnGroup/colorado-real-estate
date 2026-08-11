@@ -1,4 +1,4 @@
-export const CITY_ORIENTATION_GUIDE_STATUS = 'FIVE_CITY_LOCAL_ORIENTATION_DECISION_GUIDE_AUTHORITY_WAVE';
+export const CITY_ORIENTATION_GUIDE_STATUS = 'WAVE_2_CITY_ORIENTATION_GUIDE_AUTHORITY_EXPANSION';
 
 export const CITY_ORIENTATION_GUIDE_TARGET_CITY_SLUGS = [
   'boulder-co-housing-market',
@@ -6,6 +6,9 @@ export const CITY_ORIENTATION_GUIDE_TARGET_CITY_SLUGS = [
   'louisville-co-housing-market',
   'lafayette-co-housing-market',
   'longmont-co-housing-market',
+  'broomfield-co-housing-market',
+  'erie-co-housing-market',
+  'westminster-co-housing-market',
 ] as const;
 
 export const CITY_ORIENTATION_GUIDE_INTENT_SLUGS = [

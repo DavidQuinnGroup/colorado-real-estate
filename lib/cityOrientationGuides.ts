@@ -61,7 +61,7 @@ const GUIDE_INTENTS: GuideIntentTemplate[] = [
     freshnessState: 'PERIODIC_MARKET_EVIDENCE',
     freshnessLabel: (marketFreshnessLabel) => marketFreshnessLabel,
     limitation: (cityName) =>
-      `${cityName} market context is not a live feed, valuation, appreciation forecast, investment conclusion, ranking, or property-specific recommendation.`,
+      `${cityName} market context is not a live feed, valuation, future price projection, investment conclusion, ranking, or property-specific recommendation.`,
     verificationPath: (cityName) =>
       `Use the ${cityName} market page, Sources & Methodology, active listings, lender/professional review, and property-specific evidence before reliance.`,
     claimEligibility: 'ELIGIBLE_LIMITED',
@@ -104,7 +104,7 @@ function buildContinuityLinks(cityName: string, marketRoute: string): CityOrient
     { label: 'Property', href: `/search?city=${encodedCity}`, note: 'Open a listing for evidence', destination: 'property' },
     { label: 'Grand Plan', href: '/grand-plan', note: 'Organize decision questions', destination: 'grand-plan' },
     { label: 'Sources', href: '/sources', note: 'Check evidence boundaries', destination: 'sources' },
-    { label: 'Advisor', href: '/contact', note: 'Prepare professional questions', destination: 'professional-handoff' },
+    { label: 'Advisor', href: '/contact#advisory-readiness', note: 'Prepare professional questions', destination: 'professional-handoff' },
   ];
 }
 

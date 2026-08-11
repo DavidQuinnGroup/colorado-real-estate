@@ -251,7 +251,7 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
     },
     {
       label: 'Assumptions to keep separate',
-      body: 'City direction, pricing, competitiveness, and timing are directional context. They are not appreciation predictions, investment conclusions, or neighborhood rankings.',
+      body: 'City direction, pricing, competitiveness, and timing are directional context. They are not future price projections, investment conclusions, or neighborhood rankings.',
     },
   ];
   const cityReadinessThresholds = [
@@ -614,7 +614,7 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
           <section
             className="grid gap-6 rounded-[8px] bg-white/[0.04] p-5 md:p-8 lg:grid-cols-[0.82fr_1.18fr]"
             data-testid="city-orientation-guide-inventory"
-            data-city-orientation-guide-wave="five-city"
+            data-city-orientation-guide-wave="wave-2-city-authority"
             data-city-orientation-guide-city={cityData.name}
             data-city-orientation-guide-count={cityOrientationGuides.length}
             data-city-orientation-guide-hidden-state-transfer="false"

@@ -25,6 +25,9 @@ assert.deepEqual([...CITY_ORIENTATION_GUIDE_TARGET_CITY_SLUGS], [
   'louisville-co-housing-market',
   'lafayette-co-housing-market',
   'longmont-co-housing-market',
+  'broomfield-co-housing-market',
+  'erie-co-housing-market',
+  'westminster-co-housing-market',
 ]);
 
 assert.deepEqual([...CITY_ORIENTATION_GUIDE_INTENT_SLUGS], [
@@ -34,8 +37,10 @@ assert.deepEqual([...CITY_ORIENTATION_GUIDE_INTENT_SLUGS], [
 ]);
 
 const targetCities = cities.filter((city) => CITY_ORIENTATION_GUIDE_TARGET_CITY_SLUGS.includes(city.marketSlug as never));
-assert.equal(targetCities.length, 5, 'Exactly five target cities must be exposed.');
-assert.deepEqual(targetCities.map((city) => city.name).sort(), ['Boulder', 'Denver', 'Lafayette', 'Longmont', 'Louisville']);
+assert.equal(targetCities.length, 8, 'Exactly eight target cities must be exposed after the Wave 2 expansion.');
+for (const originalCity of ['Boulder', 'Denver', 'Lafayette', 'Longmont', 'Louisville']) {
+  assert(targetCities.some((city) => city.name === originalCity), `${originalCity} original five-city guide must remain exposed.`);
+}
 
 const guideRoutes = CITY_ORIENTATION_GUIDE_TARGET_CITY_SLUGS.flatMap((citySlug) =>
   CITY_ORIENTATION_GUIDE_INTENT_SLUGS.map((guideSlug) => ({
@@ -44,7 +49,19 @@ const guideRoutes = CITY_ORIENTATION_GUIDE_TARGET_CITY_SLUGS.flatMap((citySlug) 
     canonicalPath: buildCityOrientationGuidePath(citySlug, guideSlug),
   })),
 );
-assert.equal(guideRoutes.length, 15, 'Exactly 15 intended guide routes must be generated.');
+for (const originalCitySlug of [
+  'boulder-co-housing-market',
+  'denver-co-housing-market',
+  'louisville-co-housing-market',
+  'lafayette-co-housing-market',
+  'longmont-co-housing-market',
+]) {
+  assert.equal(
+    guideRoutes.filter((route) => route.citySlug === originalCitySlug).length,
+    3,
+    `${originalCitySlug} original guide city must keep exactly three guide routes.`,
+  );
+}
 assert.match(guideHelper, /getCityOrientationGuideStaticParams/, 'Static params helper must be present.');
 
 for (const citySlug of CITY_ORIENTATION_GUIDE_TARGET_CITY_SLUGS) {
@@ -65,7 +82,7 @@ for (const citySlug of CITY_ORIENTATION_GUIDE_TARGET_CITY_SLUGS) {
   }
 }
 
-for (const invalidCity of ['broomfield-co-housing-market', 'superior-co-housing-market', 'niwot-co-housing-market']) {
+for (const invalidCity of ['superior-co-housing-market', 'niwot-co-housing-market']) {
   assert(!CITY_ORIENTATION_GUIDE_TARGET_CITY_SLUGS.includes(invalidCity as never), `${invalidCity} must remain outside the target allowlist.`);
 }
 
@@ -127,5 +144,5 @@ for (const forbidden of [
 }
 
 console.log(
-  '[five-city-decision-guide-authority-wave] ok: five-city allowlist, three guide intents, 15 routes, canonical paths, non-target containment, evidence/freshness/limitation contracts, schema-visible alignment, continuity links, and protected boundaries verified.',
+  '[five-city-decision-guide-authority-wave] ok: original five-city routes remain intact inside the expanded allowlist, three guide intents, canonical paths, non-target containment, evidence/freshness/limitation contracts, schema-visible alignment, continuity links, and protected boundaries verified.',
 );

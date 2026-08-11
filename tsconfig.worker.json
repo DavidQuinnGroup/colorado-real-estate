@@ -112,6 +112,7 @@
     "scripts/checkColoradoSourceTrustExperience.ts",
     "scripts/checkGrandPlanEditorialAuthorityAdvancement.ts",
     "scripts/checkFiveCityDecisionGuideAuthorityWave.ts",
+    "scripts/checkWave2CityOrientationGuideAuthorityExpansion.ts",
     "scripts/checkDecisionJourneyExperience.ts",
     "scripts/checkReieProductExperienceCohesionWave.ts",
     "scripts/checkReieDecisionIntelligenceCohesion.ts",
