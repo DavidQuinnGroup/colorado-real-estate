@@ -77,6 +77,10 @@ assertIncludes(propertyPage, 'getPublicProperty(id)', 'Property route must use t
 
 assertIncludes(searchInterface, 'data-search-compare-ids-state="browser-url-only"', 'Search must disclose compareIds as browser URL state only.');
 assertIncludes(searchInterface, 'data-search-compare-ids-api-param="false"', 'Search must not send compareIds to the Search API.');
+assertIncludes(searchInterface, 'const [compareIds, setCompareIds] = useState<string[]>([]);', 'Search direct-entry compareIds must not read browser URL state during the first render.');
+assertIncludes(searchInterface, 'setCompareIds(getBrowserComparisonIds());', 'Search direct-entry compareIds must hydrate from URL after the first deterministic render.');
+assertNotIncludes(searchInterface, 'useState<string[]>(() => getBrowserComparisonIds())', 'Search direct-entry compareIds must not diverge between server and first client render.');
+assertNotIncludes(searchInterface, 'suppressHydrationWarning', 'Search direct-entry hydration must not be hidden with suppression.');
 assertIncludes(searchInterface, "params.set('compareIds', compareIds)", 'Search must preserve compareIds through filter URL updates.');
 assertIncludes(searchInterface, 'buildSearchUrl(nextFilters)', 'Search API calls must remain driven by Search filters only.');
 assertIncludes(searchInterface, 'property-shortlist-control', 'Search must expose compact shortlist control.');

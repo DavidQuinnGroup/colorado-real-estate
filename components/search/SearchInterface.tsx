@@ -287,7 +287,7 @@ export default function SearchInterface({
   const [mobileView, setMobileView] = useState<MobileSearchView>('list');
   const [isSearching, setIsSearching] = useState(false);
   const [searchError, setSearchError] = useState<string | null>(null);
-  const [compareIds, setCompareIds] = useState<string[]>(() => getBrowserComparisonIds());
+  const [compareIds, setCompareIds] = useState<string[]>([]);
   const [comparisonNotice, setComparisonNotice] = useState<string | null>(null);
   const [lastMapBounds, setLastMapBounds] = useState<MapBounds>(null);
   const [hasMovedMap, setHasMovedMap] = useState(false);
@@ -464,6 +464,7 @@ export default function SearchInterface({
     const returnContext = getBrowserSearchReturnContext();
 
     const initialReturnContextTimer = window.setTimeout(() => {
+      setCompareIds(getBrowserComparisonIds());
       if (returnContext?.view) setMobileView(returnContext.view);
 
       if (!hasActiveSearchFilters(browserFilters)) {
