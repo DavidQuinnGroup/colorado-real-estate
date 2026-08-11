@@ -417,8 +417,10 @@ async function assertSaveSearchSource() {
   assert.ok(source.includes('data-save-search-alert-readiness='), 'Expected save search to expose alert readiness.');
   assert.ok(source.includes('data-save-search-signal-count='), 'Expected save search to expose alert signal count.');
   assert.ok(source.includes('data-save-search-blocker-count='), 'Expected save search to expose alert blocker count.');
-  assert.ok(source.includes('data-save-search-user-id='), 'Expected save search to expose response user ids.');
-  assert.ok(source.includes('data-save-search-id='), 'Expected save search to expose saved search ids.');
+  assert.ok(!source.includes('data-save-search-user-id='), 'Expected save search to avoid customer-facing response user ids.');
+  assert.ok(!source.includes('data-save-search-id='), 'Expected save search to avoid customer-facing saved search ids.');
+  assert.ok(source.includes('data-testid="reie-save-search-continuation"'), 'Expected save search to expose decision continuity after save.');
+  assert.ok(source.includes('data-testid="reie-save-search-return-link"'), 'Expected save search to expose safe Search return navigation.');
 }
 
 async function assertLeadCaptureSource() {

@@ -3,10 +3,19 @@
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { Bell, Check, ChevronDown, Loader2, Mail, MessageSquareText, Sparkles } from 'lucide-react';
+import { ArrowLeft, Bell, Check, ChevronDown, ClipboardList, FileSearch, Loader2, Mail, MapPinned, MessageSquareText, Sparkles, UserRound } from 'lucide-react';
 import type { CSSProperties } from 'react';
 
 import { getSavedNorthStarAnchors } from '@/components/settings/NorthStarManager';
+import {
+  isSafeSearchReturnPath,
+  isSearchReturnView,
+  SEARCH_RETURN_ALLOWED_CRITERIA,
+  SEARCH_RETURN_SELECTED_PARAM,
+  SEARCH_RETURN_SOURCE_PARAM,
+  SEARCH_RETURN_SOURCE_VALUE,
+  SEARCH_RETURN_VIEW_PARAM,
+} from '@/lib/search/searchReturnContext';
 
 type SaveSearchProps = {
   city: string;
@@ -61,6 +70,19 @@ const TIMELINE_OPTIONS: TimelineOption[] = [
 ];
 
 const MAX_NOTE_LENGTH = 220;
+
+const MARKET_CONTEXT_BY_CITY: Record<string, { label: string; href: string }> = {
+  boulder: { label: 'Boulder', href: '/market/boulder-co-housing-market' },
+  broomfield: { label: 'Broomfield', href: '/market/broomfield-co-housing-market' },
+  denver: { label: 'Denver', href: '/market/denver-co-housing-market' },
+  erie: { label: 'Erie', href: '/market/erie-co-housing-market' },
+  gunbarrel: { label: 'Gunbarrel', href: '/market/gunbarrel-co-housing-market' },
+  lafayette: { label: 'Lafayette', href: '/market/lafayette-co-housing-market' },
+  longmont: { label: 'Longmont', href: '/market/longmont-co-housing-market' },
+  louisville: { label: 'Louisville', href: '/market/louisville-co-housing-market' },
+  superior: { label: 'Superior', href: '/market/superior-co-housing-market' },
+  westminster: { label: 'Westminster', href: '/market/westminster-co-housing-market' },
+};
 
 const selectControlStyle: CSSProperties = {
   boxSizing: 'border-box',
@@ -118,6 +140,33 @@ function getCharacterCountLabel(value: string) {
   return `${value.length}/${MAX_NOTE_LENGTH}`;
 }
 
+function normalizeCityKey(value: string) {
+  return value.trim().toLowerCase();
+}
+
+function getMarketContextLink(city: string) {
+  return MARKET_CONTEXT_BY_CITY[normalizeCityKey(city)] || null;
+}
+
+function buildReturnToSearchHref(searchParams: URLSearchParams) {
+  const nextParams = new URLSearchParams();
+
+  for (const key of SEARCH_RETURN_ALLOWED_CRITERIA) {
+    const value = searchParams.get(key);
+    if (value) nextParams.set(key, value);
+  }
+
+  const selected = searchParams.get(SEARCH_RETURN_SELECTED_PARAM);
+  const view = searchParams.get(SEARCH_RETURN_VIEW_PARAM);
+
+  nextParams.set(SEARCH_RETURN_SOURCE_PARAM, SEARCH_RETURN_SOURCE_VALUE);
+  if (selected) nextParams.set(SEARCH_RETURN_SELECTED_PARAM, selected);
+  if (isSearchReturnView(view)) nextParams.set(SEARCH_RETURN_VIEW_PARAM, view);
+
+  const safePath = `/search?${nextParams.toString()}`;
+  return isSafeSearchReturnPath(safePath) ? safePath : '/search';
+}
+
 function getReadinessClass(level: SaveSearchResponse['alertReadiness'] extends infer Readiness ? Readiness extends { level: infer Level } ? Level : never : never) {
   if (level === 'ready') return 'border-emerald-300/30 bg-emerald-400/10 text-emerald-100';
   if (level === 'watch') return 'border-amber-300/40 bg-amber-400/10 text-amber-100';
@@ -131,8 +180,21 @@ function getCustomerFollowUpLabel(level: SaveSearchResponse['alertReadiness'] ex
 }
 
 function getSavedMessage(result: SaveSearchResponse | null) {
-  if (!result?.alertReadiness) return 'Your search criteria were saved for listing updates and optional follow-up context.';
-  return result.alertReadiness.summary;
+  if (result?.alertReadiness?.level === 'incomplete') {
+    return 'Your criteria were saved for review. Automated updates are not currently active; continue manually through Search, Market, or Sources.';
+  }
+  if (!result?.alertReadiness) {
+    return 'Your search criteria were saved. Continue with the same search, review the market context, organize your decision questions, or check the sources behind the experience.';
+  }
+  return 'Your search criteria were saved. Continue with the same search, review the market context, organize your decision questions, or check the sources behind the experience.';
+}
+
+function getSavedContinuationMessage(result: SaveSearchResponse | null) {
+  if (result?.alertReadiness?.level === 'incomplete') {
+    return 'Automated updates are not currently active; continue manually through Search, Market, or Sources.';
+  }
+
+  return 'Listing updates remain subject to current alert readiness.';
 }
 
 function getIntentSummary(goal: ReieGoal, timeline: Timeline) {
@@ -182,6 +244,8 @@ export default function SaveSearch({ city }: SaveSearchProps) {
     return getIntentSummary(goal, timeline);
   }, [error, goal, submitState, timeline]);
   const intentSummary = useMemo(() => getIntentSummary(goal, timeline), [goal, timeline]);
+  const returnToSearchHref = useMemo(() => buildReturnToSearchHref(searchParams), [searchParams]);
+  const marketContextLink = useMemo(() => getMarketContextLink(city), [city]);
 
   function resetErrorState() {
     if (submitState === 'error') {
@@ -264,9 +328,10 @@ export default function SaveSearch({ city }: SaveSearchProps) {
         data-save-search-alert-readiness={saveResult?.alertReadiness?.level || ''}
         data-save-search-signal-count={saveResult?.alertReadiness?.signals.length ?? 0}
         data-save-search-blocker-count={saveResult?.alertReadiness?.blockers.length ?? 0}
-        data-save-search-user-id={saveResult?.userId || ''}
-        data-save-search-id={saveResult?.savedSearchId || ''}
         data-save-search-filter-count={capturedFilterCount}
+        data-save-search-return-href={returnToSearchHref}
+        data-save-search-market-route={marketContextLink?.href || ''}
+        data-save-search-direct-property-link="false"
       >
         <div className="border-b border-cyan-100/14 bg-cyan-100/[0.08] px-4 py-3">
           <div className="flex items-start gap-3">
@@ -310,6 +375,60 @@ export default function SaveSearch({ city }: SaveSearchProps) {
               ))}
             </div>
           ) : null}
+          <div className="mt-4 space-y-3" data-testid="reie-save-search-continuation" data-save-search-continuation="manual-decision-navigation">
+            <p className="text-xs leading-5 text-white/58" data-testid="reie-save-search-continuation-copy">
+              Your search criteria were saved. Continue with the same search, review the market context, organize your decision questions, or check the
+              sources behind the experience. {getSavedContinuationMessage(saveResult)}
+            </p>
+            <div className="grid gap-2" data-testid="reie-save-search-continuation-actions">
+              <Link
+                href={returnToSearchHref}
+                className="inline-flex min-h-10 items-center gap-2 rounded-[6px] border border-cyan-100/28 bg-cyan-100/[0.08] px-3 py-2 text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100 no-underline transition hover:border-white/40 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-300"
+                data-testid="reie-save-search-return-link"
+                data-save-search-return-href={returnToSearchHref}
+                data-save-search-hidden-state-transfer="false"
+              >
+                <ArrowLeft size={13} aria-hidden="true" />
+                Return to this search
+              </Link>
+              {marketContextLink ? (
+                <Link
+                  href={marketContextLink.href}
+                  className="inline-flex min-h-10 items-center gap-2 rounded-[6px] border border-white/10 bg-white/[0.045] px-3 py-2 text-[10px] font-black uppercase tracking-[0.14em] text-white/62 no-underline transition hover:bg-white/[0.075] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-300"
+                  data-testid="reie-save-search-market-link"
+                  data-save-search-market-city={marketContextLink.label}
+                  data-save-search-market-href={marketContextLink.href}
+                >
+                  <MapPinned size={13} aria-hidden="true" />
+                  Review {marketContextLink.label} market context
+                </Link>
+              ) : null}
+              <Link
+                href="/grand-plan"
+                className="inline-flex min-h-10 items-center gap-2 rounded-[6px] border border-white/10 bg-white/[0.045] px-3 py-2 text-[10px] font-black uppercase tracking-[0.14em] text-white/62 no-underline transition hover:bg-white/[0.075] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-300"
+                data-testid="reie-save-search-grand-plan-link"
+              >
+                <ClipboardList size={13} aria-hidden="true" />
+                Build a Decision Plan
+              </Link>
+              <Link
+                href="/sources"
+                className="inline-flex min-h-10 items-center gap-2 rounded-[6px] border border-white/10 bg-white/[0.045] px-3 py-2 text-[10px] font-black uppercase tracking-[0.14em] text-white/62 no-underline transition hover:bg-white/[0.075] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-300"
+                data-testid="reie-save-search-sources-link"
+              >
+                <FileSearch size={13} aria-hidden="true" />
+                Review Sources & Methodology
+              </Link>
+              <Link
+                href="/contact"
+                className="inline-flex min-h-10 items-center gap-2 rounded-[6px] border border-white/10 bg-white/[0.045] px-3 py-2 text-[10px] font-black uppercase tracking-[0.14em] text-white/62 no-underline transition hover:bg-white/[0.075] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-300"
+                data-testid="reie-save-search-handoff-link"
+              >
+                <UserRound size={13} aria-hidden="true" />
+                Ask a professional question
+              </Link>
+            </div>
+          </div>
           <button
             type="button"
             onClick={() => {

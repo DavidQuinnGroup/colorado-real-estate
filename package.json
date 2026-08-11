@@ -90,6 +90,7 @@
     "check:dxt-search-workspace-shell": "npm run worker:build && node dist/scripts/checkDxtSearchWorkspaceShell.js",
     "check:dxt-search-marker-preview-interaction": "npm run worker:build && node dist/scripts/checkDxtSearchMarkerPreviewInteraction.js",
     "check:dxt-search-return-context-handoff": "npm run worker:build && node dist/scripts/checkDxtSearchReturnContextHandoff.js",
+    "check:save-search-decision-continuity": "npm run worker:build && node dist/scripts/checkSaveSearchDecisionContinuity.js",
     "check:dxt-map-visual-language-normalization": "npm run worker:build && node dist/scripts/checkDxtMapVisualLanguageNormalization.js",
     "check:cep-search-map-baseline": "npm run worker:build && node dist/scripts/checkCepSearchMapBaseline.js",
     "check:cep-property-intelligence-experience": "npm run worker:build && node dist/scripts/checkCepPropertyIntelligenceExperience.js",
