@@ -131,6 +131,7 @@
     "check:niwot-governance-reconciliation": "npm run worker:build && node dist/scripts/checkNiwotGovernanceReconciliation.js",
     "check:south-boulder-neighborhood-route-enhancement": "npm run worker:build && node dist/scripts/checkSouthBoulderNeighborhoodRouteEnhancement.js",
     "check:table-mesa-boundary-scope-readiness": "npm run worker:build && node dist/scripts/checkTableMesaBoundaryScopeReadiness.js",
+    "check:table-mesa-neighborhood-route-enhancement": "npm run worker:build && node dist/scripts/checkTableMesaNeighborhoodRouteEnhancement.js",
     "check:offer-preparation-readiness": "npm run worker:build && node dist/scripts/checkOfferPreparationReadiness.js",
     "check:search-property-discovery-premium-flow": "npm run worker:build && node dist/scripts/checkSearchPropertyDiscoveryPremiumFlow.js",
     "check:property-seller-evidence-readiness": "npm run worker:build && node dist/scripts/checkPropertySellerEvidenceReadiness.js",

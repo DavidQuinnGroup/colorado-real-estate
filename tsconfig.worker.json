@@ -76,6 +76,7 @@
     "scripts/checkNiwotGovernanceReconciliation.ts",
     "scripts/checkSouthBoulderNeighborhoodRouteEnhancement.ts",
     "scripts/checkTableMesaBoundaryScopeReadiness.ts",
+    "scripts/checkTableMesaNeighborhoodRouteEnhancement.ts",
     "scripts/checkOfferPreparationReadiness.ts",
     "scripts/checkSearchPropertyDiscoveryPremiumFlow.ts",
     "scripts/checkPropertySellerEvidenceReadiness.ts",

@@ -32,7 +32,7 @@ export type NeighborhoodRouteEnhancement = {
   objectType: 'NEIGHBORHOOD';
   canonicalIdentity?: string;
   aliases?: readonly string[];
-  boundaryPosture?: 'DESCRIPTIVE_AREA_ONLY';
+  boundaryPosture?: 'DESCRIPTIVE_AREA_ONLY' | 'APPROXIMATE_BOUNDARY';
   canonicalPath: string;
   canonicalUrl: string;
   parentContext: string;
@@ -253,28 +253,31 @@ export const neighborhoods: Neighborhood[] = [
     routeEnhancement: {
       contract: 'EXISTING_NEIGHBORHOOD_ROUTE_ENHANCEMENT',
       objectType: 'NEIGHBORHOOD',
+      canonicalIdentity: 'neighborhood:boulder:table-mesa',
+      aliases: ['Table Mesa area'],
+      boundaryPosture: 'APPROXIMATE_BOUNDARY',
       canonicalPath: '/market/boulder/table-mesa',
       canonicalUrl: 'https://davidquinngroup.com/market/boulder/table-mesa',
-      parentContext: 'Boulder city context with Boulder County and Table Mesa neighborhood orientation.',
+      parentContext: 'Boulder city context with Boulder County and South Boulder place-orientation context.',
       scopeClarification:
-        'Table Mesa is presented as neighborhood-level orientation within Boulder. It is not a legal boundary, subdivision map, HOA determination, school-assignment source, municipal-jurisdiction finding, insurance conclusion, or property-specific fact.',
+        'Table Mesa is presented here as a locally recognized Boulder neighborhood context. Its edges can be described differently across sources and are not presented as an exact legal, HOA, school, parcel, or property boundary. Use this page for orientation, then verify the specific address and relevant records.',
       decisionSnapshot:
-        'Use this page to frame Table Mesa questions, then verify the exact address, records, physical condition, insurance questions, financing fit, HOA materials, and municipal details before relying on neighborhood context for a property decision.',
+        'Use this page to understand what the Table Mesa label represents: locally recognized Boulder neighborhood context, not exact legal or administrative geography.',
       localCharacter:
-        'Table Mesa context can be useful for orientation around a locally recognized Boulder neighborhood label and nearby place anchors. Exact meaning can vary by address, source, subdivision, association, and property record.',
+        'Table Mesa context can be useful for orientation around a locally recognized Boulder neighborhood label, nearby place anchors, and address-level questions. Exact meaning can vary by source and should be verified before a property decision depends on it.',
       geographicBoundaries:
-        'Neighborhood labels, subdivision names, school boundaries, HOA coverage, municipal records, access assumptions, and corridor references may not align. Treat this route as context and confirm property-specific facts through the appropriate source.',
+        'Table Mesa is associated with the broader South Boulder context for market and place orientation. That association does not mean the two areas have identical boundaries, identities, or evidence.',
       housingAndPropertyContext:
-        'Housing context should be reviewed property by property. This page does not determine condition, title, permits, value, insurance, financing, HOA status, legal compliance, marketability, or suitability for any Table Mesa property.',
+        'Housing context should be reviewed property by property. This page does not determine condition, title, permits, value, insurance, financing, HOA status, legal compliance, marketability, or sale outcome for any Table Mesa property.',
       marketAndDecisionDrivers: [
-        'Confirm whether the address is being described by a neighborhood label, subdivision, HOA, district, corridor, or another locally used area name.',
+        'Confirm whether the address is being described by a neighborhood label, subdivision, HOA, district, corridor, or another locally used area name before relying on the label.',
         'Separate Boulder citywide market context from property-specific listing facts, condition, ownership documents, and seller materials.',
-        'Review access, maintenance, financing, insurance, association, and municipal assumptions against the actual address rather than the neighborhood label alone.',
+        'Review access, maintenance, financing, insurance, association, title, permit, and municipal assumptions against the actual address rather than the neighborhood label alone.',
       ],
       buyerPrompts: [
         'Verify the exact address context, property type, age, improvements, association status, and records before relying on neighborhood-level information.',
-        'Confirm school-boundary, insurance, financing, municipal, permit, title, HOA, and inspection questions with the qualified source for the specific property.',
-        'Use current search results as a discovery path, not as proof that every Table Mesa property shares the same condition, cost, constraints, or records posture.',
+        'Confirm address-specific records, listing facts, condition, permits, HOA or association materials where applicable, title, insurance, financing, and inspection questions with the qualified source for the specific property.',
+        'Use Search This Area as a discovery path only, not as proof of complete inventory, exact boundary-filtered listings, or geographic exhaustiveness.',
       ],
       sellerPrompts: [
         'Prepare records for improvements, maintenance, permits, HOA materials, prior reports, disclosures, access details, and known property history before property-specific review.',
@@ -287,24 +290,62 @@ export const neighborhoods: Neighborhood[] = [
         'Confirm boundaries, labels, records, and property facts before applying neighborhood-level context to an offer, listing decision, or advisory conversation.',
       ],
       evidenceTransparency: [
-        'This route uses public-facing neighborhood context and repository-supported route governance; it does not expose internal Evidence Depth metadata.',
-        'Table Mesa has approximate-boundary and incomplete-evidence limitations in repository governance, so public copy remains orientation and question preparation only.',
-        'Neighborhood context does not establish property condition, value, title, ownership, insurability, permits, HOA status, school assignment, financing eligibility, marketability, suitability, or sale outcome.',
+        'This route uses public-facing neighborhood context, visible limitations, and existing Search, Market, Property, Grand Plan, Sources, and advisory continuity only.',
+        'If Table Mesa source context is unavailable, stale, conflicting, or unsupported for a specific address question, the customer-facing answer remains verification-first instead of turning uncertainty into a claim.',
+        'Neighborhood context does not establish property condition, value, title, ownership, insurability, permits, HOA status, school assignment, financing eligibility, marketability, or sale outcome.',
+      ],
+      evidenceContract: [
+        {
+          stage: 'SOURCE',
+          treatment: 'Use governed public route context and the existing Table Mesa readiness foundation; do not substitute inactive county, provider, public-record, or commercial aggregator records.',
+        },
+        {
+          stage: 'GEOGRAPHY / OBJECT TYPE',
+          treatment: 'Treat Table Mesa as canonical identity neighborhood:boulder:table-mesa, object type NEIGHBORHOOD, alias Table Mesa area, parent Boulder, and Boulder County plus South Boulder contextual association only.',
+        },
+        {
+          stage: 'PERIOD / FRESHNESS',
+          treatment: 'Treat static route orientation as durable context and current Search discovery as separately changing evidence that must be verified at use time.',
+        },
+        {
+          stage: 'LIMITATION',
+          treatment: 'Do not treat this route as a legal, HOA, school, safety, parcel, property, municipal, insurance, hazard, or exact GIS boundary.',
+        },
+        {
+          stage: 'CLAIM ELIGIBILITY',
+          treatment: 'Eligible claims are limited to Table Mesa orientation, Boulder relationship, South Boulder contextual association, visible limitations, verification questions, and neutral continuation paths.',
+        },
+        {
+          stage: 'VISIBLE ANSWER',
+          treatment: 'The customer-facing answer is preparation context: understand the Table Mesa label, use Search as discovery, then verify the specific address and relevant records before relying on it.',
+        },
+        {
+          stage: 'STRUCTURED DATA',
+          treatment: 'Schema remains aligned to visible neighborhood place context and does not publish unsupported boundary, quality, ranking, scoring, or recommendation claims.',
+        },
+      ],
+      unavailableEvidence: [
+        'No public GIS polygon or exact boundary geometry is active for Table Mesa.',
+        'The route does not activate county Assessor, parcel, provider, MLS, Typesense, CRM, email, alert, telemetry, or customer-data systems.',
+        'School attendance, HOA coverage, insurance terms, permits, title, condition, records, and financing facts remain address-specific verification items.',
       ],
       journeyLinks: [
         { label: 'Boulder City Context', href: '/market/boulder-co-housing-market', note: 'Citywide market context' },
-        { label: 'Search Table Mesa', href: '/search?neighborhood=Table%20Mesa', note: 'Existing search path' },
+        { label: 'South Boulder Context', href: '/market/boulder/south-boulder', note: 'Contextual place orientation' },
+        { label: 'Search This Area', href: '/search?city=Boulder&q=Table%20Mesa', note: 'Discovery path only, not an exact boundary filter' },
+        { label: 'Property Verification', href: '/search?city=Boulder&q=Table%20Mesa', note: 'Open a listing from Search for address-specific review' },
         { label: 'Buyer Guidance', href: '/buy', note: 'Buyer decision preparation' },
         { label: 'Financing Readiness', href: '/buy#financing-readiness', note: 'Financing questions' },
         { label: 'Seller Guidance', href: '/sell', note: 'Seller preparation' },
         { label: 'Seller Readiness', href: '/home-worth#seller-readiness', note: 'Documentation preparation' },
         { label: 'Grand Plan', href: '/grand-plan', note: 'Decision planning' },
+        { label: 'Sources', href: '/sources', note: 'Source and methodology boundaries' },
         { label: 'Advisory Readiness', href: '/contact#advisory-readiness', note: 'Advisor conversation' },
       ],
       sourceRightsBoundary:
-        'Public copy is limited to repository-backed route facts, general verification categories, and permitted neighborhood-orientation context; it does not publish internal evidence metadata or source-rights governance details.',
+        'Public copy is limited to visible route facts, general verification categories, and permitted neighborhood-orientation context; it does not publish internal evidence metadata or source-rights governance details.',
       protectedBoundary:
-        'No new route, alias, redirect, registry entry, sitemap entry, Search behavior, map layer, GIS boundary, valuation output, comparative claim, prediction, protected public-content claim, Niwot activation, Gunbarrel activation, or Local Decision Intelligence Wave 4 activation is created.',
+        'No new route, redirect, registry entry, sitemap entry, Search behavior, map layer, GIS boundary, county-source dependency, public-record retrieval, provider activation, valuation output, comparative claim, prediction, protected public-content claim, Niwot activation, Gunbarrel activation, or Local Decision Intelligence Wave 4 activation is created.',
     },
   }),
   createNeighborhood({

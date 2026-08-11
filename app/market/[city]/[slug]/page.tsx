@@ -699,6 +699,9 @@ export default async function NeighborhoodIntelligencePage({ params }: Neighborh
               <p className="mt-5 rounded-[6px] bg-cyan-100/[0.06] p-4 text-xs leading-6 text-cyan-100/72">
                 {routeEnhancement.scopeClarification}
               </p>
+              <p className="mt-4 rounded-[6px] bg-white/[0.04] p-4 text-xs leading-6 text-white/58">
+                {routeEnhancement.decisionSnapshot}
+              </p>
               {routeEnhancement.aliases?.length ? (
                 <p
                   className="mt-4 rounded-[6px] bg-white/[0.04] p-4 text-xs leading-6 text-white/52"

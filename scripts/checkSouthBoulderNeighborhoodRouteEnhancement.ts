@@ -135,25 +135,34 @@ const expectations: EnhancedRouteExpectation[] = [
     slug: "table-mesa",
     city: "Boulder",
     route: "/market/boulder/table-mesa",
+    canonicalIdentity: "neighborhood:boulder:table-mesa",
+    alias: "Table Mesa area",
+    boundaryPosture: "APPROXIMATE_BOUNDARY",
     canonicalUrl: "https://davidquinngroup.com/market/boulder/table-mesa",
-    searchHref: "/search?neighborhood=Table%20Mesa",
+    searchHref: "/search?city=Boulder&q=Table%20Mesa",
     requiredLinks: [
       "/market/boulder-co-housing-market",
-      "/search?neighborhood=Table%20Mesa",
+      "/market/boulder/south-boulder",
+      "/search?city=Boulder&q=Table%20Mesa",
       "/buy",
       "/buy#financing-readiness",
       "/sell",
       "/home-worth#seller-readiness",
       "/grand-plan",
+      "/sources",
       "/contact#advisory-readiness",
     ],
     requiredCopy: [
-      "Table Mesa is presented as neighborhood-level orientation within Boulder",
-      "approximate-boundary and incomplete-evidence limitations",
-      "does not determine condition, title, permits, value, insurance, financing, HOA status, legal compliance, marketability, or suitability",
-      "does not establish property condition, value, title, ownership, insurability, permits, HOA status, school assignment, financing eligibility, marketability, suitability, or sale outcome",
+      "Table Mesa is presented here as a locally recognized Boulder neighborhood context",
+      "not presented as an exact legal, HOA, school, parcel, or property boundary",
+      "Table Mesa is associated with the broader South Boulder context for market and place orientation",
+      "does not mean the two areas have identical boundaries, identities, or evidence",
+      "Use Search This Area as a discovery path only",
+      "No public GIS polygon or exact boundary geometry is active for Table Mesa",
+      "does not determine condition, title, permits, value, insurance, financing, HOA status, legal compliance, marketability, or sale outcome",
+      "does not establish property condition, value, title, ownership, insurability, permits, HOA status, school assignment, financing eligibility, marketability, or sale outcome",
     ],
-    forbiddenCopy: ["Table Mesa is part of South Boulder", "best neighborhood", "ideal for"],
+    forbiddenCopy: ["Table Mesa is part of South Boulder", "best neighborhood", "ideal for", "suitability"],
   },
 ];
 
@@ -232,8 +241,13 @@ for (const expectation of expectations) {
 
   assertIncludes(
     neighborhood.routeEnhancement.protectedBoundary,
-    "No new route, alias, redirect, registry entry, sitemap entry, Search behavior, map layer, GIS boundary",
+    "No new route",
     `${expectation.name} protected boundary must explicitly preserve route, Search, map, and GIS behavior.`,
+  );
+  assertIncludes(
+    neighborhood.routeEnhancement.protectedBoundary,
+    "Search behavior, map layer, GIS boundary",
+    `${expectation.name} protected boundary must explicitly preserve Search, map, and GIS behavior.`,
   );
   assertIncludes(
     neighborhood.routeEnhancement.protectedBoundary,
@@ -254,10 +268,16 @@ assert.equal(
 
 const tableMesa = enhancedNeighborhoods.find((item) => item.slug === "table-mesa");
 assert(tableMesa, "Table Mesa must remain present for regression validation.");
-assert.equal(tableMesa.routeEnhancement.canonicalIdentity, undefined, "Table Mesa must not receive the South Boulder pilot canonical identity.");
-assert.equal(tableMesa.routeEnhancement.aliases, undefined, "Table Mesa must not receive the South Boulder pilot alias treatment.");
-assert.equal(tableMesa.routeEnhancement.evidenceContract, undefined, "Table Mesa must not receive the South Boulder pilot evidence contract.");
-assert.equal(tableMesa.routeEnhancement.unavailableEvidence, undefined, "Table Mesa must not receive the South Boulder pilot unavailable-evidence list.");
+assert.equal(tableMesa.routeEnhancement.canonicalIdentity, "neighborhood:boulder:table-mesa", "Table Mesa must carry its authorized canonical identity.");
+assert(tableMesa.routeEnhancement.aliases?.includes("Table Mesa area"), "Table Mesa must carry its authorized local alias.");
+assert.equal(tableMesa.routeEnhancement.boundaryPosture, "APPROXIMATE_BOUNDARY", "Table Mesa must preserve the approximate-boundary posture.");
+assert.equal(tableMesa.routeEnhancement.evidenceContract?.length, 7, "Table Mesa must expose the seven-step evidence contract.");
+assert.equal(tableMesa.routeEnhancement.unavailableEvidence?.length, 3, "Table Mesa must expose unavailable evidence as fail-closed prompts.");
+assert.equal(
+  tableMesa.routeEnhancement.evidenceContract?.map((item) => item.stage).join(" -> "),
+  "SOURCE -> GEOGRAPHY / OBJECT TYPE -> PERIOD / FRESHNESS -> LIMITATION -> CLAIM ELIGIBILITY -> VISIBLE ANSWER -> STRUCTURED DATA",
+  "Table Mesa evidence contract must preserve source-to-visible-answer sequence.",
+);
 
 for (const path of [
   "app/market/boulder/south-boulder/page.tsx",
@@ -356,8 +376,11 @@ console.log(
     "fairHousing=neutral",
     "protectedActivations=none",
     "southBoulderIdentity=neighborhood:boulder:south-boulder",
+    "tableMesaIdentity=neighborhood:boulder:table-mesa",
     "alias=SoBo",
-    "boundary=DESCRIPTIVE_AREA_ONLY",
+    "tableMesaAlias=Table Mesa area",
+    "southBoulderBoundary=DESCRIPTIVE_AREA_ONLY",
+    "tableMesaBoundary=APPROXIMATE_BOUNDARY",
     "unavailableEvidence=fail-closed",
   ].join(" "),
 );
