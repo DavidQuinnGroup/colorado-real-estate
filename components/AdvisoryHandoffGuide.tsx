@@ -455,6 +455,8 @@ export default function AdvisoryHandoffGuide() {
             <p className="mt-3 text-sm leading-7 text-white/62">
               This handoff uses the existing Contact behavior. It does not create a generic form, change fields, submit customer information, create CRM work, send email, schedule a meeting, or pass hidden context. Submitting
               any existing inquiry is for follow-up routing only and does not automatically create a brokerage relationship.
+              You choose what to share in Contact; REIE does not silently carry search, comparison, Grand Plan, financing,
+              seller, property, browsing, or route history into the conversation.
             </p>
           </div>
           <Link

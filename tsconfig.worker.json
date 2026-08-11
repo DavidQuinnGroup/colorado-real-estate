@@ -67,6 +67,7 @@
     "scripts/checkReieComparisonFinancingIntelligence.ts",
     "scripts/checkEvidenceDepthDataIntegrationFoundation.ts",
     "scripts/checkAdvisoryHandoffReadiness.ts",
+    "scripts/checkAdvisoryHandoffValueActivation.ts",
     "scripts/checkControlledEvidenceDepthIntegration.ts",
     "scripts/checkAdvisoryOperatingReadiness.ts",
     "scripts/checkNeighborhoodSubmarketIntelligenceArchitecture.ts",

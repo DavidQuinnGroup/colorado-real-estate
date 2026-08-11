@@ -202,8 +202,8 @@ assertIncludes(advisoryGuide, 'data-testid="advisory-handoff-continuity"', 'Rese
 assertIncludes(buyerReadinessGuide, "href: '/contact#advisory-readiness'", 'Buyer Financing Readiness must route advisory continuation to the handoff anchor.');
 assertIncludes(buyerPlanner, 'href="/contact#advisory-readiness"', 'Buyer Financing Decision Planner must route advisory continuation to the handoff anchor.');
 assertIncludes(sellerReadinessGuide, 'href="/contact#advisory-readiness"', 'Seller Readiness must route advisory continuation to the handoff anchor.');
-assertIncludes(comparePage, "href: '/contact'", 'Cross-City Comparison must preserve its certified advisory route.');
-assertIncludes(grandPlanPage, "href: '/contact'", 'Grand Plan must preserve its certified advisory route.');
+assertIncludes(comparePage, "href: '/contact#advisory-readiness'", 'Cross-City Comparison must preserve its certified advisory route.');
+assertIncludes(grandPlanPage, "href: '/contact#advisory-readiness'", 'Grand Plan must preserve its certified advisory route.');
 assertIncludes(publicTrust, 'PUBLIC_CONTACT_EMAIL_STATUS', 'Public trust check must remain intact.');
 assertIncludes(evidenceFoundation, 'providerCalls, 0', 'Evidence Depth foundation check must remain provider-free.');
 assertIncludes(evidenceFoundation, 'networkAcquisition, false', 'Evidence Depth foundation check must remain network-free.');

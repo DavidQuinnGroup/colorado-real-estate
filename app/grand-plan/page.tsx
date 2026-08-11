@@ -74,7 +74,7 @@ const certifiedContinuityLinks = [
   { label: 'Compare', href: '/compare', note: 'Review differences without ranking', destination: 'compare' },
   { label: 'Financing', href: '/buy#financing-readiness', note: 'Test user-entered assumptions', destination: 'financing' },
   { label: 'Sources', href: '/sources', note: 'Understand evidence and methodology', destination: 'sources' },
-  { label: 'Advisor', href: '/contact', note: 'Discuss unresolved questions', destination: 'advisory' },
+  { label: 'Advisor', href: '/contact#advisory-readiness', note: 'Prepare the next conversation', destination: 'advisory' },
 ];
 
 export default function GrandPlanPage() {
@@ -203,6 +203,16 @@ export default function GrandPlanPage() {
                 data-testid="grand-plan-certified-tool-link"
                 data-grand-plan-certified-destination={link.destination}
                 data-grand-plan-hidden-state-transfer="false"
+                {...(link.href === '/contact#advisory-readiness'
+                  ? {
+                      'data-advisory-handoff-value-activation': 'true',
+                      'data-advisory-handoff-authoritative-destination': '/contact#advisory-readiness',
+                      'data-advisory-handoff-hidden-context': 'false',
+                      'data-advisory-handoff-query-propagation': 'false',
+                      'data-advisory-handoff-prefill': 'false',
+                      'data-advisory-handoff-customer-control': 'true',
+                    }
+                  : {})}
               >
                 <span className="block text-[10px] font-black uppercase tracking-[0.16em] text-cyan-100/70">{link.label}</span>
                 <span className="mt-2 block">{link.note}</span>
@@ -249,7 +259,7 @@ export default function GrandPlanPage() {
             links={[
               { label: 'Search Homes', href: '/search', note: 'Explore inventory', destination: 'search' },
               { label: 'Buyer Guidance', href: '/buy', note: 'Prepare purchase questions', destination: 'buyer' },
-              { label: 'Advisory Guidance', href: '/contact', note: 'Talk through the plan', destination: 'advisory' },
+              { label: 'Prepare Next Conversation', href: '/contact#advisory-readiness', note: 'Review knowns, unresolved items, and verification questions', destination: 'advisory' },
             ]}
           />
         </div>

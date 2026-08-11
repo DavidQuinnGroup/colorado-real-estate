@@ -979,7 +979,7 @@ export default function SearchInterface({
                 {[
                   { label: 'Market Context', href: '/market', action: 'view-market' as const, destination: 'market' as const },
                   { label: 'Seller Review', href: '/sell', action: 'request-seller-review' as const, destination: 'seller' as const },
-                  { label: 'Ask an Advisor', href: '/contact', action: 'ask-property-question' as const, destination: 'inquiry' as const },
+                  { label: 'Prepare Next Conversation', href: '/contact#advisory-readiness', action: 'ask-property-question' as const, destination: 'inquiry' as const },
                 ].map((item) => (
                   <Link
                     key={item.href}
@@ -991,6 +991,16 @@ export default function SearchInterface({
                       action: item.action,
                       destination: item.destination,
                     })}
+                    {...(item.href === '/contact#advisory-readiness'
+                      ? {
+                          'data-advisory-handoff-value-activation': 'true',
+                          'data-advisory-handoff-authoritative-destination': '/contact#advisory-readiness',
+                          'data-advisory-handoff-hidden-context': 'false',
+                          'data-advisory-handoff-query-propagation': 'false',
+                          'data-advisory-handoff-prefill': 'false',
+                          'data-advisory-handoff-customer-control': 'true',
+                        }
+                      : {})}
                   >
                     {item.label}
                   </Link>
@@ -1005,7 +1015,7 @@ export default function SearchInterface({
                 links={[
                   { label: 'Market Context', href: '/market', note: 'Compare city context' },
                   { label: 'View Property', href: visibleListings[0] ? `/properties/${visibleListings[0].id}` : '/search', note: 'Open listing detail' },
-                  { label: 'Ask an Advisor', href: '/contact', note: 'Bring focused questions' },
+                  { label: 'Prepare Next Conversation', href: '/contact#advisory-readiness', note: 'Review knowns, unresolved items, and verification questions' },
                 ]}
               />
               <ProfessionalHandoffCohesionPanel surface="search" density="compact" />

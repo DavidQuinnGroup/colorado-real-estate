@@ -116,6 +116,16 @@ export default function ContinueYourDecision({
                 href={link.href}
                 className={`group flex items-center justify-between gap-3 rounded-[6px] border px-4 py-3 text-xs font-black uppercase tracking-[0.12em] no-underline transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${isCompact ? 'min-h-12' : 'min-h-14'} ${linkClass}`}
                 data-testid="continue-your-decision-link"
+                {...(link.href === '/contact#advisory-readiness'
+                  ? {
+                      'data-advisory-handoff-value-activation': 'true',
+                      'data-advisory-handoff-authoritative-destination': '/contact#advisory-readiness',
+                      'data-advisory-handoff-hidden-context': 'false',
+                      'data-advisory-handoff-query-propagation': 'false',
+                      'data-advisory-handoff-prefill': 'false',
+                      'data-advisory-handoff-customer-control': 'true',
+                    }
+                  : {})}
               >
                 <span className="min-w-0">
                   <span className="block">{link.label}</span>

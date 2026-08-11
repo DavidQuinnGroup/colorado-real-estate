@@ -122,6 +122,7 @@
     "check:reie-comparison-financing-intelligence": "npm run worker:build && node dist/scripts/checkReieComparisonFinancingIntelligence.js",
     "check:evidence-depth-data-integration-foundation": "npm run worker:build && node dist/scripts/checkEvidenceDepthDataIntegrationFoundation.js",
     "check:advisory-handoff-readiness": "npm run worker:build && node dist/scripts/checkAdvisoryHandoffReadiness.js",
+    "check:advisory-handoff-value-activation": "npm run worker:build && node dist/scripts/checkAdvisoryHandoffValueActivation.js",
     "check:controlled-evidence-depth-integration": "npm run worker:build && node dist/scripts/checkControlledEvidenceDepthIntegration.js",
     "check:advisory-operating-readiness": "npm run worker:build && node dist/scripts/checkAdvisoryOperatingReadiness.js",
     "check:neighborhood-submarket-intelligence-architecture": "npm run worker:build && node dist/scripts/checkNeighborhoodSubmarketIntelligenceArchitecture.js",

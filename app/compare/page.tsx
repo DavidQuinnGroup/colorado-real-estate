@@ -285,7 +285,7 @@ export default async function CrossCityDecisionComparisonPage({ searchParams }: 
             links={[
               { label: 'Search Homes', href: '/search', note: 'Review inventory', destination: 'search' },
               { label: 'Market Context', href: '/market', note: 'Open city guides', destination: 'market' },
-              { label: 'Advisory Guidance', href: '/contact', note: 'Ask focused questions', destination: 'advisory' },
+              { label: 'Prepare Next Conversation', href: '/contact#advisory-readiness', note: 'Review knowns, unresolved items, and verification questions', destination: 'advisory' },
             ]}
           />
         </div>

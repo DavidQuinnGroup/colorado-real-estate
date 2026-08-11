@@ -110,7 +110,7 @@ assertPanelLink(homeWorthPage, 'Seller Strategy', '/sell', 'seller', 'Home-worth
 
 assertPanelLink(grandPlanPage, 'Search Homes', '/search', 'search', 'Grand Plan page');
 assertPanelLink(grandPlanPage, 'Buyer Guidance', '/buy', 'buyer', 'Grand Plan page');
-assertPanelLink(grandPlanPage, 'Advisory Guidance', '/contact', 'advisory', 'Grand Plan page');
+assertPanelLink(grandPlanPage, 'Prepare Next Conversation', '/contact#advisory-readiness', 'advisory', 'Grand Plan page');
 
 assertPanelLink(contactPage, 'Search Homes', '/search', 'search', 'Contact page');
 assertPanelLink(contactPage, 'Grand Plan', '/grand-plan', 'grand-plan', 'Contact page');

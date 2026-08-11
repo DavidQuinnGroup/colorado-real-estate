@@ -107,6 +107,16 @@ export default function JourneyCohesionPanel({
                 data-testid="reie-product-cohesion-link"
                 data-reie-product-cohesion-destination={link.destination}
                 data-reie-product-cohesion-href={link.href}
+                {...(link.href === '/contact#advisory-readiness'
+                  ? {
+                      'data-advisory-handoff-value-activation': 'true',
+                      'data-advisory-handoff-authoritative-destination': '/contact#advisory-readiness',
+                      'data-advisory-handoff-hidden-context': 'false',
+                      'data-advisory-handoff-query-propagation': 'false',
+                      'data-advisory-handoff-prefill': 'false',
+                      'data-advisory-handoff-customer-control': 'true',
+                    }
+                  : {})}
               >
                 <span className="min-w-0">
                   <span className="block">{link.label}</span>
