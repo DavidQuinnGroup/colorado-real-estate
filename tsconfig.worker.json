@@ -75,6 +75,7 @@
     "scripts/checkSecondGovernedNeighborhoodSubmarketWave.ts",
     "scripts/checkNiwotGovernanceReconciliation.ts",
     "scripts/checkSouthBoulderNeighborhoodRouteEnhancement.ts",
+    "scripts/checkTableMesaBoundaryScopeReadiness.ts",
     "scripts/checkPropertySellerEvidenceReadiness.ts",
     "scripts/checkReieBuyerConfidenceExperience.ts",
     "scripts/checkReieFinancingConfidenceEducation.ts",
