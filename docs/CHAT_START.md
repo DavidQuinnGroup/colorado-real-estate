@@ -10,7 +10,7 @@ Product:
 
 ## Latest New-Chat Handoff
 
-PROJECT ATLAS(tm) / Property-to-Offer Preparation Production Certified and Closed:
+PROJECT ATLAS(tm) / Search Property Discovery Premium Decision Flow Production Certified and Closed:
 
 Workspace:
 
@@ -19,95 +19,99 @@ Workspace:
 Production implementation state:
 
 - Branch: `main`
-- Implementation commit pushed: `637fc82084f5e2456cdb920d283d7a7672745ff5`
-- Implementation commit message: `Add property offer preparation decision support`
-- Post-push implementation state: `HEAD = origin/main = 637fc82084f5e2456cdb920d283d7a7672745ff5`
+- Original implementation commit pushed: `4d853f7db8e2422156a02832b64f652dc62f6152`
+- Original implementation commit message: `Reconcile search property discovery premium flow`
+- Visible-semantics remediation commit pushed: `b613183289761f788255e9f269aa1fd6f18ae2cb`
+- Visible-semantics remediation message: `Refine search property recommendation boundary copy`
+- Post-push remediation state: `HEAD = origin/main = b613183289761f788255e9f269aa1fd6f18ae2cb`
 - Post-push divergence before documentation closure: `0 ahead / 0 behind`
-- Prior implementation baseline: `origin/main = 268d28aa9f23e0efb6c4e606f168311b61bfd24e`
-- Production certification record: `docs/project-atlas/executive-library/REIE-PROPERTY-TO-OFFER-PREPARATION-PRODUCTION-CERTIFICATION.md`
+- Original production-certification blocker: rendered Search customer copy exposed the visible term `suitability`.
+- Production certification record: `docs/project-atlas/executive-library/REIE-SEARCH-PROPERTY-DISCOVERY-PREMIUM-DECISION-FLOW-PRODUCTION-CERTIFICATION.md`
 
 Production disposition:
 
-- `PROPERTY_TO_OFFER_PREPARATION_PRODUCTION_CERTIFIED_AND_CLOSED`
+- `SEARCH_PROPERTY_DISCOVERY_PREMIUM_DECISION_FLOW_PRODUCTION_CERTIFIED_AND_CLOSED`
 
-Architecture reconciliation:
+Semantics remediation:
 
-- `IMPLEMENTATION_ARCHITECTURE_ACCEPTED_AS_BOUNDED_EXTENSION`
-- `OfferPreparationPanel` is presentation-only and consumes deterministic, read-only readiness output.
-- The existing Property Decision Workspace remains authoritative and continues to render separately on the property route.
-- No simplification or implementation change was required before certification.
+- Search missing-evidence copy now says REIE does not determine `whether a property is right for you`.
+- Search readiness boundary now says REIE does not make a `decision about which property you should choose`.
+- Search professional handoff now says whether a property is right for the customer remains unresolved from Search alone.
+- Deterministic Search / Property premium-flow check now asserts customer-visible Search/Property copy does not expose forbidden recommendation/ranking semantics.
+- No Search hierarchy, PropertyCard layout, map/list behavior, Search API, MLS, providers, Typesense, persistence, Saved Search, alerts, CRM, email, telemetry, auth, database/schema, county/GIS/source system, or protected runtime behavior changed.
 
 Deployment evidence:
 
-- GitHub commit status id: `52028181981`
+- GitHub commit status id: `52036775246`
 - Deployment state: `success`
 - Deployment description: `Deployment has completed`
-- Deployment timestamp: `2026-08-11T14:14:38Z`
-- Vercel target URL: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/3ZSpwBCotQmNvxSq7rLZEbinyZqZ`
-- GitHub deployments endpoint returned no deployment object for the implementation SHA at certification time.
+- Deployment timestamp: `2026-08-11T16:05:54Z`
+- Vercel target URL: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/DCSF3LCMzoe1Mzjy5MjnJS8pCoFr`
 - Production domain verified: `https://davidquinngroup.com`
 
 Certified routes:
 
-- `/properties/32224-poudre-canyon-rd-bellvue-co-ire1363681`
-- `/compare`
+- `/search`
+- `/search?city=Boulder&minPrice=700000&propertyType=Residential`
 
 Production route verification:
 
-- Verified `HTTP 200` for `/`, `/search`, `/market`, `/compare`, `/grand-plan`, `/sources`, `/contact`, and `/sundance-film-festival`.
-- Browser verified the certified property route and `/compare` at desktop width `1440` and mobile width `390`.
-- Verified Offer Preparation is present on the certified property route.
-- Verified five customer-facing stages: `UNDERSTAND`, `COMPARE`, `VERIFY`, `PREPARE`, and `NEXT STEP`.
-- Verified continuity links to Search, Compare, Buyer Financing, Grand Plan, Sources, and professional handoff.
-- Verified the existing Property Decision Workspace, Property Product 3.1 evidence, and Property Inquiry / professional handoff remain present.
-- Verified `/compare` remained available and rendered comparison markers.
+- Verified `HTTP 200` for `/search`, the representative query, `/`, `/market`, `/compare`, `/grand-plan`, `/sources`, `/contact`, `/sundance-film-festival`, and `/properties/32224-poudre-canyon-rd-bellvue-co-ire1363681`.
+- Browser verified `/search` and the representative query at desktop width `1440` and mobile width `390`.
+- Verified concise first-screen hierarchy, result count, evidence/freshness state, criteria controls, advanced criteria disclosure, chips/reset, first factual property card, fact-first cards, `View Property`, list/map relationship, selected Property drawer, safe Property handoff, safe Search return context, and Save Search continuity.
 - Verified no material horizontal overflow and no captured browser console errors or page exceptions.
+- Representative evidence: desktop `/search` first card top `708`; mobile `/search` first card top `789`; desktop query first card top `723`; mobile query first card top `804`.
+- Mobile selected Property drawer for representative criteria was verified with bounded selected-state Search URL after direct headless click probing was inconsistent.
 
 Evidence and safety certification:
 
-- Verified `MORE AVAILABLE DATA DOES NOT MEAN A BETTER PROPERTY`.
-- Verified `SOURCE AVAILABILITY DOES NOT EQUAL PROPERTY QUALITY`.
-- Verified `MISSING COUNTY DATA DOES NOT EQUAL NEGATIVE PROPERTY CONDITION`.
-- Missing, conflicted, stale, unavailable, or locally variable evidence remains a `VERIFICATION REQUIRED` condition.
-- Verified no offer price, offer terms, acceptance probability, negotiation strategy, property-quality, property-condition, investment-return, appreciation, affordability, loan-qualification, lender-recommendation, protected-class, steering, school-quality, safety, best-property, winning-property, good-deal, bad-deal, or automated-offer-drafting conclusion.
-- Automated scan hits for `submit an offer` were adjudicated as explicit non-submission boundary copy.
-- Automated scan hits for `token=` were adjudicated as signed MLSGrid media URL parameters, not application credentials or protected configuration.
+- Verified no customer-visible `suitability`, `best match`, `recommended property`, `fit score`, `property score`, `winner`, `most suitable`, `investment ranking`, or `neighborhood desirability` in rendered Search/Property production DOM.
+- Internal source-code-only false-boundary metadata, deterministic prohibition language, unrelated-route boundary copy, and governance documentation were distinguished from the Search / Property customer-visible blocker.
+- Search remains criteria-led and evidence-bound; it does not rank properties, recommend a property, determine which property is right for a customer, or decide which property a customer should choose.
 
 Validation:
 
-- `git diff --check origin/main..HEAD`
+- `git diff --check`
 - `npm run typecheck`
-- `npm run check:offer-preparation-readiness`
-- `npm run check:property-evidence-completeness-verification`
-- `npm run check:property-product-3-1`
-- `npm run check:comparison-evidence-decision-difference`
-- `npm run check:buyer-financing-readiness-advancement`
-- `npm run check:grand-plan-journey-safety`
-- `npm run check:property-inquiry-decision-continuity`
-- `npm run check:professional-handoff-cohesion`
-- `npm run check:colorado-source-trust-experience`
+- `npm run check:search-property-discovery-premium-flow`
+- `npm run check:search-runtime-safety`
+- `npm run check:search-listing-quality`
+- `npm run check:map-rendering-safety`
+- `npm run check:dxt-search-return-context-handoff`
+- `npm run check:save-search-decision-continuity`
 - `npm run check:public-runtime-safety`
 - `npm run check:public-trust-readiness`
-- `npm run check:property-route-safety`
-- `npm run check:search-runtime-safety`
+- `npm run check:property-product-3-1`
+- `npm run check:property-evidence-completeness-verification`
+- `npm run smoke:public-experience`
 - `npm run lint`
 - `npm run build`
-- `npm run smoke:public-experience`
+
+Local runtime verification:
+
+- Built server: `http://localhost:3000`
+- Verified `/search` and `/search?city=Boulder&minPrice=700000&propertyType=Residential` at desktop width `1440` and mobile width `390`.
+- Confirmed offending term removed, replacement boundary copy visible, result/evidence context preserved, filters/chips/reset preserved, first-card visibility preserved, map/list relationship preserved, Property handoff preserved, Save Search continuity preserved, no material overflow, and no captured browser console errors or page exceptions.
+- First `npm run smoke:public-experience` attempt against `next dev --turbo` returned a dev-only module-resolution 500 on `/buy` for an existing `.js` import. Production build passed and smoke passed against `npm run start`.
 
 Protected boundaries:
 
-- Implementation push occurred.
+- Original implementation push occurred.
 - Automatic Vercel production deployment completed successfully.
-- Production certification completed for bounded Property-to-Offer preparation, authoritative workspace continuity, evidence boundaries, route continuity, responsive browser behavior, console/log containment, and protected-system containment.
+- Remediation push occurred.
+- Automatic Vercel production deployment for remediation completed successfully.
+- Production recertification completed for visible Search/Property semantics, route continuity, responsive browser behavior, console/log containment, selected-property handoff, and protected-system containment.
 - Documentation-only production closure record was created locally.
 - No runtime implementation occurred during production certification or closure.
-- No manual deployment, database mutation, Prisma/schema change, API change, authentication change, CRM/email behavior, worker/queue action, telemetry action, MLS ingestion change, Typesense action, credentials/configuration change, customer-data expansion, Contact submission, Property Inquiry mutation, Grand Plan submission, saved-search submission, source activation, provider activation, public GIS activation, county data acquisition, public-record retrieval, offer drafting, offer submission, or production mutation beyond the authorized implementation deployment occurred.
+- No customer information was submitted.
+- No Saved Search record was created.
+- No manual deployment, database mutation, Prisma/schema change, API change, authentication change, CRM/email behavior, worker/queue action, telemetry action, MLS ingestion change, Typesense action, credentials/configuration change, customer-data expansion, Contact submission, Property Inquiry mutation, Grand Plan submission, saved-search submission, source activation, provider activation, public GIS activation, county data acquisition, public-record retrieval, Search API change, map/provider change, or production mutation beyond the authorized implementation/remediation deployments occurred.
 
 Next gate:
 
-- `READY_FOR_PROPERTY_TO_OFFER_PREPARATION_CLOSURE_SYNC_AUTHORIZATION`
+- `READY_FOR_SEARCH_PROPERTY_DISCOVERY_PREMIUM_DECISION_FLOW_CLOSURE_SYNC_AUTHORIZATION`
 
-The documentation-only production certification closure commit is local until separate synchronization authorization is granted. Do not push it, deploy again, run another production certification, reopen Property-to-Offer Preparation implementation, begin Search/Property Discovery remediation, implement Table Mesa customer enhancement, activate sources/providers, acquire county datasets, mutate customer data, or begin another implementation workstream unless explicitly authorized.
+The documentation-only production certification closure commit is local until separate synchronization authorization is granted. Do not push it, deploy again, run another production certification, reopen Search / Property Discovery implementation, begin Seller Readiness, begin Evidence Depth, implement Table Mesa customer enhancement, activate sources/providers, acquire county datasets, mutate customer data, or begin another implementation workstream unless explicitly authorized.
 
 Prior handoff retained below for audit history.
 
