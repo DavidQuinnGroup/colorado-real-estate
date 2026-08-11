@@ -10,6 +10,69 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / Search Primary Provider Health Remediation Review Complete:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Canonical baseline:
+
+- Branch: `main`
+- Search Render and Fallback Certification documentation commit synchronized to `origin/main`: `8d4485ff048fe253c2881a0e6e72521610f665a9`
+- Post-sync canonical state before provider-health review docs: `HEAD = origin/main = 8d4485ff048fe253c2881a0e6e72521610f665a9`
+- Post-sync divergence before provider-health review docs: `0 ahead / 0 behind`
+- Provider-health review record: `docs/project-atlas/executive-library/REIE-SEARCH-PRIMARY-PROVIDER-HEALTH-REMEDIATION-REVIEW.md`
+
+Review disposition:
+
+- Local: `TYPESENSE_CONFIGURATION_OR_REACHABILITY_DEFECT_CONFIRMED`
+- Production exact root cause: `INSUFFICIENT_EVIDENCE_TO_DETERMINE_ROOT_CAUSE`
+
+Provider path finding:
+
+- `/api/search` attempts Typesense first through `searchTypesenseDocuments(LISTING_COLLECTION_NAME, ...)`.
+- No repository readiness gate or feature flag was found that intentionally bypasses Typesense.
+- Any thrown Typesense request error triggers database fallback.
+- Public API responses intentionally mask the raw provider error as `Search provider fallback served the request.`
+- Database fallback remains a degraded but usable Search response path, with Supabase REST fallback behind Prisma.
+
+Configuration and health findings:
+
+- Required local Typesense variable names are present in `.env.local`.
+- Local read-only `npm run typesense:collections:check` validated canonical schema definitions, then failed live collection inspection with `ECONNREFUSED`.
+- Production public API probe `https://davidquinngroup.com/api/search?limit=1` returned HTTP 200, `source=database`, `health=degraded`, `found=1287`, `returned=1`, `mapped=1`, `durationMs=2145`, `smoke.ready=true`, blockers `[]`.
+- Production public API probe `https://davidquinngroup.com/api/search?limit=250` returned HTTP 200, `source=database`, `health=degraded`, `found=1287`, `returned=250`, `mapped=250`, `durationMs=2055`, `smoke.ready=true`, blockers `[]`.
+- Production raw fallback cause was not established because production environment/log/provider-control-plane inspection was not authorized.
+
+Customer-impact finding:
+
+- Provider-health issue remains observable because production Search is serving from database fallback rather than Typesense.
+- No material customer-experience failure is proven under current evidence: Search remains HTTP 200, bounded, public-safe, high-limit capable, and smoke-ready with no blockers.
+
+Protected boundaries:
+
+- No Search runtime files were modified.
+- No Typesense configuration, collection, import, reset, or reindex occurred.
+- No environment variable, credential, provider infrastructure, Prisma schema, migration, database, MLS, county/GIS/provider source, customer data, telemetry, analytics, CRM, email, notification, worker, auth, persistence, deployment, or production mutation occurred.
+- Workstream 2 documentation is local only until separate synchronization authorization is granted.
+
+Validation:
+
+- Workstream 1 exact-baseline checks and push.
+- Post-push `HEAD = origin/main = 8d4485ff048fe253c2881a0e6e72521610f665a9`.
+- `npm run typesense:collections:check` as a read-only diagnostic, failing at live collection inspection with `ECONNREFUSED`.
+- Current public production API probes for `limit=1` and `limit=250`.
+- `git diff --check`.
+
+Next gate:
+
+- `READY_FOR_REIE_SEARCH_PRODUCTION_TYPESENSE_READ_ONLY_PROVIDER_DIAGNOSTICS_AUTHORIZATION`
+
+Do not push the Workstream 2 documentation commit, deploy, implement remediation, change Search runtime, change Typesense/provider configuration, mutate collections/indexes, reindex/import Typesense data, change environment variables, or inspect production provider systems beyond public read-only API behavior unless explicitly authorized.
+
+Prior handoff retained below for audit history.
+
 PROJECT ATLAS(tm) / Search Render and Fallback Certification Complete:
 
 Workspace:
