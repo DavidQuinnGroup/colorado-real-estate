@@ -205,7 +205,7 @@ export default function SearchControls({
               <SlidersHorizontal size={13} aria-hidden="true" />
               Shape Your Search
             </p>
-            <p id={`${formId}-description`} className="mt-1.5 text-[11px] font-bold leading-5 text-white/46">
+            <p id={`${formId}-description`} className="sr-only">
               Build clarity by starting with place or a specific property, then narrow by budget, home type, beds, baths, and keywords the search already supports.
             </p>
           </div>
@@ -250,16 +250,16 @@ export default function SearchControls({
         </div>
 
         <div
-          className="mt-2 rounded-[8px] bg-black/18 px-3 py-2"
+          className="mt-2 rounded-[8px] bg-black/18 px-3 py-1.5"
           data-testid="reie-search-criteria-summary"
           data-search-criteria-summary={criteriaSummary}
           data-search-active-filter-count={chips.length}
         >
           <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.16em] text-cyan-100/72">
             <MapPin size={12} aria-hidden="true" />
-            Search Path
+            {criteriaSummary}
           </p>
-          <p className="mt-1 text-[11px] font-bold leading-5 text-white/52">
+          <p className="sr-only">
             {criteriaSummary} City shapes place, while the specific-property field supports address, ZIP, keyword, or MLS-style lookups without changing result eligibility.
           </p>
         </div>
@@ -309,7 +309,7 @@ export default function SearchControls({
               Search
             </button>
           </div>
-          <p className="mt-2 text-[11px] font-bold leading-5 text-white/36">
+          <p className="sr-only">
             Use this when you already know an address, ZIP code, keyword, or MLS number. Neighborhood names and listing details can also help narrow supported search text.
           </p>
         </section>

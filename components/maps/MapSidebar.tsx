@@ -45,6 +45,7 @@ type BaseMapSidebarProps = {
   onClearSearch?: () => void;
   searchControls?: ReactNode;
   continuityContent?: ReactNode;
+  evidenceLabel?: string;
   hasActiveFilters?: boolean;
   isLoading?: boolean;
 };
@@ -409,11 +410,13 @@ function SearchDecisionPortfolio({
 function ResultsToolbar({
   count,
   stats,
+  evidenceLabel,
   hasActiveFilters,
   isLoading,
 }: {
   count: number;
   stats: InventoryStats;
+  evidenceLabel?: string;
   hasActiveFilters?: boolean;
   isLoading?: boolean;
 }) {
@@ -439,14 +442,18 @@ function ResultsToolbar({
           </p>
         </div>
 
-        <div className="grid shrink-0 grid-cols-3 overflow-hidden rounded-[6px] border border-white/10 bg-black/24 text-center">
+        <div className="grid shrink-0 grid-cols-4 overflow-hidden rounded-[6px] border border-white/10 bg-black/24 text-center">
           <div className="min-w-[58px] px-2 py-1.5">
             <p className="text-[9px] font-black uppercase tracking-[0.12em] text-white/34">Properties</p>
-            <p className="mt-0.5 text-[13px] font-black leading-none text-white">{count}</p>
+            <p className="mt-0.5 text-[13px] font-black leading-none text-white" data-testid="reie-search-result-count">{count}</p>
           </div>
           <div className="min-w-[58px] border-l border-white/10 px-2 py-1.5">
             <p className="text-[9px] font-black uppercase tracking-[0.12em] text-white/34">On Map</p>
             <p className="mt-0.5 text-[11px] font-black leading-none text-cyan-100">{mapCoverage}</p>
+          </div>
+          <div className="min-w-[58px] border-l border-white/10 px-2 py-1.5">
+            <p className="text-[9px] font-black uppercase tracking-[0.12em] text-white/34">Evidence</p>
+            <p className="mt-0.5 text-[11px] font-black leading-none text-cyan-100">{evidenceLabel || 'Complete evidence'}</p>
           </div>
           <div className="min-w-[58px] border-l border-white/10 px-2 py-1.5">
             <p className="text-[9px] font-black uppercase tracking-[0.12em] text-white/34">View</p>
@@ -466,7 +473,7 @@ function getSelectedAddress(property: MapSidebarListing | null | undefined, list
 }
 
 export default function MapSidebar(props: MapSidebarProps) {
-  const { listings = [], selectedId, hoveredId, onHover = () => {}, onCloseDetail, onClearSearch, searchControls, continuityContent, hasActiveFilters, isLoading } = props;
+  const { listings = [], selectedId, hoveredId, onHover = () => {}, onCloseDetail, onClearSearch, searchControls, continuityContent, evidenceLabel, hasActiveFilters, isLoading } = props;
   const sidebarRef = useRef<HTMLDivElement>(null);
   const activeId = selectedId ?? props.selectedProperty?.id ?? null;
   const stats = useMemo(() => getInventoryStats(listings), [listings]);
@@ -567,71 +574,6 @@ export default function MapSidebar(props: MapSidebarProps) {
             </div>
           </div>
 
-          <SearchIntelligenceStrip stats={stats} />
-          <SearchDecisionPortfolio listings={listings} stats={stats} />
-
-          <div
-            className="mt-3 min-h-12 rounded-[8px] border border-white/10 bg-black/35 px-3 py-2.5"
-            data-testid="reie-sidebar-selected-summary"
-            data-sidebar-selected-listing-id={activeId || ''}
-            data-sidebar-selected-address={selectedAddress || ''}
-          >
-            <p className="truncate text-[10px] font-black uppercase tracking-[0.18em] text-white/36">
-              {selectedAddress ? 'Selected Property' : 'Primary Market'}
-            </p>
-            <p className="mt-1 truncate text-[12px] font-black uppercase tracking-[0.08em] text-white/76">
-              {selectedAddress || `${stats.dominantCity}, Colorado`}
-            </p>
-          </div>
-
-          <div className="mt-3 grid grid-cols-2 gap-2">
-            <Link
-              href={authorityLinks.marketHref}
-              className="reie-decision-link reie-decision-link--card group rounded-[8px] px-3 py-2.5 transition-colors"
-              {...getJourneyMeasurementAttributes({
-                surface: 'search-sidebar-market-card',
-                stage: 'search',
-                action: 'view-market',
-                destination: 'market',
-              })}
-            >
-              <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100/72">
-                <Layers3 size={13} aria-hidden="true" />
-                Market
-              </p>
-              <p className="mt-1 truncate text-[10px] font-black uppercase tracking-[0.08em] text-white/55 transition-colors group-hover:text-white">
-                {stats.dominantCity} Report
-              </p>
-            </Link>
-
-            {authorityLinks.brief ? (
-              <Link
-                href={authorityLinks.brief.href}
-                className="reie-decision-link reie-decision-link--card group rounded-[8px] px-3 py-2.5 transition-colors"
-              >
-                <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100/72">
-                  <FileText size={13} aria-hidden="true" />
-                  Brief
-                </p>
-                <p className="mt-1 truncate text-[10px] font-black uppercase tracking-[0.08em] text-white/55 transition-colors group-hover:text-white">
-                  Market Context
-                </p>
-              </Link>
-            ) : (
-              <Link
-                href={`/search?city=${encodeURIComponent(stats.dominantCity)}`}
-                className="reie-decision-link reie-decision-link--card group rounded-[8px] px-3 py-2.5 transition-colors"
-              >
-                <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100/72">
-                  <Bell size={13} aria-hidden="true" />
-                  Explore
-                </p>
-                <p className="mt-1 truncate text-[10px] font-black uppercase tracking-[0.08em] text-white/55 transition-colors group-hover:text-white">
-                  More Listings
-                </p>
-              </Link>
-            )}
-          </div>
         </div>
       </header>
 
@@ -643,7 +585,7 @@ export default function MapSidebar(props: MapSidebarProps) {
         data-sidebar-selected-listing-id={activeId || ''}
         data-sidebar-hovered-listing-id={hoveredId || ''}
       >
-        <ResultsToolbar count={listings.length} stats={stats} hasActiveFilters={hasActiveFilters} isLoading={isLoading} />
+        <ResultsToolbar count={listings.length} stats={stats} evidenceLabel={evidenceLabel} hasActiveFilters={hasActiveFilters} isLoading={isLoading} />
 
         {isLoading ? (
           <LoadingInventorySkeleton />
@@ -683,6 +625,74 @@ export default function MapSidebar(props: MapSidebarProps) {
         ) : (
           <EmptyInventoryState hasActiveFilters={hasActiveFilters} onClearSearch={onClearSearch} />
         )}
+
+        {listings.length > 0 && !isLoading ? (
+          <div className="border-t border-white/10 bg-[#070b10] p-4" data-testid="reie-sidebar-after-scan-context">
+            <div
+              className="min-h-12 rounded-[8px] border border-white/10 bg-black/35 px-3 py-2.5"
+              data-testid="reie-sidebar-selected-summary"
+              data-sidebar-selected-listing-id={activeId || ''}
+              data-sidebar-selected-address={selectedAddress || ''}
+            >
+              <p className="truncate text-[10px] font-black uppercase tracking-[0.18em] text-white/36">
+                {selectedAddress ? 'Selected Property' : 'Primary Market'}
+              </p>
+              <p className="mt-1 truncate text-[12px] font-black uppercase tracking-[0.08em] text-white/76">
+                {selectedAddress || `${stats.dominantCity}, Colorado`}
+              </p>
+            </div>
+            <div className="mt-3 grid grid-cols-2 gap-2">
+              <Link
+                href={authorityLinks.marketHref}
+                className="reie-decision-link reie-decision-link--card group rounded-[8px] px-3 py-2.5 transition-colors"
+                {...getJourneyMeasurementAttributes({
+                  surface: 'search-sidebar-market-card',
+                  stage: 'search',
+                  action: 'view-market',
+                  destination: 'market',
+                })}
+              >
+                <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100/72">
+                  <Layers3 size={13} aria-hidden="true" />
+                  Market
+                </p>
+                <p className="mt-1 truncate text-[10px] font-black uppercase tracking-[0.08em] text-white/55 transition-colors group-hover:text-white">
+                  {stats.dominantCity} Report
+                </p>
+              </Link>
+
+              {authorityLinks.brief ? (
+                <Link
+                  href={authorityLinks.brief.href}
+                  className="reie-decision-link reie-decision-link--card group rounded-[8px] px-3 py-2.5 transition-colors"
+                >
+                  <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100/72">
+                    <FileText size={13} aria-hidden="true" />
+                    Brief
+                  </p>
+                  <p className="mt-1 truncate text-[10px] font-black uppercase tracking-[0.08em] text-white/55 transition-colors group-hover:text-white">
+                    Market Context
+                  </p>
+                </Link>
+              ) : (
+                <Link
+                  href={`/search?city=${encodeURIComponent(stats.dominantCity)}`}
+                  className="reie-decision-link reie-decision-link--card group rounded-[8px] px-3 py-2.5 transition-colors"
+                >
+                  <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100/72">
+                    <Bell size={13} aria-hidden="true" />
+                    Explore
+                  </p>
+                  <p className="mt-1 truncate text-[10px] font-black uppercase tracking-[0.08em] text-white/55 transition-colors group-hover:text-white">
+                    More Listings
+                  </p>
+                </Link>
+              )}
+            </div>
+            <SearchIntelligenceStrip stats={stats} />
+            <SearchDecisionPortfolio listings={listings} stats={stats} />
+          </div>
+        ) : null}
 
         {continuityContent ? (
           <div className="border-t border-white/10 bg-[#070b10] p-4" data-testid="reie-sidebar-continuity-footer">

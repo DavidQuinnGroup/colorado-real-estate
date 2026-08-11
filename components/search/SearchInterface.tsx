@@ -695,18 +695,27 @@ export default function SearchInterface({
             </div>
           ) : null}
 
-          <section
-            className="reie-search-confidence-framework"
-            data-testid="search-discovery-intelligence-advancement"
-            data-search-discovery-status={searchDiscoveryIntelligence.status}
-            data-search-discovery-cues={searchDiscoveryIntelligence.cues.length}
-            data-search-discovery-current-results={visibleListings.length}
-            data-search-discovery-active-criteria={activeFilterChips.length}
-            data-search-discovery-no-ranking={String(!searchDiscoveryIntelligence.protectedBoundaries.ranking)}
-            data-search-discovery-no-hidden-personalization={String(!searchDiscoveryIntelligence.protectedBoundaries.hiddenPersonalization)}
-            data-search-discovery-no-persistence={String(!searchDiscoveryIntelligence.protectedBoundaries.persistence)}
-            data-search-discovery-no-telemetry={String(!searchDiscoveryIntelligence.protectedBoundaries.telemetry)}
+          <details
+            className="reie-search-guidance-disclosure"
+            data-testid="reie-search-premium-guidance-disclosure"
+            data-search-first-scan-guidance-placement="progressive-disclosure-before-list"
           >
+            <summary>
+              Search guidance, evidence boundaries, and map context
+              <span aria-hidden="true">+</span>
+            </summary>
+            <section
+              className="reie-search-confidence-framework"
+              data-testid="search-discovery-intelligence-advancement"
+              data-search-discovery-status={searchDiscoveryIntelligence.status}
+              data-search-discovery-cues={searchDiscoveryIntelligence.cues.length}
+              data-search-discovery-current-results={visibleListings.length}
+              data-search-discovery-active-criteria={activeFilterChips.length}
+              data-search-discovery-no-ranking={String(!searchDiscoveryIntelligence.protectedBoundaries.ranking)}
+              data-search-discovery-no-hidden-personalization={String(!searchDiscoveryIntelligence.protectedBoundaries.hiddenPersonalization)}
+              data-search-discovery-no-persistence={String(!searchDiscoveryIntelligence.protectedBoundaries.persistence)}
+              data-search-discovery-no-telemetry={String(!searchDiscoveryIntelligence.protectedBoundaries.telemetry)}
+            >
             <div>
               <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">Discovery Intelligence</p>
               <h2 className="mt-2 font-serif text-2xl font-black leading-tight tracking-normal text-white">
@@ -739,25 +748,25 @@ export default function SearchInterface({
             <p className="mt-4 text-[11px] font-bold leading-5 text-white/44">
               Discovery cues do not rank homes, score places, infer protected preferences, save a profile, or personalize hidden results.
             </p>
-          </section>
+            </section>
 
-          <section
-            className="reie-search-confidence-framework"
-            data-testid="dxt-2-search-decision-workspace-depth"
-            data-dxt-2-search-workspace-depth="implemented"
-            data-dxt-2-search-workspace-runtime-scope="components/search/SearchInterface.tsx"
-            data-dxt-2-search-workspace-existing-evidence-only="true"
-            data-dxt-2-search-workspace-api-change="false"
-            data-dxt-2-search-workspace-ranking-change="false"
-            data-dxt-2-search-workspace-map-provider-change="false"
-            data-dxt-2-search-workspace-provider-activation="false"
-            data-dxt-2-search-workspace-url-state-change="false"
-            data-dxt-2-search-workspace-hidden-context="false"
-            data-dxt-2-search-workspace-persistence="false"
-            data-dxt-2-search-workspace-telemetry="false"
-            data-dxt-2-search-workspace-ai="false"
-            aria-labelledby="dxt-2-search-decision-question"
-          >
+            <section
+              className="reie-search-confidence-framework"
+              data-testid="dxt-2-search-decision-workspace-depth"
+              data-dxt-2-search-workspace-depth="implemented"
+              data-dxt-2-search-workspace-runtime-scope="components/search/SearchInterface.tsx"
+              data-dxt-2-search-workspace-existing-evidence-only="true"
+              data-dxt-2-search-workspace-api-change="false"
+              data-dxt-2-search-workspace-ranking-change="false"
+              data-dxt-2-search-workspace-map-provider-change="false"
+              data-dxt-2-search-workspace-provider-activation="false"
+              data-dxt-2-search-workspace-url-state-change="false"
+              data-dxt-2-search-workspace-hidden-context="false"
+              data-dxt-2-search-workspace-persistence="false"
+              data-dxt-2-search-workspace-telemetry="false"
+              data-dxt-2-search-workspace-ai="false"
+              aria-labelledby="dxt-2-search-decision-question"
+            >
             <div className="flex flex-col gap-4">
               <div>
                 <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">Search Decision Readiness</p>
@@ -829,7 +838,7 @@ export default function SearchInterface({
                 recommendation, suitability conclusion, valuation opinion, financing conclusion, or professional advice.
               </p>
             </div>
-          </section>
+            </section>
 
           <ol className="reie-search-orientation" data-testid="reie-search-orientation" aria-label="How to begin guided search" data-search-shell-region="workspace-steps">
             <li>
@@ -908,13 +917,13 @@ export default function SearchInterface({
               </button>
             </div>
           ) : null}
-          <section
-            className="reie-search-state-panel"
-            data-testid="search-map-intelligence-presentation"
-            data-search-map-local-trust-status={searchMapIntelligence.status}
-            data-search-map-representation={searchMapIntelligence.representation}
-            data-search-map-continuity-path={searchMapIntelligence.continuityPath.join(' -> ')}
-          >
+            <section
+              className="reie-search-state-panel"
+              data-testid="search-map-intelligence-presentation"
+              data-search-map-local-trust-status={searchMapIntelligence.status}
+              data-search-map-representation={searchMapIntelligence.representation}
+              data-search-map-continuity-path={searchMapIntelligence.continuityPath.join(' -> ')}
+            >
             <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
               <div>
                 <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">
@@ -943,7 +952,8 @@ export default function SearchInterface({
             <p className="mt-3 text-[11px] font-bold leading-5 text-white/44">
               {searchMapIntelligence.source} {searchMapIntelligence.limitation}
             </p>
-          </section>
+            </section>
+          </details>
         </section>
 
         <MapSidebar
@@ -953,6 +963,7 @@ export default function SearchInterface({
           onSelect={handleListSelect}
           onHover={setHoveredId}
           searchControls={searchControls}
+          evidenceLabel={evidenceLabel}
           hasActiveFilters={hasFilters}
           isLoading={isSearching}
           onClearSearch={handleReset}

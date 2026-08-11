@@ -77,6 +77,7 @@
     "scripts/checkSouthBoulderNeighborhoodRouteEnhancement.ts",
     "scripts/checkTableMesaBoundaryScopeReadiness.ts",
     "scripts/checkOfferPreparationReadiness.ts",
+    "scripts/checkSearchPropertyDiscoveryPremiumFlow.ts",
     "scripts/checkPropertySellerEvidenceReadiness.ts",
     "scripts/checkReieBuyerConfidenceExperience.ts",
     "scripts/checkReieFinancingConfidenceEducation.ts",

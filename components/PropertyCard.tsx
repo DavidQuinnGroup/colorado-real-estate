@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowUpRight, Bath, BedDouble, MapPin, Ruler, ShieldCheck, Sparkles, TriangleAlert } from 'lucide-react';
+import { ArrowUpRight, Bath, BedDouble, MapPin, Ruler, ShieldCheck, TriangleAlert } from 'lucide-react';
 import type { CSSProperties, KeyboardEvent } from 'react';
 import { useMemo } from 'react';
 
@@ -54,9 +54,9 @@ function getReviewSignal(property: MapSidebarListing) {
 }
 
 function getDecisionLabel(property: MapSidebarListing) {
-  if (property.hasPolybutyleneRisk) return 'Worth a closer plumbing review';
-  if (!isResidentialListing(property.propertyType)) return 'Special-use details deserve a closer look';
-  if (typeof property.resilienceScore === 'number' && property.resilienceScore >= 80) return 'Ready for a closer look';
+  if (property.hasPolybutyleneRisk) return 'Plumbing verification needed';
+  if (!isResidentialListing(property.propertyType)) return 'Special-use details need review';
+  if (typeof property.resilienceScore === 'number' && property.resilienceScore >= 80) return 'Location context available';
 
   return 'Public listing context available';
 }
@@ -261,7 +261,7 @@ export default function PropertyCard({ property, isActive, onClick }: PropertyCa
         </div>
 
         <div
-          className="mt-3 rounded-[6px] bg-cyan-100/[0.045] px-3 py-2.5"
+          className="mt-3 rounded-[6px] bg-cyan-100/[0.045] px-3 py-2"
           data-testid="reie-property-card-decision"
           data-property-card-decision-signal={decisionLabel}
           data-property-card-review-signal={reviewSignal}
@@ -269,10 +269,10 @@ export default function PropertyCard({ property, isActive, onClick }: PropertyCa
           data-property-card-v8-attention-reason={decisionSupport.attentionReason}
         >
           <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100/76">
-            <Sparkles size={12} aria-hidden="true" />
-            Review context
+            <ShieldCheck size={12} aria-hidden="true" />
+            Verification cue
           </p>
-          <p className="mt-1 text-xs font-bold leading-5 text-white/68">{decisionSupport.attentionLabel}. {decisionSupport.attentionReason}</p>
+          <p className="mt-1 text-xs font-bold leading-5 text-white/68">{decisionLabel}. Open the property page to review full records, condition, and cost questions.</p>
         </div>
 
         <details
@@ -320,7 +320,7 @@ export default function PropertyCard({ property, isActive, onClick }: PropertyCa
 
         <div className="mt-3 flex flex-col items-start gap-2.5 border-t border-white/8 pt-3 sm:flex-row sm:items-center sm:justify-between">
           <p className="min-w-0 text-[10px] font-bold uppercase leading-4 tracking-[0.14em] text-white/40">
-            Open details when this listing deserves a closer look. {decisionSupport.nextStep}
+            Open details to review full property facts, records, and questions to verify.
           </p>
 
           <div className="flex shrink-0 items-center gap-2 self-end sm:self-auto">

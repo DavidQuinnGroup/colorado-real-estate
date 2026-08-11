@@ -131,10 +131,10 @@ async function main() {
   assert(mapSidebar.includes('No Properties Match This View'), 'Search sidebar must guide customers through empty filtered states.');
   assert(mapSidebar.includes('properties shown on this map'), 'Search sidebar must describe mapped properties without implying complete map coverage.');
   assert(mapSidebar.includes('Talk Through Your Search'), 'Search sidebar must preserve one restrained advisor pathway.');
-  assert(propertyCard.includes('Review context'), 'Property cards must use neutral review context framing.');
+  assert(propertyCard.includes('Verification cue'), 'Property cards must use neutral verification cue framing.');
   assert(propertyCard.includes('Map Context'), 'Property cards must include plain-language map context.');
   assert(propertyCard.includes('data-testid="reie-property-card-core-facts"'), 'Property cards must expose compact core fact metadata.');
-  assert(propertyCard.includes('Open details when this listing deserves a closer look'), 'Property cards must frame detail navigation as a follow-up after comparison.');
+  assert(propertyCard.includes('Open details to review full property facts, records, and questions to verify.'), 'Property cards must frame detail navigation as a factual review follow-up after comparison.');
   assert(propertyCard.includes('Property Signals'), 'Property cards must include plain-language property signals.');
   assert(propertyCard.includes('View Property'), 'Property cards must retain a clear details action.');
   assert(propertyCard.includes('data-property-card-detail-href='), 'Property cards must retain detail navigation metadata.');

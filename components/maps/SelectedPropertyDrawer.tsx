@@ -52,8 +52,8 @@ function getReviewSignal(property: MapSidebarListing) {
 }
 
 function getAdvisoryNote(property: MapSidebarListing) {
-  if (property.hasPolybutyleneRisk) return 'Worth a closer plumbing review before next steps.';
-  if (typeof property.resilienceScore === 'number' && property.resilienceScore >= 80) return 'Worth a closer look for location and property context.';
+  if (property.hasPolybutyleneRisk) return 'Verify plumbing context before next steps.';
+  if (typeof property.resilienceScore === 'number' && property.resilienceScore >= 80) return 'Location and property context are available for review.';
   if (typeof property.efficiencyScore === 'number' && property.efficiencyScore >= 80) return 'Public location context may be useful for comparison.';
   if (property.isPrivateExclusive) return 'Additional listing context can be discussed through inquiry.';
 
@@ -282,7 +282,7 @@ export default function SelectedPropertyDrawer({ property, onClose }: SelectedPr
             View Property
             <ArrowUpRight size={13} aria-hidden="true" />
           </Link>
-          <p className="mt-2 text-left text-[10px] font-bold leading-4 text-white/42">Open the full listing details when this property deserves a closer look.</p>
+          <p className="mt-2 text-left text-[10px] font-bold leading-4 text-white/42">Open the full listing details to review property facts and verification questions.</p>
           <Link
             href={inquiryHref}
             data-testid="reie-selected-property-inquiry-link"
