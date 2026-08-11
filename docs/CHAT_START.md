@@ -10,6 +10,107 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / Table Mesa Neighborhood Decision Intelligence Production Certified and Closed:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Production implementation state:
+
+- Branch: `main`
+- Implementation commit pushed: `d3e27b9b1af650ccf66b6e4b27c841c7ec84543f`
+- Implementation commit message: `Enhance Table Mesa neighborhood decision intelligence`
+- Post-push implementation state: `HEAD = origin/main = d3e27b9b1af650ccf66b6e4b27c841c7ec84543f`
+- Post-push divergence before documentation closure: `0 ahead / 0 behind`
+- Production certification record: `docs/project-atlas/executive-library/REIE-TABLE-MESA-NEIGHBORHOOD-DECISION-INTELLIGENCE-PRODUCTION-CERTIFICATION.md`
+
+Production disposition:
+
+- `TABLE_MESA_NEIGHBORHOOD_DECISION_INTELLIGENCE_PRODUCTION_CERTIFIED_AND_CLOSED`
+
+Certified Table Mesa behavior:
+
+- Target route: `/market/boulder/table-mesa`
+- Canonical object: `neighborhood:boulder:table-mesa`
+- Object type: `NEIGHBORHOOD`
+- Parent: `Boulder`
+- Context: `Boulder County` and broader South Boulder place-orientation context
+- Boundary posture: `APPROXIMATE_BOUNDARY`
+- Table Mesa is presented as a locally recognized Boulder neighborhood context, not exact legal or administrative geography.
+- Broader South Boulder association is context-only and does not mean identical boundaries, identities, or evidence.
+- Search This Area is discovery-only and does not certify complete inventory, exact boundary-filtered listings, or geographic exhaustiveness.
+- Property Verification path is visible and address-specific.
+- Missing, stale, conflicting, unavailable, or unsupported evidence fails closed into verification language rather than a claim.
+
+Deployment evidence:
+
+- GitHub deployments endpoint returned no deployment object for the implementation SHA at certification time.
+- Initial GitHub/Vercel commit status id: `52039618319`
+- Terminal GitHub/Vercel commit status id: `52039780728`
+- Deployment state: `success`
+- Deployment description: `Deployment has completed`
+- Deployment timestamp: `2026-08-11T16:47:06Z`
+- Vercel target URL: `https://vercel.com/david-quinns-projects-a0953600/david-quinn-group-8rde/EiW7ZpLcfYBYj7vEenvNogQWHmMg`
+- Production URL verified: `https://davidquinngroup.com/market/boulder/table-mesa`
+- Production response evidence: `HTTP 200`, `server: Vercel`, `x-matched-path: /market/boulder/table-mesa`, `x-vercel-cache: PRERENDER`, `x-vercel-id: sfo1::gbmfb-1786466847735-8d2e189f0fa8`
+
+Certified routes:
+
+- `/market/boulder/table-mesa`
+
+Production route and browser verification:
+
+- Verified `HTTP 200` for `/market/boulder/table-mesa`, `/market/boulder-co-housing-market`, `/market/boulder/south-boulder`, `/market/boulder/downtown-boulder`, `/market/boulder/north-boulder`, `/search`, `/compare`, `/grand-plan`, `/sources`, and `/contact`.
+- Browser verified `/market/boulder/table-mesa` at desktop width `1440` and mobile width `390`.
+- Verified Table Mesa identity, Boulder context, canonical identity, `NEIGHBORHOOD` object type, canonical metadata, schema marker, `APPROXIMATE_BOUNDARY` marker, approximate/descriptive boundary limitation, South Boulder context-only relationship, Search discovery-only language, Property Verification path, Boulder Market/Search/Grand Plan/Sources/Advisory Readiness continuity, no material horizontal overflow, and no captured browser console errors or page exceptions.
+- Desktop production metrics: document width `1436`, client width `1436`, no overflow.
+- Mobile production metrics: document width `390`, client width `390`, no overflow.
+
+Claim and fair-housing safety certification:
+
+- Verified no customer-facing Table Mesa route-enhancement exact-boundary claim, best-neighborhood claim, suitability, desirability, school-quality ranking, safety ranking, demographic comparison, investment recommendation, appreciation prediction, or automated recommendation.
+- No legal boundary, HOA boundary, school boundary, safety boundary, parcel/property boundary, GIS polygon, new map behavior, county-source dependency, complete boundary-filtered inventory claim, ranking, desirability, suitability, investment conclusion, demographic steering, or automated recommendation was certified.
+
+Validation:
+
+- `git diff --check origin/main..HEAD`
+- `npm run typecheck`
+- `npm run check:table-mesa-boundary-scope-readiness`
+- `npm run check:table-mesa-neighborhood-route-enhancement`
+- `npm run check:south-boulder-neighborhood-route-enhancement`
+- `npm run check:second-governed-neighborhood-submarket-wave`
+- `npm run check:neighborhood-product-3`
+- `npm run check:market-aeo-wave-2`
+- `npm run check:evidence-depth-data-integration-foundation`
+- `npm run check:colorado-source-trust-experience`
+- `npm run check:search-runtime-safety`
+- `npm run check:map-rendering-safety`
+- `npm run check:property-product-3-1`
+- `npm run check:public-runtime-safety`
+- `npm run check:public-trust-readiness`
+- `npm run check:professional-handoff-cohesion`
+- `npm run lint`
+- `npm run build`
+
+Protected boundaries:
+
+- Automatic Vercel production deployment completed successfully.
+- Production certification completed for Table Mesa route identity, context, approximate-boundary limitation, Search discovery, Property verification, route continuity, responsive browser behavior, console/page-error containment, and protected-system containment.
+- Documentation-only production closure record was created locally.
+- No runtime implementation occurred during production certification or closure.
+- No customer information was submitted.
+- No Saved Search record was created.
+- No Contact submission, Property Inquiry mutation, Grand Plan submission, customer-specific workflow submission, manual deployment, redeployment, preview promotion, domain modification, environment modification, database mutation, Prisma/schema change, API change, authentication change, CRM/email behavior, worker/queue action, telemetry action, MLS ingestion change, Typesense action, credentials/configuration change, customer-data expansion, source activation, provider activation, public GIS activation, county data acquisition, public-record retrieval, county-source dependency, Search API change, map/provider change, or production mutation beyond the authorized automatic Vercel deployment occurred.
+
+Next gate:
+
+- `READY_FOR_REIE_ADVISORY_HANDOFF_VALUE_ACTIVATION_LOCAL_IMPLEMENTATION`
+
+The documentation-only Table Mesa production certification closure commit is local until separate synchronization authorization is granted. Do not push it, deploy again, run another production certification, reopen Table Mesa implementation, activate sources/providers, acquire county datasets, mutate customer data, or begin another implementation workstream unless explicitly authorized.
+
+Prior handoff retained below for audit history.
+
 PROJECT ATLAS(tm) / Search Property Discovery Premium Decision Flow Production Certified and Closed:
 
 Workspace:
@@ -112,8 +213,6 @@ Next gate:
 - `READY_FOR_SEARCH_PROPERTY_DISCOVERY_PREMIUM_DECISION_FLOW_CLOSURE_SYNC_AUTHORIZATION`
 
 The documentation-only production certification closure commit is local until separate synchronization authorization is granted. Do not push it, deploy again, run another production certification, reopen Search / Property Discovery implementation, begin Seller Readiness, begin Evidence Depth, implement Table Mesa customer enhancement, activate sources/providers, acquire county datasets, mutate customer data, or begin another implementation workstream unless explicitly authorized.
-
-Prior handoff retained below for audit history.
 
 PROJECT ATLAS(tm) / South Boulder Neighborhood Decision Intelligence Production Certified and Closed:
 
