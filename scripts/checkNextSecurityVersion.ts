@@ -8,7 +8,8 @@ type ParsedVersion = {
   patch: number;
 };
 
-const minimumPatchedVersion = '15.1.11';
+const approvedMajorVersion = 15;
+const minimumPatchedVersion = '15.5.22';
 const packageJsonPath = join(process.cwd(), 'package.json');
 const requireFromProject = createRequire(packageJsonPath);
 
@@ -72,9 +73,9 @@ for (const [label, version] of [
   ['declared', declared],
   ['installed', installed],
 ] as const) {
-  if (version.major === 15 && version.minor === 1 && compareVersions(version, floor) < 0) {
+  if (version.major !== approvedMajorVersion || compareVersions(version, floor) < 0) {
     fail(
-      `${label} Next.js version is below the approved 15.1 security floor: ${minimumPatchedVersion}.`
+      `${label} Next.js version must remain on the approved 15.x security floor: ${minimumPatchedVersion}.`
     );
   }
 }

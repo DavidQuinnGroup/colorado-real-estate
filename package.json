@@ -315,7 +315,7 @@
     "leaflet": "^1.9.4",
     "leaflet.markercluster": "^1.5.3",
     "lucide-react": "^1.8.0",
-    "next": "15.1.11",
+    "next": "15.5.22",
     "p-limit": "^7.3.0",
     "postcss": "^8.5.9",
     "react": "^19.0.0",
