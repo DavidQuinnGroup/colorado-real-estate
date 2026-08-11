@@ -33,6 +33,7 @@ export type CrossCityComparisonMarket = {
   maturity: DecisionGuideMaturity;
   maturityLabel: string;
   maturityExplanation: string;
+  registryFreshness: string;
   marketRoute: string;
   searchHref: string;
   evidencePosture: string;
@@ -61,6 +62,13 @@ export type CrossCityComparisonDimension = {
   }>;
 };
 
+export type CrossCityComparisonSourceTransparencyItem = {
+  label: 'Source' | 'Period / Freshness' | 'Limitation' | 'Verify';
+  value: string;
+  detail: string;
+  href?: string;
+};
+
 export type CrossCityComparisonWorkspace = {
   eligibleMarkets: CrossCityComparisonMarket[];
   selectedMarkets: CrossCityComparisonMarket[];
@@ -68,6 +76,7 @@ export type CrossCityComparisonWorkspace = {
   rejectedSelections: CrossCityComparisonRejectedSelection[];
   canCompare: boolean;
   dimensions: CrossCityComparisonDimension[];
+  sourceTransparency: CrossCityComparisonSourceTransparencyItem[];
   queryHref: string;
 };
 
@@ -148,6 +157,7 @@ function buildComparisonMarket(entry: DecisionGuideRegistryEntry): CrossCityComp
     maturity: guide.maturity,
     maturityLabel: getMaturityLabel(guide.maturity),
     maturityExplanation: getMaturityExplanation(guide.maturity),
+    registryFreshness: entry.freshness,
     marketRoute: entry.marketRoute,
     searchHref,
     evidencePosture: firstExplanations(guide.evidenceLimitations, 2),
@@ -284,6 +294,41 @@ function buildDimensions(selectedMarkets: CrossCityComparisonMarket[]): CrossCit
   }));
 }
 
+function formatSelectedRegistryFreshness(selectedMarkets: CrossCityComparisonMarket[]) {
+  const uniqueFreshness = Array.from(new Set(selectedMarkets.map((market) => market.registryFreshness)));
+  if (uniqueFreshness.length === 1) return `Guide Registry freshness ${uniqueFreshness[0]}`;
+
+  return selectedMarkets.map((market) => `${market.name}: ${market.registryFreshness}`).join('; ');
+}
+
+function buildSourceTransparency(selectedMarkets: CrossCityComparisonMarket[]): CrossCityComparisonSourceTransparencyItem[] {
+  if (selectedMarkets.length < CROSS_CITY_COMPARISON_MIN_SELECTIONS) return [];
+
+  return [
+    {
+      label: 'Source',
+      value: 'Public eligible Decision Guide context',
+      detail: 'This comparison uses the selected public eligible city Decision Guide context only, without internal source IDs or provenance metadata.',
+    },
+    {
+      label: 'Period / Freshness',
+      value: formatSelectedRegistryFreshness(selectedMarkets),
+      detail: 'Freshness comes from the existing Decision Guide Registry for the selected markets. It is durable guide context, not a live market feed.',
+    },
+    {
+      label: 'Limitation',
+      value: 'Citywide context is not a conclusion',
+      detail: 'It does not establish property-specific facts, property condition or value, personal fit, a better city, or any ranking.',
+    },
+    {
+      label: 'Verify',
+      value: 'Review methodology and investigate specifics',
+      detail: 'Use Sources & Methodology, then preserve each selected city guide and search path for specific investigation.',
+      href: '/sources',
+    },
+  ];
+}
+
 export function getCrossCityComparisonHref(slugs: readonly string[]) {
   const normalizedSlugs = slugs.map(slugify).filter(Boolean).slice(0, CROSS_CITY_COMPARISON_MAX_SELECTIONS);
   if (!normalizedSlugs.length) return CROSS_CITY_COMPARISON_ROUTE;
@@ -305,6 +350,7 @@ export function buildCrossCityComparisonWorkspace(rawCities?: string | string[] 
     rejectedSelections,
     canCompare: selectedMarkets.length >= CROSS_CITY_COMPARISON_MIN_SELECTIONS,
     dimensions: buildDimensions(selectedMarkets),
+    sourceTransparency: buildSourceTransparency(selectedMarkets),
     queryHref: getCrossCityComparisonHref(selectedSlugs),
   };
 }

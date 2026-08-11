@@ -225,6 +225,45 @@ export default async function CrossCityDecisionComparisonPage({ searchParams }: 
                 ))}
               </div>
 
+              <section
+                className="rounded-[8px] bg-white/[0.035] p-5 ring-1 ring-white/[0.07]"
+                data-testid="cross-city-source-transparency"
+                data-cross-city-source-transparency="decision-moment"
+                data-cross-city-registry-freshness-only="true"
+                data-cross-city-live-market-feed="false"
+                data-cross-city-ranking="false"
+                data-cross-city-recommendation="false"
+                data-cross-city-suitability="false"
+              >
+                <div className="mb-5">
+                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100/66">How to read this comparison</p>
+                  <h2 className="mt-3 text-2xl font-black uppercase tracking-normal text-white">Check source, period, limits, and verification before relying.</h2>
+                </div>
+                <div className="grid gap-3 lg:grid-cols-4">
+                  {workspace.sourceTransparency.map((item) => (
+                    <article
+                      key={item.label}
+                      className="min-w-0 rounded-[6px] bg-black/22 p-4"
+                      data-testid="cross-city-source-transparency-item"
+                      data-cross-city-source-transparency-label={item.label}
+                    >
+                      <p className="text-[10px] font-black uppercase tracking-[0.14em] text-white/42">{item.label}</p>
+                      <p className="mt-3 text-sm font-black uppercase leading-5 tracking-[0.04em] text-white/76">{item.value}</p>
+                      <p className="mt-3 text-xs leading-6 text-white/52">{item.detail}</p>
+                      {item.href ? (
+                        <Link
+                          href={item.href}
+                          className="mt-4 inline-flex text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100 transition hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
+                          data-testid="cross-city-source-transparency-verify-link"
+                        >
+                          Sources & Methodology
+                        </Link>
+                      ) : null}
+                    </article>
+                  ))}
+                </div>
+              </section>
+
               <div className="space-y-4" data-testid="cross-city-neutral-dimensions">
                 {workspace.dimensions.map((dimension) => (
                   <section key={dimension.key} className="rounded-[8px] bg-white/[0.035] p-5 ring-1 ring-white/[0.07]" data-testid="cross-city-comparison-dimension" data-cross-city-dimension={dimension.key}>

@@ -599,36 +599,39 @@ function getPropertyDecisionBriefItems({
 
 function getPropertyIntelligenceSourceItems({
   property,
-  relatedListingCount,
-  authorityLinkCount,
 }: {
   property: PropertyWithPhotos;
-  relatedListingCount: number;
-  authorityLinkCount: number;
 }) {
+  const supportedFreshness = property.lastIntelligenceSync || property.updatedAt;
+  const freshnessBasis = property.lastIntelligenceSync
+    ? 'Last synchronized listing intelligence timestamp.'
+    : property.updatedAt
+      ? 'Existing public listing update timestamp.'
+      : 'Listing update time is unavailable; confirm current information before relying.';
+
   return [
     {
       label: 'Source',
       value: 'Public listing facts',
-      detail: 'Stored listing fields, listing photos, and existing public property-link context.',
+      detail: 'Stored listing fields, listing photos, and existing Property Product 3.1 context only.',
     },
     {
-      label: 'Freshness',
-      value: formatDateTime(property.lastIntelligenceSync || property.updatedAt),
-      detail: property.lastIntelligenceSync ? 'Last synchronized listing intelligence timestamp.' : 'Last public listing update timestamp.',
+      label: 'Period / Freshness',
+      value: supportedFreshness ? formatDateTime(supportedFreshness) : 'Listing update unavailable',
+      detail: freshnessBasis,
     },
     {
-      label: 'Comparison',
-      value: relatedListingCount > 0 ? `${relatedListingCount} related listings` : 'Search context available',
+      label: 'Limitation',
+      value: 'Verify records before reliance',
       detail:
-        authorityLinkCount > 0
-          ? `${authorityLinkCount} existing authority links are available for buyer review.`
-          : 'No additional authority links are required for this view.',
+        'Visible listing facts do not establish condition, title, taxes, permits, insurance, zoning or legal use, valuation, or parcel/account correlation.',
     },
     {
-      label: 'Boundary',
-      value: 'Public-fact confidence',
-      detail: 'No protected intelligence, generated advice, provider data, or automated valuation is exposed.',
+      label: 'Verify',
+      value: 'Ask with context',
+      detail: 'Check property-specific facts before relying. Use the property question path and review Sources & Methodology.',
+      href: '#property-contact',
+      secondaryHref: '/sources',
     },
   ];
 }
@@ -1025,8 +1028,6 @@ export default async function PropertyPage({ params, searchParams }: PropertyPag
   });
   const propertyIntelligenceSourceItems = getPropertyIntelligenceSourceItems({
     property,
-    relatedListingCount: relatedListings.length,
-    authorityLinkCount: propertyPageAuthorityLinks.length,
   });
   const propertyDecisionWorkspace = buildPropertyDecisionWorkspace({
     address: property.address,
@@ -1923,12 +1924,25 @@ export default async function PropertyPage({ params, searchParams }: PropertyPag
                 data-testid="cep-property-intelligence-source-status"
                 data-property-intelligence-source="public-listing-facts"
                 data-property-intelligence-confidence-boundary="public-fact-confidence"
+                data-property-intelligence-period-source={property.lastIntelligenceSync ? 'lastIntelligenceSync' : property.updatedAt ? 'updatedAt' : 'unavailable'}
+                data-property-intelligence-public-records="verification-required"
+                data-property-intelligence-record-retrieval="false"
               >
                 {propertyIntelligenceSourceItems.map((item) => (
                   <div key={item.label} className="bg-[#0d141c] p-4">
                     <p className="text-[10px] font-black uppercase tracking-[0.14em] text-white/38">{item.label}</p>
-                    <p className="mt-2 truncate text-sm font-black uppercase tracking-[0.06em] text-white/78">{item.value}</p>
+                    <p className="mt-2 text-sm font-black uppercase leading-5 tracking-[0.06em] text-white/78">{item.value}</p>
                     <p className="mt-2 text-xs leading-5 text-white/44">{item.detail}</p>
+                    {'href' in item && item.href ? (
+                      <div className="mt-3 flex flex-wrap gap-3">
+                        <Link href={item.href} className="text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100 transition hover:text-white">
+                          Property question
+                        </Link>
+                        <Link href={item.secondaryHref} className="text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100/78 transition hover:text-white">
+                          Sources
+                        </Link>
+                      </div>
+                    ) : null}
                   </div>
                 ))}
               </div>

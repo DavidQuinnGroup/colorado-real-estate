@@ -106,6 +106,7 @@
     "scripts/checkComparisonEvidenceDecisionDifference.ts",
     "scripts/checkPropertyInquiryDecisionContinuity.ts",
     "scripts/checkPropertyGeographicSourceIntelligence.ts",
+    "scripts/checkDecisionMomentSourceTransparency.ts",
     "scripts/checkAuthoritativePropertyRecordIntelligence.ts",
     "scripts/checkReieSourceRegistryGrandPlanAdvancement.ts",
     "scripts/checkColoradoSourceTrustExperience.ts",

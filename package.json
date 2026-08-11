@@ -162,6 +162,7 @@
     "check:comparison-evidence-decision-difference": "npm run worker:build && node dist/scripts/checkComparisonEvidenceDecisionDifference.js",
     "check:property-inquiry-decision-continuity": "npm run worker:build && node dist/scripts/checkPropertyInquiryDecisionContinuity.js",
     "check:property-geographic-source-intelligence": "npm run worker:build && node dist/scripts/checkPropertyGeographicSourceIntelligence.js",
+    "check:decision-moment-source-transparency": "npm run worker:build && node dist/scripts/checkDecisionMomentSourceTransparency.js",
     "check:authoritative-property-record-intelligence": "npm run worker:build && node dist/scripts/checkAuthoritativePropertyRecordIntelligence.js",
     "check:reie-source-registry-grand-plan-advancement": "npm run worker:build && node dist/scripts/checkReieSourceRegistryGrandPlanAdvancement.js",
     "check:colorado-source-trust-experience": "npm run worker:build && node dist/scripts/checkColoradoSourceTrustExperience.js",
