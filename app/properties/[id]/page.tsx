@@ -24,6 +24,7 @@ import {
 import ContinueYourDecision from '@/components/ContinueYourDecision';
 import EquityVision from '@/components/EquityVision';
 import FinancingConfidenceEducation from '@/components/FinancingConfidenceEducation';
+import OfferPreparationPanel from '@/components/OfferPreparationPanel';
 import ProfessionalHandoffCohesionPanel from '@/components/ProfessionalHandoffCohesionPanel';
 import PropertyInquiryForm from '@/components/PropertyInquiryForm';
 import PropertyProduct31Experience from '@/components/PropertyProduct31Experience';
@@ -37,6 +38,7 @@ import { getBlogLinks } from '@/lib/linking/getBlogLinks';
 import { getPropertyLinks, type PropertyAuthorityLink } from '@/lib/linking/getPropertyLinks';
 import { getDisplaySafeListingPhotoUrl, getListingFallbackPhotoUrl, getListingPhotoUrl } from '@/lib/listingVisuals';
 import { neighborhoods } from '@/lib/neighborhoods';
+import { buildOfferPreparationReadiness } from '@/lib/offerPreparationReadiness';
 import { prisma } from '@/lib/prisma';
 import { buildPropertyDecisionWorkspace } from '@/lib/property/propertyDecisionWorkspace';
 import { buildDecisionJourneyContinuityDeepening } from '@/lib/propertyInquiryDecisionContinuity';
@@ -1069,6 +1071,16 @@ export default async function PropertyPage({ params, searchParams }: PropertyPag
     photoCount: property.photos.length,
     relatedListings,
   });
+  const offerPreparationReadiness = buildOfferPreparationReadiness({
+    propertyLabel: property.address,
+    searchHref: propertySearchHref,
+    compareHref: '/compare',
+    financingHref: '/buy#financing-readiness',
+    grandPlanHref: '/grand-plan',
+    sourcesHref: '/sources',
+    inquiryHref: '#property-contact',
+    productModel: propertyProduct31Model,
+  });
   const decisionContinuityDeepening = buildDecisionJourneyContinuityDeepening();
   const propertyReadinessAvailableEvidence = getPropertyReadinessAvailableEvidence({
     property,
@@ -1109,6 +1121,11 @@ export default async function PropertyPage({ params, searchParams }: PropertyPag
       data-dxt-2-property-readiness-persistence="false"
       data-dxt-2-property-readiness-telemetry="false"
       data-dxt-2-property-readiness-api-change="false"
+      data-offer-preparation-runtime-scope="app/properties/[id]/page.tsx"
+      data-offer-preparation-existing-evidence-only="true"
+      data-offer-preparation-push-authorized="false"
+      data-offer-preparation-deploy-authorized="false"
+      data-offer-preparation-table-mesa-public-enhancement="false"
     >
       <script
         type="application/ld+json"
@@ -1393,6 +1410,10 @@ export default async function PropertyPage({ params, searchParams }: PropertyPag
 
       <section className="mx-auto max-w-7xl px-5 py-8 sm:px-8 lg:px-10" data-testid="property-product-3-1-priority">
         <PropertyProduct31Experience model={propertyProduct31Model} />
+      </section>
+
+      <section className="mx-auto max-w-7xl px-5 pb-4 pt-2 sm:px-8 lg:px-10" data-testid="property-offer-preparation-priority">
+        <OfferPreparationPanel model={offerPreparationReadiness} />
       </section>
 
       <section className="mx-auto max-w-7xl px-5 pb-4 pt-2 sm:px-8 lg:px-10" data-testid="property-djx-continuity">
