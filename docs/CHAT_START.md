@@ -10,6 +10,74 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / Production Typesense Read-Only Provider Diagnostics Complete:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Canonical baseline:
+
+- Branch: `main`
+- Search Primary Provider Health Remediation Review documentation commit synchronized to `origin/main`: `ff115dc33bddce57a9122cf6f5b03de2ca138476`
+- Post-sync canonical state before production diagnostics docs: `HEAD = origin/main = ff115dc33bddce57a9122cf6f5b03de2ca138476`
+- Post-sync divergence before production diagnostics docs: `0 ahead / 0 behind`
+- Production diagnostics record: `docs/project-atlas/executive-library/REIE-SEARCH-PRODUCTION-TYPESENSE-READ-ONLY-PROVIDER-DIAGNOSTICS.md`
+
+Diagnostic disposition:
+
+- Root-cause classification: `INSUFFICIENT_EVIDENCE_TO_DETERMINE_PRODUCTION_ROOT_CAUSE`
+- Customer-impact classification: `NO_MATERIAL_CUSTOMER_IMPACT_PROVEN`
+
+Configuration / platform inspection:
+
+- Required production Typesense variable names remain `TYPESENSE_HOST`, `TYPESENSE_PORT`, `TYPESENSE_PROTOCOL`, and `TYPESENSE_API_KEY`.
+- No local `vercel` or `gh` binary was available in PATH.
+- Local shell `VERCEL_TOKEN` was absent.
+- The repository is linked to Vercel through `.vercel/project.json`.
+- Existing local Vercel CLI auth metadata was present, but read-only Vercel project/environment/deployment API requests for the linked project returned HTTP `403 forbidden`.
+- Production Typesense variable presence/scope is therefore `UNKNOWN`, not absent or confirmed.
+- Production logs/provider error evidence could not be inspected from this session.
+
+Representative production Search probes:
+
+- `/api/search?limit=1`: HTTP 200, wall `1920ms`, API duration `1342ms`, `source=database`, `health=degraded`, `found=1287`, `returned=1`, `mapped=1`, `smoke.ready=true`, blockers `[]`, `hasTypesenseContext=false`.
+- `/api/search?limit=250`: HTTP 200, wall `1717ms`, API duration `1249ms`, `source=database`, `health=degraded`, `found=1287`, `returned=250`, `mapped=250`, `smoke.ready=true`, blockers `[]`, `hasTypesenseContext=false`.
+- `/api/search?city=NoSuchCityTypesenseDiagnostic&limit=5`: HTTP 200, wall `937ms`, API duration `634ms`, `source=database`, `health=degraded`, `found=0`, `returned=0`, `mapped=0`, `smoke.ready=true`, blockers `[]`, `hasTypesenseContext=false`.
+
+Findings:
+
+- Production Search still serves through database fallback with degraded provider health.
+- Public response metadata proves fallback behavior but does not expose the raw Typesense exception.
+- Repository schema/query compatibility appears internally consistent: Search uses the `listings` collection, canonical query/filter/sort fields, and bounded `per_page <= 250`.
+- Production endpoint/network, authentication, and `listings` collection posture remain `UNKNOWN` because authorized platform/provider inspection was unavailable.
+- No material customer outage, reliability defect, or correctness defect is proven under current evidence.
+
+Protected boundaries:
+
+- No environment variable was changed.
+- No credential value was printed, copied, documented, committed, or returned.
+- No Typesense configuration, collection, document, import, reset, or reindex action occurred.
+- No provider infrastructure, firewall/network, Search runtime/API/ranking/limit/cache, Prisma schema, migration, database, MLS, county/GIS/source, telemetry/analytics, CRM/email/notification/worker/auth/account/persistence, restart/redeploy, manual deployment, or production mutation occurred.
+- Workstream 2 documentation is local only until separate synchronization authorization is granted.
+
+Validation:
+
+- Workstream 1 exact-baseline checks and push.
+- Post-push `HEAD = origin/main = ff115dc33bddce57a9122cf6f5b03de2ca138476`.
+- Vercel availability and read-only API access attempts, returning `403 forbidden`.
+- Current public production API summary probes for `limit=1`, `limit=250`, and empty-city fallback behavior.
+- Repository inspection of Typesense env names, schema, query construction, and fallback path.
+- `git diff --check`.
+
+Next gate:
+
+- `READY_FOR_REIE_SEARCH_PRODUCTION_TYPESENSE_PLATFORM_ACCESS_DIAGNOSTICS_AUTHORIZATION`
+
+Do not push the Workstream 2 documentation commit, deploy, remediate, change Search runtime, change Typesense/provider configuration, mutate collections/indexes, reindex/import Typesense data, change environment variables, restart/redeploy production, or expand diagnostics beyond read-only authorized access unless explicitly authorized.
+
+Prior handoff retained below for audit history.
+
 PROJECT ATLAS(tm) / Search Primary Provider Health Remediation Review Complete:
 
 Workspace:
