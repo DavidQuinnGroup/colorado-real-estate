@@ -15,13 +15,14 @@ function visibleCardCopy(source: string) {
 }
 
 async function main() {
-  const [searchInterface, searchControls, mapSidebar, propertyCard, selectedDrawer, returnContext, packageJson, tsconfigWorker] = await Promise.all([
+  const [searchInterface, searchControls, mapSidebar, propertyCard, selectedDrawer, returnContext, professionalHandoff, packageJson, tsconfigWorker] = await Promise.all([
     readFile('components/search/SearchInterface.tsx', 'utf8'),
     readFile('components/search/SearchControls.tsx', 'utf8'),
     readFile('components/maps/MapSidebar.tsx', 'utf8'),
     readFile('components/PropertyCard.tsx', 'utf8'),
     readFile('components/maps/SelectedPropertyDrawer.tsx', 'utf8'),
     readFile('lib/search/searchReturnContext.ts', 'utf8'),
+    readFile('lib/professionalHandoffCohesion.ts', 'utf8'),
     readFile('package.json', 'utf8'),
     readFile('tsconfig.worker.json', 'utf8'),
   ]);
@@ -72,14 +73,26 @@ async function main() {
     assertNotIncludes(returnContext, `'${blockedKey}'`, `Return context must not allow ${blockedKey}.`);
   }
 
+  assertIncludes(searchInterface, 'Search does not determine affordability, financing readiness, whether a property is right for you, appreciation, safety, school quality, or investment fit.', 'Search visible missing-evidence copy must preserve the boundary without suitability wording.');
+  assertIncludes(searchInterface, 'recommendation, decision about which property you should choose, valuation opinion, financing conclusion, or professional advice.', 'Search readiness boundary must avoid suitability wording while preserving recommendation limits.');
+  assertIncludes(professionalHandoff, 'whether a property is right for you remain unresolved from Search alone', 'Search professional handoff must preserve unresolved-decision boundary without suitability wording.');
+  const visibleSearchInterface = searchInterface
+    .replace(/data-search-discovery-suitability-inference=\{String\(searchDiscoveryIntelligence\.protectedBoundaries\.suitabilityInference\)\}/g, '')
+    .replace(/suitabilityInference/g, '');
+  const searchHandoffBlock = professionalHandoff.slice(
+    professionalHandoff.indexOf('search: {'),
+    professionalHandoff.indexOf('property: {'),
+  );
+
   for (const [label, source] of [
-    ['search interface', searchInterface],
+    ['search interface visible copy', visibleSearchInterface],
     ['search controls', searchControls],
     ['map sidebar', mapSidebar],
     ['property card', propertyCard],
     ['selected drawer', selectedDrawer],
+    ['search professional handoff', searchHandoffBlock],
   ] as const) {
-    for (const forbidden of ['best match', 'recommended property', 'safest', 'best school', 'most suitable', 'best neighborhood', 'investment winner', 'property score', 'fit score', 'desirability score']) {
+    for (const forbidden of ['suitability', 'best match', 'recommended property', 'safest', 'best school', 'most suitable', 'best neighborhood', 'investment winner', 'investment ranking', 'property score', 'fit score', 'desirability score', 'neighborhood desirability']) {
       assert(!source.toLowerCase().includes(forbidden), `${label} must not expose forbidden Search/property recommendation language: ${forbidden}.`);
     }
     for (const protectedChange of ['api/search/route', 'PrismaClient', 'typesense', 'sendBeacon', 'gtag(', 'analytics(', 'localStorage', 'sessionStorage', 'document.cookie']) {

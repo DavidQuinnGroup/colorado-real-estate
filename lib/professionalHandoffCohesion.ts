@@ -58,7 +58,7 @@ const protectedBoundaries: ProfessionalHandoffCohesionProfile['protectedBoundari
 const profileBySurface: Record<ProfessionalHandoffSurface, ProfessionalHandoffCohesionProfile['standard']> = {
   search: {
     whatReieCanSupport: 'Search can help compare visible listings, criteria, list context, and map context before one property deserves closer review.',
-    whatRemainsUnresolved: 'Condition, records, costs, HOA, insurance, taxes, title, financing, and suitability remain unresolved from Search alone.',
+    whatRemainsUnresolved: 'Condition, records, costs, HOA, insurance, taxes, title, financing, and whether a property is right for you remain unresolved from Search alone.',
     whoMayHelp: ['REAL ESTATE AGENT', 'LENDER', 'INSPECTOR / ENGINEER', 'ATTORNEY', 'TAX PROFESSIONAL', 'APPRAISER'],
     whatToAsk: [
       'Which homes should I inspect further based on visible criteria rather than ranking?',

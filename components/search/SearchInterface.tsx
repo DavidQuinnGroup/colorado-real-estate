@@ -806,7 +806,7 @@ export default function SearchInterface({
                   <p className="text-[9px] font-black uppercase tracking-[0.18em] text-amber-100/78">Evidence Not Available From Search</p>
                   <ul className="mt-2 space-y-1.5 text-[11px] font-bold leading-5 text-white/56">
                     <li>Condition, inspection findings, records, disclosures, HOA details, insurance, taxes, and total ownership costs still require verification.</li>
-                    <li>Search does not determine affordability, financing readiness, suitability, appreciation, safety, school quality, or investment fit.</li>
+                    <li>Search does not determine affordability, financing readiness, whether a property is right for you, appreciation, safety, school quality, or investment fit.</li>
                     <li>Provider or fallback limits should be treated as evidence boundaries, not as property recommendations.</li>
                   </ul>
                 </article>
@@ -835,7 +835,7 @@ export default function SearchInterface({
 
               <p className="text-[11px] font-bold leading-5 text-white/48" data-testid="dxt-2-search-readiness-boundary">
                 Confidence here means the Search view is organized enough to guide the next comparison question. It is not a score,
-                recommendation, suitability conclusion, valuation opinion, financing conclusion, or professional advice.
+                recommendation, decision about which property you should choose, valuation opinion, financing conclusion, or professional advice.
               </p>
             </div>
             </section>
