@@ -10,6 +10,77 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / Search Render and Fallback Certification Complete:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Canonical baseline:
+
+- Branch: `main`
+- Customer-Controlled Property Shortlist closure synchronized to `origin/main`: `e64779f2a719c9e1186494213e008c395a641e91`
+- Post-sync canonical state before Search certification docs: `HEAD = origin/main = e64779f2a719c9e1186494213e008c395a641e91`
+- Post-sync divergence before Search certification docs: `0 ahead / 0 behind`
+- Search certification record: `docs/project-atlas/executive-library/REIE-SEARCH-RENDER-AND-FALLBACK-CERTIFICATION.md`
+
+Certification disposition:
+
+- `CERTIFIED_WITH_NARROW_REMEDIATION_CANDIDATE`
+
+Search measurement summary:
+
+- `/search` server-renders through `app/search/page.tsx` and `searchPropertiesWithMeta({ limit: 250 })`.
+- `/api/search` attempts Typesense first, then database/Prisma fallback, then established Supabase fallback.
+- The current Search API ceiling remains `250` results.
+- Local and production probes returned HTTP 200 across empty, small, moderate, high-limit, filtered, and bounded states.
+- Local measured API states returned `source=database`, `health=degraded`, `smoke.ready=true`, and no smoke blockers.
+- Production measured API states returned `source=database`, `health=degraded`, `smoke.ready=true`, and no smoke blockers.
+- Production `/search` returned HTTP 200 with the guided Search frame, sidebar frame, and no automatic Grand Plan personalization claim.
+
+Measured result-volume evidence:
+
+- Empty production API probe: `found=0`, `returned=0`, `mapped=0`, `durationMs=1255`.
+- Small production API probe: `found=1287`, `returned=1`, `mapped=1`, `durationMs=1363`.
+- High-limit production API probe: `found=1287`, `returned=250`, `mapped=250`, `durationMs=1848`.
+- Local bounded viewport probe: `found=42`, `returned=42`, `mapped=42`, `durationMs=1063`, with one listing-photo placeholder warning and `smoke.ready=true`.
+
+Provider / fallback finding:
+
+- Typesense is architecturally first, but no measured local or production API probe returned `source=typesense`.
+- Search is customer-usable and fail-closed under fallback: HTTP 200, bounded results, public access enforced, relevance/status contract satisfied, no smoke blockers, and customer-safe degraded metadata.
+- This is not a customer-facing failure under current evidence, but it is a measured primary-provider health issue requiring a separately authorized narrow remediation review if Executive HQ wants to restore the primary provider path.
+
+Map/list/image findings:
+
+- Search list remains the criteria-led primary surface.
+- Map uses valid coordinate listings, grid clustering, OpenTopoMap tiles, disabled optional Mapbox overlay, and customer-safe unavailable tile status.
+- Listing imagery uses `ResilientListingImage` timeout/error fallback, local fallback visuals, and visible `Photo Pending` labeling.
+
+Validation:
+
+- `npm run check:search-runtime-safety`
+- `npm run check:search-listing-quality`
+- `npm run check:map-rendering-safety`
+
+Known limitation:
+
+- Browser connector output was not readable in this session, and running Chrome did not expose a CDP port. Do not represent this Search wave as new browser-console certification beyond the existing deterministic/API/rendered-HTML evidence.
+
+Protected boundaries:
+
+- No customer runtime files were modified.
+- No Workstream 2 push or deployment occurred.
+- No pagination, virtualization, result-limit change, Search ranking, caching architecture, Typesense configuration/provider behavior, Search API architecture, Prisma schema, migration, database write, production customer-data mutation, MLS synchronization, county/GIS acquisition, provider integration, map provider change, CRM, email, notification, worker, auth/account/identity, persistence, local/session storage shortlist persistence, telemetry, analytics, or remediation implementation occurred.
+
+Next gate:
+
+- `READY_FOR_REIE_SEARCH_PRIMARY_PROVIDER_HEALTH_REMEDIATION_REVIEW_AUTHORIZATION`
+
+The Search certification documentation commit is local only until separate synchronization authorization is granted. Do not push it, deploy it, begin remediation, alter Typesense/provider configuration, change Search performance architecture, or begin another implementation workstream unless explicitly authorized.
+
+Prior handoff retained below for audit history.
+
 PROJECT ATLAS(tm) / Customer-Controlled Property Shortlist Production Certified and Closed:
 
 Workspace:
