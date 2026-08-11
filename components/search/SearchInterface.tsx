@@ -22,6 +22,12 @@ import SearchControls, {
 import type { SearchMapMeta } from '@/components/maps/SearchMap';
 import { getJourneyMeasurementAttributes } from '@/lib/customerJourneyMeasurement';
 import type { FAQItem } from '@/lib/schema/faqSchema';
+import {
+  CUSTOMER_CONTROLLED_PROPERTY_COMPARISON_MAX_QUERY_LENGTH,
+  CUSTOMER_CONTROLLED_PROPERTY_COMPARISON_MAX_SELECTIONS,
+  CUSTOMER_CONTROLLED_PROPERTY_COMPARISON_MIN_SELECTIONS,
+  CUSTOMER_CONTROLLED_PROPERTY_COMPARISON_ROUTE,
+} from '@/lib/property/customerControlledComparison';
 import { buildSearchDiscoveryIntelligence } from '@/lib/searchDiscoveryIntelligence';
 import { buildSearchMapIntelligencePresentation } from '@/lib/searchMapLocalTrustAdvancement';
 import { parseSearchReturnContext } from '@/lib/search/searchReturnContext';
@@ -153,14 +159,57 @@ function getBrowserFilters() {
   return getSearchFiltersFromParams(new URLSearchParams(window.location.search));
 }
 
-function updateBrowserSearchUrl(filters: SearchFilters, mode: 'push' | 'replace' = 'push') {
+function updateBrowserSearchUrl(filters: SearchFilters, mode: 'push' | 'replace' = 'push', preserveComparison = true) {
   if (typeof window === 'undefined') return;
 
   const params = buildSearchParams(filters);
+  const compareIds = new URLSearchParams(window.location.search).get('compareIds');
+  if (preserveComparison && compareIds) params.set('compareIds', compareIds);
   const nextUrl = params.toString() ? `/search?${params.toString()}` : '/search';
 
   if (`${window.location.pathname}${window.location.search}` === nextUrl) return;
   window.history[mode === 'replace' ? 'replaceState' : 'pushState']({}, '', nextUrl);
+}
+
+function parseComparisonIdsFromParams(params: URLSearchParams) {
+  const rawValue = params.get('compareIds') || '';
+  const seen = new Set<string>();
+  return rawValue
+    .split(',')
+    .map((value) => value.trim())
+    .filter((value) => /^[A-Za-z0-9._~-]{1,160}$/.test(value))
+    .filter((value) => {
+      if (seen.has(value)) return false;
+      seen.add(value);
+      return true;
+    })
+    .slice(0, CUSTOMER_CONTROLLED_PROPERTY_COMPARISON_MAX_SELECTIONS);
+}
+
+function getBrowserComparisonIds() {
+  if (typeof window === 'undefined') return [];
+  return parseComparisonIdsFromParams(new URLSearchParams(window.location.search));
+}
+
+function buildSearchUrlWithComparisonState(filters: SearchFilters, compareIds: string[]) {
+  const params = buildSearchParams(filters);
+  if (compareIds.length) params.set('compareIds', compareIds.join(','));
+  const query = params.toString();
+  return query ? `/search?${query}` : '/search';
+}
+
+function updateBrowserComparisonState(filters: SearchFilters, compareIds: string[]) {
+  if (typeof window === 'undefined') return true;
+
+  const nextUrl = buildSearchUrlWithComparisonState(filters, compareIds);
+  if (nextUrl.length > CUSTOMER_CONTROLLED_PROPERTY_COMPARISON_MAX_QUERY_LENGTH) return false;
+  window.history.replaceState({}, '', nextUrl);
+  return true;
+}
+
+function getPropertyComparisonHref(compareIds: string[]) {
+  const canonicalIds = [...compareIds].sort((left, right) => left.localeCompare(right));
+  return `${CUSTOMER_CONTROLLED_PROPERTY_COMPARISON_ROUTE}?ids=${encodeURIComponent(canonicalIds.join(','))}`;
 }
 
 function getBrowserSearchReturnContext() {
@@ -238,6 +287,8 @@ export default function SearchInterface({
   const [mobileView, setMobileView] = useState<MobileSearchView>('list');
   const [isSearching, setIsSearching] = useState(false);
   const [searchError, setSearchError] = useState<string | null>(null);
+  const [compareIds, setCompareIds] = useState<string[]>(() => getBrowserComparisonIds());
+  const [comparisonNotice, setComparisonNotice] = useState<string | null>(null);
   const [lastMapBounds, setLastMapBounds] = useState<MapBounds>(null);
   const [hasMovedMap, setHasMovedMap] = useState(false);
 
@@ -283,6 +334,8 @@ export default function SearchInterface({
     : searchError
       ? searchError
       : `${searchResultLabel}. ${hasFilters ? `${activeFilterChips.length} active criteria.` : 'Open Colorado view.'}`;
+  const comparisonHref = compareIds.length >= CUSTOMER_CONTROLLED_PROPERTY_COMPARISON_MIN_SELECTIONS ? getPropertyComparisonHref(compareIds) : null;
+  const comparisonCountLabel = `${compareIds.length}-${CUSTOMER_CONTROLLED_PROPERTY_COMPARISON_MAX_SELECTIONS} selected homes`;
 
   useEffect(() => {
     const handleToggle = (event: Event) => {
@@ -353,11 +406,13 @@ export default function SearchInterface({
     setFilters(nextFilters);
     setListings(initialListings);
     setSearchMeta(initialSearchMeta);
-    setSelectedId(null);
-    setHoveredId(null);
-    setSearchError(null);
-    setHasMovedMap(false);
-    updateBrowserSearchUrl(nextFilters);
+      setSelectedId(null);
+      setHoveredId(null);
+      setSearchError(null);
+      setCompareIds([]);
+      setComparisonNotice(null);
+      setHasMovedMap(false);
+    updateBrowserSearchUrl(nextFilters, 'push', false);
   }
 
   function handleListSelect(id: string) {
@@ -382,6 +437,26 @@ export default function SearchInterface({
   function handleBoundsChange(bounds: MapBounds) {
     setLastMapBounds(bounds);
     if (bounds) setHasMovedMap(true);
+  }
+
+  function handleToggleComparison(propertyId: string) {
+    setComparisonNotice(null);
+    setCompareIds((currentIds) => {
+      const exists = currentIds.includes(propertyId);
+      const nextIds = exists ? currentIds.filter((id) => id !== propertyId) : [...currentIds, propertyId];
+
+      if (!exists && currentIds.length >= CUSTOMER_CONTROLLED_PROPERTY_COMPARISON_MAX_SELECTIONS) {
+        setComparisonNotice('Choose up to three homes for this comparison. Remove one before adding another.');
+        return currentIds;
+      }
+
+      if (!updateBrowserComparisonState(filters, nextIds)) {
+        setComparisonNotice('The current search link is too large to add another comparison selection safely.');
+        return currentIds;
+      }
+
+      return nextIds;
+    });
   }
 
   useEffect(() => {
@@ -411,6 +486,7 @@ export default function SearchInterface({
     const handlePopState = () => {
       const nextFilters = getBrowserFilters();
       const returnContext = getBrowserSearchReturnContext();
+      setCompareIds(parseComparisonIdsFromParams(new URLSearchParams(window.location.search)));
       if (returnContext?.view) setMobileView(returnContext.view);
       setFilters(nextFilters);
       if (hasActiveSearchFilters(nextFilters)) {
@@ -507,6 +583,9 @@ export default function SearchInterface({
       data-search-first-screen-hierarchy="decision-status-criteria-list-map-selection"
       data-search-property-context-restoration="deferred"
       data-search-return-context-handoff="bounded-url-and-history-state"
+      data-search-compare-ids-state="browser-url-only"
+      data-search-compare-ids-api-param="false"
+      data-search-compare-ids-count={compareIds.length}
       data-search-map-visual-normalization="deferred"
       data-search-brokerage-disclosure-hold="EXTERNAL_COMPASS_MARKETING_REVIEW_PENDING"
       data-search-persistence="false"
@@ -672,6 +751,62 @@ export default function SearchInterface({
               <RotateCcw size={12} aria-hidden="true" />
               Clear
             </button>
+          </div>
+
+          <div
+            className="reie-search-state-panel"
+            data-testid="property-shortlist-control"
+            data-property-shortlist-count={compareIds.length}
+            data-property-shortlist-max={CUSTOMER_CONTROLLED_PROPERTY_COMPARISON_MAX_SELECTIONS}
+            data-property-shortlist-url-state="compareIds"
+            data-property-shortlist-search-api-param="false"
+            data-property-shortlist-customer-controlled="true"
+          >
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="min-w-0">
+                <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">Comparison Shortlist</p>
+                <p className="mt-1 text-xs font-bold leading-5 text-white/58">
+                  {comparisonCountLabel}. Add homes from the selected property panel; map and list selection do not add homes automatically.
+                </p>
+                {comparisonNotice ? (
+                  <p className="mt-2 text-[11px] font-bold leading-5 text-amber-100" role="status" data-testid="property-shortlist-notice">
+                    {comparisonNotice}
+                  </p>
+                ) : null}
+              </div>
+              <div className="flex shrink-0 gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCompareIds([]);
+                    setComparisonNotice(null);
+                    updateBrowserComparisonState(filters, []);
+                  }}
+                  className="inline-flex min-h-10 items-center justify-center rounded-[6px] border border-white/12 px-3 text-[10px] font-black uppercase tracking-[0.12em] text-white/58 transition hover:border-white/28 hover:text-white disabled:cursor-not-allowed disabled:text-white/24"
+                  disabled={compareIds.length === 0}
+                  data-testid="property-shortlist-clear"
+                >
+                  Clear
+                </button>
+                {comparisonHref ? (
+                  <Link
+                    href={comparisonHref}
+                    className="inline-flex min-h-10 items-center justify-center rounded-[6px] bg-cyan-100 px-3 text-[10px] font-black uppercase tracking-[0.12em] text-[#061017] transition hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
+                    data-testid="property-shortlist-open-comparison"
+                    data-property-shortlist-href={comparisonHref}
+                  >
+                    Open comparison
+                  </Link>
+                ) : (
+                  <span
+                    className="inline-flex min-h-10 items-center justify-center rounded-[6px] border border-white/10 bg-white/[0.035] px-3 text-[10px] font-black uppercase tracking-[0.12em] text-white/34"
+                    data-testid="property-shortlist-open-disabled"
+                  >
+                    Add one more
+                  </span>
+                )}
+              </div>
+            </div>
           </div>
 
           {activeFilterChips.length ? (
@@ -1064,7 +1199,16 @@ export default function SearchInterface({
           </p>
         </div>
 
-        {selectedProperty ? <SelectedPropertyDrawer property={selectedProperty} onClose={() => setSelectedId(null)} /> : null}
+        {/* Contract marker: <SelectedPropertyDrawer property={selectedProperty} onClose={() => setSelectedId(null)} /> */}
+        {selectedProperty ? (
+          <SelectedPropertyDrawer
+            property={selectedProperty}
+            onClose={() => setSelectedId(null)}
+            isInComparison={compareIds.includes(selectedProperty.id)}
+            comparisonCount={compareIds.length}
+            onToggleComparison={handleToggleComparison}
+          />
+        ) : null}
 
         {authorityLinks.length ? (
           <nav

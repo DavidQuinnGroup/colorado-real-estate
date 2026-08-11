@@ -5,6 +5,7 @@ import { ArrowUpRight, Bath, BedDouble, Home, Mail, MapPin, Ruler, ShieldCheck, 
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 
 import type { MapSidebarListing } from '@/components/maps/MapSidebar';
+import { CUSTOMER_CONTROLLED_PROPERTY_COMPARISON_MAX_SELECTIONS } from '@/lib/property/customerControlledComparison';
 import ResilientListingImage from '@/components/ResilientListingImage';
 import { getCityByName } from '@/lib/cities';
 import { getListingFallbackPhotoUrl, getListingPhotoUrl } from '@/lib/listingVisuals';
@@ -14,6 +15,9 @@ import { formatLuxuryPrice } from '@/lib/utils/formatters';
 type SelectedPropertyDrawerProps = {
   property: MapSidebarListing;
   onClose: () => void;
+  isInComparison?: boolean;
+  comparisonCount?: number;
+  onToggleComparison?: (propertyId: string) => void;
 };
 
 function getNumericValue(value: number | string | null | undefined) {
@@ -77,7 +81,13 @@ function hasCoordinates(property: MapSidebarListing) {
   return Number.isFinite(property.lat) && Number.isFinite(property.lng);
 }
 
-export default function SelectedPropertyDrawer({ property, onClose }: SelectedPropertyDrawerProps) {
+export default function SelectedPropertyDrawer({
+  property,
+  onClose,
+  isInComparison = false,
+  comparisonCount = 0,
+  onToggleComparison,
+}: SelectedPropertyDrawerProps) {
   const drawerRef = useRef<HTMLElement>(null);
   const basePropertyHref = `/properties/${property.id}`;
   const [detailHref, setDetailHref] = useState(basePropertyHref);
@@ -98,6 +108,7 @@ export default function SelectedPropertyDrawer({ property, onClose }: SelectedPr
   const reviewSignal = getReviewSignal(property);
   const locationFit = getLocationFit(property);
   const headingId = `selected-property-${property.id}-heading`;
+  const comparisonDisabled = !isInComparison && comparisonCount >= CUSTOMER_CONTROLLED_PROPERTY_COMPARISON_MAX_SELECTIONS;
 
   useEffect(() => {
     drawerRef.current?.focus({ preventScroll: true });
@@ -283,6 +294,21 @@ export default function SelectedPropertyDrawer({ property, onClose }: SelectedPr
             <ArrowUpRight size={13} aria-hidden="true" />
           </Link>
           <p className="mt-2 text-left text-[10px] font-bold leading-4 text-white/42">Open the full listing details to review property facts and verification questions.</p>
+          {onToggleComparison ? (
+            <button
+              type="button"
+              onClick={() => onToggleComparison(property.id)}
+              disabled={comparisonDisabled}
+              data-testid="reie-selected-property-comparison-toggle"
+              data-selected-property-id={property.id}
+              data-property-comparison-selected={String(isInComparison)}
+              data-property-comparison-count={comparisonCount}
+              data-property-comparison-customer-controlled="true"
+              className="mt-3 inline-flex min-h-10 w-full items-center justify-center gap-1.5 rounded-[6px] border border-cyan-100/24 bg-cyan-100/[0.08] px-3 text-[10px] font-black uppercase tracking-[0.12em] text-cyan-100 transition hover:border-cyan-100/50 hover:bg-cyan-100/[0.14] disabled:cursor-not-allowed disabled:border-white/10 disabled:bg-white/[0.035] disabled:text-white/34 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
+            >
+              {isInComparison ? 'Remove from comparison' : 'Add to comparison'}
+            </button>
+          ) : null}
           <Link
             href={inquiryHref}
             data-testid="reie-selected-property-inquiry-link"

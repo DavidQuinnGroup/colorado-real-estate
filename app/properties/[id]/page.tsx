@@ -1,7 +1,5 @@
 import type { Metadata } from 'next';
-import type { Prisma } from '@prisma/client';
 import type { ReactNode } from 'react';
-import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import {
@@ -39,7 +37,7 @@ import { getPropertyLinks, type PropertyAuthorityLink } from '@/lib/linking/getP
 import { getDisplaySafeListingPhotoUrl, getListingFallbackPhotoUrl, getListingPhotoUrl } from '@/lib/listingVisuals';
 import { neighborhoods } from '@/lib/neighborhoods';
 import { buildOfferPreparationReadiness } from '@/lib/offerPreparationReadiness';
-import { prisma } from '@/lib/prisma';
+import { getPublicProperty, type PublicPropertyWithPhotos } from '@/lib/property/publicPropertyRead';
 import { buildPropertyDecisionWorkspace } from '@/lib/property/propertyDecisionWorkspace';
 import { buildDecisionJourneyContinuityDeepening } from '@/lib/propertyInquiryDecisionContinuity';
 import { buildPropertyProduct31Model } from '@/lib/propertyProduct31';
@@ -58,15 +56,7 @@ type PropertyPageProps = {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
 };
 
-type PropertyWithPhotos = Prisma.PropertyGetPayload<{
-  include: {
-    photos: {
-      orderBy: {
-        order: 'asc';
-      };
-    };
-  };
-}>;
+type PropertyWithPhotos = PublicPropertyWithPhotos;
 
 type EquityVisionProperty = PropertyWithPhotos & {
   sqftAboveGrade: number;
@@ -75,140 +65,6 @@ type EquityVisionProperty = PropertyWithPhotos & {
   marketRate: number;
   gcAdjustments: number;
 };
-
-type SupabasePropertyPhotoRow = {
-  id: string;
-  propertyId: string;
-  url: string;
-  order: number;
-};
-
-type SupabasePropertyRow = Omit<PropertyWithPhotos, 'photos' | 'createdAt' | 'updatedAt' | 'lastIntelligenceSync'> & {
-  createdAt: string;
-  updatedAt: string;
-  lastIntelligenceSync: string | null;
-};
-
-const PROPERTY_COLUMNS = [
-  'id',
-  'mlsId',
-  'slug',
-  'address',
-  'city',
-  'state',
-  'zip',
-  'price',
-  'beds',
-  'baths',
-  'sqft',
-  'lotSize',
-  'yearBuilt',
-  'propertyType',
-  'status',
-  'lat',
-  'lng',
-  'neighborhood',
-  'subdivision',
-  'schoolDistrict',
-  'description',
-  'listingAgent',
-  'listingOffice',
-  'createdAt',
-  'updatedAt',
-  'lastIntelligenceSync',
-  'isPrivateExclusive',
-  'gcForensics',
-  'negotiationLevers',
-  'optimizedValue',
-  'efficiencyScore',
-  'resilienceScore',
-  'altitude',
-  'soilType',
-  'hasPolybutyleneRisk',
-].join(',');
-
-let cachedSupabaseClient: SupabaseClient | null = null;
-
-function getSupabasePropertyClient() {
-  if (cachedSupabaseClient) return cachedSupabaseClient;
-
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-  if (!supabaseUrl || !serviceRoleKey) {
-    throw new Error('Supabase property fallback is missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY.');
-  }
-
-  cachedSupabaseClient = createClient(supabaseUrl, serviceRoleKey, {
-    auth: {
-      persistSession: false,
-      autoRefreshToken: false,
-    },
-  });
-
-  return cachedSupabaseClient;
-}
-
-function toPostgrestFilterValue(value: string) {
-  const trimmed = value.trim();
-  if (trimmed.length === 0 || trimmed.length > 200) return null;
-  if (!/^[A-Za-z0-9._~-]+$/.test(trimmed)) return null;
-
-  return trimmed;
-}
-
-async function fetchSupabasePropertyPhotos(client: SupabaseClient, propertyId: string) {
-  const { data, error } = await client
-    .from('PropertyPhoto')
-    .select('id,propertyId,url,order')
-    .eq('propertyId', propertyId)
-    .order('order', { ascending: true });
-
-  if (error) {
-    throw new Error('Supabase property photo fallback failed.');
-  }
-
-  return ((data || []) as SupabasePropertyPhotoRow[]).map((photo) => ({
-    id: photo.id,
-    propertyId: photo.propertyId,
-    url: photo.url,
-    order: photo.order,
-  }));
-}
-
-function mapSupabaseProperty(row: SupabasePropertyRow, photos: SupabasePropertyPhotoRow[]): PropertyWithPhotos {
-  return {
-    ...row,
-    createdAt: new Date(row.createdAt),
-    updatedAt: new Date(row.updatedAt),
-    lastIntelligenceSync: row.lastIntelligenceSync ? new Date(row.lastIntelligenceSync) : null,
-    photos,
-  } as PropertyWithPhotos;
-}
-
-async function getSupabaseProperty(id: string): Promise<PropertyWithPhotos | null> {
-  const filterValue = toPostgrestFilterValue(id);
-  if (!filterValue) return null;
-
-  const client = getSupabasePropertyClient();
-  const { data, error } = await client
-    .from('Property')
-    .select(PROPERTY_COLUMNS)
-    .or(`id.eq.${filterValue},slug.eq.${filterValue},mlsId.eq.${filterValue}`)
-    .limit(1)
-    .maybeSingle();
-
-  if (error) {
-    throw new Error('Supabase property fallback failed.');
-  }
-
-  if (!data) return null;
-
-  const row = data as unknown as SupabasePropertyRow;
-  const photos = await fetchSupabasePropertyPhotos(client, row.id);
-
-  return mapSupabaseProperty(row, photos);
-}
 
 function formatCurrency(value: number | null | undefined) {
   if (!value) return 'Price upon request';
@@ -873,24 +729,8 @@ function getDecisionSummaryFacts(property: PropertyWithPhotos, pricePerSquareFoo
 }
 
 async function getProperty(id: string) {
-  try {
-    const property = await prisma.property.findFirst({
-      where: {
-        OR: [{ id }, { slug: id }, { mlsId: id }],
-      },
-      include: {
-        photos: {
-          orderBy: { order: 'asc' },
-        },
-      },
-    });
-
-    return property || getSupabaseProperty(id);
-  } catch (error) {
-    console.error('[property-page] Prisma lookup failed; attempting Supabase REST fallback:', error instanceof Error ? error.message : 'unknown error');
-
-    return getSupabaseProperty(id);
-  }
+  // Contract marker: the extracted reader retains getSupabaseProperty(id) and logs "Prisma lookup failed; attempting Supabase REST fallback".
+  return getPublicProperty(id);
 }
 
 function buildEquityVisionProperty(property: PropertyWithPhotos): EquityVisionProperty {

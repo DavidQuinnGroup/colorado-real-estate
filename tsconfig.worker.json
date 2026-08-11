@@ -191,6 +191,7 @@
     "scripts/checkLocalDecisionIntelligencePhase2Wave3.ts",
     "scripts/checkSearchLdiAdvancement.ts",
     "scripts/checkCrossCityDecisionComparison.ts",
+    "scripts/checkCustomerControlledPropertyShortlist.ts",
     "scripts/checkProductionMediaResilience.ts",
     "scripts/checkPrismaClientParity.ts",
     "scripts/checkProductionDependencies.ts",
