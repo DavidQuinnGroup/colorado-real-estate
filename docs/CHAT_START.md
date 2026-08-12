@@ -10,6 +10,100 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / Full Replacement Typesense Reindex and Isolated Index Certification Complete:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Canonical baseline:
+
+- Branch: `main`
+- Workstream 1 synchronized bootstrap/runtime validation commit: `7a4470a1a6f1fe57287f85ee0a152b41207a4031`
+- Post-sync state before full reindex: `HEAD = origin/main = 7a4470a1a6f1fe57287f85ee0a152b41207a4031`
+- Post-sync divergence before full reindex: `0 ahead / 0 behind`
+- Full reindex certification record: `docs/project-atlas/executive-library/REIE-FULL-REPLACEMENT-TYPESENSE-REINDEX-AND-ISOLATED-INDEX-CERTIFICATION.md`
+
+Workstream 1 synchronization:
+
+- Verified local commit `7a4470a1a6f1fe57287f85ee0a152b41207a4031` was the only local-ahead commit.
+- Verified scope was documentation-only and limited to `docs/CHAT_START.md` and `docs/project-atlas/executive-library/REIE-TYPESENSE-REPLACEMENT-CLUSTER-BOOTSTRAP-AND-RUNTIME-VALIDATION.md`.
+- `git diff --check origin/main...HEAD` passed.
+- Pushed existing commit unchanged to `origin/main`.
+- Post-push verification: `HEAD = origin/main = 7a4470a1a6f1fe57287f85ee0a152b41207a4031`, divergence `0 ahead / 0 behind`, working tree clean.
+- No deployment was performed.
+
+Full replacement-cluster reindex:
+
+- Pre-reindex provider health passed: `/health` HTTP `200`, admin-authenticated `/collections` HTTP `200`.
+- Only expected collections existed before reindex: `properties`, `listings`.
+- Production Search had not been switched: public probe returned HTTP `200`, `source=database`, `health=degraded`, `found=1287`, `returned=1`, `mapped=1`, `hasTypesenseContext=false`.
+- Authoritative source counts: total `Property` rows `15282`, active total `1288`, active public `1287`, active private-exclusive `1`, valid-coordinate total `15278`, active public valid-coordinate `1287`.
+- Duplicate posture: distinct ids `15282`, distinct MLS ids `15282`, duplicate id groups `0`, duplicate MLS id groups `0`.
+- `npm run typesense:reindex` completed with fetched `15282`, indexed `15282`, skipped `0`, failed `0`, `propertiesIndexed=15282`, `listingsIndexed=15282`, batches `31`.
+
+Post-reindex certification:
+
+- `npm run typesense:collections:check` passed before and after the full reindex.
+- Final `properties` count: `15282`.
+- Final `listings` count: `15282`.
+- Both canonical schemas remained ready with 32 fields, 23 facets, 16 sortable fields, and default sort `price`.
+- Count reconciliation: one derived document per authoritative `Property` row in each canonical collection.
+
+Direct query certification:
+
+- Both `properties` and `listings` passed default/wildcard, q/query_by, `filter_by`, `sort_by=price:desc,updatedAt:desc`, `per_page=1`, moderate result count, `per_page=250`, zero-result, facet, city, property type, price, beds/baths, coordinate, public visibility, and status filter checks.
+- Public default found `1287`; active total found `1288`; active private-exclusive found `1`; `per_page=250` returned `250`; zero-result found `0`; representative coordinate filter found `247`.
+- Returned documents remained structurally compatible with existing Search mapping.
+
+Search contract comparison:
+
+- Replacement `listings` results matched current production database-backed Search for default `limit=1`, default `limit=250`, zero-result, representative city, property type, minimum price, beds/baths, and coordinate-bounds cases.
+- Production stayed on database fallback for every comparison case: `source=database`, `hasTypesenseContext=false`.
+- Nonblocking variance: representative text query found `30` replacement Typesense results and `19` production database fallback results. This is classified as nonblocking because the existing Typesense `query_by` contract is broader than the database fallback text predicate, while default/filter/visibility/count/zero-result/ceiling behavior matched.
+
+Production-readiness classification:
+
+- `REPLACEMENT_TYPESENSE_INDEX_CERTIFIED_WITH_NONBLOCKING_VARIANCE`
+- `READY_FOR_REPLACEMENT_TYPESENSE_PRODUCTION_CUTOVER_AUTHORIZATION`
+
+Validation:
+
+- `npm run worker:build`: passed after filesystem-access rerun.
+- `npm run check:search-runtime-safety`: passed after filesystem-access rerun.
+- `npm run check:search-listing-quality`: passed after filesystem-access rerun.
+- `npm run check:map-rendering-safety`: passed after filesystem-access rerun.
+- `npm run typecheck`: passed.
+- `git diff --check`: passed.
+- Initial sandboxed package-check attempts failed at shared `worker:build` pre-step with `TS5033` `dist` write-permission errors; generated `dist` output from approved validation was restored/cleaned before documentation edits.
+
+Protected boundaries:
+
+- No Typesense host, endpoint, API key, credential value, partial value, value prefix, value suffix, value hash, Vercel secret value, database secret, document ID, address, or customer record was printed, persisted, documented, committed, or returned.
+- Typesense replacement-cluster values were used only in volatile process env.
+- No Vercel environment variable was changed.
+- No deployment, redeploy, production restart, rollback, or production Search cutover occurred.
+- The admin/bootstrap API key was used only for authorized isolated full reindex and certification; it is not a customer runtime Search credential.
+- No runtime search-only key was requested, created, documented, or exposed.
+- No Typesense reset, collection deletion, alias swap, manual schema change, application source-code change, Prisma/schema/migration change, database mutation, MLS/source ingestion change, Search runtime/API/ranking/filter/sort/cache/customer-tracking/telemetry/persistence/auth/CRM/email/alert/worker/queue behavior change occurred.
+- `TYPESENSE_DIAGNOSTIC_VALUES_UNSET=true`
+
+Recommended next gate:
+
+- `READY_FOR_REPLACEMENT_TYPESENSE_PRODUCTION_CUTOVER_AUTHORIZATION`
+
+Next chat should first run:
+
+- `git fetch origin main`
+- `git status --short --branch --untracked-files=all`
+- `git rev-parse HEAD origin/main`
+- `git rev-list --left-right --count HEAD...origin/main`
+- `git log -8 --oneline`
+
+Do not push the Workstream 2 certification commit, modify Vercel, deploy, connect production Search to the replacement cluster, create/expose runtime search credentials, reset/delete collections, or run additional production mutation without separate Executive HQ authorization.
+
+Prior handoff retained below for audit history.
+
 PROJECT ATLAS(tm) / Typesense Replacement Cluster Bootstrap and Runtime Validation Complete:
 
 Workspace:
