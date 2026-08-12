@@ -10,6 +10,74 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / Typesense Replacement Cluster Bootstrap and Runtime Validation Complete:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Canonical baseline:
+
+- Branch: `main`
+- Replacement-cluster runtime validation started from `HEAD = origin/main = baa89a85bc2759c0df00ef4306ad85d024a06e7f`
+- Divergence before runtime validation: `0 ahead / 0 behind`
+- Runtime validation record: `docs/project-atlas/executive-library/REIE-TYPESENSE-REPLACEMENT-CLUSTER-BOOTSTRAP-AND-RUNTIME-VALIDATION.md`
+
+Replacement-cluster validation:
+
+- Keychain-provisioned replacement-cluster values were used only in volatile process env.
+- Direct sanitized Server `30.2` validation passed: DNS, TLS, TLS authorization, `/health` HTTP `200`, admin-authenticated `/collections` HTTP `200`, observed version `30.2`.
+- Initial authenticated collection inventory was empty; no unexpected collections were present.
+
+Canonical bootstrap:
+
+- `npm run typesense:init -- --dry-run` passed without opening a Typesense connection.
+- `npm run typesense:init` created only the canonical `properties` and `listings` collections on the verified-empty replacement cluster.
+- `npm run typesense:collections:check` passed after creation.
+- Both collections verified with 32 fields, 23 facets, 16 sortable fields, and default sort `price`.
+
+Bounded sample import:
+
+- `npm run typesense:reindex -- --max-records=5` completed with fetched `5`, indexed `5`, skipped `0`, failed `0`, `propertiesIndexed=5`, `listingsIndexed=5`, batches `1`.
+- This was a bounded sample import only. A full reindex was not run.
+
+Direct query certification:
+
+- `properties`: found `5`, basic hits `3`, `per_page` honored, `sort_by=price:desc,updatedAt:desc` passed, zero-match count `0`, representative filter passed, coordinate filter passed, facets returned `city`, `isPrivateExclusive`, `status`, required readable fields present.
+- `listings`: found `5`, basic hits `3`, `per_page` honored, `sort_by=price:desc,updatedAt:desc` passed, zero-match count `0`, representative filter passed, coordinate filter passed, facets returned `city`, `isPrivateExclusive`, `status`, required readable fields present.
+
+Runtime classification:
+
+- `SERVER_30_2_RUNTIME_COMPATIBILITY_CERTIFIED`
+- `READY_FOR_FULL_REPLACEMENT_TYPESENSE_REINDEX`
+
+Protected boundaries:
+
+- No Typesense host, endpoint, API key, credential value, partial value, value suffix, value prefix, value hash, Vercel secret value, or database secret was printed, persisted, committed, documented, or returned.
+- The admin/bootstrap API key was used only for authorized bootstrap and validation; it is not a customer runtime Search credential.
+- The search-only key exists but was intentionally not provisioned to Codex, was not requested, and was not created.
+- No Vercel environment variable was changed.
+- No deployment, redeploy, or production restart occurred.
+- Production Search was not connected to the replacement cluster.
+- No full reindex, reset, delete, alias swap, manual schema creation, Prisma/schema/migration change, database mutation, MLS/source ingestion change, Search runtime/API/ranking/filter/sort/cache/customer-tracking/telemetry/persistence/auth/CRM/email/alert/worker/queue behavior change occurred.
+- `TYPESENSE_DIAGNOSTIC_VALUES_UNSET=true`
+
+Recommended next gate:
+
+- `READY_FOR_FULL_REPLACEMENT_TYPESENSE_REINDEX`
+
+Next chat should first run:
+
+- `git fetch origin main`
+- `git status --short --branch --untracked-files=all`
+- `git rev-parse HEAD origin/main`
+- `git rev-list --left-right --count HEAD...origin/main`
+- `git log -8 --oneline`
+
+Do not push this documentation commit, perform a full reindex, change Vercel, deploy, connect production Search to the replacement cluster, create/expose runtime search credentials, reset/delete collections, or expand beyond this certified replacement-cluster bootstrap evidence without separate Executive HQ authorization.
+
+Prior handoff retained below for audit history.
+
 PROJECT ATLAS(tm) / Typesense 30.2 Client Compatibility Upgrade Certification Complete:
 
 Workspace:
