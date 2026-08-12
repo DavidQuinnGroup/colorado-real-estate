@@ -10,6 +10,56 @@ Product:
 
 ## Latest New-Chat Handoff
 
+
+PROJECT ATLAS(tm) / LightBox Colorado Property and Public-Record Trial Evaluation Protocol Complete:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Canonical baseline:
+
+- Branch: `main`
+- Workstream 1 synchronized commit: `ad790bc25406adc4d4e2edcc5dc46fcf2357fb70`
+- Post-sync state before Workstream 2: `HEAD = origin/main = ad790bc25406adc4d4e2edcc5dc46fcf2357fb70`
+- Post-sync divergence before Workstream 2: `0 ahead / 0 behind`
+
+LightBox correspondence status:
+
+- Executive HQ reported direct LightBox correspondence indicating first-party parcel/zoning data assets, negotiable permitted-use licensing based on intended use, technical Customer Success support, packaging flexibility, self-service Developer Portal trial access, and a three-week trial with up to `2,000` API calls.
+- This is classified as `COMMERCIAL_WILLINGNESS_TO_DISCUSS_RIGHTS`, not production rights granted.
+- `ATTOM=PENDING_PROVIDER_RESPONSE`.
+
+Evaluation-plan status:
+
+- `LIGHTBOX_COLORADO_TRIAL_EVALUATION_PROTOCOL_COMPLETE_LOCAL_DOCS_ONLY`
+- Trial not activated.
+- No Developer Portal account created.
+- No API key handled.
+- No LightBox API calls made.
+- No provider integration, source activation, database write, Typesense indexing, Vercel change, deployment, MLS change, customer-data mutation, GIS activation, or runtime implementation occurred.
+
+Artifacts created:
+
+- `docs/project-atlas/executive-library/REIE-LIGHTBOX-COLORADO-TRIAL-EVALUATION-PROTOCOL.md`
+- `docs/project-atlas/executive-library/REIE-LIGHTBOX-2000-CALL-TEST-MATRIX.md`
+- `docs/project-atlas/executive-library/REIE-PROPERTY-DATA-PROVIDER-COMPARISON-FRAMEWORK.md`
+
+Call-budget posture:
+
+- Trial ceiling: `2,000` calls.
+- Planned use before reserve: `1,340` calls.
+- Reserve: `660` calls.
+- Arithmetic: `120 + 240 + 540 + 260 + 180 + 660 = 2,000`.
+
+Next authorization gate:
+
+- `READY_FOR_REIE_LIGHTBOX_TRIAL_PRE_ACTIVATION_READINESS_REVIEW`
+
+Do not activate the LightBox trial, create a LightBox Developer Portal account, handle an API key, make provider calls, implement provider integration, persist provider data, push the Workstream 2 commit, or deploy without separate Executive HQ authorization.
+
+Prior handoff retained below for audit history.
+
 PROJECT ATLAS(tm) / REIE Agent Work Replacement and Value Architecture Phase 1 Executive Synthesis Complete:
 
 Workspace:
