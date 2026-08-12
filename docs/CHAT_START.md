@@ -10,6 +10,66 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / Typesense Replacement Cluster Sizing and Recovery Readiness Complete:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Canonical baseline:
+
+- Branch: `main`
+- Replacement-cluster readiness review started from `HEAD = origin/main = 100c8be0a3b994a58d0e5f8449250b5fd999db8d`
+- Divergence at review start: `0 ahead / 0 behind`
+- Replacement readiness record: `docs/project-atlas/executive-library/REIE-TYPESENSE-REPLACEMENT-CLUSTER-SIZING-AND-RECOVERY-READINESS.md`
+
+Former provider disposition:
+
+- Executive HQ obtained direct Typesense Cloud account evidence: no existing cluster available, New Cluster screen reached, no active cluster billing, and April 29, 2026 credit-exhaustion warning stated running clusters would be terminated and data deleted after credits ran out.
+- Treat the former Typesense Cloud production service as no longer recoverable in place unless contrary provider evidence appears.
+- Do not restore or reconnect to the dead endpoint.
+
+Current dataset and rebuildability:
+
+- Production public default Search remains usable through database fallback: HTTP `200`, `source=database`, `health=degraded`, `found=1287`, `returned=1`, `mapped=1`, `meta.smoke.ready=true`.
+- Read-only aggregate database evidence showed `15282` total `Property` rows, `1287` active public rows, `1288` active total rows, `1` private-exclusive row, and `327819` `PropertyPhoto` rows.
+- Full Typesense rebuild would generate one document per `Property` row into each canonical collection: `properties` and `listings`, or up to `30564` indexed documents total across both collections.
+- Images are not stored in Typesense; photos are fetched from `PropertyPhoto`.
+- Rebuildability classification: `FULLY_REBUILDABLE_FROM_AUTHORITATIVE_DATA`.
+
+Sizing recommendation:
+
+- Memory: `0.5 GB`
+- vCPU: `2 vCPUs, 1 hr burst/day`
+- High Availability: `Off`
+- Search Delivery Network: `Off`
+- Region: `Oregon`, subject to final Vercel compute-region confirmation
+- Cost posture: displayed base cluster cost of about `$21.60/month` plus bandwidth is technically and economically appropriate for current scale after compatibility is resolved.
+
+Compatibility blocker:
+
+- Repository Typesense JS client is declared and locked at `1.8.2`.
+- Current Typesense Cloud UI offers Server `30.2`.
+- Current official `typesense` npm compatibility table says Typesense Server `>= v30.0` requires `typesense-js >= v3.0.0`.
+- Existing recovery scripts use the Typesense JS client for collection inspection, creation, deletion, and import.
+- Final readiness classification: `TYPESENSE_VERSION_COMPATIBILITY_REVIEW_REQUIRED`.
+
+Protected boundaries:
+
+- No Typesense cluster was created.
+- No Typesense collection, import, reset, or reindex action occurred.
+- No Vercel configuration or deployment change occurred.
+- No API keys, provider credentials, Vercel secret values, Typesense secret values, database passwords, or dead endpoint values were printed, copied, documented, committed, or returned.
+- No runtime/API, Prisma schema, migration, database mutation, MLS/source refresh, CRM/email/worker/auth/account/persistence, provider DNS/network/billing/configuration, restart, rollback, or deployment action occurred.
+
+Recommended next gate:
+
+- `READY_FOR_TYPESENSE_30_2_CLIENT_COMPATIBILITY_AND_PROVISIONING_DECISION`
+
+Do not provision Typesense, change Vercel, deploy, reindex/import/reset, mutate collections/documents, change runtime/API, or perform provider/billing/DNS actions until explicitly authorized.
+
+Prior handoff retained below for audit history.
+
 PROJECT ATLAS(tm) / Typesense DNS Endpoint Correction Review Complete:
 
 Workspace:
