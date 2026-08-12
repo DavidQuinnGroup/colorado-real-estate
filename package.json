@@ -328,7 +328,7 @@
     "resend": "^4.1.1",
     "supercluster": "^8.0.1",
     "tailwindcss": "^4.2.2",
-    "typesense": "^1.8.2",
+    "typesense": "^3.0.6",
     "use-supercluster": "^1.2.0"
   },
   "devDependencies": {

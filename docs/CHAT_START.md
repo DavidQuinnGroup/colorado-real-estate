@@ -10,6 +10,73 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / Typesense 30.2 Client Compatibility Upgrade Certification Complete:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Canonical baseline:
+
+- Branch: `main`
+- Replacement-cluster readiness documentation synchronized to `origin/main`: `0f05b565645754fe105e4f4745c4fd8b74cb25b2`
+- Post-sync divergence before client-compatibility upgrade: `0 ahead / 0 behind`
+- Client-compatibility certification record: `docs/project-atlas/executive-library/REIE-TYPESENSE-30-2-CLIENT-COMPATIBILITY-UPGRADE-CERTIFICATION.md`
+
+Workstream 1 synchronization:
+
+- Pushed existing commit `0f05b565645754fe105e4f4745c4fd8b74cb25b2` with message `Document Typesense replacement cluster readiness`.
+- Post-push verification: `HEAD = origin/main = 0f05b565645754fe105e4f4745c4fd8b74cb25b2`, divergence `0 behind / 0 ahead`, working tree clean.
+- No deployment was performed.
+
+Client upgrade:
+
+- Upgraded `typesense` from `^1.8.2` to `^3.0.6`.
+- npm registry metadata showed `3.0.6` as stable `latest`; `3.0.7-0` was `next` and was not selected.
+- Official package compatibility table states Typesense Server `>= v30.0` requires `typesense-js >= v3.0.0`.
+- `@babel/runtime` peer requirement is satisfied in the installed tree.
+- No source-code changes were required.
+
+Typesense usage inventory:
+
+- JS client usage remains server/tooling-side in `lib/typesense/schema.ts`, `lib/typesense/client.ts`, `lib/typesense/indexListing.ts`, `lib/typesense/indexProperties.ts`, `scripts/initTypesense.ts`, `scripts/index.ts`, `scripts/createTypesenseCollection.ts`, and `scripts/createCollection.js`.
+- Customer Search runtime still uses the raw HTTP helper in `lib/typesense/httpClient.ts`.
+- No browser-side Typesense JS client usage or alias contract was found.
+
+Validation:
+
+- `npm run typecheck`: passed.
+- `npm run worker:build`: passed.
+- `npm run check:search-runtime-safety`: passed.
+- `npm run check:search-listing-quality`: passed.
+- `npm run check:map-rendering-safety`: passed.
+- `npm run check:cep-search-map-baseline`: passed.
+- `npm run typesense:init -- --dry-run`: passed without opening a Typesense connection.
+- `npm run typesense:create:legacy:dry`: passed without opening a Typesense connection.
+- `git diff --check`: passed.
+- Initial sandboxed deterministic check attempts failed with `TS5033` `dist` write permission errors; reruns with filesystem access passed, and generated `dist` output was restored/cleaned.
+
+Compatibility classification:
+
+- `STATIC_COMPATIBILITY_CERTIFIED_RUNTIME_30_2_VALIDATION_REQUIRED_AFTER_PROVISIONING`
+
+Protected boundaries:
+
+- No Typesense Cloud cluster was created.
+- No provider purchase, launch, billing, DNS, configuration, restart, restore, live collection creation, import, reset, or reindex occurred.
+- No Vercel environment variable was changed.
+- No production deployment occurred.
+- No database mutation, Prisma schema/migration change, MLS ingestion change, Search feature/ranking/result-ceiling/filter/sort/privacy/customer-tracking/telemetry/persistence change occurred.
+- No API keys, provider credentials, database passwords, Vercel secret values, Typesense secret values, or endpoint secret values were printed, copied, committed, or returned.
+
+Recommended next gate:
+
+- `READY_FOR_TYPESENSE_REPLACEMENT_CLUSTER_PROVISIONING_AND_BOUNDED_RUNTIME_VALIDATION`
+
+Do not provision Typesense, change Vercel, deploy, reindex/import/reset, mutate collections/documents, change runtime/API semantics, or perform provider/billing/DNS actions until explicitly authorized.
+
+Prior handoff retained below for audit history.
+
 PROJECT ATLAS(tm) / Typesense Replacement Cluster Sizing and Recovery Readiness Complete:
 
 Workspace:
