@@ -10,6 +10,84 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / Production Typesense Platform-Access Diagnostics Complete:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Canonical baseline:
+
+- Branch: `main`
+- Production Typesense read-only diagnostics documentation synchronized to `origin/main`: `1e1e2f730dd67c88c68cd59bc91876c77c47148a`
+- Post-sync canonical state before platform-access diagnostics docs: `HEAD = origin/main = 1e1e2f730dd67c88c68cd59bc91876c77c47148a`
+- Post-sync divergence before platform-access diagnostics docs: `0 ahead / 0 behind`
+- Platform-access diagnostics record: `docs/project-atlas/executive-library/REIE-SEARCH-PRODUCTION-TYPESENSE-PLATFORM-ACCESS-DIAGNOSTICS.md`
+
+Diagnostic disposition:
+
+- Root-cause classification: `INSUFFICIENT_EVIDENCE_TO_DETERMINE_PRODUCTION_ROOT_CAUSE`
+- Customer-impact classification: `NO_MATERIAL_CUSTOMER_IMPACT_PROVEN`
+
+Vercel access findings:
+
+- Temporary Vercel diagnostic credential was retrieved from macOS Keychain at runtime and used only in-memory.
+- Target Vercel project metadata was readable: project id `prj_Ry5WCDfamYUq1oO7t1CwCVwTvh4G`, team `team_53Do8TFrDJHK8AJsziDVZyRQ`, project name `david-quinn-group-8rde`, framework `nextjs`, link type `github`.
+- Vercel environment metadata was readable: HTTP 200, `20` environment records.
+- Vercel deployment metadata was readable: latest production deployment `dpl_HsWhu3KaDpB7aRNBgQJfhsaq99D8`, state `READY`, target `production`, GitHub commit SHA `1e1e2f730dd67c88c68cd59bc91876c77c47148a`.
+- Vercel deployment events were readable but were build events, not runtime Search request logs.
+- Vercel current user/account identity endpoint returned HTTP 404, but project/env/deployment scoped read access succeeded.
+
+Production Typesense env findings:
+
+- `TYPESENSE_HOST`: `PRESENT`, Production-scoped.
+- `TYPESENSE_PORT`: `PRESENT`, Production-scoped.
+- `TYPESENSE_PROTOCOL`: `PRESENT`, Production-scoped.
+- `TYPESENSE_API_KEY`: `PRESENT`, Production-scoped.
+- All four records also appear scoped to Preview and Development.
+- No variable-name mismatch was found between Vercel metadata and repository code.
+- The metadata-returned value forms were not usable as a safe plaintext Typesense connection contract: host did not validate as a plain hostname, port did not validate as numeric, protocol did not validate as `http` or `https`; this is not treated as proof of production runtime misconfiguration because Vercel may represent encrypted environment values differently through metadata APIs than runtime-injected values.
+
+Representative production Search probe:
+
+- `/api/search?limit=1`: HTTP 200, wall `2880ms`, API duration `1461ms`, `source=database`, `health=degraded`, `found=1287`, `returned=1`, `mapped=1`, `smoke.ready=true`, blockers `[]`, `hasTypesenseContext=false`, generated at `2026-08-12T16:23:57.049Z`.
+
+Remaining unknowns:
+
+- Raw runtime Typesense exception for `/api/search`.
+- Whether runtime-injected production values are correct plaintext endpoint/credential values.
+- Endpoint DNS/network/TLS health.
+- Typesense authentication.
+- Production `listings` collection existence/document count/live schema compatibility.
+
+Protected boundaries:
+
+- No Vercel environment variable was changed.
+- No credential value was printed, copied, persisted, documented, committed, or returned.
+- No decrypted env export/pull was used.
+- No Typesense configuration, collection, document, import, reset, or reindex action occurred.
+- No provider infrastructure, firewall/network, Search runtime/API/ranking/limit/cache, Prisma schema, migration, database, MLS, county/GIS/source, telemetry/analytics/logging instrumentation, CRM/email/notification/worker/auth/account/persistence, restart/redeploy, manual deployment, or production mutation occurred.
+- `VERCEL_TOKEN_UNSET=true` was confirmed for the diagnostic process.
+- Workstream documentation is local only until separate synchronization authorization is granted.
+
+Validation:
+
+- `git fetch origin main`
+- Branch/status/HEAD/origin/divergence verification.
+- Keychain retrieval of temporary diagnostic credential.
+- Vercel project/env/deployment/deployment-events metadata reads.
+- Vercel env value-shape validation without printing values.
+- Current public production API summary probe for `limit=1`.
+- `git diff --check`.
+
+Next gate:
+
+- `READY_FOR_REIE_SEARCH_RUNTIME_LOG_OR_DECRYPTED_PROVIDER_READ_DIAGNOSTICS_AUTHORIZATION`
+
+Do not push the Workstream documentation commit, deploy, remediate, change Search runtime, change Typesense/provider configuration, mutate collections/indexes, reindex/import Typesense data, change environment variables, restart/redeploy production, or expand diagnostics beyond read-only authorized access unless explicitly authorized.
+
+Prior handoff retained below for audit history.
+
 PROJECT ATLAS(tm) / Production Typesense Read-Only Provider Diagnostics Complete:
 
 Workspace:
