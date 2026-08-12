@@ -10,6 +10,74 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / Production Typesense Decrypted In-Memory Provider Read Diagnostics Complete:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Canonical baseline:
+
+- Branch: `main`
+- Production Typesense platform-access diagnostics documentation synchronized to `origin/main`: `1790ae4df65aa0a675d77762f151042971d8199c`
+- Post-sync canonical state before decrypted provider-read diagnostics docs: `HEAD = origin/main = 1790ae4df65aa0a675d77762f151042971d8199c`
+- Post-sync divergence before decrypted provider-read diagnostics docs: `0 ahead / 0 behind`
+- Decrypted provider-read diagnostics record: `docs/project-atlas/executive-library/REIE-SEARCH-PRODUCTION-TYPESENSE-DECRYPTED-IN-MEMORY-PROVIDER-READ-DIAGNOSTICS.md`
+
+Diagnostic disposition:
+
+- Root-cause classification: `PRODUCTION_TYPESENSE_DNS_FAILURE`
+- Customer-impact classification: `DEGRADED_PERFORMANCE_WITH_USABLE_FALLBACK`
+
+Configuration shape findings:
+
+- `TYPESENSE_HOST`: `NONEMPTY`
+- `TYPESENSE_PORT`: `NONEMPTY_VALID_PORT_FORM`
+- `TYPESENSE_PROTOCOL`: `VALID_HTTP_OR_HTTPS`
+- `TYPESENSE_API_KEY`: `NONEMPTY`
+- Host/port/protocol endpoint syntax: valid
+- No secret values were printed, copied, persisted, documented, committed, or returned.
+
+Provider-read findings:
+
+- DNS resolution failed for the configured Production Typesense host.
+- Sanitized DNS category: `ENOTFOUND`
+- Network/TCP classification: `OTHER_FAILURE`, category `ENOTFOUND`
+- TLS classification: `OTHER_FAILURE`, category `ENOTFOUND`
+- Typesense `/health`: `UNREACHABLE`, category `DNS_FAILURE`
+- Authenticated read: `PROVIDER_UNREACHABLE`, category `DNS_FAILURE`
+- `listings` collection existence: `UNKNOWN`
+- `listings` document count: unavailable
+- Live schema compatibility: `INSUFFICIENT_EVIDENCE`
+- Minimal representative Typesense query: `UNKNOWN`, not executed because auth/collection access was unavailable after DNS failure.
+
+Representative production Search probe:
+
+- `/api/search?limit=1`: HTTP 200, wall `3511ms`, API duration `2716ms`, `source=database`, `health=degraded`, `found=1287`, `returned=1`, `mapped=1`, `smoke.ready=true`, blockers `[]`, `hasTypesenseContext=false`, generated at `2026-08-12T16:32:33.530Z`.
+
+Exact failure boundary:
+
+- `DNS`
+- Correlation: `/api/search -> configured Typesense host cannot resolve -> Typesense request cannot complete -> database fallback -> successful HTTP 200 customer response`.
+
+Protected boundaries:
+
+- No Vercel environment variable was changed.
+- No credential value was printed, copied, persisted, documented, committed, or returned.
+- No Typesense configuration, collection, document, import, reset, or reindex action occurred.
+- No provider infrastructure, firewall/network, Search runtime/API/ranking/limit/cache, Prisma schema, migration, database, MLS/source, telemetry/analytics, CRM/email/notification/worker/auth/account/persistence, restart/redeploy, manual deployment, or production mutation occurred.
+- `VERCEL_TOKEN_UNSET=true` was confirmed.
+- `TYPESENSE_DIAGNOSTIC_VALUES_UNSET=true` was confirmed.
+- Workstream documentation is local only until separate synchronization authorization is granted.
+
+Recommended next gate:
+
+- `READY_FOR_REIE_SEARCH_TYPESENSE_DNS_ENDPOINT_CORRECTION_AUTHORIZATION`
+
+Do not push the Workstream documentation commit, deploy, remediate, change Search runtime, change Typesense/provider configuration, mutate collections/indexes, reindex/import Typesense data, change environment variables, restart/redeploy production, or expand diagnostics beyond read-only authorized access unless explicitly authorized.
+
+Prior handoff retained below for audit history.
+
 PROJECT ATLAS(tm) / Production Typesense Platform-Access Diagnostics Complete:
 
 Workspace:
