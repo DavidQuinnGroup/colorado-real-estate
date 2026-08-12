@@ -10,6 +10,90 @@ Product:
 
 ## Latest New-Chat Handoff
 
+PROJECT ATLAS(tm) / Replacement Typesense Production Cutover Certified and Closed:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Canonical baseline:
+
+- Branch: `main`
+- Production cutover started from `HEAD = origin/main = 178202befcdae46e654cd620dc12c7150f94d34f`
+- Pre-cutover divergence: `0 ahead / 0 behind`
+- Production cutover certification record: `docs/project-atlas/executive-library/REIE-REPLACEMENT-TYPESENSE-PRODUCTION-CUTOVER-CERTIFICATION.md`
+
+Search-only credential gate:
+
+- Search-only credential resolved from the exact approved Keychain service.
+- Admin/bootstrap credential remained separate.
+- Runtime credential classification: `SEARCH_ONLY_CREDENTIAL_CONFIRMED`
+- Search permission passed against `listings` document search.
+- Admin metadata permission with the runtime key was denied as expected.
+- No secret value, partial value, endpoint value, prefix, suffix, or hash was printed, persisted, documented, committed, or returned.
+
+Pre-cutover replacement provider health:
+
+- Provider `/health`: HTTP `200`
+- `properties`: `15282` documents, 32 fields, default sort `price`
+- `listings`: `15282` documents, 32 fields, default sort `price`
+- `npm run typesense:collections:check`: passed
+- No reindex, reset, delete, recreate, schema mutation, or alias action was performed.
+
+Vercel production cutover:
+
+- Existing all-target Typesense env records were retargeted to development/preview.
+- New production-scoped encrypted records were created for `TYPESENSE_HOST`, `TYPESENSE_PORT`, `TYPESENSE_PROTOCOL`, and `TYPESENSE_API_KEY`.
+- Production `TYPESENSE_API_KEY` uses the search-only runtime key, not the admin/bootstrap key.
+- Development and preview retained their previous effective records.
+- Previously effective Vercel values were captured only in process memory for rollback.
+- A partial pre-deployment env-shape attempt was rolled back before retry; no deployment was started in that failed attempt.
+
+Production deployment:
+
+- Vercel production deployment: `dpl_3t7cUVMYrvhUsfKwJDejwMbDCJux`
+- Deployment state: `READY`
+- Deployment target: `production`
+- Deployment source: `main` at `178202befcdae46e654cd620dc12c7150f94d34f`
+- Cutover marker: `replacement-30-2-search-only`
+
+Production API certification:
+
+- `https://davidquinngroup.com/api/search?limit=5`: HTTP `200`, `source=typesense`, `health=healthy`, `found=1287`, `returned=5`, `mapped=5`, `collection=listings`, `providerFallbackActive=false`, `smokeReady=true`
+- `https://davidquinngroup.com/api/search?query=Denver&limit=5`: HTTP `200`, `source=typesense`, `health=healthy`, `found=560`, `returned=5`, `mapped=5`, `collection=listings`, `providerFallbackActive=false`, `smokeReady=true`
+- `https://davidquinngroup.com/api/search?city=Denver&limit=5`: HTTP `200`, `source=typesense`, `health=healthy`, `found=151`, `returned=5`, `mapped=5`, `collection=listings`, `providerFallbackActive=false`, `smokeReady=true`
+
+Production browser certification:
+
+- Route: `https://davidquinngroup.com/search?query=Denver`
+- Desktop `1440x1000`: listing content visible, Leaflet map visible at approximately `932x888`, no horizontal overflow, no console errors, no page exceptions.
+- Mobile `390x844`: listing content visible in list state, `MAP` control activation showed Leaflet map at approximately `390x731`, priced/home-count markers rendered, no horizontal overflow, no console errors, no page exceptions.
+- Browser-observed Search API calls returned HTTP `200`.
+- Browser-side API verification returned `source=typesense`, `health=healthy`, `found=560`, `returned=5`, `mapped=5`, `providerFallbackActive=false`, `smokeReady=true`, `collection=listings`.
+
+Protected boundaries:
+
+- No Typesense full reindex, reset, collection deletion, collection recreation, alias swap, or manual schema mutation.
+- No Search source-code, API, ranking, filter, sort, cache, telemetry, persistence, auth, CRM, email, alert, worker, queue, customer-state, MLS/source ingestion, Prisma schema, migration, database, AI, GIS, or provider-expansion change.
+- No admin/bootstrap key was used as the production runtime Search credential.
+- `TYPESENSE_DIAGNOSTIC_VALUES_UNSET=true`
+
+Closure classification:
+
+- `REPLACEMENT_TYPESENSE_PRODUCTION_CUTOVER_CERTIFIED_AND_CLOSED`
+
+Next chat should first run:
+
+- `git fetch origin main`
+- `git status --short --branch --untracked-files=all`
+- `git rev-parse HEAD origin/main`
+- `git rev-list --left-right --count HEAD...origin/main`
+- `git log -8 --oneline`
+
+Future Typesense reindexing, schema changes, collection resets, provider changes, runtime behavior changes, or broader operational activation require separate Executive HQ authorization.
+
+Prior handoff retained below for audit history.
+
 PROJECT ATLAS(tm) / Full Replacement Typesense Reindex and Isolated Index Certification Complete:
 
 Workspace:
