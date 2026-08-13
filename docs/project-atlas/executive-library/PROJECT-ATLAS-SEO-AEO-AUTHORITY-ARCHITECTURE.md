@@ -2,13 +2,13 @@
 
 Program: `PROJECT_ATLAS_SEO_AEO_AUTHORITY_ARCHITECTURE`
 
-Repository baseline audited: `bf06ef8881043409a29c84a061a150ee1137b126`
+Repository baseline audited: `02e9b8576a7b22c7d25260827f2b9b587cab70da`
 
-Disposition: `ARCHITECTURAL_AUDIT_CAPABILITY_INVENTORY_GAP_ANALYSIS_GOVERNING_CONTRACT_AND_ROADMAP_COMPLETE`
+Disposition: `SEO_AEO_AUTHORITY_ARCHITECTURE_COMPLETE_READY_FOR_BOUNDED_IMPLEMENTATION`
 
 This record is documentation-only. It does not implement public-page changes, runtime code, provider activation, telemetry, database changes, Typesense changes, Vercel changes, MLS changes, LightBox work, ATTOM work, or deployment.
 
-The authorization attachment available to this run ended mid-sentence in the maturity-scorecard section. Because the authorized scope was clearly architectural audit, inventory, gap analysis, governing contract, and roadmap, this work was kept local and documentation-only.
+This completion record extends the initial architecture record that was intentionally limited when the prior authorization attachment ended mid-sentence. The completion remains architecture, audit, governance, prioritization, and roadmap only.
 
 ## Executive Model
 
@@ -153,6 +153,14 @@ An answer is citation-worthy only when all conditions hold:
 - Professional-review or source-review paths are visible when the answer is not final.
 - Structured data mirrors the visible answer and does not broaden the claim.
 
+Final citation classifications:
+
+| Classification | Required posture |
+| --- | --- |
+| `CITATION_READY` | Stable URL, explicit entity/geography, visible answer, visible source/provenance, evidence-effective date, current or acceptable freshness, no unresolved conflict, reproducible methodology, neutral language, and human/editorial accountability. |
+| `CITATION_READY_WITH_LIMITATIONS` | Same as citation-ready, but with explicit aging, partial evidence, limited claim scope, or professional verification dependency clearly visible. |
+| `NOT_CITATION_READY` | Missing source/provenance, missing freshness/effective date, unsupported or conflicting evidence, thin/duplicate content, unstable URL, hidden-only claim, speculative language, or prohibited fair-housing/professional implication. |
+
 ## Freshness And Temporal Semantics
 
 Freshness must separate four dates:
@@ -176,6 +184,261 @@ Future programmatic pages should use these states:
 | `NOINDEX` | Useful to customers but not citation-ready, personalized, customer-selected, thin, stale, or not evidence-complete. |
 | `UNPUBLISHED` | Internal/admin/agent review or draft-only surface. |
 | `FAIL_CLOSED` | Unsupported geography/entity, stale/conflicting evidence, missing source authority, protected boundary, or unsupported claim. |
+
+The long-term ambition for hundreds of cities and thousands of neighborhoods must be governed by evidence depth and uniqueness. A route must not be indexable merely because a slug can be generated.
+
+## Project Atlas AEO Authority Standard
+
+Future material public knowledge surfaces should be evaluated against this standard.
+
+| Requirement | Status | Notes |
+| --- | --- | --- |
+| Explicit question/intent | `MANDATORY` | Required for any answer-oriented surface. |
+| Canonical entity identity | `MANDATORY` | Must name the entity and stable route identity. |
+| Explicit geography | `MANDATORY` when geography is material | State/city/neighborhood/address scope must be visible. |
+| Concise factual answer | `MANDATORY` for AEO surfaces | Must be visible to humans, not only schema. |
+| Visible supporting evidence | `MANDATORY` | May be route-local evidence, source registry reference, or explicit unavailable state. |
+| Source attribution | `MANDATORY` when external or registry-backed facts are used | Link or name source/provenance. |
+| Evidence-effective date | `MANDATORY` when the answer depends on dated facts | Must not be replaced by render/build date. |
+| Freshness state | `MANDATORY` for market/source/property facts | Current, aging, unknown, conflict, not current, or not available. |
+| Conflict/limitation disclosure | `MANDATORY` when evidence is incomplete, aging, conflict-bound, or interpretation-bound | Superior-style conflict handling is the model. |
+| Canonical URL | `MANDATORY` for indexable AEO | Required for citation and reproducibility. |
+| Machine-readable semantics | `CONDITIONAL` | Emit only when structured data matches visible content. |
+| Human-visible / structured parity | `MANDATORY` when schema is emitted | JSON-LD must not broaden the claim. |
+| Stable terminology | `MANDATORY` | Use consistent source, freshness, entity, and claim terms. |
+| Related entity relationships | `CONDITIONAL` | Required when relationship context improves interpretation. |
+| Related questions | `CONDITIONAL` | Useful for guide/market/article surfaces; not required on every page. |
+| Professional-boundary safety | `MANDATORY` | No legal, tax, lending, inspection, appraisal, valuation, or representation conclusions. |
+| Fair-housing safety | `MANDATORY` | No steering, protected-class implication, demographic proxy, school/safety ranking, or suitability conclusion. |
+| Citation-worthiness | `MANDATORY` for citation-targeted answers | Classify as ready, ready-with-limitations, or not-ready. |
+
+## Project Atlas SEO Authority Standard
+
+Future public route families should be evaluated against this standard.
+
+| Requirement | Status | Notes |
+| --- | --- | --- |
+| Unique canonical URL | `MANDATORY` | One canonical route per indexable surface. |
+| Unique title | `MANDATORY` | Should identify entity, geography, and value. |
+| Useful meta description | `MANDATORY` | Should describe the actual page, not stuff keywords. |
+| Indexability decision | `MANDATORY` | Indexable/noindex/unpublished/fail-closed. |
+| Crawlability | `MANDATORY` | Robots and access must match intended visibility. |
+| Sitemap eligibility | `CONDITIONAL` | Include only indexable, stable, useful pages. |
+| Server-rendered meaningful content | `MANDATORY` | Search/answer systems should see useful content without private interaction. |
+| Explicit entity/geography | `CONDITIONAL` | Mandatory for place, market, property, guide, and source surfaces. |
+| Internal linking | `MANDATORY` | Links must reflect real semantic relationships. |
+| Structured data | `CONDITIONAL` | Use where schema accurately describes visible content. |
+| Author/editorial accountability | `CONDITIONAL` | Mandatory for articles, guides, advice-like education, and citation-targeted answers. |
+| Source/freshness visibility | `CONDITIONAL` | Mandatory for factual, market, property, source, and answer surfaces. |
+| Duplicate/thin-content protection | `MANDATORY` for programmatic surfaces | Required before city/neighborhood scale. |
+| Correct HTTP status | `MANDATORY` | Missing entities must not masquerade as valid content. |
+| Canonicalization | `MANDATORY` | Query/customer-selected variants need explicit treatment. |
+| Mobile usability | `MANDATORY` | Existing certified public UX standards remain in force. |
+| Performance awareness | `CONDITIONAL` | Required before broad template expansion or heavy schema/media additions. |
+
+## SEO+AEO Shared Trust Gate
+
+No public knowledge surface should pass merely because it is technically optimized.
+
+| Trust requirement | Gate treatment |
+| --- | --- |
+| Factual support | Required for factual or answer claims. |
+| Permitted-use support | Required when source rights or provider authorization matter. |
+| Evidence provenance | Required for citation-targeted answers. |
+| Freshness | Required for time-sensitive facts. |
+| Geographic precision | Required for place/market/property content. |
+| Neutral language | Required everywhere. |
+| Conflict disclosure | Required when conflict exists or currentness is not supported. |
+| Missing-data handling | Required where unavailable data might otherwise imply certainty. |
+| Professional boundaries | Required for real estate, lending, valuation, legal, tax, inspection, insurance, title, and transaction content. |
+| Fair-housing safety | Required everywhere. |
+| Visible/structured parity | Required whenever structured data is emitted. |
+
+## REIE Answer Unit Contract Finalization
+
+| Field | Requirement | Notes |
+| --- | --- | --- |
+| `answerUnitId` | `MANDATORY` | Stable identifier, route-local or globally namespaced. |
+| `question` / `intent` | `MANDATORY` | Direct user question and intent family. |
+| `canonicalEntity` | `MANDATORY` | Primary entity being answered about. |
+| `entityType` | `MANDATORY` | Organization, service, state, city, neighborhood, property, source, guide, article, or answer. |
+| `geography` | `CONDITIONAL` | Mandatory for real estate/place/property/market answers. |
+| `conciseAnswer` | `MANDATORY` | Human-visible direct answer. |
+| `supportingFacts` | `MANDATORY` | Bounded factual inputs, not hidden speculation. |
+| `evidenceSourceReferences` | `MANDATORY` | Source IDs, route evidence, or explicit unsupported state. |
+| `evidenceEffectiveAt` | `MANDATORY` when dated | Period/date represented by the evidence. |
+| `generatedAt` / `updatedAt` | `MANDATORY` | Generation/update timestamp, separate from evidence freshness. |
+| `freshnessPosture` | `MANDATORY` | Current, aging, unknown, conflict, not current, or unavailable. |
+| `conflictPosture` | `MANDATORY` | None, explicit conflict, unknown, or fail-closed. |
+| `limitations` | `MANDATORY` | Unsupported conclusions and professional boundaries. |
+| `verificationRequirements` | `MANDATORY` | Source/professional review path. |
+| `canonicalUrl` | `MANDATORY` | Stable public URL if eligible for publication. |
+| `semanticSchemaType` | `CONDITIONAL` | FAQPage, Question/Answer, Article, Place, Property, WebPage, or none. |
+| `relatedEntities` | `CONDITIONAL` | Required when relationships materially improve interpretation. |
+| `relatedQuestions` | `CONDITIONAL` | Useful on market/guide/article surfaces. |
+| `publicEligibility` | `MANDATORY` | Indexable, noindex, unpublished, or fail-closed. |
+| `citationEligibility` | `MANDATORY` | Citation-ready, ready-with-limitations, or not-ready. |
+
+## Gap Register
+
+| Gap | Surface | SEO impact | AEO impact | Trust impact | Current implementation | Missing capability | Dependency | Size | Risk | Duplication risk | Priority |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Shared answer-unit contract absent | Market, city, neighborhood, guides, articles, property | Medium | High | High | Market AEO and guides have local answer-like models. | Typed shared answer unit and deterministic inventory check. | Architecture contract. | M | Medium | Low | P0 |
+| Sitemap dates are build-time dates | Sitemap | Medium | Medium | Medium | `app/sitemap.ts` uses `new Date()`. | Route-specific effective/modified dates and source freshness mapping. | Answer/freshness model. | S | Low | Low | P1 |
+| Source registry not uniformly cited | All answer surfaces | Low | High | High | `/sources` and source registry exist. | Shared citation/source references on answer units. | Source-reference convention. | M | Medium | Low | P1 |
+| Structured-data eligibility decentralized | Schema-emitting routes | Medium | High | Medium | Per-route schema helpers exist. | Cross-surface parity/eligibility checks. | Answer unit and schema roadmap. | M | Medium | Low | P1 |
+| Articles have weaker source attachment | Articles | Medium | Medium | Medium | Article schema and FAQ exist. | Visible source/freshness/evidence blocks before scaling. | Source/citation standard. | S | Medium | Medium | P2 |
+| Customer-selected property compare is noindex but answer-like | Property compare | Low | Medium | Medium | Dynamic noindex workspace with boundaries. | Explicit noindex answer eligibility and structured-data non-emission rule. | Indexability threshold. | XS | Low | Low | P2 |
+| Programmatic scale thresholds not codified in code | City/neighborhood/article scale | High | High | High | Documentation and some fail-closed route logic exist. | Deterministic duplicate/thin/evidence-depth checks. | Quality gates. | L | High | High | P1 |
+| Measurement is design-only | Platform | Medium | Medium | Low | No telemetry authorized. | Future privacy-approved measurement plan. | Executive telemetry authorization. | M | Medium | Low | WATCH |
+| llms.txt/feed/endpoints unproven | Platform | Low | Unknown | Medium | Not implemented. | Evidence of value and governance. | AEO conventions review. | S | Medium | Medium | WATCH |
+| Provider public-record enrichment unavailable | Property/source facts | Low | Medium | Medium | LightBox/ATTOM pending; source registry marks status. | Provider authorization and permitted use, if future approved. | Provider response. | XL | High | Low | NOT_JUSTIFIED now |
+
+## Structured-Data Roadmap
+
+| Candidate | Classification | Rationale |
+| --- | --- | --- |
+| Organization / RealEstateAgent / Person / WebSite | `EXISTING_SUFFICIENT` | Stable identity graph already exists. |
+| WebApplication / Search tool | `EXISTING_SUFFICIENT` | Home/search tool schema is useful and visible-aligned. |
+| Market Question/Answer units | `IMPLEMENT_NOW_CANDIDATE` | Market AEO contracts already provide visible questions, answers, source, freshness, and limitations. |
+| City orientation guide Question/Answer | `IMPLEMENT_NOW_CANDIDATE` | Guides already expose visible answers and evidence fields. |
+| Place / City / Neighborhood | `LATER` | Existing schema is strong; prioritize answer-unit governance first. |
+| Property / SingleFamilyResidence | `LATER` | Property schema exists; source/freshness citation normalization should precede expansion. |
+| Article | `LATER` | Article schema exists; source/freshness attachment needs improvement before scale. |
+| FAQPage expansion | `REQUIRES_POLICY_REVIEW` | FAQ schema must not become answer stuffing. |
+| Dataset / Source metadata | `REQUIRES_POLICY_REVIEW` | Useful for `/sources`, but claim and permitted-use semantics must be exact. |
+| ClaimReview | `NOT_APPROPRIATE` | REIE is not currently operating as a public fact-checking publisher. |
+| llms.txt / answer feeds / endpoints | `LATER` or `WATCH` | Do not publish without clear value, governance, and parity checks. |
+
+## Entity / Internal-Link Authority Roadmap
+
+| Relationship | Priority | Rule |
+| --- | --- | --- |
+| State -> City -> Neighborhood -> Property | P1 | Use genuine geography containment and visible routes only. |
+| City <-> Market | P1 | City market pages should remain canonical market authority. |
+| City <-> Guides | P1 | Link guides to city market context and back to related questions. |
+| Neighborhood <-> Market | P2 | Strengthen only where neighborhood identity is canonical and useful. |
+| Property <-> Neighborhood <-> City | P2 | Link only when property geography is reliable. |
+| Market <-> Articles | P2 | Link when article topic genuinely supports market interpretation. |
+| Fact / Answer <-> Source | P0 | Every citation-targeted answer needs source linkage. |
+| Guide <-> Related Questions | P2 | Use semantically adjacent questions, not artificial link volume. |
+
+No artificial link farms, doorway pages, or keyword-only relationship blocks are justified.
+
+## Market / Newsletter Package Reuse Disposition
+
+| Component | Classification | Reuse posture |
+| --- | --- | --- |
+| Market metrics assembled from governed city data | `REUSABLE_PUBLIC_FACT_PRIMITIVE` | Reuse only after answer-unit source/freshness mapping. |
+| Source references | `REUSABLE_SOURCE_FRESHNESS_PRIMITIVE` | Useful for future citation blocks. |
+| Evidence effective date | `REUSABLE_SOURCE_FRESHNESS_PRIMITIVE` | Good model for separating package generation from evidence date. |
+| Review flags | `REUSABLE_REVIEW_FLAG` | Useful for fail-closed answer eligibility. |
+| Agent talking point inputs | `AGENT_ONLY` | Not public without editorial transformation. |
+| Customer education inputs | `REQUIRES_TRANSFORMATION` | Can inform public copy after review and source alignment. |
+| Protected admin preview | `NOT_PUBLIC` | Must remain protected; do not expose package UI. |
+| Email/scheduler/customer communication flags | `NOT_PUBLIC` | Preserve as non-activation boundaries. |
+
+Deterministic market fact assembly can reduce duplication in future Market AEO work, but only by reusing source/freshness/fact primitives. It must not publish agent-review material directly.
+
+## Technical AEO Conventions
+
+| Mechanism | Classification | Reason |
+| --- | --- | --- |
+| Shared in-repo answer-unit contract | `RECOMMENDED_NOW` | High value, testable, no provider/telemetry dependency. |
+| Deterministic answer-unit inventory check | `RECOMMENDED_NOW` | Prevents schema/content drift before public implementation. |
+| Route-local public JSON embedded in HTML | `WATCH` | Could help extraction, but risks hidden-claim drift. |
+| `llms.txt` | `WATCH` | Category is emerging; no clear current need without answer-unit governance. |
+| Answer-specific feeds | `WATCH` | Potential value after answer inventory exists. |
+| Public answer-unit endpoints | `NOT_JUSTIFIED` | Adds API surface and maintenance risk before demand is proven. |
+| Alternate machine-readable pages | `WATCH` | Consider only with strict visible parity. |
+| Additional XML feeds | `NOT_JUSTIFIED` | Sitemap is sufficient until scale requirements are clearer. |
+| Source metadata endpoints | `WATCH` | Potentially useful after source policy review; no endpoint now. |
+
+## Quality / Certification Gates
+
+| Gate | Deterministic checks to define |
+| --- | --- |
+| `SEO_GATE` | Canonical, unique metadata, robots, sitemap eligibility, indexability, duplicate/thin checks, internal links, structured-data validity, status-code expectations, mobile certification. |
+| `AEO_GATE` | Answer unit, explicit entity, explicit geography, concise factual answer, evidence-effective date, source references, semantic structure, visible/structured parity, citation eligibility. |
+| `SHARED_TRUST_GATE` | Evidence support, freshness, conflict handling, permitted use, fair-housing safety, professional boundaries, no unsupported superlatives, no fabricated claims. |
+
+## Measurement Roadmap
+
+No telemetry or analytics implementation is authorized.
+
+| Measurement area | Existing/non-invasive path | Requires future authorization |
+| --- | --- | --- |
+| Crawl/index health | Search Console or external manual review, if already available to operators. | Automated reporting ingestion. |
+| Impressions/ranking/query coverage | Manual Search Console export or operator review. | Analytics/Search Console API integration. |
+| Organic traffic | Existing analytics only if already authorized by Executive HQ. | New analytics, cookies, event tracking, or telemetry. |
+| Page performance | Local Lighthouse/manual build diagnostics. | Production monitoring integration. |
+| Answer-engine citation visibility | Manual spot checks and documented screenshots. | Automated monitoring or scraping. |
+| Question coverage | Repository inventory check. | Search/referral intent telemetry. |
+| Extraction accuracy | Local schema/DOM checks. | Third-party answer-engine monitoring. |
+| Citation/source correctness | Manual or deterministic route checks. | Provider/source monitoring integration. |
+
+## Implementation Waves
+
+| Wave | Objective | Surfaces | Size | Dependencies | Protected systems | Checks | Deployment/certification gate |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Wave 1 | Foundation contracts and quality gates | Docs, types/check scripts only | M | This architecture | No runtime/provider/telemetry | Contract, route inventory, diff check | Local certification, then sync |
+| Wave 2 | Market pilot | Boulder market route and market AEO contract | M | Wave 1 | No provider/telemetry/database | SEO/AEO/shared trust gates | Public-route certification after explicit implementation authorization |
+| Wave 3 | City pilot | One additional certified city route | S | Wave 2 | No provider/telemetry/database | Same as Wave 2 plus duplication check | Production certification |
+| Wave 4 | Neighborhood pilot | One canonical neighborhood route | M | Wave 1 and source/freshness mapping | No GIS/provider activation | Place/entity/fair-housing checks | Production certification |
+| Wave 5 | Property/source semantics | Property detail and `/sources` linkage | L | Source/citation contract | No LightBox/ATTOM unless separately authorized | Property/source parity checks | Separate protected approval |
+| Wave 6 | Scale/internal authority | Broader city/neighborhood/link graph | XL | Proven pilots and scale thresholds | No artificial link farms | Duplicate/thin/freshness checks | Phased certification |
+| Wave 7 | Measurement/optimization | Reporting only | M | Privacy/measurement authorization | Telemetry remains off unless approved | Measurement governance checks | Separate telemetry gate |
+
+## Recommended First Implementation
+
+Recommended candidate: `BOULDER_MARKET_AEO_ANSWER_UNIT_CONTRACT_AND_QUALITY_GATE_PILOT`
+
+Rationale:
+
+- Boulder market architecture already has certified Market AEO foundations.
+- It can materially improve source/freshness/citation governance without broad public churn.
+- It is independently testable through a deterministic answer-unit inventory check.
+- It does not depend on LightBox, ATTOM, county-source activation, telemetry, database schema changes, Typesense changes, MLS changes, or provider credentials.
+- It preserves customer-facing behavior if initially implemented as a contract/check layer before visible UI changes.
+
+Minimum valuable SEO+AEO implementation:
+
+| In scope | Out of scope |
+| --- | --- |
+| Typed `ReieAnswerUnit` contract for market answers. | Broad public-page rewrite. |
+| Boulder market answer-unit fixture derived from existing market AEO contract. | New provider data. |
+| Deterministic check for question, entity, geography, source, freshness, limitation, canonical URL, schema eligibility, and citation eligibility. | Telemetry or analytics. |
+| Documentation update and local certification. | Sitemap, robots, metadata, JSON-LD, or public UI changes unless separately authorized. |
+| Follow-on recommendation for visible route integration. | Scaling to 500+ cities or 10,000 neighborhoods. |
+
+## Provider Independence
+
+This architecture and the recommended first implementation do not depend on LightBox, ATTOM, county sources, public-record retrieval, provider credentials, MLS changes, Typesense changes, or Vercel changes.
+
+Provider statuses remain:
+
+- LightBox: `WAITING_FOR_LIGHTBOX_SUPPORT_AUTH_SCOPE_CONFIRMATION`
+- LightBox evaluation calls consumed by PROJECT ATLAS: `0`
+- ATTOM: `PENDING_PROVIDER_RESPONSE`
+
+## Human / Fair-Housing / Professional Boundary
+
+AEO does not relax any REIE trust boundary.
+
+The following remain prohibited:
+
+- demographic steering,
+- protected-class implications,
+- desirability rankings,
+- safety rankings,
+- school quality rankings,
+- suitability conclusions,
+- appreciation prediction,
+- investment-return prediction,
+- valuation certainty,
+- legal/tax/lending conclusions,
+- fabricated expertise,
+- unsupported superlatives.
 
 ## Market Newsletter Reuse
 
@@ -252,6 +515,10 @@ This record did not:
 
 ## Next Gate
 
-Recommended next gate:
+Immediate next gate:
 
-`READY_FOR_PROJECT_ATLAS_SEO_AEO_AUTHORITY_ARCHITECTURE_SYNCHRONIZATION`
+`READY_FOR_PROJECT_ATLAS_SEO_AEO_AUTHORITY_COMPLETION_SYNCHRONIZATION`
+
+Bounded implementation gate after synchronization:
+
+`READY_FOR_BOUNDED_MARKET_AEO_ANSWER_UNIT_PILOT_IMPLEMENTATION_AUTHORIZATION`

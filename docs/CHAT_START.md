@@ -11,7 +11,7 @@ Product:
 ## Latest New-Chat Handoff
 
 
-PROJECT ATLAS(tm) / SEO + AEO Authority Architecture Audit Complete:
+PROJECT ATLAS(tm) / SEO + AEO Authority Architecture Complete:
 
 Workspace:
 
@@ -20,10 +20,10 @@ Workspace:
 Canonical baseline:
 
 - Branch: `main`
-- Post-market-newsletter synchronization baseline: `HEAD = origin/main = bf06ef8881043409a29c84a061a150ee1137b126`
-- Divergence before SEO/AEO documentation: `0 ahead / 0 behind`
-- Worktree before SEO/AEO documentation: clean
-- Local documentation commit: created after this handoff update; verify current local HEAD with `git rev-parse HEAD`
+- Workstream 1 synchronized baseline: `HEAD = origin/main = 02e9b8576a7b22c7d25260827f2b9b587cab70da`
+- Divergence before SEO/AEO completion documentation: `0 ahead / 0 behind`
+- Worktree before SEO/AEO completion documentation: clean
+- Local completion documentation commit: created after this handoff update; verify current local HEAD with `git rev-parse HEAD`
 
 Program:
 
@@ -31,7 +31,7 @@ Program:
 
 Final disposition:
 
-- `ARCHITECTURAL_AUDIT_CAPABILITY_INVENTORY_GAP_ANALYSIS_GOVERNING_CONTRACT_AND_ROADMAP_COMPLETE`
+- `SEO_AEO_AUTHORITY_ARCHITECTURE_COMPLETE_READY_FOR_BOUNDED_IMPLEMENTATION`
 
 Artifacts created:
 
@@ -40,7 +40,7 @@ Artifacts created:
 
 Scope note:
 
-- The available authorization attachment ended mid-sentence in the maturity-scorecard section. Work was therefore kept documentation-only and local.
+- The prior authorization attachment ended mid-sentence in the maturity-scorecard section; the follow-on authorization completed the architecture.
 - No public-page implementation, runtime code, schema/API, provider, database, Typesense, Vercel, MLS, telemetry, or deployment work was performed.
 
 Key architecture conclusion:
@@ -71,6 +71,58 @@ Highest-priority gaps:
 - Programmatic scale requires indexable/noindex/unpublished/fail-closed thresholds before expansion.
 - Measurement remains design-only until telemetry authorization.
 
+Standing SEO standard:
+
+- Unique canonical URL.
+- Unique title.
+- Useful meta description.
+- Explicit indexability decision.
+- Crawlability aligned to intended visibility.
+- Sitemap eligibility only for stable, indexable, useful pages.
+- Server-rendered meaningful content.
+- Explicit entity/geography when material.
+- Genuine internal linking.
+- Structured data only when visible-content parity exists.
+- Author/editorial accountability where appropriate.
+- Source/freshness visibility for factual surfaces.
+- Duplicate/thin-content protection.
+- Correct HTTP status.
+- Canonicalization.
+- Mobile usability.
+- Performance awareness before broad expansion.
+
+Standing AEO standard:
+
+- Explicit question/intent.
+- Canonical entity identity.
+- Explicit geography when material.
+- Concise visible factual answer.
+- Visible supporting evidence.
+- Source attribution.
+- Evidence-effective date when dated facts are used.
+- Freshness state.
+- Conflict/limitation disclosure.
+- Canonical URL.
+- Machine-readable semantics where appropriate.
+- Human-visible / structured-content parity.
+- Stable terminology.
+- Related entity relationships.
+- Related questions where useful.
+- Professional-boundary safety.
+- Fair-housing safety.
+- Citation-worthiness classification.
+
+Shared trust gate:
+
+- No public knowledge surface passes merely because it is technically optimized.
+- Require factual support, permitted-use support, evidence provenance, freshness, geographic precision, neutral language, conflict disclosure, missing-data handling, professional boundaries, fair-housing safety, and visible/structured parity where applicable.
+
+Recommended first implementation:
+
+- `BOULDER_MARKET_AEO_ANSWER_UNIT_CONTRACT_AND_QUALITY_GATE_PILOT`
+- Minimum valuable implementation: define typed `ReieAnswerUnit`, derive one Boulder market answer-unit fixture from existing `buildMarketAeoContract` evidence, and add a deterministic check for entity, geography, question, answer, source, effective date, freshness, limitations, canonical URL, public eligibility, and citation eligibility.
+- Out of scope for the pilot unless separately authorized: public page rewrites, sitemap/robots/metadata/JSON-LD changes, provider data, telemetry, database/schema changes, Typesense, MLS, Vercel, and broad city/neighborhood scale.
+
 Provider tracks remain pending:
 
 - LightBox: `WAITING_FOR_LIGHTBOX_SUPPORT_AUTH_SCOPE_CONFIRMATION`
@@ -100,9 +152,13 @@ Next chat should first run:
 
 Expected next authorization gate:
 
-- `READY_FOR_PROJECT_ATLAS_SEO_AEO_AUTHORITY_ARCHITECTURE_SYNCHRONIZATION`
+- `READY_FOR_PROJECT_ATLAS_SEO_AEO_AUTHORITY_COMPLETION_SYNCHRONIZATION`
 
-Do not push the local documentation commit, deploy, activate providers, retrieve credentials, call LightBox, investigate ATTOM, modify runtime/public pages/schema/API/database/Typesense/Vercel/MLS/telemetry/customer data, or begin SEO/AEO implementation without separate Executive HQ authorization.
+Bounded implementation gate after synchronization:
+
+- `READY_FOR_BOUNDED_MARKET_AEO_ANSWER_UNIT_PILOT_IMPLEMENTATION_AUTHORIZATION`
+
+Do not push the local completion documentation commit, deploy, activate providers, retrieve credentials, call LightBox, investigate ATTOM, modify runtime/public pages/metadata/JSON-LD/sitemap/robots/schema/API/database/Typesense/Vercel/MLS/telemetry/customer data, add `llms.txt`, add feeds/endpoints, or begin SEO/AEO implementation without separate Executive HQ authorization.
 
 Prior handoff retained below for audit history.
 
