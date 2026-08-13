@@ -11,7 +11,7 @@ Product:
 ## Latest New-Chat Handoff
 
 
-PROJECT ATLAS(tm) / LightBox Trial Pre-Activation Readiness Certified:
+PROJECT ATLAS(tm) / LightBox Actual Trial Terms And App Scope Review Complete:
 
 Workspace:
 
@@ -20,57 +20,53 @@ Workspace:
 Canonical baseline:
 
 - Branch: `main`
-- Workstream 1 synchronized commit: `542b07dbff9682883f1b20916200c1edd71c0136`
-- Post-sync state before Workstream 2: `HEAD = origin/main = 542b07dbff9682883f1b20916200c1edd71c0136`
-- Post-sync divergence before Workstream 2: `0 ahead / 0 behind`
-- Workstream 2 local documentation commit: created after this handoff update; verify current local HEAD with `git rev-parse HEAD`
+- Review baseline: `HEAD = origin/main = af94e8a5107b03989a7787cae663e0b950494843`
+- Divergence before documentation: `0 ahead / 0 behind`
+- Worktree before documentation: clean
+- Local documentation commit: created after this handoff update; verify current local HEAD with `git rev-parse HEAD`
 
-Readiness classification:
+Activated app / credential posture:
 
-- `READY_TO_ACTIVATE_WITH_MANDATORY_TERMS_REVIEW_BEFORE_FIRST_CALL`
-- Tooling readiness: `DAY_1_TOOLING_SUFFICIENT`
-- Current gate: `READY_FOR_EXECUTIVE_HQ_LIGHTBOX_DEVELOPER_PORTAL_SIGNUP_ONLY`
+- Application: `PROJECT ATLAS - REIE LightBox Evaluation`
+- Application type: Personal evaluation app
+- Application status: Approved
+- Product: `LightBox API's Evaluation`
+- Product status: Approved
+- Registered: 2026-08-13
+- Credential status: Approved
+- Credential structure: Key + Secret
+- Credential expiry: 2026-09-03
+- Callback URL: N/A
+- Keychain services confirmed by Executive HQ: `PROJECT_ATLAS_LIGHTBOX_TRIAL_KEY` and `PROJECT_ATLAS_LIGHTBOX_TRIAL_SECRET`
+- No intentional LightBox property/location data API call has been authorized or made by this workstream.
 
-LightBox public-documentation posture:
+Review classification:
 
-- Public Developer Portal and API catalog reviewed without account creation, credentials, or API calls.
-- Public docs identify API families including Geocoding, Addresses, Parcels, Assessment, Zoning, Structures, APN Lookup, LightBox ID Lookup, Transactions, Historical Assessed Value, and Historical Tax.
-- Public docs expose `https://api.lightboxre.com/v1` and `x-api-key` header posture.
-- Full operational rate limits, exact trial entitlement, app scope, metering, global error taxonomy, and complete pagination behavior remain `POST_ACTIVATION_DOC_DISCOVERY_REQUIRED`.
+- Go / no-go: `AUTHENTICATION_CONTRACT_UNRESOLVED`
+- Secondary unresolved classification: `API_SCOPE_UNRESOLVED`
+- Final Day-1 data-call ceiling, once separately authorized: `5`
 
-LightBox terms posture:
+Key findings:
 
-- Public trial terms support test-purpose review only and prohibit commercial/production use.
-- Public terms describe a 30-day test period, deletion/destruction after expiration or termination, restricted access, security obligations, and audit rights.
-- Executive correspondence reported a three-week trial with up to `2,000` calls; actual sign-up terms must reconcile duration, allowance, scope, and retention before first call.
-- Sales statements remain `COMMERCIAL_WILLINGNESS_TO_DISCUSS_RIGHTS`, not production/customer-facing rights.
+- Public docs support `https://api.lightboxre.com/v1` plus `x-api-key` / consumer-key authentication.
+- Executive app evidence says credentials are Key + Secret.
+- Reviewed public docs do not establish how the Secret is used, whether it exchanges for a bearer token, whether it signs requests, or whether it should be sent to any endpoint.
+- Public FAQ indicates `2xx` responses count as calls and `4xx/5xx` responses do not incur cost.
+- Swagger Try It / Execute should be treated as a data call if it reaches an endpoint and returns `2xx`.
+- Analytics may be inspected only through static portal navigation; do not manufacture traffic to test it.
 
-Artifacts now active:
+Artifacts updated:
 
+- `docs/CHAT_START.md`
 - `docs/project-atlas/executive-library/REIE-LIGHTBOX-COLORADO-TRIAL-EVALUATION-PROTOCOL.md`
 - `docs/project-atlas/executive-library/REIE-LIGHTBOX-2000-CALL-TEST-MATRIX.md`
-- `docs/project-atlas/executive-library/REIE-PROPERTY-DATA-PROVIDER-COMPARISON-FRAMEWORK.md`
-- `docs/project-atlas/executive-library/REIE-LIGHTBOX-TRIAL-PRE-ACTIVATION-READINESS-CERTIFICATION.md`
+- `docs/project-atlas/executive-library/REIE-LIGHTBOX-ACTUAL-TRIAL-TERMS-AND-APP-SCOPE-REVIEW.md`
 
-Secure key posture:
+Recommended next authorization gate:
 
-- Do not paste a LightBox API key into ChatGPT/Codex.
-- Do not commit, log, screenshot, store in Vercel, store in production/customer runtime, or place the key in documentation.
-- Preferred local Keychain service after sign-up and terms review: `PROJECT_ATLAS_LIGHTBOX_TRIAL_API_KEY`.
-- Key may be retrieved only into bounded process memory for a separately authorized first-call session, then unset.
+- `READY_FOR_LIGHTBOX_AUTH_CONTRACT_AND_API_SCOPE_STATIC_CONFIRMATION`
 
-Recommended next user action:
-
-- Visit https://developer.lightboxre.com/ and create/sign up for the LightBox trial account only.
-- Do not make API calls.
-- Do not share the API key.
-- Return safe metadata only: trial start/end dates, call allowance, enabled API families, visible rate limits/metering, environment label, and terms/app-scope screenshots or links with secrets hidden.
-
-Next authorization gate:
-
-- `READY_FOR_LIGHTBOX_ACTUAL_TRIAL_TERMS_AND_APP_SCOPE_REVIEW`
-
-Do not make the first API call, handle the key in Codex, implement tooling, activate provider/source/GIS/AI/telemetry, persist trial data, mutate runtime/customer systems, push the Workstream 2 local commit, or deploy without separate Executive HQ authorization.
+Do not execute LightBox data calls, retrieve property/parcel/assessment/zoning/address/structure/geocoding records, use Swagger Try It/Execute, print credentials, paste credentials into Codex, implement integration/tooling, mutate database/schema/Typesense/Vercel/MLS/runtime, push the local documentation commit, or deploy without separate Executive HQ authorization.
 
 Prior handoff retained below for audit history.
 
