@@ -11,6 +11,123 @@ Product:
 ## Latest New-Chat Handoff
 
 
+PROJECT ATLAS(tm) / Boulder Market AEO Answer Unit Pilot Production Certified:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Canonical baseline:
+
+- Branch: `main`
+- Production deployment source commit: `HEAD = origin/main = 75466a59d1c56b271b98985fba61f1a315b09421`
+- Runtime implementation commit included in production source: `f5680c2735e52ef0510ba28ff433243d1d025dea`
+- Production readiness certification commit included in production source: `75466a59d1c56b271b98985fba61f1a315b09421`
+- Worktree before production closure documentation: clean
+- Local production certification closure commit: created after this handoff update; verify current local HEAD with `git rev-parse HEAD`
+
+Program:
+
+- `BOULDER_MARKET_AEO_ANSWER_UNIT_PILOT_PRODUCTION_DEPLOYMENT_AND_CERTIFICATION`
+
+Production classification:
+
+- `BOULDER_MARKET_AEO_ANSWER_UNIT_PILOT_PRODUCTION_CERTIFIED`
+
+Deployment evidence:
+
+- GitHub deployment id: `5895504078`
+- GitHub deployment status id: `16783880761`
+- Deployment status: `success`
+- Vercel target URL: `https://david-quinn-group-8rde-7ah8lqje2-david-quinns-projects-a0953600.vercel.app`
+- Production canonical domain: `https://davidquinngroup.com`
+- Boulder production route: `https://davidquinngroup.com/market/boulder-co-housing-market`
+- Denver control route: `https://davidquinngroup.com/market/denver-co-housing-market`
+
+Pre-deploy validation:
+
+- `npm run typecheck`: passed.
+- `npm run build`: passed; `/market/[city]` generated as SSG including `/market/boulder-co-housing-market`.
+- `npm run check:boulder-market-answer-unit-pilot`: passed.
+- `npm run check:market-aeo-boulder-pilot`: passed.
+- `npm run check:market-product-3`: passed.
+- `npm run check:public-runtime-safety`: passed.
+- `npm run check:public-trust-readiness`: passed.
+- `git diff --check`: passed.
+
+Production route evidence:
+
+- Boulder canonical route returned `HTTP 200`, `server: Vercel`, `x-matched-path: /market/boulder-co-housing-market`, `x-nextjs-prerender: 1`, `x-vercel-cache: PRERENDER`.
+- Denver canonical route returned `HTTP 200`, `server: Vercel`, `x-matched-path: /market/denver-co-housing-market`, `x-nextjs-prerender: 1`, `x-vercel-cache: PRERENDER`.
+- Boulder metadata: title `Boulder, CO Housing Market Intelligence | David Quinn Group`, canonical `https://davidquinngroup.com/market/boulder-co-housing-market`, existing description preserved, no noindex.
+- Denver metadata: title `Denver, CO Housing Market Intelligence | David Quinn Group`, canonical `https://davidquinngroup.com/market/denver-co-housing-market`, existing description preserved, no noindex.
+- Sitemap returned `HTTP 200` and includes both Boulder and Denver Market routes.
+- Robots returned `HTTP 200` and allows public routes while disallowing `/admin/` and `/api/`.
+
+Boulder pilot certification:
+
+- Production Boulder HTML exposes one `data-testid="boulder-market-answer-unit-pilot"` container.
+- Production Boulder HTML exposes exactly five `data-testid="boulder-market-answer-unit"` markers.
+- Production Boulder HTML exposes five intended answer unit ids: market posture, inventory context, price context, pace context, and reading boundary.
+- Production Boulder HTML exposes the intended facts: `$1,450,000`, `$850`, `22 days on market`, `58 active inventory signal`.
+- Production Boulder HTML exposes `data-answer-unit-evidence-effective-at="2026-08-08"` and `data-answer-unit-generated-at="2026-08-13T00:00:00.000Z"`.
+- Production Boulder HTML exposes source/freshness references: REIE governed city market facts, REIE City Market Experience, REIE Market Product 3 evidence state, MLS / professional listing facts, evidence effective date, and freshness posture.
+- Production Boulder HTML exposes five `CITATION_READY_WITH_LIMITATIONS` citation markers, five `CURRENT` freshness markers, five `NONE` conflict markers, and five `WebPageElement` schema-type markers.
+- Production Boulder HTML exposes protected-boundary false markers for provider activation, telemetry, customer-data mutation, AI, prediction, suitability, investment recommendation, valuation certainty, protected-class implication, and school/safety ranking.
+
+Denver control certification:
+
+- Production Denver HTML exposes no Boulder answer-unit pilot container.
+- Production Denver HTML exposes no `Questions This Market Data Can Answer` section.
+- Production Denver HTML exposes no `data-testid="boulder-market-answer-unit"` markers.
+- Production Denver HTML exposes no Boulder answer-unit factual leakage.
+
+Structured semantics:
+
+- Production Boulder and Denver JSON-LD blocks parse successfully.
+- Boulder remains at three existing JSON-LD blocks: real-estate agent graph, city market graph, and FAQ graph.
+- No new public Answer Unit JSON-LD was introduced, consistent with the certified pilot decision.
+
+Shared trust certification:
+
+- Production output scan found no prohibited prediction, appreciation forecast, investment recommendation, buy/sell timing recommendation, valuation certainty, protected-class implication, safety ranking, school-quality ranking, unsupported superlative, or fabricated-evidence phrases.
+- Playwright is unavailable in the local workspace; responsive posture was verified through server-rendered markup/classes and existing production HTML, not a browser screenshot.
+
+Provider tracks remain pending:
+
+- LightBox: `WAITING_FOR_LIGHTBOX_SUPPORT_AUTH_SCOPE_CONFIRMATION`
+- LightBox evaluation calls consumed: `0`
+- ATTOM: `PENDING_PROVIDER_RESPONSE`
+
+Protected boundaries:
+
+- No rollback occurred.
+- No credential retrieval.
+- No LightBox API call.
+- No ATTOM investigation or API call.
+- No county/GIS/public-record provider call.
+- No Prisma schema or migration.
+- No intentional production database write.
+- No customer-data mutation.
+- No CRM, SavedSearch, worker, queue, scheduler, email, notification, telemetry, analytics, Typesense, MLS, Vercel configuration, domain, environment-variable, authentication, or provider activation change.
+
+Next chat should first run:
+
+- `git fetch origin main`
+- `git status --short --branch --untracked-files=all`
+- `git rev-parse HEAD origin/main`
+- `git rev-list --left-right --count HEAD...origin/main`
+- `git log -8 --oneline`
+
+Expected next authorization gate:
+
+- `READY_FOR_BOULDER_MARKET_AEO_PRODUCTION_CERTIFICATION_CLOSURE_SYNCHRONIZATION`
+
+The production certification closure documentation commit is local until separate synchronization authorization is granted. Do not push it, deploy again, roll back, begin another city, begin neighborhood/property AEO, retrieve credentials, call LightBox, investigate ATTOM, activate county sources, modify database/schema/Typesense/Vercel/MLS/telemetry/customer data, add endpoints/feeds/`llms.txt`, or expand SEO/AEO answer units without separate Executive HQ authorization.
+
+Prior handoff retained below for audit history.
+
+
 PROJECT ATLAS(tm) / Boulder Market AEO Answer Unit Pilot Production Readiness Review:
 
 Workspace:
