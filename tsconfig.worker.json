@@ -99,6 +99,7 @@
     "scripts/checkReieVisualIntelligenceSystem.ts",
     "scripts/checkMarketProduct3.ts",
     "scripts/checkMarketNewsletterAgentReviewPackage.ts",
+    "scripts/checkBoulderMarketAnswerUnitPilot.ts",
     "scripts/checkMarketAeoBoulderPilot.ts",
     "scripts/checkMarketAeoMultiCityWave.ts",
     "scripts/checkMarketAeoWave2.ts",

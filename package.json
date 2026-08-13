@@ -154,6 +154,7 @@
     "check:reie-visual-intelligence-system": "npm run worker:build && node dist/scripts/checkReieVisualIntelligenceSystem.js",
     "check:market-product-3": "npm run worker:build && node dist/scripts/checkMarketProduct3.js",
     "check:market-newsletter-agent-review-package": "npm run worker:build && node dist/scripts/checkMarketNewsletterAgentReviewPackage.js",
+    "check:boulder-market-answer-unit-pilot": "npm run worker:build && jiti scripts/checkBoulderMarketAnswerUnitPilot.ts",
     "check:market-aeo-boulder-pilot": "npm run worker:build && node dist/scripts/checkMarketAeoBoulderPilot.js",
     "check:market-aeo-multi-city-wave": "npm run worker:build && node dist/scripts/checkMarketAeoMultiCityWave.js",
     "check:market-aeo-wave-2": "npm run worker:build && node dist/scripts/checkMarketAeoWave2.js",

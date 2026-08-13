@@ -31,6 +31,7 @@ import {
   DECISION_GUIDE_TRUST_BOUNDARIES,
 } from '@/lib/decisionGuidePlatform';
 import { buildMarketDecisionWorkspace } from '@/lib/marketDecisionWorkspace';
+import { buildBoulderMarketAnswerUnitPilot } from '@/lib/marketAeoAnswerUnit';
 import { buildMarketAeoContract } from '@/lib/marketAeoPilot';
 import { buildCityMarketExperience } from '@/lib/marketIntelligenceExperience';
 import { buildCityMarketProduct3Experience } from '@/lib/marketProduct3';
@@ -203,6 +204,10 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
     marketExperience,
     neighborhoodCount: cityNeighborhoods.length,
   });
+  const boulderMarketAnswerUnitPilot =
+    cityData.marketSlug === 'boulder-co-housing-market'
+      ? buildBoulderMarketAnswerUnitPilot()
+      : null;
   const cityOrientationGuides = getCityOrientationGuidesForCity(cityData.marketSlug);
   const decisionGuideEligibility = getDecisionGuideRegistryEntry(cityData);
   const cityDecisionGuide = buildDecisionGuide({
@@ -495,6 +500,105 @@ export default async function MarketReportPage({ params }: MarketPageProps) {
                       <li key={limitation}>{limitation}</li>
                     ))}
                   </ul>
+                </div>
+              </div>
+            </section>
+          ) : null}
+
+          {boulderMarketAnswerUnitPilot?.publicUnits.length ? (
+            <section
+              className="mt-8 rounded-[8px] bg-white/[0.045] p-5 ring-1 ring-white/[0.08]"
+              data-testid="boulder-market-answer-unit-pilot"
+              data-boulder-market-answer-unit-pilot="true"
+              data-answer-unit-contract-version="1.0.0"
+              data-answer-unit-route={boulderMarketAnswerUnitPilot.route}
+              data-answer-unit-canonical-url={canonicalUrl}
+              data-answer-unit-public-count={boulderMarketAnswerUnitPilot.publicUnits.length}
+              data-answer-unit-evidence-effective-at={boulderMarketAnswerUnitPilot.evidenceEffectiveAt}
+              data-answer-unit-generated-at={boulderMarketAnswerUnitPilot.generatedAt}
+              data-answer-unit-public-eligibility="INDEXABLE"
+              data-answer-unit-structured-json-ld="false"
+              data-answer-unit-visible-structured-parity="internal-data-visible-content"
+              data-answer-unit-provider-activation="false"
+              data-answer-unit-telemetry="false"
+              data-answer-unit-customer-data-mutation="false"
+              data-answer-unit-ai="false"
+              data-answer-unit-prediction="false"
+              data-answer-unit-suitability="false"
+              data-answer-unit-investment-recommendation="false"
+              data-answer-unit-valuation-certainty="false"
+              data-answer-unit-protected-class-implication="false"
+              data-answer-unit-school-safety-ranking="false"
+            >
+              <div className="grid gap-5 lg:grid-cols-[0.72fr_1.28fr]">
+                <div>
+                  <p className="mb-3 text-[10px] font-black uppercase tracking-[0.28em] text-cyan-100/72">
+                    Questions This Market Data Can Answer
+                  </p>
+                  <h2 className="text-2xl font-black uppercase leading-tight tracking-normal text-white md:text-3xl">
+                    Boulder answer units keep facts, sources, dates, and limits together.
+                  </h2>
+                  <p className="mt-4 text-sm leading-7 text-white/56">
+                    These answers use the existing Boulder market contract and governed source references. They are not a forecast,
+                    valuation, investment recommendation, or advice to buy or sell.
+                  </p>
+                  <div className="mt-5 grid gap-3 text-xs leading-5 text-white/48">
+                    <p>
+                      Evidence date: <span className="font-bold text-white/70">{boulderMarketAnswerUnitPilot.evidenceEffectiveAt}</span>
+                    </p>
+                    <p>
+                      Public route: <span className="font-bold text-white/70">{canonicalUrl}</span>
+                    </p>
+                  </div>
+                </div>
+
+                <div className="grid gap-3">
+                  {boulderMarketAnswerUnitPilot.publicUnits.map((unit) => (
+                    <article
+                      key={unit.answerUnitId}
+                      className="rounded-[8px] bg-[#071017]/82 p-4 ring-1 ring-white/[0.055]"
+                      data-testid="boulder-market-answer-unit"
+                      data-answer-unit-id={unit.answerUnitId}
+                      data-answer-unit-intent={unit.intent}
+                      data-answer-unit-entity={unit.canonicalEntity.id}
+                      data-answer-unit-entity-type={unit.canonicalEntity.type}
+                      data-answer-unit-geography={`${unit.geography.city}, ${unit.geography.state}`}
+                      data-answer-unit-freshness={unit.freshnessPosture}
+                      data-answer-unit-conflict={unit.conflictPosture}
+                      data-answer-unit-public-eligibility={unit.publicEligibility}
+                      data-answer-unit-citation-eligibility={unit.citationEligibility}
+                      data-answer-unit-source-count={unit.evidenceSourceReferences.length}
+                      data-answer-unit-fact-count={unit.supportingFacts.length}
+                      data-answer-unit-schema-type={unit.semanticSchemaType}
+                    >
+                      <p className="text-[9px] font-black uppercase tracking-[0.18em] text-cyan-100/68">
+                        {unit.citationEligibility === 'CITATION_READY'
+                          ? 'Citation Ready'
+                          : unit.citationEligibility === 'CITATION_READY_WITH_LIMITATIONS'
+                            ? 'Citation Ready With Limits'
+                            : 'Not Citation Ready'}
+                      </p>
+                      <h3 className="mt-2 text-base font-black uppercase leading-6 tracking-tight text-white">{unit.question}</h3>
+                      <p className="mt-3 text-sm leading-6 text-white/62">{unit.conciseAnswer}</p>
+                      <dl className="mt-4 grid gap-2 sm:grid-cols-2">
+                        {unit.supportingFacts.map((fact) => (
+                          <div key={`${unit.answerUnitId}-${fact.label}`} className="rounded-[6px] bg-white/[0.045] p-3">
+                            <dt className="text-[9px] font-black uppercase tracking-[0.16em] text-white/38">{fact.label}</dt>
+                            <dd className="mt-1 text-sm font-black text-white">{fact.value}</dd>
+                          </div>
+                        ))}
+                      </dl>
+                      <div className="mt-4 rounded-[6px] bg-black/18 p-3">
+                        <p className="text-[9px] font-black uppercase tracking-[0.16em] text-cyan-100/64">Source / Freshness</p>
+                        <p className="mt-2 text-xs leading-5 text-white/46">
+                          {unit.evidenceSourceReferences.map((source) => source.sourceName).join('; ')}. Evidence effective date:
+                          {' '}
+                          {unit.evidenceEffectiveAt}. Freshness posture: {unit.freshnessPosture.toLowerCase()}.
+                        </p>
+                      </div>
+                      <p className="mt-3 text-xs leading-5 text-white/42">{unit.limitations[0]}</p>
+                    </article>
+                  ))}
                 </div>
               </div>
             </section>

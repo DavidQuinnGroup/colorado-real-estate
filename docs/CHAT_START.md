@@ -11,6 +11,112 @@ Product:
 ## Latest New-Chat Handoff
 
 
+PROJECT ATLAS(tm) / Boulder Market AEO Answer Unit Pilot Implemented And Locally Certified:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Canonical baseline:
+
+- Branch: `main`
+- Workstream 1 synchronized baseline: `HEAD = origin/main = 14e36aec6d4f0556740e472038878aa108fd56f3`
+- Divergence before Boulder pilot implementation: `0 ahead / 0 behind`
+- Worktree before Boulder pilot implementation: clean
+- Local implementation/certification commit: created after this handoff update; verify current local HEAD with `git rev-parse HEAD`
+
+Program:
+
+- `BOULDER_MARKET_AEO_ANSWER_UNIT_CONTRACT_AND_QUALITY_GATE_PILOT`
+
+Final disposition:
+
+- `BOULDER_MARKET_AEO_ANSWER_UNIT_PILOT_IMPLEMENTED_AND_LOCALLY_CERTIFIED`
+
+Implemented pilot:
+
+- Minimum reusable answer-unit contract: `lib/marketAeoAnswerUnit.ts`
+- Boulder-only public presentation: `app/market/[city]/page.tsx`
+- Deterministic certification: `scripts/checkBoulderMarketAnswerUnitPilot.ts`
+- Package script: `npm run check:boulder-market-answer-unit-pilot`
+- Certification record: `docs/project-atlas/executive-library/REIE-BOULDER-MARKET-AEO-ANSWER-UNIT-PILOT-CERTIFICATION.md`
+
+Pilot boundary:
+
+- Geography: Boulder, Colorado only.
+- Domain: Market Intelligence only.
+- Surface: existing `/market/boulder-co-housing-market` route only.
+- No expansion to other cities, neighborhoods, properties, guides, articles, statewide pages, or broad programmatic content.
+
+Answer units:
+
+- What is happening in the Boulder housing market?
+- How much housing inventory is available in Boulder?
+- What is the current Boulder home-price context?
+- How quickly are Boulder homes selling?
+- What should a buyer or seller understand when reading the current Boulder market data?
+
+Fact/evidence reuse:
+
+- Existing Boulder city market facts: `$1,450,000` median price, `$850` price per square foot, `22` days on market, `58` active inventory signal.
+- Existing Market AEO contract, Market Product 3 evidence posture, city market experience, and Market Newsletter source/freshness primitives.
+- No duplicate calculations and no agent-only newsletter content exposed.
+
+Human-visible public experience:
+
+- Boulder market route now includes a subordinate section titled `Questions This Market Data Can Answer`.
+- The section is server-rendered public HTML and exposes answer, facts, source/freshness summary, limitation, citation posture, entity, geography, and protected-boundary markers.
+- No new public JSON-LD, FAQ spam, answer endpoint, feed, `llms.txt`, hidden machine-only text, or SEO-only claim was added.
+
+Fail-closed behavior:
+
+- Fresh supported evidence: public units render as indexable and citation-ready-with-limitations.
+- Stale/aging evidence: public units render with aging freshness and limitation posture.
+- Missing evidence, conflicting evidence, unsupported question, unsupported geography: fail closed with no public units.
+- Insufficient evidence for citation: public units remain safe but classify `NOT_CITATION_READY`.
+
+Validation:
+
+- `npm run check:boulder-market-answer-unit-pilot`
+- `npm run check:market-aeo-boulder-pilot`
+- `npm run check:market-product-3`
+- `npm run typecheck`
+- `git diff --check`
+
+Provider tracks remain pending:
+
+- LightBox: `WAITING_FOR_LIGHTBOX_SUPPORT_AUTH_SCOPE_CONFIRMATION`
+- LightBox trial calls consumed: `0`
+- ATTOM: `PENDING_PROVIDER_RESPONSE`
+
+Protected boundaries:
+
+- No credential retrieval.
+- No LightBox API call.
+- No ATTOM investigation or API call.
+- No county/GIS/public-record provider call.
+- No Prisma schema or migration.
+- No production database write.
+- No customer-data mutation.
+- No CRM, SavedSearch, worker, queue, scheduler, email, notification, telemetry, analytics, Typesense, MLS, Vercel, deployment, or provider activation.
+
+Next chat should first run:
+
+- `git fetch origin main`
+- `git status --short --branch --untracked-files=all`
+- `git rev-parse HEAD origin/main`
+- `git rev-list --left-right --count HEAD...origin/main`
+- `git log -8 --oneline`
+
+Expected next authorization gate:
+
+- `READY_FOR_BOULDER_MARKET_AEO_ANSWER_UNIT_PILOT_SYNCHRONIZATION`
+
+Do not push the local implementation/certification commit, deploy, retrieve credentials, call LightBox, investigate ATTOM, activate county sources, modify database/schema/Typesense/Vercel/MLS/telemetry/customer data, add endpoints/feeds/`llms.txt`, or expand SEO/AEO answer units to other cities or surfaces without separate Executive HQ authorization.
+
+Prior handoff retained below for audit history.
+
+
 PROJECT ATLAS(tm) / SEO + AEO Authority Architecture Complete:
 
 Workspace:

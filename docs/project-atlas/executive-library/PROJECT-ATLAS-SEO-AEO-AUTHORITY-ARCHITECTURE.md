@@ -521,4 +521,12 @@ Immediate next gate:
 
 Bounded implementation gate after synchronization:
 
-`READY_FOR_BOUNDED_MARKET_AEO_ANSWER_UNIT_PILOT_IMPLEMENTATION_AUTHORIZATION`
+`BOULDER_MARKET_AEO_ANSWER_UNIT_CONTRACT_AND_QUALITY_GATE_PILOT`
+
+The bounded pilot has now been implemented locally and certified in:
+
+`docs/project-atlas/executive-library/REIE-BOULDER-MARKET-AEO-ANSWER-UNIT-PILOT-CERTIFICATION.md`
+
+Next synchronization gate:
+
+`READY_FOR_BOULDER_MARKET_AEO_ANSWER_UNIT_PILOT_SYNCHRONIZATION`
