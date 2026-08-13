@@ -11,6 +11,84 @@ Product:
 ## Latest New-Chat Handoff
 
 
+PROJECT ATLAS(tm) / Recurring Market Newsletter Agent Review Package MVV Implemented And Locally Certified:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Canonical baseline:
+
+- Branch: `main`
+- Workstream 1 synchronized baseline: `HEAD = origin/main = f8019b6114849f1a1bb34851ef21b05740537069`
+- Workstream 1 divergence after synchronization: `0 ahead / 0 behind`
+- Workstream 1 worktree after synchronization: clean
+- Local implementation commit: created after this handoff update; verify current local HEAD with `git rev-parse HEAD`
+
+Program:
+
+- `REIE_RECURRING_SOURCE_FRESH_MARKET_NEWSLETTER_AGENT_REVIEW_PACKAGE_MVV`
+
+Final disposition:
+
+- `RECURRING_MARKET_NEWSLETTER_AGENT_REVIEW_PACKAGE_MVV_IMPLEMENTED_AND_LOCALLY_CERTIFIED`
+
+Implemented MVV:
+
+- Deterministic package builder: `lib/content/marketNewsletterPackage.ts`
+- Protected admin preview: `app/admin/market-newsletter-package/page.tsx`
+- Deterministic validation: `scripts/checkMarketNewsletterAgentReviewPackage.ts`
+- Package script: `npm run check:market-newsletter-agent-review-package`
+- Certification record: `docs/project-atlas/executive-library/REIE-RECURRING-MARKET-NEWSLETTER-AGENT-REVIEW-PACKAGE-MVV-CERTIFICATION.md`
+
+Initial geography:
+
+- Boulder only: `boulder-co-housing-market`
+- Unsupported geographies fail closed with `UNSUPPORTED_GEOGRAPHY`
+
+Package boundary:
+
+- Agent review output only.
+- Not autonomous customer communication.
+- Not an email, scheduler, worker, queue, saved-search, CRM, provider, AI, telemetry, public-record, Typesense, MLS, or deployment activation.
+
+Validation:
+
+- `npm run check:market-newsletter-agent-review-package`
+- `npm run check:market-product-3`
+- `npm run typecheck`
+- `git diff --check`
+
+Provider tracks remain pending:
+
+- LightBox: `WAITING_FOR_LIGHTBOX_SUPPORT_AUTH_SCOPE_CONFIRMATION`
+- LightBox API calls consumed by PROJECT ATLAS evaluation: `0`
+- ATTOM: `PENDING_PROVIDER_RESPONSE`
+
+Protected boundaries:
+
+- No production database write.
+- No customer-data mutation.
+- No Prisma schema or migration.
+- No SavedSearch, CRMTask, AlertEvent, AlertQueue, EmailLog, worker, queue, scheduler, Resend/email, notification, telemetry, MLS, Typesense, LightBox, ATTOM, county-source, public-record, provider, or deployment change.
+- Saved-search follow-on was not started.
+
+Next chat should first run:
+
+- `git fetch origin main`
+- `git status --short --branch --untracked-files=all`
+- `git rev-parse HEAD origin/main`
+- `git rev-list --left-right --count HEAD...origin/main`
+- `git log -8 --oneline`
+
+Expected next authorization gate:
+
+- `READY_FOR_RECURRING_MARKET_NEWSLETTER_AGENT_REVIEW_PACKAGE_MVV_SYNCHRONIZATION`
+
+Do not push the local implementation commit, deploy, activate email/scheduler/worker/queue/customer communication, mutate CRM/customer data, retrieve credentials, call LightBox, investigate ATTOM, activate county sources, or begin the saved-search follow-on without separate Executive HQ authorization.
+
+Prior handoff retained below for audit history.
+
 PROJECT ATLAS(tm) / REIE Agent Work Replacement Phase 2 Candidate Selection Complete:
 
 Workspace:
