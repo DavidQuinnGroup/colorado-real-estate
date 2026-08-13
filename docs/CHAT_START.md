@@ -11,6 +11,88 @@ Product:
 ## Latest New-Chat Handoff
 
 
+PROJECT ATLAS(tm) / Saved Search Alert Cadence And Changed-Listing Protected Feasibility Review:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Canonical baseline before review:
+
+- Branch: `main`
+- `HEAD = origin/main = 1b9817a90830bf102c774bf091c35d58613c1485`
+- Divergence: `0 behind / 0 ahead`
+- Worktree before documentation update: clean
+- Local documentation review commit: created after this handoff update; verify current local HEAD with `git rev-parse HEAD`
+
+Program:
+
+- `REIE_SAVED_SEARCH_ALERT_CADENCE_AND_CHANGED_LISTING_FOLLOW_UP_PROTECTED_FEASIBILITY_AND_CERTIFICATION_REVIEW`
+
+Feasibility disposition:
+
+- Primary: `PARTIAL_GAP`, `CERTIFICATION_GAP`, `ACTIVATION_GAP`, `RELIABILITY_GAP`, and `CUSTOMER_EXPERIENCE_GAP`
+- Not primary: `GENUINE_NEW_CAPABILITY`, `PROTECTED_SYSTEM_GAP`, and `ALREADY_SUBSTANTIALLY_COMPLETE`
+- Existing architecture is materially present for SavedSearch intake, NEW_LISTING matching, AlertEvent dedupe, AlertQueue persistence, dry-run review, bounded live send paths, digest grouping, unsubscribe, click tracking, Search/property re-entry, and CRM handoff.
+- Missing or uncrossed gates remain: saved-search cadence fields, customer-selected cadence/quiet-hour/timezone state, changed-listing classes beyond `NEW_LISTING`, stale-row expiration, broad row-quality certification, recurring worker/scheduler activation, and broad customer email activation.
+
+Architecture findings:
+
+- `SavedSearch`: implemented for user-owned criteria, active state, and Search decision-continuity; no update/delete route, cadence field, expiration field, or customer-facing cadence preference found.
+- `AlertEvent`: implemented for `userId/propertyId/type` dedupe; current production event class is `NEW_LISTING`.
+- `AlertQueue`: implemented with pending/processing/sent/skipped/failed status, payload, click tracking, dry-run preview, and explicit live processing; no first-class stale/expiry field or saved-search relation found.
+- Changed-listing detection: newly matching listings are supported through MLS processing and `matchAndNotify`; price/status/open-house/removal/back-on-market/pending/sold/photo/material-attribute change alerts are not proven by code.
+- Cadence: instant-like processing and daily-style digest are worker/script dependent; no active scheduler or persisted cadence preference was found.
+- Email/delivery: Resend path, `EmailLog`, unsubscribe links, click tracking, and digest grouping exist; no email was sent and live sends remain protected.
+- Worker/scheduler: alert worker and scripts exist; continuous worker and scheduler activation remain protected. No active `vercel.json` cron or equivalent enabled scheduler file was found.
+
+Protected-system map:
+
+- Future SavedSearch writes require explicit authorization for cadence/consent persistence.
+- Future AlertEvent and AlertQueue writes require explicit authorization for matching, queueing, status transitions, or backlog handling.
+- Future worker activation, scheduler/cron, Resend/email, EmailLog writes, customer-data mutation, unsubscribe mutation, CRM handoff mutation, telemetry, production deployment, MLS, Typesense, Vercel, and provider work require separate authorization.
+- This review crossed none of those gates.
+
+Provider tracks remain pending:
+
+- LightBox: `WAITING_FOR_LIGHTBOX_SUPPORT_AUTH_SCOPE_CONFIRMATION`
+- LightBox evaluation calls consumed: `0`
+- ATTOM: `PENDING_PROVIDER_RESPONSE`
+
+Recommended next gate:
+
+- `READY_FOR_REIE_SAVED_SEARCH_NEW_LISTING_ALERT_DRY_RUN_AND_ROW_QUALITY_CERTIFICATION`
+
+Recommended next package:
+
+- Certify the existing `NEW_LISTING` saved-search alert path with bounded non-sending row-quality, consent, unsubscribe, duplicate/noise, and stale-row review.
+- Optional commands such as `npm run check:alert-notification-readiness`, `npm run check:notification-readiness:strict`, `npm run run:queue-dashboard -- --limit=5 --timeout-ms=3000`, and `npm run run:alerts:dry -- --limit 25` require explicit authorization if they inspect live alert rows.
+- Do not proceed directly to broad customer sends, recurring worker activation, scheduler activation, backlog release, changed-listing implementation, provider enrichment, MLS volume changes, Typesense changes, telemetry, or deployment.
+
+Documentation artifact:
+
+- `docs/project-atlas/executive-library/REIE-SAVED-SEARCH-ALERT-CADENCE-CHANGED-LISTING-PROTECTED-FEASIBILITY-REVIEW.md`
+
+Protected boundaries:
+
+- No runtime code modification.
+- No Prisma schema or migration.
+- No SavedSearch, AlertEvent, AlertQueue, EmailLog, unsubscribe, CRM, or customer-data write.
+- No email send.
+- No worker or scheduler activation.
+- No MLS, Typesense, Vercel, telemetry, provider, LightBox, ATTOM, county-source, or deployment work.
+
+Next chat should first run:
+
+- `git fetch origin main`
+- `git status --short --branch --untracked-files=all`
+- `git rev-parse HEAD origin/main`
+- `git rev-list --left-right --count HEAD...origin/main`
+- `git log -8 --oneline`
+
+Prior handoff retained below for audit history.
+
+
 PROJECT ATLAS(tm) / Boulder Market AEO Answer Unit Pilot Production Certified:
 
 Workspace:
