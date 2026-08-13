@@ -35,6 +35,7 @@ model Property {
   createdAt            DateTime  @default(now())
   updatedAt            DateTime  @updatedAt
   lastIntelligenceSync DateTime?
+  sourceModifiedAt     DateTime?
 
   isPrivateExclusive  Boolean @default(false)
   gcForensics         Json?
@@ -62,6 +63,7 @@ model Property {
   @@index([lat, lng])
   @@index([isPrivateExclusive])
   @@index([lastIntelligenceSync])
+  @@index([sourceModifiedAt])
 }
 
 model MlsSyncState {

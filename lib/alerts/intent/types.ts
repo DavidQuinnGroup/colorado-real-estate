@@ -52,6 +52,7 @@ export type AlertIntentProperty = {
   changedAt?: unknown;
   updatedAt?: unknown;
   listedAt?: unknown;
+  sourceModifiedAt?: unknown;
 };
 
 export type AlertIntentSavedSearch = {

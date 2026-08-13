@@ -1,6 +1,7 @@
 import type { Prisma, Property } from '@prisma/client';
 
 import { prisma } from '../prisma.js';
+import { resolveMlsSourceModifiedAt, type SourceFreshnessPersistenceDecision } from './sourceFreshness.js';
 
 export type MlsListing = Record<string, unknown>;
 
@@ -11,6 +12,7 @@ type ExistingPropertySnapshot = {
   lat: number;
   lng: number;
   slug: string;
+  sourceModifiedAt?: Date | null;
 };
 
 type CoordinateSource = 'listing' | 'swapped' | 'existing' | 'missing';
@@ -46,6 +48,9 @@ export type UpsertListingDiagnostics = {
   sqft: number | null;
   yearBuilt: number | null;
   propertyType: string;
+  sourceModifiedAt: Date | null;
+  sourceModifiedAtField: string | null;
+  sourceModifiedAtDecision: SourceFreshnessPersistenceDecision;
   intelligence: ListingIntelligence;
 };
 
@@ -432,6 +437,7 @@ export function buildPropertyRecordWithDiagnostics(
   const sqft = toInteger(firstValue(field(listing, 'LivingArea'), field(listing, 'BuildingAreaTotal'), field(listing, 'AboveGradeFinishedArea')));
   const propertyType = toCleanString(firstValue(field(listing, 'PropertyType'), field(listing, 'PropertySubType')), DEFAULT_PROPERTY_TYPE);
   const status = normalizeStatus(listing);
+  const sourceModifiedAtResolution = resolveMlsSourceModifiedAt(listing, existing?.sourceModifiedAt);
   const skipReason: UpsertListingSkipReason | undefined =
     !mlsId || mlsId === 'undefined' ? 'missing_mls_id' : !coordinates ? 'missing_coordinates' : undefined;
   const diagnostics: UpsertListingDiagnostics = {
@@ -454,6 +460,9 @@ export function buildPropertyRecordWithDiagnostics(
     sqft,
     yearBuilt,
     propertyType,
+    sourceModifiedAt: sourceModifiedAtResolution.persistedSourceModifiedAt,
+    sourceModifiedAtField: sourceModifiedAtResolution.field,
+    sourceModifiedAtDecision: sourceModifiedAtResolution.decision,
     intelligence,
   };
 
@@ -499,6 +508,7 @@ export function buildPropertyRecordWithDiagnostics(
     soilType: intelligence.soilType,
     hasPolybutyleneRisk: intelligence.hasPolybutyleneRisk,
     lastIntelligenceSync: syncedAt,
+    sourceModifiedAt: sourceModifiedAtResolution.persistedSourceModifiedAt,
   };
 
   return {
@@ -517,6 +527,7 @@ async function getExistingProperty(mlsId: string) {
       lat: true,
       lng: true,
       slug: true,
+      sourceModifiedAt: true,
     },
   });
 }

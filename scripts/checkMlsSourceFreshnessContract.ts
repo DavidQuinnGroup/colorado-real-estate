@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 
 import {
   MLS_SOURCE_TIMESTAMP_FIELD_INVENTORY,
@@ -9,10 +10,17 @@ import {
   getSourceFreshnessPersistenceDecision,
   isFreshForNewListingAlert,
   isSourceFreshnessAfterIngestion,
+  resolveMlsSourceModifiedAt,
 } from '../lib/mls/sourceFreshness.js';
+import { buildPropertyRecordWithDiagnostics } from '../lib/mls/upsertListing.js';
 
 const evaluatedAt = '2026-08-13T12:00:00.000Z';
 const ingestionAt = '2026-08-13T12:00:00.000Z';
+const migrationPath = 'prisma/migrations/20260813213000_add_property_source_modified_at/migration.sql';
+
+function toIsoDate(value: Date | string | null | undefined) {
+  return value ? new Date(value).toISOString() : null;
+}
 
 function assertFreshness(
   name: string,
@@ -36,6 +44,16 @@ function assertFreshness(
 assert.equal(REIE_MLS_SOURCE_FRESHNESS_FIELD, 'sourceModifiedAt');
 assert.equal(REIE_MLS_SOURCE_FRESHNESS_PRIMARY_PAYLOAD_FIELD, 'ModificationTimestamp');
 assert.equal(REIE_NEW_LISTING_FRESHNESS_WINDOW_HOURS, 72);
+
+const prismaSchema = readFileSync('prisma/schema.prisma', 'utf8');
+const migrationSql = readFileSync(migrationPath, 'utf8');
+assert.match(prismaSchema, /sourceModifiedAt\s+DateTime\?/, 'Property must expose nullable sourceModifiedAt.');
+assert.match(prismaSchema, /@@index\(\[sourceModifiedAt\]\)/, 'Property must index sourceModifiedAt for freshness-window filtering.');
+assert.equal(
+  migrationSql.trim(),
+  'ALTER TABLE "Property" ADD COLUMN "sourceModifiedAt" TIMESTAMP(3);\n\nCREATE INDEX "Property_sourceModifiedAt_idx" ON "Property"("sourceModifiedAt");',
+  'Migration artifact must remain limited to the additive sourceModifiedAt column and index.',
+);
 
 const inventory = new Map(MLS_SOURCE_TIMESTAMP_FIELD_INVENTORY.map((field) => [field.field, field]));
 assert.equal(inventory.get('ModificationTimestamp')?.classification, 'SOURCE_CHANGE_TIMESTAMP');
@@ -125,6 +143,90 @@ assert.equal(
   'keep_existing_malformed_incoming',
 );
 
+const newerResolution = resolveMlsSourceModifiedAt(
+  { ModificationTimestamp: '2026-08-13T10:00:00.000Z' },
+  '2026-08-13T09:00:00.000Z',
+);
+assert.equal(newerResolution.decision, 'persist_incoming');
+assert.equal(newerResolution.persistedSourceModifiedAt?.toISOString(), '2026-08-13T10:00:00.000Z');
+
+const sameResolution = resolveMlsSourceModifiedAt(
+  { ModificationTimestamp: '2026-08-13T09:00:00.000Z' },
+  '2026-08-13T09:00:00.000Z',
+);
+assert.equal(sameResolution.decision, 'no_change_same_timestamp');
+assert.equal(sameResolution.persistedSourceModifiedAt?.toISOString(), '2026-08-13T09:00:00.000Z');
+
+const olderResolution = resolveMlsSourceModifiedAt(
+  { ModificationTimestamp: '2026-08-13T08:00:00.000Z' },
+  '2026-08-13T09:00:00.000Z',
+);
+assert.equal(olderResolution.decision, 'keep_existing_older_incoming');
+assert.equal(olderResolution.persistedSourceModifiedAt?.toISOString(), '2026-08-13T09:00:00.000Z');
+
+const missingResolution = resolveMlsSourceModifiedAt({}, '2026-08-13T09:00:00.000Z');
+assert.equal(missingResolution.decision, 'keep_existing_missing_incoming');
+assert.equal(missingResolution.persistedSourceModifiedAt?.toISOString(), '2026-08-13T09:00:00.000Z');
+
+const malformedResolution = resolveMlsSourceModifiedAt(
+  { ModificationTimestamp: 'not-a-date' },
+  '2026-08-13T09:00:00.000Z',
+);
+assert.equal(malformedResolution.decision, 'keep_existing_malformed_incoming');
+assert.equal(malformedResolution.persistedSourceModifiedAt?.toISOString(), '2026-08-13T09:00:00.000Z');
+
+const nullExistingResolution = resolveMlsSourceModifiedAt({ ModificationTimestamp: '2026-08-13T10:00:00.000Z' }, null);
+assert.equal(nullExistingResolution.decision, 'persist_incoming');
+assert.equal(nullExistingResolution.persistedSourceModifiedAt?.toISOString(), '2026-08-13T10:00:00.000Z');
+
+const baseListing = {
+  ListingKey: 'fixture-source-modified-001',
+  UnparsedAddress: '100 Fixture St',
+  City: 'Boulder',
+  StateOrProvince: 'CO',
+  PostalCode: '80302',
+  ListPrice: 900000,
+  BedroomsTotal: 3,
+  BathroomsTotalInteger: 2,
+  LivingArea: 2100,
+  PropertyType: 'Residential',
+  StandardStatus: 'Active',
+  Latitude: 40.01,
+  Longitude: -105.25,
+};
+
+const mappedNewer = buildPropertyRecordWithDiagnostics(
+  { ...baseListing, ModificationTimestamp: '2026-08-13T10:00:00.000Z' },
+  {
+    id: 'fixture-property-001',
+    lat: 40.01,
+    lng: -105.25,
+    slug: 'fixture-source-modified-001',
+    sourceModifiedAt: new Date('2026-08-13T09:00:00.000Z'),
+  },
+  new Date(evaluatedAt),
+);
+assert.equal(toIsoDate(mappedNewer.propertyData?.sourceModifiedAt), '2026-08-13T10:00:00.000Z');
+assert.equal(mappedNewer.diagnostics.sourceModifiedAtDecision, 'persist_incoming');
+
+const mappedOlder = buildPropertyRecordWithDiagnostics(
+  { ...baseListing, ModificationTimestamp: '2026-08-13T08:00:00.000Z' },
+  {
+    id: 'fixture-property-001',
+    lat: 40.01,
+    lng: -105.25,
+    slug: 'fixture-source-modified-001',
+    sourceModifiedAt: new Date('2026-08-13T09:00:00.000Z'),
+  },
+  new Date(evaluatedAt),
+);
+assert.equal(toIsoDate(mappedOlder.propertyData?.sourceModifiedAt), '2026-08-13T09:00:00.000Z');
+assert.equal(mappedOlder.diagnostics.sourceModifiedAtDecision, 'keep_existing_older_incoming');
+
+const mappedMissing = buildPropertyRecordWithDiagnostics(baseListing, null, new Date(evaluatedAt));
+assert.equal(mappedMissing.propertyData?.sourceModifiedAt, null);
+assert.equal(mappedMissing.diagnostics.sourceModifiedAtDecision, 'keep_existing_missing_incoming');
+
 const publicActiveCandidate = {
   status: 'Active',
   isPrivateExclusive: false,
@@ -158,6 +260,7 @@ console.log(
       mode: 'FIXTURE_ONLY_NO_SIDE_EFFECT',
       recommendedPersistedField: REIE_MLS_SOURCE_FRESHNESS_FIELD,
       primaryPayloadField: REIE_MLS_SOURCE_FRESHNESS_PRIMARY_PAYLOAD_FIELD,
+      migrationPath,
       windowHours: REIE_NEW_LISTING_FRESHNESS_WINDOW_HOURS,
       cases: {
         freshModificationTimestamp: 'PASS',
@@ -168,6 +271,9 @@ console.log(
         sourceTimestampNewerThanIngestion: 'PASS',
         ingestionTimeNewerThanSourceTimestamp: 'PASS',
         duplicateIngestOlderIncoming: 'PASS',
+        upsertMappingValidNewerTimestamp: 'PASS',
+        upsertMappingMissingTimestampExistingNull: 'PASS',
+        upsertMappingOlderTimestampPreservesExisting: 'PASS',
         activePublicCandidate: 'PASS',
         inactiveCandidate: 'PASS',
         privateCandidate: 'PASS',

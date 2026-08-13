@@ -54,6 +54,7 @@ const baseInput: AlertIntentInput = {
     propertyType: 'Single Family',
     status: 'Active',
     isPrivateExclusive: false,
+    sourceModifiedAt: ALERT_INTENT_PROPERTY_TIMESTAMP,
     image: 'https://example.invalid/fixture-property.jpg',
     lat: 40.01,
     lng: -105.25,

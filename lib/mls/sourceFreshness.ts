@@ -32,6 +32,11 @@ export type SourceFreshnessPersistenceDecision =
   | 'keep_existing_older_incoming'
   | 'no_change_same_timestamp';
 
+export type ResolvedMlsSourceModifiedAt = MlsSourceFreshness & {
+  decision: SourceFreshnessPersistenceDecision;
+  persistedSourceModifiedAt: Date | null;
+};
+
 export const REIE_MLS_SOURCE_FRESHNESS_FIELD = 'sourceModifiedAt';
 export const REIE_MLS_SOURCE_FRESHNESS_PRIMARY_PAYLOAD_FIELD = 'ModificationTimestamp';
 export const REIE_NEW_LISTING_FRESHNESS_WINDOW_HOURS = 72;
@@ -202,6 +207,22 @@ export function getSourceFreshnessPersistenceDecision(
   if (incomingMs === existingMs) return 'no_change_same_timestamp';
 
   return 'persist_incoming';
+}
+
+export function resolveMlsSourceModifiedAt(
+  listing: unknown,
+  existingSourceModifiedAt: Date | string | null | undefined,
+): ResolvedMlsSourceModifiedAt {
+  const incoming = getMlsSourceFreshness(listing);
+  const existing = parseSourceTimestamp(existingSourceModifiedAt);
+  const decision = getSourceFreshnessPersistenceDecision(incoming, existing);
+  const persistedSourceModifiedAt = decision === 'persist_incoming' ? incoming.sourceModifiedAt : existing;
+
+  return {
+    ...incoming,
+    decision,
+    persistedSourceModifiedAt,
+  };
 }
 
 export function isSourceFreshnessAfterIngestion(sourceFreshness: MlsSourceFreshness, ingestionAt: Date | string) {
