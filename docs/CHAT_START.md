@@ -11,7 +11,7 @@ Product:
 ## Latest New-Chat Handoff
 
 
-PROJECT ATLAS(tm) / Saved Search NEW_LISTING Semantics And Fresh-Candidate Readiness:
+PROJECT ATLAS(tm) / Authoritative MLS Freshness Source Architecture:
 
 Workspace:
 
@@ -19,98 +19,118 @@ Workspace:
 
 Canonical baseline:
 
-- Workstream 1 synchronized prior dry-run certification commit `c189296cddeb97c994f436f2e7b74a974325647d`.
-- Post-sync state before Workstream 2: `HEAD = origin/main = c189296cddeb97c994f436f2e7b74a974325647d`
+- Workstream 1 synchronized prior semantics certification commit `9d6aa9cbf988eaf265c6441e4ddb50409fc6d8c3`.
+- Post-sync state before Workstream 2: `HEAD = origin/main = 9d6aa9cbf988eaf265c6441e4ddb50409fc6d8c3`
 - Divergence before Workstream 2: `0 behind / 0 ahead`
 - Worktree before Workstream 2 source/check/documentation update: clean
-- Local certification commit: created after this handoff update; verify current local HEAD with `git rev-parse HEAD`.
+- Local architecture commit: created after this handoff update; verify current local HEAD with `git rev-parse HEAD`.
 
 Program:
 
-- `REIE_SAVED_SEARCH_NEW_LISTING_SEMANTICS_AND_FRESH_CANDIDATE_READINESS`
+- `REIE_SAVED_SEARCH_AUTHORITATIVE_MLS_FRESHNESS_SOURCE_ARCHITECTURE_AND_REMEDIATION_FEASIBILITY`
 
 Final classification:
 
-- `NEW_LISTING_SEMANTICS_CERTIFIED_NO_CURRENT_FRESH_CANDIDATE`
+- `SOURCE_FRESHNESS_CONTRACT_IMPLEMENTED_LOCALLY_MIGRATION_AUTHORIZATION_REQUIRED`
 
 Workstream 1 synchronization:
 
-- Verified and pushed existing local commit `c189296cddeb97c994f436f2e7b74a974325647d` (`Certify saved search alert dry-run quality`) unchanged to `origin/main`.
-- Post-push canonical baseline: `HEAD = origin/main = c189296cddeb97c994f436f2e7b74a974325647d`
+- Verified and pushed existing local commit `9d6aa9cbf988eaf265c6441e4ddb50409fc6d8c3` (`Certify saved search new listing semantics`) unchanged to `origin/main`.
+- Post-push canonical baseline: `HEAD = origin/main = 9d6aa9cbf988eaf265c6441e4ddb50409fc6d8c3`
 - Divergence after Workstream 1: `0 behind / 0 ahead`
 - Worktree after Workstream 1: clean.
 - No deployment occurred.
 
-Current `NEW_LISTING` semantics:
+MLS timestamp inventory:
 
-- Current production queue path means a currently processed `Property` matched an active subscribed saved search and no prior `AlertEvent(userId, propertyId, type=NEW_LISTING)` exists.
-- It does not prove newly listed by MLS date, newly active by status transition, newly created in REIE, first time public/search-eligible, first match for a specific saved search, or authoritative source freshness.
-- Narrow target contract: `FIRST_ALERTABLE_MATCH_FOR_USER` over a public active listing with a fresh authoritative source timestamp, matching a subscribed active saved search, with no prior user/property/type `NEW_LISTING` event.
+- `ModificationTimestamp`: `SOURCE_CHANGE_TIMESTAMP`; used by MLS Grid delta fetch filter/order and strongest persisted-field candidate.
+- `ListingModificationTimestamp`: `SOURCE_CHANGE_TIMESTAMP`; Typesense update fallback.
+- `MajorChangeTimestamp`: `SOURCE_CHANGE_TIMESTAMP`; Typesense update fallback.
+- `PriceChangeTimestamp`: `SOURCE_CHANGE_TIMESTAMP`; Typesense update fallback.
+- `ListingContractDate`, `OnMarketDate`, `OriginalEntryTimestamp`: `LISTING_ORIGIN_TIMESTAMP`; not source-change freshness.
+- `StatusChangeTimestamp`: `STATUS_TIMESTAMP`; not all-source modification.
+- `PhotosChangeTimestamp`: `UNKNOWN`; no current repository mapper/indexer/fetch reference found.
 
-Freshness source-of-truth result:
+Recommended source-freshness contract:
 
-- MLS Grid `ModificationTimestamp` is used by fetch filtering and ordering, but is not persisted on `Property`.
-- MLS list-date/on-market/status-change timestamps are not currently persisted/certified in `Property`.
-- `Property.lastIntelligenceSync` is useful ingestion recency but not authoritative listing newness.
-- `Property.createdAt` and `Property.updatedAt` are not reliable listing-newness fields.
-- Current runtime time must not be used as source freshness.
+- Future persisted field: `Property.sourceModifiedAt DateTime?`
+- Source: MLS Grid `ModificationTimestamp`.
+- Semantics: authoritative upstream MLS source-change time for the property row.
+- Nullable behavior: missing/malformed/not-backfilled/not-yet-refreshed rows remain `null`.
+- Mapping behavior: valid incoming timestamp persists; missing, malformed, older incoming timestamp keeps existing value; same timestamp no-ops; newer timestamp persists.
+- Alert use: `sourceModifiedAt` must be valid and within `72 hours` for truthful `FIRST_ALERTABLE_MATCH_FOR_USER` eligibility.
+- Search/Typesense: no current Search behavior requires the field; avoid Typesense change unless future public sorting/filtering uses source freshness.
+
+Current persistence:
+
+- `Property.createdAt`: DB insertion time.
+- `Property.updatedAt`: DB mutation time.
+- `Property.lastIntelligenceSync`: ingestion/runtime sync time.
+- None is authoritative MLS source freshness.
+- This workstream did not edit `prisma/schema.prisma` because schema edits without authorized migration/generation/execution would leave an incomplete implementation boundary.
 
 Read-only database evidence:
 
+- Snapshot time: `2026-08-13T21:12:07.914Z`
 - `MlsSyncState.lastSync = 2026-06-20T01:06:03.000Z`
 - `MlsSyncState.lastIntelligenceSync = 2026-06-20T01:06:02.678Z`
-- `MlsSyncState.totalRecords = 850`, `isSyncing = false`
+- `MlsSyncState.lastPage = 1`
+- `MlsSyncState.totalRecords = 850`
+- `MlsSyncState.isSyncing = false`
 - total `Property` rows: `15282`
+- max `Property.createdAt = 2026-06-20T01:02:05.616Z`
+- max `Property.updatedAt = 2026-06-20T01:06:02.112Z`
+- max `Property.lastIntelligenceSync = 2026-06-20T01:06:02.111Z`
 - active/public listings: `1287`
-- active/public listings with `lastIntelligenceSync` inside 1, 2, 3, 7, or 30 days: `0`
-- active/public listings with `createdAt` inside 30 days: `0`
-- active/public listings with `updatedAt` inside 30 days: `0`
-- active/public listings missing `lastIntelligenceSync`: `3`
-- saved-search/fresh-candidate intersection under a 7-day probe: `0` properties, `0` match pairs, `0` undeduped pairs.
+- active/public listings inside 72 hours by current `lastIntelligenceSync`: `0`
 
-Freshness window:
+MLS sync posture:
 
-- Recommended initial proof window: `72 hours`, using authoritative persisted source timestamp only.
-- `7 days` is too broad for "new listing" language unless copy is strictly "saved-search match".
+- Root-cause classification: `CERTIFICATION_GATE`.
+- Evidence supports gated/inactive sync posture, not a currently stuck lock: `isSyncing=false`.
+- Scheduler docs require bounded dry-runs, Supabase/search/queue readiness, and scheduler/provider rollout decisions before live MLS volume or recurring sync cadence.
+- Exact separate authorization needed: additive schema/migration and ingestion mapping first, then a bounded MLS freshness persistence sync/refresh with explicit page limits and validation.
 
-Deterministic check remediation:
+Repository-local implementation:
 
-- Added fixture-only no-send semantics guard coverage for inactive listing, private listing, missing freshness, stale candidate, unsupported ambiguous newness, criteria mismatch, unsubscribed user, duplicate event, truthful copy, no send, and no DB write.
-- New command: `npm run check:saved-search-new-listing-semantics`
-- Result: `SUCCESS`, `FIXTURE_ONLY_NO_SIDE_EFFECT`, `21` cases.
-- Counters: database reads `0`, database rows created/mutated `0`, queue jobs created/changed `0`, provider calls `0`, email logs created `0`, unsubscribe tokens created `0`, workers activated `0`, customer data exposed `0`.
-- Copy contract: subject `David Quinn Group: 1 property intelligence update`; prohibited phrases `new listing`, `newly listed`, `just listed`, and `new match` present `0`.
+- Added pure inert source freshness contract: `lib/mls/sourceFreshness.ts`.
+- Added deterministic fixture check: `scripts/checkMlsSourceFreshnessContract.ts`.
+- Added command: `npm run check:mls-source-freshness-contract`.
+- Added worker compiler inclusion in `tsconfig.worker.json`.
+- No Prisma schema edit, migration, data write, MLS sync, worker, scheduler, provider call, Typesense change, email send, or deploy.
 
-Saved-search attribution finding:
+Deterministic check:
 
-- `SAFE_FOR_ONE_BOUNDED_INTERNAL_PROOF` if a future authorization manually binds one internal/test recipient, one saved search, and one fresh candidate.
-- Broad activation remains blocked because `AlertEvent` and `AlertQueue` do not store `savedSearchId`.
+- Command: `npm run check:mls-source-freshness-contract`
+- Result: `SUCCESS`, `FIXTURE_ONLY_NO_SIDE_EFFECT`
+- Recommended persisted field: `sourceModifiedAt`
+- Primary payload field: `ModificationTimestamp`
+- Window: `72` hours
+- Covered: fresh timestamp, boundary, stale, missing, malformed, source newer than ingestion, ingestion newer than source, duplicate/older ingest, active/public, inactive, private, already-alerted.
+- Counters: DB reads `0`, DB writes `0`, queue jobs `0`, provider calls `0`, emails sent `0`, workers activated `0`, migrations run `0`.
 
-Current fresh candidate status:
+Internal proof readiness:
 
-- `NO_CURRENT_FRESH_CANDIDATE`
-- Do not manufacture a production candidate.
-- A non-production fixture email proof or waiting for a natural authoritative fresh candidate is safer than mutating production data.
+- `FRESHNESS_PERSISTENCE_THEN_NORMAL_SYNC_SUFFICIENT`
+- After authorized additive migration, Prisma client generation, ingestion mapper update, and one authorized fresh MLS update, `sourceModifiedAt` can support a truthful 72-hour internal proof.
 
 Broad activation blockers:
 
-- no persisted authoritative source timestamp on `Property`;
-- no `savedSearchId` on `AlertEvent` or `AlertQueue`;
+- no `savedSearchId` on `AlertEvent`/`AlertQueue`;
 - no cadence preference;
-- no timezone or quiet-hour policy;
+- no timezone policy;
+- no quiet-hour policy;
 - no per-search communication preference;
-- broader unsubscribe integration remains incomplete for per-search attribution;
-- no changed-listing taxonomy beyond `NEW_LISTING`;
-- current active/public data freshness is stale;
-- no scheduler or broad worker activation is authorized.
+- broader unsubscribe attribution incomplete;
+- no changed-listing taxonomy beyond `NEW_LISTING`.
 
 Recommended next gate:
 
-- `READY_FOR_REIE_SAVED_SEARCH_AUTHORITATIVE_FRESHNESS_SOURCE_AND_INTERNAL_PROOF_DECISION`
+- `READY_FOR_REIE_ADDITIVE_SOURCE_MODIFIED_AT_SCHEMA_AND_INGESTION_MAPPING_AUTHORIZATION`
 
 Recommended next package:
 
-- Decide whether to add/persist an authoritative MLS source timestamp for future proofs, wait for a natural fresh candidate after an authorized MLS refresh path, or run a separately authorized non-production/internal fixture email proof with no customer recipient.
+- Authorize additive nullable `Property.sourceModifiedAt` schema/migration generation, Prisma regeneration, inert ingestion mapping, and fixture/read-only validation. Do not run MLS sync until that migration/mapping gate is closed.
 
 Provider tracks remain pending:
 
@@ -120,7 +140,7 @@ Provider tracks remain pending:
 
 Documentation artifact:
 
-- `docs/project-atlas/executive-library/REIE-SAVED-SEARCH-NEW-LISTING-SEMANTICS-AND-FRESH-CANDIDATE-READINESS.md`
+- `docs/project-atlas/executive-library/REIE-SAVED-SEARCH-AUTHORITATIVE-MLS-FRESHNESS-SOURCE-ARCHITECTURE.md`
 
 Protected boundaries:
 

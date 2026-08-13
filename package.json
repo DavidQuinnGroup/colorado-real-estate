@@ -20,6 +20,7 @@
     "check:property-inquiry-notification:readiness": "npm run worker:build && node dist/scripts/propertyInquiryNotificationReadiness.js",
     "check:alert-notification-readiness": "npm run worker:build && node dist/scripts/alertNotificationReadiness.js",
     "check:saved-search-new-listing-semantics": "npm run worker:build && node dist/scripts/runAlertIntentFixtures.js",
+    "check:mls-source-freshness-contract": "npm run worker:build && node dist/scripts/checkMlsSourceFreshnessContract.js",
     "check:notification-readiness": "npm run worker:build && node dist/scripts/notificationReadinessSummary.js",
     "check:notification-readiness:strict": "npm run worker:build && node dist/scripts/notificationReadinessSummary.js --strict",
     "check:notification-readiness:strict-contract": "npm run worker:build && node dist/scripts/notificationReadinessStrictCheck.js",

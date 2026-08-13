@@ -31,6 +31,7 @@
     "scripts/activateGofWave3bColoradoPersistence.ts",
     "scripts/alertFailedRows.ts",
     "scripts/alertNotificationReadiness.ts",
+    "scripts/checkMlsSourceFreshnessContract.ts",
     "scripts/runAlertIntentFixtures.ts",
     "scripts/checkNextSecurityVersion.ts",
     "scripts/checkMapRenderingSafety.ts",
