@@ -11,6 +11,75 @@ Product:
 ## Latest New-Chat Handoff
 
 
+PROJECT ATLAS(tm) / LightBox Auth Contract And API Scope Static Confirmation Complete:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Canonical baseline:
+
+- Branch: `main`
+- Synchronized baseline before static confirmation: `HEAD = origin/main = 645487b9201ad5764dbada615022e229400274b4`
+- Divergence before static confirmation: `0 ahead / 0 behind`
+- Worktree before static confirmation: clean
+- Local documentation commit: created after this handoff update; verify current local HEAD with `git rev-parse HEAD`
+
+Workstream 1 synchronization:
+
+- Verified local commit `645487b9201ad5764dbada615022e229400274b4` was the only local-ahead commit.
+- Verified subject: `Document LightBox actual trial scope review`.
+- Verified scope:
+  - `docs/CHAT_START.md`
+  - `docs/project-atlas/executive-library/REIE-LIGHTBOX-COLORADO-TRIAL-EVALUATION-PROTOCOL.md`
+  - `docs/project-atlas/executive-library/REIE-LIGHTBOX-2000-CALL-TEST-MATRIX.md`
+  - `docs/project-atlas/executive-library/REIE-LIGHTBOX-ACTUAL-TRIAL-TERMS-AND-APP-SCOPE-REVIEW.md`
+- `git diff --check origin/main...HEAD` passed.
+- Pushed existing commit unchanged to `origin/main`.
+- Post-push verification: `HEAD = origin/main = 645487b9201ad5764dbada615022e229400274b4`, divergence `0 ahead / 0 behind`, working tree clean.
+- No deployment was performed.
+
+Static confirmation artifact:
+
+- `docs/project-atlas/executive-library/REIE-LIGHTBOX-AUTH-CONTRACT-AND-API-SCOPE-STATIC-CONFIRMATION.md`
+
+Activated app / credential posture:
+
+- Application: `PROJECT ATLAS - REIE LightBox Evaluation`
+- Application status: Approved
+- Product: `LightBox API's Evaluation`
+- Product status: Approved
+- Credential structure: Key + Secret
+- Credential expiry: 2026-09-03
+- Keychain services confirmed by Executive HQ: `PROJECT_ATLAS_LIGHTBOX_TRIAL_KEY` and `PROJECT_ATLAS_LIGHTBOX_TRIAL_SECRET`
+- No Keychain credential was retrieved by this static confirmation.
+- No intentional LightBox property/location data API call has been authorized or made by this static confirmation.
+
+Static findings:
+
+- Public/static OpenAPI specs were inspected for Geocoding, Parcels, Addresses, Assessment, Structures, and Zoning.
+- Parcels, Addresses, Structures, and Zoning statically document API-key header authentication using `x-api-key`.
+- Assessment statically documents `x-api-key` plus an alternate `BearerAuth` scheme, but no static token-exchange endpoint was found.
+- Geocoding static OpenAPI exposes the expected address search/reverse/autocomplete paths but did not include a securitySchemes entry in the inspected file; public samples/docs still demonstrate `x-api-key`.
+- No reviewed static source explained the exact role of the portal Secret.
+- Public catalog/docs support the existence of Geocoding, Parcels, Addresses, Assessment, Structures, and Zoning, but do not prove app-specific entitlement for `PROJECT ATLAS - REIE LightBox Evaluation`.
+- Public FAQ supports the evaluation period/request-limit and call-accounting baseline, but Analytics/reporting delay, auth/token counting, pagination counting, and endpoint-family entitlement remain partially unresolved.
+
+Review classification:
+
+- Go / no-go: `LIGHTBOX_SUPPORT_CONFIRMATION_REQUIRED`
+- Authentication classification: `AUTH_CONTRACT_STILL_UNRESOLVED`
+- Entitlement classification for Geocoding, Parcels, Addresses, Assessment, Structures, Zoning: `LIKELY_INCLUDED_NOT_STATICALLY_PROVEN`
+- Call-accounting classification: `CALL_ACCOUNTING_STILL_PARTIALLY_UNRESOLVED`
+
+Recommended next authorization gate:
+
+- `READY_FOR_LIGHTBOX_SUPPORT_AUTH_SCOPE_CONFIRMATION`
+
+Do not execute LightBox data calls, retrieve credentials, use Swagger Try It/Execute, send the Secret to any endpoint, implement integration/tooling, mutate database/schema/Typesense/Vercel/MLS/runtime, push this local documentation commit, or deploy without separate Executive HQ authorization.
+
+Prior handoff retained below for audit history.
+
 PROJECT ATLAS(tm) / LightBox Actual Trial Terms And App Scope Review Complete:
 
 Workspace:
