@@ -1,5 +1,7 @@
 export type AlertIntentReasonCode =
   | 'PROPERTY_INVALID'
+  | 'PROPERTY_INACTIVE'
+  | 'PROPERTY_PRIVATE'
   | 'PROPERTY_STALE'
   | 'SEARCH_INACTIVE'
   | 'USER_UNSUBSCRIBED'
@@ -15,6 +17,7 @@ export type AlertIntentReasonCode =
   | 'PAYLOAD_INVALID'
   | 'QUEUE_INTENT_READY'
   | 'RENDER_READY'
+  | 'NEWNESS_UNSUPPORTED'
   | 'DELIVERY_BLOCKED_NO_SEND_MODE'
   | 'BLOCKED_UNSUPPORTED_DRY_RUN_SEAM';
 
@@ -36,6 +39,8 @@ export type AlertIntentProperty = {
   baths?: unknown;
   sqft?: unknown;
   propertyType?: unknown;
+  status?: unknown;
+  isPrivateExclusive?: unknown;
   image?: unknown;
   lat?: unknown;
   lng?: unknown;
@@ -77,6 +82,7 @@ export type AlertIntentDedupeState = {
 export type AlertIntentFreshnessPolicy = {
   maxAgeHours: number;
   propertyTimestamp: string;
+  source?: 'authoritative_source_timestamp' | 'ambiguous_repository_timestamp';
 };
 
 export type AlertIntentInput = {

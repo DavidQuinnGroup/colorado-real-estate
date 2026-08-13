@@ -11,7 +11,7 @@ Product:
 ## Latest New-Chat Handoff
 
 
-PROJECT ATLAS(tm) / Saved Search NEW_LISTING Alert Dry-Run And Row-Quality Certification:
+PROJECT ATLAS(tm) / Saved Search NEW_LISTING Semantics And Fresh-Candidate Readiness:
 
 Workspace:
 
@@ -19,77 +19,98 @@ Workspace:
 
 Canonical baseline:
 
-- Workstream 1 synchronized prior feasibility documentation commit `0d9dd12c1f897513067093a8e55822d2548a060e`.
-- Post-sync state before Workstream 2: `HEAD = origin/main = 0d9dd12c1f897513067093a8e55822d2548a060e`
+- Workstream 1 synchronized prior dry-run certification commit `c189296cddeb97c994f436f2e7b74a974325647d`.
+- Post-sync state before Workstream 2: `HEAD = origin/main = c189296cddeb97c994f436f2e7b74a974325647d`
 - Divergence before Workstream 2: `0 behind / 0 ahead`
-- Worktree before Workstream 2 documentation update: clean
-- Local certification documentation commit: created after this handoff update; verify current local HEAD with `git rev-parse HEAD`
+- Worktree before Workstream 2 source/check/documentation update: clean
+- Local certification commit: created after this handoff update; verify current local HEAD with `git rev-parse HEAD`.
 
 Program:
 
-- `REIE_SAVED_SEARCH_NEW_LISTING_ALERT_DRY_RUN_AND_ROW_QUALITY_CERTIFICATION`
+- `REIE_SAVED_SEARCH_NEW_LISTING_SEMANTICS_AND_FRESH_CANDIDATE_READINESS`
 
 Final classification:
 
-- `DRY_RUN_CERTIFIED_WITH_NARROW_REMEDIATION_REQUIRED`
+- `NEW_LISTING_SEMANTICS_CERTIFIED_NO_CURRENT_FRESH_CANDIDATE`
 
-Dry-run safety result:
+Workstream 1 synchronization:
 
-- Existing dry-run preview path is certified zero-write and zero-send for pending `AlertQueue` inspection.
-- Source guard: `processAlertQueue({ dryRun: true })` returns through `previewAlert()` before alert claiming, unsubscribe token creation, `sendEmail()`, `AlertQueue.update`, or `EmailLog.create`.
-- Executed dry-run command: `node dist/scripts/runAlerts.js --dry-run --limit=25`
-- Result: `scanned=0`, `sent=0`, `skipped=0`, `failed=0`, `dryRun=true`, `success=true`.
-- Pre/post aggregate counts were unchanged after dry-run: `AlertQueue sent=85 skipped=198`, `AlertEvent NEW_LISTING=273`, `EmailLog=78`, `UnsubscribeToken=128`, `SavedSearch=5`.
+- Verified and pushed existing local commit `c189296cddeb97c994f436f2e7b74a974325647d` (`Certify saved search alert dry-run quality`) unchanged to `origin/main`.
+- Post-push canonical baseline: `HEAD = origin/main = c189296cddeb97c994f436f2e7b74a974325647d`
+- Divergence after Workstream 1: `0 behind / 0 ahead`
+- Worktree after Workstream 1: clean.
+- No deployment occurred.
 
-Current production row posture:
+Current `NEW_LISTING` semantics:
 
-- SavedSearch rows: total `5`, active `5`, inactive `0`.
-- SavedSearch row-quality classification: `ELIGIBLE_FOR_ALERT_EVALUATION=5`, all other block classifications `0`.
-- Globally unsubscribed users: `0`.
-- Used per-search unsubscribe tokens: `0`.
-- Used global unsubscribe tokens: `1`.
-- AlertEvent: `NEW_LISTING=273`, duplicate `userId/propertyId/type` groups `0`.
-- AlertQueue: `sent=85`, `skipped=198`, `pending=0`, `processing=0`, `failed=0`.
-- Latest 1000 sampled `Property` rows had minimum alert facts present, but all were stale or missing current `lastIntelligenceSync` under a 30-day threshold.
+- Current production queue path means a currently processed `Property` matched an active subscribed saved search and no prior `AlertEvent(userId, propertyId, type=NEW_LISTING)` exists.
+- It does not prove newly listed by MLS date, newly active by status transition, newly created in REIE, first time public/search-eligible, first match for a specific saved search, or authoritative source freshness.
+- Narrow target contract: `FIRST_ALERTABLE_MATCH_FOR_USER` over a public active listing with a fresh authoritative source timestamp, matching a subscribed active saved search, with no prior user/property/type `NEW_LISTING` event.
 
-Matching correctness:
+Freshness source-of-truth result:
 
-- Deterministic fixture command passed: `node_modules/.bin/jiti scripts/runAlertIntentFixtures.ts`.
-- Fixture mode: `FIXTURE_ONLY_NO_SIDE_EFFECT`.
-- Cases evaluated: `17`.
-- Covered complete match, city mismatch, price mismatch, beds mismatch, property-type mismatch, bounds mismatch, inactive search, unsubscribed user, missing email, stale property, invalid property, duplicate event, payload-ready, payload-invalid, queue-intent-ready, render-ready, and mandatory delivery block.
-- Fixture counters: database reads `0`, database rows created `0`, database rows mutated `0`, queue jobs created/changed `0`, provider calls `0`, email logs created `0`, unsubscribe tokens created `0`, workers activated `0`, customer data exposed `0`.
+- MLS Grid `ModificationTimestamp` is used by fetch filtering and ordering, but is not persisted on `Property`.
+- MLS list-date/on-market/status-change timestamps are not currently persisted/certified in `Property`.
+- `Property.lastIntelligenceSync` is useful ingestion recency but not authoritative listing newness.
+- `Property.createdAt` and `Property.updatedAt` are not reliable listing-newness fields.
+- Current runtime time must not be used as source freshness.
 
-NEW_LISTING semantics:
+Read-only database evidence:
 
-- Current code means a currently processed `Property` matched an active subscribed saved search and no prior `AlertEvent(userId, propertyId, type=NEW_LISTING)` exists.
-- It does not strictly prove newly ingested listing, newly active listing, listing date freshness, first time a specific saved search saw the listing, or first customer exposure.
-- `AlertEvent.sentAt` is event creation time, not proven MLS list-date or status-transition time.
-- Future live proof must either use "saved-search match" language or prove listing freshness before using stronger "new listing" language.
+- `MlsSyncState.lastSync = 2026-06-20T01:06:03.000Z`
+- `MlsSyncState.lastIntelligenceSync = 2026-06-20T01:06:02.678Z`
+- `MlsSyncState.totalRecords = 850`, `isSyncing = false`
+- total `Property` rows: `15282`
+- active/public listings: `1287`
+- active/public listings with `lastIntelligenceSync` inside 1, 2, 3, 7, or 30 days: `0`
+- active/public listings with `createdAt` inside 30 days: `0`
+- active/public listings with `updatedAt` inside 30 days: `0`
+- active/public listings missing `lastIntelligenceSync`: `3`
+- saved-search/fresh-candidate intersection under a 7-day probe: `0` properties, `0` match pairs, `0` undeduped pairs.
+
+Freshness window:
+
+- Recommended initial proof window: `72 hours`, using authoritative persisted source timestamp only.
+- `7 days` is too broad for "new listing" language unless copy is strictly "saved-search match".
+
+Deterministic check remediation:
+
+- Added fixture-only no-send semantics guard coverage for inactive listing, private listing, missing freshness, stale candidate, unsupported ambiguous newness, criteria mismatch, unsubscribed user, duplicate event, truthful copy, no send, and no DB write.
+- New command: `npm run check:saved-search-new-listing-semantics`
+- Result: `SUCCESS`, `FIXTURE_ONLY_NO_SIDE_EFFECT`, `21` cases.
+- Counters: database reads `0`, database rows created/mutated `0`, queue jobs created/changed `0`, provider calls `0`, email logs created `0`, unsubscribe tokens created `0`, workers activated `0`, customer data exposed `0`.
+- Copy contract: subject `David Quinn Group: 1 property intelligence update`; prohibited phrases `new listing`, `newly listed`, `just listed`, and `new match` present `0`.
 
 Saved-search attribution finding:
 
-- `SAVED_SEARCH_ATTRIBUTION_PARTIAL`
-- `AlertEvent` and `AlertQueue` do not store `savedSearchId`.
-- This is acceptable for duplicate suppression at user/property/type level but blocks broad multi-search activation because it can suppress distinct searches, lose attribution, blur per-search unsubscribe, and weaken exact re-entry context.
+- `SAFE_FOR_ONE_BOUNDED_INTERNAL_PROOF` if a future authorization manually binds one internal/test recipient, one saved search, and one fresh candidate.
+- Broad activation remains blocked because `AlertEvent` and `AlertQueue` do not store `savedSearchId`.
 
-Activation blockers:
+Current fresh candidate status:
 
-- `BLOCKING`: ambiguous `NEW_LISTING` semantics for live copy.
-- `BLOCKING`: no current pending production candidate rows for real preview.
-- `BLOCKING`: sampled property freshness stale/missing by `lastIntelligenceSync`.
-- `BLOCKING_FOR_BROAD_ACTIVATION`: missing `savedSearchId` attribution in alert event/queue records.
-- `BLOCKING_FOR_BROAD_ACTIVATION`: no persisted cadence/timezone/quiet-hour/per-search communication preference.
-- `BLOCKING_FOR_BROAD_ACTIVATION`: active alert/digest token creation is global despite model support for per-search tokens.
-- `FUTURE_ENHANCEMENT`: scheduler absence and changed-listing event taxonomy beyond `NEW_LISTING`.
+- `NO_CURRENT_FRESH_CANDIDATE`
+- Do not manufacture a production candidate.
+- A non-production fixture email proof or waiting for a natural authoritative fresh candidate is safer than mutating production data.
+
+Broad activation blockers:
+
+- no persisted authoritative source timestamp on `Property`;
+- no `savedSearchId` on `AlertEvent` or `AlertQueue`;
+- no cadence preference;
+- no timezone or quiet-hour policy;
+- no per-search communication preference;
+- broader unsubscribe integration remains incomplete for per-search attribution;
+- no changed-listing taxonomy beyond `NEW_LISTING`;
+- current active/public data freshness is stale;
+- no scheduler or broad worker activation is authorized.
 
 Recommended next gate:
 
-- `READY_FOR_REIE_SAVED_SEARCH_NEW_LISTING_SEMANTICS_AND_INTERNAL_LIVE_PROOF_AUTHORIZATION`
+- `READY_FOR_REIE_SAVED_SEARCH_AUTHORITATIVE_FRESHNESS_SOURCE_AND_INTERNAL_PROOF_DECISION`
 
 Recommended next package:
 
-- Either define/remediate `NEW_LISTING` semantics, freshness proof, and attribution boundaries before live use, or authorize a one-row internal/test-recipient live proof with explicit writes capped to one candidate and no scheduler, no customer recipient, no continuous worker, no backlog release, and no changed-listing expansion.
+- Decide whether to add/persist an authoritative MLS source timestamp for future proofs, wait for a natural fresh candidate after an authorized MLS refresh path, or run a separately authorized non-production/internal fixture email proof with no customer recipient.
 
 Provider tracks remain pending:
 
@@ -99,7 +120,7 @@ Provider tracks remain pending:
 
 Documentation artifact:
 
-- `docs/project-atlas/executive-library/REIE-SAVED-SEARCH-NEW-LISTING-ALERT-DRY-RUN-AND-ROW-QUALITY-CERTIFICATION.md`
+- `docs/project-atlas/executive-library/REIE-SAVED-SEARCH-NEW-LISTING-SEMANTICS-AND-FRESH-CANDIDATE-READINESS.md`
 
 Protected boundaries:
 

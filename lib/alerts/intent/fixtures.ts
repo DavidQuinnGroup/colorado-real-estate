@@ -13,10 +13,12 @@ export const ALERT_INTENT_BASELINE_SHA = '8fc84ea76e9a3436188c2de416079ff57d75b5
 export const ALERT_INTENT_EVALUATED_AT = '2026-07-31T12:00:00.000Z';
 export const ALERT_INTENT_PROPERTY_TIMESTAMP = '2026-07-31T10:00:00.000Z';
 export const ALERT_INTENT_PUBLIC_BASE_URL = 'https://davidquinngroup.com';
-export const ALERT_INTENT_EXPECTED_CASE_COUNT = 17;
+export const ALERT_INTENT_EXPECTED_CASE_COUNT = 21;
 
 export const allAlertIntentReasonCodes: readonly AlertIntentReasonCode[] = [
   'PROPERTY_INVALID',
+  'PROPERTY_INACTIVE',
+  'PROPERTY_PRIVATE',
   'PROPERTY_STALE',
   'SEARCH_INACTIVE',
   'USER_UNSUBSCRIBED',
@@ -32,6 +34,7 @@ export const allAlertIntentReasonCodes: readonly AlertIntentReasonCode[] = [
   'PAYLOAD_INVALID',
   'QUEUE_INTENT_READY',
   'RENDER_READY',
+  'NEWNESS_UNSUPPORTED',
   'DELIVERY_BLOCKED_NO_SEND_MODE',
   'BLOCKED_UNSUPPORTED_DRY_RUN_SEAM',
 ];
@@ -49,6 +52,8 @@ const baseInput: AlertIntentInput = {
     baths: 2,
     sqft: 2100,
     propertyType: 'Single Family',
+    status: 'Active',
+    isPrivateExclusive: false,
     image: 'https://example.invalid/fixture-property.jpg',
     lat: 40.01,
     lng: -105.25,
@@ -83,6 +88,7 @@ const baseInput: AlertIntentInput = {
   freshnessPolicy: {
     maxAgeHours: 24,
     propertyTimestamp: ALERT_INTENT_PROPERTY_TIMESTAMP,
+    source: 'authoritative_source_timestamp',
   },
   evaluatedAt: ALERT_INTENT_EVALUATED_AT,
   publicBaseUrl: ALERT_INTENT_PUBLIC_BASE_URL,
@@ -159,6 +165,20 @@ export const alertIntentFixtures: readonly AlertIntentFixture[] = [
     'stale property',
     { freshnessPolicy: { propertyTimestamp: '2026-07-28T10:00:00.000Z' } },
     ['PROPERTY_STALE'],
+    'blocked',
+  ),
+  fixture(
+    'missing freshness timestamp',
+    { freshnessPolicy: { propertyTimestamp: '' } },
+    ['PROPERTY_STALE'],
+    'blocked',
+  ),
+  fixture('inactive listing', { property: { status: 'Closed' } }, ['PROPERTY_INACTIVE'], 'blocked'),
+  fixture('private listing', { property: { isPrivateExclusive: true } }, ['PROPERTY_PRIVATE'], 'blocked'),
+  fixture(
+    'unsupported ambiguous newness timestamp',
+    { freshnessPolicy: { source: 'ambiguous_repository_timestamp' } },
+    ['NEWNESS_UNSUPPORTED'],
     'blocked',
   ),
   fixture('invalid property', { property: { id: '' } }, ['PROPERTY_INVALID'], 'blocked'),

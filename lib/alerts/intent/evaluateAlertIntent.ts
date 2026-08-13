@@ -79,6 +79,18 @@ export function isValidAlertProperty(property: AlertIntentProperty) {
   return Boolean(property.id && property.city);
 }
 
+function isActiveAlertProperty(property: AlertIntentProperty) {
+  return toCleanAlertString(property.status).toLowerCase() === 'active';
+}
+
+function isPublicAlertProperty(property: AlertIntentProperty) {
+  return property.isPrivateExclusive === false;
+}
+
+function hasAuthoritativeNewness(input: AlertIntentInput) {
+  return input.freshnessPolicy.source !== 'ambiguous_repository_timestamp';
+}
+
 function isFreshAlertProperty(input: AlertIntentInput) {
   const evaluatedAt = Date.parse(input.evaluatedAt);
   const propertyTimestamp = Date.parse(input.freshnessPolicy.propertyTimestamp);
@@ -190,6 +202,9 @@ export function evaluateAlertIntent(input: AlertIntentInput): AlertIntentResult 
   }
 
   if (!isValidAlertProperty(input.property)) return blocked(['PROPERTY_INVALID']);
+  if (!isActiveAlertProperty(input.property)) return blocked(['PROPERTY_INACTIVE']);
+  if (!isPublicAlertProperty(input.property)) return blocked(['PROPERTY_PRIVATE']);
+  if (!hasAuthoritativeNewness(input)) return blocked(['NEWNESS_UNSUPPORTED']);
   if (!isFreshAlertProperty(input)) return blocked(['PROPERTY_STALE']);
   if (!input.savedSearch.isActive) return blocked(['SEARCH_INACTIVE']);
   if (!input.user || input.user.isUnsubscribed) return blocked(['USER_UNSUBSCRIBED']);
