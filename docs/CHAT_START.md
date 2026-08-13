@@ -11,6 +11,117 @@ Product:
 ## Latest New-Chat Handoff
 
 
+PROJECT ATLAS(tm) / Saved Search NEW_LISTING Alert Dry-Run And Row-Quality Certification:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Canonical baseline:
+
+- Workstream 1 synchronized prior feasibility documentation commit `0d9dd12c1f897513067093a8e55822d2548a060e`.
+- Post-sync state before Workstream 2: `HEAD = origin/main = 0d9dd12c1f897513067093a8e55822d2548a060e`
+- Divergence before Workstream 2: `0 behind / 0 ahead`
+- Worktree before Workstream 2 documentation update: clean
+- Local certification documentation commit: created after this handoff update; verify current local HEAD with `git rev-parse HEAD`
+
+Program:
+
+- `REIE_SAVED_SEARCH_NEW_LISTING_ALERT_DRY_RUN_AND_ROW_QUALITY_CERTIFICATION`
+
+Final classification:
+
+- `DRY_RUN_CERTIFIED_WITH_NARROW_REMEDIATION_REQUIRED`
+
+Dry-run safety result:
+
+- Existing dry-run preview path is certified zero-write and zero-send for pending `AlertQueue` inspection.
+- Source guard: `processAlertQueue({ dryRun: true })` returns through `previewAlert()` before alert claiming, unsubscribe token creation, `sendEmail()`, `AlertQueue.update`, or `EmailLog.create`.
+- Executed dry-run command: `node dist/scripts/runAlerts.js --dry-run --limit=25`
+- Result: `scanned=0`, `sent=0`, `skipped=0`, `failed=0`, `dryRun=true`, `success=true`.
+- Pre/post aggregate counts were unchanged after dry-run: `AlertQueue sent=85 skipped=198`, `AlertEvent NEW_LISTING=273`, `EmailLog=78`, `UnsubscribeToken=128`, `SavedSearch=5`.
+
+Current production row posture:
+
+- SavedSearch rows: total `5`, active `5`, inactive `0`.
+- SavedSearch row-quality classification: `ELIGIBLE_FOR_ALERT_EVALUATION=5`, all other block classifications `0`.
+- Globally unsubscribed users: `0`.
+- Used per-search unsubscribe tokens: `0`.
+- Used global unsubscribe tokens: `1`.
+- AlertEvent: `NEW_LISTING=273`, duplicate `userId/propertyId/type` groups `0`.
+- AlertQueue: `sent=85`, `skipped=198`, `pending=0`, `processing=0`, `failed=0`.
+- Latest 1000 sampled `Property` rows had minimum alert facts present, but all were stale or missing current `lastIntelligenceSync` under a 30-day threshold.
+
+Matching correctness:
+
+- Deterministic fixture command passed: `node_modules/.bin/jiti scripts/runAlertIntentFixtures.ts`.
+- Fixture mode: `FIXTURE_ONLY_NO_SIDE_EFFECT`.
+- Cases evaluated: `17`.
+- Covered complete match, city mismatch, price mismatch, beds mismatch, property-type mismatch, bounds mismatch, inactive search, unsubscribed user, missing email, stale property, invalid property, duplicate event, payload-ready, payload-invalid, queue-intent-ready, render-ready, and mandatory delivery block.
+- Fixture counters: database reads `0`, database rows created `0`, database rows mutated `0`, queue jobs created/changed `0`, provider calls `0`, email logs created `0`, unsubscribe tokens created `0`, workers activated `0`, customer data exposed `0`.
+
+NEW_LISTING semantics:
+
+- Current code means a currently processed `Property` matched an active subscribed saved search and no prior `AlertEvent(userId, propertyId, type=NEW_LISTING)` exists.
+- It does not strictly prove newly ingested listing, newly active listing, listing date freshness, first time a specific saved search saw the listing, or first customer exposure.
+- `AlertEvent.sentAt` is event creation time, not proven MLS list-date or status-transition time.
+- Future live proof must either use "saved-search match" language or prove listing freshness before using stronger "new listing" language.
+
+Saved-search attribution finding:
+
+- `SAVED_SEARCH_ATTRIBUTION_PARTIAL`
+- `AlertEvent` and `AlertQueue` do not store `savedSearchId`.
+- This is acceptable for duplicate suppression at user/property/type level but blocks broad multi-search activation because it can suppress distinct searches, lose attribution, blur per-search unsubscribe, and weaken exact re-entry context.
+
+Activation blockers:
+
+- `BLOCKING`: ambiguous `NEW_LISTING` semantics for live copy.
+- `BLOCKING`: no current pending production candidate rows for real preview.
+- `BLOCKING`: sampled property freshness stale/missing by `lastIntelligenceSync`.
+- `BLOCKING_FOR_BROAD_ACTIVATION`: missing `savedSearchId` attribution in alert event/queue records.
+- `BLOCKING_FOR_BROAD_ACTIVATION`: no persisted cadence/timezone/quiet-hour/per-search communication preference.
+- `BLOCKING_FOR_BROAD_ACTIVATION`: active alert/digest token creation is global despite model support for per-search tokens.
+- `FUTURE_ENHANCEMENT`: scheduler absence and changed-listing event taxonomy beyond `NEW_LISTING`.
+
+Recommended next gate:
+
+- `READY_FOR_REIE_SAVED_SEARCH_NEW_LISTING_SEMANTICS_AND_INTERNAL_LIVE_PROOF_AUTHORIZATION`
+
+Recommended next package:
+
+- Either define/remediate `NEW_LISTING` semantics, freshness proof, and attribution boundaries before live use, or authorize a one-row internal/test-recipient live proof with explicit writes capped to one candidate and no scheduler, no customer recipient, no continuous worker, no backlog release, and no changed-listing expansion.
+
+Provider tracks remain pending:
+
+- LightBox: `WAITING_FOR_LIGHTBOX_SUPPORT_AUTH_SCOPE_CONFIRMATION`
+- LightBox evaluation calls consumed: `0`
+- ATTOM: `PENDING_PROVIDER_RESPONSE`
+
+Documentation artifact:
+
+- `docs/project-atlas/executive-library/REIE-SAVED-SEARCH-NEW-LISTING-ALERT-DRY-RUN-AND-ROW-QUALITY-CERTIFICATION.md`
+
+Protected boundaries:
+
+- No email sent.
+- No Resend send API call.
+- No worker or scheduler activation.
+- No AlertQueue backlog release.
+- No production AlertEvent or AlertQueue creation.
+- No EmailLog write.
+- No SavedSearch, unsubscribe, User/customer, CRM, Prisma schema, migration, MLS, Typesense, Vercel, provider, LightBox, ATTOM, or deployment mutation.
+
+Next chat should first run:
+
+- `git fetch origin main`
+- `git status --short --branch --untracked-files=all`
+- `git rev-parse HEAD origin/main`
+- `git rev-list --left-right --count HEAD...origin/main`
+- `git log -8 --oneline`
+
+Prior handoff retained below for audit history.
+
+
 PROJECT ATLAS(tm) / Saved Search Alert Cadence And Changed-Listing Protected Feasibility Review:
 
 Workspace:
