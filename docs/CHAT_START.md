@@ -11,6 +11,103 @@ Product:
 ## Latest New-Chat Handoff
 
 
+PROJECT ATLAS(tm) / Boulder Market AEO Answer Unit Pilot Production Readiness Review:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Canonical baseline:
+
+- Branch: `main`
+- Synchronized implementation commit: `HEAD = origin/main = f5680c2735e52ef0510ba28ff433243d1d025dea`
+- Worktree before production-readiness review documentation: clean
+- Local production-readiness documentation commit: created after this handoff update; verify current local HEAD with `git rev-parse HEAD`
+
+Program:
+
+- `BOULDER_MARKET_AEO_ANSWER_UNIT_PILOT_PRODUCTION_READINESS_REVIEW`
+
+Final classification:
+
+- `READY_FOR_BOULDER_MARKET_AEO_PILOT_PRODUCTION_DEPLOYMENT_AUTHORIZATION`
+
+Reviewed production candidate:
+
+- `f5680c2735e52ef0510ba28ff433243d1d025dea`
+- Commit subject: `Implement Boulder market AEO answer unit pilot`
+- Runtime scope: `app/market/[city]/page.tsx`
+- Contract/check scope: `lib/marketAeoAnswerUnit.ts`, `scripts/checkBoulderMarketAnswerUnitPilot.ts`, `package.json`, `tsconfig.worker.json`
+- Documentation scope: `docs/CHAT_START.md`, `docs/project-atlas/executive-library/PROJECT-ATLAS-SEO-AEO-AUTHORITY-ARCHITECTURE.md`, `docs/project-atlas/executive-library/REIE-BOULDER-MARKET-AEO-ANSWER-UNIT-PILOT-CERTIFICATION.md`
+
+Production-readiness evidence:
+
+- `npm run typecheck`: passed.
+- `npm run build`: passed; `/market/[city]` generated as SSG including `/market/boulder-co-housing-market`.
+- `npm run check:boulder-market-answer-unit-pilot`: passed.
+- `npm run check:market-aeo-boulder-pilot`: passed.
+- `npm run check:market-product-3`: passed.
+- `npm run check:public-runtime-safety`: passed.
+- `npm run check:public-trust-readiness`: passed.
+- Local production server (`npm run start`) returned `200` for `/market/boulder-co-housing-market` and `/market/denver-co-housing-market`.
+- Boulder production HTML exposed one answer-unit pilot container, five answer units, evidence date `2026-08-08`, `$1,450,000`, `$850`, `22 days on market`, `58 active inventory signal`, protected-boundary false markers, and no new answer-unit JSON-LD.
+- Denver production HTML exposed no Boulder answer-unit pilot markers.
+
+Review conclusions:
+
+- Boulder-only routing remains deterministic through `cityData.marketSlug === 'boulder-co-housing-market'`.
+- No non-Boulder city template receives Boulder answer units or Boulder-specific answer-unit facts.
+- Evidence-effective date remains distinct from generated/render timestamp.
+- Stale/missing/conflicting/unsupported/insufficient-citation states remain deterministic and fail closed or downgrade as designed.
+- Public UX is subordinate to the Market product and avoids FAQ spam, hidden machine-only text, prediction, valuation, investment recommendation, protected-class implication, school/safety ranking, and unsupported superlatives.
+- Existing canonical, title, description, indexability posture, sitemap behavior, internal links, and city-market schema posture are preserved.
+- Lack of new public JSON-LD is `ACCEPTABLE_FOR_PILOT`; existing visible/structured parity is internal-data-visible-content only.
+- Prior local Turbopack `.js` source-import resolver issue is classified `NONBLOCKING_LOCAL_DEV_TOOLING_ISSUE`; production build passed.
+
+Provider tracks remain pending:
+
+- LightBox: `WAITING_FOR_LIGHTBOX_SUPPORT_AUTH_SCOPE_CONFIRMATION`
+- LightBox evaluation calls consumed: `0`
+- ATTOM: `PENDING_PROVIDER_RESPONSE`
+
+Protected boundaries:
+
+- No deployment.
+- No credential retrieval.
+- No LightBox API call.
+- No ATTOM investigation or API call.
+- No county/GIS/public-record provider call.
+- No Prisma schema or migration.
+- No production database write.
+- No customer-data mutation.
+- No CRM, SavedSearch, worker, queue, scheduler, email, notification, telemetry, analytics, Typesense, MLS, Vercel, deployment, or provider activation.
+
+Recommended bounded deployment procedure, if separately authorized:
+
+- Fetch origin and verify `HEAD = origin/main = f5680c2735e52ef0510ba28ff433243d1d025dea`, divergence `0/0`, worktree clean.
+- Run `npm run typecheck`, `npm run build`, `npm run check:boulder-market-answer-unit-pilot`, `npm run check:market-aeo-boulder-pilot`, `npm run check:market-product-3`, `npm run check:public-runtime-safety`, `npm run check:public-trust-readiness`, and `git diff --check`.
+- Deploy the synchronized commit through the existing production deployment mechanism only after Executive HQ authorization.
+- Verify production `/market/boulder-co-housing-market` returns 200 and exposes the answer-unit pilot container, five answer units, evidence date, facts, source/freshness markers, canonical metadata, and protected-boundary false markers.
+- Verify at least one non-Boulder Market route returns 200 and exposes no Boulder answer-unit pilot markers.
+- Roll back or stop certification on build failure, non-200 route response, missing/extra answer units, non-Boulder leakage, metadata/canonical/noindex regression, protected-boundary violation, provider call, customer-data mutation, or unsupported claim.
+
+Next chat should first run:
+
+- `git fetch origin main`
+- `git status --short --branch --untracked-files=all`
+- `git rev-parse HEAD origin/main`
+- `git rev-list --left-right --count HEAD...origin/main`
+- `git log -8 --oneline`
+
+Expected next authorization gate:
+
+- `READY_FOR_BOULDER_MARKET_AEO_PILOT_PRODUCTION_DEPLOYMENT_AUTHORIZATION`
+
+Do not deploy, retrieve credentials, call LightBox, investigate ATTOM, activate county sources, modify database/schema/Typesense/Vercel/MLS/telemetry/customer data, add endpoints/feeds/`llms.txt`, or expand SEO/AEO answer units to other cities or surfaces without separate Executive HQ authorization.
+
+Prior handoff retained below for audit history.
+
+
 PROJECT ATLAS(tm) / Boulder Market AEO Answer Unit Pilot Implemented And Locally Certified:
 
 Workspace:
