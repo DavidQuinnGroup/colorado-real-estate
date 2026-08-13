@@ -11,6 +11,67 @@ Product:
 ## Latest New-Chat Handoff
 
 
+PROJECT ATLAS(tm) / REIE Agent Work Replacement Phase 2 Candidate Selection Complete:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Canonical baseline:
+
+- Branch: `main`
+- Phase 2 candidate-feasibility baseline: `HEAD = origin/main = 8b0a89bb954a0f69d636a7ea2ec2ccf6479bf422`
+- Divergence before documentation: `0 ahead / 0 behind`
+- Worktree before documentation: clean
+- Local documentation commit: created after this handoff update; verify current local HEAD with `git rev-parse HEAD`
+
+Artifacts created:
+
+- `docs/project-atlas/executive-library/REIE-AGENT-WORK-REPLACEMENT-PHASE-2-CANDIDATE-FEASIBILITY.md`
+- `docs/project-atlas/executive-library/REIE-AGENT-WORK-REPLACEMENT-PHASE-2-CANDIDATE-SCORECARD.md`
+
+Phase 2 disposition:
+
+- Primary next implementation candidate: `RECURRING_SOURCE_FRESH_MARKET_NEWSLETTER_AGENT_REVIEW_PACKAGE`
+- Secondary / follow-on candidate: `SAVED_SEARCH_ALERT_CADENCE_AND_CHANGED_LISTING_FOLLOW_UP_CERTIFICATION_AFTER_EXPLICIT_PROTECTED_SYSTEM_AUTHORIZATION`
+- Recommended next authorization gate: `READY_FOR_RECURRING_MARKET_NEWSLETTER_AGENT_REVIEW_PACKAGE_IMPLEMENTATION_AUTHORIZATION`
+
+Selection rationale:
+
+- Candidate 1 targets recurring market/newsletter research, source/freshness checks, reusable customer explanations, and package composition across 31 Market Intelligence rows plus 19 Newsletters / Content / Client Education rows from the Phase 1 matrix.
+- The recommended MVV is non-sending, non-mutating, agent-reviewed, and provider-independent.
+- The high-value missing capability is package assembly and approval-ready content composition, not email delivery.
+- Saved-search alerts remain high-value, but the next meaningful work crosses protected email, queue, worker, unsubscribe, customer-data, and production activation gates.
+- CRM task hardening remains useful, but the next meaningful work is mostly certification/hardening of existing CRM/customer-data mutation surfaces.
+
+Provider tracks still pending:
+
+- LightBox: `WAITING_FOR_LIGHTBOX_SUPPORT_AUTH_SCOPE_CONFIRMATION`
+- LightBox API calls consumed by PROJECT ATLAS evaluation: `0`
+- ATTOM: `PENDING_PROVIDER_RESPONSE`
+- County assessor/source operations: separate dedicated workstream
+
+Protected boundaries:
+
+- Documentation only.
+- No implementation.
+- No runtime code change.
+- No Prisma schema or migration.
+- No production database or customer-data mutation.
+- No workers, queues, saved-search alerts, live email, Resend, CRM mutation, MLS, Typesense, Vercel, provider, GIS, AI, telemetry, LightBox, ATTOM, county-source, deployment, or external activation.
+
+Next chat should first run:
+
+- `git fetch origin main`
+- `git status --short --branch --untracked-files=all`
+- `git rev-parse HEAD origin/main`
+- `git rev-list --left-right --count HEAD...origin/main`
+- `git log -8 --oneline`
+
+Do not push, deploy, implement the selected candidate, activate provider tracks, retrieve credentials, send email, run workers, mutate CRM/customer data, or begin another PROJECT ATLAS implementation workstream without separate Executive HQ authorization.
+
+Prior handoff retained below for audit history.
+
 PROJECT ATLAS(tm) / LightBox Auth Contract And API Scope Static Confirmation Complete:
 
 Workspace:
