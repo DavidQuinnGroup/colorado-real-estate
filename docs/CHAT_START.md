@@ -11,6 +11,102 @@ Product:
 ## Latest New-Chat Handoff
 
 
+PROJECT ATLAS(tm) / SEO + AEO Authority Architecture Audit Complete:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Canonical baseline:
+
+- Branch: `main`
+- Post-market-newsletter synchronization baseline: `HEAD = origin/main = bf06ef8881043409a29c84a061a150ee1137b126`
+- Divergence before SEO/AEO documentation: `0 ahead / 0 behind`
+- Worktree before SEO/AEO documentation: clean
+- Local documentation commit: created after this handoff update; verify current local HEAD with `git rev-parse HEAD`
+
+Program:
+
+- `PROJECT_ATLAS_SEO_AEO_AUTHORITY_ARCHITECTURE`
+
+Final disposition:
+
+- `ARCHITECTURAL_AUDIT_CAPABILITY_INVENTORY_GAP_ANALYSIS_GOVERNING_CONTRACT_AND_ROADMAP_COMPLETE`
+
+Artifacts created:
+
+- `docs/project-atlas/executive-library/PROJECT-ATLAS-SEO-AEO-AUTHORITY-ARCHITECTURE.md`
+- `docs/project-atlas/executive-library/PROJECT-ATLAS-SEO-AEO-AUTHORITY-MATURITY-SCORECARD.md`
+
+Scope note:
+
+- The available authorization attachment ended mid-sentence in the maturity-scorecard section. Work was therefore kept documentation-only and local.
+- No public-page implementation, runtime code, schema/API, provider, database, Typesense, Vercel, MLS, telemetry, or deployment work was performed.
+
+Key architecture conclusion:
+
+- SEO and AEO are complementary but distinct.
+- SEO covers crawlability, canonical routing, metadata, sitemaps, structured-data discoverability, internal links, and indexability.
+- AEO covers evidence-bounded answer units, canonical facts, source/provenance, freshness/effective date, entity/geographic relationships, visible answers, machine-readable semantics, and citation-worthy attribution.
+- AEO must not become FAQ stuffing, keyword stuffing, AI prose, speculative answer pages, unsupported summaries, or programmatic pages without evidence/freshness/provenance.
+
+Governed AEO model:
+
+- `REIE EVIDENCE -> CANONICAL FACTS -> SOURCE/PROVENANCE -> FRESHNESS/EFFECTIVE DATE -> ENTITY + GEOGRAPHIC RELATIONSHIPS -> STRUCTURED ANSWER UNITS -> HUMAN-READABLE PUBLIC KNOWLEDGE -> MACHINE-READABLE SEMANTICS -> SEARCH/ANSWER DISCOVERY -> ATTRIBUTABLE/CITATION-WORTHY ANSWERS`
+
+Highest-maturity foundations:
+
+- `/sources` source registry and trust route
+- existing market AEO contracts
+- city orientation guide visible-answer/evidence contract
+- property schema and property verification prompts
+- buyer/seller professional-boundary language
+
+Highest-priority gaps:
+
+- Shared REIE answer-unit contract is not yet implemented.
+- Sitemap `lastModified` currently reflects generation time rather than route-specific evidence effective dates.
+- Source registry is not yet a uniform citation layer across every answer-capable surface.
+- Structured-data eligibility is not centrally governed.
+- Programmatic scale requires indexable/noindex/unpublished/fail-closed thresholds before expansion.
+- Measurement remains design-only until telemetry authorization.
+
+Provider tracks remain pending:
+
+- LightBox: `WAITING_FOR_LIGHTBOX_SUPPORT_AUTH_SCOPE_CONFIRMATION`
+- LightBox API calls consumed by PROJECT ATLAS evaluation: `0`
+- ATTOM: `PENDING_PROVIDER_RESPONSE`
+
+Protected boundaries:
+
+- Documentation only.
+- No provider activation.
+- No credential retrieval.
+- No LightBox API call.
+- No ATTOM investigation or API call.
+- No county/GIS/public-record provider call.
+- No runtime application code change.
+- No Prisma schema or migration.
+- No production database or customer-data mutation.
+- No Typesense, MLS, Vercel, telemetry, deployment, email, queue, worker, scheduler, CRM, notification, or public implementation change.
+
+Next chat should first run:
+
+- `git fetch origin main`
+- `git status --short --branch --untracked-files=all`
+- `git rev-parse HEAD origin/main`
+- `git rev-list --left-right --count HEAD...origin/main`
+- `git log -8 --oneline`
+
+Expected next authorization gate:
+
+- `READY_FOR_PROJECT_ATLAS_SEO_AEO_AUTHORITY_ARCHITECTURE_SYNCHRONIZATION`
+
+Do not push the local documentation commit, deploy, activate providers, retrieve credentials, call LightBox, investigate ATTOM, modify runtime/public pages/schema/API/database/Typesense/Vercel/MLS/telemetry/customer data, or begin SEO/AEO implementation without separate Executive HQ authorization.
+
+Prior handoff retained below for audit history.
+
+
 PROJECT ATLAS(tm) / Recurring Market Newsletter Agent Review Package MVV Implemented And Locally Certified:
 
 Workspace:
