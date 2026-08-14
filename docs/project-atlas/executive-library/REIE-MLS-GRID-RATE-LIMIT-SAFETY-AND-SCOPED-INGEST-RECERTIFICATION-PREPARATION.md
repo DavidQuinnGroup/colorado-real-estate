@@ -21,6 +21,14 @@ Final classification:
 
 No MLS Grid API request was made during this workstream. No full scoped ingest, Typesense mutation, alert/email activity, worker/scheduler activation, deployment, push, LightBox call, ATTOM investigation, or CRM/customer-data mutation occurred.
 
+Current provider status:
+
+- MLS Grid: `MLS_GRID_LIVE_CALLS_PAUSED_PENDING_RATE_LIMIT_CLARIFICATION`
+- LightBox: `LIGHTBOX_SIX_PRODUCT_EVALUATION_SMOKE_TEST_SUCCESSFUL`
+- LightBox successful trial calls consumed: `6`
+- LightBox remaining nominal successful-call allowance: `1994`
+- ATTOM: `PENDING_PROVIDER_RESPONSE`
+
 ## Provider Safety Event
 
 Executive HQ received provider safety evidence on August 14, 2026:

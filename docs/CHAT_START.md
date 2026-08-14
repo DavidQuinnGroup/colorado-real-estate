@@ -123,6 +123,14 @@ Protected boundaries:
 - No MLS Grid API request occurred during this rate-safety workstream.
 - No full scoped ingest, Typesense mutation, reindex, alert creation, queue job creation, email send, Resend call, worker/scheduler activation, CRM/customer-data mutation, LightBox call, ATTOM investigation, deployment, or push occurred.
 
+Provider status:
+
+- MLS Grid: `MLS_GRID_LIVE_CALLS_PAUSED_PENDING_RATE_LIMIT_CLARIFICATION`
+- LightBox: `LIGHTBOX_SIX_PRODUCT_EVALUATION_SMOKE_TEST_SUCCESSFUL`
+- LightBox successful trial calls consumed: `6`
+- LightBox remaining nominal successful-call allowance: `1994`
+- ATTOM: `PENDING_PROVIDER_RESPONSE`
+
 Documentation artifact:
 
 - `docs/project-atlas/executive-library/REIE-MLS-GRID-RATE-LIMIT-SAFETY-AND-SCOPED-INGEST-RECERTIFICATION-PREPARATION.md`
