@@ -7,7 +7,12 @@ import {
   MLS_PAGE_MAX_TOP,
 } from '../queue/mlsPageQueue.js';
 import { parseMlsODataPageResponse, validateProviderNextLink, type MlsPageResponse } from './paginationContract.js';
-import { rateLimit } from './rateLimiter.js';
+import {
+  executeMlsGridRequest,
+  isRetryableMlsGridStatus,
+  readMlsGridRetryPolicy,
+  waitForMlsGridRetry,
+} from './rateLimiter.js';
 
 dotenv.config({ path: '.env.local' });
 
@@ -17,6 +22,8 @@ export type FetchMLSPageOptions = {
   page: number;
   top?: number;
   includeMedia?: boolean;
+  orderBy?: string;
+  filter?: string;
   requestCount?: boolean;
   timeoutMs?: number;
 };
@@ -158,6 +165,8 @@ function buildPropertyParams({
   page,
   top = MLS_PAGE_DEFAULT_TOP,
   includeMedia = includeMediaByDefault,
+  orderBy = 'ModificationTimestamp desc',
+  filter,
   requestCount = false,
 }: FetchMLSPageOptions) {
   const diagnostics = getFetchMLSPageDiagnostics({
@@ -167,10 +176,14 @@ function buildPropertyParams({
     requestCount,
   });
   const params: Record<string, string | number> = {
-    $orderby: 'ModificationTimestamp desc',
+    $orderby: orderBy,
     $skip: diagnostics.skip,
     $top: diagnostics.top,
   };
+
+  if (filter?.trim()) {
+    params.$filter = filter.trim();
+  }
 
   if (diagnostics.requestCount) {
     params.$count = 'true';
@@ -263,56 +276,73 @@ async function requestMLSPageResponseUrl(
     throw createMlsPageError('Missing MLS_GRID_TOKEN or MLS_API_KEY.');
   }
 
-  await rateLimit();
-
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), timeoutMs);
   const requestContext = getSafeRequestContext(requestUrl);
+  const retryPolicy = readMlsGridRetryPolicy();
 
-  try {
-    const response = await fetch(requestUrl, {
-      headers: {
-        Accept: 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      signal: controller.signal,
-    });
+  for (let attempt = 0; attempt <= retryPolicy.maxRetries; attempt += 1) {
+    try {
+      return await executeMlsGridRequest(async () => {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
-    const { data, text } = await readJsonResponse(response);
-    const retryAfterMs = parseRetryAfterMs(response.headers.get('retry-after'));
+        try {
+          const response = await fetch(requestUrl, {
+            headers: {
+              Accept: 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+            signal: controller.signal,
+          });
 
-    if (!response.ok) {
-      throw createMlsPageError(
-        retryAfterMs
-          ? `MLS Grid API error: ${response.status}. Retry after ${Math.ceil(retryAfterMs / 1000)}s.`
-          : `MLS Grid API error: ${response.status}`,
-        response.status,
-        {
-          details: getErrorDetails(data, text),
-          diagnostics,
-          request: requestContext,
-          retryAfterMs,
-        },
-        retryAfterMs,
-      );
-    }
+          const { data, text } = await readJsonResponse(response);
+          const retryAfterMs = parseRetryAfterMs(response.headers.get('retry-after'));
 
-    return getPageResponseFromResponse(data);
-  } catch (error) {
-    if (isAbortError(error)) {
-      throw createMlsPageError(`MLS Grid request timed out after ${timeoutMs}ms.`, 408, {
-        diagnostics,
-        timeoutMs,
-        request: requestContext,
+          if (!response.ok) {
+            throw createMlsPageError(
+              retryAfterMs
+                ? `MLS Grid API error: ${response.status}. Retry after ${Math.ceil(retryAfterMs / 1000)}s.`
+                : `MLS Grid API error: ${response.status}`,
+              response.status,
+              {
+                details: getErrorDetails(data, text),
+                diagnostics,
+                request: requestContext,
+                retryAfterMs,
+              },
+              retryAfterMs,
+            );
+          }
+
+          return getPageResponseFromResponse(data);
+        } catch (error) {
+          if (isAbortError(error)) {
+            throw createMlsPageError(`MLS Grid request timed out after ${timeoutMs}ms.`, 408, {
+              diagnostics,
+              timeoutMs,
+              request: requestContext,
+            });
+          }
+
+          if (isMlsPageError(error)) throw error;
+
+          throw createMlsPageError(String(error || 'Unknown MLS Grid page fetch error.'));
+        } finally {
+          clearTimeout(timeout);
+        }
       });
+    } catch (error) {
+      const shouldRetry =
+        isMlsPageError(error) && isRetryableMlsGridStatus(error.status) && attempt < retryPolicy.maxRetries;
+
+      if (!shouldRetry) {
+        throw error;
+      }
+
+      await waitForMlsGridRetry(attempt, isMlsPageError(error) ? error.retryAfterMs : undefined);
     }
-
-    if (isMlsPageError(error)) throw error;
-
-    throw createMlsPageError(String(error || 'Unknown MLS Grid page fetch error.'));
-  } finally {
-    clearTimeout(timeout);
   }
+
+  throw createMlsPageError('MLS Grid request retry loop exhausted.', 503, { diagnostics, request: requestContext });
 }
 
 async function requestMLSPageResponse(options: FetchMLSPageOptions): Promise<MlsPageResponse<MlsPageListingPayload>> {
@@ -341,9 +371,11 @@ function logFetchError(prefix: string, error: unknown) {
 }
 
 export async function fetchMLSPage({
+  filter,
   page,
   top = MLS_PAGE_DEFAULT_TOP,
   includeMedia = includeMediaByDefault,
+  orderBy = 'ModificationTimestamp desc',
   requestCount = false,
   timeoutMs = MLS_PAGE_DEFAULT_TIMEOUT_MS,
 }: FetchMLSPageOptions): Promise<MlsPageListingPayload[]> {
@@ -360,9 +392,11 @@ export async function fetchMLSPage({
 
   try {
     const listings = await requestMLSPage({
+      filter,
       page: safePage,
       top: safeTop,
       includeMedia,
+      orderBy,
       requestCount,
       timeoutMs: safeTimeoutMs,
     });
@@ -379,9 +413,11 @@ export async function fetchMLSPage({
 
       try {
         const listings = await requestMLSPage({
+          filter,
           page: safePage,
           top: safeTop,
           includeMedia: false,
+          orderBy,
           requestCount,
           timeoutMs: safeTimeoutMs,
         });
@@ -404,9 +440,11 @@ export async function fetchMLSPage({
 }
 
 export async function fetchMLSPageResponse({
+  filter,
   page,
   top = MLS_PAGE_DEFAULT_TOP,
   includeMedia = includeMediaByDefault,
+  orderBy = 'ModificationTimestamp desc',
   requestCount = true,
   timeoutMs = MLS_PAGE_DEFAULT_TIMEOUT_MS,
 }: FetchMLSPageOptions): Promise<MlsPageResponse<MlsPageListingPayload>> {
@@ -423,9 +461,11 @@ export async function fetchMLSPageResponse({
 
   try {
     const response = await requestMLSPageResponse({
+      filter,
       page: safePage,
       top: safeTop,
       includeMedia,
+      orderBy,
       requestCount,
       timeoutMs: safeTimeoutMs,
     });
@@ -443,9 +483,11 @@ export async function fetchMLSPageResponse({
 
       try {
         const response = await requestMLSPageResponse({
+          filter,
           page: safePage,
           top: safeTop,
           includeMedia: false,
+          orderBy,
           requestCount,
           timeoutMs: safeTimeoutMs,
         });

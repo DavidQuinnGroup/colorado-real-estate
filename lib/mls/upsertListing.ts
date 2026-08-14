@@ -7,7 +7,7 @@ export type MlsListing = Record<string, unknown>;
 
 export type PropertyRecord = Property;
 
-type ExistingPropertySnapshot = {
+export type ExistingPropertySnapshot = {
   id: string;
   lat: number;
   lng: number;
@@ -549,6 +549,21 @@ export async function upsertListing(listing: MlsListing): Promise<PropertyRecord
   }
 
   const existing = await getExistingProperty(mlsId);
+
+  return upsertListingWithExistingProperty(listing, existing);
+}
+
+export async function upsertListingWithExistingProperty(
+  listing: MlsListing,
+  existing: ExistingPropertySnapshot | null = null,
+): Promise<PropertyRecord | null> {
+  const mlsId = getMlsId(listing);
+
+  if (!mlsId || mlsId === 'undefined') {
+    console.error('MLS listing missing unique MLS ID.');
+    return null;
+  }
+
   const syncedAt = new Date();
   const { diagnostics, propertyData } = buildPropertyRecordWithDiagnostics(listing, existing, syncedAt);
 

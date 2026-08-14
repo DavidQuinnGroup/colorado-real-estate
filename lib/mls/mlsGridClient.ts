@@ -7,7 +7,12 @@ import {
   MLS_PAGE_MAX_TIMEOUT_MS,
   MLS_PAGE_MAX_TOP,
 } from "../queue/mlsPageQueue.js";
-import { rateLimit } from "./rateLimiter.js";
+import {
+  executeMlsGridRequest,
+  isRetryableMlsGridStatus,
+  readMlsGridRetryPolicy,
+  waitForMlsGridRetry,
+} from "./rateLimiter.js";
 
 dotenv.config({ path: ".env.local" });
 
@@ -275,65 +280,82 @@ async function requestListings(
     throw new Error("Missing MLS_GRID_TOKEN or MLS_API_KEY.");
   }
 
-  await rateLimit();
-
   const timeoutMs = getSafeInteger(options.timeoutMs, MLS_PAGE_DEFAULT_TIMEOUT_MS, 1000, MLS_PAGE_MAX_TIMEOUT_MS);
   const diagnostics = getMlsGridRequestDiagnostics(options);
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), timeoutMs);
   const requestUrl = buildPropertyUrl(options);
   const requestLabel = `skip ${requestUrl.searchParams.get("$skip") || "0"}`;
+  const retryPolicy = readMlsGridRetryPolicy();
 
-  try {
-    const response = await fetch(requestUrl, {
-      headers: {
-        Accept: "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      signal: controller.signal,
-    });
+  for (let attempt = 0; attempt <= retryPolicy.maxRetries; attempt += 1) {
+    try {
+      return await executeMlsGridRequest(async () => {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
-    const { data, text } = await readJsonResponse(response);
-    const retryAfterMs = parseRetryAfterMs(response.headers.get("retry-after"));
+        try {
+          const response = await fetch(requestUrl, {
+            headers: {
+              Accept: "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            signal: controller.signal,
+          });
 
-    if (!response.ok) {
-      throw createMlsGridError(
-        retryAfterMs
-          ? `MLS Grid API error: ${response.status}. Retry after ${Math.ceil(retryAfterMs / 1000)}s.`
-          : `MLS Grid API error: ${response.status}`,
-        response.status,
-        {
-          details: getErrorDetails(data, text),
-          request: {
-            diagnostics,
-            includeMedia: options.includeMedia ?? includeMediaByDefault,
-            skip: requestUrl.searchParams.get("$skip"),
-            top: requestUrl.searchParams.get("$top"),
-          },
-          retryAfterMs,
-        },
-        retryAfterMs
-      );
-    }
+          const { data, text } = await readJsonResponse(response);
+          const retryAfterMs = parseRetryAfterMs(response.headers.get("retry-after"));
 
-    return getListingsFromResponse(data, requestLabel);
-  } catch (error) {
-    if (isAbortError(error)) {
-      throw createMlsGridError(`MLS Grid request timed out after ${timeoutMs}ms.`, 408, {
-        timeoutMs,
-        request: {
-          diagnostics,
-          includeMedia: options.includeMedia ?? includeMediaByDefault,
-          skip: requestUrl.searchParams.get("$skip"),
-          top: requestUrl.searchParams.get("$top"),
-        },
+          if (!response.ok) {
+            throw createMlsGridError(
+              retryAfterMs
+                ? `MLS Grid API error: ${response.status}. Retry after ${Math.ceil(retryAfterMs / 1000)}s.`
+                : `MLS Grid API error: ${response.status}`,
+              response.status,
+              {
+                details: getErrorDetails(data, text),
+                request: {
+                  diagnostics,
+                  includeMedia: options.includeMedia ?? includeMediaByDefault,
+                  skip: requestUrl.searchParams.get("$skip"),
+                  top: requestUrl.searchParams.get("$top"),
+                },
+                retryAfterMs,
+              },
+              retryAfterMs
+            );
+          }
+
+          return getListingsFromResponse(data, requestLabel);
+        } catch (error) {
+          if (isAbortError(error)) {
+            throw createMlsGridError(`MLS Grid request timed out after ${timeoutMs}ms.`, 408, {
+              timeoutMs,
+              request: {
+                diagnostics,
+                includeMedia: options.includeMedia ?? includeMediaByDefault,
+                skip: requestUrl.searchParams.get("$skip"),
+                top: requestUrl.searchParams.get("$top"),
+              },
+            });
+          }
+
+          throw error;
+        } finally {
+          clearTimeout(timeout);
+        }
       });
-    }
+    } catch (error) {
+      const shouldRetry =
+        isMlsGridError(error) && isRetryableMlsGridStatus(error.status) && attempt < retryPolicy.maxRetries;
 
-    throw error;
-  } finally {
-    clearTimeout(timeout);
+      if (!shouldRetry) {
+        throw error;
+      }
+
+      await waitForMlsGridRetry(attempt, isMlsGridError(error) ? error.retryAfterMs : undefined);
+    }
   }
+
+  throw createMlsGridError("MLS Grid request retry loop exhausted.", 503, { diagnostics });
 }
 
 export async function fetchMLSGridListings({

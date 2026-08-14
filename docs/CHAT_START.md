@@ -11,6 +11,137 @@ Product:
 ## Latest New-Chat Handoff
 
 
+PROJECT ATLAS(tm) / MLS Grid Rate Limit Safety And Scoped Ingest Recertification Preparation:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Canonical baseline:
+
+- Branch: `main`
+- Pre-work `HEAD = origin/main = a82daed8304189b043b16b7ece0f30fe58a0060e`
+- Pre-work divergence: `0 behind / 0 ahead`
+- Latest local Primary work was uncommitted at start and preserved.
+- Local implementation/certification commit: created after this handoff update; verify with `git rev-parse HEAD`.
+
+Program:
+
+- `REIE_MLS_GRID_RATE_LIMIT_SAFETY_AND_SCOPED_INGEST_RECERTIFICATION_PREPARATION`
+
+Final classification:
+
+- `MLS_GRID_RATE_SAFETY_AND_FILTER_REMEDIATION_LOCALLY_CERTIFIED_READY_FOR_NEW_BOUNDED_LIVE_PROOF`
+
+Why this was needed:
+
+- MLS Grid provider warning evidence received August 14, 2026 stated PROJECT ATLAS API activity reached `5.0 requests/second`.
+- The provider notice cited an account-specific `2 requests/second` limit.
+- Generic warning/suspension language also referenced `4 RPS` warning and `6 RPS` temporary suspension thresholds, but PROJECT ATLAS now treats the account-specific `2 RPS` limit as the operative ceiling until clarified.
+- The prior live scoped-ingest certification was invalid because the initial metadata-preserving request path did not forward the intended Active/Coming Soon filter.
+- All MLS Grid live calls were paused during this workstream.
+
+Preserved local acceleration work:
+
+- Bounded accelerated scoped ingest.
+- Page-level existing-identity preload.
+- Safe checkpoint/resume contract.
+- Scope fingerprint.
+- Same-ID sequential processing with bounded DB row concurrency.
+- Scoped filter-forwarding remediation.
+
+Rate-safety remediation:
+
+- Upgraded `lib/mls/rateLimiter.ts` into the shared MLS Grid request governor.
+- Effective PROJECT ATLAS policy: `1 request/second`, minimum interval `1000 ms`, burst capacity `1`.
+- Added configurable caps for requests per run, minute, hour, and rolling 24 hours.
+- Added request accounting for attempted, succeeded, failed, start/end time, request timestamps, and average request rate.
+- Added bounded retry/backoff for retryable statuses `408`, `429`, `500`, `502`, `503`, and `504`.
+- Retry-After is honored when supplied, and the governor applies to retry attempts.
+
+MLS request boundaries covered:
+
+- `lib/mls/fetchMLSPage.ts`
+- `lib/mls/mlsGridClient.ts`
+- `lib/mls/syncMLSGrid.ts`
+- `lib/mls/scopedIngestAcceleration.ts`
+- `workers/mlsPageWorker.ts`
+- `workers/mlsWorker.ts`
+- `scripts/fetchMLS.ts`
+- `scripts/mlsSync.ts`
+- `scripts/runMlsScopedAcceleratedIngest.ts`
+
+Filter and nextLink safety:
+
+- Initial scoped request now forwards `MlgCanView eq true and (StandardStatus eq 'Active' or StandardStatus eq 'Coming Soon')`.
+- Initial request also forwards `$orderby=ModificationTimestamp desc`, `$count=true`, `$top=100`, and no `$expand=Media`.
+- Subsequent traversal remains provider-nextLink based.
+- Provider nextLink must pass HTTPS, host, and credential-free validation.
+- Raw nextLink is not printed by the bounded live runner.
+
+Validation:
+
+- `npm run check:mls-rate-governor-safety`: passed; fixture-only, no real MLS Grid provider call.
+- `npm run check:mls-pagination-contract`: passed.
+- `npm run check:mls-source-freshness-contract`: passed.
+- `npm run check:saved-search-new-listing-semantics`: passed.
+- `npm run check:mls-scoped-ingest-acceleration`: passed.
+- `npm run typecheck`: passed.
+- `npm run worker:build`: passed.
+- `git diff --check`: passed before commit.
+
+Prepared future live proof, not executed:
+
+- Exact Active/Coming Soon scoped filter.
+- Provider nextLink traversal.
+- Max `2 pages / 200 records`.
+- Max `1 provider request/sec`.
+- Burst `1`.
+- Explicit request budget.
+- No Typesense, no alerts/email, before/after DB counts, and provider request-accounting evidence.
+
+Suggested future command only after explicit authorization:
+
+- `npm run run:mls-scoped-accelerated-ingest -- --execute --simulate-resume --max-pages=2 --max-rows=200 --max-provider-requests=2 --concurrency=6 --top=100 --timeout-ms=45000`
+
+Suggested MLS Grid support question:
+
+- "We received an account-specific warning citing a 2 requests/second limit, while the general warning threshold language references 4 RPS. Which sustained RPS limit governs this specific IDX subscription, and do you recommend a lower operational target for bounded bulk synchronization under this account?"
+
+Typesense / alert sequencing:
+
+1. Recertify safe scoped MLS live ingest.
+2. Complete Active/Coming Soon ingest.
+3. Reconcile stale public-active DB rows.
+4. Certify DB public-search scope.
+5. Reindex Typesense.
+6. Certify Search.
+7. Only then resume Saved Search live-proof work.
+
+Protected boundaries:
+
+- No MLS Grid API request occurred during this rate-safety workstream.
+- No full scoped ingest, Typesense mutation, reindex, alert creation, queue job creation, email send, Resend call, worker/scheduler activation, CRM/customer-data mutation, LightBox call, ATTOM investigation, deployment, or push occurred.
+
+Documentation artifact:
+
+- `docs/project-atlas/executive-library/REIE-MLS-GRID-RATE-LIMIT-SAFETY-AND-SCOPED-INGEST-RECERTIFICATION-PREPARATION.md`
+
+Next authorization gate:
+
+- `READY_FOR_2_PAGE_MLS_GRID_RATE_GOVERNED_SCOPED_LIVE_RECERTIFICATION`
+
+Next chat should first run:
+
+- `git fetch origin main`
+- `git status --short --branch --untracked-files=all`
+- `git rev-parse HEAD origin/main`
+- `git rev-list --left-right --count origin/main...HEAD`
+- `git log -8 --oneline`
+
+Prior handoff retained below for audit history.
+
+
 PROJECT ATLAS(tm) / MLS Grid Pagination Contract Remediation And Source Scope Certification:
 
 Workspace:
