@@ -129,4 +129,59 @@ for (const forbiddenConclusion of ['best comp', 'estimated value', 'market value
 assert(!('visitor' in fixedInput.property!), 'fixture must not contain visitor data');
 assert(!('customer' in fixedInput.property!), 'fixture must not contain customer data');
 
-console.log('[open-house-agent-preparation] ok: deterministic explicit-input packet, fail-closed identity, factual preparation, evidence limitations, fair-housing and professional boundaries, and protected-system exclusions verified.');
+const previewPath = fileURLToPath(new URL('../app/admin/open-house-preparation/page.tsx', import.meta.url));
+const previewSource = readFileSync(previewPath, 'utf8');
+for (const expected of [
+  "from '@/lib/openHouseAgentPreparation'",
+  "from '@/lib/property/publicPropertyRead'",
+  'getPublicPropertiesByIds([selection.propertyId])',
+  'toPublicPropertyIdFilterValue',
+  'method="get"',
+  'action="/admin/open-house-preparation"',
+  'index: false',
+  'follow: false',
+  'nocache: true',
+  'propertyId',
+  'eventLabel',
+  'eventDateLabel',
+  'GENERIC_EVENT_LABELS',
+  'type="datetime-local"',
+  'MISSING_EXPLICIT_PROPERTY',
+  'INVALID_PROPERTY_ID',
+  'NON_PERSONAL_EVENT_LABEL_REQUIRED',
+  'UNAVAILABLE_SELECTED_PROPERTY',
+  'PROPERTY_READ_UNAVAILABLE',
+  'MISSING_CONTEXT',
+  'REIE PREPARES FACTUAL EVIDENCE AND QUESTIONS.',
+  'THE AGENT OPERATES THE OPEN HOUSE AND RETAINS ALL PROFESSIONAL JUDGMENT.',
+  'data-open-house-preparation-persistence="false"',
+  'data-open-house-preparation-customer-data="false"',
+  'data-open-house-preparation-calendar="false"',
+]) {
+  assert(previewSource.includes(expected), `protected preview must include: ${expected}`);
+}
+for (const forbiddenPreviewReference of [
+  'method="post"',
+  'fetch(',
+  '@prisma/client',
+  "@/lib/prisma",
+  "@/lib/mls",
+  "@/lib/search",
+  "@/lib/alerts",
+  "@/lib/crm",
+  'typesense',
+  'resend',
+  'nodemailer',
+  'googleapis',
+  'lightbox',
+  'attom',
+  '/api/',
+  'openHouse.find',
+  'openHouse.create',
+]) {
+  assert(!previewSource.toLowerCase().includes(forbiddenPreviewReference.toLowerCase()), `preview must not reference protected system: ${forbiddenPreviewReference}`);
+}
+assert(!previewSource.includes('marketContext:'), 'preview must preserve MISSING_CONTEXT rather than query market or place systems');
+assert(!previewSource.includes('sourceModifiedAt'), 'preview must not depend on Primary sourceModifiedAt work');
+
+console.log('[open-house-agent-preparation] ok: deterministic explicit-input packet, protected GET preview, exact bounded property read, fail-closed posture, evidence limitations, fair-housing and professional boundaries, and protected-system exclusions verified.');
