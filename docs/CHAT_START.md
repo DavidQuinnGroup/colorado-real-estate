@@ -11,6 +11,152 @@ Product:
 ## Latest New-Chat Handoff
 
 
+PROJECT ATLAS(tm) / Public Search Eligibility Runtime Activation Contract:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Canonical baseline:
+
+- Branch: `main`
+- Workstream 1 synchronized commit: `47da16c024fd44d4de0108fb1ba890b32d7744b6`
+- Workstream 1 commit subject: `Certify public search eligibility first write readiness`
+- Post-sync `HEAD = origin/main = 47da16c024fd44d4de0108fb1ba890b32d7744b6`
+- Post-sync divergence: `0 behind / 0 ahead`
+- Workstream 2 local runtime activation contract commit: created after this handoff update; verify with `git rev-parse HEAD`.
+- Workstream 2 is local only and must not be pushed without separate authorization.
+
+Program:
+
+- `REIE_PUBLIC_SEARCH_ELIGIBILITY_RUNTIME_ACTIVATION_CONTRACT`
+
+Final classification:
+
+- `PUBLIC_SEARCH_ELIGIBILITY_RUNTIME_ACTIVATION_CONTRACT_IMPLEMENTED_AND_LOCALLY_CERTIFIED`
+
+Why this was needed:
+
+- `Property.publicSearchEligibility` exists, remains nullable, and current runtime ignores it.
+- The initialization plan, transition execution contract, and first-write readiness package are certified.
+- No eligibility transition has been executed.
+- The next protected step was defining the exact pure runtime activation contract before any future runtime activation, Typesense rebuild, Saved Search behavior change, or alert proof.
+
+Activation modes:
+
+- `LEGACY`: current public criteria remain authoritative and `publicSearchEligibility` is ignored.
+- `CERTIFIED_ELIGIBILITY`: `publicSearchEligibility` becomes an additional fail-closed predicate for public Search, Typesense inclusion, DB fallback inclusion, Saved Search matching, and `NEW_LISTING` alert candidacy.
+
+Current certified DB state:
+
+- `NULL`: `75490`
+- `CERTIFIED_ELIGIBLE`: `0`
+- `PUBLIC_SCOPE_UNVERIFIED`: `0`
+- `CERTIFIED_INELIGIBLE`: `0`
+- Current runtime ignores the field.
+
+Runtime evaluator:
+
+- `lib/mls/publicSearchEligibilityRuntimeContract.ts`
+- `LEGACY` preserves current public discovery behavior, including `NULL`.
+- `CERTIFIED_ELIGIBILITY` requires `CERTIFIED_ELIGIBLE` plus the current public criteria: public-scope status, not private-exclusive, and no other public-read restriction.
+- `NULL` fails closed with `CERTIFIED_ELIGIBILITY_REQUIRED_NULL_FAIL_CLOSED`.
+- `PUBLIC_SCOPE_UNVERIFIED` fails closed with `PUBLIC_SCOPE_UNVERIFIED_FAIL_CLOSED`.
+- `CERTIFIED_INELIGIBLE` fails closed with `CERTIFIED_INELIGIBLE_FAIL_CLOSED`.
+- `CERTIFIED_ELIGIBLE` remains blocked by private-exclusive status, non-public authoritative status, or other public-read restrictions.
+
+Shared predicate requirements:
+
+- public Search eligibility, Typesense eligibility, and database fallback eligibility must be identical.
+- Saved Search and `NEW_LISTING` alert candidacy must first satisfy the shared public Search predicate.
+- `NEW_LISTING` additionally requires exact `Active` status, source freshness, saved-search criteria match, alert consent, and no duplicate alert event.
+- `Coming Soon` can be Search eligible but is not a `NEW_LISTING` alert candidate under this contract.
+- historical property route retention remains separate from public Search discovery.
+
+Activation readiness:
+
+- Current expected result: `NOT_READY_TO_ACTIVATE_CERTIFIED_ELIGIBILITY`.
+- Current blocking reasons include provider snapshot not certified complete, transition writes not executed, DB eligibility distribution not certified, expected `NULL` population not understood, Search index activation plan not certified, Typesense rebuild not ready, and DB remains all `NULL`.
+
+Future activation sequence:
+
+1. provider rate clearance
+2. scoped ingest recertification
+3. complete public snapshot
+4. deterministic eligibility plan
+5. first bounded write
+6. complete eligibility initialization
+7. resolve unverified population
+8. certify DB distribution
+9. activate shared runtime predicate
+10. rebuild Typesense
+11. certify Search/fallback parity
+12. certify Saved Search predicate
+13. later authorize one-send alert proof
+
+Rollback / deactivation design:
+
+- activation config remains separate from stored eligibility;
+- rollback to `LEGACY` mode does not rewrite eligibility rows;
+- material Search regression returns runtime to `LEGACY` mode.
+
+Fixture certification:
+
+- `scripts/checkPublicSearchEligibilityRuntimeContract.ts`
+- package script: `npm run check:public-search-eligibility-runtime-contract`
+- certified cases include legacy `NULL`, legacy eligible, activation `NULL`, unverified, ineligible, eligible Active, eligible Coming Soon, private-exclusive block, non-public status block, Search predicate, Typesense predicate, fallback parity, Saved Search predicate, `NEW_LISTING` composition, historical route retention, activation readiness, missing provider snapshot, unresolved writes, all-`NULL` DB, unresolved state drift, deterministic reasons, no DB writes, no provider calls, no Typesense mutation, and no alert side effects.
+
+Validation:
+
+- `npm run check:public-search-eligibility-state-contract`: passed.
+- `npm run check:public-search-eligibility-initialization-plan`: passed.
+- `npm run check:public-search-eligibility-transition-execution`: passed.
+- `npm run check:public-search-eligibility-first-write-readiness`: passed.
+- `npm run check:public-search-eligibility-runtime-contract`: passed.
+- `npm run typecheck`: passed.
+- `npm run worker:build`: passed.
+- `npm run build`: passed.
+- `git diff --check`: passed.
+- Generated `dist` artifacts were cleaned from commit scope.
+
+Protected boundaries:
+
+- No MLS Grid API request occurred.
+- No LightBox call occurred.
+- No ATTOM investigation occurred.
+- No `Property.publicSearchEligibility` row initialization occurred.
+- No database write occurred.
+- No Prisma schema change occurred.
+- No runtime Search, Typesense, Property route, Saved Search, or alert consumer changed.
+- No Typesense mutation or reindex occurred.
+- No alert creation, queue job creation, email send, Resend call, worker/scheduler activation, CRM/customer-data mutation, deployment, or Workstream 2 push occurred.
+
+Provider status:
+
+- MLS Grid: `LIVE_CALLS_PAUSED_PENDING_SUPPORT_RATE_LIMIT_CLARIFICATION`
+- LightBox: `WAITING_FOR_LIGHTBOX_SUPPORT_AUTH_SCOPE_CONFIRMATION`
+- LightBox evaluation calls consumed in this workstream: `0`
+- ATTOM: `PENDING_PROVIDER_RESPONSE`
+
+Documentation artifact:
+
+- `docs/project-atlas/executive-library/REIE-PUBLIC-SEARCH-ELIGIBILITY-RUNTIME-ACTIVATION-CONTRACT.md`
+
+Next authorization gate:
+
+- `READY_FOR_PUBLIC_SEARCH_ELIGIBILITY_RUNTIME_ACTIVATION_CONTRACT_SYNCHRONIZATION`
+
+Next chat should first run:
+
+- `git fetch origin main`
+- `git status --short --branch --untracked-files=all`
+- `git rev-parse HEAD origin/main`
+- `git rev-list --left-right --count origin/main...HEAD`
+- `git log -8 --oneline`
+
+Prior handoff retained below for audit history.
+
+
 PROJECT ATLAS(tm) / Public Search Eligibility First Write Readiness And Dry-Run Package:
 
 Workspace:

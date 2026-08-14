@@ -29,6 +29,7 @@
     "check:public-search-eligibility-initialization-plan": "npm run worker:build && node dist/scripts/checkPublicSearchEligibilityInitializationPlan.js",
     "check:public-search-eligibility-transition-execution": "npm run worker:build && node dist/scripts/checkPublicSearchEligibilityTransitionExecution.js",
     "check:public-search-eligibility-first-write-readiness": "npm run worker:build && node dist/scripts/checkPublicSearchEligibilityFirstWriteReadiness.js",
+    "check:public-search-eligibility-runtime-contract": "npm run worker:build && node dist/scripts/checkPublicSearchEligibilityRuntimeContract.js",
     "check:notification-readiness": "npm run worker:build && node dist/scripts/notificationReadinessSummary.js",
     "check:notification-readiness:strict": "npm run worker:build && node dist/scripts/notificationReadinessSummary.js --strict",
     "check:notification-readiness:strict-contract": "npm run worker:build && node dist/scripts/notificationReadinessStrictCheck.js",
