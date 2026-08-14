@@ -11,7 +11,7 @@ Product:
 ## Latest New-Chat Handoff
 
 
-PROJECT ATLAS(tm) / Additive Public Search Eligibility State Foundation:
+PROJECT ATLAS(tm) / Public Search Eligibility Additive Migration Execution Certification:
 
 Workspace:
 
@@ -20,27 +20,26 @@ Workspace:
 Canonical baseline:
 
 - Branch: `main`
-- Workstream 1 synchronized commit: `725257d081f93998a0bb67dc1b283d7659ce4679`
-- Post-sync `HEAD = origin/main = 725257d081f93998a0bb67dc1b283d7659ce4679`
+- Workstream 1 synchronized commit: `e17802a43795d3f95ab6fdafce0fd2878864b1f1`
+- Post-sync `HEAD = origin/main = e17802a43795d3f95ab6fdafce0fd2878864b1f1`
 - Post-sync divergence: `0 behind / 0 ahead`
-- Workstream 2 local implementation/certification commit: created after this handoff update; verify with `git rev-parse HEAD`.
+- Workstream 2 local migration-certification commit: created after this handoff update; verify with `git rev-parse HEAD`.
 - Workstream 2 is local only and must not be pushed without separate authorization.
 
 Program:
 
-- `REIE_ADDITIVE_PUBLIC_SEARCH_ELIGIBILITY_STATE_FOUNDATION`
+- `REIE_PUBLIC_SEARCH_ELIGIBILITY_ADDITIVE_MIGRATION_EXECUTION_AND_INITIALIZATION_READINESS`
 
 Final classification:
 
-- `ADDITIVE_ELIGIBILITY_SCHEMA_PREPARED_RUNTIME_ACTIVATION_SEPARATE`
+- `MIGRATION_EXECUTED_WITH_NONBLOCKING_OBSERVATION`
 
 Why this was needed:
 
-- The prior architecture certification found that existing fields cannot safely represent `PUBLIC_SCOPE_UNVERIFIED`.
-- Mutating `status` would fabricate unverified replacement listing status.
-- Mutating `isPrivateExclusive` would corrupt access/privacy semantics.
-- Filtered-feed absence proves only `NO_LONGER_PRESENT_IN_CURRENT_ACTIVE_COMING_SOON_SNAPSHOT`; it does not prove Pending, Closed, Withdrawn, Expired, Cancelled, or Deleted.
-- REIE therefore needs an additive public-search eligibility concept, separate from status and privacy.
+- The additive `Property.publicSearchEligibility` foundation had been locally prepared and synchronized.
+- The next protected step was executing only the approved additive migration while proving zero Search, Typesense, Property-route, Saved Search, and alert behavior change.
+- Existing-row semantics remain `NULL = legacy / not-yet-certified`.
+- No runtime consumer currently uses the field.
 
 Current public eligibility contract:
 
@@ -49,59 +48,100 @@ Current public eligibility contract:
 - Property Product route lookup resolves by `id`, `slug`, or `mlsId`; route availability is not current provider-scope certification.
 - Typesense rebuild currently indexes mapped Supabase `Property` rows; it must be gated behind DB public-search certification before stale-row reconciliation.
 
-Selected eligibility model:
+Migration executed:
 
-- Add nullable enum field `Property.publicSearchEligibility`.
-- Enum values:
+- Executed `npx prisma migrate deploy --schema prisma/schema.prisma`.
+- Applied migration `20260814190000_add_property_public_search_eligibility`.
+- Post-execution `npx prisma migrate status --schema prisma/schema.prisma` reported database schema up to date.
+- Migration SQL contained only:
+  - enum/type creation for `PublicSearchEligibility`;
+  - nullable `Property.publicSearchEligibility`;
+  - index `Property_publicSearchEligibility_idx`.
+- No row initialization occurred.
+- No `status` mutation occurred.
+- No `isPrivateExclusive` mutation occurred.
+
+Eligibility model:
+
+- `Property.publicSearchEligibility PublicSearchEligibility?`
+- states:
   - `CERTIFIED_ELIGIBLE`
   - `PUBLIC_SCOPE_UNVERIFIED`
   - `CERTIFIED_INELIGIBLE`
-- `NULL` means legacy/not-yet-certified and preserves current behavior because no live runtime predicate consumes the field yet.
-- Future activation must not treat `NULL` as certified eligible unless a separately authorized initialization/reconciliation gate says so.
+- `NULL` remains the current existing-row posture.
 
-Pure local implementation performed:
+Pre-migration read-only snapshot:
 
-- Added Prisma enum `PublicSearchEligibility`.
-- Added nullable `Property.publicSearchEligibility`.
-- Added index `Property_publicSearchEligibility_idx`.
-- Added non-executed migration artifact `prisma/migrations/20260814190000_add_property_public_search_eligibility/migration.sql`.
-- Added pure contract `lib/mls/publicSearchEligibilityStateContract.ts`.
-- Added deterministic check `scripts/checkPublicSearchEligibilityStateContract.ts`.
-- Added `npm run check:public-search-eligibility-state-contract`.
-- Added executive document `docs/project-atlas/executive-library/REIE-ADDITIVE-PUBLIC-SEARCH-ELIGIBILITY-STATE-FOUNDATION.md`.
-- Updated this handoff.
+- `Property` rows: `75490`
+- active public rows: `13113`
+- coming-soon public rows: `289`
+- `AlertEvent` rows: `273`
+- `AlertQueue` rows: `283`
+- applied migrations: `16`
+
+Post-migration read-only verification:
+
+- enum exists: `true`
+- nullable column exists: `true`
+- index exists: `true`
+- `Property` rows: `75490`
+- `publicSearchEligibility IS NULL`: `75490`
+- `CERTIFIED_ELIGIBLE`: `0`
+- `PUBLIC_SCOPE_UNVERIFIED`: `0`
+- `CERTIFIED_INELIGIBLE`: `0`
+- `AlertEvent` rows: `273`
+- `AlertQueue` rows: `283`
+- applied migrations: `17`
 
 Validation:
 
 - `npx prisma validate --schema prisma/schema.prisma`: passed.
-- `npm run check:public-search-eligibility-state-contract`: passed after an escalated worker build was required because sandboxed `tsc` could not write `dist` (`TS5033 ... EPERM`).
-- The check reports `FIXTURE_ONLY_NO_DB_NO_PROVIDER_NO_TYPESENSE_NO_ALERT_SIDE_EFFECT`.
-- Covered Active + provider public-scope member, Coming Soon + provider member, locally Active but absent snapshot, absent + Pending/Closed/Active verification, missing identity, duplicate identity, private-exclusive listing, incomplete provider snapshot, partial reconciliation, unresolved not Search/Typesense/Saved Search/alert eligible, historical Property retention unaffected, status not fabricated, privacy not repurposed, deterministic reason codes, and zero side effects.
-- `dist` build artifacts from the validation run were cleaned from the commit scope.
+- `npx prisma generate`: passed.
+- `npm run check:public-search-eligibility-state-contract`: passed.
+- `npm run check:mls-public-active-reconciliation-contract`: passed.
+- `npm run check:mls-rate-governor-safety`: passed and reported zero real MLS Grid provider calls.
+- `npm run typecheck`: passed.
+- `npm run worker:build`: passed.
+- `git diff --check`: passed.
+- Build checks required escalated filesystem permission because `tsc` emits `dist`; generated `dist` artifacts were cleaned from the commit scope.
 
-Prepared future state transitions:
+Nonblocking validation observation:
 
-- current provider public snapshot member plus public-scope status -> `CERTIFIED_ELIGIBLE`
-- absent from completed snapshot -> `PUBLIC_SCOPE_UNVERIFIED`
-- unverified plus authoritative Pending/Closed/Withdrawn/Expired/Cancelled status -> `CERTIFIED_INELIGIBLE`
-- unverified plus authoritative Active/Coming Soon status -> `CERTIFIED_ELIGIBLE`
-- ambiguous/missing/duplicate identity -> remain `PUBLIC_SCOPE_UNVERIFIED`
-- incomplete snapshot -> remain `PUBLIC_SCOPE_UNVERIFIED`
+- `npx prisma generate` refreshed generated Prisma types and surfaced existing type mismatches around non-null `optimizedValue` and the new nullable eligibility field in a fixture object.
+- Narrow compatibility fixes:
+  - `scripts/checkMlsScopedIngestAcceleration.ts`: fixture `Property` now includes `publicSearchEligibility: null` and uses `optimizedValue: 0`.
+  - `lib/shadowInventory.ts`: `optimizedValue` now uses `undefined` when not provided, preserving create default and avoiding invalid null update.
+- These fixes do not consume or activate `publicSearchEligibility`.
+
+Zero-behavior-change certification:
+
+- Production Search does not consume `publicSearchEligibility`.
+- Typesense indexing does not consume `publicSearchEligibility`.
+- Property Product routes do not consume `publicSearchEligibility`.
+- Saved Search and `NEW_LISTING` alert intent do not consume `publicSearchEligibility`.
+- All existing rows remain `NULL`.
+- No row was hidden or newly exposed by the migration alone.
 
 Typesense / alert sequencing:
 
-1. Synchronize this schema/contract foundation.
-2. Separately authorize and execute the additive migration.
-3. Separately initialize/reconcile eligibility state.
-4. Certify DB public-search scope.
-5. Activate Search/Typesense/Saved Search predicates.
-6. Rebuild Typesense.
-7. Certify public Search and alert readiness.
+1. Complete authoritative Active/Coming Soon provider snapshot.
+2. Initialize/reconcile eligibility state without marking every current Active row certified by assumption.
+3. Certify DB public-search scope.
+4. Activate Search/Typesense/Saved Search predicates.
+5. Rebuild Typesense from certified eligible rows.
+6. Certify public Search and alert readiness.
+
+Recommended future NULL activation strategy:
+
+- `DUAL_GATE_ROLLOUT`
+- Preserve legacy behavior for `NULL` until initialization and DB certification are complete.
+- After activation, exclude `NULL` from certified eligibility unless separately initialized.
 
 Protected boundaries:
 
-- No migration was executed.
-- No Property row was written.
+- Migration executed only the approved additive DDL.
+- No eligibility values were initialized.
+- No runtime eligibility predicate was activated.
 - No MLS Grid API request occurred.
 - No full scoped ingest, Typesense mutation, reindex, alert creation, queue job creation, email send, Resend call, worker/scheduler activation, CRM/customer-data mutation, LightBox call, ATTOM investigation, deployment, or Workstream 2 push occurred.
 
@@ -113,11 +153,11 @@ Provider status:
 
 Documentation artifact:
 
-- `docs/project-atlas/executive-library/REIE-ADDITIVE-PUBLIC-SEARCH-ELIGIBILITY-STATE-FOUNDATION.md`
+- `docs/project-atlas/executive-library/REIE-PUBLIC-SEARCH-ELIGIBILITY-ADDITIVE-MIGRATION-EXECUTION-CERTIFICATION.md`
 
 Next authorization gate:
 
-- `READY_FOR_PUBLIC_SEARCH_ELIGIBILITY_FOUNDATION_SYNCHRONIZATION`
+- `READY_FOR_PUBLIC_SEARCH_ELIGIBILITY_MIGRATION_CERTIFICATION_SYNCHRONIZATION`
 
 Next chat should first run:
 
