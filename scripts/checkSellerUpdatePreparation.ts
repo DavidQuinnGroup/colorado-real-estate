@@ -113,4 +113,24 @@ for (const protectedPattern of [/\bprisma\b/i, /\bfetch\s*\(/i, /\brequire\s*\(/
   assert(!protectedPattern.test(runtimeSource), `runtime module must not reference a protected system: ${protectedPattern}`);
 }
 
+const previewSource = readFileSync(resolve(process.cwd(), 'app/admin/seller-update-preparation/page.tsx'), 'utf8');
+const middlewareSource = readFileSync(resolve(process.cwd(), 'middleware.ts'), 'utf8');
+assert(previewSource.includes("data-seller-update-preparation-route=\"/admin/seller-update-preparation\""), 'preview must use the protected seller-update route');
+assert(previewSource.includes("method=\"get\""), 'preview form must be GET-only');
+assert(!/<form[^>]+action=/i.test(previewSource), 'preview form must not declare an action mutation target');
+assert(previewSource.includes("index: false") && previewSource.includes("follow: false") && previewSource.includes("nocache: true"), 'preview metadata must be noindex, nofollow, and nocache');
+assert(previewSource.includes("googleBot") && previewSource.includes("noimageindex: true"), 'preview metadata must preserve Googlebot noindex posture');
+assert(previewSource.includes("getPublicPropertiesByIds(selection.requestedIds)"), 'preview must use one bounded property read for submitted IDs');
+assert(previewSource.includes("toPublicPropertyIdFilterValue"), 'preview must reuse repository property ID validation');
+assert(previewSource.includes("requestedIds.length > 3") && previewSource.includes("new Set(requestedIds).size !== requestedIds.length"), 'preview must enforce the maximum and distinct identities');
+assert(previewSource.includes("allRequestedResolved") && previewSource.includes("Fail closed: every explicitly requested Property ID must resolve successfully."), 'preview must fail closed for unavailable requested IDs');
+assert(previewSource.includes('packet.priorBaseline.state') && previewSource.includes('packet.marketContext.state'), 'preview must render version-one baseline and market limitation states');
+assert(previewSource.includes('packet.competitiveFacts.selectionMode'), 'preview must render explicit competitive-selection posture');
+assert(previewSource.includes("not an authoritative MLS freshness statement"), 'preview must qualify visible timestamps');
+assert(previewSource.includes("REIE prepares factual evidence. The agent determines seller strategy."), 'preview must display the professional boundary');
+for (const prohibited of [/sourceModifiedAt/i, /publicSearchEligibility/i, /buildMarket/i, /CRMTask/i, /seller email\/message/i, /fetch\s*\(/i, /\.\$executeRaw/i, /\.\$queryRaw/i, /method=\"post\"/i, /<form[^>]+action=/i]) {
+  assert(!prohibited.test(previewSource), `preview must not depend on a prohibited system or mutation pattern: ${prohibited}`);
+}
+assert(middlewareSource.includes('matcher: ["/admin/:path*", "/api/admin/:path*"]') && middlewareSource.includes('buildAdminLoginRedirect'), 'existing middleware must protect the preview and redirect unauthenticated admin requests');
+
 console.log('SELLER_UPDATE_PREPARATION_CHECK: PASS');
