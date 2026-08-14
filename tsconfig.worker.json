@@ -41,6 +41,7 @@
     "scripts/checkPublicSearchEligibilityTransitionExecution.ts",
     "scripts/checkPublicSearchEligibilityFirstWriteReadiness.ts",
     "scripts/checkPublicSearchEligibilityRuntimeContract.ts",
+    "scripts/checkPublicSearchEligibilityDiscoveryParityCertification.ts",
     "scripts/runMlsScopedAcceleratedIngest.ts",
     "scripts/runAlertIntentFixtures.ts",
     "scripts/checkNextSecurityVersion.ts",
