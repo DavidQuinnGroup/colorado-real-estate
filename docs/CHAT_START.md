@@ -11,6 +11,117 @@ Product:
 ## Latest New-Chat Handoff
 
 
+PROJECT ATLAS(tm) / MLS Grid Pagination Contract Remediation And Source Scope Certification:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Canonical baseline:
+
+- Branch: `main`
+- Pre-work `HEAD = origin/main = b84d64c31db9d882c00b195f4eb57a23229f8864`
+- Pre-work divergence: `0 behind / 0 ahead`
+- Pre-work tree: clean
+- Local implementation/certification commit: created after this handoff update; verify with `git rev-parse HEAD`.
+
+Program:
+
+- `REIE_MLS_GRID_PAGINATION_CONTRACT_REMEDIATION_AND_SOURCE_SCOPE_CERTIFICATION`
+
+Final classification:
+
+- `MLS_PAGINATION_REMEDIATION_CERTIFIED_READY_FOR_SCOPED_INGEST`
+
+Why this was needed:
+
+- Prior source traversal processed pages `0..619`, reached `MlsSyncState.lastPage = 620`, and still did not observe a terminal page.
+- A read-only metadata probe at `$skip=62000`, `$top=1`, `$count=true`, `$orderby=ModificationTimestamp desc` returned HTTP `200`, `@odata.count = 574000`, `@odata.nextLink` present, and `value.length = 1`.
+- `MlsSyncState.totalRecords` was confirmed to be local accumulated processed count, not provider source cardinality.
+
+Repository remediation:
+
+- Added a typed MLS OData page contract preserving `value`, `@odata.count`, `@odata.nextLink`, terminal signal, value length, and response-key inventory.
+- Kept existing `fetchMLSPage()` compatible; it still returns `value[]`.
+- Added `fetchMLSPageResponse()` for metadata-preserving page reads.
+- Added `fetchMLSPageResponseFromNextLink()` for provider nextLink continuation.
+- Added provider-bound nextLink validation that rejects missing, malformed, credentialed, unsupported-protocol, and wrong-host URLs.
+- Added `getMlsProcessedCountSemantics()` documenting `MlsSyncState.totalRecords` as `LOCAL_PROCESSED_RECORD_COUNT`.
+- Added fixture-only validation script `scripts/checkMlsPaginationContract.ts`.
+- Added package script `check:mls-pagination-contract`.
+
+Validation:
+
+- `npm run check:mls-pagination-contract`: passed.
+- `npm run check:mls-source-freshness-contract`: passed.
+- Both checks are fixture-only and reported no DB writes, provider calls, alert/email/Typesense side effects, worker activation, or migration execution.
+
+Source-scope evidence:
+
+- Count probes were read-only, count-oriented, returned at most one sanitized sample row per query, and did not ingest listings.
+- Unfiltered Property count probe returned `574000`.
+- Provider count behavior is directionally useful but not perfectly invariant: `StandardStatus eq 'Closed'` returned `598606`, exceeding the unfiltered probe, so full-feed count interpretation remains provider-contract sensitive.
+- Directional source counts:
+  - Active: `29738`
+  - Coming Soon: `154`
+  - Pending: `5609`
+  - Active Under Contract: `1081`
+  - Closed: `598606`
+  - Expired: `750`
+  - Withdrawn: `337`
+  - Canceled: `0`
+  - Cancelled: provider rejected as invalid enum.
+- Display-eligible probes:
+  - `MlgCanView eq true and StandardStatus eq 'Active'`: `29725`
+  - `MlgCanView eq true and StandardStatus eq 'Coming Soon'`: `154`
+  - `MlgCanView eq true and StandardStatus eq 'Pending'`: `5608`
+  - `MlgCanView eq true and StandardStatus eq 'Active Under Contract'`: `1081`
+  - display-eligible Active/Coming Soon modified since `2026-07-15`: `22545`
+- Provider rejected `CloseDate` filtering and stated Property replication filters are limited to `MlgCanView`, `ModificationTimestamp`, `OriginatingSystemName`, `StandardStatus`, `ListingId`, `PropertyType`, and `ListOfficeMlsId`.
+
+Recommended source scope:
+
+- `OPTION A - ACTIVE / COMING SOON ONLY`
+- Intended next ingest filter: `MlgCanView eq true and (StandardStatus eq 'Active' or StandardStatus eq 'Coming Soon')`
+- Directional source count: about `29879` records.
+- Rationale: best immediate fit for public Search, Property Product, saved-search NEW_LISTING freshness, SEO/AEO current inventory, and Typesense consistency without silently choosing the full 574k+ feed.
+
+Pagination decision:
+
+- Certified future traversal mode: `PROVIDER_NEXTLINK_TRAVERSAL`
+- Future scoped ingest must use provider `@odata.nextLink` as continuation, with host/protocol validation, and must stop on absent nextLink or empty page.
+- Do not resume broad page/skip loops or use `MlsSyncState.totalRecords` to predict terminal source pages.
+
+Typesense consequence:
+
+- No Typesense mutation or reindex occurred.
+- Future Typesense reindex should occur only after scoped ingest is certified complete.
+- Future Typesense indexing should target public/search-eligible persisted rows for canonical Search collections, not the full MLS feed unless a separate historical/full-feed product decision is authorized.
+
+Protected boundaries:
+
+- No additional MLS pages were ingested.
+- No full MLS refresh, `Property` row mutation, `MlsSyncState` mutation beyond prior state, Typesense mutation, reindex, alert creation, queue job creation, email send, Resend call, worker/scheduler activation, customer-data mutation, LightBox call, ATTOM investigation, deployment, or push occurred during remediation.
+
+Documentation artifact:
+
+- `docs/project-atlas/executive-library/REIE-MLS-GRID-PAGINATION-CONTRACT-REMEDIATION-AND-SOURCE-SCOPE-CERTIFICATION.md`
+
+Next authorization gate:
+
+- `READY_FOR_REIE_MLS_GRID_SCOPED_ACTIVE_COMING_SOON_NEXTLINK_INGEST_CERTIFICATION`
+
+Next chat should first run:
+
+- `git fetch origin main`
+- `git status --short --branch --untracked-files=all`
+- `git rev-parse HEAD origin/main`
+- `git rev-list --left-right --count origin/main...HEAD`
+- `git log -8 --oneline`
+
+Prior handoff retained below for audit history.
+
+
 PROJECT ATLAS(tm) / Controlled Full MLS Freshness Refresh And Search Consistency Certification:
 
 Workspace:

@@ -6,6 +6,7 @@ import {
   MLS_PAGE_MAX_TIMEOUT_MS,
   MLS_PAGE_MAX_TOP,
 } from '../queue/mlsPageQueue.js';
+import { parseMlsODataPageResponse, validateProviderNextLink, type MlsPageResponse } from './paginationContract.js';
 import { rateLimit } from './rateLimiter.js';
 
 dotenv.config({ path: '.env.local' });
@@ -16,6 +17,7 @@ export type FetchMLSPageOptions = {
   page: number;
   top?: number;
   includeMedia?: boolean;
+  requestCount?: boolean;
   timeoutMs?: number;
 };
 
@@ -24,6 +26,7 @@ export type FetchMLSPageDiagnostics = {
   top: number;
   skip: number;
   includeMedia: boolean;
+  requestCount: boolean;
   timeoutMs: number;
   mediaExpansion: 'requested' | 'disabled';
   bounded: {
@@ -86,6 +89,7 @@ export function getFetchMLSPageDiagnostics({
   page,
   top = MLS_PAGE_DEFAULT_TOP,
   includeMedia = includeMediaByDefault,
+  requestCount = false,
   timeoutMs = MLS_PAGE_DEFAULT_TIMEOUT_MS,
 }: FetchMLSPageOptions): FetchMLSPageDiagnostics {
   const safePage = getPageNumber(page);
@@ -97,6 +101,7 @@ export function getFetchMLSPageDiagnostics({
     top: safeTop,
     skip: safePage * safeTop,
     includeMedia,
+    requestCount,
     timeoutMs: safeTimeoutMs,
     mediaExpansion: includeMedia ? 'requested' : 'disabled',
     bounded: {
@@ -149,17 +154,27 @@ function createMlsPageError(message: string, status?: number, details?: unknown,
   return error;
 }
 
-function buildPropertyParams({ page, top = MLS_PAGE_DEFAULT_TOP, includeMedia = includeMediaByDefault }: FetchMLSPageOptions) {
+function buildPropertyParams({
+  page,
+  top = MLS_PAGE_DEFAULT_TOP,
+  includeMedia = includeMediaByDefault,
+  requestCount = false,
+}: FetchMLSPageOptions) {
   const diagnostics = getFetchMLSPageDiagnostics({
     page,
     top,
     includeMedia,
+    requestCount,
   });
   const params: Record<string, string | number> = {
     $orderby: 'ModificationTimestamp desc',
     $skip: diagnostics.skip,
     $top: diagnostics.top,
   };
+
+  if (diagnostics.requestCount) {
+    params.$count = 'true';
+  }
 
   if (diagnostics.includeMedia) {
     params.$expand = 'Media';
@@ -185,6 +200,14 @@ function buildPropertyUrl(options: FetchMLSPageOptions) {
   return url;
 }
 
+function getSafeRequestContext(requestUrl: URL) {
+  return {
+    host: requestUrl.host,
+    pathname: requestUrl.pathname,
+    queryKeys: Array.from(requestUrl.searchParams.keys()).sort(),
+  };
+}
+
 function isMlsPageError(error: unknown): error is MlsPageError {
   return error instanceof Error;
 }
@@ -193,7 +216,7 @@ function shouldRetryWithoutMedia(error: unknown) {
   return isMlsPageError(error) && (error.status === 400 || error.status === 404 || error.status === 501);
 }
 
-function getListingsFromResponse(data: MlsGridResponse): MlsPageListingPayload[] {
+function getPageResponseFromResponse(data: MlsGridResponse): MlsPageResponse<MlsPageListingPayload> {
   if (!Array.isArray(data.value)) {
     throw createMlsPageError('MLS Grid response did not include a value array.', 502, {
       details: getErrorDetails(data),
@@ -202,9 +225,11 @@ function getListingsFromResponse(data: MlsGridResponse): MlsPageListingPayload[]
     });
   }
 
-  return data.value.filter(
-    (listing): listing is MlsPageListingPayload => typeof listing === 'object' && listing !== null && !Array.isArray(listing),
-  );
+  return parseMlsODataPageResponse<MlsPageListingPayload>(data);
+}
+
+function getListingsFromResponse(data: MlsGridResponse): MlsPageListingPayload[] {
+  return getPageResponseFromResponse(data).value;
 }
 
 async function readJsonResponse(response: Response): Promise<{ data: MlsGridResponse; text: string }> {
@@ -227,7 +252,11 @@ async function readJsonResponse(response: Response): Promise<{ data: MlsGridResp
   }
 }
 
-async function requestMLSPage(options: FetchMLSPageOptions): Promise<MlsPageListingPayload[]> {
+async function requestMLSPageResponseUrl(
+  requestUrl: URL,
+  timeoutMs: number,
+  diagnostics: FetchMLSPageDiagnostics | Record<string, unknown>,
+): Promise<MlsPageResponse<MlsPageListingPayload>> {
   const token = getToken();
 
   if (!token) {
@@ -236,12 +265,9 @@ async function requestMLSPage(options: FetchMLSPageOptions): Promise<MlsPageList
 
   await rateLimit();
 
-  const timeoutMs = getTimeoutMs(options.timeoutMs);
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
-  const requestUrl = buildPropertyUrl(options);
-  const params = buildPropertyParams(options);
-  const diagnostics = getFetchMLSPageDiagnostics(options);
+  const requestContext = getSafeRequestContext(requestUrl);
 
   try {
     const response = await fetch(requestUrl, {
@@ -264,20 +290,20 @@ async function requestMLSPage(options: FetchMLSPageOptions): Promise<MlsPageList
         {
           details: getErrorDetails(data, text),
           diagnostics,
-          params,
+          request: requestContext,
           retryAfterMs,
         },
         retryAfterMs,
       );
     }
 
-    return getListingsFromResponse(data);
+    return getPageResponseFromResponse(data);
   } catch (error) {
     if (isAbortError(error)) {
       throw createMlsPageError(`MLS Grid request timed out after ${timeoutMs}ms.`, 408, {
         diagnostics,
         timeoutMs,
-        params,
+        request: requestContext,
       });
     }
 
@@ -287,6 +313,19 @@ async function requestMLSPage(options: FetchMLSPageOptions): Promise<MlsPageList
   } finally {
     clearTimeout(timeout);
   }
+}
+
+async function requestMLSPageResponse(options: FetchMLSPageOptions): Promise<MlsPageResponse<MlsPageListingPayload>> {
+  const timeoutMs = getTimeoutMs(options.timeoutMs);
+  const requestUrl = buildPropertyUrl(options);
+  const diagnostics = getFetchMLSPageDiagnostics(options);
+
+  return requestMLSPageResponseUrl(requestUrl, timeoutMs, diagnostics);
+}
+
+async function requestMLSPage(options: FetchMLSPageOptions): Promise<MlsPageListingPayload[]> {
+  const response = await requestMLSPageResponse(options);
+  return response.value;
 }
 
 function logFetchError(prefix: string, error: unknown) {
@@ -305,6 +344,7 @@ export async function fetchMLSPage({
   page,
   top = MLS_PAGE_DEFAULT_TOP,
   includeMedia = includeMediaByDefault,
+  requestCount = false,
   timeoutMs = MLS_PAGE_DEFAULT_TIMEOUT_MS,
 }: FetchMLSPageOptions): Promise<MlsPageListingPayload[]> {
   const safePage = getPageNumber(page);
@@ -314,6 +354,7 @@ export async function fetchMLSPage({
     page: safePage,
     top: safeTop,
     includeMedia,
+    requestCount,
     timeoutMs: safeTimeoutMs,
   });
 
@@ -322,6 +363,7 @@ export async function fetchMLSPage({
       page: safePage,
       top: safeTop,
       includeMedia,
+      requestCount,
       timeoutMs: safeTimeoutMs,
     });
 
@@ -340,6 +382,7 @@ export async function fetchMLSPage({
           page: safePage,
           top: safeTop,
           includeMedia: false,
+          requestCount,
           timeoutMs: safeTimeoutMs,
         });
 
@@ -358,6 +401,101 @@ export async function fetchMLSPage({
     logFetchError('MLS fetch error:', error);
     throw error;
   }
+}
+
+export async function fetchMLSPageResponse({
+  page,
+  top = MLS_PAGE_DEFAULT_TOP,
+  includeMedia = includeMediaByDefault,
+  requestCount = true,
+  timeoutMs = MLS_PAGE_DEFAULT_TIMEOUT_MS,
+}: FetchMLSPageOptions): Promise<MlsPageResponse<MlsPageListingPayload>> {
+  const safePage = getPageNumber(page);
+  const safeTop = getPageSize(top);
+  const safeTimeoutMs = getTimeoutMs(timeoutMs);
+  const diagnostics = getFetchMLSPageDiagnostics({
+    page: safePage,
+    top: safeTop,
+    includeMedia,
+    requestCount,
+    timeoutMs: safeTimeoutMs,
+  });
+
+  try {
+    const response = await requestMLSPageResponse({
+      page: safePage,
+      top: safeTop,
+      includeMedia,
+      requestCount,
+      timeoutMs: safeTimeoutMs,
+    });
+
+    console.log(
+      `MLS returned ${response.value.length} listings for page ${safePage}${includeMedia ? ' with media' : ''} ` +
+        `(top=${diagnostics.top}, skip=${diagnostics.skip}, count=${response.metadata.sourceCount ?? 'absent'}, ` +
+        `nextLink=${response.metadata.hasNextLink ? 'present' : 'absent'}, timeoutMs=${diagnostics.timeoutMs}).`,
+    );
+
+    return response;
+  } catch (error) {
+    if (includeMedia && shouldRetryWithoutMedia(error)) {
+      console.warn(`MLS media expansion failed for page ${safePage}. Retrying without Media expansion.`);
+
+      try {
+        const response = await requestMLSPageResponse({
+          page: safePage,
+          top: safeTop,
+          includeMedia: false,
+          requestCount,
+          timeoutMs: safeTimeoutMs,
+        });
+
+        console.log(
+          `MLS returned ${response.value.length} listings for page ${safePage} without media ` +
+            `(top=${diagnostics.top}, skip=${diagnostics.skip}, count=${response.metadata.sourceCount ?? 'absent'}, ` +
+            `nextLink=${response.metadata.hasNextLink ? 'present' : 'absent'}, timeoutMs=${diagnostics.timeoutMs}).`,
+        );
+
+        return response;
+      } catch (fallbackError) {
+        logFetchError('MLS fallback fetch error:', fallbackError);
+        throw fallbackError;
+      }
+    }
+
+    logFetchError('MLS fetch error:', error);
+    throw error;
+  }
+}
+
+export async function fetchMLSPageResponseFromNextLink(
+  nextLink: string,
+  {
+    timeoutMs = MLS_PAGE_DEFAULT_TIMEOUT_MS,
+  }: Pick<FetchMLSPageOptions, 'timeoutMs'> = {},
+): Promise<MlsPageResponse<MlsPageListingPayload>> {
+  const safeTimeoutMs = getTimeoutMs(timeoutMs);
+  const validation = validateProviderNextLink(nextLink, getBaseUrl());
+
+  if (!validation.ok) {
+    throw createMlsPageError(`Rejected MLS Grid nextLink: ${validation.reason}.`, 400, {
+      reason: validation.reason,
+    });
+  }
+
+  const requestUrl = new URL(validation.url);
+  const response = await requestMLSPageResponseUrl(requestUrl, safeTimeoutMs, {
+    mode: 'provider_next_link',
+    request: getSafeRequestContext(requestUrl),
+  });
+
+  console.log(
+    `MLS returned ${response.value.length} listings from provider nextLink ` +
+      `(count=${response.metadata.sourceCount ?? 'absent'}, nextLink=${response.metadata.hasNextLink ? 'present' : 'absent'}, ` +
+      `timeoutMs=${safeTimeoutMs}).`,
+  );
+
+  return response;
 }
 
 // /Users/davidquinn/david-quinn-group/colorado-real-estate/lib/mls/fetchMLSPage.ts

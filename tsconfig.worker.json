@@ -32,6 +32,7 @@
     "scripts/alertFailedRows.ts",
     "scripts/alertNotificationReadiness.ts",
     "scripts/checkMlsSourceFreshnessContract.ts",
+    "scripts/checkMlsPaginationContract.ts",
     "scripts/runAlertIntentFixtures.ts",
     "scripts/checkNextSecurityVersion.ts",
     "scripts/checkMapRenderingSafety.ts",
