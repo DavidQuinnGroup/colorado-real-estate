@@ -35,6 +35,7 @@
     "scripts/checkMlsPaginationContract.ts",
     "scripts/checkMlsRateGovernorSafety.ts",
     "scripts/checkMlsScopedIngestAcceleration.ts",
+    "scripts/checkMlsPublicActiveReconciliationContract.ts",
     "scripts/runMlsScopedAcceleratedIngest.ts",
     "scripts/runAlertIntentFixtures.ts",
     "scripts/checkNextSecurityVersion.ts",

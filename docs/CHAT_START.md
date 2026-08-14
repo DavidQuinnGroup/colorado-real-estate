@@ -11,7 +11,7 @@ Product:
 ## Latest New-Chat Handoff
 
 
-PROJECT ATLAS(tm) / MLS Grid Rate Limit Safety And Scoped Ingest Recertification Preparation:
+PROJECT ATLAS(tm) / MLS Public-Active Stale-Row Reconciliation Architecture:
 
 Workspace:
 
@@ -20,124 +20,106 @@ Workspace:
 Canonical baseline:
 
 - Branch: `main`
-- Pre-work `HEAD = origin/main = a82daed8304189b043b16b7ece0f30fe58a0060e`
-- Pre-work divergence: `0 behind / 0 ahead`
-- Latest local Primary work was uncommitted at start and preserved.
-- Local implementation/certification commit: created after this handoff update; verify with `git rev-parse HEAD`.
+- Workstream 1 synchronized commit: `5c438dc47e707acce749042f33350d76bf91cd4f`
+- Post-sync `HEAD = origin/main = 5c438dc47e707acce749042f33350d76bf91cd4f`
+- Post-sync divergence: `0 behind / 0 ahead`
+- Workstream 2 local architecture commit: created after this handoff update; verify with `git rev-parse HEAD`.
+- Workstream 2 is local only and must not be pushed without separate authorization.
 
 Program:
 
-- `REIE_MLS_GRID_RATE_LIMIT_SAFETY_AND_SCOPED_INGEST_RECERTIFICATION_PREPARATION`
+- `REIE_MLS_PUBLIC_ACTIVE_STALE_ROW_RECONCILIATION_ARCHITECTURE`
 
 Final classification:
 
-- `MLS_GRID_RATE_SAFETY_AND_FILTER_REMEDIATION_LOCALLY_CERTIFIED_READY_FOR_NEW_BOUNDED_LIVE_PROOF`
+- `ADDITIVE_ELIGIBILITY_STATE_REQUIRED`
 
 Why this was needed:
 
-- MLS Grid provider warning evidence received August 14, 2026 stated PROJECT ATLAS API activity reached `5.0 requests/second`.
-- The provider notice cited an account-specific `2 requests/second` limit.
-- Generic warning/suspension language also referenced `4 RPS` warning and `6 RPS` temporary suspension thresholds, but PROJECT ATLAS now treats the account-specific `2 RPS` limit as the operative ceiling until clarified.
-- The prior live scoped-ingest certification was invalid because the initial metadata-preserving request path did not forward the intended Active/Coming Soon filter.
-- All MLS Grid live calls were paused during this workstream.
+- After a complete Active/Coming Soon provider-scope ingest, REIE needs a safe way to identify local public-active rows absent from the current provider public-scope snapshot.
+- Filtered-feed absence can prove only `NO_LONGER_PRESENT_IN_CURRENT_ACTIVE_COMING_SOON_SNAPSHOT`.
+- Filtered-feed absence does not prove Pending, Closed, Withdrawn, Expired, Cancelled, or Deleted.
+- Current repository fields represent listing status and private/public access, but not durable public-scope verification or quarantine state.
 
-Preserved local acceleration work:
+Current public eligibility contract:
 
-- Bounded accelerated scoped ingest.
-- Page-level existing-identity preload.
-- Safe checkpoint/resume contract.
-- Scope fingerprint.
-- Same-ID sequential processing with bounded DB row concurrency.
-- Scoped filter-forwarding remediation.
+- Public Search defaults to `status = Active` and `isPrivateExclusive = false`.
+- Saved Search new-listing intent requires `status = Active`, `isPrivateExclusive = false`, authoritative freshness, match criteria, and no duplicate event.
+- Property Product route lookup resolves by `id`, `slug`, or `mlsId`; route availability is not current provider-scope certification.
+- Typesense rebuild currently indexes mapped Supabase `Property` rows; it must be gated behind DB public-search certification before stale-row reconciliation.
+- Repository-native reconciliation identity is `Property.mlsId`, derived from provider/source identity candidates including `ListingKey`, `ListingId`, `MlsId`, `MLSNumber`, `ListingNumber`, `Id`, and `mlsid`.
 
-Rate-safety remediation:
+Architecture conclusion:
 
-- Upgraded `lib/mls/rateLimiter.ts` into the shared MLS Grid request governor.
-- Effective PROJECT ATLAS policy: `1 request/second`, minimum interval `1000 ms`, burst capacity `1`.
-- Added configurable caps for requests per run, minute, hour, and rolling 24 hours.
-- Added request accounting for attempted, succeeded, failed, start/end time, request timestamps, and average request rate.
-- Added bounded retry/backoff for retryable statuses `408`, `429`, `500`, `502`, `503`, and `504`.
-- Retry-After is honored when supplied, and the governor applies to retry attempts.
+- Do not mutate `Property.status` from absence alone.
+- Do not use `isPrivateExclusive` as a quarantine flag.
+- Do not delete historical `Property` records to solve search freshness.
+- Durable public-search quarantine requires additive eligibility state, for example future governed state like `publicScopeVerificationStatus`.
+- Provider status resolution for absent IDs should use the lowest-request authoritative provider mechanism that is later proven under the rate governor.
 
-MLS request boundaries covered:
+Pure local implementation performed:
 
-- `lib/mls/fetchMLSPage.ts`
-- `lib/mls/mlsGridClient.ts`
-- `lib/mls/syncMLSGrid.ts`
-- `lib/mls/scopedIngestAcceleration.ts`
-- `workers/mlsPageWorker.ts`
-- `workers/mlsWorker.ts`
-- `scripts/fetchMLS.ts`
-- `scripts/mlsSync.ts`
-- `scripts/runMlsScopedAcceleratedIngest.ts`
-
-Filter and nextLink safety:
-
-- Initial scoped request now forwards `MlgCanView eq true and (StandardStatus eq 'Active' or StandardStatus eq 'Coming Soon')`.
-- Initial request also forwards `$orderby=ModificationTimestamp desc`, `$count=true`, `$top=100`, and no `$expand=Media`.
-- Subsequent traversal remains provider-nextLink based.
-- Provider nextLink must pass HTTPS, host, and credential-free validation.
-- Raw nextLink is not printed by the bounded live runner.
+- Added `lib/mls/publicActiveReconciliationContract.ts`.
+- Added `scripts/checkMlsPublicActiveReconciliationContract.ts`.
+- Added `npm run check:mls-public-active-reconciliation-contract`.
+- Added executive document `docs/project-atlas/executive-library/REIE-MLS-PUBLIC-ACTIVE-STALE-ROW-RECONCILIATION-ARCHITECTURE.md`.
+- Updated this handoff.
 
 Validation:
 
-- `npm run check:mls-rate-governor-safety`: passed; fixture-only, no real MLS Grid provider call.
-- `npm run check:mls-pagination-contract`: passed.
-- `npm run check:mls-source-freshness-contract`: passed.
-- `npm run check:saved-search-new-listing-semantics`: passed.
-- `npm run check:mls-scoped-ingest-acceleration`: passed.
-- `npm run typecheck`: passed.
-- `npm run worker:build`: passed.
-- `git diff --check`: passed before commit.
+- `npm run check:mls-public-active-reconciliation-contract`: passed after an escalated worker build was required because sandboxed `tsc` could not write `dist` (`TS5033 ... EPERM`).
+- The check reports `FIXTURE_ONLY_NO_DB_NO_PROVIDER_NO_SIDE_EFFECT`.
+- Covered present Active, present Coming Soon provider-scope semantics, absent local Active, Pending/Closed/Withdrawn/Cancelled/Expired evidence, unavailable provider record, ambiguous status, duplicate source identity, missing identity, incomplete snapshot, search fail-closed, alert fail-closed, no DB writes, no provider calls, no Typesense writes, and no alert queue writes.
+- `dist` build artifacts from the validation run were cleaned from the commit scope.
 
-Prepared future live proof, not executed:
+Future reconciliation design:
 
-- Exact Active/Coming Soon scoped filter.
-- Provider nextLink traversal.
-- Max `2 pages / 200 records`.
-- Max `1 provider request/sec`.
-- Burst `1`.
-- Explicit request budget.
-- No Typesense, no alerts/email, before/after DB counts, and provider request-accounting evidence.
+1. Capture a complete current provider Active/Coming Soon source-ID snapshot.
+2. Compare against local public-active IDs.
+3. Isolate absent IDs.
+4. Resolve current authoritative status efficiently under the rate governor.
+5. Update local eligibility/status only from authoritative evidence.
+6. Certify DB public-search scope.
+7. Authorize Typesense rebuild only after DB certification.
 
-Suggested future command only after explicit authorization:
+Failure posture:
 
-- `npm run run:mls-scoped-accelerated-ingest -- --execute --simulate-resume --max-pages=2 --max-rows=200 --max-provider-requests=2 --concurrency=6 --top=100 --timeout-ms=45000`
-
-Suggested MLS Grid support question:
-
-- "We received an account-specific warning citing a 2 requests/second limit, while the general warning threshold language references 4 RPS. Which sustained RPS limit governs this specific IDX subscription, and do you recommend a lower operational target for bounded bulk synchronization under this account?"
+- Incomplete provider snapshot: do not classify the absent set.
+- Partial ID reconciliation: resolve only IDs with authoritative evidence; unresolved IDs fail closed.
+- Rate limit or timeout: checkpoint/stop without expanding stale classification.
+- Ambiguous identity, missing provider record, or conflicting state: fail closed for search and alerts.
 
 Typesense / alert sequencing:
 
-1. Recertify safe scoped MLS live ingest.
-2. Complete Active/Coming Soon ingest.
-3. Reconcile stale public-active DB rows.
-4. Certify DB public-search scope.
-5. Reindex Typesense.
-6. Certify Search.
-7. Only then resume Saved Search live-proof work.
+1. Decide additive public-scope eligibility state.
+2. Prove provider absent-ID resolution capability under the rate governor.
+3. Recertify safe scoped MLS live ingest.
+4. Complete Active/Coming Soon ingest.
+5. Reconcile stale public-active DB rows.
+6. Certify DB public-search scope.
+7. Reindex Typesense.
+8. Certify Search.
+9. Only then resume Saved Search live-proof work.
 
 Protected boundaries:
 
-- No MLS Grid API request occurred during this rate-safety workstream.
+- No MLS Grid API request occurred during this architecture workstream.
 - No full scoped ingest, Typesense mutation, reindex, alert creation, queue job creation, email send, Resend call, worker/scheduler activation, CRM/customer-data mutation, LightBox call, ATTOM investigation, deployment, or push occurred.
 
 Provider status:
 
 - MLS Grid: `MLS_GRID_LIVE_CALLS_PAUSED_PENDING_RATE_LIMIT_CLARIFICATION`
 - LightBox: `LIGHTBOX_SIX_PRODUCT_EVALUATION_SMOKE_TEST_SUCCESSFUL`
-- LightBox successful trial calls consumed: `6`
-- LightBox remaining nominal successful-call allowance: `1994`
+- LightBox additional calls in this workstream: `0`
 - ATTOM: `PENDING_PROVIDER_RESPONSE`
 
 Documentation artifact:
 
-- `docs/project-atlas/executive-library/REIE-MLS-GRID-RATE-LIMIT-SAFETY-AND-SCOPED-INGEST-RECERTIFICATION-PREPARATION.md`
+- `docs/project-atlas/executive-library/REIE-MLS-PUBLIC-ACTIVE-STALE-ROW-RECONCILIATION-ARCHITECTURE.md`
 
 Next authorization gate:
 
-- `READY_FOR_2_PAGE_MLS_GRID_RATE_GOVERNED_SCOPED_LIVE_RECERTIFICATION`
+- `READY_FOR_ADDITIVE_PUBLIC_SCOPE_ELIGIBILITY_STATE_DECISION_AND_PROVIDER_CAPABILITY_PROOF`
 
 Next chat should first run:
 
