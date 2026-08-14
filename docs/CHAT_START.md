@@ -11,7 +11,7 @@ Product:
 ## Latest New-Chat Handoff
 
 
-PROJECT ATLAS(tm) / MLS Public-Active Stale-Row Reconciliation Architecture:
+PROJECT ATLAS(tm) / Additive Public Search Eligibility State Foundation:
 
 Workspace:
 
@@ -20,26 +20,27 @@ Workspace:
 Canonical baseline:
 
 - Branch: `main`
-- Workstream 1 synchronized commit: `5c438dc47e707acce749042f33350d76bf91cd4f`
-- Post-sync `HEAD = origin/main = 5c438dc47e707acce749042f33350d76bf91cd4f`
+- Workstream 1 synchronized commit: `725257d081f93998a0bb67dc1b283d7659ce4679`
+- Post-sync `HEAD = origin/main = 725257d081f93998a0bb67dc1b283d7659ce4679`
 - Post-sync divergence: `0 behind / 0 ahead`
-- Workstream 2 local architecture commit: created after this handoff update; verify with `git rev-parse HEAD`.
+- Workstream 2 local implementation/certification commit: created after this handoff update; verify with `git rev-parse HEAD`.
 - Workstream 2 is local only and must not be pushed without separate authorization.
 
 Program:
 
-- `REIE_MLS_PUBLIC_ACTIVE_STALE_ROW_RECONCILIATION_ARCHITECTURE`
+- `REIE_ADDITIVE_PUBLIC_SEARCH_ELIGIBILITY_STATE_FOUNDATION`
 
 Final classification:
 
-- `ADDITIVE_ELIGIBILITY_STATE_REQUIRED`
+- `ADDITIVE_ELIGIBILITY_SCHEMA_PREPARED_RUNTIME_ACTIVATION_SEPARATE`
 
 Why this was needed:
 
-- After a complete Active/Coming Soon provider-scope ingest, REIE needs a safe way to identify local public-active rows absent from the current provider public-scope snapshot.
-- Filtered-feed absence can prove only `NO_LONGER_PRESENT_IN_CURRENT_ACTIVE_COMING_SOON_SNAPSHOT`.
-- Filtered-feed absence does not prove Pending, Closed, Withdrawn, Expired, Cancelled, or Deleted.
-- Current repository fields represent listing status and private/public access, but not durable public-scope verification or quarantine state.
+- The prior architecture certification found that existing fields cannot safely represent `PUBLIC_SCOPE_UNVERIFIED`.
+- Mutating `status` would fabricate unverified replacement listing status.
+- Mutating `isPrivateExclusive` would corrupt access/privacy semantics.
+- Filtered-feed absence proves only `NO_LONGER_PRESENT_IN_CURRENT_ACTIVE_COMING_SOON_SNAPSHOT`; it does not prove Pending, Closed, Withdrawn, Expired, Cancelled, or Deleted.
+- REIE therefore needs an additive public-search eligibility concept, separate from status and privacy.
 
 Current public eligibility contract:
 
@@ -47,79 +48,76 @@ Current public eligibility contract:
 - Saved Search new-listing intent requires `status = Active`, `isPrivateExclusive = false`, authoritative freshness, match criteria, and no duplicate event.
 - Property Product route lookup resolves by `id`, `slug`, or `mlsId`; route availability is not current provider-scope certification.
 - Typesense rebuild currently indexes mapped Supabase `Property` rows; it must be gated behind DB public-search certification before stale-row reconciliation.
-- Repository-native reconciliation identity is `Property.mlsId`, derived from provider/source identity candidates including `ListingKey`, `ListingId`, `MlsId`, `MLSNumber`, `ListingNumber`, `Id`, and `mlsid`.
 
-Architecture conclusion:
+Selected eligibility model:
 
-- Do not mutate `Property.status` from absence alone.
-- Do not use `isPrivateExclusive` as a quarantine flag.
-- Do not delete historical `Property` records to solve search freshness.
-- Durable public-search quarantine requires additive eligibility state, for example future governed state like `publicScopeVerificationStatus`.
-- Provider status resolution for absent IDs should use the lowest-request authoritative provider mechanism that is later proven under the rate governor.
+- Add nullable enum field `Property.publicSearchEligibility`.
+- Enum values:
+  - `CERTIFIED_ELIGIBLE`
+  - `PUBLIC_SCOPE_UNVERIFIED`
+  - `CERTIFIED_INELIGIBLE`
+- `NULL` means legacy/not-yet-certified and preserves current behavior because no live runtime predicate consumes the field yet.
+- Future activation must not treat `NULL` as certified eligible unless a separately authorized initialization/reconciliation gate says so.
 
 Pure local implementation performed:
 
-- Added `lib/mls/publicActiveReconciliationContract.ts`.
-- Added `scripts/checkMlsPublicActiveReconciliationContract.ts`.
-- Added `npm run check:mls-public-active-reconciliation-contract`.
-- Added executive document `docs/project-atlas/executive-library/REIE-MLS-PUBLIC-ACTIVE-STALE-ROW-RECONCILIATION-ARCHITECTURE.md`.
+- Added Prisma enum `PublicSearchEligibility`.
+- Added nullable `Property.publicSearchEligibility`.
+- Added index `Property_publicSearchEligibility_idx`.
+- Added non-executed migration artifact `prisma/migrations/20260814190000_add_property_public_search_eligibility/migration.sql`.
+- Added pure contract `lib/mls/publicSearchEligibilityStateContract.ts`.
+- Added deterministic check `scripts/checkPublicSearchEligibilityStateContract.ts`.
+- Added `npm run check:public-search-eligibility-state-contract`.
+- Added executive document `docs/project-atlas/executive-library/REIE-ADDITIVE-PUBLIC-SEARCH-ELIGIBILITY-STATE-FOUNDATION.md`.
 - Updated this handoff.
 
 Validation:
 
-- `npm run check:mls-public-active-reconciliation-contract`: passed after an escalated worker build was required because sandboxed `tsc` could not write `dist` (`TS5033 ... EPERM`).
-- The check reports `FIXTURE_ONLY_NO_DB_NO_PROVIDER_NO_SIDE_EFFECT`.
-- Covered present Active, present Coming Soon provider-scope semantics, absent local Active, Pending/Closed/Withdrawn/Cancelled/Expired evidence, unavailable provider record, ambiguous status, duplicate source identity, missing identity, incomplete snapshot, search fail-closed, alert fail-closed, no DB writes, no provider calls, no Typesense writes, and no alert queue writes.
+- `npx prisma validate --schema prisma/schema.prisma`: passed.
+- `npm run check:public-search-eligibility-state-contract`: passed after an escalated worker build was required because sandboxed `tsc` could not write `dist` (`TS5033 ... EPERM`).
+- The check reports `FIXTURE_ONLY_NO_DB_NO_PROVIDER_NO_TYPESENSE_NO_ALERT_SIDE_EFFECT`.
+- Covered Active + provider public-scope member, Coming Soon + provider member, locally Active but absent snapshot, absent + Pending/Closed/Active verification, missing identity, duplicate identity, private-exclusive listing, incomplete provider snapshot, partial reconciliation, unresolved not Search/Typesense/Saved Search/alert eligible, historical Property retention unaffected, status not fabricated, privacy not repurposed, deterministic reason codes, and zero side effects.
 - `dist` build artifacts from the validation run were cleaned from the commit scope.
 
-Future reconciliation design:
+Prepared future state transitions:
 
-1. Capture a complete current provider Active/Coming Soon source-ID snapshot.
-2. Compare against local public-active IDs.
-3. Isolate absent IDs.
-4. Resolve current authoritative status efficiently under the rate governor.
-5. Update local eligibility/status only from authoritative evidence.
-6. Certify DB public-search scope.
-7. Authorize Typesense rebuild only after DB certification.
-
-Failure posture:
-
-- Incomplete provider snapshot: do not classify the absent set.
-- Partial ID reconciliation: resolve only IDs with authoritative evidence; unresolved IDs fail closed.
-- Rate limit or timeout: checkpoint/stop without expanding stale classification.
-- Ambiguous identity, missing provider record, or conflicting state: fail closed for search and alerts.
+- current provider public snapshot member plus public-scope status -> `CERTIFIED_ELIGIBLE`
+- absent from completed snapshot -> `PUBLIC_SCOPE_UNVERIFIED`
+- unverified plus authoritative Pending/Closed/Withdrawn/Expired/Cancelled status -> `CERTIFIED_INELIGIBLE`
+- unverified plus authoritative Active/Coming Soon status -> `CERTIFIED_ELIGIBLE`
+- ambiguous/missing/duplicate identity -> remain `PUBLIC_SCOPE_UNVERIFIED`
+- incomplete snapshot -> remain `PUBLIC_SCOPE_UNVERIFIED`
 
 Typesense / alert sequencing:
 
-1. Decide additive public-scope eligibility state.
-2. Prove provider absent-ID resolution capability under the rate governor.
-3. Recertify safe scoped MLS live ingest.
-4. Complete Active/Coming Soon ingest.
-5. Reconcile stale public-active DB rows.
-6. Certify DB public-search scope.
-7. Reindex Typesense.
-8. Certify Search.
-9. Only then resume Saved Search live-proof work.
+1. Synchronize this schema/contract foundation.
+2. Separately authorize and execute the additive migration.
+3. Separately initialize/reconcile eligibility state.
+4. Certify DB public-search scope.
+5. Activate Search/Typesense/Saved Search predicates.
+6. Rebuild Typesense.
+7. Certify public Search and alert readiness.
 
 Protected boundaries:
 
-- No MLS Grid API request occurred during this architecture workstream.
-- No full scoped ingest, Typesense mutation, reindex, alert creation, queue job creation, email send, Resend call, worker/scheduler activation, CRM/customer-data mutation, LightBox call, ATTOM investigation, deployment, or push occurred.
+- No migration was executed.
+- No Property row was written.
+- No MLS Grid API request occurred.
+- No full scoped ingest, Typesense mutation, reindex, alert creation, queue job creation, email send, Resend call, worker/scheduler activation, CRM/customer-data mutation, LightBox call, ATTOM investigation, deployment, or Workstream 2 push occurred.
 
 Provider status:
 
 - MLS Grid: `MLS_GRID_LIVE_CALLS_PAUSED_PENDING_RATE_LIMIT_CLARIFICATION`
-- LightBox: `LIGHTBOX_SIX_PRODUCT_EVALUATION_SMOKE_TEST_SUCCESSFUL`
 - LightBox additional calls in this workstream: `0`
 - ATTOM: `PENDING_PROVIDER_RESPONSE`
 
 Documentation artifact:
 
-- `docs/project-atlas/executive-library/REIE-MLS-PUBLIC-ACTIVE-STALE-ROW-RECONCILIATION-ARCHITECTURE.md`
+- `docs/project-atlas/executive-library/REIE-ADDITIVE-PUBLIC-SEARCH-ELIGIBILITY-STATE-FOUNDATION.md`
 
 Next authorization gate:
 
-- `READY_FOR_ADDITIVE_PUBLIC_SCOPE_ELIGIBILITY_STATE_DECISION_AND_PROVIDER_CAPABILITY_PROOF`
+- `READY_FOR_PUBLIC_SEARCH_ELIGIBILITY_FOUNDATION_SYNCHRONIZATION`
 
 Next chat should first run:
 

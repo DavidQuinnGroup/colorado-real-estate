@@ -8,6 +8,12 @@ generator client {
   provider = "prisma-client-js"
 }
 
+enum PublicSearchEligibility {
+  CERTIFIED_ELIGIBLE
+  PUBLIC_SCOPE_UNVERIFIED
+  CERTIFIED_INELIGIBLE
+}
+
 model Property {
   id                   String    @id @default(cuid())
   mlsId                String    @unique
@@ -37,15 +43,17 @@ model Property {
   lastIntelligenceSync DateTime?
   sourceModifiedAt     DateTime?
 
-  isPrivateExclusive  Boolean @default(false)
-  gcForensics         Json?
-  negotiationLevers   Json?
-  optimizedValue      Int?
-  efficiencyScore     Int     @default(0)
-  resilienceScore     Int     @default(85)
-  altitude            Int     @default(5280)
-  soilType            String  @default("Front Range Mixed")
-  hasPolybutyleneRisk Boolean @default(false)
+  publicSearchEligibility PublicSearchEligibility?
+
+  isPrivateExclusive     Boolean @default(false)
+  gcForensics            Json?
+  negotiationLevers      Json?
+  optimizedValue         Int     @default(0)
+  efficiencyScore        Int     @default(0)
+  resilienceScore        Int     @default(85)
+  altitude               Int     @default(5280)
+  soilType               String  @default("Front Range Mixed")
+  hasPolybutyleneRisk    Boolean @default(false)
 
   photos                  PropertyPhoto[]
   priceHistory            PriceHistory[]
@@ -61,6 +69,7 @@ model Property {
   @@index([baths])
   @@index([propertyType])
   @@index([lat, lng])
+  @@index([publicSearchEligibility])
   @@index([isPrivateExclusive])
   @@index([lastIntelligenceSync])
   @@index([sourceModifiedAt])
