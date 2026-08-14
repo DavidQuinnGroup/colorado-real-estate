@@ -11,7 +11,7 @@ Product:
 ## Latest New-Chat Handoff
 
 
-PROJECT ATLAS(tm) / sourceModifiedAt Migration Execution And Bounded MLS Freshness Refresh:
+PROJECT ATLAS(tm) / Controlled Full MLS Freshness Refresh And Search Consistency Certification:
 
 Workspace:
 
@@ -19,123 +19,136 @@ Workspace:
 
 Canonical baseline:
 
-- Workstream 1 synchronized local implementation commit `26887793cf942de7d7c6384e36747e4ea9daa3d8`.
-- Post-sync canonical state before migration: `HEAD = origin/main = 26887793cf942de7d7c6384e36747e4ea9daa3d8`
-- Divergence before migration: `0 behind / 0 ahead`
-- Worktree before migration: clean
-- Local documentation-only execution certification commit: created after this handoff update; verify current local HEAD with `git rev-parse HEAD`.
+- Workstream 1 synchronized local documentation commit `9119d8dde6cbb00a0c6fe66377e00526a9c64fb9`.
+- Post-sync canonical state before full refresh: `HEAD = origin/main = 9119d8dde6cbb00a0c6fe66377e00526a9c64fb9`
+- Divergence before full refresh: `0 behind / 0 ahead`
+- Worktree before full refresh: clean
+- Local documentation-only full-refresh certification commit: created after this handoff update; verify current local HEAD with `git rev-parse HEAD`.
 
 Program:
 
-- `REIE_SOURCE_MODIFIED_AT_MIGRATION_EXECUTION_AND_BOUNDED_MLS_FRESHNESS_REFRESH`
+- `REIE_CONTROLLED_FULL_MLS_FRESHNESS_REFRESH_AND_SEARCH_CONSISTENCY_CERTIFICATION`
 
 Final classification:
 
-- `BOUNDED_REFRESH_CERTIFIED_FULL_MLS_REFRESH_RECOMMENDED`
+- `GUARD_BOUNDED_FULL_REFRESH_EXECUTED_TYPESENSE_REINDEX_REQUIRED`
 
 Workstream 1 synchronization:
 
-- Verified and pushed existing local commit `26887793cf942de7d7c6384e36747e4ea9daa3d8` (`Prepare sourceModifiedAt schema mapping`) unchanged to `origin/main`.
-- Post-push canonical baseline: `HEAD = origin/main = 26887793cf942de7d7c6384e36747e4ea9daa3d8`
+- Verified and pushed existing local commit `9119d8dde6cbb00a0c6fe66377e00526a9c64fb9` (`Certify sourceModifiedAt migration refresh`) unchanged to `origin/main`.
+- Pre-push baseline matched: prior `origin/main = 26887793cf942de7d7c6384e36747e4ea9daa3d8`, divergence `0 behind / 1 ahead`, working tree clean.
+- `git diff --check origin/main...HEAD`: passed before push.
+- Post-push canonical baseline: `HEAD = origin/main = 9119d8dde6cbb00a0c6fe66377e00526a9c64fb9`
 - Divergence after Workstream 1: `0 behind / 0 ahead`
 - Worktree after Workstream 1: clean.
 - No deployment occurred.
 
-Migration execution:
+Pre-refresh snapshot:
 
-- Pre-migration snapshot time: `2026-08-13T21:33:02.049Z`
-- Pre-migration `Property` rows: `15,282`
-- Pre-migration active/public rows: `1,287`
-- Pre-migration `sourceModifiedAt` column/index: absent.
-- Pending migration before execution: `20260813213000_add_property_source_modified_at`
-- Executed `npx prisma migrate deploy`.
-- Migration applied successfully and database schema is up to date.
-- Post-migration `sourceModifiedAt` column: present, nullable, `timestamp without time zone`.
-- Post-migration index: `Property_sourceModifiedAt_idx`.
-- Migration did not change `Property` row count.
-- Existing rows initially remained `sourceModifiedAt = NULL`.
-
-Post-migration validation:
-
-- `npx prisma validate`: passed.
-- `npx prisma generate`: passed.
-- `npm run check:mls-source-freshness-contract`: passed with fixture-only zero side-effect counters.
-- `npm run check:saved-search-new-listing-semantics`: passed with fixture-only zero side-effect counters.
-- `npm run typecheck`: passed.
-- `npm run worker:build`: passed.
-- `git diff --check`: passed.
-- Generated `dist` output was cleaned after validation.
-
-Bounded MLS refresh:
-
-- Standard live `scripts/mlsSync.ts` runner was not used because its `processListing` path can call Typesense, photo processing, and saved-search alert generation.
-- Executed one lower-level bounded refresh using existing `fetchMLSPage`, `upsertListing`, and sync-state helpers.
-- Bound: page `0`, top `5`, skip `0`, include media `false`, timeout `30,000 ms`, pages fetched `1`.
-- Excluded paths: `processListing`, `updateSearchIndex`, `processPhotos`, `matchAndNotify`, `enqueueAlert`, `sendEmail`.
-- Started: `2026-08-13T21:36:26.012Z`
-- Completed: `2026-08-13T21:36:30.585Z`
-- Listings fetched: `5`
-- Processed: `5`
-- Created: `5`
-- Updated: `0`
-- Unchanged: `0`
-- Failed: `0`
-- Skipped: `0`
-- `sourceModifiedAt` populated in run: `5`
-
-sourceModifiedAt certification:
-
-- Post-refresh total `Property` rows: `15,287`
+- Snapshot time: `2026-08-13T21:43:17.957Z`
+- Total `Property` rows: `15,287`
 - Active/public rows: `1,291`
 - Rows with `sourceModifiedAt`: `5`
 - Active/public rows with `sourceModifiedAt`: `4`
-- Rows missing `sourceModifiedAt`: `15,282`
-- Active/public rows inside 24 hours: `4`
-- Active/public rows inside 48 hours: `4`
 - Active/public rows inside 72 hours: `4`
-- Active/public rows inside 7 days: `4`
-- Min `sourceModifiedAt`: `2026-08-13T21:34:37.696Z`
-- Max `sourceModifiedAt`: `2026-08-13T21:35:37.429Z`
-- Rows where `sourceModifiedAt = lastIntelligenceSync`: `0`
-- Representative sanitized lineage: MLS `ModificationTimestamp` `2026-08-13T21:35:37.429Z` persisted to `Property.sourceModifiedAt` `2026-08-13T21:35:37.429Z` with decision `persist_incoming`.
-
-Saved-search fresh-candidate readiness:
-
-- Fresh eligible active/public properties inside 72 hours: `4`
-- Matching saved-search/property pairs: `0`
-- Undeduped pairs: `0`
-- Sanitized candidate: `null`
-- No alert or queue row was created.
-
-MLS sync health:
-
+- Rows missing `sourceModifiedAt`: `15,282`
 - `MlsSyncState.lastSync`: `2026-08-13T21:36:30.585Z`
 - `MlsSyncState.lastIntelligenceSync`: `2026-08-13T21:36:30.585Z`
 - `MlsSyncState.lastPage`: `1`
 - `MlsSyncState.totalRecords`: `855`
 - `MlsSyncState.isSyncing`: `false`
+- `AlertEvent` rows: `273`
+- `AlertQueue` rows: `283`
+- `EmailLog` rows: `78`
+
+Full refresh mechanism:
+
+- Standard live `scripts/mlsSync.ts` runner was not used because its `processListing` path can call Typesense, photo processing, and saved-search alert generation.
+- Executed a controlled full refresh using existing lower-level `fetchMLSPage`, `upsertListing`, and sync-state helpers.
+- Bound: start page `0`, page size `100`, include media `false`, timeout `30,000 ms`, max pages guard `500`, max failures `25`, max failure rate `0.02`.
+- Excluded paths: `processListing`, `updateSearchIndex`, `processPhotos`, `matchAndNotify`, `enqueueAlert`, `sendEmail`.
+- No destructive reset, delete-all, manual fabrication, Typesense mutation, alert mutation, email mutation, worker activation, scheduler activation, provider work, runtime code change, or deployment occurred.
+
+Full refresh result:
+
+- Started: `2026-08-13T21:44:27.798Z`
+- Completed: `2026-08-14T04:44:03.557Z`
+- Status: `STOPPED`
+- Stopped reason: `max_pages_guard`
+- Pages fetched: `500`
+- Empty terminal page: `null`
+- Listings fetched: `50,000`
+- Processed: `50,000`
+- Created: `49,386`
+- Updated: `614`
+- Unchanged: `0`
+- Failed: `0`
+- Skipped: `0`
+- `sourceModifiedAt` populated in run: `50,000`
+- `sourceModifiedAt` decisions: `persist_incoming = 49,999`, `no_change_same_timestamp = 1`
+
+Post-refresh sourceModifiedAt certification:
+
+- Snapshot time: `2026-08-14T04:46:45.328Z`
+- Total `Property` rows: `64,673`
+- Active/public rows: `11,762`
+- Rows with `sourceModifiedAt`: `50,000`
+- Active/public rows with `sourceModifiedAt`: `10,748`
+- Rows missing `sourceModifiedAt`: `14,673`
+- Active/public rows inside 24 hours: `1,910`
+- Active/public rows inside 48 hours: `3,989`
+- Active/public rows inside 72 hours: `5,562`
+- Active/public rows inside 7 days: `9,839`
+- Active/public rows inside 30 days: `10,748`
+- Min `sourceModifiedAt`: `2026-08-06T14:55:37.600Z`
+- Max `sourceModifiedAt`: `2026-08-13T21:43:37.439Z`
+- `MlsSyncState.lastSync`: `2026-08-14T04:44:03.235Z`
+- `MlsSyncState.lastIntelligenceSync`: `2026-08-14T04:44:03.235Z`
+- `MlsSyncState.lastPage`: `500`
+- `MlsSyncState.totalRecords`: `50,855`
+- `MlsSyncState.isSyncing`: `false`
 - No stuck lock observed.
+
+Timestamp lineage:
+
+- Representative newly created row persisted MLS Grid `ModificationTimestamp` `2026-08-13T21:43:37.439Z` to `Property.sourceModifiedAt` `2026-08-13T21:43:37.439Z` with decision `persist_incoming`.
+- Representative existing same-timestamp row retained `Property.sourceModifiedAt` `2026-08-13T21:34:37.696Z` with decision `no_change_same_timestamp`.
+
+Saved-search fresh-candidate readiness:
+
+- Fresh active/public properties inside 72 hours: `5,562`
+- Active saved searches: `5`
+- Emailable users: `9`
+- Maximum saved-search/property candidate pairs before criteria-level matching and dedupe: `27,810`
+- No alert matching, queueing, email sending, unsubscribe mutation, or customer-data mutation was authorized or performed.
 
 Typesense/Search observation:
 
-- No Typesense mutation was attempted.
-- Because the bounded refresh intentionally avoided Typesense updates, the five refreshed database rows may not be reflected in Typesense-backed Search until a separately authorized indexing or reindexing action occurs.
-- `sourceModifiedAt` itself is not part of the current Typesense schema, so no Typesense schema change is required for this field.
+- Production `/api/search?limit=5`: HTTP `200`, health `healthy`, source `typesense`, found `1,287`, returned `5`, mapped `5`, access level `public`.
+- Production `/search`: HTTP `200`, title `Guided Colorado Property Search | David Quinn Group`, embedded initial search meta source `database`, returned `250`, mapped `250`, health `healthy`.
+- Local Typesense admin endpoint `http://localhost:8109/collections`: HTTP `000`, connection unavailable from local environment.
+- Refreshed DB active/public count: `11,762`.
+- Production Typesense-backed API found count: `1,287`.
+- Search/Typesense classification: `FULL_TYPESENSE_REINDEX_REQUIRED`.
+- Proposed action: authorize a separately bounded full Typesense reindex from the refreshed database, followed by production Search API and rendered `/search` consistency certification.
 
 Alert/email boundary:
 
-- `AlertEvent` rows since refresh start: `0`
-- `AlertQueue` rows since refresh start: `0`
-- `EmailLog` rows since refresh start: `0`
+- Pre-refresh counts: `AlertEvent = 273`, `AlertQueue = 283`, `EmailLog = 78`
+- Post-refresh counts: `AlertEvent = 273`, `AlertQueue = 283`, `EmailLog = 78`
+- `AlertEvent` rows since pre-refresh snapshot: `0`
+- `AlertQueue` rows since pre-refresh snapshot: `0`
+- `EmailLog` rows since pre-refresh snapshot: `0`
 - No Resend call, worker activation, scheduler activation, or email send occurred.
 
 Executive recommendation:
 
-- Authorize either a full MLS refresh or additional bounded pages plus a Search-indexing decision. Do not send alerts until a fresh matching candidate exists and a separate alert proof gate is authorized.
+- Authorize `FULL_TYPESENSE_REINDEX_AND_SEARCH_CONSISTENCY_CERTIFICATION`.
+- Keep saved-search alerts protected until after Search consistency is restored and a separate fresh-candidate/alert proof gate is authorized.
 
 Next authorization gate:
 
-- `READY_FOR_FULL_OR_ADDITIONAL_BOUNDED_MLS_REFRESH_AND_SEARCH_INDEXING_DECISION`
+- `READY_FOR_FULL_TYPESENSE_REINDEX_AND_SEARCH_CONSISTENCY_CERTIFICATION`
 
 Provider tracks remain pending:
 
@@ -145,7 +158,7 @@ Provider tracks remain pending:
 
 Documentation artifact:
 
-- `docs/project-atlas/executive-library/REIE-SOURCE-MODIFIED-AT-MIGRATION-EXECUTION-AND-BOUNDED-MLS-FRESHNESS-REFRESH-CERTIFICATION.md`
+- `docs/project-atlas/executive-library/REIE-CONTROLLED-FULL-MLS-FRESHNESS-REFRESH-AND-SEARCH-CONSISTENCY-CERTIFICATION.md`
 
 Protected boundaries:
 
@@ -155,8 +168,8 @@ Protected boundaries:
 - No AlertQueue backlog release.
 - No production AlertEvent or AlertQueue creation.
 - No EmailLog write.
-- Authorized mutations only: additive migration execution, five normal `Property` creates through bounded MLS upsert, and associated `MlsSyncState` update.
-- No SavedSearch, unsubscribe, User/customer, CRM, Typesense, Vercel, LightBox, ATTOM, other provider, alert, email, worker, scheduler, or deployment mutation.
+- Authorized mutations only: controlled MLS Grid reads, normal `Property` creates/updates/upserts, `sourceModifiedAt` population/update, and associated `MlsSyncState` updates.
+- No SavedSearch, unsubscribe, User/customer, CRM, Typesense, Vercel, LightBox, ATTOM, other provider, alert, email, worker, scheduler, runtime code, schema, or deployment mutation.
 
 Next chat should first run:
 
