@@ -11,6 +11,205 @@ Product:
 ## Latest New-Chat Handoff
 
 
+PROJECT ATLAS(tm) / Public Search Eligibility Transition Execution Contract:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Canonical baseline:
+
+- Branch: `main`
+- Workstream 1 synchronized commit: `d29d3cda0db4346a1a6816bb872a1148ab93cf55`
+- Workstream 1 commit subject: `Certify public search eligibility planning engine`
+- Post-sync `HEAD = origin/main = d29d3cda0db4346a1a6816bb872a1148ab93cf55`
+- Post-sync divergence: `0 behind / 0 ahead`
+- Workstream 2 local transition-execution contract commit: created after this handoff update; verify with `git rev-parse HEAD`.
+- Workstream 2 is local only and must not be pushed without separate authorization.
+
+Program:
+
+- `REIE_PUBLIC_SEARCH_ELIGIBILITY_TRANSITION_EXECUTION_CONTRACT`
+
+Final classification:
+
+- `ELIGIBILITY_TRANSITION_EXECUTION_CONTRACT_IMPLEMENTED_AND_LOCALLY_CERTIFIED`
+
+Why this was needed:
+
+- `Property.publicSearchEligibility` exists, remains nullable, and is ignored by current runtime.
+- Planning engine is certified to produce deterministic proposed eligibility actions.
+- No transition has been executed.
+- The next protected step was proving that a certified deterministic plan can become a bounded, auditable, resumable, zero-write execution specification before any future write authority is granted.
+
+Current certified DB state:
+
+- `Property.publicSearchEligibility` exists and is nullable.
+- `NULL`: `75490`
+- `CERTIFIED_ELIGIBLE`: `0`
+- `PUBLIC_SCOPE_UNVERIFIED`: `0`
+- `CERTIFIED_INELIGIBLE`: `0`
+- Current runtime ignores the field.
+
+Execution contract:
+
+- `lib/mls/publicSearchEligibilityTransitionExecution.ts`
+- Accepts a certified initialization plan or equivalent validated immutable representation.
+- Requires plan identity, deterministic plan fingerprint, snapshot scope fingerprint, generated timestamp, transition entries, and expected aggregate counts.
+- Optional expected plan and scope fingerprints fail closed on mismatch.
+- Rejects duplicate `Property` IDs and conflicting transitions.
+
+Writable action whitelist:
+
+- `SET_CERTIFIED_ELIGIBLE`
+- `SET_PUBLIC_SCOPE_UNVERIFIED`
+- `SET_CERTIFIED_INELIGIBLE`
+
+Excluded actions:
+
+- `NO_CHANGE`
+- `BLOCKED_IDENTITY`
+- `BLOCKED_SNAPSHOT_INCOMPLETE`
+- `BLOCKED_MISSING_AUTHORITY`
+- future blocked actions.
+
+Write boundary:
+
+- Future executor may write only `Property.publicSearchEligibility` for explicitly identified `Property` IDs.
+- It must not write `status`, `isPrivateExclusive`, source timestamps, source identity, price, or unrelated `Property` fields.
+- Broad `updateMany` by status or category remains disallowed.
+
+Before-state and identity safety:
+
+- Every candidate carries expected current eligibility state and proposed next state.
+- Future execution must be compare-and-set aware and skip/block on state drift.
+- Source identity fingerprint is retained for audit when available.
+- Duplicate or conflicting candidates fail certification.
+
+Batching / checkpoint:
+
+- Deterministic batches include batch index, entries, expected before-states, proposed states, expected write count, and batch fingerprint.
+- Default maximum initial batch size: `100`.
+- Checkpoint only after an entire certified batch succeeds.
+- Resume after last completed batch, revalidate next batch before-state, tolerate replay, and do not skip failed/unverified entries.
+- No schema expansion is required by this pure contract.
+
+Dry-run output:
+
+- total plan rows;
+- writable rows;
+- blocked rows;
+- no-change rows;
+- batch count;
+- per-target-state counts;
+- expected before-state distribution;
+- conflicting/drifted entries;
+- write-set fingerprint.
+
+Fixture certification:
+
+- `scripts/checkPublicSearchEligibilityTransitionExecution.ts`
+- package script: `npm run check:public-search-eligibility-transition-execution`
+- certified cases:
+  - valid eligible transition;
+  - valid unverified transition;
+  - valid ineligible transition;
+  - `NO_CHANGE` excluded;
+  - blocked action excluded;
+  - duplicate `Property` ID;
+  - conflicting transitions;
+  - missing `Property` ID;
+  - expected `NULL` before-state;
+  - expected certified before-state;
+  - simulated state drift;
+  - missing row;
+  - plan fingerprint mismatch;
+  - scope fingerprint mismatch;
+  - batch fingerprint determinism;
+  - repeated dry-run determinism;
+  - batch resume contract;
+  - replay safety;
+  - partial-failure representation;
+  - only `publicSearchEligibility` writable;
+  - `status` never writable;
+  - `isPrivateExclusive` never writable;
+  - no provider;
+  - no DB write;
+  - no Typesense;
+  - no alerts.
+
+Fixture summary:
+
+- total plan rows: `6`
+- writable rows: `4`
+- blocked rows: `1`
+- no-change rows: `1`
+- batch count: `2`
+- target counts: `CERTIFIED_ELIGIBLE=2`, `PUBLIC_SCOPE_UNVERIFIED=1`, `CERTIFIED_INELIGIBLE=1`
+- before-state distribution: `NULL=2`, `PUBLIC_SCOPE_UNVERIFIED=1`, `CERTIFIED_INELIGIBLE=1`
+
+Validation:
+
+- `npm run check:public-search-eligibility-state-contract`: passed.
+- `npm run check:public-search-eligibility-initialization-plan`: passed.
+- `npm run check:public-search-eligibility-transition-execution`: passed.
+- `npm run typecheck`: passed.
+- `npm run worker:build`: passed.
+- `npm run build`: passed.
+- `git diff --check`: passed.
+- Generated `dist` artifacts were cleaned from commit scope.
+
+Future first-write authorization must require:
+
+- complete certified provider snapshot;
+- certified plan fingerprint;
+- dry-run counts;
+- explicit batch size;
+- before-state snapshot;
+- exact eligible/unverified/ineligible write counts;
+- zero status/private mutation;
+- before/after DB counts;
+- no runtime activation;
+- no Typesense;
+- no alerts.
+
+Protected boundaries:
+
+- No MLS Grid API request occurred.
+- No LightBox call occurred.
+- No ATTOM investigation occurred.
+- No `Property.publicSearchEligibility` row initialization occurred.
+- No database write occurred in Workstream 2.
+- No Prisma schema change occurred.
+- No runtime Search, Typesense, Property route, Saved Search, or alert consumer changed.
+- No Typesense mutation or reindex occurred.
+- No alert creation, queue job creation, email send, Resend call, worker/scheduler activation, CRM/customer-data mutation, deployment, or Workstream 2 push occurred.
+
+Provider status:
+
+- MLS Grid: `LIVE_CALLS_PAUSED_PENDING_SUPPORT_CLARIFICATION`
+- LightBox additional calls in this workstream: `0`
+- ATTOM: `PENDING_PROVIDER_RESPONSE`
+
+Documentation artifact:
+
+- `docs/project-atlas/executive-library/REIE-PUBLIC-SEARCH-ELIGIBILITY-TRANSITION-EXECUTION-CONTRACT.md`
+
+Next authorization gate:
+
+- `READY_FOR_PUBLIC_SEARCH_ELIGIBILITY_TRANSITION_EXECUTION_CONTRACT_SYNCHRONIZATION`
+
+Next chat should first run:
+
+- `git fetch origin main`
+- `git status --short --branch --untracked-files=all`
+- `git rev-parse HEAD origin/main`
+- `git rev-list --left-right --count origin/main...HEAD`
+- `git log -8 --oneline`
+
+Prior handoff retained below for audit history.
+
+
 PROJECT ATLAS(tm) / Public Search Eligibility Initialization And Reconciliation Planning Engine:
 
 Workspace:

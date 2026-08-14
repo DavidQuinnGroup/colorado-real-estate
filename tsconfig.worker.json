@@ -38,6 +38,7 @@
     "scripts/checkMlsPublicActiveReconciliationContract.ts",
     "scripts/checkPublicSearchEligibilityStateContract.ts",
     "scripts/checkPublicSearchEligibilityInitializationPlan.ts",
+    "scripts/checkPublicSearchEligibilityTransitionExecution.ts",
     "scripts/runMlsScopedAcceleratedIngest.ts",
     "scripts/runAlertIntentFixtures.ts",
     "scripts/checkNextSecurityVersion.ts",
