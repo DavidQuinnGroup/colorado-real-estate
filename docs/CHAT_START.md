@@ -11,6 +11,215 @@ Product:
 ## Latest New-Chat Handoff
 
 
+PROJECT ATLAS(tm) / Public Search Eligibility First Write Readiness And Dry-Run Package:
+
+Workspace:
+
+- `/Users/davidquinn/david-quinn-group/colorado-real-estate`
+
+Canonical baseline:
+
+- Branch: `main`
+- Workstream 1 synchronized commit: `40b0d8ce1ee2ad383e1b4ab8ffc160af7057a5bb`
+- Workstream 1 commit subject: `Certify public search eligibility transition execution contract`
+- Post-sync `HEAD = origin/main = 40b0d8ce1ee2ad383e1b4ab8ffc160af7057a5bb`
+- Post-sync divergence: `0 behind / 0 ahead`
+- Workstream 2 local first-write readiness commit: created after this handoff update; verify with `git rev-parse HEAD`.
+- Workstream 2 is local only and must not be pushed without separate authorization.
+
+Program:
+
+- `REIE_PUBLIC_SEARCH_ELIGIBILITY_FIRST_WRITE_READINESS_AND_DRY_RUN_PACKAGE`
+
+Final classification:
+
+- `FIRST_WRITE_READINESS_CONTRACT_IMPLEMENTED_AND_LOCALLY_CERTIFIED_PROVIDER_SNAPSHOT_PENDING`
+
+Why this was needed:
+
+- `Property.publicSearchEligibility` exists, remains nullable, and current runtime ignores it.
+- The planning engine and transition execution contract are certified.
+- No eligibility transition has been executed.
+- The next protected step was defining the exact binary, auditable evidence package required before Executive HQ can authorize the first real write.
+
+Current certified DB state:
+
+- `NULL`: `75490`
+- `CERTIFIED_ELIGIBLE`: `0`
+- `PUBLIC_SCOPE_UNVERIFIED`: `0`
+- `CERTIFIED_INELIGIBLE`: `0`
+- Current runtime ignores the field.
+
+Readiness evaluator:
+
+- `lib/mls/publicSearchEligibilityFirstWriteReadiness.ts`
+- Returns `READY_TO_WRITE` or `NOT_READY_TO_WRITE`.
+- Inputs include provider snapshot certification metadata, certified transition plan, dry-run summary, DB distribution snapshot, runtime posture, Typesense posture, alert posture, provider safety posture, and proposed first batch.
+- Missing any mandatory prerequisite returns `NOT_READY_TO_WRITE` with deterministic reason codes.
+
+Mandatory future prerequisites:
+
+- certified complete provider snapshot;
+- snapshot scope fingerprint;
+- provider capture timestamp;
+- certified Active/Coming Soon scope;
+- certified nextLink traversal;
+- rate-governed traversal evidence;
+- provider count and terminal signal certification;
+- unique identity population certification;
+- deterministic initialization plan;
+- plan fingerprint;
+- dry-run write-set fingerprint;
+- exact target counts;
+- exact blocked/unresolved counts;
+- before-state distribution;
+- explicit batch size;
+- compare-and-set expected eligibility states;
+- zero status mutation;
+- zero privacy mutation;
+- runtime still legacy;
+- Typesense disabled;
+- alerts disabled.
+
+Recommended first write:
+
+- maximum batch size: `100` transitions.
+- content: `ONLY_CERTIFIED_ELIGIBLE`.
+- rationale: first proof should use the simplest certifiable transition set: complete provider snapshot members with valid identity, expected `NULL` before-state, and target `CERTIFIED_ELIGIBLE`.
+
+Write-proof object:
+
+- snapshot fingerprint;
+- plan fingerprint;
+- write-set fingerprint;
+- batch fingerprint;
+- batch size;
+- exact `Property` ID count;
+- expected before-state counts;
+- proposed target-state counts;
+- blocked/unresolved count;
+- runtime activation `false`;
+- Typesense mutation `false`;
+- alerts enabled `false`.
+
+Future command contract:
+
+- Proposed command shape only:
+  - `npm run run:public-search-eligibility-first-write -- --plan-fingerprint <plan> --write-set-fingerprint <write-set> --batch-fingerprint <batch>`
+- Mutation executor is not implemented in this workstream.
+- Future executor must accept certified fingerprints, use compare-and-set semantics, write only `publicSearchEligibility`, abort on fingerprint mismatch, abort on before-state drift, report per-row outcomes, and avoid broad `updateMany`.
+
+Failure thresholds:
+
+- zero tolerance for identity mismatch, missing row, state drift, attempted write outside whitelist, batch fingerprint mismatch, runtime activation, Typesense mutation, or alert mutation.
+
+Post-write certification contract:
+
+- applied count;
+- no-change count;
+- blocked count;
+- failed count;
+- exact eligibility distribution delta;
+- `Property` total unchanged;
+- `status` unchanged;
+- `isPrivateExclusive` unchanged;
+- no Typesense mutation;
+- no Search activation;
+- no alerts/email;
+- runtime remains legacy.
+
+Rollback readiness:
+
+- compare-and-set rollback required;
+- rollback fingerprint required;
+- current row must still equal the just-written target state;
+- blind bulk restore is disallowed.
+
+Fixture certification:
+
+- `scripts/checkPublicSearchEligibilityFirstWriteReadiness.ts`
+- package script: `npm run check:public-search-eligibility-first-write-readiness`
+- certified cases:
+  - all prerequisites present -> `READY_TO_WRITE`;
+  - incomplete snapshot;
+  - missing snapshot fingerprint;
+  - missing plan fingerprint;
+  - missing write-set fingerprint;
+  - blocked population present;
+  - before-state mismatch;
+  - runtime activation true;
+  - Typesense mutation enabled;
+  - alerts enabled;
+  - oversized first batch;
+  - duplicate IDs;
+  - invalid target action;
+  - current DB distribution mismatch;
+  - deterministic readiness output;
+  - post-write evidence contract;
+  - rollback precondition;
+  - provider hold forces `NOT_READY_TO_WRITE`;
+  - no DB write;
+  - no provider call.
+
+Fixture summaries:
+
+- ready fixture: `READY_TO_WRITE`, `2` target IDs, expected before-state `NULL=2`, proposed target `CERTIFIED_ELIGIBLE=2`, blocked/unresolved `0`.
+- provider-hold fixture: `NOT_READY_TO_WRITE`, including `PROVIDER_SNAPSHOT_INCOMPLETE`, `SNAPSHOT_FINGERPRINT_MISSING`, and `MLS_GRID_RATE_LIMIT_CLARIFICATION_PENDING`.
+
+Validation:
+
+- `npm run check:public-search-eligibility-state-contract`: passed.
+- `npm run check:public-search-eligibility-initialization-plan`: passed.
+- `npm run check:public-search-eligibility-transition-execution`: passed.
+- `npm run check:public-search-eligibility-first-write-readiness`: passed.
+- `npm run typecheck`: passed.
+- `npm run worker:build`: passed.
+- `npm run build`: passed.
+- `git diff --check`: passed.
+- Generated `dist` artifacts were cleaned from commit scope.
+
+Current readiness:
+
+- `NOT_READY_TO_WRITE`
+- reason: MLS Grid remains paused pending support rate-limit clarification and no complete certified provider snapshot exists.
+
+Protected boundaries:
+
+- No MLS Grid API request occurred.
+- No LightBox call occurred.
+- No ATTOM investigation occurred.
+- No `Property.publicSearchEligibility` row initialization occurred.
+- No database write occurred in Workstream 2.
+- No Prisma schema change occurred.
+- No runtime Search, Typesense, Property route, Saved Search, or alert consumer changed.
+- No Typesense mutation or reindex occurred.
+- No alert creation, queue job creation, email send, Resend call, worker/scheduler activation, CRM/customer-data mutation, deployment, or Workstream 2 push occurred.
+
+Provider status:
+
+- MLS Grid: `LIVE_CALLS_PAUSED_PENDING_SUPPORT_RATE_LIMIT_CLARIFICATION`
+- LightBox additional calls in this workstream: `0`
+- ATTOM: `PENDING_PROVIDER_RESPONSE`
+
+Documentation artifact:
+
+- `docs/project-atlas/executive-library/REIE-PUBLIC-SEARCH-ELIGIBILITY-FIRST-WRITE-READINESS-AND-DRY-RUN-PACKAGE.md`
+
+Next authorization gate:
+
+- `READY_FOR_PUBLIC_SEARCH_ELIGIBILITY_FIRST_WRITE_READINESS_SYNCHRONIZATION`
+
+Next chat should first run:
+
+- `git fetch origin main`
+- `git status --short --branch --untracked-files=all`
+- `git rev-parse HEAD origin/main`
+- `git rev-list --left-right --count origin/main...HEAD`
+- `git log -8 --oneline`
+
+Prior handoff retained below for audit history.
+
+
 PROJECT ATLAS(tm) / Public Search Eligibility Transition Execution Contract:
 
 Workspace:
