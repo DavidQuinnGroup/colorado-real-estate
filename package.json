@@ -26,6 +26,7 @@
     "check:mls-scoped-ingest-acceleration": "npm run worker:build && node dist/scripts/checkMlsScopedIngestAcceleration.js",
     "check:mls-public-active-reconciliation-contract": "npm run worker:build && node dist/scripts/checkMlsPublicActiveReconciliationContract.js",
     "check:public-search-eligibility-state-contract": "npm run worker:build && node dist/scripts/checkPublicSearchEligibilityStateContract.js",
+    "check:public-search-eligibility-initialization-plan": "npm run worker:build && node dist/scripts/checkPublicSearchEligibilityInitializationPlan.js",
     "check:notification-readiness": "npm run worker:build && node dist/scripts/notificationReadinessSummary.js",
     "check:notification-readiness:strict": "npm run worker:build && node dist/scripts/notificationReadinessSummary.js --strict",
     "check:notification-readiness:strict-contract": "npm run worker:build && node dist/scripts/notificationReadinessStrictCheck.js",
