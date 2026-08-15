@@ -1,15 +1,23 @@
-import { SOURCE_QUALITY_ADMIN_PREVIEW_FIXTURE, SOURCE_QUALITY_ADMIN_PREVIEW_FIXTURE_POSTURE } from '@/lib/sourceQualityAdminPreviewFixture';
+import { SOURCE_QUALITY_OPERATIONAL_MANIFEST_DATA } from '@/lib/sourceQualityOperationalManifestData';
+import {
+  sourceQualityOperationalManifestToAssemblyRequest,
+  validateSourceQualityOperationalManifest,
+} from '@/lib/sourceQualityOperationalManifest';
 import { composeSourceQualityReport } from '@/lib/sourceQualityReport';
 import { assembleSourceQualitySummaries } from '@/lib/sourceQualitySummaryAssembly';
 
 export const dynamic = 'force-dynamic';
 
 export default function SourceQualityAdminPreviewPage() {
-  const assemblyResult = assembleSourceQualitySummaries(SOURCE_QUALITY_ADMIN_PREVIEW_FIXTURE);
-  if (assemblyResult.classification === 'FAIL_CLOSED') throw new Error('Source Quality preview fixture assembly failed closed.');
+  const manifestResult = validateSourceQualityOperationalManifest(SOURCE_QUALITY_OPERATIONAL_MANIFEST_DATA);
+  if (!manifestResult.manifest) return <FailClosed classification={manifestResult.classification} reasons={manifestResult.reasons} />;
+  const manifest = manifestResult.manifest;
+  const assemblyRequest = sourceQualityOperationalManifestToAssemblyRequest(manifest);
+  const assemblyResult = assembleSourceQualitySummaries(assemblyRequest);
+  if (assemblyResult.classification === 'FAIL_CLOSED') return <FailClosed classification={assemblyResult.classification} reasons={assemblyResult.reasons} />;
   const assembly = assemblyResult.assembly;
   const reportResult = composeSourceQualityReport(assembly.summaries);
-  if (reportResult.classification === 'FAIL_CLOSED') throw new Error('Source Quality preview fixture report failed closed.');
+  if (reportResult.classification === 'FAIL_CLOSED') return <FailClosed classification={reportResult.classification} reasons={reportResult.reasons} />;
   const report = reportResult.report;
 
   return (
@@ -17,25 +25,27 @@ export default function SourceQualityAdminPreviewPage() {
       <div className="mx-auto max-w-7xl">
         <header className="border-b border-white/10 pb-8">
           <p className="text-xs font-medium uppercase tracking-[0.24em] text-white/45">PROJECT ATLAS™</p>
-          <h1 className="mt-3 text-4xl font-semibold tracking-tight">Source Quality Internal Preview</h1>
+          <h1 className="mt-3 text-4xl font-semibold tracking-tight">Source Quality Internal Review</h1>
           <div className="mt-5 grid gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-amber-100 sm:grid-cols-2">
-            <Disclosure value={'PREVIEW_FIXTURE_ONLY: ' + SOURCE_QUALITY_ADMIN_PREVIEW_FIXTURE_POSTURE} />
-            <Disclosure value="SUPPLIED REVIEWED FIXTURE / MANIFEST ONLY" />
+            <Disclosure value="OPERATIONAL REVIEWED MANIFEST" />
+            <Disclosure value={manifest.coverageClass} />
+            <Disclosure value={manifest.suppliedDatasetScope} />
+            <Disclosure value={manifest.operationalPosture} />
             <Disclosure value="NO COMPLETENESS CLAIM" />
-            <Disclosure value="NOT AN OPERATIONAL SOURCE INVENTORY" />
+            <Disclosure value="NOT A COMPLETE SOURCE INVENTORY" />
           </div>
         </header>
 
         <section className="mt-8 grid gap-4 md:grid-cols-3" aria-label="Source quality review posture">
           <Metric label="Source Quality Review Posture" value={report.classification} />
-          <Metric label="Supplied Source Count" value={String(report.sourceCount)} />
+          <Metric label="Current Manifest Source Count" value={String(report.sourceCount)} />
           <Metric label="Assembly Coverage" value={assembly.coverageClass} />
         </section>
 
         <section className="mt-8 grid gap-4 lg:grid-cols-2">
           <Panel title="Classification Counts"><Counts values={report.classificationCounts} /></Panel>
           <Panel title="Coverage Disclosure">
-            <List values={[assembly.suppliedDatasetScope, assembly.completenessClaim, report.suppliedDatasetScope]} />
+            <List values={[manifest.suppliedDatasetScope, manifest.operationalPosture, manifest.completenessClaim, assembly.suppliedDatasetScope, assembly.completenessClaim, report.suppliedDatasetScope]} />
           </Panel>
         </section>
 
@@ -73,7 +83,17 @@ export default function SourceQualityAdminPreviewPage() {
 
         <section className="mt-8 border border-amber-300/30 bg-amber-300/10 p-5" aria-label="Activation and customer-display firewall">
           <h2 className="text-lg font-semibold">Activation / Customer-Display Firewall</h2>
-          <List values={[report.activationFirewall.sourceActivation, report.activationFirewall.executiveReview, report.activationFirewall.customerDisplayAuthority]} />
+          <List values={[
+            manifest.authorityFirewall.sourceActivation,
+            manifest.authorityFirewall.customerDisplayAuthority,
+            manifest.authorityFirewall.legalUse,
+            manifest.authorityFirewall.qualityScore,
+            manifest.authorityFirewall.providerRanking,
+            manifest.authorityFirewall.completeness,
+            report.activationFirewall.sourceActivation,
+            report.activationFirewall.executiveReview,
+            report.activationFirewall.customerDisplayAuthority,
+          ]} />
         </section>
       </div>
     </main>
@@ -111,5 +131,29 @@ function ReferenceIndex({ values }: { values: Readonly<Record<string, readonly s
 }
 
 function Empty() {
-  return <p className="text-sm text-white/50">None supplied by the canonical fixture report.</p>;
+  return <p className="text-sm text-white/50">None supplied by the canonical source quality report.</p>;
+}
+
+function FailClosed({ classification, reasons }: { classification: string; reasons: readonly string[] }) {
+  return (
+    <main className="min-h-screen bg-[#0b0b0b] px-6 py-10 text-white">
+      <div className="mx-auto max-w-3xl">
+        <header className="border-b border-white/10 pb-8">
+          <p className="text-xs font-medium uppercase tracking-[0.24em] text-white/45">PROJECT ATLAS™</p>
+          <h1 className="mt-3 text-4xl font-semibold tracking-tight">Source Quality Internal Review</h1>
+          <div className="mt-5 grid gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-amber-100 sm:grid-cols-2">
+            <Disclosure value="OPERATIONAL REVIEWED MANIFEST" />
+            <Disclosure value="FAIL CLOSED" />
+            <Disclosure value="NO FIXTURE FALLBACK" />
+            <Disclosure value="NO COMPLETENESS CLAIM" />
+          </div>
+        </header>
+        <section className="mt-8 border border-amber-300/30 bg-amber-300/10 p-5" aria-label="Source quality manifest review required">
+          <h2 className="text-lg font-semibold">Operational Manifest Review Required</h2>
+          <p className="mt-3 text-sm text-white/70">{classification}</p>
+          <List values={reasons.length > 0 ? reasons : ['SOURCE_QUALITY_OPERATIONAL_MANIFEST_REVIEW_REQUIRED']} />
+        </section>
+      </div>
+    </main>
+  );
 }
