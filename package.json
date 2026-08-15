@@ -32,6 +32,7 @@
     "check:public-search-eligibility-runtime-contract": "npm run worker:build && node dist/scripts/checkPublicSearchEligibilityRuntimeContract.js",
     "check:public-search-eligibility-discovery-parity-certification": "npm run worker:build && node dist/scripts/checkPublicSearchEligibilityDiscoveryParityCertification.js",
     "check:public-search-eligibility-activation-operations-readiness": "npm run worker:build && node dist/scripts/checkPublicSearchEligibilityActivationOperationsReadiness.js",
+    "check:public-search-eligibility-db-distribution-certification": "npm run worker:build && node dist/scripts/checkPublicSearchEligibilityDbDistributionCertification.js",
     "check:notification-readiness": "npm run worker:build && node dist/scripts/notificationReadinessSummary.js",
     "check:notification-readiness:strict": "npm run worker:build && node dist/scripts/notificationReadinessSummary.js --strict",
     "check:notification-readiness:strict-contract": "npm run worker:build && node dist/scripts/notificationReadinessStrictCheck.js",
