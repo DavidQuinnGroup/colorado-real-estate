@@ -18,6 +18,12 @@ import {
   convertBoulderCountyTreasurerSourceQualityEvidence,
 } from './sourceQualityBoulderCountyTreasurerEvidence';
 import {
+  CITY_BOULDER_OPEN_DATA_PERMITS_SOURCE_ID,
+  CITY_BOULDER_OPEN_DATA_PERMITS_SOURCE_QUALITY_CERTIFICATION,
+  CITY_BOULDER_OPEN_DATA_PERMITS_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT,
+  convertCityBoulderOpenDataPermitsSourceQualityEvidence,
+} from './sourceQualityCityBoulderOpenDataPermitsEvidence';
+import {
   MLS_LISTING_DATA_SOURCE_ID,
   MLS_LISTING_DATA_SOURCE_QUALITY_CERTIFICATION,
   MLS_LISTING_DATA_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT,
@@ -39,6 +45,7 @@ const manifestId = 'SQOM-INITIAL-001';
 const boulderCountyAccelaPermitsEvidence = convertBoulderCountyAccelaPermitsSourceQualityEvidence();
 const boulderCountyAssessorEvidence = convertBoulderCountyAssessorSourceQualityEvidence();
 const boulderCountyTreasurerEvidence = convertBoulderCountyTreasurerSourceQualityEvidence();
+const cityBoulderOpenDataPermitsEvidence = convertCityBoulderOpenDataPermitsSourceQualityEvidence();
 
 const certificationReference: SourceEvidenceCertificationReference = {
   certificationId: 'CERT-SQOM-INITIAL-001',
@@ -157,6 +164,18 @@ export const SOURCE_QUALITY_OPERATIONAL_MANIFEST_DATA: SourceQualityOperationalM
       expectedEvidenceClasses: ['CERTIFICATION'],
       certificationReference: BOULDER_COUNTY_ACCELA_PERMITS_SOURCE_QUALITY_CERTIFICATION,
       reviewedAt: BOULDER_COUNTY_ACCELA_PERMITS_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT,
+      reviewAuthorityClass: 'DELEGATED_SOURCE_GOVERNANCE_REVIEW',
+      limitationCodes: [],
+    },
+    {
+      schemaVersion: SOURCE_QUALITY_OPERATIONAL_MANIFEST_SCHEMA_VERSION,
+      manifestId,
+      sourceId: CITY_BOULDER_OPEN_DATA_PERMITS_SOURCE_ID,
+      inclusionClass: 'STRUCTURED_EVIDENCE_WITH_KNOWN_GAPS',
+      linkages: cityBoulderOpenDataPermitsEvidence.linkages,
+      expectedEvidenceClasses: ['CERTIFICATION'],
+      certificationReference: CITY_BOULDER_OPEN_DATA_PERMITS_SOURCE_QUALITY_CERTIFICATION,
+      reviewedAt: CITY_BOULDER_OPEN_DATA_PERMITS_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT,
       reviewAuthorityClass: 'DELEGATED_SOURCE_GOVERNANCE_REVIEW',
       limitationCodes: [],
     },

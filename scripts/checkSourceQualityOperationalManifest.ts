@@ -36,6 +36,16 @@ import {
   normalizeBoulderCountyTreasurerSourceQualityEvidence,
 } from '../lib/sourceQualityBoulderCountyTreasurerEvidence';
 import {
+  CITY_BOULDER_OPEN_DATA_PERMITS_MANIFEST_ELIGIBILITY,
+  CITY_BOULDER_OPEN_DATA_PERMITS_SOURCE_ID,
+  CITY_BOULDER_OPEN_DATA_PERMITS_SOURCE_QUALITY_CERTIFICATION,
+  CITY_BOULDER_OPEN_DATA_PERMITS_SOURCE_QUALITY_CONVERSION_REQUEST,
+  CITY_BOULDER_OPEN_DATA_PERMITS_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT,
+  CITY_BOULDER_OPEN_DATA_PERMITS_SOURCE_QUALITY_FIREWALL,
+  convertCityBoulderOpenDataPermitsSourceQualityEvidence,
+  normalizeCityBoulderOpenDataPermitsSourceQualityEvidence,
+} from '../lib/sourceQualityCityBoulderOpenDataPermitsEvidence';
+import {
   MLS_LISTING_DATA_MANIFEST_ELIGIBILITY,
   MLS_LISTING_DATA_SOURCE_ID,
   MLS_LISTING_DATA_SOURCE_QUALITY_CERTIFICATION,
@@ -57,7 +67,8 @@ import { getReieSourceRegistry } from '../lib/sourceRegistry';
 import { assembleSourceQualitySummaries } from '../lib/sourceQualitySummaryAssembly';
 import { composeSourceQualityReport } from '../lib/sourceQualityReport';
 
-const PRIOR_SIX_ENTRY_FINGERPRINTS = new Map([
+const PRIOR_SEVEN_ENTRY_FINGERPRINTS = new Map([
+  [BOULDER_COUNTY_ACCELA_PERMITS_SOURCE_ID, 'source-quality-operational-manifest:v1:64c2da16'],
   [BOULDER_COUNTY_ASSESSOR_SOURCE_ID, 'source-quality-operational-manifest:v1:73bd531d'],
   [BOULDER_COUNTY_TREASURER_SOURCE_ID, 'source-quality-operational-manifest:v1:636ab5ed'],
   [MLS_LISTING_DATA_SOURCE_ID, 'source-quality-operational-manifest:v1:55c44295'],
@@ -73,7 +84,7 @@ if (!valid.manifest) throw new Error('Expected operational manifest.');
 assert.equal(valid.manifest.suppliedDatasetScope, 'SUPPLIED_MANIFEST_ONLY');
 assert.equal(valid.manifest.operationalPosture, 'OPERATIONAL_INPUT_POSTURE_ONLY');
 assert.equal(valid.manifest.completenessClaim, 'NO_COMPLETENESS_CLAIM');
-assert.equal(valid.manifest.entries.length, 7);
+assert.equal(valid.manifest.entries.length, 8);
 assert.ok(valid.manifest.entries.every((entry) => entry.inclusionClass === 'STRUCTURED_EVIDENCE_WITH_KNOWN_GAPS'));
 assert.equal(valid.manifest.authorityFirewall.sourceActivation, 'SOURCE_ACTIVATION_NOT_AUTHORIZED_BY_MANIFEST');
 assert.equal(valid.manifest.authorityFirewall.customerDisplayAuthority, 'CUSTOMER_DISPLAY_NOT_GRANTED_BY_MANIFEST');
@@ -88,12 +99,14 @@ assert.deepEqual(SOURCE_QUALITY_OPERATIONAL_MANIFEST_DATA.entries.map((entry) =>
   BOULDER_COUNTY_ASSESSOR_SOURCE_ID,
   BOULDER_COUNTY_TREASURER_SOURCE_ID,
   BOULDER_COUNTY_ACCELA_PERMITS_SOURCE_ID,
+  CITY_BOULDER_OPEN_DATA_PERMITS_SOURCE_ID,
 ]);
 assert.equal(valid.manifest.entries.filter((entry) => entry.sourceId === BOULDER_COUNTY_TREASURER_SOURCE_ID).length, 1);
 assert.equal(valid.manifest.entries.filter((entry) => entry.sourceId === BOULDER_COUNTY_ACCELA_PERMITS_SOURCE_ID).length, 1);
+assert.equal(valid.manifest.entries.filter((entry) => entry.sourceId === CITY_BOULDER_OPEN_DATA_PERMITS_SOURCE_ID).length, 1);
 assert.equal(valid.manifest.entries.filter((entry) => entry.sourceId === 'SRC-BOULDER-PERMIT-CANDIDATES').length, 0);
-assert.equal(valid.manifest.entries.filter((entry) => entry.sourceId === 'SRC-CITY-BOULDER-OPEN-DATA-PERMITS').length, 0);
-for (const [sourceId, entryFingerprint] of PRIOR_SIX_ENTRY_FINGERPRINTS) {
+assert.equal(valid.manifest.entries.filter((entry) => entry.sourceId === 'SRC-CITY-BOULDER-BUILDING-PERMITS-PORTAL').length, 0);
+for (const [sourceId, entryFingerprint] of PRIOR_SEVEN_ENTRY_FINGERPRINTS) {
   assert.equal(valid.manifest.entries.find((entry) => entry.sourceId === sourceId)?.entryFingerprint, entryFingerprint);
 }
 
@@ -193,6 +206,33 @@ assert.equal(BOULDER_COUNTY_ACCELA_PERMITS_SOURCE_QUALITY_FIREWALL.candidateInhe
 assert.equal(BOULDER_COUNTY_ACCELA_PERMITS_SOURCE_QUALITY_FIREWALL.cityInheritance, 'CITY_PERMIT_SOURCES_NOT_EVIDENCE_AUTHORITY_FOR_COUNTY_ACCELA');
 assert.equal(BOULDER_COUNTY_ACCELA_PERMITS_SOURCE_QUALITY_FIREWALL.rawData, 'RAW_PERMIT_PROPERTY_OR_PERSON_DATA_NOT_ACCEPTED_BY_EVIDENCE_PACKAGE');
 
+const cityOpenDataEvidence = convertCityBoulderOpenDataPermitsSourceQualityEvidence();
+const rawCityOpenDataEntry = SOURCE_QUALITY_OPERATIONAL_MANIFEST_DATA.entries[7];
+assert.ok(rawCityOpenDataEntry);
+assert.equal(rawCityOpenDataEntry?.sourceId, CITY_BOULDER_OPEN_DATA_PERMITS_SOURCE_ID);
+assert.equal(rawCityOpenDataEntry?.inclusionClass, 'STRUCTURED_EVIDENCE_WITH_KNOWN_GAPS');
+assert.deepEqual(rawCityOpenDataEntry?.linkages, cityOpenDataEvidence.linkages);
+assert.deepEqual(rawCityOpenDataEntry?.linkages, convertCityBoulderOpenDataPermitsSourceQualityEvidence().linkages);
+assert.deepEqual(rawCityOpenDataEntry?.expectedEvidenceClasses, ['CERTIFICATION']);
+assert.strictEqual(rawCityOpenDataEntry?.certificationReference, CITY_BOULDER_OPEN_DATA_PERMITS_SOURCE_QUALITY_CERTIFICATION);
+assert.equal(rawCityOpenDataEntry?.reviewedAt, CITY_BOULDER_OPEN_DATA_PERMITS_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT);
+assert.equal(rawCityOpenDataEntry?.reviewAuthorityClass, 'DELEGATED_SOURCE_GOVERNANCE_REVIEW');
+assert.deepEqual(rawCityOpenDataEntry?.limitationCodes, []);
+assert.equal(CITY_BOULDER_OPEN_DATA_PERMITS_MANIFEST_ELIGIBILITY, 'READY_WITH_KNOWN_GAPS');
+assert.equal(CITY_BOULDER_OPEN_DATA_PERMITS_SOURCE_QUALITY_CONVERSION_REQUEST.sourceClass, 'MUNICIPAL_OPEN_DATA_PERMIT');
+assert.equal(CITY_BOULDER_OPEN_DATA_PERMITS_SOURCE_QUALITY_CONVERSION_REQUEST.fieldSensitivityPosture, 'IDENTIFIER_BEARING_CONTEXT');
+assert.equal(CITY_BOULDER_OPEN_DATA_PERMITS_SOURCE_QUALITY_FIREWALL.registryStatus, 'SOURCE_REGISTRY_STATUS_NOT_SOURCE_QUALITY_CERTIFICATION');
+assert.equal(CITY_BOULDER_OPEN_DATA_PERMITS_SOURCE_QUALITY_FIREWALL.registryAuthorization, 'AWAITING_PROVIDER_CONFIRMATION_NOT_PERMISSION');
+assert.equal(CITY_BOULDER_OPEN_DATA_PERMITS_SOURCE_QUALITY_FIREWALL.registryActivation, 'BLOCKED_NOT_AUTHORIZED_NOT_BYPASSED_BY_EVIDENCE_PACKAGE');
+assert.equal(CITY_BOULDER_OPEN_DATA_PERMITS_SOURCE_QUALITY_FIREWALL.sourceActivation, 'SOURCE_ACTIVATION_NOT_AUTHORIZED_BY_EVIDENCE_PACKAGE');
+assert.equal(CITY_BOULDER_OPEN_DATA_PERMITS_SOURCE_QUALITY_FIREWALL.retrieval, 'SCRAPING_OR_RETRIEVAL_NOT_AUTHORIZED_BY_EVIDENCE_PACKAGE');
+assert.equal(CITY_BOULDER_OPEN_DATA_PERMITS_SOURCE_QUALITY_FIREWALL.redistribution, 'REDISTRIBUTION_NOT_AUTHORIZED_BY_EVIDENCE_PACKAGE');
+assert.equal(CITY_BOULDER_OPEN_DATA_PERMITS_SOURCE_QUALITY_FIREWALL.customerDisplayAuthority, 'CUSTOMER_DISPLAY_NOT_GRANTED_BY_EVIDENCE_PACKAGE');
+assert.equal(CITY_BOULDER_OPEN_DATA_PERMITS_SOURCE_QUALITY_FIREWALL.legalUse, 'LEGAL_USE_NOT_APPROVED_BY_EVIDENCE_PACKAGE');
+assert.equal(CITY_BOULDER_OPEN_DATA_PERMITS_SOURCE_QUALITY_FIREWALL.publicSourceFallacy, 'PUBLIC_OR_GOVERNMENT_SOURCE_NOT_UNRESTRICTED_OR_VERIFIED_OR_COMPLETE');
+assert.equal(CITY_BOULDER_OPEN_DATA_PERMITS_SOURCE_QUALITY_FIREWALL.openDataFallacy, 'OPEN_DATA_NOT_UNRESTRICTED_OR_REUSE_READY');
+assert.equal(CITY_BOULDER_OPEN_DATA_PERMITS_SOURCE_QUALITY_FIREWALL.rawData, 'RAW_PERMIT_PROPERTY_PERSON_DATA_NOT_ACCEPTED_BY_EVIDENCE_PACKAGE');
+
 const treasurerRegistryRecord = getReieSourceRegistry().records.find((record) => record.sourceId === BOULDER_COUNTY_TREASURER_SOURCE_ID);
 assert.ok(treasurerRegistryRecord);
 assert.equal(treasurerRegistryRecord?.sourceClass, 'AUTHORITATIVE_SOURCE');
@@ -209,12 +249,20 @@ assert.equal(accelaRegistryRecord?.authorizationState, 'AWAITING_PROVIDER_CONFIR
 assert.equal(accelaRegistryRecord?.productionActivationState, 'BLOCKED_NOT_AUTHORIZED');
 assert.equal(accelaRegistryRecord?.claimEligible, false);
 
+const cityOpenDataRegistryRecord = getReieSourceRegistry().records.find((record) => record.sourceId === CITY_BOULDER_OPEN_DATA_PERMITS_SOURCE_ID);
+assert.ok(cityOpenDataRegistryRecord);
+assert.equal(cityOpenDataRegistryRecord?.sourceClass, 'AUTHORITATIVE_SOURCE');
+assert.equal(cityOpenDataRegistryRecord?.category, 'BUILDING_PERMITS');
+assert.equal(cityOpenDataRegistryRecord?.authorizationState, 'AWAITING_PROVIDER_CONFIRMATION');
+assert.equal(cityOpenDataRegistryRecord?.productionActivationState, 'BLOCKED_NOT_AUTHORIZED');
+assert.equal(cityOpenDataRegistryRecord?.claimEligible, false);
+
 const withoutMls = validateSourceQualityOperationalManifest({
   ...SOURCE_QUALITY_OPERATIONAL_MANIFEST_DATA,
   entries: SOURCE_QUALITY_OPERATIONAL_MANIFEST_DATA.entries.filter((entry) => entry.sourceId !== MLS_LISTING_DATA_SOURCE_ID),
 });
 assert.ok(withoutMls.manifest);
-assert.equal(withoutMls.manifest?.entries.length, 6);
+assert.equal(withoutMls.manifest?.entries.length, 7);
 assert.notEqual(valid.manifest.manifestFingerprint, withoutMls.manifest?.manifestFingerprint);
 for (const entry of withoutMls.manifest?.entries ?? []) {
   assert.equal(valid.manifest.entries.find((candidate) => candidate.sourceId === entry.sourceId)?.entryFingerprint, entry.entryFingerprint);
@@ -235,7 +283,7 @@ const withoutAssessor = validateSourceQualityOperationalManifest({
   entries: SOURCE_QUALITY_OPERATIONAL_MANIFEST_DATA.entries.filter((entry) => entry.sourceId !== BOULDER_COUNTY_ASSESSOR_SOURCE_ID),
 });
 assert.ok(withoutAssessor.manifest);
-assert.equal(withoutAssessor.manifest?.entries.length, 6);
+assert.equal(withoutAssessor.manifest?.entries.length, 7);
 assert.notEqual(valid.manifest.manifestFingerprint, withoutAssessor.manifest?.manifestFingerprint);
 for (const entry of withoutAssessor.manifest?.entries ?? []) {
   assert.equal(valid.manifest.entries.find((candidate) => candidate.sourceId === entry.sourceId)?.entryFingerprint, entry.entryFingerprint);
@@ -256,7 +304,7 @@ const withoutMunicipal = validateSourceQualityOperationalManifest({
   entries: SOURCE_QUALITY_OPERATIONAL_MANIFEST_DATA.entries.filter((entry) => entry.sourceId !== MUNICIPAL_PLANNING_CONTEXT_SOURCE_ID),
 });
 assert.ok(withoutMunicipal.manifest);
-assert.equal(withoutMunicipal.manifest?.entries.length, 6);
+assert.equal(withoutMunicipal.manifest?.entries.length, 7);
 assert.notEqual(valid.manifest.manifestFingerprint, withoutMunicipal.manifest?.manifestFingerprint);
 for (const entry of withoutMunicipal.manifest?.entries ?? []) {
   assert.equal(valid.manifest.entries.find((candidate) => candidate.sourceId === entry.sourceId)?.entryFingerprint, entry.entryFingerprint);
@@ -277,7 +325,7 @@ const withoutTreasurer = validateSourceQualityOperationalManifest({
   entries: SOURCE_QUALITY_OPERATIONAL_MANIFEST_DATA.entries.filter((entry) => entry.sourceId !== BOULDER_COUNTY_TREASURER_SOURCE_ID),
 });
 assert.ok(withoutTreasurer.manifest);
-assert.equal(withoutTreasurer.manifest?.entries.length, 6);
+assert.equal(withoutTreasurer.manifest?.entries.length, 7);
 assert.notEqual(valid.manifest.manifestFingerprint, withoutTreasurer.manifest?.manifestFingerprint);
 for (const entry of withoutTreasurer.manifest?.entries ?? []) {
   assert.equal(valid.manifest.entries.find((candidate) => candidate.sourceId === entry.sourceId)?.entryFingerprint, entry.entryFingerprint);
@@ -298,7 +346,7 @@ const withoutAccela = validateSourceQualityOperationalManifest({
   entries: SOURCE_QUALITY_OPERATIONAL_MANIFEST_DATA.entries.filter((entry) => entry.sourceId !== BOULDER_COUNTY_ACCELA_PERMITS_SOURCE_ID),
 });
 assert.ok(withoutAccela.manifest);
-assert.equal(withoutAccela.manifest?.entries.length, 6);
+assert.equal(withoutAccela.manifest?.entries.length, 7);
 assert.notEqual(valid.manifest.manifestFingerprint, withoutAccela.manifest?.manifestFingerprint);
 for (const entry of withoutAccela.manifest?.entries ?? []) {
   assert.equal(valid.manifest.entries.find((candidate) => candidate.sourceId === entry.sourceId)?.entryFingerprint, entry.entryFingerprint);
@@ -315,25 +363,48 @@ assert.equal(accelaNormalized.freshness.posture, 'UNKNOWN');
 assert.equal(accelaNormalized.attribution.posture, 'UNKNOWN');
 assert.equal(accelaNormalized.provenance.posture, 'UNKNOWN');
 
+const withoutCityOpenData = validateSourceQualityOperationalManifest({
+  ...SOURCE_QUALITY_OPERATIONAL_MANIFEST_DATA,
+  entries: SOURCE_QUALITY_OPERATIONAL_MANIFEST_DATA.entries.filter((entry) => entry.sourceId !== CITY_BOULDER_OPEN_DATA_PERMITS_SOURCE_ID),
+});
+assert.ok(withoutCityOpenData.manifest);
+assert.equal(withoutCityOpenData.manifest?.entries.length, 7);
+assert.notEqual(valid.manifest.manifestFingerprint, withoutCityOpenData.manifest?.manifestFingerprint);
+for (const entry of withoutCityOpenData.manifest?.entries ?? []) {
+  assert.equal(valid.manifest.entries.find((candidate) => candidate.sourceId === entry.sourceId)?.entryFingerprint, entry.entryFingerprint);
+}
+const cityOpenDataEntry = valid.manifest.entries.find((entry) => entry.sourceId === CITY_BOULDER_OPEN_DATA_PERMITS_SOURCE_ID);
+assert.ok(cityOpenDataEntry);
+assert.equal(cityOpenDataEntry?.inclusionClass, 'STRUCTURED_EVIDENCE_WITH_KNOWN_GAPS');
+assert.equal(cityOpenDataEntry?.entryFingerprint, validateSourceQualityOperationalManifest(SOURCE_QUALITY_OPERATIONAL_MANIFEST_DATA).manifest?.entries.find((entry) => entry.sourceId === CITY_BOULDER_OPEN_DATA_PERMITS_SOURCE_ID)?.entryFingerprint);
+const cityOpenDataNormalized = normalizeCityBoulderOpenDataPermitsSourceQualityEvidence();
+assert.equal(cityOpenDataNormalized.rights.posture, 'UNKNOWN');
+assert.equal(cityOpenDataNormalized.technicalAccess.posture, 'UNKNOWN');
+assert.equal(cityOpenDataNormalized.freshness.posture, 'UNKNOWN');
+assert.equal(cityOpenDataNormalized.attribution.posture, 'UNKNOWN');
+assert.equal(cityOpenDataNormalized.provenance.posture, 'UNKNOWN');
+
 const assemblyRequest = sourceQualityOperationalManifestToAssemblyRequest(valid.manifest);
 const assembly = assembleSourceQualitySummaries(assemblyRequest);
 assert.notEqual(assembly.classification, 'FAIL_CLOSED');
 if (assembly.classification === 'FAIL_CLOSED') throw new Error('Assembly must accept converted operational manifest.');
-assert.equal(assembly.assembly.sourceCount, 7);
+assert.equal(assembly.assembly.sourceCount, 8);
 assert.equal(assembly.assembly.summaries.find((summary) => summary.source.sourceId === MLS_LISTING_DATA_SOURCE_ID)?.classification, 'INSUFFICIENT_EVIDENCE');
 assert.equal(assembly.assembly.summaries.find((summary) => summary.source.sourceId === MUNICIPAL_PLANNING_CONTEXT_SOURCE_ID)?.classification, 'INSUFFICIENT_EVIDENCE');
 assert.equal(assembly.assembly.summaries.find((summary) => summary.source.sourceId === BOULDER_COUNTY_ASSESSOR_SOURCE_ID)?.classification, 'INSUFFICIENT_EVIDENCE');
 assert.equal(assembly.assembly.summaries.find((summary) => summary.source.sourceId === BOULDER_COUNTY_TREASURER_SOURCE_ID)?.classification, 'INSUFFICIENT_EVIDENCE');
 assert.equal(assembly.assembly.summaries.find((summary) => summary.source.sourceId === BOULDER_COUNTY_ACCELA_PERMITS_SOURCE_ID)?.classification, 'INSUFFICIENT_EVIDENCE');
+assert.equal(assembly.assembly.summaries.find((summary) => summary.source.sourceId === CITY_BOULDER_OPEN_DATA_PERMITS_SOURCE_ID)?.classification, 'INSUFFICIENT_EVIDENCE');
 const report = composeSourceQualityReport(assembly.assembly.summaries);
 assert.notEqual(report.classification, 'FAIL_CLOSED');
-if (report.classification === 'FAIL_CLOSED') throw new Error('Report must accept seven-source operational manifest output.');
-assert.equal(report.report.sourceCount, 7);
+if (report.classification === 'FAIL_CLOSED') throw new Error('Report must accept eight-source operational manifest output.');
+assert.equal(report.report.sourceCount, 8);
 assert.ok(report.report.insufficientEvidenceSources.includes(MLS_LISTING_DATA_SOURCE_ID));
 assert.ok(report.report.insufficientEvidenceSources.includes(MUNICIPAL_PLANNING_CONTEXT_SOURCE_ID));
 assert.ok(report.report.insufficientEvidenceSources.includes(BOULDER_COUNTY_ASSESSOR_SOURCE_ID));
 assert.ok(report.report.insufficientEvidenceSources.includes(BOULDER_COUNTY_TREASURER_SOURCE_ID));
 assert.ok(report.report.insufficientEvidenceSources.includes(BOULDER_COUNTY_ACCELA_PERMITS_SOURCE_ID));
+assert.ok(report.report.insufficientEvidenceSources.includes(CITY_BOULDER_OPEN_DATA_PERMITS_SOURCE_ID));
 
 assert.equal(createSourceQualityOperationalManifestFingerprint(SOURCE_QUALITY_OPERATIONAL_MANIFEST_DATA), createSourceQualityOperationalManifestFingerprint(SOURCE_QUALITY_OPERATIONAL_MANIFEST_DATA));
 assert.equal(validateSourceQualityOperationalManifest({ ...SOURCE_QUALITY_OPERATIONAL_MANIFEST_DATA, entries: [...SOURCE_QUALITY_OPERATIONAL_MANIFEST_DATA.entries].reverse() }).manifest?.manifestFingerprint, valid.manifest.manifestFingerprint);
@@ -361,10 +432,11 @@ assert.ok(data.includes('BOULDER_COUNTY_TREASURER_SOURCE_ID'));
 assert.equal(data.includes("'SRC-BOULDER-COUNTY-TREASURER'"), false);
 assert.ok(data.includes('BOULDER_COUNTY_ACCELA_PERMITS_SOURCE_ID'));
 assert.equal(data.includes("'SRC-BOULDER-COUNTY-ACCELA-PERMITS'"), false);
-assert.equal(data.includes('CITY_BOULDER_OPEN_DATA_PERMITS_SOURCE_ID'), false);
+assert.ok(data.includes('CITY_BOULDER_OPEN_DATA_PERMITS_SOURCE_ID'));
 assert.equal(data.includes("'SRC-CITY-BOULDER-OPEN-DATA-PERMITS'"), false);
+assert.equal(data.includes('SRC-CITY-BOULDER-BUILDING-PERMITS-PORTAL'), false);
 assert.ok(adminPage.includes('report.sourceCount'));
 assert.equal(adminPage.includes(MLS_LISTING_DATA_SOURCE_ID), false);
-for (const prohibited of ['sourceRegistry', 'sourceRightsActivationReadiness', 'SRA-BOULDER-COUNTY-ASSESSOR', 'SRA-BOULDER-COUNTY-TREASURER', 'sourceQualityHumanReviewedEvidenceConversionContract', 'sourceQualityCityBoulderOpenDataPermitsEvidence', 'readdir', 'readFile', 'glob(', 'process.env', '@prisma/client', 'PrismaClient', 'prisma.', 'fetch(', 'http://', 'https://', 'CRMTask', 'Typesense', 'Search', 'next/', 'queue', 'worker', 'nodemailer', 'resend', 'twilio', 'COLORADO-COUNTY-57-RESPONSE-RECONCILIATION-AND-REMAINING-SEVEN-READINESS']) assert.equal((runtime + data).includes(prohibited), false, 'Manifest runtime/data must not reference ' + prohibited);
+for (const prohibited of ['sourceRegistry', 'sourceRightsActivationReadiness', 'SRA-BOULDER-COUNTY-ASSESSOR', 'SRA-BOULDER-COUNTY-TREASURER', 'sourceQualityHumanReviewedEvidenceConversionContract', 'sourceQualityCityBoulderBuildingPermitsPortalEvidence', 'readdir', 'readFile', 'glob(', 'process.env', '@prisma/client', 'PrismaClient', 'prisma.', 'fetch(', 'http://', 'https://', 'CRMTask', 'Typesense', 'Search', 'next/', 'queue', 'worker', 'nodemailer', 'resend', 'twilio', 'COLORADO-COUNTY-57-RESPONSE-RECONCILIATION-AND-REMAINING-SEVEN-READINESS']) assert.equal((runtime + data).includes(prohibited), false, 'Manifest runtime/data must not reference ' + prohibited);
 for (const prohibited of ['ATTOM', 'LightBox', 'county correspondence', 'provider correspondence', 'human-reviewed narrative', 'qualityScore', 'providerRanking', 'activationAuthority', 'legalUseApproval', 'customerDisplayAuthority']) assert.equal(data.includes(prohibited), false, 'Operational data must not include ' + prohibited);
-console.log('[source-quality-operational-manifest] ok: exact seven-source partial typed set reuses canonical MLS, Municipal, Assessor, Treasurer, and Accela evidence, preserves known gaps/terms/provider-confirmation/blocked-activation/public-source firewalls, excludes City Open Data permits, and converts deterministically through Assembly and Report without discovery, live-system, or authority behavior.');
+console.log('[source-quality-operational-manifest] ok: exact eight-source partial typed set reuses canonical MLS, Municipal, Assessor, Treasurer, Accela, and City Open Data evidence, preserves known gaps/terms/open-data/provider-confirmation/blocked-activation/public-source firewalls, excludes City Portal permits, and converts deterministically through Assembly and Report without discovery, live-system, or authority behavior.');
