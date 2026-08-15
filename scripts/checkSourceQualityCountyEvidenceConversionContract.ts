@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
 import {
+  BOULDER_COUNTY_ACCELA_PERMITS_SOURCE_ID,
   BOULDER_COUNTY_ASSESSOR_CONVERSION_POSTURE,
   BOULDER_COUNTY_ASSESSOR_SOURCE_ID,
   BOULDER_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST,
@@ -18,7 +19,7 @@ assert.equal(BOULDER_COUNTY_ASSESSOR_SOURCE_ID, 'SRC-BOULDER-COUNTY-ASSESSOR');
 assert.deepEqual(COUNTY_SOURCE_QUALITY_CONVERSION_ALLOWED_SOURCE_IDS, [
   'SRC-BOULDER-COUNTY-ASSESSOR',
   'SRC-BOULDER-COUNTY-TREASURER',
-  'SRC-BOULDER-PERMIT-CANDIDATES',
+  'SRC-BOULDER-COUNTY-ACCELA-PERMITS',
 ]);
 assert.equal(BOULDER_COUNTY_ASSESSOR_CONVERSION_POSTURE, 'COUNTY_PUBLIC_RECORD_SOURCE_QUALITY_CONVERSION_READY_SOURCE_CONFIRMATION_REQUIRED');
 assert.equal(valid.classification, 'COUNTY_EVIDENCE_CONVERSION_VALID');
@@ -50,8 +51,23 @@ const unknown = convertCountyStructuredEvidence({
   ...BOULDER_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST,
   sourceId: 'SRC-UNKNOWN-COUNTY-SOURCE',
   sourceConfirmation: { sourceId: 'SRC-UNKNOWN-COUNTY-SOURCE', confirmationClass: 'EXACT_SOURCE_ID_CONFIRMED', reviewedAt: '2026-08-15' },
+  evidenceReferences: [{ ...BOULDER_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST.evidenceReferences[0]!, sourceId: 'SRC-UNKNOWN-COUNTY-SOURCE' }],
 });
-assert.equal(unknown.classification, 'COUNTY_EVIDENCE_SOURCE_MISMATCH');
+assert.equal(unknown.classification, 'COUNTY_SOURCE_INVALID');
+const candidate = convertCountyStructuredEvidence({
+  ...BOULDER_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST,
+  sourceId: 'SRC-BOULDER-PERMIT-CANDIDATES',
+  sourceConfirmation: { sourceId: 'SRC-BOULDER-PERMIT-CANDIDATES', confirmationClass: 'EXACT_SOURCE_ID_CONFIRMED', reviewedAt: '2026-08-15' },
+  evidenceReferences: [{ ...BOULDER_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST.evidenceReferences[0]!, sourceId: 'SRC-BOULDER-PERMIT-CANDIDATES' }],
+});
+assert.equal(candidate.classification, 'COUNTY_NON_OPERATIONAL_CANDIDATE_REJECTED');
+const cityAsCounty = convertCountyStructuredEvidence({
+  ...BOULDER_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST,
+  sourceId: 'SRC-CITY-BOULDER-OPEN-DATA-PERMITS',
+  sourceConfirmation: { sourceId: 'SRC-CITY-BOULDER-OPEN-DATA-PERMITS', confirmationClass: 'EXACT_SOURCE_ID_CONFIRMED', reviewedAt: '2026-08-15' },
+  evidenceReferences: [{ ...BOULDER_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST.evidenceReferences[0]!, sourceId: 'SRC-CITY-BOULDER-OPEN-DATA-PERMITS' }],
+});
+assert.equal(cityAsCounty.classification, 'COUNTY_SOURCE_INVALID');
 const noCertification = convertCountyStructuredEvidence({
   ...BOULDER_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST,
   certificationReference: undefined,
@@ -117,6 +133,26 @@ const changedSensitivity = convertCountyStructuredEvidence({
 });
 assert.equal(changedSensitivity.classification, 'COUNTY_EVIDENCE_CONVERSION_VALID');
 assert.notEqual(changedSensitivity.conversionFingerprint, valid.conversionFingerprint);
+const accela = convertCountyStructuredEvidence({
+  ...BOULDER_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST,
+  sourceId: BOULDER_COUNTY_ACCELA_PERMITS_SOURCE_ID,
+  sourceClass: 'COUNTY_PERMIT',
+  sourceConfirmation: { sourceId: BOULDER_COUNTY_ACCELA_PERMITS_SOURCE_ID, confirmationClass: 'EXACT_SOURCE_ID_CONFIRMED', reviewedAt: '2026-08-15' },
+  evidenceReferences: [{
+    ...BOULDER_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST.evidenceReferences[0]!,
+    sourceId: BOULDER_COUNTY_ACCELA_PERMITS_SOURCE_ID,
+    evidenceReferenceId: 'COUNTY-CONVERSION-ACCELA-CERT-001',
+  }],
+  fieldSensitivityPosture: 'RESTRICTED_OR_UNREVIEWED',
+});
+assert.equal(accela.classification, 'COUNTY_EVIDENCE_CONVERSION_VALID');
+assert.equal(accela.sourceId, BOULDER_COUNTY_ACCELA_PERMITS_SOURCE_ID);
+assert.equal(accela.linkages[0]?.sourceId, BOULDER_COUNTY_ACCELA_PERMITS_SOURCE_ID);
+assert.equal(accela.normalized?.rights.posture, 'UNKNOWN');
+assert.equal(accela.normalized?.technicalAccess.posture, 'UNKNOWN');
+assert.equal(accela.normalized?.freshness.posture, 'UNKNOWN');
+assert.equal(accela.normalized?.attribution.posture, 'UNKNOWN');
+assert.equal(accela.normalized?.provenance.posture, 'UNKNOWN');
 
 const summary = summarizeSourceQuality(valid.normalized);
 assert.equal(summary.classification, 'INSUFFICIENT_EVIDENCE');
@@ -133,4 +169,5 @@ assert.equal(COUNTY_SOURCE_QUALITY_CONVERSION_FIREWALL.publicSourceFallacy, 'PUB
 
 const runtime = await readFile(new URL('../lib/sourceQualityCountyEvidenceConversionContract.ts', import.meta.url), 'utf8');
 for (const forbidden of ['@prisma/client', 'PrismaClient', 'process.env', 'fetch(', 'http://', 'https://', 'CRMTask', 'Typesense', 'Search', 'next/', 'queue', 'worker', 'nodemailer', 'resend', 'twilio', 'sourceQualityOperationalManifestData', 'sourceQualityAdminPreviewFixture']) assert.equal(runtime.includes(forbidden), false, 'Contract must not reference ' + forbidden);
-console.log('[source-quality-county-evidence-conversion-contract] ok: exact county structured references convert deterministically through canonical normalization, control, and assembly with unknown dimensions and no activation, retrieval, or narrative behavior.');
+assert.ok(runtime.includes('convertPublicRecordStructuredEvidence'));
+console.log('[source-quality-county-evidence-conversion-contract] ok: exact county structured references delegate to the public-record core, preserve Assessor/Treasurer behavior, support exact County Accela, reject candidate and City-as-County inputs, and convert deterministically without activation, retrieval, or narrative behavior.');
