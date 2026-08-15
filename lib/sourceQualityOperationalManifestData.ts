@@ -6,6 +6,12 @@ import {
   convertBoulderCountyAssessorSourceQualityEvidence,
 } from './sourceQualityBoulderCountyAssessorEvidence';
 import {
+  BOULDER_COUNTY_TREASURER_SOURCE_ID,
+  BOULDER_COUNTY_TREASURER_SOURCE_QUALITY_CERTIFICATION,
+  BOULDER_COUNTY_TREASURER_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT,
+  convertBoulderCountyTreasurerSourceQualityEvidence,
+} from './sourceQualityBoulderCountyTreasurerEvidence';
+import {
   MLS_LISTING_DATA_SOURCE_ID,
   MLS_LISTING_DATA_SOURCE_QUALITY_CERTIFICATION,
   MLS_LISTING_DATA_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT,
@@ -25,6 +31,7 @@ import {
 const reviewedAt = '2026-08-15';
 const manifestId = 'SQOM-INITIAL-001';
 const boulderCountyAssessorEvidence = convertBoulderCountyAssessorSourceQualityEvidence();
+const boulderCountyTreasurerEvidence = convertBoulderCountyTreasurerSourceQualityEvidence();
 
 const certificationReference: SourceEvidenceCertificationReference = {
   certificationId: 'CERT-SQOM-INITIAL-001',
@@ -119,6 +126,18 @@ export const SOURCE_QUALITY_OPERATIONAL_MANIFEST_DATA: SourceQualityOperationalM
       expectedEvidenceClasses: ['CERTIFICATION'],
       certificationReference: BOULDER_COUNTY_ASSESSOR_SOURCE_QUALITY_CERTIFICATION,
       reviewedAt: BOULDER_COUNTY_ASSESSOR_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT,
+      reviewAuthorityClass: 'DELEGATED_SOURCE_GOVERNANCE_REVIEW',
+      limitationCodes: [],
+    },
+    {
+      schemaVersion: SOURCE_QUALITY_OPERATIONAL_MANIFEST_SCHEMA_VERSION,
+      manifestId,
+      sourceId: BOULDER_COUNTY_TREASURER_SOURCE_ID,
+      inclusionClass: 'STRUCTURED_EVIDENCE_WITH_KNOWN_GAPS',
+      linkages: boulderCountyTreasurerEvidence.linkages,
+      expectedEvidenceClasses: ['CERTIFICATION'],
+      certificationReference: BOULDER_COUNTY_TREASURER_SOURCE_QUALITY_CERTIFICATION,
+      reviewedAt: BOULDER_COUNTY_TREASURER_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT,
       reviewAuthorityClass: 'DELEGATED_SOURCE_GOVERNANCE_REVIEW',
       limitationCodes: [],
     },
