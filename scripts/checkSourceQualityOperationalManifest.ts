@@ -16,6 +16,15 @@ import {
   MLS_LISTING_DATA_SOURCE_QUALITY_LINKAGES,
   normalizeMlsListingDataSourceQualityEvidence,
 } from '../lib/sourceQualityMlsListingDataEvidence';
+import {
+  MUNICIPAL_PLANNING_CONTEXT_MANIFEST_ELIGIBILITY,
+  MUNICIPAL_PLANNING_CONTEXT_SOURCE_ID,
+  MUNICIPAL_PLANNING_CONTEXT_SOURCE_QUALITY_CERTIFICATION,
+  MUNICIPAL_PLANNING_CONTEXT_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT,
+  MUNICIPAL_PLANNING_CONTEXT_SOURCE_QUALITY_FIREWALL,
+  MUNICIPAL_PLANNING_CONTEXT_SOURCE_QUALITY_LINKAGES,
+  normalizeMunicipalPlanningContextSourceQualityEvidence,
+} from '../lib/sourceQualityMunicipalPlanningContextEvidence';
 import { assembleSourceQualitySummaries } from '../lib/sourceQualitySummaryAssembly';
 import { composeSourceQualityReport } from '../lib/sourceQualityReport';
 
@@ -26,7 +35,7 @@ if (!valid.manifest) throw new Error('Expected operational manifest.');
 assert.equal(valid.manifest.suppliedDatasetScope, 'SUPPLIED_MANIFEST_ONLY');
 assert.equal(valid.manifest.operationalPosture, 'OPERATIONAL_INPUT_POSTURE_ONLY');
 assert.equal(valid.manifest.completenessClaim, 'NO_COMPLETENESS_CLAIM');
-assert.equal(valid.manifest.entries.length, 3);
+assert.equal(valid.manifest.entries.length, 4);
 assert.ok(valid.manifest.entries.every((entry) => entry.inclusionClass === 'STRUCTURED_EVIDENCE_WITH_KNOWN_GAPS'));
 assert.equal(valid.manifest.authorityFirewall.sourceActivation, 'SOURCE_ACTIVATION_NOT_AUTHORIZED_BY_MANIFEST');
 assert.equal(valid.manifest.authorityFirewall.customerDisplayAuthority, 'CUSTOMER_DISPLAY_NOT_GRANTED_BY_MANIFEST');
@@ -47,12 +56,26 @@ assert.deepEqual(rawMlsEntry?.limitationCodes, []);
 assert.equal(MLS_LISTING_DATA_MANIFEST_ELIGIBILITY, 'READY_WITH_KNOWN_GAPS');
 assert.equal(MLS_LISTING_DATA_SOURCE_QUALITY_FIREWALL.registryActivation, 'SOURCE_REGISTRY_ACTIVATION_NOT_SOURCE_QUALITY_CERTIFICATION');
 
+const rawMunicipalEntry = SOURCE_QUALITY_OPERATIONAL_MANIFEST_DATA.entries[3];
+assert.ok(rawMunicipalEntry);
+assert.equal(rawMunicipalEntry?.sourceId, MUNICIPAL_PLANNING_CONTEXT_SOURCE_ID);
+assert.equal(rawMunicipalEntry?.inclusionClass, 'STRUCTURED_EVIDENCE_WITH_KNOWN_GAPS');
+assert.strictEqual(rawMunicipalEntry?.linkages, MUNICIPAL_PLANNING_CONTEXT_SOURCE_QUALITY_LINKAGES);
+assert.deepEqual(rawMunicipalEntry?.expectedEvidenceClasses, ['CERTIFICATION']);
+assert.strictEqual(rawMunicipalEntry?.certificationReference, MUNICIPAL_PLANNING_CONTEXT_SOURCE_QUALITY_CERTIFICATION);
+assert.equal(rawMunicipalEntry?.reviewedAt, MUNICIPAL_PLANNING_CONTEXT_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT);
+assert.equal(rawMunicipalEntry?.reviewAuthorityClass, 'DELEGATED_SOURCE_GOVERNANCE_REVIEW');
+assert.deepEqual(rawMunicipalEntry?.limitationCodes, []);
+assert.equal(MUNICIPAL_PLANNING_CONTEXT_MANIFEST_ELIGIBILITY, 'READY_WITH_KNOWN_GAPS');
+assert.equal(MUNICIPAL_PLANNING_CONTEXT_SOURCE_QUALITY_FIREWALL.registryActivation, 'SOURCE_REGISTRY_ACTIVATION_NOT_SOURCE_QUALITY_CERTIFICATION');
+assert.equal(MUNICIPAL_PLANNING_CONTEXT_SOURCE_QUALITY_FIREWALL.publicSourceFallacy, 'PUBLIC_OR_MUNICIPAL_SOURCE_NOT_UNRESTRICTED_OR_VERIFIED_OR_COMPLETE');
+
 const withoutMls = validateSourceQualityOperationalManifest({
   ...SOURCE_QUALITY_OPERATIONAL_MANIFEST_DATA,
   entries: SOURCE_QUALITY_OPERATIONAL_MANIFEST_DATA.entries.filter((entry) => entry.sourceId !== MLS_LISTING_DATA_SOURCE_ID),
 });
 assert.ok(withoutMls.manifest);
-assert.equal(withoutMls.manifest?.entries.length, 2);
+assert.equal(withoutMls.manifest?.entries.length, 3);
 assert.notEqual(valid.manifest.manifestFingerprint, withoutMls.manifest?.manifestFingerprint);
 for (const entry of withoutMls.manifest?.entries ?? []) {
   assert.equal(valid.manifest.entries.find((candidate) => candidate.sourceId === entry.sourceId)?.entryFingerprint, entry.entryFingerprint);
@@ -68,17 +91,40 @@ assert.equal(mlsNormalized.freshness.posture, 'UNKNOWN');
 assert.equal(mlsNormalized.attribution.posture, 'UNKNOWN');
 assert.equal(mlsNormalized.provenance.posture, 'UNKNOWN');
 
+const withoutMunicipal = validateSourceQualityOperationalManifest({
+  ...SOURCE_QUALITY_OPERATIONAL_MANIFEST_DATA,
+  entries: SOURCE_QUALITY_OPERATIONAL_MANIFEST_DATA.entries.filter((entry) => entry.sourceId !== MUNICIPAL_PLANNING_CONTEXT_SOURCE_ID),
+});
+assert.ok(withoutMunicipal.manifest);
+assert.equal(withoutMunicipal.manifest?.entries.length, 3);
+assert.notEqual(valid.manifest.manifestFingerprint, withoutMunicipal.manifest?.manifestFingerprint);
+for (const entry of withoutMunicipal.manifest?.entries ?? []) {
+  assert.equal(valid.manifest.entries.find((candidate) => candidate.sourceId === entry.sourceId)?.entryFingerprint, entry.entryFingerprint);
+}
+const municipalEntry = valid.manifest.entries.find((entry) => entry.sourceId === MUNICIPAL_PLANNING_CONTEXT_SOURCE_ID);
+assert.ok(municipalEntry);
+assert.equal(municipalEntry?.inclusionClass, 'STRUCTURED_EVIDENCE_WITH_KNOWN_GAPS');
+assert.equal(municipalEntry?.entryFingerprint, validateSourceQualityOperationalManifest(SOURCE_QUALITY_OPERATIONAL_MANIFEST_DATA).manifest?.entries.find((entry) => entry.sourceId === MUNICIPAL_PLANNING_CONTEXT_SOURCE_ID)?.entryFingerprint);
+const municipalNormalized = normalizeMunicipalPlanningContextSourceQualityEvidence();
+assert.equal(municipalNormalized.rights.posture, 'UNKNOWN');
+assert.equal(municipalNormalized.technicalAccess.posture, 'UNKNOWN');
+assert.equal(municipalNormalized.freshness.posture, 'UNKNOWN');
+assert.equal(municipalNormalized.attribution.posture, 'UNKNOWN');
+assert.equal(municipalNormalized.provenance.posture, 'UNKNOWN');
+
 const assemblyRequest = sourceQualityOperationalManifestToAssemblyRequest(valid.manifest);
 const assembly = assembleSourceQualitySummaries(assemblyRequest);
 assert.notEqual(assembly.classification, 'FAIL_CLOSED');
 if (assembly.classification === 'FAIL_CLOSED') throw new Error('Assembly must accept converted operational manifest.');
-assert.equal(assembly.assembly.sourceCount, 3);
+assert.equal(assembly.assembly.sourceCount, 4);
 assert.equal(assembly.assembly.summaries.find((summary) => summary.source.sourceId === MLS_LISTING_DATA_SOURCE_ID)?.classification, 'INSUFFICIENT_EVIDENCE');
+assert.equal(assembly.assembly.summaries.find((summary) => summary.source.sourceId === MUNICIPAL_PLANNING_CONTEXT_SOURCE_ID)?.classification, 'INSUFFICIENT_EVIDENCE');
 const report = composeSourceQualityReport(assembly.assembly.summaries);
 assert.notEqual(report.classification, 'FAIL_CLOSED');
-if (report.classification === 'FAIL_CLOSED') throw new Error('Report must accept three-source operational manifest output.');
-assert.equal(report.report.sourceCount, 3);
+if (report.classification === 'FAIL_CLOSED') throw new Error('Report must accept four-source operational manifest output.');
+assert.equal(report.report.sourceCount, 4);
 assert.ok(report.report.insufficientEvidenceSources.includes(MLS_LISTING_DATA_SOURCE_ID));
+assert.ok(report.report.insufficientEvidenceSources.includes(MUNICIPAL_PLANNING_CONTEXT_SOURCE_ID));
 
 assert.equal(createSourceQualityOperationalManifestFingerprint(SOURCE_QUALITY_OPERATIONAL_MANIFEST_DATA), createSourceQualityOperationalManifestFingerprint(SOURCE_QUALITY_OPERATIONAL_MANIFEST_DATA));
 assert.equal(validateSourceQualityOperationalManifest({ ...SOURCE_QUALITY_OPERATIONAL_MANIFEST_DATA, entries: [...SOURCE_QUALITY_OPERATIONAL_MANIFEST_DATA.entries].reverse() }).manifest?.manifestFingerprint, valid.manifest.manifestFingerprint);
@@ -98,8 +144,10 @@ const data = await readFile(new URL('../lib/sourceQualityOperationalManifestData
 const adminPage = await readFile(new URL('../app/admin/source-quality/page.tsx', import.meta.url), 'utf8');
 assert.ok(data.includes('MLS_LISTING_DATA_SOURCE_ID'));
 assert.equal(data.includes("'SRC-MLS-LISTING-DATA'"), false);
+assert.ok(data.includes('MUNICIPAL_PLANNING_CONTEXT_SOURCE_ID'));
+assert.equal(data.includes("'SRC-MUNICIPAL-PLANNING-CONTEXT'"), false);
 assert.ok(adminPage.includes('report.sourceCount'));
 assert.equal(adminPage.includes(MLS_LISTING_DATA_SOURCE_ID), false);
 for (const prohibited of ['sourceRegistry', 'readdir', 'readFile', 'glob(', 'process.env', '@prisma/client', 'PrismaClient', 'prisma.', 'fetch(', 'http://', 'https://', 'CRMTask', 'Typesense', 'Search', 'next/', 'queue', 'worker', 'nodemailer', 'resend', 'twilio', 'COLORADO-COUNTY-57-RESPONSE-RECONCILIATION-AND-REMAINING-SEVEN-READINESS']) assert.equal((runtime + data).includes(prohibited), false, 'Manifest runtime/data must not reference ' + prohibited);
 for (const prohibited of ['ATTOM', 'LightBox', 'county correspondence', 'provider correspondence', 'qualityScore', 'providerRanking', 'activationAuthority', 'legalUseApproval', 'customerDisplayAuthority']) assert.equal(data.includes(prohibited), false, 'Operational data must not include ' + prohibited);
-console.log('[source-quality-operational-manifest] ok: exact three-source partial typed set reuses canonical MLS evidence, preserves known gaps and firewalls, and converts deterministically through Assembly and Report without discovery, live-system, or authority behavior.');
+console.log('[source-quality-operational-manifest] ok: exact four-source partial typed set reuses canonical MLS and Municipal evidence, preserves known gaps/public-source firewalls, and converts deterministically through Assembly and Report without discovery, live-system, or authority behavior.');

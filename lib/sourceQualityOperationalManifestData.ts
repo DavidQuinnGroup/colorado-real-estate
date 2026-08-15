@@ -6,6 +6,12 @@ import {
   MLS_LISTING_DATA_SOURCE_QUALITY_LINKAGES,
 } from './sourceQualityMlsListingDataEvidence';
 import {
+  MUNICIPAL_PLANNING_CONTEXT_SOURCE_ID,
+  MUNICIPAL_PLANNING_CONTEXT_SOURCE_QUALITY_CERTIFICATION,
+  MUNICIPAL_PLANNING_CONTEXT_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT,
+  MUNICIPAL_PLANNING_CONTEXT_SOURCE_QUALITY_LINKAGES,
+} from './sourceQualityMunicipalPlanningContextEvidence';
+import {
   SOURCE_QUALITY_OPERATIONAL_MANIFEST_SCHEMA_VERSION,
   type SourceQualityOperationalManifestInput,
 } from './sourceQualityOperationalManifest';
@@ -82,6 +88,18 @@ export const SOURCE_QUALITY_OPERATIONAL_MANIFEST_DATA: SourceQualityOperationalM
       expectedEvidenceClasses: ['CERTIFICATION'],
       certificationReference: MLS_LISTING_DATA_SOURCE_QUALITY_CERTIFICATION,
       reviewedAt: MLS_LISTING_DATA_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT,
+      reviewAuthorityClass: 'DELEGATED_SOURCE_GOVERNANCE_REVIEW',
+      limitationCodes: [],
+    },
+    {
+      schemaVersion: SOURCE_QUALITY_OPERATIONAL_MANIFEST_SCHEMA_VERSION,
+      manifestId,
+      sourceId: MUNICIPAL_PLANNING_CONTEXT_SOURCE_ID,
+      inclusionClass: 'STRUCTURED_EVIDENCE_WITH_KNOWN_GAPS',
+      linkages: MUNICIPAL_PLANNING_CONTEXT_SOURCE_QUALITY_LINKAGES,
+      expectedEvidenceClasses: ['CERTIFICATION'],
+      certificationReference: MUNICIPAL_PLANNING_CONTEXT_SOURCE_QUALITY_CERTIFICATION,
+      reviewedAt: MUNICIPAL_PLANNING_CONTEXT_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT,
       reviewAuthorityClass: 'DELEGATED_SOURCE_GOVERNANCE_REVIEW',
       limitationCodes: [],
     },
