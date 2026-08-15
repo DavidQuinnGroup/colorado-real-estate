@@ -44,6 +44,40 @@ assert.equal(assessor.claimEligible, false);
 assert.match(assessor.currentReieUse, /Identified source candidate only/);
 assert.match(assessor.currentReieUse, /no automated retrieval/);
 
+const permitSourceIds = [
+  'SRC-CITY-BOULDER-OPEN-DATA-PERMITS',
+  'SRC-CITY-BOULDER-BUILDING-PERMITS-PORTAL',
+  'SRC-BOULDER-COUNTY-ACCELA-PERMITS',
+] as const;
+assert.equal(registry.records.filter((item) => permitSourceIds.includes(item.sourceId as (typeof permitSourceIds)[number])).length, permitSourceIds.length);
+for (const sourceId of permitSourceIds) {
+  const permit = record(sourceId);
+  assert.equal(permit.sourceClass, 'AUTHORITATIVE_SOURCE');
+  assert.equal(permit.category, 'BUILDING_PERMITS');
+  assert.equal(permit.authorizationState, 'AWAITING_PROVIDER_CONFIRMATION');
+  assert.equal(permit.productionActivationState, 'BLOCKED_NOT_AUTHORIZED');
+  assert.equal(permit.claimEligible, false);
+  assert.equal(permit.customerDisclosureEligible, true);
+  assert.match(permit.currentReieUse, /Verification prompt only/);
+  assert.match(permit.currentReieUse, /no .* retrieval/);
+  assert.match(permit.currentReieUse, /no .* customer display/);
+  assert.ok(permit.limitations.some((limitation) => /rights|access|freshness|attribution|privacy|automation|display/i.test(limitation)));
+}
+assert.equal(record('SRC-CITY-BOULDER-OPEN-DATA-PERMITS').responsibleOrganization, 'City of Boulder');
+assert.equal(record('SRC-CITY-BOULDER-BUILDING-PERMITS-PORTAL').responsibleOrganization, 'City of Boulder');
+assert.equal(record('SRC-BOULDER-COUNTY-ACCELA-PERMITS').responsibleOrganization, 'Boulder County Community Planning & Permitting / Accela');
+assert.match(record('SRC-CITY-BOULDER-OPEN-DATA-PERMITS').limitations.join(' '), /Open-data availability does not establish unrestricted reuse/);
+assert.match(record('SRC-CITY-BOULDER-BUILDING-PERMITS-PORTAL').limitations.join(' '), /Portal availability does not establish approved automated access/);
+assert.match(record('SRC-BOULDER-COUNTY-ACCELA-PERMITS').limitations.join(' '), /Boulder County channel only; no municipal authority inference/);
+const permitCandidate = record('SRC-BOULDER-PERMIT-CANDIDATES');
+assert.match(permitCandidate.currentReieUse, /Source-candidate and verification-prompt context only/);
+assert.match(permitCandidate.currentReieUse, /no permit record is retrieved or displayed/);
+assert.doesNotMatch(permitCandidate.currentReieUse, /aggregate|member|parent|child/i);
+assert.doesNotMatch(JSON.stringify(permitCandidate), /memberSourceIds|parentSourceId|aggregateSource/i);
+assert.ok(!fs.existsSync('lib/sourceQualityCityBoulderOpenDataPermitsEvidence.ts'));
+assert.ok(!fs.existsSync('lib/sourceQualityCityBoulderBuildingPermitsPortalEvidence.ts'));
+assert.ok(!fs.existsSync('lib/sourceQualityBoulderCountyAccelaPermitsEvidence.ts'));
+
 for (const sourceId of ['SRC-BCOD-ADDRESS-POINTS', 'SRC-BCOD-PARK-BOUNDARIES']) {
   const bcod = record(sourceId);
   assert.equal(bcod.responsibleOrganization, 'Boulder County Open Data');
