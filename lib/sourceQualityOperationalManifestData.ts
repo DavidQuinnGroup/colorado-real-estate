@@ -1,5 +1,11 @@
 import type { SourceEvidenceCertificationReference, SourceEvidenceLinkageRecord } from './sourceQualityEvidenceNormalization';
 import {
+  MLS_LISTING_DATA_SOURCE_ID,
+  MLS_LISTING_DATA_SOURCE_QUALITY_CERTIFICATION,
+  MLS_LISTING_DATA_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT,
+  MLS_LISTING_DATA_SOURCE_QUALITY_LINKAGES,
+} from './sourceQualityMlsListingDataEvidence';
+import {
   SOURCE_QUALITY_OPERATIONAL_MANIFEST_SCHEMA_VERSION,
   type SourceQualityOperationalManifestInput,
 } from './sourceQualityOperationalManifest';
@@ -64,6 +70,18 @@ export const SOURCE_QUALITY_OPERATIONAL_MANIFEST_DATA: SourceQualityOperationalM
       expectedEvidenceClasses: ['CERTIFICATION'],
       certificationReference,
       reviewedAt,
+      reviewAuthorityClass: 'DELEGATED_SOURCE_GOVERNANCE_REVIEW',
+      limitationCodes: [],
+    },
+    {
+      schemaVersion: SOURCE_QUALITY_OPERATIONAL_MANIFEST_SCHEMA_VERSION,
+      manifestId,
+      sourceId: MLS_LISTING_DATA_SOURCE_ID,
+      inclusionClass: 'STRUCTURED_EVIDENCE_WITH_KNOWN_GAPS',
+      linkages: MLS_LISTING_DATA_SOURCE_QUALITY_LINKAGES,
+      expectedEvidenceClasses: ['CERTIFICATION'],
+      certificationReference: MLS_LISTING_DATA_SOURCE_QUALITY_CERTIFICATION,
+      reviewedAt: MLS_LISTING_DATA_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT,
       reviewAuthorityClass: 'DELEGATED_SOURCE_GOVERNANCE_REVIEW',
       limitationCodes: [],
     },

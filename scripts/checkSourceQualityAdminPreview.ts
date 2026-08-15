@@ -11,6 +11,12 @@ import {
 import { composeSourceQualityReport } from '../lib/sourceQualityReport';
 import { assembleSourceQualitySummaries } from '../lib/sourceQualitySummaryAssembly';
 
+const EXPECTED_OPERATIONAL_SOURCE_IDS = [
+  'SRC-MLS-LISTING-DATA',
+  'SRC-REIE-FINANCING-SCENARIO-CALCULATOR',
+  'SRC-REIE-PROPERTY-COMPARISON-INTELLIGENCE',
+] as const;
+
 const fixtureAssembly = assembleSourceQualitySummaries(SOURCE_QUALITY_ADMIN_PREVIEW_FIXTURE);
 assert.notEqual(fixtureAssembly.classification, 'FAIL_CLOSED');
 if (fixtureAssembly.classification === 'FAIL_CLOSED') throw new Error('Preview fixture assembly failed closed.');
@@ -28,9 +34,9 @@ assert.equal(manifestResult.manifest.coverageClass, 'PARTIAL_REVIEWED_SOURCE_SET
 assert.equal(manifestResult.manifest.suppliedDatasetScope, 'SUPPLIED_MANIFEST_ONLY');
 assert.equal(manifestResult.manifest.operationalPosture, 'OPERATIONAL_INPUT_POSTURE_ONLY');
 assert.equal(manifestResult.manifest.completenessClaim, 'NO_COMPLETENESS_CLAIM');
-assert.equal(manifestResult.manifest.entries.length, 2);
+assert.equal(manifestResult.manifest.entries.length, EXPECTED_OPERATIONAL_SOURCE_IDS.length);
 assert.ok(manifestResult.manifest.entries.every((entry) => entry.inclusionClass === 'STRUCTURED_EVIDENCE_WITH_KNOWN_GAPS'));
-assert.deepEqual(manifestResult.manifest.entries.map((entry) => entry.sourceId), ['SRC-REIE-FINANCING-SCENARIO-CALCULATOR', 'SRC-REIE-PROPERTY-COMPARISON-INTELLIGENCE']);
+assert.deepEqual(manifestResult.manifest.entries.map((entry) => entry.sourceId), [...EXPECTED_OPERATIONAL_SOURCE_IDS]);
 assert.equal(manifestResult.manifest.authorityFirewall.sourceActivation, 'SOURCE_ACTIVATION_NOT_AUTHORIZED_BY_MANIFEST');
 assert.equal(manifestResult.manifest.authorityFirewall.customerDisplayAuthority, 'CUSTOMER_DISPLAY_NOT_GRANTED_BY_MANIFEST');
 assert.equal(manifestResult.manifest.authorityFirewall.legalUse, 'LEGAL_USE_NOT_APPROVED_BY_MANIFEST');
@@ -51,7 +57,7 @@ assert.notEqual(report.classification, 'FAIL_CLOSED');
 if (report.classification === 'FAIL_CLOSED') throw new Error('Operational manifest report failed closed.');
 assert.equal(report.report.suppliedDatasetScope, 'SUPPLIED_SUMMARIES_ONLY');
 assert.equal(report.report.sourceCount, manifestResult.manifest.entries.length);
-assert.equal(report.report.classificationCounts.INSUFFICIENT_EVIDENCE, 2);
+assert.equal(report.report.classificationCounts.INSUFFICIENT_EVIDENCE, EXPECTED_OPERATIONAL_SOURCE_IDS.length);
 assert.equal(report.report.classificationCounts.REVIEW_POSTURE_COMPLETE, 0);
 assert.equal(report.report.classificationCounts.CONFLICT_REQUIRES_REVIEW, 0);
 assert.equal(assembleSourceQualitySummaries(sourceQualityOperationalManifestToAssemblyRequest(manifestResult.manifest)).classification, assembly.classification);
