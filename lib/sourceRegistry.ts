@@ -514,6 +514,63 @@ function larimerCountyAssessorRecord(): ReieSourceRegistryRecord {
   };
 }
 
+function weldCountyAssessorRecord(): ReieSourceRegistryRecord {
+  return {
+    sourceId: 'SRC-WELD-COUNTY-ASSESSOR',
+    publicName: 'Weld County Assessor',
+    responsibleOrganization: "Weld County Assessor's Office",
+    sourceClass: 'AUTHORITATIVE_SOURCE',
+    category: 'COUNTY_ASSESSOR',
+    domains: ['Assessor property-record source identity', 'Assessment records', 'Future governed county assessor evidence'],
+    jurisdiction: { state: 'Colorado', county: 'Weld County', coverage: 'Weld County assessor/property records source identity only' },
+    officialUrl: 'https://www.weld.gov/Government/Departments/Assessor',
+    accessMethod: 'Source-specific provider, rights, and technical-access review required before public-search use, Data Download, Property Card Search, Property Map Search, Property Data Search, Sales and Account Data Explorer, retrieval, automation, ingestion, display, or reuse',
+    updateCadence: 'source-specific and not certified',
+    freshnessExpectation: 'unknown until source-specific evidence review',
+    authorizationState: 'AWAITING_PROVIDER_CONFIRMATION',
+    permittedUse: 'registry identity and source-governance review only; no property search submission, Data Download, Property Card Search, Property Map Search, Property Data Search, Sales and Account Data Explorer, retrieval, automation, storage, redistribution, legal-use, or customer-display authority',
+    productionActivationState: 'BLOCKED_NOT_AUTHORIZED',
+    claimEligible: false,
+    customerDisclosureEligible: true,
+    customerStatus: 'Blocked / not authorized',
+    currentReieUse: 'Exact source identity only for future-governed Weld County Assessor review; no property search submission, no Data Download, no Property Card Search, no Property Map Search, no Property Data Search, no Sales and Account Data Explorer, no property-record retrieval, no owner/address lookup, no parcel/account lookup, no valuation claim, no ownership claim, no title claim, no tax claim, no customer display, no ingestion, no automation, or runtime use is active. Weld Property Card Search is historical-only and not current evidence.',
+    limitations: [
+      'ASSESSOR_RECORD_NOT_TITLE.',
+      'ASSESSOR_RECORD_NOT_DEED_VALIDITY.',
+      'ASSESSOR_RECORD_NOT_TREASURER_TAX_STATUS.',
+      'ASSESSOR_RECORD_NOT_CURRENT_OWNERSHIP_GUARANTEE.',
+      'ASSESSED_VALUE_NOT_MARKET_VALUE.',
+      'PUBLIC_SEARCH_NOT_AUTOMATION_AUTHORITY.',
+      'PUBLIC_ACCESS_NOT_REUSE_OR_DISPLAY_AUTHORITY.',
+      'PUBLIC_OR_GOVERNMENT_SOURCE_NOT_UNRESTRICTED_OR_VERIFIED_OR_COMPLETE.',
+      'DATA_DOWNLOAD_NOT_AUTHORIZED_BY_REGISTRY_MVV.',
+      'PROPERTY_CARD_HISTORY_NOT_CURRENT_EVIDENCE.',
+      'PROPERTY_MAP_NOT_PARCEL_OR_TITLE_AUTHORITY.',
+      'PROPERTY_DATA_CHANNEL_NOT_UNRESTRICTED_OR_REUSE_READY.',
+      'SALES_DATA_NOT_MARKET_VALUE_OR_APPRAISAL.',
+      'COUNTY_ASSESSOR_NOT_PERMITS_OR_RECORDS.',
+      'COUNTY_ASSESSOR_NOT_COUNTY_TREASURER.',
+      'COUNTY_ASSESSOR_NOT_RECORDER.',
+      'COUNTY_ASSESSOR_NOT_PARCEL_GIS.',
+      'SOURCE_ACTIVATION_NOT_AUTHORIZED_BY_REGISTRY_MVV.',
+      'CUSTOMER_DISPLAY_NOT_GRANTED_BY_REGISTRY_MVV.',
+      'LEGAL_USE_NOT_APPROVED_BY_REGISTRY_MVV.',
+      'Weld County Data Download, Property Card Search, Property Map Search, Property Data Search, Sales and Account Data Explorer, Treasurer, Recorder, permits/records, GIS, and third-party aggregate channels are separately governed and do not become the Assessor Registry source identity.',
+      'Weld County Property Card Search is historical-only and has not been updated since 2002 according to official source research; it must not be treated as current evidence.',
+      'Boulder County, Arapahoe County, Broomfield, Jefferson County, and Larimer County Assessor findings, evidence, rights, access, freshness, attribution, provenance, and provider terms do not transfer to Weld County Assessor.',
+      'Rights, technical access, freshness, attribution, fees, privacy approval, field sensitivity, and provenance remain unknown until separately governed source evidence review.',
+    ],
+    attributionRequirement: 'unknown until source-specific review',
+    lastSourceVerificationDate: REIE_SOURCE_REGISTRY_REFERENCE_DATE,
+    lastSuccessfulDataRefresh: null,
+    sourcePaths: [
+      'lib/sourceRegistry.ts/SRC-WELD-COUNTY-ASSESSOR',
+      'Weld County Assessor official-source identity research handoff',
+      'WELD_COUNTY_ASSESSOR_EXACT_SOURCE_REGISTRY_MVV',
+    ],
+  };
+}
+
 export const BOULDER_PERMIT_CANDIDATES_SOURCE_ID = 'SRC-BOULDER-PERMIT-CANDIDATES' as const;
 export const BOULDER_PERMIT_CANDIDATES_LIFECYCLE_POSTURE = 'NON_OPERATIONAL_DISCOVERY_VERIFICATION_CONTEXT' as const;
 export const BOULDER_PERMIT_CANDIDATES_SOURCE_QUALITY_ADVANCEMENT_ELIGIBILITY = 'NOT_ELIGIBLE_NON_OPERATIONAL_CONTEXT' as const;
@@ -679,6 +736,7 @@ export const REIE_SOURCE_REGISTRY: ReieSourceRegistry = Object.freeze({
     broomfieldCountyAssessorRecord(),
     jeffersonCountyAssessorRecord(),
     larimerCountyAssessorRecord(),
+    weldCountyAssessorRecord(),
     boulderPermitCandidatesRecord(),
     sourceFromProfile({
       sourceId: 'SRC-CITY-BOULDER-OPEN-DATA-PERMITS',
