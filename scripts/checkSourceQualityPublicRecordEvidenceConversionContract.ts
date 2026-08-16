@@ -10,6 +10,7 @@ import {
   type PublicRecordSourceQualityEvidenceConversionRequest,
 } from '../lib/sourceQualityPublicRecordEvidenceConversionContract';
 import { summarizeSourceQuality } from '../lib/sourceQualityControl';
+import { COUNTY_ASSESSOR_EXACT_SOURCE_IDS } from '../lib/sourceQualityCountyAssessorExactSourceDefinitions';
 import { assembleSourceQualitySummaries } from '../lib/sourceQualitySummaryAssembly';
 
 const certificationReference = {
@@ -63,13 +64,7 @@ const recorderRequest: PublicRecordSourceQualityEvidenceConversionRequest = {
 };
 
 assert.deepEqual(PUBLIC_RECORD_SOURCE_QUALITY_CONVERSION_ALLOWED_SOURCE_IDS, [
-  'SRC-BOULDER-COUNTY-ASSESSOR',
-  'SRC-ADAMS-COUNTY-ASSESSOR',
-  'SRC-ARAPAHOE-COUNTY-ASSESSOR',
-  'SRC-BROOMFIELD-COUNTY-ASSESSOR',
-  'SRC-JEFFERSON-COUNTY-ASSESSOR',
-  'SRC-LARIMER-COUNTY-ASSESSOR',
-  'SRC-WELD-COUNTY-ASSESSOR',
+  ...COUNTY_ASSESSOR_EXACT_SOURCE_IDS,
   'SRC-BOULDER-COUNTY-TREASURER',
   'SRC-BOULDER-COUNTY-RECORDER-INDEX',
   'SRC-BOULDER-COUNTY-ACCELA-PERMITS',
