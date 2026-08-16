@@ -67,6 +67,7 @@ assert.deepEqual(PUBLIC_RECORD_SOURCE_QUALITY_CONVERSION_ALLOWED_SOURCE_IDS, [
   'SRC-ARAPAHOE-COUNTY-ASSESSOR',
   'SRC-BROOMFIELD-COUNTY-ASSESSOR',
   'SRC-JEFFERSON-COUNTY-ASSESSOR',
+  'SRC-LARIMER-COUNTY-ASSESSOR',
   'SRC-BOULDER-COUNTY-TREASURER',
   'SRC-BOULDER-COUNTY-RECORDER-INDEX',
   'SRC-BOULDER-COUNTY-ACCELA-PERMITS',
@@ -334,6 +335,70 @@ for (const inheritedSourceId of ['SRC-BOULDER-COUNTY-ASSESSOR', 'SRC-ARAPAHOE-CO
   assert.equal(convertPublicRecordStructuredEvidence({
     ...jeffersonAssessorRequest,
     evidenceReferences: [{ ...jeffersonAssessorRequest.evidenceReferences[0]!, sourceId: inheritedSourceId }],
+  }).classification, 'PUBLIC_RECORD_REFERENCE_INVALID');
+}
+
+const larimerAssessorRequest: PublicRecordSourceQualityEvidenceConversionRequest = {
+  ...request,
+  sourceId: 'SRC-LARIMER-COUNTY-ASSESSOR',
+  sourceClass: 'COUNTY_ASSESSOR',
+  sourceConfirmation: {
+    sourceId: 'SRC-LARIMER-COUNTY-ASSESSOR',
+    confirmationClass: 'EXACT_SOURCE_ID_CONFIRMED',
+    reviewedAt: '2026-08-16',
+  },
+  evidenceReferences: [{
+    sourceId: 'SRC-LARIMER-COUNTY-ASSESSOR',
+    inputClass: 'CERTIFICATION_REFERENCE',
+    evidenceReferenceId: 'PUBLIC-RECORD-CONVERSION-LARIMER-ASSESSOR-CERT-001',
+    posture: 'REFERENCED',
+    verificationStatus: 'VERIFIED',
+    limitationCodes: [],
+  }],
+  fieldSensitivityPosture: 'RESTRICTED_OR_UNREVIEWED',
+  conversionAuthorityClass: 'EXECUTIVE_COUNTY_EVIDENCE_CONVERSION_REVIEW',
+  reviewedAt: '2026-08-16',
+};
+const larimerAssessor = convertPublicRecordStructuredEvidence(larimerAssessorRequest);
+assert.equal(larimerAssessor.classification, 'PUBLIC_RECORD_EVIDENCE_CONVERSION_VALID');
+assert.equal(larimerAssessor.sourceId, 'SRC-LARIMER-COUNTY-ASSESSOR');
+assert.equal(larimerAssessor.linkages.length, 1);
+assert.equal(larimerAssessor.linkages[0]?.sourceId, 'SRC-LARIMER-COUNTY-ASSESSOR');
+assert.equal(larimerAssessor.linkages[0]?.evidenceClass, 'CERTIFICATION');
+assert.equal(larimerAssessor.linkages[0]?.relationshipType, 'CERTIFICATION');
+assert.equal(larimerAssessor.normalized?.result, 'INSUFFICIENT_EVIDENCE');
+assert.equal(larimerAssessor.normalized?.rights.posture, 'UNKNOWN');
+assert.equal(larimerAssessor.normalized?.technicalAccess.posture, 'UNKNOWN');
+assert.equal(larimerAssessor.normalized?.freshness.posture, 'UNKNOWN');
+assert.equal(larimerAssessor.normalized?.attribution.posture, 'UNKNOWN');
+assert.equal(larimerAssessor.normalized?.provenance.posture, 'UNKNOWN');
+assert.equal(convertPublicRecordStructuredEvidence(larimerAssessorRequest).conversionFingerprint, larimerAssessor.conversionFingerprint);
+assert.notEqual(larimerAssessor.conversionFingerprint, valid.conversionFingerprint);
+assert.notEqual(larimerAssessor.conversionFingerprint, arapahoeAssessor.conversionFingerprint);
+assert.notEqual(larimerAssessor.conversionFingerprint, broomfieldAssessor.conversionFingerprint);
+assert.notEqual(larimerAssessor.conversionFingerprint, jeffersonAssessor.conversionFingerprint);
+for (const sourceId of ['EXP-SRC-LARIMER-COUNTY-ASSESSOR', 'SRA-LARIMER-COUNTY-ASSESSOR', 'SRC-GENERIC-COUNTY-ASSESSOR', 'SRC-PROVIDER-COUNTY-ASSESSOR', 'SRC-LARIMER-PUBLIC-DATA-CENTER', 'SRC-LARIMER-GIS', 'SRC-LARIMER-MAP', 'SRC-LARIMER-COUNTY-TREASURER', 'SRC-LARIMER-COUNTY-RECORDER', 'SRC-LARIMER-COUNTY-PARCEL-GIS', 'SRC-LARIMER-PLANNING', 'SRC-LARIMER-ZONING', 'SRC-LARIMER-PUBLIC-TRUSTEE']) {
+  assert.equal(convertPublicRecordStructuredEvidence({
+    ...larimerAssessorRequest,
+    sourceId,
+    sourceConfirmation: { sourceId, confirmationClass: 'EXACT_SOURCE_ID_CONFIRMED', reviewedAt: '2026-08-16' },
+    evidenceReferences: [{ ...larimerAssessorRequest.evidenceReferences[0]!, sourceId }],
+  }).classification, 'PUBLIC_RECORD_SOURCE_INVALID');
+}
+assert.equal(convertPublicRecordStructuredEvidence({ ...larimerAssessorRequest, sourceClass: 'COUNTY_TREASURER' }).classification, 'PUBLIC_RECORD_SOURCE_MISMATCH');
+assert.equal(convertPublicRecordStructuredEvidence({ ...larimerAssessorRequest, sourceClass: 'COUNTY_RECORDED_DOCUMENT_INDEX' }).classification, 'PUBLIC_RECORD_SOURCE_MISMATCH');
+assert.equal(convertPublicRecordStructuredEvidence({ ...larimerAssessorRequest, sourceConfirmation: undefined }).classification, 'PUBLIC_RECORD_SOURCE_CONFIRMATION_REQUIRED');
+assert.equal(convertPublicRecordStructuredEvidence({ ...larimerAssessorRequest, certificationReference: undefined }).classification, 'PUBLIC_RECORD_CERTIFICATION_REQUIRED');
+assert.equal(convertPublicRecordStructuredEvidence({ ...larimerAssessorRequest, fieldSensitivityPosture: 'UNKNOWN' }).classification, 'PUBLIC_RECORD_FIELD_SENSITIVITY_UNREVIEWED');
+assert.equal(convertPublicRecordStructuredEvidence({ ...larimerAssessorRequest, ownerName: 'not allowed' }).classification, 'PUBLIC_RECORD_NARRATIVE_INPUT_REJECTED');
+assert.equal(convertPublicRecordStructuredEvidence({
+  ...larimerAssessorRequest,
+  evidenceReferences: [{ ...larimerAssessorRequest.evidenceReferences[0]!, parcelId: 'not allowed' }],
+}).classification, 'PUBLIC_RECORD_NARRATIVE_INPUT_REJECTED');
+for (const inheritedSourceId of ['SRC-BOULDER-COUNTY-ASSESSOR', 'SRC-ARAPAHOE-COUNTY-ASSESSOR', 'SRC-BROOMFIELD-COUNTY-ASSESSOR', 'SRC-JEFFERSON-COUNTY-ASSESSOR']) {
+  assert.equal(convertPublicRecordStructuredEvidence({
+    ...larimerAssessorRequest,
+    evidenceReferences: [{ ...larimerAssessorRequest.evidenceReferences[0]!, sourceId: inheritedSourceId }],
   }).classification, 'PUBLIC_RECORD_REFERENCE_INVALID');
 }
 
