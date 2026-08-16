@@ -146,6 +146,42 @@ const PRIOR_NINE_ENTRY_FINGERPRINTS = new Map([
 
 const RECORDER_INDEX_ENTRY_FINGERPRINT = 'source-quality-operational-manifest:v1:810478bd';
 
+type RegistryLifecycleRecord = ReturnType<typeof getReieSourceRegistry>['records'][number];
+
+function isGovernedPreManifestCountyAssessor(record: RegistryLifecycleRecord): boolean {
+  const text = JSON.stringify(record);
+  return /^SRC-[A-Z]+-COUNTY-ASSESSOR$/.test(record.sourceId)
+    && record.sourceClass === 'AUTHORITATIVE_SOURCE'
+    && record.category === 'COUNTY_ASSESSOR'
+    && record.authorizationState === 'AWAITING_PROVIDER_CONFIRMATION'
+    && record.productionActivationState === 'BLOCKED_NOT_AUTHORIZED'
+    && record.claimEligible === false
+    && record.currentReieUse.includes('Exact source identity only')
+    && text.includes('SOURCE_ACTIVATION_NOT_AUTHORIZED_BY_REGISTRY_MVV')
+    && text.includes('CUSTOMER_DISPLAY_NOT_GRANTED_BY_REGISTRY_MVV')
+    && text.includes('LEGAL_USE_NOT_APPROVED_BY_REGISTRY_MVV')
+    && text.includes('COUNTY_ASSESSOR_NOT_COUNTY_TREASURER')
+    && text.includes('COUNTY_ASSESSOR_NOT_RECORDER')
+    && text.includes('COUNTY_ASSESSOR_NOT_PARCEL_GIS')
+    && text.includes('Rights, technical access, freshness, attribution, fees, privacy approval, field sensitivity, and provenance remain unknown')
+    && (record.sourcePaths ?? []).some((sourcePath) => sourcePath.includes('EXACT_SOURCE_REGISTRY_MVV'));
+}
+
+function explainRegistryOnlySourceIds(records: readonly RegistryLifecycleRecord[], manifestIds: readonly string[]) {
+  const manifestSet = new Set(manifestIds);
+  return records
+    .filter((record) => !manifestSet.has(record.sourceId))
+    .map((record) => {
+      if (record.sourceId === 'SRC-BOULDER-PERMIT-CANDIDATES') {
+        assert.equal(record.lifecyclePosture, 'NON_OPERATIONAL_DISCOVERY_VERIFICATION_CONTEXT');
+        assert.equal(record.sourceQualityAdvancementEligibility, 'NOT_ELIGIBLE_NON_OPERATIONAL_CONTEXT');
+        return { sourceId: record.sourceId, reason: 'EXPLICIT_NON_OPERATIONAL_REGISTRY_IDENTITY' };
+      }
+      assert.ok(isGovernedPreManifestCountyAssessor(record), 'Registry-only source requires governed pre-Manifest lifecycle posture: ' + record.sourceId);
+      return { sourceId: record.sourceId, reason: 'GOVERNED_PRE_MANIFEST_COUNTY_ASSESSOR_LIFECYCLE' };
+    });
+}
+
 const valid = validateSourceQualityOperationalManifest(SOURCE_QUALITY_OPERATIONAL_MANIFEST_DATA);
 assert.equal(valid.classification, 'PARTIAL_OPERATIONAL_MANIFEST_VALID');
 assert.ok(valid.manifest);
@@ -153,22 +189,7 @@ if (!valid.manifest) throw new Error('Expected operational manifest.');
 const registryRecords = getReieSourceRegistry().records;
 const registrySourceIds = registryRecords.map((record) => record.sourceId);
 const manifestSourceIds = valid.manifest.entries.map((entry) => entry.sourceId);
-assert.equal(valid.manifest.suppliedDatasetScope, 'SUPPLIED_MANIFEST_ONLY');
-assert.equal(valid.manifest.operationalPosture, 'OPERATIONAL_INPUT_POSTURE_ONLY');
-assert.equal(valid.manifest.completenessClaim, 'NO_COMPLETENESS_CLAIM');
-assert.equal(getReieSourceRegistry().records.length, 16);
-assert.equal(valid.manifest.entries.length, 15);
-assert.equal(new Set(manifestSourceIds).size, manifestSourceIds.length, 'Operational Manifest source ids must be unique.');
-for (const sourceId of manifestSourceIds) {
-  assert.ok(registrySourceIds.includes(sourceId), 'Every Operational Manifest source must exist in the Source Registry: ' + sourceId);
-}
-assert.ok(valid.manifest.entries.every((entry) => entry.inclusionClass === 'STRUCTURED_EVIDENCE_WITH_KNOWN_GAPS'));
-assert.equal(valid.manifest.authorityFirewall.sourceActivation, 'SOURCE_ACTIVATION_NOT_AUTHORIZED_BY_MANIFEST');
-assert.equal(valid.manifest.authorityFirewall.customerDisplayAuthority, 'CUSTOMER_DISPLAY_NOT_GRANTED_BY_MANIFEST');
-assert.equal(valid.manifest.authorityFirewall.legalUse, 'LEGAL_USE_NOT_APPROVED_BY_MANIFEST');
-assert.equal(valid.manifest.authorityFirewall.qualityScore, 'NO_QUALITY_SCORE');
-assert.equal(valid.manifest.authorityFirewall.providerRanking, 'NO_PROVIDER_RANKING');
-assert.deepEqual(SOURCE_QUALITY_OPERATIONAL_MANIFEST_DATA.entries.map((entry) => entry.sourceId), [
+const expectedManifestSourceIds = [
   'SRC-REIE-FINANCING-SCENARIO-CALCULATOR',
   'SRC-REIE-PROPERTY-COMPARISON-INTELLIGENCE',
   MLS_LISTING_DATA_SOURCE_ID,
@@ -184,7 +205,23 @@ assert.deepEqual(SOURCE_QUALITY_OPERATIONAL_MANIFEST_DATA.entries.map((entry) =>
   BOULDER_COUNTY_PARCEL_GIS_SOURCE_ID,
   ARAPAHOE_COUNTY_ASSESSOR_SOURCE_ID,
   BROOMFIELD_COUNTY_ASSESSOR_SOURCE_ID,
-]);
+] as const;
+assert.equal(valid.manifest.suppliedDatasetScope, 'SUPPLIED_MANIFEST_ONLY');
+assert.equal(valid.manifest.operationalPosture, 'OPERATIONAL_INPUT_POSTURE_ONLY');
+assert.equal(valid.manifest.completenessClaim, 'NO_COMPLETENESS_CLAIM');
+assert.equal(valid.manifest.entries.length, expectedManifestSourceIds.length);
+assert.ok(registryRecords.length >= valid.manifest.entries.length, 'Registry may contain governed pre-Manifest lifecycle sources but cannot be smaller than Manifest.');
+assert.equal(new Set(manifestSourceIds).size, manifestSourceIds.length, 'Operational Manifest source ids must be unique.');
+for (const sourceId of manifestSourceIds) {
+  assert.equal(registrySourceIds.filter((candidate) => candidate === sourceId).length, 1, 'Every Operational Manifest source must exist exactly once in the Source Registry: ' + sourceId);
+}
+assert.ok(valid.manifest.entries.every((entry) => entry.inclusionClass === 'STRUCTURED_EVIDENCE_WITH_KNOWN_GAPS'));
+assert.equal(valid.manifest.authorityFirewall.sourceActivation, 'SOURCE_ACTIVATION_NOT_AUTHORIZED_BY_MANIFEST');
+assert.equal(valid.manifest.authorityFirewall.customerDisplayAuthority, 'CUSTOMER_DISPLAY_NOT_GRANTED_BY_MANIFEST');
+assert.equal(valid.manifest.authorityFirewall.legalUse, 'LEGAL_USE_NOT_APPROVED_BY_MANIFEST');
+assert.equal(valid.manifest.authorityFirewall.qualityScore, 'NO_QUALITY_SCORE');
+assert.equal(valid.manifest.authorityFirewall.providerRanking, 'NO_PROVIDER_RANKING');
+assert.deepEqual(SOURCE_QUALITY_OPERATIONAL_MANIFEST_DATA.entries.map((entry) => entry.sourceId), expectedManifestSourceIds);
 assert.equal(valid.manifest.entries.filter((entry) => entry.sourceId === BOULDER_COUNTY_TREASURER_SOURCE_ID).length, 1);
 assert.equal(valid.manifest.entries.filter((entry) => entry.sourceId === BOULDER_COUNTY_ACCELA_PERMITS_SOURCE_ID).length, 1);
 assert.equal(valid.manifest.entries.filter((entry) => entry.sourceId === CITY_BOULDER_OPEN_DATA_PERMITS_SOURCE_ID).length, 1);
@@ -196,9 +233,34 @@ assert.equal(valid.manifest.entries.filter((entry) => entry.sourceId === BOULDER
 assert.equal(valid.manifest.entries.filter((entry) => entry.sourceId === ARAPAHOE_COUNTY_ASSESSOR_SOURCE_ID).length, 1);
 assert.equal(valid.manifest.entries.filter((entry) => entry.sourceId === BROOMFIELD_COUNTY_ASSESSOR_SOURCE_ID).length, 1);
 assert.equal(valid.manifest.entries.filter((entry) => entry.sourceId === 'SRC-BOULDER-PERMIT-CANDIDATES').length, 0);
+const registryOnlySources = explainRegistryOnlySourceIds(registryRecords, manifestSourceIds);
+assert.deepEqual(registryOnlySources.map((source) => source.sourceId).sort(), ['SRC-BOULDER-PERMIT-CANDIDATES', 'SRC-JEFFERSON-COUNTY-ASSESSOR']);
 assert.deepEqual(
-  registrySourceIds.filter((sourceId) => !manifestSourceIds.includes(sourceId)).sort(),
-  ['SRC-BOULDER-PERMIT-CANDIDATES'],
+  registryOnlySources.map((source) => source.reason).sort(),
+  ['EXPLICIT_NON_OPERATIONAL_REGISTRY_IDENTITY', 'GOVERNED_PRE_MANIFEST_COUNTY_ASSESSOR_LIFECYCLE'],
+);
+const jeffersonPreManifestRecord = registryRecords.find((record) => record.sourceId === 'SRC-JEFFERSON-COUNTY-ASSESSOR');
+assert.ok(jeffersonPreManifestRecord);
+const syntheticLarimerPreManifestRecord: RegistryLifecycleRecord = {
+  ...jeffersonPreManifestRecord,
+  sourceId: 'SRC-LARIMER-COUNTY-ASSESSOR',
+  publicName: 'Larimer County Assessor',
+  responsibleOrganization: "Larimer County Assessor's Office",
+  jurisdiction: { state: 'Colorado', county: 'Larimer County', coverage: 'Larimer County assessor/property records source identity only' },
+  currentReieUse: 'Exact source identity only for future-governed Larimer County Assessor review; no property search submission, GIS access, property-record retrieval, owner/address lookup, parcel/account lookup, valuation claim, ownership claim, title claim, tax claim, customer display, ingestion, automation, or runtime use is active.',
+  sourcePaths: [
+    'lib/sourceRegistry.ts/SRC-LARIMER-COUNTY-ASSESSOR',
+    'Larimer County Assessor official-source identity research handoff',
+    'LARIMER_COUNTY_ASSESSOR_EXACT_SOURCE_REGISTRY_MVV',
+  ],
+};
+assert.deepEqual(
+  explainRegistryOnlySourceIds([...registryRecords, syntheticLarimerPreManifestRecord], manifestSourceIds).map((source) => source.sourceId).sort(),
+  ['SRC-BOULDER-PERMIT-CANDIDATES', 'SRC-JEFFERSON-COUNTY-ASSESSOR', 'SRC-LARIMER-COUNTY-ASSESSOR'],
+);
+assert.throws(
+  () => explainRegistryOnlySourceIds([...registryRecords, { ...syntheticLarimerPreManifestRecord, productionActivationState: 'ACTIVE_AUTHORIZED' }], manifestSourceIds),
+  /Registry-only source requires governed pre-Manifest lifecycle posture/,
 );
 for (const [sourceId, entryFingerprint] of PRIOR_NINE_ENTRY_FINGERPRINTS) {
   assert.equal(valid.manifest.entries.find((entry) => entry.sourceId === sourceId)?.entryFingerprint, entryFingerprint);
