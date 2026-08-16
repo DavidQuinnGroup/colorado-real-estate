@@ -60,6 +60,12 @@ import {
   convertJeffersonCountyAssessorSourceQualityEvidence,
 } from './sourceQualityJeffersonCountyAssessorEvidence';
 import {
+  LARIMER_COUNTY_ASSESSOR_SOURCE_ID,
+  LARIMER_COUNTY_ASSESSOR_SOURCE_QUALITY_CERTIFICATION,
+  LARIMER_COUNTY_ASSESSOR_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT,
+  convertLarimerCountyAssessorSourceQualityEvidence,
+} from './sourceQualityLarimerCountyAssessorEvidence';
+import {
   CITY_BOULDER_BUILDING_PERMITS_PORTAL_SOURCE_ID,
   CITY_BOULDER_BUILDING_PERMITS_PORTAL_SOURCE_QUALITY_CERTIFICATION,
   CITY_BOULDER_BUILDING_PERMITS_PORTAL_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT,
@@ -97,6 +103,7 @@ const boulderCountyRecorderIndexEvidence = convertBoulderCountyRecorderIndexSour
 const boulderCountyTreasurerEvidence = convertBoulderCountyTreasurerSourceQualityEvidence();
 const broomfieldCountyAssessorEvidence = convertBroomfieldCountyAssessorSourceQualityEvidence();
 const jeffersonCountyAssessorEvidence = convertJeffersonCountyAssessorSourceQualityEvidence();
+const larimerCountyAssessorEvidence = convertLarimerCountyAssessorSourceQualityEvidence();
 const bcodAddressPointsEvidence = convertBcodAddressPointsSourceQualityEvidence();
 const bcodParkBoundariesEvidence = convertBcodParkBoundariesSourceQualityEvidence();
 const boulderCountyParcelGisEvidence = convertBoulderCountyParcelGisSourceQualityEvidence();
@@ -328,6 +335,18 @@ export const SOURCE_QUALITY_OPERATIONAL_MANIFEST_DATA: SourceQualityOperationalM
       expectedEvidenceClasses: ['CERTIFICATION'],
       certificationReference: JEFFERSON_COUNTY_ASSESSOR_SOURCE_QUALITY_CERTIFICATION,
       reviewedAt: JEFFERSON_COUNTY_ASSESSOR_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT,
+      reviewAuthorityClass: 'DELEGATED_SOURCE_GOVERNANCE_REVIEW',
+      limitationCodes: [],
+    },
+    {
+      schemaVersion: SOURCE_QUALITY_OPERATIONAL_MANIFEST_SCHEMA_VERSION,
+      manifestId,
+      sourceId: LARIMER_COUNTY_ASSESSOR_SOURCE_ID,
+      inclusionClass: 'STRUCTURED_EVIDENCE_WITH_KNOWN_GAPS',
+      linkages: larimerCountyAssessorEvidence.linkages,
+      expectedEvidenceClasses: ['CERTIFICATION'],
+      certificationReference: LARIMER_COUNTY_ASSESSOR_SOURCE_QUALITY_CERTIFICATION,
+      reviewedAt: LARIMER_COUNTY_ASSESSOR_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT,
       reviewAuthorityClass: 'DELEGATED_SOURCE_GOVERNANCE_REVIEW',
       limitationCodes: [],
     },
