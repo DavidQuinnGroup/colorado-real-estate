@@ -33,6 +33,7 @@ assert.equal(BOULDER_COUNTY_ASSESSOR_SOURCE_ID, 'SRC-BOULDER-COUNTY-ASSESSOR');
 assert.deepEqual(COUNTY_SOURCE_QUALITY_CONVERSION_ALLOWED_SOURCE_IDS, [
   ...COUNTY_ASSESSOR_EXACT_SOURCE_IDS,
   'SRC-BOULDER-COUNTY-TREASURER',
+  'SRC-ARAPAHOE-COUNTY-TREASURER',
   'SRC-BOULDER-COUNTY-RECORDER-INDEX',
   'SRC-BOULDER-COUNTY-ACCELA-PERMITS',
 ]);
@@ -297,7 +298,7 @@ assert.equal(convertCountyStructuredEvidence({
   sourceId: 'SRC-ARAPAHOE-COUNTY-TREASURER',
   sourceConfirmation: { sourceId: 'SRC-ARAPAHOE-COUNTY-TREASURER', confirmationClass: 'EXACT_SOURCE_ID_CONFIRMED', reviewedAt: '2026-08-16' },
   evidenceReferences: [{ ...ARAPAHOE_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST.evidenceReferences[0]!, sourceId: 'SRC-ARAPAHOE-COUNTY-TREASURER' }],
-}).classification, 'COUNTY_SOURCE_INVALID');
+}).classification, 'COUNTY_EVIDENCE_SOURCE_MISMATCH');
 for (const sourceId of ['EXP-SRC-ARAPAHOE-COUNTY-ASSESSOR', 'SRA-ARAPAHOE-COUNTY-ASSESSOR', 'SRC-GENERIC-COUNTY-ASSESSOR', 'SRC-PROVIDER-COUNTY-ASSESSOR', 'SRC-ARAPAHOE-PARCEL-SEARCH', 'SRC-ARAPAHOE-ASSESSOR-DATA-MART', 'SRC-ARAPAHOE-GIS']) {
   assert.equal(convertCountyStructuredEvidence({
     ...ARAPAHOE_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST,
@@ -466,6 +467,51 @@ const changedSource = convertCountyStructuredEvidence({
 });
 assert.equal(changedSource.classification, 'COUNTY_EVIDENCE_CONVERSION_VALID');
 assert.notEqual(changedSource.conversionFingerprint, valid.conversionFingerprint);
+const arapahoeTreasurerRequest = {
+  ...BOULDER_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST,
+  sourceId: 'SRC-ARAPAHOE-COUNTY-TREASURER',
+  sourceClass: 'COUNTY_TREASURER',
+  sourceConfirmation: { sourceId: 'SRC-ARAPAHOE-COUNTY-TREASURER', confirmationClass: 'EXACT_SOURCE_ID_CONFIRMED', reviewedAt: '2026-08-16' },
+  evidenceReferences: [{
+    ...BOULDER_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST.evidenceReferences[0]!,
+    sourceId: 'SRC-ARAPAHOE-COUNTY-TREASURER',
+    evidenceReferenceId: 'COUNTY-CONVERSION-ARAPAHOE-TREASURER-CERT-001',
+  }],
+  fieldSensitivityPosture: 'RESTRICTED_OR_UNREVIEWED',
+  reviewedAt: '2026-08-16',
+} as const;
+const arapahoeTreasurer = convertCountyStructuredEvidence(arapahoeTreasurerRequest);
+assert.equal(arapahoeTreasurer.classification, 'COUNTY_EVIDENCE_CONVERSION_VALID');
+assert.equal(arapahoeTreasurer.sourceId, 'SRC-ARAPAHOE-COUNTY-TREASURER');
+assert.equal(arapahoeTreasurer.linkages.length, 1);
+assert.equal(arapahoeTreasurer.linkages[0]?.sourceId, 'SRC-ARAPAHOE-COUNTY-TREASURER');
+assert.equal(arapahoeTreasurer.linkages[0]?.relationshipType, 'CERTIFICATION');
+assert.equal(arapahoeTreasurer.normalized?.result, 'INSUFFICIENT_EVIDENCE');
+assert.equal(arapahoeTreasurer.normalized?.rights.posture, 'UNKNOWN');
+assert.equal(arapahoeTreasurer.normalized?.technicalAccess.posture, 'UNKNOWN');
+assert.equal(arapahoeTreasurer.normalized?.freshness.posture, 'UNKNOWN');
+assert.equal(arapahoeTreasurer.normalized?.attribution.posture, 'UNKNOWN');
+assert.equal(arapahoeTreasurer.normalized?.provenance.posture, 'UNKNOWN');
+assert.equal(convertCountyStructuredEvidence(arapahoeTreasurerRequest).conversionFingerprint, arapahoeTreasurer.conversionFingerprint);
+assert.notEqual(arapahoeTreasurer.conversionFingerprint, changedSource.conversionFingerprint);
+for (const sourceId of ['SRC-ARAPAHOE-COUNTY-PUBLIC-TRUSTEE', 'SRC-ARAPAHOE-COUNTY-RECORDER', 'SRC-ARAPAHOE-COUNTY-GIS', 'SRC-ARAPAHOE-TAX-PAYMENT', 'SRC-ARAPAHOE-TAX-EXTRACT', 'SRC-ARAPAHOE-CERTIFICATE-OF-TAXES-DUE', 'SRC-ARAPAHOE-TAX-LIEN', 'EXP-SRC-ARAPAHOE-COUNTY-TREASURER', 'SRA-ARAPAHOE-COUNTY-TREASURER', 'SRC-GENERIC-COUNTY-TREASURER', 'SRC-PROVIDER-COUNTY-TREASURER']) {
+  assert.equal(convertCountyStructuredEvidence({
+    ...arapahoeTreasurerRequest,
+    sourceId,
+    sourceConfirmation: { sourceId, confirmationClass: 'EXACT_SOURCE_ID_CONFIRMED', reviewedAt: '2026-08-16' },
+    evidenceReferences: [{ ...arapahoeTreasurerRequest.evidenceReferences[0]!, sourceId }],
+  }).classification, 'COUNTY_SOURCE_INVALID');
+}
+assert.equal(convertCountyStructuredEvidence({ ...arapahoeTreasurerRequest, sourceId: ARAPAHOE_COUNTY_ASSESSOR_SOURCE_ID, sourceClass: 'COUNTY_ASSESSOR', sourceConfirmation: { sourceId: ARAPAHOE_COUNTY_ASSESSOR_SOURCE_ID, confirmationClass: 'EXACT_SOURCE_ID_CONFIRMED', reviewedAt: '2026-08-16' }, evidenceReferences: [{ ...arapahoeTreasurerRequest.evidenceReferences[0]!, sourceId: ARAPAHOE_COUNTY_ASSESSOR_SOURCE_ID }] }).classification, 'COUNTY_EVIDENCE_CONVERSION_VALID');
+assert.equal(convertCountyStructuredEvidence({ ...arapahoeTreasurerRequest, sourceClass: 'COUNTY_ASSESSOR' }).classification, 'COUNTY_EVIDENCE_SOURCE_MISMATCH');
+assert.equal(convertCountyStructuredEvidence({ ...arapahoeTreasurerRequest, sourceConfirmation: undefined }).classification, 'COUNTY_SOURCE_CONFIRMATION_REQUIRED');
+assert.equal(convertCountyStructuredEvidence({ ...arapahoeTreasurerRequest, certificationReference: undefined }).classification, 'COUNTY_CERTIFICATION_REQUIRED');
+assert.equal(convertCountyStructuredEvidence({ ...arapahoeTreasurerRequest, fieldSensitivityPosture: 'UNKNOWN' }).classification, 'COUNTY_FIELD_SENSITIVITY_UNREVIEWED');
+assert.equal(convertCountyStructuredEvidence({ ...arapahoeTreasurerRequest, taxpayerName: 'not allowed' }).classification, 'COUNTY_NARRATIVE_INPUT_REJECTED');
+assert.equal(convertCountyStructuredEvidence({
+  ...arapahoeTreasurerRequest,
+  evidenceReferences: [{ ...arapahoeTreasurerRequest.evidenceReferences[0]!, sourceId: 'SRC-BOULDER-COUNTY-TREASURER' }],
+}).classification, 'COUNTY_EVIDENCE_REFERENCE_INVALID');
 const changedSensitivity = convertCountyStructuredEvidence({
   ...BOULDER_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST,
   fieldSensitivityPosture: 'IDENTIFIER_BEARING_CONTEXT',
