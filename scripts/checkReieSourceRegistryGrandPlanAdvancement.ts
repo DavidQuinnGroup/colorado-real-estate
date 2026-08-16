@@ -101,6 +101,63 @@ if (fs.existsSync('lib/sourceQualityArapahoeCountyAssessorEvidence.ts')) {
   assert.doesNotMatch(arapahoeAssessorEvidence, /RIGHTS_VERIFIED|TECHNICAL_ACCESS_READY|FRESHNESS_VERIFIED|PROVENANCE_COMPLETE|ACTIVE_AUTHORIZED/, 'Arapahoe Assessor evidence must not upgrade rights, access, freshness, provenance, or activation posture.');
 }
 
+const broomfieldAssessorSourceId = 'SRC-BROOMFIELD-COUNTY-ASSESSOR';
+assert.equal(registry.records.filter((item) => item.sourceId === broomfieldAssessorSourceId).length, 1, 'Broomfield Assessor source must exist exactly once.');
+const broomfieldAssessor = record(broomfieldAssessorSourceId);
+const broomfieldAssessorText = JSON.stringify(broomfieldAssessor);
+assert.equal(broomfieldAssessor.publicName, 'Broomfield Assessor Department');
+assert.equal(broomfieldAssessor.responsibleOrganization, 'City and County of Broomfield — Assessor Department');
+assert.equal(broomfieldAssessor.sourceClass, 'AUTHORITATIVE_SOURCE');
+assert.equal(broomfieldAssessor.category, 'COUNTY_ASSESSOR');
+assert.equal(broomfieldAssessor.jurisdiction.state, 'Colorado');
+assert.equal(broomfieldAssessor.jurisdiction.county, 'City and County of Broomfield');
+assert.equal(broomfieldAssessor.jurisdiction.municipality, 'Broomfield');
+assert.equal(broomfieldAssessor.authorizationState, 'AWAITING_PROVIDER_CONFIRMATION');
+assert.equal(broomfieldAssessor.productionActivationState, 'BLOCKED_NOT_AUTHORIZED');
+assert.equal(broomfieldAssessor.claimEligible, false);
+assert.equal(broomfieldAssessor.customerStatus, 'Blocked / not authorized');
+assert.match(broomfieldAssessor.currentReieUse, /Exact source identity only/);
+assert.match(broomfieldAssessor.currentReieUse, /future-governed Broomfield Assessor review/);
+assert.match(broomfieldAssessor.currentReieUse, /no property search submission/);
+assert.match(broomfieldAssessor.currentReieUse, /no .* GIS access/);
+assert.match(broomfieldAssessor.currentReieUse, /no .* property-record retrieval/);
+assert.match(broomfieldAssessor.currentReieUse, /no .* owner\/address lookup/);
+assert.match(broomfieldAssessor.currentReieUse, /no .* parcel\/account lookup/);
+assert.match(broomfieldAssessor.currentReieUse, /no .* customer display/);
+assert.match(broomfieldAssessorText, /ASSESSOR_RECORD_NOT_TITLE/);
+assert.match(broomfieldAssessorText, /ASSESSOR_RECORD_NOT_DEED_VALIDITY/);
+assert.match(broomfieldAssessorText, /ASSESSOR_RECORD_NOT_TREASURER_TAX_STATUS/);
+assert.match(broomfieldAssessorText, /ASSESSOR_RECORD_NOT_CURRENT_OWNERSHIP_GUARANTEE/);
+assert.match(broomfieldAssessorText, /ASSESSED_VALUE_NOT_MARKET_VALUE/);
+assert.match(broomfieldAssessorText, /PUBLIC_SEARCH_NOT_AUTOMATION_AUTHORITY/);
+assert.match(broomfieldAssessorText, /PUBLIC_ACCESS_NOT_REUSE_OR_DISPLAY_AUTHORITY/);
+assert.match(broomfieldAssessorText, /PUBLIC_OR_GOVERNMENT_SOURCE_NOT_UNRESTRICTED_OR_VERIFIED_OR_COMPLETE/);
+assert.match(broomfieldAssessorText, /COUNTY_ASSESSOR_NOT_COUNTY_TREASURER/);
+assert.match(broomfieldAssessorText, /COUNTY_ASSESSOR_NOT_RECORDER/);
+assert.match(broomfieldAssessorText, /COUNTY_ASSESSOR_NOT_PARCEL_GIS/);
+assert.match(broomfieldAssessorText, /SOURCE_ACTIVATION_NOT_AUTHORIZED_BY_REGISTRY_MVV/);
+assert.match(broomfieldAssessorText, /CUSTOMER_DISPLAY_NOT_GRANTED_BY_REGISTRY_MVV/);
+assert.match(broomfieldAssessorText, /LEGAL_USE_NOT_APPROVED_BY_REGISTRY_MVV/);
+assert.match(broomfieldAssessorText, /consolidated City and County status does not create a Broomfield government aggregate source/);
+assert.match(broomfieldAssessorText, /Broomfield GIS, Treasurer\/tax, Clerk and Recorder/);
+assert.match(broomfieldAssessorText, /Boulder County and Arapahoe County Assessor findings/);
+assert.match(broomfieldAssessorText, /Rights, technical access, freshness, attribution, fees, privacy approval, field sensitivity, and provenance remain unknown/);
+assert.doesNotMatch(broomfieldAssessorText, /RIGHTS = VERIFIED|TECHNICAL ACCESS = READY|FRESHNESS = VERIFIED|ATTRIBUTION = REQUIRED|FEE = NONE|PROVENANCE = COMPLETE/);
+assert.doesNotMatch(broomfieldAssessorText, /memberSourceIds|parentSourceId|aggregateSource|childSourceIds|relationshipType/i);
+assert.equal(registry.records.filter((item) => /^SRC-BROOMFIELD-(GIS|COUNTY-TREASURER|COUNTY-RECORDER|COUNTY-PARCEL|COUNTY-DATA-MART|COUNTY-PARCEL-SEARCH|GOVERNMENT)/.test(item.sourceId)).length, 0, 'Broomfield Assessor Registry MVV must not add GIS, Treasurer, Recorder, Parcel Search, Data Mart, or aggregate government source ids.');
+assert.equal(registry.records.filter((item) => /BROOMFIELD.*(TREASURER|RECORDER|GIS|DATA_MART|PARCEL_SEARCH|PARCEL_GEOMETRY|AGGREGATE)/i.test(`${item.sourceId} ${item.category}`)).length, 0, 'Broomfield Assessor Registry MVV must not conflate assessor identity with adjacent domains.');
+assert.doesNotMatch(broomfieldAssessorText, /EXP-|SRA-|provider aggregate|wildcard County Assessor/i);
+if (fs.existsSync('lib/sourceQualityBroomfieldCountyAssessorEvidence.ts')) {
+  const broomfieldAssessorEvidence = read('lib/sourceQualityBroomfieldCountyAssessorEvidence.ts');
+  assert.match(broomfieldAssessorEvidence, /BROOMFIELD_COUNTY_ASSESSOR_SOURCE_ID/, 'Broomfield Assessor evidence must bind through the canonical exact source identity constant.');
+  assert.match(broomfieldAssessorEvidence, /CERT-BROOMFIELD-COUNTY-ASSESSOR-SOURCE-QUALITY-EVIDENCE-001/, 'Broomfield Assessor evidence must use source-specific certification.');
+  assert.match(broomfieldAssessorEvidence, /COUNTY_ASSESSOR/, 'Broomfield Assessor evidence must preserve the canonical County Assessor class.');
+  assert.match(broomfieldAssessorEvidence, /CERTIFICATION_REFERENCE/, 'Broomfield Assessor evidence must remain certification-reference-only.');
+  assert.doesNotMatch(broomfieldAssessorEvidence, /getReieSourceRegistry|sourceRegistry/, 'Broomfield Assessor evidence must not mutate or depend on Registry implementation state.');
+  assert.doesNotMatch(broomfieldAssessorEvidence, /sourceQualityOperationalManifestData|sourceQualityAdminPreviewFixture/, 'Broomfield Assessor evidence must not create Manifest or Admin Preview coupling.');
+  assert.doesNotMatch(broomfieldAssessorEvidence, /RIGHTS_VERIFIED|TECHNICAL_ACCESS_READY|FRESHNESS_VERIFIED|PROVENANCE_COMPLETE|ACTIVE_AUTHORIZED/, 'Broomfield Assessor evidence must not upgrade rights, access, freshness, provenance, or activation posture.');
+}
+
 const parcelGisSourceId = 'SRC-BOULDER-COUNTY-PARCEL-GIS';
 assert.equal(registry.records.filter((item) => item.sourceId === parcelGisSourceId).length, 1, 'Parcel GIS source must exist exactly once.');
 const parcelGis = record(parcelGisSourceId);

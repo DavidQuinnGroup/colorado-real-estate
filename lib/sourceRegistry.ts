@@ -357,6 +357,57 @@ function arapahoeCountyAssessorRecord(): ReieSourceRegistryRecord {
   };
 }
 
+function broomfieldCountyAssessorRecord(): ReieSourceRegistryRecord {
+  return {
+    sourceId: 'SRC-BROOMFIELD-COUNTY-ASSESSOR',
+    publicName: 'Broomfield Assessor Department',
+    responsibleOrganization: 'City and County of Broomfield — Assessor Department',
+    sourceClass: 'AUTHORITATIVE_SOURCE',
+    category: 'COUNTY_ASSESSOR',
+    domains: ['Assessor property-record source identity', 'Assessment records', 'Future governed county assessor evidence'],
+    jurisdiction: { state: 'Colorado', county: 'City and County of Broomfield', municipality: 'Broomfield', coverage: 'City and County of Broomfield assessor/property records source identity only' },
+    officialUrl: 'https://www.broomfield.org/156/Assessor',
+    accessMethod: 'Source-specific provider, rights, and technical-access review required before public-search use, GIS access, retrieval, automation, ingestion, display, or reuse',
+    updateCadence: 'source-specific and not certified',
+    freshnessExpectation: 'unknown until source-specific evidence review',
+    authorizationState: 'AWAITING_PROVIDER_CONFIRMATION',
+    permittedUse: 'registry identity and source-governance review only; no property search submission, GIS access, retrieval, automation, storage, redistribution, legal-use, or customer-display authority',
+    productionActivationState: 'BLOCKED_NOT_AUTHORIZED',
+    claimEligible: false,
+    customerDisclosureEligible: true,
+    customerStatus: 'Blocked / not authorized',
+    currentReieUse: 'Exact source identity only for future-governed Broomfield Assessor review; no property search submission, GIS access, property-record retrieval, owner/address lookup, parcel/account lookup, valuation claim, ownership claim, title claim, tax claim, customer display, ingestion, automation, or runtime use is active.',
+    limitations: [
+      'ASSESSOR_RECORD_NOT_TITLE.',
+      'ASSESSOR_RECORD_NOT_DEED_VALIDITY.',
+      'ASSESSOR_RECORD_NOT_TREASURER_TAX_STATUS.',
+      'ASSESSOR_RECORD_NOT_CURRENT_OWNERSHIP_GUARANTEE.',
+      'ASSESSED_VALUE_NOT_MARKET_VALUE.',
+      'PUBLIC_SEARCH_NOT_AUTOMATION_AUTHORITY.',
+      'PUBLIC_ACCESS_NOT_REUSE_OR_DISPLAY_AUTHORITY.',
+      'PUBLIC_OR_GOVERNMENT_SOURCE_NOT_UNRESTRICTED_OR_VERIFIED_OR_COMPLETE.',
+      'COUNTY_ASSESSOR_NOT_COUNTY_TREASURER.',
+      'COUNTY_ASSESSOR_NOT_RECORDER.',
+      'COUNTY_ASSESSOR_NOT_PARCEL_GIS.',
+      'SOURCE_ACTIVATION_NOT_AUTHORIZED_BY_REGISTRY_MVV.',
+      'CUSTOMER_DISPLAY_NOT_GRANTED_BY_REGISTRY_MVV.',
+      'LEGAL_USE_NOT_APPROVED_BY_REGISTRY_MVV.',
+      'Broomfield consolidated City and County status does not create a Broomfield government aggregate source.',
+      'Broomfield GIS, Treasurer/tax, Clerk and Recorder, title/deed authority, market-value guarantee, and current-ownership guarantee remain separate source domains.',
+      'Boulder County and Arapahoe County Assessor findings, evidence, rights, access, freshness, attribution, provenance, and provider terms do not transfer to Broomfield Assessor.',
+      'Rights, technical access, freshness, attribution, fees, privacy approval, field sensitivity, and provenance remain unknown until separately governed source evidence review.',
+    ],
+    attributionRequirement: 'unknown until source-specific review',
+    lastSourceVerificationDate: REIE_SOURCE_REGISTRY_REFERENCE_DATE,
+    lastSuccessfulDataRefresh: null,
+    sourcePaths: [
+      'lib/sourceRegistry.ts/SRC-BROOMFIELD-COUNTY-ASSESSOR',
+      'Broomfield Assessor Department official-source identity research handoff',
+      'BROOMFIELD_COUNTY_ASSESSOR_EXACT_SOURCE_REGISTRY_MVV',
+    ],
+  };
+}
+
 export const BOULDER_PERMIT_CANDIDATES_SOURCE_ID = 'SRC-BOULDER-PERMIT-CANDIDATES' as const;
 export const BOULDER_PERMIT_CANDIDATES_LIFECYCLE_POSTURE = 'NON_OPERATIONAL_DISCOVERY_VERIFICATION_CONTEXT' as const;
 export const BOULDER_PERMIT_CANDIDATES_SOURCE_QUALITY_ADVANCEMENT_ELIGIBILITY = 'NOT_ELIGIBLE_NON_OPERATIONAL_CONTEXT' as const;
@@ -519,6 +570,7 @@ export const REIE_SOURCE_REGISTRY: ReieSourceRegistry = Object.freeze({
     boulderCountyRecorderIndexRecord(),
     boulderCountyParcelGisRecord(),
     arapahoeCountyAssessorRecord(),
+    broomfieldCountyAssessorRecord(),
     boulderPermitCandidatesRecord(),
     sourceFromProfile({
       sourceId: 'SRC-CITY-BOULDER-OPEN-DATA-PERMITS',
