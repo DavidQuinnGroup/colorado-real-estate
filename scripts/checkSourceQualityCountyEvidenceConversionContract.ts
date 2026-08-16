@@ -34,6 +34,7 @@ assert.deepEqual(COUNTY_SOURCE_QUALITY_CONVERSION_ALLOWED_SOURCE_IDS, [
   ...COUNTY_ASSESSOR_EXACT_SOURCE_IDS,
   'SRC-BOULDER-COUNTY-TREASURER',
   'SRC-ARAPAHOE-COUNTY-TREASURER',
+  'SRC-ADAMS-COUNTY-TREASURER',
   'SRC-BOULDER-COUNTY-RECORDER-INDEX',
   'SRC-BOULDER-COUNTY-ACCELA-PERMITS',
 ]);
@@ -261,7 +262,7 @@ assert.equal(convertCountyStructuredEvidence({
   sourceId: 'SRC-ADAMS-COUNTY-TREASURER',
   sourceConfirmation: { sourceId: 'SRC-ADAMS-COUNTY-TREASURER', confirmationClass: 'EXACT_SOURCE_ID_CONFIRMED', reviewedAt: '2026-08-16' },
   evidenceReferences: [{ ...ADAMS_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST.evidenceReferences[0]!, sourceId: 'SRC-ADAMS-COUNTY-TREASURER' }],
-}).classification, 'COUNTY_SOURCE_INVALID');
+}).classification, 'COUNTY_EVIDENCE_SOURCE_MISMATCH');
 for (const sourceId of ['EXP-SRC-ADAMS-COUNTY-ASSESSOR', 'SRA-ADAMS-COUNTY-ASSESSOR', 'SRC-GENERIC-COUNTY-ASSESSOR', 'SRC-PROVIDER-COUNTY-ASSESSOR', 'SRC-ADAMS-PROPERTY-PORTAL', 'SRC-ADAMS-GIS-INTERACTIVE-MAPS', 'SRC-ADAMS-DOWNLOADABLE-GIS-DATA', 'SRC-ADAMS-ASSESSOR-DATA-DUMP', 'SRC-ADAMS-PUBLIC-TRUSTEE', 'SRC-ADAMS-COUNTY-RECORDER', 'SRC-ADAMS-PLANNING-DEVELOPMENT', 'SRC-ADAMS-PERMITS-LICENSING', 'SRC-ADAMS-COUNTY-PARCEL-GIS', 'SRC-UNKNOWN-COUNTY-SOURCE']) {
   assert.equal(convertCountyStructuredEvidence({
     ...ADAMS_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST,
@@ -511,6 +512,52 @@ assert.equal(convertCountyStructuredEvidence({ ...arapahoeTreasurerRequest, taxp
 assert.equal(convertCountyStructuredEvidence({
   ...arapahoeTreasurerRequest,
   evidenceReferences: [{ ...arapahoeTreasurerRequest.evidenceReferences[0]!, sourceId: 'SRC-BOULDER-COUNTY-TREASURER' }],
+}).classification, 'COUNTY_EVIDENCE_REFERENCE_INVALID');
+const adamsTreasurerRequest = {
+  ...BOULDER_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST,
+  sourceId: 'SRC-ADAMS-COUNTY-TREASURER',
+  sourceClass: 'COUNTY_TREASURER',
+  sourceConfirmation: { sourceId: 'SRC-ADAMS-COUNTY-TREASURER', confirmationClass: 'EXACT_SOURCE_ID_CONFIRMED', reviewedAt: '2026-08-16' },
+  evidenceReferences: [{
+    ...BOULDER_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST.evidenceReferences[0]!,
+    sourceId: 'SRC-ADAMS-COUNTY-TREASURER',
+    evidenceReferenceId: 'COUNTY-CONVERSION-ADAMS-TREASURER-CERT-001',
+  }],
+  fieldSensitivityPosture: 'RESTRICTED_OR_UNREVIEWED',
+  reviewedAt: '2026-08-16',
+} as const;
+const adamsTreasurer = convertCountyStructuredEvidence(adamsTreasurerRequest);
+assert.equal(adamsTreasurer.classification, 'COUNTY_EVIDENCE_CONVERSION_VALID');
+assert.equal(adamsTreasurer.sourceId, 'SRC-ADAMS-COUNTY-TREASURER');
+assert.equal(adamsTreasurer.linkages.length, 1);
+assert.equal(adamsTreasurer.linkages[0]?.sourceId, 'SRC-ADAMS-COUNTY-TREASURER');
+assert.equal(adamsTreasurer.linkages[0]?.relationshipType, 'CERTIFICATION');
+assert.equal(adamsTreasurer.normalized?.result, 'INSUFFICIENT_EVIDENCE');
+assert.equal(adamsTreasurer.normalized?.rights.posture, 'UNKNOWN');
+assert.equal(adamsTreasurer.normalized?.technicalAccess.posture, 'UNKNOWN');
+assert.equal(adamsTreasurer.normalized?.freshness.posture, 'UNKNOWN');
+assert.equal(adamsTreasurer.normalized?.attribution.posture, 'UNKNOWN');
+assert.equal(adamsTreasurer.normalized?.provenance.posture, 'UNKNOWN');
+assert.equal(convertCountyStructuredEvidence(adamsTreasurerRequest).conversionFingerprint, adamsTreasurer.conversionFingerprint);
+assert.notEqual(adamsTreasurer.conversionFingerprint, changedSource.conversionFingerprint);
+assert.notEqual(adamsTreasurer.conversionFingerprint, arapahoeTreasurer.conversionFingerprint);
+for (const sourceId of ['SRC-ADAMS-COUNTY-PUBLIC-TRUSTEE', 'SRC-ADAMS-COUNTY-RECORDER', 'SRC-ADAMS-COUNTY-GIS', 'SRC-ADAMS-COUNTY-ASSESSOR', 'SRC-ADAMS-TAX-PAYMENT', 'SRC-ADAMS-TAX-SEARCH', 'SRC-ADAMS-TREASURER-DEED', 'SRC-ADAMS-DEED-APPLICATION', 'SRC-ADAMS-CERTIFICATE', 'SRC-ADAMS-TAX-LIEN', 'EXP-SRC-ADAMS-COUNTY-TREASURER', 'SRA-ADAMS-COUNTY-TREASURER', 'SRC-GENERIC-COUNTY-TREASURER', 'SRC-PROVIDER-COUNTY-TREASURER']) {
+  assert.equal(convertCountyStructuredEvidence({
+    ...adamsTreasurerRequest,
+    sourceId,
+    sourceConfirmation: { sourceId, confirmationClass: 'EXACT_SOURCE_ID_CONFIRMED', reviewedAt: '2026-08-16' },
+    evidenceReferences: [{ ...adamsTreasurerRequest.evidenceReferences[0]!, sourceId }],
+  }).classification, sourceId === 'SRC-ADAMS-COUNTY-ASSESSOR' ? 'COUNTY_EVIDENCE_SOURCE_MISMATCH' : 'COUNTY_SOURCE_INVALID');
+}
+assert.equal(convertCountyStructuredEvidence({ ...adamsTreasurerRequest, sourceClass: 'COUNTY_ASSESSOR' }).classification, 'COUNTY_EVIDENCE_SOURCE_MISMATCH');
+assert.equal(convertCountyStructuredEvidence({ ...adamsTreasurerRequest, sourceConfirmation: undefined }).classification, 'COUNTY_SOURCE_CONFIRMATION_REQUIRED');
+assert.equal(convertCountyStructuredEvidence({ ...adamsTreasurerRequest, certificationReference: undefined }).classification, 'COUNTY_CERTIFICATION_REQUIRED');
+assert.equal(convertCountyStructuredEvidence({ ...adamsTreasurerRequest, fieldSensitivityPosture: 'UNKNOWN' }).classification, 'COUNTY_FIELD_SENSITIVITY_UNREVIEWED');
+assert.equal(convertCountyStructuredEvidence({ ...adamsTreasurerRequest, taxpayerName: 'not allowed' }).classification, 'COUNTY_NARRATIVE_INPUT_REJECTED');
+assert.equal(convertCountyStructuredEvidence({ ...adamsTreasurerRequest, rawRecord: 'not allowed' }).classification, 'COUNTY_NARRATIVE_INPUT_REJECTED');
+assert.equal(convertCountyStructuredEvidence({
+  ...adamsTreasurerRequest,
+  evidenceReferences: [{ ...adamsTreasurerRequest.evidenceReferences[0]!, sourceId: 'SRC-ARAPAHOE-COUNTY-TREASURER' }],
 }).classification, 'COUNTY_EVIDENCE_REFERENCE_INVALID');
 const changedSensitivity = convertCountyStructuredEvidence({
   ...BOULDER_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST,
