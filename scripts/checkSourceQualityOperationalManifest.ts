@@ -245,32 +245,43 @@ assert.equal(valid.manifest.entries.filter((entry) => entry.sourceId === BROOMFI
 assert.equal(valid.manifest.entries.filter((entry) => entry.sourceId === JEFFERSON_COUNTY_ASSESSOR_SOURCE_ID).length, 1);
 assert.equal(valid.manifest.entries.filter((entry) => entry.sourceId === 'SRC-BOULDER-PERMIT-CANDIDATES').length, 0);
 const registryOnlySources = explainRegistryOnlySourceIds(registryRecords, manifestSourceIds);
-assert.deepEqual(registryOnlySources.map((source) => source.sourceId).sort(), ['SRC-BOULDER-PERMIT-CANDIDATES']);
-assert.deepEqual(
-  registryOnlySources.map((source) => source.reason).sort(),
-  ['EXPLICIT_NON_OPERATIONAL_REGISTRY_IDENTITY'],
-);
+assert.equal(new Set(registryOnlySources.map((source) => source.sourceId)).size, registryOnlySources.length, 'Registry-only source ids must be unique.');
+assert.equal(registryOnlySources.filter((source) => source.sourceId === 'SRC-BOULDER-PERMIT-CANDIDATES').length, 1, 'Permit Candidate must remain deterministically excluded from Operational Manifest.');
+assert.equal(registryOnlySources.find((source) => source.sourceId === 'SRC-BOULDER-PERMIT-CANDIDATES')?.reason, 'EXPLICIT_NON_OPERATIONAL_REGISTRY_IDENTITY');
+for (const source of registryOnlySources.filter((item) => item.sourceId !== 'SRC-BOULDER-PERMIT-CANDIDATES')) {
+  assert.equal(source.reason, 'GOVERNED_PRE_MANIFEST_COUNTY_ASSESSOR_LIFECYCLE', 'Registry-only non-permit source requires a governed lifecycle explanation: ' + source.sourceId);
+}
 const jeffersonPreManifestRecord = registryRecords.find((record) => record.sourceId === 'SRC-JEFFERSON-COUNTY-ASSESSOR');
 assert.ok(jeffersonPreManifestRecord);
-const syntheticLarimerPreManifestRecord: RegistryLifecycleRecord = {
+const syntheticWeldPreManifestRecord: RegistryLifecycleRecord = {
   ...jeffersonPreManifestRecord,
-  sourceId: 'SRC-LARIMER-COUNTY-ASSESSOR',
-  publicName: 'Larimer County Assessor',
-  responsibleOrganization: "Larimer County Assessor's Office",
-  jurisdiction: { state: 'Colorado', county: 'Larimer County', coverage: 'Larimer County assessor/property records source identity only' },
-  currentReieUse: 'Exact source identity only for future-governed Larimer County Assessor review; no property search submission, GIS access, property-record retrieval, owner/address lookup, parcel/account lookup, valuation claim, ownership claim, title claim, tax claim, customer display, ingestion, automation, or runtime use is active.',
+  sourceId: 'SRC-WELD-COUNTY-ASSESSOR',
+  publicName: 'Weld County Assessor',
+  responsibleOrganization: "Weld County Assessor's Office",
+  jurisdiction: { state: 'Colorado', county: 'Weld County', coverage: 'Weld County assessor/property records source identity only' },
+  currentReieUse: 'Exact source identity only for future-governed Weld County Assessor review; no property search submission, GIS access, property-record retrieval, owner/address lookup, parcel/account lookup, valuation claim, ownership claim, title claim, tax claim, customer display, ingestion, automation, or runtime use is active.',
   sourcePaths: [
-    'lib/sourceRegistry.ts/SRC-LARIMER-COUNTY-ASSESSOR',
-    'Larimer County Assessor official-source identity research handoff',
-    'LARIMER_COUNTY_ASSESSOR_EXACT_SOURCE_REGISTRY_MVV',
+    'lib/sourceRegistry.ts/SRC-WELD-COUNTY-ASSESSOR',
+    'Weld County Assessor official-source identity research handoff',
+    'WELD_COUNTY_ASSESSOR_EXACT_SOURCE_REGISTRY_MVV',
   ],
 };
+const syntheticRegistryOnly = explainRegistryOnlySourceIds([...registryRecords, syntheticWeldPreManifestRecord], manifestSourceIds);
 assert.deepEqual(
-  explainRegistryOnlySourceIds([...registryRecords, syntheticLarimerPreManifestRecord], manifestSourceIds).map((source) => source.sourceId).sort(),
-  ['SRC-BOULDER-PERMIT-CANDIDATES', 'SRC-LARIMER-COUNTY-ASSESSOR'],
+  syntheticRegistryOnly.map((source) => source.sourceId).sort(),
+  [...registryOnlySources.map((source) => source.sourceId), 'SRC-WELD-COUNTY-ASSESSOR'].sort(),
+);
+assert.equal(syntheticRegistryOnly.find((source) => source.sourceId === 'SRC-WELD-COUNTY-ASSESSOR')?.reason, 'GOVERNED_PRE_MANIFEST_COUNTY_ASSESSOR_LIFECYCLE');
+assert.throws(
+  () => explainRegistryOnlySourceIds([...registryRecords, { ...syntheticWeldPreManifestRecord, productionActivationState: 'ACTIVE_AUTHORIZED' }], manifestSourceIds),
+  /Registry-only source requires governed pre-Manifest lifecycle posture/,
 );
 assert.throws(
-  () => explainRegistryOnlySourceIds([...registryRecords, { ...syntheticLarimerPreManifestRecord, productionActivationState: 'ACTIVE_AUTHORIZED' }], manifestSourceIds),
+  () => explainRegistryOnlySourceIds([...registryRecords, { ...syntheticWeldPreManifestRecord, claimEligible: true }], manifestSourceIds),
+  /Registry-only source requires governed pre-Manifest lifecycle posture/,
+);
+assert.throws(
+  () => explainRegistryOnlySourceIds([...registryRecords, { ...syntheticWeldPreManifestRecord, sourceId: 'SRC-WELD-COUNTY-TREASURER', category: 'COUNTY_TREASURER_TAX' }], manifestSourceIds),
   /Registry-only source requires governed pre-Manifest lifecycle posture/,
 );
 for (const [sourceId, entryFingerprint] of PRIOR_NINE_ENTRY_FINGERPRINTS) {
