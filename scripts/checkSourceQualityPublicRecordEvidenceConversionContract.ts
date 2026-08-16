@@ -68,6 +68,7 @@ assert.deepEqual(PUBLIC_RECORD_SOURCE_QUALITY_CONVERSION_ALLOWED_SOURCE_IDS, [
   'SRC-BROOMFIELD-COUNTY-ASSESSOR',
   'SRC-JEFFERSON-COUNTY-ASSESSOR',
   'SRC-LARIMER-COUNTY-ASSESSOR',
+  'SRC-WELD-COUNTY-ASSESSOR',
   'SRC-BOULDER-COUNTY-TREASURER',
   'SRC-BOULDER-COUNTY-RECORDER-INDEX',
   'SRC-BOULDER-COUNTY-ACCELA-PERMITS',
@@ -399,6 +400,71 @@ for (const inheritedSourceId of ['SRC-BOULDER-COUNTY-ASSESSOR', 'SRC-ARAPAHOE-CO
   assert.equal(convertPublicRecordStructuredEvidence({
     ...larimerAssessorRequest,
     evidenceReferences: [{ ...larimerAssessorRequest.evidenceReferences[0]!, sourceId: inheritedSourceId }],
+  }).classification, 'PUBLIC_RECORD_REFERENCE_INVALID');
+}
+
+const weldAssessorRequest: PublicRecordSourceQualityEvidenceConversionRequest = {
+  ...request,
+  sourceId: 'SRC-WELD-COUNTY-ASSESSOR',
+  sourceClass: 'COUNTY_ASSESSOR',
+  sourceConfirmation: {
+    sourceId: 'SRC-WELD-COUNTY-ASSESSOR',
+    confirmationClass: 'EXACT_SOURCE_ID_CONFIRMED',
+    reviewedAt: '2026-08-16',
+  },
+  evidenceReferences: [{
+    sourceId: 'SRC-WELD-COUNTY-ASSESSOR',
+    inputClass: 'CERTIFICATION_REFERENCE',
+    evidenceReferenceId: 'PUBLIC-RECORD-CONVERSION-WELD-ASSESSOR-CERT-001',
+    posture: 'REFERENCED',
+    verificationStatus: 'VERIFIED',
+    limitationCodes: [],
+  }],
+  fieldSensitivityPosture: 'RESTRICTED_OR_UNREVIEWED',
+  conversionAuthorityClass: 'EXECUTIVE_COUNTY_EVIDENCE_CONVERSION_REVIEW',
+  reviewedAt: '2026-08-16',
+};
+const weldAssessor = convertPublicRecordStructuredEvidence(weldAssessorRequest);
+assert.equal(weldAssessor.classification, 'PUBLIC_RECORD_EVIDENCE_CONVERSION_VALID');
+assert.equal(weldAssessor.sourceId, 'SRC-WELD-COUNTY-ASSESSOR');
+assert.equal(weldAssessor.linkages.length, 1);
+assert.equal(weldAssessor.linkages[0]?.sourceId, 'SRC-WELD-COUNTY-ASSESSOR');
+assert.equal(weldAssessor.linkages[0]?.evidenceClass, 'CERTIFICATION');
+assert.equal(weldAssessor.linkages[0]?.relationshipType, 'CERTIFICATION');
+assert.equal(weldAssessor.normalized?.result, 'INSUFFICIENT_EVIDENCE');
+assert.equal(weldAssessor.normalized?.rights.posture, 'UNKNOWN');
+assert.equal(weldAssessor.normalized?.technicalAccess.posture, 'UNKNOWN');
+assert.equal(weldAssessor.normalized?.freshness.posture, 'UNKNOWN');
+assert.equal(weldAssessor.normalized?.attribution.posture, 'UNKNOWN');
+assert.equal(weldAssessor.normalized?.provenance.posture, 'UNKNOWN');
+assert.equal(convertPublicRecordStructuredEvidence(weldAssessorRequest).conversionFingerprint, weldAssessor.conversionFingerprint);
+assert.notEqual(weldAssessor.conversionFingerprint, valid.conversionFingerprint);
+assert.notEqual(weldAssessor.conversionFingerprint, arapahoeAssessor.conversionFingerprint);
+assert.notEqual(weldAssessor.conversionFingerprint, broomfieldAssessor.conversionFingerprint);
+assert.notEqual(weldAssessor.conversionFingerprint, jeffersonAssessor.conversionFingerprint);
+assert.notEqual(weldAssessor.conversionFingerprint, larimerAssessor.conversionFingerprint);
+for (const sourceId of ['EXP-SRC-WELD-COUNTY-ASSESSOR', 'SRA-WELD-COUNTY-ASSESSOR', 'SRC-GENERIC-COUNTY-ASSESSOR', 'SRC-PROVIDER-COUNTY-ASSESSOR', 'SRC-WELD-DATA-DOWNLOAD', 'SRC-WELD-PROPERTY-CARD', 'SRC-WELD-PROPERTY-MAP', 'SRC-WELD-PROPERTY-DATA', 'SRC-WELD-SALES-EXPLORER', 'SRC-WELD-COUNTY-TREASURER', 'SRC-WELD-COUNTY-RECORDER', 'SRC-WELD-COUNTY-PARCEL-GIS', 'SRC-WELD-PERMITS', 'SRC-WELD-GIS']) {
+  assert.equal(convertPublicRecordStructuredEvidence({
+    ...weldAssessorRequest,
+    sourceId,
+    sourceConfirmation: { sourceId, confirmationClass: 'EXACT_SOURCE_ID_CONFIRMED', reviewedAt: '2026-08-16' },
+    evidenceReferences: [{ ...weldAssessorRequest.evidenceReferences[0]!, sourceId }],
+  }).classification, 'PUBLIC_RECORD_SOURCE_INVALID');
+}
+assert.equal(convertPublicRecordStructuredEvidence({ ...weldAssessorRequest, sourceClass: 'COUNTY_TREASURER' }).classification, 'PUBLIC_RECORD_SOURCE_MISMATCH');
+assert.equal(convertPublicRecordStructuredEvidence({ ...weldAssessorRequest, sourceClass: 'COUNTY_RECORDED_DOCUMENT_INDEX' }).classification, 'PUBLIC_RECORD_SOURCE_MISMATCH');
+assert.equal(convertPublicRecordStructuredEvidence({ ...weldAssessorRequest, sourceConfirmation: undefined }).classification, 'PUBLIC_RECORD_SOURCE_CONFIRMATION_REQUIRED');
+assert.equal(convertPublicRecordStructuredEvidence({ ...weldAssessorRequest, certificationReference: undefined }).classification, 'PUBLIC_RECORD_CERTIFICATION_REQUIRED');
+assert.equal(convertPublicRecordStructuredEvidence({ ...weldAssessorRequest, fieldSensitivityPosture: 'UNKNOWN' }).classification, 'PUBLIC_RECORD_FIELD_SENSITIVITY_UNREVIEWED');
+assert.equal(convertPublicRecordStructuredEvidence({ ...weldAssessorRequest, ownerName: 'not allowed' }).classification, 'PUBLIC_RECORD_NARRATIVE_INPUT_REJECTED');
+assert.equal(convertPublicRecordStructuredEvidence({
+  ...weldAssessorRequest,
+  evidenceReferences: [{ ...weldAssessorRequest.evidenceReferences[0]!, parcelId: 'not allowed' }],
+}).classification, 'PUBLIC_RECORD_NARRATIVE_INPUT_REJECTED');
+for (const inheritedSourceId of ['SRC-BOULDER-COUNTY-ASSESSOR', 'SRC-ARAPAHOE-COUNTY-ASSESSOR', 'SRC-BROOMFIELD-COUNTY-ASSESSOR', 'SRC-JEFFERSON-COUNTY-ASSESSOR', 'SRC-LARIMER-COUNTY-ASSESSOR']) {
+  assert.equal(convertPublicRecordStructuredEvidence({
+    ...weldAssessorRequest,
+    evidenceReferences: [{ ...weldAssessorRequest.evidenceReferences[0]!, sourceId: inheritedSourceId }],
   }).classification, 'PUBLIC_RECORD_REFERENCE_INVALID');
 }
 

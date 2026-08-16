@@ -17,6 +17,8 @@ import {
   JEFFERSON_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST,
   LARIMER_COUNTY_ASSESSOR_SOURCE_ID,
   LARIMER_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST,
+  WELD_COUNTY_ASSESSOR_SOURCE_ID,
+  WELD_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST,
   convertCountyStructuredEvidence,
   createCountySourceQualityAssemblyRequest,
 } from '../lib/sourceQualityCountyEvidenceConversionContract';
@@ -31,6 +33,7 @@ assert.deepEqual(COUNTY_SOURCE_QUALITY_CONVERSION_ALLOWED_SOURCE_IDS, [
   'SRC-BROOMFIELD-COUNTY-ASSESSOR',
   'SRC-JEFFERSON-COUNTY-ASSESSOR',
   'SRC-LARIMER-COUNTY-ASSESSOR',
+  'SRC-WELD-COUNTY-ASSESSOR',
   'SRC-BOULDER-COUNTY-TREASURER',
   'SRC-BOULDER-COUNTY-RECORDER-INDEX',
   'SRC-BOULDER-COUNTY-ACCELA-PERMITS',
@@ -135,6 +138,28 @@ assert.notEqual(larimerAssessor.conversionFingerprint, valid.conversionFingerpri
 assert.notEqual(larimerAssessor.conversionFingerprint, arapahoeAssessor.conversionFingerprint);
 assert.notEqual(larimerAssessor.conversionFingerprint, broomfieldAssessor.conversionFingerprint);
 assert.notEqual(larimerAssessor.conversionFingerprint, jeffersonAssessor.conversionFingerprint);
+
+const weldAssessor = convertCountyStructuredEvidence(WELD_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST);
+assert.equal(WELD_COUNTY_ASSESSOR_SOURCE_ID, 'SRC-WELD-COUNTY-ASSESSOR');
+assert.equal(weldAssessor.classification, 'COUNTY_EVIDENCE_CONVERSION_VALID');
+assert.equal(weldAssessor.sourceId, WELD_COUNTY_ASSESSOR_SOURCE_ID);
+assert.equal(weldAssessor.linkages.length, 1);
+assert.equal(weldAssessor.linkages[0]?.sourceId, WELD_COUNTY_ASSESSOR_SOURCE_ID);
+assert.equal(weldAssessor.linkages[0]?.evidenceClass, 'CERTIFICATION');
+assert.equal(weldAssessor.linkages[0]?.relationshipType, 'CERTIFICATION');
+assert.equal(weldAssessor.linkages[0]?.posture, 'REFERENCED');
+assert.equal(weldAssessor.normalized?.result, 'INSUFFICIENT_EVIDENCE');
+assert.equal(weldAssessor.normalized?.rights.posture, 'UNKNOWN');
+assert.equal(weldAssessor.normalized?.technicalAccess.posture, 'UNKNOWN');
+assert.equal(weldAssessor.normalized?.freshness.posture, 'UNKNOWN');
+assert.equal(weldAssessor.normalized?.attribution.posture, 'UNKNOWN');
+assert.equal(weldAssessor.normalized?.provenance.posture, 'UNKNOWN');
+assert.equal(convertCountyStructuredEvidence(WELD_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST).conversionFingerprint, weldAssessor.conversionFingerprint);
+assert.notEqual(weldAssessor.conversionFingerprint, valid.conversionFingerprint);
+assert.notEqual(weldAssessor.conversionFingerprint, arapahoeAssessor.conversionFingerprint);
+assert.notEqual(weldAssessor.conversionFingerprint, broomfieldAssessor.conversionFingerprint);
+assert.notEqual(weldAssessor.conversionFingerprint, jeffersonAssessor.conversionFingerprint);
+assert.notEqual(weldAssessor.conversionFingerprint, larimerAssessor.conversionFingerprint);
 
 const withoutConfirmation = convertCountyStructuredEvidence({
   ...BOULDER_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST,
@@ -315,6 +340,37 @@ assert.equal(convertCountyStructuredEvidence({
 assert.equal(convertCountyStructuredEvidence({
   ...LARIMER_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST,
   evidenceReferences: [{ ...LARIMER_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST.evidenceReferences[0]!, parcelId: 'not allowed' }],
+}).classification, 'COUNTY_NARRATIVE_INPUT_REJECTED');
+
+assert.equal(convertCountyStructuredEvidence({ ...WELD_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST, sourceConfirmation: undefined }).classification, 'COUNTY_SOURCE_CONFIRMATION_REQUIRED');
+assert.equal(convertCountyStructuredEvidence({ ...WELD_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST, sourceClass: 'COUNTY_TREASURER' }).classification, 'COUNTY_EVIDENCE_SOURCE_MISMATCH');
+assert.equal(convertCountyStructuredEvidence({
+  ...WELD_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST,
+  sourceId: 'SRC-WELD-COUNTY-TREASURER',
+  sourceConfirmation: { sourceId: 'SRC-WELD-COUNTY-TREASURER', confirmationClass: 'EXACT_SOURCE_ID_CONFIRMED', reviewedAt: '2026-08-16' },
+  evidenceReferences: [{ ...WELD_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST.evidenceReferences[0]!, sourceId: 'SRC-WELD-COUNTY-TREASURER' }],
+}).classification, 'COUNTY_SOURCE_INVALID');
+for (const sourceId of ['EXP-SRC-WELD-COUNTY-ASSESSOR', 'SRA-WELD-COUNTY-ASSESSOR', 'SRC-GENERIC-COUNTY-ASSESSOR', 'SRC-PROVIDER-COUNTY-ASSESSOR', 'SRC-WELD-DATA-DOWNLOAD', 'SRC-WELD-PROPERTY-CARD', 'SRC-WELD-PROPERTY-MAP', 'SRC-WELD-PROPERTY-DATA', 'SRC-WELD-SALES-EXPLORER', 'SRC-WELD-COUNTY-RECORDER', 'SRC-WELD-COUNTY-PARCEL-GIS', 'SRC-WELD-PERMITS', 'SRC-WELD-GIS']) {
+  assert.equal(convertCountyStructuredEvidence({
+    ...WELD_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST,
+    sourceId,
+    sourceConfirmation: { sourceId, confirmationClass: 'EXACT_SOURCE_ID_CONFIRMED', reviewedAt: '2026-08-16' },
+    evidenceReferences: [{ ...WELD_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST.evidenceReferences[0]!, sourceId }],
+  }).classification, 'COUNTY_SOURCE_INVALID');
+}
+for (const inheritedSourceId of [BOULDER_COUNTY_ASSESSOR_SOURCE_ID, ARAPAHOE_COUNTY_ASSESSOR_SOURCE_ID, BROOMFIELD_COUNTY_ASSESSOR_SOURCE_ID, JEFFERSON_COUNTY_ASSESSOR_SOURCE_ID, LARIMER_COUNTY_ASSESSOR_SOURCE_ID] as const) {
+  assert.equal(convertCountyStructuredEvidence({
+    ...WELD_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST,
+    evidenceReferences: [{ ...WELD_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST.evidenceReferences[0]!, sourceId: inheritedSourceId }],
+  }).classification, 'COUNTY_EVIDENCE_REFERENCE_INVALID');
+}
+assert.equal(convertCountyStructuredEvidence({
+  ...WELD_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST,
+  ownerName: 'not allowed',
+}).classification, 'COUNTY_NARRATIVE_INPUT_REJECTED');
+assert.equal(convertCountyStructuredEvidence({
+  ...WELD_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST,
+  evidenceReferences: [{ ...WELD_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST.evidenceReferences[0]!, parcelId: 'not allowed' }],
 }).classification, 'COUNTY_NARRATIVE_INPUT_REJECTED');
 
 const expandedEvidenceReferences = [
