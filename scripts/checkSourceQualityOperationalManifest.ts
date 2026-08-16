@@ -203,6 +203,30 @@ function isGovernedPreManifestCountyAssessor(record: RegistryLifecycleRecord): b
     && (record.sourcePaths ?? []).some((sourcePath) => sourcePath.includes('EXACT_SOURCE_REGISTRY_MVV'));
 }
 
+function isGovernedPreManifestCountyTreasurer(record: RegistryLifecycleRecord): boolean {
+  const text = JSON.stringify(record);
+  return record.sourceId === 'SRC-ARAPAHOE-COUNTY-TREASURER'
+    && record.sourceClass === 'AUTHORITATIVE_SOURCE'
+    && record.category === 'COUNTY_TREASURER_TAX'
+    && record.authorizationState === 'AWAITING_PROVIDER_CONFIRMATION'
+    && record.productionActivationState === 'BLOCKED_NOT_AUTHORIZED'
+    && record.claimEligible === false
+    && record.currentReieUse.includes('Exact source identity only')
+    && text.includes('SOURCE_ACTIVATION_NOT_AUTHORIZED_BY_REGISTRY_MVV')
+    && text.includes('CUSTOMER_DISPLAY_NOT_GRANTED_BY_REGISTRY_MVV')
+    && text.includes('LEGAL_USE_NOT_APPROVED_BY_REGISTRY_MVV')
+    && text.includes('TREASURER_RECORD_NOT_ASSESSOR_VALUE_AUTHORITY')
+    && text.includes('TREASURER_RECORD_NOT_TITLE')
+    && text.includes('TREASURER_RECORD_NOT_RECORDER_INDEX')
+    && text.includes('PUBLIC_TAX_SEARCH_NOT_AUTOMATION_AUTHORITY')
+    && text.includes('TAX_PAYMENT_CHANNEL_NOT_DATA_REUSE_AUTHORITY')
+    && text.includes('TAX_EXTRACT_NOT_UNRESTRICTED_OR_REUSE_READY')
+    && text.includes('CERTIFICATE_OF_TAXES_DUE_NOT_TITLE_OR_LIEN_CLEARANCE_GUARANTEE')
+    && text.includes('Public Trustee')
+    && text.includes('Rights, technical access, freshness, attribution, fees, privacy approval, field sensitivity, and provenance remain unknown')
+    && (record.sourcePaths ?? []).some((sourcePath) => sourcePath.includes('ARAPAHOE_COUNTY_TREASURER_EXACT_SOURCE_REGISTRY_MVV'));
+}
+
 function explainRegistryOnlySourceIds(records: readonly RegistryLifecycleRecord[], manifestIds: readonly string[]) {
   const manifestSet = new Set(manifestIds);
   return records
@@ -212,6 +236,9 @@ function explainRegistryOnlySourceIds(records: readonly RegistryLifecycleRecord[
         assert.equal(record.lifecyclePosture, 'NON_OPERATIONAL_DISCOVERY_VERIFICATION_CONTEXT');
         assert.equal(record.sourceQualityAdvancementEligibility, 'NOT_ELIGIBLE_NON_OPERATIONAL_CONTEXT');
         return { sourceId: record.sourceId, reason: 'EXPLICIT_NON_OPERATIONAL_REGISTRY_IDENTITY' };
+      }
+      if (isGovernedPreManifestCountyTreasurer(record)) {
+        return { sourceId: record.sourceId, reason: 'GOVERNED_PRE_MANIFEST_COUNTY_TREASURER_LIFECYCLE' };
       }
       assert.ok(isGovernedPreManifestCountyAssessor(record), 'Registry-only source requires governed pre-Manifest lifecycle posture: ' + record.sourceId);
       return { sourceId: record.sourceId, reason: 'GOVERNED_PRE_MANIFEST_COUNTY_ASSESSOR_LIFECYCLE' };
@@ -282,7 +309,10 @@ assert.equal(new Set(registryOnlySources.map((source) => source.sourceId)).size,
 assert.equal(registryOnlySources.filter((source) => source.sourceId === 'SRC-BOULDER-PERMIT-CANDIDATES').length, 1, 'Permit Candidate must remain deterministically excluded from Operational Manifest.');
 assert.equal(registryOnlySources.find((source) => source.sourceId === 'SRC-BOULDER-PERMIT-CANDIDATES')?.reason, 'EXPLICIT_NON_OPERATIONAL_REGISTRY_IDENTITY');
 for (const source of registryOnlySources.filter((item) => item.sourceId !== 'SRC-BOULDER-PERMIT-CANDIDATES')) {
-  assert.equal(source.reason, 'GOVERNED_PRE_MANIFEST_COUNTY_ASSESSOR_LIFECYCLE', 'Registry-only non-permit source requires a governed lifecycle explanation: ' + source.sourceId);
+  assert.ok(
+    ['GOVERNED_PRE_MANIFEST_COUNTY_ASSESSOR_LIFECYCLE', 'GOVERNED_PRE_MANIFEST_COUNTY_TREASURER_LIFECYCLE'].includes(source.reason),
+    'Registry-only non-permit source requires a governed lifecycle explanation: ' + source.sourceId,
+  );
 }
 const jeffersonPreManifestRecord = registryRecords.find((record) => record.sourceId === 'SRC-JEFFERSON-COUNTY-ASSESSOR');
 assert.ok(jeffersonPreManifestRecord);

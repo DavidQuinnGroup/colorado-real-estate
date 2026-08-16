@@ -114,6 +114,7 @@ if (fs.existsSync('lib/sourceQualityAdamsCountyAssessorEvidence.ts')) {
 }
 
 const arapahoeAssessorSourceId = 'SRC-ARAPAHOE-COUNTY-ASSESSOR';
+const arapahoeTreasurerSourceId = 'SRC-ARAPAHOE-COUNTY-TREASURER';
 assert.equal(registry.records.filter((item) => item.sourceId === arapahoeAssessorSourceId).length, 1, 'Arapahoe County Assessor source must exist exactly once.');
 const arapahoeAssessor = record(arapahoeAssessorSourceId);
 const arapahoeAssessorText = JSON.stringify(arapahoeAssessor);
@@ -152,8 +153,9 @@ assert.match(arapahoeAssessorText, /do not grant rights, access, freshness, attr
 assert.match(arapahoeAssessorText, /Rights, technical access, freshness, attribution, fees, privacy approval, field sensitivity, and provenance remain unknown/);
 assert.doesNotMatch(arapahoeAssessorText, /RIGHTS = VERIFIED|TECHNICAL ACCESS = READY|FRESHNESS = VERIFIED|ATTRIBUTION = REQUIRED|FEE = NONE|PROVENANCE = COMPLETE/);
 assert.doesNotMatch(arapahoeAssessorText, /memberSourceIds|parentSourceId|aggregateSource|childSourceIds|relationshipType/i);
-assert.equal(registry.records.filter((item) => /^SRC-ARAPAHOE-COUNTY-(TREASURER|RECORDER|PARCEL|GIS|DATA-MART|PARCEL-SEARCH)/.test(item.sourceId)).length, 0, 'Arapahoe Assessor Registry MVV must not add Treasurer, Recorder, Parcel Search, Data Mart, or GIS source ids.');
-assert.equal(registry.records.filter((item) => /ARAPAHOE.*(TREASURER|RECORDER|GIS|DATA_MART|PARCEL_SEARCH|PARCEL_GEOMETRY)/i.test(`${item.sourceId} ${item.category}`)).length, 0, 'Arapahoe Assessor Registry MVV must not conflate assessor identity with adjacent domains.');
+assert.equal(registry.records.filter((item) => /^SRC-ARAPAHOE-COUNTY-(RECORDER|PARCEL|GIS|DATA-MART|PARCEL-SEARCH)/.test(item.sourceId)).length, 0, 'Arapahoe Assessor Registry MVV must not add Recorder, Parcel Search, Data Mart, or GIS source ids.');
+assert.equal(registry.records.filter((item) => item.sourceId.startsWith('SRC-ARAPAHOE-COUNTY-TREASURER') && item.sourceId !== arapahoeTreasurerSourceId).length, 0, 'Arapahoe Assessor Registry MVV must not add Treasurer aliases beyond the exact separately governed Treasurer source.');
+assert.equal(registry.records.filter((item) => item.sourceId !== arapahoeTreasurerSourceId && /ARAPAHOE.*(TREASURER|RECORDER|GIS|DATA_MART|PARCEL_SEARCH|PARCEL_GEOMETRY)/i.test(`${item.sourceId} ${item.category}`)).length, 0, 'Arapahoe Assessor Registry MVV must not conflate assessor identity with adjacent domains.');
 if (fs.existsSync('lib/sourceQualityArapahoeCountyAssessorEvidence.ts')) {
   const arapahoeAssessorEvidence = read('lib/sourceQualityArapahoeCountyAssessorEvidence.ts');
   assert.match(arapahoeAssessorEvidence, /ARAPAHOE_COUNTY_ASSESSOR_SOURCE_ID/, 'Arapahoe Assessor evidence must bind through the canonical exact source identity constant.');
@@ -164,6 +166,57 @@ if (fs.existsSync('lib/sourceQualityArapahoeCountyAssessorEvidence.ts')) {
   assert.doesNotMatch(arapahoeAssessorEvidence, /sourceQualityOperationalManifestData|sourceQualityAdminPreviewFixture/, 'Arapahoe Assessor evidence must not create Manifest or Admin Preview coupling.');
   assert.doesNotMatch(arapahoeAssessorEvidence, /RIGHTS_VERIFIED|TECHNICAL_ACCESS_READY|FRESHNESS_VERIFIED|PROVENANCE_COMPLETE|ACTIVE_AUTHORIZED/, 'Arapahoe Assessor evidence must not upgrade rights, access, freshness, provenance, or activation posture.');
 }
+
+assert.equal(registry.records.filter((item) => item.sourceId === arapahoeTreasurerSourceId).length, 1, 'Arapahoe County Treasurer source must exist exactly once.');
+const arapahoeTreasurer = record(arapahoeTreasurerSourceId);
+const arapahoeTreasurerText = JSON.stringify(arapahoeTreasurer);
+assert.equal(arapahoeTreasurer.publicName, 'Arapahoe County Treasurer');
+assert.equal(arapahoeTreasurer.responsibleOrganization, 'Arapahoe County Treasurer');
+assert.equal(arapahoeTreasurer.sourceClass, 'AUTHORITATIVE_SOURCE');
+assert.equal(arapahoeTreasurer.category, 'COUNTY_TREASURER_TAX');
+assert.equal(arapahoeTreasurer.jurisdiction.state, 'Colorado');
+assert.equal(arapahoeTreasurer.jurisdiction.county, 'Arapahoe County');
+assert.equal(arapahoeTreasurer.authorizationState, 'AWAITING_PROVIDER_CONFIRMATION');
+assert.equal(arapahoeTreasurer.productionActivationState, 'BLOCKED_NOT_AUTHORIZED');
+assert.equal(arapahoeTreasurer.claimEligible, false);
+assert.equal(arapahoeTreasurer.customerStatus, 'Blocked / not authorized');
+assert.match(arapahoeTreasurer.currentReieUse, /Exact source identity only/);
+assert.match(arapahoeTreasurer.currentReieUse, /future-governed Arapahoe County Treasurer review/);
+assert.match(arapahoeTreasurer.currentReieUse, /no Tax Search submission/);
+assert.match(arapahoeTreasurer.currentReieUse, /no online payment/);
+assert.match(arapahoeTreasurer.currentReieUse, /no daily or yearly tax extract access/);
+assert.match(arapahoeTreasurer.currentReieUse, /no .* Certificate of Taxes Due/);
+assert.match(arapahoeTreasurer.currentReieUse, /no delinquent-tax publication use/);
+assert.match(arapahoeTreasurer.currentReieUse, /no tax-lien operation/);
+assert.match(arapahoeTreasurer.currentReieUse, /no Public Trustee operation/);
+assert.match(arapahoeTreasurer.currentReieUse, /no assessor-record use/);
+assert.match(arapahoeTreasurer.currentReieUse, /no recorder-record use/);
+assert.match(arapahoeTreasurer.currentReieUse, /no GIS use/);
+assert.match(arapahoeTreasurer.currentReieUse, /no tax-record retrieval/);
+assert.match(arapahoeTreasurer.currentReieUse, /no .* customer display/);
+assert.match(arapahoeTreasurerText, /TREASURER_RECORD_NOT_ASSESSOR_VALUE_AUTHORITY/);
+assert.match(arapahoeTreasurerText, /TREASURER_RECORD_NOT_TITLE/);
+assert.match(arapahoeTreasurerText, /TREASURER_RECORD_NOT_RECORDER_INDEX/);
+assert.match(arapahoeTreasurerText, /TAX_PAYMENT_CHANNEL_NOT_DATA_REUSE_AUTHORITY/);
+assert.match(arapahoeTreasurerText, /PUBLIC_TAX_SEARCH_NOT_AUTOMATION_AUTHORITY/);
+assert.match(arapahoeTreasurerText, /PUBLIC_ACCESS_NOT_REUSE_OR_DISPLAY_AUTHORITY/);
+assert.match(arapahoeTreasurerText, /PUBLIC_OR_GOVERNMENT_SOURCE_NOT_UNRESTRICTED_OR_VERIFIED_OR_COMPLETE/);
+assert.match(arapahoeTreasurerText, /PUBLIC_TRUSTEE_NOT_AUTOMATICALLY_TREASURER_DATA_AUTHORITY/);
+assert.match(arapahoeTreasurerText, /TAX_EXTRACT_NOT_UNRESTRICTED_OR_REUSE_READY/);
+assert.match(arapahoeTreasurerText, /CERTIFICATE_OF_TAXES_DUE_NOT_TITLE_OR_LIEN_CLEARANCE_GUARANTEE/);
+assert.match(arapahoeTreasurerText, /FEE_STATUS_SOURCE_SPECIFIC/);
+assert.match(arapahoeTreasurerText, /TAX_CURRENTNESS_SOURCE_SPECIFIC/);
+assert.match(arapahoeTreasurerText, /SOURCE_ACTIVATION_NOT_AUTHORIZED_BY_REGISTRY_MVV/);
+assert.match(arapahoeTreasurerText, /CUSTOMER_DISPLAY_NOT_GRANTED_BY_REGISTRY_MVV/);
+assert.match(arapahoeTreasurerText, /LEGAL_USE_NOT_APPROVED_BY_REGISTRY_MVV/);
+assert.match(arapahoeTreasurerText, /Tax Search, online payment, daily and yearly tax extracts, tax statements and receipts, Certificate of Taxes Due, delinquent-tax publications, tax liens, Public Trustee, Assessor, Recorder, and GIS channels are separately governed/);
+assert.match(arapahoeTreasurerText, /Boulder County Treasurer, Arapahoe County Assessor/);
+assert.match(arapahoeTreasurerText, /Rights, technical access, freshness, attribution, fees, privacy approval, field sensitivity, and provenance remain unknown/);
+assert.doesNotMatch(arapahoeTreasurerText, /RIGHTS = VERIFIED|TECHNICAL ACCESS = READY|FRESHNESS = VERIFIED|ATTRIBUTION = REQUIRED|FEE = NONE|PROVENANCE = COMPLETE/);
+assert.doesNotMatch(arapahoeTreasurerText, /memberSourceIds|parentSourceId|aggregateSource|childSourceIds|relationshipType/i);
+assert.equal(registry.records.filter((item) => /^SRC-ARAPAHOE-COUNTY-(TAX-PAYMENT|TAX-EXTRACT|TAX-STATEMENT|TAX-RECEIPT|CERTIFICATE|CERTIFICATE-OF-TAXES-DUE|DELINQUENT-TAX|TAX-LIEN|PUBLIC-TRUSTEE|RECORDER|GIS)/.test(item.sourceId)).length, 0, 'Arapahoe Treasurer Registry MVV must not add payment, extract, certificate, lien, Public Trustee, Recorder, or GIS source ids.');
+assert.equal(registry.records.filter((item) => /ARAPAHOE.*(TAX_PAYMENT|TAX_EXTRACT|CERTIFICATE|LIEN|PUBLIC_TRUSTEE|RECORDER|GIS|ASSESSOR_VALUE_AUTHORITY)/i.test(`${item.sourceId} ${item.category}`)).length, 0, 'Arapahoe Treasurer Registry MVV must not conflate Treasurer identity with adjacent domains.');
+assert.doesNotMatch(arapahoeTreasurerText, /EXP-|SRA-|provider aggregate|wildcard County Treasurer/i);
 
 const broomfieldAssessorSourceId = 'SRC-BROOMFIELD-COUNTY-ASSESSOR';
 assert.equal(registry.records.filter((item) => item.sourceId === broomfieldAssessorSourceId).length, 1, 'Broomfield Assessor source must exist exactly once.');
