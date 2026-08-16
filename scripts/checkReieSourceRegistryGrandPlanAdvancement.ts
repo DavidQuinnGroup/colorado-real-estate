@@ -90,7 +90,16 @@ assert.doesNotMatch(arapahoeAssessorText, /RIGHTS = VERIFIED|TECHNICAL ACCESS = 
 assert.doesNotMatch(arapahoeAssessorText, /memberSourceIds|parentSourceId|aggregateSource|childSourceIds|relationshipType/i);
 assert.equal(registry.records.filter((item) => /^SRC-ARAPAHOE-COUNTY-(TREASURER|RECORDER|PARCEL|GIS|DATA-MART|PARCEL-SEARCH)/.test(item.sourceId)).length, 0, 'Arapahoe Assessor Registry MVV must not add Treasurer, Recorder, Parcel Search, Data Mart, or GIS source ids.');
 assert.equal(registry.records.filter((item) => /ARAPAHOE.*(TREASURER|RECORDER|GIS|DATA_MART|PARCEL_SEARCH|PARCEL_GEOMETRY)/i.test(`${item.sourceId} ${item.category}`)).length, 0, 'Arapahoe Assessor Registry MVV must not conflate assessor identity with adjacent domains.');
-assert.equal(fs.existsSync('lib/sourceQualityArapahoeCountyAssessorEvidence.ts'), false, 'Arapahoe Assessor Registry MVV must not create source-specific evidence.');
+if (fs.existsSync('lib/sourceQualityArapahoeCountyAssessorEvidence.ts')) {
+  const arapahoeAssessorEvidence = read('lib/sourceQualityArapahoeCountyAssessorEvidence.ts');
+  assert.match(arapahoeAssessorEvidence, /ARAPAHOE_COUNTY_ASSESSOR_SOURCE_ID/, 'Arapahoe Assessor evidence must bind through the canonical exact source identity constant.');
+  assert.match(arapahoeAssessorEvidence, /CERT-ARAPAHOE-COUNTY-ASSESSOR-SOURCE-QUALITY-EVIDENCE-001/, 'Arapahoe Assessor evidence must use source-specific certification.');
+  assert.match(arapahoeAssessorEvidence, /COUNTY_ASSESSOR/, 'Arapahoe Assessor evidence must preserve the canonical County Assessor class.');
+  assert.match(arapahoeAssessorEvidence, /CERTIFICATION_REFERENCE/, 'Arapahoe Assessor evidence must remain certification-reference-only.');
+  assert.doesNotMatch(arapahoeAssessorEvidence, /getReieSourceRegistry|sourceRegistry/, 'Arapahoe Assessor evidence must not mutate or depend on Registry implementation state.');
+  assert.doesNotMatch(arapahoeAssessorEvidence, /sourceQualityOperationalManifestData|sourceQualityAdminPreviewFixture/, 'Arapahoe Assessor evidence must not create Manifest or Admin Preview coupling.');
+  assert.doesNotMatch(arapahoeAssessorEvidence, /RIGHTS_VERIFIED|TECHNICAL_ACCESS_READY|FRESHNESS_VERIFIED|PROVENANCE_COMPLETE|ACTIVE_AUTHORIZED/, 'Arapahoe Assessor evidence must not upgrade rights, access, freshness, provenance, or activation posture.');
+}
 
 const parcelGisSourceId = 'SRC-BOULDER-COUNTY-PARCEL-GIS';
 assert.equal(registry.records.filter((item) => item.sourceId === parcelGisSourceId).length, 1, 'Parcel GIS source must exist exactly once.');
