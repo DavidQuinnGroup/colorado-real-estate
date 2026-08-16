@@ -13,6 +13,8 @@ import {
   BROOMFIELD_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST,
   COUNTY_SOURCE_QUALITY_CONVERSION_ALLOWED_SOURCE_IDS,
   COUNTY_SOURCE_QUALITY_CONVERSION_FIREWALL,
+  JEFFERSON_COUNTY_ASSESSOR_SOURCE_ID,
+  JEFFERSON_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST,
   convertCountyStructuredEvidence,
   createCountySourceQualityAssemblyRequest,
 } from '../lib/sourceQualityCountyEvidenceConversionContract';
@@ -25,6 +27,7 @@ assert.deepEqual(COUNTY_SOURCE_QUALITY_CONVERSION_ALLOWED_SOURCE_IDS, [
   'SRC-BOULDER-COUNTY-ASSESSOR',
   'SRC-ARAPAHOE-COUNTY-ASSESSOR',
   'SRC-BROOMFIELD-COUNTY-ASSESSOR',
+  'SRC-JEFFERSON-COUNTY-ASSESSOR',
   'SRC-BOULDER-COUNTY-TREASURER',
   'SRC-BOULDER-COUNTY-RECORDER-INDEX',
   'SRC-BOULDER-COUNTY-ACCELA-PERMITS',
@@ -88,6 +91,26 @@ assert.equal(broomfieldAssessor.normalized?.provenance.posture, 'UNKNOWN');
 assert.equal(convertCountyStructuredEvidence(BROOMFIELD_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST).conversionFingerprint, broomfieldAssessor.conversionFingerprint);
 assert.notEqual(broomfieldAssessor.conversionFingerprint, valid.conversionFingerprint);
 assert.notEqual(broomfieldAssessor.conversionFingerprint, arapahoeAssessor.conversionFingerprint);
+
+const jeffersonAssessor = convertCountyStructuredEvidence(JEFFERSON_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST);
+assert.equal(JEFFERSON_COUNTY_ASSESSOR_SOURCE_ID, 'SRC-JEFFERSON-COUNTY-ASSESSOR');
+assert.equal(jeffersonAssessor.classification, 'COUNTY_EVIDENCE_CONVERSION_VALID');
+assert.equal(jeffersonAssessor.sourceId, JEFFERSON_COUNTY_ASSESSOR_SOURCE_ID);
+assert.equal(jeffersonAssessor.linkages.length, 1);
+assert.equal(jeffersonAssessor.linkages[0]?.sourceId, JEFFERSON_COUNTY_ASSESSOR_SOURCE_ID);
+assert.equal(jeffersonAssessor.linkages[0]?.evidenceClass, 'CERTIFICATION');
+assert.equal(jeffersonAssessor.linkages[0]?.relationshipType, 'CERTIFICATION');
+assert.equal(jeffersonAssessor.linkages[0]?.posture, 'REFERENCED');
+assert.equal(jeffersonAssessor.normalized?.result, 'INSUFFICIENT_EVIDENCE');
+assert.equal(jeffersonAssessor.normalized?.rights.posture, 'UNKNOWN');
+assert.equal(jeffersonAssessor.normalized?.technicalAccess.posture, 'UNKNOWN');
+assert.equal(jeffersonAssessor.normalized?.freshness.posture, 'UNKNOWN');
+assert.equal(jeffersonAssessor.normalized?.attribution.posture, 'UNKNOWN');
+assert.equal(jeffersonAssessor.normalized?.provenance.posture, 'UNKNOWN');
+assert.equal(convertCountyStructuredEvidence(JEFFERSON_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST).conversionFingerprint, jeffersonAssessor.conversionFingerprint);
+assert.notEqual(jeffersonAssessor.conversionFingerprint, valid.conversionFingerprint);
+assert.notEqual(jeffersonAssessor.conversionFingerprint, arapahoeAssessor.conversionFingerprint);
+assert.notEqual(jeffersonAssessor.conversionFingerprint, broomfieldAssessor.conversionFingerprint);
 
 const withoutConfirmation = convertCountyStructuredEvidence({
   ...BOULDER_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST,
@@ -206,6 +229,37 @@ assert.equal(convertCountyStructuredEvidence({
 assert.equal(convertCountyStructuredEvidence({
   ...BROOMFIELD_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST,
   ownerName: 'not allowed',
+}).classification, 'COUNTY_NARRATIVE_INPUT_REJECTED');
+
+assert.equal(convertCountyStructuredEvidence({ ...JEFFERSON_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST, sourceConfirmation: undefined }).classification, 'COUNTY_SOURCE_CONFIRMATION_REQUIRED');
+assert.equal(convertCountyStructuredEvidence({ ...JEFFERSON_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST, sourceClass: 'COUNTY_TREASURER' }).classification, 'COUNTY_EVIDENCE_SOURCE_MISMATCH');
+assert.equal(convertCountyStructuredEvidence({
+  ...JEFFERSON_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST,
+  sourceId: 'SRC-JEFFERSON-COUNTY-TREASURER',
+  sourceConfirmation: { sourceId: 'SRC-JEFFERSON-COUNTY-TREASURER', confirmationClass: 'EXACT_SOURCE_ID_CONFIRMED', reviewedAt: '2026-08-16' },
+  evidenceReferences: [{ ...JEFFERSON_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST.evidenceReferences[0]!, sourceId: 'SRC-JEFFERSON-COUNTY-TREASURER' }],
+}).classification, 'COUNTY_SOURCE_INVALID');
+for (const sourceId of ['EXP-SRC-JEFFERSON-COUNTY-ASSESSOR', 'SRA-JEFFERSON-COUNTY-ASSESSOR', 'SRC-GENERIC-COUNTY-ASSESSOR', 'SRC-PROVIDER-COUNTY-ASSESSOR', 'SRC-JEFFERSON-ASPIN', 'SRC-JEFFERSON-GIS', 'SRC-JEFFERSON-COUNTY-RECORDER', 'SRC-JEFFERSON-COUNTY-PARCEL-GIS']) {
+  assert.equal(convertCountyStructuredEvidence({
+    ...JEFFERSON_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST,
+    sourceId,
+    sourceConfirmation: { sourceId, confirmationClass: 'EXACT_SOURCE_ID_CONFIRMED', reviewedAt: '2026-08-16' },
+    evidenceReferences: [{ ...JEFFERSON_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST.evidenceReferences[0]!, sourceId }],
+  }).classification, 'COUNTY_SOURCE_INVALID');
+}
+for (const inheritedSourceId of [BOULDER_COUNTY_ASSESSOR_SOURCE_ID, ARAPAHOE_COUNTY_ASSESSOR_SOURCE_ID, BROOMFIELD_COUNTY_ASSESSOR_SOURCE_ID] as const) {
+  assert.equal(convertCountyStructuredEvidence({
+    ...JEFFERSON_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST,
+    evidenceReferences: [{ ...JEFFERSON_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST.evidenceReferences[0]!, sourceId: inheritedSourceId }],
+  }).classification, 'COUNTY_EVIDENCE_REFERENCE_INVALID');
+}
+assert.equal(convertCountyStructuredEvidence({
+  ...JEFFERSON_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST,
+  ownerName: 'not allowed',
+}).classification, 'COUNTY_NARRATIVE_INPUT_REJECTED');
+assert.equal(convertCountyStructuredEvidence({
+  ...JEFFERSON_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST,
+  evidenceReferences: [{ ...JEFFERSON_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST.evidenceReferences[0]!, parcelId: 'not allowed' }],
 }).classification, 'COUNTY_NARRATIVE_INPUT_REJECTED');
 
 const expandedEvidenceReferences = [
