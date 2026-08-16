@@ -47,7 +47,14 @@ export type ReieSourceRegistryRecord = Readonly<{
   publicName: string;
   responsibleOrganization: string;
   sourceClass: ReieSourceClass;
-  category: CityIntelligenceSourceCategory | 'BCOD_ADDRESS_POINTS' | 'BCOD_PARK_BOUNDARIES' | 'RECORDED_DOCUMENT_INDEX' | 'REIE_FINANCING_SCENARIO_CALCULATOR' | 'REIE_PROPERTY_COMPARISON_INTELLIGENCE';
+  category:
+    | CityIntelligenceSourceCategory
+    | 'BCOD_ADDRESS_POINTS'
+    | 'BCOD_PARK_BOUNDARIES'
+    | 'PARCEL_GEOMETRY'
+    | 'RECORDED_DOCUMENT_INDEX'
+    | 'REIE_FINANCING_SCENARIO_CALCULATOR'
+    | 'REIE_PROPERTY_COMPARISON_INTELLIGENCE';
   domains: readonly string[];
   jurisdiction: ReieSourceJurisdiction;
   officialUrl: string | null;
@@ -247,6 +254,50 @@ function boulderCountyRecorderIndexRecord(): ReieSourceRegistryRecord {
   };
 }
 
+function boulderCountyParcelGisRecord(): ReieSourceRegistryRecord {
+  return {
+    sourceId: 'SRC-BOULDER-COUNTY-PARCEL-GIS',
+    publicName: 'Boulder County GIS Parcel Boundaries / Parcels',
+    responsibleOrganization: "Boulder County Assessor's Office",
+    sourceClass: 'AUTHORITATIVE_SOURCE',
+    category: 'PARCEL_GEOMETRY',
+    domains: ['Parcel geometry source identity', 'Parcel boundary/reference context', 'Future governed spatial reference'],
+    jurisdiction: { state: 'Colorado', county: 'Boulder County', coverage: 'Boulder County parcel geometry / cadastral boundary dataset identity only' },
+    officialUrl: 'https://bouldercounty.gov/government/open-data/',
+    accessMethod: 'Source-specific provider, rights, and technical-access review required before retrieval, download, feature-service access, ingestion, display, or reuse',
+    updateCadence: 'metadata-dependent and not certified',
+    freshnessExpectation: 'unknown until source-specific evidence review',
+    authorizationState: 'AWAITING_PROVIDER_CONFIRMATION',
+    permittedUse: 'registry identity and source-governance review only; no data retrieval, geometry use, spatial join, redistribution, legal-use, or customer-display authority',
+    productionActivationState: 'BLOCKED_NOT_AUTHORIZED',
+    claimEligible: false,
+    customerDisclosureEligible: true,
+    customerStatus: 'Blocked / not authorized',
+    currentReieUse: 'Exact source identity only for future-governed parcel geometry review; no parcel geometry, parcel identifier, ownership, assessor-record, title, tax, permit, zoning, legal-description, customer display, retrieval, feature-service call, download, ingestion, map rendering, or runtime use is active.',
+    limitations: [
+      'PARCEL_GEOMETRY_NOT_OWNERSHIP.',
+      'PARCEL_GEOMETRY_NOT_LEGAL_DESCRIPTION.',
+      'PARCEL_GEOMETRY_NOT_ASSESSOR_RECORD.',
+      'PARCEL_GEOMETRY_NOT_TITLE.',
+      'GIS_DATASET_NOT_DISPLAY_OR_USE_AUTHORITY.',
+      'OPEN_DATA_NOT_UNRESTRICTED_OR_REUSE_READY.',
+      'PUBLIC_OR_GOVERNMENT_SOURCE_NOT_UNRESTRICTED_OR_VERIFIED_OR_COMPLETE.',
+      'Address Points cannot confirm parcel identity or substitute for Parcel GIS.',
+      'Park Boundaries cannot establish parcel or property facts or substitute for Parcel GIS.',
+      'Boulder County organizational or platform overlap does not grant evidence, rights, freshness, attribution, access, or governance inheritance between sources.',
+      'Technical access, freshness, attribution, disclaimer, rights, and provenance remain unresolved until separately governed source evidence review.',
+    ],
+    attributionRequirement: 'unknown until source-specific review',
+    lastSourceVerificationDate: REIE_SOURCE_REGISTRY_REFERENCE_DATE,
+    lastSuccessfulDataRefresh: null,
+    sourcePaths: [
+      'lib/sourceRegistry.ts/SRC-BOULDER-COUNTY-PARCEL-GIS',
+      'Boulder County Geospatial Open Data Site / official ArcGIS Hub source-identity research handoff',
+      'BOULDER_COUNTY_PARCEL_GIS_EXACT_SOURCE_REGISTRY_MVV',
+    ],
+  };
+}
+
 function derivedRecord({
   sourceId,
   publicName,
@@ -344,6 +395,7 @@ export const REIE_SOURCE_REGISTRY: ReieSourceRegistry = Object.freeze({
       lastSourceVerificationDate: REIE_SOURCE_REGISTRY_REFERENCE_DATE,
     }),
     boulderCountyRecorderIndexRecord(),
+    boulderCountyParcelGisRecord(),
     sourceFromProfile({
       sourceId: 'SRC-BOULDER-PERMIT-CANDIDATES',
       publicName: 'Boulder permit source candidates',

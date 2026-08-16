@@ -44,6 +44,43 @@ assert.equal(assessor.claimEligible, false);
 assert.match(assessor.currentReieUse, /Identified source candidate only/);
 assert.match(assessor.currentReieUse, /no automated retrieval/);
 
+const parcelGisSourceId = 'SRC-BOULDER-COUNTY-PARCEL-GIS';
+assert.equal(registry.records.filter((item) => item.sourceId === parcelGisSourceId).length, 1, 'Parcel GIS source must exist exactly once.');
+const parcelGis = record(parcelGisSourceId);
+const parcelGisText = JSON.stringify(parcelGis);
+assert.equal(parcelGis.publicName, 'Boulder County GIS Parcel Boundaries / Parcels');
+assert.equal(parcelGis.responsibleOrganization, "Boulder County Assessor's Office");
+assert.equal(parcelGis.sourceClass, 'AUTHORITATIVE_SOURCE');
+assert.equal(parcelGis.category, 'PARCEL_GEOMETRY');
+assert.equal(parcelGis.authorizationState, 'AWAITING_PROVIDER_CONFIRMATION');
+assert.equal(parcelGis.productionActivationState, 'BLOCKED_NOT_AUTHORIZED');
+assert.equal(parcelGis.claimEligible, false);
+assert.equal(parcelGis.customerStatus, 'Blocked / not authorized');
+assert.match(parcelGis.currentReieUse, /Exact source identity only/);
+assert.match(parcelGis.currentReieUse, /future-governed parcel geometry review/);
+assert.match(parcelGis.currentReieUse, /no parcel geometry/);
+assert.match(parcelGis.currentReieUse, /no .* retrieval/);
+assert.match(parcelGis.currentReieUse, /no .* feature-service call/);
+assert.match(parcelGis.currentReieUse, /no .* download/);
+assert.match(parcelGis.currentReieUse, /no .* customer display/);
+assert.match(parcelGisText, /PARCEL_GEOMETRY_NOT_OWNERSHIP/);
+assert.match(parcelGisText, /PARCEL_GEOMETRY_NOT_LEGAL_DESCRIPTION/);
+assert.match(parcelGisText, /PARCEL_GEOMETRY_NOT_ASSESSOR_RECORD/);
+assert.match(parcelGisText, /PARCEL_GEOMETRY_NOT_TITLE/);
+assert.match(parcelGisText, /GIS_DATASET_NOT_DISPLAY_OR_USE_AUTHORITY/);
+assert.match(parcelGisText, /OPEN_DATA_NOT_UNRESTRICTED_OR_REUSE_READY/);
+assert.match(parcelGisText, /PUBLIC_OR_GOVERNMENT_SOURCE_NOT_UNRESTRICTED_OR_VERIFIED_OR_COMPLETE/);
+assert.match(parcelGisText, /Address Points cannot confirm parcel identity/);
+assert.match(parcelGisText, /Park Boundaries cannot establish parcel or property facts/);
+assert.match(parcelGisText, /does not grant evidence, rights, freshness, attribution, access, or governance inheritance/);
+assert.match(parcelGisText, /Technical access, freshness, attribution, disclaimer, rights, and provenance remain unresolved/);
+assert.doesNotMatch(parcelGisText, /ownership truth|owner identity authorized|assessed value|tax status|sales truth|permit truth|zoning truth|legal description authority|title validity/i);
+assert.doesNotMatch(parcelGisText, /RIGHTS = VERIFIED|TECHNICAL ACCESS = READY|FRESHNESS = VERIFIED|ATTRIBUTION = REQUIRED|PROVENANCE = COMPLETE/);
+assert.doesNotMatch(parcelGisText, /memberSourceIds|parentSourceId|aggregateSource|childSourceIds|relationshipType/i);
+assert.equal(registry.records.filter((item) => /^SRC-BOULDER-COUNTY-PARCEL-(?!GIS$)/.test(item.sourceId)).length, 0, 'Unknown speculative Boulder County parcel source ids must reject.');
+assert.equal(registry.records.filter((item) => /PARCEL.*(OWNERSHIP|ASSESSOR|TITLE|TAX|PERMIT|ZONING|LEGAL_DESCRIPTION)/i.test(item.sourceId)).length, 0, 'Parcel GIS MVV must not add parcel-derived protected domain sources.');
+assert.ok(!fs.existsSync('lib/sourceQualityBoulderCountyParcelGisEvidence.ts'), 'Parcel GIS Source Quality evidence must not be added in Registry MVV.');
+
 const recorderSourceId = 'SRC-BOULDER-COUNTY-RECORDER-INDEX';
 assert.equal(registry.records.filter((item) => item.sourceId === recorderSourceId).length, 1, 'Recorder index source must exist exactly once.');
 const recorder = record(recorderSourceId);
@@ -133,9 +170,11 @@ for (const sourceId of ['SRC-BCOD-ADDRESS-POINTS', 'SRC-BCOD-PARK-BOUNDARIES']) 
   assert.equal(bcod.claimEligible, false);
   assert.ok(
     bcod.limitations.some((limitation) => limitation.includes('No API use, download, persistence, transformation, geometry, map rendering')),
-    `${sourceId} must preserve no-activation BCOD boundaries.`,
+      `${sourceId} must preserve no-activation BCOD boundaries.`,
   );
 }
+assert.notEqual(record('SRC-BCOD-ADDRESS-POINTS').category, 'PARCEL_GEOMETRY', 'Address Points must not substitute for Parcel GIS.');
+assert.notEqual(record('SRC-BCOD-PARK-BOUNDARIES').category, 'PARCEL_GEOMETRY', 'Park Boundaries must not substitute for Parcel GIS.');
 
 for (const sourceId of ['SRC-REIE-FINANCING-SCENARIO-CALCULATOR', 'SRC-REIE-PROPERTY-COMPARISON-INTELLIGENCE']) {
   const derived = record(sourceId);
@@ -181,10 +220,12 @@ assert.ok(!fs.existsSync('app/api/grand-plan/route.ts'), 'Grand Plan must not in
 
 const packageJson = read('package.json');
 const workerConfig = read('tsconfig.worker.json');
+const operationalManifestData = read('lib/sourceQualityOperationalManifestData.ts');
 assert.match(packageJson, /check:reie-source-registry-grand-plan-advancement/, 'Package scripts must expose the advancement check.');
 assert.match(workerConfig, /scripts\/checkReieSourceRegistryGrandPlanAdvancement\.ts/, 'Worker build must include the advancement check.');
 assert.match(workerConfig, /lib\/sourceRegistry\.ts/, 'Worker build must include the Source Registry.');
+assert.doesNotMatch(operationalManifestData, /SRC-BOULDER-COUNTY-PARCEL-GIS/, 'Parcel GIS must not be added to the Source Quality Operational Manifest by the Registry MVV.');
 
 console.log(
-  `[reie-source-registry-grand-plan-advancement] ok: ${registry.records.length} source records, public /sources methodology, Grand Plan orchestration, certified continuity, statewide source boundaries, and protected no-activation contract verified.`,
+  `[reie-source-registry-grand-plan-advancement] ok: ${registry.records.length} source records, Parcel GIS exact source identity, public /sources methodology, Grand Plan orchestration, certified continuity, statewide source boundaries, and protected no-activation contract verified.`,
 );
