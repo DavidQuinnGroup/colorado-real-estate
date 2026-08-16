@@ -158,6 +158,63 @@ if (fs.existsSync('lib/sourceQualityBroomfieldCountyAssessorEvidence.ts')) {
   assert.doesNotMatch(broomfieldAssessorEvidence, /RIGHTS_VERIFIED|TECHNICAL_ACCESS_READY|FRESHNESS_VERIFIED|PROVENANCE_COMPLETE|ACTIVE_AUTHORIZED/, 'Broomfield Assessor evidence must not upgrade rights, access, freshness, provenance, or activation posture.');
 }
 
+const jeffersonAssessorSourceId = 'SRC-JEFFERSON-COUNTY-ASSESSOR';
+assert.equal(registry.records.filter((item) => item.sourceId === jeffersonAssessorSourceId).length, 1, 'Jefferson County Assessor source must exist exactly once.');
+const jeffersonAssessor = record(jeffersonAssessorSourceId);
+const jeffersonAssessorText = JSON.stringify(jeffersonAssessor);
+assert.equal(jeffersonAssessor.publicName, 'Jefferson County Assessor');
+assert.equal(jeffersonAssessor.responsibleOrganization, "Jefferson County Assessor's Office");
+assert.equal(jeffersonAssessor.sourceClass, 'AUTHORITATIVE_SOURCE');
+assert.equal(jeffersonAssessor.category, 'COUNTY_ASSESSOR');
+assert.equal(jeffersonAssessor.jurisdiction.state, 'Colorado');
+assert.equal(jeffersonAssessor.jurisdiction.county, 'Jefferson County');
+assert.equal(jeffersonAssessor.authorizationState, 'AWAITING_PROVIDER_CONFIRMATION');
+assert.equal(jeffersonAssessor.productionActivationState, 'BLOCKED_NOT_AUTHORIZED');
+assert.equal(jeffersonAssessor.claimEligible, false);
+assert.equal(jeffersonAssessor.customerStatus, 'Blocked / not authorized');
+assert.match(jeffersonAssessor.currentReieUse, /Exact source identity only/);
+assert.match(jeffersonAssessor.currentReieUse, /future-governed Jefferson County Assessor review/);
+assert.match(jeffersonAssessor.currentReieUse, /no property search submission/);
+assert.match(jeffersonAssessor.currentReieUse, /no .* ASPIN or GIS access/);
+assert.match(jeffersonAssessor.currentReieUse, /no .* property-record retrieval/);
+assert.match(jeffersonAssessor.currentReieUse, /no .* owner\/address lookup/);
+assert.match(jeffersonAssessor.currentReieUse, /no .* parcel\/account lookup/);
+assert.match(jeffersonAssessor.currentReieUse, /no .* customer display/);
+assert.match(jeffersonAssessorText, /ASSESSOR_RECORD_NOT_TITLE/);
+assert.match(jeffersonAssessorText, /ASSESSOR_RECORD_NOT_DEED_VALIDITY/);
+assert.match(jeffersonAssessorText, /ASSESSOR_RECORD_NOT_TREASURER_TAX_STATUS/);
+assert.match(jeffersonAssessorText, /ASSESSOR_RECORD_NOT_CURRENT_OWNERSHIP_GUARANTEE/);
+assert.match(jeffersonAssessorText, /ASSESSED_VALUE_NOT_MARKET_VALUE/);
+assert.match(jeffersonAssessorText, /PUBLIC_SEARCH_NOT_AUTOMATION_AUTHORITY/);
+assert.match(jeffersonAssessorText, /PUBLIC_ACCESS_NOT_REUSE_OR_DISPLAY_AUTHORITY/);
+assert.match(jeffersonAssessorText, /PUBLIC_OR_GOVERNMENT_SOURCE_NOT_UNRESTRICTED_OR_VERIFIED_OR_COMPLETE/);
+assert.match(jeffersonAssessorText, /COUNTY_ASSESSOR_NOT_COUNTY_TREASURER/);
+assert.match(jeffersonAssessorText, /COUNTY_ASSESSOR_NOT_RECORDER/);
+assert.match(jeffersonAssessorText, /COUNTY_ASSESSOR_NOT_PARCEL_GIS/);
+assert.match(jeffersonAssessorText, /SOURCE_ACTIVATION_NOT_AUTHORIZED_BY_REGISTRY_MVV/);
+assert.match(jeffersonAssessorText, /CUSTOMER_DISPLAY_NOT_GRANTED_BY_REGISTRY_MVV/);
+assert.match(jeffersonAssessorText, /LEGAL_USE_NOT_APPROVED_BY_REGISTRY_MVV/);
+assert.match(jeffersonAssessorText, /ASPIN, parcel map, interactive maps, and GIS channels are separately governed/);
+assert.match(jeffersonAssessorText, /Treasurer property records, tax status, and tax-payment channels remain separate/);
+assert.match(jeffersonAssessorText, /Clerk and Recorder records, recorded documents, title, deed validity, and legal-description authority remain separate/);
+assert.match(jeffersonAssessorText, /Boulder County, Arapahoe County, and Broomfield Assessor findings/);
+assert.match(jeffersonAssessorText, /Rights, technical access, freshness, attribution, fees, privacy approval, field sensitivity, and provenance remain unknown/);
+assert.doesNotMatch(jeffersonAssessorText, /RIGHTS = VERIFIED|TECHNICAL ACCESS = READY|FRESHNESS = VERIFIED|ATTRIBUTION = REQUIRED|FEE = NONE|PROVENANCE = COMPLETE/);
+assert.doesNotMatch(jeffersonAssessorText, /memberSourceIds|parentSourceId|aggregateSource|childSourceIds|relationshipType/i);
+assert.equal(registry.records.filter((item) => /^SRC-JEFFERSON-COUNTY-(TREASURER|RECORDER|PARCEL|GIS|ASPIN|DATA-MART|PARCEL-SEARCH)/.test(item.sourceId)).length, 0, 'Jefferson Assessor Registry MVV must not add Treasurer, Recorder, ASPIN, Parcel Search, Data Mart, or GIS source ids.');
+assert.equal(registry.records.filter((item) => /JEFFERSON.*(TREASURER|RECORDER|ASPIN|GIS|DATA_MART|PARCEL_SEARCH|PARCEL_GEOMETRY)/i.test(`${item.sourceId} ${item.category}`)).length, 0, 'Jefferson Assessor Registry MVV must not conflate assessor identity with adjacent domains.');
+assert.doesNotMatch(jeffersonAssessorText, /EXP-|SRA-|provider aggregate|wildcard County Assessor/i);
+if (fs.existsSync('lib/sourceQualityJeffersonCountyAssessorEvidence.ts')) {
+  const jeffersonAssessorEvidence = read('lib/sourceQualityJeffersonCountyAssessorEvidence.ts');
+  assert.match(jeffersonAssessorEvidence, /JEFFERSON_COUNTY_ASSESSOR_SOURCE_ID/, 'Jefferson Assessor evidence must bind through the canonical exact source identity constant.');
+  assert.match(jeffersonAssessorEvidence, /CERT-JEFFERSON-COUNTY-ASSESSOR-SOURCE-QUALITY-EVIDENCE-001/, 'Jefferson Assessor evidence must use source-specific certification.');
+  assert.match(jeffersonAssessorEvidence, /COUNTY_ASSESSOR/, 'Jefferson Assessor evidence must preserve the canonical County Assessor class.');
+  assert.match(jeffersonAssessorEvidence, /CERTIFICATION_REFERENCE/, 'Jefferson Assessor evidence must remain certification-reference-only.');
+  assert.doesNotMatch(jeffersonAssessorEvidence, /getReieSourceRegistry|sourceRegistry/, 'Jefferson Assessor evidence must not mutate or depend on Registry implementation state.');
+  assert.doesNotMatch(jeffersonAssessorEvidence, /sourceQualityOperationalManifestData|sourceQualityAdminPreviewFixture/, 'Jefferson Assessor evidence must not create Manifest or Admin Preview coupling.');
+  assert.doesNotMatch(jeffersonAssessorEvidence, /RIGHTS_VERIFIED|TECHNICAL_ACCESS_READY|FRESHNESS_VERIFIED|PROVENANCE_COMPLETE|ACTIVE_AUTHORIZED/, 'Jefferson Assessor evidence must not upgrade rights, access, freshness, provenance, or activation posture.');
+}
+
 const parcelGisSourceId = 'SRC-BOULDER-COUNTY-PARCEL-GIS';
 assert.equal(registry.records.filter((item) => item.sourceId === parcelGisSourceId).length, 1, 'Parcel GIS source must exist exactly once.');
 const parcelGis = record(parcelGisSourceId);
