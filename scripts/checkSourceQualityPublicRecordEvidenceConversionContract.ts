@@ -64,6 +64,7 @@ const recorderRequest: PublicRecordSourceQualityEvidenceConversionRequest = {
 
 assert.deepEqual(PUBLIC_RECORD_SOURCE_QUALITY_CONVERSION_ALLOWED_SOURCE_IDS, [
   'SRC-BOULDER-COUNTY-ASSESSOR',
+  'SRC-ARAPAHOE-COUNTY-ASSESSOR',
   'SRC-BOULDER-COUNTY-TREASURER',
   'SRC-BOULDER-COUNTY-RECORDER-INDEX',
   'SRC-BOULDER-COUNTY-ACCELA-PERMITS',
@@ -162,6 +163,59 @@ for (const key of ['ownerName', 'address', 'documentImage', 'scannedInstrument',
     evidenceReferences: [{ ...recorderRequest.evidenceReferences[0]!, [key]: 'not composable' }],
   }).classification, 'PUBLIC_RECORD_NARRATIVE_INPUT_REJECTED');
 }
+
+const arapahoeAssessorRequest: PublicRecordSourceQualityEvidenceConversionRequest = {
+  ...request,
+  sourceId: 'SRC-ARAPAHOE-COUNTY-ASSESSOR',
+  sourceClass: 'COUNTY_ASSESSOR',
+  sourceConfirmation: {
+    sourceId: 'SRC-ARAPAHOE-COUNTY-ASSESSOR',
+    confirmationClass: 'EXACT_SOURCE_ID_CONFIRMED',
+    reviewedAt: '2026-08-16',
+  },
+  evidenceReferences: [{
+    sourceId: 'SRC-ARAPAHOE-COUNTY-ASSESSOR',
+    inputClass: 'CERTIFICATION_REFERENCE',
+    evidenceReferenceId: 'PUBLIC-RECORD-CONVERSION-ARAPAHOE-ASSESSOR-CERT-001',
+    posture: 'REFERENCED',
+    verificationStatus: 'VERIFIED',
+    limitationCodes: [],
+  }],
+  fieldSensitivityPosture: 'RESTRICTED_OR_UNREVIEWED',
+  conversionAuthorityClass: 'EXECUTIVE_COUNTY_EVIDENCE_CONVERSION_REVIEW',
+  reviewedAt: '2026-08-16',
+};
+const arapahoeAssessor = convertPublicRecordStructuredEvidence(arapahoeAssessorRequest);
+assert.equal(arapahoeAssessor.classification, 'PUBLIC_RECORD_EVIDENCE_CONVERSION_VALID');
+assert.equal(arapahoeAssessor.sourceId, 'SRC-ARAPAHOE-COUNTY-ASSESSOR');
+assert.equal(arapahoeAssessor.linkages.length, 1);
+assert.equal(arapahoeAssessor.linkages[0]?.sourceId, 'SRC-ARAPAHOE-COUNTY-ASSESSOR');
+assert.equal(arapahoeAssessor.linkages[0]?.evidenceClass, 'CERTIFICATION');
+assert.equal(arapahoeAssessor.linkages[0]?.relationshipType, 'CERTIFICATION');
+assert.equal(arapahoeAssessor.normalized?.result, 'INSUFFICIENT_EVIDENCE');
+assert.equal(arapahoeAssessor.normalized?.rights.posture, 'UNKNOWN');
+assert.equal(arapahoeAssessor.normalized?.technicalAccess.posture, 'UNKNOWN');
+assert.equal(arapahoeAssessor.normalized?.freshness.posture, 'UNKNOWN');
+assert.equal(arapahoeAssessor.normalized?.attribution.posture, 'UNKNOWN');
+assert.equal(arapahoeAssessor.normalized?.provenance.posture, 'UNKNOWN');
+assert.equal(convertPublicRecordStructuredEvidence(arapahoeAssessorRequest).conversionFingerprint, arapahoeAssessor.conversionFingerprint);
+assert.notEqual(arapahoeAssessor.conversionFingerprint, valid.conversionFingerprint);
+for (const sourceId of ['EXP-SRC-ARAPAHOE-COUNTY-ASSESSOR', 'SRA-ARAPAHOE-COUNTY-ASSESSOR', 'SRC-GENERIC-COUNTY-ASSESSOR', 'SRC-PROVIDER-COUNTY-ASSESSOR', 'SRC-ARAPAHOE-PARCEL-SEARCH', 'SRC-ARAPAHOE-ASSESSOR-DATA-MART', 'SRC-ARAPAHOE-GIS']) {
+  assert.equal(convertPublicRecordStructuredEvidence({
+    ...arapahoeAssessorRequest,
+    sourceId,
+    sourceConfirmation: { sourceId, confirmationClass: 'EXACT_SOURCE_ID_CONFIRMED', reviewedAt: '2026-08-16' },
+    evidenceReferences: [{ ...arapahoeAssessorRequest.evidenceReferences[0]!, sourceId }],
+  }).classification, 'PUBLIC_RECORD_SOURCE_INVALID');
+}
+assert.equal(convertPublicRecordStructuredEvidence({ ...arapahoeAssessorRequest, sourceClass: 'COUNTY_TREASURER' }).classification, 'PUBLIC_RECORD_SOURCE_MISMATCH');
+assert.equal(convertPublicRecordStructuredEvidence({ ...arapahoeAssessorRequest, sourceConfirmation: undefined }).classification, 'PUBLIC_RECORD_SOURCE_CONFIRMATION_REQUIRED');
+assert.equal(convertPublicRecordStructuredEvidence({ ...arapahoeAssessorRequest, fieldSensitivityPosture: 'UNKNOWN' }).classification, 'PUBLIC_RECORD_FIELD_SENSITIVITY_UNREVIEWED');
+assert.equal(convertPublicRecordStructuredEvidence({ ...arapahoeAssessorRequest, ownerName: 'not allowed' }).classification, 'PUBLIC_RECORD_NARRATIVE_INPUT_REJECTED');
+assert.equal(convertPublicRecordStructuredEvidence({
+  ...arapahoeAssessorRequest,
+  evidenceReferences: [{ ...arapahoeAssessorRequest.evidenceReferences[0]!, sourceId: 'SRC-BOULDER-COUNTY-ASSESSOR' }],
+}).classification, 'PUBLIC_RECORD_REFERENCE_INVALID');
 
 const recorderExpanded = convertPublicRecordStructuredEvidence({
   ...recorderRequest,
