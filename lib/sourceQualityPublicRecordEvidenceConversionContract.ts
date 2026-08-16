@@ -17,6 +17,7 @@ export const SOURCE_QUALITY_PUBLIC_RECORD_EVIDENCE_CONVERSION_SCHEMA_VERSION = '
 export const PUBLIC_RECORD_SOURCE_QUALITY_CONVERSION_ALLOWED_SOURCE_IDS = Object.freeze([
   'SRC-BOULDER-COUNTY-ASSESSOR',
   'SRC-BOULDER-COUNTY-TREASURER',
+  'SRC-BOULDER-COUNTY-RECORDER-INDEX',
   'SRC-BOULDER-COUNTY-ACCELA-PERMITS',
   'SRC-CITY-BOULDER-OPEN-DATA-PERMITS',
   'SRC-CITY-BOULDER-BUILDING-PERMITS-PORTAL',
@@ -25,6 +26,7 @@ export const PUBLIC_RECORD_SOURCE_QUALITY_CONVERSION_ALLOWED_SOURCE_IDS = Object
 export type PublicRecordSourceQualityConversionSourceClass =
   | 'COUNTY_ASSESSOR'
   | 'COUNTY_TREASURER'
+  | 'COUNTY_RECORDED_DOCUMENT_INDEX'
   | 'COUNTY_PERMIT'
   | 'MUNICIPAL_OPEN_DATA_PERMIT'
   | 'MUNICIPAL_PERMIT_PORTAL';
@@ -121,7 +123,7 @@ const REQUEST_KEYS = ['schemaVersion', 'sourceId', 'sourceClass', 'sourceConfirm
 const CONFIRMATION_KEYS = ['sourceId', 'confirmationClass', 'reviewedAt'];
 const REFERENCE_KEYS = ['sourceId', 'inputClass', 'evidenceReferenceId', 'posture', 'verificationStatus', 'limitationCodes'];
 const CERTIFICATION_KEYS = ['certificationId', 'repositoryReference', 'referenceVersion', 'linkageReviewedDate'];
-const NARRATIVE_OR_PII_KEYS = ['narrative', 'notes', 'email', 'phone', 'name', 'ownerName', 'applicantName', 'taxpayerName', 'contractorName', 'mailingAddress', 'address', 'parcel', 'parcelId', 'permit', 'permitNumber', 'inspection', 'customerRecord', 'propertyRecord', 'rawRecord', 'externalArtifact', 'agreementText', 'websiteProse', 'pdfText'];
+const NARRATIVE_OR_PII_KEYS = ['narrative', 'notes', 'email', 'phone', 'name', 'ownerName', 'applicantName', 'taxpayerName', 'contractorName', 'mailingAddress', 'address', 'parcel', 'parcelId', 'permit', 'permitNumber', 'inspection', 'customerRecord', 'propertyRecord', 'rawRecord', 'externalArtifact', 'agreementText', 'websiteProse', 'pdfText', 'documentImage', 'scannedInstrument', 'ocrText', 'fullText', 'signature', 'documentBody', 'legalDescription', 'certifiedCopyContent', 'rawInstrumentPayload', 'documentContentRedistribution'];
 const LIMITATION_CODES: readonly SourceEvidenceLimitationCode[] = [
   'RIGHTS_PENDING',
   'RIGHTS_RESTRICTED',
@@ -140,6 +142,7 @@ const LIMITATION_CODES: readonly SourceEvidenceLimitationCode[] = [
 const SOURCE_CLASSES: Record<(typeof PUBLIC_RECORD_SOURCE_QUALITY_CONVERSION_ALLOWED_SOURCE_IDS)[number], PublicRecordSourceQualityConversionSourceClass> = {
   'SRC-BOULDER-COUNTY-ASSESSOR': 'COUNTY_ASSESSOR',
   'SRC-BOULDER-COUNTY-TREASURER': 'COUNTY_TREASURER',
+  'SRC-BOULDER-COUNTY-RECORDER-INDEX': 'COUNTY_RECORDED_DOCUMENT_INDEX',
   'SRC-BOULDER-COUNTY-ACCELA-PERMITS': 'COUNTY_PERMIT',
   'SRC-CITY-BOULDER-OPEN-DATA-PERMITS': 'MUNICIPAL_OPEN_DATA_PERMIT',
   'SRC-CITY-BOULDER-BUILDING-PERMITS-PORTAL': 'MUNICIPAL_PERMIT_PORTAL',

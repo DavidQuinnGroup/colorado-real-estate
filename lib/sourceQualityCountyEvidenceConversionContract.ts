@@ -19,17 +19,20 @@ import { SOURCE_QUALITY_SUMMARY_ASSEMBLY_SCHEMA_VERSION } from './sourceQualityS
 
 export const SOURCE_QUALITY_COUNTY_EVIDENCE_CONVERSION_SCHEMA_VERSION = 'REIE_SOURCE_QUALITY_COUNTY_EVIDENCE_CONVERSION_V1' as const;
 export const BOULDER_COUNTY_ASSESSOR_SOURCE_ID = 'SRC-BOULDER-COUNTY-ASSESSOR' as const;
+export const BOULDER_COUNTY_RECORDER_INDEX_SOURCE_ID = 'SRC-BOULDER-COUNTY-RECORDER-INDEX' as const;
 export const BOULDER_COUNTY_ACCELA_PERMITS_SOURCE_ID = 'SRC-BOULDER-COUNTY-ACCELA-PERMITS' as const;
 
 export const COUNTY_SOURCE_QUALITY_CONVERSION_ALLOWED_SOURCE_IDS = Object.freeze([
   BOULDER_COUNTY_ASSESSOR_SOURCE_ID,
   'SRC-BOULDER-COUNTY-TREASURER',
+  BOULDER_COUNTY_RECORDER_INDEX_SOURCE_ID,
   BOULDER_COUNTY_ACCELA_PERMITS_SOURCE_ID,
 ] as const);
 
 export type CountySourceQualityConversionSourceClass =
   | 'COUNTY_ASSESSOR'
   | 'COUNTY_TREASURER'
+  | 'COUNTY_RECORDED_DOCUMENT_INDEX'
   | 'COUNTY_PERMIT';
 
 export type CountyEvidenceInputClass =
@@ -111,10 +114,11 @@ export type CountySourceQualityEvidenceConversionResult = Readonly<{
 const SOURCE_CLASSES: Record<(typeof COUNTY_SOURCE_QUALITY_CONVERSION_ALLOWED_SOURCE_IDS)[number], CountySourceQualityConversionSourceClass> = {
   'SRC-BOULDER-COUNTY-ASSESSOR': 'COUNTY_ASSESSOR',
   'SRC-BOULDER-COUNTY-TREASURER': 'COUNTY_TREASURER',
+  'SRC-BOULDER-COUNTY-RECORDER-INDEX': 'COUNTY_RECORDED_DOCUMENT_INDEX',
   'SRC-BOULDER-COUNTY-ACCELA-PERMITS': 'COUNTY_PERMIT',
 };
 const REQUEST_KEYS = ['schemaVersion', 'sourceId', 'sourceClass', 'sourceConfirmation', 'evidenceReferences', 'certificationReference', 'fieldSensitivityPosture', 'conversionAuthorityClass', 'reviewedAt'];
-const NARRATIVE_OR_PII_KEYS = ['narrative', 'notes', 'email', 'phone', 'name', 'ownerName', 'applicantName', 'taxpayerName', 'contractorName', 'mailingAddress', 'address', 'parcel', 'parcelId', 'permit', 'permitNumber', 'inspection', 'customerRecord', 'propertyRecord', 'rawRecord', 'externalArtifact', 'agreementText', 'websiteProse', 'pdfText'];
+const NARRATIVE_OR_PII_KEYS = ['narrative', 'notes', 'email', 'phone', 'name', 'ownerName', 'applicantName', 'taxpayerName', 'contractorName', 'mailingAddress', 'address', 'parcel', 'parcelId', 'permit', 'permitNumber', 'inspection', 'customerRecord', 'propertyRecord', 'rawRecord', 'externalArtifact', 'agreementText', 'websiteProse', 'pdfText', 'documentImage', 'scannedInstrument', 'ocrText', 'fullText', 'signature', 'documentBody', 'legalDescription', 'certifiedCopyContent', 'rawInstrumentPayload', 'documentContentRedistribution'];
 
 export const BOULDER_COUNTY_ASSESSOR_CONVERSION_POSTURE = 'COUNTY_PUBLIC_RECORD_SOURCE_QUALITY_CONVERSION_READY_SOURCE_CONFIRMATION_REQUIRED' as const;
 

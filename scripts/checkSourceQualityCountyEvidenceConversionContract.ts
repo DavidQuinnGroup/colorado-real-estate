@@ -6,6 +6,7 @@ import {
   BOULDER_COUNTY_ASSESSOR_CONVERSION_POSTURE,
   BOULDER_COUNTY_ASSESSOR_SOURCE_ID,
   BOULDER_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST,
+  BOULDER_COUNTY_RECORDER_INDEX_SOURCE_ID,
   COUNTY_SOURCE_QUALITY_CONVERSION_ALLOWED_SOURCE_IDS,
   COUNTY_SOURCE_QUALITY_CONVERSION_FIREWALL,
   convertCountyStructuredEvidence,
@@ -19,6 +20,7 @@ assert.equal(BOULDER_COUNTY_ASSESSOR_SOURCE_ID, 'SRC-BOULDER-COUNTY-ASSESSOR');
 assert.deepEqual(COUNTY_SOURCE_QUALITY_CONVERSION_ALLOWED_SOURCE_IDS, [
   'SRC-BOULDER-COUNTY-ASSESSOR',
   'SRC-BOULDER-COUNTY-TREASURER',
+  'SRC-BOULDER-COUNTY-RECORDER-INDEX',
   'SRC-BOULDER-COUNTY-ACCELA-PERMITS',
 ]);
 assert.equal(BOULDER_COUNTY_ASSESSOR_CONVERSION_POSTURE, 'COUNTY_PUBLIC_RECORD_SOURCE_QUALITY_CONVERSION_READY_SOURCE_CONFIRMATION_REQUIRED');
@@ -61,6 +63,16 @@ const candidate = convertCountyStructuredEvidence({
   evidenceReferences: [{ ...BOULDER_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST.evidenceReferences[0]!, sourceId: 'SRC-BOULDER-PERMIT-CANDIDATES' }],
 });
 assert.equal(candidate.classification, 'COUNTY_NON_OPERATIONAL_CANDIDATE_REJECTED');
+for (const sourceId of ['EXP-SRC-BOULDER-COUNTY-RECORDER', 'SRA-BOULDER-COUNTY-RECORDER', 'SRC-GENERIC-COUNTY-RECORDER', 'RECORDER']) {
+  assert.equal(convertCountyStructuredEvidence({
+    ...BOULDER_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST,
+    sourceId,
+    sourceClass: 'COUNTY_RECORDED_DOCUMENT_INDEX',
+    sourceConfirmation: { sourceId, confirmationClass: 'EXACT_SOURCE_ID_CONFIRMED', reviewedAt: '2026-08-15' },
+    evidenceReferences: [{ ...BOULDER_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST.evidenceReferences[0]!, sourceId }],
+    fieldSensitivityPosture: 'RESTRICTED_OR_UNREVIEWED',
+  }).classification, 'COUNTY_SOURCE_INVALID');
+}
 const cityAsCounty = convertCountyStructuredEvidence({
   ...BOULDER_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST,
   sourceId: 'SRC-CITY-BOULDER-OPEN-DATA-PERMITS',
@@ -153,6 +165,52 @@ assert.equal(accela.normalized?.technicalAccess.posture, 'UNKNOWN');
 assert.equal(accela.normalized?.freshness.posture, 'UNKNOWN');
 assert.equal(accela.normalized?.attribution.posture, 'UNKNOWN');
 assert.equal(accela.normalized?.provenance.posture, 'UNKNOWN');
+
+const recorderRequest = {
+  ...BOULDER_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST,
+  sourceId: BOULDER_COUNTY_RECORDER_INDEX_SOURCE_ID,
+  sourceClass: 'COUNTY_RECORDED_DOCUMENT_INDEX',
+  sourceConfirmation: { sourceId: BOULDER_COUNTY_RECORDER_INDEX_SOURCE_ID, confirmationClass: 'EXACT_SOURCE_ID_CONFIRMED', reviewedAt: '2026-08-15' },
+  evidenceReferences: [{
+    ...BOULDER_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST.evidenceReferences[0]!,
+    sourceId: BOULDER_COUNTY_RECORDER_INDEX_SOURCE_ID,
+    evidenceReferenceId: 'COUNTY-CONVERSION-RECORDER-INDEX-CERT-001',
+  }],
+  fieldSensitivityPosture: 'RESTRICTED_OR_UNREVIEWED',
+} as const;
+const recorder = convertCountyStructuredEvidence(recorderRequest);
+assert.equal(BOULDER_COUNTY_RECORDER_INDEX_SOURCE_ID, 'SRC-BOULDER-COUNTY-RECORDER-INDEX');
+assert.equal(recorder.classification, 'COUNTY_EVIDENCE_CONVERSION_VALID');
+assert.equal(recorder.sourceId, BOULDER_COUNTY_RECORDER_INDEX_SOURCE_ID);
+assert.equal(recorder.linkages.length, 1);
+assert.equal(recorder.linkages[0]?.sourceId, BOULDER_COUNTY_RECORDER_INDEX_SOURCE_ID);
+assert.equal(recorder.linkages[0]?.relationshipType, 'CERTIFICATION');
+assert.equal(recorder.linkages[0]?.evidenceClass, 'CERTIFICATION');
+assert.equal(recorder.normalized?.result, 'INSUFFICIENT_EVIDENCE');
+assert.equal(recorder.normalized?.rights.posture, 'UNKNOWN');
+assert.equal(recorder.normalized?.technicalAccess.posture, 'UNKNOWN');
+assert.equal(recorder.normalized?.freshness.posture, 'UNKNOWN');
+assert.equal(recorder.normalized?.attribution.posture, 'UNKNOWN');
+assert.equal(recorder.normalized?.provenance.posture, 'UNKNOWN');
+assert.equal(convertCountyStructuredEvidence(recorderRequest).conversionFingerprint, recorder.conversionFingerprint);
+assert.equal(convertCountyStructuredEvidence({
+  ...BOULDER_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST,
+  sourceId: BOULDER_COUNTY_RECORDER_INDEX_SOURCE_ID,
+  sourceClass: 'COUNTY_ASSESSOR',
+  sourceConfirmation: { sourceId: BOULDER_COUNTY_RECORDER_INDEX_SOURCE_ID, confirmationClass: 'EXACT_SOURCE_ID_CONFIRMED', reviewedAt: '2026-08-15' },
+  evidenceReferences: [{ ...BOULDER_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST.evidenceReferences[0]!, sourceId: BOULDER_COUNTY_RECORDER_INDEX_SOURCE_ID }],
+}).classification, 'COUNTY_EVIDENCE_SOURCE_MISMATCH');
+assert.equal(convertCountyStructuredEvidence({ ...recorderRequest, sourceConfirmation: undefined }).classification, 'COUNTY_SOURCE_CONFIRMATION_REQUIRED');
+assert.equal(convertCountyStructuredEvidence({ ...recorderRequest, documentImage: 'not composable' }).classification, 'COUNTY_NARRATIVE_INPUT_REJECTED');
+assert.equal(convertCountyStructuredEvidence({
+  ...recorderRequest,
+  evidenceReferences: [{ ...recorderRequest.evidenceReferences[0]!, ocrText: 'not composable' }],
+}).classification, 'COUNTY_NARRATIVE_INPUT_REJECTED');
+const recorderAssemblyRequest = createCountySourceQualityAssemblyRequest(recorder);
+assert.ok(recorderAssemblyRequest);
+const recorderAssembly = assembleSourceQualitySummaries(recorderAssemblyRequest);
+assert.notEqual(recorderAssembly.classification, 'FAIL_CLOSED');
+assert.equal(recorderAssembly.assembly?.summaries[0]?.classification, 'INSUFFICIENT_EVIDENCE');
 
 const summary = summarizeSourceQuality(valid.normalized);
 assert.equal(summary.classification, 'INSUFFICIENT_EVIDENCE');

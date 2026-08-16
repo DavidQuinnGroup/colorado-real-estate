@@ -42,9 +42,30 @@ const request: PublicRecordSourceQualityEvidenceConversionRequest = {
   reviewedAt: '2026-08-15',
 };
 
+const recorderRequest: PublicRecordSourceQualityEvidenceConversionRequest = {
+  ...request,
+  sourceId: 'SRC-BOULDER-COUNTY-RECORDER-INDEX',
+  sourceClass: 'COUNTY_RECORDED_DOCUMENT_INDEX',
+  sourceConfirmation: {
+    sourceId: 'SRC-BOULDER-COUNTY-RECORDER-INDEX',
+    confirmationClass: 'EXACT_SOURCE_ID_CONFIRMED',
+    reviewedAt: '2026-08-15',
+  },
+  evidenceReferences: [{
+    sourceId: 'SRC-BOULDER-COUNTY-RECORDER-INDEX',
+    inputClass: 'CERTIFICATION_REFERENCE',
+    evidenceReferenceId: 'PUBLIC-RECORD-CONVERSION-RECORDER-INDEX-CERT-001',
+    posture: 'REFERENCED',
+    verificationStatus: 'VERIFIED',
+    limitationCodes: [],
+  }],
+  fieldSensitivityPosture: 'RESTRICTED_OR_UNREVIEWED',
+};
+
 assert.deepEqual(PUBLIC_RECORD_SOURCE_QUALITY_CONVERSION_ALLOWED_SOURCE_IDS, [
   'SRC-BOULDER-COUNTY-ASSESSOR',
   'SRC-BOULDER-COUNTY-TREASURER',
+  'SRC-BOULDER-COUNTY-RECORDER-INDEX',
   'SRC-BOULDER-COUNTY-ACCELA-PERMITS',
   'SRC-CITY-BOULDER-OPEN-DATA-PERMITS',
   'SRC-CITY-BOULDER-BUILDING-PERMITS-PORTAL',
@@ -82,6 +103,81 @@ assert.equal(convertPublicRecordStructuredEvidence({ ...request, evidenceReferen
 assert.equal(convertPublicRecordStructuredEvidence({ ...request, narrative: 'not composable' }).classification, 'PUBLIC_RECORD_NARRATIVE_INPUT_REJECTED');
 assert.equal(convertPublicRecordStructuredEvidence({ ...request, evidenceReferences: [{ ...request.evidenceReferences[0]!, applicantName: 'not allowed' }] }).classification, 'PUBLIC_RECORD_NARRATIVE_INPUT_REJECTED');
 assert.equal(convertPublicRecordStructuredEvidence({ ...request, evidenceReferences: [{ ...request.evidenceReferences[0]!, sourceId: 'SRC-CITY-BOULDER-BUILDING-PERMITS-PORTAL' }] }).classification, 'PUBLIC_RECORD_REFERENCE_INVALID');
+
+const recorder = convertPublicRecordStructuredEvidence(recorderRequest);
+assert.equal(recorder.classification, 'PUBLIC_RECORD_EVIDENCE_CONVERSION_VALID');
+assert.equal(recorder.sourceId, 'SRC-BOULDER-COUNTY-RECORDER-INDEX');
+assert.equal(recorder.linkages.length, 1);
+assert.equal(recorder.linkages[0]?.sourceId, 'SRC-BOULDER-COUNTY-RECORDER-INDEX');
+assert.equal(recorder.linkages[0]?.evidenceClass, 'CERTIFICATION');
+assert.equal(recorder.linkages[0]?.relationshipType, 'CERTIFICATION');
+assert.equal(recorder.linkages[0]?.posture, 'REFERENCED');
+assert.equal(recorder.normalized?.result, 'INSUFFICIENT_EVIDENCE');
+assert.equal(recorder.normalized?.rights.posture, 'UNKNOWN');
+assert.equal(recorder.normalized?.technicalAccess.posture, 'UNKNOWN');
+assert.equal(recorder.normalized?.freshness.posture, 'UNKNOWN');
+assert.equal(recorder.normalized?.attribution.posture, 'UNKNOWN');
+assert.equal(recorder.normalized?.provenance.posture, 'UNKNOWN');
+assert.equal(convertPublicRecordStructuredEvidence(recorderRequest).inputFingerprint, recorder.inputFingerprint);
+assert.equal(convertPublicRecordStructuredEvidence(recorderRequest).conversionFingerprint, recorder.conversionFingerprint);
+for (const sourceClass of ['COUNTY_ASSESSOR', 'COUNTY_TREASURER', 'COUNTY_PERMIT', 'MUNICIPAL_OPEN_DATA_PERMIT', 'MUNICIPAL_PERMIT_PORTAL'] as const) {
+  assert.equal(convertPublicRecordStructuredEvidence({ ...recorderRequest, sourceClass }).classification, 'PUBLIC_RECORD_SOURCE_MISMATCH');
+}
+for (const sourceId of ['EXP-SRC-BOULDER-COUNTY-RECORDER', 'SRA-BOULDER-COUNTY-RECORDER', 'SRC-GENERIC-COUNTY-RECORDER', 'RECORDER']) {
+  assert.equal(convertPublicRecordStructuredEvidence({
+    ...recorderRequest,
+    sourceId,
+    sourceConfirmation: { sourceId, confirmationClass: 'EXACT_SOURCE_ID_CONFIRMED', reviewedAt: '2026-08-15' },
+    evidenceReferences: [{ ...recorderRequest.evidenceReferences[0]!, sourceId }],
+  }).classification, 'PUBLIC_RECORD_SOURCE_INVALID');
+}
+for (const sourceId of [
+  'SRC-BOULDER-COUNTY-ASSESSOR',
+  'SRC-BOULDER-COUNTY-TREASURER',
+  'SRC-BOULDER-COUNTY-ACCELA-PERMITS',
+  'SRC-CITY-BOULDER-OPEN-DATA-PERMITS',
+  'SRC-CITY-BOULDER-BUILDING-PERMITS-PORTAL',
+]) {
+  assert.equal(convertPublicRecordStructuredEvidence({
+    ...recorderRequest,
+    sourceId,
+    sourceConfirmation: { sourceId, confirmationClass: 'EXACT_SOURCE_ID_CONFIRMED', reviewedAt: '2026-08-15' },
+    evidenceReferences: [{ ...recorderRequest.evidenceReferences[0]!, sourceId }],
+  }).classification, 'PUBLIC_RECORD_SOURCE_MISMATCH');
+}
+assert.equal(convertPublicRecordStructuredEvidence({ ...recorderRequest, sourceConfirmation: undefined }).classification, 'PUBLIC_RECORD_SOURCE_CONFIRMATION_REQUIRED');
+assert.equal(convertPublicRecordStructuredEvidence({ ...recorderRequest, certificationReference: undefined }).classification, 'PUBLIC_RECORD_CERTIFICATION_REQUIRED');
+assert.equal(convertPublicRecordStructuredEvidence({ ...recorderRequest, reviewedAt: '' }).classification, 'PUBLIC_RECORD_REFERENCE_INVALID');
+assert.equal(convertPublicRecordStructuredEvidence({ ...recorderRequest, narrative: 'not composable' }).classification, 'PUBLIC_RECORD_NARRATIVE_INPUT_REJECTED');
+for (const key of ['ownerName', 'address', 'documentImage', 'scannedInstrument', 'ocrText', 'fullText', 'signature', 'documentBody', 'legalDescription', 'certifiedCopyContent', 'rawInstrumentPayload', 'documentContentRedistribution']) {
+  assert.equal(convertPublicRecordStructuredEvidence({
+    ...recorderRequest,
+    evidenceReferences: [{ ...recorderRequest.evidenceReferences[0]!, [key]: 'not composable' }],
+  }).classification, 'PUBLIC_RECORD_NARRATIVE_INPUT_REJECTED');
+}
+
+const recorderExpanded = convertPublicRecordStructuredEvidence({
+  ...recorderRequest,
+  evidenceReferences: [
+    ...recorderRequest.evidenceReferences,
+    { sourceId: recorderRequest.sourceId, inputClass: 'RIGHTS_READINESS_REFERENCE', evidenceReferenceId: 'PUBLIC-RECORD-RECORDER-RIGHTS-001', posture: 'UNKNOWN', verificationStatus: 'VERIFIED', limitationCodes: [] },
+    { sourceId: recorderRequest.sourceId, inputClass: 'TECHNICAL_ACCESS_REFERENCE', evidenceReferenceId: 'PUBLIC-RECORD-RECORDER-TECH-001', posture: 'UNKNOWN', verificationStatus: 'VERIFIED', limitationCodes: [] },
+    { sourceId: recorderRequest.sourceId, inputClass: 'FRESHNESS_REFERENCE', evidenceReferenceId: 'PUBLIC-RECORD-RECORDER-FRESHNESS-001', posture: 'UNKNOWN', verificationStatus: 'VERIFIED', limitationCodes: [] },
+    { sourceId: recorderRequest.sourceId, inputClass: 'ATTRIBUTION_REFERENCE', evidenceReferenceId: 'PUBLIC-RECORD-RECORDER-ATTRIBUTION-001', posture: 'UNKNOWN', verificationStatus: 'VERIFIED', limitationCodes: [] },
+    { sourceId: recorderRequest.sourceId, inputClass: 'PROVENANCE_REFERENCE', evidenceReferenceId: 'PUBLIC-RECORD-RECORDER-PROVENANCE-001', posture: 'UNKNOWN', verificationStatus: 'VERIFIED', limitationCodes: ['PROVENANCE_INCOMPLETE'] },
+  ],
+});
+assert.equal(recorderExpanded.classification, 'PUBLIC_RECORD_EVIDENCE_CONVERSION_VALID');
+assert.equal(recorderExpanded.normalized?.rights.posture, 'UNKNOWN');
+assert.equal(recorderExpanded.normalized?.technicalAccess.posture, 'UNKNOWN');
+assert.equal(recorderExpanded.normalized?.freshness.posture, 'UNKNOWN');
+assert.equal(recorderExpanded.normalized?.attribution.posture, 'UNKNOWN');
+assert.equal(recorderExpanded.normalized?.provenance.posture, 'UNKNOWN');
+const recorderAssemblyRequest = createPublicRecordSourceQualityAssemblyRequest(recorder);
+assert.ok(recorderAssemblyRequest);
+const recorderAssembly = assembleSourceQualitySummaries(recorderAssemblyRequest);
+assert.notEqual(recorderAssembly.classification, 'FAIL_CLOSED');
+assert.equal(recorderAssembly.assembly?.summaries[0]?.classification, 'INSUFFICIENT_EVIDENCE');
 
 const portal = convertPublicRecordStructuredEvidence({
   ...request,
