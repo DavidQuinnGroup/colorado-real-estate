@@ -48,6 +48,12 @@ import {
   convertBoulderCountyTreasurerSourceQualityEvidence,
 } from './sourceQualityBoulderCountyTreasurerEvidence';
 import {
+  BROOMFIELD_COUNTY_ASSESSOR_SOURCE_ID,
+  BROOMFIELD_COUNTY_ASSESSOR_SOURCE_QUALITY_CERTIFICATION,
+  BROOMFIELD_COUNTY_ASSESSOR_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT,
+  convertBroomfieldCountyAssessorSourceQualityEvidence,
+} from './sourceQualityBroomfieldCountyAssessorEvidence';
+import {
   CITY_BOULDER_BUILDING_PERMITS_PORTAL_SOURCE_ID,
   CITY_BOULDER_BUILDING_PERMITS_PORTAL_SOURCE_QUALITY_CERTIFICATION,
   CITY_BOULDER_BUILDING_PERMITS_PORTAL_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT,
@@ -83,6 +89,7 @@ const boulderCountyAccelaPermitsEvidence = convertBoulderCountyAccelaPermitsSour
 const boulderCountyAssessorEvidence = convertBoulderCountyAssessorSourceQualityEvidence();
 const boulderCountyRecorderIndexEvidence = convertBoulderCountyRecorderIndexSourceQualityEvidence();
 const boulderCountyTreasurerEvidence = convertBoulderCountyTreasurerSourceQualityEvidence();
+const broomfieldCountyAssessorEvidence = convertBroomfieldCountyAssessorSourceQualityEvidence();
 const bcodAddressPointsEvidence = convertBcodAddressPointsSourceQualityEvidence();
 const bcodParkBoundariesEvidence = convertBcodParkBoundariesSourceQualityEvidence();
 const boulderCountyParcelGisEvidence = convertBoulderCountyParcelGisSourceQualityEvidence();
@@ -290,6 +297,18 @@ export const SOURCE_QUALITY_OPERATIONAL_MANIFEST_DATA: SourceQualityOperationalM
       expectedEvidenceClasses: ['CERTIFICATION'],
       certificationReference: ARAPAHOE_COUNTY_ASSESSOR_SOURCE_QUALITY_CERTIFICATION,
       reviewedAt: ARAPAHOE_COUNTY_ASSESSOR_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT,
+      reviewAuthorityClass: 'DELEGATED_SOURCE_GOVERNANCE_REVIEW',
+      limitationCodes: [],
+    },
+    {
+      schemaVersion: SOURCE_QUALITY_OPERATIONAL_MANIFEST_SCHEMA_VERSION,
+      manifestId,
+      sourceId: BROOMFIELD_COUNTY_ASSESSOR_SOURCE_ID,
+      inclusionClass: 'STRUCTURED_EVIDENCE_WITH_KNOWN_GAPS',
+      linkages: broomfieldCountyAssessorEvidence.linkages,
+      expectedEvidenceClasses: ['CERTIFICATION'],
+      certificationReference: BROOMFIELD_COUNTY_ASSESSOR_SOURCE_QUALITY_CERTIFICATION,
+      reviewedAt: BROOMFIELD_COUNTY_ASSESSOR_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT,
       reviewAuthorityClass: 'DELEGATED_SOURCE_GOVERNANCE_REVIEW',
       limitationCodes: [],
     },
