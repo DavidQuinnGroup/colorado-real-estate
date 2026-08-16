@@ -19,6 +19,9 @@ assert.equal(fixtureAssembly.assembly.coverageClass, 'PARTIAL_REVIEWED_SOURCE_SE
 assert.equal(fixtureAssembly.assembly.completenessClaim, 'NO_STATEWIDE_OR_PROVIDER_COMPLETENESS_CLAIM');
 assert.equal(fixtureAssembly.assembly.sourceCount, 4);
 assert.equal(fixtureAssembly.assembly.assembledSourceCount, 4);
+assert.equal(fixtureAssembly.assembly.summaries.filter((summary) => summary.source.sourceId === 'SRC-BOULDER-PERMIT-CANDIDATES').length, 0);
+assert.equal(fixtureAssembly.assembly.summaries.filter((summary) => summary.source.sourceId === 'SRC-BOULDER-COUNTY-TREASURER').length, 1);
+assert.equal(fixtureAssembly.assembly.summaries.find((summary) => summary.source.sourceId === 'SRC-BOULDER-COUNTY-TREASURER')?.classification, 'INSUFFICIENT_EVIDENCE');
 
 const manifestResult = validateSourceQualityOperationalManifest(SOURCE_QUALITY_OPERATIONAL_MANIFEST_DATA);
 assert.equal(manifestResult.classification, 'PARTIAL_OPERATIONAL_MANIFEST_VALID');
@@ -82,6 +85,8 @@ assert.ok(pageSource.includes('activationFirewall.customerDisplayAuthority'));
 assert.ok(!pageSource.includes('use client'));
 assert.ok(!pageSource.includes('use server'));
 assert.ok(fixtureSource.includes('PREVIEW_FIXTURE_ONLY'));
+assert.ok(fixtureSource.includes('SRC-BOULDER-COUNTY-TREASURER'));
+assert.ok(!fixtureSource.includes('SRC-BOULDER-PERMIT-CANDIDATES'));
 assert.ok(!fixtureSource.includes('COLORADO-COUNTY-57-RESPONSE-RECONCILIATION-AND-REMAINING-SEVEN-READINESS'));
 
 for (const prohibited of ['@prisma/client', 'PrismaClient', 'prisma.', 'fetch(', 'http://', 'https://', 'process.env', 'node:fs', 'createClient', 'Typesense', 'CRMTask', 'sendPropertyInquiryNotification', 'nodemailer', 'resend', 'twilio', 'SourceRegistry', 'sourceRegistry', 'trustScore', 'leaderboard', 'ranking', 'Activate', 'Approve', 'Publish', '<form', 'route.ts', 'method="POST"', 'method="PATCH"', 'method="PUT"', 'method="DELETE"', 'onSubmit', 'COLORADO-COUNTY-57-RESPONSE-RECONCILIATION-AND-REMAINING-SEVEN-READINESS']) assert.ok(!pageSource.includes(prohibited), 'Operational page must not reference ' + prohibited);

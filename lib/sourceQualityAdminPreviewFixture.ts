@@ -33,7 +33,7 @@ function linkages(sourceId: string, suffix: string): SourceEvidenceLinkageRecord
 const completeSource = 'SRC-MUNICIPAL-PLANNING-CONTEXT';
 const reviewSource = 'SRC-REIE-FINANCING-SCENARIO-CALCULATOR';
 const conflictSource = 'SRC-REIE-PROPERTY-COMPARISON-INTELLIGENCE';
-const insufficientSource = 'SRC-BOULDER-PERMIT-CANDIDATES';
+const insufficientSource = 'SRC-BOULDER-COUNTY-TREASURER';
 
 const reviewLinkages = linkages(reviewSource, 'REVIEW').map((linkage) => linkage.relationshipType === 'ATTRIBUTION'
   ? { ...linkage, posture: 'REQUIRED' as const, limitationCodes: ['ATTRIBUTION_REQUIRED'] as const }

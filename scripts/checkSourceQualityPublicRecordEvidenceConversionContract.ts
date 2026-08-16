@@ -70,6 +70,7 @@ assert.deepEqual(PUBLIC_RECORD_SOURCE_QUALITY_CONVERSION_ALLOWED_SOURCE_IDS, [
   'SRC-CITY-BOULDER-OPEN-DATA-PERMITS',
   'SRC-CITY-BOULDER-BUILDING-PERMITS-PORTAL',
 ]);
+assert.equal(PUBLIC_RECORD_SOURCE_QUALITY_CONVERSION_ALLOWED_SOURCE_IDS.includes('SRC-BOULDER-PERMIT-CANDIDATES' as never), false);
 
 const valid = convertPublicRecordStructuredEvidence(request);
 assert.equal(valid.classification, 'PUBLIC_RECORD_EVIDENCE_CONVERSION_VALID');
@@ -93,6 +94,12 @@ assert.equal(convertPublicRecordStructuredEvidence({
   sourceId: 'SRC-UNKNOWN-PUBLIC-RECORD',
   sourceConfirmation: { sourceId: 'SRC-UNKNOWN-PUBLIC-RECORD', confirmationClass: 'EXACT_SOURCE_ID_CONFIRMED', reviewedAt: '2026-08-15' },
   evidenceReferences: [{ ...request.evidenceReferences[0]!, sourceId: 'SRC-UNKNOWN-PUBLIC-RECORD' }],
+}).classification, 'PUBLIC_RECORD_SOURCE_INVALID');
+assert.equal(convertPublicRecordStructuredEvidence({
+  ...request,
+  sourceId: 'SRC-BOULDER-PERMIT-CANDIDATES',
+  sourceConfirmation: { sourceId: 'SRC-BOULDER-PERMIT-CANDIDATES', confirmationClass: 'EXACT_SOURCE_ID_CONFIRMED', reviewedAt: '2026-08-15' },
+  evidenceReferences: [{ ...request.evidenceReferences[0]!, sourceId: 'SRC-BOULDER-PERMIT-CANDIDATES' }],
 }).classification, 'PUBLIC_RECORD_SOURCE_INVALID');
 assert.equal(convertPublicRecordStructuredEvidence({ ...request, sourceClass: 'COUNTY_PERMIT' }).classification, 'PUBLIC_RECORD_SOURCE_MISMATCH');
 assert.equal(convertPublicRecordStructuredEvidence({ ...request, sourceConfirmation: undefined }).classification, 'PUBLIC_RECORD_SOURCE_CONFIRMATION_REQUIRED');

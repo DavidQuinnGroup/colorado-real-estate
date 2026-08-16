@@ -63,6 +63,9 @@ const candidate = convertCountyStructuredEvidence({
   evidenceReferences: [{ ...BOULDER_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST.evidenceReferences[0]!, sourceId: 'SRC-BOULDER-PERMIT-CANDIDATES' }],
 });
 assert.equal(candidate.classification, 'COUNTY_NON_OPERATIONAL_CANDIDATE_REJECTED');
+assert.deepEqual(candidate.reasons, ['NON_OPERATIONAL_PERMIT_CANDIDATE_NOT_CONVERSION_AUTHORITY']);
+assert.equal(candidate.sourceId, null);
+assert.equal(candidate.linkages.length, 0);
 for (const sourceId of ['EXP-SRC-BOULDER-COUNTY-RECORDER', 'SRA-BOULDER-COUNTY-RECORDER', 'SRC-GENERIC-COUNTY-RECORDER', 'RECORDER']) {
   assert.equal(convertCountyStructuredEvidence({
     ...BOULDER_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST,

@@ -35,6 +35,12 @@ export type ReieCustomerSourceStatus =
   | 'Reference only'
   | 'REIE calculation';
 
+export type ReieSourceLifecyclePosture =
+  | 'NON_OPERATIONAL_DISCOVERY_VERIFICATION_CONTEXT';
+
+export type ReieSourceQualityAdvancementEligibility =
+  | 'NOT_ELIGIBLE_NON_OPERATIONAL_CONTEXT';
+
 export type ReieSourceJurisdiction = Readonly<{
   state: 'Colorado' | 'Multi-state' | 'REIE';
   county?: string;
@@ -73,6 +79,10 @@ export type ReieSourceRegistryRecord = Readonly<{
   lastSourceVerificationDate: string;
   lastSuccessfulDataRefresh: string | null;
   sourcePaths: readonly string[];
+  lifecyclePosture?: ReieSourceLifecyclePosture;
+  sourceQualityAdvancementEligibility?: ReieSourceQualityAdvancementEligibility;
+  supersededOperationalSourceIds?: readonly string[];
+  nonOperationalFirewalls?: readonly string[];
 }>;
 
 export type ReieSourceRegistry = Readonly<{
@@ -298,6 +308,69 @@ function boulderCountyParcelGisRecord(): ReieSourceRegistryRecord {
   };
 }
 
+export const BOULDER_PERMIT_CANDIDATES_SOURCE_ID = 'SRC-BOULDER-PERMIT-CANDIDATES' as const;
+export const BOULDER_PERMIT_CANDIDATES_LIFECYCLE_POSTURE = 'NON_OPERATIONAL_DISCOVERY_VERIFICATION_CONTEXT' as const;
+export const BOULDER_PERMIT_CANDIDATES_SOURCE_QUALITY_ADVANCEMENT_ELIGIBILITY = 'NOT_ELIGIBLE_NON_OPERATIONAL_CONTEXT' as const;
+export const BOULDER_PERMIT_CANDIDATES_SUPERSEDED_OPERATIONAL_SOURCE_IDS = Object.freeze([
+  'SRC-BOULDER-COUNTY-ACCELA-PERMITS',
+  'SRC-CITY-BOULDER-OPEN-DATA-PERMITS',
+  'SRC-CITY-BOULDER-BUILDING-PERMITS-PORTAL',
+] as const);
+export const BOULDER_PERMIT_CANDIDATES_NON_OPERATIONAL_FIREWALLS = Object.freeze([
+  'NOT_SOURCE_QUALITY_EVIDENCE_AUTHORITY',
+  'NOT_CONVERSION_AUTHORITY',
+  'NOT_OPERATIONAL_MANIFEST_SOURCE',
+  'NOT_ACTIVATION_AUTHORITY',
+  'NOT_AGGREGATE_SOURCE',
+  'NOT_PARENT_SOURCE',
+  'NOT_MEMBER_SOURCE',
+  'NOT_EVIDENCE_INHERITANCE_AUTHORITY',
+  'NOT_RIGHTS_ACCESS_FRESHNESS_ATTRIBUTION_OR_PROVENANCE_AUTHORITY',
+] as const);
+
+function boulderPermitCandidatesRecord(): ReieSourceRegistryRecord {
+  const sourceProfile = profile('BUILDING_PERMITS');
+
+  return {
+    sourceId: BOULDER_PERMIT_CANDIDATES_SOURCE_ID,
+    publicName: 'Boulder permit source candidates',
+    responsibleOrganization: 'City of Boulder and Boulder County permit authorities',
+    sourceClass: 'AUTHORITATIVE_SOURCE',
+    category: 'BUILDING_PERMITS',
+    domains: sourceProfile.intelligenceDomains,
+    jurisdiction: { state: 'Colorado', county: 'Boulder County', municipality: 'Boulder', coverage: 'Boulder County and City of Boulder permit candidates' },
+    officialUrl: 'https://bouldercolorado.gov/planning-development-services-records-request-resources',
+    accessMethod: sourceProfile.accessMethod.replace(/_/g, ' ').toLowerCase(),
+    updateCadence: sourceProfile.updateFrequency.replace(/_/g, ' ').toLowerCase(),
+    freshnessExpectation: sourceProfile.expectedReliability.toLowerCase(),
+    authorizationState: 'AWAITING_PROVIDER_CONFIRMATION',
+    permittedUse: sourceProfile.licensingOrPermittedUse.replace(/_/g, ' ').toLowerCase(),
+    productionActivationState: 'BLOCKED_NOT_AUTHORIZED',
+    claimEligible: false,
+    customerDisclosureEligible: true,
+    customerStatus: 'Blocked / not authorized',
+    currentReieUse: 'Source-candidate and verification-prompt context only; no permit record is retrieved or displayed.',
+    limitations: [
+      ...sourceProfile.knownLimitations,
+      'Permit availability, address matching, privacy, and automation rights vary by jurisdiction and portal.',
+      'Non-operational discovery context only; not eligible for Source Quality evidence, conversion, Operational Manifest inclusion, source activation, or evidence inheritance.',
+      'Operational permit-source review is superseded by the exact independently governed permit channels listed in supersededOperationalSourceIds.',
+    ],
+    attributionRequirement: sourceProfile.attributionRequirement.replace(/_/g, ' ').toLowerCase(),
+    lastSourceVerificationDate: REIE_SOURCE_REGISTRY_REFERENCE_DATE,
+    lastSuccessfulDataRefresh: null,
+    sourcePaths: [
+      `CITY_INTELLIGENCE_SOURCE_DOMAIN_MATRIX/BUILDING_PERMITS`,
+      `COLORADO_CITY_INTELLIGENCE_RECORDS/${COLORADO_CITY_INTELLIGENCE_RECORDS.length}-governed-city-records`,
+      'REIE-BOULDER-PERMIT-EXACT-SOURCE-REGISTRY-MVV-CERTIFICATION/candidate-firewall',
+    ],
+    lifecyclePosture: BOULDER_PERMIT_CANDIDATES_LIFECYCLE_POSTURE,
+    sourceQualityAdvancementEligibility: BOULDER_PERMIT_CANDIDATES_SOURCE_QUALITY_ADVANCEMENT_ELIGIBILITY,
+    supersededOperationalSourceIds: BOULDER_PERMIT_CANDIDATES_SUPERSEDED_OPERATIONAL_SOURCE_IDS,
+    nonOperationalFirewalls: BOULDER_PERMIT_CANDIDATES_NON_OPERATIONAL_FIREWALLS,
+  };
+}
+
 function derivedRecord({
   sourceId,
   publicName,
@@ -396,22 +469,7 @@ export const REIE_SOURCE_REGISTRY: ReieSourceRegistry = Object.freeze({
     }),
     boulderCountyRecorderIndexRecord(),
     boulderCountyParcelGisRecord(),
-    sourceFromProfile({
-      sourceId: 'SRC-BOULDER-PERMIT-CANDIDATES',
-      publicName: 'Boulder permit source candidates',
-      responsibleOrganization: 'City of Boulder and Boulder County permit authorities',
-      sourceClass: 'AUTHORITATIVE_SOURCE',
-      category: 'BUILDING_PERMITS',
-      officialUrl: 'https://bouldercolorado.gov/planning-development-services-records-request-resources',
-      jurisdiction: { state: 'Colorado', county: 'Boulder County', municipality: 'Boulder', coverage: 'Boulder County and City of Boulder permit candidates' },
-      authorizationState: 'AWAITING_PROVIDER_CONFIRMATION',
-      productionActivationState: 'BLOCKED_NOT_AUTHORIZED',
-      claimEligible: false,
-      customerDisclosureEligible: true,
-      currentReieUse: 'Source-candidate and verification-prompt context only; no permit record is retrieved or displayed.',
-      limitations: ['Permit availability, address matching, privacy, and automation rights vary by jurisdiction and portal.'],
-      lastSourceVerificationDate: REIE_SOURCE_REGISTRY_REFERENCE_DATE,
-    }),
+    boulderPermitCandidatesRecord(),
     sourceFromProfile({
       sourceId: 'SRC-CITY-BOULDER-OPEN-DATA-PERMITS',
       publicName: 'City of Boulder Open Data permit/planning exports',

@@ -499,6 +499,25 @@ assert.equal(parcelGisRegistryRecord?.authorizationState, 'AWAITING_PROVIDER_CON
 assert.equal(parcelGisRegistryRecord?.productionActivationState, 'BLOCKED_NOT_AUTHORIZED');
 assert.equal(parcelGisRegistryRecord?.claimEligible, false);
 
+const permitCandidateRegistryRecord = getReieSourceRegistry().records.find((record) => record.sourceId === 'SRC-BOULDER-PERMIT-CANDIDATES');
+assert.ok(permitCandidateRegistryRecord);
+assert.equal(permitCandidateRegistryRecord?.sourceClass, 'AUTHORITATIVE_SOURCE');
+assert.equal(permitCandidateRegistryRecord?.category, 'BUILDING_PERMITS');
+assert.equal(permitCandidateRegistryRecord?.authorizationState, 'AWAITING_PROVIDER_CONFIRMATION');
+assert.equal(permitCandidateRegistryRecord?.productionActivationState, 'BLOCKED_NOT_AUTHORIZED');
+assert.equal(permitCandidateRegistryRecord?.claimEligible, false);
+assert.equal(permitCandidateRegistryRecord?.lifecyclePosture, 'NON_OPERATIONAL_DISCOVERY_VERIFICATION_CONTEXT');
+assert.equal(permitCandidateRegistryRecord?.sourceQualityAdvancementEligibility, 'NOT_ELIGIBLE_NON_OPERATIONAL_CONTEXT');
+assert.equal(valid.manifest.entries.filter((entry) => entry.sourceId === permitCandidateRegistryRecord?.sourceId).length, 0);
+assert.deepEqual(permitCandidateRegistryRecord?.supersededOperationalSourceIds, [
+  BOULDER_COUNTY_ACCELA_PERMITS_SOURCE_ID,
+  CITY_BOULDER_OPEN_DATA_PERMITS_SOURCE_ID,
+  CITY_BOULDER_BUILDING_PERMITS_PORTAL_SOURCE_ID,
+]);
+assert.ok(permitCandidateRegistryRecord?.nonOperationalFirewalls?.includes('NOT_OPERATIONAL_MANIFEST_SOURCE'));
+assert.ok(permitCandidateRegistryRecord?.nonOperationalFirewalls?.includes('NOT_EVIDENCE_INHERITANCE_AUTHORITY'));
+assert.ok(permitCandidateRegistryRecord?.nonOperationalFirewalls?.includes('NOT_RIGHTS_ACCESS_FRESHNESS_ATTRIBUTION_OR_PROVENANCE_AUTHORITY'));
+
 const withoutMls = validateSourceQualityOperationalManifest({
   ...SOURCE_QUALITY_OPERATIONAL_MANIFEST_DATA,
   entries: SOURCE_QUALITY_OPERATIONAL_MANIFEST_DATA.entries.filter((entry) => entry.sourceId !== MLS_LISTING_DATA_SOURCE_ID),

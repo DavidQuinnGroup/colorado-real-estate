@@ -2,6 +2,11 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
 import {
+  BOULDER_PERMIT_CANDIDATES_LIFECYCLE_POSTURE,
+  BOULDER_PERMIT_CANDIDATES_NON_OPERATIONAL_FIREWALLS,
+  BOULDER_PERMIT_CANDIDATES_SOURCE_ID,
+  BOULDER_PERMIT_CANDIDATES_SOURCE_QUALITY_ADVANCEMENT_ELIGIBILITY,
+  BOULDER_PERMIT_CANDIDATES_SUPERSEDED_OPERATIONAL_SOURCE_IDS,
   REIE_SOURCE_REGISTRY_REFERENCE_DATE,
   REIE_SOURCE_REGISTRY_STATUS,
   getPublicSourceRegistryRecords,
@@ -165,11 +170,45 @@ assert.equal(record('SRC-BOULDER-COUNTY-ACCELA-PERMITS').responsibleOrganization
 assert.match(record('SRC-CITY-BOULDER-OPEN-DATA-PERMITS').limitations.join(' '), /Open-data availability does not establish unrestricted reuse/);
 assert.match(record('SRC-CITY-BOULDER-BUILDING-PERMITS-PORTAL').limitations.join(' '), /Portal availability does not establish approved automated access/);
 assert.match(record('SRC-BOULDER-COUNTY-ACCELA-PERMITS').limitations.join(' '), /Boulder County channel only; no municipal authority inference/);
-const permitCandidate = record('SRC-BOULDER-PERMIT-CANDIDATES');
+const permitCandidate = record(BOULDER_PERMIT_CANDIDATES_SOURCE_ID);
 assert.match(permitCandidate.currentReieUse, /Source-candidate and verification-prompt context only/);
 assert.match(permitCandidate.currentReieUse, /no permit record is retrieved or displayed/);
 assert.doesNotMatch(permitCandidate.currentReieUse, /aggregate|member|parent|child/i);
 assert.doesNotMatch(JSON.stringify(permitCandidate), /memberSourceIds|parentSourceId|aggregateSource/i);
+assert.equal(permitCandidate.sourceClass, 'AUTHORITATIVE_SOURCE');
+assert.equal(permitCandidate.category, 'BUILDING_PERMITS');
+assert.equal(permitCandidate.authorizationState, 'AWAITING_PROVIDER_CONFIRMATION');
+assert.equal(permitCandidate.productionActivationState, 'BLOCKED_NOT_AUTHORIZED');
+assert.equal(permitCandidate.claimEligible, false);
+assert.equal(permitCandidate.lifecyclePosture, BOULDER_PERMIT_CANDIDATES_LIFECYCLE_POSTURE);
+assert.equal(permitCandidate.sourceQualityAdvancementEligibility, BOULDER_PERMIT_CANDIDATES_SOURCE_QUALITY_ADVANCEMENT_ELIGIBILITY);
+assert.deepEqual(permitCandidate.supersededOperationalSourceIds, BOULDER_PERMIT_CANDIDATES_SUPERSEDED_OPERATIONAL_SOURCE_IDS);
+assert.deepEqual(permitCandidate.nonOperationalFirewalls, BOULDER_PERMIT_CANDIDATES_NON_OPERATIONAL_FIREWALLS);
+assert.ok(permitCandidate.limitations.some((limitation) => limitation.includes('Non-operational discovery context only')));
+assert.ok(permitCandidate.limitations.some((limitation) => limitation.includes('Operational permit-source review is superseded by the exact independently governed permit channels')));
+for (const firewall of [
+  'NOT_SOURCE_QUALITY_EVIDENCE_AUTHORITY',
+  'NOT_CONVERSION_AUTHORITY',
+  'NOT_OPERATIONAL_MANIFEST_SOURCE',
+  'NOT_ACTIVATION_AUTHORITY',
+  'NOT_AGGREGATE_SOURCE',
+  'NOT_PARENT_SOURCE',
+  'NOT_MEMBER_SOURCE',
+  'NOT_EVIDENCE_INHERITANCE_AUTHORITY',
+  'NOT_RIGHTS_ACCESS_FRESHNESS_ATTRIBUTION_OR_PROVENANCE_AUTHORITY',
+] as const) {
+  assert.ok(permitCandidate.nonOperationalFirewalls?.includes(firewall), `Permit Candidate must preserve ${firewall}.`);
+}
+for (const sourceId of BOULDER_PERMIT_CANDIDATES_SUPERSEDED_OPERATIONAL_SOURCE_IDS) {
+  const exactPermit = record(sourceId);
+  assert.equal(exactPermit.sourceClass, 'AUTHORITATIVE_SOURCE');
+  assert.equal(exactPermit.category, 'BUILDING_PERMITS');
+  assert.equal(exactPermit.authorizationState, 'AWAITING_PROVIDER_CONFIRMATION');
+  assert.equal(exactPermit.productionActivationState, 'BLOCKED_NOT_AUTHORIZED');
+  assert.equal(exactPermit.claimEligible, false);
+  assert.equal(exactPermit.lifecyclePosture, undefined);
+  assert.equal(exactPermit.sourceQualityAdvancementEligibility, undefined);
+}
 
 for (const sourceId of ['SRC-BCOD-ADDRESS-POINTS', 'SRC-BCOD-PARK-BOUNDARIES']) {
   const bcod = record(sourceId);
