@@ -215,6 +215,66 @@ if (fs.existsSync('lib/sourceQualityJeffersonCountyAssessorEvidence.ts')) {
   assert.doesNotMatch(jeffersonAssessorEvidence, /RIGHTS_VERIFIED|TECHNICAL_ACCESS_READY|FRESHNESS_VERIFIED|PROVENANCE_COMPLETE|ACTIVE_AUTHORIZED/, 'Jefferson Assessor evidence must not upgrade rights, access, freshness, provenance, or activation posture.');
 }
 
+const larimerAssessorSourceId = 'SRC-LARIMER-COUNTY-ASSESSOR';
+assert.equal(registry.records.filter((item) => item.sourceId === larimerAssessorSourceId).length, 1, 'Larimer County Assessor source must exist exactly once.');
+const larimerAssessor = record(larimerAssessorSourceId);
+const larimerAssessorText = JSON.stringify(larimerAssessor);
+assert.equal(larimerAssessor.publicName, 'Larimer County Assessor');
+assert.equal(larimerAssessor.responsibleOrganization, "Larimer County Assessor's Office");
+assert.equal(larimerAssessor.sourceClass, 'AUTHORITATIVE_SOURCE');
+assert.equal(larimerAssessor.category, 'COUNTY_ASSESSOR');
+assert.equal(larimerAssessor.jurisdiction.state, 'Colorado');
+assert.equal(larimerAssessor.jurisdiction.county, 'Larimer County');
+assert.equal(larimerAssessor.authorizationState, 'AWAITING_PROVIDER_CONFIRMATION');
+assert.equal(larimerAssessor.productionActivationState, 'BLOCKED_NOT_AUTHORIZED');
+assert.equal(larimerAssessor.claimEligible, false);
+assert.equal(larimerAssessor.customerStatus, 'Blocked / not authorized');
+assert.match(larimerAssessor.currentReieUse, /Exact source identity only/);
+assert.match(larimerAssessor.currentReieUse, /future-governed Larimer County Assessor review/);
+assert.match(larimerAssessor.currentReieUse, /no property search submission/);
+assert.match(larimerAssessor.currentReieUse, /no .* Public Data Center download or automation/);
+assert.match(larimerAssessor.currentReieUse, /no .* GIS or map access/);
+assert.match(larimerAssessor.currentReieUse, /no .* property-record retrieval/);
+assert.match(larimerAssessor.currentReieUse, /no .* owner\/address lookup/);
+assert.match(larimerAssessor.currentReieUse, /no .* parcel\/account lookup/);
+assert.match(larimerAssessor.currentReieUse, /no .* customer display/);
+assert.match(larimerAssessorText, /ASSESSOR_RECORD_NOT_TITLE/);
+assert.match(larimerAssessorText, /ASSESSOR_RECORD_NOT_DEED_VALIDITY/);
+assert.match(larimerAssessorText, /ASSESSOR_RECORD_NOT_TREASURER_TAX_STATUS/);
+assert.match(larimerAssessorText, /ASSESSOR_RECORD_NOT_CURRENT_OWNERSHIP_GUARANTEE/);
+assert.match(larimerAssessorText, /ASSESSED_VALUE_NOT_MARKET_VALUE/);
+assert.match(larimerAssessorText, /PUBLIC_SEARCH_NOT_AUTOMATION_AUTHORITY/);
+assert.match(larimerAssessorText, /PUBLIC_ACCESS_NOT_REUSE_OR_DISPLAY_AUTHORITY/);
+assert.match(larimerAssessorText, /PUBLIC_OR_GOVERNMENT_SOURCE_NOT_UNRESTRICTED_OR_VERIFIED_OR_COMPLETE/);
+assert.match(larimerAssessorText, /PUBLIC_DATA_CENTER_NOT_DOWNLOAD_OR_AUTOMATION_AUTHORITY/);
+assert.match(larimerAssessorText, /GIS_OR_MAP_CHANNEL_NOT_ASSESSOR_RECORD_AUTHORITY/);
+assert.match(larimerAssessorText, /PLANNING_OR_ZONING_NOT_ASSESSOR_RECORD_AUTHORITY/);
+assert.match(larimerAssessorText, /PUBLIC_TRUSTEE_NOT_ASSESSOR_RECORD_AUTHORITY/);
+assert.match(larimerAssessorText, /COUNTY_ASSESSOR_NOT_COUNTY_TREASURER/);
+assert.match(larimerAssessorText, /COUNTY_ASSESSOR_NOT_RECORDER/);
+assert.match(larimerAssessorText, /COUNTY_ASSESSOR_NOT_PARCEL_GIS/);
+assert.match(larimerAssessorText, /SOURCE_ACTIVATION_NOT_AUTHORIZED_BY_REGISTRY_MVV/);
+assert.match(larimerAssessorText, /CUSTOMER_DISPLAY_NOT_GRANTED_BY_REGISTRY_MVV/);
+assert.match(larimerAssessorText, /LEGAL_USE_NOT_APPROVED_BY_REGISTRY_MVV/);
+assert.match(larimerAssessorText, /Public Data Center, public search, download, GIS, map, planning, zoning, Public Trustee, Treasurer, and Recorder channels are separately governed/);
+assert.match(larimerAssessorText, /Boulder County, Arapahoe County, Broomfield, and Jefferson County Assessor findings/);
+assert.match(larimerAssessorText, /Rights, technical access, freshness, attribution, fees, privacy approval, field sensitivity, and provenance remain unknown/);
+assert.doesNotMatch(larimerAssessorText, /RIGHTS = VERIFIED|TECHNICAL ACCESS = READY|FRESHNESS = VERIFIED|ATTRIBUTION = REQUIRED|FEE = NONE|PROVENANCE = COMPLETE/);
+assert.doesNotMatch(larimerAssessorText, /memberSourceIds|parentSourceId|aggregateSource|childSourceIds|relationshipType/i);
+assert.equal(registry.records.filter((item) => /^SRC-LARIMER-COUNTY-(TREASURER|RECORDER|PARCEL|GIS|PUBLIC-DATA-CENTER|PLANNING|ZONING|PUBLIC-TRUSTEE|PARCEL-SEARCH)/.test(item.sourceId)).length, 0, 'Larimer Assessor Registry MVV must not add Treasurer, Recorder, Public Data Center, Public Trustee, Planning, Zoning, Parcel Search, or GIS source ids.');
+assert.equal(registry.records.filter((item) => /LARIMER.*(TREASURER|RECORDER|GIS|PUBLIC_DATA_CENTER|PLANNING|ZONING|PUBLIC_TRUSTEE|PARCEL_SEARCH|PARCEL_GEOMETRY)/i.test(`${item.sourceId} ${item.category}`)).length, 0, 'Larimer Assessor Registry MVV must not conflate assessor identity with adjacent domains.');
+assert.doesNotMatch(larimerAssessorText, /EXP-|SRA-|provider aggregate|wildcard County Assessor/i);
+if (fs.existsSync('lib/sourceQualityLarimerCountyAssessorEvidence.ts')) {
+  const larimerAssessorEvidence = read('lib/sourceQualityLarimerCountyAssessorEvidence.ts');
+  assert.match(larimerAssessorEvidence, /LARIMER_COUNTY_ASSESSOR_SOURCE_ID/, 'Larimer Assessor evidence must bind through the canonical exact source identity constant.');
+  assert.match(larimerAssessorEvidence, /CERT-LARIMER-COUNTY-ASSESSOR-SOURCE-QUALITY-EVIDENCE-001/, 'Larimer Assessor evidence must use source-specific certification.');
+  assert.match(larimerAssessorEvidence, /COUNTY_ASSESSOR/, 'Larimer Assessor evidence must preserve the canonical County Assessor class.');
+  assert.match(larimerAssessorEvidence, /CERTIFICATION_REFERENCE/, 'Larimer Assessor evidence must remain certification-reference-only.');
+  assert.doesNotMatch(larimerAssessorEvidence, /getReieSourceRegistry|sourceRegistry/, 'Larimer Assessor evidence must not mutate or depend on Registry implementation state.');
+  assert.doesNotMatch(larimerAssessorEvidence, /sourceQualityOperationalManifestData|sourceQualityAdminPreviewFixture/, 'Larimer Assessor evidence must not create Manifest or Admin Preview coupling.');
+  assert.doesNotMatch(larimerAssessorEvidence, /RIGHTS_VERIFIED|TECHNICAL_ACCESS_READY|FRESHNESS_VERIFIED|PROVENANCE_COMPLETE|ACTIVE_AUTHORIZED/, 'Larimer Assessor evidence must not upgrade rights, access, freshness, provenance, or activation posture.');
+}
+
 const parcelGisSourceId = 'SRC-BOULDER-COUNTY-PARCEL-GIS';
 assert.equal(registry.records.filter((item) => item.sourceId === parcelGisSourceId).length, 1, 'Parcel GIS source must exist exactly once.');
 const parcelGis = record(parcelGisSourceId);

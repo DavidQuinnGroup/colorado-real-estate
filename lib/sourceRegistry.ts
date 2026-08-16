@@ -460,6 +460,60 @@ function jeffersonCountyAssessorRecord(): ReieSourceRegistryRecord {
   };
 }
 
+function larimerCountyAssessorRecord(): ReieSourceRegistryRecord {
+  return {
+    sourceId: 'SRC-LARIMER-COUNTY-ASSESSOR',
+    publicName: 'Larimer County Assessor',
+    responsibleOrganization: "Larimer County Assessor's Office",
+    sourceClass: 'AUTHORITATIVE_SOURCE',
+    category: 'COUNTY_ASSESSOR',
+    domains: ['Assessor property-record source identity', 'Assessment records', 'Future governed county assessor evidence'],
+    jurisdiction: { state: 'Colorado', county: 'Larimer County', coverage: 'Larimer County assessor/property records source identity only' },
+    officialUrl: 'https://www.larimer.gov/assessor',
+    accessMethod: 'Source-specific provider, rights, and technical-access review required before public-search use, Public Data Center download, GIS or map access, retrieval, automation, ingestion, display, or reuse',
+    updateCadence: 'source-specific and not certified',
+    freshnessExpectation: 'unknown until source-specific evidence review',
+    authorizationState: 'AWAITING_PROVIDER_CONFIRMATION',
+    permittedUse: 'registry identity and source-governance review only; no property search submission, Public Data Center download, GIS or map access, retrieval, automation, storage, redistribution, legal-use, or customer-display authority',
+    productionActivationState: 'BLOCKED_NOT_AUTHORIZED',
+    claimEligible: false,
+    customerDisclosureEligible: true,
+    customerStatus: 'Blocked / not authorized',
+    currentReieUse: 'Exact source identity only for future-governed Larimer County Assessor review; no property search submission, Public Data Center download or automation, GIS or map access, property-record retrieval, owner/address lookup, parcel/account lookup, valuation claim, ownership claim, title claim, tax claim, customer display, ingestion, automation, or runtime use is active.',
+    limitations: [
+      'ASSESSOR_RECORD_NOT_TITLE.',
+      'ASSESSOR_RECORD_NOT_DEED_VALIDITY.',
+      'ASSESSOR_RECORD_NOT_TREASURER_TAX_STATUS.',
+      'ASSESSOR_RECORD_NOT_CURRENT_OWNERSHIP_GUARANTEE.',
+      'ASSESSED_VALUE_NOT_MARKET_VALUE.',
+      'PUBLIC_SEARCH_NOT_AUTOMATION_AUTHORITY.',
+      'PUBLIC_ACCESS_NOT_REUSE_OR_DISPLAY_AUTHORITY.',
+      'PUBLIC_OR_GOVERNMENT_SOURCE_NOT_UNRESTRICTED_OR_VERIFIED_OR_COMPLETE.',
+      'PUBLIC_DATA_CENTER_NOT_DOWNLOAD_OR_AUTOMATION_AUTHORITY.',
+      'GIS_OR_MAP_CHANNEL_NOT_ASSESSOR_RECORD_AUTHORITY.',
+      'PLANNING_OR_ZONING_NOT_ASSESSOR_RECORD_AUTHORITY.',
+      'PUBLIC_TRUSTEE_NOT_ASSESSOR_RECORD_AUTHORITY.',
+      'COUNTY_ASSESSOR_NOT_COUNTY_TREASURER.',
+      'COUNTY_ASSESSOR_NOT_RECORDER.',
+      'COUNTY_ASSESSOR_NOT_PARCEL_GIS.',
+      'SOURCE_ACTIVATION_NOT_AUTHORIZED_BY_REGISTRY_MVV.',
+      'CUSTOMER_DISPLAY_NOT_GRANTED_BY_REGISTRY_MVV.',
+      'LEGAL_USE_NOT_APPROVED_BY_REGISTRY_MVV.',
+      'Larimer County Public Data Center, public search, download, GIS, map, planning, zoning, Public Trustee, Treasurer, and Recorder channels are separately governed and do not become the Assessor Registry source identity.',
+      'Boulder County, Arapahoe County, Broomfield, and Jefferson County Assessor findings, evidence, rights, access, freshness, attribution, provenance, and provider terms do not transfer to Larimer County Assessor.',
+      'Rights, technical access, freshness, attribution, fees, privacy approval, field sensitivity, and provenance remain unknown until separately governed source evidence review.',
+    ],
+    attributionRequirement: 'unknown until source-specific review',
+    lastSourceVerificationDate: REIE_SOURCE_REGISTRY_REFERENCE_DATE,
+    lastSuccessfulDataRefresh: null,
+    sourcePaths: [
+      'lib/sourceRegistry.ts/SRC-LARIMER-COUNTY-ASSESSOR',
+      'Larimer County Assessor official-source identity research handoff',
+      'LARIMER_COUNTY_ASSESSOR_EXACT_SOURCE_REGISTRY_MVV',
+    ],
+  };
+}
+
 export const BOULDER_PERMIT_CANDIDATES_SOURCE_ID = 'SRC-BOULDER-PERMIT-CANDIDATES' as const;
 export const BOULDER_PERMIT_CANDIDATES_LIFECYCLE_POSTURE = 'NON_OPERATIONAL_DISCOVERY_VERIFICATION_CONTEXT' as const;
 export const BOULDER_PERMIT_CANDIDATES_SOURCE_QUALITY_ADVANCEMENT_ELIGIBILITY = 'NOT_ELIGIBLE_NON_OPERATIONAL_CONTEXT' as const;
@@ -624,6 +678,7 @@ export const REIE_SOURCE_REGISTRY: ReieSourceRegistry = Object.freeze({
     arapahoeCountyAssessorRecord(),
     broomfieldCountyAssessorRecord(),
     jeffersonCountyAssessorRecord(),
+    larimerCountyAssessorRecord(),
     boulderPermitCandidatesRecord(),
     sourceFromProfile({
       sourceId: 'SRC-CITY-BOULDER-OPEN-DATA-PERMITS',
