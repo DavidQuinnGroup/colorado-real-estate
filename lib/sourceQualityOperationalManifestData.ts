@@ -6,11 +6,29 @@ import {
   convertBoulderCountyAccelaPermitsSourceQualityEvidence,
 } from './sourceQualityBoulderCountyAccelaPermitsEvidence';
 import {
+  BCOD_ADDRESS_POINTS_SOURCE_ID,
+  BCOD_ADDRESS_POINTS_SOURCE_QUALITY_CERTIFICATION,
+  BCOD_ADDRESS_POINTS_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT,
+  convertBcodAddressPointsSourceQualityEvidence,
+} from './sourceQualityBcodAddressPointsEvidence';
+import {
+  BCOD_PARK_BOUNDARIES_SOURCE_ID,
+  BCOD_PARK_BOUNDARIES_SOURCE_QUALITY_CERTIFICATION,
+  BCOD_PARK_BOUNDARIES_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT,
+  convertBcodParkBoundariesSourceQualityEvidence,
+} from './sourceQualityBcodParkBoundariesEvidence';
+import {
   BOULDER_COUNTY_ASSESSOR_SOURCE_ID,
   BOULDER_COUNTY_ASSESSOR_SOURCE_QUALITY_CERTIFICATION,
   BOULDER_COUNTY_ASSESSOR_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT,
   convertBoulderCountyAssessorSourceQualityEvidence,
 } from './sourceQualityBoulderCountyAssessorEvidence';
+import {
+  BOULDER_COUNTY_PARCEL_GIS_SOURCE_ID,
+  BOULDER_COUNTY_PARCEL_GIS_SOURCE_QUALITY_CERTIFICATION,
+  BOULDER_COUNTY_PARCEL_GIS_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT,
+  convertBoulderCountyParcelGisSourceQualityEvidence,
+} from './sourceQualityBoulderCountyParcelGisEvidence';
 import {
   BOULDER_COUNTY_RECORDER_INDEX_SOURCE_ID,
   BOULDER_COUNTY_RECORDER_INDEX_SOURCE_QUALITY_CERTIFICATION,
@@ -58,6 +76,9 @@ const boulderCountyAccelaPermitsEvidence = convertBoulderCountyAccelaPermitsSour
 const boulderCountyAssessorEvidence = convertBoulderCountyAssessorSourceQualityEvidence();
 const boulderCountyRecorderIndexEvidence = convertBoulderCountyRecorderIndexSourceQualityEvidence();
 const boulderCountyTreasurerEvidence = convertBoulderCountyTreasurerSourceQualityEvidence();
+const bcodAddressPointsEvidence = convertBcodAddressPointsSourceQualityEvidence();
+const bcodParkBoundariesEvidence = convertBcodParkBoundariesSourceQualityEvidence();
+const boulderCountyParcelGisEvidence = convertBoulderCountyParcelGisSourceQualityEvidence();
 const cityBoulderBuildingPermitsPortalEvidence = convertCityBoulderBuildingPermitsPortalSourceQualityEvidence();
 const cityBoulderOpenDataPermitsEvidence = convertCityBoulderOpenDataPermitsSourceQualityEvidence();
 
@@ -214,6 +235,42 @@ export const SOURCE_QUALITY_OPERATIONAL_MANIFEST_DATA: SourceQualityOperationalM
       expectedEvidenceClasses: ['CERTIFICATION'],
       certificationReference: BOULDER_COUNTY_RECORDER_INDEX_SOURCE_QUALITY_CERTIFICATION,
       reviewedAt: BOULDER_COUNTY_RECORDER_INDEX_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT,
+      reviewAuthorityClass: 'DELEGATED_SOURCE_GOVERNANCE_REVIEW',
+      limitationCodes: [],
+    },
+    {
+      schemaVersion: SOURCE_QUALITY_OPERATIONAL_MANIFEST_SCHEMA_VERSION,
+      manifestId,
+      sourceId: BCOD_ADDRESS_POINTS_SOURCE_ID,
+      inclusionClass: 'STRUCTURED_EVIDENCE_WITH_KNOWN_GAPS',
+      linkages: bcodAddressPointsEvidence.linkages,
+      expectedEvidenceClasses: ['CERTIFICATION'],
+      certificationReference: BCOD_ADDRESS_POINTS_SOURCE_QUALITY_CERTIFICATION,
+      reviewedAt: BCOD_ADDRESS_POINTS_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT,
+      reviewAuthorityClass: 'DELEGATED_SOURCE_GOVERNANCE_REVIEW',
+      limitationCodes: [],
+    },
+    {
+      schemaVersion: SOURCE_QUALITY_OPERATIONAL_MANIFEST_SCHEMA_VERSION,
+      manifestId,
+      sourceId: BCOD_PARK_BOUNDARIES_SOURCE_ID,
+      inclusionClass: 'STRUCTURED_EVIDENCE_WITH_KNOWN_GAPS',
+      linkages: bcodParkBoundariesEvidence.linkages,
+      expectedEvidenceClasses: ['CERTIFICATION'],
+      certificationReference: BCOD_PARK_BOUNDARIES_SOURCE_QUALITY_CERTIFICATION,
+      reviewedAt: BCOD_PARK_BOUNDARIES_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT,
+      reviewAuthorityClass: 'DELEGATED_SOURCE_GOVERNANCE_REVIEW',
+      limitationCodes: [],
+    },
+    {
+      schemaVersion: SOURCE_QUALITY_OPERATIONAL_MANIFEST_SCHEMA_VERSION,
+      manifestId,
+      sourceId: BOULDER_COUNTY_PARCEL_GIS_SOURCE_ID,
+      inclusionClass: 'STRUCTURED_EVIDENCE_WITH_KNOWN_GAPS',
+      linkages: boulderCountyParcelGisEvidence.linkages,
+      expectedEvidenceClasses: ['CERTIFICATION'],
+      certificationReference: BOULDER_COUNTY_PARCEL_GIS_SOURCE_QUALITY_CERTIFICATION,
+      reviewedAt: BOULDER_COUNTY_PARCEL_GIS_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT,
       reviewAuthorityClass: 'DELEGATED_SOURCE_GOVERNANCE_REVIEW',
       limitationCodes: [],
     },
