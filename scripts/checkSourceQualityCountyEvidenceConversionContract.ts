@@ -2,6 +2,8 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
 import {
+  ADAMS_COUNTY_ASSESSOR_SOURCE_ID,
+  ADAMS_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST,
   ARAPAHOE_COUNTY_ASSESSOR_SOURCE_ID,
   ARAPAHOE_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST,
   BOULDER_COUNTY_ACCELA_PERMITS_SOURCE_ID,
@@ -29,6 +31,7 @@ const valid = convertCountyStructuredEvidence(BOULDER_COUNTY_ASSESSOR_SYNTHETIC_
 assert.equal(BOULDER_COUNTY_ASSESSOR_SOURCE_ID, 'SRC-BOULDER-COUNTY-ASSESSOR');
 assert.deepEqual(COUNTY_SOURCE_QUALITY_CONVERSION_ALLOWED_SOURCE_IDS, [
   'SRC-BOULDER-COUNTY-ASSESSOR',
+  'SRC-ADAMS-COUNTY-ASSESSOR',
   'SRC-ARAPAHOE-COUNTY-ASSESSOR',
   'SRC-BROOMFIELD-COUNTY-ASSESSOR',
   'SRC-JEFFERSON-COUNTY-ASSESSOR',
@@ -54,6 +57,24 @@ assert.equal(valid.normalized?.attribution.posture, 'UNKNOWN');
 assert.equal(valid.normalized?.provenance.posture, 'UNKNOWN');
 assert.equal(convertCountyStructuredEvidence(BOULDER_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST).conversionFingerprint, valid.conversionFingerprint);
 
+const adamsAssessor = convertCountyStructuredEvidence(ADAMS_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST);
+assert.equal(ADAMS_COUNTY_ASSESSOR_SOURCE_ID, 'SRC-ADAMS-COUNTY-ASSESSOR');
+assert.equal(adamsAssessor.classification, 'COUNTY_EVIDENCE_CONVERSION_VALID');
+assert.equal(adamsAssessor.sourceId, ADAMS_COUNTY_ASSESSOR_SOURCE_ID);
+assert.equal(adamsAssessor.linkages.length, 1);
+assert.equal(adamsAssessor.linkages[0]?.sourceId, ADAMS_COUNTY_ASSESSOR_SOURCE_ID);
+assert.equal(adamsAssessor.linkages[0]?.evidenceClass, 'CERTIFICATION');
+assert.equal(adamsAssessor.linkages[0]?.relationshipType, 'CERTIFICATION');
+assert.equal(adamsAssessor.linkages[0]?.posture, 'REFERENCED');
+assert.equal(adamsAssessor.normalized?.result, 'INSUFFICIENT_EVIDENCE');
+assert.equal(adamsAssessor.normalized?.rights.posture, 'UNKNOWN');
+assert.equal(adamsAssessor.normalized?.technicalAccess.posture, 'UNKNOWN');
+assert.equal(adamsAssessor.normalized?.freshness.posture, 'UNKNOWN');
+assert.equal(adamsAssessor.normalized?.attribution.posture, 'UNKNOWN');
+assert.equal(adamsAssessor.normalized?.provenance.posture, 'UNKNOWN');
+assert.equal(convertCountyStructuredEvidence(ADAMS_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST).conversionFingerprint, adamsAssessor.conversionFingerprint);
+assert.notEqual(adamsAssessor.conversionFingerprint, valid.conversionFingerprint);
+
 const arapahoeAssessor = convertCountyStructuredEvidence(ARAPAHOE_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST);
 assert.equal(ARAPAHOE_COUNTY_ASSESSOR_SOURCE_ID, 'SRC-ARAPAHOE-COUNTY-ASSESSOR');
 assert.equal(arapahoeAssessor.classification, 'COUNTY_EVIDENCE_CONVERSION_VALID');
@@ -71,6 +92,7 @@ assert.equal(arapahoeAssessor.normalized?.attribution.posture, 'UNKNOWN');
 assert.equal(arapahoeAssessor.normalized?.provenance.posture, 'UNKNOWN');
 assert.equal(convertCountyStructuredEvidence(ARAPAHOE_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST).conversionFingerprint, arapahoeAssessor.conversionFingerprint);
 assert.notEqual(arapahoeAssessor.conversionFingerprint, valid.conversionFingerprint);
+assert.notEqual(arapahoeAssessor.conversionFingerprint, adamsAssessor.conversionFingerprint);
 assert.equal(valid.sourceId, BOULDER_COUNTY_ASSESSOR_SOURCE_ID);
 assert.equal(valid.linkages[0]?.sourceId, BOULDER_COUNTY_ASSESSOR_SOURCE_ID);
 assert.equal(valid.normalized?.rights.posture, 'UNKNOWN');
@@ -96,6 +118,7 @@ assert.equal(broomfieldAssessor.normalized?.attribution.posture, 'UNKNOWN');
 assert.equal(broomfieldAssessor.normalized?.provenance.posture, 'UNKNOWN');
 assert.equal(convertCountyStructuredEvidence(BROOMFIELD_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST).conversionFingerprint, broomfieldAssessor.conversionFingerprint);
 assert.notEqual(broomfieldAssessor.conversionFingerprint, valid.conversionFingerprint);
+assert.notEqual(broomfieldAssessor.conversionFingerprint, adamsAssessor.conversionFingerprint);
 assert.notEqual(broomfieldAssessor.conversionFingerprint, arapahoeAssessor.conversionFingerprint);
 
 const jeffersonAssessor = convertCountyStructuredEvidence(JEFFERSON_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST);
@@ -115,6 +138,7 @@ assert.equal(jeffersonAssessor.normalized?.attribution.posture, 'UNKNOWN');
 assert.equal(jeffersonAssessor.normalized?.provenance.posture, 'UNKNOWN');
 assert.equal(convertCountyStructuredEvidence(JEFFERSON_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST).conversionFingerprint, jeffersonAssessor.conversionFingerprint);
 assert.notEqual(jeffersonAssessor.conversionFingerprint, valid.conversionFingerprint);
+assert.notEqual(jeffersonAssessor.conversionFingerprint, adamsAssessor.conversionFingerprint);
 assert.notEqual(jeffersonAssessor.conversionFingerprint, arapahoeAssessor.conversionFingerprint);
 assert.notEqual(jeffersonAssessor.conversionFingerprint, broomfieldAssessor.conversionFingerprint);
 
@@ -135,6 +159,7 @@ assert.equal(larimerAssessor.normalized?.attribution.posture, 'UNKNOWN');
 assert.equal(larimerAssessor.normalized?.provenance.posture, 'UNKNOWN');
 assert.equal(convertCountyStructuredEvidence(LARIMER_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST).conversionFingerprint, larimerAssessor.conversionFingerprint);
 assert.notEqual(larimerAssessor.conversionFingerprint, valid.conversionFingerprint);
+assert.notEqual(larimerAssessor.conversionFingerprint, adamsAssessor.conversionFingerprint);
 assert.notEqual(larimerAssessor.conversionFingerprint, arapahoeAssessor.conversionFingerprint);
 assert.notEqual(larimerAssessor.conversionFingerprint, broomfieldAssessor.conversionFingerprint);
 assert.notEqual(larimerAssessor.conversionFingerprint, jeffersonAssessor.conversionFingerprint);
@@ -156,6 +181,7 @@ assert.equal(weldAssessor.normalized?.attribution.posture, 'UNKNOWN');
 assert.equal(weldAssessor.normalized?.provenance.posture, 'UNKNOWN');
 assert.equal(convertCountyStructuredEvidence(WELD_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST).conversionFingerprint, weldAssessor.conversionFingerprint);
 assert.notEqual(weldAssessor.conversionFingerprint, valid.conversionFingerprint);
+assert.notEqual(weldAssessor.conversionFingerprint, adamsAssessor.conversionFingerprint);
 assert.notEqual(weldAssessor.conversionFingerprint, arapahoeAssessor.conversionFingerprint);
 assert.notEqual(weldAssessor.conversionFingerprint, broomfieldAssessor.conversionFingerprint);
 assert.notEqual(weldAssessor.conversionFingerprint, jeffersonAssessor.conversionFingerprint);
@@ -230,6 +256,45 @@ const crossClass = convertCountyStructuredEvidence({
   sourceClass: 'COUNTY_TREASURER',
 });
 assert.equal(crossClass.classification, 'COUNTY_EVIDENCE_SOURCE_MISMATCH');
+
+assert.equal(convertCountyStructuredEvidence({ ...ADAMS_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST, sourceConfirmation: undefined }).classification, 'COUNTY_SOURCE_CONFIRMATION_REQUIRED');
+assert.equal(convertCountyStructuredEvidence({ ...ADAMS_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST, sourceClass: 'COUNTY_TREASURER' }).classification, 'COUNTY_EVIDENCE_SOURCE_MISMATCH');
+assert.equal(convertCountyStructuredEvidence({ ...ADAMS_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST, sourceClass: 'COUNTY_RECORDED_DOCUMENT_INDEX' }).classification, 'COUNTY_EVIDENCE_SOURCE_MISMATCH');
+assert.equal(convertCountyStructuredEvidence({
+  ...ADAMS_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST,
+  sourceId: 'SRC-ADAMS-COUNTY-TREASURER',
+  sourceConfirmation: { sourceId: 'SRC-ADAMS-COUNTY-TREASURER', confirmationClass: 'EXACT_SOURCE_ID_CONFIRMED', reviewedAt: '2026-08-16' },
+  evidenceReferences: [{ ...ADAMS_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST.evidenceReferences[0]!, sourceId: 'SRC-ADAMS-COUNTY-TREASURER' }],
+}).classification, 'COUNTY_SOURCE_INVALID');
+for (const sourceId of ['EXP-SRC-ADAMS-COUNTY-ASSESSOR', 'SRA-ADAMS-COUNTY-ASSESSOR', 'SRC-GENERIC-COUNTY-ASSESSOR', 'SRC-PROVIDER-COUNTY-ASSESSOR', 'SRC-ADAMS-PROPERTY-PORTAL', 'SRC-ADAMS-GIS-INTERACTIVE-MAPS', 'SRC-ADAMS-DOWNLOADABLE-GIS-DATA', 'SRC-ADAMS-ASSESSOR-DATA-DUMP', 'SRC-ADAMS-PUBLIC-TRUSTEE', 'SRC-ADAMS-COUNTY-RECORDER', 'SRC-ADAMS-PLANNING-DEVELOPMENT', 'SRC-ADAMS-PERMITS-LICENSING', 'SRC-ADAMS-COUNTY-PARCEL-GIS', 'SRC-UNKNOWN-COUNTY-SOURCE']) {
+  assert.equal(convertCountyStructuredEvidence({
+    ...ADAMS_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST,
+    sourceId,
+    sourceConfirmation: { sourceId, confirmationClass: 'EXACT_SOURCE_ID_CONFIRMED', reviewedAt: '2026-08-16' },
+    evidenceReferences: [{ ...ADAMS_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST.evidenceReferences[0]!, sourceId }],
+  }).classification, 'COUNTY_SOURCE_INVALID');
+}
+assert.equal(convertCountyStructuredEvidence({
+  ...ADAMS_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST,
+  certificationReference: undefined,
+}).classification, 'COUNTY_CERTIFICATION_REQUIRED');
+assert.equal(convertCountyStructuredEvidence({
+  ...ADAMS_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST,
+  fieldSensitivityPosture: 'UNKNOWN',
+}).classification, 'COUNTY_FIELD_SENSITIVITY_UNREVIEWED');
+for (const inheritedSourceId of [BOULDER_COUNTY_ASSESSOR_SOURCE_ID] as const) {
+  assert.equal(convertCountyStructuredEvidence({
+    ...ADAMS_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST,
+    evidenceReferences: [{ ...ADAMS_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST.evidenceReferences[0]!, sourceId: inheritedSourceId }],
+  }).classification, 'COUNTY_EVIDENCE_REFERENCE_INVALID');
+}
+for (const key of ['ownerName', 'address', 'parcelId', 'propertyRecord', 'rawRecord']) {
+  assert.equal(convertCountyStructuredEvidence({
+    ...ADAMS_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST,
+    [key]: 'not allowed',
+  }).classification, 'COUNTY_NARRATIVE_INPUT_REJECTED');
+}
+
 assert.equal(convertCountyStructuredEvidence({ ...ARAPAHOE_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST, sourceConfirmation: undefined }).classification, 'COUNTY_SOURCE_CONFIRMATION_REQUIRED');
 assert.equal(convertCountyStructuredEvidence({ ...ARAPAHOE_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST, sourceClass: 'COUNTY_TREASURER' }).classification, 'COUNTY_EVIDENCE_SOURCE_MISMATCH');
 assert.equal(convertCountyStructuredEvidence({
