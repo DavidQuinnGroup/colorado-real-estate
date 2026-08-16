@@ -357,6 +357,63 @@ function arapahoeCountyAssessorRecord(): ReieSourceRegistryRecord {
   };
 }
 
+function adamsCountyAssessorRecord(): ReieSourceRegistryRecord {
+  return {
+    sourceId: 'SRC-ADAMS-COUNTY-ASSESSOR',
+    publicName: 'Adams County Assessor',
+    responsibleOrganization: "Adams County Assessor's Office",
+    sourceClass: 'AUTHORITATIVE_SOURCE',
+    category: 'COUNTY_ASSESSOR',
+    domains: ['Assessor property-record source identity', 'Assessment records', 'Future governed county assessor evidence'],
+    jurisdiction: { state: 'Colorado', county: 'Adams County', coverage: 'Adams County assessor/property assessment and Property Portal source identity only' },
+    officialUrl: 'https://www.adcogov.org/assessor',
+    accessMethod: 'Source-specific provider, rights, and technical-access review required before public-search use, Property Portal automation, GIS Interactive Maps, Downloadable GIS Data, Assessor Data Dump, retrieval, automation, ingestion, display, or reuse',
+    updateCadence: 'source-specific and not certified',
+    freshnessExpectation: 'unknown until source-specific evidence review',
+    authorizationState: 'AWAITING_PROVIDER_CONFIRMATION',
+    permittedUse: 'registry identity and source-governance review only; no Property Portal search submission, GIS Interactive Maps, Downloadable GIS Data, Assessor Data Dump, retrieval, automation, storage, redistribution, legal-use, or customer-display authority',
+    productionActivationState: 'BLOCKED_NOT_AUTHORIZED',
+    claimEligible: false,
+    customerDisclosureEligible: true,
+    customerStatus: 'Blocked / not authorized',
+    currentReieUse: 'Exact source identity only for future-governed Adams County Assessor review; no Property Portal search submission, no GIS Interactive Maps access, no Downloadable GIS Data, no Assessor Data Dump, no property-record retrieval, no owner/address lookup, no parcel/account lookup, no valuation claim, no ownership claim, no title claim, no tax claim, no customer display, no ingestion, no automation, or runtime use is active.',
+    limitations: [
+      'ASSESSOR_RECORD_NOT_TITLE.',
+      'ASSESSOR_RECORD_NOT_DEED_VALIDITY.',
+      'ASSESSOR_RECORD_NOT_TREASURER_TAX_STATUS.',
+      'ASSESSOR_RECORD_NOT_CURRENT_OWNERSHIP_GUARANTEE.',
+      'ASSESSED_VALUE_NOT_MARKET_VALUE.',
+      'PUBLIC_SEARCH_NOT_AUTOMATION_AUTHORITY.',
+      'PUBLIC_ACCESS_NOT_REUSE_OR_DISPLAY_AUTHORITY.',
+      'PUBLIC_OR_GOVERNMENT_SOURCE_NOT_UNRESTRICTED_OR_VERIFIED_OR_COMPLETE.',
+      'ASSESSOR_GIS_NOT_ASSESSOR_RECORD_AUTHORITY.',
+      'ASSESSOR_DATA_DUMP_NOT_AUTHORIZED_BY_REGISTRY_MVV.',
+      'DOWNLOADABLE_GIS_DATA_NOT_UNRESTRICTED_OR_REUSE_READY.',
+      'PROPERTY_PORTAL_NOT_AUTOMATION_AUTHORITY.',
+      'COUNTY_ASSESSOR_NOT_PLANNING_OR_ZONING.',
+      'COUNTY_ASSESSOR_NOT_PERMITS.',
+      'COUNTY_ASSESSOR_NOT_PUBLIC_TRUSTEE.',
+      'COUNTY_ASSESSOR_NOT_COUNTY_TREASURER.',
+      'COUNTY_ASSESSOR_NOT_RECORDER.',
+      'COUNTY_ASSESSOR_NOT_PARCEL_GIS.',
+      'SOURCE_ACTIVATION_NOT_AUTHORIZED_BY_REGISTRY_MVV.',
+      'CUSTOMER_DISPLAY_NOT_GRANTED_BY_REGISTRY_MVV.',
+      'LEGAL_USE_NOT_APPROVED_BY_REGISTRY_MVV.',
+      'Adams County GIS Interactive Maps, Downloadable GIS Data, Assessor Data Dump, other GIS/property-map services, Treasurer and Public Trustee, Clerk and Recorder, Planning and Development, Permits and Licensing, public-record datasets, and restricted owner or authorized-agent procedures are separately governed and do not become the Assessor Registry source identity.',
+      'Boulder County, Arapahoe County, Broomfield, Jefferson County, Larimer County, and Weld County Assessor findings, evidence, rights, access, freshness, attribution, provenance, and provider terms do not transfer to Adams County Assessor.',
+      'Rights, technical access, freshness, attribution, fees, privacy approval, field sensitivity, and provenance remain unknown until separately governed source evidence review.',
+    ],
+    attributionRequirement: 'unknown until source-specific review',
+    lastSourceVerificationDate: REIE_SOURCE_REGISTRY_REFERENCE_DATE,
+    lastSuccessfulDataRefresh: null,
+    sourcePaths: [
+      'lib/sourceRegistry.ts/SRC-ADAMS-COUNTY-ASSESSOR',
+      'Adams County Assessor official-source identity research handoff',
+      'ADAMS_COUNTY_ASSESSOR_EXACT_SOURCE_REGISTRY_MVV',
+    ],
+  };
+}
+
 function broomfieldCountyAssessorRecord(): ReieSourceRegistryRecord {
   return {
     sourceId: 'SRC-BROOMFIELD-COUNTY-ASSESSOR',
@@ -732,6 +789,7 @@ export const REIE_SOURCE_REGISTRY: ReieSourceRegistry = Object.freeze({
     }),
     boulderCountyRecorderIndexRecord(),
     boulderCountyParcelGisRecord(),
+    adamsCountyAssessorRecord(),
     arapahoeCountyAssessorRecord(),
     broomfieldCountyAssessorRecord(),
     jeffersonCountyAssessorRecord(),
