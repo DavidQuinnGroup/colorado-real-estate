@@ -88,7 +88,12 @@ assert.match(sourceRightsReadiness, /legalEntityOrProvider:\s*'Boulder County Cl
 assert.match(sourceRightsReadiness, /LEGAL_REVIEW_REQUIRED/, 'SRA Recorder context must not become activation authority.');
 assert.match(sourceRightsReadiness, /activationCandidate:\s*false/, 'SRA Recorder context must remain non-activation readiness context.');
 assert.doesNotMatch(sourceRightsReadiness, /SRC-BOULDER-COUNTY-RECORDER-INDEX/, 'SRA context must not grant exact SRC authority inheritance.');
-assert.ok(!fs.existsSync('lib/sourceQualityBoulderCountyRecorderIndexEvidence.ts'));
+if (fs.existsSync('lib/sourceQualityBoulderCountyRecorderIndexEvidence.ts')) {
+  const recorderEvidence = read('lib/sourceQualityBoulderCountyRecorderIndexEvidence.ts');
+  assert.match(recorderEvidence, /SRC-BOULDER-COUNTY-RECORDER-INDEX/, 'Recorder evidence must bind to the canonical exact source identity.');
+  assert.doesNotMatch(recorderEvidence, /EXP-SRC-BOULDER-COUNTY-RECORDER|SRA-BOULDER-COUNTY-RECORDER/, 'Recorder evidence must not inherit EXP or SRA authority.');
+  assert.doesNotMatch(recorderEvidence, /documentImage|scannedInstrument|ocrText|fullText|signature|documentBody|certifiedCopyContent|rawInstrumentPayload|documentContentRedistribution/, 'Recorder evidence must not imply document-content authority.');
+}
 
 const permitSourceIds = [
   'SRC-CITY-BOULDER-OPEN-DATA-PERMITS',
