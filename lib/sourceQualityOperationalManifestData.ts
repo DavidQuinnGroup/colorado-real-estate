@@ -12,6 +12,12 @@ import {
   convertBoulderCountyAssessorSourceQualityEvidence,
 } from './sourceQualityBoulderCountyAssessorEvidence';
 import {
+  BOULDER_COUNTY_RECORDER_INDEX_SOURCE_ID,
+  BOULDER_COUNTY_RECORDER_INDEX_SOURCE_QUALITY_CERTIFICATION,
+  BOULDER_COUNTY_RECORDER_INDEX_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT,
+  convertBoulderCountyRecorderIndexSourceQualityEvidence,
+} from './sourceQualityBoulderCountyRecorderIndexEvidence';
+import {
   BOULDER_COUNTY_TREASURER_SOURCE_ID,
   BOULDER_COUNTY_TREASURER_SOURCE_QUALITY_CERTIFICATION,
   BOULDER_COUNTY_TREASURER_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT,
@@ -50,6 +56,7 @@ const reviewedAt = '2026-08-15';
 const manifestId = 'SQOM-INITIAL-001';
 const boulderCountyAccelaPermitsEvidence = convertBoulderCountyAccelaPermitsSourceQualityEvidence();
 const boulderCountyAssessorEvidence = convertBoulderCountyAssessorSourceQualityEvidence();
+const boulderCountyRecorderIndexEvidence = convertBoulderCountyRecorderIndexSourceQualityEvidence();
 const boulderCountyTreasurerEvidence = convertBoulderCountyTreasurerSourceQualityEvidence();
 const cityBoulderBuildingPermitsPortalEvidence = convertCityBoulderBuildingPermitsPortalSourceQualityEvidence();
 const cityBoulderOpenDataPermitsEvidence = convertCityBoulderOpenDataPermitsSourceQualityEvidence();
@@ -195,6 +202,18 @@ export const SOURCE_QUALITY_OPERATIONAL_MANIFEST_DATA: SourceQualityOperationalM
       expectedEvidenceClasses: ['CERTIFICATION'],
       certificationReference: CITY_BOULDER_BUILDING_PERMITS_PORTAL_SOURCE_QUALITY_CERTIFICATION,
       reviewedAt: CITY_BOULDER_BUILDING_PERMITS_PORTAL_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT,
+      reviewAuthorityClass: 'DELEGATED_SOURCE_GOVERNANCE_REVIEW',
+      limitationCodes: [],
+    },
+    {
+      schemaVersion: SOURCE_QUALITY_OPERATIONAL_MANIFEST_SCHEMA_VERSION,
+      manifestId,
+      sourceId: BOULDER_COUNTY_RECORDER_INDEX_SOURCE_ID,
+      inclusionClass: 'STRUCTURED_EVIDENCE_WITH_KNOWN_GAPS',
+      linkages: boulderCountyRecorderIndexEvidence.linkages,
+      expectedEvidenceClasses: ['CERTIFICATION'],
+      certificationReference: BOULDER_COUNTY_RECORDER_INDEX_SOURCE_QUALITY_CERTIFICATION,
+      reviewedAt: BOULDER_COUNTY_RECORDER_INDEX_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT,
       reviewAuthorityClass: 'DELEGATED_SOURCE_GOVERNANCE_REVIEW',
       limitationCodes: [],
     },
