@@ -1,5 +1,11 @@
 import type { SourceEvidenceCertificationReference, SourceEvidenceLinkageRecord } from './sourceQualityEvidenceNormalization';
 import {
+  ARAPAHOE_COUNTY_ASSESSOR_SOURCE_ID,
+  ARAPAHOE_COUNTY_ASSESSOR_SOURCE_QUALITY_CERTIFICATION,
+  ARAPAHOE_COUNTY_ASSESSOR_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT,
+  convertArapahoeCountyAssessorSourceQualityEvidence,
+} from './sourceQualityArapahoeCountyAssessorEvidence';
+import {
   BOULDER_COUNTY_ACCELA_PERMITS_SOURCE_ID,
   BOULDER_COUNTY_ACCELA_PERMITS_SOURCE_QUALITY_CERTIFICATION,
   BOULDER_COUNTY_ACCELA_PERMITS_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT,
@@ -72,6 +78,7 @@ import {
 
 const reviewedAt = '2026-08-15';
 const manifestId = 'SQOM-INITIAL-001';
+const arapahoeCountyAssessorEvidence = convertArapahoeCountyAssessorSourceQualityEvidence();
 const boulderCountyAccelaPermitsEvidence = convertBoulderCountyAccelaPermitsSourceQualityEvidence();
 const boulderCountyAssessorEvidence = convertBoulderCountyAssessorSourceQualityEvidence();
 const boulderCountyRecorderIndexEvidence = convertBoulderCountyRecorderIndexSourceQualityEvidence();
@@ -271,6 +278,18 @@ export const SOURCE_QUALITY_OPERATIONAL_MANIFEST_DATA: SourceQualityOperationalM
       expectedEvidenceClasses: ['CERTIFICATION'],
       certificationReference: BOULDER_COUNTY_PARCEL_GIS_SOURCE_QUALITY_CERTIFICATION,
       reviewedAt: BOULDER_COUNTY_PARCEL_GIS_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT,
+      reviewAuthorityClass: 'DELEGATED_SOURCE_GOVERNANCE_REVIEW',
+      limitationCodes: [],
+    },
+    {
+      schemaVersion: SOURCE_QUALITY_OPERATIONAL_MANIFEST_SCHEMA_VERSION,
+      manifestId,
+      sourceId: ARAPAHOE_COUNTY_ASSESSOR_SOURCE_ID,
+      inclusionClass: 'STRUCTURED_EVIDENCE_WITH_KNOWN_GAPS',
+      linkages: arapahoeCountyAssessorEvidence.linkages,
+      expectedEvidenceClasses: ['CERTIFICATION'],
+      certificationReference: ARAPAHOE_COUNTY_ASSESSOR_SOURCE_QUALITY_CERTIFICATION,
+      reviewedAt: ARAPAHOE_COUNTY_ASSESSOR_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT,
       reviewAuthorityClass: 'DELEGATED_SOURCE_GOVERNANCE_REVIEW',
       limitationCodes: [],
     },
