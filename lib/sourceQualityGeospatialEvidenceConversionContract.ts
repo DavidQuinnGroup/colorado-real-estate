@@ -18,6 +18,7 @@ export const SOURCE_QUALITY_GEOSPATIAL_EVIDENCE_CONVERSION_SCHEMA_VERSION = 'REI
 export const GEOSPATIAL_SOURCE_QUALITY_CONVERSION_ALLOWED_SOURCE_IDS = Object.freeze([
   'SRC-BCOD-ADDRESS-POINTS',
   'SRC-BCOD-PARK-BOUNDARIES',
+  'SRC-BOULDER-COUNTY-PARCEL-GIS',
 ] as const);
 
 export type GeospatialSourceQualityConversionSourceClass =
@@ -132,9 +133,10 @@ const LIMITATION_CODES: readonly SourceEvidenceLimitationCode[] = [
   'NARRATIVE_ONLY_NON_COMPOSABLE',
 ];
 
-const SOURCE_CLASSES: Record<(typeof GEOSPATIAL_SOURCE_QUALITY_CONVERSION_ALLOWED_SOURCE_IDS)[number], Exclude<GeospatialSourceQualityConversionSourceClass, 'COUNTY_GIS_PARCEL_GEOMETRY'>> = {
+const SOURCE_CLASSES: Record<(typeof GEOSPATIAL_SOURCE_QUALITY_CONVERSION_ALLOWED_SOURCE_IDS)[number], GeospatialSourceQualityConversionSourceClass> = {
   'SRC-BCOD-ADDRESS-POINTS': 'COUNTY_GIS_ADDRESS_POINTS',
   'SRC-BCOD-PARK-BOUNDARIES': 'COUNTY_GIS_PARK_BOUNDARIES',
+  'SRC-BOULDER-COUNTY-PARCEL-GIS': 'COUNTY_GIS_PARCEL_GEOMETRY',
 };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -194,6 +196,16 @@ function validReference(value: unknown, sourceId: string): value is GeospatialSt
     && ['VERIFIED', 'PENDING', 'UNVERIFIED', 'REJECTED'].includes(String(value.verificationStatus))
     && Array.isArray(value.limitationCodes)
     && value.limitationCodes.every((code) => LIMITATION_CODES.includes(code as SourceEvidenceLimitationCode));
+}
+
+function validSourceSpecificCertification(
+  sourceId: string,
+  certificationReference: SourceEvidenceCertificationReference,
+  references: readonly GeospatialStructuredEvidenceReference[],
+): boolean {
+  if (sourceId !== 'SRC-BOULDER-COUNTY-PARCEL-GIS') return true;
+  return certificationReference.certificationId.includes('PARCEL-GIS')
+    && references.every((reference) => reference.evidenceReferenceId.includes('PARCEL-GIS'));
 }
 
 function createFailFingerprint(
@@ -277,6 +289,7 @@ export function convertGeospatialStructuredEvidence(input: unknown): GeospatialS
   if (!input.evidenceReferences.some((reference) => reference.inputClass === 'CERTIFICATION_REFERENCE')) return fail('GEOSPATIAL_CERTIFICATION_REQUIRED', inputFingerprint, 'CERTIFICATION_LINKAGE_REFERENCE_REQUIRED');
 
   const request = input as GeospatialSourceQualityEvidenceConversionRequest;
+  if (!validSourceSpecificCertification(request.sourceId, request.certificationReference!, request.evidenceReferences)) return fail('GEOSPATIAL_CERTIFICATION_REQUIRED', inputFingerprint, 'EXACT_PARCEL_GIS_CERTIFICATION_REFERENCE_REQUIRED');
   const linkages = [...request.evidenceReferences]
     .sort((left, right) => (left.inputClass + ':' + left.evidenceReferenceId).localeCompare(right.inputClass + ':' + right.evidenceReferenceId))
     .map((reference) => toLinkage(reference, request.certificationReference!, request.reviewedAt));

@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
 import {
+  BOULDER_COUNTY_PARCEL_GIS_SOURCE_ID,
   BCOD_ADDRESS_POINTS_SOURCE_ID,
   BCOD_PARK_BOUNDARIES_SOURCE_ID,
   COUNTY_GEOSPATIAL_SOURCE_QUALITY_CONVERSION_ALLOWED_SOURCE_IDS,
@@ -29,6 +30,7 @@ assert.equal(BCOD_PARK_BOUNDARIES_SOURCE_ID, 'SRC-BCOD-PARK-BOUNDARIES');
 assert.deepEqual(COUNTY_GEOSPATIAL_SOURCE_QUALITY_CONVERSION_ALLOWED_SOURCE_IDS, [
   'SRC-BCOD-ADDRESS-POINTS',
   'SRC-BCOD-PARK-BOUNDARIES',
+  'SRC-BOULDER-COUNTY-PARCEL-GIS',
 ]);
 assert.equal(valid.classification, 'COUNTY_GEOSPATIAL_EVIDENCE_CONVERSION_VALID');
 assert.equal(valid.sourceId, BCOD_ADDRESS_POINTS_SOURCE_ID);
@@ -54,7 +56,7 @@ assert.equal(valid.inputFingerprint, generic.inputFingerprint);
 assert.equal(valid.conversionFingerprint, generic.conversionFingerprint);
 
 const registry = getReieSourceRegistry();
-for (const sourceId of [BCOD_ADDRESS_POINTS_SOURCE_ID, BCOD_PARK_BOUNDARIES_SOURCE_ID]) {
+for (const sourceId of [BCOD_ADDRESS_POINTS_SOURCE_ID, BCOD_PARK_BOUNDARIES_SOURCE_ID, BOULDER_COUNTY_PARCEL_GIS_SOURCE_ID]) {
   const source = registry.records.find((record) => record.sourceId === sourceId);
   assert.ok(source);
   assert.equal(source.sourceClass, 'AUTHORITATIVE_SOURCE');
@@ -78,6 +80,40 @@ assert.equal(park.classification, 'COUNTY_GEOSPATIAL_EVIDENCE_CONVERSION_VALID')
 assert.equal(park.sourceId, BCOD_PARK_BOUNDARIES_SOURCE_ID);
 assert.notEqual(park.conversionFingerprint, valid.conversionFingerprint);
 
+const parcel = convertCountyGeospatialStructuredEvidence({
+  ...countyAddressRequest,
+  sourceId: BOULDER_COUNTY_PARCEL_GIS_SOURCE_ID,
+  sourceClass: 'COUNTY_GIS_PARCEL_GEOMETRY',
+  sourceConfirmation: { sourceId: BOULDER_COUNTY_PARCEL_GIS_SOURCE_ID, confirmationClass: 'EXACT_SOURCE_ID_CONFIRMED', reviewedAt: '2026-08-16' },
+  evidenceReferences: [{
+    ...countyAddressRequest.evidenceReferences[0]!,
+    sourceId: BOULDER_COUNTY_PARCEL_GIS_SOURCE_ID,
+    evidenceReferenceId: 'GIS-CONVERSION-BOULDER-COUNTY-PARCEL-GIS-CERT-001',
+  }],
+  certificationReference: {
+    ...countyAddressRequest.certificationReference!,
+    certificationId: 'CERT-GIS-PUBLIC-GEOSPATIAL-PARCEL-GIS-CONVERSION-001',
+  },
+});
+assert.equal(parcel.classification, 'COUNTY_GEOSPATIAL_EVIDENCE_CONVERSION_VALID');
+assert.equal(parcel.sourceId, BOULDER_COUNTY_PARCEL_GIS_SOURCE_ID);
+assert.equal(parcel.normalized?.source?.declaredActivationPosture, 'BLOCKED_NOT_AUTHORIZED');
+assert.equal(parcel.normalized?.source?.claimEligible, false);
+assert.equal(parcel.normalized?.rights.posture, 'UNKNOWN');
+assert.equal(parcel.normalized?.technicalAccess.posture, 'UNKNOWN');
+assert.equal(parcel.normalized?.freshness.posture, 'UNKNOWN');
+assert.equal(parcel.normalized?.attribution.posture, 'UNKNOWN');
+assert.equal(parcel.normalized?.provenance.posture, 'UNKNOWN');
+assert.equal(parcel.control?.classification, 'INSUFFICIENT_EVIDENCE');
+assert.notEqual(parcel.conversionFingerprint, valid.conversionFingerprint);
+assert.equal(convertCountyGeospatialStructuredEvidence({
+  ...countyAddressRequest,
+  sourceId: BOULDER_COUNTY_PARCEL_GIS_SOURCE_ID,
+  sourceClass: 'COUNTY_GIS_PARCEL_GEOMETRY',
+  sourceConfirmation: { sourceId: BOULDER_COUNTY_PARCEL_GIS_SOURCE_ID, confirmationClass: 'EXACT_SOURCE_ID_CONFIRMED', reviewedAt: '2026-08-16' },
+  evidenceReferences: [{ ...countyAddressRequest.evidenceReferences[0]!, sourceId: BOULDER_COUNTY_PARCEL_GIS_SOURCE_ID }],
+}).classification, 'COUNTY_GEOSPATIAL_CERTIFICATION_REQUIRED');
+
 const city = convertCountyGeospatialStructuredEvidence({
   ...countyAddressRequest,
   sourceId: 'SRC-CITY-BOULDER-OPEN-DATA-PERMITS',
@@ -87,11 +123,11 @@ const city = convertCountyGeospatialStructuredEvidence({
 });
 assert.equal(city.classification, 'COUNTY_GEOSPATIAL_SOURCE_INVALID');
 
-for (const sourceId of ['SRC-UNKNOWN-GIS-SOURCE', 'EXP-SRC-BCOD-ADDRESS-POINTS', 'SRA-BCOD-ADDRESS-POINTS', 'SRC-BOULDER-COUNTY-PARCEL-GIS']) {
+for (const sourceId of ['SRC-UNKNOWN-GIS-SOURCE', 'EXP-SRC-BCOD-ADDRESS-POINTS', 'SRA-BCOD-ADDRESS-POINTS', 'EXP-SRC-BOULDER-COUNTY-PARCEL-GIS', 'SRA-BOULDER-COUNTY-PARCEL-GIS', 'SRC-PROVIDER-PARCEL-GIS']) {
   assert.equal(convertCountyGeospatialStructuredEvidence({
     ...countyAddressRequest,
     sourceId,
-    sourceClass: sourceId === 'SRC-BOULDER-COUNTY-PARCEL-GIS' ? 'COUNTY_GIS_PARCEL_GEOMETRY' : 'COUNTY_GIS_ADDRESS_POINTS',
+    sourceClass: sourceId.includes('PARCEL') ? 'COUNTY_GIS_PARCEL_GEOMETRY' : 'COUNTY_GIS_ADDRESS_POINTS',
     sourceConfirmation: { sourceId, confirmationClass: 'EXACT_SOURCE_ID_CONFIRMED', reviewedAt: '2026-08-16' },
     evidenceReferences: [{ ...countyAddressRequest.evidenceReferences[0]!, sourceId }],
   }).classification, 'COUNTY_GEOSPATIAL_SOURCE_INVALID');
@@ -100,6 +136,10 @@ for (const sourceId of ['SRC-UNKNOWN-GIS-SOURCE', 'EXP-SRC-BCOD-ADDRESS-POINTS',
 assert.equal(convertCountyGeospatialStructuredEvidence({
   ...countyAddressRequest,
   sourceClass: 'COUNTY_GIS_PARK_BOUNDARIES',
+}).classification, 'COUNTY_GEOSPATIAL_SOURCE_MISMATCH');
+assert.equal(convertCountyGeospatialStructuredEvidence({
+  ...countyAddressRequest,
+  sourceClass: 'COUNTY_GIS_PARCEL_GEOMETRY',
 }).classification, 'COUNTY_GEOSPATIAL_SOURCE_MISMATCH');
 const { sourceConfirmation: _sourceConfirmation, ...countyRequestWithoutConfirmation } = countyAddressRequest;
 assert.equal(convertCountyGeospatialStructuredEvidence(countyRequestWithoutConfirmation).classification, 'COUNTY_GEOSPATIAL_SOURCE_CONFIRMATION_REQUIRED');
@@ -127,7 +167,7 @@ assert.equal(assembly.assembly?.summaries[0]?.classification, 'INSUFFICIENT_EVID
 
 assert.equal(COUNTY_GEOSPATIAL_SOURCE_QUALITY_CONVERSION_FIREWALL.delegation, 'COUNTY_WRAPPER_DELEGATES_TO_GIS_PUBLIC_GEOSPATIAL_CONVERSION');
 assert.equal(COUNTY_GEOSPATIAL_SOURCE_QUALITY_CONVERSION_FIREWALL.noDuplicateConversionLogic, 'COUNTY_WRAPPER_DOES_NOT_DUPLICATE_HASHING_LINKAGE_NORMALIZATION_CONTROL_OR_ASSEMBLY');
-assert.equal(COUNTY_GEOSPATIAL_SOURCE_QUALITY_CONVERSION_FIREWALL.parcelAcceptance, 'PARCEL_GEOMETRY_SOURCE_NOT_ACCEPTED_WITHOUT_SEPARATE_AUTHORIZATION');
+assert.equal(COUNTY_GEOSPATIAL_SOURCE_QUALITY_CONVERSION_FIREWALL.parcelAcceptance, 'PARCEL_GEOMETRY_ACCEPTED_ONLY_FOR_EXACT_AUTHORIZED_SOURCE');
 
 const runtime = await readFile(new URL('../lib/sourceQualityCountyGeospatialEvidenceConversionContract.ts', import.meta.url), 'utf8');
 for (const required of ['convertGeospatialStructuredEvidence', 'createGeospatialSourceQualityAssemblyRequest']) assert.equal(runtime.includes(required), true);

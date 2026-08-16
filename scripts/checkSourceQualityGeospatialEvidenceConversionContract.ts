@@ -24,6 +24,7 @@ assert.equal(addressSource.claimEligible, false);
 assert.deepEqual(GEOSPATIAL_SOURCE_QUALITY_CONVERSION_ALLOWED_SOURCE_IDS, [
   'SRC-BCOD-ADDRESS-POINTS',
   'SRC-BCOD-PARK-BOUNDARIES',
+  'SRC-BOULDER-COUNTY-PARCEL-GIS',
 ]);
 
 const valid = convertGeospatialStructuredEvidence(BCOD_ADDRESS_POINTS_SYNTHETIC_GEOSPATIAL_CONVERSION_REQUEST);
@@ -87,7 +88,7 @@ const foreignReference = convertGeospatialStructuredEvidence({
 });
 assert.equal(foreignReference.classification, 'GEOSPATIAL_REFERENCE_INVALID');
 
-for (const sourceId of ['SRC-UNKNOWN-GIS-SOURCE', 'EXP-SRC-BCOD-ADDRESS-POINTS', 'SRA-BCOD-ADDRESS-POINTS', 'BCOD-ADDRESS-POINTS']) {
+for (const sourceId of ['SRC-UNKNOWN-GIS-SOURCE', 'EXP-SRC-BCOD-ADDRESS-POINTS', 'SRA-BCOD-ADDRESS-POINTS', 'BCOD-ADDRESS-POINTS', 'EXP-SRC-BOULDER-COUNTY-PARCEL-GIS', 'SRA-BOULDER-COUNTY-PARCEL-GIS', 'SRC-PROVIDER-PARCEL-GIS']) {
   assert.equal(convertGeospatialStructuredEvidence({
     ...BCOD_ADDRESS_POINTS_SYNTHETIC_GEOSPATIAL_CONVERSION_REQUEST,
     sourceId,
@@ -101,9 +102,50 @@ const parcelAttempt = convertGeospatialStructuredEvidence({
   sourceId: 'SRC-BOULDER-COUNTY-PARCEL-GIS',
   sourceClass: 'COUNTY_GIS_PARCEL_GEOMETRY',
   sourceConfirmation: { sourceId: 'SRC-BOULDER-COUNTY-PARCEL-GIS', confirmationClass: 'EXACT_SOURCE_ID_CONFIRMED', reviewedAt: '2026-08-16' },
-  evidenceReferences: [{ ...BCOD_ADDRESS_POINTS_SYNTHETIC_GEOSPATIAL_CONVERSION_REQUEST.evidenceReferences[0]!, sourceId: 'SRC-BOULDER-COUNTY-PARCEL-GIS' }],
+  evidenceReferences: [{
+    ...BCOD_ADDRESS_POINTS_SYNTHETIC_GEOSPATIAL_CONVERSION_REQUEST.evidenceReferences[0]!,
+    sourceId: 'SRC-BOULDER-COUNTY-PARCEL-GIS',
+    evidenceReferenceId: 'GIS-CONVERSION-BOULDER-COUNTY-PARCEL-GIS-CERT-001',
+  }],
+  certificationReference: {
+    ...BCOD_ADDRESS_POINTS_SYNTHETIC_GEOSPATIAL_CONVERSION_REQUEST.certificationReference!,
+    certificationId: 'CERT-GIS-PUBLIC-GEOSPATIAL-PARCEL-GIS-CONVERSION-001',
+  },
 });
-assert.equal(parcelAttempt.classification, 'GEOSPATIAL_SOURCE_INVALID');
+assert.equal(parcelAttempt.classification, 'GEOSPATIAL_EVIDENCE_CONVERSION_VALID');
+assert.equal(parcelAttempt.sourceId, 'SRC-BOULDER-COUNTY-PARCEL-GIS');
+assert.equal(parcelAttempt.linkages[0]?.sourceId, 'SRC-BOULDER-COUNTY-PARCEL-GIS');
+assert.equal(parcelAttempt.normalized?.source?.declaredActivationPosture, 'BLOCKED_NOT_AUTHORIZED');
+assert.equal(parcelAttempt.normalized?.source?.claimEligible, false);
+assert.equal(parcelAttempt.normalized?.rights.posture, 'UNKNOWN');
+assert.equal(parcelAttempt.normalized?.technicalAccess.posture, 'UNKNOWN');
+assert.equal(parcelAttempt.normalized?.freshness.posture, 'UNKNOWN');
+assert.equal(parcelAttempt.normalized?.attribution.posture, 'UNKNOWN');
+assert.equal(parcelAttempt.normalized?.provenance.posture, 'UNKNOWN');
+assert.equal(parcelAttempt.control?.classification, 'INSUFFICIENT_EVIDENCE');
+assert.match(parcelAttempt.inputFingerprint, /^source-quality-fingerprint:gis-public-geospatial-input:v1:sha256:[0-9a-f]{64}$/);
+assert.match(parcelAttempt.conversionFingerprint, /^source-quality-fingerprint:gis-public-geospatial-conversion:v1:sha256:[0-9a-f]{64}$/);
+assert.notEqual(parcelAttempt.conversionFingerprint, valid.conversionFingerprint);
+
+assert.equal(convertGeospatialStructuredEvidence({
+  ...BCOD_ADDRESS_POINTS_SYNTHETIC_GEOSPATIAL_CONVERSION_REQUEST,
+  sourceId: 'SRC-BOULDER-COUNTY-PARCEL-GIS',
+  sourceClass: 'COUNTY_GIS_ADDRESS_POINTS',
+  sourceConfirmation: { sourceId: 'SRC-BOULDER-COUNTY-PARCEL-GIS', confirmationClass: 'EXACT_SOURCE_ID_CONFIRMED', reviewedAt: '2026-08-16' },
+  evidenceReferences: [{ ...BCOD_ADDRESS_POINTS_SYNTHETIC_GEOSPATIAL_CONVERSION_REQUEST.evidenceReferences[0]!, sourceId: 'SRC-BOULDER-COUNTY-PARCEL-GIS' }],
+}).classification, 'GEOSPATIAL_SOURCE_MISMATCH');
+assert.equal(convertGeospatialStructuredEvidence({
+  ...BCOD_ADDRESS_POINTS_SYNTHETIC_GEOSPATIAL_CONVERSION_REQUEST,
+  sourceId: 'SRC-BOULDER-COUNTY-PARCEL-GIS',
+  sourceClass: 'COUNTY_GIS_PARCEL_GEOMETRY',
+  sourceConfirmation: { sourceId: 'SRC-BOULDER-COUNTY-PARCEL-GIS', confirmationClass: 'EXACT_SOURCE_ID_CONFIRMED', reviewedAt: '2026-08-16' },
+  evidenceReferences: [{ ...BCOD_ADDRESS_POINTS_SYNTHETIC_GEOSPATIAL_CONVERSION_REQUEST.evidenceReferences[0]!, sourceId: 'SRC-BOULDER-COUNTY-PARCEL-GIS' }],
+}).classification, 'GEOSPATIAL_CERTIFICATION_REQUIRED');
+assert.equal(convertGeospatialStructuredEvidence({
+  ...BCOD_ADDRESS_POINTS_SYNTHETIC_GEOSPATIAL_CONVERSION_REQUEST,
+  sourceId: 'SRC-BCOD-ADDRESS-POINTS',
+  sourceClass: 'COUNTY_GIS_PARCEL_GEOMETRY',
+}).classification, 'GEOSPATIAL_SOURCE_MISMATCH');
 
 const rawTopLevel = convertGeospatialStructuredEvidence({
   ...BCOD_ADDRESS_POINTS_SYNTHETIC_GEOSPATIAL_CONVERSION_REQUEST,
