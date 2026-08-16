@@ -6,6 +6,12 @@ import {
   convertAdamsCountyAssessorSourceQualityEvidence,
 } from './sourceQualityAdamsCountyAssessorEvidence';
 import {
+  ADAMS_COUNTY_TREASURER_SOURCE_ID,
+  ADAMS_COUNTY_TREASURER_SOURCE_QUALITY_CERTIFICATION,
+  ADAMS_COUNTY_TREASURER_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT,
+  convertAdamsCountyTreasurerSourceQualityEvidence,
+} from './sourceQualityAdamsCountyTreasurerEvidence';
+import {
   ARAPAHOE_COUNTY_ASSESSOR_SOURCE_ID,
   ARAPAHOE_COUNTY_ASSESSOR_SOURCE_QUALITY_CERTIFICATION,
   ARAPAHOE_COUNTY_ASSESSOR_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT,
@@ -115,6 +121,7 @@ import {
 const reviewedAt = '2026-08-15';
 const manifestId = 'SQOM-INITIAL-001';
 const adamsCountyAssessorEvidence = convertAdamsCountyAssessorSourceQualityEvidence();
+const adamsCountyTreasurerEvidence = convertAdamsCountyTreasurerSourceQualityEvidence();
 const arapahoeCountyAssessorEvidence = convertArapahoeCountyAssessorSourceQualityEvidence();
 const arapahoeCountyTreasurerEvidence = convertArapahoeCountyTreasurerSourceQualityEvidence();
 const boulderCountyAccelaPermitsEvidence = convertBoulderCountyAccelaPermitsSourceQualityEvidence();
@@ -404,6 +411,18 @@ export const SOURCE_QUALITY_OPERATIONAL_MANIFEST_DATA: SourceQualityOperationalM
       expectedEvidenceClasses: ['CERTIFICATION'],
       certificationReference: ARAPAHOE_COUNTY_TREASURER_SOURCE_QUALITY_CERTIFICATION,
       reviewedAt: ARAPAHOE_COUNTY_TREASURER_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT,
+      reviewAuthorityClass: 'DELEGATED_SOURCE_GOVERNANCE_REVIEW',
+      limitationCodes: [],
+    },
+    {
+      schemaVersion: SOURCE_QUALITY_OPERATIONAL_MANIFEST_SCHEMA_VERSION,
+      manifestId,
+      sourceId: ADAMS_COUNTY_TREASURER_SOURCE_ID,
+      inclusionClass: 'STRUCTURED_EVIDENCE_WITH_KNOWN_GAPS',
+      linkages: adamsCountyTreasurerEvidence.linkages,
+      expectedEvidenceClasses: ['CERTIFICATION'],
+      certificationReference: ADAMS_COUNTY_TREASURER_SOURCE_QUALITY_CERTIFICATION,
+      reviewedAt: ADAMS_COUNTY_TREASURER_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT,
       reviewAuthorityClass: 'DELEGATED_SOURCE_GOVERNANCE_REVIEW',
       limitationCodes: [],
     },
