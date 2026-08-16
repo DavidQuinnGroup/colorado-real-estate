@@ -47,7 +47,7 @@ export type ReieSourceRegistryRecord = Readonly<{
   publicName: string;
   responsibleOrganization: string;
   sourceClass: ReieSourceClass;
-  category: CityIntelligenceSourceCategory | 'BCOD_ADDRESS_POINTS' | 'BCOD_PARK_BOUNDARIES' | 'REIE_FINANCING_SCENARIO_CALCULATOR' | 'REIE_PROPERTY_COMPARISON_INTELLIGENCE';
+  category: CityIntelligenceSourceCategory | 'BCOD_ADDRESS_POINTS' | 'BCOD_PARK_BOUNDARIES' | 'RECORDED_DOCUMENT_INDEX' | 'REIE_FINANCING_SCENARIO_CALCULATOR' | 'REIE_PROPERTY_COMPARISON_INTELLIGENCE';
   domains: readonly string[];
   jurisdiction: ReieSourceJurisdiction;
   officialUrl: string | null;
@@ -207,6 +207,46 @@ function bcodRecord(category: 'BCOD_ADDRESS_POINTS' | 'BCOD_PARK_BOUNDARIES'): R
   };
 }
 
+function boulderCountyRecorderIndexRecord(): ReieSourceRegistryRecord {
+  return {
+    sourceId: 'SRC-BOULDER-COUNTY-RECORDER-INDEX',
+    publicName: 'Boulder County Clerk and Recorder recorded-document index',
+    responsibleOrganization: 'Boulder County Clerk and Recorder',
+    sourceClass: 'AUTHORITATIVE_SOURCE',
+    category: 'RECORDED_DOCUMENT_INDEX',
+    domains: ['Recorded-document index/search reference', 'Verification metadata', 'Future Source Quality evidence review'],
+    jurisdiction: { state: 'Colorado', county: 'Boulder County', coverage: 'Boulder County recorded-document index/search metadata only' },
+    officialUrl: 'https://boulder.co.ds.search.govos.com/',
+    accessMethod: 'Source-specific review required before retrieval, automation, scraping, ingestion, or display',
+    updateCadence: 'unknown until source-specific review',
+    freshnessExpectation: 'unknown until source-specific review',
+    authorizationState: 'AWAITING_PROVIDER_CONFIRMATION',
+    permittedUse: 'registry identity and source-governance review only; no rights, access, retrieval, automation, storage, redistribution, legal-use, or customer-display authority',
+    productionActivationState: 'BLOCKED_NOT_AUTHORIZED',
+    claimEligible: false,
+    customerDisclosureEligible: true,
+    customerStatus: 'Blocked / not authorized',
+    currentReieUse: 'Recorded-document search/index reference, verification metadata, source-governance review, and future structured Source Quality evidence only; no document bodies, document images, OCR, signatures, legal-description extraction, certified-copy workflows, bulk document redistribution, retrieval, automation, or customer display is active.',
+    limitations: [
+      'INDEX_OR_SEARCH_METADATA_NOT_DOCUMENT_CONTENT.',
+      'Document images, scanned instruments, OCR, full text, signatures, legal descriptions extracted from document bodies, certified-copy fulfillment, document-content storage, and document-content redistribution are excluded.',
+      'Public-record or government-source status does not establish unrestricted reuse, automated extraction, redistribution, legal-use approval, customer display, completeness, or freshness.',
+      'Rights, technical access, freshness, attribution, fees, privacy approval, and provenance remain unknown until source-specific review.',
+      'EXP-SRC-BOULDER-COUNTY-RECORDER remains discovery-only context and is not Source Quality evidence authority.',
+      'SRA-BOULDER-COUNTY-RECORDER remains readiness/risk context only and grants no SRC authority inheritance.',
+      'Future Public Record/County conversion support is expected to use COUNTY_RECORDED_DOCUMENT_INDEX only after a separate authorized MVV.',
+    ],
+    attributionRequirement: 'unknown until source-specific review',
+    lastSourceVerificationDate: REIE_SOURCE_REGISTRY_REFERENCE_DATE,
+    lastSuccessfulDataRefresh: null,
+    sourcePaths: [
+      'lib/sourceRegistry.ts/SRC-BOULDER-COUNTY-RECORDER-INDEX',
+      'SOURCE-RIGHTS-ACTIVATION-READINESS-1-MATRIX/SRA-BOULDER-COUNTY-RECORDER-readiness-context-only',
+      'COLORADO_CITY_INTELLIGENCE_SOURCE_DOMAIN_MATRIX/RECORDER_DEED-category-superseded-for-index-boundary',
+    ],
+  };
+}
+
 function derivedRecord({
   sourceId,
   publicName,
@@ -303,6 +343,7 @@ export const REIE_SOURCE_REGISTRY: ReieSourceRegistry = Object.freeze({
       limitations: ['No property-specific tax record retrieval is authorized.', 'Tax conclusions require source and professional verification.'],
       lastSourceVerificationDate: REIE_SOURCE_REGISTRY_REFERENCE_DATE,
     }),
+    boulderCountyRecorderIndexRecord(),
     sourceFromProfile({
       sourceId: 'SRC-BOULDER-PERMIT-CANDIDATES',
       publicName: 'Boulder permit source candidates',

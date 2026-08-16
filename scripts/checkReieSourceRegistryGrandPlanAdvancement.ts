@@ -44,6 +44,52 @@ assert.equal(assessor.claimEligible, false);
 assert.match(assessor.currentReieUse, /Identified source candidate only/);
 assert.match(assessor.currentReieUse, /no automated retrieval/);
 
+const recorderSourceId = 'SRC-BOULDER-COUNTY-RECORDER-INDEX';
+assert.equal(registry.records.filter((item) => item.sourceId === recorderSourceId).length, 1, 'Recorder index source must exist exactly once.');
+const recorder = record(recorderSourceId);
+const recorderText = JSON.stringify(recorder);
+assert.equal(recorder.responsibleOrganization, 'Boulder County Clerk and Recorder');
+assert.equal(recorder.sourceClass, 'AUTHORITATIVE_SOURCE');
+assert.equal(recorder.category, 'RECORDED_DOCUMENT_INDEX');
+assert.equal(recorder.authorizationState, 'AWAITING_PROVIDER_CONFIRMATION');
+assert.equal(recorder.productionActivationState, 'BLOCKED_NOT_AUTHORIZED');
+assert.equal(recorder.claimEligible, false);
+assert.equal(recorder.customerDisclosureEligible, true);
+assert.match(recorder.currentReieUse, /Recorded-document search\/index reference/);
+assert.match(recorder.currentReieUse, /verification metadata/);
+assert.match(recorder.currentReieUse, /future structured Source Quality evidence/);
+assert.match(recorderText, /INDEX_OR_SEARCH_METADATA_NOT_DOCUMENT_CONTENT/);
+assert.match(recorderText, /Document images, scanned instruments, OCR, full text, signatures/);
+assert.match(recorderText, /legal descriptions extracted from document bodies/);
+assert.match(recorderText, /certified-copy fulfillment/);
+assert.match(recorderText, /document-content storage/);
+assert.match(recorderText, /document-content redistribution/);
+assert.match(recorderText, /Rights, technical access, freshness, attribution, fees, privacy approval, and provenance remain unknown/);
+assert.match(recorderText, /Public-record or government-source status does not establish unrestricted reuse/);
+assert.match(recorderText, /automated extraction/);
+assert.match(recorderText, /legal-use approval/);
+assert.match(recorderText, /customer display/);
+assert.match(recorderText, /EXP-SRC-BOULDER-COUNTY-RECORDER remains discovery-only context/);
+assert.match(recorderText, /SRA-BOULDER-COUNTY-RECORDER remains readiness\/risk context only/);
+assert.match(recorderText, /grants no SRC authority inheritance/);
+assert.match(recorderText, /COUNTY_RECORDED_DOCUMENT_INDEX/);
+assert.doesNotMatch(recorderText, /RIGHTS = VERIFIED|TECHNICAL ACCESS = READY|FRESHNESS = VERIFIED|ATTRIBUTION = REQUIRED|FEE = NONE|PROVENANCE = COMPLETE/);
+assert.doesNotMatch(recorderText, /memberSourceIds|parentSourceId|aggregateSource|childSourceIds|relationshipType/i);
+assert.equal(registry.records.filter((item) => /RECORDER.*(CONTENT|IMAGE|OCR|FULL_TEXT|CERTIFIED_COPY)/i.test(item.sourceId)).length, 0, 'No document-content Recorder source may be added.');
+
+const experimentalSource = read('lib/coloradoCityEvidenceExpansion.ts');
+assert.match(experimentalSource, /sourceId:\s*'EXP-SRC-BOULDER-COUNTY-RECORDER'/, 'Experimental Recorder source context must remain present.');
+assert.match(experimentalSource, /document reuse, OCR\/full-text use, fees, and public display rights require review/, 'EXP Recorder context must remain non-operational review context.');
+assert.doesNotMatch(experimentalSource, /SRC-BOULDER-COUNTY-RECORDER-INDEX/, 'EXP context must not be converted into the exact operational source.');
+
+const sourceRightsReadiness = read('lib/sourceRightsActivationReadiness.ts');
+assert.match(sourceRightsReadiness, /sourceId:\s*'SRA-BOULDER-COUNTY-RECORDER'/, 'SRA Recorder readiness context must remain present.');
+assert.match(sourceRightsReadiness, /legalEntityOrProvider:\s*'Boulder County Clerk and Recorder'/, 'SRA Recorder context must keep the Clerk and Recorder authority label.');
+assert.match(sourceRightsReadiness, /LEGAL_REVIEW_REQUIRED/, 'SRA Recorder context must not become activation authority.');
+assert.match(sourceRightsReadiness, /activationCandidate:\s*false/, 'SRA Recorder context must remain non-activation readiness context.');
+assert.doesNotMatch(sourceRightsReadiness, /SRC-BOULDER-COUNTY-RECORDER-INDEX/, 'SRA context must not grant exact SRC authority inheritance.');
+assert.ok(!fs.existsSync('lib/sourceQualityBoulderCountyRecorderIndexEvidence.ts'));
+
 const permitSourceIds = [
   'SRC-CITY-BOULDER-OPEN-DATA-PERMITS',
   'SRC-CITY-BOULDER-BUILDING-PERMITS-PORTAL',
@@ -74,9 +120,6 @@ assert.match(permitCandidate.currentReieUse, /Source-candidate and verification-
 assert.match(permitCandidate.currentReieUse, /no permit record is retrieved or displayed/);
 assert.doesNotMatch(permitCandidate.currentReieUse, /aggregate|member|parent|child/i);
 assert.doesNotMatch(JSON.stringify(permitCandidate), /memberSourceIds|parentSourceId|aggregateSource/i);
-assert.ok(!fs.existsSync('lib/sourceQualityCityBoulderOpenDataPermitsEvidence.ts'));
-assert.ok(!fs.existsSync('lib/sourceQualityCityBoulderBuildingPermitsPortalEvidence.ts'));
-assert.ok(!fs.existsSync('lib/sourceQualityBoulderCountyAccelaPermitsEvidence.ts'));
 
 for (const sourceId of ['SRC-BCOD-ADDRESS-POINTS', 'SRC-BCOD-PARK-BOUNDARIES']) {
   const bcod = record(sourceId);
