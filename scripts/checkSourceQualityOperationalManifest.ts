@@ -141,11 +141,17 @@ const valid = validateSourceQualityOperationalManifest(SOURCE_QUALITY_OPERATIONA
 assert.equal(valid.classification, 'PARTIAL_OPERATIONAL_MANIFEST_VALID');
 assert.ok(valid.manifest);
 if (!valid.manifest) throw new Error('Expected operational manifest.');
+const registryRecords = getReieSourceRegistry().records;
+const registrySourceIds = registryRecords.map((record) => record.sourceId);
+const manifestSourceIds = valid.manifest.entries.map((entry) => entry.sourceId);
 assert.equal(valid.manifest.suppliedDatasetScope, 'SUPPLIED_MANIFEST_ONLY');
 assert.equal(valid.manifest.operationalPosture, 'OPERATIONAL_INPUT_POSTURE_ONLY');
 assert.equal(valid.manifest.completenessClaim, 'NO_COMPLETENESS_CLAIM');
-assert.equal(getReieSourceRegistry().records.length, 15);
 assert.equal(valid.manifest.entries.length, 14);
+assert.equal(new Set(manifestSourceIds).size, manifestSourceIds.length, 'Operational Manifest source ids must be unique.');
+for (const sourceId of manifestSourceIds) {
+  assert.ok(registrySourceIds.includes(sourceId), 'Every Operational Manifest source must exist in the Source Registry: ' + sourceId);
+}
 assert.ok(valid.manifest.entries.every((entry) => entry.inclusionClass === 'STRUCTURED_EVIDENCE_WITH_KNOWN_GAPS'));
 assert.equal(valid.manifest.authorityFirewall.sourceActivation, 'SOURCE_ACTIVATION_NOT_AUTHORIZED_BY_MANIFEST');
 assert.equal(valid.manifest.authorityFirewall.customerDisplayAuthority, 'CUSTOMER_DISPLAY_NOT_GRANTED_BY_MANIFEST');
@@ -178,12 +184,22 @@ assert.equal(valid.manifest.entries.filter((entry) => entry.sourceId === BCOD_PA
 assert.equal(valid.manifest.entries.filter((entry) => entry.sourceId === BOULDER_COUNTY_PARCEL_GIS_SOURCE_ID).length, 1);
 assert.equal(valid.manifest.entries.filter((entry) => entry.sourceId === ARAPAHOE_COUNTY_ASSESSOR_SOURCE_ID).length, 1);
 assert.equal(valid.manifest.entries.filter((entry) => entry.sourceId === 'SRC-BOULDER-PERMIT-CANDIDATES').length, 0);
+assert.equal(valid.manifest.entries.filter((entry) => entry.sourceId === 'SRC-BROOMFIELD-COUNTY-ASSESSOR').length, 0);
 assert.deepEqual(
-  getReieSourceRegistry().records
-    .map((record) => record.sourceId)
-    .filter((sourceId) => !valid.manifest?.entries.some((entry) => entry.sourceId === sourceId)),
-  ['SRC-BOULDER-PERMIT-CANDIDATES'],
+  registrySourceIds.filter((sourceId) => !manifestSourceIds.includes(sourceId)).sort(),
+  ['SRC-BOULDER-PERMIT-CANDIDATES', 'SRC-BROOMFIELD-COUNTY-ASSESSOR'].filter((sourceId) => registrySourceIds.includes(sourceId)),
 );
+const broomfieldAssessorRegistryOnlyRecord = registryRecords.find((record) => record.sourceId === 'SRC-BROOMFIELD-COUNTY-ASSESSOR');
+if (broomfieldAssessorRegistryOnlyRecord && !manifestSourceIds.includes('SRC-BROOMFIELD-COUNTY-ASSESSOR')) {
+  assert.equal(broomfieldAssessorRegistryOnlyRecord.sourceClass, 'AUTHORITATIVE_SOURCE');
+  assert.equal(broomfieldAssessorRegistryOnlyRecord.category, 'COUNTY_ASSESSOR');
+  assert.equal(broomfieldAssessorRegistryOnlyRecord.authorizationState, 'AWAITING_PROVIDER_CONFIRMATION');
+  assert.equal(broomfieldAssessorRegistryOnlyRecord.productionActivationState, 'BLOCKED_NOT_AUTHORIZED');
+  assert.equal(broomfieldAssessorRegistryOnlyRecord.claimEligible, false);
+  assert.match(JSON.stringify(broomfieldAssessorRegistryOnlyRecord), /SOURCE_ACTIVATION_NOT_AUTHORIZED_BY_REGISTRY_MVV/);
+  assert.match(JSON.stringify(broomfieldAssessorRegistryOnlyRecord), /CUSTOMER_DISPLAY_NOT_GRANTED_BY_REGISTRY_MVV/);
+  assert.match(JSON.stringify(broomfieldAssessorRegistryOnlyRecord), /LEGAL_USE_NOT_APPROVED_BY_REGISTRY_MVV/);
+}
 for (const [sourceId, entryFingerprint] of PRIOR_NINE_ENTRY_FINGERPRINTS) {
   assert.equal(valid.manifest.entries.find((entry) => entry.sourceId === sourceId)?.entryFingerprint, entryFingerprint);
 }
