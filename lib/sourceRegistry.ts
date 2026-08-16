@@ -679,6 +679,58 @@ function arapahoeCountyTreasurerRecord(): ReieSourceRegistryRecord {
   };
 }
 
+function adamsCountyTreasurerRecord(): ReieSourceRegistryRecord {
+  return {
+    sourceId: 'SRC-ADAMS-COUNTY-TREASURER',
+    publicName: 'Adams County Treasurer',
+    responsibleOrganization: 'Adams County Treasurer / Treasurer Division',
+    sourceClass: 'AUTHORITATIVE_SOURCE',
+    category: 'COUNTY_TREASURER_TAX',
+    domains: ['Treasurer tax-record source identity', 'Property-tax records', 'Future governed county treasurer evidence'],
+    jurisdiction: { state: 'Colorado', county: 'Adams County', coverage: 'Adams County Treasurer property-tax information source identity only' },
+    officialUrl: 'https://adcogov.org/treasurer',
+    accessMethod: 'Source-specific provider, rights, and technical-access review required before tax search use, payment, tax-lien use, Treasurer deed workflows, certificate use, report use, retrieval, automation, ingestion, display, or reuse',
+    updateCadence: 'source-specific and not certified',
+    freshnessExpectation: 'unknown until source-specific evidence review',
+    authorizationState: 'AWAITING_PROVIDER_CONFIRMATION',
+    permittedUse: 'registry identity and source-governance review only; no tax search submission, payment, lien operation, Treasurer deed action, certificate use, fee-schedule reliance, report use, Public Trustee operation, retrieval, automation, storage, redistribution, legal-use, or customer-display authority',
+    productionActivationState: 'BLOCKED_NOT_AUTHORIZED',
+    claimEligible: false,
+    customerDisclosureEligible: true,
+    customerStatus: 'Blocked / not authorized',
+    currentReieUse: 'Exact source identity only for future-governed Adams County Treasurer review; no tax search submission, no payment, no tax-lien action, no Treasurer deed action, no certificate action, no fee-schedule reliance, no report or distribution-statement use, no Public Trustee operation, no assessor-record use, no recorder-record use, no GIS use, no tax-record retrieval, no parcel/account lookup, no tax-status claim, no redemption conclusion, no lien-clearance claim, no title claim, no customer display, no ingestion, no automation, or runtime use is active.',
+    limitations: [
+      'TREASURER_RECORD_NOT_ASSESSOR_VALUE_AUTHORITY.',
+      'TREASURER_RECORD_NOT_TITLE.',
+      'TREASURER_RECORD_NOT_RECORDER_INDEX.',
+      'TAX_PAYMENT_CHANNEL_NOT_DATA_REUSE_AUTHORITY.',
+      'PUBLIC_TAX_SEARCH_NOT_AUTOMATION_AUTHORITY.',
+      'PUBLIC_ACCESS_NOT_REUSE_OR_DISPLAY_AUTHORITY.',
+      'PUBLIC_OR_GOVERNMENT_SOURCE_NOT_UNRESTRICTED_OR_VERIFIED_OR_COMPLETE.',
+      'PUBLIC_TRUSTEE_NOT_AUTOMATICALLY_TREASURER_DATA_AUTHORITY.',
+      'TREASURER_DEED_NOT_TITLE_CLEARANCE.',
+      'TAX_LIEN_DATA_NOT_OWNERSHIP_OR_REDEMPTION_CONCLUSION.',
+      'TREASURER_FEE_STATUS_SOURCE_SPECIFIC.',
+      'TAX_CURRENTNESS_SOURCE_SPECIFIC.',
+      'TREASURER_REPORTS_NOT_COMPLETE_TAX_RECORD_UNIVERSE.',
+      'SOURCE_ACTIVATION_NOT_AUTHORIZED_BY_REGISTRY_MVV.',
+      'CUSTOMER_DISPLAY_NOT_GRANTED_BY_REGISTRY_MVV.',
+      'LEGAL_USE_NOT_APPROVED_BY_REGISTRY_MVV.',
+      'Adams County tax search, payment, tax-lien sale, Treasurer deed, deed application, certificates, fee schedules, reports and distribution statements, Public Trustee, Assessor, Clerk and Recorder, GIS, and permit channels are separately governed and do not become the Treasurer Registry source identity.',
+      'Boulder County Treasurer, Arapahoe County Treasurer, Adams County Assessor, other County Assessor, Recorder, Parcel GIS, Address Points, Park Boundaries, permit sources, and Source Quality evidence do not grant rights, access, freshness, attribution, fee, provenance, findings, or governance inheritance to Adams County Treasurer.',
+      'Rights, technical access, freshness, attribution, fees, privacy approval, field sensitivity, and provenance remain unknown until separately governed source evidence review.',
+    ],
+    attributionRequirement: 'unknown until source-specific review',
+    lastSourceVerificationDate: REIE_SOURCE_REGISTRY_REFERENCE_DATE,
+    lastSuccessfulDataRefresh: null,
+    sourcePaths: [
+      'lib/sourceRegistry.ts/SRC-ADAMS-COUNTY-TREASURER',
+      'Adams County Treasurer official-source identity research handoff',
+      'ADAMS_COUNTY_TREASURER_EXACT_SOURCE_REGISTRY_MVV',
+    ],
+  };
+}
+
 export const BOULDER_PERMIT_CANDIDATES_SOURCE_ID = 'SRC-BOULDER-PERMIT-CANDIDATES' as const;
 export const BOULDER_PERMIT_CANDIDATES_LIFECYCLE_POSTURE = 'NON_OPERATIONAL_DISCOVERY_VERIFICATION_CONTEXT' as const;
 export const BOULDER_PERMIT_CANDIDATES_SOURCE_QUALITY_ADVANCEMENT_ELIGIBILITY = 'NOT_ELIGIBLE_NON_OPERATIONAL_CONTEXT' as const;
@@ -846,6 +898,7 @@ export const REIE_SOURCE_REGISTRY: ReieSourceRegistry = Object.freeze({
     jeffersonCountyAssessorRecord(),
     larimerCountyAssessorRecord(),
     weldCountyAssessorRecord(),
+    adamsCountyTreasurerRecord(),
     arapahoeCountyTreasurerRecord(),
     boulderPermitCandidatesRecord(),
     sourceFromProfile({
