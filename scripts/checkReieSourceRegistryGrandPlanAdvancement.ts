@@ -328,7 +328,23 @@ if (operationalManifestData.includes('SRC-BOULDER-COUNTY-PARCEL-GIS')) {
   assert.equal(record(parcelGisSourceId).productionActivationState, 'BLOCKED_NOT_AUTHORIZED', 'Parcel GIS Manifest inclusion must not change Registry activation posture.');
   assert.equal(record(parcelGisSourceId).claimEligible, false, 'Parcel GIS Manifest inclusion must not change Registry claim eligibility.');
 }
-assert.equal(operationalManifestData.includes('SRC-ARAPAHOE-COUNTY-ASSESSOR'), false, 'Arapahoe Assessor Registry MVV must not add Operational Manifest inclusion.');
+if (operationalManifestData.includes(arapahoeAssessorSourceId)) {
+  assert.equal(arapahoeAssessor.sourceClass, 'AUTHORITATIVE_SOURCE', 'Arapahoe Assessor Manifest inclusion must not change Registry source class.');
+  assert.equal(arapahoeAssessor.category, 'COUNTY_ASSESSOR', 'Arapahoe Assessor Manifest inclusion must not change Registry category.');
+  assert.equal(arapahoeAssessor.authorizationState, 'AWAITING_PROVIDER_CONFIRMATION', 'Arapahoe Assessor Manifest inclusion must not change Registry authorization posture.');
+  assert.equal(arapahoeAssessor.productionActivationState, 'BLOCKED_NOT_AUTHORIZED', 'Arapahoe Assessor Manifest inclusion must not change Registry activation posture.');
+  assert.equal(arapahoeAssessor.claimEligible, false, 'Arapahoe Assessor Manifest inclusion must not change Registry claim eligibility.');
+  assert.match(arapahoeAssessorText, /PUBLIC_SEARCH_NOT_AUTOMATION_AUTHORITY/, 'Arapahoe Assessor Manifest inclusion must not authorize public-search automation.');
+  assert.match(arapahoeAssessorText, /extract\/download channel only/, 'Arapahoe Assessor Manifest inclusion must not authorize Data Mart use.');
+  assert.match(arapahoeAssessorText, /GIS channels only/, 'Arapahoe Assessor Manifest inclusion must not authorize GIS access.');
+  assert.match(arapahoeAssessor.currentReieUse, /no property search submission/, 'Arapahoe Assessor Manifest inclusion must not authorize property search.');
+  assert.match(arapahoeAssessor.currentReieUse, /no .* property-record retrieval/, 'Arapahoe Assessor Manifest inclusion must not authorize retrieval.');
+  assert.match(arapahoeAssessor.currentReieUse, /no .* customer display/, 'Arapahoe Assessor Manifest inclusion must not authorize customer display.');
+  assert.match(arapahoeAssessorText, /ASSESSOR_RECORD_NOT_TITLE/, 'Arapahoe Assessor Manifest inclusion must preserve title firewall.');
+  assert.match(arapahoeAssessorText, /COUNTY_ASSESSOR_NOT_COUNTY_TREASURER/, 'Arapahoe Assessor Manifest inclusion must not conflate Treasurer.');
+  assert.match(arapahoeAssessorText, /COUNTY_ASSESSOR_NOT_RECORDER/, 'Arapahoe Assessor Manifest inclusion must not conflate Recorder.');
+  assert.match(arapahoeAssessorText, /COUNTY_ASSESSOR_NOT_PARCEL_GIS/, 'Arapahoe Assessor Manifest inclusion must not conflate Parcel GIS.');
+}
 
 console.log(
   `[reie-source-registry-grand-plan-advancement] ok: ${registry.records.length} source records, Arapahoe County Assessor and Parcel GIS exact source identities, public /sources methodology, Grand Plan orchestration, certified continuity, statewide source boundaries, and protected no-activation contract verified.`,
