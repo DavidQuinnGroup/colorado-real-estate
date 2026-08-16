@@ -308,6 +308,55 @@ function boulderCountyParcelGisRecord(): ReieSourceRegistryRecord {
   };
 }
 
+function arapahoeCountyAssessorRecord(): ReieSourceRegistryRecord {
+  return {
+    sourceId: 'SRC-ARAPAHOE-COUNTY-ASSESSOR',
+    publicName: 'Arapahoe County Assessor',
+    responsibleOrganization: "Arapahoe County Assessor's Office",
+    sourceClass: 'AUTHORITATIVE_SOURCE',
+    category: 'COUNTY_ASSESSOR',
+    domains: ['Assessor property-record source identity', 'Assessment records', 'Future governed county assessor evidence'],
+    jurisdiction: { state: 'Colorado', county: 'Arapahoe County', coverage: 'Arapahoe County assessor/property records source identity only' },
+    officialUrl: 'https://files.arapahoeco.gov/your_county/county_departments/assessor/index.php',
+    accessMethod: 'Source-specific provider, rights, and technical-access review required before public-search use, Data Mart export, GIS access, retrieval, automation, ingestion, display, or reuse',
+    updateCadence: 'source-specific and not certified',
+    freshnessExpectation: 'unknown until source-specific evidence review',
+    authorizationState: 'AWAITING_PROVIDER_CONFIRMATION',
+    permittedUse: 'registry identity and source-governance review only; no property search submission, API access, Data Mart export, GIS access, retrieval, automation, storage, redistribution, legal-use, or customer-display authority',
+    productionActivationState: 'BLOCKED_NOT_AUTHORIZED',
+    claimEligible: false,
+    customerDisclosureEligible: true,
+    customerStatus: 'Blocked / not authorized',
+    currentReieUse: 'Exact source identity only for future-governed Arapahoe County Assessor review; no property search submission, Assessor Data Mart export, GIS access, property-record retrieval, owner/address lookup, parcel/account lookup, valuation claim, ownership claim, title claim, tax claim, customer display, ingestion, automation, or runtime use is active.',
+    limitations: [
+      'ASSESSOR_RECORD_NOT_TITLE.',
+      'ASSESSOR_RECORD_NOT_DEED_VALIDITY.',
+      'ASSESSOR_RECORD_NOT_TREASURER_TAX_STATUS.',
+      'ASSESSOR_RECORD_NOT_CURRENT_OWNERSHIP_GUARANTEE.',
+      'ASSESSED_VALUE_NOT_MARKET_VALUE.',
+      'PUBLIC_SEARCH_NOT_AUTOMATION_AUTHORITY.',
+      'PUBLIC_ACCESS_NOT_REUSE_OR_DISPLAY_AUTHORITY.',
+      'GOVERNMENT_SOURCE_NOT_VERIFIED_COMPLETE_OR_UNRESTRICTED.',
+      'COUNTY_ASSESSOR_NOT_COUNTY_TREASURER.',
+      'COUNTY_ASSESSOR_NOT_RECORDER.',
+      'COUNTY_ASSESSOR_NOT_PARCEL_GIS.',
+      'parcelsearch.arapahoegov.com is a public search interface only and does not become the Registry source identity.',
+      'Assessor Data Mart extracts are an extract/download channel only and do not become the Registry source identity.',
+      'Arapahoe GIS, ArapaMAP, and GIS downloads are GIS channels only and do not become the Registry source identity.',
+      'Boulder County Assessor, Treasurer, Recorder, Parcel GIS, Address Points, Park Boundaries, permit sources, and Source Quality evidence do not grant rights, access, freshness, attribution, provenance, findings, or governance inheritance to Arapahoe County Assessor.',
+      'Rights, technical access, freshness, attribution, fees, privacy approval, field sensitivity, and provenance remain unknown until separately governed source evidence review.',
+    ],
+    attributionRequirement: 'unknown until source-specific review',
+    lastSourceVerificationDate: REIE_SOURCE_REGISTRY_REFERENCE_DATE,
+    lastSuccessfulDataRefresh: null,
+    sourcePaths: [
+      'lib/sourceRegistry.ts/SRC-ARAPAHOE-COUNTY-ASSESSOR',
+      'Arapahoe County Assessor official-source identity research handoff',
+      'ARAPAHOE_COUNTY_ASSESSOR_EXACT_SOURCE_REGISTRY_MVV',
+    ],
+  };
+}
+
 export const BOULDER_PERMIT_CANDIDATES_SOURCE_ID = 'SRC-BOULDER-PERMIT-CANDIDATES' as const;
 export const BOULDER_PERMIT_CANDIDATES_LIFECYCLE_POSTURE = 'NON_OPERATIONAL_DISCOVERY_VERIFICATION_CONTEXT' as const;
 export const BOULDER_PERMIT_CANDIDATES_SOURCE_QUALITY_ADVANCEMENT_ELIGIBILITY = 'NOT_ELIGIBLE_NON_OPERATIONAL_CONTEXT' as const;
@@ -469,6 +518,7 @@ export const REIE_SOURCE_REGISTRY: ReieSourceRegistry = Object.freeze({
     }),
     boulderCountyRecorderIndexRecord(),
     boulderCountyParcelGisRecord(),
+    arapahoeCountyAssessorRecord(),
     boulderPermitCandidatesRecord(),
     sourceFromProfile({
       sourceId: 'SRC-CITY-BOULDER-OPEN-DATA-PERMITS',
