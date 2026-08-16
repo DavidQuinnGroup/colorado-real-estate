@@ -65,6 +65,7 @@ const recorderRequest: PublicRecordSourceQualityEvidenceConversionRequest = {
 assert.deepEqual(PUBLIC_RECORD_SOURCE_QUALITY_CONVERSION_ALLOWED_SOURCE_IDS, [
   'SRC-BOULDER-COUNTY-ASSESSOR',
   'SRC-ARAPAHOE-COUNTY-ASSESSOR',
+  'SRC-BROOMFIELD-COUNTY-ASSESSOR',
   'SRC-BOULDER-COUNTY-TREASURER',
   'SRC-BOULDER-COUNTY-RECORDER-INDEX',
   'SRC-BOULDER-COUNTY-ACCELA-PERMITS',
@@ -215,6 +216,61 @@ assert.equal(convertPublicRecordStructuredEvidence({ ...arapahoeAssessorRequest,
 assert.equal(convertPublicRecordStructuredEvidence({
   ...arapahoeAssessorRequest,
   evidenceReferences: [{ ...arapahoeAssessorRequest.evidenceReferences[0]!, sourceId: 'SRC-BOULDER-COUNTY-ASSESSOR' }],
+}).classification, 'PUBLIC_RECORD_REFERENCE_INVALID');
+
+const broomfieldAssessorRequest: PublicRecordSourceQualityEvidenceConversionRequest = {
+  ...request,
+  sourceId: 'SRC-BROOMFIELD-COUNTY-ASSESSOR',
+  sourceClass: 'COUNTY_ASSESSOR',
+  sourceConfirmation: {
+    sourceId: 'SRC-BROOMFIELD-COUNTY-ASSESSOR',
+    confirmationClass: 'EXACT_SOURCE_ID_CONFIRMED',
+    reviewedAt: '2026-08-16',
+  },
+  evidenceReferences: [{
+    sourceId: 'SRC-BROOMFIELD-COUNTY-ASSESSOR',
+    inputClass: 'CERTIFICATION_REFERENCE',
+    evidenceReferenceId: 'PUBLIC-RECORD-CONVERSION-BROOMFIELD-ASSESSOR-CERT-001',
+    posture: 'REFERENCED',
+    verificationStatus: 'VERIFIED',
+    limitationCodes: [],
+  }],
+  fieldSensitivityPosture: 'RESTRICTED_OR_UNREVIEWED',
+  conversionAuthorityClass: 'EXECUTIVE_COUNTY_EVIDENCE_CONVERSION_REVIEW',
+  reviewedAt: '2026-08-16',
+};
+const broomfieldAssessor = convertPublicRecordStructuredEvidence(broomfieldAssessorRequest);
+assert.equal(broomfieldAssessor.classification, 'PUBLIC_RECORD_EVIDENCE_CONVERSION_VALID');
+assert.equal(broomfieldAssessor.sourceId, 'SRC-BROOMFIELD-COUNTY-ASSESSOR');
+assert.equal(broomfieldAssessor.linkages.length, 1);
+assert.equal(broomfieldAssessor.linkages[0]?.sourceId, 'SRC-BROOMFIELD-COUNTY-ASSESSOR');
+assert.equal(broomfieldAssessor.linkages[0]?.evidenceClass, 'CERTIFICATION');
+assert.equal(broomfieldAssessor.linkages[0]?.relationshipType, 'CERTIFICATION');
+assert.equal(broomfieldAssessor.normalized?.result, 'INSUFFICIENT_EVIDENCE');
+assert.equal(broomfieldAssessor.normalized?.rights.posture, 'UNKNOWN');
+assert.equal(broomfieldAssessor.normalized?.technicalAccess.posture, 'UNKNOWN');
+assert.equal(broomfieldAssessor.normalized?.freshness.posture, 'UNKNOWN');
+assert.equal(broomfieldAssessor.normalized?.attribution.posture, 'UNKNOWN');
+assert.equal(broomfieldAssessor.normalized?.provenance.posture, 'UNKNOWN');
+assert.equal(convertPublicRecordStructuredEvidence(broomfieldAssessorRequest).conversionFingerprint, broomfieldAssessor.conversionFingerprint);
+assert.notEqual(broomfieldAssessor.conversionFingerprint, valid.conversionFingerprint);
+assert.notEqual(broomfieldAssessor.conversionFingerprint, arapahoeAssessor.conversionFingerprint);
+for (const sourceId of ['EXP-SRC-BROOMFIELD-COUNTY-ASSESSOR', 'SRA-BROOMFIELD-COUNTY-ASSESSOR', 'SRC-GENERIC-COUNTY-ASSESSOR', 'SRC-PROVIDER-COUNTY-ASSESSOR', 'SRC-BROOMFIELD-GIS', 'SRC-BROOMFIELD-COUNTY-TREASURER', 'SRC-BROOMFIELD-COUNTY-RECORDER', 'SRC-BROOMFIELD-COUNTY-PARCEL-GIS']) {
+  assert.equal(convertPublicRecordStructuredEvidence({
+    ...broomfieldAssessorRequest,
+    sourceId,
+    sourceConfirmation: { sourceId, confirmationClass: 'EXACT_SOURCE_ID_CONFIRMED', reviewedAt: '2026-08-16' },
+    evidenceReferences: [{ ...broomfieldAssessorRequest.evidenceReferences[0]!, sourceId }],
+  }).classification, 'PUBLIC_RECORD_SOURCE_INVALID');
+}
+assert.equal(convertPublicRecordStructuredEvidence({ ...broomfieldAssessorRequest, sourceClass: 'COUNTY_TREASURER' }).classification, 'PUBLIC_RECORD_SOURCE_MISMATCH');
+assert.equal(convertPublicRecordStructuredEvidence({ ...broomfieldAssessorRequest, sourceConfirmation: undefined }).classification, 'PUBLIC_RECORD_SOURCE_CONFIRMATION_REQUIRED');
+assert.equal(convertPublicRecordStructuredEvidence({ ...broomfieldAssessorRequest, certificationReference: undefined }).classification, 'PUBLIC_RECORD_CERTIFICATION_REQUIRED');
+assert.equal(convertPublicRecordStructuredEvidence({ ...broomfieldAssessorRequest, fieldSensitivityPosture: 'UNKNOWN' }).classification, 'PUBLIC_RECORD_FIELD_SENSITIVITY_UNREVIEWED');
+assert.equal(convertPublicRecordStructuredEvidence({ ...broomfieldAssessorRequest, ownerName: 'not allowed' }).classification, 'PUBLIC_RECORD_NARRATIVE_INPUT_REJECTED');
+assert.equal(convertPublicRecordStructuredEvidence({
+  ...broomfieldAssessorRequest,
+  evidenceReferences: [{ ...broomfieldAssessorRequest.evidenceReferences[0]!, sourceId: 'SRC-ARAPAHOE-COUNTY-ASSESSOR' }],
 }).classification, 'PUBLIC_RECORD_REFERENCE_INVALID');
 
 const recorderExpanded = convertPublicRecordStructuredEvidence({
