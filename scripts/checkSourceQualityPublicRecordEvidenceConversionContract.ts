@@ -73,7 +73,8 @@ assert.deepEqual(PUBLIC_RECORD_SOURCE_QUALITY_CONVERSION_ALLOWED_SOURCE_IDS, [
   'SRC-CITY-BOULDER-BUILDING-PERMITS-PORTAL',
 ]);
 assert.equal(PUBLIC_RECORD_SOURCE_QUALITY_CONVERSION_ALLOWED_SOURCE_IDS.includes('SRC-BOULDER-PERMIT-CANDIDATES' as never), false);
-for (const futureTreasurerSourceId of ['SRC-JEFFERSON-COUNTY-TREASURER', 'SRC-WELD-COUNTY-TREASURER', 'SRC-LARIMER-COUNTY-TREASURER', 'SRC-FAKE-COUNTY-TREASURER'] as const) {
+assert.equal(PUBLIC_RECORD_SOURCE_QUALITY_CONVERSION_ALLOWED_SOURCE_IDS.includes('SRC-JEFFERSON-COUNTY-TREASURER' as never), true);
+for (const futureTreasurerSourceId of ['SRC-WELD-COUNTY-TREASURER', 'SRC-LARIMER-COUNTY-TREASURER', 'SRC-BROOMFIELD-COUNTY-TREASURER', 'SRC-FAKE-COUNTY-TREASURER'] as const) {
   assert.equal(PUBLIC_RECORD_SOURCE_QUALITY_CONVERSION_ALLOWED_SOURCE_IDS.includes(futureTreasurerSourceId as never), false);
 }
 
@@ -495,7 +496,7 @@ assert.notEqual(jeffersonAssessor.conversionFingerprint, valid.conversionFingerp
 assert.notEqual(jeffersonAssessor.conversionFingerprint, adamsAssessor.conversionFingerprint);
 assert.notEqual(jeffersonAssessor.conversionFingerprint, arapahoeAssessor.conversionFingerprint);
 assert.notEqual(jeffersonAssessor.conversionFingerprint, broomfieldAssessor.conversionFingerprint);
-for (const sourceId of ['EXP-SRC-JEFFERSON-COUNTY-ASSESSOR', 'SRA-JEFFERSON-COUNTY-ASSESSOR', 'SRC-GENERIC-COUNTY-ASSESSOR', 'SRC-PROVIDER-COUNTY-ASSESSOR', 'SRC-JEFFERSON-ASPIN', 'SRC-JEFFERSON-GIS', 'SRC-JEFFERSON-COUNTY-TREASURER', 'SRC-JEFFERSON-COUNTY-RECORDER', 'SRC-JEFFERSON-COUNTY-PARCEL-GIS']) {
+for (const sourceId of ['EXP-SRC-JEFFERSON-COUNTY-ASSESSOR', 'SRA-JEFFERSON-COUNTY-ASSESSOR', 'SRC-GENERIC-COUNTY-ASSESSOR', 'SRC-PROVIDER-COUNTY-ASSESSOR', 'SRC-JEFFERSON-ASPIN', 'SRC-JEFFERSON-GIS', 'SRC-JEFFERSON-COUNTY-RECORDER', 'SRC-JEFFERSON-COUNTY-PARCEL-GIS']) {
   assert.equal(convertPublicRecordStructuredEvidence({
     ...jeffersonAssessorRequest,
     sourceId,
@@ -503,6 +504,12 @@ for (const sourceId of ['EXP-SRC-JEFFERSON-COUNTY-ASSESSOR', 'SRA-JEFFERSON-COUN
     evidenceReferences: [{ ...jeffersonAssessorRequest.evidenceReferences[0]!, sourceId }],
   }).classification, 'PUBLIC_RECORD_SOURCE_INVALID');
 }
+assert.equal(convertPublicRecordStructuredEvidence({
+  ...jeffersonAssessorRequest,
+  sourceId: 'SRC-JEFFERSON-COUNTY-TREASURER',
+  sourceConfirmation: { sourceId: 'SRC-JEFFERSON-COUNTY-TREASURER', confirmationClass: 'EXACT_SOURCE_ID_CONFIRMED', reviewedAt: '2026-08-16' },
+  evidenceReferences: [{ ...jeffersonAssessorRequest.evidenceReferences[0]!, sourceId: 'SRC-JEFFERSON-COUNTY-TREASURER' }],
+}).classification, 'PUBLIC_RECORD_SOURCE_MISMATCH');
 assert.equal(convertPublicRecordStructuredEvidence({ ...jeffersonAssessorRequest, sourceClass: 'COUNTY_TREASURER' }).classification, 'PUBLIC_RECORD_SOURCE_MISMATCH');
 assert.equal(convertPublicRecordStructuredEvidence({ ...jeffersonAssessorRequest, sourceClass: 'COUNTY_RECORDED_DOCUMENT_INDEX' }).classification, 'PUBLIC_RECORD_SOURCE_MISMATCH');
 assert.equal(convertPublicRecordStructuredEvidence({ ...jeffersonAssessorRequest, sourceConfirmation: undefined }).classification, 'PUBLIC_RECORD_SOURCE_CONFIRMATION_REQUIRED');

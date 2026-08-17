@@ -731,6 +731,59 @@ function adamsCountyTreasurerRecord(): ReieSourceRegistryRecord {
   };
 }
 
+function jeffersonCountyTreasurerRecord(): ReieSourceRegistryRecord {
+  return {
+    sourceId: 'SRC-JEFFERSON-COUNTY-TREASURER',
+    publicName: 'Jefferson County Treasurer',
+    responsibleOrganization: "Jefferson County Treasurer's Office",
+    sourceClass: 'AUTHORITATIVE_SOURCE',
+    category: 'COUNTY_TREASURER_TAX',
+    domains: ['Treasurer tax-record source identity', 'Property-tax records', 'Future governed county treasurer evidence'],
+    jurisdiction: { state: 'Colorado', county: 'Jefferson County', coverage: 'Jefferson County Treasurer property-tax information and Property Search & Pay Taxes source identity only' },
+    officialUrl: 'https://www.jeffco.us/treasurer',
+    accessMethod: 'Source-specific provider, rights, and technical-access review required before Property Search & Pay Taxes use, payment, tax-lien sale use, deed application use, certificate use, Public Trustee operations, retrieval, automation, ingestion, display, or reuse',
+    updateCadence: 'source-specific and not certified',
+    freshnessExpectation: 'unknown until source-specific evidence review',
+    authorizationState: 'AWAITING_PROVIDER_CONFIRMATION',
+    permittedUse: 'registry identity and source-governance review only; no Property Search & Pay Taxes submission, payment, tax-lien sale action, deed application action, certificate use, Public Trustee operation, retrieval, automation, storage, redistribution, legal-use, or customer-display authority',
+    productionActivationState: 'BLOCKED_NOT_AUTHORIZED',
+    claimEligible: false,
+    customerDisclosureEligible: true,
+    customerStatus: 'Blocked / not authorized',
+    currentReieUse: 'Exact source identity only for future-governed Jefferson County Treasurer review; no Property Search & Pay Taxes submission, no payment, no tax-lien sale action, no deed application action, no certificate action or portal certificate claim, no Public Trustee operation, no assessor-record use, no recorder-record use, no GIS use, no tax-record retrieval, no parcel/account lookup, no tax-status claim, no redemption conclusion, no lien-clearance claim, no title claim, no customer display, no ingestion, no automation, or runtime use is active.',
+    limitations: [
+      'TREASURER_RECORD_NOT_ASSESSOR_VALUE_AUTHORITY.',
+      'TREASURER_RECORD_NOT_TITLE.',
+      'TREASURER_RECORD_NOT_RECORDER_INDEX.',
+      'TAX_PAYMENT_CHANNEL_NOT_DATA_REUSE_AUTHORITY.',
+      'PUBLIC_TAX_SEARCH_NOT_AUTOMATION_AUTHORITY.',
+      'PUBLIC_ACCESS_NOT_REUSE_OR_DISPLAY_AUTHORITY.',
+      'PUBLIC_OR_GOVERNMENT_SOURCE_NOT_UNRESTRICTED_OR_VERIFIED_OR_COMPLETE.',
+      'PUBLIC_TRUSTEE_NOT_AUTOMATICALLY_TREASURER_DATA_AUTHORITY.',
+      'FEE_STATUS_SOURCE_SPECIFIC.',
+      'TAX_CURRENTNESS_SOURCE_SPECIFIC.',
+      'TAX_CERTIFICATES_NOT_AVAILABLE_THROUGH_PORTAL.',
+      'TAX_LIEN_SALE_NOT_OWNERSHIP_OR_REDEMPTION_CONCLUSION.',
+      'DEED_APPLICATION_NOT_TITLE_CLEARANCE.',
+      'SOURCE_ACTIVATION_NOT_AUTHORIZED_BY_REGISTRY_MVV.',
+      'CUSTOMER_DISPLAY_NOT_GRANTED_BY_REGISTRY_MVV.',
+      'LEGAL_USE_NOT_APPROVED_BY_REGISTRY_MVV.',
+      'Jefferson County Property Search & Pay Taxes, payment, tax-lien sale, deed application, certificates, Public Trustee, Assessor, Recorder, and GIS channels are separately governed and do not become the Treasurer Registry source identity.',
+      'Tax Certificates are not available through the website/portal according to the reviewed official metadata; this portal limitation is not a general legal impossibility statement.',
+      'Boulder County Treasurer, Arapahoe County Treasurer, Adams County Treasurer, Jefferson County Assessor, other County Assessor, Recorder, Parcel GIS, Address Points, Park Boundaries, permit sources, and Source Quality evidence do not grant rights, access, freshness, attribution, fee, provenance, findings, or governance inheritance to Jefferson County Treasurer.',
+      'Rights, technical access, freshness, attribution, fees, privacy approval, field sensitivity, and provenance remain unknown until separately governed source evidence review.',
+    ],
+    attributionRequirement: 'unknown until source-specific review',
+    lastSourceVerificationDate: REIE_SOURCE_REGISTRY_REFERENCE_DATE,
+    lastSuccessfulDataRefresh: null,
+    sourcePaths: [
+      'lib/sourceRegistry.ts/SRC-JEFFERSON-COUNTY-TREASURER',
+      'Jefferson County Treasurer official-source identity research handoff',
+      'JEFFERSON_COUNTY_TREASURER_EXACT_SOURCE_REGISTRY_MVV',
+    ],
+  };
+}
+
 export const BOULDER_PERMIT_CANDIDATES_SOURCE_ID = 'SRC-BOULDER-PERMIT-CANDIDATES' as const;
 export const BOULDER_PERMIT_CANDIDATES_LIFECYCLE_POSTURE = 'NON_OPERATIONAL_DISCOVERY_VERIFICATION_CONTEXT' as const;
 export const BOULDER_PERMIT_CANDIDATES_SOURCE_QUALITY_ADVANCEMENT_ELIGIBILITY = 'NOT_ELIGIBLE_NON_OPERATIONAL_CONTEXT' as const;
@@ -900,6 +953,7 @@ export const REIE_SOURCE_REGISTRY: ReieSourceRegistry = Object.freeze({
     weldCountyAssessorRecord(),
     adamsCountyTreasurerRecord(),
     arapahoeCountyTreasurerRecord(),
+    jeffersonCountyTreasurerRecord(),
     boulderPermitCandidatesRecord(),
     sourceFromProfile({
       sourceId: 'SRC-CITY-BOULDER-OPEN-DATA-PERMITS',

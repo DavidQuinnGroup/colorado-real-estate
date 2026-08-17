@@ -9,6 +9,7 @@ import {
   COUNTY_TREASURER_EXACT_SOURCE_CLASS_BY_ID,
   COUNTY_TREASURER_EXACT_SOURCE_DEFINITIONS,
   COUNTY_TREASURER_EXACT_SOURCE_IDS,
+  JEFFERSON_COUNTY_TREASURER_SOURCE_ID,
   isCountyTreasurerExactSourceId,
 } from '../lib/sourceQualityCountyTreasurerExactSourceDefinitions';
 import { convertPublicRecordStructuredEvidence } from '../lib/sourceQualityPublicRecordEvidenceConversionContract';
@@ -21,13 +22,15 @@ assert.equal(COUNTY_TREASURER_EXACT_SOURCE_CLASS, 'COUNTY_TREASURER');
 assert.equal(BOULDER_COUNTY_TREASURER_SOURCE_ID, 'SRC-BOULDER-COUNTY-TREASURER');
 assert.equal(ARAPAHOE_COUNTY_TREASURER_SOURCE_ID, 'SRC-ARAPAHOE-COUNTY-TREASURER');
 assert.equal(ADAMS_COUNTY_TREASURER_SOURCE_ID, 'SRC-ADAMS-COUNTY-TREASURER');
+assert.equal(JEFFERSON_COUNTY_TREASURER_SOURCE_ID, 'SRC-JEFFERSON-COUNTY-TREASURER');
 assert.deepEqual(COUNTY_TREASURER_EXACT_SOURCE_IDS, [
   BOULDER_COUNTY_TREASURER_SOURCE_ID,
   ARAPAHOE_COUNTY_TREASURER_SOURCE_ID,
   ADAMS_COUNTY_TREASURER_SOURCE_ID,
+  JEFFERSON_COUNTY_TREASURER_SOURCE_ID,
 ]);
-assert.equal(COUNTY_TREASURER_EXACT_SOURCE_DEFINITIONS.length, 3);
-assert.equal(new Set(COUNTY_TREASURER_EXACT_SOURCE_IDS).size, 3);
+assert.equal(COUNTY_TREASURER_EXACT_SOURCE_DEFINITIONS.length, 4);
+assert.equal(new Set(COUNTY_TREASURER_EXACT_SOURCE_IDS).size, 4);
 for (const definition of COUNTY_TREASURER_EXACT_SOURCE_DEFINITIONS) {
   assert.equal(definition.sourceClass, 'COUNTY_TREASURER');
   assert.equal(definition.jurisdiction.state, 'Colorado');
@@ -37,8 +40,10 @@ for (const definition of COUNTY_TREASURER_EXACT_SOURCE_DEFINITIONS) {
 assert.equal(COUNTY_TREASURER_EXACT_SOURCE_DEFINITIONS.find((definition) => definition.sourceId === BOULDER_COUNTY_TREASURER_SOURCE_ID)?.responsibleOrganization, 'Boulder County Treasurer');
 assert.equal(COUNTY_TREASURER_EXACT_SOURCE_DEFINITIONS.find((definition) => definition.sourceId === ARAPAHOE_COUNTY_TREASURER_SOURCE_ID)?.responsibleOrganization, 'Arapahoe County Treasurer');
 assert.equal(COUNTY_TREASURER_EXACT_SOURCE_DEFINITIONS.find((definition) => definition.sourceId === ADAMS_COUNTY_TREASURER_SOURCE_ID)?.responsibleOrganization, 'Adams County Treasurer / Treasurer Division');
+assert.equal(COUNTY_TREASURER_EXACT_SOURCE_DEFINITIONS.find((definition) => definition.sourceId === JEFFERSON_COUNTY_TREASURER_SOURCE_ID)?.responsibleOrganization, "Jefferson County Treasurer's Office");
+assert.equal(isCountyTreasurerExactSourceId(JEFFERSON_COUNTY_TREASURER_SOURCE_ID), true);
 
-for (const sourceId of ['SRC-JEFFERSON-COUNTY-TREASURER', 'SRC-WELD-COUNTY-TREASURER', 'SRC-LARIMER-COUNTY-TREASURER', 'SRC-FAKE-COUNTY-TREASURER', 'SRC-GENERIC-COUNTY-TREASURER', 'SRC-PROVIDER-COUNTY-TREASURER', 'EXP-SRC-ADAMS-COUNTY-TREASURER', 'SRA-ADAMS-COUNTY-TREASURER']) {
+for (const sourceId of ['SRC-WELD-COUNTY-TREASURER', 'SRC-LARIMER-COUNTY-TREASURER', 'SRC-BROOMFIELD-COUNTY-TREASURER', 'SRC-FAKE-COUNTY-TREASURER', 'SRC-GENERIC-COUNTY-TREASURER', 'SRC-PROVIDER-COUNTY-TREASURER', 'EXP-SRC-ADAMS-COUNTY-TREASURER', 'SRA-ADAMS-COUNTY-TREASURER']) {
   assert.equal(isCountyTreasurerExactSourceId(sourceId), false);
   const request = {
     ...ADAMS_COUNTY_TREASURER_SOURCE_QUALITY_CONVERSION_REQUEST,
@@ -62,6 +67,14 @@ assert.equal(convertPublicRecordStructuredEvidence({ ...arbitraryCategoryOnly, s
 assert.equal(convertBoulderCountyTreasurerSourceQualityEvidence().classification, 'COUNTY_EVIDENCE_CONVERSION_VALID');
 assert.equal(convertArapahoeCountyTreasurerSourceQualityEvidence().classification, 'COUNTY_EVIDENCE_CONVERSION_VALID');
 assert.equal(convertAdamsCountyTreasurerSourceQualityEvidence().classification, 'COUNTY_EVIDENCE_CONVERSION_VALID');
+const jeffersonDefinitionOnlyRequest = {
+  ...ADAMS_COUNTY_TREASURER_SOURCE_QUALITY_CONVERSION_REQUEST,
+  sourceId: JEFFERSON_COUNTY_TREASURER_SOURCE_ID,
+  sourceConfirmation: { sourceId: JEFFERSON_COUNTY_TREASURER_SOURCE_ID, confirmationClass: 'EXACT_SOURCE_ID_CONFIRMED', reviewedAt: '2026-08-16' },
+  evidenceReferences: [{ ...ADAMS_COUNTY_TREASURER_SOURCE_QUALITY_CONVERSION_REQUEST.evidenceReferences[0]!, sourceId: JEFFERSON_COUNTY_TREASURER_SOURCE_ID }],
+} as const;
+assert.equal(convertCountyStructuredEvidence(jeffersonDefinitionOnlyRequest).classification, 'COUNTY_EVIDENCE_CONVERSION_VALID');
+assert.equal(convertPublicRecordStructuredEvidence({ ...jeffersonDefinitionOnlyRequest, schemaVersion: 'REIE_SOURCE_QUALITY_PUBLIC_RECORD_EVIDENCE_CONVERSION_V1' }).classification, 'PUBLIC_RECORD_EVIDENCE_CONVERSION_VALID');
 assert.equal(convertCountyStructuredEvidence(BOULDER_COUNTY_TREASURER_SOURCE_QUALITY_CONVERSION_REQUEST).conversionFingerprint, convertBoulderCountyTreasurerSourceQualityEvidence().conversionFingerprint);
 assert.equal(convertCountyStructuredEvidence(ARAPAHOE_COUNTY_TREASURER_SOURCE_QUALITY_CONVERSION_REQUEST).conversionFingerprint, convertArapahoeCountyTreasurerSourceQualityEvidence().conversionFingerprint);
 assert.equal(convertCountyStructuredEvidence(ADAMS_COUNTY_TREASURER_SOURCE_QUALITY_CONVERSION_REQUEST).conversionFingerprint, convertAdamsCountyTreasurerSourceQualityEvidence().conversionFingerprint);
@@ -71,4 +84,4 @@ for (const prohibited of ['rights', 'technicalAccess', 'freshness', 'attribution
   assert.equal(runtime.includes(prohibited), false, 'Treasurer exact-source definitions must not centralize ' + prohibited);
 }
 
-console.log('[source-quality-county-treasurer-exact-source-definitions] ok: finite exact Treasurer source identity definitions cover Boulder/Arapahoe/Adams only, preserve exact fail-closed behavior for future counties/provider/EXP/SRA/wildcard inputs, and do not centralize source-specific governance.');
+console.log('[source-quality-county-treasurer-exact-source-definitions] ok: finite exact Treasurer source identity definitions cover Boulder/Arapahoe/Adams/Jefferson only, preserve exact fail-closed behavior for future counties/provider/EXP/SRA/wildcard inputs, and do not centralize source-specific governance.');

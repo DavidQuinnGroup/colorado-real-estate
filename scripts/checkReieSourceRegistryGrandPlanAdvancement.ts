@@ -12,6 +12,11 @@ import {
   getPublicSourceRegistryRecords,
   getReieSourceRegistry,
 } from '../lib/sourceRegistry.js';
+import {
+  COUNTY_TREASURER_EXACT_SOURCE_DEFINITIONS,
+  JEFFERSON_COUNTY_TREASURER_SOURCE_ID,
+  isCountyTreasurerExactSourceId,
+} from '../lib/sourceQualityCountyTreasurerExactSourceDefinitions.js';
 
 function read(filePath: string) {
   return fs.readFileSync(filePath, 'utf8');
@@ -282,6 +287,69 @@ if (fs.existsSync('lib/sourceQualityAdamsCountyTreasurerEvidence.ts')) {
   assert.doesNotMatch(adamsTreasurerEvidence, /RIGHTS_VERIFIED|TECHNICAL_ACCESS_READY|FRESHNESS_VERIFIED|PROVENANCE_COMPLETE|ACTIVE_AUTHORIZED/, 'Adams Treasurer evidence must not upgrade rights, access, freshness, provenance, or activation posture.');
 }
 
+const jeffersonTreasurerSourceId = JEFFERSON_COUNTY_TREASURER_SOURCE_ID;
+assert.equal(registry.records.filter((item) => item.sourceId === jeffersonTreasurerSourceId).length, 1, 'Jefferson County Treasurer source must exist exactly once.');
+assert.equal(COUNTY_TREASURER_EXACT_SOURCE_DEFINITIONS.filter((item) => item.sourceId === jeffersonTreasurerSourceId).length, 1, 'Jefferson County Treasurer finite definition must exist exactly once.');
+assert.equal(isCountyTreasurerExactSourceId(jeffersonTreasurerSourceId), true, 'Jefferson County Treasurer must be accepted only after exact finite definition.');
+const jeffersonTreasurerDefinition = COUNTY_TREASURER_EXACT_SOURCE_DEFINITIONS.find((item) => item.sourceId === jeffersonTreasurerSourceId);
+const jeffersonTreasurer = record(jeffersonTreasurerSourceId);
+const jeffersonTreasurerText = JSON.stringify(jeffersonTreasurer);
+assert.equal(jeffersonTreasurerDefinition?.sourceClass, 'COUNTY_TREASURER');
+assert.equal(jeffersonTreasurerDefinition?.jurisdiction.state, 'Colorado');
+assert.equal(jeffersonTreasurerDefinition?.jurisdiction.county, 'Jefferson County');
+assert.equal(jeffersonTreasurerDefinition?.responsibleOrganization, "Jefferson County Treasurer's Office");
+assert.equal(jeffersonTreasurer.publicName, 'Jefferson County Treasurer');
+assert.equal(jeffersonTreasurer.responsibleOrganization, "Jefferson County Treasurer's Office");
+assert.equal(jeffersonTreasurer.sourceClass, 'AUTHORITATIVE_SOURCE');
+assert.equal(jeffersonTreasurer.category, 'COUNTY_TREASURER_TAX');
+assert.equal(jeffersonTreasurer.jurisdiction.state, 'Colorado');
+assert.equal(jeffersonTreasurer.jurisdiction.county, 'Jefferson County');
+assert.equal(jeffersonTreasurer.authorizationState, 'AWAITING_PROVIDER_CONFIRMATION');
+assert.equal(jeffersonTreasurer.productionActivationState, 'BLOCKED_NOT_AUTHORIZED');
+assert.equal(jeffersonTreasurer.claimEligible, false);
+assert.equal(jeffersonTreasurer.customerStatus, 'Blocked / not authorized');
+assert.match(jeffersonTreasurer.currentReieUse, /Exact source identity only/);
+assert.match(jeffersonTreasurer.currentReieUse, /future-governed Jefferson County Treasurer review/);
+assert.match(jeffersonTreasurer.currentReieUse, /no Property Search & Pay Taxes submission/);
+assert.match(jeffersonTreasurer.currentReieUse, /no payment/);
+assert.match(jeffersonTreasurer.currentReieUse, /no tax-lien sale action/);
+assert.match(jeffersonTreasurer.currentReieUse, /no deed application action/);
+assert.match(jeffersonTreasurer.currentReieUse, /no certificate action or portal certificate claim/);
+assert.match(jeffersonTreasurer.currentReieUse, /no Public Trustee operation/);
+assert.match(jeffersonTreasurer.currentReieUse, /no assessor-record use/);
+assert.match(jeffersonTreasurer.currentReieUse, /no recorder-record use/);
+assert.match(jeffersonTreasurer.currentReieUse, /no GIS use/);
+assert.match(jeffersonTreasurer.currentReieUse, /no tax-record retrieval/);
+assert.match(jeffersonTreasurer.currentReieUse, /no .* customer display/);
+assert.match(jeffersonTreasurerText, /TREASURER_RECORD_NOT_ASSESSOR_VALUE_AUTHORITY/);
+assert.match(jeffersonTreasurerText, /TREASURER_RECORD_NOT_TITLE/);
+assert.match(jeffersonTreasurerText, /TREASURER_RECORD_NOT_RECORDER_INDEX/);
+assert.match(jeffersonTreasurerText, /TAX_PAYMENT_CHANNEL_NOT_DATA_REUSE_AUTHORITY/);
+assert.match(jeffersonTreasurerText, /PUBLIC_TAX_SEARCH_NOT_AUTOMATION_AUTHORITY/);
+assert.match(jeffersonTreasurerText, /PUBLIC_ACCESS_NOT_REUSE_OR_DISPLAY_AUTHORITY/);
+assert.match(jeffersonTreasurerText, /PUBLIC_OR_GOVERNMENT_SOURCE_NOT_UNRESTRICTED_OR_VERIFIED_OR_COMPLETE/);
+assert.match(jeffersonTreasurerText, /PUBLIC_TRUSTEE_NOT_AUTOMATICALLY_TREASURER_DATA_AUTHORITY/);
+assert.match(jeffersonTreasurerText, /FEE_STATUS_SOURCE_SPECIFIC/);
+assert.match(jeffersonTreasurerText, /TAX_CURRENTNESS_SOURCE_SPECIFIC/);
+assert.match(jeffersonTreasurerText, /TAX_CERTIFICATES_NOT_AVAILABLE_THROUGH_PORTAL/);
+assert.match(jeffersonTreasurerText, /TAX_LIEN_SALE_NOT_OWNERSHIP_OR_REDEMPTION_CONCLUSION/);
+assert.match(jeffersonTreasurerText, /DEED_APPLICATION_NOT_TITLE_CLEARANCE/);
+assert.match(jeffersonTreasurerText, /SOURCE_ACTIVATION_NOT_AUTHORIZED_BY_REGISTRY_MVV/);
+assert.match(jeffersonTreasurerText, /CUSTOMER_DISPLAY_NOT_GRANTED_BY_REGISTRY_MVV/);
+assert.match(jeffersonTreasurerText, /LEGAL_USE_NOT_APPROVED_BY_REGISTRY_MVV/);
+assert.match(jeffersonTreasurerText, /Tax Certificates are not available through the website\/portal/);
+assert.match(jeffersonTreasurerText, /not a general legal impossibility statement/);
+assert.match(jeffersonTreasurerText, /Property Search & Pay Taxes, payment, tax-lien sale, deed application, certificates, Public Trustee, Assessor, Recorder, and GIS channels are separately governed/);
+assert.match(jeffersonTreasurerText, /Boulder County Treasurer, Arapahoe County Treasurer, Adams County Treasurer, Jefferson County Assessor/);
+assert.match(jeffersonTreasurerText, /Rights, technical access, freshness, attribution, fees, privacy approval, field sensitivity, and provenance remain unknown/);
+assert.doesNotMatch(jeffersonTreasurerText, /RIGHTS = VERIFIED|TECHNICAL ACCESS = READY|FRESHNESS = VERIFIED|ATTRIBUTION = REQUIRED|FEE = NONE|PROVENANCE = COMPLETE/);
+assert.doesNotMatch(jeffersonTreasurerText, /memberSourceIds|parentSourceId|aggregateSource|childSourceIds|relationshipType/i);
+assert.equal(registry.records.filter((item) => item.sourceId !== 'SRC-JEFFERSON-COUNTY-ASSESSOR' && /^SRC-JEFFERSON-COUNTY-(TAX-PAYMENT|TAX-SEARCH|PROPERTY-SEARCH|TAX-LIEN|DEED-APPLICATION|CERTIFICATE|PUBLIC-TRUSTEE|RECORDER|GIS|ASPIN|PARCEL|PERMIT)/.test(item.sourceId)).length, 0, 'Jefferson Treasurer Registry MVV must not add payment, search, lien, deed application, certificate, Public Trustee, Recorder, GIS, parcel, or permit source ids.');
+assert.equal(registry.records.filter((item) => item.sourceId !== 'SRC-JEFFERSON-COUNTY-ASSESSOR' && item.sourceId !== jeffersonTreasurerSourceId && /JEFFERSON.*(TAX_PAYMENT|TAX_SEARCH|PROPERTY_SEARCH|TAX_LIEN|DEED_APPLICATION|CERTIFICATE|PUBLIC_TRUSTEE|RECORDER|GIS|PARCEL_GEOMETRY|ASSESSOR_VALUE_AUTHORITY)/i.test(`${item.sourceId} ${item.category}`)).length, 0, 'Jefferson Treasurer Registry MVV must not conflate Treasurer identity with adjacent domains.');
+assert.doesNotMatch(jeffersonTreasurerText, /EXP-|SRA-|provider aggregate|wildcard County Treasurer/i);
+assert.doesNotMatch(read('lib/sourceQualityCountyTreasurerExactSourceDefinitions.ts'), /rights|technicalAccess|freshness|attribution|provenance|fee|sensitivity|reviewedAt|certification|evidence|payment|lien|deed|Public Trustee|Manifest|activation|claimEligible|startsWith|includes\(sourceId\)|COUNTY_TREASURER_TAX/, 'Finite Treasurer definition must not centralize source-specific governance.');
+assert.equal(read('lib/sourceQualityOperationalManifestData.ts').includes(jeffersonTreasurerSourceId), false, 'Jefferson Treasurer must remain Registry-only until Manifest inclusion authorization.');
+
 const broomfieldAssessorSourceId = 'SRC-BROOMFIELD-COUNTY-ASSESSOR';
 assert.equal(registry.records.filter((item) => item.sourceId === broomfieldAssessorSourceId).length, 1, 'Broomfield Assessor source must exist exactly once.');
 const broomfieldAssessor = record(broomfieldAssessorSourceId);
@@ -382,8 +450,8 @@ assert.match(jeffersonAssessorText, /Boulder County, Arapahoe County, and Broomf
 assert.match(jeffersonAssessorText, /Rights, technical access, freshness, attribution, fees, privacy approval, field sensitivity, and provenance remain unknown/);
 assert.doesNotMatch(jeffersonAssessorText, /RIGHTS = VERIFIED|TECHNICAL ACCESS = READY|FRESHNESS = VERIFIED|ATTRIBUTION = REQUIRED|FEE = NONE|PROVENANCE = COMPLETE/);
 assert.doesNotMatch(jeffersonAssessorText, /memberSourceIds|parentSourceId|aggregateSource|childSourceIds|relationshipType/i);
-assert.equal(registry.records.filter((item) => /^SRC-JEFFERSON-COUNTY-(TREASURER|RECORDER|PARCEL|GIS|ASPIN|DATA-MART|PARCEL-SEARCH)/.test(item.sourceId)).length, 0, 'Jefferson Assessor Registry MVV must not add Treasurer, Recorder, ASPIN, Parcel Search, Data Mart, or GIS source ids.');
-assert.equal(registry.records.filter((item) => /JEFFERSON.*(TREASURER|RECORDER|ASPIN|GIS|DATA_MART|PARCEL_SEARCH|PARCEL_GEOMETRY)/i.test(`${item.sourceId} ${item.category}`)).length, 0, 'Jefferson Assessor Registry MVV must not conflate assessor identity with adjacent domains.');
+assert.equal(registry.records.filter((item) => item.sourceId !== jeffersonTreasurerSourceId && /^SRC-JEFFERSON-COUNTY-(TREASURER|RECORDER|PARCEL|GIS|ASPIN|DATA-MART|PARCEL-SEARCH)/.test(item.sourceId)).length, 0, 'Jefferson Assessor Registry MVV must not add unauthorized Treasurer, Recorder, ASPIN, Parcel Search, Data Mart, or GIS source ids.');
+assert.equal(registry.records.filter((item) => item.sourceId !== jeffersonTreasurerSourceId && /JEFFERSON.*(TREASURER|RECORDER|ASPIN|GIS|DATA_MART|PARCEL_SEARCH|PARCEL_GEOMETRY)/i.test(`${item.sourceId} ${item.category}`)).length, 0, 'Jefferson Assessor Registry MVV must not conflate assessor identity with adjacent domains.');
 assert.doesNotMatch(jeffersonAssessorText, /EXP-|SRA-|provider aggregate|wildcard County Assessor/i);
 if (fs.existsSync('lib/sourceQualityJeffersonCountyAssessorEvidence.ts')) {
   const jeffersonAssessorEvidence = read('lib/sourceQualityJeffersonCountyAssessorEvidence.ts');

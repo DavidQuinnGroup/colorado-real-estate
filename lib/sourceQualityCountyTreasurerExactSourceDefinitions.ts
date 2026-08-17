@@ -1,6 +1,7 @@
 export const BOULDER_COUNTY_TREASURER_SOURCE_ID = 'SRC-BOULDER-COUNTY-TREASURER' as const;
 export const ARAPAHOE_COUNTY_TREASURER_SOURCE_ID = 'SRC-ARAPAHOE-COUNTY-TREASURER' as const;
 export const ADAMS_COUNTY_TREASURER_SOURCE_ID = 'SRC-ADAMS-COUNTY-TREASURER' as const;
+export const JEFFERSON_COUNTY_TREASURER_SOURCE_ID = 'SRC-JEFFERSON-COUNTY-TREASURER' as const;
 
 export const COUNTY_TREASURER_EXACT_SOURCE_CLASS = 'COUNTY_TREASURER' as const;
 
@@ -22,6 +23,12 @@ export const COUNTY_TREASURER_EXACT_SOURCE_DEFINITIONS = Object.freeze([
     sourceClass: COUNTY_TREASURER_EXACT_SOURCE_CLASS,
     jurisdiction: { state: 'Colorado', county: 'Adams County' },
     responsibleOrganization: 'Adams County Treasurer / Treasurer Division',
+  },
+  {
+    sourceId: JEFFERSON_COUNTY_TREASURER_SOURCE_ID,
+    sourceClass: COUNTY_TREASURER_EXACT_SOURCE_CLASS,
+    jurisdiction: { state: 'Colorado', county: 'Jefferson County' },
+    responsibleOrganization: "Jefferson County Treasurer's Office",
   },
 ] as const);
 

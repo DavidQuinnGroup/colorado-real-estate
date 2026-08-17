@@ -223,7 +223,7 @@ function isGovernedPreManifestCountyAssessor(record: RegistryLifecycleRecord): b
 
 function isGovernedPreManifestCountyTreasurer(record: RegistryLifecycleRecord): boolean {
   const text = JSON.stringify(record);
-  return ['SRC-ARAPAHOE-COUNTY-TREASURER', 'SRC-ADAMS-COUNTY-TREASURER'].includes(record.sourceId)
+  return ['SRC-ARAPAHOE-COUNTY-TREASURER', 'SRC-ADAMS-COUNTY-TREASURER', 'SRC-JEFFERSON-COUNTY-TREASURER'].includes(record.sourceId)
     && record.sourceClass === 'AUTHORITATIVE_SOURCE'
     && record.category === 'COUNTY_TREASURER_TAX'
     && record.authorizationState === 'AWAITING_PROVIDER_CONFIRMATION'
@@ -238,8 +238,8 @@ function isGovernedPreManifestCountyTreasurer(record: RegistryLifecycleRecord): 
     && text.includes('TREASURER_RECORD_NOT_RECORDER_INDEX')
     && text.includes('PUBLIC_TAX_SEARCH_NOT_AUTOMATION_AUTHORITY')
     && text.includes('TAX_PAYMENT_CHANNEL_NOT_DATA_REUSE_AUTHORITY')
-    && (text.includes('TAX_EXTRACT_NOT_UNRESTRICTED_OR_REUSE_READY') || text.includes('TAX_LIEN_DATA_NOT_OWNERSHIP_OR_REDEMPTION_CONCLUSION'))
-    && (text.includes('CERTIFICATE_OF_TAXES_DUE_NOT_TITLE_OR_LIEN_CLEARANCE_GUARANTEE') || text.includes('TREASURER_DEED_NOT_TITLE_CLEARANCE'))
+    && (text.includes('TAX_EXTRACT_NOT_UNRESTRICTED_OR_REUSE_READY') || text.includes('TAX_LIEN_DATA_NOT_OWNERSHIP_OR_REDEMPTION_CONCLUSION') || text.includes('TAX_LIEN_SALE_NOT_OWNERSHIP_OR_REDEMPTION_CONCLUSION'))
+    && (text.includes('CERTIFICATE_OF_TAXES_DUE_NOT_TITLE_OR_LIEN_CLEARANCE_GUARANTEE') || text.includes('TREASURER_DEED_NOT_TITLE_CLEARANCE') || text.includes('TAX_CERTIFICATES_NOT_AVAILABLE_THROUGH_PORTAL') || text.includes('DEED_APPLICATION_NOT_TITLE_CLEARANCE'))
     && text.includes('Public Trustee')
     && text.includes('Rights, technical access, freshness, attribution, fees, privacy approval, field sensitivity, and provenance remain unknown')
     && (record.sourcePaths ?? []).some((sourcePath) => sourcePath.includes('COUNTY_TREASURER_EXACT_SOURCE_REGISTRY_MVV'));
