@@ -15,6 +15,7 @@ import {
 import {
   COUNTY_TREASURER_EXACT_SOURCE_DEFINITIONS,
   JEFFERSON_COUNTY_TREASURER_SOURCE_ID,
+  WELD_COUNTY_TREASURER_SOURCE_ID,
   isCountyTreasurerExactSourceId,
 } from '../lib/sourceQualityCountyTreasurerExactSourceDefinitions.js';
 
@@ -347,8 +348,79 @@ assert.doesNotMatch(jeffersonTreasurerText, /memberSourceIds|parentSourceId|aggr
 assert.equal(registry.records.filter((item) => item.sourceId !== 'SRC-JEFFERSON-COUNTY-ASSESSOR' && /^SRC-JEFFERSON-COUNTY-(TAX-PAYMENT|TAX-SEARCH|PROPERTY-SEARCH|TAX-LIEN|DEED-APPLICATION|CERTIFICATE|PUBLIC-TRUSTEE|RECORDER|GIS|ASPIN|PARCEL|PERMIT)/.test(item.sourceId)).length, 0, 'Jefferson Treasurer Registry MVV must not add payment, search, lien, deed application, certificate, Public Trustee, Recorder, GIS, parcel, or permit source ids.');
 assert.equal(registry.records.filter((item) => item.sourceId !== 'SRC-JEFFERSON-COUNTY-ASSESSOR' && item.sourceId !== jeffersonTreasurerSourceId && /JEFFERSON.*(TAX_PAYMENT|TAX_SEARCH|PROPERTY_SEARCH|TAX_LIEN|DEED_APPLICATION|CERTIFICATE|PUBLIC_TRUSTEE|RECORDER|GIS|PARCEL_GEOMETRY|ASSESSOR_VALUE_AUTHORITY)/i.test(`${item.sourceId} ${item.category}`)).length, 0, 'Jefferson Treasurer Registry MVV must not conflate Treasurer identity with adjacent domains.');
 assert.doesNotMatch(jeffersonTreasurerText, /EXP-|SRA-|provider aggregate|wildcard County Treasurer/i);
-assert.doesNotMatch(read('lib/sourceQualityCountyTreasurerExactSourceDefinitions.ts'), /rights|technicalAccess|freshness|attribution|provenance|fee|sensitivity|reviewedAt|certification|evidence|payment|lien|deed|Public Trustee|Manifest|activation|claimEligible|startsWith|includes\(sourceId\)|COUNTY_TREASURER_TAX/, 'Finite Treasurer definition must not centralize source-specific governance.');
+const treasurerExactSourceDefinitionsRuntime = read('lib/sourceQualityCountyTreasurerExactSourceDefinitions.ts');
+assert.doesNotMatch(treasurerExactSourceDefinitionsRuntime, /rights|technicalAccess|freshness|attribution|provenance|fee|sensitivity|reviewedAt|certification|evidence|payment|lien|deed|Manifest|activation|claimEligible|startsWith|includes\(sourceId\)|COUNTY_TREASURER_TAX/, 'Finite Treasurer definition must not centralize source-specific governance.');
+assert.equal((treasurerExactSourceDefinitionsRuntime.match(/Public Trustee/g) ?? []).length, 1, 'Weld Public Trustee text must appear only inside the responsible organization identity.');
 assert.equal(read('lib/sourceQualityOperationalManifestData.ts').includes(jeffersonTreasurerSourceId), false, 'Jefferson Treasurer must remain Registry-only until Manifest inclusion authorization.');
+
+const weldTreasurerSourceId = WELD_COUNTY_TREASURER_SOURCE_ID;
+assert.equal(registry.records.filter((item) => item.sourceId === weldTreasurerSourceId).length, 1, 'Weld County Treasurer source must exist exactly once.');
+assert.equal(COUNTY_TREASURER_EXACT_SOURCE_DEFINITIONS.filter((item) => item.sourceId === weldTreasurerSourceId).length, 1, 'Weld County Treasurer finite definition must exist exactly once.');
+assert.equal(isCountyTreasurerExactSourceId(weldTreasurerSourceId), true, 'Weld County Treasurer must be accepted only after exact finite definition.');
+const weldTreasurerDefinition = COUNTY_TREASURER_EXACT_SOURCE_DEFINITIONS.find((item) => item.sourceId === weldTreasurerSourceId);
+const weldTreasurer = record(weldTreasurerSourceId);
+const weldTreasurerText = JSON.stringify(weldTreasurer);
+assert.equal(weldTreasurerDefinition?.sourceClass, 'COUNTY_TREASURER');
+assert.equal(weldTreasurerDefinition?.jurisdiction.state, 'Colorado');
+assert.equal(weldTreasurerDefinition?.jurisdiction.county, 'Weld County');
+assert.equal(weldTreasurerDefinition?.responsibleOrganization, 'Weld County Treasurer and Public Trustee');
+assert.equal(weldTreasurer.publicName, 'Weld County Treasurer');
+assert.equal(weldTreasurer.responsibleOrganization, 'Weld County Treasurer and Public Trustee');
+assert.equal(weldTreasurer.sourceClass, 'AUTHORITATIVE_SOURCE');
+assert.equal(weldTreasurer.category, 'COUNTY_TREASURER_TAX');
+assert.equal(weldTreasurer.jurisdiction.state, 'Colorado');
+assert.equal(weldTreasurer.jurisdiction.county, 'Weld County');
+assert.equal(weldTreasurer.authorizationState, 'AWAITING_PROVIDER_CONFIRMATION');
+assert.equal(weldTreasurer.productionActivationState, 'BLOCKED_NOT_AUTHORIZED');
+assert.equal(weldTreasurer.claimEligible, false);
+assert.equal(weldTreasurer.customerStatus, 'Blocked / not authorized');
+assert.match(weldTreasurer.currentReieUse, /Exact source identity only/);
+assert.match(weldTreasurer.currentReieUse, /future-governed Weld County Treasurer review/);
+assert.match(weldTreasurer.currentReieUse, /no tax search/);
+assert.match(weldTreasurer.currentReieUse, /no payment/);
+assert.match(weldTreasurer.currentReieUse, /no tax-lien sale action/);
+assert.match(weldTreasurer.currentReieUse, /no Treasurer Deed auction/);
+assert.match(weldTreasurer.currentReieUse, /no distribution-statement or report use/);
+assert.match(weldTreasurer.currentReieUse, /no special-assessment use/);
+assert.match(weldTreasurer.currentReieUse, /no manufactured-home tax use/);
+assert.match(weldTreasurer.currentReieUse, /no Public Trustee/);
+assert.match(weldTreasurer.currentReieUse, /no assessor-record use/);
+assert.match(weldTreasurer.currentReieUse, /no Clerk and Recorder use/);
+assert.match(weldTreasurer.currentReieUse, /no GIS or map use/);
+assert.match(weldTreasurer.currentReieUse, /no tax-record retrieval/);
+assert.match(weldTreasurer.currentReieUse, /no .* customer display/);
+assert.match(weldTreasurerText, /TREASURER_RECORD_NOT_ASSESSOR_VALUE_AUTHORITY/);
+assert.match(weldTreasurerText, /TREASURER_RECORD_NOT_TITLE/);
+assert.match(weldTreasurerText, /TREASURER_RECORD_NOT_RECORDER_INDEX/);
+assert.match(weldTreasurerText, /TAX_PAYMENT_CHANNEL_NOT_DATA_REUSE_AUTHORITY/);
+assert.match(weldTreasurerText, /PUBLIC_TAX_SEARCH_NOT_AUTOMATION_AUTHORITY/);
+assert.match(weldTreasurerText, /PUBLIC_ACCESS_NOT_REUSE_OR_DISPLAY_AUTHORITY/);
+assert.match(weldTreasurerText, /PUBLIC_OR_GOVERNMENT_SOURCE_NOT_UNRESTRICTED_OR_VERIFIED_OR_COMPLETE/);
+assert.match(weldTreasurerText, /PUBLIC_TRUSTEE_NOT_AUTOMATICALLY_TREASURER_DATA_AUTHORITY/);
+assert.match(weldTreasurerText, /TAX_CURRENTNESS_SOURCE_SPECIFIC/);
+assert.match(weldTreasurerText, /FEE_STATUS_SOURCE_SPECIFIC/);
+assert.match(weldTreasurerText, /WELD_PAYMENT_FEES_SOURCE_SPECIFIC/);
+assert.match(weldTreasurerText, /WELD_TAX_DEADLINES_NOT_CURRENTNESS_GUARANTEE/);
+assert.match(weldTreasurerText, /WELD_TAX_LIEN_SALE_NOT_OWNERSHIP_OR_REDEMPTION_CONCLUSION/);
+assert.match(weldTreasurerText, /WELD_TREASURER_DEED_NOT_TITLE_CLEARANCE/);
+assert.match(weldTreasurerText, /WELD_LIEN_PAYMENT_RESTRICTIONS_APPLY/);
+assert.match(weldTreasurerText, /WELD_SPECIAL_ASSESSMENT_CHANNEL_SEPARATE/);
+assert.match(weldTreasurerText, /WELD_MANUFACTURED_HOME_TAX_CHANNEL_SEPARATE/);
+assert.match(weldTreasurerText, /WELD_DISTRIBUTION_STATEMENTS_NOT_COMPLETE_TAX_RECORD_UNIVERSE/);
+assert.match(weldTreasurerText, /WELD_PUBLIC_TRUSTEE_NOT_TREASURER_DATA_AUTHORITY/);
+assert.match(weldTreasurerText, /SOURCE_ACTIVATION_NOT_AUTHORIZED_BY_REGISTRY_MVV/);
+assert.match(weldTreasurerText, /CUSTOMER_DISPLAY_NOT_GRANTED_BY_REGISTRY_MVV/);
+assert.match(weldTreasurerText, /LEGAL_USE_NOT_APPROVED_BY_REGISTRY_MVV/);
+assert.match(weldTreasurerText, /combined Weld County Treasurer and Public Trustee office name does not aggregate Public Trustee authority into this Treasurer tax Registry identity/);
+assert.match(weldTreasurerText, /tax search, payment, tax-lien sale, Treasurer Deed auctions, distribution statements and reports, special assessments, manufactured-home tax information, Public Trustee releases, foreclosure, tax escrow, Assessor, Clerk and Recorder, GIS\/maps, permits, and records channels are separately governed/);
+assert.match(weldTreasurerText, /Boulder County Treasurer, Arapahoe County Treasurer, Adams County Treasurer, Jefferson County Treasurer, Weld County Assessor/);
+assert.match(weldTreasurerText, /Rights, technical access, freshness, attribution, fees, privacy approval, field sensitivity, and provenance remain unknown/);
+assert.doesNotMatch(weldTreasurerText, /RIGHTS = VERIFIED|TECHNICAL ACCESS = READY|FRESHNESS = VERIFIED|ATTRIBUTION = REQUIRED|FEE = NONE|PROVENANCE = COMPLETE/);
+assert.doesNotMatch(weldTreasurerText, /memberSourceIds|parentSourceId|aggregateSource|childSourceIds|relationshipType/i);
+assert.equal(registry.records.filter((item) => item.sourceId !== 'SRC-WELD-COUNTY-ASSESSOR' && /^SRC-WELD-COUNTY-(TAX-PAYMENT|TAX-SEARCH|TAX-LIEN|TREASURER-DEED|DISTRIBUTION|SPECIAL-ASSESSMENT|MANUFACTURED-HOME|PUBLIC-TRUSTEE|RECORDER|CLERK|GIS|MAP|PERMIT|RECORDS)/.test(item.sourceId)).length, 0, 'Weld Treasurer Registry MVV must not add payment, search, lien, deed, distribution, special assessment, manufactured-home tax, Public Trustee, Recorder, Clerk, GIS, map, permit, or records source ids.');
+assert.equal(registry.records.filter((item) => item.sourceId !== 'SRC-WELD-COUNTY-ASSESSOR' && item.sourceId !== weldTreasurerSourceId && /WELD.*(TAX_PAYMENT|TAX_SEARCH|TAX_LIEN|TREASURER_DEED|DISTRIBUTION|SPECIAL_ASSESSMENT|MANUFACTURED_HOME|PUBLIC_TRUSTEE|RECORDER|CLERK|GIS|PERMITS|RECORDS|ASSESSOR_VALUE_AUTHORITY)/i.test(`${item.sourceId} ${item.category}`)).length, 0, 'Weld Treasurer Registry MVV must not conflate Treasurer identity with adjacent domains.');
+assert.doesNotMatch(weldTreasurerText, /EXP-|SRA-|provider aggregate|wildcard County Treasurer/i);
+assert.equal(read('lib/sourceQualityOperationalManifestData.ts').includes(weldTreasurerSourceId), false, 'Weld Treasurer must remain Registry-only until Manifest inclusion authorization.');
 
 const broomfieldAssessorSourceId = 'SRC-BROOMFIELD-COUNTY-ASSESSOR';
 assert.equal(registry.records.filter((item) => item.sourceId === broomfieldAssessorSourceId).length, 1, 'Broomfield Assessor source must exist exactly once.');
@@ -577,8 +649,8 @@ assert.match(weldAssessorText, /Boulder County, Arapahoe County, Broomfield, Jef
 assert.match(weldAssessorText, /Rights, technical access, freshness, attribution, fees, privacy approval, field sensitivity, and provenance remain unknown/);
 assert.doesNotMatch(weldAssessorText, /RIGHTS = VERIFIED|TECHNICAL ACCESS = READY|FRESHNESS = VERIFIED|ATTRIBUTION = REQUIRED|FEE = NONE|PROVENANCE = COMPLETE/);
 assert.doesNotMatch(weldAssessorText, /memberSourceIds|parentSourceId|aggregateSource|childSourceIds|relationshipType/i);
-assert.equal(registry.records.filter((item) => /^SRC-WELD-COUNTY-(DATA-DOWNLOAD|PROPERTY-CARD|PROPERTY-MAP|PROPERTY-DATA|SALES|TREASURER|RECORDER|PARCEL|GIS|PERMITS|RECORDS)/.test(item.sourceId)).length, 0, 'Weld Assessor Registry MVV must not add Data Download, Property Card, Property Map, Property Data, Sales, Treasurer, Recorder, permits, records, Parcel, or GIS source ids.');
-assert.equal(registry.records.filter((item) => /WELD.*(DATA_DOWNLOAD|PROPERTY_CARD|PROPERTY_MAP|PROPERTY_DATA|SALES|TREASURER|RECORDER|PERMITS|RECORDS|GIS|PARCEL_SEARCH|PARCEL_GEOMETRY)/i.test(`${item.sourceId} ${item.category}`)).length, 0, 'Weld Assessor Registry MVV must not conflate assessor identity with adjacent domains.');
+assert.equal(registry.records.filter((item) => item.sourceId !== weldTreasurerSourceId && /^SRC-WELD-COUNTY-(DATA-DOWNLOAD|PROPERTY-CARD|PROPERTY-MAP|PROPERTY-DATA|SALES|TREASURER|RECORDER|PARCEL|GIS|PERMITS|RECORDS)/.test(item.sourceId)).length, 0, 'Weld Assessor Registry MVV must not add Data Download, Property Card, Property Map, Property Data, unauthorized Treasurer, Recorder, permits, records, Parcel, or GIS source ids.');
+assert.equal(registry.records.filter((item) => item.sourceId !== weldTreasurerSourceId && /WELD.*(DATA_DOWNLOAD|PROPERTY_CARD|PROPERTY_MAP|PROPERTY_DATA|SALES|TREASURER|RECORDER|PERMITS|RECORDS|GIS|PARCEL_SEARCH|PARCEL_GEOMETRY)/i.test(`${item.sourceId} ${item.category}`)).length, 0, 'Weld Assessor Registry MVV must not conflate assessor identity with adjacent domains.');
 assert.doesNotMatch(weldAssessorText, /EXP-|SRA-|provider aggregate|wildcard County Assessor/i);
 if (fs.existsSync('lib/sourceQualityWeldCountyAssessorEvidence.ts')) {
   const weldAssessorEvidence = read('lib/sourceQualityWeldCountyAssessorEvidence.ts');

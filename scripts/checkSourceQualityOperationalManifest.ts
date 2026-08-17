@@ -232,7 +232,7 @@ function isGovernedPreManifestCountyAssessor(record: RegistryLifecycleRecord): b
 
 function isGovernedPreManifestCountyTreasurer(record: RegistryLifecycleRecord): boolean {
   const text = JSON.stringify(record);
-  return ['SRC-ARAPAHOE-COUNTY-TREASURER', 'SRC-ADAMS-COUNTY-TREASURER', 'SRC-JEFFERSON-COUNTY-TREASURER'].includes(record.sourceId)
+  return ['SRC-ARAPAHOE-COUNTY-TREASURER', 'SRC-ADAMS-COUNTY-TREASURER', 'SRC-JEFFERSON-COUNTY-TREASURER', 'SRC-WELD-COUNTY-TREASURER'].includes(record.sourceId)
     && record.sourceClass === 'AUTHORITATIVE_SOURCE'
     && record.category === 'COUNTY_TREASURER_TAX'
     && record.authorizationState === 'AWAITING_PROVIDER_CONFIRMATION'
@@ -247,8 +247,8 @@ function isGovernedPreManifestCountyTreasurer(record: RegistryLifecycleRecord): 
     && text.includes('TREASURER_RECORD_NOT_RECORDER_INDEX')
     && text.includes('PUBLIC_TAX_SEARCH_NOT_AUTOMATION_AUTHORITY')
     && text.includes('TAX_PAYMENT_CHANNEL_NOT_DATA_REUSE_AUTHORITY')
-    && (text.includes('TAX_EXTRACT_NOT_UNRESTRICTED_OR_REUSE_READY') || text.includes('TAX_LIEN_DATA_NOT_OWNERSHIP_OR_REDEMPTION_CONCLUSION') || text.includes('TAX_LIEN_SALE_NOT_OWNERSHIP_OR_REDEMPTION_CONCLUSION'))
-    && (text.includes('CERTIFICATE_OF_TAXES_DUE_NOT_TITLE_OR_LIEN_CLEARANCE_GUARANTEE') || text.includes('TREASURER_DEED_NOT_TITLE_CLEARANCE') || text.includes('TAX_CERTIFICATES_NOT_AVAILABLE_THROUGH_PORTAL') || text.includes('DEED_APPLICATION_NOT_TITLE_CLEARANCE'))
+    && (text.includes('TAX_EXTRACT_NOT_UNRESTRICTED_OR_REUSE_READY') || text.includes('TAX_LIEN_DATA_NOT_OWNERSHIP_OR_REDEMPTION_CONCLUSION') || text.includes('TAX_LIEN_SALE_NOT_OWNERSHIP_OR_REDEMPTION_CONCLUSION') || text.includes('WELD_TAX_LIEN_SALE_NOT_OWNERSHIP_OR_REDEMPTION_CONCLUSION'))
+    && (text.includes('CERTIFICATE_OF_TAXES_DUE_NOT_TITLE_OR_LIEN_CLEARANCE_GUARANTEE') || text.includes('TREASURER_DEED_NOT_TITLE_CLEARANCE') || text.includes('TAX_CERTIFICATES_NOT_AVAILABLE_THROUGH_PORTAL') || text.includes('DEED_APPLICATION_NOT_TITLE_CLEARANCE') || text.includes('WELD_TREASURER_DEED_NOT_TITLE_CLEARANCE'))
     && text.includes('Public Trustee')
     && text.includes('Rights, technical access, freshness, attribution, fees, privacy approval, field sensitivity, and provenance remain unknown')
     && (record.sourcePaths ?? []).some((sourcePath) => sourcePath.includes('COUNTY_TREASURER_EXACT_SOURCE_REGISTRY_MVV'));
@@ -341,9 +341,10 @@ const registryOnlySources = explainRegistryOnlySourceIds(registryRecords, manife
 assert.equal(new Set(registryOnlySources.map((source) => source.sourceId)).size, registryOnlySources.length, 'Registry-only source ids must be unique.');
 assert.equal(registryOnlySources.filter((source) => source.sourceId === 'SRC-BOULDER-PERMIT-CANDIDATES').length, 1, 'Permit Candidate must remain deterministically excluded from Operational Manifest.');
 assert.equal(registryOnlySources.find((source) => source.sourceId === 'SRC-BOULDER-PERMIT-CANDIDATES')?.reason, 'EXPLICIT_NON_OPERATIONAL_REGISTRY_IDENTITY');
-assert.deepEqual(registryOnlySources.map((source) => source.sourceId), ['SRC-BOULDER-PERMIT-CANDIDATES'], 'After Jefferson Treasurer Manifest inclusion, the only Registry-only source must be Permit Candidate.');
+assert.deepEqual(registryOnlySources.map((source) => source.sourceId), ['SRC-WELD-COUNTY-TREASURER', 'SRC-BOULDER-PERMIT-CANDIDATES'], 'After Weld Treasurer Registry MVV and before Manifest inclusion, registry-only sources must be Weld Treasurer plus Permit Candidate.');
 assert.equal(registryOnlySources.filter((source) => source.sourceId === 'SRC-ADAMS-COUNTY-TREASURER').length, 0, 'Adams Treasurer must be included after Manifest inclusion authorization.');
 assert.equal(registryOnlySources.filter((source) => source.sourceId === JEFFERSON_COUNTY_TREASURER_SOURCE_ID).length, 0, 'Jefferson Treasurer must be included after Manifest inclusion authorization.');
+assert.equal(registryOnlySources.find((source) => source.sourceId === 'SRC-WELD-COUNTY-TREASURER')?.reason, 'GOVERNED_PRE_MANIFEST_COUNTY_TREASURER_LIFECYCLE');
 for (const source of registryOnlySources.filter((item) => item.sourceId !== 'SRC-BOULDER-PERMIT-CANDIDATES')) {
   assert.ok(
     ['GOVERNED_PRE_MANIFEST_COUNTY_ASSESSOR_LIFECYCLE', 'GOVERNED_PRE_MANIFEST_COUNTY_TREASURER_LIFECYCLE'].includes(source.reason),

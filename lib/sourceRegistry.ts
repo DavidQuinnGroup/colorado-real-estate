@@ -784,6 +784,65 @@ function jeffersonCountyTreasurerRecord(): ReieSourceRegistryRecord {
   };
 }
 
+function weldCountyTreasurerRecord(): ReieSourceRegistryRecord {
+  return {
+    sourceId: 'SRC-WELD-COUNTY-TREASURER',
+    publicName: 'Weld County Treasurer',
+    responsibleOrganization: 'Weld County Treasurer and Public Trustee',
+    sourceClass: 'AUTHORITATIVE_SOURCE',
+    category: 'COUNTY_TREASURER_TAX',
+    domains: ['Treasurer tax-record source identity', 'Property-tax records', 'Future governed county treasurer evidence'],
+    jurisdiction: { state: 'Colorado', county: 'Weld County', coverage: 'Weld County Treasurer tax-information source identity only' },
+    officialUrl: 'https://www.weld.gov/Government/Departments/Treasurer-Public-Trustee',
+    accessMethod: 'Source-specific provider, rights, and technical-access review required before tax search use, payment, tax-lien sale use, Treasurer Deed auction use, distribution statement or report use, special assessment use, manufactured-home tax use, Public Trustee operation, retrieval, automation, ingestion, display, or reuse',
+    updateCadence: 'source-specific and not certified',
+    freshnessExpectation: 'unknown until source-specific evidence review',
+    authorizationState: 'AWAITING_PROVIDER_CONFIRMATION',
+    permittedUse: 'registry identity and source-governance review only; no tax search submission, payment, tax-lien sale action, Treasurer Deed auction action, distribution statement or report use, special assessment use, manufactured-home tax use, Public Trustee operation, retrieval, automation, storage, redistribution, legal-use, or customer-display authority',
+    productionActivationState: 'BLOCKED_NOT_AUTHORIZED',
+    claimEligible: false,
+    customerDisclosureEligible: true,
+    customerStatus: 'Blocked / not authorized',
+    currentReieUse: 'Exact source identity only for future-governed Weld County Treasurer review; no tax search submission, no payment, no tax-lien sale action, no Treasurer Deed auction action, no distribution-statement or report use, no special-assessment use, no manufactured-home tax use, no Public Trustee release or foreclosure operation, no assessor-record use, no Clerk and Recorder use, no GIS or map use, no permit or records use, no tax-record retrieval, no parcel/account lookup, no tax-status claim, no redemption conclusion, no lien-clearance claim, no title claim, no customer display, no ingestion, no automation, or runtime use is active.',
+    limitations: [
+      'TREASURER_RECORD_NOT_ASSESSOR_VALUE_AUTHORITY.',
+      'TREASURER_RECORD_NOT_TITLE.',
+      'TREASURER_RECORD_NOT_RECORDER_INDEX.',
+      'TAX_PAYMENT_CHANNEL_NOT_DATA_REUSE_AUTHORITY.',
+      'PUBLIC_TAX_SEARCH_NOT_AUTOMATION_AUTHORITY.',
+      'PUBLIC_ACCESS_NOT_REUSE_OR_DISPLAY_AUTHORITY.',
+      'PUBLIC_OR_GOVERNMENT_SOURCE_NOT_UNRESTRICTED_OR_VERIFIED_OR_COMPLETE.',
+      'PUBLIC_TRUSTEE_NOT_AUTOMATICALLY_TREASURER_DATA_AUTHORITY.',
+      'TAX_CURRENTNESS_SOURCE_SPECIFIC.',
+      'FEE_STATUS_SOURCE_SPECIFIC.',
+      'WELD_PAYMENT_FEES_SOURCE_SPECIFIC.',
+      'WELD_TAX_DEADLINES_NOT_CURRENTNESS_GUARANTEE.',
+      'WELD_TAX_LIEN_SALE_NOT_OWNERSHIP_OR_REDEMPTION_CONCLUSION.',
+      'WELD_TREASURER_DEED_NOT_TITLE_CLEARANCE.',
+      'WELD_LIEN_PAYMENT_RESTRICTIONS_APPLY.',
+      'WELD_SPECIAL_ASSESSMENT_CHANNEL_SEPARATE.',
+      'WELD_MANUFACTURED_HOME_TAX_CHANNEL_SEPARATE.',
+      'WELD_DISTRIBUTION_STATEMENTS_NOT_COMPLETE_TAX_RECORD_UNIVERSE.',
+      'WELD_PUBLIC_TRUSTEE_NOT_TREASURER_DATA_AUTHORITY.',
+      'SOURCE_ACTIVATION_NOT_AUTHORIZED_BY_REGISTRY_MVV.',
+      'CUSTOMER_DISPLAY_NOT_GRANTED_BY_REGISTRY_MVV.',
+      'LEGAL_USE_NOT_APPROVED_BY_REGISTRY_MVV.',
+      'Weld County tax search, payment, tax-lien sale, Treasurer Deed auctions, distribution statements and reports, special assessments, manufactured-home tax information, Public Trustee releases, foreclosure, tax escrow, Assessor, Clerk and Recorder, GIS/maps, permits, and records channels are separately governed and do not become the Treasurer Registry source identity.',
+      'The combined Weld County Treasurer and Public Trustee office name does not aggregate Public Trustee authority into this Treasurer tax Registry identity.',
+      'Boulder County Treasurer, Arapahoe County Treasurer, Adams County Treasurer, Jefferson County Treasurer, Weld County Assessor, other County Assessor, Recorder, Parcel GIS, Address Points, Park Boundaries, permit sources, and Source Quality evidence do not grant rights, access, freshness, attribution, fee, provenance, findings, or governance inheritance to Weld County Treasurer.',
+      'Rights, technical access, freshness, attribution, fees, privacy approval, field sensitivity, and provenance remain unknown until separately governed source evidence review.',
+    ],
+    attributionRequirement: 'unknown until source-specific review',
+    lastSourceVerificationDate: REIE_SOURCE_REGISTRY_REFERENCE_DATE,
+    lastSuccessfulDataRefresh: null,
+    sourcePaths: [
+      'lib/sourceRegistry.ts/SRC-WELD-COUNTY-TREASURER',
+      'Weld County Treasurer official-source identity research handoff',
+      'WELD_COUNTY_TREASURER_EXACT_SOURCE_REGISTRY_MVV',
+    ],
+  };
+}
+
 export const BOULDER_PERMIT_CANDIDATES_SOURCE_ID = 'SRC-BOULDER-PERMIT-CANDIDATES' as const;
 export const BOULDER_PERMIT_CANDIDATES_LIFECYCLE_POSTURE = 'NON_OPERATIONAL_DISCOVERY_VERIFICATION_CONTEXT' as const;
 export const BOULDER_PERMIT_CANDIDATES_SOURCE_QUALITY_ADVANCEMENT_ELIGIBILITY = 'NOT_ELIGIBLE_NON_OPERATIONAL_CONTEXT' as const;
@@ -954,6 +1013,7 @@ export const REIE_SOURCE_REGISTRY: ReieSourceRegistry = Object.freeze({
     adamsCountyTreasurerRecord(),
     arapahoeCountyTreasurerRecord(),
     jeffersonCountyTreasurerRecord(),
+    weldCountyTreasurerRecord(),
     boulderPermitCandidatesRecord(),
     sourceFromProfile({
       sourceId: 'SRC-CITY-BOULDER-OPEN-DATA-PERMITS',

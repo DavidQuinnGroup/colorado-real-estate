@@ -11,7 +11,10 @@ import {
 } from '../lib/sourceQualityPublicRecordEvidenceConversionContract';
 import { summarizeSourceQuality } from '../lib/sourceQualityControl';
 import { COUNTY_ASSESSOR_EXACT_SOURCE_IDS } from '../lib/sourceQualityCountyAssessorExactSourceDefinitions';
-import { COUNTY_TREASURER_EXACT_SOURCE_IDS } from '../lib/sourceQualityCountyTreasurerExactSourceDefinitions';
+import {
+  COUNTY_TREASURER_EXACT_SOURCE_IDS,
+  WELD_COUNTY_TREASURER_SOURCE_ID,
+} from '../lib/sourceQualityCountyTreasurerExactSourceDefinitions';
 import { assembleSourceQualitySummaries } from '../lib/sourceQualitySummaryAssembly';
 
 const certificationReference = {
@@ -74,9 +77,31 @@ assert.deepEqual(PUBLIC_RECORD_SOURCE_QUALITY_CONVERSION_ALLOWED_SOURCE_IDS, [
 ]);
 assert.equal(PUBLIC_RECORD_SOURCE_QUALITY_CONVERSION_ALLOWED_SOURCE_IDS.includes('SRC-BOULDER-PERMIT-CANDIDATES' as never), false);
 assert.equal(PUBLIC_RECORD_SOURCE_QUALITY_CONVERSION_ALLOWED_SOURCE_IDS.includes('SRC-JEFFERSON-COUNTY-TREASURER' as never), true);
-for (const futureTreasurerSourceId of ['SRC-WELD-COUNTY-TREASURER', 'SRC-LARIMER-COUNTY-TREASURER', 'SRC-BROOMFIELD-COUNTY-TREASURER', 'SRC-FAKE-COUNTY-TREASURER'] as const) {
+assert.equal(PUBLIC_RECORD_SOURCE_QUALITY_CONVERSION_ALLOWED_SOURCE_IDS.includes(WELD_COUNTY_TREASURER_SOURCE_ID), true);
+for (const futureTreasurerSourceId of ['SRC-LARIMER-COUNTY-TREASURER', 'SRC-BROOMFIELD-COUNTY-TREASURER', 'SRC-SYNTHETIC-COUNTY-TREASURER', 'SRC-UNREGISTERED-COUNTY-TREASURER', 'SRC-FAKE-COUNTY-TREASURER'] as const) {
   assert.equal(PUBLIC_RECORD_SOURCE_QUALITY_CONVERSION_ALLOWED_SOURCE_IDS.includes(futureTreasurerSourceId as never), false);
 }
+
+const weldTreasurerRequest: PublicRecordSourceQualityEvidenceConversionRequest = {
+  ...recorderRequest,
+  sourceId: WELD_COUNTY_TREASURER_SOURCE_ID,
+  sourceClass: 'COUNTY_TREASURER',
+  reviewedAt: '2026-08-17',
+  sourceConfirmation: {
+    sourceId: WELD_COUNTY_TREASURER_SOURCE_ID,
+    confirmationClass: 'EXACT_SOURCE_ID_CONFIRMED',
+    reviewedAt: '2026-08-17',
+  },
+  evidenceReferences: [{
+    sourceId: WELD_COUNTY_TREASURER_SOURCE_ID,
+    inputClass: 'CERTIFICATION_REFERENCE',
+    evidenceReferenceId: 'PUBLIC-RECORD-CONVERSION-WELD-TREASURER-CERT-001',
+    posture: 'REFERENCED',
+    verificationStatus: 'VERIFIED',
+    limitationCodes: [],
+  }],
+};
+assert.equal(convertPublicRecordStructuredEvidence(weldTreasurerRequest).classification, 'PUBLIC_RECORD_EVIDENCE_CONVERSION_VALID');
 
 const valid = convertPublicRecordStructuredEvidence(request);
 assert.equal(valid.classification, 'PUBLIC_RECORD_EVIDENCE_CONVERSION_VALID');
@@ -633,7 +658,7 @@ assert.notEqual(weldAssessor.conversionFingerprint, arapahoeAssessor.conversionF
 assert.notEqual(weldAssessor.conversionFingerprint, broomfieldAssessor.conversionFingerprint);
 assert.notEqual(weldAssessor.conversionFingerprint, jeffersonAssessor.conversionFingerprint);
 assert.notEqual(weldAssessor.conversionFingerprint, larimerAssessor.conversionFingerprint);
-for (const sourceId of ['EXP-SRC-WELD-COUNTY-ASSESSOR', 'SRA-WELD-COUNTY-ASSESSOR', 'SRC-GENERIC-COUNTY-ASSESSOR', 'SRC-PROVIDER-COUNTY-ASSESSOR', 'SRC-WELD-DATA-DOWNLOAD', 'SRC-WELD-PROPERTY-CARD', 'SRC-WELD-PROPERTY-MAP', 'SRC-WELD-PROPERTY-DATA', 'SRC-WELD-SALES-EXPLORER', 'SRC-WELD-COUNTY-TREASURER', 'SRC-WELD-COUNTY-RECORDER', 'SRC-WELD-COUNTY-PARCEL-GIS', 'SRC-WELD-PERMITS', 'SRC-WELD-GIS']) {
+for (const sourceId of ['EXP-SRC-WELD-COUNTY-ASSESSOR', 'SRA-WELD-COUNTY-ASSESSOR', 'SRC-GENERIC-COUNTY-ASSESSOR', 'SRC-PROVIDER-COUNTY-ASSESSOR', 'SRC-WELD-DATA-DOWNLOAD', 'SRC-WELD-PROPERTY-CARD', 'SRC-WELD-PROPERTY-MAP', 'SRC-WELD-PROPERTY-DATA', 'SRC-WELD-SALES-EXPLORER', 'SRC-WELD-COUNTY-RECORDER', 'SRC-WELD-COUNTY-PARCEL-GIS', 'SRC-WELD-PERMITS', 'SRC-WELD-GIS']) {
   assert.equal(convertPublicRecordStructuredEvidence({
     ...weldAssessorRequest,
     sourceId,
@@ -641,6 +666,12 @@ for (const sourceId of ['EXP-SRC-WELD-COUNTY-ASSESSOR', 'SRA-WELD-COUNTY-ASSESSO
     evidenceReferences: [{ ...weldAssessorRequest.evidenceReferences[0]!, sourceId }],
   }).classification, 'PUBLIC_RECORD_SOURCE_INVALID');
 }
+assert.equal(convertPublicRecordStructuredEvidence({
+  ...weldAssessorRequest,
+  sourceId: WELD_COUNTY_TREASURER_SOURCE_ID,
+  sourceConfirmation: { sourceId: WELD_COUNTY_TREASURER_SOURCE_ID, confirmationClass: 'EXACT_SOURCE_ID_CONFIRMED', reviewedAt: '2026-08-16' },
+  evidenceReferences: [{ ...weldAssessorRequest.evidenceReferences[0]!, sourceId: WELD_COUNTY_TREASURER_SOURCE_ID }],
+}).classification, 'PUBLIC_RECORD_SOURCE_MISMATCH');
 assert.equal(convertPublicRecordStructuredEvidence({ ...weldAssessorRequest, sourceClass: 'COUNTY_TREASURER' }).classification, 'PUBLIC_RECORD_SOURCE_MISMATCH');
 assert.equal(convertPublicRecordStructuredEvidence({ ...weldAssessorRequest, sourceClass: 'COUNTY_RECORDED_DOCUMENT_INDEX' }).classification, 'PUBLIC_RECORD_SOURCE_MISMATCH');
 assert.equal(convertPublicRecordStructuredEvidence({ ...weldAssessorRequest, sourceConfirmation: undefined }).classification, 'PUBLIC_RECORD_SOURCE_CONFIRMATION_REQUIRED');

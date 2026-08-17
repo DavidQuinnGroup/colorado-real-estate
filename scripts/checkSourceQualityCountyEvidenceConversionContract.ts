@@ -25,7 +25,10 @@ import {
   createCountySourceQualityAssemblyRequest,
 } from '../lib/sourceQualityCountyEvidenceConversionContract';
 import { COUNTY_ASSESSOR_EXACT_SOURCE_IDS } from '../lib/sourceQualityCountyAssessorExactSourceDefinitions';
-import { COUNTY_TREASURER_EXACT_SOURCE_IDS } from '../lib/sourceQualityCountyTreasurerExactSourceDefinitions';
+import {
+  COUNTY_TREASURER_EXACT_SOURCE_IDS,
+  WELD_COUNTY_TREASURER_SOURCE_ID,
+} from '../lib/sourceQualityCountyTreasurerExactSourceDefinitions';
 import { summarizeSourceQuality } from '../lib/sourceQualityControl';
 import { assembleSourceQualitySummaries } from '../lib/sourceQualitySummaryAssembly';
 
@@ -38,7 +41,8 @@ assert.deepEqual(COUNTY_SOURCE_QUALITY_CONVERSION_ALLOWED_SOURCE_IDS, [
   'SRC-BOULDER-COUNTY-ACCELA-PERMITS',
 ]);
 assert.equal(COUNTY_SOURCE_QUALITY_CONVERSION_ALLOWED_SOURCE_IDS.includes('SRC-JEFFERSON-COUNTY-TREASURER' as never), true);
-for (const futureTreasurerSourceId of ['SRC-WELD-COUNTY-TREASURER', 'SRC-LARIMER-COUNTY-TREASURER', 'SRC-BROOMFIELD-COUNTY-TREASURER', 'SRC-FAKE-COUNTY-TREASURER'] as const) {
+assert.equal(COUNTY_SOURCE_QUALITY_CONVERSION_ALLOWED_SOURCE_IDS.includes(WELD_COUNTY_TREASURER_SOURCE_ID), true);
+for (const futureTreasurerSourceId of ['SRC-LARIMER-COUNTY-TREASURER', 'SRC-BROOMFIELD-COUNTY-TREASURER', 'SRC-SYNTHETIC-COUNTY-TREASURER', 'SRC-UNREGISTERED-COUNTY-TREASURER', 'SRC-FAKE-COUNTY-TREASURER'] as const) {
   assert.equal(COUNTY_SOURCE_QUALITY_CONVERSION_ALLOWED_SOURCE_IDS.includes(futureTreasurerSourceId as never), false);
 }
 assert.equal(BOULDER_COUNTY_ASSESSOR_CONVERSION_POSTURE, 'COUNTY_PUBLIC_RECORD_SOURCE_QUALITY_CONVERSION_READY_SOURCE_CONFIRMATION_REQUIRED');
@@ -411,10 +415,10 @@ assert.equal(convertCountyStructuredEvidence({ ...WELD_COUNTY_ASSESSOR_SYNTHETIC
 assert.equal(convertCountyStructuredEvidence({ ...WELD_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST, sourceClass: 'COUNTY_TREASURER' }).classification, 'COUNTY_EVIDENCE_SOURCE_MISMATCH');
 assert.equal(convertCountyStructuredEvidence({
   ...WELD_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST,
-  sourceId: 'SRC-WELD-COUNTY-TREASURER',
-  sourceConfirmation: { sourceId: 'SRC-WELD-COUNTY-TREASURER', confirmationClass: 'EXACT_SOURCE_ID_CONFIRMED', reviewedAt: '2026-08-16' },
-  evidenceReferences: [{ ...WELD_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST.evidenceReferences[0]!, sourceId: 'SRC-WELD-COUNTY-TREASURER' }],
-}).classification, 'COUNTY_SOURCE_INVALID');
+  sourceId: WELD_COUNTY_TREASURER_SOURCE_ID,
+  sourceConfirmation: { sourceId: WELD_COUNTY_TREASURER_SOURCE_ID, confirmationClass: 'EXACT_SOURCE_ID_CONFIRMED', reviewedAt: '2026-08-16' },
+  evidenceReferences: [{ ...WELD_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST.evidenceReferences[0]!, sourceId: WELD_COUNTY_TREASURER_SOURCE_ID }],
+}).classification, 'COUNTY_EVIDENCE_SOURCE_MISMATCH');
 for (const sourceId of ['EXP-SRC-WELD-COUNTY-ASSESSOR', 'SRA-WELD-COUNTY-ASSESSOR', 'SRC-GENERIC-COUNTY-ASSESSOR', 'SRC-PROVIDER-COUNTY-ASSESSOR', 'SRC-WELD-DATA-DOWNLOAD', 'SRC-WELD-PROPERTY-CARD', 'SRC-WELD-PROPERTY-MAP', 'SRC-WELD-PROPERTY-DATA', 'SRC-WELD-SALES-EXPLORER', 'SRC-WELD-COUNTY-RECORDER', 'SRC-WELD-COUNTY-PARCEL-GIS', 'SRC-WELD-PERMITS', 'SRC-WELD-GIS']) {
   assert.equal(convertCountyStructuredEvidence({
     ...WELD_COUNTY_ASSESSOR_SYNTHETIC_CONVERSION_REQUEST,
