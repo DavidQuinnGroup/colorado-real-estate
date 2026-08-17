@@ -84,6 +84,12 @@ import {
   convertJeffersonCountyTreasurerSourceQualityEvidence,
 } from './sourceQualityJeffersonCountyTreasurerEvidence';
 import {
+  WELD_COUNTY_TREASURER_SOURCE_ID,
+  WELD_COUNTY_TREASURER_SOURCE_QUALITY_CERTIFICATION,
+  WELD_COUNTY_TREASURER_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT,
+  convertWeldCountyTreasurerSourceQualityEvidence,
+} from './sourceQualityWeldCountyTreasurerEvidence';
+import {
   LARIMER_COUNTY_ASSESSOR_SOURCE_ID,
   LARIMER_COUNTY_ASSESSOR_SOURCE_QUALITY_CERTIFICATION,
   LARIMER_COUNTY_ASSESSOR_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT,
@@ -139,6 +145,7 @@ const jeffersonCountyAssessorEvidence = convertJeffersonCountyAssessorSourceQual
 const jeffersonCountyTreasurerEvidence = convertJeffersonCountyTreasurerSourceQualityEvidence();
 const larimerCountyAssessorEvidence = convertLarimerCountyAssessorSourceQualityEvidence();
 const weldCountyAssessorEvidence = convertWeldCountyAssessorSourceQualityEvidence();
+const weldCountyTreasurerEvidence = convertWeldCountyTreasurerSourceQualityEvidence();
 const bcodAddressPointsEvidence = convertBcodAddressPointsSourceQualityEvidence();
 const bcodParkBoundariesEvidence = convertBcodParkBoundariesSourceQualityEvidence();
 const boulderCountyParcelGisEvidence = convertBoulderCountyParcelGisSourceQualityEvidence();
@@ -442,6 +449,18 @@ export const SOURCE_QUALITY_OPERATIONAL_MANIFEST_DATA: SourceQualityOperationalM
       expectedEvidenceClasses: ['CERTIFICATION'],
       certificationReference: JEFFERSON_COUNTY_TREASURER_SOURCE_QUALITY_CERTIFICATION,
       reviewedAt: JEFFERSON_COUNTY_TREASURER_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT,
+      reviewAuthorityClass: 'DELEGATED_SOURCE_GOVERNANCE_REVIEW',
+      limitationCodes: [],
+    },
+    {
+      schemaVersion: SOURCE_QUALITY_OPERATIONAL_MANIFEST_SCHEMA_VERSION,
+      manifestId,
+      sourceId: WELD_COUNTY_TREASURER_SOURCE_ID,
+      inclusionClass: 'STRUCTURED_EVIDENCE_WITH_KNOWN_GAPS',
+      linkages: weldCountyTreasurerEvidence.linkages,
+      expectedEvidenceClasses: ['CERTIFICATION'],
+      certificationReference: WELD_COUNTY_TREASURER_SOURCE_QUALITY_CERTIFICATION,
+      reviewedAt: WELD_COUNTY_TREASURER_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT,
       reviewAuthorityClass: 'DELEGATED_SOURCE_GOVERNANCE_REVIEW',
       limitationCodes: [],
     },
