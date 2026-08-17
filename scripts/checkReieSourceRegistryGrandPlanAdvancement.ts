@@ -15,6 +15,7 @@ import {
 import {
   BROOMFIELD_COUNTY_TREASURER_SOURCE_ID,
   COUNTY_TREASURER_EXACT_SOURCE_DEFINITIONS,
+  DOUGLAS_COUNTY_TREASURER_SOURCE_ID,
   JEFFERSON_COUNTY_TREASURER_SOURCE_ID,
   LARIMER_COUNTY_TREASURER_SOURCE_ID,
   WELD_COUNTY_TREASURER_SOURCE_ID,
@@ -563,6 +564,76 @@ assert.equal(registry.records.filter((item) => item.sourceId !== 'SRC-BROOMFIELD
 assert.equal(registry.records.filter((item) => item.sourceId !== 'SRC-BROOMFIELD-COUNTY-ASSESSOR' && item.sourceId !== broomfieldTreasurerSourceId && /BROOMFIELD.*(TAX_PAYMENT|TAX_SEARCH|ONLINE_TREASURER_PORTAL|CERTIFICATE|PAYMENT_PROVIDER|EQUAPAY|FINANCE_DIRECTOR|REVENUE_MANAGER|PUBLIC_TRUSTEE|RECORDER|GIS|GOVERNMENT|AGGREGATE|ASSESSOR_VALUE_AUTHORITY)/i.test(`${item.sourceId} ${item.category}`)).length, 0, 'Broomfield Treasurer Registry MVV must not conflate Treasurer identity with adjacent domains.');
 assert.doesNotMatch(broomfieldTreasurerText, /EXP-|SRA-|provider aggregate|wildcard County Treasurer/i);
 assert.equal(read('lib/sourceQualityOperationalManifestData.ts').includes('BROOMFIELD_COUNTY_TREASURER_SOURCE_ID'), true, 'Broomfield Treasurer must remain Manifest-included after Manifest inclusion authorization.');
+
+const douglasTreasurerSourceId = DOUGLAS_COUNTY_TREASURER_SOURCE_ID;
+assert.equal(registry.records.filter((item) => item.sourceId === douglasTreasurerSourceId).length, 1, 'Douglas County Treasurer source must exist exactly once.');
+assert.equal(COUNTY_TREASURER_EXACT_SOURCE_DEFINITIONS.filter((item) => item.sourceId === douglasTreasurerSourceId).length, 1, 'Douglas County Treasurer finite definition must exist exactly once.');
+assert.equal(isCountyTreasurerExactSourceId(douglasTreasurerSourceId), true, 'Douglas County Treasurer must be accepted only after exact finite definition.');
+const douglasTreasurerDefinition = COUNTY_TREASURER_EXACT_SOURCE_DEFINITIONS.find((item) => item.sourceId === douglasTreasurerSourceId);
+const douglasTreasurer = record(douglasTreasurerSourceId);
+const douglasTreasurerText = JSON.stringify(douglasTreasurer);
+assert.equal(douglasTreasurerDefinition?.sourceClass, 'COUNTY_TREASURER');
+assert.equal(douglasTreasurerDefinition?.jurisdiction.state, 'Colorado');
+assert.equal(douglasTreasurerDefinition?.jurisdiction.county, 'Douglas County');
+assert.equal(douglasTreasurerDefinition?.responsibleOrganization, "Douglas County Treasurer's Office");
+assert.equal(douglasTreasurer.publicName, 'Douglas County Treasurer');
+assert.equal(douglasTreasurer.responsibleOrganization, "Douglas County Treasurer's Office");
+assert.equal(douglasTreasurer.sourceClass, 'AUTHORITATIVE_SOURCE');
+assert.equal(douglasTreasurer.category, 'COUNTY_TREASURER_TAX');
+assert.equal(douglasTreasurer.jurisdiction.state, 'Colorado');
+assert.equal(douglasTreasurer.jurisdiction.county, 'Douglas County');
+assert.equal(douglasTreasurer.authorizationState, 'AWAITING_PROVIDER_CONFIRMATION');
+assert.equal(douglasTreasurer.productionActivationState, 'BLOCKED_NOT_AUTHORIZED');
+assert.equal(douglasTreasurer.claimEligible, false);
+assert.equal(douglasTreasurer.customerStatus, 'Blocked / not authorized');
+assert.match(douglasTreasurer.currentReieUse, /Exact source identity only/);
+assert.match(douglasTreasurer.currentReieUse, /future-governed Douglas County Treasurer review/);
+assert.match(douglasTreasurer.currentReieUse, /no property-tax inquiry or search submission/);
+assert.match(douglasTreasurer.currentReieUse, /no tax notice, statement, receipt, or payment-history use/);
+assert.match(douglasTreasurer.currentReieUse, /no current or delinquent charge use/);
+assert.match(douglasTreasurer.currentReieUse, /no special-assessment use/);
+assert.match(douglasTreasurer.currentReieUse, /no payment/);
+assert.match(douglasTreasurer.currentReieUse, /no Statement or Certificate of Taxes Due action/);
+assert.match(douglasTreasurer.currentReieUse, /no lien or delinquency workflow use/);
+assert.match(douglasTreasurer.currentReieUse, /no Public Trustee use/);
+assert.match(douglasTreasurer.currentReieUse, /no Assessor parcel-detail use/);
+assert.match(douglasTreasurer.currentReieUse, /no Recorder use/);
+assert.match(douglasTreasurer.currentReieUse, /no GIS use/);
+assert.match(douglasTreasurer.currentReieUse, /no tax-record retrieval/);
+assert.match(douglasTreasurer.currentReieUse, /no parcel\/account lookup/);
+assert.match(douglasTreasurer.currentReieUse, /no tax-currentness guarantee/);
+assert.match(douglasTreasurer.currentReieUse, /no ownership or redemption conclusion/);
+assert.match(douglasTreasurer.currentReieUse, /no customer display/);
+assert.match(douglasTreasurerText, /TREASURER_RECORD_NOT_ASSESSOR_VALUE_AUTHORITY/);
+assert.match(douglasTreasurerText, /TREASURER_RECORD_NOT_TITLE/);
+assert.match(douglasTreasurerText, /TREASURER_RECORD_NOT_RECORDER_INDEX/);
+assert.match(douglasTreasurerText, /TAX_PAYMENT_CHANNEL_NOT_DATA_REUSE_AUTHORITY/);
+assert.match(douglasTreasurerText, /PUBLIC_TAX_SEARCH_NOT_AUTOMATION_AUTHORITY/);
+assert.match(douglasTreasurerText, /PUBLIC_ACCESS_NOT_REUSE_OR_DISPLAY_AUTHORITY/);
+assert.match(douglasTreasurerText, /PUBLIC_OR_GOVERNMENT_SOURCE_NOT_UNRESTRICTED_OR_VERIFIED_OR_COMPLETE/);
+assert.match(douglasTreasurerText, /PUBLIC_TRUSTEE_NOT_AUTOMATICALLY_TREASURER_DATA_AUTHORITY/);
+assert.match(douglasTreasurerText, /TAX_CURRENTNESS_SOURCE_SPECIFIC/);
+assert.match(douglasTreasurerText, /FEE_STATUS_SOURCE_SPECIFIC/);
+assert.match(douglasTreasurerText, /DOUGLAS_TREASURER_BILLED_ONE_YEAR_IN_ARREARS_NOT_CURRENTNESS_GUARANTEE/);
+assert.match(douglasTreasurerText, /DOUGLAS_TAX_STATEMENT_RECEIPT_NOT_TITLE_OR_LIEN_CLEARANCE/);
+assert.match(douglasTreasurerText, /DOUGLAS_TAX_LIEN_DELINQUENCY_NOT_OWNERSHIP_OR_REDEMPTION_CONCLUSION/);
+assert.match(douglasTreasurerText, /DOUGLAS_PAYMENT_VENDOR_NOT_DATA_REUSE_OR_AUTOMATION_AUTHORITY/);
+assert.match(douglasTreasurerText, /DOUGLAS_STATEMENT_OR_CERTIFICATE_OF_TAXES_DUE_DISTINCT_GOVERNED_CHANNEL/);
+assert.match(douglasTreasurerText, /DOUGLAS_ASSESSOR_PARCEL_DETAIL_SEPARATE_SOURCE_AUTHORITY/);
+assert.match(douglasTreasurerText, /SOURCE_ACTIVATION_NOT_AUTHORIZED_BY_REGISTRY_MVV/);
+assert.match(douglasTreasurerText, /CUSTOMER_DISPLAY_NOT_GRANTED_BY_REGISTRY_MVV/);
+assert.match(douglasTreasurerText, /LEGAL_USE_NOT_APPROVED_BY_REGISTRY_MVV/);
+assert.match(douglasTreasurerText, /Treasurer billing is one year in arrears/);
+assert.match(douglasTreasurerText, /source-specific currentness limitation, not Assessor authority within the Treasurer source/);
+assert.match(douglasTreasurerText, /Douglas County property-tax inquiry and search, tax notices, statements, receipts, payment history, current and delinquent charges, special assessments, payments, Statement or Certificate of Taxes Due, lien and delinquency workflows, Public Trustee, Assessor parcel detail, Recorder, GIS, payment vendors, and lien\/deed operational actions are separately governed/);
+assert.match(douglasTreasurerText, /Boulder County Treasurer, Arapahoe County Treasurer, Adams County Treasurer, Jefferson County Treasurer, Larimer County Treasurer, Broomfield Treasurer, Weld County Treasurer, Douglas County Assessor/);
+assert.match(douglasTreasurerText, /Rights, technical access, freshness, attribution, fees, privacy approval, field sensitivity, and provenance remain unknown/);
+assert.doesNotMatch(douglasTreasurerText, /RIGHTS = VERIFIED|TECHNICAL ACCESS = READY|FRESHNESS = VERIFIED|ATTRIBUTION = REQUIRED|FEE = NONE|PROVENANCE = COMPLETE/);
+assert.doesNotMatch(douglasTreasurerText, /memberSourceIds|parentSourceId|aggregateSource|childSourceIds|relationshipType/i);
+assert.equal(registry.records.filter((item) => item.sourceId !== douglasTreasurerSourceId && /^SRC-DOUGLAS-COUNTY-(TAX-PAYMENT|TAX-SEARCH|PROPERTY-TAX|TAX-NOTICE|TAX-STATEMENT|TAX-RECEIPT|PAYMENT-HISTORY|CURRENT-CHARGES|DELINQUENT|SPECIAL-ASSESSMENT|STATEMENT|CERTIFICATE|LIEN|PUBLIC-TRUSTEE|ASSESSOR|RECORDER|GIS|PARCEL-GIS)/.test(item.sourceId)).length, 0, 'Douglas Treasurer Registry MVV must not add payment, search, statement, certificate, lien, Public Trustee, Assessor, Recorder, GIS, or Parcel GIS source ids.');
+assert.equal(registry.records.filter((item) => item.sourceId !== douglasTreasurerSourceId && /DOUGLAS.*(TAX_PAYMENT|TAX_SEARCH|PROPERTY_TAX|TAX_NOTICE|TAX_STATEMENT|TAX_RECEIPT|PAYMENT_HISTORY|CURRENT_CHARGES|DELINQUENT|SPECIAL_ASSESSMENT|STATEMENT|CERTIFICATE|LIEN|PUBLIC_TRUSTEE|ASSESSOR|RECORDER|GIS|PARCEL_GIS|ASSESSOR_VALUE_AUTHORITY)/i.test(`${item.sourceId} ${item.category}`)).length, 0, 'Douglas Treasurer Registry MVV must not conflate Treasurer identity with adjacent domains.');
+assert.doesNotMatch(douglasTreasurerText, /EXP-|SRA-|provider aggregate|wildcard County Treasurer/i);
+assert.equal(read('lib/sourceQualityOperationalManifestData.ts').includes('DOUGLAS_COUNTY_TREASURER_SOURCE_ID'), false, 'Douglas Treasurer must remain out of the Operational Manifest until separate Manifest inclusion authorization.');
 
 const broomfieldAssessorSourceId = 'SRC-BROOMFIELD-COUNTY-ASSESSOR';
 assert.equal(registry.records.filter((item) => item.sourceId === broomfieldAssessorSourceId).length, 1, 'Broomfield Assessor source must exist exactly once.');

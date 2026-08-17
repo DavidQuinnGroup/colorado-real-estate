@@ -14,6 +14,7 @@ import { COUNTY_ASSESSOR_EXACT_SOURCE_IDS } from '../lib/sourceQualityCountyAsse
 import {
   BROOMFIELD_COUNTY_TREASURER_SOURCE_ID,
   COUNTY_TREASURER_EXACT_SOURCE_IDS,
+  DOUGLAS_COUNTY_TREASURER_SOURCE_ID,
   LARIMER_COUNTY_TREASURER_SOURCE_ID,
   WELD_COUNTY_TREASURER_SOURCE_ID,
 } from '../lib/sourceQualityCountyTreasurerExactSourceDefinitions';
@@ -81,6 +82,7 @@ assert.equal(PUBLIC_RECORD_SOURCE_QUALITY_CONVERSION_ALLOWED_SOURCE_IDS.includes
 assert.equal(PUBLIC_RECORD_SOURCE_QUALITY_CONVERSION_ALLOWED_SOURCE_IDS.includes('SRC-JEFFERSON-COUNTY-TREASURER' as never), true);
 assert.equal(PUBLIC_RECORD_SOURCE_QUALITY_CONVERSION_ALLOWED_SOURCE_IDS.includes(LARIMER_COUNTY_TREASURER_SOURCE_ID), true);
 assert.equal(PUBLIC_RECORD_SOURCE_QUALITY_CONVERSION_ALLOWED_SOURCE_IDS.includes(BROOMFIELD_COUNTY_TREASURER_SOURCE_ID), true);
+assert.equal(PUBLIC_RECORD_SOURCE_QUALITY_CONVERSION_ALLOWED_SOURCE_IDS.includes(DOUGLAS_COUNTY_TREASURER_SOURCE_ID), true);
 assert.equal(PUBLIC_RECORD_SOURCE_QUALITY_CONVERSION_ALLOWED_SOURCE_IDS.includes(WELD_COUNTY_TREASURER_SOURCE_ID), true);
 for (const futureTreasurerSourceId of ['SRC-SYNTHETIC-COUNTY-TREASURER', 'SRC-UNREGISTERED-COUNTY-TREASURER', 'SRC-FAKE-COUNTY-TREASURER'] as const) {
   assert.equal(PUBLIC_RECORD_SOURCE_QUALITY_CONVERSION_ALLOWED_SOURCE_IDS.includes(futureTreasurerSourceId as never), false);
@@ -127,6 +129,27 @@ const broomfieldTreasurerRequest: PublicRecordSourceQualityEvidenceConversionReq
   }],
 };
 assert.equal(convertPublicRecordStructuredEvidence(broomfieldTreasurerRequest).classification, 'PUBLIC_RECORD_EVIDENCE_CONVERSION_VALID');
+
+const douglasTreasurerRequest: PublicRecordSourceQualityEvidenceConversionRequest = {
+  ...recorderRequest,
+  sourceId: DOUGLAS_COUNTY_TREASURER_SOURCE_ID,
+  sourceClass: 'COUNTY_TREASURER',
+  reviewedAt: '2026-08-17',
+  sourceConfirmation: {
+    sourceId: DOUGLAS_COUNTY_TREASURER_SOURCE_ID,
+    confirmationClass: 'EXACT_SOURCE_ID_CONFIRMED',
+    reviewedAt: '2026-08-17',
+  },
+  evidenceReferences: [{
+    sourceId: DOUGLAS_COUNTY_TREASURER_SOURCE_ID,
+    inputClass: 'CERTIFICATION_REFERENCE',
+    evidenceReferenceId: 'PUBLIC-RECORD-CONVERSION-DOUGLAS-TREASURER-CERT-001',
+    posture: 'REFERENCED',
+    verificationStatus: 'VERIFIED',
+    limitationCodes: [],
+  }],
+};
+assert.equal(convertPublicRecordStructuredEvidence(douglasTreasurerRequest).classification, 'PUBLIC_RECORD_EVIDENCE_CONVERSION_VALID');
 
 const weldTreasurerRequest: PublicRecordSourceQualityEvidenceConversionRequest = {
   ...recorderRequest,

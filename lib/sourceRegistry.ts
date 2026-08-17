@@ -961,6 +961,62 @@ function broomfieldCountyTreasurerRecord(): ReieSourceRegistryRecord {
   };
 }
 
+function douglasCountyTreasurerRecord(): ReieSourceRegistryRecord {
+  return {
+    sourceId: 'SRC-DOUGLAS-COUNTY-TREASURER',
+    publicName: 'Douglas County Treasurer',
+    responsibleOrganization: "Douglas County Treasurer's Office",
+    sourceClass: 'AUTHORITATIVE_SOURCE',
+    category: 'COUNTY_TREASURER_TAX',
+    domains: ['Treasurer tax-record source identity', 'Property-tax records', 'Future governed county treasurer evidence'],
+    jurisdiction: { state: 'Colorado', county: 'Douglas County', coverage: 'Douglas County Treasurer property-tax source identity only' },
+    officialUrl: 'https://www.douglas.co.us/treasurer/',
+    accessMethod: 'Source-specific provider, rights, and technical-access review required before property-tax inquiry or search use, tax notice, statement, receipt, payment-history, current or delinquent charge, special assessment, payment, Statement or Certificate of Taxes Due, lien or delinquency workflow, Public Trustee operation, Assessor parcel-detail use, Recorder use, GIS use, retrieval, automation, ingestion, display, or reuse',
+    updateCadence: 'source-specific and not certified',
+    freshnessExpectation: 'unknown until source-specific evidence review; official metadata indicates Treasurer billing is one year in arrears and directs users to the Assessor for current information',
+    authorizationState: 'AWAITING_PROVIDER_CONFIRMATION',
+    permittedUse: 'registry identity and source-governance review only; no property-tax inquiry or search submission, tax notice, statement, receipt, payment-history, current or delinquent charge use, special assessment use, payment, Statement or Certificate of Taxes Due action, lien or delinquency workflow use, Public Trustee operation, Assessor parcel-detail use, retrieval, automation, storage, redistribution, legal-use, or customer-display authority',
+    productionActivationState: 'BLOCKED_NOT_AUTHORIZED',
+    claimEligible: false,
+    customerDisclosureEligible: true,
+    customerStatus: 'Blocked / not authorized',
+    currentReieUse: 'Exact source identity only for future-governed Douglas County Treasurer review; no property-tax inquiry or search submission, no tax notice, statement, receipt, or payment-history use, no current or delinquent charge use, no special-assessment use, no payment, no Statement or Certificate of Taxes Due action or title/lien-clearance claim, no lien or delinquency workflow use, no Public Trustee use, no Assessor parcel-detail use, no Recorder use, no GIS use, no tax-record retrieval, no parcel/account lookup, no tax-currentness guarantee, no ownership or redemption conclusion, no customer display, no ingestion, no automation, or runtime use is active.',
+    limitations: [
+      'TREASURER_RECORD_NOT_ASSESSOR_VALUE_AUTHORITY.',
+      'TREASURER_RECORD_NOT_TITLE.',
+      'TREASURER_RECORD_NOT_RECORDER_INDEX.',
+      'TAX_PAYMENT_CHANNEL_NOT_DATA_REUSE_AUTHORITY.',
+      'PUBLIC_TAX_SEARCH_NOT_AUTOMATION_AUTHORITY.',
+      'PUBLIC_ACCESS_NOT_REUSE_OR_DISPLAY_AUTHORITY.',
+      'PUBLIC_OR_GOVERNMENT_SOURCE_NOT_UNRESTRICTED_OR_VERIFIED_OR_COMPLETE.',
+      'PUBLIC_TRUSTEE_NOT_AUTOMATICALLY_TREASURER_DATA_AUTHORITY.',
+      'TAX_CURRENTNESS_SOURCE_SPECIFIC.',
+      'FEE_STATUS_SOURCE_SPECIFIC.',
+      'DOUGLAS_TREASURER_BILLED_ONE_YEAR_IN_ARREARS_NOT_CURRENTNESS_GUARANTEE.',
+      'DOUGLAS_TAX_STATEMENT_RECEIPT_NOT_TITLE_OR_LIEN_CLEARANCE.',
+      'DOUGLAS_TAX_LIEN_DELINQUENCY_NOT_OWNERSHIP_OR_REDEMPTION_CONCLUSION.',
+      'DOUGLAS_PAYMENT_VENDOR_NOT_DATA_REUSE_OR_AUTOMATION_AUTHORITY.',
+      'DOUGLAS_STATEMENT_OR_CERTIFICATE_OF_TAXES_DUE_DISTINCT_GOVERNED_CHANNEL.',
+      'DOUGLAS_ASSESSOR_PARCEL_DETAIL_SEPARATE_SOURCE_AUTHORITY.',
+      'SOURCE_ACTIVATION_NOT_AUTHORIZED_BY_REGISTRY_MVV.',
+      'CUSTOMER_DISPLAY_NOT_GRANTED_BY_REGISTRY_MVV.',
+      'LEGAL_USE_NOT_APPROVED_BY_REGISTRY_MVV.',
+      'Douglas County property-tax inquiry and search, tax notices, statements, receipts, payment history, current and delinquent charges, special assessments, payments, Statement or Certificate of Taxes Due, lien and delinquency workflows, Public Trustee, Assessor parcel detail, Recorder, GIS, payment vendors, and lien/deed operational actions are separately governed and do not become the Treasurer Registry source identity.',
+      'Official currentness metadata that Treasurer billing is one year in arrears and directs users to the Assessor for current information is a source-specific currentness limitation, not Assessor authority within the Treasurer source.',
+      'Boulder County Treasurer, Arapahoe County Treasurer, Adams County Treasurer, Jefferson County Treasurer, Larimer County Treasurer, Broomfield Treasurer, Weld County Treasurer, Douglas County Assessor, other County Assessor, Recorder, Parcel GIS, Address Points, Park Boundaries, permit sources, and Source Quality evidence do not grant rights, access, freshness, attribution, fee, provenance, findings, or governance inheritance to Douglas County Treasurer.',
+      'Rights, technical access, freshness, attribution, fees, privacy approval, field sensitivity, and provenance remain unknown until separately governed source evidence review.',
+    ],
+    attributionRequirement: 'unknown until source-specific review',
+    lastSourceVerificationDate: REIE_SOURCE_REGISTRY_REFERENCE_DATE,
+    lastSuccessfulDataRefresh: null,
+    sourcePaths: [
+      'lib/sourceRegistry.ts/SRC-DOUGLAS-COUNTY-TREASURER',
+      'Douglas County Treasurer official-source identity research handoff',
+      'DOUGLAS_COUNTY_TREASURER_EXACT_SOURCE_REGISTRY_MVV',
+    ],
+  };
+}
+
 export const BOULDER_PERMIT_CANDIDATES_SOURCE_ID = 'SRC-BOULDER-PERMIT-CANDIDATES' as const;
 export const BOULDER_PERMIT_CANDIDATES_LIFECYCLE_POSTURE = 'NON_OPERATIONAL_DISCOVERY_VERIFICATION_CONTEXT' as const;
 export const BOULDER_PERMIT_CANDIDATES_SOURCE_QUALITY_ADVANCEMENT_ELIGIBILITY = 'NOT_ELIGIBLE_NON_OPERATIONAL_CONTEXT' as const;
@@ -1133,6 +1189,7 @@ export const REIE_SOURCE_REGISTRY: ReieSourceRegistry = Object.freeze({
     jeffersonCountyTreasurerRecord(),
     larimerCountyTreasurerRecord(),
     broomfieldCountyTreasurerRecord(),
+    douglasCountyTreasurerRecord(),
     weldCountyTreasurerRecord(),
     boulderPermitCandidatesRecord(),
     sourceFromProfile({

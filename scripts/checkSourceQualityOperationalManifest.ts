@@ -259,7 +259,7 @@ function isGovernedPreManifestCountyAssessor(record: RegistryLifecycleRecord): b
 
 function isGovernedPreManifestCountyTreasurer(record: RegistryLifecycleRecord): boolean {
   const text = JSON.stringify(record);
-  return ['SRC-ARAPAHOE-COUNTY-TREASURER', 'SRC-ADAMS-COUNTY-TREASURER', 'SRC-JEFFERSON-COUNTY-TREASURER', 'SRC-WELD-COUNTY-TREASURER', 'SRC-LARIMER-COUNTY-TREASURER', 'SRC-BROOMFIELD-COUNTY-TREASURER'].includes(record.sourceId)
+  return ['SRC-ARAPAHOE-COUNTY-TREASURER', 'SRC-ADAMS-COUNTY-TREASURER', 'SRC-JEFFERSON-COUNTY-TREASURER', 'SRC-WELD-COUNTY-TREASURER', 'SRC-LARIMER-COUNTY-TREASURER', 'SRC-BROOMFIELD-COUNTY-TREASURER', 'SRC-DOUGLAS-COUNTY-TREASURER'].includes(record.sourceId)
     && record.sourceClass === 'AUTHORITATIVE_SOURCE'
     && record.category === 'COUNTY_TREASURER_TAX'
     && record.authorizationState === 'AWAITING_PROVIDER_CONFIRMATION'
@@ -274,8 +274,8 @@ function isGovernedPreManifestCountyTreasurer(record: RegistryLifecycleRecord): 
     && text.includes('TREASURER_RECORD_NOT_RECORDER_INDEX')
     && text.includes('PUBLIC_TAX_SEARCH_NOT_AUTOMATION_AUTHORITY')
     && text.includes('TAX_PAYMENT_CHANNEL_NOT_DATA_REUSE_AUTHORITY')
-    && (text.includes('TAX_EXTRACT_NOT_UNRESTRICTED_OR_REUSE_READY') || text.includes('TAX_LIEN_DATA_NOT_OWNERSHIP_OR_REDEMPTION_CONCLUSION') || text.includes('TAX_LIEN_SALE_NOT_OWNERSHIP_OR_REDEMPTION_CONCLUSION') || text.includes('WELD_TAX_LIEN_SALE_NOT_OWNERSHIP_OR_REDEMPTION_CONCLUSION') || text.includes('LARIMER_DELINQUENT_STATEMENTS_SOURCE_SPECIFIC') || text.includes('BROOMFIELD_ONLINE_TREASURER_PORTAL_NOT_AUTOMATION_AUTHORITY'))
-    && (text.includes('CERTIFICATE_OF_TAXES_DUE_NOT_TITLE_OR_LIEN_CLEARANCE_GUARANTEE') || text.includes('TREASURER_DEED_NOT_TITLE_CLEARANCE') || text.includes('TAX_CERTIFICATES_NOT_AVAILABLE_THROUGH_PORTAL') || text.includes('DEED_APPLICATION_NOT_TITLE_CLEARANCE') || text.includes('WELD_TREASURER_DEED_NOT_TITLE_CLEARANCE') || text.includes('LARIMER_FORECLOSURE_RELEASE_NOT_TREASURER_RECORD_AUTHORITY'))
+    && (text.includes('TAX_EXTRACT_NOT_UNRESTRICTED_OR_REUSE_READY') || text.includes('TAX_LIEN_DATA_NOT_OWNERSHIP_OR_REDEMPTION_CONCLUSION') || text.includes('TAX_LIEN_SALE_NOT_OWNERSHIP_OR_REDEMPTION_CONCLUSION') || text.includes('WELD_TAX_LIEN_SALE_NOT_OWNERSHIP_OR_REDEMPTION_CONCLUSION') || text.includes('LARIMER_DELINQUENT_STATEMENTS_SOURCE_SPECIFIC') || text.includes('BROOMFIELD_ONLINE_TREASURER_PORTAL_NOT_AUTOMATION_AUTHORITY') || text.includes('DOUGLAS_TAX_LIEN_DELINQUENCY_NOT_OWNERSHIP_OR_REDEMPTION_CONCLUSION'))
+    && (text.includes('CERTIFICATE_OF_TAXES_DUE_NOT_TITLE_OR_LIEN_CLEARANCE_GUARANTEE') || text.includes('TREASURER_DEED_NOT_TITLE_CLEARANCE') || text.includes('TAX_CERTIFICATES_NOT_AVAILABLE_THROUGH_PORTAL') || text.includes('DEED_APPLICATION_NOT_TITLE_CLEARANCE') || text.includes('WELD_TREASURER_DEED_NOT_TITLE_CLEARANCE') || text.includes('LARIMER_FORECLOSURE_RELEASE_NOT_TREASURER_RECORD_AUTHORITY') || text.includes('DOUGLAS_TAX_STATEMENT_RECEIPT_NOT_TITLE_OR_LIEN_CLEARANCE'))
     && text.includes('Public Trustee')
     && text.includes('Rights, technical access, freshness, attribution, fees, privacy approval, field sensitivity, and provenance remain unknown')
     && (record.sourcePaths ?? []).some((sourcePath) => sourcePath.includes('COUNTY_TREASURER_EXACT_SOURCE_REGISTRY_MVV'));
@@ -374,7 +374,8 @@ const registryOnlySources = explainRegistryOnlySourceIds(registryRecords, manife
 assert.equal(new Set(registryOnlySources.map((source) => source.sourceId)).size, registryOnlySources.length, 'Registry-only source ids must be unique.');
 assert.equal(registryOnlySources.filter((source) => source.sourceId === 'SRC-BOULDER-PERMIT-CANDIDATES').length, 1, 'Permit Candidate must remain deterministically excluded from Operational Manifest.');
 assert.equal(registryOnlySources.find((source) => source.sourceId === 'SRC-BOULDER-PERMIT-CANDIDATES')?.reason, 'EXPLICIT_NON_OPERATIONAL_REGISTRY_IDENTITY');
-assert.deepEqual(registryOnlySources.map((source) => source.sourceId), ['SRC-BOULDER-PERMIT-CANDIDATES'], 'After Broomfield Treasurer Manifest inclusion, registry-only sources must be limited to Permit Candidate.');
+assert.deepEqual(registryOnlySources.map((source) => source.sourceId), ['SRC-DOUGLAS-COUNTY-TREASURER', 'SRC-BOULDER-PERMIT-CANDIDATES'], 'During Douglas Treasurer Registry MVV, registry-only sources must be limited to Douglas Treasurer and Permit Candidate.');
+assert.equal(registryOnlySources.find((source) => source.sourceId === 'SRC-DOUGLAS-COUNTY-TREASURER')?.reason, 'GOVERNED_PRE_MANIFEST_COUNTY_TREASURER_LIFECYCLE');
 assert.equal(registryOnlySources.filter((source) => source.sourceId === 'SRC-ADAMS-COUNTY-TREASURER').length, 0, 'Adams Treasurer must be included after Manifest inclusion authorization.');
 assert.equal(registryOnlySources.filter((source) => source.sourceId === JEFFERSON_COUNTY_TREASURER_SOURCE_ID).length, 0, 'Jefferson Treasurer must be included after Manifest inclusion authorization.');
 assert.equal(registryOnlySources.filter((source) => source.sourceId === WELD_COUNTY_TREASURER_SOURCE_ID).length, 0, 'Weld Treasurer must be included after Manifest inclusion authorization.');
@@ -388,35 +389,35 @@ for (const source of registryOnlySources.filter((item) => item.sourceId !== 'SRC
 }
 const jeffersonPreManifestRecord = registryRecords.find((record) => record.sourceId === 'SRC-JEFFERSON-COUNTY-ASSESSOR');
 assert.ok(jeffersonPreManifestRecord);
-const syntheticDouglasPreManifestRecord: RegistryLifecycleRecord = {
+const syntheticCountyAssessorPreManifestRecord: RegistryLifecycleRecord = {
   ...jeffersonPreManifestRecord,
-  sourceId: 'SRC-DOUGLAS-COUNTY-ASSESSOR',
-  publicName: 'Douglas County Assessor',
-  responsibleOrganization: "Douglas County Assessor's Office",
-  jurisdiction: { state: 'Colorado', county: 'Douglas County', coverage: 'Douglas County assessor/property records source identity only' },
-  currentReieUse: 'Exact source identity only for future-governed Douglas County Assessor review; no property search submission, GIS access, property-record retrieval, owner/address lookup, parcel/account lookup, valuation claim, ownership claim, title claim, tax claim, customer display, ingestion, automation, or runtime use is active.',
+  sourceId: 'SRC-SYNTHETIC-COUNTY-ASSESSOR',
+  publicName: 'Synthetic County Assessor',
+  responsibleOrganization: "Synthetic County Assessor's Office",
+  jurisdiction: { state: 'Colorado', county: 'Synthetic County', coverage: 'Synthetic County assessor/property records source identity only' },
+  currentReieUse: 'Exact source identity only for future-governed Synthetic County Assessor review; no property search submission, GIS access, property-record retrieval, owner/address lookup, parcel/account lookup, valuation claim, ownership claim, title claim, tax claim, customer display, ingestion, automation, or runtime use is active.',
   sourcePaths: [
-    'lib/sourceRegistry.ts/SRC-DOUGLAS-COUNTY-ASSESSOR',
-    'Douglas County Assessor official-source identity research handoff',
-    'DOUGLAS_COUNTY_ASSESSOR_EXACT_SOURCE_REGISTRY_MVV',
+    'lib/sourceRegistry.ts/SRC-SYNTHETIC-COUNTY-ASSESSOR',
+    'Synthetic County Assessor official-source identity research handoff',
+    'SYNTHETIC_COUNTY_ASSESSOR_EXACT_SOURCE_REGISTRY_MVV',
   ],
 };
-const syntheticRegistryOnly = explainRegistryOnlySourceIds([...registryRecords, syntheticDouglasPreManifestRecord], manifestSourceIds);
+const syntheticRegistryOnly = explainRegistryOnlySourceIds([...registryRecords, syntheticCountyAssessorPreManifestRecord], manifestSourceIds);
 assert.deepEqual(
   syntheticRegistryOnly.map((source) => source.sourceId).sort(),
-  [...registryOnlySources.map((source) => source.sourceId), 'SRC-DOUGLAS-COUNTY-ASSESSOR'].sort(),
+  [...registryOnlySources.map((source) => source.sourceId), 'SRC-SYNTHETIC-COUNTY-ASSESSOR'].sort(),
 );
-assert.equal(syntheticRegistryOnly.find((source) => source.sourceId === 'SRC-DOUGLAS-COUNTY-ASSESSOR')?.reason, 'GOVERNED_PRE_MANIFEST_COUNTY_ASSESSOR_LIFECYCLE');
+assert.equal(syntheticRegistryOnly.find((source) => source.sourceId === 'SRC-SYNTHETIC-COUNTY-ASSESSOR')?.reason, 'GOVERNED_PRE_MANIFEST_COUNTY_ASSESSOR_LIFECYCLE');
 assert.throws(
-  () => explainRegistryOnlySourceIds([...registryRecords, { ...syntheticDouglasPreManifestRecord, productionActivationState: 'ACTIVE_AUTHORIZED' }], manifestSourceIds),
+  () => explainRegistryOnlySourceIds([...registryRecords, { ...syntheticCountyAssessorPreManifestRecord, productionActivationState: 'ACTIVE_AUTHORIZED' }], manifestSourceIds),
   /Registry-only source requires governed pre-Manifest lifecycle posture/,
 );
 assert.throws(
-  () => explainRegistryOnlySourceIds([...registryRecords, { ...syntheticDouglasPreManifestRecord, claimEligible: true }], manifestSourceIds),
+  () => explainRegistryOnlySourceIds([...registryRecords, { ...syntheticCountyAssessorPreManifestRecord, claimEligible: true }], manifestSourceIds),
   /Registry-only source requires governed pre-Manifest lifecycle posture/,
 );
 assert.throws(
-  () => explainRegistryOnlySourceIds([...registryRecords, { ...syntheticDouglasPreManifestRecord, sourceId: 'SRC-DOUGLAS-COUNTY-TREASURER', category: 'COUNTY_TREASURER_TAX' }], manifestSourceIds),
+  () => explainRegistryOnlySourceIds([...registryRecords, { ...syntheticCountyAssessorPreManifestRecord, sourceId: 'SRC-SYNTHETIC-COUNTY-TREASURER', category: 'COUNTY_TREASURER_TAX' }], manifestSourceIds),
   /Registry-only source requires governed pre-Manifest lifecycle posture/,
 );
 for (const [sourceId, entryFingerprint] of PRIOR_NINE_ENTRY_FINGERPRINTS) {
