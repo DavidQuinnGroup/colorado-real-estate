@@ -96,6 +96,12 @@ import {
   convertLarimerCountyTreasurerSourceQualityEvidence,
 } from './sourceQualityLarimerCountyTreasurerEvidence';
 import {
+  BROOMFIELD_COUNTY_TREASURER_SOURCE_ID,
+  BROOMFIELD_COUNTY_TREASURER_SOURCE_QUALITY_CERTIFICATION,
+  BROOMFIELD_COUNTY_TREASURER_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT,
+  convertBroomfieldCountyTreasurerSourceQualityEvidence,
+} from './sourceQualityBroomfieldCountyTreasurerEvidence';
+import {
   LARIMER_COUNTY_ASSESSOR_SOURCE_ID,
   LARIMER_COUNTY_ASSESSOR_SOURCE_QUALITY_CERTIFICATION,
   LARIMER_COUNTY_ASSESSOR_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT,
@@ -151,6 +157,7 @@ const jeffersonCountyAssessorEvidence = convertJeffersonCountyAssessorSourceQual
 const jeffersonCountyTreasurerEvidence = convertJeffersonCountyTreasurerSourceQualityEvidence();
 const larimerCountyAssessorEvidence = convertLarimerCountyAssessorSourceQualityEvidence();
 const larimerCountyTreasurerEvidence = convertLarimerCountyTreasurerSourceQualityEvidence();
+const broomfieldCountyTreasurerEvidence = convertBroomfieldCountyTreasurerSourceQualityEvidence();
 const weldCountyAssessorEvidence = convertWeldCountyAssessorSourceQualityEvidence();
 const weldCountyTreasurerEvidence = convertWeldCountyTreasurerSourceQualityEvidence();
 const bcodAddressPointsEvidence = convertBcodAddressPointsSourceQualityEvidence();
@@ -480,6 +487,18 @@ export const SOURCE_QUALITY_OPERATIONAL_MANIFEST_DATA: SourceQualityOperationalM
       expectedEvidenceClasses: ['CERTIFICATION'],
       certificationReference: LARIMER_COUNTY_TREASURER_SOURCE_QUALITY_CERTIFICATION,
       reviewedAt: LARIMER_COUNTY_TREASURER_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT,
+      reviewAuthorityClass: 'DELEGATED_SOURCE_GOVERNANCE_REVIEW',
+      limitationCodes: [],
+    },
+    {
+      schemaVersion: SOURCE_QUALITY_OPERATIONAL_MANIFEST_SCHEMA_VERSION,
+      manifestId,
+      sourceId: BROOMFIELD_COUNTY_TREASURER_SOURCE_ID,
+      inclusionClass: 'STRUCTURED_EVIDENCE_WITH_KNOWN_GAPS',
+      linkages: broomfieldCountyTreasurerEvidence.linkages,
+      expectedEvidenceClasses: ['CERTIFICATION'],
+      certificationReference: BROOMFIELD_COUNTY_TREASURER_SOURCE_QUALITY_CERTIFICATION,
+      reviewedAt: BROOMFIELD_COUNTY_TREASURER_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT,
       reviewAuthorityClass: 'DELEGATED_SOURCE_GOVERNANCE_REVIEW',
       limitationCodes: [],
     },
