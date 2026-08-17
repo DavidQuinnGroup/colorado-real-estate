@@ -11,6 +11,7 @@ import {
 } from '../lib/sourceQualityPublicRecordEvidenceConversionContract';
 import { summarizeSourceQuality } from '../lib/sourceQualityControl';
 import { COUNTY_ASSESSOR_EXACT_SOURCE_IDS } from '../lib/sourceQualityCountyAssessorExactSourceDefinitions';
+import { COUNTY_TREASURER_EXACT_SOURCE_IDS } from '../lib/sourceQualityCountyTreasurerExactSourceDefinitions';
 import { assembleSourceQualitySummaries } from '../lib/sourceQualitySummaryAssembly';
 
 const certificationReference = {
@@ -65,15 +66,16 @@ const recorderRequest: PublicRecordSourceQualityEvidenceConversionRequest = {
 
 assert.deepEqual(PUBLIC_RECORD_SOURCE_QUALITY_CONVERSION_ALLOWED_SOURCE_IDS, [
   ...COUNTY_ASSESSOR_EXACT_SOURCE_IDS,
-  'SRC-BOULDER-COUNTY-TREASURER',
-  'SRC-ARAPAHOE-COUNTY-TREASURER',
-  'SRC-ADAMS-COUNTY-TREASURER',
+  ...COUNTY_TREASURER_EXACT_SOURCE_IDS,
   'SRC-BOULDER-COUNTY-RECORDER-INDEX',
   'SRC-BOULDER-COUNTY-ACCELA-PERMITS',
   'SRC-CITY-BOULDER-OPEN-DATA-PERMITS',
   'SRC-CITY-BOULDER-BUILDING-PERMITS-PORTAL',
 ]);
 assert.equal(PUBLIC_RECORD_SOURCE_QUALITY_CONVERSION_ALLOWED_SOURCE_IDS.includes('SRC-BOULDER-PERMIT-CANDIDATES' as never), false);
+for (const futureTreasurerSourceId of ['SRC-JEFFERSON-COUNTY-TREASURER', 'SRC-WELD-COUNTY-TREASURER', 'SRC-LARIMER-COUNTY-TREASURER', 'SRC-FAKE-COUNTY-TREASURER'] as const) {
+  assert.equal(PUBLIC_RECORD_SOURCE_QUALITY_CONVERSION_ALLOWED_SOURCE_IDS.includes(futureTreasurerSourceId as never), false);
+}
 
 const valid = convertPublicRecordStructuredEvidence(request);
 assert.equal(valid.classification, 'PUBLIC_RECORD_EVIDENCE_CONVERSION_VALID');
