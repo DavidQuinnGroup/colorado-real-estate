@@ -903,6 +903,64 @@ function larimerCountyTreasurerRecord(): ReieSourceRegistryRecord {
   };
 }
 
+function broomfieldCountyTreasurerRecord(): ReieSourceRegistryRecord {
+  return {
+    sourceId: 'SRC-BROOMFIELD-COUNTY-TREASURER',
+    publicName: 'Broomfield Treasurer',
+    responsibleOrganization: 'City and County of Broomfield — Treasurer Department',
+    sourceClass: 'AUTHORITATIVE_SOURCE',
+    category: 'COUNTY_TREASURER_TAX',
+    domains: ['Treasurer tax-record source identity', 'Property-tax billing and collection records', 'Future governed county treasurer evidence'],
+    jurisdiction: { state: 'Colorado', county: 'City and County of Broomfield', municipality: 'Broomfield', coverage: 'City and County of Broomfield Treasurer property-tax billing, collection, and distribution source identity only' },
+    officialUrl: 'https://www.broomfield.org/260/Treasurer',
+    accessMethod: 'Source-specific provider, rights, and technical-access review required before Online Treasurer Portal use, property or tax search use, payment, Certificate of Taxes Due use, payment-provider use, Finance Director investment or reconciliation use, Revenue Manager function use, retrieval, automation, ingestion, display, or reuse',
+    updateCadence: 'source-specific and not certified',
+    freshnessExpectation: 'unknown until source-specific evidence review',
+    authorizationState: 'AWAITING_PROVIDER_CONFIRMATION',
+    permittedUse: 'registry identity and source-governance review only; no Online Treasurer Portal automation, property or tax search submission, payment, Certificate of Taxes Due action, payment-provider use, Finance Director investment or reconciliation use, Revenue Manager function use, retrieval, automation, storage, redistribution, legal-use, or customer-display authority',
+    productionActivationState: 'BLOCKED_NOT_AUTHORIZED',
+    claimEligible: false,
+    customerDisclosureEligible: true,
+    customerStatus: 'Blocked / not authorized',
+    currentReieUse: 'Exact source identity only for future-governed Broomfield Treasurer review; no Online Treasurer Portal automation, no property or tax search submission, no payment, no Certificate of Taxes Due action or title/lien-clearance claim, no payment-provider use, no Finance Director investment or reconciliation use, no Revenue Manager separate-source treatment, no Assessor use, no Clerk and Recorder use, no GIS use, no Public Trustee use, no other consolidated-government function use, no tax-record retrieval, no parcel/account lookup, no tax-currentness claim, no fee-status claim, no customer display, no ingestion, no automation, or runtime use is active.',
+    limitations: [
+      'TREASURER_RECORD_NOT_ASSESSOR_VALUE_AUTHORITY.',
+      'TREASURER_RECORD_NOT_TITLE.',
+      'TREASURER_RECORD_NOT_RECORDER_INDEX.',
+      'TAX_PAYMENT_CHANNEL_NOT_DATA_REUSE_AUTHORITY.',
+      'PUBLIC_TAX_SEARCH_NOT_AUTOMATION_AUTHORITY.',
+      'PUBLIC_ACCESS_NOT_REUSE_OR_DISPLAY_AUTHORITY.',
+      'PUBLIC_OR_GOVERNMENT_SOURCE_NOT_UNRESTRICTED_OR_VERIFIED_OR_COMPLETE.',
+      'PUBLIC_TRUSTEE_NOT_AUTOMATICALLY_TREASURER_DATA_AUTHORITY.',
+      'TAX_CURRENTNESS_SOURCE_SPECIFIC.',
+      'FEE_STATUS_SOURCE_SPECIFIC.',
+      'CERTIFICATE_OF_TAXES_DUE_NOT_TITLE_OR_LIEN_CLEARANCE_GUARANTEE.',
+      'BROOMFIELD_PAYMENT_PROVIDER_FEES_SOURCE_SPECIFIC.',
+      'BROOMFIELD_ONLINE_TREASURER_PORTAL_NOT_AUTOMATION_AUTHORITY.',
+      'EQUAPAY_NOT_COUNTY_TAX_RECORD_AUTHORITY.',
+      'FINANCE_DIRECTOR_INVESTMENT_RECONCILIATION_NOT_TREASURER_TAX_RECORD_AUTHORITY.',
+      'REVENUE_MANAGER_ROLE_NOT_SEPARATE_SOURCE_IDENTITY.',
+      'CONSOLIDATED_CITY_COUNTY_NOT_AGGREGATE_SOURCE_AUTHORITY.',
+      'SOURCE_ACTIVATION_NOT_AUTHORIZED_BY_REGISTRY_MVV.',
+      'CUSTOMER_DISPLAY_NOT_GRANTED_BY_REGISTRY_MVV.',
+      'LEGAL_USE_NOT_APPROVED_BY_REGISTRY_MVV.',
+      'Broomfield Online Treasurer Portal, tax search, payment, Certificate of Taxes Due, payment-provider, Finance Director investment and reconciliation, Revenue Manager, Assessor, Clerk and Recorder, GIS, Public Trustee, and other municipal or county finance functions are separately governed and do not become the Treasurer Registry source identity.',
+      'The consolidated City and County of Broomfield structure does not create an aggregate Broomfield government source or cross-department authority for Treasurer tax records.',
+      'The Finance Director investment/reconciliation role is not Treasurer tax-record authority, and the Revenue Manager role is an internal organizational function rather than a separate source identity.',
+      'Boulder County Treasurer, Arapahoe County Treasurer, Adams County Treasurer, Jefferson County Treasurer, Larimer County Treasurer, Weld County Treasurer, Broomfield Assessor, other County Assessor, Recorder, Parcel GIS, Address Points, Park Boundaries, permit sources, and Source Quality evidence do not grant rights, access, freshness, attribution, fee, provenance, findings, or governance inheritance to Broomfield Treasurer.',
+      'Rights, technical access, freshness, attribution, fees, privacy approval, field sensitivity, and provenance remain unknown until separately governed source evidence review.',
+    ],
+    attributionRequirement: 'unknown until source-specific review',
+    lastSourceVerificationDate: REIE_SOURCE_REGISTRY_REFERENCE_DATE,
+    lastSuccessfulDataRefresh: null,
+    sourcePaths: [
+      'lib/sourceRegistry.ts/SRC-BROOMFIELD-COUNTY-TREASURER',
+      'Broomfield Treasurer official-source identity research handoff',
+      'BROOMFIELD_COUNTY_TREASURER_EXACT_SOURCE_REGISTRY_MVV',
+    ],
+  };
+}
+
 export const BOULDER_PERMIT_CANDIDATES_SOURCE_ID = 'SRC-BOULDER-PERMIT-CANDIDATES' as const;
 export const BOULDER_PERMIT_CANDIDATES_LIFECYCLE_POSTURE = 'NON_OPERATIONAL_DISCOVERY_VERIFICATION_CONTEXT' as const;
 export const BOULDER_PERMIT_CANDIDATES_SOURCE_QUALITY_ADVANCEMENT_ELIGIBILITY = 'NOT_ELIGIBLE_NON_OPERATIONAL_CONTEXT' as const;
@@ -1074,6 +1132,7 @@ export const REIE_SOURCE_REGISTRY: ReieSourceRegistry = Object.freeze({
     arapahoeCountyTreasurerRecord(),
     jeffersonCountyTreasurerRecord(),
     larimerCountyTreasurerRecord(),
+    broomfieldCountyTreasurerRecord(),
     weldCountyTreasurerRecord(),
     boulderPermitCandidatesRecord(),
     sourceFromProfile({

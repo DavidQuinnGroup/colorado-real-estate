@@ -12,6 +12,7 @@ import {
 import { summarizeSourceQuality } from '../lib/sourceQualityControl';
 import { COUNTY_ASSESSOR_EXACT_SOURCE_IDS } from '../lib/sourceQualityCountyAssessorExactSourceDefinitions';
 import {
+  BROOMFIELD_COUNTY_TREASURER_SOURCE_ID,
   COUNTY_TREASURER_EXACT_SOURCE_IDS,
   LARIMER_COUNTY_TREASURER_SOURCE_ID,
   WELD_COUNTY_TREASURER_SOURCE_ID,
@@ -79,8 +80,9 @@ assert.deepEqual(PUBLIC_RECORD_SOURCE_QUALITY_CONVERSION_ALLOWED_SOURCE_IDS, [
 assert.equal(PUBLIC_RECORD_SOURCE_QUALITY_CONVERSION_ALLOWED_SOURCE_IDS.includes('SRC-BOULDER-PERMIT-CANDIDATES' as never), false);
 assert.equal(PUBLIC_RECORD_SOURCE_QUALITY_CONVERSION_ALLOWED_SOURCE_IDS.includes('SRC-JEFFERSON-COUNTY-TREASURER' as never), true);
 assert.equal(PUBLIC_RECORD_SOURCE_QUALITY_CONVERSION_ALLOWED_SOURCE_IDS.includes(LARIMER_COUNTY_TREASURER_SOURCE_ID), true);
+assert.equal(PUBLIC_RECORD_SOURCE_QUALITY_CONVERSION_ALLOWED_SOURCE_IDS.includes(BROOMFIELD_COUNTY_TREASURER_SOURCE_ID), true);
 assert.equal(PUBLIC_RECORD_SOURCE_QUALITY_CONVERSION_ALLOWED_SOURCE_IDS.includes(WELD_COUNTY_TREASURER_SOURCE_ID), true);
-for (const futureTreasurerSourceId of ['SRC-BROOMFIELD-COUNTY-TREASURER', 'SRC-SYNTHETIC-COUNTY-TREASURER', 'SRC-UNREGISTERED-COUNTY-TREASURER', 'SRC-FAKE-COUNTY-TREASURER'] as const) {
+for (const futureTreasurerSourceId of ['SRC-SYNTHETIC-COUNTY-TREASURER', 'SRC-UNREGISTERED-COUNTY-TREASURER', 'SRC-FAKE-COUNTY-TREASURER'] as const) {
   assert.equal(PUBLIC_RECORD_SOURCE_QUALITY_CONVERSION_ALLOWED_SOURCE_IDS.includes(futureTreasurerSourceId as never), false);
 }
 
@@ -104,6 +106,27 @@ const larimerTreasurerRequest: PublicRecordSourceQualityEvidenceConversionReques
   }],
 };
 assert.equal(convertPublicRecordStructuredEvidence(larimerTreasurerRequest).classification, 'PUBLIC_RECORD_EVIDENCE_CONVERSION_VALID');
+
+const broomfieldTreasurerRequest: PublicRecordSourceQualityEvidenceConversionRequest = {
+  ...recorderRequest,
+  sourceId: BROOMFIELD_COUNTY_TREASURER_SOURCE_ID,
+  sourceClass: 'COUNTY_TREASURER',
+  reviewedAt: '2026-08-17',
+  sourceConfirmation: {
+    sourceId: BROOMFIELD_COUNTY_TREASURER_SOURCE_ID,
+    confirmationClass: 'EXACT_SOURCE_ID_CONFIRMED',
+    reviewedAt: '2026-08-17',
+  },
+  evidenceReferences: [{
+    sourceId: BROOMFIELD_COUNTY_TREASURER_SOURCE_ID,
+    inputClass: 'CERTIFICATION_REFERENCE',
+    evidenceReferenceId: 'PUBLIC-RECORD-CONVERSION-BROOMFIELD-TREASURER-CERT-001',
+    posture: 'REFERENCED',
+    verificationStatus: 'VERIFIED',
+    limitationCodes: [],
+  }],
+};
+assert.equal(convertPublicRecordStructuredEvidence(broomfieldTreasurerRequest).classification, 'PUBLIC_RECORD_EVIDENCE_CONVERSION_VALID');
 
 const weldTreasurerRequest: PublicRecordSourceQualityEvidenceConversionRequest = {
   ...recorderRequest,
@@ -487,7 +510,7 @@ assert.equal(convertPublicRecordStructuredEvidence(broomfieldAssessorRequest).co
 assert.notEqual(broomfieldAssessor.conversionFingerprint, valid.conversionFingerprint);
 assert.notEqual(broomfieldAssessor.conversionFingerprint, adamsAssessor.conversionFingerprint);
 assert.notEqual(broomfieldAssessor.conversionFingerprint, arapahoeAssessor.conversionFingerprint);
-for (const sourceId of ['EXP-SRC-BROOMFIELD-COUNTY-ASSESSOR', 'SRA-BROOMFIELD-COUNTY-ASSESSOR', 'SRC-GENERIC-COUNTY-ASSESSOR', 'SRC-PROVIDER-COUNTY-ASSESSOR', 'SRC-BROOMFIELD-GIS', 'SRC-BROOMFIELD-COUNTY-TREASURER', 'SRC-BROOMFIELD-COUNTY-RECORDER', 'SRC-BROOMFIELD-COUNTY-PARCEL-GIS']) {
+for (const sourceId of ['EXP-SRC-BROOMFIELD-COUNTY-ASSESSOR', 'SRA-BROOMFIELD-COUNTY-ASSESSOR', 'SRC-GENERIC-COUNTY-ASSESSOR', 'SRC-PROVIDER-COUNTY-ASSESSOR', 'SRC-BROOMFIELD-GIS', 'SRC-BROOMFIELD-COUNTY-RECORDER', 'SRC-BROOMFIELD-COUNTY-PARCEL-GIS']) {
   assert.equal(convertPublicRecordStructuredEvidence({
     ...broomfieldAssessorRequest,
     sourceId,
@@ -496,6 +519,12 @@ for (const sourceId of ['EXP-SRC-BROOMFIELD-COUNTY-ASSESSOR', 'SRA-BROOMFIELD-CO
   }).classification, 'PUBLIC_RECORD_SOURCE_INVALID');
 }
 assert.equal(convertPublicRecordStructuredEvidence({ ...broomfieldAssessorRequest, sourceClass: 'COUNTY_TREASURER' }).classification, 'PUBLIC_RECORD_SOURCE_MISMATCH');
+assert.equal(convertPublicRecordStructuredEvidence({
+  ...broomfieldAssessorRequest,
+  sourceId: BROOMFIELD_COUNTY_TREASURER_SOURCE_ID,
+  sourceConfirmation: { sourceId: BROOMFIELD_COUNTY_TREASURER_SOURCE_ID, confirmationClass: 'EXACT_SOURCE_ID_CONFIRMED', reviewedAt: '2026-08-17' },
+  evidenceReferences: [{ ...broomfieldAssessorRequest.evidenceReferences[0]!, sourceId: BROOMFIELD_COUNTY_TREASURER_SOURCE_ID }],
+}).classification, 'PUBLIC_RECORD_SOURCE_MISMATCH');
 assert.equal(convertPublicRecordStructuredEvidence({ ...broomfieldAssessorRequest, sourceConfirmation: undefined }).classification, 'PUBLIC_RECORD_SOURCE_CONFIRMATION_REQUIRED');
 assert.equal(convertPublicRecordStructuredEvidence({ ...broomfieldAssessorRequest, certificationReference: undefined }).classification, 'PUBLIC_RECORD_CERTIFICATION_REQUIRED');
 assert.equal(convertPublicRecordStructuredEvidence({ ...broomfieldAssessorRequest, fieldSensitivityPosture: 'UNKNOWN' }).classification, 'PUBLIC_RECORD_FIELD_SENSITIVITY_UNREVIEWED');

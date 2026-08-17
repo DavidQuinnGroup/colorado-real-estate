@@ -3,6 +3,7 @@ export const ARAPAHOE_COUNTY_TREASURER_SOURCE_ID = 'SRC-ARAPAHOE-COUNTY-TREASURE
 export const ADAMS_COUNTY_TREASURER_SOURCE_ID = 'SRC-ADAMS-COUNTY-TREASURER' as const;
 export const JEFFERSON_COUNTY_TREASURER_SOURCE_ID = 'SRC-JEFFERSON-COUNTY-TREASURER' as const;
 export const LARIMER_COUNTY_TREASURER_SOURCE_ID = 'SRC-LARIMER-COUNTY-TREASURER' as const;
+export const BROOMFIELD_COUNTY_TREASURER_SOURCE_ID = 'SRC-BROOMFIELD-COUNTY-TREASURER' as const;
 export const WELD_COUNTY_TREASURER_SOURCE_ID = 'SRC-WELD-COUNTY-TREASURER' as const;
 
 export const COUNTY_TREASURER_EXACT_SOURCE_CLASS = 'COUNTY_TREASURER' as const;
@@ -37,6 +38,12 @@ export const COUNTY_TREASURER_EXACT_SOURCE_DEFINITIONS = Object.freeze([
     sourceClass: COUNTY_TREASURER_EXACT_SOURCE_CLASS,
     jurisdiction: { state: 'Colorado', county: 'Larimer County' },
     responsibleOrganization: 'Larimer County Treasurer & Public Trustee',
+  },
+  {
+    sourceId: BROOMFIELD_COUNTY_TREASURER_SOURCE_ID,
+    sourceClass: COUNTY_TREASURER_EXACT_SOURCE_CLASS,
+    jurisdiction: { state: 'Colorado', county: 'City and County of Broomfield' },
+    responsibleOrganization: 'City and County of Broomfield — Treasurer Department',
   },
   {
     sourceId: WELD_COUNTY_TREASURER_SOURCE_ID,

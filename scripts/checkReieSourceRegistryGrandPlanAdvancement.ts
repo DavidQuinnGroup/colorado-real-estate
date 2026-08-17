@@ -13,6 +13,7 @@ import {
   getReieSourceRegistry,
 } from '../lib/sourceRegistry.js';
 import {
+  BROOMFIELD_COUNTY_TREASURER_SOURCE_ID,
   COUNTY_TREASURER_EXACT_SOURCE_DEFINITIONS,
   JEFFERSON_COUNTY_TREASURER_SOURCE_ID,
   LARIMER_COUNTY_TREASURER_SOURCE_ID,
@@ -492,7 +493,76 @@ assert.doesNotMatch(larimerTreasurerText, /memberSourceIds|parentSourceId|aggreg
 assert.equal(registry.records.filter((item) => item.sourceId !== 'SRC-LARIMER-COUNTY-ASSESSOR' && /^SRC-LARIMER-COUNTY-(TAX-PAYMENT|TAX-SEARCH|PROPERTY-SEARCH|STATEMENT|PAYMENT|DELINQUENT|RECEIPT|EXEMPTION|DEFERRAL|MANUFACTURED-HOME|SPECIAL-ASSESSMENT|PUBLIC-TRUSTEE|FORECLOSURE|RELEASE|RECORDER|GIS|PLANNING|ZONING|PERMIT|RECORDS)/.test(item.sourceId)).length, 0, 'Larimer Treasurer Registry MVV must not add payment, search, statement, delinquent, receipt, exemption, deferral, manufactured-home, special assessment, Public Trustee, foreclosure, release, Recorder, GIS, planning, zoning, permit, or records source ids.');
 assert.equal(registry.records.filter((item) => item.sourceId !== 'SRC-LARIMER-COUNTY-ASSESSOR' && item.sourceId !== larimerTreasurerSourceId && /LARIMER.*(TAX_PAYMENT|TAX_SEARCH|PROPERTY_SEARCH|STATEMENT|DELINQUENT|RECEIPT|EXEMPTION|DEFERRAL|MANUFACTURED_HOME|SPECIAL_ASSESSMENT|PUBLIC_TRUSTEE|FORECLOSURE|RELEASE|RECORDER|GIS|PLANNING|ZONING|PERMITS|RECORDS|ASSESSOR_VALUE_AUTHORITY)/i.test(`${item.sourceId} ${item.category}`)).length, 0, 'Larimer Treasurer Registry MVV must not conflate Treasurer identity with adjacent domains.');
 assert.doesNotMatch(larimerTreasurerText, /EXP-|SRA-|provider aggregate|wildcard County Treasurer/i);
-assert.equal(read('lib/sourceQualityOperationalManifestData.ts').includes(larimerTreasurerSourceId), false, 'Larimer Treasurer must remain Registry-only until Manifest inclusion authorization.');
+assert.equal(read('lib/sourceQualityOperationalManifestData.ts').includes('LARIMER_COUNTY_TREASURER_SOURCE_ID'), true, 'Larimer Treasurer must remain Manifest-included after Manifest inclusion authorization.');
+
+const broomfieldTreasurerSourceId = BROOMFIELD_COUNTY_TREASURER_SOURCE_ID;
+assert.equal(registry.records.filter((item) => item.sourceId === broomfieldTreasurerSourceId).length, 1, 'Broomfield Treasurer source must exist exactly once.');
+assert.equal(COUNTY_TREASURER_EXACT_SOURCE_DEFINITIONS.filter((item) => item.sourceId === broomfieldTreasurerSourceId).length, 1, 'Broomfield Treasurer finite definition must exist exactly once.');
+assert.equal(isCountyTreasurerExactSourceId(broomfieldTreasurerSourceId), true, 'Broomfield Treasurer must be accepted only after exact finite definition.');
+const broomfieldTreasurerDefinition = COUNTY_TREASURER_EXACT_SOURCE_DEFINITIONS.find((item) => item.sourceId === broomfieldTreasurerSourceId);
+const broomfieldTreasurer = record(broomfieldTreasurerSourceId);
+const broomfieldTreasurerText = JSON.stringify(broomfieldTreasurer);
+assert.equal(broomfieldTreasurerDefinition?.sourceClass, 'COUNTY_TREASURER');
+assert.equal(broomfieldTreasurerDefinition?.jurisdiction.state, 'Colorado');
+assert.equal(broomfieldTreasurerDefinition?.jurisdiction.county, 'City and County of Broomfield');
+assert.equal(broomfieldTreasurerDefinition?.responsibleOrganization, 'City and County of Broomfield — Treasurer Department');
+assert.equal(broomfieldTreasurer.publicName, 'Broomfield Treasurer');
+assert.equal(broomfieldTreasurer.responsibleOrganization, 'City and County of Broomfield — Treasurer Department');
+assert.equal(broomfieldTreasurer.sourceClass, 'AUTHORITATIVE_SOURCE');
+assert.equal(broomfieldTreasurer.category, 'COUNTY_TREASURER_TAX');
+assert.equal(broomfieldTreasurer.jurisdiction.state, 'Colorado');
+assert.equal(broomfieldTreasurer.jurisdiction.county, 'City and County of Broomfield');
+assert.equal(broomfieldTreasurer.jurisdiction.municipality, 'Broomfield');
+assert.equal(broomfieldTreasurer.authorizationState, 'AWAITING_PROVIDER_CONFIRMATION');
+assert.equal(broomfieldTreasurer.productionActivationState, 'BLOCKED_NOT_AUTHORIZED');
+assert.equal(broomfieldTreasurer.claimEligible, false);
+assert.equal(broomfieldTreasurer.customerStatus, 'Blocked / not authorized');
+assert.match(broomfieldTreasurer.currentReieUse, /Exact source identity only/);
+assert.match(broomfieldTreasurer.currentReieUse, /future-governed Broomfield Treasurer review/);
+assert.match(broomfieldTreasurer.currentReieUse, /no Online Treasurer Portal automation/);
+assert.match(broomfieldTreasurer.currentReieUse, /no property or tax search/);
+assert.match(broomfieldTreasurer.currentReieUse, /no payment/);
+assert.match(broomfieldTreasurer.currentReieUse, /no Certificate of Taxes Due/);
+assert.match(broomfieldTreasurer.currentReieUse, /no payment-provider use/);
+assert.match(broomfieldTreasurer.currentReieUse, /no Finance Director investment or reconciliation use/);
+assert.match(broomfieldTreasurer.currentReieUse, /no Revenue Manager separate-source treatment/);
+assert.match(broomfieldTreasurer.currentReieUse, /no Assessor use/);
+assert.match(broomfieldTreasurer.currentReieUse, /no Clerk and Recorder use/);
+assert.match(broomfieldTreasurer.currentReieUse, /no GIS use/);
+assert.match(broomfieldTreasurer.currentReieUse, /no Public Trustee use/);
+assert.match(broomfieldTreasurer.currentReieUse, /no .* customer display/);
+assert.match(broomfieldTreasurerText, /TREASURER_RECORD_NOT_ASSESSOR_VALUE_AUTHORITY/);
+assert.match(broomfieldTreasurerText, /TREASURER_RECORD_NOT_TITLE/);
+assert.match(broomfieldTreasurerText, /TREASURER_RECORD_NOT_RECORDER_INDEX/);
+assert.match(broomfieldTreasurerText, /TAX_PAYMENT_CHANNEL_NOT_DATA_REUSE_AUTHORITY/);
+assert.match(broomfieldTreasurerText, /PUBLIC_TAX_SEARCH_NOT_AUTOMATION_AUTHORITY/);
+assert.match(broomfieldTreasurerText, /PUBLIC_ACCESS_NOT_REUSE_OR_DISPLAY_AUTHORITY/);
+assert.match(broomfieldTreasurerText, /PUBLIC_OR_GOVERNMENT_SOURCE_NOT_UNRESTRICTED_OR_VERIFIED_OR_COMPLETE/);
+assert.match(broomfieldTreasurerText, /PUBLIC_TRUSTEE_NOT_AUTOMATICALLY_TREASURER_DATA_AUTHORITY/);
+assert.match(broomfieldTreasurerText, /TAX_CURRENTNESS_SOURCE_SPECIFIC/);
+assert.match(broomfieldTreasurerText, /FEE_STATUS_SOURCE_SPECIFIC/);
+assert.match(broomfieldTreasurerText, /CERTIFICATE_OF_TAXES_DUE_NOT_TITLE_OR_LIEN_CLEARANCE_GUARANTEE/);
+assert.match(broomfieldTreasurerText, /BROOMFIELD_PAYMENT_PROVIDER_FEES_SOURCE_SPECIFIC/);
+assert.match(broomfieldTreasurerText, /BROOMFIELD_ONLINE_TREASURER_PORTAL_NOT_AUTOMATION_AUTHORITY/);
+assert.match(broomfieldTreasurerText, /EQUAPAY_NOT_COUNTY_TAX_RECORD_AUTHORITY/);
+assert.match(broomfieldTreasurerText, /FINANCE_DIRECTOR_INVESTMENT_RECONCILIATION_NOT_TREASURER_TAX_RECORD_AUTHORITY/);
+assert.match(broomfieldTreasurerText, /REVENUE_MANAGER_ROLE_NOT_SEPARATE_SOURCE_IDENTITY/);
+assert.match(broomfieldTreasurerText, /CONSOLIDATED_CITY_COUNTY_NOT_AGGREGATE_SOURCE_AUTHORITY/);
+assert.match(broomfieldTreasurerText, /SOURCE_ACTIVATION_NOT_AUTHORIZED_BY_REGISTRY_MVV/);
+assert.match(broomfieldTreasurerText, /CUSTOMER_DISPLAY_NOT_GRANTED_BY_REGISTRY_MVV/);
+assert.match(broomfieldTreasurerText, /LEGAL_USE_NOT_APPROVED_BY_REGISTRY_MVV/);
+assert.match(broomfieldTreasurerText, /consolidated City and County of Broomfield structure does not create an aggregate Broomfield government source/);
+assert.match(broomfieldTreasurerText, /Finance Director investment\/reconciliation role is not Treasurer tax-record authority/);
+assert.match(broomfieldTreasurerText, /Revenue Manager role is an internal organizational function rather than a separate source identity/);
+assert.match(broomfieldTreasurerText, /Broomfield Online Treasurer Portal, tax search, payment, Certificate of Taxes Due, payment-provider, Finance Director investment and reconciliation, Revenue Manager, Assessor, Clerk and Recorder, GIS, Public Trustee/);
+assert.match(broomfieldTreasurerText, /Boulder County Treasurer, Arapahoe County Treasurer, Adams County Treasurer, Jefferson County Treasurer, Larimer County Treasurer, Weld County Treasurer, Broomfield Assessor/);
+assert.match(broomfieldTreasurerText, /Rights, technical access, freshness, attribution, fees, privacy approval, field sensitivity, and provenance remain unknown/);
+assert.doesNotMatch(broomfieldTreasurerText, /RIGHTS = VERIFIED|TECHNICAL ACCESS = READY|FRESHNESS = VERIFIED|ATTRIBUTION = REQUIRED|FEE = NONE|PROVENANCE = COMPLETE/);
+assert.doesNotMatch(broomfieldTreasurerText, /memberSourceIds|parentSourceId|aggregateSource|childSourceIds|relationshipType/i);
+assert.equal(registry.records.filter((item) => item.sourceId !== 'SRC-BROOMFIELD-COUNTY-ASSESSOR' && /^SRC-BROOMFIELD-(TAX-PAYMENT|TAX-SEARCH|ONLINE-TREASURER-PORTAL|CERTIFICATE|PAYMENT-PROVIDER|EQUAPAY|FINANCE-DIRECTOR|REVENUE-MANAGER|PUBLIC-TRUSTEE|COUNTY-RECORDER|GIS|GOVERNMENT)/.test(item.sourceId)).length, 0, 'Broomfield Treasurer Registry MVV must not add payment, search, portal, certificate, payment-provider, Finance Director, Revenue Manager, Public Trustee, Recorder, GIS, or aggregate government source ids.');
+assert.equal(registry.records.filter((item) => item.sourceId !== 'SRC-BROOMFIELD-COUNTY-ASSESSOR' && item.sourceId !== broomfieldTreasurerSourceId && /BROOMFIELD.*(TAX_PAYMENT|TAX_SEARCH|ONLINE_TREASURER_PORTAL|CERTIFICATE|PAYMENT_PROVIDER|EQUAPAY|FINANCE_DIRECTOR|REVENUE_MANAGER|PUBLIC_TRUSTEE|RECORDER|GIS|GOVERNMENT|AGGREGATE|ASSESSOR_VALUE_AUTHORITY)/i.test(`${item.sourceId} ${item.category}`)).length, 0, 'Broomfield Treasurer Registry MVV must not conflate Treasurer identity with adjacent domains.');
+assert.doesNotMatch(broomfieldTreasurerText, /EXP-|SRA-|provider aggregate|wildcard County Treasurer/i);
+assert.equal(read('lib/sourceQualityOperationalManifestData.ts').includes('BROOMFIELD_COUNTY_TREASURER_SOURCE_ID'), false, 'Broomfield Treasurer must remain Registry-only until Manifest inclusion authorization.');
 
 const broomfieldAssessorSourceId = 'SRC-BROOMFIELD-COUNTY-ASSESSOR';
 assert.equal(registry.records.filter((item) => item.sourceId === broomfieldAssessorSourceId).length, 1, 'Broomfield Assessor source must exist exactly once.');
@@ -537,8 +607,8 @@ assert.match(broomfieldAssessorText, /Boulder County and Arapahoe County Assesso
 assert.match(broomfieldAssessorText, /Rights, technical access, freshness, attribution, fees, privacy approval, field sensitivity, and provenance remain unknown/);
 assert.doesNotMatch(broomfieldAssessorText, /RIGHTS = VERIFIED|TECHNICAL ACCESS = READY|FRESHNESS = VERIFIED|ATTRIBUTION = REQUIRED|FEE = NONE|PROVENANCE = COMPLETE/);
 assert.doesNotMatch(broomfieldAssessorText, /memberSourceIds|parentSourceId|aggregateSource|childSourceIds|relationshipType/i);
-assert.equal(registry.records.filter((item) => /^SRC-BROOMFIELD-(GIS|COUNTY-TREASURER|COUNTY-RECORDER|COUNTY-PARCEL|COUNTY-DATA-MART|COUNTY-PARCEL-SEARCH|GOVERNMENT)/.test(item.sourceId)).length, 0, 'Broomfield Assessor Registry MVV must not add GIS, Treasurer, Recorder, Parcel Search, Data Mart, or aggregate government source ids.');
-assert.equal(registry.records.filter((item) => /BROOMFIELD.*(TREASURER|RECORDER|GIS|DATA_MART|PARCEL_SEARCH|PARCEL_GEOMETRY|AGGREGATE)/i.test(`${item.sourceId} ${item.category}`)).length, 0, 'Broomfield Assessor Registry MVV must not conflate assessor identity with adjacent domains.');
+assert.equal(registry.records.filter((item) => item.sourceId !== broomfieldTreasurerSourceId && /^SRC-BROOMFIELD-(GIS|COUNTY-TREASURER|COUNTY-RECORDER|COUNTY-PARCEL|COUNTY-DATA-MART|COUNTY-PARCEL-SEARCH|GOVERNMENT)/.test(item.sourceId)).length, 0, 'Broomfield Assessor Registry MVV must not add GIS, unauthorized Treasurer, Recorder, Parcel Search, Data Mart, or aggregate government source ids.');
+assert.equal(registry.records.filter((item) => item.sourceId !== broomfieldTreasurerSourceId && /BROOMFIELD.*(TREASURER|RECORDER|GIS|DATA_MART|PARCEL_SEARCH|PARCEL_GEOMETRY|AGGREGATE)/i.test(`${item.sourceId} ${item.category}`)).length, 0, 'Broomfield Assessor Registry MVV must not conflate assessor identity with adjacent domains.');
 assert.doesNotMatch(broomfieldAssessorText, /EXP-|SRA-|provider aggregate|wildcard County Assessor/i);
 if (fs.existsSync('lib/sourceQualityBroomfieldCountyAssessorEvidence.ts')) {
   const broomfieldAssessorEvidence = read('lib/sourceQualityBroomfieldCountyAssessorEvidence.ts');

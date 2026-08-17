@@ -49,7 +49,6 @@ assert.equal(publicRecordConversion.sourceId, JEFFERSON_COUNTY_TREASURER_SOURCE_
 assert.equal(publicRecordConversion.linkages[0]?.relationshipType, 'CERTIFICATION');
 
 for (const sourceId of [
-  'SRC-BROOMFIELD-COUNTY-TREASURER',
   'SRC-FAKE-COUNTY-TREASURER',
   'SRC-GENERIC-COUNTY-TREASURER',
   'SRC-PROVIDER-COUNTY-TREASURER',
