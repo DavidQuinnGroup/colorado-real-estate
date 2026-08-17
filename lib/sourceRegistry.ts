@@ -843,6 +843,66 @@ function weldCountyTreasurerRecord(): ReieSourceRegistryRecord {
   };
 }
 
+function larimerCountyTreasurerRecord(): ReieSourceRegistryRecord {
+  return {
+    sourceId: 'SRC-LARIMER-COUNTY-TREASURER',
+    publicName: 'Larimer County Treasurer',
+    responsibleOrganization: 'Larimer County Treasurer & Public Trustee',
+    sourceClass: 'AUTHORITATIVE_SOURCE',
+    category: 'COUNTY_TREASURER_TAX',
+    domains: ['Treasurer tax-record source identity', 'Property-tax records', 'Future governed county treasurer evidence'],
+    jurisdiction: { state: 'Colorado', county: 'Larimer County', coverage: 'Larimer County Treasurer tax-information source identity only' },
+    officialUrl: 'https://www.larimer.gov/treasurer',
+    accessMethod: 'Source-specific provider, rights, and technical-access review required before property or tax search use, tax statement use, payment, delinquent information use, receipt use, exemption or deferral use, manufactured-home tax use, special assessment use, Public Trustee foreclosure or release operation, retrieval, automation, ingestion, display, or reuse',
+    updateCadence: 'source-specific and not certified',
+    freshnessExpectation: 'unknown until source-specific evidence review',
+    authorizationState: 'AWAITING_PROVIDER_CONFIRMATION',
+    permittedUse: 'registry identity and source-governance review only; no property or tax search submission, tax statement use, payment, delinquent information use, receipt use, exemption or deferral use, manufactured-home tax use, special assessment use, Public Trustee foreclosure or release operation, retrieval, automation, storage, redistribution, legal-use, or customer-display authority',
+    productionActivationState: 'BLOCKED_NOT_AUTHORIZED',
+    claimEligible: false,
+    customerDisclosureEligible: true,
+    customerStatus: 'Blocked / not authorized',
+    currentReieUse: 'Exact source identity only for future-governed Larimer County Treasurer review; no property or tax search submission, no tax-statement use, no payment, no delinquent-information use, no receipt use, no exemption or deferral tax-status claim, no manufactured-home tax use, no special-assessment use, no Public Trustee foreclosure or release operation, no assessor-record use, no recorder-record use, no GIS, planning, or zoning use, no permit use, no tax-record retrieval, no parcel/account lookup, no tax-status clearance claim, no title claim, no customer display, no ingestion, no automation, or runtime use is active.',
+    limitations: [
+      'TREASURER_RECORD_NOT_ASSESSOR_VALUE_AUTHORITY.',
+      'TREASURER_RECORD_NOT_TITLE.',
+      'TREASURER_RECORD_NOT_RECORDER_INDEX.',
+      'TAX_PAYMENT_CHANNEL_NOT_DATA_REUSE_AUTHORITY.',
+      'PUBLIC_TAX_SEARCH_NOT_AUTOMATION_AUTHORITY.',
+      'PUBLIC_ACCESS_NOT_REUSE_OR_DISPLAY_AUTHORITY.',
+      'PUBLIC_OR_GOVERNMENT_SOURCE_NOT_UNRESTRICTED_OR_VERIFIED_OR_COMPLETE.',
+      'PUBLIC_TRUSTEE_NOT_AUTOMATICALLY_TREASURER_DATA_AUTHORITY.',
+      'TAX_CURRENTNESS_SOURCE_SPECIFIC.',
+      'FEE_STATUS_SOURCE_SPECIFIC.',
+      'LARIMER_TREASURER_PUBLIC_TRUSTEE_COMBINED_OFFICE_NOT_COMBINED_SOURCE_AUTHORITY.',
+      'LARIMER_SCHEDULED_MAINTENANCE_NOT_CURRENTNESS_GUARANTEE.',
+      'LARIMER_CURRENT_STATEMENTS_NOT_COMPLETE_TAX_HISTORY.',
+      'LARIMER_DELINQUENT_STATEMENTS_SOURCE_SPECIFIC.',
+      'LARIMER_MANUFACTURED_HOME_TAX_CHANNEL_SEPARATE.',
+      'LARIMER_SPECIAL_ASSESSMENT_CHANNEL_SEPARATE.',
+      'LARIMER_EXEMPTION_DEFERRAL_NOT_TAX_STATUS_CLEARANCE.',
+      'LARIMER_PAYMENT_CHANNEL_NOT_DATA_REUSE_AUTHORITY.',
+      'LARIMER_FORECLOSURE_RELEASE_NOT_TREASURER_RECORD_AUTHORITY.',
+      'LARIMER_PUBLIC_TRUSTEE_NOT_TREASURER_DATA_AUTHORITY.',
+      'SOURCE_ACTIVATION_NOT_AUTHORIZED_BY_REGISTRY_MVV.',
+      'CUSTOMER_DISPLAY_NOT_GRANTED_BY_REGISTRY_MVV.',
+      'LEGAL_USE_NOT_APPROVED_BY_REGISTRY_MVV.',
+      'Larimer County property and tax search, tax statements, payments, delinquent information, receipts, exemptions and deferrals, manufactured-home tax, special assessments, Public Trustee foreclosure and release duties, Assessor, Recorder, GIS, planning, zoning, permits, and records channels are separately governed and do not become the Treasurer Registry source identity.',
+      'The combined Larimer County Treasurer & Public Trustee office name does not aggregate Public Trustee foreclosure or release authority into this Treasurer tax Registry identity.',
+      'Boulder County Treasurer, Arapahoe County Treasurer, Adams County Treasurer, Jefferson County Treasurer, Weld County Treasurer, Larimer County Assessor, other County Assessor, Recorder, Parcel GIS, Address Points, Park Boundaries, permit sources, and Source Quality evidence do not grant rights, access, freshness, attribution, fee, provenance, findings, or governance inheritance to Larimer County Treasurer.',
+      'Rights, technical access, freshness, attribution, fees, privacy approval, field sensitivity, and provenance remain unknown until separately governed source evidence review.',
+    ],
+    attributionRequirement: 'unknown until source-specific review',
+    lastSourceVerificationDate: REIE_SOURCE_REGISTRY_REFERENCE_DATE,
+    lastSuccessfulDataRefresh: null,
+    sourcePaths: [
+      'lib/sourceRegistry.ts/SRC-LARIMER-COUNTY-TREASURER',
+      'Larimer County Treasurer official-source identity research handoff',
+      'LARIMER_COUNTY_TREASURER_EXACT_SOURCE_REGISTRY_MVV',
+    ],
+  };
+}
+
 export const BOULDER_PERMIT_CANDIDATES_SOURCE_ID = 'SRC-BOULDER-PERMIT-CANDIDATES' as const;
 export const BOULDER_PERMIT_CANDIDATES_LIFECYCLE_POSTURE = 'NON_OPERATIONAL_DISCOVERY_VERIFICATION_CONTEXT' as const;
 export const BOULDER_PERMIT_CANDIDATES_SOURCE_QUALITY_ADVANCEMENT_ELIGIBILITY = 'NOT_ELIGIBLE_NON_OPERATIONAL_CONTEXT' as const;
@@ -1013,6 +1073,7 @@ export const REIE_SOURCE_REGISTRY: ReieSourceRegistry = Object.freeze({
     adamsCountyTreasurerRecord(),
     arapahoeCountyTreasurerRecord(),
     jeffersonCountyTreasurerRecord(),
+    larimerCountyTreasurerRecord(),
     weldCountyTreasurerRecord(),
     boulderPermitCandidatesRecord(),
     sourceFromProfile({

@@ -15,6 +15,7 @@ import {
 import {
   COUNTY_TREASURER_EXACT_SOURCE_DEFINITIONS,
   JEFFERSON_COUNTY_TREASURER_SOURCE_ID,
+  LARIMER_COUNTY_TREASURER_SOURCE_ID,
   WELD_COUNTY_TREASURER_SOURCE_ID,
   isCountyTreasurerExactSourceId,
 } from '../lib/sourceQualityCountyTreasurerExactSourceDefinitions.js';
@@ -350,7 +351,7 @@ assert.equal(registry.records.filter((item) => item.sourceId !== 'SRC-JEFFERSON-
 assert.doesNotMatch(jeffersonTreasurerText, /EXP-|SRA-|provider aggregate|wildcard County Treasurer/i);
 const treasurerExactSourceDefinitionsRuntime = read('lib/sourceQualityCountyTreasurerExactSourceDefinitions.ts');
 assert.doesNotMatch(treasurerExactSourceDefinitionsRuntime, /rights|technicalAccess|freshness|attribution|provenance|fee|sensitivity|reviewedAt|certification|evidence|payment|lien|deed|Manifest|activation|claimEligible|startsWith|includes\(sourceId\)|COUNTY_TREASURER_TAX/, 'Finite Treasurer definition must not centralize source-specific governance.');
-assert.equal((treasurerExactSourceDefinitionsRuntime.match(/Public Trustee/g) ?? []).length, 1, 'Weld Public Trustee text must appear only inside the responsible organization identity.');
+assert.equal((treasurerExactSourceDefinitionsRuntime.match(/Public Trustee/g) ?? []).length, 2, 'Public Trustee text must appear only inside Weld and Larimer responsible organization identities.');
 assert.equal(read('lib/sourceQualityOperationalManifestData.ts').includes(jeffersonTreasurerSourceId), false, 'Jefferson Treasurer must remain Registry-only until Manifest inclusion authorization.');
 
 const weldTreasurerSourceId = WELD_COUNTY_TREASURER_SOURCE_ID;
@@ -420,7 +421,78 @@ assert.doesNotMatch(weldTreasurerText, /memberSourceIds|parentSourceId|aggregate
 assert.equal(registry.records.filter((item) => item.sourceId !== 'SRC-WELD-COUNTY-ASSESSOR' && /^SRC-WELD-COUNTY-(TAX-PAYMENT|TAX-SEARCH|TAX-LIEN|TREASURER-DEED|DISTRIBUTION|SPECIAL-ASSESSMENT|MANUFACTURED-HOME|PUBLIC-TRUSTEE|RECORDER|CLERK|GIS|MAP|PERMIT|RECORDS)/.test(item.sourceId)).length, 0, 'Weld Treasurer Registry MVV must not add payment, search, lien, deed, distribution, special assessment, manufactured-home tax, Public Trustee, Recorder, Clerk, GIS, map, permit, or records source ids.');
 assert.equal(registry.records.filter((item) => item.sourceId !== 'SRC-WELD-COUNTY-ASSESSOR' && item.sourceId !== weldTreasurerSourceId && /WELD.*(TAX_PAYMENT|TAX_SEARCH|TAX_LIEN|TREASURER_DEED|DISTRIBUTION|SPECIAL_ASSESSMENT|MANUFACTURED_HOME|PUBLIC_TRUSTEE|RECORDER|CLERK|GIS|PERMITS|RECORDS|ASSESSOR_VALUE_AUTHORITY)/i.test(`${item.sourceId} ${item.category}`)).length, 0, 'Weld Treasurer Registry MVV must not conflate Treasurer identity with adjacent domains.');
 assert.doesNotMatch(weldTreasurerText, /EXP-|SRA-|provider aggregate|wildcard County Treasurer/i);
-assert.equal(read('lib/sourceQualityOperationalManifestData.ts').includes(weldTreasurerSourceId), false, 'Weld Treasurer must remain Registry-only until Manifest inclusion authorization.');
+assert.equal(read('lib/sourceQualityOperationalManifestData.ts').includes('WELD_COUNTY_TREASURER_SOURCE_ID'), true, 'Weld Treasurer must remain Manifest-included after Manifest inclusion authorization.');
+
+const larimerTreasurerSourceId = LARIMER_COUNTY_TREASURER_SOURCE_ID;
+assert.equal(registry.records.filter((item) => item.sourceId === larimerTreasurerSourceId).length, 1, 'Larimer County Treasurer source must exist exactly once.');
+assert.equal(COUNTY_TREASURER_EXACT_SOURCE_DEFINITIONS.filter((item) => item.sourceId === larimerTreasurerSourceId).length, 1, 'Larimer County Treasurer finite definition must exist exactly once.');
+assert.equal(isCountyTreasurerExactSourceId(larimerTreasurerSourceId), true, 'Larimer County Treasurer must be accepted only after exact finite definition.');
+const larimerTreasurerDefinition = COUNTY_TREASURER_EXACT_SOURCE_DEFINITIONS.find((item) => item.sourceId === larimerTreasurerSourceId);
+const larimerTreasurer = record(larimerTreasurerSourceId);
+const larimerTreasurerText = JSON.stringify(larimerTreasurer);
+assert.equal(larimerTreasurerDefinition?.sourceClass, 'COUNTY_TREASURER');
+assert.equal(larimerTreasurerDefinition?.jurisdiction.state, 'Colorado');
+assert.equal(larimerTreasurerDefinition?.jurisdiction.county, 'Larimer County');
+assert.equal(larimerTreasurerDefinition?.responsibleOrganization, 'Larimer County Treasurer & Public Trustee');
+assert.equal(larimerTreasurer.publicName, 'Larimer County Treasurer');
+assert.equal(larimerTreasurer.responsibleOrganization, 'Larimer County Treasurer & Public Trustee');
+assert.equal(larimerTreasurer.sourceClass, 'AUTHORITATIVE_SOURCE');
+assert.equal(larimerTreasurer.category, 'COUNTY_TREASURER_TAX');
+assert.equal(larimerTreasurer.jurisdiction.state, 'Colorado');
+assert.equal(larimerTreasurer.jurisdiction.county, 'Larimer County');
+assert.equal(larimerTreasurer.authorizationState, 'AWAITING_PROVIDER_CONFIRMATION');
+assert.equal(larimerTreasurer.productionActivationState, 'BLOCKED_NOT_AUTHORIZED');
+assert.equal(larimerTreasurer.claimEligible, false);
+assert.equal(larimerTreasurer.customerStatus, 'Blocked / not authorized');
+assert.match(larimerTreasurer.currentReieUse, /Exact source identity only/);
+assert.match(larimerTreasurer.currentReieUse, /future-governed Larimer County Treasurer review/);
+assert.match(larimerTreasurer.currentReieUse, /no property or tax search/);
+assert.match(larimerTreasurer.currentReieUse, /no tax-statement use/);
+assert.match(larimerTreasurer.currentReieUse, /no payment/);
+assert.match(larimerTreasurer.currentReieUse, /no delinquent-information use/);
+assert.match(larimerTreasurer.currentReieUse, /no receipt use/);
+assert.match(larimerTreasurer.currentReieUse, /no exemption or deferral tax-status claim/);
+assert.match(larimerTreasurer.currentReieUse, /no manufactured-home tax use/);
+assert.match(larimerTreasurer.currentReieUse, /no special-assessment use/);
+assert.match(larimerTreasurer.currentReieUse, /no Public Trustee foreclosure or release/);
+assert.match(larimerTreasurer.currentReieUse, /no assessor-record use/);
+assert.match(larimerTreasurer.currentReieUse, /no recorder-record use/);
+assert.match(larimerTreasurer.currentReieUse, /no GIS, planning, or zoning use/);
+assert.match(larimerTreasurer.currentReieUse, /no tax-record retrieval/);
+assert.match(larimerTreasurer.currentReieUse, /no .* customer display/);
+assert.match(larimerTreasurerText, /TREASURER_RECORD_NOT_ASSESSOR_VALUE_AUTHORITY/);
+assert.match(larimerTreasurerText, /TREASURER_RECORD_NOT_TITLE/);
+assert.match(larimerTreasurerText, /TREASURER_RECORD_NOT_RECORDER_INDEX/);
+assert.match(larimerTreasurerText, /TAX_PAYMENT_CHANNEL_NOT_DATA_REUSE_AUTHORITY/);
+assert.match(larimerTreasurerText, /PUBLIC_TAX_SEARCH_NOT_AUTOMATION_AUTHORITY/);
+assert.match(larimerTreasurerText, /PUBLIC_ACCESS_NOT_REUSE_OR_DISPLAY_AUTHORITY/);
+assert.match(larimerTreasurerText, /PUBLIC_OR_GOVERNMENT_SOURCE_NOT_UNRESTRICTED_OR_VERIFIED_OR_COMPLETE/);
+assert.match(larimerTreasurerText, /PUBLIC_TRUSTEE_NOT_AUTOMATICALLY_TREASURER_DATA_AUTHORITY/);
+assert.match(larimerTreasurerText, /TAX_CURRENTNESS_SOURCE_SPECIFIC/);
+assert.match(larimerTreasurerText, /FEE_STATUS_SOURCE_SPECIFIC/);
+assert.match(larimerTreasurerText, /LARIMER_TREASURER_PUBLIC_TRUSTEE_COMBINED_OFFICE_NOT_COMBINED_SOURCE_AUTHORITY/);
+assert.match(larimerTreasurerText, /LARIMER_SCHEDULED_MAINTENANCE_NOT_CURRENTNESS_GUARANTEE/);
+assert.match(larimerTreasurerText, /LARIMER_CURRENT_STATEMENTS_NOT_COMPLETE_TAX_HISTORY/);
+assert.match(larimerTreasurerText, /LARIMER_DELINQUENT_STATEMENTS_SOURCE_SPECIFIC/);
+assert.match(larimerTreasurerText, /LARIMER_MANUFACTURED_HOME_TAX_CHANNEL_SEPARATE/);
+assert.match(larimerTreasurerText, /LARIMER_SPECIAL_ASSESSMENT_CHANNEL_SEPARATE/);
+assert.match(larimerTreasurerText, /LARIMER_EXEMPTION_DEFERRAL_NOT_TAX_STATUS_CLEARANCE/);
+assert.match(larimerTreasurerText, /LARIMER_PAYMENT_CHANNEL_NOT_DATA_REUSE_AUTHORITY/);
+assert.match(larimerTreasurerText, /LARIMER_FORECLOSURE_RELEASE_NOT_TREASURER_RECORD_AUTHORITY/);
+assert.match(larimerTreasurerText, /LARIMER_PUBLIC_TRUSTEE_NOT_TREASURER_DATA_AUTHORITY/);
+assert.match(larimerTreasurerText, /SOURCE_ACTIVATION_NOT_AUTHORIZED_BY_REGISTRY_MVV/);
+assert.match(larimerTreasurerText, /CUSTOMER_DISPLAY_NOT_GRANTED_BY_REGISTRY_MVV/);
+assert.match(larimerTreasurerText, /LEGAL_USE_NOT_APPROVED_BY_REGISTRY_MVV/);
+assert.match(larimerTreasurerText, /combined Larimer County Treasurer & Public Trustee office name does not aggregate Public Trustee foreclosure or release authority into this Treasurer tax Registry identity/);
+assert.match(larimerTreasurerText, /property and tax search, tax statements, payments, delinquent information, receipts, exemptions and deferrals, manufactured-home tax, special assessments, Public Trustee foreclosure and release duties, Assessor, Recorder, GIS, planning, zoning, permits, and records channels are separately governed/);
+assert.match(larimerTreasurerText, /Boulder County Treasurer, Arapahoe County Treasurer, Adams County Treasurer, Jefferson County Treasurer, Weld County Treasurer, Larimer County Assessor/);
+assert.match(larimerTreasurerText, /Rights, technical access, freshness, attribution, fees, privacy approval, field sensitivity, and provenance remain unknown/);
+assert.doesNotMatch(larimerTreasurerText, /RIGHTS = VERIFIED|TECHNICAL ACCESS = READY|FRESHNESS = VERIFIED|ATTRIBUTION = REQUIRED|FEE = NONE|PROVENANCE = COMPLETE/);
+assert.doesNotMatch(larimerTreasurerText, /memberSourceIds|parentSourceId|aggregateSource|childSourceIds|relationshipType/i);
+assert.equal(registry.records.filter((item) => item.sourceId !== 'SRC-LARIMER-COUNTY-ASSESSOR' && /^SRC-LARIMER-COUNTY-(TAX-PAYMENT|TAX-SEARCH|PROPERTY-SEARCH|STATEMENT|PAYMENT|DELINQUENT|RECEIPT|EXEMPTION|DEFERRAL|MANUFACTURED-HOME|SPECIAL-ASSESSMENT|PUBLIC-TRUSTEE|FORECLOSURE|RELEASE|RECORDER|GIS|PLANNING|ZONING|PERMIT|RECORDS)/.test(item.sourceId)).length, 0, 'Larimer Treasurer Registry MVV must not add payment, search, statement, delinquent, receipt, exemption, deferral, manufactured-home, special assessment, Public Trustee, foreclosure, release, Recorder, GIS, planning, zoning, permit, or records source ids.');
+assert.equal(registry.records.filter((item) => item.sourceId !== 'SRC-LARIMER-COUNTY-ASSESSOR' && item.sourceId !== larimerTreasurerSourceId && /LARIMER.*(TAX_PAYMENT|TAX_SEARCH|PROPERTY_SEARCH|STATEMENT|DELINQUENT|RECEIPT|EXEMPTION|DEFERRAL|MANUFACTURED_HOME|SPECIAL_ASSESSMENT|PUBLIC_TRUSTEE|FORECLOSURE|RELEASE|RECORDER|GIS|PLANNING|ZONING|PERMITS|RECORDS|ASSESSOR_VALUE_AUTHORITY)/i.test(`${item.sourceId} ${item.category}`)).length, 0, 'Larimer Treasurer Registry MVV must not conflate Treasurer identity with adjacent domains.');
+assert.doesNotMatch(larimerTreasurerText, /EXP-|SRA-|provider aggregate|wildcard County Treasurer/i);
+assert.equal(read('lib/sourceQualityOperationalManifestData.ts').includes(larimerTreasurerSourceId), false, 'Larimer Treasurer must remain Registry-only until Manifest inclusion authorization.');
 
 const broomfieldAssessorSourceId = 'SRC-BROOMFIELD-COUNTY-ASSESSOR';
 assert.equal(registry.records.filter((item) => item.sourceId === broomfieldAssessorSourceId).length, 1, 'Broomfield Assessor source must exist exactly once.');
@@ -582,8 +654,8 @@ assert.match(larimerAssessorText, /Boulder County, Arapahoe County, Broomfield, 
 assert.match(larimerAssessorText, /Rights, technical access, freshness, attribution, fees, privacy approval, field sensitivity, and provenance remain unknown/);
 assert.doesNotMatch(larimerAssessorText, /RIGHTS = VERIFIED|TECHNICAL ACCESS = READY|FRESHNESS = VERIFIED|ATTRIBUTION = REQUIRED|FEE = NONE|PROVENANCE = COMPLETE/);
 assert.doesNotMatch(larimerAssessorText, /memberSourceIds|parentSourceId|aggregateSource|childSourceIds|relationshipType/i);
-assert.equal(registry.records.filter((item) => /^SRC-LARIMER-COUNTY-(TREASURER|RECORDER|PARCEL|GIS|PUBLIC-DATA-CENTER|PLANNING|ZONING|PUBLIC-TRUSTEE|PARCEL-SEARCH)/.test(item.sourceId)).length, 0, 'Larimer Assessor Registry MVV must not add Treasurer, Recorder, Public Data Center, Public Trustee, Planning, Zoning, Parcel Search, or GIS source ids.');
-assert.equal(registry.records.filter((item) => /LARIMER.*(TREASURER|RECORDER|GIS|PUBLIC_DATA_CENTER|PLANNING|ZONING|PUBLIC_TRUSTEE|PARCEL_SEARCH|PARCEL_GEOMETRY)/i.test(`${item.sourceId} ${item.category}`)).length, 0, 'Larimer Assessor Registry MVV must not conflate assessor identity with adjacent domains.');
+assert.equal(registry.records.filter((item) => item.sourceId !== larimerTreasurerSourceId && /^SRC-LARIMER-COUNTY-(TREASURER|RECORDER|PARCEL|GIS|PUBLIC-DATA-CENTER|PLANNING|ZONING|PUBLIC-TRUSTEE|PARCEL-SEARCH)/.test(item.sourceId)).length, 0, 'Larimer Assessor Registry MVV must not add unauthorized Treasurer, Recorder, Public Data Center, Public Trustee, Planning, Zoning, Parcel Search, or GIS source ids.');
+assert.equal(registry.records.filter((item) => item.sourceId !== larimerTreasurerSourceId && /LARIMER.*(TREASURER|RECORDER|GIS|PUBLIC_DATA_CENTER|PLANNING|ZONING|PUBLIC_TRUSTEE|PARCEL_SEARCH|PARCEL_GEOMETRY)/i.test(`${item.sourceId} ${item.category}`)).length, 0, 'Larimer Assessor Registry MVV must not conflate assessor identity with adjacent domains.');
 assert.doesNotMatch(larimerAssessorText, /EXP-|SRA-|provider aggregate|wildcard County Assessor/i);
 if (fs.existsSync('lib/sourceQualityLarimerCountyAssessorEvidence.ts')) {
   const larimerAssessorEvidence = read('lib/sourceQualityLarimerCountyAssessorEvidence.ts');

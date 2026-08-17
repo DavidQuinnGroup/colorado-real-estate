@@ -65,7 +65,6 @@ assert.notEqual(conversion.conversionFingerprint, convertAdamsCountyTreasurerSou
 assert.notEqual(conversion.conversionFingerprint, convertJeffersonCountyTreasurerSourceQualityEvidence().conversionFingerprint);
 
 for (const sourceId of [
-  'SRC-LARIMER-COUNTY-TREASURER',
   'SRC-BROOMFIELD-COUNTY-TREASURER',
   'SRC-SYNTHETIC-COUNTY-TREASURER',
   'SRC-UNREGISTERED-COUNTY-TREASURER',
