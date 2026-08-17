@@ -10,6 +10,7 @@ import {
 } from '../lib/sourceQualityOperationalManifest';
 import { composeSourceQualityReport } from '../lib/sourceQualityReport';
 import { assembleSourceQualitySummaries } from '../lib/sourceQualitySummaryAssembly';
+import type { SourceQualityReviewSummary } from '../lib/sourceQualityControl';
 
 const fixtureAssembly = assembleSourceQualitySummaries(SOURCE_QUALITY_ADMIN_PREVIEW_FIXTURE);
 assert.notEqual(fixtureAssembly.classification, 'FAIL_CLOSED');
@@ -19,9 +20,9 @@ assert.equal(fixtureAssembly.assembly.coverageClass, 'PARTIAL_REVIEWED_SOURCE_SE
 assert.equal(fixtureAssembly.assembly.completenessClaim, 'NO_STATEWIDE_OR_PROVIDER_COMPLETENESS_CLAIM');
 assert.equal(fixtureAssembly.assembly.sourceCount, 4);
 assert.equal(fixtureAssembly.assembly.assembledSourceCount, 4);
-assert.equal(fixtureAssembly.assembly.summaries.filter((summary) => summary.source.sourceId === 'SRC-BOULDER-PERMIT-CANDIDATES').length, 0);
-assert.equal(fixtureAssembly.assembly.summaries.filter((summary) => summary.source.sourceId === 'SRC-BOULDER-COUNTY-TREASURER').length, 1);
-assert.equal(fixtureAssembly.assembly.summaries.find((summary) => summary.source.sourceId === 'SRC-BOULDER-COUNTY-TREASURER')?.classification, 'INSUFFICIENT_EVIDENCE');
+assert.equal(fixtureAssembly.assembly.summaries.filter((summary: SourceQualityReviewSummary) => summary.source.sourceId === 'SRC-BOULDER-PERMIT-CANDIDATES').length, 0);
+assert.equal(fixtureAssembly.assembly.summaries.filter((summary: SourceQualityReviewSummary) => summary.source.sourceId === 'SRC-BOULDER-COUNTY-TREASURER').length, 1);
+assert.equal(fixtureAssembly.assembly.summaries.find((summary: SourceQualityReviewSummary) => summary.source.sourceId === 'SRC-BOULDER-COUNTY-TREASURER')?.classification, 'INSUFFICIENT_EVIDENCE');
 
 const manifestResult = validateSourceQualityOperationalManifest(SOURCE_QUALITY_OPERATIONAL_MANIFEST_DATA);
 assert.equal(manifestResult.classification, 'PARTIAL_OPERATIONAL_MANIFEST_VALID');

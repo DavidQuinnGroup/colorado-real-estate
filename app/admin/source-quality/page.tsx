@@ -4,6 +4,10 @@ import {
   validateSourceQualityOperationalManifest,
 } from '@/lib/sourceQualityOperationalManifest';
 import { composeSourceQualityReport } from '@/lib/sourceQualityReport';
+import type {
+  SourceQualityConflictQueueEntry,
+  SourceQualityReportQueueEntry,
+} from '@/lib/sourceQualityReport';
 import { assembleSourceQualitySummaries } from '@/lib/sourceQualitySummaryAssembly';
 
 export const dynamic = 'force-dynamic';
@@ -50,7 +54,7 @@ export default function SourceQualityAdminPreviewPage() {
         </section>
 
         <section className="mt-8"><Panel title="Human Review Queue">
-          {report.reviewRequiredSources.length === 0 ? <Empty /> : <div className="space-y-3">{report.reviewRequiredSources.map((entry) => (
+          {report.reviewRequiredSources.length === 0 ? <Empty /> : <div className="space-y-3">{report.reviewRequiredSources.map((entry: SourceQualityReportQueueEntry) => (
             <article key={entry.sourceId} className="border border-white/10 bg-black/20 p-4">
               <p className="font-mono text-sm text-white">{entry.sourceId}</p>
               <p className="mt-2 text-sm text-white/70">{entry.classification}</p>
@@ -63,12 +67,12 @@ export default function SourceQualityAdminPreviewPage() {
         </Panel></section>
 
         <section className="mt-8 grid gap-4 lg:grid-cols-2">
-          <Panel title="Conflicts">{report.conflictSources.length === 0 ? <Empty /> : <List values={report.conflictSources.map((entry) => entry.sourceId + ': ' + entry.conflictReferences.map((reference) => reference.relationshipType + ' [' + reference.evidenceReferenceIds.join(', ') + ']').join('; '))} />}</Panel>
-          <Panel title="Insufficient / Invalid Evidence"><List values={[...report.insufficientEvidenceSources.map((sourceId) => 'INSUFFICIENT_EVIDENCE: ' + sourceId), ...report.invalidSourceEvidenceSources.map((sourceId) => 'INVALID_SOURCE_EVIDENCE: ' + sourceId)]} /></Panel>
+          <Panel title="Conflicts">{report.conflictSources.length === 0 ? <Empty /> : <List values={report.conflictSources.map((entry: SourceQualityConflictQueueEntry) => entry.sourceId + ': ' + entry.conflictReferences.map((reference: SourceQualityConflictQueueEntry['conflictReferences'][number]) => reference.relationshipType + ' [' + reference.evidenceReferenceIds.join(', ') + ']').join('; '))} />}</Panel>
+          <Panel title="Insufficient / Invalid Evidence"><List values={[...report.insufficientEvidenceSources.map((sourceId: string) => 'INSUFFICIENT_EVIDENCE: ' + sourceId), ...report.invalidSourceEvidenceSources.map((sourceId: string) => 'INVALID_SOURCE_EVIDENCE: ' + sourceId)]} /></Panel>
         </section>
 
         <section className="mt-8"><Panel title="Dimension Posture Counts">
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">{Object.entries(report.dimensionPostureCounts).map(([dimension, counts]) => <div key={dimension} className="border border-white/10 bg-black/20 p-4"><p className="text-xs font-semibold uppercase tracking-[0.14em] text-white/45">{dimension}</p><Counts values={counts} /></div>)}</div>
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">{Object.entries(report.dimensionPostureCounts).map(([dimension, counts]: [string, Readonly<Record<string, number>>]) => <div key={dimension} className="border border-white/10 bg-black/20 p-4"><p className="text-xs font-semibold uppercase tracking-[0.14em] text-white/45">{dimension}</p><Counts values={counts} /></div>)}</div>
         </Panel></section>
 
         <section className="mt-8 grid gap-4 lg:grid-cols-2">
@@ -113,12 +117,12 @@ function Disclosure({ value }: { value: string }) {
 }
 
 function Counts({ values }: { values: Readonly<Record<string, number>> }) {
-  const entries = Object.entries(values);
+  const entries: [string, number][] = Object.entries(values);
   return entries.length === 0 ? <Empty /> : <dl className="mt-3 space-y-2 text-sm">{entries.map(([label, value]) => <div key={label} className="flex gap-3"><dt className="break-words text-white/55">{label}</dt><dd className="ml-auto font-mono text-white/85">{value}</dd></div>)}</dl>;
 }
 
 function List({ values }: { values: readonly string[] }) {
-  return values.length === 0 ? <Empty /> : <ul className="mt-3 space-y-2 text-sm text-white/70">{values.map((value) => <li key={value} className="break-words border-l border-white/15 pl-3">{value}</li>)}</ul>;
+  return values.length === 0 ? <Empty /> : <ul className="mt-3 space-y-2 text-sm text-white/70">{values.map((value: string) => <li key={value} className="break-words border-l border-white/15 pl-3">{value}</li>)}</ul>;
 }
 
 function Metadata({ label, values }: { label: string; values: readonly string[] }) {
@@ -126,7 +130,7 @@ function Metadata({ label, values }: { label: string; values: readonly string[] 
 }
 
 function ReferenceIndex({ values }: { values: Readonly<Record<string, readonly string[]>> }) {
-  const entries = Object.entries(values);
+  const entries: [string, readonly string[]][] = Object.entries(values);
   return entries.length === 0 ? <Empty /> : <dl className="space-y-3 text-sm">{entries.map(([reference, sourceIds]) => <div key={reference}><dt className="font-mono text-white/85">{reference}</dt><dd className="mt-1 text-white/55">{sourceIds.join(', ')}</dd></div>)}</dl>;
 }
 

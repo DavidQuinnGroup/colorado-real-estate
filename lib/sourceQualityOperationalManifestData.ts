@@ -102,6 +102,12 @@ import {
   convertBroomfieldCountyTreasurerSourceQualityEvidence,
 } from './sourceQualityBroomfieldCountyTreasurerEvidence';
 import {
+  DOUGLAS_COUNTY_TREASURER_SOURCE_ID,
+  DOUGLAS_COUNTY_TREASURER_SOURCE_QUALITY_CERTIFICATION,
+  DOUGLAS_COUNTY_TREASURER_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT,
+  convertDouglasCountyTreasurerSourceQualityEvidence,
+} from './sourceQualityDouglasCountyTreasurerEvidence';
+import {
   LARIMER_COUNTY_ASSESSOR_SOURCE_ID,
   LARIMER_COUNTY_ASSESSOR_SOURCE_QUALITY_CERTIFICATION,
   LARIMER_COUNTY_ASSESSOR_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT,
@@ -158,6 +164,7 @@ const jeffersonCountyTreasurerEvidence = convertJeffersonCountyTreasurerSourceQu
 const larimerCountyAssessorEvidence = convertLarimerCountyAssessorSourceQualityEvidence();
 const larimerCountyTreasurerEvidence = convertLarimerCountyTreasurerSourceQualityEvidence();
 const broomfieldCountyTreasurerEvidence = convertBroomfieldCountyTreasurerSourceQualityEvidence();
+const douglasCountyTreasurerEvidence = convertDouglasCountyTreasurerSourceQualityEvidence();
 const weldCountyAssessorEvidence = convertWeldCountyAssessorSourceQualityEvidence();
 const weldCountyTreasurerEvidence = convertWeldCountyTreasurerSourceQualityEvidence();
 const bcodAddressPointsEvidence = convertBcodAddressPointsSourceQualityEvidence();
@@ -499,6 +506,18 @@ export const SOURCE_QUALITY_OPERATIONAL_MANIFEST_DATA: SourceQualityOperationalM
       expectedEvidenceClasses: ['CERTIFICATION'],
       certificationReference: BROOMFIELD_COUNTY_TREASURER_SOURCE_QUALITY_CERTIFICATION,
       reviewedAt: BROOMFIELD_COUNTY_TREASURER_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT,
+      reviewAuthorityClass: 'DELEGATED_SOURCE_GOVERNANCE_REVIEW',
+      limitationCodes: [],
+    },
+    {
+      schemaVersion: SOURCE_QUALITY_OPERATIONAL_MANIFEST_SCHEMA_VERSION,
+      manifestId,
+      sourceId: DOUGLAS_COUNTY_TREASURER_SOURCE_ID,
+      inclusionClass: 'STRUCTURED_EVIDENCE_WITH_KNOWN_GAPS',
+      linkages: douglasCountyTreasurerEvidence.linkages,
+      expectedEvidenceClasses: ['CERTIFICATION'],
+      certificationReference: DOUGLAS_COUNTY_TREASURER_SOURCE_QUALITY_CERTIFICATION,
+      reviewedAt: DOUGLAS_COUNTY_TREASURER_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT,
       reviewAuthorityClass: 'DELEGATED_SOURCE_GOVERNANCE_REVIEW',
       limitationCodes: [],
     },
