@@ -1,0 +1,47 @@
+# REIE Larimer County Treasurer Source Quality Evidence MVV Certification
+
+Status: LARIMER_COUNTY_TREASURER_SOURCE_QUALITY_EVIDENCE_MVV_CERTIFIED_LOCAL
+
+Source ID: `SRC-LARIMER-COUNTY-TREASURER`
+
+The evidence MVV adds certification-reference metadata only for Larimer County Treasurer tax authority. It does not contain raw tax, parcel, property, owner, taxpayer, payment, delinquency, receipt, exemption, deferral, manufactured-home, special-assessment, foreclosure, release, or Public Trustee data.
+
+The evidence conversion remains `INSUFFICIENT_EVIDENCE` for rights, technical access, freshness, attribution, and provenance. Manifest eligibility is `READY_WITH_KNOWN_GAPS`; that readiness does not grant source activation, customer display, retrieval, automation, reuse, legal use, or production authority.
+
+The evidence package preserves the Registry posture:
+
+- `AWAITING_PROVIDER_CONFIRMATION`
+- `BLOCKED_NOT_AUTHORIZED`
+- `claimEligible=false`
+- `RESTRICTED_OR_UNREVIEWED`
+
+Larimer Treasurer evidence firewalls retained:
+
+- `SOURCE_REGISTRY_STATUS_NOT_SOURCE_QUALITY_CERTIFICATION`
+- `BLOCKED_NOT_AUTHORIZED_NOT_BYPASSED_BY_EVIDENCE_PACKAGE`
+- `SOURCE_ACTIVATION_NOT_AUTHORIZED_BY_EVIDENCE_PACKAGE`
+- `PUBLIC_TAX_SEARCH_NOT_AUTOMATION_AUTHORITY`
+- `TAX_PAYMENT_CHANNEL_NOT_DATA_REUSE_AUTHORITY`
+- `TAX_CURRENTNESS_SOURCE_SPECIFIC`
+- `TREASURER_FEE_STATUS_SOURCE_SPECIFIC`
+- `LARIMER_TREASURER_PUBLIC_TRUSTEE_COMBINED_OFFICE_NOT_COMBINED_SOURCE_AUTHORITY`
+- `LARIMER_SCHEDULED_MAINTENANCE_NOT_CURRENTNESS_GUARANTEE`
+- `LARIMER_CURRENT_STATEMENTS_NOT_COMPLETE_TAX_HISTORY`
+- `LARIMER_DELINQUENT_STATEMENTS_SOURCE_SPECIFIC`
+- `LARIMER_MANUFACTURED_HOME_TAX_CHANNEL_SEPARATE`
+- `LARIMER_SPECIAL_ASSESSMENT_CHANNEL_SEPARATE`
+- `LARIMER_EXEMPTION_DEFERRAL_NOT_TAX_STATUS_CLEARANCE`
+- `LARIMER_PAYMENT_CHANNEL_NOT_DATA_REUSE_AUTHORITY`
+- `LARIMER_FORECLOSURE_RELEASE_NOT_TREASURER_RECORD_AUTHORITY`
+- `LARIMER_PUBLIC_TRUSTEE_NOT_TREASURER_DATA_AUTHORITY`
+- `TREASURER_RECORD_NOT_ASSESSOR_VALUE_AUTHORITY`
+- `TREASURER_RECORD_NOT_TITLE`
+- `TREASURER_RECORD_NOT_RECORDER_INDEX`
+- `CUSTOMER_DISPLAY_NOT_GRANTED_BY_EVIDENCE_PACKAGE`
+- `LEGAL_USE_NOT_APPROVED_BY_EVIDENCE_PACKAGE`
+- `PUBLIC_OR_GOVERNMENT_SOURCE_NOT_UNRESTRICTED_OR_VERIFIED_OR_COMPLETE`
+- `RAW_TAX_PROPERTY_OR_PERSON_DATA_NOT_ACCEPTED_BY_EVIDENCE_PACKAGE`
+
+The package does not inherit Boulder, Arapahoe, Adams, Jefferson, or Weld Treasurer findings, and does not inherit Larimer Assessor findings.
+
+Operational Manifest inclusion remains a separate authorization step.
