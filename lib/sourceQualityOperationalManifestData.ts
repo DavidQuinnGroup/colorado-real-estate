@@ -78,6 +78,12 @@ import {
   convertJeffersonCountyAssessorSourceQualityEvidence,
 } from './sourceQualityJeffersonCountyAssessorEvidence';
 import {
+  JEFFERSON_COUNTY_TREASURER_SOURCE_ID,
+  JEFFERSON_COUNTY_TREASURER_SOURCE_QUALITY_CERTIFICATION,
+  JEFFERSON_COUNTY_TREASURER_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT,
+  convertJeffersonCountyTreasurerSourceQualityEvidence,
+} from './sourceQualityJeffersonCountyTreasurerEvidence';
+import {
   LARIMER_COUNTY_ASSESSOR_SOURCE_ID,
   LARIMER_COUNTY_ASSESSOR_SOURCE_QUALITY_CERTIFICATION,
   LARIMER_COUNTY_ASSESSOR_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT,
@@ -130,6 +136,7 @@ const boulderCountyRecorderIndexEvidence = convertBoulderCountyRecorderIndexSour
 const boulderCountyTreasurerEvidence = convertBoulderCountyTreasurerSourceQualityEvidence();
 const broomfieldCountyAssessorEvidence = convertBroomfieldCountyAssessorSourceQualityEvidence();
 const jeffersonCountyAssessorEvidence = convertJeffersonCountyAssessorSourceQualityEvidence();
+const jeffersonCountyTreasurerEvidence = convertJeffersonCountyTreasurerSourceQualityEvidence();
 const larimerCountyAssessorEvidence = convertLarimerCountyAssessorSourceQualityEvidence();
 const weldCountyAssessorEvidence = convertWeldCountyAssessorSourceQualityEvidence();
 const bcodAddressPointsEvidence = convertBcodAddressPointsSourceQualityEvidence();
@@ -423,6 +430,18 @@ export const SOURCE_QUALITY_OPERATIONAL_MANIFEST_DATA: SourceQualityOperationalM
       expectedEvidenceClasses: ['CERTIFICATION'],
       certificationReference: ADAMS_COUNTY_TREASURER_SOURCE_QUALITY_CERTIFICATION,
       reviewedAt: ADAMS_COUNTY_TREASURER_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT,
+      reviewAuthorityClass: 'DELEGATED_SOURCE_GOVERNANCE_REVIEW',
+      limitationCodes: [],
+    },
+    {
+      schemaVersion: SOURCE_QUALITY_OPERATIONAL_MANIFEST_SCHEMA_VERSION,
+      manifestId,
+      sourceId: JEFFERSON_COUNTY_TREASURER_SOURCE_ID,
+      inclusionClass: 'STRUCTURED_EVIDENCE_WITH_KNOWN_GAPS',
+      linkages: jeffersonCountyTreasurerEvidence.linkages,
+      expectedEvidenceClasses: ['CERTIFICATION'],
+      certificationReference: JEFFERSON_COUNTY_TREASURER_SOURCE_QUALITY_CERTIFICATION,
+      reviewedAt: JEFFERSON_COUNTY_TREASURER_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT,
       reviewAuthorityClass: 'DELEGATED_SOURCE_GOVERNANCE_REVIEW',
       limitationCodes: [],
     },
