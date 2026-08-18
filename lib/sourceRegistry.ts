@@ -308,6 +308,55 @@ function boulderCountyParcelGisRecord(): ReieSourceRegistryRecord {
   };
 }
 
+function arapahoeCountyParcelGisRecord(): ReieSourceRegistryRecord {
+  return {
+    sourceId: 'SRC-ARAPAHOE-COUNTY-PARCEL-GIS',
+    publicName: 'Arapahoe County Parcels',
+    responsibleOrganization: 'Arapahoe County Mapping / GIS',
+    sourceClass: 'AUTHORITATIVE_SOURCE',
+    category: 'PARCEL_GEOMETRY',
+    domains: ['Parcel geometry source identity', 'Parcel boundary/cadastral reference context', 'Future governed spatial reference'],
+    jurisdiction: { state: 'Colorado', county: 'Arapahoe County', coverage: 'Arapahoe County base Parcels geometry / cadastral source identity only' },
+    officialUrl: null,
+    accessMethod: 'Human-reviewed source identity only; provider, rights, technical-access, endpoint, and delivery review required before retrieval, download, feature-service access, ingestion, display, or reuse',
+    updateCadence: 'not established from correspondence',
+    freshnessExpectation: 'unknown until source-specific evidence review',
+    authorizationState: 'AWAITING_PROVIDER_CONFIRMATION',
+    permittedUse: 'registry identity and source-governance review only; no data retrieval, geometry use, spatial join, redistribution, legal-use, or customer-display authority',
+    productionActivationState: 'BLOCKED_NOT_AUTHORIZED',
+    claimEligible: false,
+    customerDisclosureEligible: true,
+    customerStatus: 'Blocked / not authorized',
+    currentReieUse: 'Exact base Parcels source identity only for future-governed Arapahoe County parcel geometry review; no parcel geometry, parcel identifier, ownership, Assessor_Parcels enrichment, Aumentum/DataMart attribute, title, tax, legal-description, customer display, retrieval, download, feature-service call, ingestion, map rendering, or runtime use is active.',
+    limitations: [
+      'PARCEL_GEOMETRY_NOT_OWNERSHIP.',
+      'PARCEL_GEOMETRY_NOT_LEGAL_DESCRIPTION.',
+      'PARCEL_GEOMETRY_NOT_ASSESSOR_RECORD.',
+      'PARCEL_GEOMETRY_NOT_TITLE.',
+      'GIS_DATASET_NOT_DISPLAY_OR_USE_AUTHORITY.',
+      'OPEN_DATA_NOT_UNRESTRICTED_OR_REUSE_READY.',
+      'PUBLIC_OR_GOVERNMENT_SOURCE_NOT_UNRESTRICTED_OR_VERIFIED_OR_COMPLETE.',
+      'ARAPAHOE_PARCELS_NOT_ASSESSOR_PARCELS.',
+      'ASSESSOR_PARCELS_DERIVED_ENRICHED_LAYER_NOT_BASE_GEOMETRY_AUTHORITY.',
+      'AUMENTUM_DATAMART_NOT_PARCEL_GEOMETRY_AUTHORITY.',
+      'ARAPAMAP_NOT_PARCEL_SOURCE_IDENTITY.',
+      'ADDRESS_PARCEL_INFO_NOT_PARCEL_SOURCE_IDENTITY.',
+      'TAX_MAPS_DERIVATIVE_NOT_BASE_PARCEL_SOURCE.',
+      'Address Points and Park Boundaries cannot confirm Arapahoe parcel identity or substitute for base Parcels.',
+      'Arapahoe County Assessor, Aumentum/DataMart, Assessor_Parcels, ArapaMAP, Address/Parcel Info, Tax Maps, and other delivery or enrichment channels do not grant source, rights, freshness, attribution, access, or governance inheritance to base Parcels.',
+      'Rights, technical access, endpoint, freshness, attribution, terms, fees, privacy approval, field sensitivity, and provenance remain unresolved until separately governed source evidence review.',
+    ],
+    attributionRequirement: 'unknown until source-specific review',
+    lastSourceVerificationDate: REIE_SOURCE_REGISTRY_REFERENCE_DATE,
+    lastSuccessfulDataRefresh: null,
+    sourcePaths: [
+      'lib/sourceRegistry.ts/SRC-ARAPAHOE-COUNTY-PARCEL-GIS',
+      'Human-reviewed Arapahoe County Assessor correspondence dated 2026-08-17',
+      'REIE_ARAPAHOE_PARCEL_GIS_AND_PRODUCT_ARCHITECTURE_RECONCILIATION_FOUNDATION',
+    ],
+  };
+}
+
 function arapahoeCountyAssessorRecord(): ReieSourceRegistryRecord {
   return {
     sourceId: 'SRC-ARAPAHOE-COUNTY-ASSESSOR',
@@ -1178,6 +1227,7 @@ export const REIE_SOURCE_REGISTRY: ReieSourceRegistry = Object.freeze({
     }),
     boulderCountyRecorderIndexRecord(),
     boulderCountyParcelGisRecord(),
+    arapahoeCountyParcelGisRecord(),
     adamsCountyAssessorRecord(),
     arapahoeCountyAssessorRecord(),
     broomfieldCountyAssessorRecord(),

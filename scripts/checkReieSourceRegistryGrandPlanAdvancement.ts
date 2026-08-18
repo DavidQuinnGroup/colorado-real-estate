@@ -162,9 +162,9 @@ assert.match(arapahoeAssessorText, /do not grant rights, access, freshness, attr
 assert.match(arapahoeAssessorText, /Rights, technical access, freshness, attribution, fees, privacy approval, field sensitivity, and provenance remain unknown/);
 assert.doesNotMatch(arapahoeAssessorText, /RIGHTS = VERIFIED|TECHNICAL ACCESS = READY|FRESHNESS = VERIFIED|ATTRIBUTION = REQUIRED|FEE = NONE|PROVENANCE = COMPLETE/);
 assert.doesNotMatch(arapahoeAssessorText, /memberSourceIds|parentSourceId|aggregateSource|childSourceIds|relationshipType/i);
-assert.equal(registry.records.filter((item) => /^SRC-ARAPAHOE-COUNTY-(RECORDER|PARCEL|GIS|DATA-MART|PARCEL-SEARCH)/.test(item.sourceId)).length, 0, 'Arapahoe Assessor Registry MVV must not add Recorder, Parcel Search, Data Mart, or GIS source ids.');
+assert.equal(registry.records.filter((item) => /^SRC-ARAPAHOE-COUNTY-(RECORDER|GIS|DATA-MART|PARCEL-SEARCH)/.test(item.sourceId)).length, 0, 'Arapahoe Assessor Registry MVV must not add Recorder, Parcel Search, Data Mart, or GIS source ids.');
 assert.equal(registry.records.filter((item) => item.sourceId.startsWith('SRC-ARAPAHOE-COUNTY-TREASURER') && item.sourceId !== arapahoeTreasurerSourceId).length, 0, 'Arapahoe Assessor Registry MVV must not add Treasurer aliases beyond the exact separately governed Treasurer source.');
-assert.equal(registry.records.filter((item) => item.sourceId !== arapahoeTreasurerSourceId && /ARAPAHOE.*(TREASURER|RECORDER|GIS|DATA_MART|PARCEL_SEARCH|PARCEL_GEOMETRY)/i.test(`${item.sourceId} ${item.category}`)).length, 0, 'Arapahoe Assessor Registry MVV must not conflate assessor identity with adjacent domains.');
+assert.equal(registry.records.filter((item) => item.sourceId !== arapahoeTreasurerSourceId && item.sourceId !== 'SRC-ARAPAHOE-COUNTY-PARCEL-GIS' && /ARAPAHOE.*(TREASURER|RECORDER|GIS|DATA_MART|PARCEL_SEARCH|PARCEL_GEOMETRY)/i.test(`${item.sourceId} ${item.category}`)).length, 0, 'Arapahoe Assessor Registry MVV must not conflate assessor identity with adjacent domains.');
 if (fs.existsSync('lib/sourceQualityArapahoeCountyAssessorEvidence.ts')) {
   const arapahoeAssessorEvidence = read('lib/sourceQualityArapahoeCountyAssessorEvidence.ts');
   assert.match(arapahoeAssessorEvidence, /ARAPAHOE_COUNTY_ASSESSOR_SOURCE_ID/, 'Arapahoe Assessor evidence must bind through the canonical exact source identity constant.');
@@ -224,7 +224,7 @@ assert.match(arapahoeTreasurerText, /Rights, technical access, freshness, attrib
 assert.doesNotMatch(arapahoeTreasurerText, /RIGHTS = VERIFIED|TECHNICAL ACCESS = READY|FRESHNESS = VERIFIED|ATTRIBUTION = REQUIRED|FEE = NONE|PROVENANCE = COMPLETE/);
 assert.doesNotMatch(arapahoeTreasurerText, /memberSourceIds|parentSourceId|aggregateSource|childSourceIds|relationshipType/i);
 assert.equal(registry.records.filter((item) => /^SRC-ARAPAHOE-COUNTY-(TAX-PAYMENT|TAX-EXTRACT|TAX-STATEMENT|TAX-RECEIPT|CERTIFICATE|CERTIFICATE-OF-TAXES-DUE|DELINQUENT-TAX|TAX-LIEN|PUBLIC-TRUSTEE|RECORDER|GIS)/.test(item.sourceId)).length, 0, 'Arapahoe Treasurer Registry MVV must not add payment, extract, certificate, lien, Public Trustee, Recorder, or GIS source ids.');
-assert.equal(registry.records.filter((item) => /ARAPAHOE.*(TAX_PAYMENT|TAX_EXTRACT|CERTIFICATE|LIEN|PUBLIC_TRUSTEE|RECORDER|GIS|ASSESSOR_VALUE_AUTHORITY)/i.test(`${item.sourceId} ${item.category}`)).length, 0, 'Arapahoe Treasurer Registry MVV must not conflate Treasurer identity with adjacent domains.');
+assert.equal(registry.records.filter((item) => item.sourceId !== 'SRC-ARAPAHOE-COUNTY-PARCEL-GIS' && /ARAPAHOE.*(TAX_PAYMENT|TAX_EXTRACT|CERTIFICATE|LIEN|PUBLIC_TRUSTEE|RECORDER|GIS|ASSESSOR_VALUE_AUTHORITY)/i.test(`${item.sourceId} ${item.category}`)).length, 0, 'Arapahoe Treasurer Registry MVV must not conflate Treasurer identity with adjacent domains.');
 assert.doesNotMatch(arapahoeTreasurerText, /EXP-|SRA-|provider aggregate|wildcard County Treasurer/i);
 
 const adamsTreasurerSourceId = 'SRC-ADAMS-COUNTY-TREASURER';
@@ -919,6 +919,52 @@ if (fs.existsSync('lib/sourceQualityBoulderCountyParcelGisEvidence.ts')) {
   assert.match(parcelGisEvidence, /CERTIFICATION_REFERENCE/, 'Parcel GIS evidence must remain certification-reference-only.');
   assert.doesNotMatch(parcelGisEvidence, /getReieSourceRegistry|sourceRegistry/, 'Parcel GIS evidence must not mutate or depend on Registry implementation state.');
   assert.doesNotMatch(parcelGisEvidence, /RIGHTS_VERIFIED|TECHNICAL_ACCESS_READY|FRESHNESS_VERIFIED|PROVENANCE_COMPLETE|ACTIVE_AUTHORIZED/, 'Parcel GIS evidence must not upgrade rights, access, freshness, provenance, or activation posture.');
+}
+
+const arapahoeParcelGisSourceId = 'SRC-ARAPAHOE-COUNTY-PARCEL-GIS';
+assert.equal(registry.records.filter((item) => item.sourceId === arapahoeParcelGisSourceId).length, 1, 'Arapahoe Parcel GIS source must exist exactly once.');
+const arapahoeParcelGis = record(arapahoeParcelGisSourceId);
+const arapahoeParcelGisText = JSON.stringify(arapahoeParcelGis);
+assert.equal(arapahoeParcelGis.publicName, 'Arapahoe County Parcels');
+assert.equal(arapahoeParcelGis.responsibleOrganization, 'Arapahoe County Mapping / GIS');
+assert.equal(arapahoeParcelGis.officialUrl, null);
+assert.equal(arapahoeParcelGis.sourceClass, 'AUTHORITATIVE_SOURCE');
+assert.equal(arapahoeParcelGis.category, 'PARCEL_GEOMETRY');
+assert.equal(arapahoeParcelGis.authorizationState, 'AWAITING_PROVIDER_CONFIRMATION');
+assert.equal(arapahoeParcelGis.productionActivationState, 'BLOCKED_NOT_AUTHORIZED');
+assert.equal(arapahoeParcelGis.claimEligible, false);
+assert.equal(arapahoeParcelGis.customerStatus, 'Blocked / not authorized');
+assert.match(arapahoeParcelGis.currentReieUse, /Exact base Parcels source identity only/);
+assert.match(arapahoeParcelGis.currentReieUse, /no parcel geometry/);
+assert.match(arapahoeParcelGis.currentReieUse, /no .* retrieval/);
+assert.match(arapahoeParcelGis.currentReieUse, /no .* customer display/);
+for (const firewall of [
+  'PARCEL_GEOMETRY_NOT_OWNERSHIP',
+  'PARCEL_GEOMETRY_NOT_LEGAL_DESCRIPTION',
+  'PARCEL_GEOMETRY_NOT_ASSESSOR_RECORD',
+  'PARCEL_GEOMETRY_NOT_TITLE',
+  'GIS_DATASET_NOT_DISPLAY_OR_USE_AUTHORITY',
+  'OPEN_DATA_NOT_UNRESTRICTED_OR_REUSE_READY',
+  'PUBLIC_OR_GOVERNMENT_SOURCE_NOT_UNRESTRICTED_OR_VERIFIED_OR_COMPLETE',
+  'ARAPAHOE_PARCELS_NOT_ASSESSOR_PARCELS',
+  'ASSESSOR_PARCELS_DERIVED_ENRICHED_LAYER_NOT_BASE_GEOMETRY_AUTHORITY',
+  'AUMENTUM_DATAMART_NOT_PARCEL_GEOMETRY_AUTHORITY',
+  'ARAPAMAP_NOT_PARCEL_SOURCE_IDENTITY',
+  'ADDRESS_PARCEL_INFO_NOT_PARCEL_SOURCE_IDENTITY',
+  'TAX_MAPS_DERIVATIVE_NOT_BASE_PARCEL_SOURCE',
+]) assert.match(arapahoeParcelGisText, new RegExp(firewall));
+assert.doesNotMatch(arapahoeParcelGisText, /RIGHTS = VERIFIED|TECHNICAL ACCESS = READY|FRESHNESS = VERIFIED|ATTRIBUTION = REQUIRED|PROVENANCE = COMPLETE/);
+assert.equal(registry.records.filter((item) => item.sourceId !== arapahoeParcelGisSourceId && /^SRC-ARAPAHOE-COUNTY-PARCEL-(?!GIS$)/.test(item.sourceId)).length, 0, 'Unknown speculative Arapahoe County parcel source ids must reject.');
+assert.match(read('lib/sourceQualityOperationalManifestData.ts'), /ARAPAHOE_COUNTY_PARCEL_GIS_SOURCE_ID/);
+if (fs.existsSync('lib/sourceQualityArapahoeCountyParcelGisEvidence.ts')) {
+  const arapahoeParcelGisEvidence = read('lib/sourceQualityArapahoeCountyParcelGisEvidence.ts');
+  assert.match(arapahoeParcelGisEvidence, /ARAPAHOE_COUNTY_PARCEL_GIS_SOURCE_ID/, 'Arapahoe Parcel GIS evidence must bind through the canonical exact source identity constant.');
+  assert.match(arapahoeParcelGisEvidence, /CERT-ARAPAHOE-COUNTY-PARCEL-GIS-SOURCE-QUALITY-EVIDENCE-001/, 'Arapahoe Parcel GIS evidence must use source-specific certification.');
+  assert.match(arapahoeParcelGisEvidence, /COUNTY_GIS_PARCEL_GEOMETRY/, 'Arapahoe Parcel GIS evidence must preserve the canonical GIS class.');
+  assert.match(arapahoeParcelGisEvidence, /CERTIFICATION_REFERENCE/, 'Arapahoe Parcel GIS evidence must remain certification-reference-only.');
+  assert.match(arapahoeParcelGisEvidence, /ASSESSOR_PARCELS_DERIVED_ENRICHED_LAYER_NOT_BASE_GEOMETRY_AUTHORITY/);
+  assert.doesNotMatch(arapahoeParcelGisEvidence, /getReieSourceRegistry|sourceRegistry/);
+  assert.doesNotMatch(arapahoeParcelGisEvidence, /RIGHTS_VERIFIED|TECHNICAL_ACCESS_READY|FRESHNESS_VERIFIED|PROVENANCE_COMPLETE|ACTIVE_AUTHORIZED/);
 }
 
 const recorderSourceId = 'SRC-BOULDER-COUNTY-RECORDER-INDEX';

@@ -19,6 +19,7 @@ export const GEOSPATIAL_SOURCE_QUALITY_CONVERSION_ALLOWED_SOURCE_IDS = Object.fr
   'SRC-BCOD-ADDRESS-POINTS',
   'SRC-BCOD-PARK-BOUNDARIES',
   'SRC-BOULDER-COUNTY-PARCEL-GIS',
+  'SRC-ARAPAHOE-COUNTY-PARCEL-GIS',
 ] as const);
 
 export type GeospatialSourceQualityConversionSourceClass =
@@ -137,6 +138,7 @@ const SOURCE_CLASSES: Record<(typeof GEOSPATIAL_SOURCE_QUALITY_CONVERSION_ALLOWE
   'SRC-BCOD-ADDRESS-POINTS': 'COUNTY_GIS_ADDRESS_POINTS',
   'SRC-BCOD-PARK-BOUNDARIES': 'COUNTY_GIS_PARK_BOUNDARIES',
   'SRC-BOULDER-COUNTY-PARCEL-GIS': 'COUNTY_GIS_PARCEL_GEOMETRY',
+  'SRC-ARAPAHOE-COUNTY-PARCEL-GIS': 'COUNTY_GIS_PARCEL_GEOMETRY',
 };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -203,7 +205,7 @@ function validSourceSpecificCertification(
   certificationReference: SourceEvidenceCertificationReference,
   references: readonly GeospatialStructuredEvidenceReference[],
 ): boolean {
-  if (sourceId !== 'SRC-BOULDER-COUNTY-PARCEL-GIS') return true;
+  if (sourceId !== 'SRC-BOULDER-COUNTY-PARCEL-GIS' && sourceId !== 'SRC-ARAPAHOE-COUNTY-PARCEL-GIS') return true;
   return certificationReference.certificationId.includes('PARCEL-GIS')
     && references.every((reference) => reference.evidenceReferenceId.includes('PARCEL-GIS'));
 }

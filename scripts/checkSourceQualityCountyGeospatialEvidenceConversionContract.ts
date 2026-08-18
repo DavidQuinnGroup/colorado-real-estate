@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises';
 
 import {
   BOULDER_COUNTY_PARCEL_GIS_SOURCE_ID,
+  ARAPAHOE_COUNTY_PARCEL_GIS_SOURCE_ID,
   BCOD_ADDRESS_POINTS_SOURCE_ID,
   BCOD_PARK_BOUNDARIES_SOURCE_ID,
   COUNTY_GEOSPATIAL_SOURCE_QUALITY_CONVERSION_ALLOWED_SOURCE_IDS,
@@ -31,6 +32,7 @@ assert.deepEqual(COUNTY_GEOSPATIAL_SOURCE_QUALITY_CONVERSION_ALLOWED_SOURCE_IDS,
   'SRC-BCOD-ADDRESS-POINTS',
   'SRC-BCOD-PARK-BOUNDARIES',
   'SRC-BOULDER-COUNTY-PARCEL-GIS',
+  'SRC-ARAPAHOE-COUNTY-PARCEL-GIS',
 ]);
 assert.equal(valid.classification, 'COUNTY_GEOSPATIAL_EVIDENCE_CONVERSION_VALID');
 assert.equal(valid.sourceId, BCOD_ADDRESS_POINTS_SOURCE_ID);
@@ -56,7 +58,7 @@ assert.equal(valid.inputFingerprint, generic.inputFingerprint);
 assert.equal(valid.conversionFingerprint, generic.conversionFingerprint);
 
 const registry = getReieSourceRegistry();
-for (const sourceId of [BCOD_ADDRESS_POINTS_SOURCE_ID, BCOD_PARK_BOUNDARIES_SOURCE_ID, BOULDER_COUNTY_PARCEL_GIS_SOURCE_ID]) {
+for (const sourceId of [BCOD_ADDRESS_POINTS_SOURCE_ID, BCOD_PARK_BOUNDARIES_SOURCE_ID, BOULDER_COUNTY_PARCEL_GIS_SOURCE_ID, ARAPAHOE_COUNTY_PARCEL_GIS_SOURCE_ID]) {
   const source = registry.records.find((record) => record.sourceId === sourceId);
   assert.ok(source);
   assert.equal(source.sourceClass, 'AUTHORITATIVE_SOURCE');
@@ -113,6 +115,30 @@ assert.equal(convertCountyGeospatialStructuredEvidence({
   sourceConfirmation: { sourceId: BOULDER_COUNTY_PARCEL_GIS_SOURCE_ID, confirmationClass: 'EXACT_SOURCE_ID_CONFIRMED', reviewedAt: '2026-08-16' },
   evidenceReferences: [{ ...countyAddressRequest.evidenceReferences[0]!, sourceId: BOULDER_COUNTY_PARCEL_GIS_SOURCE_ID }],
 }).classification, 'COUNTY_GEOSPATIAL_CERTIFICATION_REQUIRED');
+
+const arapahoeParcel = convertCountyGeospatialStructuredEvidence({
+  ...countyAddressRequest,
+  sourceId: ARAPAHOE_COUNTY_PARCEL_GIS_SOURCE_ID,
+  sourceClass: 'COUNTY_GIS_PARCEL_GEOMETRY',
+  sourceConfirmation: { sourceId: ARAPAHOE_COUNTY_PARCEL_GIS_SOURCE_ID, confirmationClass: 'EXACT_SOURCE_ID_CONFIRMED', reviewedAt: '2026-08-17' },
+  evidenceReferences: [{
+    ...countyAddressRequest.evidenceReferences[0]!,
+    sourceId: ARAPAHOE_COUNTY_PARCEL_GIS_SOURCE_ID,
+    evidenceReferenceId: 'SQE-ARAPAHOE-COUNTY-PARCEL-GIS-CERT-001',
+  }],
+  certificationReference: {
+    ...countyAddressRequest.certificationReference!,
+    certificationId: 'CERT-ARAPAHOE-COUNTY-PARCEL-GIS-SOURCE-QUALITY-EVIDENCE-001',
+    linkageReviewedDate: '2026-08-17',
+  },
+  reviewedAt: '2026-08-17',
+});
+assert.equal(arapahoeParcel.classification, 'COUNTY_GEOSPATIAL_EVIDENCE_CONVERSION_VALID');
+assert.equal(arapahoeParcel.sourceId, ARAPAHOE_COUNTY_PARCEL_GIS_SOURCE_ID);
+assert.equal(arapahoeParcel.normalized?.source?.declaredActivationPosture, 'BLOCKED_NOT_AUTHORIZED');
+assert.equal(arapahoeParcel.normalized?.source?.claimEligible, false);
+assert.equal(arapahoeParcel.control?.classification, 'INSUFFICIENT_EVIDENCE');
+assert.notEqual(arapahoeParcel.conversionFingerprint, parcel.conversionFingerprint);
 
 const city = convertCountyGeospatialStructuredEvidence({
   ...countyAddressRequest,

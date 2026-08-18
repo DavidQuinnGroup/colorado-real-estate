@@ -25,6 +25,7 @@ assert.deepEqual(GEOSPATIAL_SOURCE_QUALITY_CONVERSION_ALLOWED_SOURCE_IDS, [
   'SRC-BCOD-ADDRESS-POINTS',
   'SRC-BCOD-PARK-BOUNDARIES',
   'SRC-BOULDER-COUNTY-PARCEL-GIS',
+  'SRC-ARAPAHOE-COUNTY-PARCEL-GIS',
 ]);
 
 const valid = convertGeospatialStructuredEvidence(BCOD_ADDRESS_POINTS_SYNTHETIC_GEOSPATIAL_CONVERSION_REQUEST);
@@ -126,6 +127,30 @@ assert.equal(parcelAttempt.control?.classification, 'INSUFFICIENT_EVIDENCE');
 assert.match(parcelAttempt.inputFingerprint, /^source-quality-fingerprint:gis-public-geospatial-input:v1:sha256:[0-9a-f]{64}$/);
 assert.match(parcelAttempt.conversionFingerprint, /^source-quality-fingerprint:gis-public-geospatial-conversion:v1:sha256:[0-9a-f]{64}$/);
 assert.notEqual(parcelAttempt.conversionFingerprint, valid.conversionFingerprint);
+
+const arapahoeParcelAttempt = convertGeospatialStructuredEvidence({
+  ...BCOD_ADDRESS_POINTS_SYNTHETIC_GEOSPATIAL_CONVERSION_REQUEST,
+  sourceId: 'SRC-ARAPAHOE-COUNTY-PARCEL-GIS',
+  sourceClass: 'COUNTY_GIS_PARCEL_GEOMETRY',
+  sourceConfirmation: { sourceId: 'SRC-ARAPAHOE-COUNTY-PARCEL-GIS', confirmationClass: 'EXACT_SOURCE_ID_CONFIRMED', reviewedAt: '2026-08-17' },
+  evidenceReferences: [{
+    ...BCOD_ADDRESS_POINTS_SYNTHETIC_GEOSPATIAL_CONVERSION_REQUEST.evidenceReferences[0]!,
+    sourceId: 'SRC-ARAPAHOE-COUNTY-PARCEL-GIS',
+    evidenceReferenceId: 'SQE-ARAPAHOE-COUNTY-PARCEL-GIS-CERT-001',
+  }],
+  certificationReference: {
+    ...BCOD_ADDRESS_POINTS_SYNTHETIC_GEOSPATIAL_CONVERSION_REQUEST.certificationReference!,
+    certificationId: 'CERT-ARAPAHOE-COUNTY-PARCEL-GIS-SOURCE-QUALITY-EVIDENCE-001',
+    linkageReviewedDate: '2026-08-17',
+  },
+  reviewedAt: '2026-08-17',
+});
+assert.equal(arapahoeParcelAttempt.classification, 'GEOSPATIAL_EVIDENCE_CONVERSION_VALID');
+assert.equal(arapahoeParcelAttempt.sourceId, 'SRC-ARAPAHOE-COUNTY-PARCEL-GIS');
+assert.equal(arapahoeParcelAttempt.normalized?.source?.declaredActivationPosture, 'BLOCKED_NOT_AUTHORIZED');
+assert.equal(arapahoeParcelAttempt.normalized?.source?.claimEligible, false);
+assert.equal(arapahoeParcelAttempt.control?.classification, 'INSUFFICIENT_EVIDENCE');
+assert.notEqual(arapahoeParcelAttempt.conversionFingerprint, parcelAttempt.conversionFingerprint);
 
 assert.equal(convertGeospatialStructuredEvidence({
   ...BCOD_ADDRESS_POINTS_SYNTHETIC_GEOSPATIAL_CONVERSION_REQUEST,

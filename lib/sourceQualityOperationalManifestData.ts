@@ -54,6 +54,12 @@ import {
   convertBoulderCountyParcelGisSourceQualityEvidence,
 } from './sourceQualityBoulderCountyParcelGisEvidence';
 import {
+  ARAPAHOE_COUNTY_PARCEL_GIS_SOURCE_ID,
+  ARAPAHOE_COUNTY_PARCEL_GIS_SOURCE_QUALITY_CERTIFICATION,
+  ARAPAHOE_COUNTY_PARCEL_GIS_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT,
+  convertArapahoeCountyParcelGisSourceQualityEvidence,
+} from './sourceQualityArapahoeCountyParcelGisEvidence';
+import {
   BOULDER_COUNTY_RECORDER_INDEX_SOURCE_ID,
   BOULDER_COUNTY_RECORDER_INDEX_SOURCE_QUALITY_CERTIFICATION,
   BOULDER_COUNTY_RECORDER_INDEX_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT,
@@ -362,6 +368,18 @@ export const SOURCE_QUALITY_OPERATIONAL_MANIFEST_DATA: SourceQualityOperationalM
       expectedEvidenceClasses: ['CERTIFICATION'],
       certificationReference: BOULDER_COUNTY_PARCEL_GIS_SOURCE_QUALITY_CERTIFICATION,
       reviewedAt: BOULDER_COUNTY_PARCEL_GIS_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT,
+      reviewAuthorityClass: 'DELEGATED_SOURCE_GOVERNANCE_REVIEW',
+      limitationCodes: [],
+    },
+    {
+      schemaVersion: SOURCE_QUALITY_OPERATIONAL_MANIFEST_SCHEMA_VERSION,
+      manifestId,
+      sourceId: ARAPAHOE_COUNTY_PARCEL_GIS_SOURCE_ID,
+      inclusionClass: 'STRUCTURED_EVIDENCE_WITH_KNOWN_GAPS',
+      linkages: convertArapahoeCountyParcelGisSourceQualityEvidence().linkages,
+      expectedEvidenceClasses: ['CERTIFICATION'],
+      certificationReference: ARAPAHOE_COUNTY_PARCEL_GIS_SOURCE_QUALITY_CERTIFICATION,
+      reviewedAt: ARAPAHOE_COUNTY_PARCEL_GIS_SOURCE_QUALITY_EVIDENCE_REVIEWED_AT,
       reviewAuthorityClass: 'DELEGATED_SOURCE_GOVERNANCE_REVIEW',
       limitationCodes: [],
     },
