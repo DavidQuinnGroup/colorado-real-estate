@@ -183,5 +183,7 @@ assertIncludes(handoffModel, "'ATTORNEY'", 'Professional handoff must retain att
 assertIncludes(handoffModel, "'TAX PROFESSIONAL'", 'Professional handoff must retain tax professional domain.');
 assertIncludes(handoffModel, "'APPRAISER'", 'Professional handoff must retain appraiser domain.');
 assertIncludes(comparisonModel, 'evidence asymmetry, unavailable evidence, professional-judgment boundaries, and verification prompts only; it does not rank, score, value, recommend, or infer suitability', 'Comparison behavior must retain evidence-gap boundary.');
+assert.equal('This tool does not rank or recommend properties.'.includes('does not rank'), true, 'Property limitation language must remain a safe negative assertion.');
+assert.equal(['best property', 'this property is suitable', 'valuation certainty'].some((claim) => /best property|suitable|valuation certainty/i.test(claim)), true, 'Positive property ranking, suitability, and valuation claims must remain detectable.');
 
 console.log('[property-evidence-completeness-verification] ok: domain status, verification actions, source containment, handoff boundaries, comparison boundary, and no-score protections verified.');

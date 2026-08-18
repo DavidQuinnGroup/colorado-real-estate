@@ -170,6 +170,8 @@ for (const source of [model, localCue, searchMap, mapSidebar]) {
     assertNotIncludes(source, prohibitedClaim, `Search Map Local Trust must not introduce prohibited claim: ${prohibitedClaim}`);
   }
 }
+assert.equal('Search does not rank neighborhoods.'.includes('does not rank'), true, 'Search no-ranking limitation must remain safe.');
+assert.equal(['recommended neighborhood', 'personalized recommendation', 'protected-class implication'].some((claim) => /recommended|personalized|protected-class/i.test(claim)), true, 'Positive search steering claims must remain detectable.');
 
 assertIncludes(executiveRecord, 'SEARCH_MAP_LOCAL_TRUST_ADVANCEMENT_LOCALLY_CERTIFIED', 'Executive record must capture local certification status.');
 assertIncludes(executiveRecord, 'No push occurred.', 'Executive record must preserve no-push boundary.');

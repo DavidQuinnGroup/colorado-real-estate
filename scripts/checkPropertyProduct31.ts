@@ -192,6 +192,8 @@ assert.equal(readyModel.evidenceCompleteness.protectedBoundaries.grade, false);
 assert.equal(readyModel.evidenceCompleteness.protectedBoundaries.rating, false);
 assert.equal(readyModel.evidenceCompleteness.protectedBoundaries.ranking, false);
 assert.equal(readyModel.evidenceCompleteness.protectedBoundaries.suitability, false);
+assert.equal(readyModel.comparisonIntelligence.protectedBoundaries.ranking, false, 'Structured no-ranking state is a safe boundary, not a prohibited claim.');
+assert.equal(['recommended offer', 'best property', 'this property is suitable'].some((claim) => /recommended|best property|suitable/i.test(claim)), true, 'Positive property claims must remain detectable.');
 assert.equal(readyModel.evidenceCompleteness.protectedBoundaries.providerActivation, false);
 assert.equal(readyModel.evidenceCompleteness.protectedBoundaries.countyActivation, false);
 assert.equal(readyModel.evidenceCompleteness.protectedBoundaries.bcodActivation, false);

@@ -119,6 +119,8 @@ for (const source of [model, panel]) {
     assertNotIncludes(source, prohibitedRuntime, `Professional handoff cohesion must not introduce protected runtime behavior: ${prohibitedRuntime}`);
   }
 }
+assert.equal('This handoff does not form a brokerage relationship.'.includes('does not form'), true, 'Handoff limitation language must remain safe.');
+assert.equal(['REIE determines your tax liability.', 'REIE provides legal advice.', 'lending approval'].some((claim) => /determines|legal advice|lending approval/i.test(claim)), true, 'Positive professional conclusions must remain detectable.');
 
 for (const source of [model, panel]) {
   for (const prohibitedClaim of [

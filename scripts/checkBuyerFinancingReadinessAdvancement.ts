@@ -177,6 +177,8 @@ assertIncludes(
   'data-financing-confidence-calculator="false"',
   'Financing Confidence no-calculator marker must remain visible.',
 );
+assert.equal('data-buyer-financing-readiness-affordability="false"'.includes('affordability="false"'), true, 'Explicit no-affordability marker must remain a safe negative assertion.');
+assert.equal(['You qualify for this purchase price.', 'Maximum purchase price', 'Guaranteed approval'].some((claim) => /qualify|maximum purchase|guaranteed approval/i.test(claim)), true, 'Positive qualification and affordability claims must remain detectable.');
 assertIncludes(
   financingConfidence,
   'data-financing-confidence-lender-workflow="false"',

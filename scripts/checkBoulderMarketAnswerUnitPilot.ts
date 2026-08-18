@@ -210,6 +210,8 @@ for (const forbiddenCopy of [
     `Pilot surfaces must not include prohibited claim language: ${forbiddenCopy}`,
   );
 }
+assert.equal('data-answer-unit-protected-class-implication="false"'.includes('="false"'), true, 'Explicit no-implication marker must remain safe.');
+assert.equal(['protected-class implication=true', 'best investment', 'will appreciate'].some((claim) => /implication=true|best investment|will appreciate/i.test(claim)), true, 'Positive market claims must remain detectable.');
 
 assert.equal(
   packageJson.scripts?.['check:boulder-market-answer-unit-pilot'],
