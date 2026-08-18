@@ -193,6 +193,7 @@
     "check:neighborhood-submarket-search-market-relationship": "jiti scripts/checkNeighborhoodSubmarketSearchMarketRelationship.ts",
     "check:neighborhood-submarket-internal-source-context-consumer-adapter": "jiti scripts/checkNeighborhoodSubmarketInternalSourceContextConsumerAdapter.ts",
     "check:neighborhood-submarket-property-relationships": "jiti scripts/checkNeighborhoodSubmarketPropertyRelationships.ts",
+    "check:neighborhood-submarket-map-relationship-safety": "jiti scripts/checkNeighborhoodSubmarketMapRelationshipSafety.ts",
     "check:five-city-decision-guide-authority-wave": "npm run worker:build && node --experimental-specifier-resolution=node dist/scripts/checkFiveCityDecisionGuideAuthorityWave.js",
     "check:wave-2-city-orientation-guide-authority-expansion": "npm run worker:build && node --experimental-specifier-resolution=node dist/scripts/checkWave2CityOrientationGuideAuthorityExpansion.js",
     "check:decision-journey-experience": "npm run worker:build && node dist/scripts/checkDecisionJourneyExperience.js",
