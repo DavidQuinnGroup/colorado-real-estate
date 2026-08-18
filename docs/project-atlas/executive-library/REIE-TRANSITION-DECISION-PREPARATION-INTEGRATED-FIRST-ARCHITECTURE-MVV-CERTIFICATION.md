@@ -1,0 +1,3 @@
+# REIE Transition Decision Preparation Integrated-First Architecture MVV
+
+`IMPLEMENTED_INTERNAL_ARCHITECTURE_ONLY`. The finite Phase 1 contract organizes explicit customer-selected transition questions, verification needs, recurring-cost categories, accessibility questions, family-conversation preparation, source limitations, and professional handoff. It has no route, UI, persistence, source activation, inference, recommendation, age/senior classification, health/care profile, financial conclusion, delegation, document vault, or activation behavior. Every result remains `ADMIN_ONLY` and `NOT_AUTHORIZED`.
