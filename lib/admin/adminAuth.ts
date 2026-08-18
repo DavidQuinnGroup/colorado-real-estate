@@ -3,13 +3,17 @@ import { NextResponse } from 'next/server.js';
 
 export const ADMIN_MACHINE_KEY_COOKIE = 'reie_admin_key';
 export const ADMIN_SESSION_COOKIE = 'reie_admin_session';
+export const AGENT_SESSION_COOKIE = 'reie_agent_session';
 export const ADMIN_SESSION_MAX_AGE_SECONDS = 8 * 60 * 60;
 export const ADMIN_SESSION_CONTRACT_VERSION = 'EPARB-REVIEW-001-ADMIN-SESSION-FOUNDATION';
+export const AGENT_SESSION_CONTRACT_VERSION = 'REIE-AGENT-PER-USER-CREDENTIAL-IDENTITY-AND-ROLE-ALLOWLIST-MVV';
 
-export type AdminIdentityType = 'HUMAN_ADMIN' | 'MACHINE_ADMIN' | 'DEVELOPMENT_OPERATOR';
-export type AdminRole = 'REPOSITORY_ADMIN' | 'EXECUTIVE_ADMIN' | 'OPERATIONS_ADMIN' | 'SERVICE_ADMIN';
+export type AdminIdentityType = 'HUMAN_ADMIN' | 'HUMAN_AGENT' | 'MACHINE_ADMIN' | 'DEVELOPMENT_OPERATOR';
+export type HumanAdminRole = 'REPOSITORY_ADMIN' | 'EXECUTIVE_ADMIN' | 'OPERATIONS_ADMIN' | 'SERVICE_ADMIN';
+export type AdminRole = 'AGENT' | HumanAdminRole;
 export type AdminAuthMechanism =
   | 'HUMAN_SESSION'
+  | 'HUMAN_AGENT_SESSION'
   | 'X_ADMIN_KEY'
   | 'BEARER_ADMIN_KEY'
   | 'LEGACY_ADMIN_KEY_COOKIE'
@@ -38,7 +42,20 @@ export type AdminProtectedSurfaceClassification = {
 export type AdminSessionPayload = {
   contractVersion: typeof ADMIN_SESSION_CONTRACT_VERSION;
   identityType: 'HUMAN_ADMIN';
-  role: AdminRole;
+  role: HumanAdminRole;
+  issuedAt: number;
+  expiresAt: number;
+  sessionVersion: string;
+};
+
+export type AgentIdentityIssuer = 'PER_USER_CREDENTIAL' | 'EXTERNAL_IDP';
+
+export type AgentSessionPayload = {
+  contractVersion: typeof AGENT_SESSION_CONTRACT_VERSION;
+  identityType: 'HUMAN_AGENT';
+  issuer: 'PER_USER_CREDENTIAL';
+  subject: string;
+  role: 'AGENT';
   issuedAt: number;
   expiresAt: number;
   sessionVersion: string;
@@ -72,6 +89,7 @@ export const adminProtectedSurfaceClassifications: AdminProtectedSurfaceClassifi
   surface('/admin', 'BROWSER_ADMIN_PAGE', ['HUMAN_ADMIN', 'MACHINE_ADMIN', 'DEVELOPMENT_OPERATOR'], ['REPOSITORY_ADMIN', 'SERVICE_ADMIN'], ['HUMAN_SESSION', 'X_ADMIN_KEY', 'BEARER_ADMIN_KEY', 'LEGACY_ADMIN_KEY_COOKIE', 'DEVELOPMENT_NO_KEY_FALLBACK'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),
   surface('/admin/repository', 'BROWSER_ADMIN_PAGE', ['HUMAN_ADMIN', 'MACHINE_ADMIN', 'DEVELOPMENT_OPERATOR'], ['REPOSITORY_ADMIN', 'SERVICE_ADMIN'], ['HUMAN_SESSION', 'X_ADMIN_KEY', 'BEARER_ADMIN_KEY', 'LEGACY_ADMIN_KEY_COOKIE', 'DEVELOPMENT_NO_KEY_FALLBACK'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),
   surface('/admin/repository/executive-operations-dashboard', 'BROWSER_ADMIN_PAGE', ['HUMAN_ADMIN', 'MACHINE_ADMIN', 'DEVELOPMENT_OPERATOR'], ['EXECUTIVE_ADMIN', 'REPOSITORY_ADMIN', 'SERVICE_ADMIN'], ['HUMAN_SESSION', 'X_ADMIN_KEY', 'BEARER_ADMIN_KEY', 'LEGACY_ADMIN_KEY_COOKIE', 'DEVELOPMENT_NO_KEY_FALLBACK'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),
+  surface('/admin/agent-briefing-preparation', 'BROWSER_ADMIN_PAGE', ['HUMAN_AGENT', 'HUMAN_ADMIN'], ['AGENT', 'REPOSITORY_ADMIN'], ['HUMAN_AGENT_SESSION', 'HUMAN_SESSION'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),
   surface('/api/admin/enterprise/operational-kpis', 'DUAL_ACCESS_ADMIN_API', ['HUMAN_ADMIN', 'MACHINE_ADMIN', 'DEVELOPMENT_OPERATOR'], ['EXECUTIVE_ADMIN', 'REPOSITORY_ADMIN', 'SERVICE_ADMIN'], ['HUMAN_SESSION', 'X_ADMIN_KEY', 'BEARER_ADMIN_KEY', 'DEVELOPMENT_NO_KEY_FALLBACK'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),
   surface('/api/admin/enterprise/operational-summary', 'DUAL_ACCESS_ADMIN_API', ['HUMAN_ADMIN', 'MACHINE_ADMIN', 'DEVELOPMENT_OPERATOR'], ['EXECUTIVE_ADMIN', 'REPOSITORY_ADMIN', 'SERVICE_ADMIN'], ['HUMAN_SESSION', 'X_ADMIN_KEY', 'BEARER_ADMIN_KEY', 'DEVELOPMENT_NO_KEY_FALLBACK'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),
   surface('/api/admin/toggle-access', 'MUTATING_ADMIN_API', ['MACHINE_ADMIN', 'DEVELOPMENT_OPERATOR'], ['SERVICE_ADMIN', 'REPOSITORY_ADMIN'], ['X_ADMIN_KEY', 'BEARER_ADMIN_KEY', 'DEVELOPMENT_NO_KEY_FALLBACK'], 'MUTATION_CAPABLE', 'MUTATING_ADMIN', true),
@@ -85,6 +103,27 @@ export const adminProtectedSurfaceClassifications: AdminProtectedSurfaceClassifi
 
 export function getConfiguredAdminCredential() {
   return process.env.REIE_ADMIN_API_KEY || process.env.ADMIN_API_KEY || null;
+}
+
+export function getConfiguredAgentCredential() {
+  return process.env.REIE_AGENT_CREDENTIAL || null;
+}
+
+export function getConfiguredAgentSubject() {
+  const subject = process.env.REIE_AGENT_SUBJECT?.trim();
+  return subject || null;
+}
+
+export function getAgentSessionVersion() {
+  return process.env.REIE_AGENT_SESSION_VERSION || '1';
+}
+
+export function resolveAgentRole(identity: { issuer: AgentIdentityIssuer; subject: string }) {
+  // Authorization is keyed only by the stable internal subject so a future verified issuer can reuse this mapping.
+  const configuredSubject = getConfiguredAgentSubject();
+  if (!configuredSubject || process.env.REIE_AGENT_SUBJECT_STATUS !== 'ACTIVE') return null;
+  if (!constantTimeEqual(identity.subject, configuredSubject)) return null;
+  return 'AGENT' as const;
 }
 
 export function getAdminSessionVersion() {
@@ -109,6 +148,14 @@ export function getExpiredAdminSessionCookieOptions(isProduction = process.env.N
   };
 }
 
+export function getAgentSessionCookieOptions(isProduction = process.env.NODE_ENV === 'production') {
+  return getAdminSessionCookieOptions(isProduction);
+}
+
+export function getExpiredAgentSessionCookieOptions(isProduction = process.env.NODE_ENV === 'production') {
+  return getExpiredAdminSessionCookieOptions(isProduction);
+}
+
 export function sanitizeAdminReturnPath(value: string | null | undefined) {
   if (!value) return '/admin';
   const trimmed = value.trim();
@@ -117,6 +164,10 @@ export function sanitizeAdminReturnPath(value: string | null | undefined) {
   if (trimmed.startsWith('/api/')) return '/admin';
   if (trimmed.startsWith('/admin-auth')) return '/admin';
   return trimmed;
+}
+
+export function sanitizeAgentReturnPath(value: string | null | undefined) {
+  return value === '/admin/agent-briefing-preparation' ? value : '/admin/agent-briefing-preparation';
 }
 
 export function classifyAdminSurface(pathname: string, method = 'GET'): AdminProtectedSurfaceClassification {
@@ -155,7 +206,7 @@ export function readMachineCredential(request: NextRequest) {
 
 export async function createAdminSessionCookieValue(options: {
   nowMs?: number;
-  role?: AdminRole;
+  role?: HumanAdminRole;
   sessionVersion?: string;
 } = {}) {
   const nowMs = options.nowMs ?? Date.now();
@@ -168,7 +219,7 @@ export async function createAdminSessionCookieValue(options: {
     sessionVersion: options.sessionVersion ?? getAdminSessionVersion(),
   };
   const encodedPayload = base64UrlEncode(JSON.stringify(payload));
-  const signature = await signSessionPayload(encodedPayload);
+  const signature = await signSessionPayload(encodedPayload, getConfiguredAdminCredential());
   return `${encodedPayload}.${signature}`;
 }
 
@@ -186,7 +237,7 @@ export async function validateAdminSessionCookieValue(
   const [encodedPayload, signature, extra] = value.split('.');
   if (!encodedPayload || !signature || extra) return { valid: false, reason: 'INVALID_SESSION' };
 
-  const expectedSignature = await signSessionPayload(encodedPayload);
+  const expectedSignature = await signSessionPayload(encodedPayload, getConfiguredAdminCredential());
   if (!constantTimeEqual(signature, expectedSignature)) return { valid: false, reason: 'INVALID_SESSION' };
 
   let payload: AdminSessionPayload;
@@ -220,6 +271,77 @@ export async function validateAdminCredentialSubmission(candidate: string) {
   return constantTimeEqual(candidate, configuredCredential);
 }
 
+export async function createAgentSessionCookieValue(options: {
+  nowMs?: number;
+  subject?: string;
+  sessionVersion?: string;
+} = {}) {
+  const credential = getConfiguredAgentCredential();
+  const subject = options.subject ?? getConfiguredAgentSubject();
+  if (!credential || !subject || resolveAgentRole({ issuer: 'PER_USER_CREDENTIAL', subject }) !== 'AGENT') {
+    throw new Error('Agent identity configuration is not active.');
+  }
+  const nowMs = options.nowMs ?? Date.now();
+  const payload: AgentSessionPayload = {
+    contractVersion: AGENT_SESSION_CONTRACT_VERSION,
+    identityType: 'HUMAN_AGENT',
+    issuer: 'PER_USER_CREDENTIAL',
+    subject,
+    role: 'AGENT',
+    issuedAt: Math.floor(nowMs / 1000),
+    expiresAt: Math.floor(nowMs / 1000) + ADMIN_SESSION_MAX_AGE_SECONDS,
+    sessionVersion: options.sessionVersion ?? getAgentSessionVersion(),
+  };
+  const encodedPayload = base64UrlEncode(JSON.stringify(payload));
+  return `${encodedPayload}.${await signSessionPayload(encodedPayload, credential)}`;
+}
+
+export async function validateAgentSessionCookieValue(
+  value: string | undefined,
+  options: { nowMs?: number; sessionVersion?: string } = {},
+): Promise<
+  | { valid: true; payload: AgentSessionPayload }
+  | { valid: false; reason: 'MISSING_SESSION' | 'INVALID_SESSION' | 'EXPIRED_SESSION' | 'REVOKED_SESSION' }
+> {
+  if (!value) return { valid: false, reason: 'MISSING_SESSION' };
+  const credential = getConfiguredAgentCredential();
+  if (!credential) return { valid: false, reason: 'INVALID_SESSION' };
+  const [encodedPayload, signature, extra] = value.split('.');
+  if (!encodedPayload || !signature || extra) return { valid: false, reason: 'INVALID_SESSION' };
+  const expectedSignature = await signSessionPayload(encodedPayload, credential);
+  if (!constantTimeEqual(signature, expectedSignature)) return { valid: false, reason: 'INVALID_SESSION' };
+
+  let payload: AgentSessionPayload;
+  try {
+    payload = JSON.parse(base64UrlDecode(encodedPayload)) as AgentSessionPayload;
+  } catch {
+    return { valid: false, reason: 'INVALID_SESSION' };
+  }
+  if (
+    payload.contractVersion !== AGENT_SESSION_CONTRACT_VERSION ||
+    payload.identityType !== 'HUMAN_AGENT' ||
+    payload.issuer !== 'PER_USER_CREDENTIAL' ||
+    payload.role !== 'AGENT' ||
+    !payload.subject ||
+    !payload.issuedAt ||
+    !payload.expiresAt ||
+    !payload.sessionVersion ||
+    resolveAgentRole({ issuer: payload.issuer, subject: payload.subject }) !== 'AGENT'
+  ) return { valid: false, reason: 'INVALID_SESSION' };
+
+  const nowSeconds = Math.floor((options.nowMs ?? Date.now()) / 1000);
+  if (payload.expiresAt <= nowSeconds) return { valid: false, reason: 'EXPIRED_SESSION' };
+  if (payload.sessionVersion !== (options.sessionVersion ?? getAgentSessionVersion())) return { valid: false, reason: 'REVOKED_SESSION' };
+  return { valid: true, payload };
+}
+
+export async function validateAgentCredentialSubmission(candidate: string) {
+  const credential = getConfiguredAgentCredential();
+  const subject = getConfiguredAgentSubject();
+  if (!credential || !subject || resolveAgentRole({ issuer: 'PER_USER_CREDENTIAL', subject }) !== 'AGENT') return false;
+  return constantTimeEqual(candidate, credential);
+}
+
 export async function authorizeAdminRequest(
   request: NextRequest,
   options: {
@@ -231,6 +353,27 @@ export async function authorizeAdminRequest(
   const method = options.method ?? request.method;
   const protectedSurface = classifyAdminSurface(pathname, method);
   const configuredCredential = getConfiguredAdminCredential();
+
+  const agentSessionValue = request.cookies.get(AGENT_SESSION_COOKIE)?.value;
+  const agentSessionValidation = await validateAgentSessionCookieValue(agentSessionValue);
+  if (agentSessionValidation.valid) {
+    if (
+      protectedSurface.acceptedIdentityTypes.includes('HUMAN_AGENT') &&
+      protectedSurface.allowedMechanisms.includes('HUMAN_AGENT_SESSION') &&
+      protectedSurface.requiredRoles.includes('AGENT') &&
+      protectedSurface.mutationPosture === 'READ_ONLY'
+    ) {
+      return {
+        authenticated: true,
+        identityType: 'HUMAN_AGENT',
+        role: 'AGENT',
+        mechanism: 'HUMAN_AGENT_SESSION',
+        canMutate: false,
+        surface: protectedSurface,
+      };
+    }
+    return { authenticated: false, denialReason: 'INSUFFICIENT_SURFACE_PERMISSION', surface: protectedSurface };
+  }
 
   if (!configuredCredential) {
     if (process.env.NODE_ENV !== 'production' && protectedSurface.allowedMechanisms.includes('DEVELOPMENT_NO_KEY_FALLBACK')) {
@@ -332,8 +475,7 @@ export function isSameOriginAdminRequest(request: NextRequest) {
   return origin === request.nextUrl.origin;
 }
 
-async function signSessionPayload(encodedPayload: string) {
-  const secret = getConfiguredAdminCredential();
+async function signSessionPayload(encodedPayload: string, secret: string | null) {
   if (!secret) throw new Error('Admin session signing secret is not configured.');
   const key = await globalThis.crypto.subtle.importKey(
     'raw',

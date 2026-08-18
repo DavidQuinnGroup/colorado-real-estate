@@ -70,6 +70,7 @@
     "scripts/checkEparbAuthenticationAccessReview.ts",
     "scripts/checkEparbAdminAuthSessionFoundation.ts",
     "scripts/checkAdminAuthSafety.ts",
+    "scripts/checkAgentPerUserCredentialIdentity.ts",
     "scripts/checkReieAdjustmentsTraceability.ts",
     "scripts/checkReieFirstImpressionExperienceBaseline.ts",
     "scripts/checkReieSellerConfidenceExperience.ts",
