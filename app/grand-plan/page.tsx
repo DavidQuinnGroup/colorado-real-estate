@@ -5,6 +5,7 @@ import { CheckCircle2, Compass, FileSearch, Home, MapPinned } from 'lucide-react
 import GrandPlanIntake from '@/components/GrandPlanIntake';
 import FinancialPreparationComposition from '@/components/FinancialPreparationComposition';
 import JourneyCohesionPanel from '@/components/JourneyCohesionPanel';
+import TransitionDecisionPreparationComposition from '@/components/TransitionDecisionPreparationComposition';
 import { SITE_NAME, SITE_URL } from '@/lib/publicTrust';
 
 export const metadata: Metadata = {
@@ -256,6 +257,8 @@ export default function GrandPlanPage() {
           <GrandPlanIntake />
         </div>
       </section>
+
+      <TransitionDecisionPreparationComposition />
 
       <section className="px-5 pb-16 sm:px-8 lg:px-12" data-testid="grand-plan-cohesion-continuity">
         <div className="mx-auto w-full max-w-[1180px]">
