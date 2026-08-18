@@ -1,0 +1,3 @@
+# REIE Property Relationship Architecture MVV Certification
+
+Status: `IMPLEMENTED_INTERNAL_ARCHITECTURE_ONLY`. This finite contract separates provider, editorial, and customer observations from canonical governed candidates. Every result is non-activating and runtime assignment is permanently false. Boundary membership requires certified boundary evidence, authorized reproducible geometry, current rights/freshness, and conflict-free provenance. Niwot, Gunbarrel, and Table Mesa remain blocked; no Property record, provider, schema, route, Search, Map, Market, AEO, or persistence system is consumed or changed.
