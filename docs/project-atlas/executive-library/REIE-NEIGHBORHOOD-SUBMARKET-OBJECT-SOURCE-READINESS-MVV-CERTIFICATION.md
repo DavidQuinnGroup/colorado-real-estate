@@ -4,7 +4,7 @@
 
 Program: `REIE_NEIGHBORHOOD_SUBMARKET_OBJECT_SOURCE_READINESS_MVV`
 
-Status: `IMPLEMENTED_INTERNAL_READINESS_ONLY`
+Status: `OBJECT_SOURCE_READINESS_RECONCILED_AND_CERTIFIED`
 
 Activation state: `NOT_AUTHORIZED`
 
@@ -23,7 +23,7 @@ This certification records an internal readiness contract for geographic object 
 
 The contract is implemented in `lib/neighborhood-submarket/objectSourceReadiness.ts`.
 
-It evaluates source identity, stable references, rights, freshness, evidence, attribution, conflict, boundary, jurisdiction, editorial separation, professional verification, Fair Housing, correction, retirement, certification, and activation posture.
+It evaluates source identity, stable references, rights, freshness, typed evidence, attribution, conflict, boundary, jurisdiction, parent and governed-object relationship evidence, editorial separation, professional verification, Fair Housing, correction, retirement, certification, and activation posture.
 
 Stable references are retained as references only. Mutable source state is not copied into geographic objects.
 
@@ -33,7 +33,9 @@ Stable references are retained as references only. Mutable source state is not c
 - Stable reference evidence must be present.
 - Rights must be `APPROVED_FOR_INTERNAL_GOVERNANCE`.
 - Freshness must be `CURRENT`.
+- Governed evidence has a stable evidence identity, finite type, source reference, posture, and governed-fact flag. Supported types are object identity, object type, jurisdiction, boundary, parent relationship, and governed-object relationship.
 - Evidence observations, attribution, boundary evidence, jurisdiction evidence, correction path, and retirement policy must be present.
+- A claimed parent or other governed-object relationship must have type-matched, supported evidence; conflicts and unresolved claims fail closed.
 - Registry identity and Source Quality certification do not independently create permitted use.
 
 ## Certification State Machine
@@ -48,7 +50,7 @@ Stable references are retained as references only. Mutable source state is not c
 
 Fixtures are implemented in `lib/neighborhood-submarket/objectSourceReadinessFixtures.ts`.
 
-Coverage includes Niwot, Gunbarrel, Table Mesa, municipality, subdivision, corridor, market area, editorial-only context, unknown rights, stale source, conflicting boundary, unsupported jurisdiction, Source Registry no-authority, Source Quality no-authority, existing route no-authority, requested public activation, and a complete internal-governance-ready case.
+Coverage includes Niwot, Gunbarrel, Table Mesa, municipality, subdivision, corridor, market area, editorial-only context, unknown rights, stale source, conflicting boundary, unsupported jurisdiction, Source Registry no-authority, Source Quality no-authority, existing route no-authority, requested public activation, missing evidence identity, unknown evidence type, editorial evidence, unsupported parent relationship, stale relationship evidence, conflicting relationship evidence, and a complete internal-governance-ready case.
 
 ## Checker
 
@@ -60,7 +62,7 @@ The checker asserts deterministic readiness outcomes, protected activation state
 
 ## Certification
 
-Certified posture: `INTERNAL_SOURCE_READINESS_CONTRACT_CERTIFIED`
+Certified posture: `OBJECT_SOURCE_READINESS_RECONCILED_AND_CERTIFIED`
 
 Protected systems: `NOT_ACTIVATED`
 

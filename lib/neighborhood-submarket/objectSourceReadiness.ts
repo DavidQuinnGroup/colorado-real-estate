@@ -29,6 +29,32 @@ export type SourceUsePosture =
 
 export type ActivationState = 'NOT_AUTHORIZED';
 
+export type GovernedEvidenceType =
+  | 'OBJECT_IDENTITY'
+  | 'OBJECT_TYPE'
+  | 'JURISDICTION'
+  | 'BOUNDARY'
+  | 'PARENT_RELATIONSHIP'
+  | 'OBJECT_RELATIONSHIP';
+
+export type GovernedRelationshipType = 'WITHIN' | 'OVERLAPS' | 'ASSOCIATED_WITH' | 'ADJACENT_TO' | 'NON_JURISDICTIONAL_CONTEXT';
+
+export type GovernedReadinessEvidence = Readonly<{
+  evidenceId: string;
+  evidenceType: GovernedEvidenceType | string;
+  sourceReference: string | null;
+  posture: 'SUPPORTED' | 'CONFLICTING' | 'INSUFFICIENT' | 'UNKNOWN';
+  supportsGovernedFact: boolean;
+}>;
+
+export type GovernedRelationshipClaim = Readonly<{
+  relatedObjectId: string;
+  relationshipType: GovernedRelationshipType;
+  evidenceIds: readonly string[];
+  posture: 'SUPPORTED' | 'CONFLICTING' | 'UNRESOLVED';
+  professionalVerification: 'COMPLETE' | 'REQUIRED';
+}>;
+
 export type ObjectSourceReadinessReason =
   | 'SOURCE_IDENTITY_REQUIRED'
   | 'STABLE_REFERENCE_REQUIRED'
@@ -38,6 +64,12 @@ export type ObjectSourceReadinessReason =
   | 'RIGHTS_APPROVAL_REQUIRED'
   | 'SOURCE_FRESHNESS_CURRENT_REQUIRED'
   | 'EVIDENCE_OBSERVATION_REQUIRED'
+  | 'EVIDENCE_IDENTITY_REQUIRED'
+  | 'EVIDENCE_TYPE_REQUIRED'
+  | 'UNKNOWN_EVIDENCE_TYPE'
+  | 'EVIDENCE_SOURCE_REFERENCE_REQUIRED'
+  | 'EDITORIAL_EVIDENCE_NOT_GOVERNED_FACT_ELIGIBLE'
+  | 'EVIDENCE_POSTURE_NOT_SUPPORTED'
   | 'ATTRIBUTION_REQUIRED'
   | 'BOUNDARY_CONFLICT_REQUIRES_REVIEW'
   | 'BOUNDARY_EVIDENCE_REQUIRED'
@@ -47,6 +79,10 @@ export type ObjectSourceReadinessReason =
   | 'FAIR_HOUSING_FIREWALL_REQUIRED'
   | 'CORRECTION_PATH_REQUIRED'
   | 'RETIREMENT_POLICY_REQUIRED'
+  | 'PARENT_RELATIONSHIP_EVIDENCE_REQUIRED'
+  | 'RELATIONSHIP_EVIDENCE_REQUIRED'
+  | 'RELATIONSHIP_EVIDENCE_CONFLICT_REQUIRES_REVIEW'
+  | 'RELATIONSHIP_EVIDENCE_UNRESOLVED'
   | 'EXISTING_ROUTE_DOES_NOT_AUTHORIZE_ACTIVATION'
   | 'PUBLIC_ACTIVATION_NOT_AUTHORIZED';
 
@@ -64,6 +100,7 @@ export type ObjectSourceReadinessInput = Readonly<{
   copiedMutableSourceState: boolean;
   rights: 'APPROVED_FOR_INTERNAL_GOVERNANCE' | 'UNKNOWN' | 'RESTRICTED';
   freshness: 'CURRENT' | 'STALE' | 'UNKNOWN';
+  evidence: readonly GovernedReadinessEvidence[];
   evidenceReferences: readonly string[];
   attribution: Readonly<{
     required: boolean;
@@ -77,6 +114,14 @@ export type ObjectSourceReadinessInput = Readonly<{
     status: 'SUPPORTED' | 'UNSUPPORTED' | 'AMBIGUOUS';
     evidenceReferences: readonly string[];
   }>;
+  parentRelationship: Readonly<{
+    parentObjectId: string | null;
+    relationshipType: GovernedRelationshipType | null;
+    evidenceIds: readonly string[];
+    posture: 'SUPPORTED' | 'CONFLICTING' | 'UNRESOLVED' | 'NOT_APPLICABLE';
+    professionalVerification: 'COMPLETE' | 'REQUIRED' | 'NOT_APPLICABLE';
+  }>;
+  relationships: readonly GovernedRelationshipClaim[];
   editorialSeparation: 'FACTUAL_GOVERNANCE' | 'EDITORIAL_ONLY';
   professionalVerification: 'COMPLETE' | 'REQUIRED' | 'NOT_APPLICABLE';
   fairHousing: Readonly<{
@@ -103,6 +148,7 @@ export type ObjectSourceReadinessResult = Readonly<{
   publicActivationBlocked: true;
   stableReferences: readonly string[];
   sourceReferences: readonly string[];
+  evidenceReferences: readonly string[];
   reasons: readonly ObjectSourceReadinessReason[];
 }>;
 
@@ -115,6 +161,12 @@ const firstPostureByReason: Record<ObjectSourceReadinessReason, SourceUsePosture
   RIGHTS_APPROVAL_REQUIRED: 'NOT_READY_RIGHTS',
   SOURCE_FRESHNESS_CURRENT_REQUIRED: 'NOT_READY_FRESHNESS',
   EVIDENCE_OBSERVATION_REQUIRED: 'NOT_READY_EVIDENCE',
+  EVIDENCE_IDENTITY_REQUIRED: 'NOT_READY_EVIDENCE',
+  EVIDENCE_TYPE_REQUIRED: 'NOT_READY_EVIDENCE',
+  UNKNOWN_EVIDENCE_TYPE: 'NOT_READY_EVIDENCE',
+  EVIDENCE_SOURCE_REFERENCE_REQUIRED: 'NOT_READY_EVIDENCE',
+  EDITORIAL_EVIDENCE_NOT_GOVERNED_FACT_ELIGIBLE: 'NOT_READY_EDITORIAL_SEPARATION',
+  EVIDENCE_POSTURE_NOT_SUPPORTED: 'NOT_READY_EVIDENCE',
   ATTRIBUTION_REQUIRED: 'NOT_READY_ATTRIBUTION',
   BOUNDARY_CONFLICT_REQUIRES_REVIEW: 'NOT_READY_CONFLICT',
   BOUNDARY_EVIDENCE_REQUIRED: 'NOT_READY_BOUNDARY',
@@ -124,9 +176,28 @@ const firstPostureByReason: Record<ObjectSourceReadinessReason, SourceUsePosture
   FAIR_HOUSING_FIREWALL_REQUIRED: 'NOT_READY_FAIR_HOUSING',
   CORRECTION_PATH_REQUIRED: 'NOT_READY_CORRECTION',
   RETIREMENT_POLICY_REQUIRED: 'NOT_READY_RETIREMENT',
+  PARENT_RELATIONSHIP_EVIDENCE_REQUIRED: 'NOT_READY_EVIDENCE',
+  RELATIONSHIP_EVIDENCE_REQUIRED: 'NOT_READY_EVIDENCE',
+  RELATIONSHIP_EVIDENCE_CONFLICT_REQUIRES_REVIEW: 'NOT_READY_CONFLICT',
+  RELATIONSHIP_EVIDENCE_UNRESOLVED: 'NOT_READY_CONFLICT',
   EXISTING_ROUTE_DOES_NOT_AUTHORIZE_ACTIVATION: 'NOT_READY_SOURCE_IDENTITY',
   PUBLIC_ACTIVATION_NOT_AUTHORIZED: 'NOT_READY_SOURCE_IDENTITY',
 };
+
+const governedEvidenceTypes = new Set<GovernedEvidenceType>([
+  'OBJECT_IDENTITY', 'OBJECT_TYPE', 'JURISDICTION', 'BOUNDARY', 'PARENT_RELATIONSHIP', 'OBJECT_RELATIONSHIP',
+]);
+
+const supportsDimension = (
+  evidence: readonly GovernedReadinessEvidence[],
+  evidenceIds: readonly string[],
+  evidenceType: GovernedEvidenceType,
+): boolean => evidenceIds.length > 0 && evidenceIds.every((evidenceId) => evidence.some((item) =>
+  item.evidenceId === evidenceId
+  && item.evidenceType === evidenceType
+  && item.posture === 'SUPPORTED'
+  && item.supportsGovernedFact,
+));
 
 const hasFairHousingFirewall = (input: ObjectSourceReadinessInput): boolean =>
   input.fairHousing.ranking === false
@@ -147,10 +218,33 @@ export function evaluateObjectSourceReadiness(input: ObjectSourceReadinessInput)
   if (input.rights !== 'APPROVED_FOR_INTERNAL_GOVERNANCE') reasons.push('RIGHTS_APPROVAL_REQUIRED');
   if (input.freshness !== 'CURRENT') reasons.push('SOURCE_FRESHNESS_CURRENT_REQUIRED');
   if (input.evidenceReferences.length === 0) reasons.push('EVIDENCE_OBSERVATION_REQUIRED');
+  if (input.evidence.some((item) => !item.evidenceId)) reasons.push('EVIDENCE_IDENTITY_REQUIRED');
+  if (input.evidence.some((item) => !item.evidenceType)) reasons.push('EVIDENCE_TYPE_REQUIRED');
+  if (input.evidence.some((item) => !governedEvidenceTypes.has(item.evidenceType as GovernedEvidenceType))) reasons.push('UNKNOWN_EVIDENCE_TYPE');
+  if (input.evidence.some((item) => item.supportsGovernedFact && !item.sourceReference)) reasons.push('EVIDENCE_SOURCE_REFERENCE_REQUIRED');
+  if (input.evidence.some((item) => !item.supportsGovernedFact)) reasons.push('EDITORIAL_EVIDENCE_NOT_GOVERNED_FACT_ELIGIBLE');
+  if (input.evidence.some((item) => item.posture !== 'SUPPORTED')) reasons.push('EVIDENCE_POSTURE_NOT_SUPPORTED');
+  if (!supportsDimension(input.evidence, input.evidenceReferences, 'OBJECT_IDENTITY')
+    || !input.evidence.some((item) => item.evidenceType === 'OBJECT_TYPE' && item.posture === 'SUPPORTED' && item.supportsGovernedFact)) reasons.push('EVIDENCE_OBSERVATION_REQUIRED');
   if (input.attribution.required && !input.attribution.provided) reasons.push('ATTRIBUTION_REQUIRED');
   if (input.boundary.status === 'CONFLICTING') reasons.push('BOUNDARY_CONFLICT_REQUIRES_REVIEW');
   if (input.boundary.status !== 'SUPPORTED' || input.boundary.evidenceReferences.length === 0) reasons.push('BOUNDARY_EVIDENCE_REQUIRED');
   if (input.jurisdiction.status !== 'SUPPORTED' || input.jurisdiction.evidenceReferences.length === 0) reasons.push('SUPPORTED_JURISDICTION_REQUIRED');
+  if (input.jurisdiction.status === 'SUPPORTED' && !supportsDimension(input.evidence, input.jurisdiction.evidenceReferences, 'JURISDICTION')) reasons.push('SUPPORTED_JURISDICTION_REQUIRED');
+  if (input.boundary.status === 'SUPPORTED' && !supportsDimension(input.evidence, input.boundary.evidenceReferences, 'BOUNDARY')) reasons.push('BOUNDARY_EVIDENCE_REQUIRED');
+  const parent = input.parentRelationship;
+  if (parent.parentObjectId || parent.relationshipType) {
+    if (!parent.parentObjectId || !parent.relationshipType || !supportsDimension(input.evidence, parent.evidenceIds, 'PARENT_RELATIONSHIP')) reasons.push('PARENT_RELATIONSHIP_EVIDENCE_REQUIRED');
+    if (parent.posture === 'CONFLICTING') reasons.push('RELATIONSHIP_EVIDENCE_CONFLICT_REQUIRES_REVIEW');
+    if (parent.posture === 'UNRESOLVED') reasons.push('RELATIONSHIP_EVIDENCE_UNRESOLVED');
+    if (parent.professionalVerification !== 'COMPLETE') reasons.push('PROFESSIONAL_VERIFICATION_REQUIRED');
+  }
+  for (const relationship of input.relationships) {
+    if (!relationship.relatedObjectId || !supportsDimension(input.evidence, relationship.evidenceIds, 'OBJECT_RELATIONSHIP')) reasons.push('RELATIONSHIP_EVIDENCE_REQUIRED');
+    if (relationship.posture === 'CONFLICTING') reasons.push('RELATIONSHIP_EVIDENCE_CONFLICT_REQUIRES_REVIEW');
+    if (relationship.posture === 'UNRESOLVED') reasons.push('RELATIONSHIP_EVIDENCE_UNRESOLVED');
+    if (relationship.professionalVerification !== 'COMPLETE') reasons.push('PROFESSIONAL_VERIFICATION_REQUIRED');
+  }
   if (input.editorialSeparation === 'EDITORIAL_ONLY') reasons.push('EDITORIAL_ONLY_CONTEXT_NOT_FACT_ELIGIBLE');
   if (input.professionalVerification !== 'COMPLETE') reasons.push('PROFESSIONAL_VERIFICATION_REQUIRED');
   if (!hasFairHousingFirewall(input)) reasons.push('FAIR_HOUSING_FIREWALL_REQUIRED');
@@ -171,6 +265,7 @@ export function evaluateObjectSourceReadiness(input: ObjectSourceReadinessInput)
     publicActivationBlocked: true,
     stableReferences: input.stableReferences,
     sourceReferences: input.sourceIdentity.sourceId ? [input.sourceIdentity.sourceId] : [],
+    evidenceReferences: input.evidence.map((item) => item.evidenceId).filter(Boolean),
     reasons,
   };
 }

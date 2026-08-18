@@ -9,6 +9,13 @@ const fairHousingFirewall = {
   propertyAssignment: false,
 } as const;
 
+const evidence = (objectId: string): ObjectSourceReadinessInput['evidence'] => [
+  { evidenceId: `${objectId}-IDENTITY`, evidenceType: 'OBJECT_IDENTITY', sourceReference: 'SRC-INTERNAL-GEOGRAPHIC-GOVERNANCE-FIXTURE', posture: 'SUPPORTED', supportsGovernedFact: true },
+  { evidenceId: `${objectId}-TYPE`, evidenceType: 'OBJECT_TYPE', sourceReference: 'SRC-INTERNAL-GEOGRAPHIC-GOVERNANCE-FIXTURE', posture: 'SUPPORTED', supportsGovernedFact: true },
+  { evidenceId: `${objectId}-JURISDICTION`, evidenceType: 'JURISDICTION', sourceReference: 'SRC-INTERNAL-GEOGRAPHIC-GOVERNANCE-FIXTURE', posture: 'SUPPORTED', supportsGovernedFact: true },
+  { evidenceId: `${objectId}-BOUNDARY`, evidenceType: 'BOUNDARY', sourceReference: 'SRC-INTERNAL-GEOGRAPHIC-GOVERNANCE-FIXTURE', posture: 'SUPPORTED', supportsGovernedFact: true },
+];
+
 const baseReady = (
   objectId: string,
   objectName: string,
@@ -27,10 +34,13 @@ const baseReady = (
   copiedMutableSourceState: false,
   rights: 'APPROVED_FOR_INTERNAL_GOVERNANCE',
   freshness: 'CURRENT',
-  evidenceReferences: [`${objectId}-EVIDENCE`],
+  evidence: evidence(objectId),
+  evidenceReferences: [`${objectId}-IDENTITY`],
   attribution: { required: true, provided: true },
   boundary: { status: 'SUPPORTED', evidenceReferences: [`${objectId}-BOUNDARY`] },
   jurisdiction: { status: 'SUPPORTED', evidenceReferences: [`${objectId}-JURISDICTION`] },
+  parentRelationship: { parentObjectId: null, relationshipType: null, evidenceIds: [], posture: 'NOT_APPLICABLE', professionalVerification: 'NOT_APPLICABLE' },
+  relationships: [],
   editorialSeparation: 'FACTUAL_GOVERNANCE',
   professionalVerification: 'COMPLETE',
   fairHousing: fairHousingFirewall,
@@ -46,12 +56,14 @@ export const OBJECT_SOURCE_READINESS_FIXTURES = {
     jurisdiction: { status: 'AMBIGUOUS' as const, evidenceReferences: [] },
     boundary: { status: 'UNKNOWN' as const, evidenceReferences: [] },
     professionalVerification: 'REQUIRED' as const,
+    parentRelationship: { parentObjectId: 'GEO-BOULDER-COUNTY', relationshipType: 'WITHIN' as const, evidenceIds: [], posture: 'UNRESOLVED' as const, professionalVerification: 'REQUIRED' as const },
   },
   gunbarrel: {
     ...baseReady('GEO-GUNBARREL', 'Gunbarrel', 'NON_AUTHORITATIVE_EDITORIAL_CONTEXT'),
     editorialSeparation: 'EDITORIAL_ONLY' as const,
     jurisdiction: { status: 'AMBIGUOUS' as const, evidenceReferences: [] },
     professionalVerification: 'REQUIRED' as const,
+    parentRelationship: { parentObjectId: 'GEO-BOULDER-COUNTY', relationshipType: 'WITHIN' as const, evidenceIds: [], posture: 'UNRESOLVED' as const, professionalVerification: 'REQUIRED' as const },
   },
   tableMesa: {
     ...baseReady('GEO-TABLE-MESA', 'Table Mesa', 'NEIGHBORHOOD'),
@@ -98,5 +110,32 @@ export const OBJECT_SOURCE_READINESS_FIXTURES = {
   requestedPublicActivation: {
     ...baseReady('GEO-REQUESTED-PUBLIC-ACTIVATION-FIXTURE', 'Requested Public Activation Fixture', 'NEIGHBORHOOD'),
     requestedActivation: true,
+  },
+  missingEvidenceIdentity: {
+    ...baseReady('GEO-MISSING-EVIDENCE-ID-FIXTURE', 'Missing Evidence Identity Fixture', 'NEIGHBORHOOD'),
+    evidence: [{ evidenceId: '', evidenceType: 'OBJECT_IDENTITY', sourceReference: 'SRC-INTERNAL-GEOGRAPHIC-GOVERNANCE-FIXTURE', posture: 'SUPPORTED', supportsGovernedFact: true }],
+  },
+  unknownEvidenceType: {
+    ...baseReady('GEO-UNKNOWN-EVIDENCE-TYPE-FIXTURE', 'Unknown Evidence Type Fixture', 'NEIGHBORHOOD'),
+    evidence: [{ evidenceId: 'UNKNOWN-EVIDENCE', evidenceType: 'UNSUPPORTED_EVIDENCE_TYPE', sourceReference: 'SRC-INTERNAL-GEOGRAPHIC-GOVERNANCE-FIXTURE', posture: 'SUPPORTED', supportsGovernedFact: true }] as ObjectSourceReadinessInput['evidence'],
+  },
+  editorialEvidence: {
+    ...baseReady('GEO-EDITORIAL-EVIDENCE-FIXTURE', 'Editorial Evidence Fixture', 'NEIGHBORHOOD'),
+    evidence: evidence('GEO-EDITORIAL-EVIDENCE-FIXTURE').map((item) => ({ ...item, supportsGovernedFact: false })),
+  },
+  unsupportedParentRelationship: {
+    ...baseReady('GEO-UNSUPPORTED-PARENT-FIXTURE', 'Unsupported Parent Fixture', 'NEIGHBORHOOD'),
+    parentRelationship: { parentObjectId: 'GEO-PARENT', relationshipType: 'WITHIN' as const, evidenceIds: [], posture: 'UNRESOLVED' as const, professionalVerification: 'REQUIRED' as const },
+  },
+  staleRelationshipEvidence: {
+    ...baseReady('GEO-STALE-RELATIONSHIP-FIXTURE', 'Stale Relationship Fixture', 'NEIGHBORHOOD'),
+    freshness: 'STALE' as const,
+    relationships: [{ relatedObjectId: 'GEO-RELATED', relationshipType: 'ASSOCIATED_WITH' as const, evidenceIds: ['GEO-STALE-RELATIONSHIP-FIXTURE-RELATIONSHIP'], posture: 'SUPPORTED' as const, professionalVerification: 'COMPLETE' as const }],
+    evidence: [...evidence('GEO-STALE-RELATIONSHIP-FIXTURE'), { evidenceId: 'GEO-STALE-RELATIONSHIP-FIXTURE-RELATIONSHIP', evidenceType: 'OBJECT_RELATIONSHIP', sourceReference: 'SRC-INTERNAL-GEOGRAPHIC-GOVERNANCE-FIXTURE', posture: 'SUPPORTED', supportsGovernedFact: true }],
+  },
+  conflictingRelationshipEvidence: {
+    ...baseReady('GEO-CONFLICTING-RELATIONSHIP-FIXTURE', 'Conflicting Relationship Fixture', 'NEIGHBORHOOD'),
+    relationships: [{ relatedObjectId: 'GEO-RELATED', relationshipType: 'OVERLAPS' as const, evidenceIds: ['GEO-CONFLICTING-RELATIONSHIP-FIXTURE-RELATIONSHIP'], posture: 'CONFLICTING' as const, professionalVerification: 'COMPLETE' as const }],
+    evidence: [...evidence('GEO-CONFLICTING-RELATIONSHIP-FIXTURE'), { evidenceId: 'GEO-CONFLICTING-RELATIONSHIP-FIXTURE-RELATIONSHIP', evidenceType: 'OBJECT_RELATIONSHIP', sourceReference: 'SRC-INTERNAL-GEOGRAPHIC-GOVERNANCE-FIXTURE', posture: 'CONFLICTING', supportsGovernedFact: true }],
   },
 } as const satisfies Record<string, ObjectSourceReadinessInput>;

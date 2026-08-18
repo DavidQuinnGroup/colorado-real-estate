@@ -64,6 +64,14 @@ assert(results.sourceQualityNoUseAuthority.reasons.includes('SOURCE_QUALITY_NOT_
 assert(results.requestedPublicActivation.reasons.includes('PUBLIC_ACTIVATION_NOT_AUTHORIZED'));
 assert.equal(results.requestedPublicActivation.activationState, 'NOT_AUTHORIZED');
 
+assert(results.missingEvidenceIdentity.reasons.includes('EVIDENCE_IDENTITY_REQUIRED'));
+assert(results.unknownEvidenceType.reasons.includes('UNKNOWN_EVIDENCE_TYPE'));
+assert(results.editorialEvidence.reasons.includes('EDITORIAL_EVIDENCE_NOT_GOVERNED_FACT_ELIGIBLE'));
+assert(results.unsupportedParentRelationship.reasons.includes('PARENT_RELATIONSHIP_EVIDENCE_REQUIRED'));
+assert(results.unsupportedParentRelationship.reasons.includes('RELATIONSHIP_EVIDENCE_UNRESOLVED'));
+assert(results.staleRelationshipEvidence.reasons.includes('SOURCE_FRESHNESS_CURRENT_REQUIRED'));
+assert(results.conflictingRelationshipEvidence.reasons.includes('RELATIONSHIP_EVIDENCE_CONFLICT_REQUIRES_REVIEW'));
+
 const contractSource = read('lib/neighborhood-submarket/objectSourceReadiness.ts');
 const fixtureSource = read('lib/neighborhood-submarket/objectSourceReadinessFixtures.ts');
 const packageJson = JSON.parse(read('package.json')) as { scripts?: Record<string, string> };
@@ -72,9 +80,14 @@ assert.match(contractSource, /MUTABLE_SOURCE_STATE_MUST_NOT_BE_COPIED/);
 assert.match(contractSource, /CERTIFICATION_READY/);
 assert.match(contractSource, /publicSearchMapPropertyRouteAeoReady: false/);
 assert.match(contractSource, /activationState: 'NOT_AUTHORIZED'/);
+assert.match(contractSource, /GovernedEvidenceType/);
+assert.match(contractSource, /PARENT_RELATIONSHIP_EVIDENCE_REQUIRED/);
+assert.match(contractSource, /RELATIONSHIP_EVIDENCE_CONFLICT_REQUIRES_REVIEW/);
 assert.match(fixtureSource, /GEO-NIWOT/);
 assert.match(fixtureSource, /GEO-GUNBARREL/);
 assert.match(fixtureSource, /GEO-TABLE-MESA/);
+assert.match(fixtureSource, /GEO-MISSING-EVIDENCE-ID-FIXTURE/);
+assert.match(fixtureSource, /GEO-UNSUPPORTED-PARENT-FIXTURE/);
 assert.equal(
   packageJson.scripts?.['check:neighborhood-submarket-object-source-readiness'],
   'jiti scripts/checkNeighborhoodSubmarketObjectSourceReadiness.ts',
