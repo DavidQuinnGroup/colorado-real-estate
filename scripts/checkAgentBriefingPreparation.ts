@@ -117,25 +117,18 @@ for (const protectedPattern of [/\brequire\s*\(/i, /\bfetch\s*\(/i, /\bprisma\s*
 }
 
 const previewSource = readFileSync(resolve(process.cwd(), 'app/admin/agent-briefing-preparation/page.tsx'), 'utf8');
+const compositionProofSource = readFileSync(resolve(process.cwd(), 'components/AgentConversationPreparationCompositionProof.tsx'), 'utf8');
 const middlewareSource = readFileSync(resolve(process.cwd(), 'middleware.ts'), 'utf8');
-assert(previewSource.includes('data-agent-briefing-route="/admin/agent-briefing-preparation"'), 'preview must use the protected agent-briefing route');
-assert(previewSource.includes("from '@/lib/agentBriefingPreparation'") && previewSource.includes('buildAgentBriefingPreparationPacket(demoInput(scenario))'), 'preview must import and call the canonical packet builder');
-assert(previewSource.includes("scenario === 'ready'") && previewSource.includes("scenario === 'incomplete'") && previewSource.includes("scenario === 'blocked'"), 'preview must provide deterministic ready, incomplete, and blocked scenarios');
-assert(previewSource.includes("return 'blocked';"), 'unknown scenario values must deterministically fail safely to the blocked demo');
-assert(previewSource.includes('packet.status') && previewSource.includes('packet.readiness') && previewSource.includes('packet.briefingType'), 'preview must render canonical readiness and briefing-type output');
-assert(previewSource.includes('item.state') && previewSource.includes('section.sourceIdentity') && previewSource.includes('section.visibleDate') && previewSource.includes('section.effectiveDate'), 'preview must render canonical evidence state and source/date posture');
-assert(previewSource.includes('section.limitations') && previewSource.includes('section.verificationRequirements'), 'preview must render canonical limitations and verification requirements');
-assert(previewSource.includes('packet.internalTalkingPointInputs') && previewSource.includes('packet.reviewQuestions'), 'preview must render canonical talking points and review questions');
-assert(previewSource.includes('INTERNAL AGENT PREPARATION ONLY'), 'preview must conspicuously label internal-only use');
-assert(previewSource.includes('Current-state internal preparation only — no history, comparison, trend, or change analysis.'), 'preview must conspicuously preserve current-state-only limitation');
-assert(previewSource.includes('packet.professionalBoundary') && previewSource.includes('packet.fairHousingBoundary'), 'preview must render canonical professional and fair-housing boundaries');
-assert(previewSource.includes("packet.status === 'FAIL_CLOSED'") && previewSource.includes('do not use this evidence for briefing talking points'), 'blocked evidence must not render as talking points');
+assert(previewSource.includes('AgentConversationPreparationCompositionProof'), 'preview must use the bounded composition-proof adapter');
+assert(!/searchParams|scenario/i.test(previewSource), 'preview must not accept URL packet state');
+assert(compositionProofSource.includes('data-agent-only="true"') && compositionProofSource.includes('data-persistence="false"'), 'proof must remain agent-only and non-persistent');
+assert(compositionProofSource.includes('MARKET_PLACE') && compositionProofSource.includes('SELLER_UPDATE_REVIEW') && compositionProofSource.includes('OFFER_PREPARATION_REVIEW'), 'proof must expose only the three authorized types');
+assert(compositionProofSource.includes('buildAgentConversationPreparationPacket') && compositionProofSource.includes('AGENT_CONVERSATION_PREPARATION_FIXTURES'), 'proof must reuse the canonical composition and synthetic fixtures');
+for (const field of ['Preparation purpose', 'Packet readiness', 'Known evidence', 'Assumptions', 'Professional handoff categories', 'Do-not-conclude boundaries']) assert(compositionProofSource.includes(field), `proof must render ${field}`);
+assert(compositionProofSource.includes('agent-preparation-reset'), 'proof must provide deterministic local reset');
 assert(previewSource.includes('index: false') && previewSource.includes('follow: false') && previewSource.includes('nocache: true') && previewSource.includes('noimageindex: true'), 'preview must use noindex, nofollow, nocache, and Googlebot noindex posture');
-assert(!/<form\b/i.test(previewSource) && !/method="post"/i.test(previewSource) && !/<form[^>]+action=/i.test(previewSource), 'preview must not use form POST/action behavior');
-assert(!/name="(?:purpose|evidence|source|customer|property)/i.test(previewSource) && !/params\.(?:purpose|evidence|source|customer|property)/i.test(previewSource), 'preview must not accept arbitrary evidence, identity, or source payload in URL parameters');
-assert(!/getPublicPropertiesByIds|buildMarket|fetch\s*\(|prisma|createClient|typesense|mls|crmTask|resend|queue|worker|email\s*\(/i.test(previewSource), 'preview must not depend on property, provider, DB, Search, CRM, queue, worker, or email systems');
-const previewImports = previewSource.match(/^import[^;]+;/gm) || [];
-assert(previewImports.length === 2 && previewImports.every((line) => line.includes("from 'next'") || line.includes("from '@/lib/agentBriefingPreparation'")), 'preview imports must be limited to Next metadata and the canonical packet contract');
+assert(!/<form\b/i.test(compositionProofSource) && !/method="post"/i.test(compositionProofSource), 'proof must not use form POST behavior');
+assert(!/localStorage|sessionStorage|URLSearchParams|<a\b|href=|fetch\s*\(|prisma|createClient|typesense|crmTask|resend|queue|worker|email\s*\(/i.test(compositionProofSource), 'proof must not depend on persistence, navigation, provider, DB, CRM, queue, worker, or email systems');
 assert(middlewareSource.includes('matcher: ["/admin/:path*", "/api/admin/:path*"]') && middlewareSource.includes('buildAdminLoginRedirect'), 'existing middleware must protect the preview and redirect unauthenticated admin requests');
 
 console.log('AGENT_BRIEFING_PREPARATION_CHECK: PASS');

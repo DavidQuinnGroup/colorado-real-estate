@@ -198,6 +198,7 @@
     "check:transition-decision-preparation": "jiti scripts/checkTransitionDecisionPreparation.ts",
     "check:transition-decision-preparation-grand-plan-composition": "jiti scripts/checkTransitionDecisionPreparationGrandPlanComposition.ts",
     "check:agent-conversation-preparation-composition": "jiti scripts/checkAgentConversationPreparationComposition.ts",
+    "check:agent-conversation-preparation-agent-only-composition-proof": "jiti scripts/checkAgentConversationPreparationAgentOnlyCompositionProof.ts",
     "check:agent-per-user-credential-identity": "npm run worker:build && node dist/scripts/checkAgentPerUserCredentialIdentity.js",
     "check:five-city-decision-guide-authority-wave": "npm run worker:build && node --experimental-specifier-resolution=node dist/scripts/checkFiveCityDecisionGuideAuthorityWave.js",
     "check:wave-2-city-orientation-guide-authority-expansion": "npm run worker:build && node --experimental-specifier-resolution=node dist/scripts/checkWave2CityOrientationGuideAuthorityExpansion.js",
