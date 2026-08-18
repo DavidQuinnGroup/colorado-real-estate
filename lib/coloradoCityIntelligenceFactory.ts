@@ -1,4 +1,4 @@
-import { GIS_FAIL_CLOSED_ACTIVATION } from './geographic-intelligence/activationContract.js';
+import { GIS_FAIL_CLOSED_ACTIVATION } from './geographic-intelligence/activationContract';
 
 export const COLORADO_CITY_INTELLIGENCE_FACTORY_STATUS = 'COLORADO_CITY_INTELLIGENCE_ACQUISITION_ENRICHMENT_1_COMPLETE';
 export const COLORADO_CITY_INTELLIGENCE_FACTORY_VERSION = '1.0.0';

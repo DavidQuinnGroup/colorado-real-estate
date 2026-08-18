@@ -3,13 +3,13 @@ import {
   COLORADO_CITY_INTELLIGENCE_RECORDS,
   type CityIntelligenceSourceCategory,
   type CitySourceDomainProfile,
-} from '../coloradoCityIntelligenceFactory.js';
+} from '../coloradoCityIntelligenceFactory';
 import {
   buildPropertyPublicRecordEvidenceProfile,
   type PropertyPublicRecordEvidenceProfile,
   type PropertyRecordDomain,
   type PropertyRecordDomainDisposition,
-} from './propertyPublicRecordEvidence.js';
+} from './propertyPublicRecordEvidence';
 
 export const PROPERTY_GEOGRAPHIC_SOURCE_INTELLIGENCE_STATUS = 'PROPERTY_GEOGRAPHIC_SOURCE_INTELLIGENCE_IMPLEMENTED';
 export const PROPERTY_GEOGRAPHIC_SOURCE_INTELLIGENCE_VERSION = '1.0.0';

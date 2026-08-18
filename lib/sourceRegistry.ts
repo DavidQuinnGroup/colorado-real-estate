@@ -3,7 +3,7 @@ import {
   COLORADO_CITY_INTELLIGENCE_RECORDS,
   type CityIntelligenceSourceCategory,
   type CitySourceDomainProfile,
-} from './coloradoCityIntelligenceFactory.js';
+} from './coloradoCityIntelligenceFactory';
 
 export const REIE_SOURCE_REGISTRY_STATUS = 'REIE_SOURCE_REGISTRY_IMPLEMENTED';
 export const REIE_SOURCE_REGISTRY_VERSION = '1.0.0';

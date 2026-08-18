@@ -1,18 +1,18 @@
-import { getCityByName, type CityData } from './cities.js';
+import { getCityByName, type CityData } from './cities';
 import {
   getColoradoDecisionGuideRegistry,
   getPublicDecisionGuideRegistryEntries,
   type DecisionGuideMaturity,
   type DecisionGuideRegistryEntry,
-} from './coloradoDecisionGuideRegistry.js';
+} from './coloradoDecisionGuideRegistry';
 import {
   buildDecisionGuide,
   buildDecisionGuideContinuityLinks,
   type DecisionGuide,
   type DecisionGuideContinuityLink,
-} from './decisionGuidePlatform.js';
-import { buildCityMarketExperience } from './marketIntelligenceExperience.js';
-import { neighborhoods } from './neighborhoods.js';
+} from './decisionGuidePlatform';
+import { buildCityMarketExperience } from './marketIntelligenceExperience';
+import { neighborhoods } from './neighborhoods';
 
 export const CROSS_CITY_COMPARISON_ROUTE = '/compare';
 export const CROSS_CITY_COMPARISON_MIN_SELECTIONS = 2;

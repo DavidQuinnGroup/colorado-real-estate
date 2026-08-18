@@ -1,4 +1,4 @@
-import { buildReieDecisionIntelligenceCohesionProfile, type ReieDecisionCohesionSurface } from './reieDecisionIntelligenceCohesion.js';
+import { buildReieDecisionIntelligenceCohesionProfile, type ReieDecisionCohesionSurface } from './reieDecisionIntelligenceCohesion';
 
 export const REIE_PROFESSIONAL_HANDOFF_COHESION_STATUS = 'REIE_PROFESSIONAL_HANDOFF_COHESION_IMPLEMENTED';
 

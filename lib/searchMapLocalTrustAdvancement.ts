@@ -1,7 +1,7 @@
 import {
   buildReieDecisionIntelligenceCohesionProfile,
   type ReieDecisionCohesionSurface,
-} from './reieDecisionIntelligenceCohesion.js';
+} from './reieDecisionIntelligenceCohesion';
 
 export const SEARCH_MAP_LOCAL_TRUST_ADVANCEMENT_STATUS = 'SEARCH_MAP_LOCAL_TRUST_ADVANCEMENT_IMPLEMENTED';
 

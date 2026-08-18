@@ -1,4 +1,4 @@
-import { getReieSourceRegistry, type ReieSourceRegistryRecord } from './sourceRegistry.js';
+import { getReieSourceRegistry, type ReieSourceRegistryRecord } from './sourceRegistry';
 
 export const HOME_WORTH_ADVISORY_INTELLIGENCE_STATUS = 'HOME_WORTH_ADVISORY_INTELLIGENCE_IMPLEMENTED';
 export const HOME_WORTH_INTELLIGENCE_ADVANCEMENT_STATUS = 'HOME_WORTH_INTELLIGENCE_ADVANCEMENT_IMPLEMENTED';

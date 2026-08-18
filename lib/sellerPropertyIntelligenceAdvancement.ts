@@ -1,4 +1,4 @@
-import { getReieSourceRegistry, type ReieSourceRegistryRecord } from './sourceRegistry.js';
+import { getReieSourceRegistry, type ReieSourceRegistryRecord } from './sourceRegistry';
 
 export const SELLER_INTELLIGENCE_ADVANCEMENT_STATUS = 'SELLER_INTELLIGENCE_ADVANCEMENT_IMPLEMENTED';
 export const PROPERTY_INTELLIGENCE_DEEPENING_STATUS = 'PROPERTY_INTELLIGENCE_DEEPENING_IMPLEMENTED';

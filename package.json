@@ -93,6 +93,7 @@
     "check:internal-preview-adapter-safety": "npm run worker:build && node dist/scripts/checkInternalPreviewAdapterSafety.js",
     "check:public-runtime-safety": "npm run worker:build && node dist/scripts/checkPublicRuntimeSafety.js",
     "check:public-trust-readiness": "npm run worker:build && node dist/scripts/checkPublicTrustReadiness.js",
+    "check:runtime-source-import-resolution": "jiti scripts/checkRuntimeSourceImportResolution.ts",
     "check:seller-journey-safety": "npm run worker:build && node dist/scripts/checkSellerJourneySafety.js",
     "check:grand-plan-journey-safety": "npm run worker:build && node dist/scripts/checkGrandPlanJourneySafety.js",
     "check:prisma-client-parity": "npm run worker:build && node dist/scripts/checkPrismaClientParity.js",

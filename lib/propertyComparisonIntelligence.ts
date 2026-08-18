@@ -1,4 +1,4 @@
-import { buildFinancingScenario, type FinancingScenarioInput, type FinancingScenarioResult } from './financingScenarioCalculator.js';
+import { buildFinancingScenario, type FinancingScenarioInput, type FinancingScenarioResult } from './financingScenarioCalculator';
 
 export const PROPERTY_COMPARISON_INTELLIGENCE_STATUS = 'PROPERTY_COMPARISON_INTELLIGENCE_IMPLEMENTED';
 export const PROPERTY_COMPARISON_INTELLIGENCE_VERSION = '1.0.0';

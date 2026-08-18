@@ -5,7 +5,7 @@ import {
   getPrimarySearchPhoto,
   normalizeSearchPhotos,
   sortListingsForLaunchQuality,
-} from './listingQuality.js';
+} from './listingQuality';
 
 export type SupabaseSearchParams = {
   query?: string;

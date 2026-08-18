@@ -1,5 +1,5 @@
-import type { NeighborhoodProduct3EvidenceState, NeighborhoodProduct3InventoryState } from './neighborhoodProduct3.js';
-import { getReieSourceRegistry, type ReieSourceRegistryRecord } from './sourceRegistry.js';
+import type { NeighborhoodProduct3EvidenceState, NeighborhoodProduct3InventoryState } from './neighborhoodProduct3';
+import { getReieSourceRegistry, type ReieSourceRegistryRecord } from './sourceRegistry';
 
 export const BUYER_PLACE_INTELLIGENCE_ADVANCEMENT_STATUS = 'BUYER_PLACE_INTELLIGENCE_ADVANCEMENT_IMPLEMENTED';
 export const BUYER_INTELLIGENCE_ADVANCEMENT_STATUS = 'BUYER_INTELLIGENCE_ADVANCEMENT_IMPLEMENTED';

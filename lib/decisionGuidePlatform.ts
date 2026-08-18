@@ -1,5 +1,5 @@
-import type { CityData } from './cities.js';
-import type { Neighborhood } from './neighborhoods.js';
+import type { CityData } from './cities';
+import type { Neighborhood } from './neighborhoods';
 
 export type DecisionGuideKey = string;
 type EditorialDecisionGuideKey = 'boulder' | 'louisville' | 'lafayette';

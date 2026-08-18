@@ -2,7 +2,7 @@ import {
   getPublicSourceRegistryRecords,
   type ReieCustomerSourceStatus,
   type ReieSourceRegistryRecord,
-} from './sourceRegistry.js';
+} from './sourceRegistry';
 
 export const COLORADO_SOURCE_TRUST_EXPERIENCE_STATUS = 'COLORADO_SOURCE_TRUST_EXPERIENCE_IMPLEMENTED';
 

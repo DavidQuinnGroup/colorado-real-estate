@@ -1,6 +1,6 @@
-import type { PropertyGeographicSourceIntelligence } from './property/propertyAuthoritativeSourceIntelligence.js';
-import type { PropertyComparisonWorkspace } from './propertyComparisonIntelligence.js';
-import type { PropertyProduct31Input } from './propertyProduct31.js';
+import type { PropertyGeographicSourceIntelligence } from './property/propertyAuthoritativeSourceIntelligence';
+import type { PropertyComparisonWorkspace } from './propertyComparisonIntelligence';
+import type { PropertyProduct31Input } from './propertyProduct31';
 
 export const PROPERTY_EVIDENCE_COMPLETENESS_VERIFICATION_STATUS =
   'PROPERTY_EVIDENCE_COMPLETENESS_VERIFICATION_IMPLEMENTED' as const;

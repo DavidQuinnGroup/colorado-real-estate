@@ -1,19 +1,19 @@
 import {
   buildPropertyGeographicSourceIntelligence,
   type PropertyGeographicSourceIntelligence,
-} from './property/propertyAuthoritativeSourceIntelligence.js';
+} from './property/propertyAuthoritativeSourceIntelligence';
 import {
   buildPropertyComparisonWorkspace,
   type PropertyComparisonWorkspace,
-} from './propertyComparisonIntelligence.js';
+} from './propertyComparisonIntelligence';
 import {
   buildPropertyIntelligenceDeepening,
   type PropertyIntelligenceDeepening,
-} from './sellerPropertyIntelligenceAdvancement.js';
+} from './sellerPropertyIntelligenceAdvancement';
 import {
   buildPropertyEvidenceCompletenessVerification,
   type PropertyEvidenceCompletenessVerification,
-} from './propertyEvidenceCompletenessVerification.js';
+} from './propertyEvidenceCompletenessVerification';
 
 export type PropertyProduct31Input = {
   address?: string | null;

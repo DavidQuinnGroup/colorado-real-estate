@@ -1,7 +1,7 @@
-import type { PropertyProduct31ChecklistItem } from './propertyProduct31.js';
-import type { PropertyGeographicSourceIntelligence } from './property/propertyAuthoritativeSourceIntelligence.js';
-import type { PropertyComparisonWorkspace } from './propertyComparisonIntelligence.js';
-import type { PropertyIntelligenceDeepening } from './sellerPropertyIntelligenceAdvancement.js';
+import type { PropertyProduct31ChecklistItem } from './propertyProduct31';
+import type { PropertyGeographicSourceIntelligence } from './property/propertyAuthoritativeSourceIntelligence';
+import type { PropertyComparisonWorkspace } from './propertyComparisonIntelligence';
+import type { PropertyIntelligenceDeepening } from './sellerPropertyIntelligenceAdvancement';
 
 export const PROPERTY_INQUIRY_PREPARATION_INTELLIGENCE_STATUS = 'PROPERTY_INQUIRY_PREPARATION_INTELLIGENCE_IMPLEMENTED';
 export const DECISION_JOURNEY_CONTINUITY_DEEPENING_STATUS = 'DECISION_JOURNEY_CONTINUITY_DEEPENED';

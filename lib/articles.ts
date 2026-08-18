@@ -1,5 +1,5 @@
-import { neighborhoods, type Neighborhood } from "./neighborhoods.js";
-import { buildArticleSchema } from "./schema/articleSchema.js";
+import { neighborhoods, type Neighborhood } from "./neighborhoods";
+import { buildArticleSchema } from "./schema/articleSchema";
 
 export type ArticleIntent = "Lifestyle" | "Efficiency" | "Investment" | "Resilience";
 

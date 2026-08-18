@@ -1,9 +1,9 @@
-import { cities, getCityByMarketSlug, type CityData } from '../cities.js';
-import { neighborhoods } from '../neighborhoods.js';
-import { articles } from '../articles.js';
-import { buildCityMarketExperience } from '../marketIntelligenceExperience.js';
-import { buildCityMarketProduct3Experience } from '../marketProduct3.js';
-import { getPublicSourceRegistryRecords, REIE_SOURCE_REGISTRY_REFERENCE_DATE } from '../sourceRegistry.js';
+import { cities, getCityByMarketSlug, type CityData } from '../cities';
+import { neighborhoods } from '../neighborhoods';
+import { articles } from '../articles';
+import { buildCityMarketExperience } from '../marketIntelligenceExperience';
+import { buildCityMarketProduct3Experience } from '../marketProduct3';
+import { getPublicSourceRegistryRecords, REIE_SOURCE_REGISTRY_REFERENCE_DATE } from '../sourceRegistry';
 
 export const MARKET_NEWSLETTER_AGENT_REVIEW_PACKAGE_STATUS =
   'RECURRING_MARKET_NEWSLETTER_AGENT_REVIEW_PACKAGE_MVV';

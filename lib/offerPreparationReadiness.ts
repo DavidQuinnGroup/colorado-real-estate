@@ -1,5 +1,5 @@
-import type { PropertyEvidenceCompletenessState } from './propertyEvidenceCompletenessVerification.js';
-import type { PropertyProduct31Model } from './propertyProduct31.js';
+import type { PropertyEvidenceCompletenessState } from './propertyEvidenceCompletenessVerification';
+import type { PropertyProduct31Model } from './propertyProduct31';
 
 export const OFFER_PREPARATION_READINESS_STATUS = 'OFFER_PREPARATION_READINESS_IMPLEMENTED' as const;
 
