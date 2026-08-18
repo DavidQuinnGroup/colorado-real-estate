@@ -1,6 +1,7 @@
 import Link from 'next/link';
 
 import BuyerFinancingDecisionPlanner from './BuyerFinancingDecisionPlanner';
+import FinancialPreparationComposition from './FinancialPreparationComposition';
 
 const preparationGroups = [
   {
@@ -180,6 +181,10 @@ export default function BuyerFinancingReadinessGuide() {
       </div>
 
       <BuyerFinancingDecisionPlanner />
+
+      <div className="mt-5" data-testid="buyer-financing-module-6-composition">
+        <FinancialPreparationComposition surface="buy" />
+      </div>
 
       <div className="mt-4 grid gap-4 lg:grid-cols-[0.82fr_1fr]">
         <section

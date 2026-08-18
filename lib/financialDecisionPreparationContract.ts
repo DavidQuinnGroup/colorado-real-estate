@@ -2,19 +2,19 @@ import {
   buildFinancingScenario,
   type FinancingScenarioInput,
   type FinancingScenarioResult,
-} from './financingScenarioCalculator.js';
+} from './financingScenarioCalculator';
 import {
   validateReieDecisionContext,
   type ReieDecisionContext,
-} from './reieDecisionContextContract.js';
+} from './reieDecisionContextContract';
 import {
   validateReieDecisionEvidenceItem,
   type ReieDecisionEvidenceItem,
-} from './reieDecisionEvidenceClassification.js';
+} from './reieDecisionEvidenceClassification';
 import {
   validateReieProfessionalHandoffRequest,
   type ReieProfessionalHandoffRequest,
-} from './reieProfessionalHandoffTaxonomy.js';
+} from './reieProfessionalHandoffTaxonomy';
 
 export const REIE_FINANCIAL_DECISION_PREPARATION_VERSION = 'REIE_MODULE_6_FINANCIAL_PREPARATION_V1' as const;
 

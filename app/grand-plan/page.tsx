@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { CheckCircle2, Compass, FileSearch, Home, MapPinned } from 'lucide-react';
 
 import GrandPlanIntake from '@/components/GrandPlanIntake';
+import FinancialPreparationComposition from '@/components/FinancialPreparationComposition';
 import JourneyCohesionPanel from '@/components/JourneyCohesionPanel';
 import { SITE_NAME, SITE_URL } from '@/lib/publicTrust';
 
@@ -178,6 +179,12 @@ export default function GrandPlanPage() {
               </article>
             ))}
           </div>
+        </div>
+      </section>
+
+      <section className="px-5 py-12 sm:px-8 lg:px-12" data-testid="grand-plan-financial-preparation-composition">
+        <div className="mx-auto max-w-[1180px]">
+          <FinancialPreparationComposition surface="grand-plan" />
         </div>
       </section>
 

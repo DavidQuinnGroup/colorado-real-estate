@@ -2,7 +2,7 @@ import {
   REIE_DECISION_EVIDENCE_CLASSIFICATIONS,
   type ReieDecisionEvidenceClassification,
   type ReieDecisionEvidenceValue,
-} from './reieDecisionEvidenceClassification.js';
+} from './reieDecisionEvidenceClassification';
 
 export const REIE_FINANCIAL_SCENARIO_ALLOWED_OUTPUTS = [
   'ASSUMPTION_INVENTORY',

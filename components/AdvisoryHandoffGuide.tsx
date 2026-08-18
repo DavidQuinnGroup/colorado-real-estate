@@ -2,6 +2,7 @@ import Link from 'next/link';
 
 import ProfessionalHandoffCohesionPanel from '@/components/ProfessionalHandoffCohesionPanel';
 import { buildAdvisoryPreparationIntelligenceModel } from '@/lib/homeWorthAdvisoryIntelligence';
+import FinancialPreparationComposition from './FinancialPreparationComposition';
 
 const preparationThemes = [
   {
@@ -442,6 +443,10 @@ export default function AdvisoryHandoffGuide() {
               certify valuation, guarantee pricing, guarantee outcomes, rank providers, or make suitability conclusions.
             </p>
           </div>
+        </div>
+
+        <div data-testid="advisory-handoff-financial-preparation-composition">
+          <FinancialPreparationComposition surface="advisory" />
         </div>
 
         <div

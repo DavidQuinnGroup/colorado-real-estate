@@ -1,15 +1,15 @@
 import {
   REIE_FINANCIAL_PREPARATION_CONTEXTS,
   type ReieFinancialPreparationContext,
-} from './financialDecisionPreparationContract.js';
+} from './financialDecisionPreparationContract';
 import {
   validateMultiDimensionalStrategyOrchestration,
   type ReieModule8OrchestrationInput,
-} from './multiDimensionalStrategyOrchestration.js';
+} from './multiDimensionalStrategyOrchestration';
 import {
   validateReieProfessionalHandoffRequest,
   type ReieProfessionalHandoffRequest,
-} from './reieProfessionalHandoffTaxonomy.js';
+} from './reieProfessionalHandoffTaxonomy';
 
 export const REIE_FINANCIAL_DECISION_ORCHESTRATION_VERSION = 'REIE_MODULE_6_ORCHESTRATION_HANDOFF_V1' as const;
 
