@@ -197,6 +197,7 @@
     "check:neighborhood-submarket-aeo-geographic-context": "jiti scripts/checkNeighborhoodSubmarketAeoGeographicContext.ts",
     "check:transition-decision-preparation": "jiti scripts/checkTransitionDecisionPreparation.ts",
     "check:transition-decision-preparation-grand-plan-composition": "jiti scripts/checkTransitionDecisionPreparationGrandPlanComposition.ts",
+    "check:agent-conversation-preparation-composition": "jiti scripts/checkAgentConversationPreparationComposition.ts",
     "check:five-city-decision-guide-authority-wave": "npm run worker:build && node --experimental-specifier-resolution=node dist/scripts/checkFiveCityDecisionGuideAuthorityWave.js",
     "check:wave-2-city-orientation-guide-authority-expansion": "npm run worker:build && node --experimental-specifier-resolution=node dist/scripts/checkWave2CityOrientationGuideAuthorityExpansion.js",
     "check:decision-journey-experience": "npm run worker:build && node dist/scripts/checkDecisionJourneyExperience.js",
