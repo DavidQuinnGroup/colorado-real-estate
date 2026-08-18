@@ -153,4 +153,3 @@ An Executive packet is ready for a future decision when it has:
 - compliance and source questions named;
 - selected disposition explicitly approved;
 - implementation authorization issued separately, if needed.
-
