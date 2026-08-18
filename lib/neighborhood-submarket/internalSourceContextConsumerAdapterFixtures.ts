@@ -1,0 +1,14 @@
+import { evaluateObjectSourceReadiness } from './objectSourceReadiness';
+import { OBJECT_SOURCE_READINESS_FIXTURES } from './objectSourceReadinessFixtures';
+import { evaluateSearchMarketRelationship } from './searchMarketRelationship';
+import { SEARCH_MARKET_RELATIONSHIP_FIXTURES } from './searchMarketRelationshipFixtures';
+import type { InternalSourceContextConsumerInput } from './internalSourceContextConsumerAdapter';
+const source = OBJECT_SOURCE_READINESS_FIXTURES.municipality; const relationship = { ...SEARCH_MARKET_RELATIONSHIP_FIXTURES.municipality, relationshipType: 'SOURCE_CONTEXT_FOR' as const };
+const base = (): InternalSourceContextConsumerInput => ({ relationship, relationshipResult: evaluateSearchMarketRelationship(relationship), sourceReadinessInput: source, sourceReadinessResult: evaluateObjectSourceReadiness(source), requestedVisibility: 'ADMIN_ONLY', requestedActivation: false, requestedMutation: false, prohibitedClaim: false });
+export const INTERNAL_SOURCE_CONTEXT_CONSUMER_FIXTURES = {
+  valid: base(), nonSource: { ...base(), relationship: SEARCH_MARKET_RELATIONSHIP_FIXTURES.municipality, relationshipResult: evaluateSearchMarketRelationship(SEARCH_MARKET_RELATIONSHIP_FIXTURES.municipality) },
+  niwot: { ...base(), relationship: { ...SEARCH_MARKET_RELATIONSHIP_FIXTURES.niwot, relationshipType: 'SOURCE_CONTEXT_FOR' as const }, relationshipResult: evaluateSearchMarketRelationship({ ...SEARCH_MARKET_RELATIONSHIP_FIXTURES.niwot, relationshipType: 'SOURCE_CONTEXT_FOR' as const }), sourceReadinessInput: OBJECT_SOURCE_READINESS_FIXTURES.niwot, sourceReadinessResult: evaluateObjectSourceReadiness(OBJECT_SOURCE_READINESS_FIXTURES.niwot) },
+  gunbarrel: { ...base(), relationship: { ...SEARCH_MARKET_RELATIONSHIP_FIXTURES.gunbarrel, relationshipType: 'SOURCE_CONTEXT_FOR' as const }, relationshipResult: evaluateSearchMarketRelationship({ ...SEARCH_MARKET_RELATIONSHIP_FIXTURES.gunbarrel, relationshipType: 'SOURCE_CONTEXT_FOR' as const }), sourceReadinessInput: OBJECT_SOURCE_READINESS_FIXTURES.gunbarrel, sourceReadinessResult: evaluateObjectSourceReadiness(OBJECT_SOURCE_READINESS_FIXTURES.gunbarrel) },
+  tableMesa: { ...base(), relationship: { ...SEARCH_MARKET_RELATIONSHIP_FIXTURES.tableMesa, relationshipType: 'SOURCE_CONTEXT_FOR' as const }, relationshipResult: evaluateSearchMarketRelationship({ ...SEARCH_MARKET_RELATIONSHIP_FIXTURES.tableMesa, relationshipType: 'SOURCE_CONTEXT_FOR' as const }), sourceReadinessInput: OBJECT_SOURCE_READINESS_FIXTURES.tableMesa, sourceReadinessResult: evaluateObjectSourceReadiness(OBJECT_SOURCE_READINESS_FIXTURES.tableMesa) },
+  publicRequest: { ...base(), requestedVisibility: 'PUBLIC' as const }, activation: { ...base(), requestedActivation: true }, mutation: { ...base(), requestedMutation: true }, prohibitedClaim: { ...base(), prohibitedClaim: true },
+} as const satisfies Record<string, InternalSourceContextConsumerInput>;
