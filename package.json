@@ -189,6 +189,7 @@
     "check:sundance-content-generation-gate": "jiti scripts/checkSundanceContentGenerationGate.ts",
     "check:sundance-content-topic-register": "jiti scripts/checkSundanceContentTopicRegister.ts",
     "check:neighborhood-submarket-geographic-object-governance": "jiti scripts/checkNeighborhoodSubmarketGeographicObjectGovernance.ts",
+    "check:neighborhood-submarket-object-source-readiness": "jiti scripts/checkNeighborhoodSubmarketObjectSourceReadiness.ts",
     "check:five-city-decision-guide-authority-wave": "npm run worker:build && node --experimental-specifier-resolution=node dist/scripts/checkFiveCityDecisionGuideAuthorityWave.js",
     "check:wave-2-city-orientation-guide-authority-expansion": "npm run worker:build && node --experimental-specifier-resolution=node dist/scripts/checkWave2CityOrientationGuideAuthorityExpansion.js",
     "check:decision-journey-experience": "npm run worker:build && node dist/scripts/checkDecisionJourneyExperience.js",
