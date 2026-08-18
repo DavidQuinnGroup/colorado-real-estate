@@ -23,6 +23,20 @@ const REQUIRED_DOCS = [
   'docs/project-atlas/executive-library/COLORADO-IMAGERY-ACQUISITION-PLAN-1.md',
 ] as const;
 
+const EXPECTED_ENHANCED_FOUNDATION_CITY_INVENTORY = [
+  'Brighton',
+  'Broomfield',
+  'Denver',
+  'Erie',
+  'Firestone',
+  'Frederick',
+  'Longmont',
+  'Superior',
+  'Westminster',
+] as const;
+
+const EXPECTED_ENHANCED_FOUNDATION_CITY_FINGERPRINT = EXPECTED_ENHANCED_FOUNDATION_CITY_INVENTORY.join('|');
+
 function assertUnique(values: readonly string[], label: string) {
   const duplicates = values.filter((value, index) => values.indexOf(value) !== index);
   assert.equal(duplicates.length, 0, `${label} must not contain duplicate values: ${duplicates.join(', ')}`);
@@ -53,13 +67,19 @@ async function main() {
     0,
     'Public FOUNDATION Local Decision Intelligence backlog must remain closed after Phase 2 Wave 3.',
   );
+  const enhancedFoundationCityInventory = getPublicDecisionGuideRegistryEntries()
+    .filter((entry) => entry.guideMaturity === 'ENHANCED_FOUNDATION')
+    .map((entry) => entry.canonicalName)
+    .sort();
   assert.deepEqual(
-    getPublicDecisionGuideRegistryEntries()
-      .filter((entry) => entry.guideMaturity === 'ENHANCED_FOUNDATION')
-      .map((entry) => entry.canonicalName)
-      .sort(),
-    ['Broomfield', 'Denver', 'Erie', 'Longmont', 'Superior', 'Westminster'],
-    'Enhanced Foundation city inventory must match the certified Phase 2 closure state.',
+    enhancedFoundationCityInventory,
+    EXPECTED_ENHANCED_FOUNDATION_CITY_INVENTORY,
+    'Enhanced Foundation city inventory must match the current canonical Decision Guide registry.',
+  );
+  assert.equal(
+    enhancedFoundationCityInventory.join('|'),
+    EXPECTED_ENHANCED_FOUNDATION_CITY_FINGERPRINT,
+    'Enhanced Foundation city inventory fingerprint must remain deterministic.',
   );
   assert.match(marketPage, /decision-guide-discovery-certified/, 'Market page must expose certified guide discovery section.');
   assert.match(marketPage, /data-decision-guide-discovery-foundation-promoted="false"/, 'Market page must explicitly block foundation promotion.');
