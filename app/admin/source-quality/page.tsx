@@ -118,7 +118,7 @@ function Disclosure({ value }: { value: string }) {
 
 function Counts({ values }: { values: Readonly<Record<string, number>> }) {
   const entries: [string, number][] = Object.entries(values);
-  return entries.length === 0 ? <Empty /> : <dl className="mt-3 space-y-2 text-sm">{entries.map(([label, value]) => <div key={label} className="flex gap-3"><dt className="break-words text-white/55">{label}</dt><dd className="ml-auto font-mono text-white/85">{value}</dd></div>)}</dl>;
+  return entries.length === 0 ? <Empty /> : <dl className="mt-3 space-y-2 text-sm">{entries.map(([label, value]: [string, number]) => <div key={label} className="flex gap-3"><dt className="break-words text-white/55">{label}</dt><dd className="ml-auto font-mono text-white/85">{value}</dd></div>)}</dl>;
 }
 
 function List({ values }: { values: readonly string[] }) {
@@ -131,7 +131,7 @@ function Metadata({ label, values }: { label: string; values: readonly string[] 
 
 function ReferenceIndex({ values }: { values: Readonly<Record<string, readonly string[]>> }) {
   const entries: [string, readonly string[]][] = Object.entries(values);
-  return entries.length === 0 ? <Empty /> : <dl className="space-y-3 text-sm">{entries.map(([reference, sourceIds]) => <div key={reference}><dt className="font-mono text-white/85">{reference}</dt><dd className="mt-1 text-white/55">{sourceIds.join(', ')}</dd></div>)}</dl>;
+  return entries.length === 0 ? <Empty /> : <dl className="space-y-3 text-sm">{entries.map(([reference, sourceIds]: [string, readonly string[]]) => <div key={reference}><dt className="font-mono text-white/85">{reference}</dt><dd className="mt-1 text-white/55">{sourceIds.join(', ')}</dd></div>)}</dl>;
 }
 
 function Empty() {
