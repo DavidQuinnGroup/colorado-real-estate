@@ -14,6 +14,8 @@ import { neighborhoods } from '../lib/neighborhoods.js';
 const PHASE_2_WAVE_1_CITIES = ['Longmont', 'Denver'] as const;
 const PRESERVED_ENHANCED_FOUNDATION_CITIES = ['Broomfield', 'Superior', 'Erie', 'Westminster'] as const;
 const PRESERVED_EDITORIAL_CITIES = ['Boulder', 'Louisville', 'Lafayette'] as const;
+const EXPLICIT_NEGATIVE_PROTECTED_CLASS_MARKER = 'data-answer-unit-protected-class-implication="false"';
+const EXPLICIT_NEGATIVE_INVESTMENT_LIMITATION = 'valuation, investment recommendation, or advice to buy or sell.';
 
 const PROHIBITED_PATTERNS = [
   /best place/i,
@@ -23,7 +25,7 @@ const PROHIBITED_PATTERNS = [
   /safety ranking/i,
   /crime score/i,
   /demographic recommendation/i,
-  /protected-class/i,
+  /protected[-\s]class/i,
   /suitability claims/i,
   /investment\s+(?:opportunity|return|upside|ranking|score|grade|pick|recommendation)/i,
   /(?<!not )appreciation predictions?/i,
@@ -48,8 +50,33 @@ function slugifyCity(value: string) {
 }
 
 function assertNoProhibitedClaims(source: string) {
+  const semanticSource = source
+    .split(EXPLICIT_NEGATIVE_PROTECTED_CLASS_MARKER).join('')
+    .split(EXPLICIT_NEGATIVE_INVESTMENT_LIMITATION).join('');
   for (const pattern of PROHIBITED_PATTERNS) {
-    assert(!pattern.test(source), `Local Decision Intelligence Phase 2 Wave 1 must not include prohibited claim or activation text: ${pattern}`);
+    assert(!pattern.test(semanticSource), `Local Decision Intelligence Phase 2 Wave 1 must not include prohibited claim or activation text: ${pattern}`);
+  }
+}
+
+function assertSemanticSafetyFixtures() {
+  const safeFixtures = [EXPLICIT_NEGATIVE_PROTECTED_CLASS_MARKER, EXPLICIT_NEGATIVE_INVESTMENT_LIMITATION];
+  const unsafeFixtures = [
+    'Best for a protected class.',
+    'Protected-class neighborhood recommendation.',
+    'Protected class ranking.',
+    'Protected-class inference.',
+    'Steering output for a protected class.',
+    'This guide is an investment recommendation.',
+  ];
+
+  for (const [fixture, expected] of [
+    ...safeFixtures.map((fixture) => [fixture, false] as const),
+    ...unsafeFixtures.map((fixture) => [fixture, true] as const),
+  ]) {
+    const semanticFixture = fixture
+      .split(EXPLICIT_NEGATIVE_PROTECTED_CLASS_MARKER).join('')
+      .split(EXPLICIT_NEGATIVE_INVESTMENT_LIMITATION).join('');
+    assert.equal(PROHIBITED_PATTERNS.some((pattern) => pattern.test(semanticFixture)), expected, `Semantic fixture failed: ${fixture}`);
   }
 }
 
@@ -109,6 +136,8 @@ async function main() {
     readFile('lib/cities.ts', 'utf8'),
     readFile('components/search/SearchControls.tsx', 'utf8'),
   ]);
+
+  assertSemanticSafetyFixtures();
 
   for (const cityName of PHASE_2_WAVE_1_CITIES) {
     const city = cities.find((candidate) => normalize(candidate.name) === normalize(cityName));

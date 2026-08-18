@@ -20,6 +20,90 @@ function assertUnique(values: string[], label: string) {
   assert.equal(duplicates.length, 0, `${label} must not contain duplicate values: ${duplicates.join(', ')}`);
 }
 
+const EXPLICIT_NEGATIVE_PROTECTED_CLASS_MARKER = 'data-answer-unit-protected-class-implication="false"';
+const EXPLICIT_NEGATIVE_INVESTMENT_LIMITATION = 'valuation, investment recommendation, or advice to buy or sell.';
+
+function containsUnsafeProtectedClassImplication(source: string): boolean {
+  return source.split(EXPLICIT_NEGATIVE_PROTECTED_CLASS_MARKER).join('').match(/protected[-\s]class/i) !== null;
+}
+
+function assertProtectedClassSafety(source: string) {
+  assert.match(
+    source,
+    /data-answer-unit-protected-class-implication="false"/,
+    'The governed Boulder Answer Unit must explicitly declare no protected-class implication.',
+  );
+
+  const safeFixtures = [
+    'data-answer-unit-protected-class-implication="false"',
+  ];
+  for (const fixture of safeFixtures) {
+    assert.equal(
+      containsUnsafeProtectedClassImplication(fixture),
+      false,
+      `Explicit negative safety assertion must pass: ${fixture}`,
+    );
+  }
+
+  const unsafeFixtures = [
+    'Best for a protected class',
+    'Ideal for a protected class',
+    'Suitable for a protected class',
+    'Protected-class neighborhood recommendation',
+    'Protected-class ranking',
+    'Protected-class preference',
+    'Protected-class inference',
+    'Steering implication for a protected class',
+  ];
+  for (const fixture of unsafeFixtures) {
+    assert.equal(
+      containsUnsafeProtectedClassImplication(fixture),
+      true,
+      `Actual protected-class implication must fail: ${fixture}`,
+    );
+  }
+
+  assert.equal(
+    containsUnsafeProtectedClassImplication(source),
+    false,
+    'Decision Guide sources must not contain protected-class implications beyond the explicit false-valued safety marker.',
+  );
+}
+
+function assertInvestmentRecommendationSafety(source: string) {
+  const hasUnsafeInvestmentRecommendation = (candidate: string) =>
+    candidate
+      .split(EXPLICIT_NEGATIVE_INVESTMENT_LIMITATION).join('')
+      .toLowerCase()
+      .includes('investment recommendation');
+  const safeFixtures = [EXPLICIT_NEGATIVE_INVESTMENT_LIMITATION];
+  for (const fixture of safeFixtures) {
+    assert.equal(
+      hasUnsafeInvestmentRecommendation(fixture),
+      false,
+      `Explicit negative investment limitation must pass: ${fixture}`,
+    );
+  }
+
+  const unsafeFixtures = [
+    'This guide is an investment recommendation.',
+    'Investment recommendation: buy this market.',
+  ];
+  for (const fixture of unsafeFixtures) {
+    assert.equal(
+      hasUnsafeInvestmentRecommendation(fixture),
+      true,
+      `Actual investment recommendation must fail: ${fixture}`,
+    );
+  }
+
+  assert.equal(
+    hasUnsafeInvestmentRecommendation(source),
+    false,
+    'Decision Guide sources must not contain investment recommendation claims beyond the explicit negative limitation.',
+  );
+}
+
 function assertNoProhibitedClaims(source: string) {
   const prohibited = [
     /best place/i,
@@ -29,8 +113,6 @@ function assertNoProhibitedClaims(source: string) {
     /safety ranking/i,
     /crime score/i,
     /demographic recommendation/i,
-    /protected-class/i,
-    /investment recommendation/i,
     /appreciation prediction/i,
     /guaranteed appreciation/i,
     /urgent/i,
@@ -45,6 +127,9 @@ function assertNoProhibitedClaims(source: string) {
   for (const pattern of prohibited) {
     assert(!pattern.test(source), `Colorado Decision Guide generation system must not include prohibited claim or activation text: ${pattern}`);
   }
+
+  assertProtectedClassSafety(source);
+  assertInvestmentRecommendationSafety(source);
 }
 
 async function main() {

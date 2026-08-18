@@ -10,11 +10,19 @@ type DecisionGuideValidationOptions = {
   packageScriptName: string;
 };
 
+const EXPLICIT_NEGATIVE_PROTECTED_CLASS_MARKER = 'data-answer-unit-protected-class-implication="false"';
+const EXPLICIT_NEGATIVE_PROTECTED_CLASS_LIMITATION = 'This guide does not infer or rank protected-class characteristics.';
+const EXPLICIT_NEGATIVE_INVESTMENT_LIMITATION = 'valuation, investment recommendation, or advice to buy or sell.';
+
 function assertIncludes(source: string, expected: string, message: string) {
   assert(source.includes(expected), message);
 }
 
 function assertNoProhibitedClaims(source: string, cityName: string) {
+  const semanticSource = source
+    .split(EXPLICIT_NEGATIVE_PROTECTED_CLASS_MARKER).join('')
+    .split(EXPLICIT_NEGATIVE_PROTECTED_CLASS_LIMITATION).join('')
+    .split(EXPLICIT_NEGATIVE_INVESTMENT_LIMITATION).join('');
   const prohibited = [
     /best place/i,
     /best neighborhood/i,
@@ -23,7 +31,7 @@ function assertNoProhibitedClaims(source: string, cityName: string) {
     /safety ranking/i,
     /crime score/i,
     /demographic recommendation/i,
-    /protected-class/i,
+    /protected[-\s]class/i,
     /investment recommendation/i,
     /appreciation prediction/i,
     /guaranteed appreciation/i,
@@ -38,7 +46,39 @@ function assertNoProhibitedClaims(source: string, cityName: string) {
   ];
 
   for (const pattern of prohibited) {
-    assert(!pattern.test(source), `${cityName} Decision Guide must not include prohibited claim or activation text: ${pattern}`);
+    assert(!pattern.test(semanticSource), `${cityName} Decision Guide must not include prohibited claim or activation text: ${pattern}`);
+  }
+}
+
+function assertSemanticSafetyFixtures() {
+  const prohibited = [
+    /protected[-\s]class/i,
+    /investment recommendation/i,
+  ];
+  const safeFixtures = [
+    EXPLICIT_NEGATIVE_PROTECTED_CLASS_MARKER,
+    EXPLICIT_NEGATIVE_PROTECTED_CLASS_LIMITATION,
+    EXPLICIT_NEGATIVE_INVESTMENT_LIMITATION,
+  ];
+  const unsafeFixtures = [
+    'Protected-class implication = true.',
+    'Best for a protected class.',
+    'Protected-class ranking.',
+    'Protected-class suitability recommendation.',
+    'Demographic protected-class inference.',
+    'Steering output for a protected class.',
+    'This guide is an investment recommendation.',
+  ];
+
+  for (const [fixture, expected] of [
+    ...safeFixtures.map((fixture) => [fixture, false] as const),
+    ...unsafeFixtures.map((fixture) => [fixture, true] as const),
+  ]) {
+    const semanticFixture = fixture
+      .split(EXPLICIT_NEGATIVE_PROTECTED_CLASS_MARKER).join('')
+      .split(EXPLICIT_NEGATIVE_PROTECTED_CLASS_LIMITATION).join('')
+      .split(EXPLICIT_NEGATIVE_INVESTMENT_LIMITATION).join('');
+    assert.equal(prohibited.some((pattern) => pattern.test(semanticFixture)), expected, `Decision Guide semantic fixture failed: ${fixture}`);
   }
 }
 
@@ -48,6 +88,8 @@ export async function assertDecisionGuidePlatformContract({
   expectedNeighborhoodEvidence,
   packageScriptName,
 }: DecisionGuideValidationOptions) {
+  assertSemanticSafetyFixtures();
+
   const [cityMarketPage, platformSource, packageJson] = await Promise.all([
     readFile('app/market/[city]/page.tsx', 'utf8'),
     readFile('lib/decisionGuidePlatform.ts', 'utf8'),
