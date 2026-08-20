@@ -1,8 +1,6 @@
 import type { ReactNode } from 'react';
 import './globals.css';
-import BrokerageAttribution from '@/components/BrokerageAttribution';
-import PlatformFooter from '@/components/Footer';
-import PublicNavigation from '@/components/PublicNavigation';
+import ApplicationShell from '@/components/ApplicationShell';
 import { Lexend } from 'next/font/google';
 import { realEstateAgentSchema } from '@/lib/schema/realEstateAgentSchema';
 
@@ -47,10 +45,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
         />
       </head>
       <body className="flex min-h-full w-full max-w-full flex-col overflow-x-hidden font-sans antialiased">
-        <BrokerageAttribution />
-        <PublicNavigation />
-        <main className="flex-grow">{children}</main>
-        <PlatformFooter />
+        <ApplicationShell>{children}</ApplicationShell>
       </body>
     </html>
   );
