@@ -6,6 +6,7 @@ import {
   getAgentPropertyPreparationHumanState,
   prepareAgentPropertyConversation,
 } from '../lib/agent-advisory-workbench/agentPropertyConversationPreparation';
+import { sanitizeAgentReturnPath } from '../lib/admin/adminAuth';
 import { buildAgentPropertyPreparationPacket } from '../lib/agent-advisory-workbench/agentPropertyPreparationAdmission';
 import { AGENT_PROPERTY_PREPARATION_FIXTURES } from '../lib/agent-advisory-workbench/agentPropertyPreparationAdmissionFixtures';
 
@@ -69,6 +70,8 @@ assert.ok(page.includes('PropertyConversationExperience') && page.includes('getA
 assert.ok(auth.includes("surface('/agent/prepare/property', 'BROWSER_ADMIN_PAGE', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY'"), 'Property preparation must be exact Agent-only read-only authorization.');
 assert.ok(!auth.includes("surface('/agent/:path*'"), 'Property preparation must not create a generic Agent authorization grant.');
 assert.ok(middleware.includes('pathname === "/agent/prepare/property"') && middleware.includes('buildAgentLoginRedirect'), 'Unauthenticated Property preparation must use the existing Agent login flow.');
+assert.equal(sanitizeAgentReturnPath('/agent/prepare/property'), '/agent/prepare/property', 'The exact Property route must survive the existing Agent login return-path allowlist.');
+assert.equal(sanitizeAgentReturnPath('/agent/other'), '/admin/agent-briefing-preparation', 'The Agent login return-path allowlist must remain exact.');
 assert.ok(agentShell.includes('href="/agent/prepare/property"') && agentShell.includes('Property Preparation'), 'Property Preparation navigation must appear in the Agent shell.');
 assert.ok(agentShell.includes('href="/agent/prepare/market"') && agentShell.includes('Market Preparation'), 'Existing Market Preparation navigation must remain.');
 
