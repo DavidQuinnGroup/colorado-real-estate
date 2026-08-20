@@ -12,7 +12,7 @@ export default function AgentWorkspaceShell({ children }: { children: ReactNode 
 
   return (
     <section className="min-h-screen bg-[#071014] text-slate-100" data-testid="agent-workspace-shell" data-agent-shell="private-professional">
-      <header className="sticky top-0 z-40 border-b border-white/10 bg-[#071014]/95 backdrop-blur-xl" data-testid="agent-workspace-navigation">
+      <header className="border-b border-white/10 bg-[#071014]" data-testid="agent-workspace-navigation">
         <nav className="mx-auto flex min-h-[72px] max-w-6xl items-center justify-between gap-4 px-5 py-3 sm:px-8 lg:px-12" aria-label="Agent workspace navigation">
           <div className="min-w-0">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-100/70">Project Atlas</p>

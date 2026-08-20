@@ -24,6 +24,7 @@ assert(applicationShell.includes("pathname?.startsWith('/agent')") && applicatio
 assert(applicationShell.includes('<BrokerageAttribution />') && applicationShell.includes('<PublicNavigation />') && applicationShell.includes('<PlatformFooter />'), 'public chrome must remain owned by the public shell');
 assert(agentLayout.includes('<AgentWorkspaceShell>{children}</AgentWorkspaceShell>'), 'agent route tree must use the dedicated Agent shell');
 assert(!marketLayout.includes('fixed inset-0 z-50'), 'market layout must not create an overlapping fixed viewport');
+assert(!agentShell.includes('sticky top-0'), 'Agent navigation must not cover briefing content while scrolling');
 assert(agentShell.includes('Project Atlas') && agentShell.includes('Agent Workspace'), 'Agent product identity is required');
 assert(agentShell.includes('href="/agent/prepare/market"'), 'only the existing Market Preparation destination may be present');
 assert(agentShell.includes('href="/agent/logout?next=/agent/prepare/market"'), 'Agent shell must expose existing sign-out');
