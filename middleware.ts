@@ -22,7 +22,7 @@ export async function middleware(request: NextRequest) {
       return buildAdminLoginRedirect(request);
     }
 
-    if (pathname === "/agent/prepare/market") {
+    if (pathname === "/agent/prepare/market" || pathname === "/agent/prepare/property") {
       return buildAgentLoginRedirect(request);
     }
 
@@ -37,5 +37,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/api/admin/:path*", "/agent/prepare/market"],
+  matcher: ["/admin/:path*", "/api/admin/:path*", "/agent/prepare/market", "/agent/prepare/property"],
 };

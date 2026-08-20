@@ -26,14 +26,16 @@ assert(agentLayout.includes('<AgentWorkspaceShell>{children}</AgentWorkspaceShel
 assert(!marketLayout.includes('fixed inset-0 z-50'), 'market layout must not create an overlapping fixed viewport');
 assert(!agentShell.includes('sticky top-0'), 'Agent navigation must not cover briefing content while scrolling');
 assert(agentShell.includes('Project Atlas') && agentShell.includes('Agent Workspace'), 'Agent product identity is required');
-assert(agentShell.includes('href="/agent/prepare/market"'), 'only the existing Market Preparation destination may be present');
+assert(agentShell.includes('href="/agent/prepare/property"'), 'Property Preparation must be an exact Agent navigation destination.');
+assert(agentShell.includes('href="/agent/prepare/market"'), 'Market Preparation must remain an exact Agent navigation destination.');
 assert(agentShell.includes('href="/agent/logout?next=/agent/prepare/market"'), 'Agent shell must expose existing sign-out');
 for (const forbidden of ['/admin', 'MCP', 'Search Homes', 'PublicNavigation', 'PlatformFooter', 'localStorage', 'sessionStorage']) {
   assert(!agentShell.includes(forbidden), `Agent shell must not introduce ${forbidden}`);
 }
 assert(marketPage.includes('MarketConversationExperience'), 'Market workflow route must remain unchanged');
 assert(marketExperience.includes('data-agent-only="true"') && marketExperience.includes('data-persistence="false"'), 'Market experience must remain Agent-only and ephemeral');
-assert(auth.includes("surface('/agent/prepare/market'") && auth.includes("['AGENT']"), 'exact Agent Market authorization must remain classified');
+assert(auth.includes("surface('/agent/prepare/market'") && auth.includes("surface('/agent/prepare/property'") && auth.includes("['AGENT']"), 'exact Agent workflow authorization must remain classified');
 assert(middleware.includes('pathname === "/agent/prepare/market"'), 'exact Market route login protection must remain');
+assert(middleware.includes('pathname === "/agent/prepare/property"'), 'exact Property route login protection must remain');
 
 console.log('AGENT_OPERATING_SHELL_CHECK: PASS');
