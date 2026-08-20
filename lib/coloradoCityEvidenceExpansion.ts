@@ -1,5 +1,5 @@
-import { cities } from './cities.js';
-import { getColoradoDecisionGuideRegistry } from './coloradoDecisionGuideRegistry.js';
+import { cities } from './cities';
+import { getColoradoDecisionGuideRegistry } from './coloradoDecisionGuideRegistry';
 import {
   COLORADO_CITY_INTELLIGENCE_REFERENCE_DATE,
   REQUIRED_CITY_INTELLIGENCE_DOMAINS,
@@ -7,8 +7,8 @@ import {
   type CityIntelligenceMaturity,
   type CityIntelligenceSourceCategory,
   type DomainCompleteness,
-} from './coloradoCityIntelligenceFactory.js';
-import { neighborhoods } from './neighborhoods.js';
+} from './coloradoCityIntelligenceFactory';
+import { neighborhoods } from './neighborhoods';
 
 export const COLORADO_CITY_EVIDENCE_EXPANSION_STATUS = 'COLORADO_CITY_INTELLIGENCE_EVIDENCE_EXPANSION_1_COMPLETE';
 
