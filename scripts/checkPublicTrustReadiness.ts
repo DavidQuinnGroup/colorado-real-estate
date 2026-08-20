@@ -115,7 +115,12 @@ for (const route of publicExperienceRoutes) {
 }
 
 const layout = read('app/layout.tsx');
-assert.match(layout, /BrokerageAttribution/, 'Shared root layout must render brokerage attribution on every viewable public page.');
+assert.match(layout, /ApplicationShell/, 'Shared root layout must delegate viewable pages to the application shell.');
+
+const applicationShell = read('components/ApplicationShell.tsx');
+assert.match(applicationShell, /BrokerageAttribution/, 'Application shell must render brokerage attribution on every viewable public page.');
+assert.match(applicationShell, /PublicNavigation/, 'Application shell must render public navigation on every viewable public page.');
+assert.match(applicationShell, /PlatformFooter/, 'Application shell must render the public footer on every viewable public page.');
 
 const brokerageAttribution = read('components/BrokerageAttribution.tsx');
 assert.match(brokerageAttribution, /data-testid="public-brokerage-attribution"/, 'Brokerage attribution component must be testable.');
