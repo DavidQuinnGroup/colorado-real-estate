@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import {
   authorizeAdminRequest,
+  buildAgentLoginRedirect,
   buildAdminLoginRedirect,
   buildAdminUnauthorizedResponse,
   withTrustedAdminHeaders,
@@ -21,6 +22,10 @@ export async function middleware(request: NextRequest) {
       return buildAdminLoginRedirect(request);
     }
 
+    if (pathname === "/agent/prepare/market") {
+      return buildAgentLoginRedirect(request);
+    }
+
     return buildAdminUnauthorizedResponse();
   }
 
@@ -32,5 +37,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/api/admin/:path*"],
+  matcher: ["/admin/:path*", "/api/admin/:path*", "/agent/prepare/market"],
 };

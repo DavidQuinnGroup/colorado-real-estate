@@ -90,6 +90,7 @@ export const adminProtectedSurfaceClassifications: AdminProtectedSurfaceClassifi
   surface('/admin/repository', 'BROWSER_ADMIN_PAGE', ['HUMAN_ADMIN', 'MACHINE_ADMIN', 'DEVELOPMENT_OPERATOR'], ['REPOSITORY_ADMIN', 'SERVICE_ADMIN'], ['HUMAN_SESSION', 'X_ADMIN_KEY', 'BEARER_ADMIN_KEY', 'LEGACY_ADMIN_KEY_COOKIE', 'DEVELOPMENT_NO_KEY_FALLBACK'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),
   surface('/admin/repository/executive-operations-dashboard', 'BROWSER_ADMIN_PAGE', ['HUMAN_ADMIN', 'MACHINE_ADMIN', 'DEVELOPMENT_OPERATOR'], ['EXECUTIVE_ADMIN', 'REPOSITORY_ADMIN', 'SERVICE_ADMIN'], ['HUMAN_SESSION', 'X_ADMIN_KEY', 'BEARER_ADMIN_KEY', 'LEGACY_ADMIN_KEY_COOKIE', 'DEVELOPMENT_NO_KEY_FALLBACK'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),
   surface('/admin/agent-briefing-preparation', 'BROWSER_ADMIN_PAGE', ['HUMAN_AGENT', 'HUMAN_ADMIN'], ['AGENT', 'REPOSITORY_ADMIN'], ['HUMAN_AGENT_SESSION', 'HUMAN_SESSION'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),
+  surface('/agent/prepare/market', 'BROWSER_ADMIN_PAGE', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),
   surface('/api/admin/enterprise/operational-kpis', 'DUAL_ACCESS_ADMIN_API', ['HUMAN_ADMIN', 'MACHINE_ADMIN', 'DEVELOPMENT_OPERATOR'], ['EXECUTIVE_ADMIN', 'REPOSITORY_ADMIN', 'SERVICE_ADMIN'], ['HUMAN_SESSION', 'X_ADMIN_KEY', 'BEARER_ADMIN_KEY', 'DEVELOPMENT_NO_KEY_FALLBACK'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),
   surface('/api/admin/enterprise/operational-summary', 'DUAL_ACCESS_ADMIN_API', ['HUMAN_ADMIN', 'MACHINE_ADMIN', 'DEVELOPMENT_OPERATOR'], ['EXECUTIVE_ADMIN', 'REPOSITORY_ADMIN', 'SERVICE_ADMIN'], ['HUMAN_SESSION', 'X_ADMIN_KEY', 'BEARER_ADMIN_KEY', 'DEVELOPMENT_NO_KEY_FALLBACK'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),
   surface('/api/admin/toggle-access', 'MUTATING_ADMIN_API', ['MACHINE_ADMIN', 'DEVELOPMENT_OPERATOR'], ['SERVICE_ADMIN', 'REPOSITORY_ADMIN'], ['X_ADMIN_KEY', 'BEARER_ADMIN_KEY', 'DEVELOPMENT_NO_KEY_FALLBACK'], 'MUTATION_CAPABLE', 'MUTATING_ADMIN', true),
@@ -167,7 +168,7 @@ export function sanitizeAdminReturnPath(value: string | null | undefined) {
 }
 
 export function sanitizeAgentReturnPath(value: string | null | undefined) {
-  return value === '/admin/agent-briefing-preparation' ? value : '/admin/agent-briefing-preparation';
+  return value === '/admin/agent-briefing-preparation' || value === '/agent/prepare/market' ? value : '/admin/agent-briefing-preparation';
 }
 
 export function classifyAdminSurface(pathname: string, method = 'GET'): AdminProtectedSurfaceClassification {
@@ -448,6 +449,13 @@ export function buildAdminUnauthorizedResponse() {
 export function buildAdminLoginRedirect(request: NextRequest) {
   const next = sanitizeAdminReturnPath(`${request.nextUrl.pathname}${request.nextUrl.search}`);
   const loginUrl = new URL('/admin/login', request.nextUrl.origin);
+  loginUrl.searchParams.set('next', next);
+  return NextResponse.redirect(loginUrl, { status: 303 });
+}
+
+export function buildAgentLoginRedirect(request: NextRequest) {
+  const next = sanitizeAgentReturnPath(`${request.nextUrl.pathname}${request.nextUrl.search}`);
+  const loginUrl = new URL('/agent/login', request.nextUrl.origin);
   loginUrl.searchParams.set('next', next);
   return NextResponse.redirect(loginUrl, { status: 303 });
 }
