@@ -1,0 +1,33 @@
+import {
+  AGENT_BUYER_PREPARATION_CAPABILITY,
+  AGENT_BUYER_PREPARATION_ROUTE,
+  type AgentBuyerPreparationRequest,
+} from "./agentBuyerPreparationAdmission";
+
+export const AGENT_BUYER_PREPARATION_FIXTURE = Object.freeze({
+  actorIdentityType: "HUMAN_AGENT" as const,
+  actorRole: "AGENT" as const,
+  sessionMechanism: "HUMAN_AGENT_SESSION" as const,
+  capability: AGENT_BUYER_PREPARATION_CAPABILITY,
+  route: AGENT_BUYER_PREPARATION_ROUTE,
+  stage: "DISCOVERY" as const,
+  priorities: ["BUYING_PROCESS", "FINANCING_READINESS"] as const,
+  certifiedCity: "Boulder" as const,
+  propertyObjective: "SINGLE_FAMILY" as const,
+  timing: "EXPLORING" as const,
+  financingStatus: "LENDER_CONVERSATION_REPORTED" as const,
+  marketContext: "CERTIFIED_POINT_IN_TIME" as const,
+  supportedPropertyContext: false,
+  customerContext: false,
+  persistenceRequested: false,
+  providerRuntimeRequired: false,
+  adminContext: false,
+  mcpContext: false,
+  protectedClassRequest: false,
+  schoolQualityRequest: false,
+  safetyRequest: false,
+  affordabilityConclusionRequested: false,
+  loanRecommendationRequested: false,
+  legalConclusionRequested: false,
+  representationRequirementClaimRequested: false,
+} satisfies AgentBuyerPreparationRequest);

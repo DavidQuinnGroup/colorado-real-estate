@@ -208,6 +208,7 @@
     "check:agent-conversation-preparation-agent-only-composition-proof": "jiti scripts/checkAgentConversationPreparationAgentOnlyCompositionProof.ts",
     "check:agent-market-preparation-context-adapter": "jiti scripts/checkAgentMarketPreparationContextAdapter.ts",
     "check:agent-briefing-composition": "jiti scripts/checkAgentBriefingComposition.ts",
+    "check:agent-buyer-preparation-admission": "jiti scripts/checkAgentBuyerPreparationAdmission.ts",
     "check:agent-place-preparation-admission": "jiti scripts/checkAgentPlacePreparationAdmission.ts",
     "check:agent-place-conversation-preparation-experience": "jiti scripts/checkAgentPlaceConversationPreparationExperience.ts",
     "check:real-market-preparation-context-producer": "jiti scripts/checkRealMarketPreparationContextProducer.ts",

@@ -12,7 +12,7 @@ export const AGENT_BRIEFING_CONTENT_CLASSES = [
 ] as const;
 
 export type AgentBriefingContentClass = (typeof AGENT_BRIEFING_CONTENT_CLASSES)[number];
-export type AgentBriefingSurface = 'MARKET' | 'PLACE' | 'PROPERTY';
+export type AgentBriefingSurface = 'MARKET' | 'PLACE' | 'PROPERTY' | 'BUYER';
 
 export type AgentBriefingTraceability = Readonly<{
   sourceReferences: readonly string[];
