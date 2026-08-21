@@ -10,6 +10,7 @@ import {
 
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
+  const isAgentPreparationRoute = pathname === "/agent/prepare/market" || pathname === "/agent/prepare/property";
 
   if (pathname === "/admin/login" || pathname === "/admin/logout" || pathname === "/agent/login" || pathname === "/agent/logout") {
     return NextResponse.next();
@@ -22,18 +23,25 @@ export async function middleware(request: NextRequest) {
       return buildAdminLoginRedirect(request);
     }
 
-    if (pathname === "/agent/prepare/market" || pathname === "/agent/prepare/property") {
+    if (isAgentPreparationRoute) {
       return buildAgentLoginRedirect(request);
     }
 
     return buildAdminUnauthorizedResponse();
   }
 
-  return NextResponse.next({
+  const response = NextResponse.next({
     request: {
       headers: withTrustedAdminHeaders(request, result),
     },
   });
+
+  if (isAgentPreparationRoute) {
+    response.headers.set('Cache-Control', 'private, no-store');
+    response.headers.set('x-middleware-cache', 'no-cache');
+  }
+
+  return response;
 }
 
 export const config = {

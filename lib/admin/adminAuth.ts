@@ -458,7 +458,10 @@ export function buildAgentLoginRedirect(request: NextRequest) {
   const next = sanitizeAgentReturnPath(`${request.nextUrl.pathname}${request.nextUrl.search}`);
   const loginUrl = new URL('/agent/login', request.nextUrl.origin);
   loginUrl.searchParams.set('next', next);
-  return NextResponse.redirect(loginUrl, { status: 303 });
+  const response = NextResponse.redirect(loginUrl, { status: 303 });
+  response.headers.set('Cache-Control', 'private, no-store');
+  response.headers.set('x-middleware-cache', 'no-cache');
+  return response;
 }
 
 export function withTrustedAdminHeaders(request: NextRequest, result: Extract<AdminAuthenticationResult, { authenticated: true }>) {

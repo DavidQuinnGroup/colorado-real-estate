@@ -19,10 +19,10 @@ export default function AgentWorkspaceShell({ children }: { children: ReactNode 
             <p className="mt-1 text-sm font-medium text-white">Agent Workspace</p>
           </div>
           <div className="flex items-center gap-2">
-            <Link href="/agent/prepare/property" className="rounded-[7px] px-3 py-2 text-xs font-semibold text-slate-200 transition hover:bg-white/[0.08] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100" data-testid="agent-workspace-property-link">
+            <Link href="/agent/prepare/property" prefetch={false} className="rounded-[7px] px-3 py-2 text-xs font-semibold text-slate-200 transition hover:bg-white/[0.08] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100" data-testid="agent-workspace-property-link">
               Property Preparation
             </Link>
-            <Link href="/agent/prepare/market" className="rounded-[7px] px-3 py-2 text-xs font-semibold text-slate-200 transition hover:bg-white/[0.08] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100" data-testid="agent-workspace-market-link">
+            <Link href="/agent/prepare/market" prefetch={false} className="rounded-[7px] px-3 py-2 text-xs font-semibold text-slate-200 transition hover:bg-white/[0.08] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100" data-testid="agent-workspace-market-link">
               Market Preparation
             </Link>
             <Link href="/agent/logout?next=/agent/prepare/market" className="inline-flex min-h-10 items-center gap-2 rounded-[7px] border border-white/15 px-3 py-2 text-xs font-semibold text-slate-200 transition hover:border-white/30 hover:bg-white/[0.06] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100" data-testid="agent-workspace-sign-out">
