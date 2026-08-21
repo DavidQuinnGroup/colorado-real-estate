@@ -165,6 +165,7 @@
     "check:colorado-city-intelligence-acquisition-enrichment": "npm run worker:build && node dist/scripts/checkColoradoCityIntelligenceAcquisitionEnrichment.js",
     "check:colorado-city-evidence-expansion": "npm run worker:build && node dist/scripts/checkColoradoCityEvidenceExpansion.js",
     "check:source-rights-activation-readiness": "npm run worker:build && node dist/scripts/checkSourceRightsActivationReadiness.js",
+    "check:restriction-triggered-source-governance": "jiti scripts/checkRestrictionTriggeredSourceGovernance.ts",
     "check:boulder-county-open-data-activation-gate": "npm run worker:build && node dist/scripts/checkBoulderCountyOpenDataActivationGate.js",
     "check:reie-visual-intelligence-system": "npm run worker:build && node dist/scripts/checkReieVisualIntelligenceSystem.js",
     "check:market-product-3": "npm run worker:build && node dist/scripts/checkMarketProduct3.js",
