@@ -10,7 +10,7 @@ import {
 
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
-  const isAgentPreparationRoute = pathname === "/agent/prepare/market" || pathname === "/agent/prepare/property";
+  const isAgentPreparationRoute = pathname === "/agent/prepare/market" || pathname === "/agent/prepare/property" || pathname === "/agent/prepare/place";
 
   if (pathname === "/admin/login" || pathname === "/admin/logout" || pathname === "/agent/login" || pathname === "/agent/logout") {
     return NextResponse.next();
@@ -45,5 +45,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/api/admin/:path*", "/agent/prepare/market", "/agent/prepare/property"],
+  matcher: ["/admin/:path*", "/api/admin/:path*", "/agent/prepare/market", "/agent/prepare/property", "/agent/prepare/place"],
 };

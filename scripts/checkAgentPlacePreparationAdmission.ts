@@ -31,7 +31,8 @@ for (const name of ['boulder', 'louisville', 'lafayette'] as const) {
   assert.equal(packet.city?.jurisdictionClass, 'MUNICIPALITY');
   assert.equal(packet.city?.guideMaturity, 'EDITORIALLY_CERTIFIED');
   assert.equal(packet.sourcePosture?.freshness, 'DATED_DURABLE_EDITORIAL');
-  assert.equal(packet.routeClassification.activationState, 'NOT_AUTHORIZED');
+  assert.equal(packet.routeClassification.privateRouteAuthorization, 'AUTHORIZED');
+  assert.equal(packet.routeClassification.publicActivationState, 'NOT_AUTHORIZED');
   assert.equal(packet.protectedBoundaries.publicActivation, false);
   assert.ok(packet.safeReieSurfaces.some((surface) => surface.href === '/agent/prepare/market' && surface.display === 'PROGRESSIVE_DISCLOSURE'));
   assert.deepEqual(packet.talkingPoints.map((point) => point.label), ['FACT', 'CONTEXT', 'LIMITATION', 'VERIFICATION']);
@@ -82,9 +83,9 @@ expectFailure('providerRuntime', 'PROVIDER_RUNTIME_PROHIBITED');
 const auth = source('lib/admin/adminAuth.ts');
 const middleware = source('middleware.ts');
 const agentShell = source('components/agent/AgentWorkspaceShell.tsx');
-assert.ok(!auth.includes("surface('/agent/prepare/place'"), 'This admission-only contract must not activate an auth surface.');
-assert.ok(!middleware.includes('pathname === "/agent/prepare/place"'), 'This admission-only contract must not activate middleware.');
-assert.ok(!agentShell.includes('/agent/prepare/place'), 'This admission-only contract must not activate Agent navigation.');
-assert.equal(existsSync(resolve(process.cwd(), 'app/agent/prepare/place/page.tsx')), false, 'This admission-only contract must not create a route.');
+assert.ok(auth.includes("surface('/agent/prepare/place', 'BROWSER_ADMIN_PAGE', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY'"), 'The exact Agent place route must be read-only without Admin inheritance.');
+assert.ok(middleware.includes('pathname === "/agent/prepare/place"'), 'The exact Agent place route must use the existing Agent login redirect.');
+assert.ok(agentShell.includes('href="/agent/prepare/place"'), 'The authorized Place Preparation capability must be visible in the Agent shell.');
+assert.equal(existsSync(resolve(process.cwd(), 'app/agent/prepare/place/page.tsx')), true, 'The exact Agent place UI route must exist.');
 
 console.log('AGENT_PLACE_PREPARATION_ADMISSION_CHECK: PASS');

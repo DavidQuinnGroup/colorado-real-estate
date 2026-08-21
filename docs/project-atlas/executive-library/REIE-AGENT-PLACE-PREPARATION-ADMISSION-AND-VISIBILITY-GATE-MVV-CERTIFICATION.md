@@ -8,7 +8,7 @@
 
 Only three canonical `CITY` / `MUNICIPALITY` identities are admitted: Boulder, Louisville, and Lafayette. Each derives from the existing certified Colorado Decision Guide registry with a stable internal identifier, `EDITORIALLY_CERTIFIED` maturity, `CO` state identity, and dated durable editorial freshness. The contract does not copy mutable external source state into the city identity.
 
-The exact future capability is `AGENT_PLACE_CONVERSATION_PREPARATION` at `/agent/prepare/place`, constrained to `HUMAN_AGENT`, `AGENT`, `HUMAN_AGENT_SESSION`, and `READ_ONLY`. `activationState` remains `NOT_AUTHORIZED`; the future route is not implemented, classified, protected, navigable, or visible.
+The exact capability is `AGENT_PLACE_CONVERSATION_PREPARATION` at `/agent/prepare/place`, constrained to `HUMAN_AGENT`, `AGENT`, `HUMAN_AGENT_SESSION`, and `READ_ONLY`. Private-route authorization is limited to the separately certified Place Conversation Preparation Experience; public activation remains `NOT_AUTHORIZED`.
 
 ## Evidence And Visibility
 

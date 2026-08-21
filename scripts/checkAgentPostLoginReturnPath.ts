@@ -34,6 +34,7 @@ function location(response: Response) {
 async function main() {
   assert.equal(sanitizeAgentReturnPath('/agent/prepare/property'), '/agent/prepare/property');
   assert.equal(sanitizeAgentReturnPath('/agent/prepare/market'), '/agent/prepare/market');
+  assert.equal(sanitizeAgentReturnPath('/agent/prepare/place'), '/agent/prepare/place');
   assert.equal(sanitizeAgentReturnPath(null), '/agent/prepare/market');
 
   for (const value of [
@@ -60,9 +61,14 @@ async function main() {
   assert.equal(location(marketRedirect), '/agent/login');
   assert.equal(new URL(marketRedirect.headers.get('location') || '').searchParams.get('next'), '/agent/prepare/market');
 
+  const placeRedirect = buildAgentLoginRedirect(protectedRequest('/agent/prepare/place'));
+  assert.equal(location(placeRedirect), '/agent/login');
+  assert.equal(new URL(placeRedirect.headers.get('location') || '').searchParams.get('next'), '/agent/prepare/place');
+
   for (const [next, expected] of [
     ['/agent/prepare/property', '/agent/prepare/property'],
     ['/agent/prepare/market', '/agent/prepare/market'],
+    ['/agent/prepare/place', '/agent/prepare/place'],
     [undefined, '/agent/prepare/market'],
     ['/admin/agent-briefing-preparation', '/agent/prepare/market'],
     ['https://example.com', '/agent/prepare/market'],

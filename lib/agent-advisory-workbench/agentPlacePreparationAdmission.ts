@@ -14,6 +14,8 @@ export const AGENT_PLACE_PREPARATION_ROUTE_CLASSIFICATION = Object.freeze({
   allowedMechanism: 'HUMAN_AGENT_SESSION',
   mutationPosture: 'READ_ONLY',
   activationState: 'NOT_AUTHORIZED',
+  privateRouteAuthorization: 'AUTHORIZED',
+  publicActivationState: 'NOT_AUTHORIZED',
   noGenericAgentGrant: true,
   adminInheritance: false,
   mcpInheritance: false,

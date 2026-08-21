@@ -16,7 +16,7 @@ import {
 import { createAgentLoginSuccessResponse } from '../lib/admin/agentLoginReturn';
 
 const credential = createHash('sha256').update('REIE_AGENT_CROSS_CAPABILITY_SESSION_CONTINUITY_CHECK').digest('base64url');
-const agentRoutes = ['/agent/prepare/market', '/agent/prepare/property'] as const;
+const agentRoutes = ['/agent/prepare/market', '/agent/prepare/property', '/agent/prepare/place'] as const;
 
 Object.assign(process.env, {
   NODE_ENV: 'production',
@@ -68,8 +68,10 @@ async function main() {
 
   await assertAllowed('/agent/prepare/market', cookie);
   await assertAllowed('/agent/prepare/property', cookie);
+  await assertAllowed('/agent/prepare/place', cookie);
   await assertAllowed('/agent/prepare/market', cookie);
   await assertAllowed('/agent/prepare/property', cookie);
+  await assertAllowed('/agent/prepare/place', cookie);
 
   for (const path of ['/agent/unknown', '/admin', '/admin/repository', '/api/admin/enterprise/operational-kpis', '/api/process-alerts']) {
     const result = await authorizeAdminRequest(request(path, cookie), { method: path === '/api/process-alerts' ? 'POST' : 'GET' });
@@ -85,7 +87,7 @@ async function main() {
     assert.equal(signedOutRedirect.headers.get('x-middleware-cache'), 'no-cache');
   }
 
-  const loginResponse = await createAgentLoginSuccessResponse('https://davidquinngroup.com', '/agent/prepare/property');
+  const loginResponse = await createAgentLoginSuccessResponse('https://davidquinngroup.com', '/agent/prepare/place');
   const setCookie = loginResponse.headers.get('set-cookie') || '';
   assert.match(setCookie, new RegExp(`^${AGENT_SESSION_COOKIE}=`), 'Agent login must issue the Agent session cookie.');
   for (const attribute of ['path=/', 'max-age=28800', 'httponly', 'secure', 'samesite=lax']) {
@@ -95,11 +97,12 @@ async function main() {
 
   const middleware = source('middleware.ts');
   const shell = source('components/agent/AgentWorkspaceShell.tsx');
-  assert.match(middleware, /pathname === "\/agent\/prepare\/market" \|\| pathname === "\/agent\/prepare\/property"/, 'Middleware must enumerate only the exact Agent capabilities.');
+  assert.match(middleware, /pathname === "\/agent\/prepare\/market" \|\| pathname === "\/agent\/prepare\/property" \|\| pathname === "\/agent\/prepare\/place"/, 'Middleware must enumerate only the exact Agent capabilities.');
   assert.match(middleware, /Cache-Control', 'private, no-store'/, 'Authenticated Agent route responses must be private and non-storable.');
   assert.match(middleware, /x-middleware-cache', 'no-cache'/, 'Middleware results must not persist in the client router cache.');
   assert.match(shell, /href="\/agent\/prepare\/property" prefetch=\{false\}/, 'Property navigation must avoid speculative protected-route prefetching.');
   assert.match(shell, /href="\/agent\/prepare\/market" prefetch=\{false\}/, 'Market navigation must avoid speculative protected-route prefetching.');
+  assert.match(shell, /href="\/agent\/prepare\/place" prefetch=\{false\}/, 'Place navigation must avoid speculative protected-route prefetching.');
   assert.doesNotMatch(middleware, /\/agent\/:path\*/, 'Middleware must not create generic Agent authorization.');
 
   console.log('AGENT_CROSS_CAPABILITY_SESSION_CONTINUITY_CHECK: PASS');
