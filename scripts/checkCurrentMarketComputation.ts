@@ -11,8 +11,9 @@ import { CURRENT_MARKET_COMPUTATION_FIXTURE } from '../lib/currentMarketComputat
 const result = computeCurrentMarketAggregates(CURRENT_MARKET_COMPUTATION_FIXTURE);
 assert.equal(result.status, REIE_BOUNDED_CURRENT_MARKET_COMPUTATION_STATUS);
 assert.equal(result.mode, CURRENT_MARKET_COMPUTATION_MODE);
-assert.equal(result.normalizedListings.length, 5);
-assert.deepEqual(result.exclusionCounts, { DUPLICATE_LISTING_IDENTITY: 2, SOURCE_STALE: 1, UNSUPPORTED_OR_INVALID_CITY: 1, UNSUPPORTED_STATUS: 1 });
+assert.equal(result.normalizedListings.length, 6);
+assert.deepEqual(result.exclusionCounts, { DUPLICATE_LISTING_IDENTITY: 2, MISSING_SOURCE_MODIFIED_AT: 1, NONCURRENT_STATUS: 1, UNSUPPORTED_OR_INVALID_CITY: 1, UNSUPPORTED_STATUS: 1 });
+assert.equal(result.sourceSetCurrentness.state, 'CERTIFIED_SOURCE_SET_CURRENTNESS');
 assert(Object.values(result.protectedBoundaries).every((value) => value === false));
 
 function aggregate(scopeType: 'CITY' | 'ZIP', scopeId: string, metric: string) {
@@ -24,14 +25,17 @@ function aggregate(scopeType: 'CITY' | 'ZIP', scopeId: string, metric: string) {
 assert.equal(aggregate('CITY', 'Boulder', 'ACTIVE_INVENTORY_COUNT').value, 3);
 assert.equal(aggregate('CITY', 'Boulder', 'MEDIAN_ACTIVE_LIST_PRICE').value, 900_000);
 assert.equal(aggregate('CITY', 'Boulder', 'MEDIAN_ACTIVE_LIST_PRICE_PER_SQFT').value, 625);
-assert.equal(aggregate('CITY', 'Boulder', 'PENDING_COUNT').value, 1);
-assert.equal(aggregate('CITY', 'Boulder', 'PENDING_TO_ACTIVE_RATIO').value, 1 / 3);
+assert.equal(aggregate('CITY', 'Boulder', 'PENDING_COUNT').value, 2);
+assert.equal(aggregate('CITY', 'Boulder', 'COMING_SOON_COUNT').value, 0);
+assert.equal(aggregate('CITY', 'Boulder', 'PENDING_TO_ACTIVE_RATIO').value, 2 / 3);
 assert.equal(aggregate('CITY', 'Louisville', 'MEDIAN_ACTIVE_LIST_PRICE').state, 'INSUFFICIENT_VERIFIED_SAMPLE');
 assert.equal(aggregate('CITY', 'Louisville', 'MEDIAN_ACTIVE_LIST_PRICE').value, null);
 assert.match(aggregate('CITY', 'Boulder', 'MEDIAN_ACTIVE_LIST_PRICE_PER_SQFT').limitations.join(' '), /list price/i);
 assert.match(aggregate('CITY', 'Boulder', 'ACTIVE_INVENTORY_BY_PROPERTY_TYPE').limitations.join(' '), /UNKNOWN/i);
+assert.equal(aggregate('CITY', 'Boulder', 'ACTIVE_INVENTORY_BY_PROPERTY_TYPE').breakdown.find((item) => item.key === 'UNSPECIFIED_RESIDENTIAL')?.value, 1);
 
 const source = fs.readFileSync('lib/currentMarketComputation.ts', 'utf8');
 assert.doesNotMatch(source, /fetch\(|PrismaClient|prisma\.|process\.env|from ['"]next|Typesense|CRM/, 'Current Market engine must remain pure and non-activating.');
+assert.doesNotMatch(source, /maximumSourceAgeHours|SOURCE_STALE/, 'Current Market engine must not apply a per-record source-age gate.');
 
 console.log('CURRENT_MARKET_COMPUTATION_CHECK: PASS');

@@ -1,16 +1,20 @@
 import { evaluateRestrictionTriggeredSourceGovernance } from './sourceGovernanceRestrictionTriggered';
+import {
+  evaluateCurrentMarketSourceSetCurrentness,
+  type CurrentMarketSourceSetCompletion,
+} from './currentMarketSourceSetCurrentness';
 
 export const REIE_BOUNDED_CURRENT_MARKET_COMPUTATION_STATUS = 'REIE_BOUNDED_CURRENT_MARKET_COMPUTATION_CERTIFIED' as const;
-export const CURRENT_MARKET_COMPUTATION_MODE = 'FIXTURE_ONLY_LIVE_READ_AUTHORIZATION_REQUIRED' as const;
+export const CURRENT_MARKET_COMPUTATION_MODE = 'PURE_NON_PERSISTENT_COMPUTATION' as const;
 export const CURRENT_MARKET_NORMALIZATION_VERSION = 'CURRENT_MARKET_NORMALIZATION_V1' as const;
 export const CURRENT_MARKET_METRIC_VERSION = 'CURRENT_MARKET_METRICS_V1' as const;
 
 export const CURRENT_MARKET_SUPPORTED_CITIES = Object.freeze(['Boulder', 'Louisville', 'Lafayette', 'Superior', 'Erie', 'Longmont'] as const);
 export type CurrentMarketCity = (typeof CURRENT_MARKET_SUPPORTED_CITIES)[number];
 export type CurrentMarketStatus = 'ACTIVE' | 'COMING_SOON' | 'PENDING' | 'CLOSED' | 'INACTIVE' | 'UNKNOWN';
-export type CurrentMarketPropertyType = 'SINGLE_FAMILY' | 'CONDO' | 'TOWNHOME' | 'MULTI_FAMILY' | 'LAND' | 'OTHER' | 'UNKNOWN';
+export type CurrentMarketPropertyType = 'SINGLE_FAMILY' | 'CONDO' | 'TOWNHOME' | 'MULTI_FAMILY' | 'LAND' | 'UNSPECIFIED_RESIDENTIAL' | 'OTHER' | 'UNKNOWN';
 export type CurrentMarketScope = Readonly<{ type: 'CITY' | 'ZIP'; id: string }>;
-export type CurrentMarketMetric = 'ACTIVE_INVENTORY_COUNT' | 'MEDIAN_ACTIVE_LIST_PRICE' | 'MEDIAN_ACTIVE_LIST_PRICE_PER_SQFT' | 'ACTIVE_INVENTORY_BY_PROPERTY_TYPE' | 'PENDING_COUNT' | 'PENDING_TO_ACTIVE_RATIO';
+export type CurrentMarketMetric = 'ACTIVE_INVENTORY_COUNT' | 'MEDIAN_ACTIVE_LIST_PRICE' | 'MEDIAN_ACTIVE_LIST_PRICE_PER_SQFT' | 'ACTIVE_INVENTORY_BY_PROPERTY_TYPE' | 'PENDING_COUNT' | 'COMING_SOON_COUNT' | 'PENDING_TO_ACTIVE_RATIO';
 export type CurrentMarketAggregateState = 'CERTIFIED' | 'INSUFFICIENT_VERIFIED_SAMPLE' | 'NOT_AVAILABLE';
 
 export type CurrentMarketListingInput = Readonly<{
@@ -25,9 +29,8 @@ export type CurrentMarketListingInput = Readonly<{
 }>;
 
 export type CurrentMarketComputationInput = Readonly<{
-  sourceSetId: string;
+  sourceSet: CurrentMarketSourceSetCompletion;
   computedAt: string | Date;
-  maximumSourceAgeHours: number;
   minimumVerifiedSampleSize: number;
   listings: readonly CurrentMarketListingInput[];
 }>;
@@ -37,7 +40,7 @@ export type NormalizedCurrentMarketListing = Readonly<{
   listPrice: number | null;
   mlsId: string;
   propertyType: CurrentMarketPropertyType;
-  sourceModifiedAt: string;
+  sourceModifiedAt: string | null;
   sqft: number | null;
   status: CurrentMarketStatus;
   zip: string;
@@ -51,6 +54,8 @@ export type CurrentMarketAggregate = Readonly<{
   sampleSize: number;
   populationSize: number;
   sourceSetId: string;
+  sourceSetCurrentAsOf: string;
+  sourceCutoffAt: string;
   computedAt: string;
   latestAdmittedSourceModifiedAt: string | null;
   oldestAdmittedSourceModifiedAt: string | null;
@@ -58,6 +63,7 @@ export type CurrentMarketAggregate = Readonly<{
   normalizationVersion: typeof CURRENT_MARKET_NORMALIZATION_VERSION;
   metricVersion: typeof CURRENT_MARKET_METRIC_VERSION;
   limitations: readonly string[];
+  breakdown: readonly Readonly<{ key: string; value: number }>[];
 }>;
 
 export type CurrentMarketComputationResult = Readonly<{
@@ -66,6 +72,7 @@ export type CurrentMarketComputationResult = Readonly<{
   aggregates: readonly CurrentMarketAggregate[];
   normalizedListings: readonly NormalizedCurrentMarketListing[];
   exclusionCounts: Readonly<Record<string, number>>;
+  sourceSetCurrentness: ReturnType<typeof evaluateCurrentMarketSourceSetCurrentness>;
   protectedBoundaries: Readonly<{
     providerActivity: false;
     persistence: false;
@@ -80,6 +87,7 @@ const STATUS_TAXONOMY: Readonly<Record<string, CurrentMarketStatus>> = Object.fr
   'coming soon': 'COMING_SOON',
   pending: 'PENDING',
   'under contract': 'PENDING',
+  'active under contract': 'PENDING',
   closed: 'CLOSED',
   sold: 'CLOSED',
   inactive: 'INACTIVE',
@@ -100,6 +108,13 @@ const PROPERTY_TYPE_TAXONOMY: Readonly<Record<string, CurrentMarketPropertyType>
   'multi family': 'MULTI_FAMILY',
   multifamily: 'MULTI_FAMILY',
   land: 'LAND',
+  residential: 'UNSPECIFIED_RESIDENTIAL',
+  'residential income': 'OTHER',
+  'commercial sale': 'OTHER',
+  'commercial lease': 'OTHER',
+  farm: 'OTHER',
+  estate: 'OTHER',
+  'manufactured in park': 'OTHER',
   other: 'OTHER',
 });
 
@@ -172,8 +187,9 @@ function aggregate(
   input: CurrentMarketComputationInput,
   listings: readonly NormalizedCurrentMarketListing[],
   limitations: readonly string[] = [],
+  breakdown: readonly Readonly<{ key: string; value: number }>[] = [],
 ): CurrentMarketAggregate {
-  const timestamps = listings.map((listing) => listing.sourceModifiedAt).sort();
+  const timestamps = listings.map((listing) => listing.sourceModifiedAt).filter((timestamp): timestamp is string => Boolean(timestamp)).sort();
   const requiresSample = metric === 'MEDIAN_ACTIVE_LIST_PRICE' || metric === 'MEDIAN_ACTIVE_LIST_PRICE_PER_SQFT';
   const state: CurrentMarketAggregateState = value === null
     ? 'NOT_AVAILABLE'
@@ -187,7 +203,9 @@ function aggregate(
     value: state === 'CERTIFIED' || !requiresSample ? value : null,
     sampleSize,
     populationSize,
-    sourceSetId: input.sourceSetId,
+    sourceSetId: input.sourceSet.sourceSetId,
+    sourceSetCurrentAsOf: evaluateCurrentMarketSourceSetCurrentness(input.sourceSet, input.computedAt).sourceSetCurrentAsOf!,
+    sourceCutoffAt: evaluateCurrentMarketSourceSetCurrentness(input.sourceSet, input.computedAt).sourceCutoffAt!,
     computedAt: parseDate(input.computedAt)!.toISOString(),
     latestAdmittedSourceModifiedAt: timestamps.at(-1) ?? null,
     oldestAdmittedSourceModifiedAt: timestamps.at(0) ?? null,
@@ -195,14 +213,17 @@ function aggregate(
     normalizationVersion: CURRENT_MARKET_NORMALIZATION_VERSION,
     metricVersion: CURRENT_MARKET_METRIC_VERSION,
     limitations: Object.freeze([...new Set(limitations)].sort()),
+    breakdown: Object.freeze([...breakdown].sort((left, right) => left.key.localeCompare(right.key))),
   });
 }
 
 export function computeCurrentMarketAggregates(input: CurrentMarketComputationInput): CurrentMarketComputationResult {
   const computedAt = parseDate(input.computedAt);
-  if (!computedAt || !text(input.sourceSetId) || !Number.isFinite(input.maximumSourceAgeHours) || input.maximumSourceAgeHours < 0 || !Number.isInteger(input.minimumVerifiedSampleSize) || input.minimumVerifiedSampleSize < 1) {
-    throw new Error('Current Market computation requires a source set, valid computation time, non-negative freshness window, and positive integer sample policy.');
+  if (!computedAt || !Number.isInteger(input.minimumVerifiedSampleSize) || input.minimumVerifiedSampleSize < 1) {
+    throw new Error('Current Market computation requires a certified source set, valid computation time, and positive integer sample policy.');
   }
+  const sourceSetCurrentness = evaluateCurrentMarketSourceSetCurrentness(input.sourceSet, computedAt);
+  if (!sourceSetCurrentness.certified) throw new Error(`Current Market source set is not certified: ${sourceSetCurrentness.reasons.join(', ')}`);
 
   const sourceGovernance = evaluateRestrictionTriggeredSourceGovernance({
     sourceAccessAuthorized: true,
@@ -224,32 +245,31 @@ export function computeCurrentMarketAggregates(input: CurrentMarketComputationIn
     const mlsId = text(listing.mlsId);
     const city = normalizeCity(listing.city);
     const zip = normalizeZip(listing.zip);
-    const sourceModifiedAt = parseDate(listing.sourceModifiedAt);
     if (!mlsId) { countReason(exclusionCounts, 'MISSING_LISTING_IDENTITY'); continue; }
     if (!city) { countReason(exclusionCounts, 'UNSUPPORTED_OR_INVALID_CITY'); continue; }
     if (!zip) { countReason(exclusionCounts, 'INVALID_ZIP'); continue; }
-    if (!sourceModifiedAt) { countReason(exclusionCounts, 'MISSING_OR_INVALID_SOURCE_MODIFIED_AT'); continue; }
-    if ((computedAt.getTime() - sourceModifiedAt.getTime()) / 3_600_000 > input.maximumSourceAgeHours) { countReason(exclusionCounts, 'SOURCE_STALE'); continue; }
+    const status = normalizeStatus(listing.status);
+    if (status === 'UNKNOWN') { countReason(exclusionCounts, 'UNSUPPORTED_STATUS'); continue; }
+    if (status === 'CLOSED' || status === 'INACTIVE') { countReason(exclusionCounts, 'NONCURRENT_STATUS'); continue; }
+    const sourceModifiedAt = parseDate(listing.sourceModifiedAt);
+    if (!sourceModifiedAt && listing.sourceModifiedAt !== null) countReason(exclusionCounts, 'INVALID_SOURCE_MODIFIED_AT');
+    if (!sourceModifiedAt && listing.sourceModifiedAt === null) countReason(exclusionCounts, 'MISSING_SOURCE_MODIFIED_AT');
     identities.set(mlsId, (identities.get(mlsId) ?? 0) + 1);
     candidates.push(Object.freeze({
       mlsId,
       city,
       zip,
-      status: normalizeStatus(listing.status),
+      status,
       propertyType: normalizePropertyType(listing.propertyType),
       listPrice: finitePositive(listing.listPrice),
       sqft: finitePositive(listing.sqft),
-      sourceModifiedAt: sourceModifiedAt.toISOString(),
+      sourceModifiedAt: sourceModifiedAt?.toISOString() ?? null,
     }));
   }
 
   const normalizedListings = candidates.filter((listing) => {
     if ((identities.get(listing.mlsId) ?? 0) > 1) {
       countReason(exclusionCounts, 'DUPLICATE_LISTING_IDENTITY');
-      return false;
-    }
-    if (listing.status === 'UNKNOWN') {
-      countReason(exclusionCounts, 'UNSUPPORTED_STATUS');
       return false;
     }
     return true;
@@ -259,12 +279,13 @@ export function computeCurrentMarketAggregates(input: CurrentMarketComputationIn
   for (const group of scopes(normalizedListings)) {
     const active = group.listings.filter((listing) => listing.status === 'ACTIVE');
     const pending = group.listings.filter((listing) => listing.status === 'PENDING');
+    const comingSoon = group.listings.filter((listing) => listing.status === 'COMING_SOON');
     const activeWithPrice = active.filter((listing) => listing.listPrice !== null);
     const activeWithPpsf = active.filter((listing) => listing.listPrice !== null && listing.sqft !== null);
     const typeCounts = active.reduce<Record<CurrentMarketPropertyType, number>>((counts, listing) => {
       counts[listing.propertyType] += 1;
       return counts;
-    }, { SINGLE_FAMILY: 0, CONDO: 0, TOWNHOME: 0, MULTI_FAMILY: 0, LAND: 0, OTHER: 0, UNKNOWN: 0 });
+    }, { SINGLE_FAMILY: 0, CONDO: 0, TOWNHOME: 0, MULTI_FAMILY: 0, LAND: 0, UNSPECIFIED_RESIDENTIAL: 0, OTHER: 0, UNKNOWN: 0 });
     const typeMetricValue = Object.entries(typeCounts).filter(([, count]) => count > 0).length;
     const scopeLimitations = [
       'Price bands are deferred pending a separately governed threshold policy.',
@@ -276,8 +297,9 @@ export function computeCurrentMarketAggregates(input: CurrentMarketComputationIn
       aggregate('ACTIVE_INVENTORY_COUNT', group.scope, active.length, active.length, group.listings.length, input, group.listings, scopeLimitations),
       aggregate('MEDIAN_ACTIVE_LIST_PRICE', group.scope, median(activeWithPrice.map((listing) => listing.listPrice!)), activeWithPrice.length, active.length, input, group.listings, scopeLimitations),
       aggregate('MEDIAN_ACTIVE_LIST_PRICE_PER_SQFT', group.scope, median(activeWithPpsf.map((listing) => listing.listPrice! / listing.sqft!)), activeWithPpsf.length, active.length, input, group.listings, scopeLimitations),
-      aggregate('ACTIVE_INVENTORY_BY_PROPERTY_TYPE', group.scope, typeMetricValue, active.length, active.length, input, group.listings, [...scopeLimitations, `Property-type counts: ${JSON.stringify(typeCounts)}.`]),
+      aggregate('ACTIVE_INVENTORY_BY_PROPERTY_TYPE', group.scope, typeMetricValue, active.length, active.length, input, group.listings, [...scopeLimitations, 'Unknown property types are preserved as an explicit category.'], Object.entries(typeCounts).map(([key, value]) => Object.freeze({ key, value }))),
       aggregate('PENDING_COUNT', group.scope, pending.length, pending.length, group.listings.length, input, group.listings, scopeLimitations),
+      aggregate('COMING_SOON_COUNT', group.scope, comingSoon.length, comingSoon.length, group.listings.length, input, group.listings, scopeLimitations),
       aggregate('PENDING_TO_ACTIVE_RATIO', group.scope, active.length ? pending.length / active.length : null, pending.length + active.length, group.listings.length, input, group.listings, active.length ? scopeLimitations : [...scopeLimitations, 'Ratio unavailable because active inventory denominator is zero.']),
     );
   }
@@ -288,6 +310,7 @@ export function computeCurrentMarketAggregates(input: CurrentMarketComputationIn
     aggregates: Object.freeze(aggregates.sort((left, right) => `${left.scope.type}:${left.scope.id}:${left.metric}`.localeCompare(`${right.scope.type}:${right.scope.id}:${right.metric}`))),
     normalizedListings: Object.freeze(normalizedListings),
     exclusionCounts: Object.freeze(Object.fromEntries(Object.entries(exclusionCounts).sort(([left], [right]) => left.localeCompare(right)))),
+    sourceSetCurrentness,
     protectedBoundaries: Object.freeze({ providerActivity: false, persistence: false, publicActivation: false, customerData: false, agentComposition: false }),
   });
 }
