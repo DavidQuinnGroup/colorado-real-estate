@@ -10,6 +10,7 @@ import {
   authorizeAdminRequest,
   buildAgentLoginRedirect,
   createAgentSessionCookieValue,
+  getExpiredAgentSessionCookieOptions,
   getAgentSessionCookieOptions,
   sanitizeAgentReturnPath,
 } from '../lib/admin/adminAuth';
@@ -53,6 +54,14 @@ async function assertAllowed(path: (typeof agentRoutes)[number], cookie: string)
   }
 }
 
+async function assertSignedOut(path: (typeof agentRoutes)[number]) {
+  const result = await authorizeAdminRequest(request(path));
+  assert.equal(result.authenticated, false, `${path} must require the Agent session after sign-out.`);
+  const redirect = buildAgentLoginRedirect(request(path));
+  assert.equal(location(redirect), '/agent/login');
+  assert.equal(new URL(redirect.headers.get('location') || '').searchParams.get('next'), path);
+}
+
 async function main() {
   const cookieOptions = getAgentSessionCookieOptions(true);
   assert.deepEqual(cookieOptions, {
@@ -66,12 +75,23 @@ async function main() {
   const session = await createAgentSessionCookieValue();
   const cookie = `${AGENT_SESSION_COOKIE}=${session}`;
 
-  await assertAllowed('/agent/prepare/market', cookie);
-  await assertAllowed('/agent/prepare/property', cookie);
-  await assertAllowed('/agent/prepare/place', cookie);
-  await assertAllowed('/agent/prepare/market', cookie);
-  await assertAllowed('/agent/prepare/property', cookie);
-  await assertAllowed('/agent/prepare/place', cookie);
+  const transitions = [
+    ['/agent/prepare/place', '/agent/prepare/property'],
+    ['/agent/prepare/place', '/agent/prepare/market'],
+    ['/agent/prepare/property', '/agent/prepare/place'],
+    ['/agent/prepare/property', '/agent/prepare/market'],
+    ['/agent/prepare/market', '/agent/prepare/place'],
+    ['/agent/prepare/market', '/agent/prepare/property'],
+  ] as const;
+  for (const [from, to] of transitions) {
+    await assertAllowed(from, cookie);
+    await assertAllowed(to, cookie);
+  }
+
+  for (const path of agentRoutes) {
+    await assertAllowed(path, cookie);
+    await assertAllowed(path, cookie);
+  }
 
   for (const path of ['/agent/unknown', '/admin', '/admin/repository', '/api/admin/enterprise/operational-kpis', '/api/process-alerts']) {
     const result = await authorizeAdminRequest(request(path, cookie), { method: path === '/api/process-alerts' ? 'POST' : 'GET' });
@@ -95,14 +115,22 @@ async function main() {
   }
   assert.equal(sanitizeAgentReturnPath('/admin/agent-briefing-preparation'), '/agent/prepare/market', 'The proof harness must remain excluded from Agent returns.');
 
+  assert.deepEqual(getExpiredAgentSessionCookieOptions(true), {
+    ...cookieOptions,
+    maxAge: 0,
+    expires: new Date(0),
+  }, 'Sign-out must expire the same root-scoped Agent session cookie.');
+  for (const path of agentRoutes) await assertSignedOut(path);
+
   const middleware = source('middleware.ts');
   const shell = source('components/agent/AgentWorkspaceShell.tsx');
   assert.match(middleware, /pathname === "\/agent\/prepare\/market" \|\| pathname === "\/agent\/prepare\/property" \|\| pathname === "\/agent\/prepare\/place"/, 'Middleware must enumerate only the exact Agent capabilities.');
   assert.match(middleware, /Cache-Control', 'private, no-store'/, 'Authenticated Agent route responses must be private and non-storable.');
   assert.match(middleware, /x-middleware-cache', 'no-cache'/, 'Middleware results must not persist in the client router cache.');
-  assert.match(shell, /href="\/agent\/prepare\/property" prefetch=\{false\}/, 'Property navigation must avoid speculative protected-route prefetching.');
-  assert.match(shell, /href="\/agent\/prepare\/market" prefetch=\{false\}/, 'Market navigation must avoid speculative protected-route prefetching.');
-  assert.match(shell, /href="\/agent\/prepare\/place" prefetch=\{false\}/, 'Place navigation must avoid speculative protected-route prefetching.');
+  assert.doesNotMatch(shell, /from 'next\/link'/, 'Agent capability navigation must not use the App Router client-navigation path.');
+  for (const path of agentRoutes) {
+    assert.match(shell, new RegExp(`<a href="${path}"`), `${path} must use same-origin document navigation.`);
+  }
   assert.doesNotMatch(middleware, /\/agent\/:path\*/, 'Middleware must not create generic Agent authorization.');
 
   console.log('AGENT_CROSS_CAPABILITY_SESSION_CONTINUITY_CHECK: PASS');
