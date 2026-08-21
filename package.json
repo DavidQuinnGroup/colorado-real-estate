@@ -168,6 +168,7 @@
     "check:restriction-triggered-source-governance": "jiti scripts/checkRestrictionTriggeredSourceGovernance.ts",
     "check:internal-market-computation-architecture": "jiti scripts/checkInternalMarketComputationArchitecture.ts",
     "check:current-market-computation": "jiti scripts/checkCurrentMarketComputation.ts",
+    "check:prospective-market-observation-persistence-architecture": "jiti scripts/checkProspectiveMarketObservationPersistenceArchitecture.ts",
     "check:boulder-county-open-data-activation-gate": "npm run worker:build && node dist/scripts/checkBoulderCountyOpenDataActivationGate.js",
     "check:reie-visual-intelligence-system": "npm run worker:build && node dist/scripts/checkReieVisualIntelligenceSystem.js",
     "check:market-product-3": "npm run worker:build && node dist/scripts/checkMarketProduct3.js",
