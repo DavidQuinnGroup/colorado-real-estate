@@ -5,7 +5,7 @@ import MarketConversationExperience from '@/components/agent/MarketConversationE
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'Prepare for a Market Conversation | Project Atlas Agent',
+  title: 'Market Preparation | Project Atlas Agent',
   description: 'Read-only Agent market conversation preparation using certified repository-local market context.',
 };
 

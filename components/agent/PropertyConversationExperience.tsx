@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import { ArrowRight, CheckCircle2, ChevronDown, CircleAlert, ClipboardList, Clock3, FileSearch, Landmark, ShieldCheck } from 'lucide-react';
 
+import AgentBriefingComposition from '@/components/agent/AgentBriefingComposition';
+import AgentPreparationPageHeader from '@/components/agent/AgentPreparationPageHeader';
 import {
   prepareAgentPropertyConversation,
   type AgentPropertyConversationCandidate,
@@ -60,6 +62,7 @@ export default function PropertyConversationExperience({ candidates }: PropertyC
   const briefing = packet?.admission === 'ADMITTED' ? packet : null;
   const property = briefing?.snapshot || null;
   const source = briefing?.sourcePosture || null;
+  const composition = experience?.composition || null;
 
   const configuration = property ? [
     property.beds === null ? null : `${formatNumber(property.beds)} beds`,
@@ -77,8 +80,7 @@ export default function PropertyConversationExperience({ candidates }: PropertyC
     <main className="min-h-screen bg-[#071014] px-5 py-6 text-slate-100 sm:px-8 sm:py-8 lg:px-12" data-testid="agent-property-conversation-experience" data-agent-only="true" data-persistence="false" data-customer-data="false" data-provider-activity="false" data-public-record-retrieval="false" data-recommendation="false" data-fair-housing-inference="false">
       <div className="mx-auto max-w-6xl">
         <header className="flex flex-col gap-6 border-b border-white/10 pb-8 sm:flex-row sm:items-end sm:justify-between">
-          <div className="max-w-3xl"><p className="text-[11px] font-bold uppercase tracking-[0.16em] text-cyan-100/70">Project Atlas / Agent</p><h1 className="mt-3 text-3xl font-semibold text-white sm:text-4xl">Prepare for a property conversation</h1><p className="mt-3 max-w-2xl text-sm leading-6 text-slate-300">Choose one supported property to organize the current listing facts, the open questions, and the professional checkpoints for a focused conversation.</p></div>
-          <p className="max-w-xs text-sm leading-6 text-slate-400">The briefing uses repository listing facts for orientation. Material details still require direct verification.</p>
+          <AgentPreparationPageHeader pageTitle="PROPERTY PREPARATION" taskHeading="Prepare for a property conversation" description="Choose one supported property to receive a concise listing and verification briefing before opening supporting detail." scopeNote="The briefing uses stored listing facts for orientation. Material details still require direct verification." />
         </header>
 
         <section className="mt-8 grid gap-5 lg:grid-cols-[minmax(0,1fr)_18rem]" aria-labelledby="property-selection-heading">
@@ -97,7 +99,8 @@ export default function PropertyConversationExperience({ candidates }: PropertyC
         {!experience ? <section className="mt-8 border border-dashed border-white/15 px-5 py-7 text-sm text-slate-400" data-testid="agent-property-empty-state">Choose one supported property, then prepare your briefing.</section> : null}
         {experience && !briefing ? <section className="mt-8 border border-amber-200/20 bg-amber-100/[0.06] p-5" role="status" data-testid="agent-property-failure-state"><Status caution>{experience.humanState.label}</Status><p className="mt-3 max-w-3xl text-sm leading-6 text-amber-50/80">{experience.humanState.message}</p></section> : null}
 
-        {briefing && property && source ? <div className="mt-8 space-y-5" data-testid="agent-property-briefing" data-human-state={experience?.humanState.label} data-canonical-property-slug={property.slug}>
+        {composition ? <AgentBriefingComposition briefing={composition} /> : null}
+        {briefing && property && source && !composition ? <div className="mt-8 space-y-5" data-testid="agent-property-briefing" data-human-state={experience?.humanState.label} data-canonical-property-slug={property.slug}>
           <section className="border border-cyan-200/20 bg-cyan-100/[0.06] p-5 sm:p-6" aria-labelledby="property-briefing-heading"><div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between"><div className="max-w-3xl"><p className="text-[11px] font-bold uppercase tracking-[0.14em] text-cyan-100/80">60-second property briefing</p><h2 id="property-briefing-heading" className="mt-2 text-2xl font-semibold text-white">{property.address}, {property.city}</h2><p className="mt-3 text-base leading-7 text-slate-200">This {property.propertyType.toLowerCase()} property is currently listed at {formatCurrency(property.price)}{configuration.length ? ` with ${configuration.join(', ')}` : ''}. The admitted listing facts were observed on {formatDate(source.observedAt)}. Condition, public-record, title, HOA, insurance, tax, and financing questions remain outside confirmed REIE evidence and should be verified separately.</p></div><Status>{experience?.humanState.label || 'Ready for your review'}</Status></div></section>
 
           <section className="grid gap-5 lg:grid-cols-[1.45fr_1fr]"><div className="border border-white/10 bg-white/[0.035] p-5 sm:p-6" aria-labelledby="what-matters-heading"><div className="flex items-center gap-3"><ClipboardList className="h-5 w-5 text-cyan-100" aria-hidden="true" /><div><p className="text-[11px] font-bold uppercase tracking-[0.14em] text-cyan-100/70">Briefing notes</p><h2 id="what-matters-heading" className="mt-1 text-lg font-semibold">What matters</h2></div></div><dl className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4"><div className="border border-white/10 bg-black/15 p-4"><dt className="text-xs text-slate-400">Current listing position</dt><dd className="mt-3 text-base font-semibold text-white">{property.status}</dd></div><div className="border border-white/10 bg-black/15 p-4"><dt className="text-xs text-slate-400">List price</dt><dd className="mt-3 text-base font-semibold text-white">{formatCurrency(property.price)}</dd></div><div className="border border-white/10 bg-black/15 p-4"><dt className="text-xs text-slate-400">Property type</dt><dd className="mt-3 text-base font-semibold text-white">{property.propertyType}</dd></div>{configuration.length ? <div className="border border-white/10 bg-black/15 p-4"><dt className="text-xs text-slate-400">Size and configuration</dt><dd className="mt-3 text-base font-semibold text-white">{configuration.join(' · ')}</dd></div> : null}</dl></div><div className="border border-white/10 bg-white/[0.035] p-5 sm:p-6" aria-labelledby="known-now-heading"><div className="flex items-center gap-3"><CheckCircle2 className="h-5 w-5 text-emerald-100" aria-hidden="true" /><div><p className="text-[11px] font-bold uppercase tracking-[0.14em] text-emerald-100/70">Supported now</p><h2 id="known-now-heading" className="mt-1 text-lg font-semibold">Known now</h2></div></div><ul className="mt-5 space-y-3 text-sm leading-6 text-slate-300">{briefing.knownNow.map((item) => <li key={item} className="flex gap-3"><span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-100" aria-hidden="true" />{item}</li>)}</ul></div></section>

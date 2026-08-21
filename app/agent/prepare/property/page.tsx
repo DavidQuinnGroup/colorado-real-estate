@@ -6,7 +6,7 @@ import { getAgentPropertyConversationCandidates } from '@/lib/agent-advisory-wor
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'Prepare for a Property Conversation | Project Atlas Agent',
+  title: 'Property Preparation | Project Atlas Agent',
   description: 'Read-only Agent property conversation preparation using certified repository-local listing facts.',
 };
 

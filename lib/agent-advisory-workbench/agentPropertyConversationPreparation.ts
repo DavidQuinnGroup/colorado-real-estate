@@ -7,6 +7,11 @@ import {
   type AgentPropertyPreparationRequest,
   type AgentPropertyPreparationSourcePosture,
 } from './agentPropertyPreparationAdmission';
+import {
+  composeAgentBriefing,
+  type AgentBriefingComposition,
+  type AgentBriefingTraceability,
+} from './agentBriefingComposition';
 
 export type AgentPropertyConversationCandidate = Readonly<{
   property: AgentPropertyPreparationProperty;
@@ -38,6 +43,52 @@ const AGENT_PROPERTY_REQUEST: AgentPropertyPreparationRequest = Object.freeze({
   fairHousingSensitiveRequest: false,
 });
 
+function trace(sourceReference: string, evidenceKeys: readonly string[], freshness: AgentBriefingTraceability['freshness'], compositionRule: AgentBriefingTraceability['compositionRule']): AgentBriefingTraceability {
+  return { sourceReferences: [sourceReference], evidenceKeys, freshness, compositionRule };
+}
+
+function formatCurrency(value: number) {
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(value);
+}
+
+function composePropertyBriefing(packet: AgentPropertyPreparationPacket): AgentBriefingComposition | null {
+  const property = packet.snapshot;
+  const source = packet.sourcePosture;
+  if (!property || !source?.observedAt) return null;
+  const sourceReference = source.listingReference || source.sourceId || 'REIE_STORED_LISTING_FACTS';
+  const configuration = [
+    property.beds === null ? null : `${property.beds} beds`,
+    property.baths === null ? null : `${property.baths} baths`,
+    property.sqft === null ? null : `${property.sqft.toLocaleString()} sq ft`,
+    property.lotSize === null ? null : `${property.lotSize} lot size`,
+    property.yearBuilt === null ? null : `built ${property.yearBuilt}`,
+  ].filter((value): value is string => Boolean(value));
+  const configurationText = configuration.length ? ` with ${configuration.join(', ')}` : '';
+  return composeAgentBriefing({
+    surface: 'PROPERTY', subject: `${property.address}, ${property.city}`,
+    executiveBriefing: {
+      id: 'property-executive-briefing', contentClass: 'SUPPORTED_SYNTHESIS',
+      text: `${property.address} is an active ${property.propertyType.toLowerCase()} listed at ${formatCurrency(property.price)}${configurationText}. The available listing record was observed on ${source.observedAt}; it establishes listing position and configuration, not condition, value, or property-specific conclusions.`,
+      traceability: trace(sourceReference, ['property-status', 'property-price', 'property-type', 'property-configuration'], 'CURRENT', 'FACT_AND_CONTEXT_SYNTHESIS'),
+    },
+    whatMatters: [{ id: 'property-record-scope', contentClass: 'LIMITATION', text: 'The available record is useful for identifying the active listing and its stated configuration before deeper diligence begins.', traceability: trace(sourceReference, ['property-record-scope'], 'CURRENT', 'LIMITATION_RENDER') }],
+    whyItMatters: [{ id: 'property-why', contentClass: 'SUPPORTED_SYNTHESIS', text: 'Configuration and listing position can focus the next conversation, while condition, records, costs, and other material facts remain separate verification questions.', traceability: trace(sourceReference, ['property-why'], 'CURRENT', 'FACT_AND_CONTEXT_SYNTHESIS') }],
+    keyEvidence: [
+      { id: 'property-position', label: 'Current listing position', value: property.status, contentClass: 'DIRECT_FACT', text: property.status, traceability: trace(sourceReference, ['property-status'], 'CURRENT', 'DIRECT_RENDER') },
+      { id: 'property-price', label: 'List price', value: formatCurrency(property.price), contentClass: 'DIRECT_FACT', text: formatCurrency(property.price), traceability: trace(sourceReference, ['property-price'], 'CURRENT', 'DIRECT_RENDER') },
+      { id: 'property-configuration', label: 'Configuration', value: configuration.join(' · ') || property.propertyType, contentClass: 'DIRECT_FACT', text: configuration.join(' · ') || property.propertyType, traceability: trace(sourceReference, ['property-configuration'], 'CURRENT', 'DIRECT_RENDER') },
+    ],
+    whatCouldChangeInterpretation: packet.needsVerification.slice(0, 2).map((text, index) => ({ id: `property-verification-${index + 1}`, contentClass: 'VERIFICATION_TRIGGER' as const, text, traceability: trace(sourceReference, [`property-verification-${index + 1}`], 'CURRENT', 'VERIFICATION_TRIGGER_RENDER') })),
+    questionsWorthAsking: [
+      { id: 'property-currentness-question', text: `Has the listing status, list price, or stated configuration changed since ${source.observedAt}?`, triggerEvidenceKeys: ['property-status', 'property-price', 'property-configuration'] },
+      { id: 'property-material-question', text: 'Which condition, record, cost, or document question is most material to verify before relying on this listing summary?', triggerEvidenceKeys: ['property-record-scope'] },
+    ],
+    reviewSurfaces: packet.safeReieSurfaces.map((surface) => ({ id: surface.href, label: surface.label, href: surface.href })),
+    sourcesFreshnessLimitations: packet.missingEvidence.slice(0, 2).map((text, index) => ({ id: `property-limitation-${index + 1}`, contentClass: 'LIMITATION' as const, text, traceability: trace(sourceReference, [`property-limitation-${index + 1}`], 'CURRENT', 'LIMITATION_RENDER') })),
+    professionalCheckpoints: packet.professionalCheckpoints.slice(0, 3).map((checkpoint) => ({ id: `property-checkpoint-${checkpoint.role}`, role: checkpoint.role.replaceAll('_', ' '), question: checkpoint.question, traceability: trace(sourceReference, ['property-record-scope'], 'CURRENT', 'PROFESSIONAL_CHECKPOINT_RENDER') })),
+  });
+}
+
 export function prepareAgentPropertyConversation(candidate: AgentPropertyConversationCandidate) {
   const packet = buildAgentPropertyPreparationPacket({
     property: candidate.property,
@@ -47,6 +98,7 @@ export function prepareAgentPropertyConversation(candidate: AgentPropertyConvers
 
   return Object.freeze({
     packet,
+    composition: packet.admission === 'ADMITTED' ? composePropertyBriefing(packet) : null,
     humanState: getAgentPropertyPreparationHumanState(candidate, packet),
   });
 }

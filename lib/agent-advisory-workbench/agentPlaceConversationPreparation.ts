@@ -10,6 +10,11 @@ import {
   type AgentPlaceObjectType,
   type AgentPlacePreparationPacket,
 } from './agentPlacePreparationAdmission';
+import {
+  composeAgentBriefing,
+  type AgentBriefingComposition,
+  type AgentBriefingTraceability,
+} from './agentBriefingComposition';
 
 export const AGENT_PLACE_CONVERSATION_PREPARATION_STATUS = 'REIE_AGENT_PLACE_CONVERSATION_PREPARATION_EXPERIENCE_MVV' as const;
 
@@ -26,6 +31,7 @@ export type AgentPlaceConversationBriefing = Readonly<{
   whatMatters: readonly Readonly<{ label: string; value: string }> [];
   verificationQuestions: readonly string[];
   cityDecisionGuideHref: string;
+  composition: AgentBriefingComposition;
 }>;
 
 export type AgentPlaceConversationExperienceState = Readonly<{
@@ -58,6 +64,10 @@ const AGENT_PLACE_REQUEST_BASE = Object.freeze({
 function guideConfig(city: AgentPlaceCanonicalCity) {
   const key = city.canonicalName.toLowerCase() as 'boulder' | 'louisville' | 'lafayette';
   return DECISION_GUIDE_CITY_CONFIGS[key];
+}
+
+function trace(sourceReference: string, evidenceKeys: readonly string[], freshness: AgentBriefingTraceability['freshness'], compositionRule: AgentBriefingTraceability['compositionRule']): AgentBriefingTraceability {
+  return { sourceReferences: [sourceReference], evidenceKeys, freshness, compositionRule };
 }
 
 function unavailable(packet: AgentPlacePreparationPacket, canonicalPlaceId: string | null, requestedObjectType: AgentPlaceObjectType): AgentPlaceConversationExperienceState {
@@ -114,6 +124,34 @@ export function prepareAgentPlaceConversation(
 
   const config = guideConfig(packet.city);
   const cityDecisionGuideHref = `${packet.city.marketRoute}/guides/orienting-before-search`;
+  const sourceReference = packet.sourcePosture?.sourceReference || `city-guide:${packet.city.canonicalPlaceId}`;
+  const composition = composeAgentBriefing({
+    surface: 'PLACE',
+    subject: `${packet.city.canonicalName}, Colorado`,
+    executiveBriefing: {
+      id: 'place-executive-briefing', contentClass: 'SUPPORTED_SYNTHESIS',
+      text: `${packet.city.canonicalName} is ${config.distinctValue.toLowerCase()}. The governed city context highlights ${config.housingPatternLabel.toLowerCase()} and local access patterns; the specific property and neighborhood still determine the practical interpretation.`,
+      traceability: trace(sourceReference, ['city-identity', 'city-distinct-context', 'city-housing-context'], 'DATED_DURABLE_CONTEXT', 'FACT_AND_CONTEXT_SYNTHESIS'),
+    },
+    whatMatters: [{ id: 'place-focus', contentClass: 'GOVERNED_EDITORIAL_CONTEXT', text: `Keep ${config.attentionValue.toLowerCase()} separate when moving from city orientation to a specific property discussion.`, traceability: trace(sourceReference, ['city-review-focus'], 'DATED_DURABLE_CONTEXT', 'GOVERNED_CONTEXT_RENDER') }],
+    whyItMatters: [{ id: 'place-why', contentClass: 'GOVERNED_EDITORIAL_CONTEXT', text: 'Citywide context helps frame the conversation without treating every neighborhood or address as interchangeable.', traceability: trace(sourceReference, ['city-variation-boundary'], 'DATED_DURABLE_CONTEXT', 'GOVERNED_CONTEXT_RENDER') }],
+    keyEvidence: [
+      { id: 'place-identity', label: 'City identity', value: `${packet.city.canonicalName}, Colorado`, contentClass: 'DIRECT_FACT', text: `${packet.city.canonicalName}, Colorado`, traceability: trace(sourceReference, ['city-identity'], 'DATED_DURABLE_CONTEXT', 'DIRECT_RENDER') },
+      { id: 'place-housing', label: 'Housing orientation', value: config.housingPatternLabel, contentClass: 'GOVERNED_EDITORIAL_CONTEXT', text: config.housingPatternLabel, traceability: trace(sourceReference, ['city-housing-context'], 'DATED_DURABLE_CONTEXT', 'GOVERNED_CONTEXT_RENDER') },
+      { id: 'place-access', label: 'Local-use context', value: config.accessExplanation, contentClass: 'GOVERNED_EDITORIAL_CONTEXT', text: config.accessExplanation, traceability: trace(sourceReference, ['city-access-context'], 'DATED_DURABLE_CONTEXT', 'GOVERNED_CONTEXT_RENDER') },
+    ],
+    whatCouldChangeInterpretation: [
+      { id: 'place-neighborhood-variation', contentClass: 'LIMITATION', text: config.housingVariationExplanation, traceability: trace(sourceReference, ['city-variation-boundary'], 'DATED_DURABLE_CONTEXT', 'LIMITATION_RENDER') },
+      { id: 'place-address-verification', contentClass: 'VERIFICATION_TRIGGER', text: config.verificationExplanation, traceability: trace(sourceReference, ['city-address-verification'], 'DATED_DURABLE_CONTEXT', 'VERIFICATION_TRIGGER_RENDER') },
+    ],
+    questionsWorthAsking: config.verificationQuestions.slice(0, 2).map((text, index) => ({ id: `place-question-${index + 1}`, text, triggerEvidenceKeys: ['city-review-focus', 'city-variation-boundary'] })),
+    reviewSurfaces: [{ id: 'city-guide', label: 'City Decision Guide', href: cityDecisionGuideHref }, { id: 'city-market', label: 'City market orientation', href: packet.city.marketRoute }, { id: 'sources', label: 'Sources and methodology', href: '/sources' }],
+    sourcesFreshnessLimitations: [
+      { id: 'place-freshness', contentClass: 'DIRECT_FACT' as const, text: `Certified City Decision Guide context dated ${packet.city.registryFreshness}.`, traceability: trace(sourceReference, ['city-freshness'], 'DATED_DURABLE_CONTEXT', 'DIRECT_RENDER') },
+      ...packet.missingEvidence.slice(0, 2).map((text, index) => ({ id: `place-limitation-${index + 1}`, contentClass: 'LIMITATION' as const, text, traceability: trace(sourceReference, [`place-limitation-${index + 1}`], 'DATED_DURABLE_CONTEXT', 'LIMITATION_RENDER') })),
+    ],
+    professionalCheckpoints: packet.professionalCheckpoints.filter((checkpoint) => checkpoint.role !== 'REAL_ESTATE_AGENT').map((checkpoint) => ({ id: `place-checkpoint-${checkpoint.role}`, role: checkpoint.role.replaceAll('_', ' '), question: checkpoint.question, traceability: trace(sourceReference, ['city-address-verification'], 'DATED_DURABLE_CONTEXT', 'PROFESSIONAL_CHECKPOINT_RENDER') })),
+  });
   const briefing: AgentPlaceConversationBriefing = Object.freeze({
     city: packet.city,
     headline: config.summaryHeadline,
@@ -130,6 +168,7 @@ export function prepareAgentPlaceConversation(
     ]),
     verificationQuestions: Object.freeze(config.verificationQuestions.slice(0, 3)),
     cityDecisionGuideHref,
+    composition,
   });
 
   return Object.freeze({
