@@ -205,6 +205,7 @@
     "check:agent-operating-shell": "jiti scripts/checkAgentOperatingShell.ts",
     "check:agent-property-preparation-admission": "jiti scripts/checkAgentPropertyPreparationAdmission.ts",
     "check:agent-property-conversation-preparation-experience": "jiti scripts/checkAgentPropertyConversationPreparationExperience.ts",
+    "check:agent-post-login-return-path": "jiti scripts/checkAgentPostLoginReturnPath.ts",
     "check:tailwind-v4-style-pipeline": "jiti scripts/checkTailwindV4StylePipeline.ts",
     "check:agent-per-user-credential-identity": "npm run worker:build && node dist/scripts/checkAgentPerUserCredentialIdentity.js",
     "check:five-city-decision-guide-authority-wave": "npm run worker:build && node --experimental-specifier-resolution=node dist/scripts/checkFiveCityDecisionGuideAuthorityWave.js",

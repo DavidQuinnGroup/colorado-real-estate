@@ -1,13 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import {
-  AGENT_SESSION_COOKIE,
-  createAgentSessionCookieValue,
-  getAgentSessionCookieOptions,
   isSameOriginAdminRequest,
   sanitizeAgentReturnPath,
   validateAgentCredentialSubmission,
 } from '@/lib/admin/adminAuth';
+import { createAgentLoginSuccessResponse } from '@/lib/admin/agentLoginReturn';
 
 export const dynamic = 'force-dynamic';
 
@@ -23,9 +21,7 @@ export async function POST(request: NextRequest) {
     failureUrl.searchParams.set('error', '1');
     return NextResponse.redirect(failureUrl, { status: 303 });
   }
-  const response = NextResponse.redirect(new URL(nextPath, request.nextUrl.origin), { status: 303 });
-  response.cookies.set(AGENT_SESSION_COOKIE, await createAgentSessionCookieValue(), getAgentSessionCookieOptions());
-  return response;
+  return createAgentLoginSuccessResponse(request.nextUrl.origin, nextPath);
 }
 
 export function GET(request: NextRequest) {

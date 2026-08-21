@@ -169,7 +169,7 @@ export function sanitizeAdminReturnPath(value: string | null | undefined) {
 }
 
 export function sanitizeAgentReturnPath(value: string | null | undefined) {
-  return value === '/admin/agent-briefing-preparation' || value === '/agent/prepare/market' || value === '/agent/prepare/property' ? value : '/admin/agent-briefing-preparation';
+  return value === '/agent/prepare/market' || value === '/agent/prepare/property' ? value : '/agent/prepare/market';
 }
 
 export function classifyAdminSurface(pathname: string, method = 'GET'): AdminProtectedSurfaceClassification {
