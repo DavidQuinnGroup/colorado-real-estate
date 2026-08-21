@@ -1,0 +1,37 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+
+import {
+  CURRENT_MARKET_COMPUTATION_MODE,
+  REIE_BOUNDED_CURRENT_MARKET_COMPUTATION_STATUS,
+  computeCurrentMarketAggregates,
+} from '../lib/currentMarketComputation';
+import { CURRENT_MARKET_COMPUTATION_FIXTURE } from '../lib/currentMarketComputationFixtures';
+
+const result = computeCurrentMarketAggregates(CURRENT_MARKET_COMPUTATION_FIXTURE);
+assert.equal(result.status, REIE_BOUNDED_CURRENT_MARKET_COMPUTATION_STATUS);
+assert.equal(result.mode, CURRENT_MARKET_COMPUTATION_MODE);
+assert.equal(result.normalizedListings.length, 5);
+assert.deepEqual(result.exclusionCounts, { DUPLICATE_LISTING_IDENTITY: 2, SOURCE_STALE: 1, UNSUPPORTED_OR_INVALID_CITY: 1, UNSUPPORTED_STATUS: 1 });
+assert(Object.values(result.protectedBoundaries).every((value) => value === false));
+
+function aggregate(scopeType: 'CITY' | 'ZIP', scopeId: string, metric: string) {
+  const found = result.aggregates.find((item) => item.scope.type === scopeType && item.scope.id === scopeId && item.metric === metric);
+  assert(found, `Expected ${scopeType}/${scopeId}/${metric}.`);
+  return found;
+}
+
+assert.equal(aggregate('CITY', 'Boulder', 'ACTIVE_INVENTORY_COUNT').value, 3);
+assert.equal(aggregate('CITY', 'Boulder', 'MEDIAN_ACTIVE_LIST_PRICE').value, 900_000);
+assert.equal(aggregate('CITY', 'Boulder', 'MEDIAN_ACTIVE_LIST_PRICE_PER_SQFT').value, 625);
+assert.equal(aggregate('CITY', 'Boulder', 'PENDING_COUNT').value, 1);
+assert.equal(aggregate('CITY', 'Boulder', 'PENDING_TO_ACTIVE_RATIO').value, 1 / 3);
+assert.equal(aggregate('CITY', 'Louisville', 'MEDIAN_ACTIVE_LIST_PRICE').state, 'INSUFFICIENT_VERIFIED_SAMPLE');
+assert.equal(aggregate('CITY', 'Louisville', 'MEDIAN_ACTIVE_LIST_PRICE').value, null);
+assert.match(aggregate('CITY', 'Boulder', 'MEDIAN_ACTIVE_LIST_PRICE_PER_SQFT').limitations.join(' '), /list price/i);
+assert.match(aggregate('CITY', 'Boulder', 'ACTIVE_INVENTORY_BY_PROPERTY_TYPE').limitations.join(' '), /UNKNOWN/i);
+
+const source = fs.readFileSync('lib/currentMarketComputation.ts', 'utf8');
+assert.doesNotMatch(source, /fetch\(|PrismaClient|prisma\.|process\.env|from ['"]next|Typesense|CRM/, 'Current Market engine must remain pure and non-activating.');
+
+console.log('CURRENT_MARKET_COMPUTATION_CHECK: PASS');
