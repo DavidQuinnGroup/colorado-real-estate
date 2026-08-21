@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ArrowRight, CheckCircle2, ChevronDown, CircleAlert, ClipboardList, Clock3, FileSearch, Landmark, ShieldCheck } from 'lucide-react';
 
 import AgentBriefingComposition from '@/components/agent/AgentBriefingComposition';
@@ -9,11 +9,8 @@ import AgentPreparationPageHeader from '@/components/agent/AgentPreparationPageH
 import {
   prepareAgentPropertyConversation,
   type AgentPropertyConversationCandidate,
+  type AgentPropertyConversationCandidateSummary,
 } from '@/lib/agent-advisory-workbench/agentPropertyConversationPreparation';
-
-type PropertyConversationExperienceProps = {
-  candidates: readonly AgentPropertyConversationCandidate[];
-};
 
 function formatCurrency(value: number) {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(value);
@@ -34,7 +31,7 @@ function formatRole(value: string) {
   return value.toLowerCase().split('_').map((word) => `${word.slice(0, 1).toUpperCase()}${word.slice(1)}`).join(' ');
 }
 
-function candidateLabel(candidate: AgentPropertyConversationCandidate) {
+function candidateLabel(candidate: AgentPropertyConversationCandidateSummary) {
   const property = candidate.property;
   return `${property.address || 'Property'} · ${property.city || 'Colorado'}, ${property.state || 'CO'} ${property.zip || ''}`.trim();
 }
@@ -43,10 +40,35 @@ function Status({ children, caution = false }: { children: string; caution?: boo
   return <p className={`inline-flex items-center gap-2 text-sm font-semibold ${caution ? 'text-amber-100' : 'text-emerald-100'}`}><span className={`flex h-5 w-5 items-center justify-center rounded-full ${caution ? 'bg-amber-200/15' : 'bg-emerald-200/15'}`}>{caution ? <CircleAlert size={13} aria-hidden="true" /> : <CheckCircle2 size={13} aria-hidden="true" />}</span>{children}</p>;
 }
 
-export default function PropertyConversationExperience({ candidates }: PropertyConversationExperienceProps) {
+export default function PropertyConversationExperience() {
+  const [candidates, setCandidates] = useState<readonly AgentPropertyConversationCandidateSummary[]>([]);
+  const [candidateLoadState, setCandidateLoadState] = useState<'LOADING' | 'READY' | 'FAILED'>('LOADING');
+  const [preparationError, setPreparationError] = useState<string | null>(null);
   const [query, setQuery] = useState('');
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
-  const [preparedSlug, setPreparedSlug] = useState<string | null>(null);
+  const [preparedCandidate, setPreparedCandidate] = useState<AgentPropertyConversationCandidate | null>(null);
+  const [isPreparing, setIsPreparing] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadCandidates() {
+      try {
+        const response = await fetch('/api/agent/prepare/property', { cache: 'no-store', credentials: 'same-origin' });
+        const payload = await response.json() as { candidates?: AgentPropertyConversationCandidateSummary[] };
+        if (!response.ok || !payload.candidates) throw new Error('Property selector unavailable.');
+        if (active) {
+          setCandidates(payload.candidates);
+          setCandidateLoadState('READY');
+        }
+      } catch {
+        if (active) setCandidateLoadState('FAILED');
+      }
+    }
+
+    void loadCandidates();
+    return () => { active = false; };
+  }, []);
   const normalizedQuery = query.trim().toLocaleLowerCase();
   const visibleCandidates = useMemo(() => candidates.filter((candidate) => {
     if (!normalizedQuery) return true;
@@ -56,7 +78,6 @@ export default function PropertyConversationExperience({ candidates }: PropertyC
       .some((value) => value.toLocaleLowerCase().includes(normalizedQuery));
   }).slice(0, 12), [candidates, normalizedQuery]);
   const selectedCandidate = useMemo(() => candidates.find((candidate) => candidate.property.slug === selectedSlug) || null, [candidates, selectedSlug]);
-  const preparedCandidate = useMemo(() => candidates.find((candidate) => candidate.property.slug === preparedSlug) || null, [candidates, preparedSlug]);
   const experience = useMemo(() => preparedCandidate ? prepareAgentPropertyConversation(preparedCandidate) : null, [preparedCandidate]);
   const packet = experience?.packet || null;
   const briefing = packet?.admission === 'ADMITTED' ? packet : null;
@@ -76,6 +97,22 @@ export default function PropertyConversationExperience({ candidates }: PropertyC
     'Are HOA, title, tax, insurance, financing, or municipal record questions relevant and still unconfirmed?',
   ] : [];
 
+  async function prepareSelectedProperty() {
+    if (!selectedCandidate) return;
+    setIsPreparing(true);
+    setPreparationError(null);
+    try {
+      const response = await fetch(`/api/agent/prepare/property?property=${encodeURIComponent(selectedCandidate.property.slug)}`, { cache: 'no-store', credentials: 'same-origin' });
+      const payload = await response.json() as { candidate?: AgentPropertyConversationCandidate; error?: string };
+      if (!response.ok || !payload.candidate) throw new Error(payload.error || 'Property briefing unavailable.');
+      setPreparedCandidate(payload.candidate);
+    } catch {
+      setPreparationError('The selected property briefing is unavailable. Confirm the Agent session and try again.');
+    } finally {
+      setIsPreparing(false);
+    }
+  }
+
   return (
     <main className="min-h-screen bg-[#071014] px-5 py-6 text-slate-100 sm:px-8 sm:py-8 lg:px-12" data-testid="agent-property-conversation-experience" data-agent-only="true" data-persistence="false" data-customer-data="false" data-provider-activity="false" data-public-record-retrieval="false" data-recommendation="false" data-fair-housing-inference="false">
       <div className="mx-auto max-w-6xl">
@@ -87,16 +124,17 @@ export default function PropertyConversationExperience({ candidates }: PropertyC
           <div className="border border-white/10 bg-white/[0.035] p-5 sm:p-6">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between"><div><p className="text-[11px] font-bold uppercase tracking-[0.14em] text-cyan-100/70">Step 1</p><h2 id="property-selection-heading" className="mt-2 text-lg font-semibold text-white">Choose one real property</h2></div><span className="text-xs text-slate-400">Active public Colorado listings</span></div>
             <label className="mt-5 block"><span className="sr-only">Filter supported repository properties</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search address, city, ZIP, or property type" className="min-h-11 w-full border border-white/15 bg-black/15 px-4 text-sm text-white placeholder:text-slate-500 focus:border-cyan-100 focus:outline-none focus:ring-2 focus:ring-cyan-100/40" data-testid="agent-property-search-input" /></label>
-            <fieldset className="mt-4 grid gap-3" data-testid="agent-property-candidate-results"><legend className="sr-only">Supported repository property results</legend>{visibleCandidates.length ? visibleCandidates.map((candidate) => {
+            <fieldset className="mt-4 grid gap-3" data-testid="agent-property-candidate-results" data-load-state={candidateLoadState}><legend className="sr-only">Supported repository property results</legend>{candidateLoadState === 'LOADING' ? <p className="border border-dashed border-white/15 px-4 py-5 text-sm leading-6 text-slate-400" data-testid="agent-property-candidates-loading">Loading supported repository properties.</p> : null}{candidateLoadState === 'FAILED' ? <p className="border border-dashed border-amber-200/30 px-4 py-5 text-sm leading-6 text-amber-100" data-testid="agent-property-candidates-unavailable">Supported repository properties are unavailable. Refresh the page to try again.</p> : null}{candidateLoadState === 'READY' && visibleCandidates.length ? visibleCandidates.map((candidate) => {
               const selected = candidate.property.slug === selectedSlug;
-              return <label key={candidate.property.slug} className={`flex cursor-pointer items-center justify-between gap-4 border px-4 py-3 transition ${selected ? 'border-cyan-200/70 bg-cyan-200/10 text-white' : 'border-white/10 bg-black/10 text-slate-300 hover:border-white/30'}`} data-canonical-property-slug={candidate.property.slug}><span className="min-w-0"><span className="block truncate text-sm font-medium">{candidateLabel(candidate)}</span><span className="mt-1 block text-xs text-slate-400">{candidate.property.propertyType || 'Property type to verify'} · {candidate.property.price === null ? 'Price to verify' : formatCurrency(candidate.property.price)} · {candidate.property.status}</span></span><input type="radio" name="property" value={candidate.property.slug} checked={selected} onChange={() => { setSelectedSlug(candidate.property.slug); setPreparedSlug(null); }} className="h-4 w-4 shrink-0 accent-cyan-200" /></label>;
-            }) : <p className="border border-dashed border-white/15 px-4 py-5 text-sm leading-6 text-slate-400" data-testid="agent-property-unavailable">No supported repository properties match this search. Refine the search or use the public Property Search surface.</p>}</fieldset>
-            <div className="mt-6 flex flex-col gap-3 border-t border-white/10 pt-5 sm:flex-row sm:items-center sm:justify-between"><p className="text-sm leading-6 text-slate-400">Your choice and briefing remain only in this open page session.</p><button type="button" onClick={() => setPreparedSlug(selectedCandidate?.property.slug || null)} disabled={!selectedCandidate} className="inline-flex min-h-11 items-center justify-center gap-2 bg-cyan-200 px-5 text-sm font-semibold text-slate-950 transition hover:bg-cyan-100 disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-100 focus:ring-offset-2 focus:ring-offset-[#071014]" data-testid="agent-property-prepare-briefing">Prepare my briefing <ArrowRight size={16} aria-hidden="true" /></button></div>
+              return <label key={candidate.property.slug} className={`flex cursor-pointer items-center justify-between gap-4 border px-4 py-3 transition ${selected ? 'border-cyan-200/70 bg-cyan-200/10 text-white' : 'border-white/10 bg-black/10 text-slate-300 hover:border-white/30'}`} data-canonical-property-slug={candidate.property.slug}><span className="min-w-0"><span className="block truncate text-sm font-medium">{candidateLabel(candidate)}</span><span className="mt-1 block text-xs text-slate-400">{candidate.property.propertyType || 'Property type to verify'} · {candidate.property.price === null ? 'Price to verify' : formatCurrency(candidate.property.price)} · {candidate.property.status}</span></span><input type="radio" name="property" value={candidate.property.slug} checked={selected} onChange={() => { setSelectedSlug(candidate.property.slug); setPreparedCandidate(null); }} className="h-4 w-4 shrink-0 accent-cyan-200" /></label>;
+            }) : null}{candidateLoadState === 'READY' && !visibleCandidates.length ? <p className="border border-dashed border-white/15 px-4 py-5 text-sm leading-6 text-slate-400" data-testid="agent-property-unavailable">No supported repository properties match this search. Refine the search or use the public Property Search surface.</p> : null}</fieldset>
+            <div className="mt-6 flex flex-col gap-3 border-t border-white/10 pt-5 sm:flex-row sm:items-center sm:justify-between"><p className="text-sm leading-6 text-slate-400">Your choice and briefing remain only in this open page session.</p><button type="button" onClick={() => void prepareSelectedProperty()} disabled={!selectedCandidate || isPreparing} className="inline-flex min-h-11 items-center justify-center gap-2 bg-cyan-200 px-5 text-sm font-semibold text-slate-950 transition hover:bg-cyan-100 disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-100 focus:ring-offset-2 focus:ring-offset-[#071014]" data-testid="agent-property-prepare-briefing">{isPreparing ? 'Preparing briefing' : 'Prepare my briefing'} <ArrowRight size={16} aria-hidden="true" /></button></div>
           </div>
           <aside className="border border-white/10 bg-[#0b171c] p-5" aria-label="Briefing scope"><Clock3 className="h-5 w-5 text-cyan-100" aria-hidden="true" /><h2 className="mt-4 text-base font-semibold text-white">A focused property briefing</h2><p className="mt-2 text-sm leading-6 text-slate-400">Understand the supported facts in about a minute, then review detailed evidence limitations only when useful.</p></aside>
         </section>
 
-        {!experience ? <section className="mt-8 border border-dashed border-white/15 px-5 py-7 text-sm text-slate-400" data-testid="agent-property-empty-state">Choose one supported property, then prepare your briefing.</section> : null}
+        {preparationError ? <section className="mt-8 border border-amber-200/20 bg-amber-100/[0.06] p-5 text-sm leading-6 text-amber-50/80" role="status" data-testid="agent-property-preparation-error">{preparationError}</section> : null}
+        {!experience && !preparationError ? <section className="mt-8 border border-dashed border-white/15 px-5 py-7 text-sm text-slate-400" data-testid="agent-property-empty-state">Choose one supported property, then prepare your briefing.</section> : null}
         {experience && !briefing ? <section className="mt-8 border border-amber-200/20 bg-amber-100/[0.06] p-5" role="status" data-testid="agent-property-failure-state"><Status caution>{experience.humanState.label}</Status><p className="mt-3 max-w-3xl text-sm leading-6 text-amber-50/80">{experience.humanState.message}</p></section> : null}
 
         {composition ? <AgentBriefingComposition briefing={composition} /> : null}

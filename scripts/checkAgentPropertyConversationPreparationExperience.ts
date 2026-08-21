@@ -32,6 +32,7 @@ const page = source('app/agent/prepare/property/page.tsx');
 const experience = source('components/agent/PropertyConversationExperience.tsx');
 const adapter = source('lib/agent-advisory-workbench/agentPropertyConversationPreparation.ts');
 const repository = source('lib/agent-advisory-workbench/agentPropertyConversationPreparationRepository.ts');
+const propertyApi = source('app/api/agent/prepare/property/route.ts');
 const auth = source('lib/admin/adminAuth.ts');
 const middleware = source('middleware.ts');
 const agentShell = source('components/agent/AgentWorkspaceShell.tsx');
@@ -66,8 +67,9 @@ const unsupportedPacket = buildAgentPropertyPreparationPacket({
 });
 assert.equal(getAgentPropertyPreparationHumanState({ ...unsupportedJurisdiction, property: { ...unsupportedJurisdiction.property, state: 'WY' } }, unsupportedPacket).label, 'Property unavailable');
 
-assert.ok(page.includes('PropertyConversationExperience') && page.includes('getAgentPropertyConversationCandidates'), 'The exact route must use the real repository property adapter and experience.');
+assert.ok(page.includes('PropertyConversationExperience') && !page.includes('getAgentPropertyConversationCandidates'), 'The exact route must render the Property experience without blocking on a repository read.');
 assert.ok(auth.includes("surface('/agent/prepare/property', 'BROWSER_ADMIN_PAGE', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY'"), 'Property preparation must be exact Agent-only read-only authorization.');
+assert.ok(auth.includes("surface('/api/agent/prepare/property', 'READ_ONLY_ADMIN_API', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY'"), 'Deferred Property reads must remain exact Agent-only read-only authorization.');
 assert.ok(!auth.includes("surface('/agent/:path*'"), 'Property preparation must not create a generic Agent authorization grant.');
 assert.ok(middleware.includes('pathname === "/agent/prepare/property"') && middleware.includes('buildAgentLoginRedirect'), 'Unauthenticated Property preparation must use the existing Agent login flow.');
 assert.equal(sanitizeAgentReturnPath('/agent/prepare/property'), '/agent/prepare/property', 'The exact Property route must survive the existing Agent login return-path allowlist.');
@@ -98,16 +100,19 @@ for (const expected of [
   assert.ok(experience.includes(expected), `Property experience must retain ${expected}.`);
 }
 
-assert.ok(experience.includes('candidate.property.slug === selectedSlug') && experience.includes('setPreparedSlug(selectedCandidate?.property.slug || null)'), 'Selection must resolve only through the exact canonical Property.slug.');
-for (const forbidden of ['localStorage', 'sessionStorage', 'fetch(', 'XMLHttpRequest', 'sendBeacon', 'leadId', 'CRM', 'ATTOM', 'LightBox', 'assessor', 'permit lookup', 'recommendation score', 'suitability']) {
+assert.ok(experience.includes('candidate.property.slug === selectedSlug') && experience.includes('encodeURIComponent(selectedCandidate.property.slug)'), 'Selection must resolve only through the exact canonical Property.slug.');
+assert.ok(experience.includes("fetch('/api/agent/prepare/property', { cache: 'no-store', credentials: 'same-origin' })"), 'The compact selector read must use the exact no-store Agent endpoint.');
+for (const forbidden of ['localStorage', 'sessionStorage', 'XMLHttpRequest', 'sendBeacon', 'leadId', 'CRM', 'ATTOM', 'LightBox', 'assessor', 'permit lookup', 'recommendation score', 'suitability']) {
   assert.ok(!experience.includes(forbidden), `Property experience must not introduce ${forbidden}.`);
 }
 
 assert.ok(repository.includes("origin: 'REPOSITORY_PROPERTY'") && repository.includes('resolvedPropertyCount: 1'), 'Repository adapter must identify one real repository property.');
+assert.ok(repository.includes('getAgentPropertyConversationCandidateSummaries') && repository.includes('getAgentPropertyConversationCandidate(slug'), 'Repository reads must separate compact selector summaries from exact selected-property detail.');
 assert.ok(repository.includes("sourceId: AGENT_PROPERTY_LISTING_SOURCE_ID") && repository.includes("sourceClass: 'EXISTING_REPOSITORY_LISTING_FACTS'"), 'Repository adapter must preserve source identity.');
 assert.ok(repository.includes('sourceModifiedAt || record.lastIntelligenceSync || record.updatedAt') && repository.includes('CURRENT_LISTING_WINDOW_MS'), 'Repository adapter must calculate freshness from stored observation metadata.');
 assert.ok(!repository.match(/create\(|update\(|delete\(|upsert\(|\$executeRaw|fetch\(/), 'Repository adapter must remain read-only and avoid external runtime calls.');
 assert.ok(!adapter.match(/fetch\(|prisma\.|createClient\(|localStorage|sessionStorage/), 'Conversation adapter must stay a pure admission/presentation layer.');
+assert.ok(propertyApi.includes("authorizeAdminRequest(request, { pathname: AGENT_PROPERTY_API_PATH, method: 'GET' })") && propertyApi.includes("'Cache-Control': 'private, no-store'"), 'Deferred Property reads must validate the exact Agent surface and remain private no-store.');
 assert.ok(publicPropertyPage.includes('getPublicProperty'), 'The public Property page must retain its existing read path.');
 assert.ok(marketPage.includes('MarketConversationExperience'), 'The existing Market workflow page must remain unchanged.');
 

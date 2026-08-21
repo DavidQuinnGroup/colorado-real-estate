@@ -18,6 +18,13 @@ export type AgentPropertyConversationCandidate = Readonly<{
   sourcePosture: AgentPropertyPreparationSourcePosture;
 }>;
 
+export type AgentPropertyConversationCandidateSummary = Readonly<{
+  property: Pick<
+    AgentPropertyPreparationProperty,
+    'slug' | 'address' | 'city' | 'state' | 'zip' | 'status' | 'price' | 'propertyType' | 'neighborhood'
+  >;
+}>;
+
 export type AgentPropertyPreparationHumanState = Readonly<{
   label:
     | 'Ready for your review'

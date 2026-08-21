@@ -67,10 +67,12 @@ const packageJson = JSON.parse(source('package.json')) as { scripts?: Record<str
 
 for (const title of ['MARKET PREPARATION', 'PLACE PREPARATION', 'PROPERTY PREPARATION']) assert(shell.includes(title), `${title} must be a shared page identity.`);
 for (const heading of ['Prepare for a market conversation', 'Prepare for a place conversation', 'Prepare for a property conversation']) assert([marketExperience, placeExperience, propertyExperience].some((content) => content.includes(heading)), `${heading} must remain a separate task heading.`);
-for (const marker of ['Executive briefing', 'What matters', 'Why it matters', 'What could change the interpretation', 'Questions worth asking', 'Sources, freshness &amp; limitations', 'agent-briefing-progressive-details']) assert(renderer.includes(marker), `Shared briefing renderer must include ${marker}.`);
-for (const content of [renderer, marketExperience, placeExperience, propertyExperience]) {
+for (const marker of ['Executive briefing', 'What matters', 'Why it matters', 'Key evidence', 'What could change the interpretation', 'Questions worth asking', 'Sources, freshness &amp; limitations', 'agent-briefing-progressive-details']) assert(renderer.includes(marker), `Shared briefing renderer must include ${marker}.`);
+for (const content of [renderer, marketExperience, placeExperience]) {
   for (const forbidden of ['localStorage', 'sessionStorage', 'document.cookie', 'fetch(', 'CRM', 'customerName', 'MLS_GRID', 'IRES', 'ATTOM', 'LightBox', 'recommendation: true', 'suitability: true']) assert.equal(content.includes(forbidden), false, `Briefing UI must not introduce ${forbidden}.`);
 }
+for (const forbidden of ['localStorage', 'sessionStorage', 'document.cookie', 'CRM', 'customerName', 'MLS_GRID', 'IRES', 'ATTOM', 'LightBox', 'recommendation: true', 'suitability: true']) assert.equal(propertyExperience.includes(forbidden), false, `Property briefing UI must not introduce ${forbidden}.`);
+assert.ok(propertyExperience.includes("fetch('/api/agent/prepare/property', { cache: 'no-store', credentials: 'same-origin' })") && propertyExperience.includes("fetch(`/api/agent/prepare/property?property=${encodeURIComponent(selectedCandidate.property.slug)}`"), 'Property briefing UI may use only its exact private no-store selector and selected-detail reads.');
 assert.equal(packageJson.scripts?.['check:agent-briefing-composition'], 'jiti scripts/checkAgentBriefingComposition.ts');
 
 console.log('AGENT_BRIEFING_COMPOSITION_CHECK: PASS');

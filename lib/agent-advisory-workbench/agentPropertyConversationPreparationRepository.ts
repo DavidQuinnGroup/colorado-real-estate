@@ -9,7 +9,10 @@ import {
   type AgentPropertyPreparationProperty,
   type AgentPropertyPreparationSourcePosture,
 } from './agentPropertyPreparationAdmission';
-import type { AgentPropertyConversationCandidate } from './agentPropertyConversationPreparation';
+import type {
+  AgentPropertyConversationCandidate,
+  AgentPropertyConversationCandidateSummary,
+} from './agentPropertyConversationPreparation';
 
 const MAX_CANDIDATES = 120;
 const CURRENT_LISTING_WINDOW_MS = 30 * 24 * 60 * 60 * 1000;
@@ -42,9 +45,18 @@ type SupabasePropertyRow = Omit<RepositoryProperty, 'updatedAt' | 'lastIntellige
   sourceModifiedAt: string | null;
 };
 
+type RepositoryPropertySummary = Pick<
+  RepositoryProperty,
+  'slug' | 'address' | 'city' | 'state' | 'zip' | 'status' | 'price' | 'propertyType' | 'neighborhood'
+>;
+
 const CANDIDATE_COLUMNS = [
   'mlsId', 'slug', 'address', 'city', 'state', 'zip', 'status', 'isPrivateExclusive', 'price', 'beds', 'baths', 'sqft',
   'lotSize', 'yearBuilt', 'propertyType', 'neighborhood', 'updatedAt', 'lastIntelligenceSync', 'sourceModifiedAt',
+].join(',');
+
+const CANDIDATE_SUMMARY_COLUMNS = [
+  'slug', 'address', 'city', 'state', 'zip', 'status', 'price', 'propertyType', 'neighborhood',
 ].join(',');
 
 let cachedSupabaseClient: SupabaseClient | null = null;
@@ -122,41 +134,99 @@ function toCandidate(record: RepositoryProperty, now: Date): AgentPropertyConver
   return Object.freeze({ property, sourcePosture });
 }
 
-async function readSupabaseCandidates() {
+function toCandidateSummary(record: RepositoryPropertySummary): AgentPropertyConversationCandidateSummary {
+  return Object.freeze({
+    property: Object.freeze({
+      slug: record.slug,
+      address: record.address,
+      city: record.city,
+      state: record.state,
+      zip: record.zip,
+      status: record.status,
+      price: record.price,
+      propertyType: record.propertyType,
+      neighborhood: record.neighborhood,
+    }),
+  });
+}
+
+function isSafePropertySlug(value: string | null) {
+  return Boolean(value && /^[A-Za-z0-9._~-]{1,160}$/.test(value));
+}
+
+async function readSupabaseCandidateSummaries() {
   const { data, error } = await getSupabaseClient()
     .from('Property')
-    .select(CANDIDATE_COLUMNS)
+    .select(CANDIDATE_SUMMARY_COLUMNS)
     .eq('state', 'CO')
     .eq('isPrivateExclusive', false)
     .ilike('status', 'Active')
     .order('updatedAt', { ascending: false })
     .limit(MAX_CANDIDATES);
 
-  if (error) throw new Error('Repository property read fallback failed.');
-  return (data || []).flatMap((row) => {
-    const mapped = mapSupabaseRow(row as unknown as SupabasePropertyRow);
-    return mapped ? [mapped] : [];
-  });
+  if (error) throw new Error('Repository property summary read fallback failed.');
+  return (data || []) as unknown as RepositoryPropertySummary[];
 }
 
-export async function getAgentPropertyConversationCandidates(now = new Date()): Promise<readonly AgentPropertyConversationCandidate[]> {
+async function readSupabaseCandidateBySlug(slug: string) {
+  const { data, error } = await getSupabaseClient()
+    .from('Property')
+    .select(CANDIDATE_COLUMNS)
+    .eq('slug', slug)
+    .eq('state', 'CO')
+    .eq('isPrivateExclusive', false)
+    .ilike('status', 'Active')
+    .limit(1)
+    .maybeSingle();
+
+  if (error) throw new Error('Repository property detail read fallback failed.');
+  return data ? mapSupabaseRow(data as unknown as SupabasePropertyRow) : null;
+}
+
+export async function getAgentPropertyConversationCandidateSummaries(): Promise<readonly AgentPropertyConversationCandidateSummary[]> {
   try {
     const records = await prisma.property.findMany({
       where: { state: { equals: 'CO', mode: 'insensitive' }, status: { equals: 'Active', mode: 'insensitive' }, isPrivateExclusive: false },
+      select: {
+        slug: true, address: true, city: true, state: true, zip: true, status: true, price: true, propertyType: true, neighborhood: true,
+      },
+      orderBy: [{ updatedAt: 'desc' }, { slug: 'asc' }],
+      take: MAX_CANDIDATES,
+    });
+    return Object.freeze(records.map(toCandidateSummary));
+  } catch {
+    try {
+      return Object.freeze((await readSupabaseCandidateSummaries()).map(toCandidateSummary));
+    } catch {
+      return Object.freeze([]);
+    }
+  }
+}
+
+export async function getAgentPropertyConversationCandidate(slug: string, now = new Date()): Promise<AgentPropertyConversationCandidate | null> {
+  if (!isSafePropertySlug(slug)) return null;
+
+  try {
+    const record = await prisma.property.findFirst({
+      where: {
+        slug,
+        state: { equals: 'CO', mode: 'insensitive' },
+        status: { equals: 'Active', mode: 'insensitive' },
+        isPrivateExclusive: false,
+      },
       select: {
         mlsId: true, slug: true, address: true, city: true, state: true, zip: true, status: true, isPrivateExclusive: true,
         price: true, beds: true, baths: true, sqft: true, lotSize: true, yearBuilt: true, propertyType: true, neighborhood: true,
         updatedAt: true, lastIntelligenceSync: true, sourceModifiedAt: true,
       },
-      orderBy: [{ updatedAt: 'desc' }, { slug: 'asc' }],
-      take: MAX_CANDIDATES,
     });
-    return Object.freeze(records.map((record) => toCandidate(record, now)));
+    return record ? toCandidate(record, now) : null;
   } catch {
     try {
-      return Object.freeze((await readSupabaseCandidates()).map((record) => toCandidate(record, now)));
+      const record = await readSupabaseCandidateBySlug(slug);
+      return record ? toCandidate(record, now) : null;
     } catch {
-      return Object.freeze([]);
+      return null;
     }
   }
 }
