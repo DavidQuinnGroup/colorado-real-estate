@@ -160,6 +160,23 @@ function label(value: string) {
   return value.toLowerCase().replaceAll("_", " ");
 }
 
+function priorityQuestion(priority: AgentBuyerDiscussionPriority) {
+  const questions: Record<AgentBuyerDiscussionPriority, string> = {
+    BUYING_PROCESS: 'Which parts of the buying process would be most useful to clarify before search activity begins?',
+    TIMING: 'What timing constraints or decision milestones should shape the first search steps?',
+    SEARCH_GEOGRAPHY: 'Which explicit geography, access, or location criteria should be defined without inferring a preferred area?',
+    PROPERTY_NEEDS: 'Which property characteristics are essential, flexible, or still unknown?',
+    FINANCING_READINESS: 'Which financing questions should be confirmed with a lender rather than inferred here?',
+    MARKET_CONTEXT: 'Which current market questions should be reviewed through the separate Market Preparation surface?',
+    PLACE_CONTEXT: 'Which neutral City context would help frame follow-up questions without becoming a recommendation?',
+    SEARCH_STRATEGY: 'What initial search breadth and review rhythm would best support the stated priorities?',
+    TOURING_PROCESS: 'What should be understood about touring and observation before scheduling property visits?',
+    DECISION_PROCESS: 'Who needs to participate in the decision process and what information remains unresolved?',
+    PROFESSIONAL_DUE_DILIGENCE: 'Which inspection, title, financing, or other professional questions should be identified early?',
+  };
+  return questions[priority];
+}
+
 export function buildAgentBuyerPreparationPacket(
   request: AgentBuyerPreparationRequest,
 ): AgentBuyerPreparationPacket {
@@ -257,16 +274,35 @@ export function composeAgentBuyerPreparationBriefing(
   if (packet.admission !== "ADMITTED") return null;
   const { request } = packet;
   const priorities = request.priorities.map(label).join(", ");
+  const questionsWorthAsking = [
+    {
+      id: 'buyer-stage',
+      text: request.stage === 'DISCOVERY'
+        ? 'What should this discovery conversation establish before the buyer narrows a search?'
+        : 'What is still needed before the buyer is ready to begin an active search?',
+      triggerEvidenceKeys: ['stage'],
+    },
+    ...request.priorities.map((priority) => ({
+      id: `buyer-priority-${priority.toLowerCase()}`,
+      text: priorityQuestion(priority),
+      triggerEvidenceKeys: ['priorities', priority],
+    })),
+  ];
   const context = request.financingStatus
     ? ` Financing status is recorded only as Agent-entered reported context: ${label(request.financingStatus)}.`
     : "";
+  const optionalContext = [
+    request.certifiedCity ? `City context is limited to ${request.certifiedCity} orientation.` : null,
+    request.propertyObjective ? `Property objective is ${label(request.propertyObjective)}.` : null,
+    request.timing ? `Timing is ${label(request.timing)}.` : null,
+  ].filter((value): value is string => Boolean(value)).join(' ');
   return composeAgentBriefing({
     surface: "BUYER",
     subject: "Buyer consultation preparation",
     executiveBriefing: {
       id: "buyer-executive",
       contentClass: "SUPPORTED_SYNTHESIS",
-      text: `Prepare a ${label(request.stage)} buyer consultation around ${priorities}.${context} Use the briefing to clarify lawful priorities, process questions, and verification needs without making a financing, legal, representation, or suitability conclusion.`,
+      text: `Prepare a ${label(request.stage)} buyer consultation around ${priorities}.${context} ${optionalContext} Use the briefing to clarify lawful priorities, process questions, and verification needs without making a financing, legal, representation, or suitability conclusion.`,
       traceability: trace(
         ["stage", "priorities", "financing-status"],
         "FACT_AND_CONTEXT_SYNTHESIS",
@@ -308,6 +344,22 @@ export function composeAgentBuyerPreparationBriefing(
         text: priorities,
         traceability: trace(["priorities"], "DIRECT_RENDER"),
       },
+      ...(request.certifiedCity ? [{
+        id: 'buyer-city', label: 'City context', value: request.certifiedCity, contentClass: 'DIRECT_FACT' as const, text: request.certifiedCity,
+        traceability: trace(['city'], 'DIRECT_RENDER'),
+      }] : []),
+      ...(request.propertyObjective ? [{
+        id: 'buyer-property-objective', label: 'Property objective', value: label(request.propertyObjective), contentClass: 'DIRECT_FACT' as const, text: label(request.propertyObjective),
+        traceability: trace(['property-objective'], 'DIRECT_RENDER'),
+      }] : []),
+      ...(request.timing ? [{
+        id: 'buyer-timing', label: 'Timing', value: label(request.timing), contentClass: 'DIRECT_FACT' as const, text: label(request.timing),
+        traceability: trace(['timing'], 'DIRECT_RENDER'),
+      }] : []),
+      ...(request.financingStatus ? [{
+        id: 'buyer-financing-status', label: 'Financing discussion', value: `${label(request.financingStatus)} (reported)`, contentClass: 'DIRECT_FACT' as const, text: label(request.financingStatus),
+        traceability: trace(['financing-status'], 'DIRECT_RENDER'),
+      }] : []),
     ],
     whatCouldChangeInterpretation: [
       ...packet.limitations.map((value) => ({
@@ -330,30 +382,17 @@ export function composeAgentBuyerPreparationBriefing(
           ]
         : []),
     ],
-    questionsWorthAsking: [
-      {
-        id: "buyer-timing",
-        text: "What timing and decision-process details need clarification before search activity begins?",
-        triggerEvidenceKeys: ["stage", "priorities"],
-      },
-      {
-        id: "buyer-financing",
-        text: "Which financing questions should be confirmed with a lender rather than inferred here?",
-        triggerEvidenceKeys: ["financing-status"],
-      },
-      {
-        id: "buyer-process",
-        text: "Which buying-process, documentation, or professional questions should the Agent prepare to explain?",
-        triggerEvidenceKeys: ["consultation-objective"],
-      },
-    ],
+    questionsWorthAsking,
+    nextActions: [
+      { id: 'buyer-action-clarify', category: 'Agent action' as const, text: 'Prepare the selected priorities as a concise conversation outline.' },
+      ...(request.financingStatus ? [] : [{ id: 'buyer-action-financing', category: 'Client discussion item' as const, text: 'Clarify whether financing has been discussed before treating budget or payment assumptions as settled.' }]),
+      ...(request.priorities.includes('FINANCING_READINESS') ? [{ id: 'buyer-action-lender', category: 'Professional verification' as const, text: 'Separate lender-confirmed financing information from reported discussion context.' }] : []),
+      ...(request.priorities.includes('MARKET_CONTEXT') ? [{ id: 'buyer-action-market', category: 'Future ATLAS action' as const, text: 'Open Market Preparation only when current market context would help the conversation.' }] : []),
+      ...(request.certifiedCity ? [{ id: 'buyer-action-place', category: 'Future ATLAS action' as const, text: 'Use Place Preparation to review the selected City context and its limitations.' }] : []),
+    ].slice(0, 5),
     reviewSurfaces: [
       { id: "buyer-guidance", label: "Buyer guidance", href: "/buy" },
-      {
-        id: "market-preparation",
-        label: "Market Preparation",
-        href: "/agent/prepare/market",
-      },
+      ...(request.priorities.includes('MARKET_CONTEXT') ? [{ id: 'market-preparation', label: 'Market Preparation', href: '/agent/prepare/market' }] : []),
       ...(request.certifiedCity
         ? [
             {
@@ -363,7 +402,7 @@ export function composeAgentBuyerPreparationBriefing(
             },
           ]
         : []),
-      ...(request.supportedPropertyContext
+      ...(request.supportedPropertyContext || request.propertyObjective
         ? [
             {
               id: "property-preparation",

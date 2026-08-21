@@ -17,7 +17,7 @@ import {
 import { createAgentLoginSuccessResponse } from '../lib/admin/agentLoginReturn';
 
 const credential = createHash('sha256').update('REIE_AGENT_CROSS_CAPABILITY_SESSION_CONTINUITY_CHECK').digest('base64url');
-const agentRoutes = ['/agent/prepare/market', '/agent/prepare/property', '/agent/prepare/place'] as const;
+const agentRoutes = ['/agent/prepare/market', '/agent/prepare/property', '/agent/prepare/place', '/agent/prepare/buyer'] as const;
 
 Object.assign(process.env, {
   NODE_ENV: 'production',
@@ -82,6 +82,9 @@ async function main() {
     ['/agent/prepare/property', '/agent/prepare/market'],
     ['/agent/prepare/market', '/agent/prepare/place'],
     ['/agent/prepare/market', '/agent/prepare/property'],
+    ['/agent/prepare/buyer', '/agent/prepare/place'],
+    ['/agent/prepare/buyer', '/agent/prepare/property'],
+    ['/agent/prepare/buyer', '/agent/prepare/market'],
   ] as const;
   for (const [from, to] of transitions) {
     await assertAllowed(from, cookie);
@@ -124,7 +127,7 @@ async function main() {
 
   const middleware = source('middleware.ts');
   const shell = source('components/agent/AgentWorkspaceShell.tsx');
-  assert.match(middleware, /pathname === "\/agent\/prepare\/market" \|\| pathname === "\/agent\/prepare\/property" \|\| pathname === "\/agent\/prepare\/place"/, 'Middleware must enumerate only the exact Agent capabilities.');
+  assert.match(middleware, /pathname === "\/agent\/prepare\/market" \|\| pathname === "\/agent\/prepare\/property" \|\| pathname === "\/agent\/prepare\/place" \|\| pathname === "\/agent\/prepare\/buyer"/, 'Middleware must enumerate only the exact Agent capabilities.');
   assert.match(middleware, /Cache-Control', 'private, no-store'/, 'Authenticated Agent route responses must be private and non-storable.');
   assert.match(middleware, /x-middleware-cache', 'no-cache'/, 'Middleware results must not persist in the client router cache.');
   assert.doesNotMatch(shell, /from 'next\/link'/, 'Agent capability navigation must not use the App Router client-navigation path.');

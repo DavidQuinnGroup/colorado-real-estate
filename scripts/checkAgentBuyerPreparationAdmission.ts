@@ -162,17 +162,17 @@ for (const forbiddenToken of [
 
 assert.equal(
   existsSync(resolve(root, "app/agent/prepare/buyer/page.tsx")),
-  false,
-  "Buyer experience must not be introduced by this admission MVV",
+  true,
+  "The separately certified Buyer experience must retain its exact route.",
 );
 const adminAuthSource = readFileSync(
   resolve(root, "lib/admin/adminAuth.ts"),
   "utf8",
 );
 assert.equal(
-  adminAuthSource.includes("'/agent/prepare/buyer'"),
+  adminAuthSource.includes("surface('/agent/:path*'"),
   false,
-  "Admission must not alter active authorization visibility",
+  "Buyer authorization must remain exact rather than generic.",
 );
 
 console.log("AGENT_BUYER_PREPARATION_ADMISSION_CHECK: PASS");

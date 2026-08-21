@@ -1,5 +1,5 @@
 type AgentPreparationPageHeaderProps = Readonly<{
-  pageTitle: 'MARKET PREPARATION' | 'PLACE PREPARATION' | 'PROPERTY PREPARATION';
+  pageTitle: 'MARKET PREPARATION' | 'PLACE PREPARATION' | 'PROPERTY PREPARATION' | 'BUYER PREPARATION';
   taskHeading: string;
   description: string;
   scopeNote: string;

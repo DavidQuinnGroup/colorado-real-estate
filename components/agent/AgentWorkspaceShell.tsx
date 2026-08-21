@@ -12,12 +12,15 @@ export default function AgentWorkspaceShell({ children }: { children: ReactNode 
   return (
     <section className="min-h-screen bg-[#071014] text-slate-100" data-testid="agent-workspace-shell" data-agent-shell="private-professional">
       <header className="border-b border-white/10 bg-[#071014]" data-testid="agent-workspace-navigation">
-        <nav className="mx-auto flex min-h-[72px] max-w-6xl items-center justify-between gap-4 px-5 py-3 sm:px-8 lg:px-12" aria-label="Agent workspace navigation">
+        <nav className="mx-auto flex min-h-[72px] max-w-6xl flex-col items-start justify-between gap-3 px-5 py-3 sm:flex-row sm:items-center sm:gap-4 sm:px-8 lg:px-12" aria-label="Agent workspace navigation">
           <div className="min-w-0">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-100/70">Project Atlas</p>
             <p className="mt-1 text-sm font-medium text-white">Agent Workspace</p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+            <a href="/agent/prepare/buyer" className="rounded-[7px] px-3 py-2 text-xs font-semibold text-slate-200 transition hover:bg-white/[0.08] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100" data-testid="agent-workspace-buyer-link">
+              Buyer Preparation
+            </a>
             <a href="/agent/prepare/place" className="rounded-[7px] px-3 py-2 text-xs font-semibold text-slate-200 transition hover:bg-white/[0.08] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100" data-testid="agent-workspace-place-link">
               Place Preparation
             </a>

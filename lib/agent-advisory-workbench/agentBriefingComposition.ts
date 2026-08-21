@@ -30,6 +30,11 @@ export type AgentBriefingStatement = Readonly<{
 
 export type AgentBriefingEvidence = AgentBriefingStatement & Readonly<{ label: string; value: string }>;
 export type AgentBriefingQuestion = Readonly<{ id: string; text: string; triggerEvidenceKeys: readonly string[] }>;
+export type AgentBriefingNextAction = Readonly<{
+  id: string;
+  category: 'Agent action' | 'Client discussion item' | 'Professional verification' | 'Future ATLAS action';
+  text: string;
+}>;
 export type AgentBriefingReviewSurface = Readonly<{ id: string; label: string; href: string }>;
 export type AgentBriefingProfessionalCheckpoint = Readonly<{ id: string; role: string; question: string; traceability: AgentBriefingTraceability }>;
 
@@ -43,6 +48,7 @@ export type AgentBriefingComposition = Readonly<{
   keyEvidence: readonly AgentBriefingEvidence[];
   whatCouldChangeInterpretation: readonly AgentBriefingStatement[];
   questionsWorthAsking: readonly AgentBriefingQuestion[];
+  nextActions?: readonly AgentBriefingNextAction[];
   reviewSurfaces: readonly AgentBriefingReviewSurface[];
   sourcesFreshnessLimitations: readonly AgentBriefingStatement[];
   professionalCheckpoints: readonly AgentBriefingProfessionalCheckpoint[];
@@ -87,6 +93,14 @@ function validateQuestions(questions: readonly AgentBriefingQuestion[]) {
   }
 }
 
+function validateNextActions(actions: readonly AgentBriefingNextAction[] | undefined) {
+  if (!actions) return;
+  if (actions.length > 5) throw new Error('Next actions must be bounded to five useful items.');
+  for (const action of actions) {
+    if (!action.id || !action.text.trim() || !action.category) throw new Error('Next actions require stable, visible, categorized content.');
+  }
+}
+
 function validateDuplication(input: AgentBriefingCompositionInput) {
   const counts = new Map<string, number>();
   const visibleStatements = [
@@ -115,6 +129,7 @@ export function composeAgentBriefing(input: AgentBriefingCompositionInput): Agen
   })) for (const statement of statements) validateStatement(statement, location);
   for (const evidence of input.keyEvidence) validateStatement(evidence, 'Key evidence');
   validateQuestions(input.questionsWorthAsking);
+  validateNextActions(input.nextActions);
   if (input.professionalCheckpoints.some((checkpoint) => checkpoint.role === 'REAL_ESTATE_AGENT')) throw new Error('The current Agent must not receive a redundant Real Estate Agent handoff.');
   for (const checkpoint of input.professionalCheckpoints) {
     if (!checkpoint.id || !checkpoint.role || !checkpoint.question || !checkpoint.traceability.sourceReferences.length) throw new Error('Professional checkpoints require external-role traceability.');
@@ -130,6 +145,7 @@ export function composeAgentBriefing(input: AgentBriefingCompositionInput): Agen
     keyEvidence: Object.freeze(input.keyEvidence.map((statement) => Object.freeze(statement))),
     whatCouldChangeInterpretation: Object.freeze(input.whatCouldChangeInterpretation.map((statement) => Object.freeze(statement))),
     questionsWorthAsking: Object.freeze(input.questionsWorthAsking.map((question) => Object.freeze({ ...question, triggerEvidenceKeys: Object.freeze(unique(question.triggerEvidenceKeys)) }))),
+    nextActions: input.nextActions ? Object.freeze(input.nextActions.map((action) => Object.freeze(action))) : undefined,
     reviewSurfaces: Object.freeze(input.reviewSurfaces.map((surface) => Object.freeze(surface))),
     sourcesFreshnessLimitations: Object.freeze(input.sourcesFreshnessLimitations.map((statement) => Object.freeze(statement))),
     professionalCheckpoints: Object.freeze(input.professionalCheckpoints.map((checkpoint) => Object.freeze(checkpoint))),
