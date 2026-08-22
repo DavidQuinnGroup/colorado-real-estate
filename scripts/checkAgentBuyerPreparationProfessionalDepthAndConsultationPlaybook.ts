@@ -41,7 +41,7 @@ assert.match(experience.composition.executiveBriefing.text, /reported financing 
 
 assert.equal(
   experience.playbook.status,
-  "REIE_AGENT_BUYER_PREPARATION_PROFESSIONAL_DEPTH_MVV",
+  "REIE_AGENT_BUYER_PREPARATION_AGENT_READY_CONTENT_MVV",
 );
 assert.ok(experience.playbook.sections.length >= 12);
 assert.ok(experience.playbook.sections.some((section) => section.level === "CORE"));
@@ -112,8 +112,16 @@ assert.ok(offer);
 assert.ok(offer.prompts.some((prompt) => /No offer price, escalation, acceptance prediction/i.test(prompt)));
 
 assert.equal(experience.playbook.consultationAgenda.length, 6);
-assert.ok(experience.playbook.consultationAgenda.some((step) => /Financing readiness/i.test(step)));
-assert.ok(experience.playbook.consultationAgenda.some((step) => /Representation/i.test(step)));
+assert.ok(experience.playbook.consultationAgenda.some((step) => /Financing readiness/i.test(step.title)));
+assert.ok(experience.playbook.consultationAgenda.some((step) => /Representation/i.test(step.title)));
+for (const step of experience.playbook.consultationAgenda) {
+  assert.ok(step.id && step.title && step.summary);
+  assert.ok(step.guide.keyQuestions.length > 0);
+  assert.ok(step.guide.talkingPoints.length > 0);
+  assert.ok(step.guide.factsToConfirm.length > 0);
+  assert.ok(step.guide.professionalCheckpoints.length > 0);
+  assert.ok(step.guide.expectedOutcome);
+}
 assert.ok(experience.playbook.nextActionPlan.agentActions.length >= 2);
 assert.ok(experience.playbook.nextActionPlan.buyerClarifications.length >= 2);
 assert.ok(experience.playbook.nextActionPlan.professionalVerification.length >= 1);

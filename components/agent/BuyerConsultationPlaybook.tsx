@@ -3,11 +3,48 @@
 import Link from 'next/link';
 import { ChevronDown, ClipboardList, Compass, Landmark, ListChecks } from 'lucide-react';
 
-import type { AgentBuyerProfessionalPlaybook } from '@/lib/agent-advisory-workbench/agentBuyerProfessionalPlaybook';
+import type {
+  AgentBuyerAgentReadyGuide,
+  AgentBuyerProfessionalPlaybook,
+} from '@/lib/agent-advisory-workbench/agentBuyerProfessionalPlaybook';
 
 type BuyerConsultationPlaybookProps = {
   playbook: AgentBuyerProfessionalPlaybook;
 };
+
+function AgentReadyGuide({ guide }: { guide: AgentBuyerAgentReadyGuide }) {
+  return (
+    <div className="grid gap-5 border-t border-white/10 pt-5 text-sm leading-6 text-slate-300 lg:grid-cols-2">
+      <div>
+        <h4 className="font-semibold text-white">Key questions</h4>
+        <ul className="mt-3 space-y-3">
+          {guide.keyQuestions.map((item) => <li key={item}>{item}</li>)}
+        </ul>
+      </div>
+      <div>
+        <h4 className="font-semibold text-white">Talking points</h4>
+        <ul className="mt-3 space-y-3">
+          {guide.talkingPoints.map((item) => <li key={item}>{item}</li>)}
+        </ul>
+      </div>
+      <div>
+        <h4 className="font-semibold text-white">Facts to confirm</h4>
+        <ul className="mt-3 space-y-3">
+          {guide.factsToConfirm.map((item) => <li key={item}>{item}</li>)}
+        </ul>
+      </div>
+      <div>
+        <h4 className="font-semibold text-white">Professional checkpoints</h4>
+        <ul className="mt-3 space-y-3">
+          {guide.professionalCheckpoints.map((item) => <li key={item}>{item}</li>)}
+        </ul>
+      </div>
+      <p className="border-l border-cyan-100/30 pl-3 text-sm leading-6 text-cyan-50 lg:col-span-2">
+        <span className="font-semibold">Expected outcome:</span> {guide.expectedOutcome}
+      </p>
+    </div>
+  );
+}
 
 function PlaybookSection({
   section,
@@ -38,6 +75,17 @@ function PlaybookSection({
           </li>
         ))}
       </ul>
+      {section.guide ? (
+        <details className="group mt-5 border border-white/10 bg-black/10 p-4" data-testid="agent-buyer-section-guide">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold text-cyan-100">
+            Agent-ready questions and talking points
+            <ChevronDown className="h-4 w-4 transition group-open:rotate-180" aria-hidden="true" />
+          </summary>
+          <div className="mt-5">
+            <AgentReadyGuide guide={section.guide} />
+          </div>
+        </details>
+      ) : null}
     </article>
   );
 }
@@ -97,9 +145,23 @@ export default function BuyerConsultationPlaybook({
         </div>
         <ol className="mt-5 grid gap-3 text-sm leading-6 text-slate-300 lg:grid-cols-2">
           {playbook.consultationAgenda.map((step, index) => (
-            <li key={step} className="grid grid-cols-[1.5rem_minmax(0,1fr)] gap-3 border-l border-cyan-100/25 pl-3">
+            <li key={step.id} className="border-l border-cyan-100/25 pl-3">
+              <div className="grid grid-cols-[1.5rem_minmax(0,1fr)] gap-3">
               <span className="font-semibold text-cyan-100">{index + 1}.</span>
-              <span>{step}</span>
+                <div>
+                  <p className="font-semibold text-white">{step.title}</p>
+                  <p className="mt-1">{step.summary}</p>
+                </div>
+              </div>
+              <details className="group mt-3 border border-white/10 bg-black/10 p-4" data-testid="agent-buyer-agenda-guide">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold text-cyan-100">
+                  Use in consultation
+                  <ChevronDown className="h-4 w-4 transition group-open:rotate-180" aria-hidden="true" />
+                </summary>
+                <div className="mt-5">
+                  <AgentReadyGuide guide={step.guide} />
+                </div>
+              </details>
             </li>
           ))}
         </ol>

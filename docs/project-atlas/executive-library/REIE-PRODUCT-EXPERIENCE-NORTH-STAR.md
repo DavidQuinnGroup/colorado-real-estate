@@ -70,6 +70,21 @@ expand a capability. Do not expose an action for an unavailable, unauthorized,
 or unsupported workflow. Avoid repeating the same contextual action elsewhere
 on the page when the direct action already provides the needed continuation.
 
+## Agent-Ready Work Product Principle
+
+Where governed information and professional boundaries permit, ATLAS should
+prepare an Agent-ready work product rather than merely naming a topic to
+prepare. The work product may include usable neutral questions, talking
+points, checklists, decision frameworks, process explanations, and follow-up
+items. It must retain the explicit input, evidence, professional-boundary, and
+non-recommendation limits that govern the underlying capability.
+
+Agent-ready material supports professional judgment. It does not infer facts,
+create a customer profile, make a suitability or affordability conclusion,
+replace qualified professional verification, or silently transfer context.
+Progressive disclosure should keep the immediate consultation view useful
+without forcing every supporting prompt into the first scan.
+
 ## Future Visual Direction
 
 The future visual direction is:
@@ -101,6 +116,8 @@ reconciliation.
    distinct canonical workflow or object requires a route transition.
 9. Use exact, authorized contextual capability actions when they provide the
    clearest next step without unsupported context transfer.
+10. When a governed Agent capability is mature enough, provide the usable
+    consultation work product within its certified professional boundaries.
 
 ## Non-Authorization Boundary
 
