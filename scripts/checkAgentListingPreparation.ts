@@ -12,6 +12,7 @@ const page = source('app/agent/prepare/listing/page.tsx');
 const experienceSource = source('components/agent/ListingPreparationExperience.tsx');
 const playbookSource = source('components/agent/ListingPreparationPlaybook.tsx');
 const contractSource = source('lib/agent-advisory-workbench/agentListingPreparationAdmission.ts');
+const evidenceContractSource = source('lib/agent-advisory-workbench/agentListingEvidenceAdmission.ts');
 const middleware = source('middleware.ts');
 const shell = source('components/agent/AgentWorkspaceShell.tsx');
 const auth = source('lib/admin/adminAuth.ts');
@@ -63,8 +64,12 @@ assert.ok(ready.playbook?.nextActionPlan.atlasContinuations.some((action) => act
 assert.ok(ready.playbook?.nextActionPlan.atlasContinuations.some((action) => action.href === '/agent/prepare/property'));
 assert.ok(ready.playbook?.nextActionPlan.atlasContinuations.some((action) => action.href === '/agent/prepare/market'));
 
-for (const marker of ['agent-listing-preparation-experience', 'agent-listing-empty-state', 'agent-listing-prepare-briefing', 'agent-listing-briefing', 'Agent workspace / Listing preparation', 'Prepare a seller property for the next reviewed decision', 'After Seller engagement', 'Moving toward a possible launch', 'Choose the topics to emphasize', 'Priority Focus', 'Update my briefing', 'data-persistence="false"', 'data-same-page-decision-continuity="true"']) assert.ok(experienceSource.includes(marker), `Missing Listing experience marker: ${marker}`);
+for (const marker of ['agent-listing-preparation-experience', 'agent-listing-empty-state', 'agent-listing-prepare-briefing', 'agent-listing-briefing', 'agent-listing-evidence-selector', 'Agent workspace / Listing preparation', 'Prepare a seller property for the next reviewed decision', 'After Seller engagement', 'Moving toward a possible launch', 'Choose the topics to emphasize', 'Priority Focus', 'Update my briefing', 'data-persistence="false"', 'data-same-page-decision-continuity="true"']) assert.ok(experienceSource.includes(marker), `Missing Listing experience marker: ${marker}`);
 for (const marker of ['agent-listing-professional-playbook', 'agent-listing-playbook-detail', 'Use in preparation', 'ATLAS continuation actions', 'DisclosureStateIndicator']) assert.ok(playbookSource.includes(marker), `Missing Listing playbook marker: ${marker}`);
-for (const forbidden of ['fetch(', 'prisma', 'createClient', 'localStorage', 'sessionStorage', 'document.cookie', 'REIE_AGENT_CREDENTIAL', 'customerName', 'leadId', 'MLS_GRID', 'IRES', 'school ranking', 'safety score', 'family friendly', 'address:']) { assert.equal(contractSource.includes(forbidden), false, `Listing contract must not introduce ${forbidden}`); assert.equal(experienceSource.includes(forbidden), false, `Listing experience must not introduce ${forbidden}`); }
+assert.ok(experienceSource.includes("fetch('/api/agent/prepare/property', { cache: 'no-store', credentials: 'same-origin' })"), 'Listing may use only the existing exact Agent Property no-store selector.');
+assert.ok(experienceSource.includes('encodeURIComponent(selectedCandidate.property.slug)'), 'Listing must resolve evidence through the canonical Property slug.');
+for (const forbidden of ['prisma', 'createClient', 'localStorage', 'sessionStorage', 'document.cookie', 'REIE_AGENT_CREDENTIAL', 'customerName', 'leadId', 'MLS_GRID', 'IRES', 'school ranking', 'safety score', 'family friendly']) { assert.equal(contractSource.includes(forbidden), false, `Listing contract must not introduce ${forbidden}`); assert.equal(evidenceContractSource.includes(forbidden), false, `Listing evidence contract must not introduce ${forbidden}`); assert.equal(experienceSource.includes(forbidden), false, `Listing experience must not introduce ${forbidden}`); }
+assert.equal(contractSource.includes('address:'), false, 'The original Listing preparation contract must not accept property address input.');
+assert.equal(experienceSource.includes('address:'), false, 'Listing experience must not accept a free-form property address.');
 assert.equal(packageJson.scripts?.['check:agent-listing-preparation'], 'jiti scripts/checkAgentListingPreparation.ts');
 console.log('AGENT_LISTING_PREPARATION_CHECK: PASS');
