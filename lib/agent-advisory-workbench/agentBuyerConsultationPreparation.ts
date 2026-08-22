@@ -49,7 +49,7 @@ function unavailable(
       ? {
           label: "Complete the consultation choices" as const,
           message:
-            "Choose a consultation stage and two to four discussion priorities before preparing the briefing.",
+            "Choose a consultation stage and at least two discussion priorities before preparing the briefing.",
         }
       : {
           label: "Buyer preparation unavailable" as const,

@@ -3,6 +3,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
 import {
+  AGENT_BUYER_DISCUSSION_PRIORITIES,
   AGENT_BUYER_TIMING_OPTIONS,
   buildAgentBuyerPreparationPacket,
   composeAgentBuyerPreparationBriefing,
@@ -37,6 +38,9 @@ const productNorthStar = source(
 const certification = source(
   "docs/project-atlas/executive-library/REIE-AGENT-BUYER-PREPARATION-HUMAN-LANGUAGE-AND-SAME-PAGE-DECISION-CONTINUITY-MVV-CERTIFICATION.md",
 );
+const selectionStandard = source(
+  "docs/project-atlas/executive-library/REIE-AGENT-CONSULTATION-UNLIMITED-PRIORITY-FOCUS-STANDARD.md",
+);
 const packageJson = JSON.parse(source("package.json")) as {
   scripts?: Record<string, string>;
 };
@@ -56,6 +60,53 @@ assert.equal(ready.packet.protectedBoundaries.recommendation, false);
 assert.equal(ready.packet.protectedBoundaries.suitability, false);
 assert.equal(ready.packet.protectedBoundaries.fairHousingInference, false);
 assert.ok(ready.cityContext?.summary);
+
+const allPriorities = [...AGENT_BUYER_DISCUSSION_PRIORITIES];
+const allTopics = prepareAgentBuyerConsultation({
+  ...AGENT_BUYER_PREPARATION_FIXTURE,
+  priorities: allPriorities,
+});
+const reversedAllTopics = prepareAgentBuyerConsultation({
+  ...AGENT_BUYER_PREPARATION_FIXTURE,
+  priorities: [...allPriorities].reverse(),
+});
+assert.equal(allTopics.packet.admission, "ADMITTED");
+assert.ok(allTopics.composition && allTopics.playbook);
+assert.ok(
+  (allTopics.composition?.questionsWorthAsking.length ?? 0) <= 5,
+  "The all-topic Executive Briefing must remain readable.",
+);
+assert.equal(reversedAllTopics.packet.admission, "ADMITTED");
+assert.deepEqual(
+  allTopics.composition?.questionsWorthAsking,
+  reversedAllTopics.composition?.questionsWorthAsking,
+  "Buyer topic order must not change the prepared questions.",
+);
+assert.deepEqual(
+  allTopics.playbook?.sections.map((section) => [section.id, section.emphasis]),
+  reversedAllTopics.playbook?.sections.map((section) => [section.id, section.emphasis]),
+  "Buyer topic order must not change playbook emphasis.",
+);
+assert.equal(
+  allTopics.playbook?.sections.length,
+  ready.playbook?.sections.length,
+  "Selecting every topic must retain the complete Buyer playbook.",
+);
+assert.ok(
+  (allTopics.playbook?.sections.filter((section) => section.emphasis === "SELECTED_PRIORITY").length ?? 0) >= 8,
+  "Every applicable Buyer topic must receive visible Priority Focus treatment.",
+);
+for (const section of allTopics.playbook?.sections ?? []) {
+  if (section.guide)
+    assert.ok(
+      section.guide.keyQuestions.length &&
+        section.guide.talkingPoints.length &&
+        section.guide.factsToConfirm.length &&
+        section.guide.professionalCheckpoints.length &&
+        section.guide.expectedOutcome,
+      `All-topic Buyer playbook section ${section.id} must retain its Agent-ready guide.`,
+    );
+}
 
 assert.equal(AGENT_BUYER_TIMING_OPTIONS.length, 6);
 assert.deepEqual(
@@ -141,6 +192,8 @@ for (const marker of [
   "Use only what was stated",
   "Starting the buyer conversation",
   "Preparing for an active search",
+  "Choose the topics to emphasize",
+  "Priority Focus treatment",
   "When might they want to buy?",
   "What is known about financing?",
   "Update my briefing",
@@ -174,6 +227,12 @@ assert.ok(
     experience.includes("setPreparedRequest"),
   "Buyer selections must remain editable and regenerate the same-page briefing.",
 );
+for (const legacyLimit of ["two to four", "up to four", "length === 4", "length > 4"])
+  assert.equal(
+    experience.includes(legacyLimit),
+    false,
+    `Legacy Buyer topic ceiling remains visible: ${legacyLimit}`,
+  );
 assert.equal(experience.includes("useRouter"), false);
 assert.equal(experience.includes("router.push"), false);
 assert.equal(experience.includes("window.location"), false);
@@ -191,6 +250,12 @@ assert.ok(
   certification.includes("Human Language and Same-Page Decision Continuity") &&
     certification.includes("six-state model"),
   "Certification must record the bounded Buyer usability update.",
+);
+assert.ok(
+  selectionStandard.includes("Preparation-topic selections control emphasis, not access to consultation knowledge.") &&
+    selectionStandard.includes("All applicable topics may be selected.") &&
+    selectionStandard.includes("Selected topics receive Priority Focus treatment while the complete consultation playbook remains available."),
+  "The reusable consultation-selection standard must remain certified.",
 );
 
 for (const forbidden of [

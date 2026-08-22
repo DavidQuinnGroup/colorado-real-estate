@@ -107,7 +107,7 @@ export default function BuyerConsultationExperience() {
     useState<AgentBuyerPreparationRequest | null>(null);
   const [briefingNeedsUpdate, setBriefingNeedsUpdate] = useState(false);
   const [formMessage, setFormMessage] = useState(
-    "Choose a stage and two to four discussion priorities to prepare the briefing.",
+    "Choose a stage and at least two discussion priorities to prepare the briefing.",
   );
 
   const experience = useMemo(
@@ -115,9 +115,7 @@ export default function BuyerConsultationExperience() {
       preparedRequest ? prepareAgentBuyerConsultation(preparedRequest) : null,
     [preparedRequest],
   );
-  const canPrepare = Boolean(
-    stage && priorities.length >= 2 && priorities.length <= 4,
-  );
+  const canPrepare = Boolean(stage && priorities.length >= 2);
   const selectedTiming = timing
     ? AGENT_BUYER_TIMING_OPTIONS.find((option) => option.value === timing)
     : null;
@@ -135,12 +133,6 @@ export default function BuyerConsultationExperience() {
     setPriorities((current) => {
       if (current.includes(priority))
         return current.filter((value) => value !== priority);
-      if (current.length === 4) {
-        setFormMessage(
-          "Choose up to four discussion priorities. Remove one before adding another.",
-        );
-        return current;
-      }
       return [...current, priority];
     });
   }
@@ -152,9 +144,9 @@ export default function BuyerConsultationExperience() {
       );
       return;
     }
-    if (priorities.length < 2 || priorities.length > 4) {
+    if (priorities.length < 2) {
       setFormMessage(
-        "Choose two to four discussion priorities before preparing the briefing.",
+        "Choose at least two discussion priorities before preparing the briefing.",
       );
       return;
     }
@@ -289,25 +281,24 @@ export default function BuyerConsultationExperience() {
 
             <fieldset className="mt-7">
               <legend className="text-sm font-semibold text-white">
-                2. Choose two to four topics to cover
+                2. Choose the topics to emphasize
               </legend>
               <p className="mt-1 text-sm leading-6 text-slate-400">
-                {priorities.length} selected. Choose only the topics this
-                conversation needs to cover directly.
+                {priorities.length} selected. Every selected topic receives
+                Priority Focus treatment; the complete Buyer consultation
+                playbook remains available.
               </p>
               <div className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
                 {AGENT_BUYER_DISCUSSION_PRIORITIES.map((priority) => {
                   const checked = priorities.includes(priority);
-                  const disabled = !checked && priorities.length === 4;
                   return (
                     <label
                       key={priority}
-                      className={`flex min-h-12 cursor-pointer items-center gap-3 border px-4 py-3 transition ${checked ? "border-cyan-200/70 bg-cyan-200/10 text-white" : "border-white/10 bg-black/10 text-slate-300 hover:border-white/30"} ${disabled ? "cursor-not-allowed opacity-50" : ""}`}
+                      className={`flex min-h-12 cursor-pointer items-center gap-3 border px-4 py-3 transition ${checked ? "border-cyan-200/70 bg-cyan-200/10 text-white" : "border-white/10 bg-black/10 text-slate-300 hover:border-white/30"}`}
                     >
                       <input
                         type="checkbox"
                         checked={checked}
-                        disabled={disabled}
                         onChange={() => togglePriority(priority)}
                         className="h-4 w-4 accent-cyan-200"
                       />
@@ -468,7 +459,7 @@ export default function BuyerConsultationExperience() {
             className="mt-8 border border-dashed border-white/15 px-5 py-7 text-sm text-slate-400"
             data-testid="agent-buyer-empty-state"
           >
-            Choose a consultation stage and two to four discussion priorities,
+            Choose a consultation stage and at least two discussion priorities,
             then prepare your briefing.
           </section>
         ) : null}

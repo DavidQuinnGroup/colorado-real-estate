@@ -458,7 +458,6 @@ export function buildAgentBuyerPreparationPacket(
     reasons.push("GOVERNED_BUYER_STAGE_REQUIRED");
   if (
     request.priorities.length < 2 ||
-    request.priorities.length > 4 ||
     new Set(request.priorities).size !== request.priorities.length ||
     request.priorities.some(
       (value) => !AGENT_BUYER_DISCUSSION_PRIORITIES.includes(value),
@@ -537,7 +536,10 @@ export function composeAgentBuyerPreparationBriefing(
   if (packet.admission !== "ADMITTED") return null;
   const { request } = packet;
   const selectedTiming = request.timing ? timingOption(request.timing) : null;
-  const priorities = request.priorities.map(label).join(", ");
+  const selectedPriorities = AGENT_BUYER_DISCUSSION_PRIORITIES.filter((priority) =>
+    request.priorities.includes(priority),
+  );
+  const priorities = selectedPriorities.map(label).join(", ");
   const questionsWorthAsking = [
     {
       id: 'buyer-stage',
@@ -546,7 +548,7 @@ export function composeAgentBuyerPreparationBriefing(
         : 'What is still needed before the buyer is ready to begin an active search?',
       triggerEvidenceKeys: ['stage'],
     },
-    ...request.priorities.map((priority) => ({
+    ...selectedPriorities.slice(0, 4).map((priority) => ({
       id: `buyer-priority-${priority.toLowerCase()}`,
       text: priorityQuestion(priority),
       triggerEvidenceKeys: ['priorities', priority],
