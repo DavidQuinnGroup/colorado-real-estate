@@ -19,11 +19,11 @@ const publicNavigationLinks = [
 
 type AgentNavigationEntry = {
   label: 'Agent Login' | 'Agent Workspace';
-  href: '/agent/login' | '/agent/prepare/market';
+  href: '/agent/login' | '/agent';
 };
 
 const agentLoginNavigationEntry = { label: 'Agent Login', href: '/agent/login' } as const;
-const agentWorkspaceNavigationEntry = { label: 'Agent Workspace', href: '/agent/prepare/market' } as const;
+const agentWorkspaceNavigationEntry = { label: 'Agent Workspace', href: '/agent' } as const;
 
 export default function PublicNavigation() {
   const pathname = usePathname();

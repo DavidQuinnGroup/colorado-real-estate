@@ -17,7 +17,7 @@ import {
 import { createAgentLoginSuccessResponse } from '../lib/admin/agentLoginReturn';
 
 const credential = createHash('sha256').update('REIE_AGENT_CROSS_CAPABILITY_SESSION_CONTINUITY_CHECK').digest('base64url');
-const agentRoutes = ['/agent/prepare/market', '/agent/prepare/property', '/agent/prepare/place', '/agent/prepare/buyer', '/agent/prepare/seller', '/agent/prepare/listing'] as const;
+const agentRoutes = ['/agent', '/agent/prepare/market', '/agent/prepare/property', '/agent/prepare/place', '/agent/prepare/buyer', '/agent/prepare/seller', '/agent/prepare/listing'] as const;
 
 Object.assign(process.env, {
   NODE_ENV: 'production',
@@ -76,6 +76,18 @@ async function main() {
   const cookie = `${AGENT_SESSION_COOKIE}=${session}`;
 
   const transitions = [
+    ['/agent', '/agent/prepare/buyer'],
+    ['/agent', '/agent/prepare/seller'],
+    ['/agent', '/agent/prepare/listing'],
+    ['/agent', '/agent/prepare/place'],
+    ['/agent', '/agent/prepare/property'],
+    ['/agent', '/agent/prepare/market'],
+    ['/agent/prepare/buyer', '/agent'],
+    ['/agent/prepare/seller', '/agent'],
+    ['/agent/prepare/listing', '/agent'],
+    ['/agent/prepare/place', '/agent'],
+    ['/agent/prepare/property', '/agent'],
+    ['/agent/prepare/market', '/agent'],
     ['/agent/prepare/place', '/agent/prepare/property'],
     ['/agent/prepare/place', '/agent/prepare/market'],
     ['/agent/prepare/property', '/agent/prepare/place'],
@@ -122,7 +134,7 @@ async function main() {
   for (const attribute of ['path=/', 'max-age=28800', 'httponly', 'secure', 'samesite=lax']) {
     assert.ok(setCookie.toLowerCase().includes(attribute), `Agent login must retain ${attribute}.`);
   }
-  assert.equal(sanitizeAgentReturnPath('/admin/agent-briefing-preparation'), '/agent/prepare/market', 'The proof harness must remain excluded from Agent returns.');
+  assert.equal(sanitizeAgentReturnPath('/admin/agent-briefing-preparation'), '/agent', 'The proof harness must remain excluded from Agent returns.');
 
   assert.deepEqual(getExpiredAgentSessionCookieOptions(true), {
     ...cookieOptions,
@@ -133,7 +145,7 @@ async function main() {
 
   const middleware = source('middleware.ts');
   const shell = source('components/agent/AgentWorkspaceShell.tsx');
-  assert.match(middleware, /pathname === "\/agent\/prepare\/market" \|\| pathname === "\/agent\/prepare\/property" \|\| pathname === "\/agent\/prepare\/place" \|\| pathname === "\/agent\/prepare\/buyer" \|\| pathname === "\/agent\/prepare\/seller" \|\| pathname === "\/agent\/prepare\/listing"/, 'Middleware must enumerate only the exact Agent capabilities.');
+  assert.match(middleware, /pathname === "\/agent" \|\| pathname === "\/agent\/prepare\/market" \|\| pathname === "\/agent\/prepare\/property" \|\| pathname === "\/agent\/prepare\/place" \|\| pathname === "\/agent\/prepare\/buyer" \|\| pathname === "\/agent\/prepare\/seller" \|\| pathname === "\/agent\/prepare\/listing"/, 'Middleware must enumerate only the Agent Workspace Home and exact capabilities.');
   assert.match(middleware, /Cache-Control', 'private, no-store'/, 'Authenticated Agent route responses must be private and non-storable.');
   assert.match(middleware, /x-middleware-cache', 'no-cache'/, 'Middleware results must not persist in the client router cache.');
   assert.doesNotMatch(shell, /from 'next\/link'/, 'Agent capability navigation must not use the App Router client-navigation path.');

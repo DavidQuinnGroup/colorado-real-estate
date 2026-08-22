@@ -50,10 +50,10 @@ export async function middleware(request: NextRequest) {
       return privateAccessGateResponse(request);
     }
   }
-  const isAgentPreparationRoute = pathname === "/agent/prepare/market" || pathname === "/agent/prepare/property" || pathname === "/agent/prepare/place" || pathname === "/agent/prepare/buyer" || pathname === "/agent/prepare/seller" || pathname === "/agent/prepare/listing";
+  const isAgentWorkspaceRoute = pathname === "/agent" || pathname === "/agent/prepare/market" || pathname === "/agent/prepare/property" || pathname === "/agent/prepare/place" || pathname === "/agent/prepare/buyer" || pathname === "/agent/prepare/seller" || pathname === "/agent/prepare/listing";
   const isAdminProtectedRoute = pathname.startsWith('/admin') || pathname.startsWith('/api/admin/');
 
-  if (!isAgentPreparationRoute && !isAdminProtectedRoute) {
+  if (!isAgentWorkspaceRoute && !isAdminProtectedRoute) {
     return privateConfiguration.enabled ? withPrivateResponseHeaders(NextResponse.next()) : NextResponse.next();
   }
 
@@ -68,7 +68,7 @@ export async function middleware(request: NextRequest) {
       return privateConfiguration.enabled ? withPrivateResponseHeaders(buildAdminLoginRedirect(request)) : buildAdminLoginRedirect(request);
     }
 
-    if (isAgentPreparationRoute) {
+    if (isAgentWorkspaceRoute) {
       return privateConfiguration.enabled ? withPrivateResponseHeaders(buildAgentLoginRedirect(request)) : buildAgentLoginRedirect(request);
     }
 
@@ -81,7 +81,7 @@ export async function middleware(request: NextRequest) {
     },
   });
 
-  if (isAgentPreparationRoute) {
+  if (isAgentWorkspaceRoute) {
     response.headers.set('Cache-Control', 'private, no-store');
     response.headers.set('x-middleware-cache', 'no-cache');
   }
@@ -90,5 +90,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next/).*)', "/admin/:path*", "/api/admin/:path*", "/agent/prepare/market", "/agent/prepare/property", "/agent/prepare/place", "/agent/prepare/buyer", "/agent/prepare/seller", "/agent/prepare/listing"],
+  matcher: ['/((?!_next/).*)', "/admin/:path*", "/api/admin/:path*", "/agent", "/agent/prepare/market", "/agent/prepare/property", "/agent/prepare/place", "/agent/prepare/buyer", "/agent/prepare/seller", "/agent/prepare/listing"],
 };
