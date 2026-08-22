@@ -216,6 +216,7 @@
     "check:agent-seller-consultation-preparation": "jiti scripts/checkAgentSellerConsultationPreparation.ts",
     "check:agent-listing-preparation": "jiti scripts/checkAgentListingPreparation.ts",
     "check:agent-listing-evidence-admission": "jiti scripts/checkAgentListingEvidenceAdmission.ts",
+    "check:county-property-identity-schema": "jiti scripts/checkCountyPropertyIdentitySchema.ts",
     "check:shared-disclosure-state-indicator": "jiti scripts/checkSharedDisclosureStateIndicator.ts",
     "check:agent-place-preparation-admission": "jiti scripts/checkAgentPlacePreparationAdmission.ts",
     "check:agent-place-conversation-preparation-experience": "jiti scripts/checkAgentPlaceConversationPreparationExperience.ts",

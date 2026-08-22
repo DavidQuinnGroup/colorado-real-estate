@@ -14,6 +14,81 @@ enum PublicSearchEligibility {
   CERTIFIED_INELIGIBLE
 }
 
+enum CountyJurisdictionType {
+  COUNTY
+  MUNICIPALITY
+  SPECIAL_DISTRICT
+  OTHER
+}
+
+enum PropertySourceIdentifierType {
+  ASSESSOR_ACCOUNT
+  PARCEL
+  BUILDING
+  SCHEDULE_NUMBER
+  TAX_ACCOUNT
+  PROPERTY_NUMBER
+  OTHER_COUNTY_NATIVE_ID
+}
+
+enum PropertySourceIdentityStatus {
+  OBSERVED
+  ACTIVE
+  CONFLICTING
+  STALE
+  SUPERSEDED
+  RETIRED
+}
+
+enum PropertySourceIdentityFreshness {
+  FRESH
+  AGING
+  STALE
+  UNKNOWN
+}
+
+enum PropertySourceIdentityConfidence {
+  UNVERIFIED
+  SOURCE_REPORTED
+  DETERMINISTIC_MATCH
+  MANUAL_REVIEW_CONFIRMED
+}
+
+enum PropertySourceIdentityRelationshipType {
+  ACCOUNT_TO_PARCEL
+  ACCOUNT_TO_BUILDING
+  ACCOUNT_TO_PROPERTY
+  PARCEL_TO_PROPERTY
+  SUPERSEDES
+  OTHER_COUNTY_NATIVE_RELATIONSHIP
+}
+
+enum PropertySourceIdentityRelationshipStatus {
+  OBSERVED
+  ACTIVE
+  CONFLICTING
+  STALE
+  SUPERSEDED
+}
+
+enum PropertyCountyIdentityMappingStatus {
+  MATCHED
+  AMBIGUOUS
+  CONFLICTING
+  UNMATCHED
+  STALE
+  SUPERSEDED
+}
+
+enum PropertyCountyIdentityMappingBasis {
+  AUTHORITATIVE_IDENTIFIER
+  EXACT_IDENTIFIER_WITH_JURISDICTION
+  ADDRESS_UNIT_LEGAL_CONFIRMATION
+  MANUAL_REVIEW
+  FUZZY_ADDRESS_CANDIDATE
+  UNKNOWN
+}
+
 model Property {
   id                   String    @id @default(cuid())
   mlsId                String    @unique
@@ -61,6 +136,7 @@ model Property {
   alertEvents             AlertEvent[]
   LeadInteraction         LeadInteraction[]
   geographicRelationships PropertyGeographicRelationship[]
+  countyIdentityMappings  PropertyCountyIdentityMapping[]
 
   @@index([city])
   @@index([status])
@@ -73,6 +149,120 @@ model Property {
   @@index([isPrivateExclusive])
   @@index([lastIntelligenceSync])
   @@index([sourceModifiedAt])
+}
+
+model PropertySourceIdentity {
+  id                String                       @id @default(cuid())
+  sourceId          String
+  jurisdictionType  CountyJurisdictionType
+  jurisdictionCode  String
+  identifierType    PropertySourceIdentifierType
+  sourceValue       String
+  normalizedValue   String
+  status            PropertySourceIdentityStatus @default(OBSERVED)
+  firstObservedAt   DateTime?
+  lastObservedAt    DateTime?
+  validFrom         DateTime?
+  validTo           DateTime?
+  isCurrent         Boolean                      @default(true)
+  supersededById    String?
+  createdAt         DateTime                     @default(now())
+  updatedAt         DateTime                     @updatedAt
+
+  supersededBy          PropertySourceIdentity?               @relation("PropertySourceIdentitySupersession", fields: [supersededById], references: [id], onDelete: Restrict)
+  supersedes            PropertySourceIdentity[]              @relation("PropertySourceIdentitySupersession")
+  observations          PropertySourceIdentityObservation[]
+  sourceRelationships   PropertySourceIdentityRelationship[]  @relation("PropertySourceIdentityRelationshipSource")
+  targetRelationships   PropertySourceIdentityRelationship[]  @relation("PropertySourceIdentityRelationshipTarget")
+  countyIdentityMappings PropertyCountyIdentityMapping[]
+
+  @@unique([sourceId, jurisdictionCode, identifierType, normalizedValue], map: "PSI_source_jurisdiction_type_value_uq")
+  @@index([sourceId, jurisdictionCode, identifierType], map: "PSI_source_jurisdiction_type_idx")
+  @@index([jurisdictionType, jurisdictionCode, isCurrent], map: "PSI_jurisdiction_current_idx")
+  @@index([supersededById], map: "PSI_superseded_idx")
+}
+
+model PropertySourceIdentityObservation {
+  id                    String                          @id @default(cuid())
+  identityId            String
+  sourceRecordReference String?
+  fieldSemanticsReference String?
+  rightsPostureReference String?
+  attributionReference  String?
+  sourcePayloadReference String?
+  freshness             PropertySourceIdentityFreshness @default(UNKNOWN)
+  confidence            PropertySourceIdentityConfidence @default(UNVERIFIED)
+  observedAt            DateTime
+  ingestedAt            DateTime?
+  effectiveAt           DateTime?
+  validFrom             DateTime?
+  validTo               DateTime?
+  observationFingerprint String                           @unique(map: "PSIO_fingerprint_uq")
+  createdAt             DateTime                          @default(now())
+
+  identity      PropertySourceIdentity               @relation(fields: [identityId], references: [id], onDelete: Restrict)
+  relationships PropertySourceIdentityRelationship[]
+  mappings      PropertyCountyIdentityMapping[]
+
+  @@index([identityId, observedAt], map: "PSIO_identity_observed_idx")
+  @@index([freshness], map: "PSIO_freshness_idx")
+}
+
+model PropertySourceIdentityRelationship {
+  id                    String                                    @id @default(cuid())
+  sourceIdentityId      String
+  targetIdentityId      String
+  relationshipType      PropertySourceIdentityRelationshipType
+  status                PropertySourceIdentityRelationshipStatus @default(OBSERVED)
+  confidence            PropertySourceIdentityConfidence         @default(UNVERIFIED)
+  observationId         String
+  effectiveAt           DateTime?
+  validFrom             DateTime?
+  validTo               DateTime?
+  isCurrent             Boolean                                   @default(true)
+  relationshipFingerprint String                                  @unique(map: "PSIR_fingerprint_uq")
+  supersededById        String?
+  createdAt             DateTime                                  @default(now())
+  updatedAt             DateTime                                  @updatedAt
+
+  sourceIdentity PropertySourceIdentity                    @relation("PropertySourceIdentityRelationshipSource", fields: [sourceIdentityId], references: [id], onDelete: Restrict)
+  targetIdentity PropertySourceIdentity                    @relation("PropertySourceIdentityRelationshipTarget", fields: [targetIdentityId], references: [id], onDelete: Restrict)
+  observation    PropertySourceIdentityObservation         @relation(fields: [observationId], references: [id], onDelete: Restrict)
+  supersededBy   PropertySourceIdentityRelationship?       @relation("PropertySourceIdentityRelationshipSupersession", fields: [supersededById], references: [id], onDelete: Restrict)
+  supersedes     PropertySourceIdentityRelationship[]      @relation("PropertySourceIdentityRelationshipSupersession")
+
+  @@index([sourceIdentityId, relationshipType, isCurrent], map: "PSIR_source_type_current_idx")
+  @@index([targetIdentityId, relationshipType, isCurrent], map: "PSIR_target_type_current_idx")
+  @@index([observationId], map: "PSIR_observation_idx")
+  @@index([supersededById], map: "PSIR_superseded_idx")
+}
+
+model PropertyCountyIdentityMapping {
+  id                    String                               @id @default(cuid())
+  propertyId            String
+  identityId            String
+  observationId         String?
+  status                PropertyCountyIdentityMappingStatus  @default(UNMATCHED)
+  confidence            PropertySourceIdentityConfidence     @default(UNVERIFIED)
+  basis                 PropertyCountyIdentityMappingBasis   @default(UNKNOWN)
+  verificationRequired  Boolean                              @default(true)
+  conflictReference     String?
+  firstObservedAt       DateTime?
+  lastObservedAt        DateTime?
+  validFrom             DateTime?
+  validTo               DateTime?
+  isCurrent             Boolean                              @default(true)
+  createdAt             DateTime                             @default(now())
+  updatedAt             DateTime                             @updatedAt
+
+  property    Property                           @relation(fields: [propertyId], references: [id], onDelete: Restrict)
+  identity    PropertySourceIdentity             @relation(fields: [identityId], references: [id], onDelete: Restrict)
+  observation PropertySourceIdentityObservation? @relation(fields: [observationId], references: [id], onDelete: Restrict)
+
+  @@unique([propertyId, identityId], map: "PCIM_property_identity_uq")
+  @@index([propertyId, status, isCurrent], map: "PCIM_property_status_current_idx")
+  @@index([identityId, status, isCurrent], map: "PCIM_identity_status_current_idx")
+  @@index([observationId], map: "PCIM_observation_idx")
 }
 
 model MlsSyncState {
