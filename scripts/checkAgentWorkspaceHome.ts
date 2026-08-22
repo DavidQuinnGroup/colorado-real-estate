@@ -47,7 +47,10 @@ function location(response: Response) {
 
 async function main() {
   const page = source('app/agent/page.tsx');
+  const titleHierarchy = source('components/ProjectAtlasTitleHierarchy.ts');
   const home = source('components/agent/AgentWorkspaceHome.tsx');
+  const preparationHeader = source('components/agent/AgentPreparationPageHeader.tsx');
+  const listingPreparation = source('components/agent/ListingPreparationExperience.tsx');
   const shell = source('components/agent/AgentWorkspaceShell.tsx');
   const publicNavigation = source('components/PublicNavigation.tsx');
   const middleware = source('middleware.ts');
@@ -55,6 +58,13 @@ async function main() {
   assert.match(page, /AgentWorkspaceHome/, 'The canonical /agent route must render the Workspace Home.');
   assert.match(home, /Choose what you want to prepare/, 'Workspace Home must state its Agent preparation purpose.');
   assert.match(home, /Preparation launcher/, 'Workspace Home must identify its capability-launcher role.');
+  assert.match(titleHierarchy, /page: 'text-3xl font-semibold leading-tight text-white sm:text-4xl'/, 'The reusable page-title standard must preserve hierarchy above card titles.');
+  assert.match(titleHierarchy, /section: 'text-xl font-semibold leading-7 text-white sm:text-2xl sm:leading-8'/, 'The reusable section-title standard must remain responsive.');
+  assert.match(titleHierarchy, /capabilityCard: 'mt-5 text-xl font-semibold leading-7 text-white sm:mt-6 sm:text-2xl sm:leading-8'/, 'The reusable capability-card title must remain prominent and responsive.');
+  assert.match(home, /projectAtlasTitleHierarchy\.capabilityCard/, 'Workspace capability titles must use the reusable title standard.');
+  assert.match(home, /data-testid="agent-workspace-capability-title"/, 'Workspace capability titles must remain individually inspectable.');
+  assert.match(preparationHeader, /projectAtlasTitleHierarchy\.page/, 'Buyer, Seller, Location, Property, and Market preparation headers must share the page-title standard.');
+  assert.match(listingPreparation, /projectAtlasTitleHierarchy\.page/, 'Listing preparation must share the page-title standard.');
   for (const route of capabilityRoutes) assert.match(home, new RegExp(`href: '${route}'`), `${route} must be an immediate Workspace Home launcher.`);
   assert.match(home, /Location Preparation[\s\S]*geographic and local context/, 'Location Preparation must remain distinct geographic and local intelligence.');
   assert.match(home, /Property Preparation[\s\S]*property-specific diligence/, 'Property Preparation must remain distinct asset-specific intelligence.');
