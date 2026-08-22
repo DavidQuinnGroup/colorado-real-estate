@@ -12,6 +12,7 @@ import {
 import { useMemo, useState } from "react";
 
 import AgentBriefingComposition from "@/components/agent/AgentBriefingComposition";
+import BuyerConsultationPlaybook from "@/components/agent/BuyerConsultationPlaybook";
 import AgentPreparationPageHeader from "@/components/agent/AgentPreparationPageHeader";
 import {
   AGENT_BUYER_CERTIFIED_CITIES,
@@ -524,7 +525,10 @@ export default function BuyerConsultationExperience() {
                 </p>
               </article>
             </section>
-            <AgentBriefingComposition briefing={experience.composition} />
+            <AgentBriefingComposition briefing={experience.composition} showNextActions={false} />
+            {experience.playbook ? (
+              <BuyerConsultationPlaybook playbook={experience.playbook} />
+            ) : null}
             <section className="mt-5 grid gap-5 lg:grid-cols-2">
               {experience.cityContext ? (
                 <article className="border border-white/10 bg-white/[0.035] p-5 sm:p-6">

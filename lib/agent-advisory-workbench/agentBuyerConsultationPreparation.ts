@@ -7,6 +7,10 @@ import {
   type AgentBuyerPreparationRequest,
 } from "./agentBuyerPreparationAdmission";
 import type { AgentBriefingComposition } from "./agentBriefingComposition";
+import {
+  buildAgentBuyerProfessionalPlaybook,
+  type AgentBuyerProfessionalPlaybook,
+} from "./agentBuyerProfessionalPlaybook";
 
 export const AGENT_BUYER_CONSULTATION_PREPARATION_STATUS =
   "REIE_AGENT_BUYER_CONSULTATION_PREPARATION_EXPERIENCE_MVV" as const;
@@ -28,6 +32,7 @@ export type AgentBuyerConsultationExperience = Readonly<{
   journeyPosition: string | null;
   cityContext: Readonly<{ name: string; summary: string; href: string }> | null;
   searchStrategyContext: readonly string[];
+  playbook: AgentBuyerProfessionalPlaybook | null;
 }>;
 
 function unavailable(
@@ -55,6 +60,7 @@ function unavailable(
     journeyPosition: null,
     cityContext: null,
     searchStrategyContext: [],
+    playbook: null,
   });
 }
 
@@ -100,11 +106,28 @@ export function prepareAgentBuyerConsultation(
         href: "/agent/prepare/place",
       })
     : null;
+  const composition = composeAgentBuyerPreparationBriefing(packet);
+  const playbook = composition
+    ? buildAgentBuyerProfessionalPlaybook(
+        packet,
+        composition,
+        placeExperience?.briefing
+          ? {
+              name: placeExperience.briefing.city.canonicalName,
+              summary: placeExperience.briefing.summary,
+              orientation: placeExperience.briefing.whatMatters.map(
+                (item) => item.value,
+              ),
+              verificationQuestions: placeExperience.briefing.verificationQuestions,
+            }
+          : null,
+      )
+    : null;
 
   return Object.freeze({
     status: AGENT_BUYER_CONSULTATION_PREPARATION_STATUS,
     packet,
-    composition: composeAgentBuyerPreparationBriefing(packet),
+    composition,
     humanState: {
       label: "Ready for your review" as const,
       message:
@@ -120,5 +143,6 @@ export function prepareAgentBuyerConsultation(
         : "Readiness is a preparation point before active search: confirm open questions, prepare verification items, and organize the next conversation.",
     cityContext,
     searchStrategyContext: strategyContext(request),
+    playbook,
   });
 }
