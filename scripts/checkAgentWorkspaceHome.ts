@@ -59,7 +59,7 @@ async function main() {
   assert.match(home, /Choose what you want to prepare/, 'Workspace Home must state its Agent preparation purpose.');
   assert.match(home, /Preparation launcher/, 'Workspace Home must identify its capability-launcher role.');
   assert.match(titleHierarchy, /page: 'text-3xl font-semibold leading-tight text-white sm:text-4xl'/, 'The reusable page-title standard must preserve hierarchy above card titles.');
-  assert.match(titleHierarchy, /section: 'text-xl font-semibold leading-7 text-white sm:text-2xl sm:leading-8'/, 'The reusable section-title standard must remain responsive.');
+  assert.match(titleHierarchy, /section: 'text-\[22px\] font-semibold leading-7 text-white sm:text-2xl sm:leading-8'/, 'The reusable section-title standard must remain responsive and above capability titles.');
   assert.match(titleHierarchy, /capabilityCard: 'mt-5 text-xl font-semibold leading-7 text-white sm:mt-6 sm:text-\[22px\] sm:leading-7'/, 'The reusable capability-card title must remain prominent, responsive, and below the major section title.');
   assert.match(home, /projectAtlasTitleHierarchy\.capabilityCard/, 'Workspace capability titles must use the reusable title standard.');
   assert.match(home, /data-testid="agent-workspace-capability-title"/, 'Workspace capability titles must remain individually inspectable.');
