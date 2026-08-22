@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 import DisclosureStateIndicator from '@/components/DisclosureStateIndicator';
 
@@ -16,8 +17,36 @@ const publicNavigationLinks = [
   { label: 'Contact', href: '/contact' },
 ] as const;
 
+type AgentNavigationEntry = {
+  label: 'Agent Login' | 'Agent Workspace';
+  href: '/agent/login' | '/agent/prepare/market';
+};
+
+const agentLoginNavigationEntry = { label: 'Agent Login', href: '/agent/login' } as const;
+const agentWorkspaceNavigationEntry = { label: 'Agent Workspace', href: '/agent/prepare/market' } as const;
+
 export default function PublicNavigation() {
   const pathname = usePathname();
+  const [agentNavigationEntry, setAgentNavigationEntry] = useState<AgentNavigationEntry>(agentLoginNavigationEntry);
+
+  useEffect(() => {
+    let mounted = true;
+
+    async function resolveAgentNavigationEntry() {
+      try {
+        const response = await fetch('/api/agent/session', { cache: 'no-store', credentials: 'same-origin' });
+        const session = response.ok ? await response.json() as { authenticated?: unknown } : null;
+        if (mounted && session?.authenticated === true) setAgentNavigationEntry(agentWorkspaceNavigationEntry);
+      } catch {
+        // A status lookup never changes the signed-out navigation fallback.
+      }
+    }
+
+    void resolveAgentNavigationEntry();
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   if (pathname?.startsWith('/admin')) return null;
 
@@ -52,13 +81,14 @@ export default function PublicNavigation() {
         </Link>
 
         <div className="reie-public-desktop-navigation-links hidden items-center gap-2 lg:flex" data-testid="reie-public-navigation-links">
-          {publicNavigationLinks.map((link) => (
+          {[...publicNavigationLinks, agentNavigationEntry].map((link) => (
             <Link
               key={link.href}
               href={link.href}
               className="reie-public-navigation-link rounded-[7px] px-3 py-2 text-[11px] font-black uppercase tracking-[0.13em] text-white/58 no-underline transition hover:bg-white/[0.06] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100"
               data-testid="reie-public-navigation-link"
               data-reie-public-route={link.href}
+              data-reie-agent-navigation-state={link.href === agentNavigationEntry.href ? (agentNavigationEntry.href === agentWorkspaceNavigationEntry.href ? 'SIGNED_IN_AGENT' : 'SIGNED_OUT_AGENT') : undefined}
             >
               {link.label}
             </Link>
@@ -84,13 +114,14 @@ export default function PublicNavigation() {
           <DisclosureStateIndicator className="h-4 w-4 text-cyan-100/70" />
         </summary>
         <nav className="reie-public-mobile-route-list grid gap-px bg-white/[0.06] sm:grid-cols-2" aria-label="Primary public mobile route list">
-          {publicNavigationLinks.map((link) => (
+          {[...publicNavigationLinks, agentNavigationEntry].map((link) => (
             <Link
               key={`mobile-${link.href}`}
               href={link.href}
               className="reie-public-navigation-link reie-public-mobile-menu-link flex min-h-12 items-center justify-between bg-[#071017]/94 px-4 py-3 text-[10px] font-black uppercase leading-4 tracking-[0.12em] text-white/62 no-underline transition hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-cyan-100 sm:px-8"
               data-testid="reie-public-mobile-navigation-link"
               data-reie-public-route={link.href}
+              data-reie-agent-navigation-state={link.href === agentNavigationEntry.href ? (agentNavigationEntry.href === agentWorkspaceNavigationEntry.href ? 'SIGNED_IN_AGENT' : 'SIGNED_OUT_AGENT') : undefined}
             >
               {link.label}
               <span aria-hidden="true" className="text-cyan-100/45">&rarr;</span>
