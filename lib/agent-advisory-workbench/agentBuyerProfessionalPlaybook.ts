@@ -251,12 +251,12 @@ export function buildAgentBuyerProfessionalPlaybook(
     ),
     section(
       "place-geographic-context",
-      "Place / geographic context",
+      "Location / geographic context",
       "CORE",
       has(request, "PLACE_CONTEXT") || Boolean(placeContext) ? "SELECTED_PRIORITY" : "STANDARD",
       placeContext
         ? `${placeContext.name} is admitted as neutral City orientation. It frames questions for the conversation and never a neighborhood or property suitability conclusion.`
-        : "No certified City was selected, so retain geographic questions for the consultation rather than supplying unsupported place context.",
+        : "No certified City was selected, so retain geographic questions for the consultation rather than supplying unsupported location context.",
       placeContext
         ? [
             placeContext.summary,

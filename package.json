@@ -217,6 +217,7 @@
     "check:shared-disclosure-state-indicator": "jiti scripts/checkSharedDisclosureStateIndicator.ts",
     "check:agent-place-preparation-admission": "jiti scripts/checkAgentPlacePreparationAdmission.ts",
     "check:agent-place-conversation-preparation-experience": "jiti scripts/checkAgentPlaceConversationPreparationExperience.ts",
+    "check:agent-location-preparation-terminology": "jiti scripts/checkAgentLocationPreparationTerminology.ts",
     "check:real-market-preparation-context-producer": "jiti scripts/checkRealMarketPreparationContextProducer.ts",
     "check:market-conversation-experience": "jiti scripts/checkMarketConversationExperience.ts",
     "check:agent-operating-shell": "jiti scripts/checkAgentOperatingShell.ts",

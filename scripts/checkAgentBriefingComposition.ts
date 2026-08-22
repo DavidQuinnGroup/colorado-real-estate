@@ -83,8 +83,8 @@ const placeExperience = source('components/agent/PlaceConversationExperience.tsx
 const propertyExperience = source('components/agent/PropertyConversationExperience.tsx');
 const packageJson = JSON.parse(source('package.json')) as { scripts?: Record<string, string> };
 
-for (const title of ['MARKET PREPARATION', 'PLACE PREPARATION', 'PROPERTY PREPARATION', 'BUYER PREPARATION']) assert(shell.includes(title), `${title} must be a shared page identity.`);
-for (const heading of ['Prepare for a market conversation', 'Prepare for a place conversation', 'Prepare for a property conversation']) assert([marketExperience, placeExperience, propertyExperience].some((content) => content.includes(heading)), `${heading} must remain a separate task heading.`);
+for (const title of ['MARKET PREPARATION', 'LOCATION PREPARATION', 'PROPERTY PREPARATION', 'BUYER PREPARATION']) assert(shell.includes(title), `${title} must be a shared page identity.`);
+for (const heading of ['Prepare for a market conversation', 'Prepare for a location conversation', 'Prepare for a property conversation']) assert([marketExperience, placeExperience, propertyExperience].some((content) => content.includes(heading)), `${heading} must remain a separate task heading.`);
 for (const marker of ['Executive briefing', 'What matters', 'Why it matters', 'Key evidence', 'What could change the interpretation', 'Questions worth asking', 'Next actions', 'Sources, freshness &amp; limitations', 'agent-briefing-progressive-details']) assert(renderer.includes(marker), `Shared briefing renderer must include ${marker}.`);
 for (const marker of ['hasMaterialBriefingSection', 'hasInterpretationChanges ?', 'data-empty-section-discipline="true"']) assert(renderer.includes(marker), `Shared briefing renderer must enforce empty-section discipline: ${marker}.`);
 for (const content of [renderer, marketExperience, placeExperience]) {

@@ -57,7 +57,7 @@ export function buildAgentSellerPreparationPacket(request: AgentSellerPreparatio
   if (request.actorIdentityType !== "HUMAN_AGENT" || request.actorRole !== "AGENT" || request.sessionMechanism !== "HUMAN_AGENT_SESSION") reasons.push("AGENT_IDENTITY_REQUIRED");
   if (request.capability !== AGENT_SELLER_PREPARATION_CAPABILITY || request.route !== AGENT_SELLER_PREPARATION_ROUTE) reasons.push("EXACT_SELLER_CAPABILITY_REQUIRED");
   if (!AGENT_SELLER_CONSULTATION_POSITIONS.includes(request.position)) reasons.push("GOVERNED_SELLER_POSITION_REQUIRED");
-  if (request.priorities.length < 2 || request.priorities.length > 5 || request.priorities.some((value) => !priorityValues.has(value)) || new Set(request.priorities).size !== request.priorities.length) reasons.push("GOVERNED_SELLER_TOPICS_REQUIRED");
+  if (request.priorities.length < 2 || request.priorities.some((value) => !priorityValues.has(value)) || new Set(request.priorities).size !== request.priorities.length) reasons.push("GOVERNED_SELLER_TOPICS_REQUIRED");
   if (request.timing && !timingValues.has(request.timing)) reasons.push("GOVERNED_SELLER_TIMING_REQUIRED");
   if (request.customerContext || request.persistenceRequested || request.providerRuntimeRequired || request.adminContext || request.mcpContext) reasons.push("PROTECTED_CONTEXT_PROHIBITED");
   if (request.protectedClassRequest || request.demographicInferenceRequested || request.suitabilityConclusionRequested) reasons.push("FAIR_HOUSING_OR_SUITABILITY_PROHIBITED");
@@ -79,7 +79,7 @@ export function composeAgentSellerPreparationBriefing(packet: AgentSellerPrepara
     { id: "seller-action-timing", category: "Agent action", text: timing ? `Use the ${timing.label.toLowerCase()} horizon to sequence the next preparation questions.` : "Clarify the Seller's timing horizon and the milestones that could change it." },
     { id: "seller-action-property", category: "Future ATLAS action", text: "Prepare property facts and records for review before relying on them.", href: "/agent/prepare/property" },
     { id: "seller-action-market", category: "Future ATLAS action", text: "Open Market Preparation for dated market context when it is needed.", href: "/agent/prepare/market" },
-    ...(request.cityContext ? [{ id: "seller-action-place", category: "Future ATLAS action" as const, text: `Open Place Preparation for neutral ${request.cityContext} context.`, href: "/agent/prepare/place" as const }] : []),
+    ...(request.cityContext ? [{ id: "seller-action-place", category: "Future ATLAS action" as const, text: `Open Location Preparation for neutral ${request.cityContext} context.`, href: "/agent/prepare/place" as const }] : []),
   ];
   return composeAgentBriefing({
     surface: "SELLER", subject: "Seller consultation preparation",

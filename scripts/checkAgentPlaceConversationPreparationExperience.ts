@@ -56,10 +56,10 @@ for (const marker of [
   'agent-place-empty-state',
   'agent-place-prepare-briefing',
   'agent-place-briefing',
-  '60-second place briefing',
+  '60-second location briefing',
   'City identity and orientation',
   'What matters',
-  'Facts and local context',
+  'Facts and location context',
   'What needs verification',
   'Questions to prepare',
   'Municipal and professional checkpoints',
@@ -81,7 +81,7 @@ assert.ok(!auth.includes("surface('/agent/:path*'"), 'Place preparation must not
 assert.ok(middleware.includes('pathname === "/agent/prepare/place"') && middleware.includes('buildAgentLoginRedirect'), 'Unauthenticated Place access must use the Agent login flow.');
 assert.equal(sanitizeAgentReturnPath('/agent/prepare/place'), '/agent/prepare/place', 'The exact Place route must survive the Agent return-path allowlist.');
 assert.equal(sanitizeAgentReturnPath('/agent/place'), '/agent/prepare/market', 'Unknown Agent returns must fail closed to the safe fallback.');
-assert.ok(agentShell.includes('href="/agent/prepare/place"') && agentShell.includes('Place Preparation'), 'Place Preparation must appear in the Agent shell.');
+assert.ok(agentShell.includes('href="/agent/prepare/place"') && agentShell.includes('Location Preparation'), 'Location Preparation must appear in the Agent shell.');
 assert.ok(agentShell.includes('href="/agent/prepare/property"') && agentShell.includes('href="/agent/prepare/market"'), 'Property and Market navigation must remain.');
 
 assert.ok(admission.includes("publicActivationState: 'NOT_AUTHORIZED'"), 'Private route authorization must not authorize public activation.');

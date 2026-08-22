@@ -141,7 +141,7 @@ function safeTopics(input: AgentConversationPreparationInput) {
     'Review supplied evidence, assumptions, limitations, and open verification questions.',
     'Confirm whether a qualified professional review is needed before reliance.',
   ];
-  if (input.preparationType === 'MARKET_PLACE') topics.push('Review current market and place context with source and date limitations visible.');
+  if (input.preparationType === 'MARKET_PLACE') topics.push('Review current market and location context with source and date limitations visible.');
   if (input.preparationType === 'SELLER_UPDATE_REVIEW') topics.push('Review supplied listing facts, missing evidence, and factual update questions.');
   if (input.preparationType === 'OFFER_PREPARATION_REVIEW') topics.push('Review readiness stages and verification domains before any decision discussion.');
   return Object.freeze(topics);

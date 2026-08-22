@@ -1,0 +1,22 @@
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+
+const source = (path: string) => readFileSync(resolve(process.cwd(), path), 'utf8');
+const page = source('app/agent/prepare/place/page.tsx');
+const location = source('components/agent/PlaceConversationExperience.tsx');
+const shell = source('components/agent/AgentWorkspaceShell.tsx');
+const buyer = source('components/agent/BuyerConsultationExperience.tsx');
+const seller = source('components/agent/SellerConsultationExperience.tsx');
+const buyerContract = source('lib/agent-advisory-workbench/agentBuyerPreparationAdmission.ts');
+const sellerContract = source('lib/agent-advisory-workbench/agentSellerPreparationAdmission.ts');
+const sellerPreparation = source('lib/agent-advisory-workbench/agentSellerConsultationPreparation.ts');
+for (const value of ['Location Preparation | Project Atlas', 'LOCATION PREPARATION', 'Prepare for a location conversation']) assert.ok(`${page}\n${location}`.includes(value), `Missing canonical Location terminology: ${value}`);
+assert.ok(shell.includes('href="/agent/prepare/place"') && shell.includes('Location Preparation'));
+assert.ok(buyer.includes('City and location context') && buyer.includes('Location context'));
+assert.ok(seller.includes('City / location context'));
+assert.ok(buyerContract.includes('Location Preparation'));
+assert.ok(sellerContract.includes('Location Preparation'));
+assert.ok(sellerPreparation.includes('at least two Seller topics'));
+assert.ok(!shell.includes('Place Preparation'));
+console.log('AGENT_LOCATION_PREPARATION_TERMINOLOGY_CHECK: PASS');

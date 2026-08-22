@@ -25,7 +25,7 @@ export default function AgentWorkspaceShell({ children }: { children: ReactNode 
               Seller Preparation
             </a>
             <a href="/agent/prepare/place" className="rounded-[7px] px-3 py-2 text-xs font-semibold text-slate-200 transition hover:bg-white/[0.08] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100" data-testid="agent-workspace-place-link">
-              Place Preparation
+              Location Preparation
             </a>
             <a href="/agent/prepare/property" className="rounded-[7px] px-3 py-2 text-xs font-semibold text-slate-200 transition hover:bg-white/[0.08] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100" data-testid="agent-workspace-property-link">
               Property Preparation

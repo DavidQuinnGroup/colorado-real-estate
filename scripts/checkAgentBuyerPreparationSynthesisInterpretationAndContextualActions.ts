@@ -61,7 +61,7 @@ const propertyAction = composition.nextActions?.find(
 assert.deepEqual(placeAction, {
   id: "buyer-action-place",
   category: "Future ATLAS action",
-  text: "Review Louisville in Place Preparation.",
+  text: "Review Louisville in Location Preparation.",
   href: "/agent/prepare/place",
 });
 assert.equal(propertyAction?.href, "/agent/prepare/property");
@@ -94,7 +94,7 @@ const certification = source(
 );
 
 assert.ok(renderer.includes("hasInterpretationChanges ?"));
-assert.ok(!buyerExperience.includes("Review {experience.cityContext.name} in Place Preparation"));
+assert.ok(!buyerExperience.includes("Review {experience.cityContext.name} in Location Preparation"));
 assert.ok(!buyerExperience.includes("Open Property Preparation when a specific property is in"));
 assert.ok(
   northStar.includes("Contextual Capability Action Principle") &&

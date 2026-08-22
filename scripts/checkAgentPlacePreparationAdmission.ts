@@ -85,7 +85,7 @@ const middleware = source('middleware.ts');
 const agentShell = source('components/agent/AgentWorkspaceShell.tsx');
 assert.ok(auth.includes("surface('/agent/prepare/place', 'BROWSER_ADMIN_PAGE', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY'"), 'The exact Agent place route must be read-only without Admin inheritance.');
 assert.ok(middleware.includes('pathname === "/agent/prepare/place"'), 'The exact Agent place route must use the existing Agent login redirect.');
-assert.ok(agentShell.includes('href="/agent/prepare/place"'), 'The authorized Place Preparation capability must be visible in the Agent shell.');
+assert.ok(agentShell.includes('href="/agent/prepare/place"') && agentShell.includes('Location Preparation'), 'The authorized Location Preparation capability must be visible in the Agent shell.');
 assert.equal(existsSync(resolve(process.cwd(), 'app/agent/prepare/place/page.tsx')), true, 'The exact Agent place UI route must exist.');
 
 console.log('AGENT_PLACE_PREPARATION_ADMISSION_CHECK: PASS');

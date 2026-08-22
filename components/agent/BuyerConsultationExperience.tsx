@@ -35,7 +35,7 @@ const PRIORITY_LABELS: Record<AgentBuyerDiscussionPriority, string> = {
   PROPERTY_NEEDS: "Property needs and trade-offs",
   FINANCING_READINESS: "Financing discussion",
   MARKET_CONTEXT: "Current market questions",
-  PLACE_CONTEXT: "City and place context",
+  PLACE_CONTEXT: "City and location context",
   SEARCH_STRATEGY: "Search approach",
   TOURING_PROCESS: "Touring approach",
   DECISION_PROCESS: "Decision participants and process",
@@ -537,7 +537,7 @@ export default function BuyerConsultationExperience() {
                       className="h-5 w-5 text-cyan-100"
                       aria-hidden="true"
                     />
-                    <h2 className="text-lg font-semibold">Place context</h2>
+                    <h2 className="text-lg font-semibold">Location context</h2>
                   </div>
                   <p className="mt-4 text-sm leading-6 text-slate-300">
                     {experience.cityContext.summary}

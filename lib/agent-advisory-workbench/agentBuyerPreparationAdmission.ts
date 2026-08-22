@@ -265,7 +265,7 @@ function buyerExecutiveSynthesis(
     );
   else if (request.certifiedCity)
     statements.push(
-      `${request.certifiedCity} is an initial City frame to test through neutral Place Preparation context, not a location recommendation.`,
+      `${request.certifiedCity} is an initial City frame to test through neutral Location Preparation context, not a location recommendation.`,
     );
   else if (request.propertyObjective)
     statements.push(
@@ -411,7 +411,7 @@ function buyerContextualActions(
           {
             id: "buyer-action-place",
             category: "Future ATLAS action" as const,
-            text: `Review ${request.certifiedCity} in Place Preparation.`,
+            text: `Review ${request.certifiedCity} in Location Preparation.`,
             href: "/agent/prepare/place" as const,
           },
         ]

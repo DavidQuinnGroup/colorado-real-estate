@@ -28,7 +28,7 @@ const validInput = {
     },
     {
       id: 'place-context',
-      title: 'City place context',
+      title: 'City location context',
       sourceIdentity: 'REIE City Decision Guide',
       visibleDate: '2026-08-14',
       effectiveDate: '2026-08-08',

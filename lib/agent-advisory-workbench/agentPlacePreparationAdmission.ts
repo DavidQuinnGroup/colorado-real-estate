@@ -302,7 +302,7 @@ export function buildAgentPlacePreparationPacket(input: Readonly<{
     whatMatters: Object.freeze([
       'Use the exact city identity and governed editorial orientation to prepare neutral discussion questions.',
       'Separate durable city context from any matter that needs direct current verification.',
-      'Do not convert place context into a recommendation, suitability statement, ranking, or property assignment.',
+      'Use location context for orientation and keep recommendations, suitability statements, rankings, and property assignment outside this capability.',
     ]),
     knownNow: Object.freeze([
       `Canonical city: ${city!.canonicalName}, ${city!.state}.`,

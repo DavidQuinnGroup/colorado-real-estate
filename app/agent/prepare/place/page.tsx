@@ -5,8 +5,8 @@ import PlaceConversationExperience from '@/components/agent/PlaceConversationExp
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'Place Preparation | Project Atlas Agent',
-  description: 'Read-only Agent place conversation preparation using certified City context.',
+  title: 'Location Preparation | Project Atlas',
+  description: 'Read-only Agent location conversation preparation using certified City context.',
 };
 
 export default function AgentPlaceConversationPage() {
