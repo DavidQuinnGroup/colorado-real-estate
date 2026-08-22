@@ -214,6 +214,7 @@
     "check:agent-buyer-preparation-professional-depth-and-consultation-playbook": "jiti scripts/checkAgentBuyerPreparationProfessionalDepthAndConsultationPlaybook.ts",
     "check:agent-buyer-preparation-agent-ready-consultation-content": "jiti scripts/checkAgentBuyerPreparationAgentReadyConsultationContent.ts",
     "check:agent-seller-consultation-preparation": "jiti scripts/checkAgentSellerConsultationPreparation.ts",
+    "check:agent-listing-preparation": "jiti scripts/checkAgentListingPreparation.ts",
     "check:shared-disclosure-state-indicator": "jiti scripts/checkSharedDisclosureStateIndicator.ts",
     "check:agent-place-preparation-admission": "jiti scripts/checkAgentPlacePreparationAdmission.ts",
     "check:agent-place-conversation-preparation-experience": "jiti scripts/checkAgentPlaceConversationPreparationExperience.ts",

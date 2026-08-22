@@ -12,7 +12,7 @@ export const AGENT_BRIEFING_CONTENT_CLASSES = [
 ] as const;
 
 export type AgentBriefingContentClass = (typeof AGENT_BRIEFING_CONTENT_CLASSES)[number];
-export type AgentBriefingSurface = 'MARKET' | 'PLACE' | 'PROPERTY' | 'BUYER' | 'SELLER';
+export type AgentBriefingSurface = 'MARKET' | 'PLACE' | 'PROPERTY' | 'BUYER' | 'SELLER' | 'LISTING';
 
 export type AgentBriefingTraceability = Readonly<{
   sourceReferences: readonly string[];
@@ -34,6 +34,9 @@ export const AGENT_BRIEFING_CONTEXTUAL_CAPABILITY_HREFS = [
   '/agent/prepare/market',
   '/agent/prepare/place',
   '/agent/prepare/property',
+  '/agent/prepare/buyer',
+  '/agent/prepare/seller',
+  '/agent/prepare/listing',
 ] as const;
 export type AgentBriefingContextualCapabilityHref =
   (typeof AGENT_BRIEFING_CONTEXTUAL_CAPABILITY_HREFS)[number];
