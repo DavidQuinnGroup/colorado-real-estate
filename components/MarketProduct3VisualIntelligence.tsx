@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { ArrowUpRight, BarChart3, CheckCircle2, ShieldCheck } from 'lucide-react';
 
+import DisclosureStateIndicator from '@/components/DisclosureStateIndicator';
 import type { MarketProduct3Experience } from '@/lib/marketProduct3';
 
 type MarketProduct3VisualIntelligenceProps = {
@@ -140,6 +141,7 @@ export default function MarketProduct3VisualIntelligence({ experience }: MarketP
         <summary>
           <ShieldCheck aria-hidden="true" />
           Confidence layer
+          <DisclosureStateIndicator className="h-4 w-4" />
         </summary>
         <dl>
           {Object.entries(experience.confidenceLayer).map(([label, value]) => (

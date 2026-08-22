@@ -4,6 +4,8 @@ import { Check, Copy, Loader2, MapPin, RotateCcw, Search, SlidersHorizontal, Spa
 import type { CSSProperties, FormEvent, ReactNode } from 'react';
 import { useId, useMemo, useState } from 'react';
 
+import DisclosureStateIndicator from '@/components/DisclosureStateIndicator';
+
 export type SearchFilters = {
   query: string;
   city: string;
@@ -321,7 +323,7 @@ export default function SearchControls({
         >
           <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-[10px] font-black uppercase tracking-[0.16em] text-white/54">
             Advanced criteria: refine budget and home details
-            <span className="text-cyan-100/70">+</span>
+            <DisclosureStateIndicator className="h-4 w-4 text-cyan-100/70" />
           </summary>
           <div className="mt-3 grid gap-2">
             <RefinementSection eyebrow="Budget" title="What fits your budget?">

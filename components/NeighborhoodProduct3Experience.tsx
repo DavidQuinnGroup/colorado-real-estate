@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { ArrowUpRight, CheckCircle2, Compass, Home, Layers3, MapPinned, ShieldCheck } from 'lucide-react';
 
+import DisclosureStateIndicator from '@/components/DisclosureStateIndicator';
 import type {
   NeighborhoodProduct3Confidence,
   NeighborhoodProduct3EvidenceState,
@@ -218,6 +219,7 @@ export default function NeighborhoodProduct3Experience({ model }: NeighborhoodPr
             <summary className="flex cursor-pointer items-center gap-3 p-5 text-sm font-black uppercase tracking-[0.12em] text-cyan-100 focus:outline-none focus:ring-2 focus:ring-cyan-100/70 md:p-6">
               <ShieldCheck size={16} aria-hidden="true" />
               Neighborhood Confidence Layer
+              <DisclosureStateIndicator className="ml-auto h-4 w-4" />
             </summary>
             <div className="reie-neighborhood-product-3-confidence-grid grid gap-px bg-white/10 md:grid-cols-3">
               {model.confidence.map((facet) => (

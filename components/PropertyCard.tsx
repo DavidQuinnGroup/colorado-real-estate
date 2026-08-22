@@ -6,6 +6,7 @@ import type { CSSProperties, KeyboardEvent } from 'react';
 import { useMemo } from 'react';
 
 import type { MapSidebarListing } from '@/components/maps/MapSidebar';
+import DisclosureStateIndicator from '@/components/DisclosureStateIndicator';
 import ResilientListingImage from '@/components/ResilientListingImage';
 import { getCityByName } from '@/lib/cities';
 import { getListingFallbackPhotoUrl, getListingPhotoUrl } from '@/lib/listingVisuals';
@@ -285,7 +286,7 @@ export default function PropertyCard({ property, isActive, onClick }: PropertyCa
         >
           <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-[9px] font-black uppercase tracking-[0.14em] text-white/42">
             Context and verification
-            <span className="text-cyan-100/70">+</span>
+            <DisclosureStateIndicator className="h-4 w-4 text-cyan-100/70" />
           </summary>
           <div
             className="mt-3 grid grid-cols-2 gap-2 text-left"

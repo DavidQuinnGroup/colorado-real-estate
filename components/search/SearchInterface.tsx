@@ -6,6 +6,7 @@ import { AlertTriangle, List, Map as MapIcon, RotateCcw, SlidersHorizontal } fro
 import { type FormEvent, type KeyboardEvent, useEffect, useMemo, useState } from 'react';
 
 import ContinueYourDecision from '@/components/ContinueYourDecision';
+import DisclosureStateIndicator from '@/components/DisclosureStateIndicator';
 import FinancingConfidenceEducation from '@/components/FinancingConfidenceEducation';
 import MapSidebar, { type MapSidebarListing } from '@/components/maps/MapSidebar';
 import type { MapBounds } from '@/components/maps/MapInner';
@@ -838,7 +839,7 @@ export default function SearchInterface({
           >
             <summary>
               Search guidance, evidence boundaries, and map context
-              <span aria-hidden="true">+</span>
+              <DisclosureStateIndicator className="h-4 w-4" />
             </summary>
             <section
               className="reie-search-confidence-framework"
@@ -1002,7 +1003,7 @@ export default function SearchInterface({
             <details className="group">
               <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100/72">
                 Decision Framework
-                <span className="text-white/34 transition group-open:rotate-45">+</span>
+                <DisclosureStateIndicator className="h-4 w-4 text-white/34" />
               </summary>
               <div className="mt-3 grid gap-2 sm:grid-cols-5">
                 {[
@@ -1244,8 +1245,9 @@ export default function SearchInterface({
 
         {faqItems.length ? (
           <details className="absolute right-6 top-6 z-[700] hidden w-[min(420px,calc(100%-3rem))] rounded-[8px] border border-white/12 bg-[#071017]/88 p-4 shadow-2xl backdrop-blur-md md:block">
-            <summary className="cursor-pointer list-none text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100">
-              Search Guidance
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100">
+              <span>Search Guidance</span>
+              <DisclosureStateIndicator className="h-4 w-4 text-cyan-100" />
             </summary>
             <div className="mt-4 max-h-[52vh] space-y-4 overflow-auto pr-2">
               {faqItems.slice(0, 4).map((faq) => (

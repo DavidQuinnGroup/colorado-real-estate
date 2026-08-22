@@ -5,6 +5,7 @@ import {
   VIS_STATE_HANDLING,
   getVisualIntelligencePrototypeFixture,
 } from "@/lib/visual-intelligence/visualIntelligenceSystem";
+import DisclosureStateIndicator from "@/components/DisclosureStateIndicator";
 
 function confidenceTone(state: "available" | "limited" | "needs-review") {
   if (state === "available") {
@@ -334,6 +335,7 @@ function ConfidenceLayer() {
                 <span className={`rounded-full px-3 py-1 text-xs font-medium ${confidenceTone(facet.state)}`}>
                   {facet.state}
                 </span>
+                <DisclosureStateIndicator className="h-4 w-4" />
               </span>
             </summary>
             <p className="mt-4 text-sm leading-6 text-[#4b4236]">{facet.explanation}</p>
@@ -406,8 +408,9 @@ function VisualContracts() {
       </div>
 
       <details className="mt-5 rounded-2xl bg-white/[0.05] p-5">
-        <summary className="cursor-pointer list-none font-semibold">
-          Required state handling
+        <summary className="flex cursor-pointer list-none items-center justify-between gap-3 font-semibold">
+          <span>Required state handling</span>
+          <DisclosureStateIndicator className="h-4 w-4" />
         </summary>
         <dl className="mt-4 grid gap-3 text-sm text-[#c9c0b0]">
           {Object.entries(VIS_STATE_HANDLING).map(([state, handling]) => (

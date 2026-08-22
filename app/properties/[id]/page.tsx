@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 
 import ContinueYourDecision from '@/components/ContinueYourDecision';
+import DisclosureStateIndicator from '@/components/DisclosureStateIndicator';
 import EquityVision from '@/components/EquityVision';
 import FinancingConfidenceEducation from '@/components/FinancingConfidenceEducation';
 import OfferPreparationPanel from '@/components/OfferPreparationPanel';
@@ -1138,7 +1139,7 @@ export default async function PropertyPage({ params, searchParams }: PropertyPag
                 <details className="mt-4 rounded-[6px] bg-black/18 p-3">
                   <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-[10px] font-black uppercase tracking-[0.16em] text-white/48">
                     Trust boundary
-                    <span className="text-cyan-100/70">+</span>
+                    <DisclosureStateIndicator className="h-4 w-4 text-cyan-100/70" />
                   </summary>
                   <p className="mt-3 text-xs leading-5 text-white/52">
                     This workspace organizes public information, educational context, and questions to verify. It does not replace inspection,
@@ -1167,7 +1168,7 @@ export default async function PropertyPage({ params, searchParams }: PropertyPag
             <details className="mt-4 rounded-[8px] bg-[#0d141c] p-4">
               <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-[10px] font-black uppercase tracking-[0.18em] text-white/58">
                 Compare and discuss
-                <span className="text-cyan-100/70">+</span>
+                <DisclosureStateIndicator className="h-4 w-4 text-cyan-100/70" />
               </summary>
               <div className="mt-4">
                 <DecisionLensLabel lens="Compare" question="How does this compare with other homes?" />
@@ -1198,7 +1199,7 @@ export default async function PropertyPage({ params, searchParams }: PropertyPag
             <details className="mt-4 rounded-[8px] bg-[#0d141c] p-4">
               <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-[10px] font-black uppercase tracking-[0.18em] text-white/58">
                 What deserves verification?
-                <span className="text-cyan-100/70">+</span>
+                <DisclosureStateIndicator className="h-4 w-4 text-cyan-100/70" />
               </summary>
               <section className="mt-4">
                 <DecisionLensLabel lens="Evaluate" question="Why does this matter?" />
@@ -1238,7 +1239,7 @@ export default async function PropertyPage({ params, searchParams }: PropertyPag
                     <HardHat className="shrink-0 text-cyan-100" size={16} />
                     Property Questions Welcome
                   </span>
-                  <span className="text-cyan-100/70">+</span>
+                  <DisclosureStateIndicator className="h-4 w-4 text-cyan-100/70" />
                 </summary>
                     <p className="mt-1 text-sm leading-6 text-white/62">
                   Use the public facts on this page to prepare focused questions before a direct conversation.

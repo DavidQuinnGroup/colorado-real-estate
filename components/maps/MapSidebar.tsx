@@ -5,6 +5,7 @@ import { Bell, FileText, Gauge, Layers3, ListFilter, MapPinned, ShieldCheck, X }
 import type { ReactNode } from 'react';
 import { Suspense, useEffect, useMemo, useRef } from 'react';
 
+import DisclosureStateIndicator from '@/components/DisclosureStateIndicator';
 import { cities } from '@/lib/cities';
 import { getBlogLinks, type BlogLink } from '@/lib/linking/getBlogLinks';
 import { buildGuidedSearchDecisionSupport } from '@/lib/search/guidedSearchDecisionSupport';
@@ -382,9 +383,7 @@ function SearchDecisionPortfolio({
           <p className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100/70">Decision View</p>
           <p className="mt-1 text-sm font-black leading-5 text-white">{decisionMode}</p>
         </div>
-        <span className="shrink-0 rounded-[5px] border border-white/10 bg-white/[0.045] px-2 py-1 text-[9px] font-black uppercase tracking-[0.12em] text-white/48">
-          Open
-        </span>
+        <DisclosureStateIndicator className="h-4 w-4 text-cyan-100" />
       </summary>
       <div className="mt-3 grid grid-cols-3 gap-2 text-center">
         <div className="rounded-[6px] bg-white/[0.035] px-2 py-2">

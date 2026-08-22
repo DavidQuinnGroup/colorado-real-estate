@@ -1,7 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { ChevronDown, ClipboardList, Compass, Landmark, ListChecks } from 'lucide-react';
+import { ClipboardList, Compass, Landmark, ListChecks } from 'lucide-react';
+
+import DisclosureStateIndicator from '@/components/DisclosureStateIndicator';
 
 import type {
   AgentBuyerAgentReadyGuide,
@@ -79,7 +81,7 @@ function PlaybookSection({
         <details className="group mt-5 border border-white/10 bg-black/10 p-4" data-testid="agent-buyer-section-guide">
           <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold text-cyan-100">
             Agent-ready questions and talking points
-            <ChevronDown className="h-4 w-4 transition group-open:rotate-180" aria-hidden="true" />
+            <DisclosureStateIndicator className="h-4 w-4" />
           </summary>
           <div className="mt-5">
             <AgentReadyGuide guide={section.guide} />
@@ -156,7 +158,7 @@ export default function BuyerConsultationPlaybook({
               <details className="group mt-3 border border-white/10 bg-black/10 p-4" data-testid="agent-buyer-agenda-guide">
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold text-cyan-100">
                   Use in consultation
-                  <ChevronDown className="h-4 w-4 transition group-open:rotate-180" aria-hidden="true" />
+                  <DisclosureStateIndicator className="h-4 w-4" />
                 </summary>
                 <div className="mt-5">
                   <AgentReadyGuide guide={step.guide} />
@@ -227,7 +229,7 @@ export default function BuyerConsultationPlaybook({
               <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-cyan-100/70">Supporting preparation</p>
               <h2 className="mt-1 text-lg font-semibold text-white">Process, verification, and offer detail</h2>
             </div>
-            <ChevronDown className="h-5 w-5 text-slate-400 transition group-open:rotate-180" aria-hidden="true" />
+            <DisclosureStateIndicator className="h-5 w-5 text-slate-400" />
           </summary>
           <div className="grid gap-5 border-t border-white/10 p-5 sm:p-6 xl:grid-cols-2">
             {detail.map((section) => <PlaybookSection key={section.id} section={section} />)}

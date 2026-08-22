@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { List, Map as MapIcon } from 'lucide-react';
 import { type FormEvent, useCallback, useEffect, useRef, useState } from 'react';
 
+import DisclosureStateIndicator from '@/components/DisclosureStateIndicator';
 import MapSidebar, { type MapSidebarListing } from '@/components/maps/MapSidebar';
 import type { MapBounds } from '@/components/maps/MapInner';
 import SelectedPropertyDrawer from '@/components/maps/SelectedPropertyDrawer';
@@ -470,8 +471,9 @@ export default function HomeSearchExperience({ authorityLinks = [], faqItems = [
 
         {faqItems.length && !isEmbedded ? (
           <details className="absolute right-6 top-6 z-[700] hidden w-[min(420px,calc(100%-3rem))] rounded-[8px] border border-white/12 bg-[#071017]/88 p-4 shadow-2xl backdrop-blur-md md:block">
-            <summary className="cursor-pointer list-none text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100">
-              REIE Authority FAQ
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100">
+              <span>REIE Authority FAQ</span>
+              <DisclosureStateIndicator className="h-4 w-4" />
             </summary>
             <div className="mt-4 max-h-[52vh] space-y-4 overflow-auto pr-2">
               {faqItems.slice(0, 4).map((faq) => (

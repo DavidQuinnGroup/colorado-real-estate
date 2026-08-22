@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
+import DisclosureStateIndicator from '@/components/DisclosureStateIndicator';
+
 const publicNavigationLinks = [
   { label: 'Search', href: '/search' },
   { label: 'Buy', href: '/buy' },
@@ -79,7 +81,7 @@ export default function PublicNavigation() {
       >
         <summary className="reie-public-mobile-menu-summary flex min-h-11 cursor-pointer list-none items-center justify-between px-4 py-2 text-[10px] font-black uppercase tracking-[0.18em] text-white/70 marker:content-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-cyan-100 sm:px-8">
           Menu
-          <span aria-hidden="true" className="text-cyan-100/70">+</span>
+          <DisclosureStateIndicator className="h-4 w-4 text-cyan-100/70" />
         </summary>
         <nav className="reie-public-mobile-route-list grid gap-px bg-white/[0.06] sm:grid-cols-2" aria-label="Primary public mobile route list">
           {publicNavigationLinks.map((link) => (
