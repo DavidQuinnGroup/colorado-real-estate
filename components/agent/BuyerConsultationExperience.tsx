@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import {
   ArrowRight,
   CheckCircle2,
@@ -539,13 +538,6 @@ export default function BuyerConsultationExperience() {
                   <p className="mt-4 text-sm leading-6 text-slate-300">
                     {experience.cityContext.summary}
                   </p>
-                  <Link
-                    href={experience.cityContext.href}
-                    prefetch={false}
-                    className="mt-4 inline-flex text-sm font-semibold text-cyan-100 underline decoration-cyan-100/40 underline-offset-4 hover:text-white"
-                  >
-                    Review {experience.cityContext.name} in Place Preparation
-                  </Link>
                 </article>
               ) : null}
               {experience.searchStrategyContext.length ? (
@@ -564,14 +556,6 @@ export default function BuyerConsultationExperience() {
                       <li key={item}>{item}</li>
                     ))}
                   </ul>
-                  <Link
-                    href="/agent/prepare/property"
-                    prefetch={false}
-                    className="mt-4 inline-flex text-sm font-semibold text-cyan-100 underline decoration-cyan-100/40 underline-offset-4 hover:text-white"
-                  >
-                    Open Property Preparation when a specific property is in
-                    view
-                  </Link>
                 </article>
               ) : null}
             </section>

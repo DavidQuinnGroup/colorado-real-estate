@@ -76,7 +76,11 @@ for (const option of AGENT_BUYER_TIMING_OPTIONS) {
   });
   const composition = composeAgentBuyerPreparationBriefing(packet);
   assert.equal(packet.admission, "ADMITTED");
-  assert.ok(composition?.executiveBriefing.text.includes(option.briefingFocus));
+  assert.ok(
+    composition?.executiveBriefing.text
+      .toLowerCase()
+      .includes(option.briefingFocus.toLowerCase()),
+  );
   assert.ok(
     composition?.keyEvidence.some(
       (evidence) =>

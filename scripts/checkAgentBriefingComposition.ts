@@ -3,7 +3,9 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 import {
+  AGENT_BRIEFING_CONTEXTUAL_CAPABILITY_HREFS,
   composeAgentBriefing,
+  hasMaterialBriefingSection,
   type AgentBriefingComposition,
   type AgentBriefingTraceability,
 } from '../lib/agent-advisory-workbench/agentBriefingComposition';
@@ -39,18 +41,34 @@ assert.match(market.composition?.executiveBriefing.text || '', /22 days-on-marke
 assert.match(market.composition?.executiveBriefing.text || '', /\$1,450,000 median-price context/);
 assert.equal(market.composition?.questionsWorthAsking.length, 2);
 assert.equal(market.composition?.professionalCheckpoints.length, 0, 'Market must not hand routine judgment back to the current Agent.');
+assert.equal(hasMaterialBriefingSection(market.composition?.whatCouldChangeInterpretation), true);
 
 const place = prepareAgentPlaceConversation('reie-city:boulder-co-real-estate');
 assert.equal(place.briefing?.composition.surface, 'PLACE');
 assert.match(place.briefing?.composition.executiveBriefing.text || '', /compact front range city/i);
 assert.equal(place.briefing?.composition.questionsWorthAsking.length, 2);
 assert.ok(place.briefing?.composition.professionalCheckpoints.every((checkpoint) => checkpoint.role !== 'REAL ESTATE AGENT'));
+assert.equal(hasMaterialBriefingSection(place.briefing?.composition.whatCouldChangeInterpretation), true);
 
 const propertyFixture = AGENT_PROPERTY_PREPARATION_FIXTURES.admissible;
 const property = prepareAgentPropertyConversation({ property: propertyFixture.property, sourcePosture: propertyFixture.sourcePosture });
 assert.equal(property.composition?.surface, 'PROPERTY');
 assert.match(property.composition?.executiveBriefing.text || '', /active/);
 assert.ok((property.composition?.questionsWorthAsking.length || 0) <= 5);
+assert.equal(hasMaterialBriefingSection(property.composition?.whatCouldChangeInterpretation), true);
+
+assert.equal(hasMaterialBriefingSection([]), false);
+assert.equal(hasMaterialBriefingSection([{ text: '   ' }]), false);
+assert.equal(hasMaterialBriefingSection([{ text: 'Material context.' }]), true);
+assert.throws(() => composeAgentBriefing(validComposition({
+  nextActions: [{
+    id: 'bad-contextual-action',
+    category: 'Future ATLAS action',
+    text: 'Open an unsupported capability.',
+    href: '/agent/prepare/unsupported' as never,
+  }],
+})), /exact authorized capability route/);
+assert.ok(AGENT_BRIEFING_CONTEXTUAL_CAPABILITY_HREFS.every((href) => href.startsWith('/agent/prepare/')));
 
 assert.throws(() => composeAgentBriefing(validComposition({ executiveBriefing: { id: 'bad', contentClass: 'VERIFICATION_TRIGGER', text: 'Verify first.', traceability: { ...trace(['bad']), compositionRule: 'VERIFICATION_TRIGGER_RENDER' } } })), /Executive briefing cannot lead/);
 assert.throws(() => composeAgentBriefing(validComposition({
@@ -68,6 +86,7 @@ const packageJson = JSON.parse(source('package.json')) as { scripts?: Record<str
 for (const title of ['MARKET PREPARATION', 'PLACE PREPARATION', 'PROPERTY PREPARATION', 'BUYER PREPARATION']) assert(shell.includes(title), `${title} must be a shared page identity.`);
 for (const heading of ['Prepare for a market conversation', 'Prepare for a place conversation', 'Prepare for a property conversation']) assert([marketExperience, placeExperience, propertyExperience].some((content) => content.includes(heading)), `${heading} must remain a separate task heading.`);
 for (const marker of ['Executive briefing', 'What matters', 'Why it matters', 'Key evidence', 'What could change the interpretation', 'Questions worth asking', 'Next actions', 'Sources, freshness &amp; limitations', 'agent-briefing-progressive-details']) assert(renderer.includes(marker), `Shared briefing renderer must include ${marker}.`);
+for (const marker of ['hasMaterialBriefingSection', 'hasInterpretationChanges ?', 'data-empty-section-discipline="true"']) assert(renderer.includes(marker), `Shared briefing renderer must enforce empty-section discipline: ${marker}.`);
 for (const content of [renderer, marketExperience, placeExperience]) {
   for (const forbidden of ['localStorage', 'sessionStorage', 'document.cookie', 'fetch(', 'CRM', 'customerName', 'MLS_GRID', 'IRES', 'ATTOM', 'LightBox', 'recommendation: true', 'suitability: true']) assert.equal(content.includes(forbidden), false, `Briefing UI must not introduce ${forbidden}.`);
 }

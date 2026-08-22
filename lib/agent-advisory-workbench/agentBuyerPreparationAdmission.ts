@@ -1,6 +1,8 @@
 import {
   composeAgentBriefing,
   type AgentBriefingComposition,
+  type AgentBriefingNextAction,
+  type AgentBriefingStatement,
   type AgentBriefingTraceability,
 } from "./agentBriefingComposition";
 
@@ -240,6 +242,204 @@ function priorityQuestion(priority: AgentBuyerDiscussionPriority) {
   return questions[priority];
 }
 
+function buyerExecutiveSynthesis(
+  request: AgentBuyerPreparationRequest,
+  selectedTiming: (typeof AGENT_BUYER_TIMING_OPTIONS)[number] | null,
+) {
+  const statements = [
+    request.stage === "READINESS"
+      ? "This is a readiness-focused planning conversation: organize the remaining preparation before an active search."
+      : "This is an early buyer-planning conversation: clarify the preparation path before narrowing a search.",
+    selectedTiming
+      ? `The stated ${selectedTiming.label.toLowerCase()} horizon calls for ${selectedTiming.briefingFocus.toLowerCase()}`
+      : "Timing has not been selected, so clarifying the intended purchase horizon is part of the preparation posture.",
+  ];
+
+  if (request.financingStatus)
+    statements.push(
+      "Reported financing is a preparation boundary: identify what requires lender confirmation before treating the search plan as settled.",
+    );
+  if (request.certifiedCity && request.propertyObjective)
+    statements.push(
+      `${request.certifiedCity} and a ${label(request.propertyObjective)} objective provide an initial search frame to test, not a location or property recommendation.`,
+    );
+  else if (request.certifiedCity)
+    statements.push(
+      `${request.certifiedCity} is an initial City frame to test through neutral Place Preparation context, not a location recommendation.`,
+    );
+  else if (request.propertyObjective)
+    statements.push(
+      `The ${label(request.propertyObjective)} objective frames the first property questions without selecting a specific property.`,
+    );
+  if (request.priorities.includes("SEARCH_STRATEGY"))
+    statements.push(
+      "Turn the initial search frame into explicit search breadth and review rhythm before relying on inventory impressions.",
+    );
+  if (request.priorities.includes("PROFESSIONAL_DUE_DILIGENCE"))
+    statements.push(
+      "Surface unresolved professional questions early so verification can shape readiness before active search.",
+    );
+
+  return statements.slice(0, 5).join(" ");
+}
+
+function buyerInterpretationChanges(
+  packet: AgentBuyerPreparationPacket,
+  selectedTiming: (typeof AGENT_BUYER_TIMING_OPTIONS)[number] | null,
+): readonly AgentBriefingStatement[] {
+  const { request } = packet;
+  const changes: AgentBriefingStatement[] = [
+    ...packet.limitations.map((value) => ({
+      id: `buyer-limitation-${value}`,
+      contentClass: "LIMITATION" as const,
+      text: label(value),
+      traceability: trace([value], "LIMITATION_RENDER"),
+    })),
+    ...(selectedTiming
+      ? [
+          {
+            id: "buyer-timing-change",
+            contentClass: "VERIFICATION_TRIGGER" as const,
+            text: "Revisit the preparation posture if the intended purchase horizon changes.",
+            traceability: trace(["timing"], "VERIFICATION_TRIGGER_RENDER"),
+          },
+        ]
+      : []),
+    ...(request.financingStatus
+      ? [
+          {
+            id: "buyer-financing-change",
+            contentClass: "VERIFICATION_TRIGGER" as const,
+            text: "Update the working preparation assumptions if lender-confirmed financing information differs from the reported discussion context.",
+            traceability: trace(
+              ["financing-status"],
+              "VERIFICATION_TRIGGER_RENDER",
+            ),
+          },
+        ]
+      : []),
+    ...(request.certifiedCity
+      ? [
+          {
+            id: "buyer-city-change",
+            contentClass: "VERIFICATION_TRIGGER" as const,
+            text: `Reassess the initial search frame if ${request.certifiedCity} is no longer the City to discuss.`,
+            traceability: trace(["city"], "VERIFICATION_TRIGGER_RENDER"),
+          },
+        ]
+      : []),
+    ...(request.propertyObjective
+      ? [
+          {
+            id: "buyer-property-objective-change",
+            contentClass: "VERIFICATION_TRIGGER" as const,
+            text: `Reassess the initial search frame if ${label(request.propertyObjective)} is no longer the property type to discuss.`,
+            traceability: trace(
+              ["property-objective"],
+              "VERIFICATION_TRIGGER_RENDER",
+            ),
+          },
+        ]
+      : []),
+    ...(request.priorities.includes("PROFESSIONAL_DUE_DILIGENCE")
+      ? [
+          {
+            id: "buyer-professional-question-change",
+            contentClass: "VERIFICATION_TRIGGER" as const,
+            text: "Revisit active-search readiness if unresolved professional questions identify a material verification item.",
+            traceability: trace(
+              ["priorities"],
+              "VERIFICATION_TRIGGER_RENDER",
+            ),
+          },
+        ]
+      : request.priorities.includes("SEARCH_STRATEGY")
+        ? [
+            {
+              id: "buyer-priority-change",
+              contentClass: "VERIFICATION_TRIGGER" as const,
+              text: "Refine the preparation focus if the selected conversation priorities change.",
+              traceability: trace(
+                ["priorities"],
+                "VERIFICATION_TRIGGER_RENDER",
+              ),
+            },
+          ]
+        : []),
+    ...(request.marketContext === "CERTIFIED_POINT_IN_TIME"
+      ? [
+          {
+            id: "buyer-market-currentness",
+            contentClass: "VERIFICATION_TRIGGER" as const,
+            text: "Use any Market Preparation context only with its visible date, freshness, and limitations.",
+            traceability: trace(
+              ["market-context"],
+              "VERIFICATION_TRIGGER_RENDER",
+            ),
+          },
+        ]
+      : []),
+  ];
+  return changes.slice(0, 5);
+}
+
+function buyerContextualActions(
+  request: AgentBuyerPreparationRequest,
+  selectedTiming: (typeof AGENT_BUYER_TIMING_OPTIONS)[number] | null,
+): readonly AgentBriefingNextAction[] {
+  const actions: AgentBriefingNextAction[] = [
+    ...(selectedTiming
+      ? [
+          {
+            id: "buyer-action-timing",
+            category: "Agent action" as const,
+            text: selectedTiming.nextAction,
+          },
+        ]
+      : []),
+    ...(request.priorities.includes("FINANCING_READINESS")
+      ? [
+          {
+            id: "buyer-action-lender",
+            category: "Professional verification" as const,
+            text: "Separate lender-confirmed financing information from reported discussion context.",
+          },
+        ]
+      : []),
+    ...(request.certifiedCity
+      ? [
+          {
+            id: "buyer-action-place",
+            category: "Future ATLAS action" as const,
+            text: `Review ${request.certifiedCity} in Place Preparation.`,
+            href: "/agent/prepare/place" as const,
+          },
+        ]
+      : []),
+    ...(request.propertyObjective
+      ? [
+          {
+            id: "buyer-action-property",
+            category: "Future ATLAS action" as const,
+            text: "Open Property Preparation when a specific property is in view.",
+            href: "/agent/prepare/property" as const,
+          },
+        ]
+      : []),
+    ...(request.priorities.includes("MARKET_CONTEXT")
+      ? [
+          {
+            id: "buyer-action-market",
+            category: "Future ATLAS action" as const,
+            text: "Open Market Preparation to review dated market context before relying on it.",
+            href: "/agent/prepare/market" as const,
+          },
+        ]
+      : []),
+  ];
+  return actions.slice(0, 5);
+}
+
 export function buildAgentBuyerPreparationPacket(
   request: AgentBuyerPreparationRequest,
 ): AgentBuyerPreparationPacket {
@@ -352,23 +552,22 @@ export function composeAgentBuyerPreparationBriefing(
       triggerEvidenceKeys: ['priorities', priority],
     })),
   ];
-  const context = request.financingStatus
-    ? ` Financing status is recorded only as Agent-entered reported context: ${label(request.financingStatus)}.`
-    : "";
-  const optionalContext = [
-    request.certifiedCity ? `City context is limited to ${request.certifiedCity} orientation.` : null,
-    request.propertyObjective ? `Property objective is ${label(request.propertyObjective)}.` : null,
-    selectedTiming ? `Timing is ${selectedTiming.label}.` : null,
-  ].filter((value): value is string => Boolean(value)).join(' ');
   return composeAgentBriefing({
     surface: "BUYER",
     subject: "Buyer consultation preparation",
     executiveBriefing: {
       id: "buyer-executive",
       contentClass: "SUPPORTED_SYNTHESIS",
-      text: `Prepare a ${label(request.stage)} buyer consultation around ${priorities}.${context} ${optionalContext} ${selectedTiming?.briefingFocus ?? ""} Use the briefing to clarify lawful priorities, process questions, and verification needs without making a financing, legal, representation, or suitability conclusion.`,
+      text: `${buyerExecutiveSynthesis(request, selectedTiming)} Use the briefing to clarify lawful priorities, process questions, and verification needs without making a financing, legal, representation, or suitability conclusion.`,
       traceability: trace(
-        ["stage", "priorities", "financing-status"],
+        [
+          "stage",
+          "priorities",
+          ...(selectedTiming ? ["timing"] : []),
+          ...(request.financingStatus ? ["financing-status"] : []),
+          ...(request.certifiedCity ? ["city"] : []),
+          ...(request.propertyObjective ? ["property-objective"] : []),
+        ],
         "FACT_AND_CONTEXT_SYNTHESIS",
       ),
     },
@@ -382,19 +581,6 @@ export function composeAgentBuyerPreparationBriefing(
           "GOVERNED_CONTEXT_RENDER",
         ),
       },
-      ...(selectedTiming
-        ? [
-            {
-              id: "buyer-timing-focus",
-              contentClass: "GOVERNED_EDITORIAL_CONTEXT" as const,
-              text: selectedTiming.briefingFocus,
-              traceability: trace(
-                ["timing", request.timing as string],
-                "GOVERNED_CONTEXT_RENDER",
-              ),
-            },
-          ]
-        : []),
     ],
     whyItMatters: [
       {
@@ -438,57 +624,14 @@ export function composeAgentBuyerPreparationBriefing(
         traceability: trace(['financing-status'], 'DIRECT_RENDER'),
       }] : []),
     ],
-    whatCouldChangeInterpretation: [
-      ...packet.limitations.map((value) => ({
-        id: `buyer-limitation-${value}`,
-        contentClass: "LIMITATION" as const,
-        text: label(value),
-        traceability: trace([value], "LIMITATION_RENDER"),
-      })),
-      ...(request.marketContext === "CERTIFIED_POINT_IN_TIME"
-        ? [
-            {
-              id: "buyer-market-currentness",
-              contentClass: "VERIFICATION_TRIGGER" as const,
-              text: "Use any Market Preparation context only with its visible date, freshness, and limitations.",
-              traceability: trace(
-                ["market-context"],
-                "VERIFICATION_TRIGGER_RENDER",
-              ),
-            },
-          ]
-        : []),
-    ],
+    whatCouldChangeInterpretation: buyerInterpretationChanges(
+      packet,
+      selectedTiming,
+    ),
     questionsWorthAsking,
-    nextActions: [
-      { id: 'buyer-action-clarify', category: 'Agent action' as const, text: 'Prepare the selected priorities as a concise conversation outline.' },
-      ...(selectedTiming ? [{ id: 'buyer-action-timing', category: 'Agent action' as const, text: selectedTiming.nextAction }] : []),
-      ...(request.financingStatus ? [] : [{ id: 'buyer-action-financing', category: 'Client discussion item' as const, text: 'Clarify whether financing has been discussed before treating budget or payment assumptions as settled.' }]),
-      ...(request.priorities.includes('FINANCING_READINESS') ? [{ id: 'buyer-action-lender', category: 'Professional verification' as const, text: 'Separate lender-confirmed financing information from reported discussion context.' }] : []),
-      ...(request.priorities.includes('MARKET_CONTEXT') ? [{ id: 'buyer-action-market', category: 'Future ATLAS action' as const, text: 'Open Market Preparation only when current market context would help the conversation.' }] : []),
-      ...(request.certifiedCity ? [{ id: 'buyer-action-place', category: 'Future ATLAS action' as const, text: 'Use Place Preparation to review the selected City context and its limitations.' }] : []),
-    ].slice(0, 5),
+    nextActions: buyerContextualActions(request, selectedTiming),
     reviewSurfaces: [
       { id: "buyer-guidance", label: "Buyer guidance", href: "/buy" },
-      ...(request.priorities.includes('MARKET_CONTEXT') ? [{ id: 'market-preparation', label: 'Market Preparation', href: '/agent/prepare/market' }] : []),
-      ...(request.certifiedCity
-        ? [
-            {
-              id: "place-preparation",
-              label: "Place Preparation",
-              href: "/agent/prepare/place",
-            },
-          ]
-        : []),
-      ...(request.supportedPropertyContext || request.propertyObjective
-        ? [
-            {
-              id: "property-preparation",
-              label: "Property Preparation",
-              href: "/agent/prepare/property",
-            },
-          ]
-        : []),
     ],
     sourcesFreshnessLimitations: [
       {

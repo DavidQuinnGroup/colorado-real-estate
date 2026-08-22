@@ -30,10 +30,18 @@ export type AgentBriefingStatement = Readonly<{
 
 export type AgentBriefingEvidence = AgentBriefingStatement & Readonly<{ label: string; value: string }>;
 export type AgentBriefingQuestion = Readonly<{ id: string; text: string; triggerEvidenceKeys: readonly string[] }>;
+export const AGENT_BRIEFING_CONTEXTUAL_CAPABILITY_HREFS = [
+  '/agent/prepare/market',
+  '/agent/prepare/place',
+  '/agent/prepare/property',
+] as const;
+export type AgentBriefingContextualCapabilityHref =
+  (typeof AGENT_BRIEFING_CONTEXTUAL_CAPABILITY_HREFS)[number];
 export type AgentBriefingNextAction = Readonly<{
   id: string;
   category: 'Agent action' | 'Client discussion item' | 'Professional verification' | 'Future ATLAS action';
   text: string;
+  href?: AgentBriefingContextualCapabilityHref;
 }>;
 export type AgentBriefingReviewSurface = Readonly<{ id: string; label: string; href: string }>;
 export type AgentBriefingProfessionalCheckpoint = Readonly<{ id: string; role: string; question: string; traceability: AgentBriefingTraceability }>;
@@ -80,6 +88,12 @@ function unique(values: readonly string[]) {
   return [...new Set(values.filter(Boolean))];
 }
 
+export function hasMaterialBriefingSection(
+  items: readonly Readonly<{ text: string }>[] | undefined,
+) {
+  return Boolean(items?.some((item) => item.text.trim()));
+}
+
 function validateStatement(statement: AgentBriefingStatement, location: string) {
   if (!statement.id || !statement.text.trim()) throw new Error(`${location} requires a stable id and visible text.`);
   if (!statement.traceability.sourceReferences.length || !statement.traceability.evidenceKeys.length) throw new Error(`${location} requires source and evidence traceability.`);
@@ -98,6 +112,11 @@ function validateNextActions(actions: readonly AgentBriefingNextAction[] | undef
   if (actions.length > 5) throw new Error('Next actions must be bounded to five useful items.');
   for (const action of actions) {
     if (!action.id || !action.text.trim() || !action.category) throw new Error('Next actions require stable, visible, categorized content.');
+    if (
+      action.href &&
+      !AGENT_BRIEFING_CONTEXTUAL_CAPABILITY_HREFS.includes(action.href)
+    )
+      throw new Error('Contextual actions require an exact authorized capability route.');
   }
 }
 

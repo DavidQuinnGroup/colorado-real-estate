@@ -56,6 +56,20 @@ moving from Buyer Preparation to Property Preparation, opening a dedicated
 Market product, or entering a distinct administrative capability. This
 principle does not require a broad retrofit of existing products.
 
+## Contextual Capability Action Principle
+
+When ATLAS identifies a useful next action that maps directly to an existing
+authorized ATLAS capability, provide that contextual action at the decision
+moment. The action should use the exact existing capability route, preserve
+the authorized Agent session boundary, and avoid silently transferring inputs
+or hidden context unless a separate certified ephemeral-transfer mechanism
+exists.
+
+Contextual actions are follow-through, not a recommendation or permission to
+expand a capability. Do not expose an action for an unavailable, unauthorized,
+or unsupported workflow. Avoid repeating the same contextual action elsewhere
+on the page when the direct action already provides the needed continuation.
+
 ## Future Visual Direction
 
 The future visual direction is:
@@ -85,6 +99,8 @@ reconciliation.
    unclear ownership, or unresolved governance.
 8. Preserve same-page decision continuity for progressive tasks unless a
    distinct canonical workflow or object requires a route transition.
+9. Use exact, authorized contextual capability actions when they provide the
+   clearest next step without unsupported context transfer.
 
 ## Non-Authorization Boundary
 
