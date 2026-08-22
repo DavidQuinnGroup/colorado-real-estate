@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { headers } from 'next/headers';
 import './globals.css';
 import ApplicationShell from '@/components/ApplicationShell';
 import { Lexend } from 'next/font/google';
@@ -25,13 +26,15 @@ export const metadata = {
   icons: {
     icon: '/favicon.svg',
   },
+  robots: { index: false, follow: false },
 };
 
-export default function RootLayout({ children }: RootLayoutProps) {
+export default async function RootLayout({ children }: RootLayoutProps) {
+  const privateGate = (await headers()).get('x-project-atlas-private-gate') === 'true';
   return (
     <html lang="en" className={`${lexend.variable} h-full w-full overflow-x-hidden bg-[#050505]`}>
       <head>
-        <script
+        {!privateGate ? <script
           type="application/ld+json"
           data-testid="reie-real-estate-agent-schema"
           data-agent-schema-type="RealEstateAgent"
@@ -42,10 +45,10 @@ export default function RootLayout({ children }: RootLayoutProps) {
           data-agent-schema-has-property-search="true"
           data-agent-schema-has-reie-service="true"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(realEstateAgentSchema) }}
-        />
+        /> : null}
       </head>
       <body className="flex min-h-full w-full max-w-full flex-col overflow-x-hidden font-sans antialiased">
-        <ApplicationShell>{children}</ApplicationShell>
+        {privateGate ? children : <ApplicationShell>{children}</ApplicationShell>}
       </body>
     </html>
   );

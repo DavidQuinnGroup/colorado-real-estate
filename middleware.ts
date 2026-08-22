@@ -7,27 +7,72 @@ import {
   buildAdminUnauthorizedResponse,
   withTrustedAdminHeaders,
 } from "@/lib/admin/adminAuth";
+import { PRIVATE_SITE_ACCESS_COOKIE, getPrivateSiteAccessConfiguration, sanitizePrivateAccessReturnPath, validatePrivateSiteAccessSessionValue } from '@/lib/privateSiteAccess';
+
+function withPrivateResponseHeaders(response: NextResponse) {
+  response.headers.set('Cache-Control', 'private, no-store');
+  response.headers.set('X-Robots-Tag', 'noindex, nofollow');
+  response.headers.set('x-middleware-cache', 'no-cache');
+  return response;
+}
+
+function isPrivateAccessAllowlist(pathname: string) {
+  return pathname === '/private-access' || pathname.startsWith('/private-access/') || pathname === '/robots.txt' || pathname === '/favicon.svg';
+}
+
+function privateAccessPageResponse(request: NextRequest) {
+  const headers = new Headers(request.headers);
+  headers.set('x-project-atlas-private-gate', 'true');
+  return withPrivateResponseHeaders(NextResponse.next({ request: { headers } }));
+}
+
+function privateAccessGateResponse(request: NextRequest, unavailable = false) {
+  const url = new URL('/private-access', request.nextUrl.origin);
+  url.searchParams.set('next', sanitizePrivateAccessReturnPath(`${request.nextUrl.pathname}${request.nextUrl.search}`));
+  if (unavailable) url.searchParams.set('unavailable', '1');
+  const headers = new Headers(request.headers);
+  headers.set('x-project-atlas-private-gate', 'true');
+  return withPrivateResponseHeaders(NextResponse.rewrite(url, { request: { headers } }));
+}
 
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
+  const privateConfiguration = getPrivateSiteAccessConfiguration();
+  if (isPrivateAccessAllowlist(pathname)) return pathname.startsWith('/private-access') ? privateAccessPageResponse(request) : withPrivateResponseHeaders(NextResponse.next());
+  if (privateConfiguration.enabled) {
+    if (privateConfiguration.configurationState !== 'ENABLED') {
+      if (pathname.startsWith('/api/')) return withPrivateResponseHeaders(NextResponse.json({ success: false, error: 'Private development access is unavailable.' }, { status: 503 }));
+      return privateAccessGateResponse(request, true);
+    }
+    const authenticated = await validatePrivateSiteAccessSessionValue(request.cookies.get(PRIVATE_SITE_ACCESS_COOKIE)?.value, privateConfiguration);
+    if (!authenticated) {
+      if (pathname.startsWith('/api/')) return withPrivateResponseHeaders(NextResponse.json({ success: false, error: 'Private access required.' }, { status: 401 }));
+      return privateAccessGateResponse(request);
+    }
+  }
   const isAgentPreparationRoute = pathname === "/agent/prepare/market" || pathname === "/agent/prepare/property" || pathname === "/agent/prepare/place" || pathname === "/agent/prepare/buyer" || pathname === "/agent/prepare/seller" || pathname === "/agent/prepare/listing";
+  const isAdminProtectedRoute = pathname.startsWith('/admin') || pathname.startsWith('/api/admin/');
+
+  if (!isAgentPreparationRoute && !isAdminProtectedRoute) {
+    return privateConfiguration.enabled ? withPrivateResponseHeaders(NextResponse.next()) : NextResponse.next();
+  }
 
   if (pathname === "/admin/login" || pathname === "/admin/logout" || pathname === "/agent/login" || pathname === "/agent/logout") {
-    return NextResponse.next();
+    return privateConfiguration.enabled ? withPrivateResponseHeaders(NextResponse.next()) : NextResponse.next();
   }
 
   const result = await authorizeAdminRequest(request);
 
   if (!result.authenticated) {
     if (pathname.startsWith("/admin")) {
-      return buildAdminLoginRedirect(request);
+      return privateConfiguration.enabled ? withPrivateResponseHeaders(buildAdminLoginRedirect(request)) : buildAdminLoginRedirect(request);
     }
 
     if (isAgentPreparationRoute) {
-      return buildAgentLoginRedirect(request);
+      return privateConfiguration.enabled ? withPrivateResponseHeaders(buildAgentLoginRedirect(request)) : buildAgentLoginRedirect(request);
     }
 
-    return buildAdminUnauthorizedResponse();
+    return privateConfiguration.enabled ? withPrivateResponseHeaders(buildAdminUnauthorizedResponse()) : buildAdminUnauthorizedResponse();
   }
 
   const response = NextResponse.next({
@@ -41,9 +86,9 @@ export async function middleware(request: NextRequest) {
     response.headers.set('x-middleware-cache', 'no-cache');
   }
 
-  return response;
+  return privateConfiguration.enabled ? withPrivateResponseHeaders(response) : response;
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/api/admin/:path*", "/agent/prepare/market", "/agent/prepare/property", "/agent/prepare/place", "/agent/prepare/buyer", "/agent/prepare/seller", "/agent/prepare/listing"],
+  matcher: ['/((?!_next/).*)', "/admin/:path*", "/api/admin/:path*", "/agent/prepare/market", "/agent/prepare/property", "/agent/prepare/place", "/agent/prepare/buyer", "/agent/prepare/seller", "/agent/prepare/listing"],
 };
