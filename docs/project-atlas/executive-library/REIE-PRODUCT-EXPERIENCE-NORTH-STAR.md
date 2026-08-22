@@ -33,6 +33,29 @@ reconciliation precede any shell redesign.
   performance.
 - Deep capability without exposing architectural complexity.
 
+## Same-Page Decision Continuity Principle
+
+When a user is making selections, configuring criteria, answering questions,
+applying filters, or progressively building context for one task, the resulting
+intelligence should normally appear on that same page. The inputs remain
+visible and editable so the user can see what produced the output, make an
+adjustment, and update the result without losing orientation.
+
+The preferred interaction is:
+
+`CHOOSE -> SEE -> UNDERSTAND -> ADJUST -> SEE THE EFFECT`
+
+This is an explainability standard, not merely a navigation preference. The
+relationship between an explicit input and ATLAS output should remain visually
+understandable wherever the task is progressive and the output can be updated
+in place.
+
+A route transition remains appropriate when the user intentionally begins a
+different canonical task or object, such as opening a specific Property,
+moving from Buyer Preparation to Property Preparation, opening a dedicated
+Market product, or entering a distinct administrative capability. This
+principle does not require a broad retrofit of existing products.
+
 ## Future Visual Direction
 
 The future visual direction is:
@@ -60,6 +83,8 @@ reconciliation.
    part of product quality rather than finishing work.
 7. Do not use visual polish to conceal incomplete functionality, weak evidence,
    unclear ownership, or unresolved governance.
+8. Preserve same-page decision continuity for progressive tasks unless a
+   distinct canonical workflow or object requires a route transition.
 
 ## Non-Authorization Boundary
 

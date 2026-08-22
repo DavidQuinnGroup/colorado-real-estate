@@ -42,12 +42,67 @@ const AGENT_BUYER_PROPERTY_OBJECTIVES = [
   "LAND",
   "UNSPECIFIED",
 ] as const;
-const AGENT_BUYER_TIMING_VALUES = [
-  "EXPLORING",
-  "NEAR_TERM",
-  "FLEXIBLE",
-  "UNKNOWN",
+export const AGENT_BUYER_TIMING_OPTIONS = [
+  {
+    value: "EXPLORING",
+    label: "Just exploring",
+    description: "Curious about the market; no move planned yet.",
+    briefingFocus:
+      "Keep the conversation focused on discovery and education rather than an assumed purchase timetable.",
+    nextAction:
+      "Keep the first conversation educational and clarify what would make a future move worth planning.",
+  },
+  {
+    value: "WITHIN_3_MONTHS",
+    label: "Within 3 months",
+    description: "Preparing to buy relatively soon.",
+    briefingFocus:
+      "Focus on readiness and the unresolved preparation items that should be clarified before a near-term search.",
+    nextAction:
+      "Identify readiness questions and professional verification items before beginning a near-term search.",
+  },
+  {
+    value: "THREE_TO_SIX_MONTHS",
+    label: "3-6 months",
+    description: "Planning for an upcoming purchase.",
+    briefingFocus:
+      "Focus on planning checkpoints and steady readiness progression for an upcoming purchase.",
+    nextAction:
+      "Set planning checkpoints and revisit readiness as the intended purchase window approaches.",
+  },
+  {
+    value: "SIX_TO_TWELVE_MONTHS",
+    label: "6-12 months",
+    description: "Longer-range purchase planning.",
+    briefingFocus:
+      "Focus on longer-range preparation while keeping future timing open to explicit updates.",
+    nextAction:
+      "Build a longer-range preparation timeline and revisit the stated timing as facts change.",
+  },
+  {
+    value: "MORE_THAN_TWELVE_MONTHS",
+    label: "More than 12 months",
+    description: "Early planning stage.",
+    briefingFocus:
+      "Keep the conversation in early planning and education without implying immediate search readiness.",
+    nextAction:
+      "Keep early planning educational and define the future decision milestones worth revisiting.",
+  },
+  {
+    value: "TIMING_NOT_DECIDED",
+    label: "Timing not decided yet",
+    description: "Need to work through timing.",
+    briefingFocus:
+      "Treat timing clarification itself as a useful consultation objective rather than inferring urgency.",
+    nextAction:
+      "Make timing clarification an explicit consultation objective before establishing urgency or a search schedule.",
+  },
 ] as const;
+export type AgentBuyerTiming =
+  (typeof AGENT_BUYER_TIMING_OPTIONS)[number]["value"];
+const AGENT_BUYER_TIMING_VALUES = AGENT_BUYER_TIMING_OPTIONS.map(
+  (option) => option.value,
+) as readonly AgentBuyerTiming[];
 const AGENT_BUYER_MARKET_CONTEXTS = [
   "NONE",
   "CERTIFIED_POINT_IN_TIME",
@@ -98,7 +153,7 @@ export type AgentBuyerPreparationRequest = Readonly<{
     | "LAND"
     | "UNSPECIFIED"
     | null;
-  timing: "EXPLORING" | "NEAR_TERM" | "FLEXIBLE" | "UNKNOWN" | null;
+  timing: AgentBuyerTiming | null;
   financingStatus: AgentBuyerFinancingStatus | null;
   marketContext: "NONE" | "CERTIFIED_POINT_IN_TIME" | "STALE_OR_UNKNOWN";
   supportedPropertyContext: boolean;
@@ -158,6 +213,14 @@ function trace(
 }
 function label(value: string) {
   return value.toLowerCase().replaceAll("_", " ");
+}
+
+function timingOption(timing: AgentBuyerTiming) {
+  const option = AGENT_BUYER_TIMING_OPTIONS.find(
+    (candidate) => candidate.value === timing,
+  );
+  if (!option) throw new Error(`Unsupported Buyer timing: ${timing}`);
+  return option;
 }
 
 function priorityQuestion(priority: AgentBuyerDiscussionPriority) {
@@ -273,6 +336,7 @@ export function composeAgentBuyerPreparationBriefing(
 ): AgentBriefingComposition | null {
   if (packet.admission !== "ADMITTED") return null;
   const { request } = packet;
+  const selectedTiming = request.timing ? timingOption(request.timing) : null;
   const priorities = request.priorities.map(label).join(", ");
   const questionsWorthAsking = [
     {
@@ -294,7 +358,7 @@ export function composeAgentBuyerPreparationBriefing(
   const optionalContext = [
     request.certifiedCity ? `City context is limited to ${request.certifiedCity} orientation.` : null,
     request.propertyObjective ? `Property objective is ${label(request.propertyObjective)}.` : null,
-    request.timing ? `Timing is ${label(request.timing)}.` : null,
+    selectedTiming ? `Timing is ${selectedTiming.label}.` : null,
   ].filter((value): value is string => Boolean(value)).join(' ');
   return composeAgentBriefing({
     surface: "BUYER",
@@ -302,7 +366,7 @@ export function composeAgentBuyerPreparationBriefing(
     executiveBriefing: {
       id: "buyer-executive",
       contentClass: "SUPPORTED_SYNTHESIS",
-      text: `Prepare a ${label(request.stage)} buyer consultation around ${priorities}.${context} ${optionalContext} Use the briefing to clarify lawful priorities, process questions, and verification needs without making a financing, legal, representation, or suitability conclusion.`,
+      text: `Prepare a ${label(request.stage)} buyer consultation around ${priorities}.${context} ${optionalContext} ${selectedTiming?.briefingFocus ?? ""} Use the briefing to clarify lawful priorities, process questions, and verification needs without making a financing, legal, representation, or suitability conclusion.`,
       traceability: trace(
         ["stage", "priorities", "financing-status"],
         "FACT_AND_CONTEXT_SYNTHESIS",
@@ -318,6 +382,19 @@ export function composeAgentBuyerPreparationBriefing(
           "GOVERNED_CONTEXT_RENDER",
         ),
       },
+      ...(selectedTiming
+        ? [
+            {
+              id: "buyer-timing-focus",
+              contentClass: "GOVERNED_EDITORIAL_CONTEXT" as const,
+              text: selectedTiming.briefingFocus,
+              traceability: trace(
+                ["timing", request.timing as string],
+                "GOVERNED_CONTEXT_RENDER",
+              ),
+            },
+          ]
+        : []),
     ],
     whyItMatters: [
       {
@@ -352,8 +429,8 @@ export function composeAgentBuyerPreparationBriefing(
         id: 'buyer-property-objective', label: 'Property objective', value: label(request.propertyObjective), contentClass: 'DIRECT_FACT' as const, text: label(request.propertyObjective),
         traceability: trace(['property-objective'], 'DIRECT_RENDER'),
       }] : []),
-      ...(request.timing ? [{
-        id: 'buyer-timing', label: 'Timing', value: label(request.timing), contentClass: 'DIRECT_FACT' as const, text: label(request.timing),
+      ...(selectedTiming ? [{
+        id: 'buyer-timing', label: 'Timing', value: selectedTiming.label, contentClass: 'DIRECT_FACT' as const, text: selectedTiming.label,
         traceability: trace(['timing'], 'DIRECT_RENDER'),
       }] : []),
       ...(request.financingStatus ? [{
@@ -385,6 +462,7 @@ export function composeAgentBuyerPreparationBriefing(
     questionsWorthAsking,
     nextActions: [
       { id: 'buyer-action-clarify', category: 'Agent action' as const, text: 'Prepare the selected priorities as a concise conversation outline.' },
+      ...(selectedTiming ? [{ id: 'buyer-action-timing', category: 'Agent action' as const, text: selectedTiming.nextAction }] : []),
       ...(request.financingStatus ? [] : [{ id: 'buyer-action-financing', category: 'Client discussion item' as const, text: 'Clarify whether financing has been discussed before treating budget or payment assumptions as settled.' }]),
       ...(request.priorities.includes('FINANCING_READINESS') ? [{ id: 'buyer-action-lender', category: 'Professional verification' as const, text: 'Separate lender-confirmed financing information from reported discussion context.' }] : []),
       ...(request.priorities.includes('MARKET_CONTEXT') ? [{ id: 'buyer-action-market', category: 'Future ATLAS action' as const, text: 'Open Market Preparation only when current market context would help the conversation.' }] : []),

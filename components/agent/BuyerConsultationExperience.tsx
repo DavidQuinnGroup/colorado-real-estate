@@ -20,33 +20,35 @@ import {
   AGENT_BUYER_FINANCING_STATUSES,
   AGENT_BUYER_PREPARATION_CAPABILITY,
   AGENT_BUYER_PREPARATION_ROUTE,
+  AGENT_BUYER_TIMING_OPTIONS,
   type AgentBuyerDiscussionPriority,
   type AgentBuyerFinancingStatus,
   type AgentBuyerPreparationRequest,
+  type AgentBuyerTiming,
 } from "@/lib/agent-advisory-workbench/agentBuyerPreparationAdmission";
 import { prepareAgentBuyerConsultation } from "@/lib/agent-advisory-workbench/agentBuyerConsultationPreparation";
 
 const PRIORITY_LABELS: Record<AgentBuyerDiscussionPriority, string> = {
-  BUYING_PROCESS: "Buying process",
-  TIMING: "Timing",
-  SEARCH_GEOGRAPHY: "Search geography",
-  PROPERTY_NEEDS: "Property needs",
-  FINANCING_READINESS: "Financing readiness",
-  MARKET_CONTEXT: "Market context",
-  PLACE_CONTEXT: "Place context",
-  SEARCH_STRATEGY: "Search strategy",
-  TOURING_PROCESS: "Touring process",
-  DECISION_PROCESS: "Decision process",
-  PROFESSIONAL_DUE_DILIGENCE: "Due diligence",
+  BUYING_PROCESS: "How buying works",
+  TIMING: "When they may want to buy",
+  SEARCH_GEOGRAPHY: "Location criteria",
+  PROPERTY_NEEDS: "Property needs and trade-offs",
+  FINANCING_READINESS: "Financing discussion",
+  MARKET_CONTEXT: "Current market questions",
+  PLACE_CONTEXT: "City and place context",
+  SEARCH_STRATEGY: "Search approach",
+  TOURING_PROCESS: "Touring approach",
+  DECISION_PROCESS: "Decision participants and process",
+  PROFESSIONAL_DUE_DILIGENCE: "Professional questions to clarify",
 };
 
 const FINANCING_LABELS: Record<AgentBuyerFinancingStatus, string> = {
-  NOT_DISCUSSED: "Not yet discussed",
-  CASH_REPORTED: "Cash reported",
-  FINANCING_EXPECTED: "Financing expected",
-  PREAPPROVAL_REPORTED: "Preapproval reported",
-  LENDER_CONVERSATION_REPORTED: "Lender conversation reported",
-  UNKNOWN_OR_OTHER: "Unknown or other",
+  NOT_DISCUSSED: "Not discussed yet",
+  CASH_REPORTED: "They said they plan to pay cash",
+  FINANCING_EXPECTED: "They expect to use financing",
+  PREAPPROVAL_REPORTED: "They said they are preapproved",
+  LENDER_CONVERSATION_REPORTED: "They have spoken with a lender",
+  UNKNOWN_OR_OTHER: "Not known or another situation",
 };
 
 const PROPERTY_OBJECTIVES = [
@@ -54,20 +56,14 @@ const PROPERTY_OBJECTIVES = [
   ["CONDO_TOWNHOME", "Condo or townhome"],
   ["MULTI_FAMILY", "Multi-family"],
   ["LAND", "Land"],
-  ["UNSPECIFIED", "Still open"],
-] as const;
-const TIMING_OPTIONS = [
-  ["EXPLORING", "Exploring"],
-  ["NEAR_TERM", "Near term"],
-  ["FLEXIBLE", "Flexible"],
-  ["UNKNOWN", "Still unknown"],
+  ["UNSPECIFIED", "Not decided yet"],
 ] as const;
 
 type Stage = AgentBuyerPreparationRequest["stage"];
 type PropertyObjective = NonNullable<
   AgentBuyerPreparationRequest["propertyObjective"]
 >;
-type Timing = NonNullable<AgentBuyerPreparationRequest["timing"]>;
+type Timing = AgentBuyerTiming;
 
 function SelectionStatus({
   message,
@@ -109,6 +105,7 @@ export default function BuyerConsultationExperience() {
     useState<AgentBuyerFinancingStatus | null>(null);
   const [preparedRequest, setPreparedRequest] =
     useState<AgentBuyerPreparationRequest | null>(null);
+  const [briefingNeedsUpdate, setBriefingNeedsUpdate] = useState(false);
   const [formMessage, setFormMessage] = useState(
     "Choose a stage and two to four discussion priorities to prepare the briefing.",
   );
@@ -121,13 +118,20 @@ export default function BuyerConsultationExperience() {
   const canPrepare = Boolean(
     stage && priorities.length >= 2 && priorities.length <= 4,
   );
+  const selectedTiming = timing
+    ? AGENT_BUYER_TIMING_OPTIONS.find((option) => option.value === timing)
+    : null;
 
-  function clearBriefing() {
-    setPreparedRequest(null);
+  function markBriefingForUpdate() {
+    if (!preparedRequest) return;
+    setBriefingNeedsUpdate(true);
+    setFormMessage(
+      "Your selections changed. The visible briefing reflects the previous choices until you update it.",
+    );
   }
 
   function togglePriority(priority: AgentBuyerDiscussionPriority) {
-    clearBriefing();
+    markBriefingForUpdate();
     setPriorities((current) => {
       if (current.includes(priority))
         return current.filter((value) => value !== priority);
@@ -144,7 +148,7 @@ export default function BuyerConsultationExperience() {
   function prepareBriefing() {
     if (!stage) {
       setFormMessage(
-        "Choose Discovery or Readiness before preparing the briefing.",
+        "Choose where this buyer conversation begins before preparing the briefing.",
       );
       return;
     }
@@ -154,6 +158,7 @@ export default function BuyerConsultationExperience() {
       );
       return;
     }
+    const updating = Boolean(preparedRequest);
     setPreparedRequest({
       actorIdentityType: "HUMAN_AGENT",
       actorRole: "AGENT",
@@ -181,8 +186,11 @@ export default function BuyerConsultationExperience() {
       legalConclusionRequested: false,
       representationRequirementClaimRequested: false,
     });
+    setBriefingNeedsUpdate(false);
     setFormMessage(
-      "Your session-only consultation briefing is ready for review.",
+      updating
+        ? "Your session-only consultation briefing has been updated for the current selections."
+        : "Your session-only consultation briefing is ready for review.",
     );
   }
 
@@ -197,6 +205,7 @@ export default function BuyerConsultationExperience() {
       data-recommendation="false"
       data-suitability="false"
       data-fair-housing-inference="false"
+      data-same-page-decision-continuity="true"
     >
       <div className="mx-auto max-w-6xl">
         <header className="flex flex-col gap-6 border-b border-white/10 pb-8 sm:flex-row sm:items-end sm:justify-between">
@@ -232,23 +241,23 @@ export default function BuyerConsultationExperience() {
 
             <fieldset className="mt-6">
               <legend className="text-sm font-semibold text-white">
-                1. Select a consultation stage
+                1. Choose where this buyer conversation begins
               </legend>
               <p className="mt-1 text-sm leading-6 text-slate-400">
-                Choose the stage that best fits this conversation.
+                Choose the description that best matches the conversation you are preparing.
               </p>
               <div className="mt-3 grid gap-3 sm:grid-cols-2">
                 {(
                   [
                     [
                       "DISCOVERY",
-                      "Discovery",
-                      "Early conversation about goals, timing, search direction, and process.",
+                      "Starting the buyer conversation",
+                      "Clarify goals, timing, search direction, and how the buying process works.",
                     ],
                     [
                       "READINESS",
-                      "Readiness",
-                      "Prepare to actively search and move forward with open questions in view.",
+                      "Preparing for an active search",
+                      "Organize the open questions and verification steps before search activity begins.",
                     ],
                   ] as const
                 ).map(([value, title, description]) => (
@@ -263,7 +272,7 @@ export default function BuyerConsultationExperience() {
                       checked={stage === value}
                       onChange={() => {
                         setStage(value);
-                        clearBriefing();
+                        markBriefingForUpdate();
                       }}
                       className="sr-only"
                     />
@@ -280,11 +289,11 @@ export default function BuyerConsultationExperience() {
 
             <fieldset className="mt-7">
               <legend className="text-sm font-semibold text-white">
-                2. Select two to four discussion priorities
+                2. Choose two to four topics to cover
               </legend>
               <p className="mt-1 text-sm leading-6 text-slate-400">
-                {priorities.length} selected. Use only the priorities you want
-                to discuss directly.
+                {priorities.length} selected. Choose only the topics this
+                conversation needs to cover directly.
               </p>
               <div className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
                 {AGENT_BUYER_DISCUSSION_PRIORITIES.map((priority) => {
@@ -319,17 +328,17 @@ export default function BuyerConsultationExperience() {
                 />
                 <div>
                   <h2 className="text-sm font-semibold text-white">
-                    Optional consultation context
+                    Optional conversation context
                   </h2>
                   <p className="mt-1 text-sm leading-6 text-slate-400">
-                    These are explicit discussion prompts, not verified client
-                    information.
+                    These are explicit conversation prompts, not verified
+                    client information or a client profile.
                   </p>
                 </div>
               </div>
               <div className="mt-4 grid gap-4 sm:grid-cols-2">
                 <label className="text-sm font-medium text-slate-200">
-                  City context
+                  City to discuss
                   <select
                     value={city ?? ""}
                     onChange={(event) => {
@@ -337,11 +346,11 @@ export default function BuyerConsultationExperience() {
                         (event.target.value ||
                           null) as AgentBuyerPreparationRequest["certifiedCity"],
                       );
-                      clearBriefing();
+                      markBriefingForUpdate();
                     }}
                     className="mt-2 block min-h-11 w-full border border-white/15 bg-black/20 px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-100"
                   >
-                    <option value="">No City selected</option>
+                    <option value="">No city chosen</option>
                     {AGENT_BUYER_CERTIFIED_CITIES.map((value) => (
                       <option key={value} value={value}>
                         {value}
@@ -350,7 +359,7 @@ export default function BuyerConsultationExperience() {
                   </select>
                 </label>
                 <label className="text-sm font-medium text-slate-200">
-                  Property objective
+                  Property type to discuss
                   <select
                     value={propertyObjective ?? ""}
                     onChange={(event) => {
@@ -358,11 +367,11 @@ export default function BuyerConsultationExperience() {
                         (event.target.value ||
                           null) as PropertyObjective | null,
                       );
-                      clearBriefing();
+                      markBriefingForUpdate();
                     }}
                     className="mt-2 block min-h-11 w-full border border-white/15 bg-black/20 px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-100"
                   >
-                    <option value="">No objective selected</option>
+                    <option value="">Not discussed</option>
                     {PROPERTY_OBJECTIVES.map(([value, label]) => (
                       <option key={value} value={value}>
                         {label}
@@ -371,25 +380,29 @@ export default function BuyerConsultationExperience() {
                   </select>
                 </label>
                 <label className="text-sm font-medium text-slate-200">
-                  Timing
+                  When might they want to buy?
                   <select
                     value={timing ?? ""}
                     onChange={(event) => {
                       setTiming((event.target.value || null) as Timing | null);
-                      clearBriefing();
+                      markBriefingForUpdate();
                     }}
                     className="mt-2 block min-h-11 w-full border border-white/15 bg-black/20 px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-100"
                   >
-                    <option value="">No timing selected</option>
-                    {TIMING_OPTIONS.map(([value, label]) => (
-                      <option key={value} value={value}>
-                        {label}
+                    <option value="">Not discussed</option>
+                    {AGENT_BUYER_TIMING_OPTIONS.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
                       </option>
                     ))}
                   </select>
+                  <span className="mt-2 block text-xs font-normal leading-5 text-slate-400">
+                    {selectedTiming?.description ??
+                      "Choose a clear time horizon only when it has been discussed."}
+                  </span>
                 </label>
                 <label className="text-sm font-medium text-slate-200">
-                  Financing status
+                  What is known about financing?
                   <select
                     value={financingStatus ?? ""}
                     onChange={(event) => {
@@ -397,11 +410,11 @@ export default function BuyerConsultationExperience() {
                         (event.target.value ||
                           null) as AgentBuyerFinancingStatus | null,
                       );
-                      clearBriefing();
+                      markBriefingForUpdate();
                     }}
                     className="mt-2 block min-h-11 w-full border border-white/15 bg-black/20 px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-100"
                   >
-                    <option value="">Not entered</option>
+                    <option value="">Not discussed</option>
                     {AGENT_BUYER_FINANCING_STATUSES.map((value) => (
                       <option key={value} value={value}>
                         {FINANCING_LABELS[value]}
@@ -409,8 +422,8 @@ export default function BuyerConsultationExperience() {
                     ))}
                   </select>
                   <span className="mt-2 block text-xs font-normal leading-5 text-slate-400">
-                    Client-reported context only. Confirm financing information
-                    with a lender.
+                    Use only what was stated. Confirm financing information
+                    directly with a lender.
                   </span>
                 </label>
               </div>
@@ -430,7 +443,8 @@ export default function BuyerConsultationExperience() {
                 className="inline-flex min-h-11 items-center justify-center gap-2 bg-cyan-200 px-5 text-sm font-semibold text-slate-950 transition hover:bg-cyan-100 disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-100 focus:ring-offset-2 focus:ring-offset-[#071014]"
                 data-testid="agent-buyer-prepare-briefing"
               >
-                Prepare my briefing <ArrowRight size={16} aria-hidden="true" />
+                {preparedRequest ? "Update my briefing" : "Prepare my briefing"}{" "}
+                <ArrowRight size={16} aria-hidden="true" />
               </button>
             </div>
           </div>
@@ -466,6 +480,21 @@ export default function BuyerConsultationExperience() {
             <SelectionStatus message={experience.humanState.label} caution />
             <p className="mt-3 max-w-3xl text-sm leading-6 text-amber-50/80">
               {experience.humanState.message}
+            </p>
+          </section>
+        ) : null}
+
+        {experience?.composition && briefingNeedsUpdate ? (
+          <section
+            className="mt-8 border border-cyan-200/20 bg-cyan-100/[0.06] p-5"
+            data-testid="agent-buyer-briefing-update-state"
+            aria-live="polite"
+          >
+            <SelectionStatus message="Selections ready to update" />
+            <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-300">
+              The briefing below remains visible so you can compare it with the
+              changed selections. Select Update my briefing to regenerate it
+              without leaving this page.
             </p>
           </section>
         ) : null}
