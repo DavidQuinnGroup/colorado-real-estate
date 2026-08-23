@@ -1,4 +1,5 @@
 import { prepareMarketConversation } from './marketConversationExperience';
+import { marketMetricSemantics, type MarketMetricSemanticState } from './marketMetricSemantics';
 
 export const AGENT_MARKET_UPDATE_PREPARATION_STATUS = 'PROJECT_ATLAS_AGENT_MARKET_UPDATE_PREPARATION_ADMITTED' as const;
 export const AGENT_MARKET_UPDATE_PREPARATION_CERTIFICATION = 'PROJECT_ATLAS_AGENT_MARKET_UPDATE_PREPARATION_CERTIFIED' as const;
@@ -38,6 +39,8 @@ export type MarketUpdateObservation = Readonly<{
   atlasObservedDate: string;
   freshness: 'CURRENT' | 'STALE';
   verificationStatus: 'PROFESSIONAL_VERIFICATION_REQUIRED';
+  semanticState: MarketMetricSemanticState;
+  authoritativeDocumentationRequired: string;
   directObservation: MarketUpdateNarrativeStatement;
   plainLanguageDescription: MarketUpdateNarrativeStatement;
   semanticQualifier: MarketUpdateNarrativeStatement;
@@ -133,30 +136,31 @@ function joined(items: readonly string[]) {
 
 function metricValue(topic: MarketUpdateTopic, raw: string) {
   const number = raw.match(/\d[\d,]*/)?.[0] ?? raw;
-  if (topic === 'INVENTORY') return `${number} active listings`;
+  if (topic === 'INVENTORY') return `${number} reported inventory`;
   if (topic === 'DAYS_ON_MARKET') return `${number} days`;
   return raw.replace(/\s+median-price context$/i, '').trim();
 }
 
 function metricDefinition(topic: MarketUpdateTopic) {
+  const semantics = marketMetricSemantics(topic);
   if (topic === 'INVENTORY') return Object.freeze({
-    label: 'Active inventory',
-    description: 'Active inventory describes the homes represented as available for sale in the admitted market snapshot.',
-    qualifier: 'This single inventory figure does not show whether available choice is greater or smaller than usual; that requires an admitted prior-period or year-over-year comparison.',
-    question: 'How does current active inventory compare with the same period last year or another admitted benchmark?',
-    nextStep: 'Compare active inventory with an admitted prior-period or year-over-year benchmark before characterizing buyer choice.',
+    label: semantics.displayLabel,
+    description: 'The repository records a dated inventory value, but the admitted evidence does not establish the listing-status definition, property population, geography, snapshot timing, or exclusions needed to call it active inventory precisely.',
+    qualifier: `${semantics.limitations} Required reconciliation: ${semantics.authoritativeDocumentationRequired}`,
+    question: 'Which listing statuses, property population, geography, snapshot time, and exclusions does this inventory value represent?',
+    nextStep: 'Obtain the authoritative inventory definition and a valid comparison period before characterizing available choice.',
   });
   if (topic === 'DAYS_ON_MARKET') return Object.freeze({
-    label: 'Days on market',
-    description: 'The days-on-market measure provides marketing-time context for the admitted market snapshot.',
-    qualifier: 'The admitted evidence does not define whether this days-on-market measure is median, average, or another calculation, and it does not establish whether homes are moving faster or slower than before.',
+    label: semantics.displayLabel,
+    description: 'The repository records a dated days value, but the admitted evidence does not establish whether it is average DOM, median DOM, CDOM, ADOM, or another calculation.',
+    qualifier: `${semantics.limitations} Required reconciliation: ${semantics.authoritativeDocumentationRequired}`,
     question: 'Is the current days-on-market measure materially different from an admitted recent range, and how does the source define it?',
     nextStep: 'Confirm the source definition and compare the days-on-market measure with an admitted recent range before describing pace.',
   });
   return Object.freeze({
-    label: 'Median price',
-    description: 'The median price measure marks the middle of the admitted price distribution in this market snapshot.',
-    qualifier: 'The admitted evidence does not identify whether this measure is list price, sold price, or another price definition, and it does not establish price direction.',
+    label: semantics.displayLabel,
+    description: 'The repository records a dated price value, but the admitted evidence does not establish whether it is a median list, original-list, sold, closed-sale, asking, or another price measure.',
+    qualifier: `${semantics.limitations} Required reconciliation: ${semantics.authoritativeDocumentationRequired}`,
     question: 'Does the admitted median-price measure represent list price, sold price, or another source definition?',
     nextStep: 'Confirm the price definition and compare it with admitted prior-period evidence before discussing change.',
   });
@@ -232,6 +236,8 @@ export function prepareAgentMarketUpdate(input: MarketUpdatePreparationInput): M
       atlasObservedDate: posture.observationDate,
       freshness: posture.freshness,
       verificationStatus: 'PROFESSIONAL_VERIFICATION_REQUIRED' as const,
+      semanticState: marketMetricSemantics(topic).semanticState,
+      authoritativeDocumentationRequired: marketMetricSemantics(topic).authoritativeDocumentationRequired,
       directObservation: statement('DIRECT_OBSERVATION', `The admitted ${briefingSummary.marketLabel} snapshot records ${value.toLowerCase()} for ${metric.label.toLowerCase()}.`, evidenceIds),
       plainLanguageDescription: statement('DEFINITIONAL_EXPLANATION', metric.description, evidenceIds),
       semanticQualifier: statement('LIMITATION_VERIFICATION', metric.qualifier, evidenceIds),

@@ -13,6 +13,7 @@ import {
   type AgentBriefingComposition,
   type AgentBriefingTraceability,
 } from './agentBriefingComposition';
+import { marketMetricSemantics } from './marketMetricSemantics';
 
 export const MARKET_CONVERSATION_EXPERIENCE_STATUS = 'DQG_MASTER_APP_MARKET_CONVERSATION_EXPERIENCE_MVV' as const;
 
@@ -56,22 +57,25 @@ function composeMarketBriefing(briefing: AgentMarketHumanBriefing): AgentBriefin
   const factKeys = briefing.evidencePosture.map((item) => item.observationId);
   const observedAt = briefing.evidencePosture[0]?.observationDate || 'the recorded observation date';
   const label = briefing.briefingSummary.marketLabel;
+  const inventorySemantics = marketMetricSemantics('INVENTORY');
+  const daysOnMarketSemantics = marketMetricSemantics('DAYS_ON_MARKET');
+  const priceSemantics = marketMetricSemantics('MEDIAN_PRICE');
   return composeAgentBriefing({
     surface: 'MARKET',
     subject: label,
     executiveBriefing: {
       id: 'market-executive-briefing', contentClass: 'SUPPORTED_SYNTHESIS',
-      text: `The available ${label} snapshot records ${inventory.value}, ${medianPrice.value}, and ${daysOnMarket.value}. It is dated ${observedAt}, so it is useful for orientation and should be refreshed before a current client conversation.`,
+      text: `The available ${label} snapshot records three dated repository signals: ${inventory.value}, ${medianPrice.value}, and ${daysOnMarket.value}. Their source definitions are not admitted, so use them only to identify what must be reconciled before a current client conversation.`,
       traceability: trace(sourceReferences, factKeys, 'POINT_IN_TIME', 'FACT_AND_CONTEXT_SYNTHESIS'),
     },
-    whatMatters: [{ id: 'market-orientation', contentClass: 'LIMITATION', text: 'Use the snapshot to frame the available supply, price context, and time on market without inferring a forecast, value conclusion, or strategy.', traceability: trace(sourceReferences, ['market-orientation'], 'POINT_IN_TIME', 'LIMITATION_RENDER') }],
-    whyItMatters: [{ id: 'market-why', contentClass: 'SUPPORTED_SYNTHESIS', text: 'The three signals provide a concise starting point for a market conversation; they do not establish the current position of a specific property.', traceability: trace(sourceReferences, ['market-why'], 'POINT_IN_TIME', 'FACT_AND_CONTEXT_SYNTHESIS') }],
+    whatMatters: [{ id: 'market-orientation', contentClass: 'LIMITATION', text: 'Use the snapshot only to frame source-definition questions. It does not establish active-listing scope, marketing-time calculation, price basis, a forecast, value conclusion, or strategy.', traceability: trace(sourceReferences, ['market-orientation'], 'POINT_IN_TIME', 'LIMITATION_RENDER') }],
+    whyItMatters: [{ id: 'market-why', contentClass: 'SUPPORTED_SYNTHESIS', text: 'The three dated signals identify the minimum reconciliation work for a useful market conversation; they do not establish the current position of a specific property.', traceability: trace(sourceReferences, ['market-why'], 'POINT_IN_TIME', 'FACT_AND_CONTEXT_SYNTHESIS') }],
     keyEvidence: [
-      { id: 'market-inventory', label: inventory.label, value: display(inventory.value), contentClass: 'DIRECT_FACT', text: display(inventory.value), traceability: trace(sourceReferences, [factKeys[0]], 'POINT_IN_TIME', 'DIRECT_RENDER') },
-      { id: 'market-days-on-market', label: daysOnMarket.label, value: display(daysOnMarket.value), contentClass: 'DIRECT_FACT', text: display(daysOnMarket.value), traceability: trace(sourceReferences, [factKeys[1]], 'POINT_IN_TIME', 'DIRECT_RENDER') },
-      { id: 'market-median-price', label: medianPrice.label, value: display(medianPrice.value), contentClass: 'DIRECT_FACT', text: display(medianPrice.value), traceability: trace(sourceReferences, [factKeys[2]], 'POINT_IN_TIME', 'DIRECT_RENDER') },
+      { id: 'market-inventory', label: inventorySemantics.displayLabel, value: display(inventory.value), contentClass: 'DIRECT_FACT', text: display(inventory.value), traceability: trace(sourceReferences, [factKeys[0]], 'POINT_IN_TIME', 'DIRECT_RENDER') },
+      { id: 'market-days-on-market', label: daysOnMarketSemantics.displayLabel, value: display(daysOnMarket.value), contentClass: 'DIRECT_FACT', text: display(daysOnMarket.value), traceability: trace(sourceReferences, [factKeys[1]], 'POINT_IN_TIME', 'DIRECT_RENDER') },
+      { id: 'market-median-price', label: priceSemantics.displayLabel, value: display(medianPrice.value), contentClass: 'DIRECT_FACT', text: display(medianPrice.value), traceability: trace(sourceReferences, [factKeys[2]], 'POINT_IN_TIME', 'DIRECT_RENDER') },
     ],
-    whatCouldChangeInterpretation: [{ id: 'market-currentness', contentClass: 'VERIFICATION_TRIGGER', text: `Inventory, days on market, and median-price context may have changed since ${observedAt}.`, traceability: trace(sourceReferences, ['market-currentness'], 'POINT_IN_TIME', 'VERIFICATION_TRIGGER_RENDER') }],
+    whatCouldChangeInterpretation: [{ id: 'market-currentness', contentClass: 'VERIFICATION_TRIGGER', text: `The source definitions for inventory, days on market, and price are unresolved, and the underlying values may have changed since ${observedAt}.`, traceability: trace(sourceReferences, ['market-currentness'], 'POINT_IN_TIME', 'VERIFICATION_TRIGGER_RENDER') }],
     questionsWorthAsking: briefing.questionsToPrepare.slice(0, 3).map((text, index) => ({ id: `market-question-${index + 1}`, text, triggerEvidenceKeys: factKeys })),
     reviewSurfaces: briefing.reviewSurfaces.map((surface) => ({ id: surface, label: surface === 'MARKET' ? 'Market context' : surface === 'DECISION_GUIDES' ? 'Decision guides' : 'Sources and methodology', href: surface === 'MARKET' ? `/market/${label.toLowerCase().replaceAll(' market', '').replaceAll(' ', '-')}-co-housing-market` : surface === 'DECISION_GUIDES' ? '/market' : '/sources' })),
     sourcesFreshnessLimitations: briefing.limitations.map((text, index) => ({ id: `market-limitation-${index + 1}`, contentClass: 'LIMITATION' as const, text, traceability: trace(sourceReferences, [`market-limitation-${index + 1}`], 'POINT_IN_TIME', 'LIMITATION_RENDER') })),

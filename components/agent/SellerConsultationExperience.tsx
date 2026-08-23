@@ -4,6 +4,7 @@ import { ArrowRight, Compass, SlidersHorizontal } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { projectAtlasTitleHierarchy } from '@/components/ProjectAtlasTitleHierarchy';
 import AgentBriefingComposition from '@/components/agent/AgentBriefingComposition';
+import PropertyCriteriaProfileEditor from '@/components/agent/PropertyCriteriaProfileEditor';
 import AgentPreparationPageHeader from '@/components/agent/AgentPreparationPageHeader';
 import SellerConsultationPlaybook from '@/components/agent/SellerConsultationPlaybook';
 import {
@@ -114,6 +115,7 @@ export default function SellerConsultationExperience() {
               <Select label="Known proceeds discussion" value={proceedsDiscussion ?? ''} onChange={(value) => { setProceedsDiscussion((value || null) as AgentSellerPreparationRequest['proceedsDiscussion']); changed(); }} options={['PAYOFF_OR_LIEN_QUESTION|Payoff or lien question', 'SELLING_COST_QUESTION|Selling-cost question', 'TAX_QUESTION|Tax question', 'OTHER_REPORTED|Another reported question']} empty="Not discussed" helper="Use only what was stated. Confirm financial, title, tax, and legal questions with the appropriate professional." />
             </div>
           </div>
+          <PropertyCriteriaProfileEditor context="SELLER_PROPERTY_FACT" />
           <div className="mt-7 flex flex-col gap-3 border-t border-white/10 pt-5 sm:flex-row sm:items-center sm:justify-between"><p className="text-sm leading-6 text-slate-400" aria-live="polite">{message}</p><button type="button" onClick={prepare} disabled={!canPrepare} className="inline-flex min-h-11 items-center justify-center gap-2 bg-cyan-200 px-5 text-sm font-semibold text-slate-950 transition hover:bg-cyan-100 disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-100" data-testid="agent-seller-prepare-briefing">{preparedRequest ? 'Update my briefing' : 'Prepare my briefing'} <ArrowRight size={16} aria-hidden="true" /></button></div>
         </div>
         <aside className="border border-white/10 bg-[#0b171c] p-5" aria-label="Briefing scope"><Compass className="h-5 w-5 text-cyan-100" aria-hidden="true" /><h2 className="mt-4 text-base font-semibold text-white">A focused Seller briefing</h2><p className="mt-2 text-sm leading-6 text-slate-400">Review the selected priorities, then inspect the complete playbook and professional checkpoints when needed.</p></aside>

@@ -13,6 +13,7 @@ import { useMemo, useState } from "react";
 
 import { projectAtlasTitleHierarchy } from "@/components/ProjectAtlasTitleHierarchy";
 import AgentBriefingComposition from "@/components/agent/AgentBriefingComposition";
+import PropertyCriteriaProfileEditor from "@/components/agent/PropertyCriteriaProfileEditor";
 import BuyerConsultationPlaybook from "@/components/agent/BuyerConsultationPlaybook";
 import AgentPreparationPageHeader from "@/components/agent/AgentPreparationPageHeader";
 import {
@@ -420,6 +421,8 @@ export default function BuyerConsultationExperience() {
                 </label>
               </div>
             </div>
+
+            <PropertyCriteriaProfileEditor context="BUYER_PREFERENCE" />
 
             <div className="mt-7 flex flex-col gap-3 border-t border-white/10 pt-5 sm:flex-row sm:items-center sm:justify-between">
               <p

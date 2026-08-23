@@ -34,9 +34,9 @@ async function main() {
   assert.match(buyer.audienceContext.text, /negotiating leverage/i);
   assert.notEqual(buyer.audienceContext.text, seller.audienceContext.text, 'Audience selection must change the preparation context.');
   assert.equal(buyer.observations[0].directObservation.class, 'DIRECT_OBSERVATION');
-  assert.match(buyer.observations[0].value, /active listings/i);
+  assert.match(buyer.observations[0].value, /reported inventory/i);
   assert.equal(seller.observations.length, 1);
-  assert.match(seller.observations[0].label, /median price/i);
+  assert.match(seller.observations[0].label, /price signal \(semantics unresolved\)/i);
   assert.equal(missingTopic.state, 'NOT_READY');
   assert.equal(stale.state, 'NOT_READY');
   assert.deepEqual(buyer.boundaries, { sessionOnly: true, persistence: false, customerData: false, recipientSelection: false, communicationExecution: false, adminInheritance: false, providerActivity: false });

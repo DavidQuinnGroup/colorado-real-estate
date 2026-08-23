@@ -37,9 +37,10 @@ function main() {
 
   assert.equal(prospect.observations.length, 3);
   assert.equal(prospect.sourceFreshness.length, 3);
-  assert.match(prospect.observations[0].value, /active listings/i);
-  assert.match(homeowner.observations[0].semanticQualifier.text, /median, average, or another calculation/i);
-  assert.match(seller.observations[0].semanticQualifier.text, /list price, sold price, or another price definition/i);
+  assert.match(prospect.observations[0].value, /reported inventory/i);
+  assert.equal(prospect.observations[0].semanticState, 'METRIC_SEMANTICS_UNRESOLVED');
+  assert.match(homeowner.observations[0].semanticQualifier.text, /average DOM, median DOM, CDOM, ADOM/i);
+  assert.match(seller.observations[0].semanticQualifier.text, /median list, original-list, sold, closed-sale, asking/i);
   assert.match(prospect.evidenceSynthesis.text, /different views of the same/i);
   assert.match(prospect.whatCouldChangeInterpretation.text, /prior-period comparison/i);
   assert.match(prospect.optionalDraftLanguage?.text ?? '', /point-in-time reference/i);

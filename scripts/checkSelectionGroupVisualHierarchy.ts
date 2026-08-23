@@ -33,7 +33,7 @@ function main() {
   assert.match(buyer, /projectAtlasTitleHierarchy\.selectionSection/);
   assert.match(seller, /projectAtlasTitleHierarchy\.selectionGroup/);
   assert.match(seller, /projectAtlasTitleHierarchy\.selectionSection/);
-  assert.match(listing, /<fieldset[\s\S]*<legend className="text-sm font-semibold text-white">Preparation position/);
+  assert.match(listing, /<fieldset[\s\S]*<legend className=(?:\{projectAtlasTitleHierarchy\.selectionGroup\}|"text-sm font-semibold text-white")>Preparation position/);
   assert.match(globalStyles, /agent-listing-preparation-experience.*Listing preparation choices/);
   assert.doesNotMatch(buyer, /<legend[^>]*>\s*[12]\.\s*Choose/);
   assert.doesNotMatch(seller, /<legend[^>]*>\s*[12]\.\s*Choose/);
