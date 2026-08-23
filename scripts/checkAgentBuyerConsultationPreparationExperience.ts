@@ -300,7 +300,7 @@ assert.equal(
 );
 assert.equal(
   sanitizeAgentReturnPath("/agent/prepare/unknown"),
-  "/agent/prepare/market",
+  "/agent",
 );
 assert.ok(
   agentShell.includes('href="/agent/prepare/buyer"') &&

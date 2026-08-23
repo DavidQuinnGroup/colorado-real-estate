@@ -80,7 +80,7 @@ assert.ok(auth.includes("surface('/agent/prepare/place', 'BROWSER_ADMIN_PAGE', [
 assert.ok(!auth.includes("surface('/agent/:path*'"), 'Place preparation must not create a generic Agent grant.');
 assert.ok(middleware.includes('pathname === "/agent/prepare/place"') && middleware.includes('buildAgentLoginRedirect'), 'Unauthenticated Place access must use the Agent login flow.');
 assert.equal(sanitizeAgentReturnPath('/agent/prepare/place'), '/agent/prepare/place', 'The exact Place route must survive the Agent return-path allowlist.');
-assert.equal(sanitizeAgentReturnPath('/agent/place'), '/agent/prepare/market', 'Unknown Agent returns must fail closed to the safe fallback.');
+assert.equal(sanitizeAgentReturnPath('/agent/place'), '/agent', 'Unknown Agent returns must fail closed to the safe Workspace Home fallback.');
 assert.ok(agentShell.includes('href="/agent/prepare/place"') && agentShell.includes('Location Preparation'), 'Location Preparation must appear in the Agent shell.');
 assert.ok(agentShell.includes('href="/agent/prepare/property"') && agentShell.includes('href="/agent/prepare/market"'), 'Property and Market navigation must remain.');
 

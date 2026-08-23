@@ -73,7 +73,7 @@ assert.ok(auth.includes("surface('/api/agent/prepare/property', 'READ_ONLY_ADMIN
 assert.ok(!auth.includes("surface('/agent/:path*'"), 'Property preparation must not create a generic Agent authorization grant.');
 assert.ok(middleware.includes('pathname === "/agent/prepare/property"') && middleware.includes('buildAgentLoginRedirect'), 'Unauthenticated Property preparation must use the existing Agent login flow.');
 assert.equal(sanitizeAgentReturnPath('/agent/prepare/property'), '/agent/prepare/property', 'The exact Property route must survive the existing Agent login return-path allowlist.');
-assert.equal(sanitizeAgentReturnPath('/agent/other'), '/agent/prepare/market', 'The Agent login return-path allowlist must remain exact and use the safe Agent fallback.');
+assert.equal(sanitizeAgentReturnPath('/agent/other'), '/agent', 'The Agent login return-path allowlist must remain exact and use the safe Workspace Home fallback.');
 assert.ok(agentShell.includes('href="/agent/prepare/property"') && agentShell.includes('Property Preparation'), 'Property Preparation navigation must appear in the Agent shell.');
 assert.ok(agentShell.includes('href="/agent/prepare/market"') && agentShell.includes('Market Preparation'), 'Existing Market Preparation navigation must remain.');
 
