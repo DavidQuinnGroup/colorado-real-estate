@@ -101,13 +101,14 @@ for (const expected of [
 }
 
 assert.ok(experience.includes('candidate.property.slug === selectedSlug') && experience.includes('encodeURIComponent(selectedCandidate.property.slug)'), 'Selection must resolve only through the exact canonical Property.slug.');
-assert.ok(experience.includes("fetch('/api/agent/prepare/property', { cache: 'no-store', credentials: 'same-origin' })"), 'The compact selector read must use the exact no-store Agent endpoint.');
+assert.ok(experience.includes('fetch(`/api/agent/prepare/property?q=${encodeURIComponent(searchQuery)}`') && experience.includes('agent-property-search-submit'), 'The compact selector read must occur only after an explicit Agent search.');
+assert.ok(experience.includes("'NO_SEARCH_YET'") && experience.includes("'SEARCHING'") && experience.includes("'NO_MATCHES'") && experience.includes("'MATCHES_FOUND'"), 'Property search must expose explicit no-query, searching, no-result, and match states.');
 for (const forbidden of ['localStorage', 'sessionStorage', 'XMLHttpRequest', 'sendBeacon', 'leadId', 'CRM', 'ATTOM', 'LightBox', 'assessor', 'permit lookup', 'recommendation score', 'suitability']) {
   assert.ok(!experience.includes(forbidden), `Property experience must not introduce ${forbidden}.`);
 }
 
 assert.ok(repository.includes("origin: 'REPOSITORY_PROPERTY'") && repository.includes('resolvedPropertyCount: 1'), 'Repository adapter must identify one real repository property.');
-assert.ok(repository.includes('getAgentPropertyConversationCandidateSummaries') && repository.includes('getAgentPropertyConversationCandidate(slug'), 'Repository reads must separate compact selector summaries from exact selected-property detail.');
+assert.ok(repository.includes('searchAgentPropertyConversationCandidateSummaries') && repository.includes('getAgentPropertyConversationCandidate(slug'), 'Repository reads must separate bounded search summaries from exact selected-property detail.');
 assert.ok(repository.includes("sourceId: AGENT_PROPERTY_LISTING_SOURCE_ID") && repository.includes("sourceClass: 'EXISTING_REPOSITORY_LISTING_FACTS'"), 'Repository adapter must preserve source identity.');
 assert.ok(repository.includes('sourceModifiedAt || record.lastIntelligenceSync || record.updatedAt') && repository.includes('CURRENT_LISTING_WINDOW_MS'), 'Repository adapter must calculate freshness from stored observation metadata.');
 assert.ok(!repository.match(/create\(|update\(|delete\(|upsert\(|\$executeRaw|fetch\(/), 'Repository adapter must remain read-only and avoid external runtime calls.');

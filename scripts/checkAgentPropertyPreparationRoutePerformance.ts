@@ -15,9 +15,10 @@ const middleware = source('middleware.ts');
 
 assert.ok(!page.includes('getAgentPropertyConversationCandidate'), 'Property page first render must not block on selector or detail data.');
 assert.ok(!page.includes('async function'), 'Property page server work must remain limited to the protected shell render.');
-assert.ok(experience.includes("fetch('/api/agent/prepare/property', { cache: 'no-store', credentials: 'same-origin' })"), 'The selector must load after the first protected page render.');
+assert.ok(experience.includes('fetch(`/api/agent/prepare/property?q=${encodeURIComponent(searchQuery)}`'), 'The selector must query only after explicit Agent input.');
+assert.ok(experience.includes("useState<CandidateSearchState>('NO_SEARCH_YET')") && !experience.includes('useEffect(() =>'), 'The selector must not load candidates on the first protected page render.');
 assert.ok(experience.includes("fetch(`/api/agent/prepare/property?property=${encodeURIComponent(selectedCandidate.property.slug)}`"), 'Selected-property detail must be deferred until the explicit prepare action.');
-assert.ok(repository.includes('CANDIDATE_SUMMARY_COLUMNS') && repository.includes("'slug', 'address', 'city', 'state', 'zip', 'status', 'price', 'propertyType', 'neighborhood'"), 'The initial selector must use the compact, search-preserving summary projection.');
+assert.ok(repository.includes('CANDIDATE_SUMMARY_COLUMNS') && repository.includes("'slug', 'address', 'city', 'state', 'zip', 'status', 'price', 'propertyType', 'neighborhood'") && repository.includes('AGENT_PROPERTY_SEARCH_RESULT_LIMIT = 8'), 'The on-demand selector must use the compact, bounded summary projection.');
 assert.ok(repository.includes('getAgentPropertyConversationCandidate(slug') && repository.includes('where: {\n        slug,'), 'Selected briefing data must use an exact canonical slug read.');
 assert.ok(propertyApi.includes("authorizeAdminRequest(request, { pathname: AGENT_PROPERTY_API_PATH, method: 'GET' })"), 'The deferred read endpoint must enforce its exact Agent authorization surface.');
 assert.ok(propertyApi.includes("'Cache-Control': 'private, no-store'") && propertyApi.includes('export const revalidate = 0'), 'The deferred response must remain private and uncached.');

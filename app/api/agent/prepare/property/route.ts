@@ -4,6 +4,8 @@ import { authorizeAdminRequest } from '@/lib/admin/adminAuth';
 import {
   getAgentPropertyConversationCandidate,
   getAgentPropertyConversationCandidateSummaries,
+  normalizeAgentPropertySearchQuery,
+  searchAgentPropertyConversationCandidateSummaries,
 } from '@/lib/agent-advisory-workbench/agentPropertyConversationPreparationRepository';
 
 export const dynamic = 'force-dynamic';
@@ -29,6 +31,17 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ candidate }, { headers: RESPONSE_HEADERS });
   }
 
-  const candidates = await getAgentPropertyConversationCandidateSummaries();
-  return NextResponse.json({ candidates }, { headers: RESPONSE_HEADERS });
+  const rawQuery = request.nextUrl.searchParams.get('q');
+  if (!request.nextUrl.searchParams.has('q')) {
+    const candidates = await getAgentPropertyConversationCandidateSummaries();
+    return NextResponse.json({ candidates }, { headers: RESPONSE_HEADERS });
+  }
+
+  const query = normalizeAgentPropertySearchQuery(rawQuery);
+  if (!query) {
+    return NextResponse.json({ candidates: [], state: 'QUERY_TOO_SHORT' }, { headers: RESPONSE_HEADERS });
+  }
+
+  const candidates = await searchAgentPropertyConversationCandidateSummaries(query);
+  return NextResponse.json({ candidates, state: candidates.length ? 'MATCHES_FOUND' : 'NO_MATCHES' }, { headers: RESPONSE_HEADERS });
 }

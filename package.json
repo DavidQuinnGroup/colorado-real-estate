@@ -232,6 +232,7 @@
     "check:agent-property-preparation-admission": "jiti scripts/checkAgentPropertyPreparationAdmission.ts",
     "check:agent-property-conversation-preparation-experience": "jiti scripts/checkAgentPropertyConversationPreparationExperience.ts",
     "check:agent-property-preparation-route-performance": "jiti scripts/checkAgentPropertyPreparationRoutePerformance.ts",
+    "check:property-preparation-search-on-demand": "jiti scripts/checkPropertyPreparationSearchOnDemand.ts",
     "check:agent-post-login-return-path": "jiti scripts/checkAgentPostLoginReturnPath.ts",
     "check:agent-cross-capability-session-continuity": "jiti scripts/checkAgentCrossCapabilitySessionContinuity.ts",
     "check:tailwind-v4-style-pipeline": "jiti scripts/checkTailwindV4StylePipeline.ts",

@@ -14,7 +14,10 @@ import type {
   AgentPropertyConversationCandidateSummary,
 } from './agentPropertyConversationPreparation';
 
-const MAX_CANDIDATES = 120;
+export const AGENT_PROPERTY_SEARCH_RESULT_LIMIT = 8;
+export const AGENT_PROPERTY_SEARCH_MINIMUM_QUERY_LENGTH = 2;
+const MAX_AGENT_PROPERTY_SEARCH_QUERY_LENGTH = 120;
+const LEGACY_AGENT_PROPERTY_CANDIDATE_LIMIT = 120;
 const CURRENT_LISTING_WINDOW_MS = 30 * 24 * 60 * 60 * 1000;
 
 type RepositoryProperty = {
@@ -49,6 +52,12 @@ type RepositoryPropertySummary = Pick<
   RepositoryProperty,
   'slug' | 'address' | 'city' | 'state' | 'zip' | 'status' | 'price' | 'propertyType' | 'neighborhood'
 >;
+
+export function normalizeAgentPropertySearchQuery(value: string | null) {
+  const query = value?.trim() ?? '';
+  if (query.length < AGENT_PROPERTY_SEARCH_MINIMUM_QUERY_LENGTH || query.length > MAX_AGENT_PROPERTY_SEARCH_QUERY_LENGTH) return null;
+  return query;
+}
 
 const CANDIDATE_COLUMNS = [
   'mlsId', 'slug', 'address', 'city', 'state', 'zip', 'status', 'isPrivateExclusive', 'price', 'beds', 'baths', 'sqft',
@@ -154,15 +163,17 @@ function isSafePropertySlug(value: string | null) {
   return Boolean(value && /^[A-Za-z0-9._~-]{1,160}$/.test(value));
 }
 
-async function readSupabaseCandidateSummaries() {
+async function readSupabaseCandidateSummaries(query: string) {
+  const pattern = `%${query.replace(/[%_]/g, '\\$&')}%`;
   const { data, error } = await getSupabaseClient()
     .from('Property')
     .select(CANDIDATE_SUMMARY_COLUMNS)
     .eq('state', 'CO')
     .eq('isPrivateExclusive', false)
     .ilike('status', 'Active')
+    .or(`address.ilike.${pattern},city.ilike.${pattern},zip.ilike.${pattern},propertyType.ilike.${pattern},neighborhood.ilike.${pattern},mlsId.ilike.${pattern}`)
     .order('updatedAt', { ascending: false })
-    .limit(MAX_CANDIDATES);
+    .limit(AGENT_PROPERTY_SEARCH_RESULT_LIMIT);
 
   if (error) throw new Error('Repository property summary read fallback failed.');
   return (data || []) as unknown as RepositoryPropertySummary[];
@@ -183,20 +194,70 @@ async function readSupabaseCandidateBySlug(slug: string) {
   return data ? mapSupabaseRow(data as unknown as SupabasePropertyRow) : null;
 }
 
+// Listing Preparation is an existing, separately authorized selector surface.
+// Property Preparation uses the bounded search function below and never calls this.
 export async function getAgentPropertyConversationCandidateSummaries(): Promise<readonly AgentPropertyConversationCandidateSummary[]> {
   try {
     const records = await prisma.property.findMany({
-      where: { state: { equals: 'CO', mode: 'insensitive' }, status: { equals: 'Active', mode: 'insensitive' }, isPrivateExclusive: false },
+      where: {
+        state: { equals: 'CO', mode: 'insensitive' },
+        status: { equals: 'Active', mode: 'insensitive' },
+        isPrivateExclusive: false,
+      },
       select: {
         slug: true, address: true, city: true, state: true, zip: true, status: true, price: true, propertyType: true, neighborhood: true,
       },
       orderBy: [{ updatedAt: 'desc' }, { slug: 'asc' }],
-      take: MAX_CANDIDATES,
+      take: LEGACY_AGENT_PROPERTY_CANDIDATE_LIMIT,
     });
     return Object.freeze(records.map(toCandidateSummary));
   } catch {
     try {
-      return Object.freeze((await readSupabaseCandidateSummaries()).map(toCandidateSummary));
+      const { data, error } = await getSupabaseClient()
+        .from('Property')
+        .select(CANDIDATE_SUMMARY_COLUMNS)
+        .eq('state', 'CO')
+        .eq('isPrivateExclusive', false)
+        .ilike('status', 'Active')
+        .order('updatedAt', { ascending: false })
+        .limit(LEGACY_AGENT_PROPERTY_CANDIDATE_LIMIT);
+      if (error) throw new Error('Repository property summary read fallback failed.');
+      return Object.freeze(((data || []) as unknown as RepositoryPropertySummary[]).map(toCandidateSummary));
+    } catch {
+      return Object.freeze([]);
+    }
+  }
+}
+
+export async function searchAgentPropertyConversationCandidateSummaries(query: string): Promise<readonly AgentPropertyConversationCandidateSummary[]> {
+  const normalizedQuery = normalizeAgentPropertySearchQuery(query);
+  if (!normalizedQuery) return Object.freeze([]);
+
+  try {
+    const records = await prisma.property.findMany({
+      where: {
+        state: { equals: 'CO', mode: 'insensitive' },
+        status: { equals: 'Active', mode: 'insensitive' },
+        isPrivateExclusive: false,
+        OR: [
+          { address: { contains: normalizedQuery, mode: 'insensitive' } },
+          { city: { contains: normalizedQuery, mode: 'insensitive' } },
+          { zip: { contains: normalizedQuery, mode: 'insensitive' } },
+          { propertyType: { contains: normalizedQuery, mode: 'insensitive' } },
+          { neighborhood: { contains: normalizedQuery, mode: 'insensitive' } },
+          { mlsId: { contains: normalizedQuery, mode: 'insensitive' } },
+        ],
+      },
+      select: {
+        slug: true, address: true, city: true, state: true, zip: true, status: true, price: true, propertyType: true, neighborhood: true,
+      },
+      orderBy: [{ updatedAt: 'desc' }, { slug: 'asc' }],
+      take: AGENT_PROPERTY_SEARCH_RESULT_LIMIT,
+    });
+    return Object.freeze(records.map(toCandidateSummary));
+  } catch {
+    try {
+      return Object.freeze((await readSupabaseCandidateSummaries(normalizedQuery)).map(toCandidateSummary));
     } catch {
       return Object.freeze([]);
     }
