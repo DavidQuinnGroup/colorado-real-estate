@@ -32,6 +32,7 @@ export type AgentBriefingEvidence = AgentBriefingStatement & Readonly<{ label: s
 export type AgentBriefingQuestion = Readonly<{ id: string; text: string; triggerEvidenceKeys: readonly string[] }>;
 export const AGENT_BRIEFING_CONTEXTUAL_CAPABILITY_HREFS = [
   '/agent/prepare/market',
+  '/agent/prepare/market-update',
   '/agent/prepare/place',
   '/agent/prepare/property',
   '/agent/prepare/buyer',

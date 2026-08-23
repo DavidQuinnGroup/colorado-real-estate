@@ -22,6 +22,7 @@ const agentRoutes = [
   '/agent/prepare/place',
   '/agent/prepare/property',
   '/agent/prepare/market',
+  '/agent/prepare/market-update',
 ] as const;
 
 Object.assign(process.env, {

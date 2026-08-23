@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowRight, Building2, ClipboardList, Home, MapPinned, Store, Users } from 'lucide-react';
+import { ArrowRight, Building2, ClipboardList, Home, MapPinned, MessageSquareText, Store, Users } from 'lucide-react';
 
 import { projectAtlasTitleHierarchy } from '@/components/ProjectAtlasTitleHierarchy';
 
@@ -10,6 +10,7 @@ const preparationCapabilities = [
   { title: 'Location Preparation', description: 'Prepare geographic and local context for a city, community, neighborhood, access, or place question.', href: '/agent/prepare/place', icon: MapPinned },
   { title: 'Property Preparation', description: 'Prepare property-specific diligence around an address, facts, condition, records, HOA, taxes, title, or insurance.', href: '/agent/prepare/property', icon: Home },
   { title: 'Market Preparation', description: 'Prepare current inventory, pricing, days on market, competition, supply, demand, and market-condition questions.', href: '/agent/prepare/market', icon: Building2 },
+  { title: 'Market Update Preparation', description: 'Prepare a dated, evidence-aware market update and human-review draft for a selected conversation context.', href: '/agent/prepare/market-update', icon: MessageSquareText },
 ] as const;
 
 export default function AgentWorkspaceHome() {

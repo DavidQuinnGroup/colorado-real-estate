@@ -35,6 +35,7 @@ async function main() {
   assert.equal(sanitizeAgentReturnPath('/agent'), '/agent');
   assert.equal(sanitizeAgentReturnPath('/agent/prepare/property'), '/agent/prepare/property');
   assert.equal(sanitizeAgentReturnPath('/agent/prepare/market'), '/agent/prepare/market');
+  assert.equal(sanitizeAgentReturnPath('/agent/prepare/market-update'), '/agent/prepare/market-update');
   assert.equal(sanitizeAgentReturnPath('/agent/prepare/place'), '/agent/prepare/place');
   assert.equal(sanitizeAgentReturnPath('/agent/prepare/buyer'), '/agent/prepare/buyer');
   assert.equal(sanitizeAgentReturnPath('/agent/prepare/listing'), '/agent/prepare/listing');
@@ -68,6 +69,10 @@ async function main() {
   assert.equal(location(marketRedirect), '/agent/login');
   assert.equal(new URL(marketRedirect.headers.get('location') || '').searchParams.get('next'), '/agent/prepare/market');
 
+  const marketUpdateRedirect = buildAgentLoginRedirect(protectedRequest('/agent/prepare/market-update'));
+  assert.equal(location(marketUpdateRedirect), '/agent/login');
+  assert.equal(new URL(marketUpdateRedirect.headers.get('location') || '').searchParams.get('next'), '/agent/prepare/market-update');
+
   const placeRedirect = buildAgentLoginRedirect(protectedRequest('/agent/prepare/place'));
   assert.equal(location(placeRedirect), '/agent/login');
   assert.equal(new URL(placeRedirect.headers.get('location') || '').searchParams.get('next'), '/agent/prepare/place');
@@ -84,6 +89,7 @@ async function main() {
     ['/agent', '/agent'],
     ['/agent/prepare/property', '/agent/prepare/property'],
     ['/agent/prepare/market', '/agent/prepare/market'],
+    ['/agent/prepare/market-update', '/agent/prepare/market-update'],
     ['/agent/prepare/place', '/agent/prepare/place'],
     ['/agent/prepare/buyer', '/agent/prepare/buyer'],
     ['/agent/prepare/listing', '/agent/prepare/listing'],

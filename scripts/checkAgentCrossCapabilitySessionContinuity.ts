@@ -17,7 +17,7 @@ import {
 import { createAgentLoginSuccessResponse } from '../lib/admin/agentLoginReturn';
 
 const credential = createHash('sha256').update('REIE_AGENT_CROSS_CAPABILITY_SESSION_CONTINUITY_CHECK').digest('base64url');
-const agentRoutes = ['/agent', '/agent/prepare/market', '/agent/prepare/property', '/agent/prepare/place', '/agent/prepare/buyer', '/agent/prepare/seller', '/agent/prepare/listing'] as const;
+const agentRoutes = ['/agent', '/agent/prepare/market', '/agent/prepare/market-update', '/agent/prepare/property', '/agent/prepare/place', '/agent/prepare/buyer', '/agent/prepare/seller', '/agent/prepare/listing'] as const;
 
 Object.assign(process.env, {
   NODE_ENV: 'production',
@@ -82,18 +82,22 @@ async function main() {
     ['/agent', '/agent/prepare/place'],
     ['/agent', '/agent/prepare/property'],
     ['/agent', '/agent/prepare/market'],
+    ['/agent', '/agent/prepare/market-update'],
     ['/agent/prepare/buyer', '/agent'],
     ['/agent/prepare/seller', '/agent'],
     ['/agent/prepare/listing', '/agent'],
     ['/agent/prepare/place', '/agent'],
     ['/agent/prepare/property', '/agent'],
     ['/agent/prepare/market', '/agent'],
+    ['/agent/prepare/market-update', '/agent'],
     ['/agent/prepare/place', '/agent/prepare/property'],
     ['/agent/prepare/place', '/agent/prepare/market'],
     ['/agent/prepare/property', '/agent/prepare/place'],
     ['/agent/prepare/property', '/agent/prepare/market'],
     ['/agent/prepare/market', '/agent/prepare/place'],
     ['/agent/prepare/market', '/agent/prepare/property'],
+    ['/agent/prepare/market-update', '/agent/prepare/market'],
+    ['/agent/prepare/market', '/agent/prepare/market-update'],
     ['/agent/prepare/buyer', '/agent/prepare/place'],
     ['/agent/prepare/buyer', '/agent/prepare/property'],
     ['/agent/prepare/buyer', '/agent/prepare/market'],
@@ -145,7 +149,7 @@ async function main() {
 
   const middleware = source('middleware.ts');
   const shell = source('components/agent/AgentWorkspaceShell.tsx');
-  assert.match(middleware, /pathname === "\/agent" \|\| pathname === "\/agent\/prepare\/market" \|\| pathname === "\/agent\/prepare\/property" \|\| pathname === "\/agent\/prepare\/place" \|\| pathname === "\/agent\/prepare\/buyer" \|\| pathname === "\/agent\/prepare\/seller" \|\| pathname === "\/agent\/prepare\/listing"/, 'Middleware must enumerate only the Agent Workspace Home and exact capabilities.');
+  assert.match(middleware, /pathname === "\/agent" \|\| pathname === "\/agent\/prepare\/market" \|\| pathname === "\/agent\/prepare\/market-update" \|\| pathname === "\/agent\/prepare\/property" \|\| pathname === "\/agent\/prepare\/place" \|\| pathname === "\/agent\/prepare\/buyer" \|\| pathname === "\/agent\/prepare\/seller" \|\| pathname === "\/agent\/prepare\/listing"/, 'Middleware must enumerate only the Agent Workspace Home and exact capabilities.');
   assert.match(middleware, /Cache-Control', 'private, no-store'/, 'Authenticated Agent route responses must be private and non-storable.');
   assert.match(middleware, /x-middleware-cache', 'no-cache'/, 'Middleware results must not persist in the client router cache.');
   assert.match(shell, /<Link href="\/" prefetch=\{false\}/, 'Public Site must use the repository-supported non-prefetched same-origin navigation primitive.');

@@ -22,6 +22,7 @@ const capabilityRoutes = [
   '/agent/prepare/place',
   '/agent/prepare/property',
   '/agent/prepare/market',
+  '/agent/prepare/market-update',
 ] as const;
 
 Object.assign(process.env, {
@@ -69,6 +70,7 @@ async function main() {
   assert.match(home, /Location Preparation[\s\S]*geographic and local context/, 'Location Preparation must remain distinct geographic and local intelligence.');
   assert.match(home, /Property Preparation[\s\S]*property-specific diligence/, 'Property Preparation must remain distinct asset-specific intelligence.');
   assert.match(home, /Market Preparation[\s\S]*current inventory, pricing, days on market, competition, supply, demand/, 'Market Preparation must remain distinct current market intelligence.');
+  assert.match(home, /Market Update Preparation[\s\S]*dated, evidence-aware market update/, 'Market Update Preparation must remain distinct from Market Preparation.');
   assert.match(home, /data-persistence="false"/, 'Workspace Home must remain session-only.');
   assert.doesNotMatch(home, /localStorage|sessionStorage|fetch\(|CRM|customer history|saved preparation|notification/i, 'Workspace Home must not introduce persistence, customer history, or background activity.');
   assert.match(shell, /href="\/agent"/, 'Agent capability navigation must include a Workspace Home return.');
