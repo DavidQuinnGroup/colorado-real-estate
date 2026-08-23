@@ -217,6 +217,7 @@
     "check:agent-listing-preparation": "jiti scripts/checkAgentListingPreparation.ts",
     "check:agent-listing-evidence-admission": "jiti scripts/checkAgentListingEvidenceAdmission.ts",
     "check:agent-market-update-preparation": "jiti scripts/checkAgentMarketUpdatePreparation.ts",
+    "check:market-update-narrative-quality": "jiti scripts/checkMarketUpdateNarrativeQuality.ts",
     "check:selection-group-visual-hierarchy": "jiti scripts/checkSelectionGroupVisualHierarchy.ts",
     "check:county-property-identity-schema": "jiti scripts/checkCountyPropertyIdentitySchema.ts",
     "check:boulder-county-identity-population": "jiti scripts/checkBoulderCountyIdentityPopulation.ts",

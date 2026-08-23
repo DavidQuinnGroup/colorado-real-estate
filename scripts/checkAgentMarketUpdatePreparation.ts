@@ -30,11 +30,13 @@ async function main() {
   assert.equal(buyer.state, 'EVIDENCE_REVIEW_REQUIRED');
   assert.equal(buyer.observations.length, 1);
   assert.match(buyer.observations[0].label, /inventory/i);
-  assert.match(buyer.optionalDraftLanguage, /dated market context/);
-  assert.match(buyer.audienceContext, /purchase, offer, or negotiation approach/i);
-  assert.notEqual(buyer.audienceContext, seller.audienceContext, 'Audience selection must change the preparation context.');
+  assert.match(buyer.optionalDraftLanguage?.text ?? '', /point-in-time reference/);
+  assert.match(buyer.audienceContext.text, /negotiating leverage/i);
+  assert.notEqual(buyer.audienceContext.text, seller.audienceContext.text, 'Audience selection must change the preparation context.');
+  assert.equal(buyer.observations[0].directObservation.class, 'DIRECT_OBSERVATION');
+  assert.match(buyer.observations[0].value, /active listings/i);
   assert.equal(seller.observations.length, 1);
-  assert.match(seller.observations[0].label, /median-price/i);
+  assert.match(seller.observations[0].label, /median price/i);
   assert.equal(missingTopic.state, 'NOT_READY');
   assert.equal(stale.state, 'NOT_READY');
   assert.deepEqual(buyer.boundaries, { sessionOnly: true, persistence: false, customerData: false, recipientSelection: false, communicationExecution: false, adminInheritance: false, providerActivity: false });
@@ -50,12 +52,13 @@ async function main() {
   const packageJson = JSON.parse(source('package.json')) as { scripts?: Record<string, string> };
 
   assert.match(page, /MarketUpdatePreparationExperience/);
-  for (const marker of ['Choose what to prepare', 'Executive market summary', 'Key market observations', 'What could change the interpretation', 'Talking points', 'Client-friendly explanations', 'Sources, as-of dates &amp; freshness', 'Verification checkpoints', 'Agent next actions', 'Draft market update language', 'data-testid="agent-market-update-prepare"', 'data-testid="agent-market-update-refresh"']) assert.match(experience, new RegExp(marker));
+  for (const marker of ['Choose what to prepare', 'Executive market summary', 'Key market observations', 'What these measures help explain', 'What could change the interpretation', 'Talking points', 'Client-friendly explanations', 'Sources, as-of dates &amp; freshness', 'Verification checkpoints', 'Agent next actions', 'Draft market update language', 'data-testid="agent-market-update-prepare"', 'data-testid="agent-market-update-refresh"']) assert.match(experience, new RegExp(marker));
   assert.match(experience, /setPreparedInput/, 'Selections and output must remain on the same page.');
   assert.match(experience, /data-session-only="true"/);
   for (const forbidden of ['localStorage', 'sessionStorage', 'fetch(', 'PrismaClient', 'sendEmail', 'createMarketNewsletter', 'document.cookie', 'recipientEmail', 'customerName', 'CRM']) assert.equal(experience.includes(forbidden), false, `${forbidden} must not enter the Agent Market Update surface.`);
   assert.match(contract, /prepareMarketConversation/, 'Market Update must reuse admitted Market Preparation evidence.');
-  assert.match(contract, /No prediction/);
+  assert.match(contract, /MARKET_UPDATE_NARRATIVE_CLASSES/);
+  assert.match(contract, /not as a forecast/);
   assert.match(contract, /recipientSelection: false/);
   assert.match(contract, /communicationExecution: false/);
   assert.equal(adminNewsletter.includes('/agent/prepare/market-update'), false, 'Admin newsletter execution surfaces must remain separate.');
