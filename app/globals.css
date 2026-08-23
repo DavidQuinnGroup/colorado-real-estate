@@ -418,6 +418,14 @@ html, body {
 }
 
 @layer utilities {
+  [data-agent-only="true"] fieldset > legend:not(.sr-only) {
+    margin-bottom: 0.75rem;
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.5;
+  }
+
   .glass-panel {
     background: rgba(7, 16, 23, 0.78);
     backdrop-filter: blur(28px) saturate(130%);

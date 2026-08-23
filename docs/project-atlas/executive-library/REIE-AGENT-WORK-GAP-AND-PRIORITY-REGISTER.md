@@ -90,3 +90,41 @@ These are recommendations only; they are not implementation authority.
 ## Protected-System Boundary
 
 No source/provider activation, MLS mutation, Typesense mutation, schema/API change, database/customer-data mutation, CRM/email/alert operation, GIS activation, deployment, or runtime implementation is authorized by this register. Each future candidate requires a separate Executive HQ authorization gate.
+
+## Executive Requirement Records
+
+### `PROJECT_ATLAS_COMPARATIVE_MARKET_REPORTING_AND_EXPORT_REQUIRED`
+
+Status: `RECORDED_FUTURE_CAPABILITY_NOT_AUTHORIZED_FOR_IMPLEMENTATION`
+
+PROJECT ATLAS requires a future, evidence-backed comparative market-reporting
+capability that remains distinct from Market Preparation and single-market
+Market Update Preparation. Subject to separately admitted data, rights,
+freshness, and comparison semantics, the future capability must support:
+
+- multi-market selection across admitted Colorado markets;
+- current, month-over-month, year-over-year, and selected-period comparisons
+  only where the evidence contract supports each comparison;
+- comparative inventory, new-listing, pending, closed-sale, price, days on
+  market, months-of-supply, sale-to-list, competition, and supply/demand
+  indicators where separately admitted;
+- audience-specific report composition, market-by-market sections, comparative
+  tables, visualizations, sources, as-of dates, freshness, limitations,
+  verification status, and Agent-reviewed narrative;
+- professional print presentation and PDF export for human-reviewed client
+  meetings, buyer consultations, listing presentations, market updates, and
+  internal Agent analysis.
+
+This record authorizes no multi-market selector, calculation, dataset,
+visualization, print layout, PDF generation, report persistence, recipient
+selection, emailing, or publication. A future implementation requires its own
+evidence, data-rights, freshness, professional-review, and protected-system
+authorization.
+
+### `PROJECT_ATLAS_VISUAL_ORIENTATION_AND_CAPABILITY_DIFFERENTIATION_REQUIRED`
+
+Status: `PRESERVED_FUTURE_REQUIREMENT_NOT_COMPLETED_BY_SELECTION_HIERARCHY`
+
+The bounded selection-group hierarchy refinement improves scanability and
+process orientation only. It does not complete, replace, or supersede the
+broader future visual-orientation and capability-differentiation requirement.

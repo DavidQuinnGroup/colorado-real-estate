@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { useMemo, useState } from "react";
 
+import { projectAtlasTitleHierarchy } from "@/components/ProjectAtlasTitleHierarchy";
 import AgentBriefingComposition from "@/components/agent/AgentBriefingComposition";
 import BuyerConsultationPlaybook from "@/components/agent/BuyerConsultationPlaybook";
 import AgentPreparationPageHeader from "@/components/agent/AgentPreparationPageHeader";
@@ -232,7 +233,7 @@ export default function BuyerConsultationExperience() {
             </div>
 
             <fieldset className="mt-6">
-              <legend className="text-sm font-semibold text-white">
+              <legend className={projectAtlasTitleHierarchy.selectionGroup}>
                 1. Choose where this buyer conversation begins
               </legend>
               <p className="mt-1 text-sm leading-6 text-slate-400">
@@ -279,8 +280,8 @@ export default function BuyerConsultationExperience() {
               </div>
             </fieldset>
 
-            <fieldset className="mt-7">
-              <legend className="text-sm font-semibold text-white">
+            <fieldset className="mt-8">
+              <legend className={projectAtlasTitleHierarchy.selectionGroup}>
                 2. Choose the topics to emphasize
               </legend>
               <p className="mt-1 text-sm leading-6 text-slate-400">
