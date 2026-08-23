@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 import { ArrowRight, CheckCircle2, CircleAlert, ClipboardList, Clock3, FileSearch, ShieldCheck } from 'lucide-react';
 
 import DisclosureStateIndicator from '@/components/DisclosureStateIndicator';
+import { projectAtlasTitleHierarchy } from '@/components/ProjectAtlasTitleHierarchy';
 import AgentBriefingComposition from '@/components/agent/AgentBriefingComposition';
 import AgentPreparationPageHeader from '@/components/agent/AgentPreparationPageHeader';
 import { prepareMarketConversation } from '@/lib/agent-advisory-workbench/marketConversationExperience';
@@ -55,7 +56,7 @@ export default function MarketConversationExperience() {
 
         <section className="mt-8 grid gap-5 lg:grid-cols-[minmax(0,1fr)_18rem]" aria-labelledby="market-selection-heading">
           <div className="border border-white/10 bg-white/[0.035] p-5 sm:p-6">
-            <div className="flex items-start justify-between gap-4"><div><p className="text-[11px] font-bold uppercase tracking-[0.14em] text-cyan-100/70">Step 1</p><h2 id="market-selection-heading" className="mt-2 text-lg font-semibold text-white">Choose a market</h2></div><span className="text-xs text-slate-400">Six supported markets</span></div>
+            <div className="flex items-start justify-between gap-4"><div><h2 id="market-selection-heading" className={projectAtlasTitleHierarchy.selectionGroup}>Choose a market</h2></div><span className="text-xs text-slate-400">Six supported markets</span></div>
             <fieldset className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3"><legend className="sr-only">Certified market selection</legend>{MARKETS.map((market) => {
               const checked = selectedMarket === market.id;
               return <label key={market.id} className={`flex min-h-14 cursor-pointer items-center justify-between border px-4 py-3 transition ${checked ? 'border-cyan-200/70 bg-cyan-200/10 text-white' : 'border-white/10 bg-black/10 text-slate-300 hover:border-white/30'}`}><span className="font-medium">{market.label}</span><input type="radio" name="market" value={market.id} checked={checked} onChange={() => setSelectedMarket(market.id)} className="h-4 w-4 accent-cyan-200" /></label>;

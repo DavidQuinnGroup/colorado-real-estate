@@ -2,7 +2,7 @@
 
 Program: `PLATFORM_SELECTION_HIERARCHY_REFINEMENT_AND_COMPARATIVE_MARKET_REPORTING_REQUIREMENT`
 
-Status: `PROJECT_ATLAS_SELECTION_GROUP_VISUAL_HIERARCHY_CERTIFIED`
+Status: `PROJECT_ATLAS_SELECTION_GROUP_VISUAL_HIERARCHY_V2_CERTIFIED`
 
 ## Purpose
 
@@ -14,10 +14,11 @@ those pages or changing their authorization, data, or workflow boundaries.
 ## Contract
 
 The shared Agent fieldset contract gives visible selection-group legends a
-`text-base`, `font-semibold`, `leading-6` title treatment and a tighter
-title-to-controls relationship. The Market Update selection grid uses a
-larger row gap than its internal option gap, so group separation remains
-clear without excessive whitespace.
+`22px` mobile and `30px` desktop title treatment, with semibold weight and a
+tighter title-to-controls relationship. Selection-section titles remain above
+the group-title scale. The Market Update selection grid retains a larger row
+gap than its internal option gap, so group separation remains clear without
+excessive whitespace.
 
 The hierarchy is:
 
@@ -29,13 +30,14 @@ The hierarchy is:
 
 ## Applied Surfaces
 
-- Buyer Preparation and Seller Preparation use the shared title token and
-  deliberate sequential group spacing.
-- Listing Preparation inherits the shared visible-legend contract.
+- Buyer Preparation and Seller Preparation use unnumbered shared group titles
+  and deliberate sequential group spacing.
+- Listing Preparation inherits the shared visible-legend contract and a
+  higher selection-section heading.
 - Market Update Preparation uses the shared title token for Market, Audience,
   Purpose, and Topics to emphasize, with responsive `gap-y-8` group rhythm.
-- Market Preparation, Location Preparation, and Property Preparation retain
-  their existing stronger section headings above a single selector group.
+- Market Preparation, Location Preparation, and Property Preparation use the
+  shared selection-heading token above their single selector groups.
 
 ## Responsive And Accessibility Boundaries
 

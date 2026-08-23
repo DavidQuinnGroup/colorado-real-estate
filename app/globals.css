@@ -419,11 +419,28 @@ html, body {
 
 @layer utilities {
   [data-agent-only="true"] fieldset > legend:not(.sr-only) {
-    margin-bottom: 0.75rem;
+    margin-bottom: 1rem;
     color: #ffffff;
-    font-size: 1rem;
+    font-size: 1.375rem;
     font-weight: 600;
-    line-height: 1.5;
+    line-height: 1.25;
+  }
+
+  @media (min-width: 1024px) {
+    [data-agent-only="true"] fieldset > legend:not(.sr-only) {
+      font-size: 1.875rem;
+      line-height: 1.2;
+    }
+
+    [data-testid="agent-listing-preparation-experience"] section[aria-label="Listing preparation choices"] > div:first-child > div:first-child h2 {
+      font-size: 2.125rem;
+      line-height: 1.25;
+    }
+  }
+
+  [data-testid="agent-listing-preparation-experience"] section[aria-label="Listing preparation choices"] > div:first-child > div:first-child h2 {
+    font-size: 1.625rem;
+    line-height: 1.25;
   }
 
   .glass-panel {

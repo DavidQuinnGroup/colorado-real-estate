@@ -88,18 +88,18 @@ export default function SellerConsultationExperience() {
       <section className="mt-8 grid gap-5 lg:grid-cols-[minmax(0,1fr)_18rem]" aria-labelledby="seller-setup-heading">
         <div className="border border-white/10 bg-white/[0.035] p-5 sm:p-6">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-            <div><p className="text-[11px] font-bold uppercase tracking-[0.14em] text-cyan-100/70">Consultation setup</p><h2 id="seller-setup-heading" className="mt-2 text-lg font-semibold text-white">Choose what the conversation needs to emphasize</h2></div>
+            <div><p className="text-[11px] font-bold uppercase tracking-[0.14em] text-cyan-100/70">Consultation setup</p><h2 id="seller-setup-heading" className={`mt-2 ${projectAtlasTitleHierarchy.selectionSection}`}>Choose what the conversation needs to emphasize</h2></div>
             <span className="text-xs text-slate-400">No information is saved</span>
           </div>
           <fieldset className="mt-6">
-            <legend className={projectAtlasTitleHierarchy.selectionGroup}>1. Choose where this seller conversation begins</legend>
+            <legend className={projectAtlasTitleHierarchy.selectionGroup}>Choose where this seller conversation begins</legend>
             <p className="mt-1 text-sm leading-6 text-slate-400">Choose the description that best matches the conversation you are preparing.</p>
             <div className="mt-3 grid gap-3 sm:grid-cols-2">
               {[[AGENT_SELLER_CONSULTATION_POSITIONS[0], 'Starting the seller conversation', 'Clarify goals, property situation, timing, process, and what should be prepared.'], [AGENT_SELLER_CONSULTATION_POSITIONS[1], 'Preparing to move toward market', 'Organize readiness questions and preparation steps before a listing plan is treated as settled.']].map(([value, title, description]) => <label key={value} className={`cursor-pointer border p-4 transition ${position === value ? 'border-cyan-200/70 bg-cyan-200/10' : 'border-white/10 bg-black/10 hover:border-white/30'}`}><input type="radio" name="seller-consultation-position" value={value} checked={position === value} onChange={() => { setPosition(value as Position); changed(); }} className="sr-only" /><span className="block text-sm font-semibold text-white">{title}</span><span className="mt-1 block text-sm leading-6 text-slate-400">{description}</span></label>)}
             </div>
           </fieldset>
           <fieldset className="mt-8">
-            <legend className={projectAtlasTitleHierarchy.selectionGroup}>2. Choose the topics to emphasize</legend>
+            <legend className={projectAtlasTitleHierarchy.selectionGroup}>Choose the topics to emphasize</legend>
             <p className="mt-1 text-sm leading-6 text-slate-400">{priorities.length} selected. Every selected topic receives Priority Focus treatment; the complete Seller consultation playbook remains available.</p>
             <div className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
               {AGENT_SELLER_DISCUSSION_PRIORITIES.map((priority) => { const checked = priorities.includes(priority); return <label key={priority} className={`flex min-h-12 cursor-pointer items-center gap-3 border px-4 py-3 text-sm transition ${checked ? 'border-cyan-200/70 bg-cyan-200/10 text-white' : 'border-white/10 bg-black/10 text-slate-300'}`}><input type="checkbox" checked={checked} onChange={() => toggle(priority)} className="h-4 w-4 accent-cyan-200" /><span className="font-medium">{labels[priority]}</span></label>; })}

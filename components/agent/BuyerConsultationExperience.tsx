@@ -222,7 +222,7 @@ export default function BuyerConsultationExperience() {
                 </p>
                 <h2
                   id="buyer-setup-heading"
-                  className="mt-2 text-lg font-semibold text-white"
+                  className={`mt-2 ${projectAtlasTitleHierarchy.selectionSection}`}
                 >
                   Choose what the conversation needs to cover
                 </h2>
@@ -234,7 +234,7 @@ export default function BuyerConsultationExperience() {
 
             <fieldset className="mt-6">
               <legend className={projectAtlasTitleHierarchy.selectionGroup}>
-                1. Choose where this buyer conversation begins
+                Choose where this buyer conversation begins
               </legend>
               <p className="mt-1 text-sm leading-6 text-slate-400">
                 Choose the description that best matches the conversation you are preparing.
@@ -282,7 +282,7 @@ export default function BuyerConsultationExperience() {
 
             <fieldset className="mt-8">
               <legend className={projectAtlasTitleHierarchy.selectionGroup}>
-                2. Choose the topics to emphasize
+                Choose the topics to emphasize
               </legend>
               <p className="mt-1 text-sm leading-6 text-slate-400">
                 {priorities.length} selected. Every selected topic receives

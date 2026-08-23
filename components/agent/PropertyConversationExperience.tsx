@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { ArrowRight, CheckCircle2, CircleAlert, ClipboardList, Clock3, FileSearch, Landmark, ShieldCheck } from 'lucide-react';
 
 import DisclosureStateIndicator from '@/components/DisclosureStateIndicator';
+import { projectAtlasTitleHierarchy } from '@/components/ProjectAtlasTitleHierarchy';
 import AgentBriefingComposition from '@/components/agent/AgentBriefingComposition';
 import AgentPreparationPageHeader from '@/components/agent/AgentPreparationPageHeader';
 import {
@@ -123,7 +124,7 @@ export default function PropertyConversationExperience() {
 
         <section className="mt-8 grid gap-5 lg:grid-cols-[minmax(0,1fr)_18rem]" aria-labelledby="property-selection-heading">
           <div className="border border-white/10 bg-white/[0.035] p-5 sm:p-6">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between"><div><p className="text-[11px] font-bold uppercase tracking-[0.14em] text-cyan-100/70">Step 1</p><h2 id="property-selection-heading" className="mt-2 text-lg font-semibold text-white">Choose one real property</h2></div><span className="text-xs text-slate-400">Active public Colorado listings</span></div>
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between"><div><h2 id="property-selection-heading" className={projectAtlasTitleHierarchy.selectionGroup}>Choose one real property</h2></div><span className="text-xs text-slate-400">Active public Colorado listings</span></div>
             <label className="mt-5 block"><span className="sr-only">Filter supported repository properties</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search address, city, ZIP, or property type" className="min-h-11 w-full border border-white/15 bg-black/15 px-4 text-sm text-white placeholder:text-slate-500 focus:border-cyan-100 focus:outline-none focus:ring-2 focus:ring-cyan-100/40" data-testid="agent-property-search-input" /></label>
             <fieldset className="mt-4 grid gap-3" data-testid="agent-property-candidate-results" data-load-state={candidateLoadState}><legend className="sr-only">Supported repository property results</legend>{candidateLoadState === 'LOADING' ? <p className="border border-dashed border-white/15 px-4 py-5 text-sm leading-6 text-slate-400" data-testid="agent-property-candidates-loading">Loading supported repository properties.</p> : null}{candidateLoadState === 'FAILED' ? <p className="border border-dashed border-amber-200/30 px-4 py-5 text-sm leading-6 text-amber-100" data-testid="agent-property-candidates-unavailable">Supported repository properties are unavailable. Refresh the page to try again.</p> : null}{candidateLoadState === 'READY' && visibleCandidates.length ? visibleCandidates.map((candidate) => {
               const selected = candidate.property.slug === selectedSlug;
