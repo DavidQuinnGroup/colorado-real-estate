@@ -101,7 +101,7 @@ for (const expected of [
 }
 
 assert.ok(experience.includes('candidate.property.slug === selectedSlug') && experience.includes('encodeURIComponent(selectedCandidate.property.slug)'), 'Selection must resolve only through the exact canonical Property.slug.');
-assert.ok(experience.includes('fetch(`/api/agent/prepare/property?q=${encodeURIComponent(searchQuery)}`') && experience.includes('agent-property-search-submit'), 'The compact selector read must occur only after an explicit Agent search.');
+assert.ok(experience.includes('fetch(`/api/agent/prepare/property?q=${encodeURIComponent(searchQuery)}`') && experience.includes('AUTOCOMPLETE_DEBOUNCE_MS') && experience.includes('agent-property-search-submit'), 'The compact selector read must remain Agent-initiated through debounced autocomplete with an explicit-search fallback.');
 assert.ok(experience.includes("'NO_SEARCH_YET'") && experience.includes("'SEARCHING'") && experience.includes("'NO_MATCHES'") && experience.includes("'MATCHES_FOUND'"), 'Property search must expose explicit no-query, searching, no-result, and match states.');
 for (const forbidden of ['localStorage', 'sessionStorage', 'XMLHttpRequest', 'sendBeacon', 'leadId', 'CRM', 'ATTOM', 'LightBox', 'assessor', 'permit lookup', 'recommendation score', 'suitability']) {
   assert.ok(!experience.includes(forbidden), `Property experience must not introduce ${forbidden}.`);

@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowRight, CheckCircle2, CircleAlert, ClipboardList, Clock3, FileSearch, Landmark, ShieldCheck } from 'lucide-react';
 
 import DisclosureStateIndicator from '@/components/DisclosureStateIndicator';
@@ -44,17 +44,24 @@ function Status({ children, caution = false }: { children: string; caution?: boo
 }
 
 type CandidateSearchState = 'NO_SEARCH_YET' | 'QUERY_TOO_SHORT' | 'SEARCHING' | 'MATCHES_FOUND' | 'NO_MATCHES' | 'FAILED';
+const AUTOCOMPLETE_DEBOUNCE_MS = 250;
+const PROPERTY_AUTOCOMPLETE_LISTBOX_ID = 'agent-property-autocomplete-results';
 
 export default function PropertyConversationExperience() {
   const [candidates, setCandidates] = useState<readonly AgentPropertyConversationCandidateSummary[]>([]);
   const [candidateSearchState, setCandidateSearchState] = useState<CandidateSearchState>('NO_SEARCH_YET');
+  const [activeCandidateIndex, setActiveCandidateIndex] = useState(-1);
+  const [isSuggestionListOpen, setIsSuggestionListOpen] = useState(false);
   const [preparationError, setPreparationError] = useState<string | null>(null);
   const [query, setQuery] = useState('');
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
   const [preparedCandidate, setPreparedCandidate] = useState<AgentPropertyConversationCandidate | null>(null);
   const [isPreparing, setIsPreparing] = useState(false);
+  const searchRequestId = useRef(0);
+  const explicitSearchQuery = useRef<string | null>(null);
 
   const selectedCandidate = useMemo(() => candidates.find((candidate) => candidate.property.slug === selectedSlug) || null, [candidates, selectedSlug]);
+  const selectedQuery = selectedCandidate ? selectedCandidate.property.address ?? candidateLabel(selectedCandidate) : null;
   const experience = useMemo(() => preparedCandidate ? prepareAgentPropertyConversation(preparedCandidate) : null, [preparedCandidate]);
   const packet = experience?.packet || null;
   const briefing = packet?.admission === 'ADMITTED' ? packet : null;
@@ -74,27 +81,88 @@ export default function PropertyConversationExperience() {
     'Are HOA, title, tax, insurance, financing, or municipal record questions relevant and still unconfirmed?',
   ] : [];
 
-  async function searchCandidates() {
-    const searchQuery = query.trim();
-    setPreparedCandidate(null);
-    setSelectedSlug(null);
-    setPreparationError(null);
+  const searchCandidates = useCallback(async (rawQuery: string) => {
+    const searchQuery = rawQuery.trim();
     if (searchQuery.length < 2) {
       setCandidates([]);
       setCandidateSearchState(searchQuery ? 'QUERY_TOO_SHORT' : 'NO_SEARCH_YET');
+      setActiveCandidateIndex(-1);
+      setIsSuggestionListOpen(false);
       return;
     }
 
+    const requestId = ++searchRequestId.current;
     setCandidateSearchState('SEARCHING');
+    setActiveCandidateIndex(-1);
+    setIsSuggestionListOpen(true);
     try {
       const response = await fetch(`/api/agent/prepare/property?q=${encodeURIComponent(searchQuery)}`, { cache: 'no-store', credentials: 'same-origin' });
       const payload = await response.json() as { candidates?: AgentPropertyConversationCandidateSummary[]; state?: CandidateSearchState };
       if (!response.ok || !payload.candidates || (payload.state !== 'MATCHES_FOUND' && payload.state !== 'NO_MATCHES')) throw new Error('Property selector unavailable.');
+      if (searchRequestId.current !== requestId) return;
       setCandidates(payload.candidates);
       setCandidateSearchState(payload.state);
     } catch {
+      if (searchRequestId.current !== requestId) return;
       setCandidates([]);
       setCandidateSearchState('FAILED');
+    }
+  }, []);
+
+  useEffect(() => {
+    const searchQuery = query.trim();
+    if (selectedQuery && searchQuery === selectedQuery) return;
+    if (searchQuery.length < 2) return;
+    const timeout = window.setTimeout(() => {
+      if (explicitSearchQuery.current === searchQuery) {
+        explicitSearchQuery.current = null;
+        return;
+      }
+      void searchCandidates(searchQuery);
+    }, AUTOCOMPLETE_DEBOUNCE_MS);
+    return () => window.clearTimeout(timeout);
+  }, [query, searchCandidates, selectedQuery]);
+
+  function beginNewSearch(value: string) {
+    searchRequestId.current += 1;
+    explicitSearchQuery.current = null;
+    setQuery(value);
+    setSelectedSlug(null);
+    setPreparedCandidate(null);
+    setPreparationError(null);
+    const searchQuery = value.trim();
+    setCandidates([]);
+    setActiveCandidateIndex(-1);
+    setCandidateSearchState(searchQuery.length >= 2 ? 'SEARCHING' : searchQuery ? 'QUERY_TOO_SHORT' : 'NO_SEARCH_YET');
+    setIsSuggestionListOpen(searchQuery.length >= 2);
+  }
+
+  function selectCandidate(candidate: AgentPropertyConversationCandidateSummary) {
+    searchRequestId.current += 1;
+    setSelectedSlug(candidate.property.slug);
+    setPreparedCandidate(null);
+    setPreparationError(null);
+    setQuery(candidate.property.address ?? candidateLabel(candidate));
+    setActiveCandidateIndex(-1);
+    setIsSuggestionListOpen(false);
+  }
+
+  function handleSearchKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
+    if (event.key === 'ArrowDown' && candidates.length) {
+      event.preventDefault();
+      setIsSuggestionListOpen(true);
+      setActiveCandidateIndex((current) => current < candidates.length - 1 ? current + 1 : 0);
+    } else if (event.key === 'ArrowUp' && candidates.length) {
+      event.preventDefault();
+      setIsSuggestionListOpen(true);
+      setActiveCandidateIndex((current) => current > 0 ? current - 1 : candidates.length - 1);
+    } else if (event.key === 'Enter' && isSuggestionListOpen && activeCandidateIndex >= 0) {
+      event.preventDefault();
+      selectCandidate(candidates[activeCandidateIndex]);
+    } else if (event.key === 'Escape' && isSuggestionListOpen) {
+      event.preventDefault();
+      setActiveCandidateIndex(-1);
+      setIsSuggestionListOpen(false);
     }
   }
 
@@ -124,11 +192,12 @@ export default function PropertyConversationExperience() {
         <section className="mt-8 grid gap-5 lg:grid-cols-[minmax(0,1fr)_18rem]" aria-labelledby="property-selection-heading">
           <div className="border border-white/10 bg-white/[0.035] p-5 sm:p-6">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between"><div><h2 id="property-selection-heading" className={projectAtlasTitleHierarchy.selectionGroup}>Choose one real property</h2></div><span className="text-xs text-slate-400">Active public Colorado listings</span></div>
-            <form className="mt-5 flex flex-col gap-3 sm:flex-row" onSubmit={(event) => { event.preventDefault(); void searchCandidates(); }}><label className="min-w-0 flex-1"><span className="sr-only">Search supported repository properties</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search address, city, ZIP, MLS ID, or property type" className="min-h-11 w-full border border-white/15 bg-black/15 px-4 text-sm text-white placeholder:text-slate-500 focus:border-cyan-100 focus:outline-none focus:ring-2 focus:ring-cyan-100/40" data-testid="agent-property-search-input" /></label><button type="submit" className="min-h-11 border border-cyan-100/40 px-4 text-sm font-semibold text-cyan-100 transition hover:border-cyan-100 hover:text-white focus:outline-none focus:ring-2 focus:ring-cyan-100" data-testid="agent-property-search-submit">Search properties</button></form>
-            <fieldset className="mt-4 grid gap-3" data-testid="agent-property-candidate-results" data-search-state={candidateSearchState} aria-live="polite"><legend className="sr-only">Supported repository property results</legend>{candidateSearchState === 'NO_SEARCH_YET' ? <p className="border border-dashed border-white/15 px-4 py-5 text-sm leading-6 text-slate-400" data-testid="agent-property-search-empty">Search by an address or another supported identifier to choose one repository property.</p> : null}{candidateSearchState === 'QUERY_TOO_SHORT' ? <p className="border border-dashed border-white/15 px-4 py-5 text-sm leading-6 text-slate-400" data-testid="agent-property-search-too-short">Enter at least two characters to search supported repository properties.</p> : null}{candidateSearchState === 'SEARCHING' ? <p className="border border-dashed border-white/15 px-4 py-5 text-sm leading-6 text-slate-400" data-testid="agent-property-candidates-loading" role="status">Searching supported repository properties.</p> : null}{candidateSearchState === 'FAILED' ? <p className="border border-dashed border-amber-200/30 px-4 py-5 text-sm leading-6 text-amber-100" data-testid="agent-property-candidates-unavailable">Property search is unavailable. Refine the query or try again.</p> : null}{candidateSearchState === 'MATCHES_FOUND' ? candidates.map((candidate) => {
+            <form className="mt-5 flex flex-col gap-3 sm:flex-row" onSubmit={(event) => { event.preventDefault(); beginNewSearch(query); explicitSearchQuery.current = query.trim(); void searchCandidates(query); }}><label className="min-w-0 flex-1"><span className="sr-only">Search supported repository properties</span><input value={query} onChange={(event) => beginNewSearch(event.target.value)} onKeyDown={handleSearchKeyDown} role="combobox" aria-autocomplete="list" aria-controls={PROPERTY_AUTOCOMPLETE_LISTBOX_ID} aria-expanded={isSuggestionListOpen && candidateSearchState === 'MATCHES_FOUND'} aria-activedescendant={activeCandidateIndex >= 0 ? `${PROPERTY_AUTOCOMPLETE_LISTBOX_ID}-${activeCandidateIndex}` : undefined} placeholder="Search address, city, ZIP, MLS ID, or property type" className="min-h-11 w-full border border-white/15 bg-black/15 px-4 text-sm text-white placeholder:text-slate-500 focus:border-cyan-100 focus:outline-none focus:ring-2 focus:ring-cyan-100/40" data-testid="agent-property-search-input" /></label><button type="submit" className="min-h-11 border border-cyan-100/40 px-4 text-sm font-semibold text-cyan-100 transition hover:border-cyan-100 hover:text-white focus:outline-none focus:ring-2 focus:ring-cyan-100" data-testid="agent-property-search-submit">Search properties</button></form>
+            <div className="mt-4 grid gap-3" data-testid="agent-property-candidate-results" data-search-state={candidateSearchState} aria-live="polite">{candidateSearchState === 'NO_SEARCH_YET' ? <p className="border border-dashed border-white/15 px-4 py-5 text-sm leading-6 text-slate-400" data-testid="agent-property-search-empty">Search by an address or another supported identifier to choose one repository property.</p> : null}{candidateSearchState === 'QUERY_TOO_SHORT' ? <p className="border border-dashed border-white/15 px-4 py-5 text-sm leading-6 text-slate-400" data-testid="agent-property-search-too-short">Enter at least two characters to search supported repository properties.</p> : null}{candidateSearchState === 'SEARCHING' ? <p className="border border-dashed border-white/15 px-4 py-5 text-sm leading-6 text-slate-400" data-testid="agent-property-candidates-loading" role="status">Searching supported repository properties.</p> : null}{candidateSearchState === 'FAILED' ? <p className="border border-dashed border-amber-200/30 px-4 py-5 text-sm leading-6 text-amber-100" data-testid="agent-property-candidates-unavailable">Property search is unavailable. Refine the query or try again.</p> : null}{candidateSearchState === 'MATCHES_FOUND' && isSuggestionListOpen ? <ul id={PROPERTY_AUTOCOMPLETE_LISTBOX_ID} role="listbox" aria-label="Matching supported repository properties" className="grid gap-2" data-testid="agent-property-autocomplete-list">{candidates.map((candidate, index) => {
               const selected = candidate.property.slug === selectedSlug;
-              return <label key={candidate.property.slug} className={`flex cursor-pointer items-center justify-between gap-4 border px-4 py-3 transition ${selected ? 'border-cyan-200/70 bg-cyan-200/10 text-white' : 'border-white/10 bg-black/10 text-slate-300 hover:border-white/30'}`} data-canonical-property-slug={candidate.property.slug}><span className="min-w-0"><span className="block truncate text-sm font-medium">{candidateLabel(candidate)}</span><span className="mt-1 block text-xs text-slate-400">{candidate.property.propertyType || 'Property type to verify'} · {candidate.property.price === null ? 'Price to verify' : formatCurrency(candidate.property.price)} · {candidate.property.status}</span></span><input type="radio" name="property" value={candidate.property.slug} checked={selected} onChange={() => { setSelectedSlug(candidate.property.slug); setPreparedCandidate(null); }} className="h-4 w-4 shrink-0 accent-cyan-200" /></label>;
-            }) : null}{candidateSearchState === 'NO_MATCHES' ? <p className="border border-dashed border-white/15 px-4 py-5 text-sm leading-6 text-slate-400" data-testid="agent-property-unavailable">No supported repository properties match this search. Refine the query and try again.</p> : null}{selectedCandidate ? <p className="text-sm font-semibold text-emerald-100" data-testid="agent-property-selected">Property selected. Prepare the briefing when ready.</p> : null}</fieldset>
+              const active = index === activeCandidateIndex;
+              return <li key={candidate.property.slug} id={`${PROPERTY_AUTOCOMPLETE_LISTBOX_ID}-${index}`} role="option" aria-selected={active || selected} data-canonical-property-slug={candidate.property.slug}><button type="button" onClick={() => selectCandidate(candidate)} className={`flex min-h-11 w-full items-center justify-between gap-4 border px-4 py-3 text-left transition focus:outline-none focus:ring-2 focus:ring-cyan-100 ${active || selected ? 'border-cyan-200/70 bg-cyan-200/10 text-white' : 'border-white/10 bg-black/10 text-slate-300 hover:border-white/30'}`}><span className="min-w-0"><span className="block truncate text-sm font-medium">{candidateLabel(candidate)}</span><span className="mt-1 block text-xs text-slate-400">{candidate.property.propertyType || 'Property type to verify'} · {candidate.property.price === null ? 'Price to verify' : formatCurrency(candidate.property.price)} · {candidate.property.status}</span></span></button></li>;
+            })}</ul> : null}{candidateSearchState === 'NO_MATCHES' ? <p className="border border-dashed border-white/15 px-4 py-5 text-sm leading-6 text-slate-400" data-testid="agent-property-unavailable">No supported repository properties match this search. Refine the query and try again.</p> : null}{selectedCandidate ? <p className="text-sm font-semibold text-emerald-100" data-testid="agent-property-selected">Property selected. Prepare the briefing when ready.</p> : null}</div>
             <PropertyCriteriaProfileEditor context="PROPERTY_REVIEW" />
             <div className="mt-6 flex flex-col gap-3 border-t border-white/10 pt-5 sm:flex-row sm:items-center sm:justify-between"><p className="text-sm leading-6 text-slate-400">Your choice and briefing remain only in this open page session.</p><button type="button" onClick={() => void prepareSelectedProperty()} disabled={!selectedCandidate || isPreparing} className="inline-flex min-h-11 items-center justify-center gap-2 bg-cyan-200 px-5 text-sm font-semibold text-slate-950 transition hover:bg-cyan-100 disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-100 focus:ring-offset-2 focus:ring-offset-[#071014]" data-testid="agent-property-prepare-briefing">{isPreparing ? 'Preparing briefing' : 'Prepare my briefing'} <ArrowRight size={16} aria-hidden="true" /></button></div>
           </div>
