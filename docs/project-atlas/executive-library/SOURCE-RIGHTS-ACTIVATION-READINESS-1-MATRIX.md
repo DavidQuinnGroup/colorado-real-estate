@@ -14,7 +14,8 @@ This matrix converts the earlier source-rights inventory into a counsel-ready an
 | --- | --- | --- | --- | --- | --- |
 | Boulder County Open Data | Boulder County, Colorado | Parcels, zoning, property information, metadata | Likely eligible after dataset review | Requires dataset review | `APPROVE_WITH_CONDITIONS` |
 | City of Boulder Open Data permits | City of Boulder | Construction permits, current project map data, planning case data | Provider confirmation required | Provider confirmation required | `PROVIDER_CONFIRMATION_REQUIRED` |
-| Boulder County Assessor | Boulder County Assessor | Property type, parcel attributes, valuation context, subdivision relationships | Legal review required | Legal review required | `LEGAL_REVIEW_REQUIRED` |
+| Boulder County Assessor, broader record domains | Boulder County Assessor | Property type, parcel attributes, valuation context, subdivision relationships | Legal review required | Legal review required | `LEGAL_REVIEW_REQUIRED` |
+| Boulder County Assessor, `Account_Parcels.csv` identity slice | Boulder County Assessor | `strap` account identifier, textual 12-character `Parcelno` identifier, and reported account-to-parcel relationships only | Bounded importer code readiness only; database population separately pending Supabase recovery | Not authorized | `RECONCILED_FOR_COVERED_BOULDER_OPEN_DATA` |
 | Boulder County Accela | Boulder County CPP / Accela | Permit applications, license records, status metadata | Not approved | Not approved | `PROVIDER_CONFIRMATION_REQUIRED` |
 | Boulder County Recorder | Boulder County Clerk and Recorder | Deeds, liens, plats, recorded document indexes | Legal review required | Legal review required | `LEGAL_REVIEW_REQUIRED` |
 | Municipal planning records | City of Boulder and future municipalities | Plans, zoning references, projects, infrastructure context | Provider confirmation required | Provider confirmation required | `PROVIDER_CONFIRMATION_REQUIRED` |
@@ -33,4 +34,4 @@ This matrix converts the earlier source-rights inventory into a counsel-ready an
 
 ## Boundary
 
-This matrix is not legal advice, does not issue final legal conclusions, and does not activate any source.
+This matrix is not legal advice and does not issue final legal conclusions. The `Account_Parcels.csv` row records the Executive-accepted, source-specific official publication and licensing evidence; it does not authorize external retrieval, database population, property facts, property mapping, customer display, public display, or any other Boulder County dataset. Attribution, non-endorsement, County disclaimer, and user-reliance limitations remain required.

@@ -55,8 +55,15 @@ assert.equal(assessor.publicName, 'Boulder County Assessor');
 assert.equal(assessor.sourceClass, 'AUTHORITATIVE_SOURCE');
 assert.equal(assessor.productionActivationState, 'AWAITING_PROVIDER_CONFIRMATION');
 assert.equal(assessor.claimEligible, false);
-assert.match(assessor.currentReieUse, /Identified source candidate only/);
-assert.match(assessor.currentReieUse, /no automated retrieval/);
+assert.match(assessor.currentReieUse, /broader Assessor record remains source-governance-only/);
+assert.match(assessor.currentReieUse, /Account_Parcels\.csv identity slice is authorized for bounded code preparation/);
+assert.equal(assessor.boundedUsePosture?.historicalBroaderAssessorPosture, 'AWAITING_PROVIDER_CONFIRMATION');
+assert.equal(assessor.boundedUsePosture?.rights, 'RECONCILED_FOR_COVERED_BOULDER_OPEN_DATA');
+assert.equal(assessor.boundedUsePosture?.identityDataset, 'AUTHORIZED_FOR_BOUNDED_ACCOUNT_PARCEL_IDENTITY_USE');
+assert.equal(assessor.boundedUsePosture?.runtimeActivation, 'NOT_ACTIVE');
+assert.equal(assessor.boundedUsePosture?.propertyFactAdmission, 'NOT_AUTHORIZED_SEPARATE_GATE');
+assert.equal(assessor.boundedUsePosture?.customerDisplay, 'NOT_AUTHORIZED_SEPARATE_GATE');
+assert.equal(assessor.boundedUsePosture?.publicDisplay, 'NOT_AUTHORIZED_SEPARATE_GATE');
 
 const adamsAssessorSourceId = 'SRC-ADAMS-COUNTY-ASSESSOR';
 assert.equal(registry.records.filter((item) => item.sourceId === adamsAssessorSourceId).length, 1, 'Adams County Assessor source must exist exactly once.');

@@ -4,6 +4,11 @@ import {
   type CityIntelligenceSourceCategory,
   type CitySourceDomainProfile,
 } from './coloradoCityIntelligenceFactory';
+import {
+  BOULDER_COUNTY_ACCOUNT_PARCELS_OFFICIAL_EVIDENCE,
+  BOULDER_COUNTY_IDENTITY_ACTIVATION,
+  BOULDER_COUNTY_IDENTITY_RIGHTS_POSTURE,
+} from './property/boulderCountyIdentityPopulation';
 
 export const REIE_SOURCE_REGISTRY_STATUS = 'REIE_SOURCE_REGISTRY_IMPLEMENTED';
 export const REIE_SOURCE_REGISTRY_VERSION = '1.0.0';
@@ -83,6 +88,19 @@ export type ReieSourceRegistryRecord = Readonly<{
   sourceQualityAdvancementEligibility?: ReieSourceQualityAdvancementEligibility;
   supersededOperationalSourceIds?: readonly string[];
   nonOperationalFirewalls?: readonly string[];
+  boundedUsePosture?: Readonly<{
+    historicalBroaderAssessorPosture: 'AWAITING_PROVIDER_CONFIRMATION';
+    evidenceStatus: 'BOULDER_COUNTY_OPEN_DATA_RIGHTS_AND_IDENTITY_SOURCE_CERTIFIED';
+    rights: typeof BOULDER_COUNTY_IDENTITY_RIGHTS_POSTURE;
+    technicalAccess: 'OFFICIAL_PUBLIC_BULK_DOWNLOAD_PUBLISHED';
+    identityDataset: typeof BOULDER_COUNTY_IDENTITY_ACTIVATION;
+    runtimeActivation: 'NOT_ACTIVE';
+    ownerData: 'EXCLUDED';
+    propertyFactAdmission: 'NOT_AUTHORIZED_SEPARATE_GATE';
+    customerDisplay: 'NOT_AUTHORIZED_SEPARATE_GATE';
+    publicDisplay: 'NOT_AUTHORIZED_SEPARATE_GATE';
+    observedAndReconciledAt: string;
+  }>;
 }>;
 
 export type ReieSourceRegistry = Readonly<{
@@ -141,6 +159,7 @@ function sourceFromProfile({
   limitations,
   lastSourceVerificationDate,
   lastSuccessfulDataRefresh = null,
+  boundedUsePosture,
 }: {
   sourceId: string;
   publicName: string;
@@ -157,6 +176,7 @@ function sourceFromProfile({
   limitations: readonly string[];
   lastSourceVerificationDate: string;
   lastSuccessfulDataRefresh?: string | null;
+  boundedUsePosture?: ReieSourceRegistryRecord['boundedUsePosture'];
 }): ReieSourceRegistryRecord {
   const sourceProfile = profile(category);
 
@@ -183,6 +203,7 @@ function sourceFromProfile({
     attributionRequirement: sourceProfile.attributionRequirement.replace(/_/g, ' ').toLowerCase(),
     lastSourceVerificationDate,
     lastSuccessfulDataRefresh,
+    boundedUsePosture,
     sourcePaths: [
       `CITY_INTELLIGENCE_SOURCE_DOMAIN_MATRIX/${category}`,
       `COLORADO_CITY_INTELLIGENCE_RECORDS/${COLORADO_CITY_INTELLIGENCE_RECORDS.length}-governed-city-records`,
@@ -1205,9 +1226,28 @@ export const REIE_SOURCE_REGISTRY: ReieSourceRegistry = Object.freeze({
       productionActivationState: 'AWAITING_PROVIDER_CONFIRMATION',
       claimEligible: false,
       customerDisclosureEligible: true,
-      currentReieUse: 'Identified source candidate only; no automated retrieval, parcel confirmation, owner display, valuation claim, or property-record claim is active.',
-      limitations: ['External confirmation remains pending.', 'Public accessibility does not equal permission for automated or customer-facing REIE use.'],
-      lastSourceVerificationDate: REIE_SOURCE_REGISTRY_REFERENCE_DATE,
+      currentReieUse: 'The broader Assessor record remains source-governance-only. The separately reconciled Account_Parcels.csv identity slice is authorized for bounded code preparation, but has no runtime retrieval, database population, property-fact, mapping, customer-display, or public-display activation.',
+      limitations: [
+        'Historical broader-Assessor posture remains awaiting provider confirmation; it does not control the separately evidenced Account_Parcels.csv identity slice.',
+        'The bounded slice admits only assessor-account, textual parcel identifiers, and their reported relationships.',
+        'Owners and Addresses is excluded before retrieval. Owner names, mailing addresses, targeting, profiling, ownership inference, and ownership guarantees are prohibited.',
+        'Property facts, valuations, sales, permits, tax, title, legal descriptions, GIS geometry, property mapping, Search, Map, customer display, and public display remain separately gated and not authorized.',
+        'Published attribution, non-endorsement, County disclaimer, and user-reliance limits apply to the bounded slice.',
+      ],
+      lastSourceVerificationDate: BOULDER_COUNTY_ACCOUNT_PARCELS_OFFICIAL_EVIDENCE.observedAndReconciledAt,
+      boundedUsePosture: {
+        historicalBroaderAssessorPosture: BOULDER_COUNTY_ACCOUNT_PARCELS_OFFICIAL_EVIDENCE.historicalBroaderAssessorPosture,
+        evidenceStatus: BOULDER_COUNTY_ACCOUNT_PARCELS_OFFICIAL_EVIDENCE.status,
+        rights: BOULDER_COUNTY_IDENTITY_RIGHTS_POSTURE,
+        technicalAccess: BOULDER_COUNTY_ACCOUNT_PARCELS_OFFICIAL_EVIDENCE.technicalAccessPosture,
+        identityDataset: BOULDER_COUNTY_IDENTITY_ACTIVATION,
+        runtimeActivation: BOULDER_COUNTY_ACCOUNT_PARCELS_OFFICIAL_EVIDENCE.runtimeActivation,
+        ownerData: BOULDER_COUNTY_ACCOUNT_PARCELS_OFFICIAL_EVIDENCE.ownerData,
+        propertyFactAdmission: BOULDER_COUNTY_ACCOUNT_PARCELS_OFFICIAL_EVIDENCE.propertyFactAdmission,
+        customerDisplay: BOULDER_COUNTY_ACCOUNT_PARCELS_OFFICIAL_EVIDENCE.customerDisplay,
+        publicDisplay: BOULDER_COUNTY_ACCOUNT_PARCELS_OFFICIAL_EVIDENCE.publicDisplay,
+        observedAndReconciledAt: BOULDER_COUNTY_ACCOUNT_PARCELS_OFFICIAL_EVIDENCE.observedAndReconciledAt,
+      },
     }),
     sourceFromProfile({
       sourceId: 'SRC-BOULDER-COUNTY-TREASURER',
