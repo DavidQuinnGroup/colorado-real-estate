@@ -1,8 +1,9 @@
 'use client';
 
 import type { ReactNode } from 'react';
+import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, LogOut } from 'lucide-react';
+import { Globe2, Home, LogOut } from 'lucide-react';
 
 export default function AgentWorkspaceShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
@@ -40,6 +41,10 @@ export default function AgentWorkspaceShell({ children }: { children: ReactNode 
               <Home size={15} aria-hidden="true" />
               Workspace Home
             </a>
+            <Link href="/" prefetch={false} className="inline-flex min-h-10 items-center gap-2 rounded-[7px] border border-cyan-100/25 px-3 py-2 text-xs font-semibold text-cyan-100 transition hover:border-cyan-100/50 hover:bg-cyan-100/[0.08] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100" data-testid="agent-workspace-public-site-link">
+              <Globe2 size={15} aria-hidden="true" />
+              Public Site
+            </Link>
             <a href="/agent/logout?next=/agent" className="inline-flex min-h-10 items-center gap-2 rounded-[7px] border border-white/15 px-3 py-2 text-xs font-semibold text-slate-200 transition hover:border-white/30 hover:bg-white/[0.06] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100" data-testid="agent-workspace-sign-out">
               <LogOut size={15} aria-hidden="true" />
               Sign out

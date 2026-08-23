@@ -27,6 +27,7 @@ assert(!marketLayout.includes('fixed inset-0 z-50'), 'market layout must not cre
 assert(!agentShell.includes('sticky top-0'), 'Agent navigation must not cover briefing content while scrolling');
 assert(agentShell.includes('Project Atlas') && agentShell.includes('Agent Workspace'), 'Agent product identity is required');
 assert(agentShell.includes('href="/agent"') && agentShell.includes('agent-workspace-home-link'), 'Agent workspace navigation must return to the canonical home route.');
+assert(agentShell.includes('href="/"') && agentShell.includes('agent-workspace-public-site-link'), 'Agent workspace navigation must expose the canonical Public Site return route.');
 assert(agentShell.includes('href="/agent/prepare/buyer"'), 'Buyer Preparation must be an exact Agent navigation destination.');
 assert(agentShell.includes('href="/agent/prepare/seller"'), 'Seller Preparation must be an exact Agent navigation destination.');
 assert(agentShell.includes('href="/agent/prepare/listing"'), 'Listing Preparation must be an exact Agent navigation destination.');

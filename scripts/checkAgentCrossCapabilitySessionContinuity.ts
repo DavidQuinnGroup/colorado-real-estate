@@ -148,7 +148,7 @@ async function main() {
   assert.match(middleware, /pathname === "\/agent" \|\| pathname === "\/agent\/prepare\/market" \|\| pathname === "\/agent\/prepare\/property" \|\| pathname === "\/agent\/prepare\/place" \|\| pathname === "\/agent\/prepare\/buyer" \|\| pathname === "\/agent\/prepare\/seller" \|\| pathname === "\/agent\/prepare\/listing"/, 'Middleware must enumerate only the Agent Workspace Home and exact capabilities.');
   assert.match(middleware, /Cache-Control', 'private, no-store'/, 'Authenticated Agent route responses must be private and non-storable.');
   assert.match(middleware, /x-middleware-cache', 'no-cache'/, 'Middleware results must not persist in the client router cache.');
-  assert.doesNotMatch(shell, /from 'next\/link'/, 'Agent capability navigation must not use the App Router client-navigation path.');
+  assert.match(shell, /<Link href="\/" prefetch=\{false\}/, 'Public Site must use the repository-supported non-prefetched same-origin navigation primitive.');
   for (const path of agentRoutes) {
     assert.match(shell, new RegExp(`<a href="${path}"`), `${path} must use same-origin document navigation.`);
   }
