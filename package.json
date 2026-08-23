@@ -167,6 +167,7 @@
     "check:source-rights-activation-readiness": "npm run worker:build && node dist/scripts/checkSourceRightsActivationReadiness.js",
     "check:restriction-triggered-source-governance": "jiti scripts/checkRestrictionTriggeredSourceGovernance.ts",
     "check:internal-market-computation-architecture": "jiti scripts/checkInternalMarketComputationArchitecture.ts",
+    "check:market-metric-definition-evidence": "jiti scripts/checkMarketMetricDefinitionEvidence.ts",
     "check:current-market-computation": "jiti scripts/checkCurrentMarketComputation.ts",
     "check:current-market-source-set-currentness": "jiti scripts/checkCurrentMarketSourceSetCurrentness.ts",
     "check:current-market-source-set-reestablishment": "jiti scripts/checkCurrentMarketSourceSetReestablishment.ts",
