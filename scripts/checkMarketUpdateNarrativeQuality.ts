@@ -71,6 +71,7 @@ function main() {
   const experience = source('components/agent/MarketUpdatePreparationExperience.tsx');
   const contract = source('lib/agent-advisory-workbench/marketUpdatePreparation.ts');
   const futureRequirements = source('docs/project-atlas/executive-library/REIE-AGENT-WORK-GAP-AND-PRIORITY-REGISTER.md');
+  const certification = source('docs/project-atlas/executive-library/REIE-MARKET-UPDATE-NARRATIVE-AND-INTELLIGENCE-QUALITY-2.0-CERTIFICATION.md');
   const packageJson = JSON.parse(source('package.json')) as { scripts?: Record<string, string> };
   for (const marker of ['item.plainLanguageDescription.text', 'item.evidenceId', 'item.sourceDate', 'item.atlasObservedDate', 'item.verificationStatus', 'preparation.evidenceSynthesis.text', 'preparation.whatCouldChangeInterpretation.text']) assert.match(experience, new RegExp(marker.replaceAll('.', '\\.')));
   assert.match(contract, /sessionOnly: true/);
@@ -78,6 +79,8 @@ function main() {
   assert.match(contract, /providerActivity: false/);
   assert.match(futureRequirements, /PROJECT_ATLAS_COMPARATIVE_MARKET_REPORTING_AND_EXPORT_REQUIRED/);
   assert.match(futureRequirements, /PROJECT_ATLAS_VISUAL_ORIENTATION_AND_CAPABILITY_DIFFERENTIATION_REQUIRED/);
+  assert.match(certification, /PROJECT_ATLAS_MARKET_UPDATE_NARRATIVE_AND_INTELLIGENCE_QUALITY_2_0_CERTIFIED/);
+  assert.match(certification, /READY_FOR_EXECUTIVE_MARKET_UPDATE_QUALITY_2_0_HUMAN_TEST/);
   assert.equal(packageJson.scripts?.['check:market-update-narrative-quality'], 'jiti scripts/checkMarketUpdateNarrativeQuality.ts');
 
   console.log('MARKET_UPDATE_NARRATIVE_QUALITY_CHECK: PASS');
