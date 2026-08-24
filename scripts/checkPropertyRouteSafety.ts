@@ -4,6 +4,8 @@ import { readFile } from 'node:fs/promises';
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
 
+import { createSupabasePropertyReadFetch } from '../lib/property/supabaseReadResilience.js';
+
 dotenv.config({ path: '.env.local', quiet: true });
 dotenv.config({ quiet: true });
 
@@ -35,6 +37,9 @@ function getSupabaseClient() {
     auth: {
       persistSession: false,
       autoRefreshToken: false,
+    },
+    global: {
+      fetch: createSupabasePropertyReadFetch(),
     },
   });
 }

@@ -4,6 +4,7 @@ import type { Prisma } from '@prisma/client';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
 import { prisma } from '@/lib/prisma';
+import { createSupabasePropertyReadFetch } from '@/lib/property/supabaseReadResilience';
 
 export type PublicPropertyWithPhotos = Prisma.PropertyGetPayload<{
   include: {
@@ -82,6 +83,9 @@ function getSupabasePropertyClient() {
     auth: {
       persistSession: false,
       autoRefreshToken: false,
+    },
+    global: {
+      fetch: createSupabasePropertyReadFetch(),
     },
   });
 
