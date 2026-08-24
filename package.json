@@ -197,6 +197,7 @@
     "check:sundance-content-generation-gate": "jiti scripts/checkSundanceContentGenerationGate.ts",
     "check:sundance-content-topic-register": "jiti scripts/checkSundanceContentTopicRegister.ts",
     "check:neighborhood-submarket-geographic-object-governance": "jiti scripts/checkNeighborhoodSubmarketGeographicObjectGovernance.ts",
+    "check:ires-cityid-evidence": "jiti scripts/checkIresCityIdEvidence.ts",
     "check:neighborhood-submarket-object-source-readiness": "jiti scripts/checkNeighborhoodSubmarketObjectSourceReadiness.ts",
     "check:neighborhood-submarket-search-market-relationship": "jiti scripts/checkNeighborhoodSubmarketSearchMarketRelationship.ts",
     "check:neighborhood-submarket-internal-source-context-consumer-adapter": "jiti scripts/checkNeighborhoodSubmarketInternalSourceContextConsumerAdapter.ts",
