@@ -28,6 +28,8 @@ enum PropertySourceIdentifierType {
   SCHEDULE_NUMBER
   TAX_ACCOUNT
   PROPERTY_NUMBER
+  MLS_LISTING
+  SOURCE_PROPERTY_RECORD
   OTHER_COUNTY_NATIVE_ID
 }
 
@@ -89,6 +91,60 @@ enum PropertyCountyIdentityMappingBasis {
   UNKNOWN
 }
 
+enum CanonicalPhysicalPropertyIdentityStatus {
+  UNRESOLVED
+  ACTIVE
+  CONFLICTING
+  SUPERSEDED
+  RETIRED
+}
+
+enum CanonicalPhysicalPropertyIdentityConfidence {
+  UNVERIFIED
+  POSSIBLE
+  PROBABLE
+  CONFIRMED
+  CONFLICTING
+}
+
+enum CanonicalPhysicalPropertyAssociationType {
+  CANONICAL_PROPERTY_HAS_SOURCE_IDENTITY
+  PROPERTY_ASSOCIATED_WITH_PARCEL
+  PROPERTY_ASSOCIATED_WITH_STRUCTURE
+  PROPERTY_ASSOCIATED_WITH_UNIT
+}
+
+enum CanonicalPhysicalPropertyAssociationStatus {
+  OBSERVED
+  POSSIBLE
+  CONFIRMED
+  CONFLICTING
+  SUPERSEDED
+}
+
+enum CanonicalPhysicalPropertyAssociationBasis {
+  SOURCE_REPORTED
+  DETERMINISTIC_CORRELATION
+  MANUAL_REVIEW
+  FUZZY_ADDRESS_CANDIDATE
+  UNKNOWN
+}
+
+enum CanonicalPhysicalPropertyObservationKind {
+  IDENTITY
+  ADDRESS
+  PROPERTY_FACT
+  LISTING_EVENT
+}
+
+enum CanonicalPropertyListingEventStatus {
+  CURRENT
+  HISTORICAL
+  UNRESOLVED
+  CONFLICTING
+  SUPERSEDED
+}
+
 model Property {
   id                   String    @id @default(cuid())
   mlsId                String    @unique
@@ -137,6 +193,7 @@ model Property {
   LeadInteraction         LeadInteraction[]
   geographicRelationships PropertyGeographicRelationship[]
   countyIdentityMappings  PropertyCountyIdentityMapping[]
+  canonicalListingEvents  CanonicalPropertyListingEvent[]
 
   @@index([city])
   @@index([status])
@@ -175,6 +232,8 @@ model PropertySourceIdentity {
   sourceRelationships   PropertySourceIdentityRelationship[]  @relation("PropertySourceIdentityRelationshipSource")
   targetRelationships   PropertySourceIdentityRelationship[]  @relation("PropertySourceIdentityRelationshipTarget")
   countyIdentityMappings PropertyCountyIdentityMapping[]
+  canonicalPropertyMappings CanonicalPhysicalPropertySourceIdentityMapping[]
+  canonicalPropertyObservations CanonicalPhysicalPropertyObservation[]
 
   @@unique([sourceId, jurisdictionCode, identifierType, normalizedValue], map: "PSI_source_jurisdiction_type_value_uq")
   @@index([sourceId, jurisdictionCode, identifierType], map: "PSI_source_jurisdiction_type_idx")
@@ -203,6 +262,7 @@ model PropertySourceIdentityObservation {
   identity      PropertySourceIdentity               @relation(fields: [identityId], references: [id], onDelete: Restrict)
   relationships PropertySourceIdentityRelationship[]
   mappings      PropertyCountyIdentityMapping[]
+  canonicalPropertyObservations CanonicalPhysicalPropertyObservation[]
 
   @@index([identityId, observedAt], map: "PSIO_identity_observed_idx")
   @@index([freshness], map: "PSIO_freshness_idx")
@@ -263,6 +323,143 @@ model PropertyCountyIdentityMapping {
   @@index([propertyId, status, isCurrent], map: "PCIM_property_status_current_idx")
   @@index([identityId, status, isCurrent], map: "PCIM_identity_status_current_idx")
   @@index([observationId], map: "PCIM_observation_idx")
+}
+
+// Source-independent physical-property anchor. It remains empty until a later
+// source-admission and population authorization; legacy Property rows stay listing-shaped.
+model CanonicalPhysicalProperty {
+  id                         String                                    @id @default(cuid())
+  identityStatus             CanonicalPhysicalPropertyIdentityStatus   @default(UNRESOLVED)
+  identityConfidence         CanonicalPhysicalPropertyIdentityConfidence @default(UNVERIFIED)
+  sourceFormattedSitusAddress String?
+  normalizedSitusAddress     String?
+  streetNumber               String?
+  preDirectional             String?
+  streetName                 String?
+  streetSuffix               String?
+  postDirectional            String?
+  unit                       String?
+  city                       String?
+  state                      String?
+  postalCode                 String?
+  county                     String?
+  jurisdiction               String?
+  latitude                   Float?
+  longitude                  Float?
+  firstObservedAt            DateTime?
+  lastObservedAt             DateTime?
+  validFrom                  DateTime?
+  validTo                    DateTime?
+  supersededById             String?
+  createdAt                  DateTime                                  @default(now())
+  updatedAt                  DateTime                                  @updatedAt
+
+  supersededBy      CanonicalPhysicalProperty?                         @relation("CanonicalPhysicalPropertySupersession", fields: [supersededById], references: [id], onDelete: Restrict)
+  supersedes        CanonicalPhysicalProperty[]                        @relation("CanonicalPhysicalPropertySupersession")
+  sourceMappings    CanonicalPhysicalPropertySourceIdentityMapping[]
+  observations      CanonicalPhysicalPropertyObservation[]
+  listingEvents     CanonicalPropertyListingEvent[]
+
+  @@index([identityStatus, identityConfidence], map: "CPP_status_confidence_idx")
+  @@index([state, county, jurisdiction], map: "CPP_jurisdiction_idx")
+  @@index([normalizedSitusAddress], map: "CPP_normalized_address_idx")
+  @@index([supersededById], map: "CPP_superseded_idx")
+}
+
+model CanonicalPhysicalPropertySourceIdentityMapping {
+  id                    String                                      @id @default(cuid())
+  canonicalPropertyId   String
+  identityId            String
+  associationType       CanonicalPhysicalPropertyAssociationType
+  status                CanonicalPhysicalPropertyAssociationStatus @default(OBSERVED)
+  confidence            CanonicalPhysicalPropertyIdentityConfidence @default(UNVERIFIED)
+  basis                 CanonicalPhysicalPropertyAssociationBasis  @default(UNKNOWN)
+  verificationRequired  Boolean                                     @default(true)
+  conflictReference     String?
+  firstObservedAt       DateTime?
+  lastObservedAt        DateTime?
+  validFrom             DateTime?
+  validTo               DateTime?
+  isCurrent             Boolean                                     @default(true)
+  mappingFingerprint    String                                      @unique(map: "CPPSIM_fingerprint_uq")
+  supersededById        String?
+  createdAt             DateTime                                    @default(now())
+  updatedAt             DateTime                                    @updatedAt
+
+  canonicalProperty CanonicalPhysicalProperty                       @relation(fields: [canonicalPropertyId], references: [id], onDelete: Restrict)
+  identity          PropertySourceIdentity                          @relation(fields: [identityId], references: [id], onDelete: Restrict)
+  supersededBy      CanonicalPhysicalPropertySourceIdentityMapping? @relation("CanonicalPhysicalPropertySourceIdentityMappingSupersession", fields: [supersededById], references: [id], onDelete: Restrict)
+  supersedes        CanonicalPhysicalPropertySourceIdentityMapping[] @relation("CanonicalPhysicalPropertySourceIdentityMappingSupersession")
+
+  @@unique([canonicalPropertyId, identityId, associationType], map: "CPPSIM_property_identity_type_uq")
+  @@index([canonicalPropertyId, status, isCurrent], map: "CPPSIM_property_status_idx")
+  @@index([identityId, status, isCurrent], map: "CPPSIM_identity_status_idx")
+  @@index([supersededById], map: "CPPSIM_superseded_idx")
+}
+
+model CanonicalPhysicalPropertyObservation {
+  id                          String                                      @id @default(cuid())
+  canonicalPropertyId         String
+  sourceId                    String
+  sourceIdentityId            String?
+  sourceIdentityObservationId String?
+  observationKind             CanonicalPhysicalPropertyObservationKind
+  sourceRecordReference       String?
+  fieldSemanticsReference     String?
+  rightsPostureReference      String?
+  attributionReference        String?
+  sourcePayloadReference      String?
+  freshness                   PropertySourceIdentityFreshness             @default(UNKNOWN)
+  confidence                  CanonicalPhysicalPropertyIdentityConfidence @default(UNVERIFIED)
+  observedAt                  DateTime
+  ingestedAt                  DateTime?
+  effectiveAt                 DateTime?
+  validFrom                   DateTime?
+  validTo                     DateTime?
+  observationFingerprint      String                                      @unique(map: "CPPO_fingerprint_uq")
+  createdAt                   DateTime                                    @default(now())
+
+  canonicalProperty         CanonicalPhysicalProperty          @relation(fields: [canonicalPropertyId], references: [id], onDelete: Restrict)
+  sourceIdentity            PropertySourceIdentity?            @relation(fields: [sourceIdentityId], references: [id], onDelete: Restrict)
+  sourceIdentityObservation PropertySourceIdentityObservation? @relation(fields: [sourceIdentityObservationId], references: [id], onDelete: Restrict)
+
+  @@index([canonicalPropertyId, observedAt], map: "CPPO_property_observed_idx")
+  @@index([sourceId, observationKind], map: "CPPO_source_kind_idx")
+  @@index([sourceIdentityId], map: "CPPO_identity_idx")
+  @@index([sourceIdentityObservationId], map: "CPPO_identity_observation_idx")
+}
+
+model CanonicalPropertyListingEvent {
+  id                    String                              @id @default(cuid())
+  canonicalPropertyId   String
+  propertyId            String
+  sourceId              String
+  sourceListingReference String
+  status                CanonicalPropertyListingEventStatus @default(UNRESOLVED)
+  confidence            CanonicalPhysicalPropertyIdentityConfidence @default(UNVERIFIED)
+  rightsPostureReference String?
+  observationReference  String?
+  effectiveAt           DateTime?
+  validFrom             DateTime?
+  validTo               DateTime?
+  isCurrent             Boolean                             @default(false)
+  conflictReference     String?
+  verificationRequired  Boolean                             @default(true)
+  eventFingerprint      String                              @unique(map: "CPLE_fingerprint_uq")
+  supersededById        String?
+  createdAt             DateTime                            @default(now())
+  updatedAt             DateTime                            @updatedAt
+
+  canonicalProperty CanonicalPhysicalProperty           @relation(fields: [canonicalPropertyId], references: [id], onDelete: Restrict)
+  property          Property                            @relation(fields: [propertyId], references: [id], onDelete: Restrict)
+  supersededBy      CanonicalPropertyListingEvent?      @relation("CanonicalPropertyListingEventSupersession", fields: [supersededById], references: [id], onDelete: Restrict)
+  supersedes        CanonicalPropertyListingEvent[]     @relation("CanonicalPropertyListingEventSupersession")
+
+  @@unique([canonicalPropertyId, propertyId], map: "CPLE_property_listing_uq")
+  @@index([canonicalPropertyId, status, isCurrent], map: "CPLE_canonical_status_idx")
+  @@index([propertyId], map: "CPLE_property_idx")
+  @@index([sourceId, sourceListingReference], map: "CPLE_source_listing_idx")
+  @@index([supersededById], map: "CPLE_superseded_idx")
 }
 
 model MlsSyncState {
