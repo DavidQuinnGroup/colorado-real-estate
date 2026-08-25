@@ -137,7 +137,7 @@ assert.equal(rejectedAggregation.normalized.validation.reasons.includes('FILTER_
 const cohortBuilder = fs.readFileSync('lib/agentCohortBuilder.ts', 'utf8');
 const currentMarket = fs.readFileSync('lib/currentMarketComputation.ts', 'utf8');
 const comparisonUi = fs.readFileSync('components/agent/AgentCurrentSnapshotComparison.tsx', 'utf8');
-const doc = fs.readFileSync('docs/project-atlas/executive-library/VERSIONED-AGENT-LISTING-CITY-SET-WAVE-9-CERTIFICATION.md', 'utf8');
+const doc = fs.readFileSync('docs/project-atlas/executive-library/VERSIONED-AGENT-LISTING-CITY-SET-AND-PRIORITY-CITY-EXPANSION-BOUNDED-IMPLEMENTATION-WAVE-9-CERTIFICATION.md', 'utf8');
 assert.doesNotMatch(cohortBuilder, /AGENT_COHORT_SUPPORTED_CITIES\s*=\s*\[/);
 assert.doesNotMatch(currentMarket, /CURRENT_MARKET_SUPPORTED_CITIES\s*=\s*Object\.freeze\(\[/);
 assert.match(comparisonUi, /AGENT_LOCATION_PREPARATION_CITY_KEYS/);
