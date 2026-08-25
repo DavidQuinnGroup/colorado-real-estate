@@ -10,6 +10,7 @@ export type AgentComparisonSurfaceConfig = Readonly<{
   resultHeading: string;
   defaultLeft: AgentCohortQuickFilters;
   defaultRight: AgentCohortQuickFilters;
+  defaultCohorts: readonly AgentCohortQuickFilters[];
   leftLabel: string;
   rightLabel: string;
   generatedBandControl: boolean;
@@ -39,6 +40,7 @@ export const AGENT_COMPARISON_SURFACE_CONFIGS: Readonly<Record<AgentComparisonSu
     resultHeading: 'Principal differences',
     defaultLeft: baseFilters,
     defaultRight: Object.freeze({ ...baseFilters, city: 'louisville' }),
+    defaultCohorts: Object.freeze([baseFilters, Object.freeze({ ...baseFilters, city: 'louisville' })]),
     leftLabel: 'Cohort A',
     rightLabel: 'Cohort B',
     generatedBandControl: true,
@@ -52,6 +54,11 @@ export const AGENT_COMPARISON_SURFACE_CONFIGS: Readonly<Record<AgentComparisonSu
     resultHeading: 'Current market cohort differences',
     defaultLeft: Object.freeze({ ...baseFilters, priceMin: 500000, priceMax: 1000000 }),
     defaultRight: Object.freeze({ ...baseFilters, priceMin: 1000000, priceMax: 2000000 }),
+    defaultCohorts: Object.freeze([
+      Object.freeze({ ...baseFilters, priceMin: 500000, priceMax: 1000000 }),
+      Object.freeze({ ...baseFilters, priceMin: 1000000, priceMax: 1500000 }),
+      Object.freeze({ ...baseFilters, priceMin: 1500000, priceMax: 2000000 }),
+    ]),
     leftLabel: 'Market cohort A',
     rightLabel: 'Market cohort B',
     generatedBandControl: true,
@@ -65,6 +72,7 @@ export const AGENT_COMPARISON_SURFACE_CONFIGS: Readonly<Record<AgentComparisonSu
     resultHeading: 'Current location cohort differences',
     defaultLeft: baseFilters,
     defaultRight: Object.freeze({ ...baseFilters, city: 'louisville' }),
+    defaultCohorts: Object.freeze([baseFilters, Object.freeze({ ...baseFilters, city: 'louisville' }), Object.freeze({ ...baseFilters, city: 'lafayette' })]),
     leftLabel: 'Boulder current cohort',
     rightLabel: 'Louisville current cohort',
     generatedBandControl: false,
@@ -78,6 +86,11 @@ export const AGENT_COMPARISON_SURFACE_CONFIGS: Readonly<Record<AgentComparisonSu
     resultHeading: 'Current buyer-search cohort differences',
     defaultLeft: Object.freeze({ ...baseFilters, priceMin: 750000, priceMax: 1000000, bedsMin: 2, bathsMin: 2 }),
     defaultRight: Object.freeze({ ...baseFilters, city: 'louisville', priceMin: 750000, priceMax: 1000000, bedsMin: 2, bathsMin: 2 }),
+    defaultCohorts: Object.freeze([
+      Object.freeze({ ...baseFilters, priceMin: 750000, priceMax: 1000000, bedsMin: 2, bathsMin: 2 }),
+      Object.freeze({ ...baseFilters, city: 'louisville', priceMin: 750000, priceMax: 1000000, bedsMin: 2, bathsMin: 2 }),
+      Object.freeze({ ...baseFilters, city: 'lafayette', priceMin: 750000, priceMax: 1000000, bedsMin: 2, bathsMin: 2 }),
+    ]),
     leftLabel: 'Buyer search A',
     rightLabel: 'Buyer search B',
     generatedBandControl: true,
@@ -91,6 +104,7 @@ export const AGENT_COMPARISON_SURFACE_CONFIGS: Readonly<Record<AgentComparisonSu
     resultHeading: 'Principal differences',
     defaultLeft: baseFilters,
     defaultRight: Object.freeze({ ...baseFilters, city: 'louisville' }),
+    defaultCohorts: Object.freeze([baseFilters, Object.freeze({ ...baseFilters, city: 'louisville' })]),
     leftLabel: 'Cohort A',
     rightLabel: 'Cohort B',
     generatedBandControl: true,

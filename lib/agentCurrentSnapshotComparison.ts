@@ -25,8 +25,12 @@ import { classifyAgentNumericIntervals, type AgentNumericIntervalDimension } fro
 
 export const CURRENT_SNAPSHOT_COMPARATIVE_INTELLIGENCE_WAVE_3_STATUS =
   'CURRENT_SNAPSHOT_COMPARATIVE_INTELLIGENCE_BOUNDED_IMPLEMENTATION_WAVE_3_CERTIFIED' as const;
+export const COHORT_N_MULTI_MARKET_COMPARATIVE_INTELLIGENCE_WAVE_5_STATUS =
+  'COHORT_N_MULTI_MARKET_COMPARATIVE_INTELLIGENCE_BOUNDED_IMPLEMENTATION_WAVE_5_CERTIFIED' as const;
 export const CURRENT_SNAPSHOT_COMPARATIVE_INTELLIGENCE_NEXT_GATE =
   'READY_FOR_AGENT_COMPARISON_REUSE_AND_SEGMENT_EXPANSION_REVIEW' as const;
+export const COHORT_N_MULTI_MARKET_COMPARATIVE_INTELLIGENCE_NEXT_GATE =
+  'READY_FOR_ADVANCED_SEGMENTATION_HISTORICAL_EVIDENCE_AND_SUBJECT_PROPERTY_BENCHMARK_AUTHORIZATION' as const;
 export const AGENT_CURRENT_SNAPSHOT_COMPARISON_VERSION = 'AGENT_CURRENT_SNAPSHOT_COMPARISON_V1' as const;
 export const AGENT_CURRENT_SNAPSHOT_COMPARISON_AS_OF_TOLERANCE_MS = 5000;
 
@@ -38,6 +42,7 @@ export type AgentComparisonAsOfAlignmentStatus = 'ALIGNED_WITHIN_SINGLE_REQUEST_
 export type AgentComparisonCohortInput = Readonly<{
   label: string;
   cohort: AgentCohortInput;
+  surface?: string | null;
 }>;
 
 export type AgentComparisonRequest = Readonly<{
@@ -97,13 +102,16 @@ export type AgentCurrentSnapshotComparisonResult = Readonly<{
 
 export type AgentCurrentSnapshotComparisonResponse = Readonly<{
   status: 'READY' | 'NOT_AVAILABLE';
+  overallComparabilityStatus: AtlasComparabilityState | 'PARTIAL';
   certification: typeof CURRENT_SNAPSHOT_COMPARATIVE_INTELLIGENCE_WAVE_3_STATUS;
+  cohortNCertification: typeof COHORT_N_MULTI_MARKET_COMPARATIVE_INTELLIGENCE_WAVE_5_STATUS;
   cohortNReadiness: 'COHORT_N_RUNTIME_READY';
   requestAsOf: string;
   cohorts: readonly Readonly<{
     label: string;
-    status: AgentCohortAggregationResult['status'];
+    status: AgentCohortAggregationResult['status'] | 'INVALID_COHORT';
     normalized: AgentCohortNormalizedDefinition;
+    rejectionReasons: readonly string[];
   }>[];
   rejectedMetricIds: readonly string[];
   rejectedOperations: readonly AgentComparisonOperation[];
@@ -230,13 +238,10 @@ function direction(left: number | null, right: number | null): AgentComparisonDi
 }
 
 function ranks(values: readonly (number | null)[]) {
-  const sorted = values
-    .map((value, index) => ({ value, index }))
-    .filter((item): item is { value: number; index: number } => item.value !== null)
-    .sort((left, right) => right.value - left.value);
-  return values.map((value, index) => {
+  const sortedValues = [...new Set(values.filter((value): value is number => value !== null))].sort((left, right) => right - left);
+  return values.map((value) => {
     if (value === null) return null;
-    return sorted.findIndex((item) => item.index === index) + 1;
+    return sortedValues.findIndex((item) => item === value) + 1;
   });
 }
 
@@ -256,6 +261,20 @@ export function compareAgentCurrentSnapshotMetricArtifacts(input: Readonly<{
   const alignment = asOfAlignment(input.artifacts, input.requestAsOf);
   const values = Object.freeze(input.artifacts.map((artifact) => artifact.value));
   const baseReasons = [
+    ...input.artifacts.flatMap((artifact, index) => [
+      artifact.metricId !== input.metricId && `COHORT_${index + 1}:METRIC_ID_MISMATCH`,
+      artifact.metricId !== artifactA.metricId && `COHORT_${index + 1}:METRIC_ID_MISMATCH`,
+      artifact.calculationVersion !== artifactA.calculationVersion && `COHORT_${index + 1}:CALCULATION_VERSION_MISMATCH`,
+      artifact.fieldBasis !== artifactA.fieldBasis && `COHORT_${index + 1}:FIELD_BASIS_MISMATCH`,
+      artifact.aggregation !== artifactA.aggregation && `COHORT_${index + 1}:AGGREGATION_MISMATCH`,
+      artifact.unit !== artifactA.unit && `COHORT_${index + 1}:UNIT_MISMATCH`,
+      artifact.analyticalGrain !== 'MLS_LISTING' && `COHORT_${index + 1}:GRAIN_MISMATCH`,
+      artifact.sourceScope !== 'CURRENT_REPOSITORY_PROPERTY_SEARCH_PROJECTION' && `COHORT_${index + 1}:SOURCE_SCOPE_MISMATCH`,
+      artifact.temporalBasis !== 'OBSERVATION_AS_OF_TIMESTAMP' && `COHORT_${index + 1}:TEMPORAL_BASIS_MISMATCH`,
+      artifact.periodForm !== 'AS_OF_INSTANT_SNAPSHOT' && `COHORT_${index + 1}:PERIOD_FORM_MISMATCH`,
+      artifact.audience !== 'AGENT_ONLY' && `COHORT_${index + 1}:RIGHTS_INCOMPATIBLE`,
+      artifact.state !== 'READY' && `COHORT_${index + 1}:ARTIFACT_NO_DATA`,
+    ]),
     artifactA.metricId !== input.metricId && 'METRIC_ID_MISMATCH',
     artifactB.metricId !== input.metricId && 'METRIC_ID_MISMATCH',
     artifactA.metricId !== artifactB.metricId && 'METRIC_ID_MISMATCH',
@@ -345,37 +364,57 @@ export async function compareAgentCurrentSnapshotCohorts(request: AgentCompariso
   const metricIds = admittedMetricIds.length ? admittedMetricIds : AGENT_COHORT_METRIC_IDS;
   const { requestedOperations, rejectedOperations } = normalizeAgentComparisonOperations(request.requestedOperations);
   const normalizedOnly = request.cohorts.map((cohort) => normalizeAgentCohortDefinition(cohort.cohort));
+  const invalidIndexes = new Set(normalizedOnly.map((cohort, index) => cohort.validation.ready ? null : index).filter((index): index is number => index !== null));
+  const validRequests = request.cohorts.filter((_, index) => !invalidIndexes.has(index));
+  const validNormalized = normalizedOnly.filter((_, index) => !invalidIndexes.has(index));
   const requestRejections = [
     (request.cohorts.length < 2 || request.cohorts.length > 6) && 'COHORT_COUNT_OUT_OF_BOUNDS',
     audience !== 'AGENT_ONLY' && 'RIGHTS_INCOMPATIBLE',
     rejectedMetricIds.length > 0 && 'UNSUPPORTED_METRIC_ID',
     rejectedOperations.length > 0 && 'UNSUPPORTED_OPERATION',
-    ...normalizedOnly.flatMap((cohort, index) => cohort.validation.ready ? [] : cohort.validation.reasons.map((reason) => `COHORT_${index + 1}:${reason}`)),
+    validRequests.length < 2 && invalidIndexes.size > 0 && 'FEWER_THAN_TWO_VALID_COHORTS',
   ].filter(Boolean) as string[];
 
   if (requestRejections.length > 0) {
     return Object.freeze({
       status: 'NOT_AVAILABLE',
+      overallComparabilityStatus: audience !== 'AGENT_ONLY' ? 'RIGHTS_BLOCKED' : 'NOT_COMPARABLE',
       certification: CURRENT_SNAPSHOT_COMPARATIVE_INTELLIGENCE_WAVE_3_STATUS,
+      cohortNCertification: COHORT_N_MULTI_MARKET_COMPARATIVE_INTELLIGENCE_WAVE_5_STATUS,
       cohortNReadiness: 'COHORT_N_RUNTIME_READY',
       requestAsOf,
-      cohorts: Object.freeze(normalizedOnly.map((normalized, index) => Object.freeze({ label: request.cohorts[index]?.label ?? `Cohort ${index + 1}`, status: 'NOT_AVAILABLE' as const, normalized }))),
+      cohorts: Object.freeze(normalizedOnly.map((normalized, index) => Object.freeze({
+        label: request.cohorts[index]?.label ?? `Cohort ${index + 1}`,
+        status: normalized.validation.ready ? 'NOT_AVAILABLE' as const : 'INVALID_COHORT' as const,
+        normalized,
+        rejectionReasons: normalized.validation.ready ? Object.freeze([]) : normalized.validation.reasons,
+      }))),
       rejectedMetricIds,
       rejectedOperations,
       results: Object.freeze([]),
-      rejectionReasons: Object.freeze([...new Set(requestRejections)].sort()),
+      rejectionReasons: Object.freeze([...new Set([
+        ...requestRejections,
+        ...normalizedOnly.flatMap((cohort, index) => cohort.validation.ready ? [] : cohort.validation.reasons.map((reason) => `COHORT_${index + 1}:${reason}`)),
+      ])].sort()),
     });
   }
 
-  const aggregations = await Promise.all(request.cohorts.map((cohort) => aggregateAgentCohort(cohort.cohort, metricIds)));
-  const aggregationRejections = aggregations.flatMap((aggregation, index) => aggregation.status === 'READY' ? [] : [`COHORT_${index + 1}:AGGREGATION_NOT_AVAILABLE`]);
-  if (aggregationRejections.length > 0) {
+  const aggregations = await Promise.all(validRequests.map((cohort) => aggregateAgentCohort(cohort.cohort, metricIds)));
+  const validOriginalIndexes = request.cohorts.map((_, index) => index).filter((index) => !invalidIndexes.has(index));
+  const aggregationRejections = aggregations.flatMap((aggregation, index) => aggregation.status === 'READY' ? [] : [`COHORT_${validOriginalIndexes[index] + 1}:AGGREGATION_NOT_AVAILABLE`]);
+  const readyAggregations = aggregations.filter((aggregation) => aggregation.status === 'READY');
+  if (readyAggregations.length < 2) {
     return Object.freeze({
       status: 'NOT_AVAILABLE',
+      overallComparabilityStatus: 'EVIDENCE_INSUFFICIENT',
       certification: CURRENT_SNAPSHOT_COMPARATIVE_INTELLIGENCE_WAVE_3_STATUS,
+      cohortNCertification: COHORT_N_MULTI_MARKET_COMPARATIVE_INTELLIGENCE_WAVE_5_STATUS,
       cohortNReadiness: 'COHORT_N_RUNTIME_READY',
       requestAsOf,
-      cohorts: Object.freeze(aggregations.map((aggregation, index) => Object.freeze({ label: request.cohorts[index].label, status: aggregation.status, normalized: aggregation.normalized }))),
+      cohorts: Object.freeze([
+        ...aggregations.map((aggregation, index) => Object.freeze({ label: validRequests[index].label, status: aggregation.status, normalized: aggregation.normalized, rejectionReasons: aggregation.status === 'READY' ? Object.freeze([]) : Object.freeze(['AGGREGATION_NOT_AVAILABLE']) })),
+        ...normalizedOnly.flatMap((normalized, index) => invalidIndexes.has(index) ? [Object.freeze({ label: request.cohorts[index].label, status: 'INVALID_COHORT' as const, normalized, rejectionReasons: normalized.validation.reasons })] : []),
+      ]),
       rejectedMetricIds,
       rejectedOperations,
       results: Object.freeze([]),
@@ -383,24 +422,75 @@ export async function compareAgentCurrentSnapshotCohorts(request: AgentCompariso
     });
   }
 
+  const readyRequests = validRequests.filter((_, index) => aggregations[index].status === 'READY');
   const results = metricIds.map((metricId) => {
-    const artifacts = aggregations.map((aggregation) => aggregation.artifacts.find((artifact) => artifact.metricId === metricId)).filter((artifact): artifact is AgentCohortMetricArtifact => Boolean(artifact));
-    return compareAgentCurrentSnapshotMetricArtifacts({ metricId, artifacts, cohorts: request.cohorts, normalized: aggregations.map((item) => item.normalized), requestedOperations, requestAsOf });
+    const artifacts = readyAggregations.map((aggregation) => aggregation.artifacts.find((artifact) => artifact.metricId === metricId)).filter((artifact): artifact is AgentCohortMetricArtifact => Boolean(artifact));
+    return compareAgentCurrentSnapshotMetricArtifacts({ metricId, artifacts, cohorts: readyRequests, normalized: readyAggregations.map((item) => item.normalized), requestedOperations, requestAsOf });
   });
+  const partialRejections = Object.freeze([
+    ...normalizedOnly.flatMap((cohort, index) => cohort.validation.ready ? [] : cohort.validation.reasons.map((reason) => `COHORT_${index + 1}:${reason}`)),
+    ...aggregationRejections,
+  ].sort());
   return Object.freeze({
     status: 'READY',
+    overallComparabilityStatus: partialRejections.length ? 'PARTIAL' : results.some((result) => result.comparabilityStatus === 'COMPARABLE_WITH_LIMITATIONS') ? 'COMPARABLE_WITH_LIMITATIONS' : 'COMPARABLE',
     certification: CURRENT_SNAPSHOT_COMPARATIVE_INTELLIGENCE_WAVE_3_STATUS,
+    cohortNCertification: COHORT_N_MULTI_MARKET_COMPARATIVE_INTELLIGENCE_WAVE_5_STATUS,
     cohortNReadiness: 'COHORT_N_RUNTIME_READY',
     requestAsOf,
-    cohorts: Object.freeze(aggregations.map((aggregation, index) => Object.freeze({ label: request.cohorts[index].label, status: aggregation.status, normalized: aggregation.normalized }))),
+    cohorts: Object.freeze(request.cohorts.map((cohort, index) => {
+      if (invalidIndexes.has(index)) return Object.freeze({ label: cohort.label, status: 'INVALID_COHORT' as const, normalized: normalizedOnly[index], rejectionReasons: normalizedOnly[index].validation.reasons });
+      const validIndex = validNormalized.indexOf(normalizedOnly[index]);
+      const aggregation = aggregations[validIndex];
+      return Object.freeze({ label: cohort.label, status: aggregation.status, normalized: aggregation.normalized, rejectionReasons: aggregation.status === 'READY' ? Object.freeze([]) : Object.freeze(['AGGREGATION_NOT_AVAILABLE']) });
+    })),
     rejectedMetricIds,
     rejectedOperations,
     results: Object.freeze(results),
-    rejectionReasons: Object.freeze([]),
+    rejectionReasons: partialRejections,
   });
 }
 
 export function parseAgentComparisonSearchParams(searchParams: URLSearchParams): AgentComparisonRequest {
+  const cohortCountValue = searchParams.get('cohortCount');
+  const cohortCount = cohortCountValue ? Number(cohortCountValue) : null;
+  if (Number.isInteger(cohortCount) && cohortCount !== null) {
+    const cohorts = Array.from({ length: cohortCount }, (_, index): AgentComparisonCohortInput => {
+      const filters: Partial<Record<AgentCohortFilterKey, string>> = {};
+      for (const key of AGENT_COHORT_SUPPORTED_FILTER_KEYS) {
+        const value = searchParams.get(`cohort.${index}.${key}`);
+        if (value !== null) filters[key] = value;
+      }
+      return Object.freeze({
+        label: searchParams.get(`cohort.${index}.label`) || `Cohort ${index + 1}`,
+        surface: searchParams.get(`cohort.${index}.surface`),
+        cohort: Object.freeze({
+          purpose: searchParams.get('purpose') || 'Agent current-snapshot multi-cohort comparative preparation cohort.',
+          filters,
+          intervals: Object.freeze({
+            price: Object.freeze({ boundary: searchParams.get(`cohort.${index}.priceInterval`) }),
+            sqft: Object.freeze({ boundary: searchParams.get(`cohort.${index}.sqftInterval`) }),
+            yearBuilt: Object.freeze({ boundary: searchParams.get(`cohort.${index}.yearBuiltInterval`) }),
+            beds: Object.freeze({ boundary: searchParams.get(`cohort.${index}.bedsInterval`) }),
+            baths: Object.freeze({ boundary: searchParams.get(`cohort.${index}.bathsInterval`) }),
+          }),
+          unsupportedFilters: searchParams.getAll(`cohort.${index}.unsupportedFilter`),
+          analyticalGrain: searchParams.get(`cohort.${index}.analyticalGrain`),
+          temporalBasis: searchParams.get(`cohort.${index}.temporalBasis`),
+          periodForm: searchParams.get(`cohort.${index}.periodForm`),
+          scenarioBoundary: searchParams.get(`cohort.${index}.scenarioBoundary`),
+          asOf: searchParams.get(`cohort.${index}.asOf`),
+        }),
+      });
+    });
+    return Object.freeze({
+      cohorts: Object.freeze(cohorts),
+      metricIds: Object.freeze(searchParams.getAll('metricId')),
+      requestedOperations: Object.freeze(searchParams.getAll('operation') as AgentComparisonOperation[]),
+      audience: (searchParams.get('audience') as AtlasAudienceOutput | null) ?? 'AGENT_ONLY',
+      requestAsOf: searchParams.get('requestAsOf'),
+    });
+  }
   const cohortFromPrefix = (prefix: 'a' | 'b'): AgentComparisonCohortInput => {
     const filters: Partial<Record<AgentCohortFilterKey, string>> = {};
     for (const key of AGENT_COHORT_SUPPORTED_FILTER_KEYS) {

@@ -18,11 +18,13 @@ import type { PropertyCriteriaProfile } from '@/lib/agent-advisory-workbench/pro
 type MetricComparison = Readonly<{
   metricId: string;
   label: string;
+  cohortLabels: readonly string[];
   values: readonly (number | null)[];
   unit: string;
   absoluteDelta: number | null;
   percentageDelta: number | null;
   direction: 'HIGHER' | 'LOWER' | 'SAME' | 'UNDEFINED';
+  ranks: readonly (number | null)[];
   comparabilityStatus: string;
   comparabilityReasons: readonly string[];
   cohortRelationship: string;
@@ -34,6 +36,8 @@ type MetricComparison = Readonly<{
 type ComparisonState = Readonly<{
   loading: boolean;
   status: 'READY' | 'NOT_AVAILABLE';
+  overallComparabilityStatus: string;
+  cohorts: readonly Readonly<{ label: string; status: string; rejectionReasons: readonly string[] }>[];
   results: readonly MetricComparison[];
   rejectionReasons: readonly string[];
   requestAsOf: string | null;
@@ -76,22 +80,35 @@ function formatDelta(metric: MetricComparison) {
   return `${formatted} ${metric.direction === 'HIGHER' ? 'higher' : 'lower'}${suffix}`;
 }
 
-function toComparisonQuery(left: AgentCohortQuickFilters, right: AgentCohortQuickFilters, labels: readonly [string, string], priceInterval: IntervalMode) {
+function toComparisonQuery(cohorts: readonly AgentCohortQuickFilters[], labels: readonly string[], priceInterval: IntervalMode) {
   const params = new URLSearchParams();
   params.set('purpose', 'Agent current-snapshot comparative preparation cohort.');
   params.set('audience', 'AGENT_ONLY');
   for (const metricId of primaryMetricIds) params.append('metricId', metricId);
   for (const operation of ['SIDE_BY_SIDE', 'ABSOLUTE_DELTA', 'PERCENTAGE_DELTA', 'DIRECTION', 'RANK']) params.append('operation', operation);
-  for (const key of AGENT_COHORT_SUPPORTED_FILTER_KEYS) {
-    const leftValue = left[key];
-    const rightValue = right[key];
-    if (leftValue !== null) params.set(`a.${key}`, String(leftValue));
-    if (rightValue !== null) params.set(`b.${key}`, String(rightValue));
+  if (cohorts.length === 2) {
+    for (const key of AGENT_COHORT_SUPPORTED_FILTER_KEYS) {
+      const leftValue = cohorts[0][key];
+      const rightValue = cohorts[1][key];
+      if (leftValue !== null) params.set(`a.${key}`, String(leftValue));
+      if (rightValue !== null) params.set(`b.${key}`, String(rightValue));
+    }
+    params.set('a.priceInterval', priceInterval);
+    params.set('b.priceInterval', priceInterval);
+    params.set('a.label', labels[0] ?? 'Cohort A');
+    params.set('b.label', labels[1] ?? 'Cohort B');
+    return params.toString();
   }
-  params.set('a.priceInterval', priceInterval);
-  params.set('b.priceInterval', priceInterval);
-  params.set('a.label', labels[0]);
-  params.set('b.label', labels[1]);
+  params.set('cohortCount', String(cohorts.length));
+  cohorts.forEach((cohort, index) => {
+    for (const key of AGENT_COHORT_SUPPORTED_FILTER_KEYS) {
+      const value = cohort[key];
+      if (value !== null) params.set(`cohort.${index}.${key}`, String(value));
+    }
+    params.set(`cohort.${index}.priceInterval`, priceInterval);
+    params.set(`cohort.${index}.label`, labels[index] ?? `Cohort ${index + 1}`);
+    params.set(`cohort.${index}.surface`, 'AGENT_COMPARISON');
+  });
   return params.toString();
 }
 
@@ -142,12 +159,13 @@ export default function AgentCurrentSnapshotComparison({ surface, buyerCriteriaP
     () => surface === 'BUYER_PREPARATION' && buyerCriteriaProfile ? mapBuyerCriteriaToAgentCohort(buyerCriteriaProfile, config.defaultLeft) : null,
     [buyerCriteriaProfile, config.defaultLeft, surface],
   );
-  const [left, setLeft] = useState<AgentCohortQuickFilters>(buyerMapping?.filters ?? config.defaultLeft);
-  const [right, setRight] = useState<AgentCohortQuickFilters>(buyerMapping ? { ...buyerMapping.filters, city: 'louisville' } : config.defaultRight);
+  const initialCohorts = buyerMapping ? config.defaultCohorts.map((cohort) => ({ ...buyerMapping.filters, city: cohort.city })) : config.defaultCohorts;
+  const [cohorts, setCohorts] = useState<readonly AgentCohortQuickFilters[]>(() => initialCohorts);
   const [priceInterval, setPriceInterval] = useState<IntervalMode>('CLOSED');
   const [refreshToken, setRefreshToken] = useState(0);
-  const [comparison, setComparison] = useState<ComparisonState>({ loading: true, status: 'NOT_AVAILABLE', results: [], rejectionReasons: [], requestAsOf: null });
-  const query = useMemo(() => toComparisonQuery(left, right, [config.leftLabel, config.rightLabel], priceInterval), [config.leftLabel, config.rightLabel, left, priceInterval, right]);
+  const [comparison, setComparison] = useState<ComparisonState>({ loading: true, status: 'NOT_AVAILABLE', overallComparabilityStatus: 'NOT_COMPARABLE', cohorts: [], results: [], rejectionReasons: [], requestAsOf: null });
+  const labels = useMemo(() => cohorts.map((cohort, index) => cohort.city ? AGENT_COHORT_SUPPORTED_CITIES.find((city) => city.id === cohort.city)?.label ?? `Cohort ${index + 1}` : `Cohort ${index + 1}`), [cohorts]);
+  const query = useMemo(() => toComparisonQuery(cohorts, labels, priceInterval), [cohorts, labels, priceInterval]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -157,6 +175,8 @@ export default function AgentCurrentSnapshotComparison({ surface, buyerCriteriaP
         setComparison({
           loading: false,
           status: payload.status === 'READY' ? 'READY' : 'NOT_AVAILABLE',
+          overallComparabilityStatus: typeof payload.overallComparabilityStatus === 'string' ? payload.overallComparabilityStatus : 'NOT_COMPARABLE',
+          cohorts: Array.isArray(payload.cohorts) ? payload.cohorts : [],
           results: Array.isArray(payload.results) ? payload.results : [],
           rejectionReasons: Array.isArray(payload.rejectionReasons) ? payload.rejectionReasons : [],
           requestAsOf: typeof payload.requestAsOf === 'string' ? payload.requestAsOf : null,
@@ -164,13 +184,18 @@ export default function AgentCurrentSnapshotComparison({ surface, buyerCriteriaP
       })
       .catch((error: unknown) => {
         if (error instanceof DOMException && error.name === 'AbortError') return;
-        setComparison({ loading: false, status: 'NOT_AVAILABLE', results: [], rejectionReasons: ['COMPARISON_READ_UNAVAILABLE'], requestAsOf: null });
+        setComparison({ loading: false, status: 'NOT_AVAILABLE', overallComparabilityStatus: 'NOT_COMPARABLE', cohorts: [], results: [], rejectionReasons: ['COMPARISON_READ_UNAVAILABLE'], requestAsOf: null });
       });
     return () => controller.abort();
   }, [query, refreshToken]);
 
-  const updateLeft = <TKey extends keyof AgentCohortQuickFilters>(key: TKey, value: AgentCohortQuickFilters[TKey]) => setLeft((current) => ({ ...current, [key]: value }));
-  const updateRight = <TKey extends keyof AgentCohortQuickFilters>(key: TKey, value: AgentCohortQuickFilters[TKey]) => setRight((current) => ({ ...current, [key]: value }));
+  const updateCohort = (index: number) => <TKey extends keyof AgentCohortQuickFilters>(key: TKey, value: AgentCohortQuickFilters[TKey]) => setCohorts((current) => current.map((cohort, cohortIndex) => cohortIndex === index ? { ...cohort, [key]: value } : cohort));
+  const addCohort = () => setCohorts((current) => {
+    if (current.length >= 6) return current;
+    const nextCity = AGENT_COHORT_SUPPORTED_CITIES[current.length % AGENT_COHORT_SUPPORTED_CITIES.length]?.id ?? 'boulder';
+    return [...current, { ...current[current.length - 1], city: nextCity }];
+  });
+  const removeCohort = (index: number) => setCohorts((current) => current.length <= 2 ? current : current.filter((_, cohortIndex) => cohortIndex !== index));
 
   return <section
     className="mt-8 border border-emerald-200/20 bg-emerald-100/[0.045] p-5 sm:p-6"
@@ -198,10 +223,15 @@ export default function AgentCurrentSnapshotComparison({ surface, buyerCriteriaP
       <button type="button" onClick={() => { setComparison((current) => ({ ...current, loading: true })); setRefreshToken((current) => current + 1); }} className="inline-flex min-h-11 items-center justify-center gap-2 bg-emerald-200 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-emerald-100 focus:outline-none focus:ring-2 focus:ring-emerald-100" data-testid="agent-current-snapshot-comparison-refresh"><RefreshCw size={16} aria-hidden="true" /> Refresh comparison</button>
     </div>
 
-    <div className="mt-6 grid gap-4 xl:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] xl:items-start">
-      <CohortControls title={config.leftLabel} filters={left} surface={surface} update={updateLeft} />
-      <div className="hidden h-full items-center justify-center px-1 text-sm font-bold uppercase tracking-[0.14em] text-emerald-100/70 xl:flex">vs</div>
-      <CohortControls title={config.rightLabel} filters={right} surface={surface} update={updateRight} />
+    <div className="mt-6 grid gap-4 xl:grid-cols-3 xl:items-start">
+      {cohorts.map((cohort, index) => <div key={index} className="relative">
+        <CohortControls title={labels[index] ?? `Cohort ${index + 1}`} filters={cohort} surface={surface} update={updateCohort(index)} />
+        {cohorts.length > 2 ? <button type="button" onClick={() => removeCohort(index)} className="mt-2 min-h-9 border border-white/15 px-3 text-xs font-semibold text-slate-200">Remove cohort</button> : null}
+      </div>)}
+    </div>
+    <div className="mt-4 flex flex-wrap items-center gap-3">
+      <button type="button" onClick={addCohort} disabled={cohorts.length >= 6} className="min-h-10 border border-emerald-200/30 px-3 text-xs font-semibold text-emerald-100 disabled:cursor-not-allowed disabled:opacity-50">Add cohort</button>
+      <p className="text-xs text-slate-400">{cohorts.length} selected; minimum 2, maximum 6. Request order is preserved separately from rank.</p>
     </div>
 
     {config.generatedBandControl ? <section className="mt-4 border border-white/10 bg-black/10 p-4" data-testid="agent-current-snapshot-interval-controls">
@@ -223,9 +253,12 @@ export default function AgentCurrentSnapshotComparison({ surface, buyerCriteriaP
           <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-emerald-100/70">Primary comparative metrics</p>
           <h3 id="agent-current-snapshot-results-heading" className={projectAtlasTitleHierarchy.briefingSection}>{config.resultHeading}</h3>
         </div>
-        <p className="text-xs text-slate-400">{comparison.loading ? 'Reading current cohorts' : comparison.status === 'READY' ? 'Comparable current snapshot' : 'Comparison unavailable'}</p>
+        <p className="text-xs text-slate-400">{comparison.loading ? 'Reading current cohorts' : comparison.status === 'READY' ? `Current snapshot: ${comparison.overallComparabilityStatus}` : 'Comparison unavailable'}</p>
       </div>
       {comparison.rejectionReasons.length ? <p className="mt-4 border border-amber-200/20 bg-amber-100/[0.05] p-3 text-sm leading-6 text-amber-50" data-testid="agent-current-snapshot-comparison-rejections">{comparison.rejectionReasons.join(', ')}</p> : null}
+      {comparison.cohorts.length ? <div className="mt-4 grid gap-2 md:grid-cols-3" data-testid="agent-current-snapshot-cohort-statuses">
+        {comparison.cohorts.map((cohort, index) => <div key={`${cohort.label}-${index}`} className="border border-white/10 bg-black/15 p-3"><p className="text-xs font-semibold text-white">{cohort.label}</p><p className="mt-1 text-xs text-slate-400">{cohort.status}</p>{cohort.rejectionReasons.length ? <p className="mt-1 text-xs text-amber-100">{cohort.rejectionReasons.join(', ')}</p> : null}</div>)}
+      </div> : null}
       <div className="mt-4 grid gap-3 lg:grid-cols-2">
         {comparison.results.map((metric) => <article key={metric.metricId} className="border border-white/10 bg-black/15 p-4" data-testid="agent-current-snapshot-comparison-metric" data-agent-comparison-metric-id={metric.metricId} data-agent-comparison-status={metric.comparabilityStatus} data-agent-comparison-relationship={metric.cohortRelationship}>
           <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
@@ -236,10 +269,9 @@ export default function AgentCurrentSnapshotComparison({ surface, buyerCriteriaP
             <p className="text-xs font-semibold uppercase tracking-[0.12em] text-emerald-100/80">{metric.comparabilityStatus}</p>
           </div>
           <dl className="mt-4 grid gap-3 sm:grid-cols-2">
-            <div><dt className="text-xs text-slate-500">Cohort A</dt><dd className="mt-1 text-sm font-semibold text-slate-100">{formatMetricValue(metric.values[0] ?? null, metric.unit)}</dd></div>
-            <div><dt className="text-xs text-slate-500">Cohort B</dt><dd className="mt-1 text-sm font-semibold text-slate-100">{formatMetricValue(metric.values[1] ?? null, metric.unit)}</dd></div>
+            {metric.values.map((value, index) => <div key={`${metric.metricId}-${index}`}><dt className="text-xs text-slate-500">{metric.cohortLabels[index] ?? `Cohort ${index + 1}`}</dt><dd className="mt-1 text-sm font-semibold text-slate-100">{formatMetricValue(value ?? null, metric.unit)}{metric.ranks[index] ? <span className="ml-2 text-xs font-normal text-emerald-100">Rank {metric.ranks[index]}</span> : null}</dd></div>)}
           </dl>
-          <p className="mt-3 text-xs leading-5 text-slate-400">Coverage A {formatNumber(metric.coverage[0]?.includedPopulationCount ?? null)} of {formatNumber(metric.coverage[0]?.eligibleCohortCount ?? null)}; B {formatNumber(metric.coverage[1]?.includedPopulationCount ?? null)} of {formatNumber(metric.coverage[1]?.eligibleCohortCount ?? null)}. Relationship: {metric.cohortRelationship}. As-of skew: {metric.asOfAlignment.maxSkewMs ?? 'unknown'} ms.</p>
+          <p className="mt-3 text-xs leading-5 text-slate-400">Coverage is shown per cohort in request order. Relationship: {metric.cohortRelationship}. As-of skew: {metric.asOfAlignment.maxSkewMs ?? 'unknown'} ms.</p>
         </article>)}
         {!comparison.results.length ? <p className="border border-dashed border-white/15 p-4 text-sm text-slate-400" data-testid="agent-current-snapshot-comparison-empty">No current-snapshot comparative artifacts are available for these cohorts.</p> : null}
       </div>
