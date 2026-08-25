@@ -21,12 +21,33 @@ type CountState = Readonly<{
   cohortId: string | null;
   reasons: readonly string[];
   asOf: string | null;
+  artifacts: readonly MetricArtifact[];
 }>;
 
 type NumberFilterKey = 'priceMin' | 'priceMax' | 'bedsMin' | 'bathsMin' | 'sqftMin' | 'sqftMax' | 'yearBuiltMin' | 'yearBuiltMax';
+type MetricArtifact = Readonly<{
+  metricId: string;
+  label: string;
+  state: 'READY' | 'NO_DATA' | 'REJECTED';
+  value: number | null;
+  unit: string;
+  aggregation: string;
+  fieldBasis: string;
+  eligibleCohortCount: number;
+  includedPopulationCount: number;
+  nullMissingCount: number;
+  calculationVersion: string;
+  limitations: readonly string[];
+}>;
 
 function formatNumber(value: number | null) {
   return value === null ? 'Unavailable' : new Intl.NumberFormat('en-US').format(value);
+}
+
+function formatMetricValue(metric: MetricArtifact) {
+  if (metric.value === null) return 'No data';
+  if (metric.unit === 'USD') return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(metric.value);
+  return `${formatNumber(metric.value)} ${metric.unit}`;
 }
 
 function toQuery(filters: AgentCohortQuickFilters) {
@@ -49,7 +70,7 @@ function inputClass() {
 
 export default function AgentCohortBuilder({ surface }: { surface: 'MARKET_UPDATE_PREPARATION' | 'AGENT_WORKSPACE' }) {
   const [filters, setFilters] = useState<AgentCohortQuickFilters>(AGENT_COHORT_EMPTY_FILTERS);
-  const [count, setCount] = useState<CountState>({ loading: false, available: false, value: null, cohortId: null, reasons: [], asOf: null });
+  const [count, setCount] = useState<CountState>({ loading: false, available: false, value: null, cohortId: null, reasons: [], asOf: null, artifacts: [] });
   const [refreshToken, setRefreshToken] = useState(0);
   const query = useMemo(() => toQuery(filters), [filters]);
   const selectedFilterCount = useMemo(() => Object.entries(filters).filter(([key, value]) => key !== 'statusScope' && value !== null).length, [filters]);
@@ -66,11 +87,12 @@ export default function AgentCohortBuilder({ surface }: { surface: 'MARKET_UPDAT
           cohortId: typeof payload.cohort?.id === 'string' ? payload.cohort.id : null,
           reasons: Array.isArray(payload.cohort?.validation?.reasons) ? payload.cohort.validation.reasons : [],
           asOf: typeof payload.count?.asOf === 'string' ? payload.count.asOf : null,
+          artifacts: Array.isArray(payload.metrics?.artifacts) ? payload.metrics.artifacts : [],
         });
       })
       .catch((error: unknown) => {
         if (error instanceof DOMException && error.name === 'AbortError') return;
-        setCount({ loading: false, available: false, value: null, cohortId: null, reasons: ['COUNT_READ_UNAVAILABLE'], asOf: null });
+        setCount({ loading: false, available: false, value: null, cohortId: null, reasons: ['COUNT_READ_UNAVAILABLE'], asOf: null, artifacts: [] });
       });
     return () => controller.abort();
   }, [query, refreshToken]);
@@ -152,5 +174,23 @@ export default function AgentCohortBuilder({ surface }: { surface: 'MARKET_UPDAT
         <div><p className="font-medium text-white">Not admitted here</p><p className="mt-1">Sales, DOM/CDOM, DTO/DTS, absorption, SP/LP, relist episodes, client reports, PDF/export, scenarios, recommendations, and historical comparisons.</p></div>
       </div>
     </details>
+
+    <section className="mt-5 border border-white/10 bg-white/[0.025] p-4" aria-labelledby="agent-cohort-aggregations-heading" data-testid="agent-cohort-aggregations" data-agent-cohort-aggregation-version={count.artifacts[0]?.calculationVersion ?? 'AGENT_COHORT_BASIC_AGGREGATION_V1'}>
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-cyan-100/70">Admitted aggregations</p>
+          <h3 id="agent-cohort-aggregations-heading" className={projectAtlasTitleHierarchy.briefingSection}>Current listing summaries</h3>
+        </div>
+        <p className="text-xs text-slate-400">Agent-only, current as-of snapshot</p>
+      </div>
+      <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+        {count.artifacts.map((metric) => <article key={metric.metricId} className="border border-white/10 bg-black/15 p-4" data-testid="agent-cohort-metric-artifact" data-agent-cohort-metric-id={metric.metricId} data-agent-cohort-metric-state={metric.state} data-agent-cohort-field-basis={metric.fieldBasis} data-agent-cohort-aggregation={metric.aggregation}>
+          <p className="text-xs leading-5 text-slate-400">{metric.label}</p>
+          <p className="mt-2 text-xl font-semibold text-white">{formatMetricValue(metric)}</p>
+          <p className="mt-3 text-xs leading-5 text-slate-400">Included {formatNumber(metric.includedPopulationCount)} of {formatNumber(metric.eligibleCohortCount)} listing records. Null/missing {formatNumber(metric.nullMissingCount)}.</p>
+        </article>)}
+        {!count.artifacts.length ? <p className="border border-dashed border-white/15 p-4 text-sm text-slate-400" data-testid="agent-cohort-no-aggregations">No admitted aggregate artifacts are available for this cohort.</p> : null}
+      </div>
+    </section>
   </section>;
 }

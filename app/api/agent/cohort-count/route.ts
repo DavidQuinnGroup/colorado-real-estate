@@ -1,16 +1,17 @@
 import { NextResponse } from 'next/server';
 
-import { countAgentCohortListings } from '@/lib/agentCohortCount';
+import { aggregateAgentCohort } from '@/lib/agentCohortAggregation';
 import { parseAgentCohortSearchParams } from '@/lib/agentCohortBuilder';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request) {
-  const input = parseAgentCohortSearchParams(new URL(request.url).searchParams);
-  const result = await countAgentCohortListings(input);
+  const searchParams = new URL(request.url).searchParams;
+  const input = parseAgentCohortSearchParams(searchParams);
+  const result = await aggregateAgentCohort(input, searchParams.getAll('metricId'));
   return NextResponse.json(
     {
-      status: result.count.available ? 'READY' : 'NOT_AVAILABLE',
+      status: result.status,
       cohort: {
         id: result.normalized.cohort.cohortDefinitionId,
         version: result.normalized.cohort.cohortDefinitionVersion,
@@ -25,7 +26,11 @@ export async function GET(request: Request) {
         sourceAsOf: result.normalized.cohort.sourceScope.sourceAsOf,
       },
       count: result.count,
+      metrics: {
+        artifacts: result.artifacts,
+        rejectedMetricIds: result.rejectedMetricIds,
+      },
     },
-    { status: result.count.available ? 200 : 422 },
+    { status: result.status === 'READY' ? 200 : 422 },
   );
 }
