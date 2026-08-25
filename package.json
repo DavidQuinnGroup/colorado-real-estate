@@ -240,6 +240,7 @@
     "check:admitted-filter-registry-priority-1-property-segmentation-wave-7": "jiti scripts/checkAdmittedFilterRegistryPriority1PropertySegmentationWave7.ts",
     "check:zip-postal-listing-filter-foundation-admission-review": "jiti scripts/checkZipPostalListingFilterFoundationAdmissionReview.ts",
     "check:zip-postal-listing-filter-bounded-implementation-wave-8": "jiti scripts/checkZipPostalListingFilterBoundedImplementationWave8.ts",
+    "check:versioned-city-set-expansion-admission-review": "jiti scripts/checkVersionedCitySetExpansionAdmissionReview.ts",
     "check:shared-disclosure-state-indicator": "jiti scripts/checkSharedDisclosureStateIndicator.ts",
     "check:agent-place-preparation-admission": "jiti scripts/checkAgentPlacePreparationAdmission.ts",
     "check:agent-place-conversation-preparation-experience": "jiti scripts/checkAgentPlaceConversationPreparationExperience.ts",
