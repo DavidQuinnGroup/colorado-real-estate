@@ -20,8 +20,8 @@ import {
   AGENT_COHORT_SUPPORTED_STATUS_SCOPES,
 } from '@/lib/agentCohortBuilder';
 
-type CompetingContextFilterKey = 'city' | 'propertyType' | 'statusScope' | 'priceMin' | 'priceMax' | 'bedsMin' | 'bedsMax' | 'bedsExact' | 'bathsMin' | 'bathsMax' | 'bathsExact' | 'sqftMin' | 'sqftMax' | 'yearBuiltMin' | 'yearBuiltMax' | 'lotSizeMin' | 'lotSizeMax';
-type CompetingContextFilters = Partial<Record<CompetingContextFilterKey, string | number | null>>;
+type CompetingContextFilterKey = 'city' | 'zip' | 'propertyType' | 'statusScope' | 'priceMin' | 'priceMax' | 'bedsMin' | 'bedsMax' | 'bedsExact' | 'bathsMin' | 'bathsMax' | 'bathsExact' | 'sqftMin' | 'sqftMax' | 'yearBuiltMin' | 'yearBuiltMax' | 'lotSizeMin' | 'lotSizeMax';
+type CompetingContextFilters = Partial<Record<CompetingContextFilterKey, string | number | readonly string[] | null>>;
 type CompetingContextPayload = Readonly<{
   status: 'READY' | 'NOT_AVAILABLE';
   rejectionReasons: readonly string[];
@@ -29,7 +29,7 @@ type CompetingContextPayload = Readonly<{
     analyticalGrain: 'MLS_LISTING';
     observationAsOf: string;
     currentStatus: string;
-    fields: { city: string; propertyType: string; price: number | null; beds: number | null; baths: number | null; sqft: number | null; yearBuilt: number | null; lotSize: number | null };
+    fields: { city: string; zip: string | null; propertyType: string; price: number | null; beds: number | null; baths: number | null; sqft: number | null; yearBuilt: number | null; lotSize: number | null };
     missingFields: readonly string[];
   } | null;
   cohort: {
@@ -96,7 +96,9 @@ function formatDelta(value: number | null, unit: string) {
 function filterQuery(filters: CompetingContextFilters) {
   const params = new URLSearchParams();
   for (const [key, value] of Object.entries(filters)) {
-    if (value !== null && value !== undefined && value !== '') params.set(key, String(value));
+    if (Array.isArray(value)) {
+      for (const entry of value) params.append(key, entry);
+    } else if (value !== null && value !== undefined && value !== '') params.set(key, String(value));
   }
   return params;
 }
@@ -154,7 +156,7 @@ export default function PropertyConversationExperience() {
     'Which physical-condition items should be addressed through inspection rather than listing interpretation?',
     'Are HOA, title, tax, insurance, financing, or municipal record questions relevant and still unconfirmed?',
   ] : [];
-  const selectedCompetingFilterCount = Object.values(competingFilters).filter((value) => value !== null && value !== undefined).length;
+  const selectedCompetingFilterCount = Object.values(competingFilters).filter((value) => Array.isArray(value) ? value.length > 0 : value !== null && value !== undefined).length;
 
   const readCompetingContext = useCallback(async (slug: string, filters: CompetingContextFilters) => {
     setCompetingContextState('READING');
@@ -296,6 +298,10 @@ export default function PropertyConversationExperience() {
     setCompetingFilters((current) => ({ ...current, [key]: value || null }));
   }
 
+  function updateCompetingZipFilter(value: string) {
+    setCompetingFilters((current) => ({ ...current, zip: value.split(',').map((entry) => entry.trim()).filter(Boolean) }));
+  }
+
   return (
     <main className="min-h-screen bg-[#071014] px-5 py-6 text-slate-100 sm:px-8 sm:py-8 lg:px-12" data-testid="agent-property-conversation-experience" data-agent-only="true" data-persistence="false" data-customer-data="false" data-provider-activity="false" data-public-record-retrieval="false" data-recommendation="false" data-fair-housing-inference="false">
       <div className="mx-auto max-w-6xl">
@@ -337,12 +343,14 @@ export default function PropertyConversationExperience() {
             </div>
 
             <div className="mt-5 grid gap-5 lg:grid-cols-[1fr_1.2fr]">
-              <div className="border border-white/10 bg-black/10 p-4" data-testid="agent-current-competing-listing-subject"><p className="text-xs font-semibold uppercase tracking-[0.12em] text-cyan-100/70">Subject listing</p><dl className="mt-4 grid gap-3 text-sm"><div className="flex justify-between gap-4"><dt className="text-slate-400">Grain</dt><dd className="font-semibold text-white">MLS listing</dd></div><div className="flex justify-between gap-4"><dt className="text-slate-400">Status</dt><dd className="font-semibold text-white">{property.status}</dd></div><div className="flex justify-between gap-4"><dt className="text-slate-400">Current asking/list price</dt><dd className="font-semibold text-white">{formatCurrency(property.price)}</dd></div><div className="flex justify-between gap-4"><dt className="text-slate-400">Observed</dt><dd className="font-semibold text-white">{formatDate(source.observedAt)}</dd></div></dl></div>
+              <div className="border border-white/10 bg-black/10 p-4" data-testid="agent-current-competing-listing-subject"><p className="text-xs font-semibold uppercase tracking-[0.12em] text-cyan-100/70">Subject listing</p><dl className="mt-4 grid gap-3 text-sm"><div className="flex justify-between gap-4"><dt className="text-slate-400">Grain</dt><dd className="font-semibold text-white">MLS listing</dd></div><div className="flex justify-between gap-4"><dt className="text-slate-400">Status</dt><dd className="font-semibold text-white">{property.status}</dd></div><div className="flex justify-between gap-4"><dt className="text-slate-400">Listing ZIP</dt><dd className="font-semibold text-white">{property.zip}</dd></div><div className="flex justify-between gap-4"><dt className="text-slate-400">Current asking/list price</dt><dd className="font-semibold text-white">{formatCurrency(property.price)}</dd></div><div className="flex justify-between gap-4"><dt className="text-slate-400">Observed</dt><dd className="font-semibold text-white">{formatDate(source.observedAt)}</dd></div></dl></div>
               <div className="border border-white/10 bg-black/10 p-4" data-testid="agent-current-competing-listing-criteria"><div className="flex items-center gap-3"><SlidersHorizontal className="h-4 w-4 text-cyan-100" aria-hidden="true" /><p className="text-xs font-semibold uppercase tracking-[0.12em] text-cyan-100/70">{competingContext?.cohort?.derivation === 'AGENT_ADJUSTED_COMPETING_COHORT' ? 'Agent-adjusted cohort' : 'System-derived starting cohort'}</p></div><div className="mt-4 flex flex-wrap gap-2">{(competingContext?.cohort?.visibleCriteria ?? ['City, residential property type, and active status']).map((item) => <span key={item} className="border border-white/10 bg-white/[0.04] px-3 py-1 text-xs text-slate-300">{item}</span>)}</div><p className="mt-4 text-xs leading-5 text-slate-400">The starting cohort is transparent context. Narrowing remains Agent-controlled and uses only already admitted filters.</p></div>
             </div>
 
             <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4" data-testid="agent-current-competing-listing-refinement">
               <label className="block text-xs font-medium text-slate-300"><span>City</span><select value={competingFilters.city ?? ''} onChange={(event) => updateCompetingTextFilter('city', event.target.value)} className="mt-2 block min-h-10 w-full border border-white/15 bg-black/20 px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-100" data-testid="agent-current-competing-listing-city"><option value="">Subject city</option>{AGENT_COHORT_SUPPORTED_CITIES.map((city) => <option key={city.id} value={city.id}>{city.label}</option>)}</select></label>
+              <label className="block text-xs font-medium text-slate-300"><span>Listing ZIPs</span><input value={Array.isArray(competingFilters.zip) ? competingFilters.zip.join(', ') : competingFilters.zip ?? ''} onChange={(event) => updateCompetingZipFilter(event.target.value)} placeholder={property.zip || '80301, 80302'} className="mt-2 block min-h-10 w-full border border-white/15 bg-black/20 px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-100" data-testid="agent-current-competing-listing-zip" data-agent-current-competing-listing-zip-postal-attribute="true" data-agent-current-competing-listing-zip-geography="false" /></label>
+              {property.zip ? <button type="button" onClick={() => setCompetingFilters((current) => ({ ...current, zip: [property.zip] }))} className="min-h-10 border border-white/15 px-3 text-xs font-semibold text-cyan-100 transition hover:border-cyan-100/50 hover:text-white focus:outline-none focus:ring-2 focus:ring-cyan-100" data-testid="agent-current-competing-listing-use-subject-zip">Use subject ZIP</button> : null}
               <label className="block text-xs font-medium text-slate-300"><span>Property type</span><select value={competingFilters.propertyType ?? ''} onChange={(event) => updateCompetingTextFilter('propertyType', event.target.value)} className="mt-2 block min-h-10 w-full border border-white/15 bg-black/20 px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-100" data-testid="agent-current-competing-listing-property-type"><option value="">Subject type</option>{AGENT_COHORT_SUPPORTED_PROPERTY_TYPES.map((type) => <option key={type.id} value={type.id}>{type.label}</option>)}</select></label>
               <label className="block text-xs font-medium text-slate-300"><span>Status scope</span><select value={competingFilters.statusScope ?? ''} onChange={(event) => updateCompetingTextFilter('statusScope', event.target.value)} className="mt-2 block min-h-10 w-full border border-white/15 bg-black/20 px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-100" data-testid="agent-current-competing-listing-status"><option value="">Active</option>{AGENT_COHORT_SUPPORTED_STATUS_SCOPES.map((status) => <option key={status.id} value={status.id}>{status.label}</option>)}</select></label>
               {([

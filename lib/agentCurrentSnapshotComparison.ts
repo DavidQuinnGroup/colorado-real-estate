@@ -169,6 +169,19 @@ function sameBasePopulation(left: AgentCohortQuickFilters, right: AgentCohortQui
 
 const relationshipDimensions = ['price', 'sqft', 'yearBuilt', 'beds', 'baths', 'lotSize'] as const satisfies readonly AgentNumericIntervalDimension[];
 
+function zipSetRelationship(left: readonly string[], right: readonly string[]) {
+  if (!left.length && !right.length) return 'SAME_INTERVAL' as const;
+  if (!left.length || !right.length) return 'OVERLAPPING' as const;
+  const leftSet = new Set(left);
+  const rightSet = new Set(right);
+  const intersection = left.filter((zip) => rightSet.has(zip));
+  if (intersection.length === leftSet.size && intersection.length === rightSet.size) return 'SAME_INTERVAL' as const;
+  if (intersection.length === 0) return 'DISJOINT' as const;
+  if (intersection.length === leftSet.size) return 'SUBSET' as const;
+  if (intersection.length === rightSet.size) return 'SUPERSET' as const;
+  return 'OVERLAPPING' as const;
+}
+
 function isSubset(left: AgentCohortQuickFilters, right: AgentCohortQuickFilters) {
   if (!sameBasePopulation(left, right)) return false;
   return true;
@@ -180,7 +193,11 @@ export function classifyAgentCohortRelationship(left: AgentCohortNormalizedDefin
   if (left.serializedCohortIdentity === right.serializedCohortIdentity) return 'SAME_POPULATION';
   if (leftFilters.city && rightFilters.city && leftFilters.city !== rightFilters.city) return 'DISJOINT';
   if (!sameBasePopulation(leftFilters, rightFilters)) return 'UNKNOWN_RELATIONSHIP';
-  const intervalRelationships = relationshipDimensions.map((dimension) => classifyAgentNumericIntervals(left.intervalSemantics[dimension], right.intervalSemantics[dimension]));
+  const zipRelationship = zipSetRelationship(leftFilters.zip, rightFilters.zip);
+  const intervalRelationships = [
+    zipRelationship,
+    ...relationshipDimensions.map((dimension) => classifyAgentNumericIntervals(left.intervalSemantics[dimension], right.intervalSemantics[dimension])),
+  ];
   if (intervalRelationships.includes('DISJOINT')) {
     return 'DISJOINT';
   }
@@ -468,8 +485,13 @@ export function parseAgentComparisonSearchParams(searchParams: URLSearchParams):
     const cohorts = Array.from({ length: cohortCount }, (_, index): AgentComparisonCohortInput => {
       const filters: Partial<Record<AgentCohortFilterKey, string>> = {};
       for (const key of AGENT_COHORT_SUPPORTED_FILTER_KEYS) {
-        const value = searchParams.get(`cohort.${index}.${key}`);
-        if (value !== null) filters[key] = value;
+        const paramKey = `cohort.${index}.${key}`;
+        const values = searchParams.getAll(paramKey);
+        if (values.length > 1 && key === 'zip') filters[key] = values.join(',');
+        else {
+          const value = searchParams.get(paramKey);
+          if (value !== null) filters[key] = value;
+        }
       }
       return Object.freeze({
         label: searchParams.get(`cohort.${index}.label`) || `Cohort ${index + 1}`,
@@ -504,8 +526,13 @@ export function parseAgentComparisonSearchParams(searchParams: URLSearchParams):
   const cohortFromPrefix = (prefix: 'a' | 'b'): AgentComparisonCohortInput => {
     const filters: Partial<Record<AgentCohortFilterKey, string>> = {};
     for (const key of AGENT_COHORT_SUPPORTED_FILTER_KEYS) {
-      const value = searchParams.get(`${prefix}.${key}`);
-      if (value !== null) filters[key] = value;
+      const paramKey = `${prefix}.${key}`;
+      const values = searchParams.getAll(paramKey);
+      if (values.length > 1 && key === 'zip') filters[key] = values.join(',');
+      else {
+        const value = searchParams.get(paramKey);
+        if (value !== null) filters[key] = value;
+      }
     }
     return Object.freeze({
       label: searchParams.get(`${prefix}.label`) || (prefix === 'a' ? 'Cohort A' : 'Cohort B'),

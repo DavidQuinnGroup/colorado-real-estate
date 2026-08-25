@@ -32,6 +32,7 @@ export function buildAgentCohortPrismaWhere(normalized: AgentCohortNormalizedDef
   const filters = normalized.filters;
   return {
     city: filters.city ? { equals: getAgentCohortCityLabel(filters.city) ?? undefined, mode: 'insensitive' } : undefined,
+    zip: filters.zip.length ? { in: [...filters.zip] } : undefined,
     propertyType: filters.propertyType ? { equals: getAgentCohortPropertyTypeValue(filters.propertyType) ?? undefined, mode: 'insensitive' } : undefined,
     status: { equals: getAgentCohortStatusValue(filters.statusScope), mode: 'insensitive' },
     price: intervalWhere(normalized.intervalSemantics.price, true),

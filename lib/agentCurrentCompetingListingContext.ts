@@ -31,7 +31,7 @@ export type SubjectListingContextRequest = Readonly<{
   historical?: boolean;
   dom?: boolean;
   soldComparable?: boolean;
-  filters?: Partial<Record<AgentCohortFilterKey, string | number | null | undefined>>;
+  filters?: Partial<Record<AgentCohortFilterKey, string | number | readonly string[] | null | undefined>>;
   unsupportedFilters?: readonly string[];
 }>;
 
@@ -82,6 +82,7 @@ export type CurrentCompetingListingContextResult = Readonly<{
     currentStatus: string;
     fields: Readonly<{
       city: string;
+      zip: string | null;
       propertyType: string;
       price: number | null;
       beds: number | null;
@@ -177,6 +178,8 @@ function statusScopeFor(label: string) {
 function visibleCriteria(filters: AgentCohortQuickFilters) {
   return Object.freeze([
     filters.city && `City: ${AGENT_COHORT_SUPPORTED_CITIES.find((city) => city.id === filters.city)?.label}`,
+    filters.zip.length === 1 && `ZIP: ${filters.zip[0]}`,
+    filters.zip.length > 1 && `ZIPs: ${filters.zip.join(', ')}`,
     filters.propertyType && `Property type: ${AGENT_COHORT_SUPPORTED_PROPERTY_TYPES.find((type) => type.id === filters.propertyType)?.label}`,
     `Status: ${AGENT_COHORT_SUPPORTED_STATUS_SCOPES.find((status) => status.id === filters.statusScope)?.label ?? filters.statusScope}`,
     filters.priceMin !== null && `Minimum current asking/list price: ${filters.priceMin}`,
@@ -203,6 +206,7 @@ function missingFields(fields: SubjectListingContext['fields']) {
 export function buildSubjectListingContext(candidate: AgentPropertyConversationCandidate) {
   const subjectFields = Object.freeze({
     city: candidate.property.city ?? '',
+    zip: candidate.property.zip ?? null,
     propertyType: candidate.property.propertyType ?? '',
     price: candidate.property.price,
     beds: candidate.property.beds,
@@ -242,7 +246,7 @@ export function deriveCompetingCohortInput(candidate: AgentPropertyConversationC
   const city = cityIdFor(candidate.property.city ?? '');
   const propertyType = propertyTypeIdFor(candidate.property.propertyType ?? '');
   const statusScope = statusScopeFor(candidate.property.status ?? '') ?? 'active';
-  const filters: Partial<Record<AgentCohortFilterKey, string | number | null | undefined>> = {
+  const filters: Partial<Record<AgentCohortFilterKey, string | number | readonly string[] | null | undefined>> = {
     city,
     propertyType,
     statusScope,

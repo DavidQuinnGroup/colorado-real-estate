@@ -22,10 +22,14 @@ function boolParam(value: string | null) {
 }
 
 function parseFilters(searchParams: URLSearchParams) {
-  const filters: Partial<Record<AgentCohortFilterKey, string | number | null | undefined>> = {};
+  const filters: Partial<Record<AgentCohortFilterKey, string | number | readonly string[] | null | undefined>> = {};
   for (const key of AGENT_COHORT_SUPPORTED_FILTER_KEYS) {
-    const value = searchParams.get(key);
-    if (value !== null) filters[key] = value;
+    const values = searchParams.getAll(key);
+    if (values.length > 1 && key === 'zip') filters[key] = values;
+    else {
+      const value = searchParams.get(key);
+      if (value !== null) filters[key] = value;
+    }
   }
   return filters;
 }

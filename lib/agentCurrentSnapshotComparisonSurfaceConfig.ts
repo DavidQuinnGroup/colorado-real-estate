@@ -19,6 +19,7 @@ export type AgentComparisonSurfaceConfig = Readonly<{
 
 const baseFilters: AgentCohortQuickFilters = Object.freeze({
   city: 'boulder',
+  zip: Object.freeze([]),
   propertyType: 'residential',
   statusScope: 'active',
   priceMin: null,

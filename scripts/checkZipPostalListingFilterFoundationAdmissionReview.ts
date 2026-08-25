@@ -12,7 +12,7 @@ import {
   normalizeZipPostalListingFilterSet,
   normalizeZipPostalListingFilterValue,
 } from '../lib/agentZipPostalListingFilterAdmissionReview';
-import { isAgentAdmittedFilterKey, isAgentUnadmittedFilterKey } from '../lib/agentAdmittedFilterRegistry';
+import { getAgentAdmittedFilterRegistration } from '../lib/agentAdmittedFilterRegistry';
 import { normalizeAgentCohortDefinition, parseAgentCohortSearchParams } from '../lib/agentCohortBuilder';
 
 const read = (path: string) => fs.readFileSync(path, 'utf8');
@@ -61,11 +61,9 @@ assert.deepEqual(normalizeZipPostalListingFilterSet(['80302', '80301', '80302'])
 });
 assert.equal(normalizeZipPostalListingFilterSet([]).ready, false);
 
-assert.equal(isAgentAdmittedFilterKey('zip'), false);
-assert.equal(isAgentUnadmittedFilterKey('zip'), true);
+assert.equal(getAgentAdmittedFilterRegistration('zip')?.propertyField, 'zip');
 const parsedZip = parseAgentCohortSearchParams(new URLSearchParams('city=boulder&propertyType=residential&statusScope=active&zip=80301'));
-assert.equal(parsedZip.unsupportedFilters?.includes('zip'), true);
-assert.equal(normalizeAgentCohortDefinition(parsedZip).validation.ready, false);
+assert.equal(normalizeAgentCohortDefinition(parsedZip).validation.ready, true);
 
 assert.equal(ZIP_POSTAL_LISTING_IMPLEMENTATION_READINESS.zipOnlyCohort, 'BLOCKED_BY_CURRENT_GEOGRAPHY_CONTRACT');
 assert.equal(ZIP_POSTAL_LISTING_IMPLEMENTATION_READINESS.cityZipCohort, 'READY_NOW_FOR_BOUNDED_IMPLEMENTATION');

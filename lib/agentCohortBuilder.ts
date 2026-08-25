@@ -2,6 +2,7 @@ import type { AtlasCohortDefinition } from './atlasCohortComparativeContract';
 import { ATLAS_COHORT_CONTRACT_VERSION, validateAtlasCohortDefinition } from './atlasCohortComparativeContract';
 import { legacyClosedInterval, normalizeAgentNumericInterval, type AgentNumericInterval, type AgentNumericIntervalBoundaryKind, type AgentNumericIntervalDimension, type AgentNumericIntervalInput } from './agentNumericInterval';
 import { AGENT_ADMITTED_FILTER_REGISTRY, isAgentAdmittedFilterKey, isAgentUnadmittedFilterKey } from './agentAdmittedFilterRegistry';
+import { normalizeZipPostalListingFilterSet } from './agentZipPostalListingFilterAdmissionReview';
 
 export const REUSABLE_AGENT_COHORT_BUILDER_WAVE_1_STATUS =
   'REUSABLE_AGENT_COHORT_BUILDER_BOUNDED_IMPLEMENTATION_WAVE_1_CERTIFIED' as const;
@@ -28,6 +29,7 @@ export const AGENT_COHORT_SUPPORTED_STATUS_SCOPES = [
 
 export const AGENT_COHORT_SUPPORTED_FILTER_KEYS = [
   'city',
+  'zip',
   'propertyType',
   'statusScope',
   'priceMin',
@@ -53,6 +55,7 @@ export type AgentCohortStatusScopeId = (typeof AGENT_COHORT_SUPPORTED_STATUS_SCO
 
 export type AgentCohortQuickFilters = Readonly<{
   city: AgentCohortCityId | null;
+  zip: readonly string[];
   propertyType: AgentCohortPropertyTypeId | null;
   statusScope: AgentCohortStatusScopeId;
   priceMin: number | null;
@@ -73,7 +76,7 @@ export type AgentCohortQuickFilters = Readonly<{
 
 export type AgentCohortInput = Readonly<{
   purpose: string;
-  filters: Partial<Record<AgentCohortFilterKey, string | number | null | undefined>>;
+  filters: Partial<Record<AgentCohortFilterKey, string | number | readonly string[] | null | undefined>>;
   intervals?: Partial<Record<AgentNumericIntervalDimension, AgentNumericIntervalInput>>;
   unsupportedFilters?: readonly string[];
   analyticalGrain?: string | null;
@@ -109,6 +112,7 @@ export type AgentCohortCountContract = Readonly<{
 
 export const AGENT_COHORT_EMPTY_FILTERS: AgentCohortQuickFilters = Object.freeze({
   city: null,
+  zip: Object.freeze([]),
   propertyType: null,
   statusScope: 'active',
   priceMin: null,
@@ -155,6 +159,16 @@ function statusById(value: unknown) {
   return AGENT_COHORT_SUPPORTED_STATUS_SCOPES.find((status) => status.id === normalized || status.sourceValue.toLowerCase() === normalized) ?? null;
 }
 
+function normalizeZipFilter(value: unknown) {
+  if (value === null || value === undefined || value === '') return Object.freeze({ values: Object.freeze([] as string[]), rejected: Object.freeze([] as string[]) });
+  const rawValues = Array.isArray(value) ? value : typeof value === 'string' ? value.split(',') : [value];
+  const normalized = normalizeZipPostalListingFilterSet(rawValues.map((item) => typeof item === 'string' ? item : item));
+  if (normalized.ready && normalized.normalized) {
+    return Object.freeze({ values: Object.freeze(normalized.normalized.split(',')), rejected: Object.freeze([] as string[]) });
+  }
+  return Object.freeze({ values: Object.freeze([] as string[]), rejected: normalized.reasons.length ? normalized.reasons : Object.freeze(['ZIP_MALFORMED']) });
+}
+
 function stableSerialize(value: unknown): string {
   if (Array.isArray(value)) return `[${value.map(stableSerialize).join(',')}]`;
   if (value && typeof value === 'object') {
@@ -179,8 +193,13 @@ function explicitIntervalBoundary(input: AgentCohortInput, dimension: AgentNumer
 export function parseAgentCohortSearchParams(searchParams: URLSearchParams): AgentCohortInput {
   const filters: Partial<Record<AgentCohortFilterKey, string>> = {};
   for (const key of AGENT_COHORT_SUPPORTED_FILTER_KEYS) {
-    const value = searchParams.get(key);
-    if (value !== null) filters[key] = value;
+    const values = searchParams.getAll(key);
+    if (values.length > 1 && key === 'zip') {
+      filters[key] = values.join(',');
+    } else {
+      const value = searchParams.get(key);
+      if (value !== null) filters[key] = value;
+    }
   }
   const unsupportedFilters = new Set(searchParams.getAll('unsupportedFilter'));
   for (const key of searchParams.keys()) {
@@ -218,6 +237,9 @@ export function normalizeAgentCohortDefinition(input: AgentCohortInput): AgentCo
 
   const city = cityById(input.filters.city);
   if (text(input.filters.city) && !city) rejected.add('city');
+  const zip = normalizeZipFilter(input.filters.zip);
+  for (const reason of zip.rejected) rejected.add(`zip:${reason}`);
+  if (zip.values.length && !city) rejected.add('zip:ZIP_REQUIRES_ADMITTED_CITY');
   const propertyType = propertyTypeById(input.filters.propertyType);
   if (text(input.filters.propertyType) && !propertyType) rejected.add('propertyType');
   const status = statusById(input.filters.statusScope);
@@ -259,6 +281,7 @@ export function normalizeAgentCohortDefinition(input: AgentCohortInput): AgentCo
 
   const filters: AgentCohortQuickFilters = Object.freeze({
     city: city?.id ?? null,
+    zip: zip.values,
     propertyType: propertyType?.id ?? null,
     statusScope: status?.id ?? 'active',
     priceMin: Number.isNaN(numbers.priceMin) ? null : numbers.priceMin,
@@ -402,6 +425,7 @@ export function buildAgentCohortCountContract(input: Readonly<{
       'Count is current listing-record stock, not physical properties, listing episodes, sales, recommendations, scenarios, or historical flow.',
       'Null fields are not coerced to zero; records with null values fail the matching predicate for minimum or maximum numeric filters.',
       'Only explicitly registered Agent filters are admitted.',
+      'ZIP filters are listing-level postal-code predicates, require one admitted city, and are not canonical geography, neighborhood, or market-area claims.',
       'Lot acreage filters use the persisted Property.lotSize acres field for filtering only; no lot-size metric is admitted.',
     ]),
   });

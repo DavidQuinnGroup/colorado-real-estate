@@ -4,9 +4,10 @@ export const AGENT_ADMITTED_FILTER_REGISTRY_VERSION = 'AGENT_ADMITTED_FILTER_REG
 export const ADMITTED_FILTER_REGISTRY_NEXT_GATE = 'READY_FOR_ZIP_POSTAL_LISTING_FILTER_FOUNDATION_ADMISSION' as const;
 
 export type AgentAdmittedFilterTier = 'QUICK_FILTER' | 'ADVANCED_PROPERTY_FILTER';
-export type AgentAdmittedFilterOperator = 'EQUALS' | 'MINIMUM' | 'MAXIMUM' | 'EXACT';
+export type AgentAdmittedFilterOperator = 'EQUALS' | 'IN' | 'MINIMUM' | 'MAXIMUM' | 'EXACT';
 export type AgentAdmittedFilterKey =
   | 'city'
+  | 'zip'
   | 'propertyType'
   | 'statusScope'
   | 'priceMin'
@@ -26,10 +27,10 @@ export type AgentAdmittedFilterKey =
 
 export type AgentAdmittedFilterRegistration = Readonly<{
   key: AgentAdmittedFilterKey;
-  propertyField: 'city' | 'propertyType' | 'status' | 'price' | 'beds' | 'baths' | 'sqft' | 'yearBuilt' | 'lotSize';
+  propertyField: 'city' | 'zip' | 'propertyType' | 'status' | 'price' | 'beds' | 'baths' | 'sqft' | 'yearBuilt' | 'lotSize';
   tier: AgentAdmittedFilterTier;
   operator: AgentAdmittedFilterOperator;
-  valueType: 'STRING_ENUM' | 'INTEGER' | 'DECIMAL';
+  valueType: 'STRING_ENUM' | 'STRING_IDENTIFIER' | 'INTEGER' | 'DECIMAL';
   canonicalUnit: 'NONE' | 'USD' | 'COUNT' | 'LISTED_SQUARE_FEET' | 'YEAR' | 'ACRES';
   analyticalGrain: 'MLS_LISTING';
   sourceScope: 'CURRENT_REPOSITORY_PROPERTY_SEARCH_PROJECTION';
@@ -54,6 +55,7 @@ function registration(input: Omit<AgentAdmittedFilterRegistration, 'analyticalGr
 
 export const AGENT_ADMITTED_FILTER_REGISTRY: Readonly<Record<AgentAdmittedFilterKey, AgentAdmittedFilterRegistration>> = Object.freeze({
   city: registration({ key: 'city', propertyField: 'city', tier: 'QUICK_FILTER', operator: 'EQUALS', valueType: 'STRING_ENUM', canonicalUnit: 'NONE', aggregatable: false }),
+  zip: registration({ key: 'zip', propertyField: 'zip', tier: 'ADVANCED_PROPERTY_FILTER', operator: 'IN', valueType: 'STRING_IDENTIFIER', canonicalUnit: 'NONE', aggregatable: false }),
   propertyType: registration({ key: 'propertyType', propertyField: 'propertyType', tier: 'QUICK_FILTER', operator: 'EQUALS', valueType: 'STRING_ENUM', canonicalUnit: 'NONE', aggregatable: false }),
   statusScope: registration({ key: 'statusScope', propertyField: 'status', tier: 'QUICK_FILTER', operator: 'EQUALS', valueType: 'STRING_ENUM', canonicalUnit: 'NONE', aggregatable: false }),
   priceMin: registration({ key: 'priceMin', propertyField: 'price', tier: 'QUICK_FILTER', operator: 'MINIMUM', valueType: 'INTEGER', canonicalUnit: 'USD', aggregatable: true }),
@@ -73,7 +75,6 @@ export const AGENT_ADMITTED_FILTER_REGISTRY: Readonly<Record<AgentAdmittedFilter
 });
 
 export const AGENT_COHORT_UNADMITTED_FILTER_KEYS = [
-  'zip',
   'county',
   'subdivision',
   'neighborhood',

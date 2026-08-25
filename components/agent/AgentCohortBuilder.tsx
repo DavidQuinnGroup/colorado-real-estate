@@ -55,7 +55,9 @@ function toQuery(filters: AgentCohortQuickFilters) {
   params.set('purpose', 'Agent recurring analytical/reporting preparation cohort.');
   for (const key of AGENT_COHORT_SUPPORTED_FILTER_KEYS) {
     const value = filters[key];
-    if (value !== null) params.set(key, String(value));
+    if (Array.isArray(value)) {
+      for (const entry of value) params.append(key, entry);
+    } else if (value !== null) params.set(key, String(value));
   }
   return params.toString();
 }
@@ -73,7 +75,7 @@ export default function AgentCohortBuilder({ surface }: { surface: 'MARKET_UPDAT
   const [count, setCount] = useState<CountState>({ loading: false, available: false, value: null, cohortId: null, reasons: [], asOf: null, artifacts: [] });
   const [refreshToken, setRefreshToken] = useState(0);
   const query = useMemo(() => toQuery(filters), [filters]);
-  const selectedFilterCount = useMemo(() => Object.entries(filters).filter(([key, value]) => key !== 'statusScope' && value !== null).length, [filters]);
+  const selectedFilterCount = useMemo(() => Object.entries(filters).filter(([key, value]) => key !== 'statusScope' && (Array.isArray(value) ? value.length > 0 : value !== null)).length, [filters]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -99,6 +101,7 @@ export default function AgentCohortBuilder({ surface }: { surface: 'MARKET_UPDAT
 
   const update = <TKey extends keyof AgentCohortQuickFilters>(key: TKey, value: AgentCohortQuickFilters[TKey]) => setFilters((current) => ({ ...current, [key]: value }));
   const updateNumber = (key: NumberFilterKey, value: string) => update(key, value === '' ? null : Number(value));
+  const updateZip = (value: string) => update('zip', value.split(',').map((entry) => entry.trim()).filter(Boolean));
   const reset = () => setFilters(AGENT_COHORT_EMPTY_FILTERS);
 
   return <section
@@ -134,6 +137,9 @@ export default function AgentCohortBuilder({ surface }: { surface: 'MARKET_UPDAT
           <option value="">Choose city</option>
           {AGENT_COHORT_SUPPORTED_CITIES.map((city) => <option key={city.id} value={city.id}>{city.label}</option>)}
         </select>
+      </Field>
+      <Field label="Listing ZIPs">
+        <input value={filters.zip.join(', ')} onChange={(event) => updateZip(event.target.value)} placeholder="80301, 80302" className={inputClass()} data-testid="agent-cohort-zip" data-agent-cohort-zip-postal-attribute="true" data-agent-cohort-zip-geography="false" />
       </Field>
       <Field label="Property type">
         <select value={filters.propertyType ?? ''} onChange={(event) => update('propertyType', (event.target.value || null) as AgentCohortQuickFilters['propertyType'])} className={inputClass()} data-testid="agent-cohort-property-type">

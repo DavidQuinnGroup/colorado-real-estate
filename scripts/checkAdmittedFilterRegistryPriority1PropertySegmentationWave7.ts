@@ -41,7 +41,6 @@ assert.equal(AGENT_ADMITTED_FILTER_REGISTRY.bathsExact.valueType, 'DECIMAL');
 assert.equal(AGENT_ADMITTED_FILTER_REGISTRY.bathsMax.valueType, 'DECIMAL');
 assert.equal(AGENT_ADMITTED_FILTER_REGISTRY.lotSizeMin.canonicalUnit, 'ACRES');
 assert.equal(AGENT_ADMITTED_FILTER_REGISTRY.lotSizeMax.aggregatable, false);
-assert.equal(isAgentUnadmittedFilterKey('zip'), true);
 assert.equal(isAgentUnadmittedFilterKey('garageSpaces'), true);
 
 const bedroomRange = normalizeAgentCohortDefinition({
@@ -108,21 +107,19 @@ for (const invalid of [
   normalizeAgentCohortDefinition({ purpose: 'Exact outside beds', filters: { city: 'Boulder', propertyType: 'Residential', statusScope: 'Active', bedsMin: 4, bedsExact: 3 } }),
   normalizeAgentCohortDefinition({ purpose: 'Exact outside baths', filters: { city: 'Boulder', propertyType: 'Residential', statusScope: 'Active', bathsExact: 2.5, bathsMax: 2 } }),
   normalizeAgentCohortDefinition({ purpose: 'Negative lot', filters: { city: 'Boulder', propertyType: 'Residential', statusScope: 'Active', lotSizeMin: -0.1 } }),
-  normalizeAgentCohortDefinition({ purpose: 'ZIP rejected', filters: { city: 'Boulder', propertyType: 'Residential', statusScope: 'Active', zip: '80301' } as never }),
 ]) {
   assert.equal(invalid.validation.ready, false);
 }
 
 const parsedZip = parseAgentCohortSearchParams(new URLSearchParams('city=boulder&propertyType=residential&statusScope=active&zip=80301'));
-assert.equal(parsedZip.unsupportedFilters?.includes('zip'), true);
-assert.equal(normalizeAgentCohortDefinition(parsedZip).validation.ready, false);
+assert.equal(normalizeAgentCohortDefinition(parsedZip).validation.ready, true);
 
 const parsedComparison = parseAgentComparisonSearchParams(new URLSearchParams('cohortCount=3&cohort.0.city=boulder&cohort.0.propertyType=residential&cohort.0.statusScope=active&cohort.0.bedsExact=3&cohort.1.city=louisville&cohort.1.propertyType=residential&cohort.1.statusScope=active&cohort.1.bedsExact=3&cohort.2.city=lafayette&cohort.2.propertyType=residential&cohort.2.statusScope=active&cohort.2.bedsExact=3'));
 assert.equal(parsedComparison.cohorts.length, 3);
 assert.equal(normalizeAgentCohortDefinition(parsedComparison.cohorts[0].cohort).filters.bedsExact, 3);
 
 const parsedComparisonZip = parseAgentComparisonSearchParams(new URLSearchParams('a.city=boulder&a.propertyType=residential&a.statusScope=active&a.zip=80301&b.city=louisville&b.propertyType=residential&b.statusScope=active'));
-assert.equal(parsedComparisonZip.cohorts[0].cohort.unsupportedFilters?.includes('zip'), true);
+assert.equal(normalizeAgentCohortDefinition(parsedComparisonZip.cohorts[0].cohort).filters.zip[0], '80301');
 
 assert.equal(classifyAgentCohortRelationship(bedroomExact, normalizeAgentCohortDefinition({ purpose: 'Four beds', filters: { city: 'Boulder', propertyType: 'Residential', statusScope: 'Active', bedsExact: 4 } })), 'DISJOINT');
 assert.equal(classifyAgentCohortRelationship(bedroomExact, bedroomRange), 'SUBSET');
