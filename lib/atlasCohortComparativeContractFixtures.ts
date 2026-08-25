@@ -1,5 +1,7 @@
 import {
   ATLAS_COHORT_CONTRACT_VERSION,
+  ATLAS_METRIC_ARTIFACT_CONTRACT_VERSION,
+  type AtlasMetricArtifact,
   type AtlasCohortDefinition,
 } from './atlasCohortComparativeContract';
 
@@ -139,4 +141,133 @@ export const VALID_SCENARIO_COHORT_FIXTURE: AtlasCohortDefinition = Object.freez
   analyticalGrain: 'SCENARIO_MODEL_OBSERVATION',
   stockFlowClass: 'SCENARIO',
   scenarioBoundary: 'MODELED_DATA_NEVER_OBSERVED_MARKET_EVIDENCE',
+});
+
+const metricCoverage = Object.freeze({
+  ...baseCoverage,
+  fieldCoverage: Object.freeze({ eligibleCount: 25, populatedCount: 25, missingNullCount: 0 }),
+});
+
+export const VALID_CURRENT_METRIC_ARTIFACT: AtlasMetricArtifact = Object.freeze({
+  metricArtifactId: 'atlas.metric.fixture.active-count.current',
+  metricDefinitionId: 'atlas.metric.active-listing-count',
+  metricDefinitionVersion: 'metric-v1',
+  metricFamily: 'INVENTORY',
+  cohortDefinitionId: VALID_STOCK_COHORT_FIXTURE.cohortDefinitionId,
+  cohortDefinitionVersion: ATLAS_COHORT_CONTRACT_VERSION,
+  analyticalGrain: 'AS_OF_SNAPSHOT_MEMBER',
+  period: VALID_STOCK_COHORT_FIXTURE.period,
+  observationAsOf: '2026-08-25T00:00:00.000Z',
+  sourceAsOf: '2026-08-25T00:00:00.000Z',
+  calculationVersion: ATLAS_METRIC_ARTIFACT_CONTRACT_VERSION,
+  value: 25,
+  unit: 'count',
+  aggregation: 'COUNT',
+  eligiblePopulationCount: 25,
+  includedPopulationCount: 25,
+  excludedPopulationCount: 0,
+  nullPopulationCount: 0,
+  unknownPopulationCount: 0,
+  coverage: metricCoverage,
+  sourceProvenance: ['EXP-SRC-REIE-CITY-MARKET-DATA'],
+  geographyProvenance: ['fixture-geography-v1'],
+  identityPolicyVersion: 'identity-policy-v1',
+  methodologyEvidence: ['admitted-fixture-methodology-v1'],
+  limitations: ['Fixture only; no public/client output authority.'],
+  rightsPolicy: Object.freeze({
+    AGENT_ONLY: 'PERMITTED',
+    CLIENT_PROFESSIONAL_REPORT: 'BLOCKED',
+    PUBLIC_DISPLAY: 'BLOCKED',
+    EXPORT: 'BLOCKED',
+    INTERNAL_ARCHITECTURE: 'PERMITTED',
+  }),
+  createdAt: '2026-08-25T00:01:00.000Z',
+  restatementState: 'ORIGINAL',
+  artifactClass: 'DERIVED_METRIC_ARTIFACT',
+  calculationKind: 'DERIVED_FROM_OBSERVED_EVIDENCE',
+});
+
+export const VALID_PRIOR_METRIC_ARTIFACT: AtlasMetricArtifact = Object.freeze({
+  ...VALID_CURRENT_METRIC_ARTIFACT,
+  metricArtifactId: 'atlas.metric.fixture.active-count.prior',
+  value: 20,
+  observationAsOf: '2026-07-25T00:00:00.000Z',
+  sourceAsOf: '2026-07-25T00:00:00.000Z',
+  period: Object.freeze({
+    ...VALID_CURRENT_METRIC_ARTIFACT.period,
+    asOf: '2026-07-25T00:00:00.000Z',
+  }),
+});
+
+export const ZERO_DENOMINATOR_PRIOR_METRIC_ARTIFACT: AtlasMetricArtifact = Object.freeze({
+  ...VALID_PRIOR_METRIC_ARTIFACT,
+  metricArtifactId: 'atlas.metric.fixture.active-count.zero-prior',
+  value: 0,
+});
+
+export const LIMITED_NULL_COVERAGE_METRIC_ARTIFACT: AtlasMetricArtifact = Object.freeze({
+  ...VALID_PRIOR_METRIC_ARTIFACT,
+  metricArtifactId: 'atlas.metric.fixture.active-count.limited-null-coverage',
+  nullPopulationCount: 3,
+  unknownPopulationCount: 0,
+  coverage: Object.freeze({
+    ...metricCoverage,
+    fieldCoverage: Object.freeze({ eligibleCount: 25, populatedCount: 22, missingNullCount: 3 }),
+  }),
+  limitations: ['Fixture has material null coverage; display limitation required.'],
+});
+
+export const UNKNOWN_METHODOLOGY_METRIC_ARTIFACT: AtlasMetricArtifact = Object.freeze({
+  ...VALID_CURRENT_METRIC_ARTIFACT,
+  metricArtifactId: 'atlas.metric.fixture.dom.unknown-methodology',
+  metricDefinitionId: 'atlas.metric.average-dom',
+  metricDefinitionVersion: null,
+  metricFamily: 'DAYS_ON_MARKET',
+  calculationVersion: null,
+  methodologyEvidence: [],
+  value: 46,
+});
+
+export const PUBLIC_RIGHTS_BLOCKED_METRIC_ARTIFACT: AtlasMetricArtifact = Object.freeze({
+  ...VALID_CURRENT_METRIC_ARTIFACT,
+  metricArtifactId: 'atlas.metric.fixture.public-rights-blocked',
+  rightsPolicy: Object.freeze({
+    AGENT_ONLY: 'PERMITTED',
+    CLIENT_PROFESSIONAL_REPORT: 'UNKNOWN',
+    PUBLIC_DISPLAY: 'BLOCKED',
+    EXPORT: 'UNKNOWN',
+    INTERNAL_ARCHITECTURE: 'PERMITTED',
+  }),
+});
+
+export const IRES_COMPARE_TWO_YEARS_FAILURE_ARTIFACT: AtlasMetricArtifact = Object.freeze({
+  ...VALID_PRIOR_METRIC_ARTIFACT,
+  metricArtifactId: 'atlas.metric.fixture.ires-compare-two-years-2025-zero',
+  value: 0,
+  period: Object.freeze({
+    ...VALID_PRIOR_METRIC_ARTIFACT.period,
+    start: '2026-01-01T00:00:00.000Z',
+    end: '2026-08-25T00:00:00.000Z',
+    asOf: null,
+    form: 'CUSTOM_BOUNDED_PERIOD',
+    periodBasis: 'LISTING_DATE',
+  }),
+  coverage: Object.freeze({
+    ...metricCoverage,
+    temporalCoverage: Object.freeze({
+      earliestEvidence: '2026-01-01T00:00:00.000Z',
+      latestSourceAsOf: '2026-08-25T00:00:00.000Z',
+      historicalGaps: ['NOMINAL_2025_COMPARISON_RETAINED_2026_LISTING_DATE_RANGE'],
+      restatementLimitations: ['IRES report label does not establish comparable prior-year cohort.'],
+    }),
+  }),
+  limitations: ['Controlled IRES Compare Two Years failure-mode fixture.'],
+});
+
+export const SCENARIO_METRIC_ARTIFACT: AtlasMetricArtifact = Object.freeze({
+  ...VALID_CURRENT_METRIC_ARTIFACT,
+  metricArtifactId: 'atlas.metric.fixture.scenario-modeled-value',
+  analyticalGrain: 'SCENARIO_MODEL_OBSERVATION',
+  cohortDefinitionId: VALID_SCENARIO_COHORT_FIXTURE.cohortDefinitionId,
+  calculationKind: 'SCENARIO_MODEL',
 });

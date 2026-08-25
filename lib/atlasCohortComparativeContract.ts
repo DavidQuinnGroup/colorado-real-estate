@@ -1,10 +1,13 @@
 export const ATLAS_COHORT_COMPARATIVE_CONTRACT_STATUS =
-  'ATLAS_COHORT_COMPARATIVE_MARKET_INTELLIGENCE_CONTRACT_MVV_BLOCK_1_FOUNDATION' as const;
+  'ATLAS_COHORT_AND_COMPARATIVE_MARKET_INTELLIGENCE_CONTRACT_MVV_CERTIFIED' as const;
 
 export const ATLAS_COHORT_COMPARATIVE_CONTRACT_NEXT_GATE =
-  'ATLAS_COHORT_COMPARATIVE_CONTRACT_MVV_BLOCK_1_COMPLETE_READY_FOR_BLOCK_2' as const;
+  'ATLAS_COHORT_AND_COMPARATIVE_MARKET_INTELLIGENCE_CONTRACT_MVV_CERTIFIED' as const;
 
 export const ATLAS_COHORT_CONTRACT_VERSION = 'ATLAS_COHORT_CONTRACT_V1_BLOCK_1' as const;
+export const ATLAS_COMPARABILITY_CONTRACT_VERSION = 'ATLAS_COMPARABILITY_CONTRACT_V1_BLOCK_2' as const;
+export const ATLAS_METRIC_ARTIFACT_CONTRACT_VERSION = 'ATLAS_METRIC_ARTIFACT_CONTRACT_V1_BLOCK_2' as const;
+export const ATLAS_COMPARATIVE_RESULT_CONTRACT_VERSION = 'ATLAS_COMPARATIVE_RESULT_CONTRACT_V1_BLOCK_2' as const;
 
 export const ATLAS_ANALYTICAL_GRAINS = [
   'PHYSICAL_PROPERTY',
@@ -107,6 +110,79 @@ export const ATLAS_OBSERVATION_ARTIFACT_CLASSES = [
 
 export type AtlasObservationArtifactClass = (typeof ATLAS_OBSERVATION_ARTIFACT_CLASSES)[number];
 
+export const ATLAS_AUDIENCE_OUTPUTS = [
+  'AGENT_ONLY',
+  'CLIENT_PROFESSIONAL_REPORT',
+  'PUBLIC_DISPLAY',
+  'EXPORT',
+  'INTERNAL_ARCHITECTURE',
+] as const;
+
+export type AtlasAudienceOutput = (typeof ATLAS_AUDIENCE_OUTPUTS)[number];
+
+export const ATLAS_COMPARABILITY_STATES = [
+  'COMPARABLE',
+  'COMPARABLE_WITH_LIMITATIONS',
+  'NOT_COMPARABLE',
+  'EVIDENCE_INSUFFICIENT',
+  'RIGHTS_BLOCKED',
+] as const;
+
+export type AtlasComparabilityState = (typeof ATLAS_COMPARABILITY_STATES)[number];
+
+export const ATLAS_COMPARABILITY_REASON_CODES = [
+  'METRIC_MISMATCH',
+  'GRAIN_MISMATCH',
+  'SOURCE_POPULATION_MISMATCH',
+  'IDENTITY_POLICY_MISMATCH',
+  'GEOGRAPHY_MISMATCH',
+  'EVENT_BASIS_MISMATCH',
+  'STOCK_FLOW_MISMATCH',
+  'HISTORICAL_COVERAGE_INSUFFICIENT',
+  'FIELD_COVERAGE_INSUFFICIENT',
+  'CALCULATION_VERSION_MISMATCH',
+  'RIGHTS_INCOMPATIBLE',
+  'UNKNOWN_METHODOLOGY',
+  'UNKNOWN_COMPARABILITY',
+  'UNKNOWN_ATTRIBUTION_REQUIREMENT',
+  'UNKNOWN_RETENTION_EXPORT_PERMISSION',
+  'UNRESOLVED_SOURCE_CONFLICT',
+  'UNRESOLVED_IDENTITY_CONFLICT',
+  'UNRESOLVED_GEOGRAPHY_CONFLICT',
+  'UNRESOLVED_NULL_MISSING_DATA_MATERIALITY',
+  'SCENARIO_OBSERVED_EVIDENCE_AMBIGUITY',
+] as const;
+
+export type AtlasComparabilityReasonCode = (typeof ATLAS_COMPARABILITY_REASON_CODES)[number];
+
+export const ATLAS_ADMISSION_GATES = [
+  'SOURCE_ADMISSION',
+  'FIELD_ADMISSION',
+  'METRIC_METHODOLOGY_ADMISSION',
+  'IDENTITY_DUPLICATION_ADMISSION',
+  'GEOGRAPHY_ADMISSION',
+  'TEMPORAL_HISTORY_ADMISSION',
+  'COMPARABILITY_ADMISSION',
+  'RIGHTS_AUDIENCE_ADMISSION',
+  'PRESENTATION_INTERPRETATION_ADMISSION',
+] as const;
+
+export type AtlasAdmissionGate = (typeof ATLAS_ADMISSION_GATES)[number];
+
+export const ATLAS_READINESS_STATES = [
+  'READY_NOW_FOR_BOUNDED_IMPLEMENTATION',
+  'READY_AFTER_REPOSITORY_LOCAL_FOUNDATION',
+  'BLOCKED_BY_SOURCE_DATA',
+  'BLOCKED_BY_HISTORICAL_DATA',
+  'BLOCKED_BY_METHODOLOGY',
+  'BLOCKED_BY_IDENTITY_DEDUPLICATION',
+  'BLOCKED_BY_GEOGRAPHY',
+  'BLOCKED_BY_RIGHTS',
+  'BLOCKED_BY_EXECUTIVE_DECISION',
+] as const;
+
+export type AtlasReadinessState = (typeof ATLAS_READINESS_STATES)[number];
+
 export type AtlasSourceScope = Readonly<{
   sourceIds: readonly string[];
   mlsSources: readonly string[];
@@ -167,6 +243,87 @@ export type AtlasCoverageProvenanceContract = Readonly<{
   geographicCoverage: Readonly<{ definitionVersion: string | null; mappingGaps: readonly string[]; unresolvedGeography: readonly string[] }>;
   identityCoverage: Readonly<{ resolvedIdentities: number | null; unresolvedIdentities: number | null; duplicateConflicts: number | null }>;
   provenanceRefs: readonly string[];
+}>;
+
+export type AtlasMetricArtifact = Readonly<{
+  metricArtifactId: string;
+  metricDefinitionId: string;
+  metricDefinitionVersion: string | null;
+  metricFamily: string;
+  cohortDefinitionId: string;
+  cohortDefinitionVersion: string;
+  analyticalGrain: AtlasAnalyticalGrain;
+  period: AtlasPeriodContract;
+  observationAsOf: string | null;
+  sourceAsOf: string | null;
+  calculationVersion: string | null;
+  value: number | null;
+  unit: string;
+  aggregation: string;
+  eligiblePopulationCount: number | null;
+  includedPopulationCount: number | null;
+  excludedPopulationCount: number | null;
+  nullPopulationCount: number | null;
+  unknownPopulationCount: number | null;
+  coverage: AtlasCoverageProvenanceContract;
+  sourceProvenance: readonly string[];
+  geographyProvenance: readonly string[];
+  identityPolicyVersion: string | null;
+  methodologyEvidence: readonly string[];
+  limitations: readonly string[];
+  rightsPolicy: Readonly<Record<AtlasAudienceOutput, 'PERMITTED' | 'BLOCKED' | 'UNKNOWN'>>;
+  createdAt: string | null;
+  restatementState: 'ORIGINAL' | 'RESTATED' | 'SUPERSEDED' | 'INVALIDATED' | 'REQUIRES_POLICY';
+  artifactClass: AtlasObservationArtifactClass;
+  calculationKind: 'OBSERVED_MARKET_EVIDENCE' | 'DERIVED_FROM_OBSERVED_EVIDENCE' | 'SCENARIO_MODEL';
+}>;
+
+export type AtlasMetricArtifactValidationResult = Readonly<{
+  valid: boolean;
+  reasons: readonly AtlasComparabilityReasonCode[];
+}>;
+
+export type AtlasComparabilityInput = Readonly<{
+  left: AtlasMetricArtifact;
+  right: AtlasMetricArtifact;
+  requestedAudience: AtlasAudienceOutput;
+  allowLimitedComparability: boolean;
+}>;
+
+export type AtlasComparabilityResult = Readonly<{
+  state: AtlasComparabilityState;
+  reasons: readonly AtlasComparabilityReasonCode[];
+  limitations: readonly string[];
+}>;
+
+export type AtlasComparativeResultArtifact = Readonly<{
+  comparisonArtifactId: string;
+  comparisonDefinitionVersion: typeof ATLAS_COMPARATIVE_RESULT_CONTRACT_VERSION;
+  metricIdentity: string;
+  cohortArtifactIds: readonly string[];
+  comparability: AtlasComparabilityResult;
+  values: readonly (number | null)[];
+  absoluteDelta: number | null;
+  percentageDelta: number | null;
+  zeroDenominatorPolicy: 'RETURN_UNDEFINED_WITH_REASON' | 'NOT_APPLICABLE';
+  direction: 'UP' | 'DOWN' | 'FLAT' | 'UNDEFINED';
+  periodAlignment: string;
+  coverageComparison: readonly string[];
+  provenance: readonly string[];
+  calculationVersion: string | null;
+  requestedAudience: AtlasAudienceOutput;
+}>;
+
+export type AtlasAdmissionGateEvaluation = Readonly<{
+  gate: AtlasAdmissionGate;
+  state: 'PASS' | 'FAIL' | 'LIMITED';
+  reason: string;
+}>;
+
+export type AtlasCapabilityReadiness = Readonly<{
+  capability: string;
+  state: AtlasReadinessState;
+  blockers: readonly string[];
 }>;
 
 export type AtlasCohortDefinition = Readonly<{
@@ -307,6 +464,152 @@ export function validateAtlasCohortDefinition(cohort: AtlasCohortDefinition): At
     protectedBoundaries: ATLAS_COHORT_COMPARATIVE_PROTECTED_BOUNDARIES,
   });
 }
+
+export function validateAtlasMetricArtifact(artifact: AtlasMetricArtifact): AtlasMetricArtifactValidationResult {
+  const reasons = [
+    !hasValue(artifact.metricArtifactId) && 'UNKNOWN_COMPARABILITY',
+    !hasValue(artifact.metricDefinitionId) && 'METRIC_MISMATCH',
+    !artifact.metricDefinitionVersion && 'UNKNOWN_METHODOLOGY',
+    !hasValue(artifact.cohortDefinitionId) && 'UNKNOWN_COMPARABILITY',
+    artifact.cohortDefinitionVersion !== ATLAS_COHORT_CONTRACT_VERSION && 'UNKNOWN_COMPARABILITY',
+    !artifact.period.periodBasis && 'EVENT_BASIS_MISMATCH',
+    !artifact.observationAsOf && 'HISTORICAL_COVERAGE_INSUFFICIENT',
+    !artifact.sourceAsOf && 'SOURCE_POPULATION_MISMATCH',
+    !artifact.calculationVersion && 'CALCULATION_VERSION_MISMATCH',
+    artifact.includedPopulationCount === null && 'FIELD_COVERAGE_INSUFFICIENT',
+    artifact.nullPopulationCount === null && 'UNRESOLVED_NULL_MISSING_DATA_MATERIALITY',
+    artifact.unknownPopulationCount === null && 'UNRESOLVED_NULL_MISSING_DATA_MATERIALITY',
+    artifact.coverage.provenanceRefs.length === 0 && 'UNKNOWN_ATTRIBUTION_REQUIREMENT',
+    artifact.sourceProvenance.length === 0 && 'UNKNOWN_ATTRIBUTION_REQUIREMENT',
+    !artifact.identityPolicyVersion && 'IDENTITY_POLICY_MISMATCH',
+    artifact.methodologyEvidence.length === 0 && 'UNKNOWN_METHODOLOGY',
+    artifact.limitations.length === 0 && 'UNKNOWN_COMPARABILITY',
+    artifact.calculationKind === 'SCENARIO_MODEL' && artifact.artifactClass !== 'DERIVED_METRIC_ARTIFACT' && 'SCENARIO_OBSERVED_EVIDENCE_AMBIGUITY',
+  ].filter(Boolean) as AtlasComparabilityReasonCode[];
+  return Object.freeze({ valid: reasons.length === 0, reasons: Object.freeze([...new Set(reasons)].sort()) });
+}
+
+function audienceBlocked(artifact: AtlasMetricArtifact, audience: AtlasAudienceOutput) {
+  return artifact.rightsPolicy[audience] !== 'PERMITTED';
+}
+
+export function evaluateAtlasComparability(input: AtlasComparabilityInput): AtlasComparabilityResult {
+  const leftValidation = validateAtlasMetricArtifact(input.left);
+  const rightValidation = validateAtlasMetricArtifact(input.right);
+  const structuralReasons = [
+    ...leftValidation.reasons,
+    ...rightValidation.reasons,
+    input.left.metricDefinitionId !== input.right.metricDefinitionId && 'METRIC_MISMATCH',
+    input.left.metricDefinitionVersion !== input.right.metricDefinitionVersion && 'METRIC_MISMATCH',
+    input.left.metricFamily !== input.right.metricFamily && 'METRIC_MISMATCH',
+    input.left.unit !== input.right.unit && 'METRIC_MISMATCH',
+    input.left.aggregation !== input.right.aggregation && 'METRIC_MISMATCH',
+    input.left.analyticalGrain !== input.right.analyticalGrain && 'GRAIN_MISMATCH',
+    input.left.period.periodBasis !== input.right.period.periodBasis && 'EVENT_BASIS_MISMATCH',
+    input.left.period.form !== input.right.period.form && 'EVENT_BASIS_MISMATCH',
+    input.left.coverage.sourceCoverage.admittedPopulation !== input.right.coverage.sourceCoverage.admittedPopulation && 'SOURCE_POPULATION_MISMATCH',
+    input.left.coverage.geographicCoverage.definitionVersion !== input.right.coverage.geographicCoverage.definitionVersion && 'GEOGRAPHY_MISMATCH',
+    input.left.identityPolicyVersion !== input.right.identityPolicyVersion && 'IDENTITY_POLICY_MISMATCH',
+    input.left.calculationVersion !== input.right.calculationVersion && 'CALCULATION_VERSION_MISMATCH',
+    (input.left.coverage.temporalCoverage.historicalGaps.length > 0 || input.right.coverage.temporalCoverage.historicalGaps.length > 0) && 'HISTORICAL_COVERAGE_INSUFFICIENT',
+    ((input.left.nullPopulationCount ?? 0) > 0 || (input.right.nullPopulationCount ?? 0) > 0 || (input.left.unknownPopulationCount ?? 0) > 0 || (input.right.unknownPopulationCount ?? 0) > 0) && 'FIELD_COVERAGE_INSUFFICIENT',
+    input.left.coverage.sourceCoverage.missingSources.length > 0 && 'SOURCE_POPULATION_MISMATCH',
+    input.right.coverage.sourceCoverage.missingSources.length > 0 && 'SOURCE_POPULATION_MISMATCH',
+    input.left.coverage.geographicCoverage.unresolvedGeography.length > 0 && 'UNRESOLVED_GEOGRAPHY_CONFLICT',
+    input.right.coverage.geographicCoverage.unresolvedGeography.length > 0 && 'UNRESOLVED_GEOGRAPHY_CONFLICT',
+    input.left.calculationKind !== input.right.calculationKind && 'SCENARIO_OBSERVED_EVIDENCE_AMBIGUITY',
+    audienceBlocked(input.left, input.requestedAudience) && 'RIGHTS_INCOMPATIBLE',
+    audienceBlocked(input.right, input.requestedAudience) && 'RIGHTS_INCOMPATIBLE',
+  ].filter(Boolean) as AtlasComparabilityReasonCode[];
+  const reasons = Object.freeze([...new Set(structuralReasons)].sort());
+  if (reasons.includes('RIGHTS_INCOMPATIBLE')) return Object.freeze({ state: 'RIGHTS_BLOCKED', reasons, limitations: Object.freeze(['Analytical validity does not grant requested output rights.']) });
+  if (reasons.includes('UNKNOWN_METHODOLOGY') || reasons.includes('HISTORICAL_COVERAGE_INSUFFICIENT') || reasons.includes('UNKNOWN_ATTRIBUTION_REQUIREMENT')) return Object.freeze({ state: 'EVIDENCE_INSUFFICIENT', reasons, limitations: Object.freeze(['Required evidence, methodology, history, or provenance is incomplete.']) });
+  if (reasons.length > 0 && input.allowLimitedComparability && reasons.every((reason) => reason === 'FIELD_COVERAGE_INSUFFICIENT')) {
+    return Object.freeze({ state: 'COMPARABLE_WITH_LIMITATIONS', reasons, limitations: Object.freeze(['Field/null coverage differences must be displayed with the result.']) });
+  }
+  if (reasons.length > 0) return Object.freeze({ state: 'NOT_COMPARABLE', reasons, limitations: Object.freeze(['Compared artifacts are not meaningfully compatible.']) });
+  return Object.freeze({ state: 'COMPARABLE', reasons, limitations: Object.freeze([]) });
+}
+
+export function calculateAtlasComparativeResult(input: Readonly<{
+  comparisonArtifactId: string;
+  left: AtlasMetricArtifact;
+  right: AtlasMetricArtifact;
+  requestedAudience: AtlasAudienceOutput;
+  allowLimitedComparability: boolean;
+}>): AtlasComparativeResultArtifact {
+  const comparability = evaluateAtlasComparability(input);
+  const comparable = comparability.state === 'COMPARABLE' || comparability.state === 'COMPARABLE_WITH_LIMITATIONS';
+  const leftValue = input.left.value;
+  const rightValue = input.right.value;
+  const absoluteDelta = comparable && leftValue !== null && rightValue !== null ? leftValue - rightValue : null;
+  const percentageDelta = comparable && absoluteDelta !== null && rightValue !== null && rightValue !== 0 ? absoluteDelta / rightValue : null;
+  const zeroDenominatorPolicy = comparable && rightValue === 0 ? 'RETURN_UNDEFINED_WITH_REASON' : 'NOT_APPLICABLE';
+  const direction = absoluteDelta === null ? 'UNDEFINED' : absoluteDelta > 0 ? 'UP' : absoluteDelta < 0 ? 'DOWN' : 'FLAT';
+  return Object.freeze({
+    comparisonArtifactId: input.comparisonArtifactId,
+    comparisonDefinitionVersion: ATLAS_COMPARATIVE_RESULT_CONTRACT_VERSION,
+    metricIdentity: input.left.metricDefinitionId,
+    cohortArtifactIds: Object.freeze([input.left.metricArtifactId, input.right.metricArtifactId]),
+    comparability,
+    values: Object.freeze([leftValue, rightValue]),
+    absoluteDelta,
+    percentageDelta,
+    zeroDenominatorPolicy,
+    direction,
+    periodAlignment: `${input.left.period.form}:${input.left.period.periodBasis ?? 'UNKNOWN'}::${input.right.period.form}:${input.right.period.periodBasis ?? 'UNKNOWN'}`,
+    coverageComparison: Object.freeze([...comparability.reasons]),
+    provenance: Object.freeze([...input.left.sourceProvenance, ...input.right.sourceProvenance]),
+    calculationVersion: input.left.calculationVersion === input.right.calculationVersion ? input.left.calculationVersion : null,
+    requestedAudience: input.requestedAudience,
+  });
+}
+
+export function evaluateAtlasAdmissionGates(input: Readonly<{
+  sourceAdmitted: boolean;
+  fieldAdmitted: boolean;
+  methodologyAdmitted: boolean;
+  identityAdmitted: boolean;
+  geographyAdmitted: boolean;
+  temporalHistoryAdmitted: boolean;
+  comparabilityAdmitted: boolean;
+  rightsAudienceAdmitted: boolean;
+  presentationInterpretationAdmitted: boolean;
+}>): readonly AtlasAdmissionGateEvaluation[] {
+  const rows: readonly [AtlasAdmissionGate, boolean, string][] = [
+    ['SOURCE_ADMISSION', input.sourceAdmitted, 'Source identified and admitted for intended analytical use.'],
+    ['FIELD_ADMISSION', input.fieldAdmitted, 'Required fields exist, are populated, and have admitted semantics.'],
+    ['METRIC_METHODOLOGY_ADMISSION', input.methodologyAdmitted, 'Definition, formula, aggregation, null handling, and event basis are admitted.'],
+    ['IDENTITY_DUPLICATION_ADMISSION', input.identityAdmitted, 'Counting grain, duplicate handling, and relisting behavior are controlled.'],
+    ['GEOGRAPHY_ADMISSION', input.geographyAdmitted, 'Geographic semantics and mapping are controlled.'],
+    ['TEMPORAL_HISTORY_ADMISSION', input.temporalHistoryAdmitted, 'Historical/event/as-of evidence exists for the requested analysis.'],
+    ['COMPARABILITY_ADMISSION', input.comparabilityAdmitted, 'Comparison populations satisfy the comparability contract.'],
+    ['RIGHTS_AUDIENCE_ADMISSION', input.rightsAudienceAdmitted, 'Intended audience/output use is permitted.'],
+    ['PRESENTATION_INTERPRETATION_ADMISSION', input.presentationInterpretationAdmitted, 'Interpretation and recommendation output satisfies governance/review requirements.'],
+  ];
+  return Object.freeze(rows.map(([gate, pass, reason]) => Object.freeze({ gate, state: pass ? 'PASS' as const : 'FAIL' as const, reason })));
+}
+
+export const ATLAS_IMPLEMENTATION_READINESS_MATRIX: readonly AtlasCapabilityReadiness[] = Object.freeze([
+  Object.freeze({ capability: 'Reusable Agent cohort builder', state: 'READY_NOW_FOR_BOUNDED_IMPLEMENTATION', blockers: Object.freeze([]) }),
+  Object.freeze({ capability: 'Quick Filters', state: 'READY_NOW_FOR_BOUNDED_IMPLEMENTATION', blockers: Object.freeze([]) }),
+  Object.freeze({ capability: 'Advanced Property Filters', state: 'READY_AFTER_REPOSITORY_LOCAL_FOUNDATION', blockers: Object.freeze(['FIELD_SEMANTICS_ADMISSION']) }),
+  Object.freeze({ capability: 'Expert/MLS Filters', state: 'BLOCKED_BY_SOURCE_DATA', blockers: Object.freeze(['MLS_FIELD_ADMISSION', 'RIGHTS_REVIEW']) }),
+  Object.freeze({ capability: 'Simple admitted counts', state: 'READY_NOW_FOR_BOUNDED_IMPLEMENTATION', blockers: Object.freeze([]) }),
+  Object.freeze({ capability: 'Min/max/median/average for admitted fields', state: 'READY_AFTER_REPOSITORY_LOCAL_FOUNDATION', blockers: Object.freeze(['AGGREGATION_CONTRACT_IMPLEMENTATION']) }),
+  Object.freeze({ capability: 'Multi-city comparison', state: 'READY_AFTER_REPOSITORY_LOCAL_FOUNDATION', blockers: Object.freeze(['COMPARATIVE_RESULT_IMPLEMENTATION']) }),
+  Object.freeze({ capability: 'Month-over-month / year-over-year / YTD / trend charts', state: 'BLOCKED_BY_HISTORICAL_DATA', blockers: Object.freeze(['HISTORICAL_MLS_USE_RECONCILIATION_REQUIRED']) }),
+  Object.freeze({ capability: 'Active inventory', state: 'BLOCKED_BY_METHODOLOGY', blockers: Object.freeze(['ACTIVE_STATUS_METHODOLOGY_REQUIRED']) }),
+  Object.freeze({ capability: 'New / pending / sold activity', state: 'BLOCKED_BY_METHODOLOGY', blockers: Object.freeze(['STATUS_EVENT_METHODOLOGY_REQUIRED']) }),
+  Object.freeze({ capability: 'DOM-family analysis', state: 'BLOCKED_BY_METHODOLOGY', blockers: Object.freeze(['DOM_CDOM_DTS_DTO_METHODOLOGY_REQUIRED']) }),
+  Object.freeze({ capability: 'SP/LP and original/final-list-to-sale', state: 'BLOCKED_BY_METHODOLOGY', blockers: Object.freeze(['PRICE_SEMANTICS_REQUIRED']) }),
+  Object.freeze({ capability: 'Months of supply and absorption', state: 'BLOCKED_BY_HISTORICAL_DATA', blockers: Object.freeze(['HISTORICAL_EVENT_COVERAGE_REQUIRED']) }),
+  Object.freeze({ capability: 'Listing episode / relist / failed-listing analysis', state: 'BLOCKED_BY_IDENTITY_DEDUPLICATION', blockers: Object.freeze(['LISTING_EPISODE_POLICY_REQUIRED']) }),
+  Object.freeze({ capability: 'Subject-property benchmark cohorts', state: 'READY_AFTER_REPOSITORY_LOCAL_FOUNDATION', blockers: Object.freeze(['BENCHMARK_SELECTION_POLICY_REQUIRED']) }),
+  Object.freeze({ capability: 'Seller pricing and buyer competitive positioning', state: 'BLOCKED_BY_EXECUTIVE_DECISION', blockers: Object.freeze(['PROFESSIONAL_RECOMMENDATION_POLICY_REQUIRED']) }),
+  Object.freeze({ capability: 'Scenario / investment / proceeds / breakeven analysis', state: 'BLOCKED_BY_EXECUTIVE_DECISION', blockers: Object.freeze(['SCENARIO_MODEL_GOVERNANCE_REQUIRED']) }),
+  Object.freeze({ capability: 'Client-facing market reports / PDF / public reporting', state: 'BLOCKED_BY_RIGHTS', blockers: Object.freeze(['CLIENT_PUBLIC_EXPORT_RIGHTS_REQUIRED']) }),
+]);
 
 export function classifyStockFlowCompatibility(input: Readonly<{
   requestedClass: AtlasStockFlowClass;
