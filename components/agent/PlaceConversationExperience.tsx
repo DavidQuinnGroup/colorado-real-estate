@@ -7,6 +7,7 @@ import { ArrowRight, CheckCircle2, CircleAlert, ClipboardList, Clock3, FileSearc
 import DisclosureStateIndicator from '@/components/DisclosureStateIndicator';
 import { projectAtlasTitleHierarchy } from '@/components/ProjectAtlasTitleHierarchy';
 import AgentBriefingComposition from '@/components/agent/AgentBriefingComposition';
+import AgentCurrentSnapshotComparison from '@/components/agent/AgentCurrentSnapshotComparison';
 import AgentPreparationPageHeader from '@/components/agent/AgentPreparationPageHeader';
 import { AGENT_PLACE_PREPARATION_P0_CITIES } from '@/lib/agent-advisory-workbench/agentPlacePreparationAdmission';
 import { prepareAgentPlaceConversation } from '@/lib/agent-advisory-workbench/agentPlaceConversationPreparation';
@@ -59,6 +60,8 @@ export default function PlaceConversationExperience() {
 
         {!experience ? <section className="mt-8 border border-dashed border-white/15 px-5 py-7 text-sm text-slate-400" data-testid="agent-place-empty-state">Choose one certified City, then prepare your location briefing.</section> : null}
         {experience && !briefing ? <section className="mt-8 border border-amber-200/20 bg-amber-100/[0.06] p-5" role="status" data-testid="agent-place-failure-state"><Status caution>{experience.humanState.label}</Status><p className="mt-3 max-w-3xl text-sm leading-6 text-amber-50/80">{experience.humanState.message}</p></section> : null}
+
+        <AgentCurrentSnapshotComparison surface="LOCATION_PREPARATION" />
 
         {composition ? <AgentBriefingComposition briefing={composition} /> : null}
         {briefing && packet && experience && !composition ? <div className="mt-8 space-y-5" data-testid="agent-place-briefing" data-human-state={experience.humanState.label} data-canonical-city-id={briefing.city.canonicalPlaceId}>

@@ -13,6 +13,7 @@ import { useMemo, useState } from "react";
 
 import { projectAtlasTitleHierarchy } from "@/components/ProjectAtlasTitleHierarchy";
 import AgentBriefingComposition from "@/components/agent/AgentBriefingComposition";
+import AgentCurrentSnapshotComparison from "@/components/agent/AgentCurrentSnapshotComparison";
 import PropertyCriteriaProfileEditor from "@/components/agent/PropertyCriteriaProfileEditor";
 import BuyerConsultationPlaybook from "@/components/agent/BuyerConsultationPlaybook";
 import AgentPreparationPageHeader from "@/components/agent/AgentPreparationPageHeader";
@@ -29,6 +30,7 @@ import {
   type AgentBuyerTiming,
 } from "@/lib/agent-advisory-workbench/agentBuyerPreparationAdmission";
 import { prepareAgentBuyerConsultation } from "@/lib/agent-advisory-workbench/agentBuyerConsultationPreparation";
+import { createPropertyCriteriaProfile, type PropertyCriteriaProfile } from "@/lib/agent-advisory-workbench/propertyCriteriaProfile";
 
 const PRIORITY_LABELS: Record<AgentBuyerDiscussionPriority, string> = {
   BUYING_PROCESS: "How buying works",
@@ -107,6 +109,8 @@ export default function BuyerConsultationExperience() {
     useState<AgentBuyerFinancingStatus | null>(null);
   const [preparedRequest, setPreparedRequest] =
     useState<AgentBuyerPreparationRequest | null>(null);
+  const [propertyCriteriaProfile, setPropertyCriteriaProfile] =
+    useState<PropertyCriteriaProfile>(() => createPropertyCriteriaProfile("BUYER_PREFERENCE"));
   const [briefingNeedsUpdate, setBriefingNeedsUpdate] = useState(false);
   const [formMessage, setFormMessage] = useState(
     "Choose a stage and at least two discussion priorities to prepare the briefing.",
@@ -422,7 +426,7 @@ export default function BuyerConsultationExperience() {
               </div>
             </div>
 
-            <PropertyCriteriaProfileEditor context="BUYER_PREFERENCE" />
+            <PropertyCriteriaProfileEditor context="BUYER_PREFERENCE" onProfileChange={setPropertyCriteriaProfile} />
 
             <div className="mt-7 flex flex-col gap-3 border-t border-white/10 pt-5 sm:flex-row sm:items-center sm:justify-between">
               <p
@@ -478,6 +482,8 @@ export default function BuyerConsultationExperience() {
             </p>
           </section>
         ) : null}
+
+        <AgentCurrentSnapshotComparison key={JSON.stringify(propertyCriteriaProfile)} surface="BUYER_PREPARATION" buyerCriteriaProfile={propertyCriteriaProfile} />
 
         {experience?.composition && briefingNeedsUpdate ? (
           <section

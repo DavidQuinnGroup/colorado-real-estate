@@ -1,5 +1,6 @@
 import type { AtlasCohortDefinition } from './atlasCohortComparativeContract';
 import { ATLAS_COHORT_CONTRACT_VERSION, validateAtlasCohortDefinition } from './atlasCohortComparativeContract';
+import { legacyClosedInterval, normalizeAgentNumericInterval, type AgentNumericInterval, type AgentNumericIntervalBoundaryKind, type AgentNumericIntervalDimension, type AgentNumericIntervalInput } from './agentNumericInterval';
 
 export const REUSABLE_AGENT_COHORT_BUILDER_WAVE_1_STATUS =
   'REUSABLE_AGENT_COHORT_BUILDER_BOUNDED_IMPLEMENTATION_WAVE_1_CERTIFIED' as const;
@@ -60,6 +61,7 @@ export type AgentCohortQuickFilters = Readonly<{
 export type AgentCohortInput = Readonly<{
   purpose: string;
   filters: Partial<Record<AgentCohortFilterKey, string | number | null | undefined>>;
+  intervals?: Partial<Record<AgentNumericIntervalDimension, AgentNumericIntervalInput>>;
   unsupportedFilters?: readonly string[];
   analyticalGrain?: string | null;
   temporalBasis?: string | null;
@@ -71,7 +73,9 @@ export type AgentCohortInput = Readonly<{
 export type AgentCohortNormalizedDefinition = Readonly<{
   version: typeof AGENT_COHORT_BUILDER_VERSION;
   filters: AgentCohortQuickFilters;
+  intervalSemantics: Readonly<Record<AgentNumericIntervalDimension, AgentNumericInterval>>;
   serializedFilters: string;
+  serializedCohortIdentity: string;
   cohort: AtlasCohortDefinition;
   validation: ReturnType<typeof validateAtlasCohortDefinition>;
   rejectedFilters: readonly string[];
@@ -146,6 +150,13 @@ function currentIso(value: string | null | undefined) {
   return new Date().toISOString();
 }
 
+const intervalDimensions = ['price', 'sqft', 'yearBuilt', 'beds', 'baths'] as const satisfies readonly AgentNumericIntervalDimension[];
+
+function explicitIntervalBoundary(input: AgentCohortInput, dimension: AgentNumericIntervalDimension): AgentNumericIntervalBoundaryKind | null {
+  const value = input.intervals?.[dimension]?.boundary;
+  return value ? value as AgentNumericIntervalBoundaryKind : null;
+}
+
 export function parseAgentCohortSearchParams(searchParams: URLSearchParams): AgentCohortInput {
   const filters: Partial<Record<AgentCohortFilterKey, string>> = {};
   for (const key of AGENT_COHORT_SUPPORTED_FILTER_KEYS) {
@@ -156,6 +167,13 @@ export function parseAgentCohortSearchParams(searchParams: URLSearchParams): Age
     purpose: searchParams.get('purpose') || 'Agent-defined recurring analytical preparation cohort.',
     filters,
     unsupportedFilters: searchParams.getAll('unsupportedFilter'),
+    intervals: Object.freeze({
+      price: Object.freeze({ boundary: searchParams.get('priceInterval') }),
+      sqft: Object.freeze({ boundary: searchParams.get('sqftInterval') }),
+      yearBuilt: Object.freeze({ boundary: searchParams.get('yearBuiltInterval') }),
+      beds: Object.freeze({ boundary: searchParams.get('bedsInterval') }),
+      baths: Object.freeze({ boundary: searchParams.get('bathsInterval') }),
+    }),
     analyticalGrain: searchParams.get('analyticalGrain'),
     temporalBasis: searchParams.get('temporalBasis'),
     periodForm: searchParams.get('periodForm'),
@@ -209,10 +227,34 @@ export function normalizeAgentCohortDefinition(input: AgentCohortInput): AgentCo
     yearBuiltMin: Number.isNaN(numbers.yearBuiltMin) ? null : numbers.yearBuiltMin,
     yearBuiltMax: Number.isNaN(numbers.yearBuiltMax) ? null : numbers.yearBuiltMax,
   });
+  const intervalSemantics = Object.freeze({
+    price: explicitIntervalBoundary(input, 'price')
+      ? normalizeAgentNumericInterval('price', { min: filters.priceMin, max: filters.priceMax, boundary: explicitIntervalBoundary(input, 'price') })
+      : legacyClosedInterval('price', filters.priceMin, filters.priceMax),
+    sqft: explicitIntervalBoundary(input, 'sqft')
+      ? normalizeAgentNumericInterval('sqft', { min: filters.sqftMin, max: filters.sqftMax, boundary: explicitIntervalBoundary(input, 'sqft') })
+      : legacyClosedInterval('sqft', filters.sqftMin, filters.sqftMax),
+    yearBuilt: explicitIntervalBoundary(input, 'yearBuilt')
+      ? normalizeAgentNumericInterval('yearBuilt', { min: filters.yearBuiltMin, max: filters.yearBuiltMax, boundary: explicitIntervalBoundary(input, 'yearBuilt') })
+      : legacyClosedInterval('yearBuilt', filters.yearBuiltMin, filters.yearBuiltMax),
+    beds: explicitIntervalBoundary(input, 'beds')
+      ? normalizeAgentNumericInterval('beds', { min: filters.bedsMin, max: null, boundary: explicitIntervalBoundary(input, 'beds') })
+      : legacyClosedInterval('beds', filters.bedsMin, null),
+    baths: explicitIntervalBoundary(input, 'baths')
+      ? normalizeAgentNumericInterval('baths', { min: filters.bathsMin, max: null, boundary: explicitIntervalBoundary(input, 'baths') })
+      : legacyClosedInterval('baths', filters.bathsMin, null),
+  } satisfies Record<AgentNumericIntervalDimension, AgentNumericInterval>);
+  for (const dimension of intervalDimensions) {
+    if (!intervalSemantics[dimension].validation.ready) {
+      for (const reason of intervalSemantics[dimension].validation.reasons) rejected.add(`${dimension}Interval:${reason}`);
+    }
+  }
   const serializedFilters = stableSerialize(filters);
+  const hasExplicitIntervals = intervalDimensions.some((dimension) => explicitIntervalBoundary(input, dimension));
+  const serializedCohortIdentity = hasExplicitIntervals ? stableSerialize({ filters, intervalSemantics: Object.fromEntries(intervalDimensions.map((dimension) => [dimension, intervalSemantics[dimension].serialized])) }) : serializedFilters;
   const asOf = currentIso(input.asOf);
   const cohort: AtlasCohortDefinition = Object.freeze({
-    cohortDefinitionId: `agent-cohort:${AGENT_COHORT_BUILDER_VERSION}:${serializedFilters}`,
+    cohortDefinitionId: `agent-cohort:${AGENT_COHORT_BUILDER_VERSION}:${serializedCohortIdentity}`,
     cohortDefinitionVersion: ATLAS_COHORT_CONTRACT_VERSION,
     cohortType: 'MLS_LISTING_COHORT',
     humanPurpose: text(input.purpose) || 'Agent-defined recurring analytical preparation cohort.',
@@ -284,7 +326,7 @@ export function normalizeAgentCohortDefinition(input: AgentCohortInput): AgentCo
     reasons: Object.freeze([...new Set([...baseValidation.reasons, ...rejectedFilters.map((filter) => `FILTER_REJECTED:${filter}`)])].sort()),
   });
 
-  return Object.freeze({ version: AGENT_COHORT_BUILDER_VERSION, filters, serializedFilters, cohort, validation, rejectedFilters });
+  return Object.freeze({ version: AGENT_COHORT_BUILDER_VERSION, filters, intervalSemantics, serializedFilters, serializedCohortIdentity, cohort, validation, rejectedFilters });
 }
 
 export function buildAgentCohortCountContract(input: Readonly<{

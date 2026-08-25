@@ -12,6 +12,17 @@ import {
 } from './agentCohortBuilder';
 import { prisma } from './prisma';
 
+function intervalWhere(interval: AgentCohortNormalizedDefinition['intervalSemantics']['price'], preserveClosedRangeShape = false) {
+  if (interval.min === null && interval.max === null) return undefined;
+  if (preserveClosedRangeShape && interval.boundary === 'CLOSED') return { gte: interval.min ?? undefined, lte: interval.max ?? undefined };
+  return {
+    ...(interval.min !== null && interval.includeMin ? { gte: interval.min } : {}),
+    ...(interval.min !== null && !interval.includeMin ? { gt: interval.min } : {}),
+    ...(interval.max !== null && interval.includeMax ? { lte: interval.max } : {}),
+    ...(interval.max !== null && !interval.includeMax ? { lt: interval.max } : {}),
+  };
+}
+
 export type AgentCohortCountResult = Readonly<{
   normalized: AgentCohortNormalizedDefinition;
   count: AgentCohortCountContract;
@@ -23,11 +34,11 @@ export function buildAgentCohortPrismaWhere(normalized: AgentCohortNormalizedDef
     city: filters.city ? { equals: getAgentCohortCityLabel(filters.city) ?? undefined, mode: 'insensitive' } : undefined,
     propertyType: filters.propertyType ? { equals: getAgentCohortPropertyTypeValue(filters.propertyType) ?? undefined, mode: 'insensitive' } : undefined,
     status: { equals: getAgentCohortStatusValue(filters.statusScope), mode: 'insensitive' },
-    price: filters.priceMin !== null || filters.priceMax !== null ? { gte: filters.priceMin ?? undefined, lte: filters.priceMax ?? undefined } : undefined,
-    beds: filters.bedsMin !== null ? { gte: filters.bedsMin } : undefined,
-    baths: filters.bathsMin !== null ? { gte: filters.bathsMin } : undefined,
-    sqft: filters.sqftMin !== null || filters.sqftMax !== null ? { gte: filters.sqftMin ?? undefined, lte: filters.sqftMax ?? undefined } : undefined,
-    yearBuilt: filters.yearBuiltMin !== null || filters.yearBuiltMax !== null ? { gte: filters.yearBuiltMin ?? undefined, lte: filters.yearBuiltMax ?? undefined } : undefined,
+    price: intervalWhere(normalized.intervalSemantics.price, true),
+    beds: intervalWhere(normalized.intervalSemantics.beds),
+    baths: intervalWhere(normalized.intervalSemantics.baths),
+    sqft: intervalWhere(normalized.intervalSemantics.sqft, true),
+    yearBuilt: intervalWhere(normalized.intervalSemantics.yearBuilt, true),
   };
 }
 

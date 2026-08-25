@@ -6,6 +6,7 @@ import { ArrowRight, CheckCircle2, CircleAlert, ClipboardList, Clock3, FileSearc
 import DisclosureStateIndicator from '@/components/DisclosureStateIndicator';
 import { projectAtlasTitleHierarchy } from '@/components/ProjectAtlasTitleHierarchy';
 import AgentBriefingComposition from '@/components/agent/AgentBriefingComposition';
+import AgentCurrentSnapshotComparison from '@/components/agent/AgentCurrentSnapshotComparison';
 import AgentPreparationPageHeader from '@/components/agent/AgentPreparationPageHeader';
 import { prepareMarketConversation } from '@/lib/agent-advisory-workbench/marketConversationExperience';
 
@@ -68,6 +69,8 @@ export default function MarketConversationExperience() {
 
         {!experience ? <section className="mt-8 border border-dashed border-white/15 px-5 py-7 text-sm text-slate-400" data-testid="agent-market-empty-state">Choose a supported market, then prepare your briefing.</section> : null}
         {experience && !briefing ? <section className="mt-8 border border-amber-200/20 bg-amber-100/[0.06] p-5" role="status" data-testid="agent-market-failure-state"><Status caution>{experience.humanState}</Status><p className="mt-3 max-w-3xl text-sm leading-6 text-amber-50/80">{experience.message}</p></section> : null}
+
+        <AgentCurrentSnapshotComparison surface="MARKET_PREPARATION" />
 
         {experience?.composition ? <AgentBriefingComposition briefing={experience.composition} /> : null}
         {briefing && !experience?.composition ? <div className="mt-8 space-y-5" data-testid="agent-market-briefing" data-human-state={briefing.humanState}>

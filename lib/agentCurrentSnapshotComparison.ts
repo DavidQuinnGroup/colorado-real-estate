@@ -21,6 +21,7 @@ import {
   type AgentCohortQuickFilters,
 } from './agentCohortBuilder';
 import type { AtlasAudienceOutput, AtlasComparabilityState } from './atlasCohortComparativeContract';
+import { classifyAgentNumericIntervals, type AgentNumericIntervalDimension } from './agentNumericInterval';
 
 export const CURRENT_SNAPSHOT_COMPARATIVE_INTELLIGENCE_WAVE_3_STATUS =
   'CURRENT_SNAPSHOT_COMPARATIVE_INTELLIGENCE_BOUNDED_IMPLEMENTATION_WAVE_3_CERTIFIED' as const;
@@ -153,44 +154,29 @@ export function normalizeAgentComparisonOperations(input: readonly string[] | nu
   });
 }
 
-function intervalSubset(leftMin: number | null, leftMax: number | null, rightMin: number | null, rightMax: number | null) {
-  return (rightMin === null || (leftMin !== null && leftMin >= rightMin)) && (rightMax === null || (leftMax !== null && leftMax <= rightMax));
-}
-
-function intervalDisjoint(leftMin: number | null, leftMax: number | null, rightMin: number | null, rightMax: number | null) {
-  return (leftMax !== null && rightMin !== null && leftMax < rightMin) || (rightMax !== null && leftMin !== null && rightMax < leftMin);
-}
-
 function sameBasePopulation(left: AgentCohortQuickFilters, right: AgentCohortQuickFilters) {
   return left.city === right.city && left.propertyType === right.propertyType && left.statusScope === right.statusScope;
 }
 
+const relationshipDimensions = ['price', 'sqft', 'yearBuilt', 'beds', 'baths'] as const satisfies readonly AgentNumericIntervalDimension[];
+
 function isSubset(left: AgentCohortQuickFilters, right: AgentCohortQuickFilters) {
   if (!sameBasePopulation(left, right)) return false;
-  return (
-    intervalSubset(left.priceMin, left.priceMax, right.priceMin, right.priceMax) &&
-    intervalSubset(left.sqftMin, left.sqftMax, right.sqftMin, right.sqftMax) &&
-    intervalSubset(left.yearBuiltMin, left.yearBuiltMax, right.yearBuiltMin, right.yearBuiltMax) &&
-    (right.bedsMin === null || (left.bedsMin !== null && left.bedsMin >= right.bedsMin)) &&
-    (right.bathsMin === null || (left.bathsMin !== null && left.bathsMin >= right.bathsMin))
-  );
+  return true;
 }
 
 export function classifyAgentCohortRelationship(left: AgentCohortNormalizedDefinition, right: AgentCohortNormalizedDefinition): CohortRelationshipAdmission {
   const leftFilters = left.filters;
   const rightFilters = right.filters;
-  if (left.serializedFilters === right.serializedFilters) return 'SAME_POPULATION';
+  if (left.serializedCohortIdentity === right.serializedCohortIdentity) return 'SAME_POPULATION';
   if (leftFilters.city && rightFilters.city && leftFilters.city !== rightFilters.city) return 'DISJOINT';
   if (!sameBasePopulation(leftFilters, rightFilters)) return 'UNKNOWN_RELATIONSHIP';
-  if (
-    intervalDisjoint(leftFilters.priceMin, leftFilters.priceMax, rightFilters.priceMin, rightFilters.priceMax) ||
-    intervalDisjoint(leftFilters.sqftMin, leftFilters.sqftMax, rightFilters.sqftMin, rightFilters.sqftMax) ||
-    intervalDisjoint(leftFilters.yearBuiltMin, leftFilters.yearBuiltMax, rightFilters.yearBuiltMin, rightFilters.yearBuiltMax)
-  ) {
+  const intervalRelationships = relationshipDimensions.map((dimension) => classifyAgentNumericIntervals(left.intervalSemantics[dimension], right.intervalSemantics[dimension]));
+  if (intervalRelationships.includes('DISJOINT')) {
     return 'DISJOINT';
   }
-  const leftSubset = isSubset(leftFilters, rightFilters);
-  const rightSubset = isSubset(rightFilters, leftFilters);
+  const leftSubset = isSubset(leftFilters, rightFilters) && intervalRelationships.every((relationship) => relationship === 'SAME_INTERVAL' || relationship === 'SUBSET');
+  const rightSubset = isSubset(rightFilters, leftFilters) && intervalRelationships.every((relationship) => relationship === 'SAME_INTERVAL' || relationship === 'SUPERSET');
   if (leftSubset && !rightSubset) return 'SUBSET';
   if (rightSubset && !leftSubset) return 'SUPERSET';
   if (leftFilters.city && rightFilters.city && leftFilters.city === rightFilters.city) return 'OVERLAPPING';
@@ -321,7 +307,7 @@ export function compareAgentCurrentSnapshotMetricArtifacts(input: Readonly<{
   ].filter(Boolean) as string[]);
 
   return Object.freeze({
-    comparisonArtifactId: `agent-comparison:${AGENT_CURRENT_SNAPSHOT_COMPARISON_VERSION}:${input.metricId}:${stableSerialize(input.normalized.map((item) => item.serializedFilters))}`,
+    comparisonArtifactId: `agent-comparison:${AGENT_CURRENT_SNAPSHOT_COMPARISON_VERSION}:${input.metricId}:${stableSerialize(input.normalized.map((item) => item.serializedCohortIdentity))}`,
     comparisonVersion: AGENT_CURRENT_SNAPSHOT_COMPARISON_VERSION,
     metricId: input.metricId,
     metricVersion: AGENT_COHORT_AGGREGATION_VERSION,
@@ -426,6 +412,13 @@ export function parseAgentComparisonSearchParams(searchParams: URLSearchParams):
       cohort: Object.freeze({
         purpose: searchParams.get('purpose') || 'Agent current-snapshot comparative preparation cohort.',
         filters,
+        intervals: Object.freeze({
+          price: Object.freeze({ boundary: searchParams.get(`${prefix}.priceInterval`) }),
+          sqft: Object.freeze({ boundary: searchParams.get(`${prefix}.sqftInterval`) }),
+          yearBuilt: Object.freeze({ boundary: searchParams.get(`${prefix}.yearBuiltInterval`) }),
+          beds: Object.freeze({ boundary: searchParams.get(`${prefix}.bedsInterval`) }),
+          baths: Object.freeze({ boundary: searchParams.get(`${prefix}.bathsInterval`) }),
+        }),
         unsupportedFilters: searchParams.getAll(`${prefix}.unsupportedFilter`),
         analyticalGrain: searchParams.get(`${prefix}.analyticalGrain`),
         temporalBasis: searchParams.get(`${prefix}.temporalBasis`),

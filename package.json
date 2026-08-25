@@ -232,6 +232,7 @@
     "check:comparative-intelligence-admission-review": "jiti scripts/checkComparativeIntelligenceAdmissionReview.ts",
     "check:current-snapshot-comparative-intelligence": "jiti scripts/checkCurrentSnapshotComparativeIntelligence.ts",
     "check:agent-comparison-reuse-segment-expansion-admission-review": "jiti scripts/checkAgentComparisonReuseSegmentExpansionAdmissionReview.ts",
+    "check:agent-decision-comparison-reuse-interval-semantics-wave-4": "jiti scripts/checkAgentDecisionComparisonReuseIntervalSemanticsWave4.ts",
     "check:shared-disclosure-state-indicator": "jiti scripts/checkSharedDisclosureStateIndicator.ts",
     "check:agent-place-preparation-admission": "jiti scripts/checkAgentPlacePreparationAdmission.ts",
     "check:agent-place-conversation-preparation-experience": "jiti scripts/checkAgentPlaceConversationPreparationExperience.ts",

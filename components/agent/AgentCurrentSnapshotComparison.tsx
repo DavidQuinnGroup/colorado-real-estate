@@ -5,13 +5,15 @@ import { GitCompareArrows, RefreshCw, ShieldCheck } from 'lucide-react';
 
 import { projectAtlasTitleHierarchy } from '@/components/ProjectAtlasTitleHierarchy';
 import {
-  AGENT_COHORT_EMPTY_FILTERS,
   AGENT_COHORT_SUPPORTED_CITIES,
   AGENT_COHORT_SUPPORTED_FILTER_KEYS,
   AGENT_COHORT_SUPPORTED_PROPERTY_TYPES,
   AGENT_COHORT_SUPPORTED_STATUS_SCOPES,
   type AgentCohortQuickFilters,
 } from '@/lib/agentCohortBuilder';
+import { mapBuyerCriteriaToAgentCohort, type AgentBuyerCriteriaComparisonMapping } from '@/lib/agentBuyerCriteriaComparisonAdapter';
+import { getAgentComparisonSurfaceConfig, type AgentComparisonSurfaceId } from '@/lib/agentCurrentSnapshotComparisonSurfaceConfig';
+import type { PropertyCriteriaProfile } from '@/lib/agent-advisory-workbench/propertyCriteriaProfile';
 
 type MetricComparison = Readonly<{
   metricId: string;
@@ -52,6 +54,9 @@ const primaryMetricLabels = [
 ] as const;
 
 type NumberFilterKey = 'priceMin' | 'priceMax' | 'bedsMin' | 'bathsMin' | 'sqftMin' | 'sqftMax' | 'yearBuiltMin' | 'yearBuiltMax';
+type IntervalMode = 'CLOSED' | 'LOWER_INCLUSIVE_UPPER_EXCLUSIVE';
+
+const locationAdmittedCityIds = new Set(['boulder', 'louisville', 'lafayette']);
 
 function formatNumber(value: number | null) {
   return value === null ? 'Unavailable' : new Intl.NumberFormat('en-US').format(value);
@@ -71,7 +76,7 @@ function formatDelta(metric: MetricComparison) {
   return `${formatted} ${metric.direction === 'HIGHER' ? 'higher' : 'lower'}${suffix}`;
 }
 
-function toComparisonQuery(left: AgentCohortQuickFilters, right: AgentCohortQuickFilters) {
+function toComparisonQuery(left: AgentCohortQuickFilters, right: AgentCohortQuickFilters, labels: readonly [string, string], priceInterval: IntervalMode) {
   const params = new URLSearchParams();
   params.set('purpose', 'Agent current-snapshot comparative preparation cohort.');
   params.set('audience', 'AGENT_ONLY');
@@ -83,8 +88,10 @@ function toComparisonQuery(left: AgentCohortQuickFilters, right: AgentCohortQuic
     if (leftValue !== null) params.set(`a.${key}`, String(leftValue));
     if (rightValue !== null) params.set(`b.${key}`, String(rightValue));
   }
-  params.set('a.label', 'Cohort A');
-  params.set('b.label', 'Cohort B');
+  params.set('a.priceInterval', priceInterval);
+  params.set('b.priceInterval', priceInterval);
+  params.set('a.label', labels[0]);
+  params.set('b.label', labels[1]);
   return params.toString();
 }
 
@@ -96,15 +103,16 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   return <label className="block text-sm font-medium text-slate-200"><span>{label}</span>{children}</label>;
 }
 
-function CohortControls({ title, filters, update }: { title: string; filters: AgentCohortQuickFilters; update: <TKey extends keyof AgentCohortQuickFilters>(key: TKey, value: AgentCohortQuickFilters[TKey]) => void }) {
+function CohortControls({ title, filters, surface, update }: { title: string; filters: AgentCohortQuickFilters; surface: AgentComparisonSurfaceId; update: <TKey extends keyof AgentCohortQuickFilters>(key: TKey, value: AgentCohortQuickFilters[TKey]) => void }) {
   const updateNumber = (key: NumberFilterKey, value: string) => update(key, value === '' ? null : Number(value));
+  const cityOptions = surface === 'LOCATION_PREPARATION' ? AGENT_COHORT_SUPPORTED_CITIES.filter((city) => locationAdmittedCityIds.has(city.id)) : AGENT_COHORT_SUPPORTED_CITIES;
   return <section className="border border-white/10 bg-black/10 p-4" aria-label={title}>
     <h3 className={projectAtlasTitleHierarchy.briefingSection}>{title}</h3>
     <div className="mt-4 grid gap-3 sm:grid-cols-2">
       <Field label="City">
         <select value={filters.city ?? ''} onChange={(event) => update('city', (event.target.value || null) as AgentCohortQuickFilters['city'])} className={inputClass()}>
           <option value="">Choose city</option>
-          {AGENT_COHORT_SUPPORTED_CITIES.map((city) => <option key={city.id} value={city.id}>{city.label}</option>)}
+          {cityOptions.map((city) => <option key={city.id} value={city.id}>{city.label}</option>)}
         </select>
       </Field>
       <Field label="Property type">
@@ -128,12 +136,18 @@ function CohortControls({ title, filters, update }: { title: string; filters: Ag
   </section>;
 }
 
-export default function AgentCurrentSnapshotComparison({ surface }: { surface: 'MARKET_UPDATE_PREPARATION' | 'AGENT_WORKSPACE' }) {
-  const [left, setLeft] = useState<AgentCohortQuickFilters>({ ...AGENT_COHORT_EMPTY_FILTERS, city: 'boulder', propertyType: 'residential' });
-  const [right, setRight] = useState<AgentCohortQuickFilters>({ ...AGENT_COHORT_EMPTY_FILTERS, city: 'louisville', propertyType: 'residential' });
+export default function AgentCurrentSnapshotComparison({ surface, buyerCriteriaProfile }: { surface: AgentComparisonSurfaceId; buyerCriteriaProfile?: PropertyCriteriaProfile | null }) {
+  const config = getAgentComparisonSurfaceConfig(surface);
+  const buyerMapping: AgentBuyerCriteriaComparisonMapping | null = useMemo(
+    () => surface === 'BUYER_PREPARATION' && buyerCriteriaProfile ? mapBuyerCriteriaToAgentCohort(buyerCriteriaProfile, config.defaultLeft) : null,
+    [buyerCriteriaProfile, config.defaultLeft, surface],
+  );
+  const [left, setLeft] = useState<AgentCohortQuickFilters>(buyerMapping?.filters ?? config.defaultLeft);
+  const [right, setRight] = useState<AgentCohortQuickFilters>(buyerMapping ? { ...buyerMapping.filters, city: 'louisville' } : config.defaultRight);
+  const [priceInterval, setPriceInterval] = useState<IntervalMode>('CLOSED');
   const [refreshToken, setRefreshToken] = useState(0);
   const [comparison, setComparison] = useState<ComparisonState>({ loading: true, status: 'NOT_AVAILABLE', results: [], rejectionReasons: [], requestAsOf: null });
-  const query = useMemo(() => toComparisonQuery(left, right), [left, right]);
+  const query = useMemo(() => toComparisonQuery(left, right, [config.leftLabel, config.rightLabel], priceInterval), [config.leftLabel, config.rightLabel, left, priceInterval, right]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -176,25 +190,38 @@ export default function AgentCurrentSnapshotComparison({ surface }: { surface: '
   >
     <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
       <div className="max-w-3xl">
-        <div className="flex items-center gap-3"><GitCompareArrows className="h-5 w-5 text-emerald-100" aria-hidden="true" /><p className="text-[11px] font-bold uppercase tracking-[0.14em] text-emerald-100/80">Current-snapshot comparison</p></div>
-        <h2 id="agent-current-snapshot-comparison-heading" className={`mt-2 ${projectAtlasTitleHierarchy.selectionSection}`}>Compare two current listing cohorts</h2>
-        <p className="mt-3 text-sm leading-6 text-slate-300">Agent-only side-by-side comparison using admitted current listing metrics, explicit cohort filters, coverage, and as-of metadata.</p>
+        <div className="flex items-center gap-3"><GitCompareArrows className="h-5 w-5 text-emerald-100" aria-hidden="true" /><p className="text-[11px] font-bold uppercase tracking-[0.14em] text-emerald-100/80">{config.eyebrow}</p></div>
+        <h2 id="agent-current-snapshot-comparison-heading" className={`mt-2 ${projectAtlasTitleHierarchy.selectionSection}`}>{config.heading}</h2>
+        <p className="mt-3 text-sm leading-6 text-slate-300">{config.supportingCopy}</p>
         <p className="sr-only">{primaryMetricLabels.join('; ')}</p>
       </div>
       <button type="button" onClick={() => { setComparison((current) => ({ ...current, loading: true })); setRefreshToken((current) => current + 1); }} className="inline-flex min-h-11 items-center justify-center gap-2 bg-emerald-200 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-emerald-100 focus:outline-none focus:ring-2 focus:ring-emerald-100" data-testid="agent-current-snapshot-comparison-refresh"><RefreshCw size={16} aria-hidden="true" /> Refresh comparison</button>
     </div>
 
     <div className="mt-6 grid gap-4 xl:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] xl:items-start">
-      <CohortControls title="Cohort A" filters={left} update={updateLeft} />
+      <CohortControls title={config.leftLabel} filters={left} surface={surface} update={updateLeft} />
       <div className="hidden h-full items-center justify-center px-1 text-sm font-bold uppercase tracking-[0.14em] text-emerald-100/70 xl:flex">vs</div>
-      <CohortControls title="Cohort B" filters={right} update={updateRight} />
+      <CohortControls title={config.rightLabel} filters={right} surface={surface} update={updateRight} />
     </div>
+
+    {config.generatedBandControl ? <section className="mt-4 border border-white/10 bg-black/10 p-4" data-testid="agent-current-snapshot-interval-controls">
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+        <div>
+          <p className="text-sm font-semibold text-white">Price band boundary</p>
+          <p className="mt-1 text-xs leading-5 text-slate-400">Inclusive preserves current Quick Filter behavior. Non-overlapping generated bands make shared-endpoint price segments disjoint.</p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <button type="button" onClick={() => setPriceInterval('CLOSED')} className={`min-h-10 px-3 text-xs font-semibold ${priceInterval === 'CLOSED' ? 'bg-emerald-200 text-slate-950' : 'border border-white/15 text-slate-200'}`}>Inclusive bands</button>
+          <button type="button" onClick={() => setPriceInterval('LOWER_INCLUSIVE_UPPER_EXCLUSIVE')} className={`min-h-10 px-3 text-xs font-semibold ${priceInterval === 'LOWER_INCLUSIVE_UPPER_EXCLUSIVE' ? 'bg-emerald-200 text-slate-950' : 'border border-white/15 text-slate-200'}`}>Non-overlapping generated bands</button>
+        </div>
+      </div>
+    </section> : null}
 
     <section className="mt-5 border border-white/10 bg-white/[0.025] p-4" aria-labelledby="agent-current-snapshot-results-heading">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-emerald-100/70">Primary comparative metrics</p>
-          <h3 id="agent-current-snapshot-results-heading" className={projectAtlasTitleHierarchy.briefingSection}>Principal differences</h3>
+          <h3 id="agent-current-snapshot-results-heading" className={projectAtlasTitleHierarchy.briefingSection}>{config.resultHeading}</h3>
         </div>
         <p className="text-xs text-slate-400">{comparison.loading ? 'Reading current cohorts' : comparison.status === 'READY' ? 'Comparable current snapshot' : 'Comparison unavailable'}</p>
       </div>
@@ -222,8 +249,13 @@ export default function AgentCurrentSnapshotComparison({ surface }: { surface: '
       <summary className="flex cursor-pointer list-none items-center gap-3 p-4 text-sm font-semibold text-emerald-100"><ShieldCheck size={16} aria-hidden="true" /> Source, grain, and limits</summary>
       <div className="grid gap-4 border-t border-white/10 p-4 text-sm leading-6 text-slate-300 lg:grid-cols-2">
         <div><p className="font-medium text-white">Source scope</p><p className="mt-1">Current repository property search projection. Results are current MLS listing-record observations only.</p></div>
-        <div><p className="font-medium text-white">Not admitted here</p><p className="mt-1">Historical comparisons, closed-sale pricing, valuation, DOM/CDOM, supply, absorption, negotiation posture, recommendations, public reports, and export.</p></div>
+        <div><p className="font-medium text-white">Not admitted here</p><p className="mt-1">Historical comparisons, closed-sale pricing, valuation, DOM/CDOM, supply, absorption, negotiation posture, recommendations, public reports, and export.</p><p className="mt-3">{config.boundaryCopy}</p></div>
       </div>
     </details>
+    {buyerMapping ? <section className="mt-5 border border-white/10 bg-black/10 p-4" data-testid="agent-buyer-criteria-comparison-mapping" data-buyer-criteria-mapping-status={buyerMapping.status}>
+      <p className="text-sm font-semibold text-white">Buyer criteria mapping</p>
+      <p className="mt-2 text-xs leading-5 text-slate-400">Mapped: {buyerMapping.mappedCriteria.length ? buyerMapping.mappedCriteria.join(', ') : 'No supported criteria selected yet'}.</p>
+      <p className="mt-2 text-xs leading-5 text-amber-100">Not mapped: {buyerMapping.unmappedCriteria.length ? buyerMapping.unmappedCriteria.join(', ') : 'None'}.</p>
+    </section> : null}
   </section>;
 }
