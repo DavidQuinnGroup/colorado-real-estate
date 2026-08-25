@@ -1,0 +1,445 @@
+import {
+  CURRENT_SNAPSHOT_COMPARISON_OPERATION_POLICY,
+  type CohortRelationshipAdmission,
+} from './agentComparativeAdmissionReview';
+import {
+  AGENT_COHORT_ADMITTED_METRICS,
+  AGENT_COHORT_AGGREGATION_VERSION,
+  AGENT_COHORT_METRIC_IDS,
+  aggregateAgentCohort,
+  normalizeAgentCohortMetricIds,
+  type AgentCohortAggregationResult,
+  type AgentCohortMetricArtifact,
+  type AgentCohortMetricId,
+} from './agentCohortAggregation';
+import {
+  AGENT_COHORT_SUPPORTED_FILTER_KEYS,
+  normalizeAgentCohortDefinition,
+  type AgentCohortFilterKey,
+  type AgentCohortInput,
+  type AgentCohortNormalizedDefinition,
+  type AgentCohortQuickFilters,
+} from './agentCohortBuilder';
+import type { AtlasAudienceOutput, AtlasComparabilityState } from './atlasCohortComparativeContract';
+
+export const CURRENT_SNAPSHOT_COMPARATIVE_INTELLIGENCE_WAVE_3_STATUS =
+  'CURRENT_SNAPSHOT_COMPARATIVE_INTELLIGENCE_BOUNDED_IMPLEMENTATION_WAVE_3_CERTIFIED' as const;
+export const CURRENT_SNAPSHOT_COMPARATIVE_INTELLIGENCE_NEXT_GATE =
+  'READY_FOR_AGENT_COMPARISON_REUSE_AND_SEGMENT_EXPANSION_REVIEW' as const;
+export const AGENT_CURRENT_SNAPSHOT_COMPARISON_VERSION = 'AGENT_CURRENT_SNAPSHOT_COMPARISON_V1' as const;
+export const AGENT_CURRENT_SNAPSHOT_COMPARISON_AS_OF_TOLERANCE_MS = 5000;
+
+export type AgentComparisonOperation = 'SIDE_BY_SIDE' | 'ABSOLUTE_DELTA' | 'PERCENTAGE_DELTA' | 'DIRECTION' | 'RANK';
+export type AgentComparisonOperationAdmission = 'ADMITTED' | 'ADMITTED_WITH_LIMITATIONS' | 'NOT_ADMITTED';
+export type AgentComparisonDirection = 'HIGHER' | 'LOWER' | 'SAME' | 'UNDEFINED';
+export type AgentComparisonAsOfAlignmentStatus = 'ALIGNED_WITHIN_SINGLE_REQUEST_TOLERANCE' | 'COMPARABLE_WITH_AS_OF_LIMITATION' | 'AS_OF_EVIDENCE_INSUFFICIENT';
+
+export type AgentComparisonCohortInput = Readonly<{
+  label: string;
+  cohort: AgentCohortInput;
+}>;
+
+export type AgentComparisonRequest = Readonly<{
+  cohorts: readonly AgentComparisonCohortInput[];
+  metricIds?: readonly string[];
+  requestedOperations?: readonly AgentComparisonOperation[];
+  audience?: AtlasAudienceOutput;
+  requestAsOf?: string | null;
+}>;
+
+export type AgentComparisonAsOfAlignment = Readonly<{
+  requestAsOf: string;
+  observationAsOf: readonly string[];
+  maxSkewMs: number | null;
+  toleranceMs: typeof AGENT_CURRENT_SNAPSHOT_COMPARISON_AS_OF_TOLERANCE_MS;
+  status: AgentComparisonAsOfAlignmentStatus;
+  limitation: string | null;
+}>;
+
+export type AgentComparisonOperationPolicy = Readonly<Record<AgentComparisonOperation, AgentComparisonOperationAdmission>>;
+
+export type AgentCurrentSnapshotComparisonResult = Readonly<{
+  comparisonArtifactId: string;
+  comparisonVersion: typeof AGENT_CURRENT_SNAPSHOT_COMPARISON_VERSION;
+  metricId: AgentCohortMetricId;
+  metricVersion: typeof AGENT_COHORT_AGGREGATION_VERSION;
+  label: string;
+  cohortLabels: readonly string[];
+  cohortDefinitionIds: readonly string[];
+  values: readonly (number | null)[];
+  unit: AgentCohortMetricArtifact['unit'];
+  operationPolicy: AgentComparisonOperationPolicy;
+  absoluteDelta: number | null;
+  percentageDelta: number | null;
+  direction: AgentComparisonDirection;
+  ranks: readonly (number | null)[];
+  comparabilityStatus: AtlasComparabilityState;
+  comparabilityReasons: readonly string[];
+  cohortRelationship: CohortRelationshipAdmission;
+  coverage: readonly Readonly<{
+    eligibleCohortCount: number;
+    includedPopulationCount: number;
+    nullMissingCount: number;
+    includedCoverageRatio: number | null;
+  }>[];
+  observationAsOf: readonly string[];
+  asOfAlignment: AgentComparisonAsOfAlignment;
+  sourceScope: 'CURRENT_REPOSITORY_PROPERTY_SEARCH_PROJECTION';
+  analyticalGrain: 'MLS_LISTING';
+  temporalBasis: 'OBSERVATION_AS_OF_TIMESTAMP';
+  periodForm: 'AS_OF_INSTANT_SNAPSHOT';
+  calculationVersion: typeof AGENT_COHORT_AGGREGATION_VERSION;
+  audience: 'AGENT_ONLY';
+  limitations: readonly string[];
+  createdAt: string;
+}>;
+
+export type AgentCurrentSnapshotComparisonResponse = Readonly<{
+  status: 'READY' | 'NOT_AVAILABLE';
+  certification: typeof CURRENT_SNAPSHOT_COMPARATIVE_INTELLIGENCE_WAVE_3_STATUS;
+  cohortNReadiness: 'COHORT_N_RUNTIME_READY';
+  requestAsOf: string;
+  cohorts: readonly Readonly<{
+    label: string;
+    status: AgentCohortAggregationResult['status'];
+    normalized: AgentCohortNormalizedDefinition;
+  }>[];
+  rejectedMetricIds: readonly string[];
+  rejectedOperations: readonly AgentComparisonOperation[];
+  results: readonly AgentCurrentSnapshotComparisonResult[];
+  rejectionReasons: readonly string[];
+}>;
+
+const operationByPolicyToken: Readonly<Record<string, AgentComparisonOperation>> = Object.freeze({
+  SIDE_BY_SIDE_ONLY: 'SIDE_BY_SIDE',
+  ABSOLUTE_DELTA_ALLOWED: 'ABSOLUTE_DELTA',
+  PERCENTAGE_DELTA_ALLOWED: 'PERCENTAGE_DELTA',
+  DIRECTION_ALLOWED: 'DIRECTION',
+  RANK_ALLOWED: 'RANK',
+});
+
+const allOperations: readonly AgentComparisonOperation[] = Object.freeze(['SIDE_BY_SIDE', 'ABSOLUTE_DELTA', 'PERCENTAGE_DELTA', 'DIRECTION', 'RANK']);
+
+function nowIso(value: string | null | undefined) {
+  if (value && !Number.isNaN(Date.parse(value))) return new Date(value).toISOString();
+  return new Date().toISOString();
+}
+
+function stableSerialize(value: unknown): string {
+  if (Array.isArray(value)) return `[${value.map(stableSerialize).join(',')}]`;
+  if (value && typeof value === 'object') {
+    return `{${Object.entries(value).sort(([left], [right]) => left.localeCompare(right)).map(([key, entry]) => `${JSON.stringify(key)}:${stableSerialize(entry)}`).join(',')}}`;
+  }
+  return JSON.stringify(value);
+}
+
+export function getAgentMetricOperationPolicy(metricId: AgentCohortMetricId): AgentComparisonOperationPolicy {
+  const admitted = new Set(CURRENT_SNAPSHOT_COMPARISON_OPERATION_POLICY[metricId].map((token) => operationByPolicyToken[token]));
+  return Object.freeze({
+    SIDE_BY_SIDE: 'ADMITTED',
+    ABSOLUTE_DELTA: admitted.has('ABSOLUTE_DELTA') ? 'ADMITTED' : 'NOT_ADMITTED',
+    PERCENTAGE_DELTA: admitted.has('PERCENTAGE_DELTA') ? 'ADMITTED_WITH_LIMITATIONS' : 'NOT_ADMITTED',
+    DIRECTION: admitted.has('DIRECTION') ? 'ADMITTED' : 'NOT_ADMITTED',
+    RANK: admitted.has('RANK') ? 'ADMITTED_WITH_LIMITATIONS' : 'NOT_ADMITTED',
+  });
+}
+
+export function normalizeAgentComparisonOperations(input: readonly string[] | null | undefined) {
+  const requested = input?.length ? input : allOperations;
+  const admitted = new Set(allOperations);
+  return Object.freeze({
+    requestedOperations: Object.freeze(requested.filter((operation): operation is AgentComparisonOperation => admitted.has(operation as AgentComparisonOperation))),
+    rejectedOperations: Object.freeze(requested.filter((operation) => !admitted.has(operation as AgentComparisonOperation)).sort() as AgentComparisonOperation[]),
+  });
+}
+
+function intervalSubset(leftMin: number | null, leftMax: number | null, rightMin: number | null, rightMax: number | null) {
+  return (rightMin === null || (leftMin !== null && leftMin >= rightMin)) && (rightMax === null || (leftMax !== null && leftMax <= rightMax));
+}
+
+function intervalDisjoint(leftMin: number | null, leftMax: number | null, rightMin: number | null, rightMax: number | null) {
+  return (leftMax !== null && rightMin !== null && leftMax < rightMin) || (rightMax !== null && leftMin !== null && rightMax < leftMin);
+}
+
+function sameBasePopulation(left: AgentCohortQuickFilters, right: AgentCohortQuickFilters) {
+  return left.city === right.city && left.propertyType === right.propertyType && left.statusScope === right.statusScope;
+}
+
+function isSubset(left: AgentCohortQuickFilters, right: AgentCohortQuickFilters) {
+  if (!sameBasePopulation(left, right)) return false;
+  return (
+    intervalSubset(left.priceMin, left.priceMax, right.priceMin, right.priceMax) &&
+    intervalSubset(left.sqftMin, left.sqftMax, right.sqftMin, right.sqftMax) &&
+    intervalSubset(left.yearBuiltMin, left.yearBuiltMax, right.yearBuiltMin, right.yearBuiltMax) &&
+    (right.bedsMin === null || (left.bedsMin !== null && left.bedsMin >= right.bedsMin)) &&
+    (right.bathsMin === null || (left.bathsMin !== null && left.bathsMin >= right.bathsMin))
+  );
+}
+
+export function classifyAgentCohortRelationship(left: AgentCohortNormalizedDefinition, right: AgentCohortNormalizedDefinition): CohortRelationshipAdmission {
+  const leftFilters = left.filters;
+  const rightFilters = right.filters;
+  if (left.serializedFilters === right.serializedFilters) return 'SAME_POPULATION';
+  if (leftFilters.city && rightFilters.city && leftFilters.city !== rightFilters.city) return 'DISJOINT';
+  if (!sameBasePopulation(leftFilters, rightFilters)) return 'UNKNOWN_RELATIONSHIP';
+  if (
+    intervalDisjoint(leftFilters.priceMin, leftFilters.priceMax, rightFilters.priceMin, rightFilters.priceMax) ||
+    intervalDisjoint(leftFilters.sqftMin, leftFilters.sqftMax, rightFilters.sqftMin, rightFilters.sqftMax) ||
+    intervalDisjoint(leftFilters.yearBuiltMin, leftFilters.yearBuiltMax, rightFilters.yearBuiltMin, rightFilters.yearBuiltMax)
+  ) {
+    return 'DISJOINT';
+  }
+  const leftSubset = isSubset(leftFilters, rightFilters);
+  const rightSubset = isSubset(rightFilters, leftFilters);
+  if (leftSubset && !rightSubset) return 'SUBSET';
+  if (rightSubset && !leftSubset) return 'SUPERSET';
+  if (leftFilters.city && rightFilters.city && leftFilters.city === rightFilters.city) return 'OVERLAPPING';
+  return 'UNKNOWN_RELATIONSHIP';
+}
+
+function asOfAlignment(artifacts: readonly AgentCohortMetricArtifact[], requestAsOf: string): AgentComparisonAsOfAlignment {
+  const observationAsOf = artifacts.map((artifact) => artifact.asOf);
+  const parsed = observationAsOf.map((value) => Date.parse(value)).filter((value) => Number.isFinite(value));
+  const maxSkewMs = parsed.length === observationAsOf.length ? Math.max(...parsed) - Math.min(...parsed) : null;
+  const status =
+    maxSkewMs === null
+      ? 'AS_OF_EVIDENCE_INSUFFICIENT'
+      : maxSkewMs <= AGENT_CURRENT_SNAPSHOT_COMPARISON_AS_OF_TOLERANCE_MS
+        ? 'ALIGNED_WITHIN_SINGLE_REQUEST_TOLERANCE'
+        : 'COMPARABLE_WITH_AS_OF_LIMITATION';
+  return Object.freeze({
+    requestAsOf,
+    observationAsOf: Object.freeze(observationAsOf),
+    maxSkewMs,
+    toleranceMs: AGENT_CURRENT_SNAPSHOT_COMPARISON_AS_OF_TOLERANCE_MS,
+    status,
+    limitation: status === 'ALIGNED_WITHIN_SINGLE_REQUEST_TOLERANCE' ? null : 'Cohort artifacts were not observed within the same bounded request tolerance.',
+  });
+}
+
+function coverageFor(artifact: AgentCohortMetricArtifact) {
+  const includedCoverageRatio = artifact.eligibleCohortCount > 0 ? artifact.includedPopulationCount / artifact.eligibleCohortCount : null;
+  return Object.freeze({
+    eligibleCohortCount: artifact.eligibleCohortCount,
+    includedPopulationCount: artifact.includedPopulationCount,
+    nullMissingCount: artifact.nullMissingCount,
+    includedCoverageRatio,
+  });
+}
+
+function coverageLimitations(coverage: readonly ReturnType<typeof coverageFor>[]) {
+  const ratios = coverage.map((item) => item.includedCoverageRatio).filter((value): value is number => value !== null);
+  const materialDifference = ratios.length > 1 && Math.max(...ratios) - Math.min(...ratios) >= 0.25;
+  return Object.freeze([
+    coverage.some((item) => item.nullMissingCount > 0) && 'Field/null coverage is displayed; null values are not coerced to zero.',
+    materialDifference && 'Material included-population coverage differences may limit interpretation.',
+  ].filter(Boolean) as string[]);
+}
+
+function direction(left: number | null, right: number | null): AgentComparisonDirection {
+  if (left === null || right === null) return 'UNDEFINED';
+  if (left > right) return 'HIGHER';
+  if (left < right) return 'LOWER';
+  return 'SAME';
+}
+
+function ranks(values: readonly (number | null)[]) {
+  const sorted = values
+    .map((value, index) => ({ value, index }))
+    .filter((item): item is { value: number; index: number } => item.value !== null)
+    .sort((left, right) => right.value - left.value);
+  return values.map((value, index) => {
+    if (value === null) return null;
+    return sorted.findIndex((item) => item.index === index) + 1;
+  });
+}
+
+export function compareAgentCurrentSnapshotMetricArtifacts(input: Readonly<{
+  metricId: AgentCohortMetricId;
+  artifacts: readonly AgentCohortMetricArtifact[];
+  cohorts: readonly AgentComparisonCohortInput[];
+  normalized: readonly AgentCohortNormalizedDefinition[];
+  requestedOperations: readonly AgentComparisonOperation[];
+  requestAsOf: string;
+}>): AgentCurrentSnapshotComparisonResult {
+  const artifactA = input.artifacts[0];
+  const artifactB = input.artifacts[1];
+  const operationPolicy = getAgentMetricOperationPolicy(input.metricId);
+  const coverage = Object.freeze(input.artifacts.map(coverageFor));
+  const coverageLimits = coverageLimitations(coverage);
+  const alignment = asOfAlignment(input.artifacts, input.requestAsOf);
+  const values = Object.freeze(input.artifacts.map((artifact) => artifact.value));
+  const baseReasons = [
+    artifactA.metricId !== input.metricId && 'METRIC_ID_MISMATCH',
+    artifactB.metricId !== input.metricId && 'METRIC_ID_MISMATCH',
+    artifactA.metricId !== artifactB.metricId && 'METRIC_ID_MISMATCH',
+    artifactA.calculationVersion !== artifactB.calculationVersion && 'CALCULATION_VERSION_MISMATCH',
+    artifactA.fieldBasis !== artifactB.fieldBasis && 'FIELD_BASIS_MISMATCH',
+    artifactA.aggregation !== artifactB.aggregation && 'AGGREGATION_MISMATCH',
+    artifactA.unit !== artifactB.unit && 'UNIT_MISMATCH',
+    artifactA.analyticalGrain !== 'MLS_LISTING' && 'GRAIN_MISMATCH',
+    artifactB.analyticalGrain !== 'MLS_LISTING' && 'GRAIN_MISMATCH',
+    artifactA.sourceScope !== 'CURRENT_REPOSITORY_PROPERTY_SEARCH_PROJECTION' && 'SOURCE_SCOPE_MISMATCH',
+    artifactB.sourceScope !== 'CURRENT_REPOSITORY_PROPERTY_SEARCH_PROJECTION' && 'SOURCE_SCOPE_MISMATCH',
+    artifactA.temporalBasis !== 'OBSERVATION_AS_OF_TIMESTAMP' && 'TEMPORAL_BASIS_MISMATCH',
+    artifactB.temporalBasis !== 'OBSERVATION_AS_OF_TIMESTAMP' && 'TEMPORAL_BASIS_MISMATCH',
+    artifactA.periodForm !== 'AS_OF_INSTANT_SNAPSHOT' && 'PERIOD_FORM_MISMATCH',
+    artifactB.periodForm !== 'AS_OF_INSTANT_SNAPSHOT' && 'PERIOD_FORM_MISMATCH',
+    artifactA.audience !== 'AGENT_ONLY' && 'RIGHTS_INCOMPATIBLE',
+    artifactB.audience !== 'AGENT_ONLY' && 'RIGHTS_INCOMPATIBLE',
+    artifactA.state !== 'READY' && 'LEFT_ARTIFACT_NO_DATA',
+    artifactB.state !== 'READY' && 'RIGHT_ARTIFACT_NO_DATA',
+    alignment.status === 'AS_OF_EVIDENCE_INSUFFICIENT' && 'AS_OF_EVIDENCE_INSUFFICIENT',
+    ...input.requestedOperations.filter((operation) => operationPolicy[operation] === 'NOT_ADMITTED').map((operation) => `OPERATION_NOT_ADMITTED:${operation}`),
+  ].filter(Boolean) as string[];
+  const reasons = Object.freeze([...new Set(baseReasons)].sort());
+  const hardBlock = reasons.some((reason) => !['FIELD_COVERAGE_LIMITATION'].includes(reason));
+  const comparable = reasons.length === 0;
+  const comparabilityStatus: AtlasComparabilityState =
+    reasons.includes('RIGHTS_INCOMPATIBLE')
+      ? 'RIGHTS_BLOCKED'
+      : hardBlock
+        ? 'NOT_COMPARABLE'
+        : coverageLimits.length > 0 || alignment.status === 'COMPARABLE_WITH_AS_OF_LIMITATION'
+          ? 'COMPARABLE_WITH_LIMITATIONS'
+          : 'COMPARABLE';
+  const leftValue = values[0] ?? null;
+  const rightValue = values[1] ?? null;
+  const mayCalculate = comparabilityStatus === 'COMPARABLE' || comparabilityStatus === 'COMPARABLE_WITH_LIMITATIONS';
+  const absoluteDelta = mayCalculate && operationPolicy.ABSOLUTE_DELTA !== 'NOT_ADMITTED' && leftValue !== null && rightValue !== null ? leftValue - rightValue : null;
+  const percentageDelta =
+    mayCalculate && operationPolicy.PERCENTAGE_DELTA !== 'NOT_ADMITTED' && absoluteDelta !== null && rightValue !== null && rightValue !== 0
+      ? absoluteDelta / rightValue
+      : null;
+  const limitations = Object.freeze([
+    ...artifactA.limitations,
+    ...artifactB.limitations,
+    ...coverageLimits,
+    alignment.limitation,
+    rightValue === 0 && operationPolicy.PERCENTAGE_DELTA !== 'NOT_ADMITTED' && 'Percentage delta is omitted when the comparison baseline is zero.',
+    input.metricId === 'agent.cohort.current-mls-listing-record-count.v1' && 'Count difference is only relative difference in matching current MLS listing-record counts; it is not supply, demand, absorption, or market strength.',
+  ].filter(Boolean) as string[]);
+
+  return Object.freeze({
+    comparisonArtifactId: `agent-comparison:${AGENT_CURRENT_SNAPSHOT_COMPARISON_VERSION}:${input.metricId}:${stableSerialize(input.normalized.map((item) => item.serializedFilters))}`,
+    comparisonVersion: AGENT_CURRENT_SNAPSHOT_COMPARISON_VERSION,
+    metricId: input.metricId,
+    metricVersion: AGENT_COHORT_AGGREGATION_VERSION,
+    label: AGENT_COHORT_ADMITTED_METRICS[input.metricId].label,
+    cohortLabels: Object.freeze(input.cohorts.map((cohort) => cohort.label)),
+    cohortDefinitionIds: Object.freeze(input.normalized.map((item) => item.cohort.cohortDefinitionId)),
+    values,
+    unit: artifactA.unit,
+    operationPolicy,
+    absoluteDelta,
+    percentageDelta,
+    direction: mayCalculate && operationPolicy.DIRECTION !== 'NOT_ADMITTED' ? direction(leftValue, rightValue) : 'UNDEFINED',
+    ranks: Object.freeze(mayCalculate && operationPolicy.RANK !== 'NOT_ADMITTED' ? ranks(values) : values.map(() => null)),
+    comparabilityStatus: comparable && (coverageLimits.length > 0 || alignment.status === 'COMPARABLE_WITH_AS_OF_LIMITATION') ? 'COMPARABLE_WITH_LIMITATIONS' : comparabilityStatus,
+    comparabilityReasons: reasons,
+    cohortRelationship: classifyAgentCohortRelationship(input.normalized[0], input.normalized[1]),
+    coverage,
+    observationAsOf: Object.freeze(input.artifacts.map((artifact) => artifact.asOf)),
+    asOfAlignment: alignment,
+    sourceScope: 'CURRENT_REPOSITORY_PROPERTY_SEARCH_PROJECTION',
+    analyticalGrain: 'MLS_LISTING',
+    temporalBasis: 'OBSERVATION_AS_OF_TIMESTAMP',
+    periodForm: 'AS_OF_INSTANT_SNAPSHOT',
+    calculationVersion: AGENT_COHORT_AGGREGATION_VERSION,
+    audience: 'AGENT_ONLY',
+    limitations,
+    createdAt: input.requestAsOf,
+  });
+}
+
+export async function compareAgentCurrentSnapshotCohorts(request: AgentComparisonRequest): Promise<AgentCurrentSnapshotComparisonResponse> {
+  const requestAsOf = nowIso(request.requestAsOf);
+  const audience = request.audience ?? 'AGENT_ONLY';
+  const { admittedMetricIds, rejectedMetricIds } = normalizeAgentCohortMetricIds(request.metricIds);
+  const metricIds = admittedMetricIds.length ? admittedMetricIds : AGENT_COHORT_METRIC_IDS;
+  const { requestedOperations, rejectedOperations } = normalizeAgentComparisonOperations(request.requestedOperations);
+  const normalizedOnly = request.cohorts.map((cohort) => normalizeAgentCohortDefinition(cohort.cohort));
+  const requestRejections = [
+    (request.cohorts.length < 2 || request.cohorts.length > 6) && 'COHORT_COUNT_OUT_OF_BOUNDS',
+    audience !== 'AGENT_ONLY' && 'RIGHTS_INCOMPATIBLE',
+    rejectedMetricIds.length > 0 && 'UNSUPPORTED_METRIC_ID',
+    rejectedOperations.length > 0 && 'UNSUPPORTED_OPERATION',
+    ...normalizedOnly.flatMap((cohort, index) => cohort.validation.ready ? [] : cohort.validation.reasons.map((reason) => `COHORT_${index + 1}:${reason}`)),
+  ].filter(Boolean) as string[];
+
+  if (requestRejections.length > 0) {
+    return Object.freeze({
+      status: 'NOT_AVAILABLE',
+      certification: CURRENT_SNAPSHOT_COMPARATIVE_INTELLIGENCE_WAVE_3_STATUS,
+      cohortNReadiness: 'COHORT_N_RUNTIME_READY',
+      requestAsOf,
+      cohorts: Object.freeze(normalizedOnly.map((normalized, index) => Object.freeze({ label: request.cohorts[index]?.label ?? `Cohort ${index + 1}`, status: 'NOT_AVAILABLE' as const, normalized }))),
+      rejectedMetricIds,
+      rejectedOperations,
+      results: Object.freeze([]),
+      rejectionReasons: Object.freeze([...new Set(requestRejections)].sort()),
+    });
+  }
+
+  const aggregations = await Promise.all(request.cohorts.map((cohort) => aggregateAgentCohort(cohort.cohort, metricIds)));
+  const aggregationRejections = aggregations.flatMap((aggregation, index) => aggregation.status === 'READY' ? [] : [`COHORT_${index + 1}:AGGREGATION_NOT_AVAILABLE`]);
+  if (aggregationRejections.length > 0) {
+    return Object.freeze({
+      status: 'NOT_AVAILABLE',
+      certification: CURRENT_SNAPSHOT_COMPARATIVE_INTELLIGENCE_WAVE_3_STATUS,
+      cohortNReadiness: 'COHORT_N_RUNTIME_READY',
+      requestAsOf,
+      cohorts: Object.freeze(aggregations.map((aggregation, index) => Object.freeze({ label: request.cohorts[index].label, status: aggregation.status, normalized: aggregation.normalized }))),
+      rejectedMetricIds,
+      rejectedOperations,
+      results: Object.freeze([]),
+      rejectionReasons: Object.freeze(aggregationRejections),
+    });
+  }
+
+  const results = metricIds.map((metricId) => {
+    const artifacts = aggregations.map((aggregation) => aggregation.artifacts.find((artifact) => artifact.metricId === metricId)).filter((artifact): artifact is AgentCohortMetricArtifact => Boolean(artifact));
+    return compareAgentCurrentSnapshotMetricArtifacts({ metricId, artifacts, cohorts: request.cohorts, normalized: aggregations.map((item) => item.normalized), requestedOperations, requestAsOf });
+  });
+  return Object.freeze({
+    status: 'READY',
+    certification: CURRENT_SNAPSHOT_COMPARATIVE_INTELLIGENCE_WAVE_3_STATUS,
+    cohortNReadiness: 'COHORT_N_RUNTIME_READY',
+    requestAsOf,
+    cohorts: Object.freeze(aggregations.map((aggregation, index) => Object.freeze({ label: request.cohorts[index].label, status: aggregation.status, normalized: aggregation.normalized }))),
+    rejectedMetricIds,
+    rejectedOperations,
+    results: Object.freeze(results),
+    rejectionReasons: Object.freeze([]),
+  });
+}
+
+export function parseAgentComparisonSearchParams(searchParams: URLSearchParams): AgentComparisonRequest {
+  const cohortFromPrefix = (prefix: 'a' | 'b'): AgentComparisonCohortInput => {
+    const filters: Partial<Record<AgentCohortFilterKey, string>> = {};
+    for (const key of AGENT_COHORT_SUPPORTED_FILTER_KEYS) {
+      const value = searchParams.get(`${prefix}.${key}`);
+      if (value !== null) filters[key] = value;
+    }
+    return Object.freeze({
+      label: searchParams.get(`${prefix}.label`) || (prefix === 'a' ? 'Cohort A' : 'Cohort B'),
+      cohort: Object.freeze({
+        purpose: searchParams.get('purpose') || 'Agent current-snapshot comparative preparation cohort.',
+        filters,
+        unsupportedFilters: searchParams.getAll(`${prefix}.unsupportedFilter`),
+        analyticalGrain: searchParams.get(`${prefix}.analyticalGrain`),
+        temporalBasis: searchParams.get(`${prefix}.temporalBasis`),
+        periodForm: searchParams.get(`${prefix}.periodForm`),
+        scenarioBoundary: searchParams.get(`${prefix}.scenarioBoundary`),
+        asOf: searchParams.get(`${prefix}.asOf`),
+      }),
+    });
+  };
+  return Object.freeze({
+    cohorts: Object.freeze([cohortFromPrefix('a'), cohortFromPrefix('b')]),
+    metricIds: Object.freeze(searchParams.getAll('metricId')),
+    requestedOperations: Object.freeze(searchParams.getAll('operation') as AgentComparisonOperation[]),
+    audience: (searchParams.get('audience') as AtlasAudienceOutput | null) ?? 'AGENT_ONLY',
+    requestAsOf: searchParams.get('requestAsOf'),
+  });
+}

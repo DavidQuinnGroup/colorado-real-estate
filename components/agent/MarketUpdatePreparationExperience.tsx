@@ -5,6 +5,7 @@ import { ArrowRight, CheckCircle2, ClipboardList, FileText, RefreshCw, ShieldChe
 
 import { projectAtlasTitleHierarchy } from '@/components/ProjectAtlasTitleHierarchy';
 import AgentCohortBuilder from '@/components/agent/AgentCohortBuilder';
+import AgentCurrentSnapshotComparison from '@/components/agent/AgentCurrentSnapshotComparison';
 import AgentPreparationPageHeader from '@/components/agent/AgentPreparationPageHeader';
 import {
   MARKET_UPDATE_AUDIENCES,
@@ -73,6 +74,7 @@ export default function MarketUpdatePreparationExperience() {
       </section>
 
       <AgentCohortBuilder surface="MARKET_UPDATE_PREPARATION" />
+      <AgentCurrentSnapshotComparison surface="MARKET_UPDATE_PREPARATION" />
 
       {!preparation ? <section className="mt-8 border border-dashed border-white/15 px-5 py-7 text-sm text-slate-400" data-testid="agent-market-update-empty-state">Choose a supported market and at least one topic, then prepare the update.</section> : null}
       {preparation?.state === 'NOT_READY' ? <section className="mt-8 border border-amber-200/20 bg-amber-100/[0.05] p-5 text-sm leading-6 text-amber-50/90" role="status">{preparation.executiveSummary.text}</section> : null}
