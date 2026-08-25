@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { authorizeAdminRequest } from '@/lib/admin/adminAuth';
 import { AGENT_COHORT_SUPPORTED_FILTER_KEYS, type AgentCohortFilterKey } from '@/lib/agentCohortBuilder';
+import { isAgentUnadmittedFilterKey } from '@/lib/agentAdmittedFilterRegistry';
 import { buildCurrentCompetingListingContext, type SubjectListingContextRequest } from '@/lib/agentCurrentCompetingListingContext';
 import { getAgentPropertyConversationCandidate } from '@/lib/agent-advisory-workbench/agentPropertyConversationPreparationRepository';
 import type { AtlasAudienceOutput } from '@/lib/atlasCohortComparativeContract';
@@ -44,7 +45,12 @@ export async function GET(request: NextRequest) {
     dom: boolParam(request.nextUrl.searchParams.get('dom')),
     soldComparable: boolParam(request.nextUrl.searchParams.get('soldComparable')),
     filters: Object.freeze(parseFilters(request.nextUrl.searchParams)),
-    unsupportedFilters: Object.freeze(request.nextUrl.searchParams.getAll('unsupportedFilter')),
+    unsupportedFilters: Object.freeze([
+      ...new Set([
+        ...request.nextUrl.searchParams.getAll('unsupportedFilter'),
+        ...[...request.nextUrl.searchParams.keys()].filter(isAgentUnadmittedFilterKey),
+      ]),
+    ].sort()),
   });
   const result = await buildCurrentCompetingListingContext(candidate, requestContract);
   return NextResponse.json(result, { status: result.status === 'READY' ? 200 : slug ? 422 : 404, headers: RESPONSE_HEADERS });

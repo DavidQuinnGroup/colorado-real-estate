@@ -88,6 +88,7 @@ export type CurrentCompetingListingContextResult = Readonly<{
       baths: number | null;
       sqft: number | null;
       yearBuilt: number | null;
+      lotSize: number | null;
     }>;
     missingFields: readonly string[];
   }> | null;
@@ -181,11 +182,17 @@ function visibleCriteria(filters: AgentCohortQuickFilters) {
     filters.priceMin !== null && `Minimum current asking/list price: ${filters.priceMin}`,
     filters.priceMax !== null && `Maximum current asking/list price: ${filters.priceMax}`,
     filters.bedsMin !== null && `Minimum bedrooms: ${filters.bedsMin}`,
+    filters.bedsMax !== null && `Maximum bedrooms: ${filters.bedsMax}`,
+    filters.bedsExact !== null && `Exact bedrooms: ${filters.bedsExact}`,
     filters.bathsMin !== null && `Minimum bathrooms: ${filters.bathsMin}`,
+    filters.bathsMax !== null && `Maximum bathrooms: ${filters.bathsMax}`,
+    filters.bathsExact !== null && `Exact bathrooms: ${filters.bathsExact}`,
     filters.sqftMin !== null && `Minimum listed square feet: ${filters.sqftMin}`,
     filters.sqftMax !== null && `Maximum listed square feet: ${filters.sqftMax}`,
     filters.yearBuiltMin !== null && `Minimum year built: ${filters.yearBuiltMin}`,
     filters.yearBuiltMax !== null && `Maximum year built: ${filters.yearBuiltMax}`,
+    filters.lotSizeMin !== null && `Minimum lot acres: ${filters.lotSizeMin}`,
+    filters.lotSizeMax !== null && `Maximum lot acres: ${filters.lotSizeMax}`,
   ].filter(Boolean) as string[]);
 }
 
@@ -202,6 +209,7 @@ export function buildSubjectListingContext(candidate: AgentPropertyConversationC
     baths: candidate.property.baths,
     sqft: candidate.property.sqft,
     yearBuilt: candidate.property.yearBuilt,
+    lotSize: candidate.property.lotSize,
   });
   return Object.freeze({
     identityType: 'PROPERTY_SLUG' as const,

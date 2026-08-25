@@ -10,7 +10,7 @@ export const AGENT_NUMERIC_INTERVAL_BOUNDARY_KINDS = [
 ] as const;
 
 export type AgentNumericIntervalBoundaryKind = (typeof AGENT_NUMERIC_INTERVAL_BOUNDARY_KINDS)[number];
-export type AgentNumericIntervalDimension = 'price' | 'sqft' | 'yearBuilt' | 'beds' | 'baths';
+export type AgentNumericIntervalDimension = 'price' | 'sqft' | 'yearBuilt' | 'beds' | 'baths' | 'lotSize';
 export type AgentNumericIntervalInput = Readonly<{
   min?: number | string | null;
   max?: number | string | null;
@@ -29,10 +29,11 @@ export type AgentNumericInterval = Readonly<{
 }>;
 export type AgentNumericIntervalRelation = 'SAME_INTERVAL' | 'DISJOINT' | 'SUBSET' | 'SUPERSET' | 'OVERLAPPING';
 
-function normalizeNumber(value: number | string | null | undefined) {
+function normalizeNumber(dimension: AgentNumericIntervalDimension, value: number | string | null | undefined) {
   if (value === null || value === undefined || value === '') return null;
   const parsed = typeof value === 'number' ? value : Number(String(value).replace(/[$,]/g, '').trim());
-  return Number.isFinite(parsed) ? Math.floor(parsed) : Number.NaN;
+  if (!Number.isFinite(parsed)) return Number.NaN;
+  return dimension === 'baths' || dimension === 'lotSize' ? parsed : Math.floor(parsed);
 }
 
 function boundary(value: AgentNumericIntervalInput['boundary']): AgentNumericIntervalBoundaryKind {
@@ -50,8 +51,8 @@ function stableSerialize(value: unknown): string {
 }
 
 export function normalizeAgentNumericInterval(dimension: AgentNumericIntervalDimension, input: AgentNumericIntervalInput): AgentNumericInterval {
-  const min = normalizeNumber(input.min);
-  const max = normalizeNumber(input.max);
+  const min = normalizeNumber(dimension, input.min);
+  const max = normalizeNumber(dimension, input.max);
   const kind = boundary(input.boundary);
   const reasons = new Set<string>();
   if (Number.isNaN(min)) reasons.add('INTERVAL_MIN_MALFORMED');

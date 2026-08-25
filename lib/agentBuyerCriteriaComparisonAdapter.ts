@@ -24,7 +24,9 @@ export function mapBuyerCriteriaToAgentCohort(profile: PropertyCriteriaProfile, 
       ? 'residential'
       : base.propertyType,
     bedsMin: profile.bedrooms.min ?? base.bedsMin,
+    bedsMax: profile.bedrooms.max ?? base.bedsMax,
     bathsMin: profile.bathrooms.min ?? base.bathsMin,
+    bathsMax: profile.bathrooms.max ?? base.bathsMax,
     sqftMin: profile.squareFeet.min ?? base.sqftMin,
     sqftMax: profile.squareFeet.max ?? base.sqftMax,
     yearBuiltMin: profile.yearBuilt.min ?? base.yearBuiltMin,
@@ -32,9 +34,9 @@ export function mapBuyerCriteriaToAgentCohort(profile: PropertyCriteriaProfile, 
   });
   if (hasChoice(profile.propertyTypes.values) && filters.propertyType === 'residential') mapped.add('residential property type');
   if (profile.bedrooms.min !== null) mapped.add('minimum bedrooms');
-  if (profile.bedrooms.max !== null) unmapped.add('maximum bedrooms');
+  if (profile.bedrooms.max !== null) mapped.add('maximum bedrooms');
   if (profile.bathrooms.min !== null) mapped.add('minimum bathrooms');
-  if (profile.bathrooms.max !== null) unmapped.add('maximum bathrooms');
+  if (profile.bathrooms.max !== null) mapped.add('maximum bathrooms');
   if (profile.squareFeet.min !== null) mapped.add('minimum listed square feet');
   if (profile.squareFeet.max !== null) mapped.add('maximum listed square feet');
   if (profile.yearBuilt.min !== null) mapped.add('minimum year built');

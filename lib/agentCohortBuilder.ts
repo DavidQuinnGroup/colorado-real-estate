@@ -1,6 +1,7 @@
 import type { AtlasCohortDefinition } from './atlasCohortComparativeContract';
 import { ATLAS_COHORT_CONTRACT_VERSION, validateAtlasCohortDefinition } from './atlasCohortComparativeContract';
 import { legacyClosedInterval, normalizeAgentNumericInterval, type AgentNumericInterval, type AgentNumericIntervalBoundaryKind, type AgentNumericIntervalDimension, type AgentNumericIntervalInput } from './agentNumericInterval';
+import { AGENT_ADMITTED_FILTER_REGISTRY, isAgentAdmittedFilterKey, isAgentUnadmittedFilterKey } from './agentAdmittedFilterRegistry';
 
 export const REUSABLE_AGENT_COHORT_BUILDER_WAVE_1_STATUS =
   'REUSABLE_AGENT_COHORT_BUILDER_BOUNDED_IMPLEMENTATION_WAVE_1_CERTIFIED' as const;
@@ -32,11 +33,17 @@ export const AGENT_COHORT_SUPPORTED_FILTER_KEYS = [
   'priceMin',
   'priceMax',
   'bedsMin',
+  'bedsMax',
+  'bedsExact',
   'bathsMin',
+  'bathsMax',
+  'bathsExact',
   'sqftMin',
   'sqftMax',
   'yearBuiltMin',
   'yearBuiltMax',
+  'lotSizeMin',
+  'lotSizeMax',
 ] as const;
 
 export type AgentCohortFilterKey = (typeof AGENT_COHORT_SUPPORTED_FILTER_KEYS)[number];
@@ -51,11 +58,17 @@ export type AgentCohortQuickFilters = Readonly<{
   priceMin: number | null;
   priceMax: number | null;
   bedsMin: number | null;
+  bedsMax: number | null;
+  bedsExact: number | null;
   bathsMin: number | null;
+  bathsMax: number | null;
+  bathsExact: number | null;
   sqftMin: number | null;
   sqftMax: number | null;
   yearBuiltMin: number | null;
   yearBuiltMax: number | null;
+  lotSizeMin: number | null;
+  lotSizeMax: number | null;
 }>;
 
 export type AgentCohortInput = Readonly<{
@@ -101,22 +114,28 @@ export const AGENT_COHORT_EMPTY_FILTERS: AgentCohortQuickFilters = Object.freeze
   priceMin: null,
   priceMax: null,
   bedsMin: null,
+  bedsMax: null,
+  bedsExact: null,
   bathsMin: null,
+  bathsMax: null,
+  bathsExact: null,
   sqftMin: null,
   sqftMax: null,
   yearBuiltMin: null,
   yearBuiltMax: null,
+  lotSizeMin: null,
+  lotSizeMax: null,
 });
 
 function text(value: unknown) {
   return typeof value === 'string' ? value.trim() : '';
 }
 
-function normalizeNumber(value: unknown) {
+function normalizeNumber(value: unknown, mode: 'INTEGER' | 'DECIMAL' = 'INTEGER') {
   if (value === null || value === undefined || value === '') return null;
   const parsed = typeof value === 'number' ? value : Number(String(value).replace(/[$,]/g, '').trim());
   if (!Number.isFinite(parsed)) return Number.NaN;
-  return Math.floor(parsed);
+  return mode === 'DECIMAL' ? parsed : Math.floor(parsed);
 }
 
 function cityById(value: unknown) {
@@ -150,7 +169,7 @@ function currentIso(value: string | null | undefined) {
   return new Date().toISOString();
 }
 
-const intervalDimensions = ['price', 'sqft', 'yearBuilt', 'beds', 'baths'] as const satisfies readonly AgentNumericIntervalDimension[];
+const intervalDimensions = ['price', 'sqft', 'yearBuilt', 'beds', 'baths', 'lotSize'] as const satisfies readonly AgentNumericIntervalDimension[];
 
 function explicitIntervalBoundary(input: AgentCohortInput, dimension: AgentNumericIntervalDimension): AgentNumericIntervalBoundaryKind | null {
   const value = input.intervals?.[dimension]?.boundary;
@@ -163,16 +182,21 @@ export function parseAgentCohortSearchParams(searchParams: URLSearchParams): Age
     const value = searchParams.get(key);
     if (value !== null) filters[key] = value;
   }
+  const unsupportedFilters = new Set(searchParams.getAll('unsupportedFilter'));
+  for (const key of searchParams.keys()) {
+    if (isAgentUnadmittedFilterKey(key)) unsupportedFilters.add(key);
+  }
   return Object.freeze({
     purpose: searchParams.get('purpose') || 'Agent-defined recurring analytical preparation cohort.',
     filters,
-    unsupportedFilters: searchParams.getAll('unsupportedFilter'),
+    unsupportedFilters: Object.freeze([...unsupportedFilters].sort()),
     intervals: Object.freeze({
       price: Object.freeze({ boundary: searchParams.get('priceInterval') }),
       sqft: Object.freeze({ boundary: searchParams.get('sqftInterval') }),
       yearBuilt: Object.freeze({ boundary: searchParams.get('yearBuiltInterval') }),
       beds: Object.freeze({ boundary: searchParams.get('bedsInterval') }),
       baths: Object.freeze({ boundary: searchParams.get('bathsInterval') }),
+      lotSize: Object.freeze({ boundary: searchParams.get('lotSizeInterval') }),
     }),
     analyticalGrain: searchParams.get('analyticalGrain'),
     temporalBasis: searchParams.get('temporalBasis'),
@@ -184,6 +208,9 @@ export function parseAgentCohortSearchParams(searchParams: URLSearchParams): Age
 
 export function normalizeAgentCohortDefinition(input: AgentCohortInput): AgentCohortNormalizedDefinition {
   const rejected = new Set<string>(input.unsupportedFilters ?? []);
+  for (const key of Object.keys(input.filters)) {
+    if (!isAgentAdmittedFilterKey(key)) rejected.add(key);
+  }
   if (input.analyticalGrain && input.analyticalGrain !== 'MLS_LISTING') rejected.add('analyticalGrain');
   if (input.temporalBasis && input.temporalBasis !== 'OBSERVATION_AS_OF_TIMESTAMP') rejected.add('temporalBasis');
   if (input.periodForm && input.periodForm !== 'AS_OF_INSTANT_SNAPSHOT') rejected.add('periodForm');
@@ -200,19 +227,35 @@ export function normalizeAgentCohortDefinition(input: AgentCohortInput): AgentCo
     priceMin: normalizeNumber(input.filters.priceMin),
     priceMax: normalizeNumber(input.filters.priceMax),
     bedsMin: normalizeNumber(input.filters.bedsMin),
-    bathsMin: normalizeNumber(input.filters.bathsMin),
+    bedsMax: normalizeNumber(input.filters.bedsMax),
+    bedsExact: normalizeNumber(input.filters.bedsExact),
+    bathsMin: normalizeNumber(input.filters.bathsMin, 'DECIMAL'),
+    bathsMax: normalizeNumber(input.filters.bathsMax, 'DECIMAL'),
+    bathsExact: normalizeNumber(input.filters.bathsExact, 'DECIMAL'),
     sqftMin: normalizeNumber(input.filters.sqftMin),
     sqftMax: normalizeNumber(input.filters.sqftMax),
     yearBuiltMin: normalizeNumber(input.filters.yearBuiltMin),
     yearBuiltMax: normalizeNumber(input.filters.yearBuiltMax),
+    lotSizeMin: normalizeNumber(input.filters.lotSizeMin, 'DECIMAL'),
+    lotSizeMax: normalizeNumber(input.filters.lotSizeMax, 'DECIMAL'),
   };
   for (const [key, value] of Object.entries(numbers)) {
     if (Number.isNaN(value)) rejected.add(key);
     if (typeof value === 'number' && value < 0) rejected.add(key);
   }
   if (numbers.priceMin !== null && numbers.priceMax !== null && numbers.priceMin > numbers.priceMax) rejected.add('priceRange');
+  if (numbers.bedsMin !== null && numbers.bedsMax !== null && numbers.bedsMin > numbers.bedsMax) rejected.add('bedsRange');
+  if (numbers.bathsMin !== null && numbers.bathsMax !== null && numbers.bathsMin > numbers.bathsMax) rejected.add('bathsRange');
   if (numbers.sqftMin !== null && numbers.sqftMax !== null && numbers.sqftMin > numbers.sqftMax) rejected.add('sqftRange');
   if (numbers.yearBuiltMin !== null && numbers.yearBuiltMax !== null && numbers.yearBuiltMin > numbers.yearBuiltMax) rejected.add('yearBuiltRange');
+  if (numbers.lotSizeMin !== null && numbers.lotSizeMax !== null && numbers.lotSizeMin > numbers.lotSizeMax) rejected.add('lotSizeRange');
+  if (numbers.bedsExact !== null && numbers.bedsMin !== null && numbers.bedsExact < numbers.bedsMin) rejected.add('bedsExactOutsideRange');
+  if (numbers.bedsExact !== null && numbers.bedsMax !== null && numbers.bedsExact > numbers.bedsMax) rejected.add('bedsExactOutsideRange');
+  if (numbers.bathsExact !== null && numbers.bathsMin !== null && numbers.bathsExact < numbers.bathsMin) rejected.add('bathsExactOutsideRange');
+  if (numbers.bathsExact !== null && numbers.bathsMax !== null && numbers.bathsExact > numbers.bathsMax) rejected.add('bathsExactOutsideRange');
+
+  const canonicalBedsExact = numbers.bedsExact ?? (numbers.bedsMin !== null && numbers.bedsMax !== null && numbers.bedsMin === numbers.bedsMax ? numbers.bedsMin : null);
+  const canonicalBathsExact = numbers.bathsExact ?? (numbers.bathsMin !== null && numbers.bathsMax !== null && numbers.bathsMin === numbers.bathsMax ? numbers.bathsMin : null);
 
   const filters: AgentCohortQuickFilters = Object.freeze({
     city: city?.id ?? null,
@@ -220,12 +263,18 @@ export function normalizeAgentCohortDefinition(input: AgentCohortInput): AgentCo
     statusScope: status?.id ?? 'active',
     priceMin: Number.isNaN(numbers.priceMin) ? null : numbers.priceMin,
     priceMax: Number.isNaN(numbers.priceMax) ? null : numbers.priceMax,
-    bedsMin: Number.isNaN(numbers.bedsMin) ? null : numbers.bedsMin,
-    bathsMin: Number.isNaN(numbers.bathsMin) ? null : numbers.bathsMin,
+    bedsMin: canonicalBedsExact !== null ? null : Number.isNaN(numbers.bedsMin) ? null : numbers.bedsMin,
+    bedsMax: canonicalBedsExact !== null ? null : Number.isNaN(numbers.bedsMax) ? null : numbers.bedsMax,
+    bedsExact: Number.isNaN(canonicalBedsExact) ? null : canonicalBedsExact,
+    bathsMin: canonicalBathsExact !== null ? null : Number.isNaN(numbers.bathsMin) ? null : numbers.bathsMin,
+    bathsMax: canonicalBathsExact !== null ? null : Number.isNaN(numbers.bathsMax) ? null : numbers.bathsMax,
+    bathsExact: Number.isNaN(canonicalBathsExact) ? null : canonicalBathsExact,
     sqftMin: Number.isNaN(numbers.sqftMin) ? null : numbers.sqftMin,
     sqftMax: Number.isNaN(numbers.sqftMax) ? null : numbers.sqftMax,
     yearBuiltMin: Number.isNaN(numbers.yearBuiltMin) ? null : numbers.yearBuiltMin,
     yearBuiltMax: Number.isNaN(numbers.yearBuiltMax) ? null : numbers.yearBuiltMax,
+    lotSizeMin: Number.isNaN(numbers.lotSizeMin) ? null : numbers.lotSizeMin,
+    lotSizeMax: Number.isNaN(numbers.lotSizeMax) ? null : numbers.lotSizeMax,
   });
   const intervalSemantics = Object.freeze({
     price: explicitIntervalBoundary(input, 'price')
@@ -238,11 +287,14 @@ export function normalizeAgentCohortDefinition(input: AgentCohortInput): AgentCo
       ? normalizeAgentNumericInterval('yearBuilt', { min: filters.yearBuiltMin, max: filters.yearBuiltMax, boundary: explicitIntervalBoundary(input, 'yearBuilt') })
       : legacyClosedInterval('yearBuilt', filters.yearBuiltMin, filters.yearBuiltMax),
     beds: explicitIntervalBoundary(input, 'beds')
-      ? normalizeAgentNumericInterval('beds', { min: filters.bedsMin, max: null, boundary: explicitIntervalBoundary(input, 'beds') })
-      : legacyClosedInterval('beds', filters.bedsMin, null),
+      ? normalizeAgentNumericInterval('beds', { min: filters.bedsExact ?? filters.bedsMin, max: filters.bedsExact ?? filters.bedsMax, boundary: explicitIntervalBoundary(input, 'beds') })
+      : legacyClosedInterval('beds', filters.bedsExact ?? filters.bedsMin, filters.bedsExact ?? filters.bedsMax),
     baths: explicitIntervalBoundary(input, 'baths')
-      ? normalizeAgentNumericInterval('baths', { min: filters.bathsMin, max: null, boundary: explicitIntervalBoundary(input, 'baths') })
-      : legacyClosedInterval('baths', filters.bathsMin, null),
+      ? normalizeAgentNumericInterval('baths', { min: filters.bathsExact ?? filters.bathsMin, max: filters.bathsExact ?? filters.bathsMax, boundary: explicitIntervalBoundary(input, 'baths') })
+      : legacyClosedInterval('baths', filters.bathsExact ?? filters.bathsMin, filters.bathsExact ?? filters.bathsMax),
+    lotSize: explicitIntervalBoundary(input, 'lotSize')
+      ? normalizeAgentNumericInterval('lotSize', { min: filters.lotSizeMin, max: filters.lotSizeMax, boundary: explicitIntervalBoundary(input, 'lotSize') })
+      : legacyClosedInterval('lotSize', filters.lotSizeMin, filters.lotSizeMax),
   } satisfies Record<AgentNumericIntervalDimension, AgentNumericInterval>);
   for (const dimension of intervalDimensions) {
     if (!intervalSemantics[dimension].validation.ready) {
@@ -258,7 +310,7 @@ export function normalizeAgentCohortDefinition(input: AgentCohortInput): AgentCo
     cohortDefinitionVersion: ATLAS_COHORT_CONTRACT_VERSION,
     cohortType: 'MLS_LISTING_COHORT',
     humanPurpose: text(input.purpose) || 'Agent-defined recurring analytical preparation cohort.',
-    analyticalPurpose: 'Count current repository listing records matching explicit Agent quick filters.',
+    analyticalPurpose: 'Count current repository listing records matching explicit registry-admitted Agent filters.',
     creatorOrigin: 'AGENT_DEFINED',
     lifecycleStatus: 'ACTIVE_CONTRACT',
     reproducibilityPosture: 'REPRODUCIBLE',
@@ -307,13 +359,13 @@ export function normalizeAgentCohortDefinition(input: AgentCohortInput): AgentCo
       sourceCoverage: Object.freeze({
         representedSources: Object.freeze(['CURRENT_REPOSITORY_PROPERTY_SEARCH_PROJECTION']),
         missingSources: Object.freeze([]),
-        admittedPopulation: 'Current repository listing records matching explicit quick filters.',
+        admittedPopulation: 'Current repository listing records matching explicit registry-admitted filters.',
       }),
       fieldCoverage: Object.freeze({ eligibleCount: null, populatedCount: null, missingNullCount: null }),
       temporalCoverage: Object.freeze({ earliestEvidence: null, latestSourceAsOf: asOf, historicalGaps: Object.freeze([]), restatementLimitations: Object.freeze(['Current projection can change after source synchronization.']) }),
       geographicCoverage: Object.freeze({ definitionVersion: 'AGENT_SUPPORTED_CITY_SCOPE_V1', mappingGaps: Object.freeze([]), unresolvedGeography: Object.freeze(city ? [] : ['CITY_REQUIRED_FOR_WAVE_1_COUNT']) }),
       identityCoverage: Object.freeze({ resolvedIdentities: null, unresolvedIdentities: null, duplicateConflicts: null }),
-      provenanceRefs: Object.freeze(['lib/agentCohortBuilder.ts', 'lib/agentCohortCount.ts']),
+      provenanceRefs: Object.freeze(['lib/agentAdmittedFilterRegistry.ts', 'lib/agentCohortBuilder.ts', 'lib/agentCohortCount.ts']),
     }),
     scenarioBoundary: 'NOT_SCENARIO',
   });
@@ -349,9 +401,14 @@ export function buildAgentCohortCountContract(input: Readonly<{
     limitations: Object.freeze([
       'Count is current listing-record stock, not physical properties, listing episodes, sales, recommendations, scenarios, or historical flow.',
       'Null fields are not coerced to zero; records with null values fail the matching predicate for minimum or maximum numeric filters.',
-      'Only explicitly supported Wave 1 quick filters are admitted.',
+      'Only explicitly registered Agent filters are admitted.',
+      'Lot acreage filters use the persisted Property.lotSize acres field for filtering only; no lot-size metric is admitted.',
     ]),
   });
+}
+
+export function getAgentCohortFilterRegistration(key: AgentCohortFilterKey) {
+  return AGENT_ADMITTED_FILTER_REGISTRY[key];
 }
 
 export function getAgentCohortCityLabel(cityId: AgentCohortCityId | null) {

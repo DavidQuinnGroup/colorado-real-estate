@@ -20,7 +20,7 @@ import {
   AGENT_COHORT_SUPPORTED_STATUS_SCOPES,
 } from '@/lib/agentCohortBuilder';
 
-type CompetingContextFilterKey = 'city' | 'propertyType' | 'statusScope' | 'priceMin' | 'priceMax' | 'bedsMin' | 'bathsMin' | 'sqftMin' | 'sqftMax' | 'yearBuiltMin' | 'yearBuiltMax';
+type CompetingContextFilterKey = 'city' | 'propertyType' | 'statusScope' | 'priceMin' | 'priceMax' | 'bedsMin' | 'bedsMax' | 'bedsExact' | 'bathsMin' | 'bathsMax' | 'bathsExact' | 'sqftMin' | 'sqftMax' | 'yearBuiltMin' | 'yearBuiltMax' | 'lotSizeMin' | 'lotSizeMax';
 type CompetingContextFilters = Partial<Record<CompetingContextFilterKey, string | number | null>>;
 type CompetingContextPayload = Readonly<{
   status: 'READY' | 'NOT_AVAILABLE';
@@ -29,7 +29,7 @@ type CompetingContextPayload = Readonly<{
     analyticalGrain: 'MLS_LISTING';
     observationAsOf: string;
     currentStatus: string;
-    fields: { city: string; propertyType: string; price: number | null; beds: number | null; baths: number | null; sqft: number | null; yearBuilt: number | null };
+    fields: { city: string; propertyType: string; price: number | null; beds: number | null; baths: number | null; sqft: number | null; yearBuilt: number | null; lotSize: number | null };
     missingFields: readonly string[];
   } | null;
   cohort: {
@@ -345,7 +345,22 @@ export default function PropertyConversationExperience() {
               <label className="block text-xs font-medium text-slate-300"><span>City</span><select value={competingFilters.city ?? ''} onChange={(event) => updateCompetingTextFilter('city', event.target.value)} className="mt-2 block min-h-10 w-full border border-white/15 bg-black/20 px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-100" data-testid="agent-current-competing-listing-city"><option value="">Subject city</option>{AGENT_COHORT_SUPPORTED_CITIES.map((city) => <option key={city.id} value={city.id}>{city.label}</option>)}</select></label>
               <label className="block text-xs font-medium text-slate-300"><span>Property type</span><select value={competingFilters.propertyType ?? ''} onChange={(event) => updateCompetingTextFilter('propertyType', event.target.value)} className="mt-2 block min-h-10 w-full border border-white/15 bg-black/20 px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-100" data-testid="agent-current-competing-listing-property-type"><option value="">Subject type</option>{AGENT_COHORT_SUPPORTED_PROPERTY_TYPES.map((type) => <option key={type.id} value={type.id}>{type.label}</option>)}</select></label>
               <label className="block text-xs font-medium text-slate-300"><span>Status scope</span><select value={competingFilters.statusScope ?? ''} onChange={(event) => updateCompetingTextFilter('statusScope', event.target.value)} className="mt-2 block min-h-10 w-full border border-white/15 bg-black/20 px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-100" data-testid="agent-current-competing-listing-status"><option value="">Active</option>{AGENT_COHORT_SUPPORTED_STATUS_SCOPES.map((status) => <option key={status.id} value={status.id}>{status.label}</option>)}</select></label>
-              {(['priceMin', 'priceMax', 'sqftMin', 'sqftMax', 'bedsMin', 'bathsMin', 'yearBuiltMin', 'yearBuiltMax'] as const).map((key) => <label key={key} className="block text-xs font-medium text-slate-300"><span>{key.replace(/([A-Z])/g, ' $1').replace(/^./, (value) => value.toUpperCase())}</span><input type="number" min="0" value={competingFilters[key] ?? ''} onChange={(event) => updateCompetingFilter(key, event.target.value)} className="mt-2 block min-h-10 w-full border border-white/15 bg-black/20 px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-100" data-testid={`agent-current-competing-listing-${key}`} /></label>)}
+              {([
+                ['priceMin', 'Minimum price', '1'],
+                ['priceMax', 'Maximum price', '1'],
+                ['sqftMin', 'Minimum square feet', '1'],
+                ['sqftMax', 'Maximum square feet', '1'],
+                ['bedsMin', 'Minimum beds', '1'],
+                ['bedsMax', 'Maximum beds', '1'],
+                ['bedsExact', 'Exact beds', '1'],
+                ['bathsMin', 'Minimum baths', '0.25'],
+                ['bathsMax', 'Maximum baths', '0.25'],
+                ['bathsExact', 'Exact baths', '0.25'],
+                ['yearBuiltMin', 'Minimum year built', '1'],
+                ['yearBuiltMax', 'Maximum year built', '1'],
+                ['lotSizeMin', 'Minimum lot acres', '0.01'],
+                ['lotSizeMax', 'Maximum lot acres', '0.01'],
+              ] as const).map(([key, label, step]) => <label key={key} className="block text-xs font-medium text-slate-300"><span>{label}</span><input type="number" min="0" step={step} value={competingFilters[key] ?? ''} onChange={(event) => updateCompetingFilter(key, event.target.value)} className="mt-2 block min-h-10 w-full border border-white/15 bg-black/20 px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-100" data-testid={`agent-current-competing-listing-${key}`} /></label>)}
             </div>
             <div className="mt-4 flex flex-col gap-3 border-t border-white/10 pt-4 sm:flex-row sm:items-center sm:justify-between"><p className="text-sm leading-6 text-slate-400">{selectedCompetingFilterCount} Agent-adjusted filters applied. Empty fields preserve the system-derived starting cohort.</p><button type="button" onClick={() => setCompetingFilters({})} className="inline-flex min-h-10 items-center justify-center gap-2 border border-white/15 px-4 text-sm font-semibold text-slate-200 transition hover:border-cyan-100/50 hover:text-white focus:outline-none focus:ring-2 focus:ring-cyan-100" data-testid="agent-current-competing-listing-reset"><RefreshCw size={15} aria-hidden="true" /> Reset cohort</button></div>
 

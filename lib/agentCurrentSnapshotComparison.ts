@@ -22,6 +22,7 @@ import {
 } from './agentCohortBuilder';
 import type { AtlasAudienceOutput, AtlasComparabilityState } from './atlasCohortComparativeContract';
 import { classifyAgentNumericIntervals, type AgentNumericIntervalDimension } from './agentNumericInterval';
+import { isAgentUnadmittedFilterKey } from './agentAdmittedFilterRegistry';
 
 export const CURRENT_SNAPSHOT_COMPARATIVE_INTELLIGENCE_WAVE_3_STATUS =
   'CURRENT_SNAPSHOT_COMPARATIVE_INTELLIGENCE_BOUNDED_IMPLEMENTATION_WAVE_3_CERTIFIED' as const;
@@ -166,7 +167,7 @@ function sameBasePopulation(left: AgentCohortQuickFilters, right: AgentCohortQui
   return left.city === right.city && left.propertyType === right.propertyType && left.statusScope === right.statusScope;
 }
 
-const relationshipDimensions = ['price', 'sqft', 'yearBuilt', 'beds', 'baths'] as const satisfies readonly AgentNumericIntervalDimension[];
+const relationshipDimensions = ['price', 'sqft', 'yearBuilt', 'beds', 'baths', 'lotSize'] as const satisfies readonly AgentNumericIntervalDimension[];
 
 function isSubset(left: AgentCohortQuickFilters, right: AgentCohortQuickFilters) {
   if (!sameBasePopulation(left, right)) return false;
@@ -452,6 +453,15 @@ export async function compareAgentCurrentSnapshotCohorts(request: AgentCompariso
 }
 
 export function parseAgentComparisonSearchParams(searchParams: URLSearchParams): AgentComparisonRequest {
+  const unsupportedFromParams = (prefix: string) => Object.freeze([
+    ...new Set([
+      ...searchParams.getAll(`${prefix}.unsupportedFilter`),
+      ...[...searchParams.keys()]
+        .filter((key) => key.startsWith(`${prefix}.`))
+        .map((key) => key.slice(prefix.length + 1))
+        .filter(isAgentUnadmittedFilterKey),
+    ]),
+  ].sort());
   const cohortCountValue = searchParams.get('cohortCount');
   const cohortCount = cohortCountValue ? Number(cohortCountValue) : null;
   if (Number.isInteger(cohortCount) && cohortCount !== null) {
@@ -474,7 +484,7 @@ export function parseAgentComparisonSearchParams(searchParams: URLSearchParams):
             beds: Object.freeze({ boundary: searchParams.get(`cohort.${index}.bedsInterval`) }),
             baths: Object.freeze({ boundary: searchParams.get(`cohort.${index}.bathsInterval`) }),
           }),
-          unsupportedFilters: searchParams.getAll(`cohort.${index}.unsupportedFilter`),
+          unsupportedFilters: unsupportedFromParams(`cohort.${index}`),
           analyticalGrain: searchParams.get(`cohort.${index}.analyticalGrain`),
           temporalBasis: searchParams.get(`cohort.${index}.temporalBasis`),
           periodForm: searchParams.get(`cohort.${index}.periodForm`),
@@ -509,7 +519,7 @@ export function parseAgentComparisonSearchParams(searchParams: URLSearchParams):
           beds: Object.freeze({ boundary: searchParams.get(`${prefix}.bedsInterval`) }),
           baths: Object.freeze({ boundary: searchParams.get(`${prefix}.bathsInterval`) }),
         }),
-        unsupportedFilters: searchParams.getAll(`${prefix}.unsupportedFilter`),
+        unsupportedFilters: unsupportedFromParams(prefix),
         analyticalGrain: searchParams.get(`${prefix}.analyticalGrain`),
         temporalBasis: searchParams.get(`${prefix}.temporalBasis`),
         periodForm: searchParams.get(`${prefix}.periodForm`),

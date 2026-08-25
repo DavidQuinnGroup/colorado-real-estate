@@ -39,6 +39,7 @@ export function buildAgentCohortPrismaWhere(normalized: AgentCohortNormalizedDef
     baths: intervalWhere(normalized.intervalSemantics.baths),
     sqft: intervalWhere(normalized.intervalSemantics.sqft, true),
     yearBuilt: intervalWhere(normalized.intervalSemantics.yearBuilt, true),
+    lotSize: intervalWhere(normalized.intervalSemantics.lotSize, true),
   };
 }
 

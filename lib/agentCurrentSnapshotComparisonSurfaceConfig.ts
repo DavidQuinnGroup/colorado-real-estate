@@ -24,11 +24,17 @@ const baseFilters: AgentCohortQuickFilters = Object.freeze({
   priceMin: null,
   priceMax: null,
   bedsMin: null,
+  bedsMax: null,
+  bedsExact: null,
   bathsMin: null,
+  bathsMax: null,
+  bathsExact: null,
   sqftMin: null,
   sqftMax: null,
   yearBuiltMin: null,
   yearBuiltMax: null,
+  lotSizeMin: null,
+  lotSizeMax: null,
 });
 
 export const AGENT_COMPARISON_SURFACE_CONFIGS: Readonly<Record<AgentComparisonSurfaceId, AgentComparisonSurfaceConfig>> = Object.freeze({

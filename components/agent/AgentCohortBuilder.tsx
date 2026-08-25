@@ -24,7 +24,7 @@ type CountState = Readonly<{
   artifacts: readonly MetricArtifact[];
 }>;
 
-type NumberFilterKey = 'priceMin' | 'priceMax' | 'bedsMin' | 'bathsMin' | 'sqftMin' | 'sqftMax' | 'yearBuiltMin' | 'yearBuiltMax';
+type NumberFilterKey = 'priceMin' | 'priceMax' | 'bedsMin' | 'bedsMax' | 'bedsExact' | 'bathsMin' | 'bathsMax' | 'bathsExact' | 'sqftMin' | 'sqftMax' | 'yearBuiltMin' | 'yearBuiltMax' | 'lotSizeMin' | 'lotSizeMax';
 type MetricArtifact = Readonly<{
   metricId: string;
   label: string;
@@ -149,16 +149,22 @@ export default function AgentCohortBuilder({ surface }: { surface: 'MARKET_UPDAT
       <Field label="Minimum price"><input type="number" min="0" inputMode="numeric" value={filters.priceMin ?? ''} onChange={(event) => updateNumber('priceMin', event.target.value)} className={inputClass()} data-testid="agent-cohort-price-min" /></Field>
       <Field label="Maximum price"><input type="number" min="0" inputMode="numeric" value={filters.priceMax ?? ''} onChange={(event) => updateNumber('priceMax', event.target.value)} className={inputClass()} data-testid="agent-cohort-price-max" /></Field>
       <Field label="Minimum beds"><input type="number" min="0" inputMode="numeric" value={filters.bedsMin ?? ''} onChange={(event) => updateNumber('bedsMin', event.target.value)} className={inputClass()} data-testid="agent-cohort-beds-min" /></Field>
-      <Field label="Minimum baths"><input type="number" min="0" inputMode="numeric" value={filters.bathsMin ?? ''} onChange={(event) => updateNumber('bathsMin', event.target.value)} className={inputClass()} data-testid="agent-cohort-baths-min" /></Field>
+      <Field label="Maximum beds"><input type="number" min="0" inputMode="numeric" value={filters.bedsMax ?? ''} onChange={(event) => updateNumber('bedsMax', event.target.value)} className={inputClass()} data-testid="agent-cohort-beds-max" /></Field>
+      <Field label="Exact beds"><input type="number" min="0" inputMode="numeric" value={filters.bedsExact ?? ''} onChange={(event) => updateNumber('bedsExact', event.target.value)} className={inputClass()} data-testid="agent-cohort-beds-exact" /></Field>
+      <Field label="Minimum baths"><input type="number" min="0" step="0.25" inputMode="decimal" value={filters.bathsMin ?? ''} onChange={(event) => updateNumber('bathsMin', event.target.value)} className={inputClass()} data-testid="agent-cohort-baths-min" /></Field>
+      <Field label="Maximum baths"><input type="number" min="0" step="0.25" inputMode="decimal" value={filters.bathsMax ?? ''} onChange={(event) => updateNumber('bathsMax', event.target.value)} className={inputClass()} data-testid="agent-cohort-baths-max" /></Field>
+      <Field label="Exact baths"><input type="number" min="0" step="0.25" inputMode="decimal" value={filters.bathsExact ?? ''} onChange={(event) => updateNumber('bathsExact', event.target.value)} className={inputClass()} data-testid="agent-cohort-baths-exact" /></Field>
       <Field label="Minimum square feet"><input type="number" min="0" inputMode="numeric" value={filters.sqftMin ?? ''} onChange={(event) => updateNumber('sqftMin', event.target.value)} className={inputClass()} data-testid="agent-cohort-sqft-min" /></Field>
       <Field label="Maximum square feet"><input type="number" min="0" inputMode="numeric" value={filters.sqftMax ?? ''} onChange={(event) => updateNumber('sqftMax', event.target.value)} className={inputClass()} data-testid="agent-cohort-sqft-max" /></Field>
       <Field label="Minimum year built"><input type="number" min="1800" inputMode="numeric" value={filters.yearBuiltMin ?? ''} onChange={(event) => updateNumber('yearBuiltMin', event.target.value)} className={inputClass()} data-testid="agent-cohort-year-built-min" /></Field>
       <Field label="Maximum year built"><input type="number" min="1800" inputMode="numeric" value={filters.yearBuiltMax ?? ''} onChange={(event) => updateNumber('yearBuiltMax', event.target.value)} className={inputClass()} data-testid="agent-cohort-year-built-max" /></Field>
+      <Field label="Minimum lot acres"><input type="number" min="0" step="0.01" inputMode="decimal" value={filters.lotSizeMin ?? ''} onChange={(event) => updateNumber('lotSizeMin', event.target.value)} className={inputClass()} data-testid="agent-cohort-lot-size-min" /></Field>
+      <Field label="Maximum lot acres"><input type="number" min="0" step="0.01" inputMode="decimal" value={filters.lotSizeMax ?? ''} onChange={(event) => updateNumber('lotSizeMax', event.target.value)} className={inputClass()} data-testid="agent-cohort-lot-size-max" /></Field>
     </div>
 
     <div className="mt-6 flex flex-col gap-3 border-t border-white/10 pt-5 sm:flex-row sm:items-center sm:justify-between">
       <div className="text-sm leading-6 text-slate-400">
-        <p>{selectedFilterCount} explicit quick filters applied. Grain: MLS listing. Basis: current as-of observation.</p>
+        <p>{selectedFilterCount} explicit registry-admitted filters applied. Grain: MLS listing. Basis: current as-of observation.</p>
         {count.reasons.length ? <p className="mt-1 text-amber-100" data-testid="agent-cohort-validation-reasons">{count.reasons.join(', ')}</p> : null}
       </div>
       <div className="flex flex-wrap gap-3">
