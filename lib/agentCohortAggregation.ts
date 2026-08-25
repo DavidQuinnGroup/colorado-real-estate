@@ -78,6 +78,10 @@ export type AgentCohortAggregationResult = Readonly<{
   rejectedMetricIds: readonly string[];
 }>;
 
+export type AgentCohortAggregationOptions = Readonly<{
+  excludeMlsIds?: readonly string[];
+}>;
+
 const priceLimitations = Object.freeze([
   'Price field is treated only as current asking/list price in the repository listing projection.',
   'This is not sale price, closed price, property value, market value, pricing advice, or historical market methodology.',
@@ -217,7 +221,7 @@ function numericValue(row: Record<string, unknown>, field: NumericField) {
   return typeof value === 'number' && Number.isFinite(value) ? value : null;
 }
 
-export async function aggregateAgentCohort(input: AgentCohortInput, requestedMetricIds?: readonly string[]): Promise<AgentCohortAggregationResult> {
+export async function aggregateAgentCohort(input: AgentCohortInput, requestedMetricIds?: readonly string[], options: AgentCohortAggregationOptions = Object.freeze({})): Promise<AgentCohortAggregationResult> {
   const normalized = normalizeAgentCohortDefinition(input);
   const { admittedMetricIds, rejectedMetricIds } = normalizeAgentCohortMetricIds(requestedMetricIds);
   const asOf = nowIso(normalized.cohort.period.asOf);
@@ -232,7 +236,9 @@ export async function aggregateAgentCohort(input: AgentCohortInput, requestedMet
     });
   }
 
-  const where = buildAgentCohortPrismaWhere(normalized);
+  const baseWhere = buildAgentCohortPrismaWhere(normalized);
+  const excludedMlsIds = [...(options.excludeMlsIds ?? [])].filter((value) => Boolean(value));
+  const where = excludedMlsIds.length ? { AND: [baseWhere, { mlsId: { notIn: excludedMlsIds } }] } : baseWhere;
   try {
     const rows = await prisma.property.findMany({ where, select: selectForMetrics(admittedMetricIds) });
     const eligibleCount = rows.length;

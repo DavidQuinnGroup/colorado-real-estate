@@ -99,6 +99,7 @@ export const adminProtectedSurfaceClassifications: AdminProtectedSurfaceClassifi
   surface('/agent/prepare/seller', 'BROWSER_ADMIN_PAGE', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),
   surface('/agent/prepare/listing', 'BROWSER_ADMIN_PAGE', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),
   surface('/api/agent/prepare/property', 'READ_ONLY_ADMIN_API', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),
+  surface('/api/agent/current-competing-listing-context', 'READ_ONLY_ADMIN_API', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),
   surface('/api/agent/current-snapshot-comparison', 'READ_ONLY_ADMIN_API', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),
   surface('/api/admin/enterprise/operational-kpis', 'DUAL_ACCESS_ADMIN_API', ['HUMAN_ADMIN', 'MACHINE_ADMIN', 'DEVELOPMENT_OPERATOR'], ['EXECUTIVE_ADMIN', 'REPOSITORY_ADMIN', 'SERVICE_ADMIN'], ['HUMAN_SESSION', 'X_ADMIN_KEY', 'BEARER_ADMIN_KEY', 'DEVELOPMENT_NO_KEY_FALLBACK'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),
   surface('/api/admin/enterprise/operational-summary', 'DUAL_ACCESS_ADMIN_API', ['HUMAN_ADMIN', 'MACHINE_ADMIN', 'DEVELOPMENT_OPERATOR'], ['EXECUTIVE_ADMIN', 'REPOSITORY_ADMIN', 'SERVICE_ADMIN'], ['HUMAN_SESSION', 'X_ADMIN_KEY', 'BEARER_ADMIN_KEY', 'DEVELOPMENT_NO_KEY_FALLBACK'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),
