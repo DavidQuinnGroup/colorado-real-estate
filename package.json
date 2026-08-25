@@ -229,6 +229,7 @@
     "check:atlas-cohort-comparative-contract": "jiti scripts/checkAtlasCohortComparativeContract.ts",
     "check:reusable-agent-cohort-builder": "jiti scripts/checkReusableAgentCohortBuilder.ts",
     "check:admitted-basic-aggregation": "jiti scripts/checkAdmittedBasicAggregation.ts",
+    "check:comparative-intelligence-admission-review": "jiti scripts/checkComparativeIntelligenceAdmissionReview.ts",
     "check:shared-disclosure-state-indicator": "jiti scripts/checkSharedDisclosureStateIndicator.ts",
     "check:agent-place-preparation-admission": "jiti scripts/checkAgentPlacePreparationAdmission.ts",
     "check:agent-place-conversation-preparation-experience": "jiti scripts/checkAgentPlaceConversationPreparationExperience.ts",
