@@ -11,7 +11,7 @@ import { CURRENT_MARKET_SUPPORTED_CITIES } from '../lib/currentMarketComputation
 
 assert.equal(REIE_INTERNAL_SYNCHRONIZED_PROPERTY_MARKET_READ_ADAPTER_STATUS, 'REIE_INTERNAL_SYNCHRONIZED_PROPERTY_MARKET_READ_ADAPTER_CURRENTNESS_CERTIFIED');
 assert.deepEqual(Object.keys(INTERNAL_SYNCHRONIZED_PROPERTY_MARKET_READ_PROJECTION).sort(), ['city', 'mlsId', 'price', 'propertyType', 'sourceModifiedAt', 'sqft', 'status', 'zip']);
-assert.deepEqual(CURRENT_MARKET_SUPPORTED_CITIES, ['Boulder', 'Louisville', 'Lafayette', 'Superior', 'Erie', 'Longmont']);
+assert.deepEqual(CURRENT_MARKET_SUPPORTED_CITIES, ['Boulder', 'Louisville', 'Lafayette', 'Superior', 'Erie', 'Longmont', 'Denver', 'Broomfield', 'Westminster', 'Brighton', 'Arvada']);
 assert.equal(REIE_CURRENT_MARKET_MINIMUM_VERIFIED_SAMPLE_SIZE, 5);
 assert(Object.values(INTERNAL_SYNCHRONIZED_PROPERTY_MARKET_READ_PROTECTED_BOUNDARIES).every((value) => value === false));
 

@@ -67,7 +67,7 @@ const limitedBuyerMapping = mapBuyerCriteriaToAgentCohort(buyerProfile, AGENT_CO
 assert.equal(limitedBuyerMapping.status, 'LIMITED_BY_UNMAPPED_CRITERIA');
 assert(limitedBuyerMapping.unmappedCriteria.includes('garage or parking spaces'));
 
-const unsupportedLocation = normalizeAgentCohortDefinition({ purpose: 'unsupported location', filters: { city: 'Denver', propertyType: 'Residential', statusScope: 'Active' } });
+const unsupportedLocation = normalizeAgentCohortDefinition({ purpose: 'deferred location', filters: { city: 'Aurora', propertyType: 'Residential', statusScope: 'Active' } });
 assert.equal(unsupportedLocation.validation.ready, false);
 assert(unsupportedLocation.validation.reasons.includes('FILTER_REJECTED:city'));
 

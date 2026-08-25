@@ -3,13 +3,14 @@ import {
   evaluateCurrentMarketSourceSetCurrentness,
   type CurrentMarketSourceSetCompletion,
 } from './currentMarketSourceSetCurrentness';
+import { AGENT_ADMITTED_LISTING_CITY_SET, getActiveAgentListingCity } from './agentAdmittedListingCitySet';
 
 export const REIE_BOUNDED_CURRENT_MARKET_COMPUTATION_STATUS = 'REIE_BOUNDED_CURRENT_MARKET_COMPUTATION_CERTIFIED' as const;
 export const CURRENT_MARKET_COMPUTATION_MODE = 'PURE_NON_PERSISTENT_COMPUTATION' as const;
 export const CURRENT_MARKET_NORMALIZATION_VERSION = 'CURRENT_MARKET_NORMALIZATION_V1' as const;
 export const CURRENT_MARKET_METRIC_VERSION = 'CURRENT_MARKET_METRICS_V1' as const;
 
-export const CURRENT_MARKET_SUPPORTED_CITIES = Object.freeze(['Boulder', 'Louisville', 'Lafayette', 'Superior', 'Erie', 'Longmont'] as const);
+export const CURRENT_MARKET_SUPPORTED_CITIES = Object.freeze(AGENT_ADMITTED_LISTING_CITY_SET.map((city) => city.label));
 export type CurrentMarketCity = (typeof CURRENT_MARKET_SUPPORTED_CITIES)[number];
 export type CurrentMarketStatus = 'ACTIVE' | 'COMING_SOON' | 'PENDING' | 'CLOSED' | 'INACTIVE' | 'UNKNOWN';
 export type CurrentMarketPropertyType = 'SINGLE_FAMILY' | 'CONDO' | 'TOWNHOME' | 'MULTI_FAMILY' | 'LAND' | 'UNSPECIFIED_RESIDENTIAL' | 'OTHER' | 'UNKNOWN';
@@ -127,8 +128,7 @@ function normalizeStatus(value: string | null): CurrentMarketStatus {
 }
 
 function normalizeCity(value: string | null): CurrentMarketCity | null {
-  const normalized = text(value).toLowerCase();
-  return CURRENT_MARKET_SUPPORTED_CITIES.find((city) => city.toLowerCase() === normalized) ?? null;
+  return getActiveAgentListingCity(text(value))?.label ?? null;
 }
 
 function normalizeZip(value: string | null): string | null {

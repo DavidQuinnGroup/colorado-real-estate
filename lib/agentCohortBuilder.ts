@@ -2,6 +2,13 @@ import type { AtlasCohortDefinition } from './atlasCohortComparativeContract';
 import { ATLAS_COHORT_CONTRACT_VERSION, validateAtlasCohortDefinition } from './atlasCohortComparativeContract';
 import { legacyClosedInterval, normalizeAgentNumericInterval, type AgentNumericInterval, type AgentNumericIntervalBoundaryKind, type AgentNumericIntervalDimension, type AgentNumericIntervalInput } from './agentNumericInterval';
 import { AGENT_ADMITTED_FILTER_REGISTRY, isAgentAdmittedFilterKey, isAgentUnadmittedFilterKey } from './agentAdmittedFilterRegistry';
+import {
+  AGENT_ADMITTED_LISTING_CITY_OPTIONS,
+  AGENT_ADMITTED_LISTING_CITY_SET_VERSION,
+  classifyAgentListingCity,
+  getActiveAgentListingCity,
+  getAgentListingCityLabel,
+} from './agentAdmittedListingCitySet';
 import { normalizeZipPostalListingFilterSet } from './agentZipPostalListingFilterAdmissionReview';
 
 export const REUSABLE_AGENT_COHORT_BUILDER_WAVE_1_STATUS =
@@ -10,14 +17,7 @@ export const REUSABLE_AGENT_COHORT_BUILDER_NEXT_GATE = 'READY_FOR_ADMITTED_BASIC
 export const AGENT_COHORT_BUILDER_VERSION = 'AGENT_COHORT_BUILDER_V1' as const;
 export const AGENT_COHORT_COUNT_LABEL = 'Matching current MLS listing records' as const;
 
-export const AGENT_COHORT_SUPPORTED_CITIES = [
-  { id: 'boulder', label: 'Boulder', sourceGeographyId: 'boulder-co-housing-market' },
-  { id: 'louisville', label: 'Louisville', sourceGeographyId: 'louisville-co-housing-market' },
-  { id: 'lafayette', label: 'Lafayette', sourceGeographyId: 'lafayette-co-housing-market' },
-  { id: 'superior', label: 'Superior', sourceGeographyId: 'superior-co-housing-market' },
-  { id: 'erie', label: 'Erie', sourceGeographyId: 'erie-co-housing-market' },
-  { id: 'longmont', label: 'Longmont', sourceGeographyId: 'longmont-co-housing-market' },
-] as const;
+export const AGENT_COHORT_SUPPORTED_CITIES = AGENT_ADMITTED_LISTING_CITY_OPTIONS;
 
 export const AGENT_COHORT_SUPPORTED_PROPERTY_TYPES = [
   { id: 'residential', label: 'Residential', sourceValue: 'Residential' },
@@ -92,6 +92,7 @@ export type AgentCohortNormalizedDefinition = Readonly<{
   intervalSemantics: Readonly<Record<AgentNumericIntervalDimension, AgentNumericInterval>>;
   serializedFilters: string;
   serializedCohortIdentity: string;
+  citySetAuthority: typeof AGENT_ADMITTED_LISTING_CITY_SET_VERSION;
   cohort: AtlasCohortDefinition;
   validation: ReturnType<typeof validateAtlasCohortDefinition>;
   rejectedFilters: readonly string[];
@@ -143,8 +144,7 @@ function normalizeNumber(value: unknown, mode: 'INTEGER' | 'DECIMAL' = 'INTEGER'
 }
 
 function cityById(value: unknown) {
-  const normalized = text(value).toLowerCase();
-  return AGENT_COHORT_SUPPORTED_CITIES.find((city) => city.id === normalized || city.label.toLowerCase() === normalized) ?? null;
+  return getActiveAgentListingCity(value);
 }
 
 function propertyTypeById(value: unknown) {
@@ -236,7 +236,10 @@ export function normalizeAgentCohortDefinition(input: AgentCohortInput): AgentCo
   if (input.scenarioBoundary && input.scenarioBoundary !== 'NOT_SCENARIO') rejected.add('scenarioBoundary');
 
   const city = cityById(input.filters.city);
-  if (text(input.filters.city) && !city) rejected.add('city');
+  if (text(input.filters.city) && !city) {
+    rejected.add('city');
+    rejected.add(`city:${classifyAgentListingCity(input.filters.city).reason}`);
+  }
   const zip = normalizeZipFilter(input.filters.zip);
   for (const reason of zip.rejected) rejected.add(`zip:${reason}`);
   if (zip.values.length && !city) rejected.add('zip:ZIP_REQUIRES_ADMITTED_CITY');
@@ -401,7 +404,7 @@ export function normalizeAgentCohortDefinition(input: AgentCohortInput): AgentCo
     reasons: Object.freeze([...new Set([...baseValidation.reasons, ...rejectedFilters.map((filter) => `FILTER_REJECTED:${filter}`)])].sort()),
   });
 
-  return Object.freeze({ version: AGENT_COHORT_BUILDER_VERSION, filters, intervalSemantics, serializedFilters, serializedCohortIdentity, cohort, validation, rejectedFilters });
+  return Object.freeze({ version: AGENT_COHORT_BUILDER_VERSION, filters, intervalSemantics, serializedFilters, serializedCohortIdentity, citySetAuthority: AGENT_ADMITTED_LISTING_CITY_SET_VERSION, cohort, validation, rejectedFilters });
 }
 
 export function buildAgentCohortCountContract(input: Readonly<{
@@ -436,7 +439,7 @@ export function getAgentCohortFilterRegistration(key: AgentCohortFilterKey) {
 }
 
 export function getAgentCohortCityLabel(cityId: AgentCohortCityId | null) {
-  return AGENT_COHORT_SUPPORTED_CITIES.find((city) => city.id === cityId)?.label ?? null;
+  return getAgentListingCityLabel(cityId);
 }
 
 export function getAgentCohortPropertyTypeValue(propertyTypeId: AgentCohortPropertyTypeId | null) {

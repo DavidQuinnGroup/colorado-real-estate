@@ -241,6 +241,7 @@
     "check:zip-postal-listing-filter-foundation-admission-review": "jiti scripts/checkZipPostalListingFilterFoundationAdmissionReview.ts",
     "check:zip-postal-listing-filter-bounded-implementation-wave-8": "jiti scripts/checkZipPostalListingFilterBoundedImplementationWave8.ts",
     "check:versioned-city-set-expansion-admission-review": "jiti scripts/checkVersionedCitySetExpansionAdmissionReview.ts",
+    "check:versioned-agent-listing-city-set-wave-9": "jiti scripts/checkVersionedAgentListingCitySetWave9.ts",
     "check:shared-disclosure-state-indicator": "jiti scripts/checkSharedDisclosureStateIndicator.ts",
     "check:agent-place-preparation-admission": "jiti scripts/checkAgentPlacePreparationAdmission.ts",
     "check:agent-place-conversation-preparation-experience": "jiti scripts/checkAgentPlaceConversationPreparationExperience.ts",

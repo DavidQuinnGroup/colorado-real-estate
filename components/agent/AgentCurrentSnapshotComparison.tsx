@@ -12,6 +12,7 @@ import {
   type AgentCohortQuickFilters,
 } from '@/lib/agentCohortBuilder';
 import { mapBuyerCriteriaToAgentCohort, type AgentBuyerCriteriaComparisonMapping } from '@/lib/agentBuyerCriteriaComparisonAdapter';
+import { AGENT_LOCATION_PREPARATION_CITY_KEYS } from '@/lib/agentAdmittedListingCitySet';
 import { getAgentComparisonSurfaceConfig, type AgentComparisonSurfaceId } from '@/lib/agentCurrentSnapshotComparisonSurfaceConfig';
 import type { PropertyCriteriaProfile } from '@/lib/agent-advisory-workbench/propertyCriteriaProfile';
 
@@ -60,7 +61,7 @@ const primaryMetricLabels = [
 type NumberFilterKey = 'priceMin' | 'priceMax' | 'bedsMin' | 'bathsMin' | 'sqftMin' | 'sqftMax' | 'yearBuiltMin' | 'yearBuiltMax';
 type IntervalMode = 'CLOSED' | 'LOWER_INCLUSIVE_UPPER_EXCLUSIVE';
 
-const locationAdmittedCityIds = new Set(['boulder', 'louisville', 'lafayette']);
+const locationAdmittedCityIds = new Set(AGENT_LOCATION_PREPARATION_CITY_KEYS);
 
 function formatNumber(value: number | null) {
   return value === null ? 'Unavailable' : new Intl.NumberFormat('en-US').format(value);

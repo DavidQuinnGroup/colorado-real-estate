@@ -17,6 +17,7 @@ import {
   getAgentListingCityReviewEntry,
   normalizeAgentListingCityLabel,
 } from '../lib/agentVersionedCitySetExpansionAdmissionReview';
+import { AGENT_ADMITTED_LISTING_CITY_SET, AGENT_ADMITTED_LISTING_CITY_SET_VERSION } from '../lib/agentAdmittedListingCitySet';
 
 const docPath = 'docs/project-atlas/executive-library/VERSIONED-CITY-SET-EXPANSION-ADMISSION-REVIEW.md';
 const doc = fs.readFileSync(docPath, 'utf8');
@@ -24,8 +25,9 @@ const doc = fs.readFileSync(docPath, 'utf8');
 assert.equal(VERSIONED_CITY_SET_EXPANSION_ADMISSION_REVIEW_STATUS, 'VERSIONED_CITY_SET_EXPANSION_ADMISSION_REVIEW_CERTIFIED');
 assert.equal(VERSIONED_CITY_SET_EXPANSION_ADMISSION_REVIEW_NEXT_GATE, 'READY_FOR_VERSIONED_AGENT_LISTING_CITY_SET_AND_PRIORITY_CITY_EXPANSION_BOUNDED_IMPLEMENTATION_WAVE_9');
 assert.equal(RECOMMENDED_AGENT_CITY_AUTHORITY_NAME, 'AGENT_ADMITTED_LISTING_CITY_SET_V1');
-assert.deepEqual(AGENT_COHORT_SUPPORTED_CITIES.map((city) => city.id), [...CURRENT_SIX_AGENT_LISTING_CITY_KEYS]);
-assert.deepEqual(CURRENT_MARKET_SUPPORTED_CITIES, ['Boulder', 'Louisville', 'Lafayette', 'Superior', 'Erie', 'Longmont']);
+assert.equal(AGENT_ADMITTED_LISTING_CITY_SET_VERSION, RECOMMENDED_AGENT_CITY_AUTHORITY_NAME);
+assert.deepEqual(AGENT_COHORT_SUPPORTED_CITIES.map((city) => city.id), [...CURRENT_SIX_AGENT_LISTING_CITY_KEYS, ...WAVE_9_READY_AGENT_LISTING_CITY_KEYS]);
+assert.deepEqual(CURRENT_MARKET_SUPPORTED_CITIES, AGENT_ADMITTED_LISTING_CITY_SET.map((city) => city.label));
 
 for (const key of CURRENT_SIX_AGENT_LISTING_CITY_KEYS) {
   const entry = getAgentListingCityReviewEntry(key);
@@ -59,13 +61,13 @@ for (const key of BLOCKED_AGENT_LISTING_CITY_KEYS) {
 assert.equal(normalizeAgentListingCityLabel('  Denver  '), 'denver');
 assert.equal(getAgentListingCityReviewEntry('City of Broomfield'), null);
 
-const denverRuntime = normalizeAgentCohortDefinition({ purpose: 'Denver must remain inactive during admission review', filters: { city: 'Denver', statusScope: 'Active' } });
-assert.equal(denverRuntime.validation.ready, false);
-assert.equal(denverRuntime.validation.reasons.includes('FILTER_REJECTED:city'), true);
+const denverRuntime = normalizeAgentCohortDefinition({ purpose: 'Denver is active after Wave 9 implementation', filters: { city: 'Denver', statusScope: 'Active' } });
+assert.equal(denverRuntime.validation.ready, true);
+assert.equal(denverRuntime.citySetAuthority, RECOMMENDED_AGENT_CITY_AUTHORITY_NAME);
 
-const broomfieldRuntime = normalizeAgentCohortDefinition({ purpose: 'Broomfield must remain inactive during admission review', filters: { city: 'Broomfield', statusScope: 'Active', zip: '80020' } });
-assert.equal(broomfieldRuntime.validation.ready, false);
-assert.equal(broomfieldRuntime.validation.reasons.includes('FILTER_REJECTED:city'), true);
+const broomfieldRuntime = normalizeAgentCohortDefinition({ purpose: 'Broomfield is active after Wave 9 implementation', filters: { city: 'Broomfield', statusScope: 'Active', zip: '80020' } });
+assert.equal(broomfieldRuntime.validation.ready, true);
+assert.equal(broomfieldRuntime.citySetAuthority, RECOMMENDED_AGENT_CITY_AUTHORITY_NAME);
 
 assert.equal(Object.values(VERSIONED_CITY_SET_PROTECTED_BOUNDARIES).every((value) => value === false), true);
 assert.equal(Object.values(IRES_CITYID_SOURCE_GEOGRAPHY_FIREWALL).every((value) => value === false), true);

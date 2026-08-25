@@ -100,8 +100,8 @@ assert.equal(zipOnly.validation.ready, false);
 assert.equal(zipOnly.validation.reasons.includes('FILTER_REJECTED:zip:ZIP_REQUIRES_ADMITTED_CITY'), true);
 
 const unsupportedCityZip = normalizeAgentCohortDefinition({
-  purpose: 'Unsupported city plus ZIP',
-  filters: { city: 'Denver', propertyType: 'Residential', statusScope: 'Active', zip: '80202' },
+  purpose: 'Deferred city plus ZIP',
+  filters: { city: 'Aurora', propertyType: 'Residential', statusScope: 'Active', zip: '80012' },
 });
 assert.equal(unsupportedCityZip.validation.ready, false);
 assert.equal(unsupportedCityZip.validation.reasons.includes('FILTER_REJECTED:city'), true);

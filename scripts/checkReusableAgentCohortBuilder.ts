@@ -98,7 +98,7 @@ const missingGeography = normalizeAgentCohortDefinition({ purpose: 'No city', fi
 assert.equal(missingGeography.validation.ready, false);
 assert(missingGeography.validation.reasons.includes('GEOGRAPHY_RECONCILIATION_REQUIRED'));
 
-const invalidGeography = normalizeAgentCohortDefinition({ purpose: 'Unknown city', filters: { city: 'Denver', statusScope: 'Active' }, asOf: '2026-08-25T12:00:00.000Z' });
+const invalidGeography = normalizeAgentCohortDefinition({ purpose: 'Deferred city', filters: { city: 'Aurora', statusScope: 'Active' }, asOf: '2026-08-25T12:00:00.000Z' });
 assert.equal(invalidGeography.validation.ready, false);
 assert(invalidGeography.validation.reasons.includes('FILTER_REJECTED:city'));
 

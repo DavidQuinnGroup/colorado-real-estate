@@ -114,7 +114,7 @@ async function main() {
   assert.equal(unsupportedOperation.status, 'NOT_AVAILABLE');
   assert(unsupportedOperation.rejectionReasons.includes('UNSUPPORTED_OPERATION'));
 
-  const invalidMiddle = parseAgentComparisonSearchParams(new URLSearchParams('cohortCount=3&cohort.0.city=boulder&cohort.0.propertyType=residential&cohort.0.statusScope=active&cohort.1.city=denver&cohort.1.propertyType=residential&cohort.1.statusScope=active&cohort.2.city=lafayette&cohort.2.propertyType=residential&cohort.2.statusScope=active'));
+  const invalidMiddle = parseAgentComparisonSearchParams(new URLSearchParams('cohortCount=3&cohort.0.city=boulder&cohort.0.propertyType=residential&cohort.0.statusScope=active&cohort.1.city=aurora&cohort.1.propertyType=residential&cohort.1.statusScope=active&cohort.2.city=lafayette&cohort.2.propertyType=residential&cohort.2.statusScope=active'));
   assert.equal(normalizeAgentCohortDefinition(invalidMiddle.cohorts[1].cohort).validation.ready, false);
   const historical = parseAgentComparisonSearchParams(new URLSearchParams('cohortCount=3&cohort.0.city=boulder&cohort.0.propertyType=residential&cohort.0.statusScope=active&cohort.1.city=louisville&cohort.1.propertyType=residential&cohort.1.statusScope=active&cohort.2.city=lafayette&cohort.2.propertyType=residential&cohort.2.statusScope=active&cohort.2.temporalBasis=CLOSE_SOLD_DATE'));
   assert.equal(normalizeAgentCohortDefinition(historical.cohorts[2].cohort).validation.reasons.includes('FILTER_REJECTED:temporalBasis'), true);

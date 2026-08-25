@@ -1,3 +1,5 @@
+import { AGENT_ADMITTED_LISTING_CITY_SET_VERSION } from './agentAdmittedListingCitySet';
+
 export const ADMITTED_FILTER_REGISTRY_WAVE_7_STATUS =
   'ADMITTED_FILTER_REGISTRY_AND_PRIORITY_1_PROPERTY_SEGMENTATION_BOUNDED_IMPLEMENTATION_WAVE_7_CERTIFIED' as const;
 export const AGENT_ADMITTED_FILTER_REGISTRY_VERSION = 'AGENT_ADMITTED_FILTER_REGISTRY_V1' as const;
@@ -37,24 +39,26 @@ export type AgentAdmittedFilterRegistration = Readonly<{
   rightsAudience: 'AGENT_ONLY';
   filterable: true;
   aggregatable: boolean;
+  valueAuthority: typeof AGENT_ADMITTED_LISTING_CITY_SET_VERSION | null;
   nullPolicy: 'RECORD_MUST_HAVE_POPULATED_VALUE';
   geographyActivation: false;
 }>;
 
-function registration(input: Omit<AgentAdmittedFilterRegistration, 'analyticalGrain' | 'sourceScope' | 'rightsAudience' | 'filterable' | 'nullPolicy' | 'geographyActivation'>): AgentAdmittedFilterRegistration {
+function registration(input: Omit<AgentAdmittedFilterRegistration, 'analyticalGrain' | 'sourceScope' | 'rightsAudience' | 'filterable' | 'valueAuthority' | 'nullPolicy' | 'geographyActivation'> & Partial<Pick<AgentAdmittedFilterRegistration, 'valueAuthority'>>): AgentAdmittedFilterRegistration {
   return Object.freeze({
     ...input,
     analyticalGrain: 'MLS_LISTING',
     sourceScope: 'CURRENT_REPOSITORY_PROPERTY_SEARCH_PROJECTION',
     rightsAudience: 'AGENT_ONLY',
     filterable: true,
+    valueAuthority: input.valueAuthority ?? null,
     nullPolicy: 'RECORD_MUST_HAVE_POPULATED_VALUE',
     geographyActivation: false,
   });
 }
 
 export const AGENT_ADMITTED_FILTER_REGISTRY: Readonly<Record<AgentAdmittedFilterKey, AgentAdmittedFilterRegistration>> = Object.freeze({
-  city: registration({ key: 'city', propertyField: 'city', tier: 'QUICK_FILTER', operator: 'EQUALS', valueType: 'STRING_ENUM', canonicalUnit: 'NONE', aggregatable: false }),
+  city: registration({ key: 'city', propertyField: 'city', tier: 'QUICK_FILTER', operator: 'EQUALS', valueType: 'STRING_ENUM', canonicalUnit: 'NONE', aggregatable: false, valueAuthority: AGENT_ADMITTED_LISTING_CITY_SET_VERSION }),
   zip: registration({ key: 'zip', propertyField: 'zip', tier: 'ADVANCED_PROPERTY_FILTER', operator: 'IN', valueType: 'STRING_IDENTIFIER', canonicalUnit: 'NONE', aggregatable: false }),
   propertyType: registration({ key: 'propertyType', propertyField: 'propertyType', tier: 'QUICK_FILTER', operator: 'EQUALS', valueType: 'STRING_ENUM', canonicalUnit: 'NONE', aggregatable: false }),
   statusScope: registration({ key: 'statusScope', propertyField: 'status', tier: 'QUICK_FILTER', operator: 'EQUALS', valueType: 'STRING_ENUM', canonicalUnit: 'NONE', aggregatable: false }),
