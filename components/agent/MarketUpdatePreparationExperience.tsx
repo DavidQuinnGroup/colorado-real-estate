@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 import { ArrowRight, CheckCircle2, ClipboardList, FileText, RefreshCw, ShieldCheck } from 'lucide-react';
 
 import { projectAtlasTitleHierarchy } from '@/components/ProjectAtlasTitleHierarchy';
+import AgentCohortBuilder from '@/components/agent/AgentCohortBuilder';
 import AgentPreparationPageHeader from '@/components/agent/AgentPreparationPageHeader';
 import {
   MARKET_UPDATE_AUDIENCES,
@@ -70,6 +71,8 @@ export default function MarketUpdatePreparationExperience() {
         </div>
         <div className="mt-6 flex flex-col gap-3 border-t border-white/10 pt-5 sm:flex-row sm:items-center sm:justify-between"><p className="text-sm leading-6 text-slate-400">Use only the admitted market evidence shown below. Confirm currentness before relying on it in a live conversation.</p><button type="button" onClick={prepare} disabled={!marketId || !topics.length} className="inline-flex min-h-11 items-center justify-center gap-2 bg-cyan-200 px-5 text-sm font-semibold text-slate-950 transition hover:bg-cyan-100 disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-100 focus:ring-offset-2 focus:ring-offset-[#071014]" data-testid="agent-market-update-prepare">Prepare update <ArrowRight size={16} aria-hidden="true" /></button></div>
       </section>
+
+      <AgentCohortBuilder surface="MARKET_UPDATE_PREPARATION" />
 
       {!preparation ? <section className="mt-8 border border-dashed border-white/15 px-5 py-7 text-sm text-slate-400" data-testid="agent-market-update-empty-state">Choose a supported market and at least one topic, then prepare the update.</section> : null}
       {preparation?.state === 'NOT_READY' ? <section className="mt-8 border border-amber-200/20 bg-amber-100/[0.05] p-5 text-sm leading-6 text-amber-50/90" role="status">{preparation.executiveSummary.text}</section> : null}

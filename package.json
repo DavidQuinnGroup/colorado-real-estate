@@ -227,6 +227,7 @@
     "check:boulder-county-identity-population": "jiti scripts/checkBoulderCountyIdentityPopulation.ts",
     "check:canonical-physical-property-identity": "jiti scripts/checkCanonicalPhysicalPropertyIdentity.ts",
     "check:atlas-cohort-comparative-contract": "jiti scripts/checkAtlasCohortComparativeContract.ts",
+    "check:reusable-agent-cohort-builder": "jiti scripts/checkReusableAgentCohortBuilder.ts",
     "check:shared-disclosure-state-indicator": "jiti scripts/checkSharedDisclosureStateIndicator.ts",
     "check:agent-place-preparation-admission": "jiti scripts/checkAgentPlacePreparationAdmission.ts",
     "check:agent-place-conversation-preparation-experience": "jiti scripts/checkAgentPlaceConversationPreparationExperience.ts",
