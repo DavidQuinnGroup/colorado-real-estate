@@ -38,36 +38,64 @@ export const ATLAS_OUTPUT_SUBJECT_KINDS = [
 export const ATLAS_OUTPUT_SECTION_KINDS = [
   'EXECUTIVE_OVERVIEW',
   'SUBJECT_CONTEXT',
+  'CONTEXT',
+  'PROPERTY',
   'PROPERTY_FACTS',
+  'LOCATION',
   'LOCATION_CONTEXT',
+  'MARKET',
   'MARKET_CONTEXT',
+  'COMPETITION',
   'COMPARATIVE_CONTEXT',
+  'POSITIONING',
+  'PREPARATION',
+  'LAUNCH',
+  'RECOMMENDATIONS',
   'FINANCIAL_CONTEXT',
   'STRATEGY_REVIEW',
+  'TIMELINE',
+  'NEXT_DECISIONS',
+  'EVIDENCE_APPENDIX',
   'EVIDENCE_AND_LIMITATIONS',
   'NEXT_STEPS',
 ] as const;
 
 export const ATLAS_OUTPUT_MODULE_KINDS = [
   'EXECUTIVE_SUMMARY',
+  'DECISION_SNAPSHOT',
+  'OBJECTIVES',
+  'TIMING_CONSTRAINTS',
   'SUBJECT_PROPERTY',
+  'PROPERTY_HERO',
   'PROPERTY_FACTS',
+  'FACT_GRID',
+  'PROPERTY_STRENGTHS',
   'LOCATION_CONTEXT',
+  'LOCATION_STORY',
   'MARKET_SNAPSHOT',
   'COHORT_COMPARISON',
   'MULTI_MARKET_COMPARISON',
   'CURRENT_COMPETITION',
   'PROPERTY_POSITIONING',
+  'POSITIONING_THEMES',
   'DECISION_CONTEXT',
   'FINANCIAL_SCENARIO',
   'RECOMMENDATION',
+  'RECOMMENDATION_CARD',
   'NARRATIVE',
+  'PROPERTY_STORY',
+  'PREPARATION_PLAN',
+  'ASSET_PLAN',
+  'LAUNCH_PLAN',
+  'SELLER_JOURNEY',
+  'NEXT_DECISIONS',
   'METRIC_GROUP',
   'COMPARISON_TABLE',
   'CHART',
   'MAP',
   'PROPERTY_CARD_GROUP',
   'EVIDENCE_NOTES',
+  'EVIDENCE_PANEL',
   'DISCLOSURES',
   'AGENT_COMMENTARY',
 ] as const;
@@ -77,6 +105,13 @@ export type AtlasOutputAudience = (typeof ATLAS_OUTPUT_AUDIENCES)[number];
 export type AtlasOutputSubjectKind = (typeof ATLAS_OUTPUT_SUBJECT_KINDS)[number];
 export type AtlasOutputSectionKind = (typeof ATLAS_OUTPUT_SECTION_KINDS)[number];
 export type AtlasOutputModuleKind = (typeof ATLAS_OUTPUT_MODULE_KINDS)[number];
+export type AtlasOutputModuleInputType =
+  | 'ATLAS_INTELLIGENCE'
+  | 'AGENT_INPUT'
+  | 'ATLAS_AND_AGENT_INPUT'
+  | 'EVIDENCE_APPENDIX'
+  | 'PROFESSIONAL_HANDOFF';
+export type AtlasOutputModulePriority = 'CORE' | 'P0' | 'CONTEXTUAL' | 'OPTIONAL' | 'ADVANCED' | 'AGENT_INTERNAL' | 'APPENDIX';
 
 export type AtlasOutputSourceReference = Readonly<{
   id: string;
@@ -175,6 +210,9 @@ export type AtlasOutputModuleDefinition = Readonly<{
   freshnessRequirement: AtlasOutputFreshnessState;
   reviewRequired: boolean;
   limitations: readonly string[];
+  inputType?: AtlasOutputModuleInputType;
+  priority?: AtlasOutputModulePriority;
+  readinessRule?: string;
 }>;
 
 export type AtlasOutputSectionDefinition = Readonly<{

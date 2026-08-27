@@ -246,6 +246,7 @@
     "check:historical-evidence-foundation-admission-review": "jiti scripts/checkHistoricalEvidenceFoundationAdmissionReview.ts",
     "check:prospective-listing-observation-event-evidence-foundation": "jiti scripts/checkProspectiveListingObservationEventEvidenceFoundation.ts",
     "check:shared-output-product-section-module-foundation": "jiti scripts/checkSharedOutputProductSectionModuleFoundation.ts",
+    "check:seller-decision-brief-foundation": "jiti scripts/checkSellerDecisionBriefFoundation.ts",
     "check:shared-disclosure-state-indicator": "jiti scripts/checkSharedDisclosureStateIndicator.ts",
     "check:agent-place-preparation-admission": "jiti scripts/checkAgentPlacePreparationAdmission.ts",
     "check:agent-place-conversation-preparation-experience": "jiti scripts/checkAgentPlaceConversationPreparationExperience.ts",
