@@ -24,13 +24,14 @@ const source = (path: string) => readFileSync(resolve(process.cwd(), path), 'utf
 
 assert.equal(MARKET_METRIC_DEFINITION_EVIDENCE_STATUS, 'PROJECT_ATLAS_MARKET_METRIC_DEFINITION_AND_EVIDENCE_CONTRACT_MVV');
 for (const state of ['CERTIFIED', 'PARTIALLY_DEFINED', 'SEMANTICS_UNRESOLVED', 'NOT_ADMITTED', 'DEPRECATED']) assert.ok(MARKET_METRIC_SEMANTIC_STATUSES.includes(state as never));
-for (const basis of ['LISTING_DOM', 'AVERAGE_DOM', 'MEDIAN_DOM', 'CDOM', 'AVERAGE_CDOM', 'MEDIAN_CDOM', 'OTHER_DEFINED_DOM_MEASURE', 'UNRESOLVED_DOM_MEASURE']) assert.ok(MARKET_DOM_BASES.includes(basis as never));
+for (const basis of ['LISTING_DOM', 'AVERAGE_DOM', 'MEDIAN_DOM', 'CDOM', 'AVERAGE_CDOM', 'MEDIAN_CDOM', 'DAYS_SINCE_LISTING_CONTRACT_DATE', 'OTHER_DEFINED_DOM_MEASURE', 'UNRESOLVED_DOM_MEASURE']) assert.ok(MARKET_DOM_BASES.includes(basis as never));
 for (const basis of ['CURRENT_LIST_PRICE', 'ORIGINAL_LIST_PRICE', 'MEDIAN_LIST_PRICE', 'AVERAGE_LIST_PRICE', 'CLOSE_PRICE', 'MEDIAN_CLOSE_PRICE', 'AVERAGE_CLOSE_PRICE', 'PRICE_PER_SQUARE_FOOT', 'OTHER_DEFINED_PRICE_MEASURE', 'UNRESOLVED_PRICE_MEASURE']) assert.ok(MARKET_PRICE_BASES.includes(basis as never));
 for (const use of ['DISPLAY_RAW_OBSERVATION', 'AGENT_PREPARATION', 'AUDIENCE_UPDATE_PREPARATION', 'HISTORICAL_COMPARISON', 'DERIVED_CALCULATION', 'COMPARATIVE_REPORTING', 'PUBLIC_DISPLAY']) assert.ok(MARKET_METRIC_ALLOWED_USES.includes(use as never));
 for (const prohibition of ['NO_TREND_INFERENCE', 'NO_FORECAST', 'NO_BUYER_LEVERAGE_INFERENCE', 'NO_SELLER_LEVERAGE_INFERENCE', 'NO_AFFORDABILITY_INFERENCE', 'NO_PROPERTY_VALUATION', 'NO_PRICING_RECOMMENDATION', 'NO_NEGOTIATION_RECOMMENDATION']) assert.ok(MARKET_METRIC_PROHIBITED_INTERPRETATIONS.includes(prohibition as never));
 
 const inventory = MARKET_METRIC_DEFINITIONS.INVENTORY_SIGNAL;
 const dom = MARKET_METRIC_DEFINITIONS.DAYS_ON_MARKET_SIGNAL;
+const daysSinceListingContractDate = MARKET_METRIC_DEFINITIONS.DAYS_SINCE_LISTING_CONTRACT_DATE_CANDIDATE;
 const price = MARKET_METRIC_DEFINITIONS.PRICE_SIGNAL;
 for (const definition of [inventory, dom, price]) {
   assert.equal(definition.semanticStatus, 'SEMANTICS_UNRESOLVED');
@@ -41,6 +42,15 @@ for (const definition of [inventory, dom, price]) {
   assert.ok(definition.prohibitedInterpretations.includes('NO_TREND_INFERENCE'));
 }
 assert.equal(dom.domBasis, 'UNRESOLVED_DOM_MEASURE');
+assert.equal(daysSinceListingContractDate.sourceFamily, 'IRES');
+assert.equal(daysSinceListingContractDate.sourceConcept, 'ListingContractDate');
+assert.equal(daysSinceListingContractDate.domBasis, 'DAYS_SINCE_LISTING_CONTRACT_DATE');
+assert.equal(daysSinceListingContractDate.semanticStatus, 'PARTIALLY_DEFINED');
+assert.equal(daysSinceListingContractDate.historicalComparisonStatus, 'NOT_ADMITTED');
+assert.equal((daysSinceListingContractDate.allowedUses as readonly string[]).includes('HISTORICAL_COMPARISON'), false);
+assert.equal((daysSinceListingContractDate.allowedUses as readonly string[]).includes('PUBLIC_DISPLAY'), false);
+assert.ok(daysSinceListingContractDate.limitations.some((limitation) => limitation.includes('Provider-equivalent DOM')));
+assert.ok(daysSinceListingContractDate.limitations.some((limitation) => limitation.includes('supplied DaysOnMarket field remains non-authoritative')));
 assert.equal(price.priceBasis, 'UNRESOLVED_PRICE_MEASURE');
 assert.equal(displayMarketMetricLabel(dom), 'Days-on-market signal (semantics unresolved)');
 assert.equal(displayMarketMetricLabel(price), 'Price signal (semantics unresolved)');
