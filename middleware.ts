@@ -50,7 +50,7 @@ export async function middleware(request: NextRequest) {
       return privateAccessGateResponse(request);
     }
   }
-  const isAgentWorkspaceRoute = pathname === "/agent" || pathname === "/agent/prepare/market" || pathname === "/agent/prepare/market-update" || pathname === "/agent/prepare/property" || pathname === "/agent/prepare/place" || pathname === "/agent/prepare/buyer" || pathname === "/agent/prepare/seller" || pathname === "/agent/prepare/listing";
+  const isAgentWorkspaceRoute = pathname === "/agent" || pathname === "/agent/prepare/market" || pathname === "/agent/prepare/market-update" || pathname === "/agent/prepare/property" || pathname === "/agent/prepare/place" || pathname === "/agent/prepare/buyer" || pathname === "/agent/prepare/seller" || pathname === "/agent/prepare/seller/presentation" || pathname === "/agent/prepare/listing";
   const isAdminProtectedRoute = pathname.startsWith('/admin') || pathname.startsWith('/api/admin/');
 
   if (!isAgentWorkspaceRoute && !isAdminProtectedRoute) {
@@ -90,5 +90,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next/).*)', "/admin/:path*", "/api/admin/:path*", "/agent", "/agent/prepare/market", "/agent/prepare/market-update", "/agent/prepare/property", "/agent/prepare/place", "/agent/prepare/buyer", "/agent/prepare/seller", "/agent/prepare/listing"],
+  matcher: ['/((?!_next/).*)', "/admin/:path*", "/api/admin/:path*", "/agent", "/agent/prepare/market", "/agent/prepare/market-update", "/agent/prepare/property", "/agent/prepare/place", "/agent/prepare/buyer", "/agent/prepare/seller", "/agent/prepare/seller/presentation", "/agent/prepare/listing"],
 };

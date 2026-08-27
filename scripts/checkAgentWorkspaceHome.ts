@@ -18,6 +18,7 @@ const credential = createHash('sha256').update('REIE_AGENT_WORKSPACE_HOME_CHECK'
 const capabilityRoutes = [
   '/agent/prepare/buyer',
   '/agent/prepare/seller',
+  '/agent/prepare/seller/presentation',
   '/agent/prepare/listing',
   '/agent/prepare/place',
   '/agent/prepare/property',
@@ -95,6 +96,7 @@ async function main() {
   assert.equal(new URL(redirect.headers.get('location') || '').searchParams.get('next'), '/agent');
   assert.equal(sanitizeAgentReturnPath(null), '/agent', 'Direct Agent login must default to Workspace Home.');
   assert.equal(sanitizeAgentReturnPath('/agent/prepare/property'), '/agent/prepare/property', 'Safe explicit Agent preparation returns must be preserved.');
+  assert.equal(sanitizeAgentReturnPath('/agent/prepare/seller/presentation'), '/agent/prepare/seller/presentation', 'Safe explicit Seller Presentation returns must be preserved.');
   assert.equal(sanitizeAgentReturnPath('/admin'), '/agent', 'Unsafe Agent returns must fail closed to Workspace Home.');
   assert.equal(location(await createAgentLoginSuccessResponse('https://davidquinngroup.com', null)), '/agent', 'Successful direct Agent login must land on Workspace Home.');
 

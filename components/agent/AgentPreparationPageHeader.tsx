@@ -1,7 +1,7 @@
 import { projectAtlasTitleHierarchy } from '@/components/ProjectAtlasTitleHierarchy';
 
 type AgentPreparationPageHeaderProps = Readonly<{
-  pageTitle: 'MARKET PREPARATION' | 'MARKET UPDATE PREPARATION' | 'LOCATION PREPARATION' | 'PROPERTY PREPARATION' | 'BUYER PREPARATION' | 'SELLER PREPARATION';
+  pageTitle: 'MARKET PREPARATION' | 'MARKET UPDATE PREPARATION' | 'LOCATION PREPARATION' | 'PROPERTY PREPARATION' | 'BUYER PREPARATION' | 'SELLER PREPARATION' | 'SELLER PRESENTATION';
   taskHeading: string;
   description: string;
   scopeNote: string;

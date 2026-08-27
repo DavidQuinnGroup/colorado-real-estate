@@ -393,13 +393,13 @@ function validateDefinition(definition: AtlasOutputProductDefinition): readonly 
     if (section.moduleIds.some((moduleId) => !modules.has(moduleId))) reasons.push(`OUTPUT_SECTION_UNKNOWN_MODULE_${section.id}`);
   }
   const evidence = evidenceById(definition);
-  for (const module of definition.modules) {
-    if (!text(module.id) || !text(module.title)) reasons.push('OUTPUT_MODULE_ID_AND_TITLE_REQUIRED');
-    if (!module.supportedProducts.includes(definition.productKind)) reasons.push(`OUTPUT_MODULE_PRODUCT_NOT_SUPPORTED_${module.id}`);
-    if (!module.supportedAudiences.includes(definition.context.audience)) reasons.push(`OUTPUT_MODULE_AUDIENCE_NOT_SUPPORTED_${module.id}`);
-    if (module.evidenceReferenceIds.length === 0) reasons.push(`OUTPUT_MODULE_EVIDENCE_REQUIRED_${module.id}`);
-    if (module.evidenceReferenceIds.some((evidenceId) => !evidence.has(evidenceId))) reasons.push(`OUTPUT_MODULE_UNKNOWN_EVIDENCE_${module.id}`);
-    if (module.limitations.length === 0) reasons.push(`OUTPUT_MODULE_LIMITATIONS_REQUIRED_${module.id}`);
+  for (const outputModule of definition.modules) {
+    if (!text(outputModule.id) || !text(outputModule.title)) reasons.push('OUTPUT_MODULE_ID_AND_TITLE_REQUIRED');
+    if (!outputModule.supportedProducts.includes(definition.productKind)) reasons.push(`OUTPUT_MODULE_PRODUCT_NOT_SUPPORTED_${outputModule.id}`);
+    if (!outputModule.supportedAudiences.includes(definition.context.audience)) reasons.push(`OUTPUT_MODULE_AUDIENCE_NOT_SUPPORTED_${outputModule.id}`);
+    if (outputModule.evidenceReferenceIds.length === 0) reasons.push(`OUTPUT_MODULE_EVIDENCE_REQUIRED_${outputModule.id}`);
+    if (outputModule.evidenceReferenceIds.some((evidenceId) => !evidence.has(evidenceId))) reasons.push(`OUTPUT_MODULE_UNKNOWN_EVIDENCE_${outputModule.id}`);
+    if (outputModule.limitations.length === 0) reasons.push(`OUTPUT_MODULE_LIMITATIONS_REQUIRED_${outputModule.id}`);
   }
   return Object.freeze([...new Set(reasons)].sort());
 }

@@ -1,6 +1,45 @@
 @config "../tailwind.config.js";
 @import "tailwindcss";
 
+@media print {
+  [data-testid="agent-workspace-navigation"],
+  [data-testid="seller-brief-section-rail"],
+  [data-testid="seller-brief-module-inspector"],
+  [data-testid="seller-brief-top-bar"],
+  [data-testid="seller-presentation-back-to-preparation"] {
+    display: none !important;
+  }
+
+  [data-testid="seller-decision-brief-composition-preview"] {
+    background: #ffffff !important;
+    color: #111827 !important;
+    padding: 0 !important;
+  }
+
+  [data-testid="seller-brief-three-region-workspace"] {
+    display: block !important;
+  }
+
+  [data-testid="seller-brief-output-canvas"] {
+    box-shadow: none !important;
+    width: 100% !important;
+  }
+
+  [data-testid="seller-brief-canvas-section"] {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  [data-testid="seller-brief-output-module"] {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  [data-testid="seller-brief-print-footer"] {
+    display: block;
+  }
+}
+
 [data-testid="vis-prototype"] {
   width: 100%;
   min-height: 100vh;

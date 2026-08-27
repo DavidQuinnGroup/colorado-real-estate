@@ -1,11 +1,12 @@
 import Link from 'next/link';
-import { ArrowRight, Building2, ClipboardList, Home, MapPinned, MessageSquareText, Store, Users } from 'lucide-react';
+import { ArrowRight, Building2, ClipboardList, FileText, Home, MapPinned, MessageSquareText, Store, Users } from 'lucide-react';
 
 import { projectAtlasTitleHierarchy } from '@/components/ProjectAtlasTitleHierarchy';
 
 const preparationCapabilities = [
   { title: 'Buyer Preparation', description: 'Prepare the questions, priorities, and professional checkpoints for a buyer consultation.', href: '/agent/prepare/buyer', icon: Users },
   { title: 'Seller Preparation', description: 'Prepare the conversation, timing, and review points for a seller consultation.', href: '/agent/prepare/seller', icon: ClipboardList },
+  { title: 'Seller Presentation', description: 'Compose and review the Seller Decision Brief with Agent, Seller, and print preview modes.', href: '/agent/prepare/seller/presentation', icon: FileText },
   { title: 'Listing Preparation', description: 'Prepare a listing appointment and the property-to-market questions that need review.', href: '/agent/prepare/listing', icon: Store },
   { title: 'Location Preparation', description: 'Prepare geographic and local context for a city, community, neighborhood, access, or place question.', href: '/agent/prepare/place', icon: MapPinned },
   { title: 'Property Preparation', description: 'Prepare property-specific diligence around an address, facts, condition, records, HOA, taxes, title, or insurance.', href: '/agent/prepare/property', icon: Home },
