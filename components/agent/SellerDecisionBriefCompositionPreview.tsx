@@ -40,11 +40,16 @@ import {
   type SellerPostLaunchCurrentRefresh,
   type SellerPostLaunchReview,
 } from '@/lib/sellerPostLaunchCurrentContextReview';
+import {
+  OUTPUT_VERSION_LINEAGE_AND_INVALIDATION_FOUNDATION_FIXTURE,
+  type AtlasOutputVersionFoundation,
+} from '@/lib/outputVersionLineageInvalidationFoundation';
 
 const preview = SELLER_DECISION_BRIEF_COMPOSITION_PREVIEW_FIXTURE;
 const sellerV2 = SELLER_DECISION_BRIEF_V2_FIXTURE;
 const pricingFramework = SELLER_PRICING_POSITIONING_DECISION_FRAMEWORK_FIXTURE;
 const postLaunchReview = SELLER_POST_LAUNCH_CURRENT_CONTEXT_REVIEW_FIXTURE;
+const outputVersionFoundation = OUTPUT_VERSION_LINEAGE_AND_INVALIDATION_FOUNDATION_FIXTURE;
 
 const modeLabels: Record<SellerDecisionBriefPreviewMode, string> = {
   AGENT_REVIEW: 'Agent review',
@@ -202,9 +207,10 @@ export default function SellerDecisionBriefCompositionPreview() {
           </aside>
 
           <section className={`bg-[#f7f3ec] text-[#172025] shadow-2xl shadow-black/30 ${mode === 'PRINT_PREVIEW' ? 'seller-brief-print-preview' : ''}`} data-testid="seller-brief-output-canvas" aria-label="Seller preview canvas">
-            <OutputCover mode={mode} sectionsReady={sectionsReady} reviewRequired={reviewRequired} sectionNeedsInput={sectionNeedsInput} postLaunchReview={postLaunchReview} />
+            <OutputCover mode={mode} sectionsReady={sectionsReady} reviewRequired={reviewRequired} sectionNeedsInput={sectionNeedsInput} postLaunchReview={postLaunchReview} outputVersionFoundation={outputVersionFoundation} />
             <PricingDecisionFrameworkSection framework={pricingFramework} mode={mode} />
             <PostLaunchCurrentContextReviewSection review={postLaunchReview} mode={mode} />
+            <OutputVersionLineageFoundationSection foundation={outputVersionFoundation} mode={mode} />
             {preview.sectionPresentations.map((section) => (
               <article
                 key={section.sectionId}
@@ -238,7 +244,7 @@ export default function SellerDecisionBriefCompositionPreview() {
           </section>
 
           <aside className="border border-white/10 bg-[#0b171c] p-4 xl:sticky xl:top-28 xl:max-h-[calc(100vh-8rem)] xl:overflow-auto" aria-label="Selected module inspector" data-testid="seller-brief-module-inspector">
-            <ModuleInspector module={selectedModule} narrative={narrativeForModule(sellerV2, selectedModule.module.id)} pricingFramework={pricingFramework} postLaunchReview={postLaunchReview} mode={mode} />
+            <ModuleInspector module={selectedModule} narrative={narrativeForModule(sellerV2, selectedModule.module.id)} pricingFramework={pricingFramework} postLaunchReview={postLaunchReview} outputVersionFoundation={outputVersionFoundation} mode={mode} />
           </aside>
         </section>
       </div>
@@ -263,7 +269,7 @@ function readinessClass(state: SellerDecisionBriefReadinessState) {
   return 'bg-stone-200 text-stone-800';
 }
 
-function OutputCover({ mode, sectionsReady, reviewRequired, sectionNeedsInput, postLaunchReview }: { mode: SellerDecisionBriefPreviewMode; sectionsReady: number; reviewRequired: number; sectionNeedsInput: number; postLaunchReview: SellerPostLaunchReview }) {
+function OutputCover({ mode, sectionsReady, reviewRequired, sectionNeedsInput, postLaunchReview, outputVersionFoundation }: { mode: SellerDecisionBriefPreviewMode; sectionsReady: number; reviewRequired: number; sectionNeedsInput: number; postLaunchReview: SellerPostLaunchReview; outputVersionFoundation: AtlasOutputVersionFoundation }) {
   return (
     <section className="grid gap-6 bg-[#efe5d4] px-5 py-8 sm:px-8 lg:grid-cols-[minmax(0,1fr)_18rem] lg:px-10" data-testid="seller-brief-output-cover">
       <div>
@@ -288,6 +294,8 @@ function OutputCover({ mode, sectionsReady, reviewRequired, sectionNeedsInput, p
           <CoverMetric label="Pricing options" value={`${pricingFramework.scenarios.length}`} />
           <CoverMetric label="Post-launch checkpoints" value="3" />
           <CoverMetric label="Seller Update modules" value={`${postLaunchReview.sellerUpdateProduct.modules.length}`} />
+          <CoverMetric label="Output versions" value={`${outputVersionFoundation.outputVersions.length}`} />
+          <CoverMetric label="Version warnings" value={`${outputVersionFoundation.dependencyWarnings.length}`} />
         </div>
       </div>
     </section>
@@ -758,6 +766,148 @@ function PostLaunchRefreshPanel({ refresh, testId, visual }: { refresh: SellerPo
   );
 }
 
+function OutputVersionLineageFoundationSection({ foundation, mode }: { foundation: AtlasOutputVersionFoundation; mode: SellerDecisionBriefPreviewMode }) {
+  const currentVersion = foundation.outputVersions.find((version) => version.id === 'seller-update-current-version') ?? foundation.outputVersions[0];
+  const priorVersion = foundation.outputVersions.find((version) => version.id === currentVersion.priorReviewedVersion);
+  const draftSuccessor = foundation.outputVersions.find((version) => version.id === 'seller-update-draft-successor');
+  const visibleWarnings = foundation.dependencyWarnings.slice(0, 7);
+  const visibleDiffs = foundation.diffs.slice(0, 7);
+  return (
+    <article
+      className="border-t border-[#d8cfc0] bg-white px-5 py-8 sm:px-8 lg:px-10"
+      data-testid="output-version-lineage-invalidation-foundation"
+      data-version={foundation.version}
+      data-persistence="false"
+      data-schema-migration="false"
+      data-provider-activity="false"
+      data-pdf-generation="false"
+      data-share-delivery="false"
+      data-preview-mode={mode}
+    >
+      <header className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_20rem]">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#786b58]">Output version / lineage / invalidation foundation</p>
+          <h3 className="mt-2 text-3xl font-semibold leading-9 text-[#172025]">Every Seller output now has a current version, prior version, evidence snapshot, dependency state, and successor seam.</h3>
+          <p className="mt-3 max-w-3xl text-sm leading-6 text-[#4d5652]">This session-safe foundation represents version identity, reviewed immutability, supersession, evidence snapshots, dependency invalidation, diffs, reuse rules, Seller decision references, financial review warnings, and future render/persistence seams without creating durable storage.</p>
+        </div>
+        <section className="border border-[#d8cfc0] bg-[#fffdf8] p-4" data-testid="output-version-current-badge" data-visual-component="OutputVersionBadge" aria-label="Current output version">
+          <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#71624e]">Current version</p>
+          <h4 className="mt-2 text-xl font-semibold text-[#172025]">{currentVersion.displayVersion}</h4>
+          <p className="mt-2 text-sm leading-6 text-[#4d5652]">{currentVersion.lifecycleState.replaceAll('_', ' ')} / {currentVersion.reviewState.replaceAll('_', ' ')}</p>
+          <p className="mt-2 text-xs font-semibold uppercase tracking-[0.12em] text-[#71624e]">As of {currentVersion.effectiveAsOf} / {currentVersion.contentFingerprint}</p>
+        </section>
+      </header>
+
+      <div className="mt-5 grid gap-3 border border-[#d8cfc0] bg-[#fffdf8] p-4 text-xs font-semibold uppercase text-[#71624e] md:grid-cols-3" aria-label="Output version governance tokens">
+        <p className="break-words">Version: {foundation.version}</p>
+        <p className="break-words">Next gate: {foundation.nextGate}</p>
+        <p className="break-words">Persistence: {foundation.persistencePosition}</p>
+      </div>
+
+      <div className="mt-7 grid gap-5 xl:grid-cols-[20rem_minmax(0,1fr)_22rem]">
+        <aside className="border border-[#d8cfc0] bg-[#fffdf8] p-4" data-testid="output-version-history-panel" data-visual-component="OutputVersionHistory">
+          <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#71624e]">Version history</p>
+          <ol className="mt-4 grid gap-3">
+            {foundation.outputVersions.filter((version) => ['seller-decision-brief-v2-reviewed', 'seller-pricing-version-reviewed', 'seller-post-launch-review-current', 'seller-update-current-version', 'seller-update-superseded-version', 'seller-update-invalidated-version', 'seller-update-draft-successor'].includes(version.id)).map((version) => (
+              <li key={version.id} className="border border-[#d8cfc0] bg-white p-3">
+                <p className="text-sm font-semibold text-[#172025]">{version.displayVersion}</p>
+                <p className="mt-1 text-xs font-semibold uppercase tracking-[0.12em] text-[#71624e]">{version.lifecycleState.replaceAll('_', ' ')}</p>
+                <p className="mt-2 text-sm leading-6 text-[#4d5652]">Prior: {version.priorReviewedVersion ?? 'none'}. Supersedes: {version.supersedesVersion ?? 'none'}.</p>
+              </li>
+            ))}
+          </ol>
+        </aside>
+
+        <section className="grid gap-5">
+          <section className="border border-[#d8cfc0] bg-[#fffdf8] p-4" data-testid="output-version-compare-to-prior" data-visual-component="OutputVersionCompareToPrior">
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#71624e]">Compare to prior</p>
+            <div className="mt-3 grid gap-3 md:grid-cols-2">
+              <VersionCompareCard label="Prior reviewed" value={priorVersion?.displayVersion ?? 'No prior version'} detail={currentVersion.priorReviewedVersion ?? 'none'} />
+              <VersionCompareCard label="Current" value={currentVersion.displayVersion} detail={currentVersion.id} />
+              <VersionCompareCard label="Draft successor" value={draftSuccessor?.displayVersion ?? 'No draft successor'} detail={draftSuccessor?.id ?? 'none'} />
+              <VersionCompareCard label="Seller decision" value={currentVersion.sellerClientDecisionReferences[0]?.label ?? 'Decision review required'} detail={currentVersion.sellerClientDecisionReferences[0]?.version ?? 'none'} />
+            </div>
+          </section>
+
+          <section className="border border-[#d8cfc0] bg-[#fffdf8] p-4" data-testid="output-version-diff-summary" data-visual-component="OutputVersionDiffSummary">
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#71624e]">What changed</p>
+            <div className="mt-3 grid gap-2">
+              {visibleDiffs.map((diff) => (
+                <div key={diff.id} className="grid gap-2 border border-[#d8cfc0] bg-white p-3 md:grid-cols-[11rem_minmax(0,1fr)_9rem]">
+                  <p className="text-sm font-semibold text-[#172025]">{diff.diffClass.replaceAll('_', ' ')}</p>
+                  <p className="text-sm leading-6 text-[#4d5652]">{diff.sellerFacingChangeSummary}</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#71624e]">{diff.severity.replaceAll('_', ' ')}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section className="border border-[#d8cfc0] bg-[#fffdf8] p-4" data-testid="output-version-successor-actions" data-visual-component="OutputVersionSuccessorActions">
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#71624e]">Successor / derive seams</p>
+            <div className="mt-3 grid gap-3 md:grid-cols-3">
+              {foundation.agentVersionUi.filter((item) => item.uiElement.includes('CREATE') || item.uiElement.includes('REFRESH') || item.uiElement.includes('REUSE')).map((item) => (
+                <div key={item.uiElement} className="border border-[#d8cfc0] bg-white p-3">
+                  <p className="text-sm font-semibold text-[#172025]">{item.uiElement.replaceAll('_', ' ')}</p>
+                  <p className="mt-1 text-sm leading-6 text-[#4d5652]">{item.action}</p>
+                  <p className="mt-2 text-xs font-semibold uppercase tracking-[0.12em] text-[#71624e]">{item.readiness}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section className="border border-[#d8cfc0] bg-[#fffdf8] p-4" data-testid="output-version-reuse-rules" data-visual-component="OutputVersionReuseRules">
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#71624e]">Reuse rules</p>
+            <div className="mt-3 overflow-x-auto">
+              <table className="min-w-full border border-[#d8cfc0] text-sm">
+                <thead className="bg-[#efe5d4]"><tr>{['Artifact', 'Same product', 'Seller Update', 'Buyer', 'Financial', 'Advisory'].map((heading) => <th key={heading} className="border border-[#d8cfc0] px-3 py-2 text-left">{heading}</th>)}</tr></thead>
+                <tbody>
+                  {foundation.reuseRules.slice(0, 6).map((rule) => (
+                    <tr key={rule.artifact}>
+                      <td className="border border-[#d8cfc0] px-3 py-2 font-semibold">{rule.artifact}</td>
+                      <td className="border border-[#d8cfc0] px-3 py-2">{rule.sameProductNewVersion}</td>
+                      <td className="border border-[#d8cfc0] px-3 py-2">{rule.sellerUpdate}</td>
+                      <td className="border border-[#d8cfc0] px-3 py-2">{rule.buyer}</td>
+                      <td className="border border-[#d8cfc0] px-3 py-2">{rule.financial}</td>
+                      <td className="border border-[#d8cfc0] px-3 py-2">{rule.advisory}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+
+        <aside className="grid gap-4">
+          <section className="border border-[#d8cfc0] bg-[#fffdf8] p-4" data-testid="output-version-dependency-warnings" data-visual-component="OutputDependencyWarnings">
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#71624e]">Dependency warnings</p>
+            <div className="mt-3 grid gap-2">
+              {visibleWarnings.map((warning) => (
+                <div key={warning.warning} className="border border-[#d8cfc0] bg-white p-3">
+                  <p className="text-sm font-semibold text-[#172025]">{warning.warning.replaceAll('_', ' ')}</p>
+                  <p className="mt-1 text-xs font-semibold uppercase tracking-[0.12em] text-[#71624e]">{warning.state.replaceAll('_', ' ')}</p>
+                  <p className="mt-2 text-sm leading-6 text-[#4d5652]">{warning.requiredAction}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+          <section className="border border-[#d8cfc0] bg-[#fffdf8] p-4" data-testid="output-version-render-seam" data-visual-component="OutputRenderVersionSeam">
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#71624e]">Print / render seam</p>
+            <p className="mt-2 text-sm leading-6 text-[#4d5652]">Source output: seller-update-current-version. Content fingerprint: {currentVersion.contentFingerprint}. Render readiness: foundation only. PDF generation and share delivery remain held.</p>
+          </section>
+          <section className="border border-[#d8cfc0] bg-[#fffdf8] p-4" data-testid="output-version-persistence-seam" data-visual-component="OutputPersistenceSeam">
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#71624e]">Persistence position</p>
+            <p className="mt-2 text-sm leading-6 text-[#4d5652]">{foundation.persistencePosition.replaceAll('_', ' ')}. Durable persistence becomes material before cross-session reviewed output or Seller decision retention.</p>
+          </section>
+        </aside>
+      </div>
+    </article>
+  );
+}
+
+function VersionCompareCard({ label, value, detail }: { label: string; value: string; detail: string }) {
+  return <div className="border border-[#d8cfc0] bg-white p-3"><p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#71624e]">{label}</p><p className="mt-1 text-sm font-semibold text-[#172025]">{value}</p><p className="mt-2 break-words text-xs leading-5 text-[#4d5652]">{detail}</p></div>;
+}
+
 function SectionNarrative({ section }: { section: SellerDecisionBriefSectionPresentation }) {
   const narrative = narrativeForSection(sellerV2, section.sectionId);
   const transition = sellerV2.sectionTransitions.find((item) => item.fromSectionId === section.sectionId);
@@ -837,7 +987,7 @@ function ModuleVisualTreatment({ module }: { module: SellerDecisionBriefModulePr
   return <div className="mt-4 grid gap-2 sm:grid-cols-3" data-testid="seller-brief-generic-output-treatment">{['Content', 'Evidence', 'Review'].map((label) => <div key={label} className="border border-[#d8cfc0] bg-[#f7f3ec] p-3 text-sm font-semibold text-[#172025]">{label}</div>)}</div>;
 }
 
-function ModuleInspector({ module, narrative, pricingFramework, postLaunchReview, mode }: { module: SellerDecisionBriefModulePresentation; narrative?: SellerDecisionBriefNarrativeUnit; pricingFramework: SellerPricingFramework; postLaunchReview: SellerPostLaunchReview; mode: SellerDecisionBriefPreviewMode }) {
+function ModuleInspector({ module, narrative, pricingFramework, postLaunchReview, outputVersionFoundation, mode }: { module: SellerDecisionBriefModulePresentation; narrative?: SellerDecisionBriefNarrativeUnit; pricingFramework: SellerPricingFramework; postLaunchReview: SellerPostLaunchReview; outputVersionFoundation: AtlasOutputVersionFoundation; mode: SellerDecisionBriefPreviewMode }) {
   return (
     <div>
       <div className="flex items-center gap-2">
@@ -885,6 +1035,13 @@ function ModuleInspector({ module, narrative, pricingFramework, postLaunchReview
         <InspectorRow label="Seller decision" value={postLaunchReview.sellerDecision.selectedAction.replaceAll('_', ' ')} />
         <InspectorRow label="Financial review" value={postLaunchReview.sellerDecision.financialEffect.replaceAll('_', ' ')} />
         <p className="text-sm leading-6 text-slate-300">Seller Update preview is available for Agent review with current-vs-prior evidence, response inputs, change sets, reassessment triggers, Agent interpretation, updated recommendation, Seller decision, next checkpoint, and evidence lineage.</p>
+      </InspectorSection>
+      <InspectorSection icon={<ListChecks size={16} aria-hidden="true" />} title="Output version">
+        <InspectorRow label="Foundation" value={outputVersionFoundation.version} />
+        <InspectorRow label="Current output" value={outputVersionFoundation.outputVersions.find((version) => version.id === 'seller-update-current-version')?.displayVersion ?? 'Review required'} />
+        <InspectorRow label="Dependencies" value={`${outputVersionFoundation.dependencies.length}`} />
+        <InspectorRow label="Warnings" value={`${outputVersionFoundation.dependencyWarnings.length}`} />
+        <p className="text-sm leading-6 text-slate-300">Version history, current/prior diff, dependency warnings, Seller decision linkage, content fingerprint, reuse rules, successor seams, and future render/persistence seams are represented session-safely.</p>
       </InspectorSection>
       <InspectorSection icon={<ShieldCheck size={16} aria-hidden="true" />} title="Evidence / freshness / rights">
         {module.evidence.map((evidence) => (
