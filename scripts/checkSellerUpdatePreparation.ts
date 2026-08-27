@@ -131,6 +131,12 @@ assert(previewSource.includes("REIE prepares factual evidence. The agent determi
 for (const prohibited of [/sourceModifiedAt/i, /publicSearchEligibility/i, /buildMarket/i, /CRMTask/i, /seller email\/message/i, /fetch\s*\(/i, /\.\$executeRaw/i, /\.\$queryRaw/i, /method=\"post\"/i, /<form[^>]+action=/i]) {
   assert(!prohibited.test(previewSource), `preview must not depend on a prohibited system or mutation pattern: ${prohibited}`);
 }
-assert(middlewareSource.includes('matcher: ["/admin/:path*", "/api/admin/:path*"]') && middlewareSource.includes('buildAdminLoginRedirect'), 'existing middleware must protect the preview and redirect unauthenticated admin requests');
+assert(
+  middlewareSource.includes("pathname.startsWith('/admin')") &&
+    middlewareSource.includes('"/admin/:path*"') &&
+    middlewareSource.includes('"/api/admin/:path*"') &&
+    middlewareSource.includes('buildAdminLoginRedirect'),
+  'existing middleware must protect the preview and redirect unauthenticated admin requests',
+);
 
 console.log('SELLER_UPDATE_PREPARATION_CHECK: PASS');

@@ -35,10 +35,16 @@ import {
   type SellerPricingFramework,
   type SellerPricingScenario,
 } from '@/lib/sellerPricingPositioningDecisionFramework';
+import {
+  SELLER_POST_LAUNCH_CURRENT_CONTEXT_REVIEW_FIXTURE,
+  type SellerPostLaunchCurrentRefresh,
+  type SellerPostLaunchReview,
+} from '@/lib/sellerPostLaunchCurrentContextReview';
 
 const preview = SELLER_DECISION_BRIEF_COMPOSITION_PREVIEW_FIXTURE;
 const sellerV2 = SELLER_DECISION_BRIEF_V2_FIXTURE;
 const pricingFramework = SELLER_PRICING_POSITIONING_DECISION_FRAMEWORK_FIXTURE;
+const postLaunchReview = SELLER_POST_LAUNCH_CURRENT_CONTEXT_REVIEW_FIXTURE;
 
 const modeLabels: Record<SellerDecisionBriefPreviewMode, string> = {
   AGENT_REVIEW: 'Agent review',
@@ -196,8 +202,9 @@ export default function SellerDecisionBriefCompositionPreview() {
           </aside>
 
           <section className={`bg-[#f7f3ec] text-[#172025] shadow-2xl shadow-black/30 ${mode === 'PRINT_PREVIEW' ? 'seller-brief-print-preview' : ''}`} data-testid="seller-brief-output-canvas" aria-label="Seller preview canvas">
-            <OutputCover mode={mode} sectionsReady={sectionsReady} reviewRequired={reviewRequired} sectionNeedsInput={sectionNeedsInput} />
+            <OutputCover mode={mode} sectionsReady={sectionsReady} reviewRequired={reviewRequired} sectionNeedsInput={sectionNeedsInput} postLaunchReview={postLaunchReview} />
             <PricingDecisionFrameworkSection framework={pricingFramework} mode={mode} />
+            <PostLaunchCurrentContextReviewSection review={postLaunchReview} mode={mode} />
             {preview.sectionPresentations.map((section) => (
               <article
                 key={section.sectionId}
@@ -231,7 +238,7 @@ export default function SellerDecisionBriefCompositionPreview() {
           </section>
 
           <aside className="border border-white/10 bg-[#0b171c] p-4 xl:sticky xl:top-28 xl:max-h-[calc(100vh-8rem)] xl:overflow-auto" aria-label="Selected module inspector" data-testid="seller-brief-module-inspector">
-            <ModuleInspector module={selectedModule} narrative={narrativeForModule(sellerV2, selectedModule.module.id)} pricingFramework={pricingFramework} mode={mode} />
+            <ModuleInspector module={selectedModule} narrative={narrativeForModule(sellerV2, selectedModule.module.id)} pricingFramework={pricingFramework} postLaunchReview={postLaunchReview} mode={mode} />
           </aside>
         </section>
       </div>
@@ -256,7 +263,7 @@ function readinessClass(state: SellerDecisionBriefReadinessState) {
   return 'bg-stone-200 text-stone-800';
 }
 
-function OutputCover({ mode, sectionsReady, reviewRequired, sectionNeedsInput }: { mode: SellerDecisionBriefPreviewMode; sectionsReady: number; reviewRequired: number; sectionNeedsInput: number }) {
+function OutputCover({ mode, sectionsReady, reviewRequired, sectionNeedsInput, postLaunchReview }: { mode: SellerDecisionBriefPreviewMode; sectionsReady: number; reviewRequired: number; sectionNeedsInput: number; postLaunchReview: SellerPostLaunchReview }) {
   return (
     <section className="grid gap-6 bg-[#efe5d4] px-5 py-8 sm:px-8 lg:grid-cols-[minmax(0,1fr)_18rem] lg:px-10" data-testid="seller-brief-output-cover">
       <div>
@@ -279,6 +286,8 @@ function OutputCover({ mode, sectionsReady, reviewRequired, sectionNeedsInput }:
           <CoverMetric label="Mode" value={modeLabels[mode]} />
           <CoverMetric label="V2 narratives" value={`${sellerV2.narratives.length}`} />
           <CoverMetric label="Pricing options" value={`${pricingFramework.scenarios.length}`} />
+          <CoverMetric label="Post-launch checkpoints" value="3" />
+          <CoverMetric label="Seller Update modules" value={`${postLaunchReview.sellerUpdateProduct.modules.length}`} />
         </div>
       </div>
     </section>
@@ -557,6 +566,198 @@ function PricingEvidencePanel({ framework, mode }: { framework: SellerPricingFra
   );
 }
 
+function PostLaunchCurrentContextReviewSection({ review, mode }: { review: SellerPostLaunchReview; mode: SellerDecisionBriefPreviewMode }) {
+  const selectedScenario = pricingFramework.scenarios.find((scenario) => scenario.id === review.currentPricingScenarioId) ?? pricingFramework.scenarios[0];
+  const changeSet = [...review.marketChangeSet, ...review.competitionChangeSet, ...review.subjectChangeSet];
+  return (
+    <article
+      className="border-t border-[#d8cfc0] bg-[#f7f3ec] px-5 py-8 sm:px-8 lg:px-10"
+      data-testid="seller-post-launch-current-context-review"
+      data-version={review.version}
+      data-review-version={review.reviewVersion}
+      data-seller-update-version={review.sellerUpdateProduct.version}
+      data-persistence="false"
+      data-provider-activity="false"
+      data-customer-data="false"
+      data-pdf-generation="false"
+      data-share-delivery="false"
+      data-financial-advice="false"
+      data-automated-pricing-recommendation="false"
+      data-preview-mode={mode}
+    >
+      <header className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_20rem]">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#786b58]">Seller post-launch response intelligence</p>
+          <h3 className="mt-2 text-3xl font-semibold leading-9 text-[#172025]">Current response review turns launch context into a governed Seller Update.</h3>
+          <p className="mt-3 max-w-3xl text-sm leading-6 text-[#4d5652]">The Agent compares the launch-reviewed baseline with current market, competition, subject, response, pricing, and financial-continuity context before confirming the recommendation, Seller decision, and next checkpoint.</p>
+        </div>
+        <dl className="grid gap-3 border border-[#d8cfc0] bg-white p-4" data-testid="post-launch-review-status-bar">
+          <PostLaunchFact label="Property" value={review.propertyReference} />
+          <PostLaunchFact label="Pricing scenario" value={`${selectedScenario.name} / ${formatCurrency(review.selectedPriceAssumption)}`} />
+          <PostLaunchFact label="Review status" value={review.currentCheckpoint.currentState.replaceAll('_', ' ')} />
+          <PostLaunchFact label="As of" value={review.currentMarket.asOf} />
+          <PostLaunchFact label="Next action" value={review.updatedRecommendation.nextAction} />
+        </dl>
+      </header>
+
+      <div className="mt-7 grid gap-5 xl:grid-cols-[17rem_minmax(0,1fr)_22rem]">
+        <aside className="border border-[#d8cfc0] bg-white p-4" data-testid="post-launch-review-timeline" data-visual-component="OutputCheckpointTimeline">
+          <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#71624e]">Checkpoint timeline</p>
+          <ol className="mt-4 grid gap-3">
+            {[review.previousCheckpoint, review.currentCheckpoint, review.nextCheckpoint].map((checkpoint) => (
+              <li key={checkpoint.id} className="border border-[#d8cfc0] bg-[#fffdf8] p-3">
+                <p className="text-sm font-semibold text-[#172025]">{checkpoint.name}</p>
+                <p className="mt-1 text-xs font-semibold uppercase tracking-[0.12em] text-[#71624e]">{checkpoint.type.replaceAll('_', ' ')} / {checkpoint.currentState.replaceAll('_', ' ')}</p>
+                <p className="mt-2 text-sm leading-6 text-[#4d5652]">{checkpoint.basis}</p>
+              </li>
+            ))}
+          </ol>
+        </aside>
+
+        <section className="grid gap-5" data-testid="seller-update-preview">
+          <section className="border border-[#d8cfc0] bg-white p-4" data-testid="post-launch-change-summary" data-visual-component="OutputChangeSummary">
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#71624e]">Change summary</p>
+            <div className="mt-3 grid gap-3 md:grid-cols-4">
+              {(['NEW', 'CHANGED', 'STABLE', 'REQUIRES_REVIEW'] as const).map((changeClass) => (
+                <PostLaunchMetric key={changeClass} label={changeClass.replaceAll('_', ' ')} value={`${changeSet.filter((entry) => entry.changeClass === changeClass).length}`} />
+              ))}
+            </div>
+          </section>
+
+          <div className="grid gap-4 lg:grid-cols-2">
+            <PostLaunchRefreshPanel refresh={review.currentMarket} testId="post-launch-current-prior-market" visual="OutputCurrentPriorMarket" />
+            <PostLaunchRefreshPanel refresh={review.currentCompetition} testId="post-launch-current-prior-competition" visual="OutputCurrentPriorCompetition" />
+          </div>
+
+          <section className="border border-[#d8cfc0] bg-white p-4" data-testid="post-launch-response-summary" data-visual-component="OutputResponseSummary">
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#71624e]">Response inputs</p>
+            <div className="mt-3 grid gap-2 md:grid-cols-3">
+              {review.responseInputs.map((input) => (
+                <div key={input.id} className="border border-[#d8cfc0] bg-[#fffdf8] p-3">
+                  <p className="text-sm font-semibold text-[#172025]">{input.sourceClass.replaceAll('_', ' ')}</p>
+                  <p className="mt-1 text-sm leading-6 text-[#4d5652]">{input.summary}</p>
+                  <p className="mt-2 text-xs font-semibold uppercase tracking-[0.12em] text-[#71624e]">{input.verification.replaceAll('_', ' ')} / {input.sellerFacingUse.replaceAll('_', ' ')}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section className="border border-[#d8cfc0] bg-white p-4" data-testid="post-launch-change-card" data-visual-component="OutputChangeCard">
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#71624e]">Change cards</p>
+            <div className="mt-3 grid gap-2">
+              {changeSet.map((entry) => (
+                <div key={entry.id} className="grid gap-2 border border-[#d8cfc0] bg-[#fffdf8] p-3 md:grid-cols-[9rem_minmax(0,1fr)_8rem]">
+                  <p className="text-sm font-semibold text-[#172025]">{entry.domain}</p>
+                  <p className="text-sm leading-6 text-[#4d5652]">{entry.field}: {entry.previousValue} to {entry.currentValue}</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#71624e]">{entry.changeClass.replaceAll('_', ' ')}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <div className="grid gap-4 lg:grid-cols-2">
+            <section className="border border-[#d8cfc0] bg-white p-4" data-testid="post-launch-positioning-status" data-visual-component="OutputPositioningStatus">
+              <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#71624e]">Positioning status</p>
+              <p className="mt-2 text-sm leading-6 text-[#4d5652]">{review.agentInterpretation.positioningEffect}</p>
+            </section>
+            <section className="border border-[#d8cfc0] bg-white p-4" data-testid="post-launch-pricing-status" data-visual-component="OutputPricingStatus">
+              <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#71624e]">Pricing status</p>
+              <p className="mt-2 text-sm leading-6 text-[#4d5652]">{review.agentInterpretation.pricingEffect}</p>
+              <p className="mt-2 text-xs font-semibold uppercase tracking-[0.12em] text-[#71624e]">Financial: {review.sellerDecision.financialEffect.replaceAll('_', ' ')}</p>
+            </section>
+          </div>
+
+          <section className="border border-[#d8cfc0] bg-white p-4" data-testid="post-launch-agent-interpretation" data-visual-component="OutputAgentInterpretation">
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#71624e]">Agent interpretation</p>
+            <h4 className="mt-1 text-xl font-semibold text-[#172025]">{review.agentInterpretation.sellerFacingSummary}</h4>
+            <p className="mt-2 text-sm leading-6 text-[#4d5652]">{review.agentInterpretation.whyItMatters}</p>
+            <ul className="mt-3 grid gap-2 text-sm leading-6 text-[#4d5652]">
+              {review.agentInterpretation.whatChanged.map((item) => <li key={item}>- {item}</li>)}
+            </ul>
+          </section>
+
+          <section className="border border-[#d8cfc0] bg-[#efe5d4] p-4" data-testid="post-launch-updated-recommendation" data-visual-component="OutputRecommendationCard">
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#71624e]">Updated recommendation</p>
+            <h4 className="mt-1 text-xl font-semibold text-[#172025]">{review.updatedRecommendation.currentRecommendation.replaceAll('_', ' ')}</h4>
+            <p className="mt-2 text-sm leading-6 text-[#4d5652]">{review.updatedRecommendation.rationale}</p>
+            <p className="mt-2 text-xs font-semibold uppercase tracking-[0.12em] text-[#71624e]">Alternatives: {review.updatedRecommendation.alternatives.join(', ').replaceAll('_', ' ')}</p>
+          </section>
+
+          <div className="grid gap-4 lg:grid-cols-2">
+            <section className="border border-[#d8cfc0] bg-white p-4" data-testid="post-launch-seller-decision" data-visual-component="OutputDecisionChecklist">
+              <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#71624e]">Seller decision</p>
+              <p className="mt-2 text-lg font-semibold text-[#172025]">{review.sellerDecision.selectedAction.replaceAll('_', ' ')}</p>
+              <p className="mt-2 text-sm leading-6 text-[#4d5652]">{review.sellerDecision.reason}</p>
+            </section>
+            <section className="border border-[#d8cfc0] bg-white p-4" data-testid="post-launch-next-checkpoint" data-visual-component="OutputCheckpointTimeline">
+              <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#71624e]">Next checkpoint</p>
+              <p className="mt-2 text-lg font-semibold text-[#172025]">{review.nextCheckpoint.name}</p>
+              <p className="mt-2 text-sm leading-6 text-[#4d5652]">{review.nextCheckpoint.plannedTimeOrEvent}</p>
+            </section>
+          </div>
+        </section>
+
+        <aside className="grid gap-4">
+          <section className="border border-[#d8cfc0] bg-white p-4" data-testid="post-launch-reassessment-triggers">
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#71624e]">Reassessment triggers</p>
+            <div className="mt-3 grid gap-2">
+              {review.reassessmentTriggers.map((trigger) => (
+                <div key={trigger.id} className="border border-[#d8cfc0] bg-[#fffdf8] p-3">
+                  <p className="text-sm font-semibold text-[#172025]">{trigger.type.replaceAll('_', ' ')}</p>
+                  <p className="mt-1 text-xs font-semibold uppercase tracking-[0.12em] text-[#71624e]">{trigger.priority}</p>
+                  <p className="mt-2 text-sm leading-6 text-[#4d5652]">{trigger.reviewAction}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+          <section className="border border-[#d8cfc0] bg-white p-4" data-testid="post-launch-evidence-panel" data-visual-component="OutputEvidencePanel">
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#71624e]">Evidence / versions / limitations</p>
+            <div className="mt-3 grid gap-2">
+              {review.evidenceReferences.map((evidence) => (
+                <div key={evidence.id} className="border border-[#d8cfc0] bg-[#fffdf8] p-3">
+                  <p className="text-sm font-semibold text-[#172025]">{evidence.label}</p>
+                  <p className="mt-1 text-xs leading-5 text-[#4d5652]">Class: {evidence.evidenceClass.replaceAll('_', ' ')}. Source: {evidence.source}. Version: {evidence.version}. Rights: {evidence.rights.replaceAll('_', ' ')}.</p>
+                </div>
+              ))}
+            </div>
+          </section>
+        </aside>
+      </div>
+    </article>
+  );
+}
+
+function PostLaunchFact({ label, value }: { label: string; value: string }) {
+  return <div className="border-b border-[#d8cfc0] pb-2 last:border-0 last:pb-0"><dt className="text-xs font-semibold uppercase tracking-[0.12em] text-[#71624e]">{label}</dt><dd className="mt-1 text-sm font-semibold text-[#172025]">{value}</dd></div>;
+}
+
+function PostLaunchMetric({ label, value }: { label: string; value: string }) {
+  return <div className="border border-[#d8cfc0] bg-[#fffdf8] p-3"><p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#71624e]">{label}</p><p className="mt-1 text-2xl font-semibold text-[#172025]">{value}</p></div>;
+}
+
+function PostLaunchRefreshPanel({ refresh, testId, visual }: { refresh: SellerPostLaunchCurrentRefresh; testId: string; visual: string }) {
+  return (
+    <section className="border border-[#d8cfc0] bg-white p-4" data-testid={testId} data-visual-component={visual}>
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#71624e]">{refresh.domain} current / prior</p>
+          <h4 className="mt-1 text-xl font-semibold text-[#172025]">{refresh.coverage}</h4>
+        </div>
+        <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#71624e]">{refresh.comparability.replaceAll('_', ' ')}</p>
+      </div>
+      <div className="mt-3 grid gap-2">
+        {refresh.facts.map((fact) => (
+          <div key={fact.label} className="border border-[#d8cfc0] bg-[#fffdf8] p-3">
+            <p className="text-sm font-semibold text-[#172025]">{fact.label}</p>
+            <p className="mt-1 text-sm leading-6 text-[#4d5652]">{fact.prior} to {fact.current}</p>
+            <p className="mt-2 text-xs font-semibold uppercase tracking-[0.12em] text-[#71624e]">{fact.changeClass.replaceAll('_', ' ')}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 function SectionNarrative({ section }: { section: SellerDecisionBriefSectionPresentation }) {
   const narrative = narrativeForSection(sellerV2, section.sectionId);
   const transition = sellerV2.sectionTransitions.find((item) => item.fromSectionId === section.sectionId);
@@ -636,7 +837,7 @@ function ModuleVisualTreatment({ module }: { module: SellerDecisionBriefModulePr
   return <div className="mt-4 grid gap-2 sm:grid-cols-3" data-testid="seller-brief-generic-output-treatment">{['Content', 'Evidence', 'Review'].map((label) => <div key={label} className="border border-[#d8cfc0] bg-[#f7f3ec] p-3 text-sm font-semibold text-[#172025]">{label}</div>)}</div>;
 }
 
-function ModuleInspector({ module, narrative, pricingFramework, mode }: { module: SellerDecisionBriefModulePresentation; narrative?: SellerDecisionBriefNarrativeUnit; pricingFramework: SellerPricingFramework; mode: SellerDecisionBriefPreviewMode }) {
+function ModuleInspector({ module, narrative, pricingFramework, postLaunchReview, mode }: { module: SellerDecisionBriefModulePresentation; narrative?: SellerDecisionBriefNarrativeUnit; pricingFramework: SellerPricingFramework; postLaunchReview: SellerPostLaunchReview; mode: SellerDecisionBriefPreviewMode }) {
   return (
     <div>
       <div className="flex items-center gap-2">
@@ -677,6 +878,13 @@ function ModuleInspector({ module, narrative, pricingFramework, mode }: { module
         <InspectorRow label="Selected scenario" value={pricingFramework.sellerDecision.selectedScenarioId} />
         <InspectorRow label="Financial link" value={pricingFramework.sellerDecision.financialLinkState.replaceAll('_', ' ')} />
         <p className="text-sm leading-6 text-slate-300">Agent review exposes subject facts, cohort definition, current competition, search-band definitions, boundary semantics, price assumptions, alternatives, subject position, positioning effects, tradeoffs, evidence gaps, Agent rationale, checkpoints, reassessment triggers, financial links, and Seller decision state.</p>
+      </InspectorSection>
+      <InspectorSection icon={<ListChecks size={16} aria-hidden="true" />} title="Post-launch review">
+        <InspectorRow label="Version" value={postLaunchReview.version} />
+        <InspectorRow label="Current checkpoint" value={postLaunchReview.currentCheckpoint.currentState.replaceAll('_', ' ')} />
+        <InspectorRow label="Seller decision" value={postLaunchReview.sellerDecision.selectedAction.replaceAll('_', ' ')} />
+        <InspectorRow label="Financial review" value={postLaunchReview.sellerDecision.financialEffect.replaceAll('_', ' ')} />
+        <p className="text-sm leading-6 text-slate-300">Seller Update preview is available for Agent review with current-vs-prior evidence, response inputs, change sets, reassessment triggers, Agent interpretation, updated recommendation, Seller decision, next checkpoint, and evidence lineage.</p>
       </InspectorSection>
       <InspectorSection icon={<ShieldCheck size={16} aria-hidden="true" />} title="Evidence / freshness / rights">
         {module.evidence.map((evidence) => (
