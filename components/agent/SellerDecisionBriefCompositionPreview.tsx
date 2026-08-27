@@ -30,9 +30,15 @@ import {
   narrativeForSection,
   type SellerDecisionBriefNarrativeUnit,
 } from '@/lib/sellerDecisionBriefV2';
+import {
+  SELLER_PRICING_POSITIONING_DECISION_FRAMEWORK_FIXTURE,
+  type SellerPricingFramework,
+  type SellerPricingScenario,
+} from '@/lib/sellerPricingPositioningDecisionFramework';
 
 const preview = SELLER_DECISION_BRIEF_COMPOSITION_PREVIEW_FIXTURE;
 const sellerV2 = SELLER_DECISION_BRIEF_V2_FIXTURE;
+const pricingFramework = SELLER_PRICING_POSITIONING_DECISION_FRAMEWORK_FIXTURE;
 
 const modeLabels: Record<SellerDecisionBriefPreviewMode, string> = {
   AGENT_REVIEW: 'Agent review',
@@ -191,6 +197,7 @@ export default function SellerDecisionBriefCompositionPreview() {
 
           <section className={`bg-[#f7f3ec] text-[#172025] shadow-2xl shadow-black/30 ${mode === 'PRINT_PREVIEW' ? 'seller-brief-print-preview' : ''}`} data-testid="seller-brief-output-canvas" aria-label="Seller preview canvas">
             <OutputCover mode={mode} sectionsReady={sectionsReady} reviewRequired={reviewRequired} sectionNeedsInput={sectionNeedsInput} />
+            <PricingDecisionFrameworkSection framework={pricingFramework} mode={mode} />
             {preview.sectionPresentations.map((section) => (
               <article
                 key={section.sectionId}
@@ -224,7 +231,7 @@ export default function SellerDecisionBriefCompositionPreview() {
           </section>
 
           <aside className="border border-white/10 bg-[#0b171c] p-4 xl:sticky xl:top-28 xl:max-h-[calc(100vh-8rem)] xl:overflow-auto" aria-label="Selected module inspector" data-testid="seller-brief-module-inspector">
-            <ModuleInspector module={selectedModule} narrative={narrativeForModule(sellerV2, selectedModule.module.id)} mode={mode} />
+            <ModuleInspector module={selectedModule} narrative={narrativeForModule(sellerV2, selectedModule.module.id)} pricingFramework={pricingFramework} mode={mode} />
           </aside>
         </section>
       </div>
@@ -255,7 +262,7 @@ function OutputCover({ mode, sectionsReady, reviewRequired, sectionNeedsInput }:
       <div>
         <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#71624e]">Project Atlas / Seller Decision Brief</p>
         <h2 className="mt-3 max-w-3xl text-4xl font-semibold leading-tight text-[#172025] sm:text-5xl">{preview.brief.outputProduct.context.subject.label}</h2>
-        <p className="mt-4 max-w-2xl text-base leading-7 text-[#4d5652]">A composed, Agent-reviewed decision brief for the seller property, market, competition, positioning, preparation, launch strategy, recommendation, alternatives, next decisions, and evidence.</p>
+        <p className="mt-4 max-w-2xl text-base leading-7 text-[#4d5652]">A composed, Agent-reviewed decision brief for the seller property, market, competition, pricing, positioning, preparation, launch strategy, recommendation, alternatives, next decisions, financial connections, and evidence.</p>
         <div className="mt-6 flex flex-wrap gap-2" aria-label="Semantic content grammar">
           {semanticLabels.map((label) => <span key={label} className="rounded-[7px] border border-[#cabda9] bg-white/50 px-3 py-1 text-xs font-semibold text-[#4d5652]">{label}</span>)}
         </div>
@@ -271,6 +278,7 @@ function OutputCover({ mode, sectionsReady, reviewRequired, sectionNeedsInput }:
           <CoverMetric label="Need Agent input" value={`${sectionNeedsInput}`} />
           <CoverMetric label="Mode" value={modeLabels[mode]} />
           <CoverMetric label="V2 narratives" value={`${sellerV2.narratives.length}`} />
+          <CoverMetric label="Pricing options" value={`${pricingFramework.scenarios.length}`} />
         </div>
       </div>
     </section>
@@ -293,6 +301,259 @@ function OutputSectionHeader({ section, selected }: { section: SellerDecisionBri
         {selected ? <span className="rounded-[7px] bg-[#172025] px-3 py-1 text-xs font-semibold text-white">Selected</span> : null}
       </div>
     </header>
+  );
+}
+
+function PricingDecisionFrameworkSection({ framework, mode }: { framework: SellerPricingFramework; mode: SellerDecisionBriefPreviewMode }) {
+  const selectedScenario = framework.scenarios.find((scenario) => scenario.sellerSelectionState === 'SELLER_SELECTED') ?? framework.scenarios[0];
+  return (
+    <article
+      className="border-t border-[#d8cfc0] bg-white px-5 py-8 sm:px-8 lg:px-10"
+      data-testid="seller-pricing-positioning-decision-framework"
+      data-version={framework.version}
+      data-agent-authored="true"
+      data-persistence="false"
+      data-provider-activity="false"
+      data-financial-advice="false"
+    >
+      <header className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_18rem]">
+        <div data-testid="pricing-executive-summary">
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#786b58]">Seller pricing and positioning decision framework</p>
+          <h3 className="mt-2 text-3xl font-semibold leading-9 text-[#172025]">Price is framed as a transparent decision, not an automated recommendation.</h3>
+          <p className="mt-3 max-w-3xl text-sm leading-6 text-[#4d5652]">The Agent reviews the pricing objective, current context, current competition, search bands, options, positioning effect, tradeoffs, recommendation rationale, response checkpoints, Seller decision, and financial-link review state.</p>
+        </div>
+        <div className="border border-[#d8cfc0] bg-[#fffdf8] p-4" data-testid="seller-pricing-decision-state">
+          <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#71624e]">Seller decision</p>
+          <p className="mt-2 text-xl font-semibold text-[#172025]">{selectedScenario.name}</p>
+          <p className="mt-2 text-sm leading-6 text-[#4d5652]">{formatCurrency(selectedScenario.priceAssumption.value)} / {framework.sellerDecision.state.replaceAll('_', ' ')}</p>
+          <p className="mt-3 text-xs font-semibold uppercase tracking-[0.12em] text-[#71624e]">Financial link: {selectedScenario.financialLink.financialLinkReviewState.replaceAll('_', ' ')}</p>
+        </div>
+      </header>
+
+      <PricingObjective framework={framework} selectedScenario={selectedScenario} />
+      <SearchBandLadder framework={framework} />
+      <PriceOptionCards scenarios={framework.scenarios} />
+      <ScenarioComparison framework={framework} />
+      <SubjectPricePosition framework={framework} />
+      <PricingTradeoffs framework={framework} />
+      <PositioningEffect framework={framework} />
+      <PricingAgentRationale framework={framework} />
+      <ResponseCheckpointTimeline framework={framework} />
+      <ReassessmentPanel framework={framework} />
+      <SellerPricingDecisionPanel framework={framework} />
+      <PricingEvidencePanel framework={framework} mode={mode} />
+    </article>
+  );
+}
+
+function PricingObjective({ framework, selectedScenario }: { framework: SellerPricingFramework; selectedScenario: SellerPricingScenario }) {
+  const objective = framework.objectives.find((item) => item.id === selectedScenario.objectiveId);
+  return (
+    <section className="mt-7 border border-[#d8cfc0] bg-[#fffdf8] p-4" data-testid="pricing-objective" data-visual-component="OutputPricingObjective">
+      <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#71624e]">Decision question</p>
+      <h4 className="mt-1 text-xl font-semibold text-[#172025]">{objective?.sellerQuestion ?? 'What are we trying to accomplish with price?'}</h4>
+      <p className="mt-2 text-sm leading-6 text-[#4d5652]"><span className="font-semibold text-[#172025]">Primary takeaway:</span> {objective?.displayName}. {selectedScenario.agentRationale}</p>
+      <p className="mt-2 text-sm leading-6 text-[#4d5652]"><span className="font-semibold text-[#172025]">Agent interpretation:</span> Pricing options are Agent-authored professional judgment and must remain review-gated before Seller use.</p>
+    </section>
+  );
+}
+
+function SearchBandLadder({ framework }: { framework: SellerPricingFramework }) {
+  return (
+    <section className="mt-6" data-testid="pricing-search-band-ladder" data-visual-component="OutputSearchBandLadder">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#71624e]">Search-band context</p>
+          <h4 className="mt-1 text-2xl font-semibold text-[#172025]">Agent-defined bands make boundary semantics explicit.</h4>
+        </div>
+        <p className="text-sm font-semibold text-[#4d5652]">As of {framework.currentContext.asOf}</p>
+      </div>
+      <div className="mt-4 grid gap-3 md:grid-cols-3">
+        {framework.currentContext.searchBands.map((band) => (
+          <div key={band.id} className="border border-[#d8cfc0] bg-[#f7f3ec] p-4" data-testid="pricing-search-band" data-band-id={band.id}>
+            <p className="text-sm font-semibold text-[#172025]">{band.label}</p>
+            <p className="mt-2 text-2xl font-semibold text-[#172025]">{formatCurrency(band.lowerBound)} - {formatCurrency(band.upperBound)}</p>
+            <p className="mt-2 text-sm leading-6 text-[#4d5652]">{band.boundarySemantics.label}</p>
+            <p className="mt-3 text-xs font-semibold uppercase tracking-[0.12em] text-[#71624e]">{band.currentListingCount} current listings / {band.subjectMembership.replaceAll('_', ' ')}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function PriceOptionCards({ scenarios }: { scenarios: readonly SellerPricingScenario[] }) {
+  return (
+    <section className="mt-6" data-testid="pricing-price-option-cards" data-visual-component="OutputPriceOptionCard">
+      <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#71624e]">Options / tradeoffs</p>
+      <div className="mt-3 grid gap-3 lg:grid-cols-3">
+        {scenarios.map((scenario) => (
+          <div key={scenario.id} className={`border p-4 ${scenario.sellerSelectionState === 'SELLER_SELECTED' ? 'border-[#172025] bg-[#efe5d4]' : 'border-[#d8cfc0] bg-white'}`} data-testid="pricing-option-card" data-scenario-id={scenario.id}>
+            <p className="text-xs font-bold uppercase tracking-[0.12em] text-[#71624e]">{scenario.sellerSelectionState.replaceAll('_', ' ')}</p>
+            <h4 className="mt-1 text-xl font-semibold text-[#172025]">{scenario.name}</h4>
+            <p className="mt-2 text-3xl font-semibold text-[#172025]">{formatCurrency(scenario.priceAssumption.value)}</p>
+            <p className="mt-2 text-sm leading-6 text-[#4d5652]">{scenario.subjectPosition.sellerFacingLabel} / {scenario.searchBandMembership.replaceAll('_', ' ')}</p>
+            <p className="mt-3 text-sm leading-6 text-[#4d5652]"><span className="font-semibold text-[#172025]">Advantage:</span> {scenario.advantages[0]}</p>
+            <p className="mt-2 text-sm leading-6 text-[#4d5652]"><span className="font-semibold text-[#172025]">Tradeoff:</span> {scenario.tradeoffIds[0].replaceAll('_', ' ')}</p>
+            <p className="mt-3 text-xs font-semibold uppercase tracking-[0.12em] text-[#71624e]">Checkpoint: {scenario.responseCheckpointIds[1]?.replaceAll('-', ' ')}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function ScenarioComparison({ framework }: { framework: SellerPricingFramework }) {
+  return (
+    <section className="mt-6 overflow-x-auto" data-testid="pricing-scenario-comparison" data-visual-component="OutputPricingScenarioComparison">
+      <table className="min-w-full border border-[#d8cfc0] text-sm">
+        <caption className="pb-3 text-left text-xs font-bold uppercase tracking-[0.14em] text-[#71624e]">Scenario comparison</caption>
+        <thead className="bg-[#efe5d4]">
+          <tr>
+            {['Option', 'Price assumption', 'Search band', 'Position', 'Tradeoff', 'Financial link', 'Agent rationale'].map((heading) => <th key={heading} className="border border-[#d8cfc0] px-3 py-2 text-left">{heading}</th>)}
+          </tr>
+        </thead>
+        <tbody>
+          {framework.scenarios.map((scenario) => (
+            <tr key={scenario.id}>
+              <td className="border border-[#d8cfc0] px-3 py-2 font-semibold">{scenario.name}</td>
+              <td className="border border-[#d8cfc0] px-3 py-2">{formatCurrency(scenario.priceAssumption.value)}</td>
+              <td className="border border-[#d8cfc0] px-3 py-2">{scenario.searchBandId}</td>
+              <td className="border border-[#d8cfc0] px-3 py-2">{scenario.subjectPosition.sellerFacingLabel}</td>
+              <td className="border border-[#d8cfc0] px-3 py-2">{scenario.tradeoffIds.join(', ').replaceAll('_', ' ')}</td>
+              <td className="border border-[#d8cfc0] px-3 py-2">{scenario.financialLink.financialLinkReviewState.replaceAll('_', ' ')}</td>
+              <td className="border border-[#d8cfc0] px-3 py-2">{scenario.agentRationale}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </section>
+  );
+}
+
+function SubjectPricePosition({ framework }: { framework: SellerPricingFramework }) {
+  return (
+    <section className="mt-6 border border-[#d8cfc0] bg-[#fffdf8] p-4" data-testid="pricing-subject-price-position" data-visual-component="OutputSubjectPricePosition">
+      <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#71624e]">Subject price position</p>
+      <div className="mt-3 grid gap-3 md:grid-cols-3">
+        {framework.scenarios.map((scenario) => (
+          <div key={scenario.id} className="border border-[#d8cfc0] bg-white p-3">
+            <p className="text-sm font-semibold text-[#172025]">{scenario.name}</p>
+            <p className="mt-1 text-lg font-semibold text-[#172025]">{scenario.subjectPosition.sellerFacingLabel}</p>
+            <p className="mt-2 text-sm leading-6 text-[#4d5652]">{scenario.subjectPosition.definition}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function PricingTradeoffs({ framework }: { framework: SellerPricingFramework }) {
+  const visibleTradeoffs = framework.tradeoffs.slice(0, 9);
+  return (
+    <section className="mt-6" data-testid="pricing-tradeoff-matrix" data-visual-component="OutputPricingTradeoffMatrix">
+      <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#71624e]">Tradeoff matrix</p>
+      <div className="mt-3 grid gap-2 md:grid-cols-3">
+        {visibleTradeoffs.map((tradeoff) => (
+          <div key={tradeoff.id} className="border border-[#d8cfc0] bg-[#fffdf8] p-3">
+            <p className="text-sm font-semibold text-[#172025]">{tradeoff.label}</p>
+            <p className="mt-1 text-sm leading-6 text-[#4d5652]">{tradeoff.agentStatement}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function PositioningEffect({ framework }: { framework: SellerPricingFramework }) {
+  return (
+    <section className="mt-6 border border-[#d8cfc0] bg-[#f7f3ec] p-4" data-testid="pricing-positioning-effect" data-visual-component="OutputPositioningEffect">
+      <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#71624e]">Positioning effect</p>
+      <div className="mt-3 grid gap-3 md:grid-cols-3">
+        {framework.positioningThemes.map((theme) => (
+          <div key={theme.id} className="border border-[#d8cfc0] bg-white p-3">
+            <p className="text-sm font-semibold text-[#172025]">{theme.headline}</p>
+            <p className="mt-1 text-sm leading-6 text-[#4d5652]">{theme.message}</p>
+            <p className="mt-2 text-xs font-semibold uppercase tracking-[0.12em] text-[#71624e]">{theme.emphasis} / Agent review</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function PricingAgentRationale({ framework }: { framework: SellerPricingFramework }) {
+  const selectedScenario = framework.scenarios.find((scenario) => scenario.id === framework.sellerDecision.selectedScenarioId) ?? framework.scenarios[0];
+  return (
+    <section className="mt-6 border border-[#d8cfc0] bg-[#fffdf8] p-4" data-testid="pricing-agent-rationale" data-visual-component="OutputPricingAgentRationale">
+      <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#71624e]">Agent recommendation rationale</p>
+      <h4 className="mt-1 text-xl font-semibold text-[#172025]">{selectedScenario.name}</h4>
+      <p className="mt-2 text-sm leading-6 text-[#4d5652]">{selectedScenario.agentRationale}</p>
+      <p className="mt-3 text-sm leading-6 text-[#4d5652]"><span className="font-semibold text-[#172025]">Evidence:</span> {selectedScenario.evidenceReferenceIds.join(', ')}.</p>
+      <p className="mt-2 text-sm leading-6 text-[#4d5652]"><span className="font-semibold text-[#172025]">Limitations:</span> Agent authorship is required. No automated valuation, pricing recommendation, sale-probability, or financial advice is generated.</p>
+    </section>
+  );
+}
+
+function ResponseCheckpointTimeline({ framework }: { framework: SellerPricingFramework }) {
+  return (
+    <section className="mt-6" data-testid="pricing-response-checkpoint-timeline" data-visual-component="OutputResponseCheckpointTimeline">
+      <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#71624e]">Response checkpoint timeline</p>
+      <ol className="mt-3 grid gap-3">
+        {framework.responseCheckpoints.map((checkpoint) => (
+          <li key={checkpoint.id} className="border border-[#d8cfc0] bg-[#fffdf8] p-4">
+            <p className="text-sm font-semibold text-[#172025]">{checkpoint.name} / {checkpoint.timing}</p>
+            <p className="mt-1 text-sm leading-6 text-[#4d5652]">{checkpoint.agentInterpretation}</p>
+            <p className="mt-2 text-xs font-semibold uppercase tracking-[0.12em] text-[#71624e]">Triggered decision: {checkpoint.triggeredDecision}</p>
+          </li>
+        ))}
+      </ol>
+    </section>
+  );
+}
+
+function ReassessmentPanel({ framework }: { framework: SellerPricingFramework }) {
+  return (
+    <section className="mt-6" data-testid="pricing-reassessment-panel" data-visual-component="OutputReassessmentPanel">
+      <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#71624e]">Reassessment triggers</p>
+      <div className="mt-3 grid gap-3 md:grid-cols-2">
+        {framework.reassessmentTriggers.map((trigger) => (
+          <div key={trigger.id} className="border border-[#d8cfc0] bg-white p-3">
+            <p className="text-sm font-semibold text-[#172025]">{trigger.type.replaceAll('_', ' ')}</p>
+            <p className="mt-1 text-sm leading-6 text-[#4d5652]">{trigger.whatChanged}</p>
+            <p className="mt-2 text-xs font-semibold uppercase tracking-[0.12em] text-[#71624e]">{trigger.reviewAction}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function SellerPricingDecisionPanel({ framework }: { framework: SellerPricingFramework }) {
+  return (
+    <section className="mt-6 border border-[#d8cfc0] bg-[#efe5d4] p-4" data-testid="pricing-seller-pricing-decision" data-visual-component="OutputSellerPricingDecision">
+      <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#71624e]">Seller pricing decision</p>
+      <h4 className="mt-1 text-xl font-semibold text-[#172025]">{framework.sellerDecision.state.replaceAll('_', ' ')}</h4>
+      <p className="mt-2 text-sm leading-6 text-[#4d5652]">Selected scenario: {framework.sellerDecision.selectedScenarioId}. Next action: {framework.sellerDecision.nextAction}</p>
+      <p className="mt-2 text-xs font-semibold uppercase tracking-[0.12em] text-[#71624e]">Financial-link state: {framework.sellerDecision.financialLinkState.replaceAll('_', ' ')}</p>
+    </section>
+  );
+}
+
+function PricingEvidencePanel({ framework, mode }: { framework: SellerPricingFramework; mode: SellerDecisionBriefPreviewMode }) {
+  return (
+    <section className="mt-6 border border-[#d8cfc0] bg-[#fffdf8] p-4" data-testid="pricing-evidence-panel" data-visual-component="OutputPricingEvidencePanel">
+      <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#71624e]">Deeper evidence / versions / limitations</p>
+      <div className="mt-3 grid gap-3 md:grid-cols-2">
+        {framework.evidenceReferences.map((evidence) => (
+          <div key={evidence.id} className="border border-[#d8cfc0] bg-white p-3">
+            <p className="text-sm font-semibold text-[#172025]">{evidence.label}</p>
+            <p className="mt-1 text-xs leading-5 text-[#4d5652]">Source: {evidence.source}. Version: {evidence.version}. As of: {evidence.asOf}. Rights: {evidence.rights.replaceAll('_', ' ')}. Freshness: {evidence.freshness.replaceAll('_', ' ')}.</p>
+          </div>
+        ))}
+      </div>
+      <p className="mt-4 text-sm leading-6 text-[#4d5652]">Print preview mode: {mode === 'PRINT_PREVIEW' ? 'active' : 'available'}. PDF generation, share delivery, persistence, provider runtime, automated valuation, automated pricing recommendation, and financial advice remain held.</p>
+    </section>
   );
 }
 
@@ -375,7 +636,7 @@ function ModuleVisualTreatment({ module }: { module: SellerDecisionBriefModulePr
   return <div className="mt-4 grid gap-2 sm:grid-cols-3" data-testid="seller-brief-generic-output-treatment">{['Content', 'Evidence', 'Review'].map((label) => <div key={label} className="border border-[#d8cfc0] bg-[#f7f3ec] p-3 text-sm font-semibold text-[#172025]">{label}</div>)}</div>;
 }
 
-function ModuleInspector({ module, narrative, mode }: { module: SellerDecisionBriefModulePresentation; narrative?: SellerDecisionBriefNarrativeUnit; mode: SellerDecisionBriefPreviewMode }) {
+function ModuleInspector({ module, narrative, pricingFramework, mode }: { module: SellerDecisionBriefModulePresentation; narrative?: SellerDecisionBriefNarrativeUnit; pricingFramework: SellerPricingFramework; mode: SellerDecisionBriefPreviewMode }) {
   return (
     <div>
       <div className="flex items-center gap-2">
@@ -410,6 +671,13 @@ function ModuleInspector({ module, narrative, mode }: { module: SellerDecisionBr
           {sellerV2.alternatives.map((alternative) => <div key={alternative.id} className="border border-white/10 bg-black/15 p-3"><p className="text-sm font-semibold text-white">{alternative.name}</p><p className="mt-1 text-xs leading-5 text-slate-400">{alternative.objective} Tradeoffs: {alternative.tradeoffs.join('; ')}.</p></div>)}
         </div>
       </InspectorSection> : null}
+      <InspectorSection icon={<AlertTriangle size={16} aria-hidden="true" />} title="Pricing framework">
+        <InspectorRow label="Version" value={pricingFramework.version} />
+        <InspectorRow label="Options" value={`${pricingFramework.scenarios.length}`} />
+        <InspectorRow label="Selected scenario" value={pricingFramework.sellerDecision.selectedScenarioId} />
+        <InspectorRow label="Financial link" value={pricingFramework.sellerDecision.financialLinkState.replaceAll('_', ' ')} />
+        <p className="text-sm leading-6 text-slate-300">Agent review exposes subject facts, cohort definition, current competition, search-band definitions, boundary semantics, price assumptions, alternatives, subject position, positioning effects, tradeoffs, evidence gaps, Agent rationale, checkpoints, reassessment triggers, financial links, and Seller decision state.</p>
+      </InspectorSection>
       <InspectorSection icon={<ShieldCheck size={16} aria-hidden="true" />} title="Evidence / freshness / rights">
         {module.evidence.map((evidence) => (
           <div key={evidence.id} className="border border-white/10 bg-black/15 p-3">
@@ -440,4 +708,8 @@ function InspectorSection({ icon, title, children }: { icon: ReactNode; title: s
 
 function InspectorRow({ label, value }: { label: string; value: string }) {
   return <div className="flex items-start justify-between gap-3 border border-white/10 bg-black/15 p-3 text-sm"><span className="text-slate-400">{label}</span><span className="text-right font-semibold text-white">{value}</span></div>;
+}
+
+function formatCurrency(value: number) {
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(value);
 }
