@@ -1,12 +1,19 @@
 @config "../tailwind.config.js";
 @import "tailwindcss";
 
+@page {
+  size: letter;
+  margin: 0.62in;
+}
+
 @media print {
   [data-testid="agent-workspace-navigation"],
   [data-testid="seller-brief-section-rail"],
   [data-testid="seller-brief-module-inspector"],
   [data-testid="seller-brief-top-bar"],
-  [data-testid="seller-presentation-back-to-preparation"] {
+  [data-testid="seller-presentation-back-to-preparation"],
+  [data-print-omit="true"],
+  [data-screen-only="true"] {
     display: none !important;
   }
 
@@ -25,18 +32,61 @@
     width: 100% !important;
   }
 
+  [data-print-page="true"] {
+    page-break-after: auto;
+    break-after: auto;
+  }
+
+  [data-print-role="cover"] {
+    page-break-after: always;
+    break-after: page;
+  }
+
+  [data-print-section-start="true"] {
+    page-break-before: auto;
+    break-before: auto;
+  }
+
   [data-testid="seller-brief-canvas-section"] {
     break-inside: avoid;
     page-break-inside: avoid;
   }
 
-  [data-testid="seller-brief-output-module"] {
+  [data-testid="seller-brief-output-module"],
+  [data-print-break="avoid"] {
     break-inside: avoid;
     page-break-inside: avoid;
   }
 
+  [data-testid="seller-brief-output-module"] {
+    border-color: #d8cfc0 !important;
+    background: #ffffff !important;
+  }
+
+  [data-print-only="true"] {
+    display: block !important;
+  }
+
   [data-testid="seller-brief-print-footer"] {
     display: block;
+  }
+
+  [data-print-static-asset="true"] {
+    color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  table {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  thead {
+    display: table-header-group;
+  }
+
+  tfoot {
+    display: table-footer-group;
   }
 }
 

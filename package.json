@@ -247,6 +247,7 @@
     "check:prospective-listing-observation-event-evidence-foundation": "jiti scripts/checkProspectiveListingObservationEventEvidenceFoundation.ts",
     "check:shared-output-product-section-module-foundation": "jiti scripts/checkSharedOutputProductSectionModuleFoundation.ts",
     "check:output-version-lineage-invalidation-foundation": "jiti scripts/checkOutputVersionLineageInvalidationFoundation.ts",
+    "check:seller-print-pdf-render-foundation": "jiti scripts/checkSellerPrintPdfRenderFoundation.ts",
     "check:seller-decision-brief-foundation": "jiti scripts/checkSellerDecisionBriefFoundation.ts",
     "check:seller-decision-brief-composition-preview": "jiti scripts/checkSellerDecisionBriefCompositionPreview.ts",
     "check:seller-decision-brief-v2": "jiti scripts/checkSellerDecisionBriefV2.ts",

@@ -44,12 +44,17 @@ import {
   OUTPUT_VERSION_LINEAGE_AND_INVALIDATION_FOUNDATION_FIXTURE,
   type AtlasOutputVersionFoundation,
 } from '@/lib/outputVersionLineageInvalidationFoundation';
+import {
+  SELLER_PRINT_PDF_RENDER_FOUNDATION_FIXTURE,
+  type SellerPrintPdfRenderFoundation,
+} from '@/lib/sellerPrintPdfRenderFoundation';
 
 const preview = SELLER_DECISION_BRIEF_COMPOSITION_PREVIEW_FIXTURE;
 const sellerV2 = SELLER_DECISION_BRIEF_V2_FIXTURE;
 const pricingFramework = SELLER_PRICING_POSITIONING_DECISION_FRAMEWORK_FIXTURE;
 const postLaunchReview = SELLER_POST_LAUNCH_CURRENT_CONTEXT_REVIEW_FIXTURE;
 const outputVersionFoundation = OUTPUT_VERSION_LINEAGE_AND_INVALIDATION_FOUNDATION_FIXTURE;
+const printRenderFoundation = SELLER_PRINT_PDF_RENDER_FOUNDATION_FIXTURE;
 
 const modeLabels: Record<SellerDecisionBriefPreviewMode, string> = {
   AGENT_REVIEW: 'Agent review',
@@ -117,6 +122,11 @@ export default function SellerDecisionBriefCompositionPreview() {
     setSelectedModuleId(section.modules[0]?.module.id ?? preview.selectedModuleId);
   }
 
+  function printCurrentPreview() {
+    setMode('PRINT_PREVIEW');
+    window.setTimeout(() => window.print(), 0);
+  }
+
   return (
     <main
       className="min-h-screen bg-[#071014] px-5 py-6 text-slate-100 sm:px-8 sm:py-8 lg:px-12"
@@ -172,9 +182,13 @@ export default function SellerDecisionBriefCompositionPreview() {
                   </button>
                 ))}
               </div>
-              <button type="button" className="inline-flex min-h-11 items-center justify-center gap-2 bg-cyan-200 px-4 text-sm font-semibold text-slate-950 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100" data-testid="seller-brief-review-action">
+              <button type="button" className="inline-flex min-h-11 items-center justify-center gap-2 bg-cyan-200 px-4 text-sm font-semibold text-slate-950 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100" data-testid="seller-brief-review-action" data-screen-only="true">
                 <CheckCircle2 size={16} aria-hidden="true" />
                 Review selected module
+              </button>
+              <button type="button" onClick={printCurrentPreview} className="inline-flex min-h-11 items-center justify-center gap-2 border border-cyan-100/35 px-4 text-sm font-semibold text-cyan-100 transition hover:bg-cyan-100/[0.08] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100" data-testid="seller-print-browser-print-action" data-visual-component="BrowserPrintAction" data-screen-only="true" data-pdf-generation="false">
+                <Printer size={16} aria-hidden="true" />
+                Print
               </button>
             </div>
           </div>
@@ -207,10 +221,12 @@ export default function SellerDecisionBriefCompositionPreview() {
           </aside>
 
           <section className={`bg-[#f7f3ec] text-[#172025] shadow-2xl shadow-black/30 ${mode === 'PRINT_PREVIEW' ? 'seller-brief-print-preview' : ''}`} data-testid="seller-brief-output-canvas" aria-label="Seller preview canvas">
+            <PrintPreviewProductBar foundation={printRenderFoundation} mode={mode} />
             <OutputCover mode={mode} sectionsReady={sectionsReady} reviewRequired={reviewRequired} sectionNeedsInput={sectionNeedsInput} postLaunchReview={postLaunchReview} outputVersionFoundation={outputVersionFoundation} />
             <PricingDecisionFrameworkSection framework={pricingFramework} mode={mode} />
             <PostLaunchCurrentContextReviewSection review={postLaunchReview} mode={mode} />
             <OutputVersionLineageFoundationSection foundation={outputVersionFoundation} mode={mode} />
+            <SellerPrintPdfRenderFoundationSection foundation={printRenderFoundation} mode={mode} />
             {preview.sectionPresentations.map((section) => (
               <article
                 key={section.sectionId}
@@ -218,6 +234,8 @@ export default function SellerDecisionBriefCompositionPreview() {
                 className={`border-t border-[#d8cfc0] px-5 py-7 sm:px-8 lg:px-10 ${section.sectionId === selectedSectionId ? 'bg-white' : 'bg-[#f7f3ec]'}`}
                 data-testid="seller-brief-canvas-section"
                 data-density={section.density}
+                data-print-page="true"
+                data-print-section-start={section.density === 'D1' ? 'true' : undefined}
               >
                 <OutputSectionHeader section={section} selected={section.sectionId === selectedSectionId} />
                 <SectionNarrative section={section} />
@@ -238,13 +256,13 @@ export default function SellerDecisionBriefCompositionPreview() {
                 </div>
               </article>
             ))}
-            <footer className="border-t border-[#d8cfc0] bg-white px-5 py-5 text-xs leading-5 text-[#5d665f] sm:px-8 lg:px-10" data-testid="seller-brief-print-footer">
-              Seller Decision Brief. Version {preview.version}. As of {preview.brief.outputProduct.effectiveAsOf}. Page number and output version seams are reserved for authorized PDF/print production.
+            <footer className="border-t border-[#d8cfc0] bg-white px-5 py-5 text-xs leading-5 text-[#5d665f] sm:px-8 lg:px-10" data-testid="seller-brief-print-footer" data-print-only="true">
+              Seller Decision Brief. Output {printRenderFoundation.outputRenders[0].sourceOutputVersionId}. Render {printRenderFoundation.outputRenders[0].renderVersion}. As of {preview.brief.outputProduct.effectiveAsOf}. PDF generation, delivery, and render persistence remain held.
             </footer>
           </section>
 
           <aside className="border border-white/10 bg-[#0b171c] p-4 xl:sticky xl:top-28 xl:max-h-[calc(100vh-8rem)] xl:overflow-auto" aria-label="Selected module inspector" data-testid="seller-brief-module-inspector">
-            <ModuleInspector module={selectedModule} narrative={narrativeForModule(sellerV2, selectedModule.module.id)} pricingFramework={pricingFramework} postLaunchReview={postLaunchReview} outputVersionFoundation={outputVersionFoundation} mode={mode} />
+            <ModuleInspector module={selectedModule} narrative={narrativeForModule(sellerV2, selectedModule.module.id)} pricingFramework={pricingFramework} postLaunchReview={postLaunchReview} outputVersionFoundation={outputVersionFoundation} printRenderFoundation={printRenderFoundation} mode={mode} />
           </aside>
         </section>
       </div>
@@ -908,6 +926,138 @@ function VersionCompareCard({ label, value, detail }: { label: string; value: st
   return <div className="border border-[#d8cfc0] bg-white p-3"><p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#71624e]">{label}</p><p className="mt-1 text-sm font-semibold text-[#172025]">{value}</p><p className="mt-2 break-words text-xs leading-5 text-[#4d5652]">{detail}</p></div>;
 }
 
+function PrintPreviewProductBar({ foundation, mode }: { foundation: SellerPrintPdfRenderFoundation; mode: SellerDecisionBriefPreviewMode }) {
+  const render = foundation.outputRenders.find((item) => item.id === 'render-seller-update-print-preview-v1') ?? foundation.outputRenders[0];
+  return (
+    <section
+      className="border-b border-[#d8cfc0] bg-[#172025] px-5 py-4 text-white sm:px-8 lg:px-10"
+      data-testid="seller-print-preview-product-bar"
+      data-visual-component="PrintPreviewProductBar"
+      data-print-role="render-product-bar"
+      data-preview-mode={mode}
+    >
+      <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-[0.14em] text-cyan-100">Print / PDF render foundation</p>
+          <h3 className="mt-1 text-lg font-semibold">Rendering {render.displayVersion} from {render.sourceOutputVersionId}</h3>
+          <p className="mt-1 text-xs leading-5 text-slate-300">{foundation.productStatus}. {foundation.pdfActivationPosition}.</p>
+        </div>
+        <div className="grid gap-2 text-xs font-semibold uppercase text-slate-200 sm:grid-cols-4 lg:min-w-[34rem]">
+          <PrintBarMetric label="Render" value={render.renderVersion} />
+          <PrintBarMetric label="Pages" value={`${render.pageCount}`} />
+          <PrintBarMetric label="Print" value={render.printReadiness} />
+          <PrintBarMetric label="PDF" value={render.pdfReadiness} />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function PrintBarMetric({ label, value }: { label: string; value: string }) {
+  return <div className="border border-white/15 bg-white/[0.06] p-2"><p className="text-[10px] text-cyan-100/70">{label}</p><p className="mt-1 break-words text-white">{value.replaceAll('_', ' ')}</p></div>;
+}
+
+function SellerPrintPdfRenderFoundationSection({ foundation, mode }: { foundation: SellerPrintPdfRenderFoundation; mode: SellerDecisionBriefPreviewMode }) {
+  const render = foundation.outputRenders.find((item) => item.id === 'render-seller-update-print-preview-v1') ?? foundation.outputRenders[0];
+  const documentModel = foundation.documentModels.find((item) => item.id === 'seller-update-print-document-v1') ?? foundation.documentModels[0];
+  return (
+    <article
+      className="border-t border-[#d8cfc0] bg-white px-5 py-8 sm:px-8 lg:px-10"
+      data-testid="seller-print-pdf-render-foundation"
+      data-version={foundation.version}
+      data-next-gate={foundation.nextGate}
+      data-pdf-activation-position={foundation.pdfActivationPosition}
+      data-persistence="false"
+      data-pdf-generation="false"
+      data-share-delivery="false"
+      data-preview-mode={mode}
+    >
+      <header className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_20rem]">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#786b58]">Seller Print / PDF Render Foundation</p>
+          <h3 className="mt-2 text-3xl font-semibold leading-9 text-[#172025]">The reviewed output now resolves into a deterministic print document, render version, QA record, and future PDF seam.</h3>
+          <p className="mt-3 max-w-3xl text-sm leading-6 text-[#4d5652]">This foundation connects the certified output version to a document model, page templates, static map/chart fallbacks, browser print, render fingerprints, QA, provenance, and PDF request/result contracts without generating PDF bytes or storing files.</p>
+        </div>
+        <section className="border border-[#d8cfc0] bg-[#fffdf8] p-4" data-testid="seller-print-render-version-badge" data-visual-component="PrintRenderVersionBadge" aria-label="Current print render version">
+          <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#71624e]">Current render</p>
+          <h4 className="mt-2 text-xl font-semibold text-[#172025]">{render.renderVersion}</h4>
+          <p className="mt-2 text-sm leading-6 text-[#4d5652]">{render.printReadiness.replaceAll('_', ' ')} / {render.pdfReadiness.replaceAll('_', ' ')}</p>
+          <p className="mt-2 break-words text-xs font-semibold uppercase tracking-[0.12em] text-[#71624e]">{render.renderFingerprint}</p>
+        </section>
+      </header>
+
+      <div className="mt-5 grid gap-3 border border-[#d8cfc0] bg-[#fffdf8] p-4 text-xs font-semibold uppercase text-[#71624e] md:grid-cols-3" aria-label="Seller print PDF governance tokens">
+        <p className="break-words">Version: {foundation.version}</p>
+        <p className="break-words">Next gate: {foundation.nextGate}</p>
+        <p className="break-words">PDF position: {foundation.pdfActivationPosition}</p>
+      </div>
+
+      <div className="mt-7 grid gap-5 xl:grid-cols-[minmax(0,1fr)_22rem]">
+        <section className="grid gap-5">
+          <section className="border border-[#d8cfc0] bg-[#fffdf8] p-4" data-testid="seller-print-document-model" data-visual-component="PrintDocumentModelSummary">
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#71624e]">Document model</p>
+            <div className="mt-3 grid gap-3 md:grid-cols-3">
+              <VersionCompareCard label="Template" value={documentModel.documentTemplateVersion} detail={documentModel.documentTemplateId} />
+              <VersionCompareCard label="Output version" value={documentModel.outputVersionId} detail={documentModel.sourceContentFingerprint} />
+              <VersionCompareCard label="Page model" value={`${documentModel.pages.length} pages / ${documentModel.blocks.length} blocks`} detail={documentModel.effectiveAsOf} />
+            </div>
+            <div className="mt-4 overflow-x-auto">
+              <table className="min-w-full border border-[#d8cfc0] text-sm">
+                <thead className="bg-[#efe5d4]"><tr>{['Page', 'Template', 'Title', 'Sections'].map((heading) => <th key={heading} className="border border-[#d8cfc0] px-3 py-2 text-left">{heading}</th>)}</tr></thead>
+                <tbody>
+                  {documentModel.pages.map((page) => (
+                    <tr key={page.id}>
+                      <td className="border border-[#d8cfc0] px-3 py-2 font-semibold">{page.pageNumberIntent}</td>
+                      <td className="border border-[#d8cfc0] px-3 py-2">{page.pageTemplateId}</td>
+                      <td className="border border-[#d8cfc0] px-3 py-2">{page.title}</td>
+                      <td className="border border-[#d8cfc0] px-3 py-2">{page.sourceSectionIds.join(', ')}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section className="border border-[#d8cfc0] bg-[#fffdf8] p-4" data-testid="seller-print-render-qa" data-visual-component="PrintRenderQaSummary">
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#71624e]">Render QA</p>
+            <div className="mt-3 grid gap-2 md:grid-cols-2">
+              {foundation.renderQa.map((rule) => (
+                <div key={rule.id} className="border border-[#d8cfc0] bg-white p-3">
+                  <p className="text-sm font-semibold text-[#172025]">{rule.category.replaceAll('_', ' ')}</p>
+                  <p className="mt-1 text-sm leading-6 text-[#4d5652]">{rule.assertion}</p>
+                  <p className="mt-2 text-xs font-semibold uppercase tracking-[0.12em] text-[#71624e]">{rule.state.replaceAll('_', ' ')} / {rule.evidence}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+        </section>
+
+        <aside className="grid gap-4">
+          <section className="border border-[#d8cfc0] bg-[#fffdf8] p-4" data-testid="seller-print-static-asset-manifest" data-visual-component="PrintStaticAssetManifest" data-print-static-asset="true">
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#71624e]">Static assets</p>
+            <div className="mt-3 grid gap-2">
+              {foundation.staticAssets.slice(0, 5).map((asset) => (
+                <div key={asset.id} className="border border-[#d8cfc0] bg-white p-3">
+                  <p className="text-sm font-semibold text-[#172025]">{asset.label}</p>
+                  <p className="mt-1 text-xs font-semibold uppercase tracking-[0.12em] text-[#71624e]">{asset.kind.replaceAll('_', ' ')} / {asset.printBehavior.replaceAll('_', ' ')}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+          <section className="border border-[#d8cfc0] bg-[#fffdf8] p-4" data-testid="seller-print-pdf-seam" data-visual-component="PdfRendererSeam">
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#71624e]">PDF renderer seam</p>
+            <p className="mt-2 text-sm leading-6 text-[#4d5652]">Request: {foundation.pdfRequestSeams[0].requestId}. Result: {foundation.pdfResultSeams[0].status.replaceAll('_', ' ')}. Candidate: {foundation.pdfRequestSeams[0].rendererCandidate}. Required proof: {foundation.nextGate}.</p>
+          </section>
+          <section className="border border-[#d8cfc0] bg-[#fffdf8] p-4" data-testid="seller-print-provenance-panel" data-visual-component="PrintPreviewProvenancePanel" data-print-only="true">
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#71624e]">Print provenance</p>
+            <p className="mt-2 break-words text-sm leading-6 text-[#4d5652]">Output fingerprint: {render.sourceContentFingerprint}. Render fingerprint: {render.renderFingerprint}. Evidence snapshots: {render.evidenceSnapshotReferences.join(', ')}.</p>
+          </section>
+        </aside>
+      </div>
+    </article>
+  );
+}
+
 function SectionNarrative({ section }: { section: SellerDecisionBriefSectionPresentation }) {
   const narrative = narrativeForSection(sellerV2, section.sectionId);
   const transition = sellerV2.sectionTransitions.find((item) => item.fromSectionId === section.sectionId);
@@ -939,6 +1089,8 @@ function ModuleCard({ module, narrative, selected, sellerMode, onSelect }: { mod
       data-testid="seller-brief-output-module"
       data-visual-component={module.visualComponent}
       data-readiness={module.readinessState}
+      data-print-break="avoid"
+      data-print-static-asset={module.visualComponent.includes('Map') || module.visualComponent.includes('Metric') ? 'true' : undefined}
     >
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
@@ -987,7 +1139,8 @@ function ModuleVisualTreatment({ module }: { module: SellerDecisionBriefModulePr
   return <div className="mt-4 grid gap-2 sm:grid-cols-3" data-testid="seller-brief-generic-output-treatment">{['Content', 'Evidence', 'Review'].map((label) => <div key={label} className="border border-[#d8cfc0] bg-[#f7f3ec] p-3 text-sm font-semibold text-[#172025]">{label}</div>)}</div>;
 }
 
-function ModuleInspector({ module, narrative, pricingFramework, postLaunchReview, outputVersionFoundation, mode }: { module: SellerDecisionBriefModulePresentation; narrative?: SellerDecisionBriefNarrativeUnit; pricingFramework: SellerPricingFramework; postLaunchReview: SellerPostLaunchReview; outputVersionFoundation: AtlasOutputVersionFoundation; mode: SellerDecisionBriefPreviewMode }) {
+function ModuleInspector({ module, narrative, pricingFramework, postLaunchReview, outputVersionFoundation, printRenderFoundation, mode }: { module: SellerDecisionBriefModulePresentation; narrative?: SellerDecisionBriefNarrativeUnit; pricingFramework: SellerPricingFramework; postLaunchReview: SellerPostLaunchReview; outputVersionFoundation: AtlasOutputVersionFoundation; printRenderFoundation: SellerPrintPdfRenderFoundation; mode: SellerDecisionBriefPreviewMode }) {
+  const currentRender = printRenderFoundation.outputRenders.find((render) => render.id === 'render-seller-update-print-preview-v1') ?? printRenderFoundation.outputRenders[0];
   return (
     <div>
       <div className="flex items-center gap-2">
@@ -1042,6 +1195,14 @@ function ModuleInspector({ module, narrative, pricingFramework, postLaunchReview
         <InspectorRow label="Dependencies" value={`${outputVersionFoundation.dependencies.length}`} />
         <InspectorRow label="Warnings" value={`${outputVersionFoundation.dependencyWarnings.length}`} />
         <p className="text-sm leading-6 text-slate-300">Version history, current/prior diff, dependency warnings, Seller decision linkage, content fingerprint, reuse rules, successor seams, and future render/persistence seams are represented session-safely.</p>
+      </InspectorSection>
+      <InspectorSection icon={<Printer size={16} aria-hidden="true" />} title="Print / PDF render">
+        <InspectorRow label="Foundation" value={printRenderFoundation.version} />
+        <InspectorRow label="Render" value={currentRender.renderVersion} />
+        <InspectorRow label="Document" value={printRenderFoundation.documentModels.find((document) => document.id === 'seller-update-print-document-v1')?.documentTemplateVersion ?? 'Review required'} />
+        <InspectorRow label="Print readiness" value={currentRender.printReadiness.replaceAll('_', ' ')} />
+        <InspectorRow label="PDF position" value={printRenderFoundation.pdfActivationPosition.replaceAll('_', ' ')} />
+        <p className="text-sm leading-6 text-slate-300">Print preview, document pages, static asset fallbacks, browser print, render fingerprint, QA, and PDF request/result seams are represented without generating PDF bytes or storing render files.</p>
       </InspectorSection>
       <InspectorSection icon={<ShieldCheck size={16} aria-hidden="true" />} title="Evidence / freshness / rights">
         {module.evidence.map((evidence) => (
