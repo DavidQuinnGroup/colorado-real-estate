@@ -248,6 +248,7 @@
     "check:shared-output-product-section-module-foundation": "jiti scripts/checkSharedOutputProductSectionModuleFoundation.ts",
     "check:seller-decision-brief-foundation": "jiti scripts/checkSellerDecisionBriefFoundation.ts",
     "check:seller-decision-brief-composition-preview": "jiti scripts/checkSellerDecisionBriefCompositionPreview.ts",
+    "check:seller-decision-brief-v2": "jiti scripts/checkSellerDecisionBriefV2.ts",
     "check:shared-disclosure-state-indicator": "jiti scripts/checkSharedDisclosureStateIndicator.ts",
     "check:agent-place-preparation-admission": "jiti scripts/checkAgentPlacePreparationAdmission.ts",
     "check:agent-place-conversation-preparation-experience": "jiti scripts/checkAgentPlaceConversationPreparationExperience.ts",

@@ -24,8 +24,15 @@ import {
   type SellerDecisionBriefReadinessState,
   type SellerDecisionBriefSectionPresentation,
 } from '@/lib/sellerDecisionBriefCompositionPreview';
+import {
+  SELLER_DECISION_BRIEF_V2_FIXTURE,
+  narrativeForModule,
+  narrativeForSection,
+  type SellerDecisionBriefNarrativeUnit,
+} from '@/lib/sellerDecisionBriefV2';
 
 const preview = SELLER_DECISION_BRIEF_COMPOSITION_PREVIEW_FIXTURE;
+const sellerV2 = SELLER_DECISION_BRIEF_V2_FIXTURE;
 
 const modeLabels: Record<SellerDecisionBriefPreviewMode, string> = {
   AGENT_REVIEW: 'Agent review',
@@ -128,9 +135,9 @@ export default function SellerDecisionBriefCompositionPreview() {
         <section className="sticky top-0 z-10 -mx-5 border-b border-white/10 bg-[#071014]/95 px-5 py-4 backdrop-blur sm:-mx-8 sm:px-8 lg:-mx-12 lg:px-12" aria-label="Seller Decision Brief controls" data-testid="seller-brief-top-bar">
           <div className="mx-auto flex max-w-[92rem] flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
             <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-              <TopBarItem label="Product" value={preview.brief.outputProduct.title} />
+              <TopBarItem label="Product" value={sellerV2.productTitle} />
               <TopBarItem label="Subject" value={preview.brief.outputProduct.context.subject.label} />
-              <TopBarItem label="Version" value={preview.version} />
+              <TopBarItem label="Version" value={sellerV2.version} />
               <TopBarItem label="As of" value={preview.brief.outputProduct.effectiveAsOf} />
             </div>
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
@@ -193,11 +200,13 @@ export default function SellerDecisionBriefCompositionPreview() {
                 data-density={section.density}
               >
                 <OutputSectionHeader section={section} selected={section.sectionId === selectedSectionId} />
+                <SectionNarrative section={section} />
                 <div className="mt-5 grid gap-4">
                   {section.modules.map((module) => (
                     <ModuleCard
                       key={module.module.id}
                       module={module}
+                      narrative={narrativeForModule(sellerV2, module.module.id)}
                       selected={module.module.id === selectedModule.module.id}
                       sellerMode={mode === 'SELLER_PREVIEW'}
                       onSelect={() => {
@@ -215,7 +224,7 @@ export default function SellerDecisionBriefCompositionPreview() {
           </section>
 
           <aside className="border border-white/10 bg-[#0b171c] p-4 xl:sticky xl:top-28 xl:max-h-[calc(100vh-8rem)] xl:overflow-auto" aria-label="Selected module inspector" data-testid="seller-brief-module-inspector">
-            <ModuleInspector module={selectedModule} mode={mode} />
+            <ModuleInspector module={selectedModule} narrative={narrativeForModule(sellerV2, selectedModule.module.id)} mode={mode} />
           </aside>
         </section>
       </div>
@@ -246,10 +255,13 @@ function OutputCover({ mode, sectionsReady, reviewRequired, sectionNeedsInput }:
       <div>
         <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#71624e]">Project Atlas / Seller Decision Brief</p>
         <h2 className="mt-3 max-w-3xl text-4xl font-semibold leading-tight text-[#172025] sm:text-5xl">{preview.brief.outputProduct.context.subject.label}</h2>
-        <p className="mt-4 max-w-2xl text-base leading-7 text-[#4d5652]">A composed, Agent-reviewed decision brief for the seller property, market, competition, plan, recommendation, next decisions, and evidence.</p>
+        <p className="mt-4 max-w-2xl text-base leading-7 text-[#4d5652]">A composed, Agent-reviewed decision brief for the seller property, market, competition, positioning, preparation, launch strategy, recommendation, alternatives, next decisions, and evidence.</p>
         <div className="mt-6 flex flex-wrap gap-2" aria-label="Semantic content grammar">
           {semanticLabels.map((label) => <span key={label} className="rounded-[7px] border border-[#cabda9] bg-white/50 px-3 py-1 text-xs font-semibold text-[#4d5652]">{label}</span>)}
         </div>
+        <ol className="mt-6 grid gap-2 text-sm leading-6 text-[#4d5652]" data-testid="seller-brief-v2-story-flow" aria-label="Seller Decision Brief V2 story flow">
+          {sellerV2.storyLayers.slice(0, 6).map((layer) => <li key={layer.layer}><span className="font-semibold text-[#172025]">{layer.layer}:</span> {layer.primaryQuestion}</li>)}
+        </ol>
       </div>
       <div className="border border-[#cabda9] bg-white/55 p-4" data-testid="seller-brief-product-readiness">
         <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#71624e]">Current readiness</p>
@@ -258,6 +270,7 @@ function OutputCover({ mode, sectionsReady, reviewRequired, sectionNeedsInput }:
           <CoverMetric label="Need review" value={`${reviewRequired}`} />
           <CoverMetric label="Need Agent input" value={`${sectionNeedsInput}`} />
           <CoverMetric label="Mode" value={modeLabels[mode]} />
+          <CoverMetric label="V2 narratives" value={`${sellerV2.narratives.length}`} />
         </div>
       </div>
     </section>
@@ -283,7 +296,29 @@ function OutputSectionHeader({ section, selected }: { section: SellerDecisionBri
   );
 }
 
-function ModuleCard({ module, selected, sellerMode, onSelect }: { module: SellerDecisionBriefModulePresentation; selected: boolean; sellerMode: boolean; onSelect: () => void }) {
+function SectionNarrative({ section }: { section: SellerDecisionBriefSectionPresentation }) {
+  const narrative = narrativeForSection(sellerV2, section.sectionId);
+  const transition = sellerV2.sectionTransitions.find((item) => item.fromSectionId === section.sectionId);
+  if (!narrative && !transition) return null;
+  return (
+    <div className="mt-5 grid gap-3 border border-[#d8cfc0] bg-[#fffdf8] p-4" data-testid="seller-brief-v2-section-narrative" data-narrative-kind={narrative?.kind ?? 'SECTION_TRANSITION'}>
+      {narrative ? (
+        <>
+          <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#71624e]">{narrative.kind.replaceAll('_', ' ')} / {narrative.readiness.replaceAll('_', ' ')}</p>
+          <h4 className="text-xl font-semibold leading-7 text-[#172025]">{narrative.headline}</h4>
+          <p className="text-sm leading-6 text-[#4d5652]">{narrative.summary}</p>
+          <ul className="grid gap-2 text-sm leading-6 text-[#4d5652]">
+            {narrative.points.map((point) => <li key={point}>- {point}</li>)}
+          </ul>
+          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#71624e]">Agent authorship: {narrative.agentAuthorship.required ? 'Required and visible' : 'Not required'} / As of {narrative.asOf}</p>
+        </>
+      ) : null}
+      {transition ? <p className="border-t border-[#d8cfc0] pt-3 text-sm leading-6 text-[#4d5652]" data-testid="seller-brief-v2-section-transition"><span className="font-semibold text-[#172025]">Next:</span> {transition.bridgeMessage}</p> : null}
+    </div>
+  );
+}
+
+function ModuleCard({ module, narrative, selected, sellerMode, onSelect }: { module: SellerDecisionBriefModulePresentation; narrative?: SellerDecisionBriefNarrativeUnit; selected: boolean; sellerMode: boolean; onSelect: () => void }) {
   return (
     <button
       type="button"
@@ -300,7 +335,8 @@ function ModuleCard({ module, selected, sellerMode, onSelect }: { module: Seller
         </div>
         <ReadinessBadge state={module.readinessState} />
       </div>
-      <p className="mt-3 text-sm leading-6 text-[#4d5652]">{sellerMode ? sellerFacingLine(module) : module.registry.purpose}</p>
+      <p className="mt-3 text-sm leading-6 text-[#4d5652]">{sellerMode ? sellerFacingLine(module, narrative) : narrative?.summary ?? module.registry.purpose}</p>
+      {narrative ? <NarrativeSummary narrative={narrative} /> : null}
       <ModuleVisualTreatment module={module} />
       <p className="mt-4 text-xs font-semibold uppercase tracking-[0.12em] text-[#71624e]">Evidence / as-of</p>
       <p className="mt-1 text-sm leading-6 text-[#4d5652]">{module.evidence.map((evidence) => `${evidence.label}${evidence.asOf ? ` (${evidence.asOf})` : ''}`).join('; ')}</p>
@@ -308,7 +344,18 @@ function ModuleCard({ module, selected, sellerMode, onSelect }: { module: Seller
   );
 }
 
-function sellerFacingLine(module: SellerDecisionBriefModulePresentation) {
+function NarrativeSummary({ narrative }: { narrative: SellerDecisionBriefNarrativeUnit }) {
+  return (
+    <div className="mt-4 border border-[#d8cfc0] bg-[#fffdf8] p-3" data-testid="seller-brief-v2-module-narrative" data-narrative-kind={narrative.kind}>
+      <p className="text-xs font-bold uppercase tracking-[0.12em] text-[#71624e]">{narrative.kind.replaceAll('_', ' ')} / {narrative.classification.replaceAll('_', ' ')}</p>
+      <p className="mt-1 text-sm font-semibold leading-6 text-[#172025]">{narrative.headline}</p>
+      <p className="mt-2 text-sm leading-6 text-[#4d5652]">Agent authorship: {narrative.agentAuthorship.required ? 'Required' : 'Not required'}. Review: {narrative.agentAuthorship.reviewState.replaceAll('_', ' ')}.</p>
+    </div>
+  );
+}
+
+function sellerFacingLine(module: SellerDecisionBriefModulePresentation, narrative?: SellerDecisionBriefNarrativeUnit) {
+  if (narrative) return `${narrative.headline} ${narrative.summary}`;
   return module.sellerQuestion ? `${module.sellerQuestion} This section is prepared for Agent review before seller use.` : 'Evidence and limitations are visible for Agent review before seller use.';
 }
 
@@ -328,7 +375,7 @@ function ModuleVisualTreatment({ module }: { module: SellerDecisionBriefModulePr
   return <div className="mt-4 grid gap-2 sm:grid-cols-3" data-testid="seller-brief-generic-output-treatment">{['Content', 'Evidence', 'Review'].map((label) => <div key={label} className="border border-[#d8cfc0] bg-[#f7f3ec] p-3 text-sm font-semibold text-[#172025]">{label}</div>)}</div>;
 }
 
-function ModuleInspector({ module, mode }: { module: SellerDecisionBriefModulePresentation; mode: SellerDecisionBriefPreviewMode }) {
+function ModuleInspector({ module, narrative, mode }: { module: SellerDecisionBriefModulePresentation; narrative?: SellerDecisionBriefNarrativeUnit; mode: SellerDecisionBriefPreviewMode }) {
   return (
     <div>
       <div className="flex items-center gap-2">
@@ -348,6 +395,21 @@ function ModuleInspector({ module, mode }: { module: SellerDecisionBriefModulePr
         <InspectorRow label="Density" value={module.density} />
         <InspectorRow label="Inclusion" value={module.module.inclusionState.replaceAll('_', ' ')} />
       </InspectorSection>
+      {narrative ? <InspectorSection icon={<FileText size={16} aria-hidden="true" />} title="V2 narrative / strategy">
+        <InspectorRow label="Narrative" value={narrative.kind.replaceAll('_', ' ')} />
+        <InspectorRow label="Readiness" value={narrative.readiness.replaceAll('_', ' ')} />
+        <InspectorRow label="Agent authorship" value={narrative.agentAuthorship.required ? 'Required' : 'Not required'} />
+        <p className="text-sm leading-6 text-slate-300">{narrative.summary}</p>
+        <ul className="grid gap-2 text-sm leading-6 text-slate-300">
+          {narrative.points.map((point) => <li key={point}>- {point}</li>)}
+        </ul>
+      </InspectorSection> : null}
+      {module.module.id === 'seller-module-recommendation-card' ? <InspectorSection icon={<AlertTriangle size={16} aria-hidden="true" />} title="Recommendation evidence / alternatives">
+        <p className="text-sm leading-6 text-slate-300">Evidence map: property, location, market, competition, Agent input, and professional handoff support are explicitly separated.</p>
+        <div className="grid gap-2">
+          {sellerV2.alternatives.map((alternative) => <div key={alternative.id} className="border border-white/10 bg-black/15 p-3"><p className="text-sm font-semibold text-white">{alternative.name}</p><p className="mt-1 text-xs leading-5 text-slate-400">{alternative.objective} Tradeoffs: {alternative.tradeoffs.join('; ')}.</p></div>)}
+        </div>
+      </InspectorSection> : null}
       <InspectorSection icon={<ShieldCheck size={16} aria-hidden="true" />} title="Evidence / freshness / rights">
         {module.evidence.map((evidence) => (
           <div key={evidence.id} className="border border-white/10 bg-black/15 p-3">
