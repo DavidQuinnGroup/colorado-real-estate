@@ -85,6 +85,7 @@ for (const token of [
 
 assert.equal(packageJson.dependencies?.['@sparticuz/chromium'], '149.0.0');
 assert.equal(packageJson.dependencies?.['pdfjs-dist'], '5.4.530');
+assert.equal(packageJson.dependencies?.['playwright-core'], '^1.62.1');
 assert.equal(packageJson.scripts?.['check:atlas-pdf-renderer-deployment-validation'], 'jiti scripts/checkAtlasPdfRendererDeploymentValidation.ts');
 
 console.log('ATLAS_PDF_RENDERER_DEPLOYMENT_VALIDATION_CHECK: PASS');
