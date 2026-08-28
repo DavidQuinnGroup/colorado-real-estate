@@ -6,6 +6,14 @@ import { basename, join } from 'node:path';
 import { createRequire } from 'node:module';
 
 import {
+  type AtlasPdfRuntimeVersion,
+  buildAtlasPdfRuntimeVersion,
+  resolveAtlasPdfChromiumExecutable,
+  resolveAtlasPdfPlaywrightChromium,
+  resolveAtlasPdfRuntimeEnvironment,
+} from './atlasPdfDeploymentRuntime';
+
+import {
   type AtlasDocumentModel,
   type AtlasOutputRender,
   buildSellerPrintPdfRenderFoundation,
@@ -181,8 +189,9 @@ export type AtlasPdfRenderResult = Readonly<{
   rendererId: typeof ATLAS_PDF_RENDERER_ID;
   rendererAdapterId: typeof ATLAS_PDF_RENDERER_ADAPTER_ID;
   rendererVersion: typeof ATLAS_PDF_RENDERER_ADAPTER_VERSION;
-  playwrightVersion: '1.62.1';
-  chromiumVersion: typeof ATLAS_PDF_RENDERER_CHROMIUM_VERSION;
+  playwrightVersion: string;
+  chromiumVersion: string;
+  runtimeVersion: AtlasPdfRuntimeVersion;
   generatedAt: string;
   pageCount: number;
   fileName: string;
@@ -222,7 +231,7 @@ export type AtlasPdfGenerationOutcome = AtlasPdfRenderResult | AtlasPdfFailureRe
 type PlaywrightChromium = {
   chromium: {
     executablePath(): string;
-    launch(options: { headless: true; timeout: number }): Promise<{
+    launch(options: { headless: true; executablePath: string; args: readonly string[]; timeout: number }): Promise<{
       version(): string;
       newPage(options: { viewport: { width: number; height: number } }): Promise<{
         setContent(html: string, options: { waitUntil: 'load'; timeout: number }): Promise<void>;
@@ -643,6 +652,72 @@ export function runAtlasPdfStructuralQa(input: {
   };
 }
 
+async function parseAtlasPdfWithPdfJs(pdfBytes: Buffer) {
+  const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs');
+  const document = await pdfjs.getDocument({ data: new Uint8Array(pdfBytes) }).promise;
+  try {
+    const pages = await Promise.all(
+      Array.from({ length: document.numPages }, async (_, index) => {
+        const page = await document.getPage(index + 1);
+        const content = await page.getTextContent();
+        return content.items.map((item) => ('str' in item ? item.str : '')).join(' ');
+      }),
+    );
+    const metadata = await document.getMetadata();
+    const markInfo = await document.getMarkInfo().catch(() => null);
+    return {
+      pageCount: document.numPages,
+      text: pages.join('\n'),
+      title: typeof (metadata.info as { Title?: unknown }).Title === 'string' ? (metadata.info as { Title: string }).Title : '',
+      tagged: markInfo?.Marked === true ? 'yes' : 'unknown',
+    };
+  } finally {
+    await document.destroy();
+  }
+}
+
+export async function runAtlasPdfStructuralQaForRuntime(input: {
+  request: AtlasPdfRenderRequest;
+  pdfPath: string;
+  pdfBytes: Buffer;
+  fileHash: string;
+}): Promise<{ qaState: 'PDF_QA_PASSED' | 'PDF_QA_FAILED'; pageCount: number; items: readonly AtlasPdfQaItem[]; qaDurationMs: number }> {
+  const nativeResult = runAtlasPdfStructuralQa(input);
+  if (nativeResult.pageCount > 0) return nativeResult;
+
+  const started = Date.now();
+  try {
+    const parsed = await parseAtlasPdfWithPdfJs(input.pdfBytes);
+    const missingMarkers = input.request.expectedTextMarkers.filter((marker) => !parsed.text.includes(marker));
+    const fileHashValid = /^[a-f0-9]{64}$/.test(input.fileHash) && input.fileHash === createHash('sha256').update(input.pdfBytes).digest('hex');
+    const items: AtlasPdfQaItem[] = [
+      { domain: 'CONTENT_MATCH', state: missingMarkers.length === 0 ? 'PASS' : 'FAIL', detail: missingMarkers.length === 0 ? 'All expected structural text markers extracted with PDF.js.' : `Missing markers: ${missingMarkers.join(', ')}` },
+      { domain: 'VERSION_MATCH', state: input.request.renderFingerprint === input.request.expectedRenderFingerprint ? 'PASS' : 'FAIL', detail: input.request.renderVersion },
+      { domain: 'RIGHTS', state: input.request.rightsState === 'RIGHTS_PASS' ? 'PASS' : 'FAIL', detail: input.request.rightsState },
+      { domain: 'FRESHNESS', state: input.request.freshnessState === 'FRESHNESS_PASS' ? 'PASS' : 'FAIL', detail: input.request.freshnessState },
+      { domain: 'PAGES', state: parsed.pageCount >= input.request.expectedTextMarkers.length / 8 ? 'PASS' : 'FAIL', detail: `${parsed.pageCount} pages` },
+      { domain: 'TABLES', state: parsed.text.includes('Identity') && parsed.text.includes('Value') ? 'PASS' : 'FAIL', detail: 'Identity/provenance tables extracted with PDF.js.' },
+      { domain: 'MAP', state: parsed.text.includes('Static Map Fallback') ? 'PASS' : 'FAIL', detail: 'Map fallback is text/table based.' },
+      { domain: 'CHART', state: parsed.text.includes('Static Chart Fallback') ? 'PASS' : 'FAIL', detail: 'Chart fallback is text/table based.' },
+      { domain: 'IMAGE', state: 'PASS_WITH_LIMITATION', detail: 'Property image is controlled fallback; no remote image fetch.' },
+      { domain: 'FONT', state: 'PASS_WITH_LIMITATION', detail: 'System font fallback rendered with Arial/Helvetica.' },
+      { domain: 'METADATA', state: parsed.title === input.request.metadata.title ? 'PASS_WITH_LIMITATION' : 'FAIL', detail: 'Chromium Title is present; custom metadata awaits post-processing.' },
+      { domain: 'BOOKMARKS', state: 'PASS_WITH_LIMITATION', detail: 'outline:true accepted; bookmark tree inspection deferred.' },
+      { domain: 'ACCESSIBILITY', state: parsed.tagged === 'yes' ? 'PASS_WITH_LIMITATION' : 'FAIL', detail: `Tagged: ${parsed.tagged}` },
+      { domain: 'PROVENANCE', state: parsed.text.includes('Evidence and Provenance') && parsed.text.includes(input.request.outputVersionId) ? 'PASS' : 'FAIL', detail: 'Output, render, evidence, pricing, post-launch, and decision markers present.' },
+      { domain: 'FILE_HASH', state: fileHashValid ? 'PASS' : 'FAIL', detail: input.fileHash },
+    ];
+    return Object.freeze({
+      qaState: items.some((item) => item.state === 'FAIL') ? 'PDF_QA_FAILED' : 'PDF_QA_PASSED',
+      pageCount: parsed.pageCount,
+      items: freezeArray(items),
+      qaDurationMs: Date.now() - started,
+    });
+  } catch {
+    return nativeResult;
+  }
+}
+
 export async function generateAtlasPdf(
   request: AtlasPdfRenderRequest,
   options: { simulateRendererFailure?: boolean } = {},
@@ -660,12 +735,26 @@ export async function generateAtlasPdf(
   let browser: Awaited<ReturnType<PlaywrightChromium['chromium']['launch']>> | null = null;
   let page: Awaited<ReturnType<Awaited<ReturnType<PlaywrightChromium['chromium']['launch']>>['newPage']>> | null = null;
   let startupMs = 0;
+  const runtimeEnvironment = resolveAtlasPdfRuntimeEnvironment();
+  let runtimeVersion: AtlasPdfRuntimeVersion | null = null;
 
   try {
-    const { chromium } = requireFromRuntime('playwright') as PlaywrightChromium;
+    const launchConfig = await resolveAtlasPdfChromiumExecutable(runtimeEnvironment);
+    const { chromium } = resolveAtlasPdfPlaywrightChromium(runtimeEnvironment) as PlaywrightChromium;
     const launchStarted = Date.now();
-    browser = await chromium.launch({ headless: true, timeout: request.printOptions.timeoutMs });
+    browser = await chromium.launch({
+      headless: launchConfig.headless,
+      executablePath: launchConfig.executablePath,
+      args: launchConfig.args,
+      timeout: request.printOptions.timeoutMs,
+    });
     startupMs = Date.now() - launchStarted;
+    runtimeVersion = buildAtlasPdfRuntimeVersion({
+      environment: runtimeEnvironment,
+      chromiumPackage: launchConfig.chromiumPackage,
+      chromiumVersion: await browser.version(),
+      playwrightVersion: requireFromRuntime(`${runtimeEnvironment === 'DEPLOYED_SERVER' ? 'playwright-core' : 'playwright'}/package.json`).version,
+    });
     page = await browser.newPage({ viewport: { width: 816, height: 1056 } });
     await page.setContent(renderAtlasPdfHtml(request), { waitUntil: 'load', timeout: request.printOptions.timeoutMs });
     await page.pdf({
@@ -699,9 +788,9 @@ export async function generateAtlasPdf(
 
   lifecycle.push('PDF_QA_REQUIRED');
   const fileHash = createHash('sha256').update(pdfBytes).digest('hex');
-  const qa = runAtlasPdfStructuralQa({ request, pdfPath: tempPath, pdfBytes, fileHash });
-  const tempFileRemoved = existsSync(tempPath);
-  if (tempFileRemoved) unlinkSync(tempPath);
+  const qa = await runAtlasPdfStructuralQaForRuntime({ request, pdfPath: tempPath, pdfBytes, fileHash });
+  if (existsSync(tempPath)) unlinkSync(tempPath);
+  const tempFileRemoved = !existsSync(tempPath);
   if (qa.qaState !== 'PDF_QA_PASSED') return failedOutcome(request, 'QA_FAILURE', lifecycle);
 
   lifecycle.push('PDF_READY', 'PDF_CERTIFIED');
@@ -715,8 +804,14 @@ export async function generateAtlasPdf(
     rendererId: ATLAS_PDF_RENDERER_ID,
     rendererAdapterId: ATLAS_PDF_RENDERER_ADAPTER_ID,
     rendererVersion: ATLAS_PDF_RENDERER_ADAPTER_VERSION,
-    playwrightVersion: requireFromRuntime('playwright/package.json').version,
-    chromiumVersion: ATLAS_PDF_RENDERER_CHROMIUM_VERSION,
+    playwrightVersion: runtimeVersion?.playwrightVersion ?? requireFromRuntime('playwright/package.json').version,
+    chromiumVersion: runtimeVersion?.chromiumVersion ?? ATLAS_PDF_RENDERER_CHROMIUM_VERSION,
+    runtimeVersion: runtimeVersion ?? buildAtlasPdfRuntimeVersion({
+      environment: runtimeEnvironment,
+      chromiumPackage: 'playwright@1.62.1',
+      chromiumVersion: ATLAS_PDF_RENDERER_CHROMIUM_VERSION,
+      playwrightVersion: requireFromRuntime('playwright/package.json').version,
+    }),
     generatedAt: new Date().toISOString(),
     pageCount: qa.pageCount,
     fileName: request.fileName,

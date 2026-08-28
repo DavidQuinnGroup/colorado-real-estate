@@ -251,6 +251,7 @@
     "check:headless-pdf-renderer-feasibility": "jiti scripts/checkHeadlessPdfRendererFeasibility.ts",
     "run:headless-pdf-renderer-feasibility-proof": "jiti scripts/runHeadlessPdfRendererFeasibilityProof.ts",
     "check:atlas-pdf-renderer": "jiti scripts/checkAtlasPdfRenderer.ts",
+    "check:atlas-pdf-renderer-deployment-validation": "jiti scripts/checkAtlasPdfRendererDeploymentValidation.ts",
     "run:atlas-pdf-renderer-fixtures": "jiti scripts/runAtlasPdfRendererFixtures.ts",
     "check:seller-decision-brief-foundation": "jiti scripts/checkSellerDecisionBriefFoundation.ts",
     "check:seller-decision-brief-composition-preview": "jiti scripts/checkSellerDecisionBriefCompositionPreview.ts",
@@ -416,6 +417,7 @@
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
+    "@sparticuz/chromium": "149.0.0",
     "@supabase/ssr": "^0.10.2",
     "@supabase/supabase-js": "^2.103.0",
     "@tailwindcss/postcss": "^4.2.2",
@@ -427,6 +429,7 @@
     "lucide-react": "^1.8.0",
     "next": "15.5.22",
     "p-limit": "^7.3.0",
+    "pdfjs-dist": "5.4.530",
     "playwright": "1.62.1",
     "postcss": "^8.5.9",
     "react": "^19.0.0",

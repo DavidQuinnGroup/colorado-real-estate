@@ -34,6 +34,13 @@ import {
   validateAtlasPdfRenderRequest,
 } from '../lib/atlasPdfRenderer';
 import {
+  ATLAS_PDF_DEPLOYMENT_ADAPTER_VERSION,
+  ATLAS_PDF_DEPLOYMENT_CHROMIUM_PACKAGE,
+  ATLAS_PDF_DEPLOYMENT_RUNTIME_CONTRACT_VERSION,
+  buildAtlasPdfRuntimeVersion,
+  resolveAtlasPdfRuntimeEnvironment,
+} from '../lib/atlasPdfDeploymentRuntime';
+import {
   HEADLESS_PDF_RENDERER_FEASIBILITY_SELECTED_RENDERER,
   HEADLESS_PDF_RENDERER_FEASIBILITY_STATUS,
 } from '../lib/headlessPdfRendererFeasibility';
@@ -64,6 +71,9 @@ assert.equal(ATLAS_PDF_RENDERER_DEPLOYMENT_POSITION, 'DEPLOYMENT_VALIDATION_REQU
 assert.equal(ATLAS_PDF_RENDERER_PERSISTENCE_POSITION, 'EPHEMERAL_RESULT_ONLY_OUTPUT_RENDER_PERSISTENCE_DEFERRED');
 assert.equal(ATLAS_PDF_RENDERER_NEXT_GATE, 'ATLAS_PDF_RENDERER_DEPLOYMENT_VALIDATION_V1');
 assert.equal(ATLAS_PDF_RENDERER_NEXT_PRIMARY_PACKAGE, 'ATLAS_PDF_RENDERER_DEPLOYMENT_VALIDATION_V1');
+assert.equal(ATLAS_PDF_DEPLOYMENT_ADAPTER_VERSION, 'PLAYWRIGHT_CORE_SPARTICUZ_CHROMIUM_ADAPTER_V1');
+assert.equal(ATLAS_PDF_DEPLOYMENT_CHROMIUM_PACKAGE, '@sparticuz/chromium@149.0.0');
+assert.equal(ATLAS_PDF_DEPLOYMENT_RUNTIME_CONTRACT_VERSION, 'ATLAS_PDF_DEPLOYMENT_RUNTIME_CONTRACT_V1');
 assert.equal(HEADLESS_PDF_RENDERER_FEASIBILITY_SELECTED_RENDERER, 'PLAYWRIGHT_CHROMIUM');
 assert.equal(HEADLESS_PDF_RENDERER_FEASIBILITY_STATUS, 'HEADLESS_PDF_RENDERER_FEASIBILITY_V1_PASS_WITH_LIMITATIONS');
 
@@ -115,6 +125,27 @@ assert.equal(classifyAtlasPdfRetry('RENDERER_TIMEOUT'), 'SAFE_RETRY');
 assert.equal(classifyAtlasPdfRetry('VERSION_MISMATCH'), 'INPUT_FIX_REQUIRED');
 assert.equal(classifyAtlasPdfRetry('RIGHTS_BLOCK'), 'REVIEW_REQUIRED');
 assert.equal(classifyAtlasPdfRetry('FONT_FAILURE'), 'RUNTIME_FIX_REQUIRED');
+assert.equal(resolveAtlasPdfRuntimeEnvironment({}), 'LOCAL_DEVELOPMENT');
+assert.equal(resolveAtlasPdfRuntimeEnvironment({ NODE_ENV: 'test' }), 'TEST');
+assert.equal(resolveAtlasPdfRuntimeEnvironment({ VERCEL: '1' }), 'DEPLOYED_SERVER');
+assert.equal(resolveAtlasPdfRuntimeEnvironment({ ATLAS_PDF_RUNTIME_OVERRIDE: 'DEPLOYED_SERVER' }), 'DEPLOYED_SERVER');
+assert.deepEqual(
+  buildAtlasPdfRuntimeVersion({
+    environment: 'DEPLOYED_SERVER',
+    chromiumPackage: ATLAS_PDF_DEPLOYMENT_CHROMIUM_PACKAGE,
+    chromiumVersion: '149.0.0',
+    playwrightVersion: '1.62.1',
+  }),
+  {
+    adapterVersion: ATLAS_PDF_DEPLOYMENT_ADAPTER_VERSION,
+    playwrightVersion: '1.62.1',
+    chromiumVersion: '149.0.0',
+    chromiumPackage: ATLAS_PDF_DEPLOYMENT_CHROMIUM_PACKAGE,
+    nodeRuntime: process.version,
+    deploymentRuntime: 'DEPLOYED_SERVER',
+    configVersion: ATLAS_PDF_DEPLOYMENT_RUNTIME_CONTRACT_VERSION,
+  },
+);
 
 assert.equal(sanitizeAtlasPdfFileName(' Seller / A:B* C?.pdf '), 'Seller-A-B-C-.pdf');
 assert(sellerRequest.fileName.endsWith('.pdf'));
@@ -140,7 +171,9 @@ assert.equal(qaFailure.qaState, 'PDF_QA_FAILED');
 assert(qaFailure.items.some((item) => item.domain === 'CONTENT_MATCH' && item.state === 'FAIL'));
 
 for (const token of [
-  "requireFromRuntime('playwright')",
+  'resolveAtlasPdfChromiumExecutable',
+  'resolveAtlasPdfPlaywrightChromium',
+  'runAtlasPdfStructuralQaForRuntime',
   'chromium.launch',
   'page.setContent',
   'page.pdf',
@@ -162,6 +195,8 @@ for (const token of [
 
 for (const token of [
   "export const runtime = 'nodejs'",
+  "export const preferredRegion = 'iad1'",
+  'export const maxDuration = 60',
   'authorizeAdminRequest',
   'ATLAS_PDF_RENDERER_API_ROUTE',
   "method: 'POST'",
@@ -170,6 +205,8 @@ for (const token of [
   'Content-Disposition',
   'X-Atlas-Pdf-File-Hash',
   'X-Atlas-Pdf-Page-Count',
+  'X-Atlas-Pdf-Runtime-Environment',
+  'X-Atlas-Pdf-Chromium-Package',
   'new Uint8Array(result.pdfBytes)',
 ]) {
   assert(route.includes(token), `route missing token ${token}`);

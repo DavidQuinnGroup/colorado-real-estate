@@ -11,6 +11,8 @@ import {
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 export const runtime = 'nodejs';
+export const preferredRegion = 'iad1';
+export const maxDuration = 60;
 
 const RESPONSE_HEADERS = { 'Cache-Control': 'private, no-store', Vary: 'Cookie' };
 
@@ -75,6 +77,16 @@ export async function POST(request: NextRequest) {
       'X-Atlas-Pdf-Output-Version': result.sourceOutputVersionId,
       'X-Atlas-Pdf-Qa-State': result.qaState,
       'X-Atlas-Pdf-Generated-At': result.generatedAt,
+      'X-Atlas-Pdf-Request-Id': result.requestId,
+      'X-Atlas-Pdf-Render-Id': result.renderId,
+      'X-Atlas-Pdf-Duration-Ms': `${result.durationMs}`,
+      'X-Atlas-Pdf-Renderer-Startup-Ms': `${result.rendererStartupMs}`,
+      'X-Atlas-Pdf-Qa-Duration-Ms': `${result.qaDurationMs}`,
+      'X-Atlas-Pdf-Runtime-Environment': result.runtimeVersion.deploymentRuntime,
+      'X-Atlas-Pdf-Runtime-Adapter-Version': result.runtimeVersion.adapterVersion,
+      'X-Atlas-Pdf-Chromium-Package': result.runtimeVersion.chromiumPackage,
+      'X-Atlas-Pdf-Chromium-Version': result.runtimeVersion.chromiumVersion,
+      'X-Atlas-Pdf-Node-Runtime': result.runtimeVersion.nodeRuntime,
     },
   });
 }
