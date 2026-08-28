@@ -99,6 +99,7 @@ export const adminProtectedSurfaceClassifications: AdminProtectedSurfaceClassifi
   surface('/agent/prepare/seller', 'BROWSER_ADMIN_PAGE', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),
   surface('/agent/prepare/seller/presentation', 'BROWSER_ADMIN_PAGE', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),
   surface('/agent/prepare/listing', 'BROWSER_ADMIN_PAGE', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),
+  surface('/api/agent/output/pdf', 'READ_ONLY_ADMIN_API', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),
   surface('/api/agent/prepare/property', 'READ_ONLY_ADMIN_API', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),
   surface('/api/agent/current-competing-listing-context', 'READ_ONLY_ADMIN_API', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),
   surface('/api/agent/current-snapshot-comparison', 'READ_ONLY_ADMIN_API', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),

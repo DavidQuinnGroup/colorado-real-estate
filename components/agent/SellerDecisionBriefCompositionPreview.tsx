@@ -4,16 +4,21 @@ import {
   AlertTriangle,
   CheckCircle2,
   ClipboardCheck,
+  Download,
+  ExternalLink,
+  FileCheck2,
   FileText,
   Layers3,
   LayoutGrid,
   ListChecks,
+  Loader2,
   MapPinned,
   Printer,
+  RefreshCw,
   ShieldCheck,
 } from 'lucide-react';
 import type { ReactNode } from 'react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import AgentPreparationPageHeader from '@/components/agent/AgentPreparationPageHeader';
 import { projectAtlasTitleHierarchy } from '@/components/ProjectAtlasTitleHierarchy';
@@ -85,6 +90,28 @@ const semanticLabels = [
   'Professional handoff',
 ] as const;
 
+type AgentPdfProductKind = 'SELLER' | 'SELLER_UPDATE';
+type AgentPdfState =
+  | 'PDF_RENDERER_READY'
+  | 'PDF_RENDER_REQUESTED'
+  | 'PDF_RENDERING'
+  | 'PDF_READY'
+  | 'PDF_CERTIFIED'
+  | 'PDF_RENDER_FAILED';
+
+type AgentPdfResult = Readonly<{
+  productKind: AgentPdfProductKind;
+  objectUrl: string;
+  fileName: string;
+  fileHash: string;
+  pageCount: string;
+  fileSize: string;
+  renderVersion: string;
+  outputVersion: string;
+  qaState: string;
+  generatedAt: string;
+}>;
+
 const fixturePropertyFacts = [
   ['Subject', preview.brief.outputProduct.context.subject.label],
   ['Type', 'Single-family reference property'],
@@ -116,6 +143,14 @@ export default function SellerDecisionBriefCompositionPreview() {
   const sectionsReady = preview.sectionPresentations.filter((section) => section.readinessState === 'READY').length;
   const sectionNeedsInput = preview.sectionPresentations.filter((section) => section.readinessState === 'AGENT_INPUT_REQUIRED').length;
   const reviewRequired = preview.sectionPresentations.length - sectionsReady;
+  const [pdfProductKind, setPdfProductKind] = useState<AgentPdfProductKind>('SELLER_UPDATE');
+  const [pdfState, setPdfState] = useState<AgentPdfState>('PDF_RENDERER_READY');
+  const [pdfResult, setPdfResult] = useState<AgentPdfResult | null>(null);
+  const [pdfError, setPdfError] = useState<string | null>(null);
+
+  useEffect(() => () => {
+    if (pdfResult?.objectUrl) URL.revokeObjectURL(pdfResult.objectUrl);
+  }, [pdfResult?.objectUrl]);
 
   function selectSection(section: SellerDecisionBriefSectionPresentation) {
     setSelectedSectionId(section.sectionId);
@@ -127,6 +162,48 @@ export default function SellerDecisionBriefCompositionPreview() {
     window.setTimeout(() => window.print(), 0);
   }
 
+  async function generatePdf() {
+    setMode('PRINT_PREVIEW');
+    setPdfError(null);
+    setPdfState('PDF_RENDER_REQUESTED');
+    await Promise.resolve();
+    setPdfState('PDF_RENDERING');
+    try {
+      const response = await fetch('/api/agent/output/pdf', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Atlas-Pdf-Action': pdfResult ? 'REGENERATE_PDF' : 'GENERATE_PDF' },
+        credentials: 'same-origin',
+        cache: 'no-store',
+        body: JSON.stringify({ productKind: pdfProductKind }),
+      });
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({ error: 'PDF generation failed.' }));
+        setPdfState('PDF_RENDER_FAILED');
+        setPdfError(error.error ?? 'PDF generation failed.');
+        return;
+      }
+      const blob = await response.blob();
+      const nextUrl = URL.createObjectURL(blob);
+      if (pdfResult?.objectUrl) URL.revokeObjectURL(pdfResult.objectUrl);
+      setPdfResult({
+        productKind: pdfProductKind,
+        objectUrl: nextUrl,
+        fileName: response.headers.get('X-Atlas-Pdf-File-Name') ?? 'Project-Atlas-PDF.pdf',
+        fileHash: response.headers.get('X-Atlas-Pdf-File-Hash') ?? '',
+        pageCount: response.headers.get('X-Atlas-Pdf-Page-Count') ?? '',
+        fileSize: response.headers.get('X-Atlas-Pdf-File-Size') ?? '',
+        renderVersion: response.headers.get('X-Atlas-Pdf-Render-Version') ?? '',
+        outputVersion: response.headers.get('X-Atlas-Pdf-Output-Version') ?? '',
+        qaState: response.headers.get('X-Atlas-Pdf-Qa-State') ?? '',
+        generatedAt: response.headers.get('X-Atlas-Pdf-Generated-At') ?? '',
+      });
+      setPdfState('PDF_CERTIFIED');
+    } catch {
+      setPdfState('PDF_RENDER_FAILED');
+      setPdfError('PDF generation failed before a file was returned.');
+    }
+  }
+
   return (
     <main
       className="min-h-screen bg-[#071014] px-5 py-6 text-slate-100 sm:px-8 sm:py-8 lg:px-12"
@@ -135,7 +212,7 @@ export default function SellerDecisionBriefCompositionPreview() {
       data-persistence="false"
       data-provider-activity="false"
       data-customer-data="false"
-      data-pdf-generation="false"
+      data-pdf-generation="true"
       data-share-delivery="false"
       data-preview-mode={mode}
     >
@@ -146,7 +223,7 @@ export default function SellerDecisionBriefCompositionPreview() {
               pageTitle="SELLER PRESENTATION"
               taskHeading="Compose the Seller Decision Brief"
               description="Review the Seller Presentation through one canonical composition: Agent review, Seller preview, and print preview all use the same governed sections and modules."
-              scopeNote="Session-only preview. No persistence, provider calls, PDF generation, share delivery, CRM, or customer mutation."
+              scopeNote="Session-only preview with Agent-internal ephemeral PDF generation. No persistence, provider calls, share delivery, CRM, or customer mutation."
             />
             <a
               href="/agent/prepare/seller"
@@ -222,6 +299,14 @@ export default function SellerDecisionBriefCompositionPreview() {
 
           <section className={`bg-[#f7f3ec] text-[#172025] shadow-2xl shadow-black/30 ${mode === 'PRINT_PREVIEW' ? 'seller-brief-print-preview' : ''}`} data-testid="seller-brief-output-canvas" aria-label="Seller preview canvas">
             <PrintPreviewProductBar foundation={printRenderFoundation} mode={mode} />
+            <AgentPdfGenerationPanel
+              productKind={pdfProductKind}
+              state={pdfState}
+              result={pdfResult}
+              error={pdfError}
+              onProductKindChange={setPdfProductKind}
+              onGenerate={() => void generatePdf()}
+            />
             <OutputCover mode={mode} sectionsReady={sectionsReady} reviewRequired={reviewRequired} sectionNeedsInput={sectionNeedsInput} postLaunchReview={postLaunchReview} outputVersionFoundation={outputVersionFoundation} />
             <PricingDecisionFrameworkSection framework={pricingFramework} mode={mode} />
             <PostLaunchCurrentContextReviewSection review={postLaunchReview} mode={mode} />
@@ -257,7 +342,7 @@ export default function SellerDecisionBriefCompositionPreview() {
               </article>
             ))}
             <footer className="border-t border-[#d8cfc0] bg-white px-5 py-5 text-xs leading-5 text-[#5d665f] sm:px-8 lg:px-10" data-testid="seller-brief-print-footer" data-print-only="true">
-              Seller Decision Brief. Output {printRenderFoundation.outputRenders[0].sourceOutputVersionId}. Render {printRenderFoundation.outputRenders[0].renderVersion}. As of {preview.brief.outputProduct.effectiveAsOf}. PDF generation, delivery, and render persistence remain held.
+              Seller Decision Brief. Output {printRenderFoundation.outputRenders[0].sourceOutputVersionId}. Render {printRenderFoundation.outputRenders[0].renderVersion}. As of {preview.brief.outputProduct.effectiveAsOf}. Agent-internal PDF generation is active; delivery and render persistence remain held.
             </footer>
           </section>
 
@@ -955,6 +1040,115 @@ function PrintPreviewProductBar({ foundation, mode }: { foundation: SellerPrintP
 
 function PrintBarMetric({ label, value }: { label: string; value: string }) {
   return <div className="border border-white/15 bg-white/[0.06] p-2"><p className="text-[10px] text-cyan-100/70">{label}</p><p className="mt-1 break-words text-white">{value.replaceAll('_', ' ')}</p></div>;
+}
+
+function AgentPdfGenerationPanel({
+  productKind,
+  state,
+  result,
+  error,
+  onProductKindChange,
+  onGenerate,
+}: {
+  productKind: AgentPdfProductKind;
+  state: AgentPdfState;
+  result: AgentPdfResult | null;
+  error: string | null;
+  onProductKindChange: (productKind: AgentPdfProductKind) => void;
+  onGenerate: () => void;
+}) {
+  const generating = state === 'PDF_RENDER_REQUESTED' || state === 'PDF_RENDERING';
+  const selectedRender = printRenderFoundation.outputRenders.find((render) => productKind === 'SELLER' ? render.id === 'render-seller-decision-brief-print-preview-v1' : render.id === 'render-seller-update-print-preview-v1') ?? printRenderFoundation.outputRenders[0];
+  const selectedDocument = printRenderFoundation.documentModels.find((document) => document.outputVersionId === selectedRender.sourceOutputVersionId) ?? printRenderFoundation.documentModels[0];
+  const matchingResult = result?.productKind === productKind ? result : null;
+  return (
+    <section
+      className="border-b border-[#d8cfc0] bg-white px-5 py-5 sm:px-8 lg:px-10"
+      data-testid="atlas-pdf-renderer-v1"
+      data-visual-component="AgentPdfGenerationPanel"
+      data-pdf-generation="true"
+      data-persistence="false"
+      data-share-delivery="false"
+      data-provider-activity="false"
+      data-pdf-state={state}
+      data-output-version={selectedRender.sourceOutputVersionId}
+      data-render-version={selectedRender.renderVersion}
+      data-render-fingerprint={selectedRender.renderFingerprint}
+    >
+      <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_24rem]">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#71624e]">ATLAS PDF Renderer V1</p>
+          <h3 className="mt-2 text-2xl font-semibold leading-8 text-[#172025]">Generate an Agent-internal PDF from the exact reviewed output and render version.</h3>
+          <div className="mt-4 grid gap-3 md:grid-cols-3">
+            <VersionCompareCard label="Output version" value={selectedRender.sourceOutputVersionId} detail={selectedRender.sourceContentFingerprint} />
+            <VersionCompareCard label="Render version" value={selectedRender.renderVersion} detail={selectedRender.renderFingerprint} />
+            <VersionCompareCard label="Document template" value={selectedDocument.documentTemplateVersion} detail={selectedRender.pageTemplateVersionSet} />
+          </div>
+          <div className="mt-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between" data-testid="atlas-pdf-generation-action">
+            <div className="inline-flex min-h-11 overflow-hidden border border-[#d8cfc0]" role="group" aria-label="PDF product">
+              {(['SELLER', 'SELLER_UPDATE'] as const).map((item) => (
+                <button
+                  key={item}
+                  type="button"
+                  onClick={() => onProductKindChange(item)}
+                  className={`min-h-11 px-4 text-xs font-semibold transition ${productKind === item ? 'bg-[#172025] text-white' : 'bg-[#fffdf8] text-[#4d5652] hover:bg-[#efe5d4]'}`}
+                  aria-pressed={productKind === item}
+                  data-testid={`atlas-pdf-product-${item.toLowerCase()}`}
+                >
+                  {item === 'SELLER' ? 'Seller PDF' : 'Seller Update PDF'}
+                </button>
+              ))}
+            </div>
+            <button
+              type="button"
+              onClick={onGenerate}
+              disabled={generating}
+              className="inline-flex min-h-11 items-center justify-center gap-2 bg-[#172025] px-5 text-sm font-semibold text-white transition hover:bg-[#25343a] disabled:cursor-not-allowed disabled:bg-[#d8cfc0] disabled:text-[#71624e] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#172025]"
+              data-testid="atlas-pdf-generate-button"
+              data-screen-only="true"
+            >
+              {generating ? <Loader2 size={16} aria-hidden="true" className="animate-spin" /> : matchingResult ? <RefreshCw size={16} aria-hidden="true" /> : <FileCheck2 size={16} aria-hidden="true" />}
+              {generating ? 'Generating PDF' : matchingResult ? 'Regenerate PDF' : 'Generate PDF'}
+            </button>
+          </div>
+          {error ? <p className="mt-3 border border-amber-300 bg-amber-50 p-3 text-sm font-semibold text-amber-900" data-testid="atlas-pdf-error">{error}</p> : null}
+        </div>
+        <aside className="border border-[#d8cfc0] bg-[#fffdf8] p-4" data-testid="atlas-pdf-status-panel" data-visual-component="OutputPdfResult">
+          <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#71624e]">PDF status</p>
+          <div className="mt-3 grid gap-2 text-sm">
+            <PdfStatusRow label="State" value={state.replaceAll('_', ' ')} />
+            <PdfStatusRow label="Renderer" value="PLAYWRIGHT CHROMIUM ADAPTER V1" />
+            <PdfStatusRow label="QA" value={matchingResult?.qaState.replaceAll('_', ' ') ?? 'Ready to run'} />
+            <PdfStatusRow label="Generated" value={matchingResult?.generatedAt ?? 'Not generated'} />
+            <PdfStatusRow label="File" value={matchingResult?.fileName ?? 'No file returned yet'} />
+            <PdfStatusRow label="Pages / size" value={matchingResult ? `${matchingResult.pageCount} pages / ${matchingResult.fileSize} bytes` : 'Pending'} />
+            <PdfStatusRow label="Hash" value={matchingResult?.fileHash ? `${matchingResult.fileHash.slice(0, 16)}...` : 'Pending'} />
+          </div>
+          {matchingResult ? (
+            <div className="mt-4 grid gap-2 sm:grid-cols-2" data-testid="atlas-pdf-result-actions">
+              <a href={matchingResult.objectUrl} target="_blank" rel="noreferrer" className="inline-flex min-h-10 items-center justify-center gap-2 border border-[#172025] px-3 text-sm font-semibold text-[#172025]">
+                <ExternalLink size={15} aria-hidden="true" />
+                Open
+              </a>
+              <a href={matchingResult.objectUrl} download={matchingResult.fileName} className="inline-flex min-h-10 items-center justify-center gap-2 bg-[#172025] px-3 text-sm font-semibold text-white">
+                <Download size={15} aria-hidden="true" />
+                Save
+              </a>
+            </div>
+          ) : null}
+        </aside>
+      </div>
+      <div className="mt-4 grid gap-3 text-sm md:grid-cols-3" data-testid="atlas-pdf-qa-provenance">
+        <div className="border border-[#d8cfc0] bg-[#fffdf8] p-3"><p className="font-semibold text-[#172025]">PDF QA</p><p className="mt-1 text-[#4d5652]">Content, version, rights, freshness, pages, tables, map/chart fallbacks, metadata, accessibility, provenance, and file hash run before certification.</p></div>
+        <div className="border border-[#d8cfc0] bg-[#fffdf8] p-3"><p className="font-semibold text-[#172025]">Provenance</p><p className="mt-1 break-words text-[#4d5652]">{selectedRender.sourceOutputVersionId} / {selectedRender.renderVersion} / {selectedRender.renderFingerprint}</p></div>
+        <div className="border border-[#d8cfc0] bg-[#fffdf8] p-3"><p className="font-semibold text-[#172025]">Boundary</p><p className="mt-1 text-[#4d5652]">Agent-internal ephemeral result only. No durable OutputRender, storage, delivery, provider call, CRM, or customer mutation.</p></div>
+      </div>
+    </section>
+  );
+}
+
+function PdfStatusRow({ label, value }: { label: string; value: string }) {
+  return <div className="grid grid-cols-[6.5rem_minmax(0,1fr)] gap-3 border-b border-[#d8cfc0] pb-2 last:border-b-0"><span className="font-semibold text-[#71624e]">{label}</span><span className="break-words text-[#172025]">{value}</span></div>;
 }
 
 function SellerPrintPdfRenderFoundationSection({ foundation, mode }: { foundation: SellerPrintPdfRenderFoundation; mode: SellerDecisionBriefPreviewMode }) {

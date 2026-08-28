@@ -135,8 +135,10 @@ for (const token of [
   'data-persistence="false"',
   'data-provider-activity="false"',
   'data-customer-data="false"',
-  'data-pdf-generation="false"',
+  'data-pdf-generation="true"',
   'data-share-delivery="false"',
+  "fetch('/api/agent/output/pdf'",
+  'data-testid="atlas-pdf-renderer-v1"',
 ]) {
   assert(component.includes(token), `component missing UI token ${token}`);
 }
@@ -157,7 +159,7 @@ assert(styles.includes('@media print'), 'print styles must exist');
 assert(styles.includes('[data-testid="seller-brief-output-canvas"]'), 'print styles must target the output canvas');
 assert(styles.includes('page-break-inside: avoid'), 'print styles must include page-break behavior');
 
-for (const source of [contract, component, route]) {
+for (const source of [contract, route]) {
   for (const forbidden of [
     'fetch(',
     'new PrismaClient',
@@ -176,6 +178,24 @@ for (const source of [contract, component, route]) {
     assert.equal(source.includes(forbidden), false, `Seller composition preview must not include runtime token ${forbidden}`);
   }
 }
+
+for (const forbidden of [
+  'new PrismaClient',
+  'prisma.',
+  'supabase.',
+  'typesense.',
+  'MLS_GRID_TOKEN',
+  'DATABASE_URL',
+  'sendEmail',
+  'resend',
+  'localStorage',
+  'sessionStorage',
+  'document.cookie',
+  'navigator.share',
+]) {
+  assert.equal(component.includes(forbidden), false, `Seller composition preview must not include runtime token ${forbidden}`);
+}
+assert.equal(component.includes("fetch('/api/agent/output/pdf'"), true, 'Seller composition preview may only call the exact Agent PDF route.');
 
 assert.equal(
   packageJson.scripts?.['check:seller-decision-brief-composition-preview'],
