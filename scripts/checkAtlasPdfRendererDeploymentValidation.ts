@@ -66,6 +66,8 @@ for (const token of [
   'page.close',
   'browser.close',
   'unlinkSync(tempPath)',
+  'ATLAS_PDF_RENDERER_RUNTIME_FAILURE',
+  'errorMessage: runtimeError.message',
 ]) assert(renderer.includes(token), `renderer missing deployment policy ${token}`);
 
 for (const token of [

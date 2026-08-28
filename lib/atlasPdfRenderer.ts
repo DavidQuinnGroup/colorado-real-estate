@@ -772,6 +772,14 @@ export async function generateAtlasPdf(
     });
   } catch (error) {
     if (existsSync(tempPath)) unlinkSync(tempPath);
+    const runtimeError = error instanceof Error ? error : new Error(String(error));
+    console.error('ATLAS_PDF_RENDERER_RUNTIME_FAILURE', {
+      requestId: request.requestId,
+      productKind: request.productKind,
+      runtimeEnvironment,
+      errorName: runtimeError.name,
+      errorMessage: runtimeError.message,
+    });
     return failedOutcome(request, error instanceof Error && /timeout/i.test(error.message) ? 'RENDERER_TIMEOUT' : 'RENDERER_LAUNCH_FAILURE', lifecycle);
   } finally {
     if (page) await page.close().catch(() => undefined);
