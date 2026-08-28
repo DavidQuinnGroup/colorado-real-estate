@@ -2,7 +2,7 @@ import { execFileSync } from 'node:child_process';
 import { createHash, randomUUID } from 'node:crypto';
 import { existsSync, mkdirSync, readFileSync, unlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { basename, join } from 'node:path';
+import { basename, dirname, join } from 'node:path';
 import { createRequire } from 'node:module';
 
 import {
@@ -258,6 +258,13 @@ type PlaywrightChromium = {
 const requireFromRuntime = createRequire(import.meta.url);
 const sellerPrintFoundation = buildSellerPrintPdfRenderFoundation();
 const outputVersionFoundation = OUTPUT_VERSION_LINEAGE_AND_INVALIDATION_FOUNDATION_FIXTURE;
+
+function resolveRuntimePackageVersion(packageName: 'playwright' | 'playwright-core') {
+  const packageEntryPath = requireFromRuntime.resolve(packageName);
+  const packageJson = JSON.parse(readFileSync(join(dirname(packageEntryPath), 'package.json'), 'utf8')) as { version?: unknown };
+  if (typeof packageJson.version !== 'string') throw new Error(`Unable to resolve ${packageName} package version.`);
+  return packageJson.version;
+}
 
 function freezeArray<T>(items: readonly T[]) {
   return Object.freeze([...items]);
@@ -753,7 +760,7 @@ export async function generateAtlasPdf(
       environment: runtimeEnvironment,
       chromiumPackage: launchConfig.chromiumPackage,
       chromiumVersion: await browser.version(),
-      playwrightVersion: requireFromRuntime(`${runtimeEnvironment === 'DEPLOYED_SERVER' ? 'playwright-core' : 'playwright'}/package.json`).version,
+      playwrightVersion: resolveRuntimePackageVersion(runtimeEnvironment === 'DEPLOYED_SERVER' ? 'playwright-core' : 'playwright'),
     });
     page = await browser.newPage({ viewport: { width: 816, height: 1056 } });
     await page.setContent(renderAtlasPdfHtml(request), { waitUntil: 'load', timeout: request.printOptions.timeoutMs });
@@ -812,13 +819,13 @@ export async function generateAtlasPdf(
     rendererId: ATLAS_PDF_RENDERER_ID,
     rendererAdapterId: ATLAS_PDF_RENDERER_ADAPTER_ID,
     rendererVersion: ATLAS_PDF_RENDERER_ADAPTER_VERSION,
-    playwrightVersion: runtimeVersion?.playwrightVersion ?? requireFromRuntime('playwright/package.json').version,
+    playwrightVersion: runtimeVersion?.playwrightVersion ?? resolveRuntimePackageVersion('playwright'),
     chromiumVersion: runtimeVersion?.chromiumVersion ?? ATLAS_PDF_RENDERER_CHROMIUM_VERSION,
     runtimeVersion: runtimeVersion ?? buildAtlasPdfRuntimeVersion({
       environment: runtimeEnvironment,
       chromiumPackage: 'playwright@1.62.1',
       chromiumVersion: ATLAS_PDF_RENDERER_CHROMIUM_VERSION,
-      playwrightVersion: requireFromRuntime('playwright/package.json').version,
+      playwrightVersion: resolveRuntimePackageVersion('playwright'),
     }),
     generatedAt: new Date().toISOString(),
     pageCount: qa.pageCount,

@@ -61,6 +61,8 @@ for (const token of [
   'resolveAtlasPdfRuntimeEnvironment',
   'resolveAtlasPdfChromiumExecutable',
   'resolveAtlasPdfPlaywrightChromium',
+  'resolveRuntimePackageVersion',
+  "requireFromRuntime.resolve(packageName)",
   'runAtlasPdfStructuralQaForRuntime',
   'LOCAL_DOCUMENT_ONLY_NO_REMOTE_FETCH',
   'page.close',
@@ -69,6 +71,12 @@ for (const token of [
   'ATLAS_PDF_RENDERER_RUNTIME_FAILURE',
   'errorMessage: runtimeError.message',
 ]) assert(renderer.includes(token), `renderer missing deployment policy ${token}`);
+
+assert.equal(
+  renderer.includes("requireFromRuntime(`${runtimeEnvironment === 'DEPLOYED_SERVER' ? 'playwright-core' : 'playwright'}/package.json`)"),
+  false,
+  'renderer must not import Playwright package metadata through the package exports boundary',
+);
 
 for (const token of [
   "'/api/agent/output/pdf': ['./node_modules/@sparticuz/chromium/bin/**']",
