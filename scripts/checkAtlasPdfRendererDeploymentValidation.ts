@@ -69,7 +69,6 @@ for (const token of [
   'resolveAtlasPdfPlaywrightChromium',
   'resolveRuntimePackageVersion',
   "requireFromRuntime.resolve(packageName)",
-  "import * as pdfjs from 'pdfjs-dist/legacy/build/pdf.mjs'",
   'runAtlasPdfStructuralQaForRuntime',
   'LOCAL_DOCUMENT_ONLY_NO_REMOTE_FETCH',
   'page.close',

@@ -5,8 +5,6 @@ import { tmpdir } from 'node:os';
 import { basename, dirname, join } from 'node:path';
 import { createRequire } from 'node:module';
 
-import * as pdfjs from 'pdfjs-dist/legacy/build/pdf.mjs';
-
 import {
   ATLAS_PDF_DEPLOYMENT_PLAYWRIGHT_CORE_VERSION,
   type AtlasPdfRuntimeVersion,
@@ -663,6 +661,7 @@ export function runAtlasPdfStructuralQa(input: {
 }
 
 async function parseAtlasPdfWithPdfJs(pdfBytes: Buffer) {
+  const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs');
   const document = await pdfjs.getDocument({ data: new Uint8Array(pdfBytes) }).promise;
   try {
     const pages = await Promise.all(
