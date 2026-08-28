@@ -3,7 +3,10 @@ import type { NextConfig } from 'next';
 const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
     '/api/admin/enterprise/geographic-persistence-pilot': ['./prisma/schema.prisma'],
-    '/api/agent/output/pdf': ['./node_modules/@sparticuz/chromium/bin/**'],
+    '/api/agent/output/pdf': [
+      './node_modules/@sparticuz/chromium/bin/**',
+      './node_modules/playwright-core/**',
+    ],
   },
   serverExternalPackages: ['@sparticuz/chromium', 'playwright-core'],
   experimental: {

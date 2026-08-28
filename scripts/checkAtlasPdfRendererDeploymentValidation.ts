@@ -79,7 +79,9 @@ assert.equal(
 );
 
 for (const token of [
-  "'/api/agent/output/pdf': ['./node_modules/@sparticuz/chromium/bin/**']",
+  "'/api/agent/output/pdf': [",
+  "'./node_modules/@sparticuz/chromium/bin/**'",
+  "'./node_modules/playwright-core/**'",
   "serverExternalPackages: ['@sparticuz/chromium', 'playwright-core']",
 ]) assert(config.includes(token), `next config missing deployment trace policy ${token}`);
 
