@@ -6,6 +6,7 @@ import { chromium as playwrightCoreChromium } from 'playwright-core';
 export const ATLAS_PDF_DEPLOYMENT_RUNTIME_CONTRACT_VERSION = 'ATLAS_PDF_DEPLOYMENT_RUNTIME_CONTRACT_V1' as const;
 export const ATLAS_PDF_DEPLOYMENT_ADAPTER_VERSION = 'PLAYWRIGHT_CORE_SPARTICUZ_CHROMIUM_ADAPTER_V1' as const;
 export const ATLAS_PDF_DEPLOYMENT_CHROMIUM_PACKAGE = '@sparticuz/chromium@149.0.0' as const;
+export const ATLAS_PDF_DEPLOYMENT_PLAYWRIGHT_CORE_VERSION = '1.62.1' as const;
 
 export type AtlasPdfRuntimeEnvironment = 'LOCAL_DEVELOPMENT' | 'TEST' | 'DEPLOYED_SERVER';
 

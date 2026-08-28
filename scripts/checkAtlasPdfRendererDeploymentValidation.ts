@@ -4,6 +4,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import {
   ATLAS_PDF_DEPLOYMENT_ADAPTER_VERSION,
   ATLAS_PDF_DEPLOYMENT_CHROMIUM_PACKAGE,
+  ATLAS_PDF_DEPLOYMENT_PLAYWRIGHT_CORE_VERSION,
   ATLAS_PDF_DEPLOYMENT_RUNTIME_CONTRACT_VERSION,
   buildAtlasPdfRuntimeVersion,
   resolveAtlasPdfChromiumExecutable,
@@ -22,6 +23,7 @@ const packageJson = JSON.parse(readFileSync('package.json', 'utf8')) as {
 assert.equal(ATLAS_PDF_DEPLOYMENT_RUNTIME_CONTRACT_VERSION, 'ATLAS_PDF_DEPLOYMENT_RUNTIME_CONTRACT_V1');
 assert.equal(ATLAS_PDF_DEPLOYMENT_ADAPTER_VERSION, 'PLAYWRIGHT_CORE_SPARTICUZ_CHROMIUM_ADAPTER_V1');
 assert.equal(ATLAS_PDF_DEPLOYMENT_CHROMIUM_PACKAGE, '@sparticuz/chromium@149.0.0');
+assert.equal(ATLAS_PDF_DEPLOYMENT_PLAYWRIGHT_CORE_VERSION, '1.62.1');
 assert.equal(resolveAtlasPdfRuntimeEnvironment({}), 'LOCAL_DEVELOPMENT');
 assert.equal(resolveAtlasPdfRuntimeEnvironment({ NODE_ENV: 'test' }), 'TEST');
 assert.equal(resolveAtlasPdfRuntimeEnvironment({ VERCEL: '1' }), 'DEPLOYED_SERVER');
@@ -45,6 +47,7 @@ assert.equal(runtimeVersion.deploymentRuntime, 'DEPLOYED_SERVER');
 assert.equal(runtimeVersion.chromiumPackage, ATLAS_PDF_DEPLOYMENT_CHROMIUM_PACKAGE);
 assert(runtimeAdapter.includes("import { chromium as playwrightCoreChromium } from 'playwright-core'"), 'deployed adapter must statically import Playwright Core');
 assert(runtimeAdapter.includes("if (environment === 'DEPLOYED_SERVER') return { chromium: playwrightCoreChromium };"), 'deployed adapter must use the statically imported Playwright Core adapter');
+assert(renderer.includes('ATLAS_PDF_DEPLOYMENT_PLAYWRIGHT_CORE_VERSION'), 'renderer must use the pinned deployed Playwright Core version without runtime package metadata lookup');
 
 for (const token of [
   "export const runtime = 'nodejs'",
