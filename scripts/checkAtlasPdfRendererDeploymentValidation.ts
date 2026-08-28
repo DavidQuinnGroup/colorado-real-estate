@@ -12,6 +12,7 @@ import {
 
 const route = readFileSync('app/api/agent/output/pdf/route.ts', 'utf8');
 const renderer = readFileSync('lib/atlasPdfRenderer.ts', 'utf8');
+const runtimeAdapter = readFileSync('lib/atlasPdfDeploymentRuntime.ts', 'utf8');
 const config = readFileSync('next.config.ts', 'utf8');
 const packageJson = JSON.parse(readFileSync('package.json', 'utf8')) as {
   dependencies?: Record<string, string>;
@@ -42,6 +43,8 @@ const runtimeVersion = buildAtlasPdfRuntimeVersion({
 assert.equal(runtimeVersion.adapterVersion, ATLAS_PDF_DEPLOYMENT_ADAPTER_VERSION);
 assert.equal(runtimeVersion.deploymentRuntime, 'DEPLOYED_SERVER');
 assert.equal(runtimeVersion.chromiumPackage, ATLAS_PDF_DEPLOYMENT_CHROMIUM_PACKAGE);
+assert(runtimeAdapter.includes("import { chromium as playwrightCoreChromium } from 'playwright-core'"), 'deployed adapter must statically import Playwright Core');
+assert(runtimeAdapter.includes("if (environment === 'DEPLOYED_SERVER') return { chromium: playwrightCoreChromium };"), 'deployed adapter must use the statically imported Playwright Core adapter');
 
 for (const token of [
   "export const runtime = 'nodejs'",

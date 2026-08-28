@@ -1,6 +1,7 @@
 import { createRequire } from 'node:module';
 
 import sparticuzChromium from '@sparticuz/chromium';
+import { chromium as playwrightCoreChromium } from 'playwright-core';
 
 export const ATLAS_PDF_DEPLOYMENT_RUNTIME_CONTRACT_VERSION = 'ATLAS_PDF_DEPLOYMENT_RUNTIME_CONTRACT_V1' as const;
 export const ATLAS_PDF_DEPLOYMENT_ADAPTER_VERSION = 'PLAYWRIGHT_CORE_SPARTICUZ_CHROMIUM_ADAPTER_V1' as const;
@@ -67,7 +68,8 @@ export async function resolveAtlasPdfChromiumExecutable(
 }
 
 export function resolveAtlasPdfPlaywrightChromium(environment: AtlasPdfRuntimeEnvironment = resolveAtlasPdfRuntimeEnvironment()) {
-  return requireFromRuntime(environment === 'DEPLOYED_SERVER' ? 'playwright-core' : 'playwright') as {
+  if (environment === 'DEPLOYED_SERVER') return { chromium: playwrightCoreChromium };
+  return requireFromRuntime('playwright') as {
     chromium: {
       launch(options: { headless: true; executablePath: string; args: readonly string[]; timeout: number }): Promise<unknown>;
     };
