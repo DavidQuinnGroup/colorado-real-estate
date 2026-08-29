@@ -55,6 +55,7 @@ export async function POST(request: NextRequest) {
       failure: result.failure,
       retryClass: result.retryClass,
       diagnosticCodes: result.diagnosticCodes,
+      diagnosticMarkerHashes: result.diagnosticMarkerHashes,
     }));
     return NextResponse.json(
       {
@@ -65,6 +66,7 @@ export async function POST(request: NextRequest) {
         requestId: result.requestId,
         pdfState: result.pdfState,
         diagnosticCodes: result.diagnosticCodes,
+        diagnosticMarkerHashes: result.diagnosticMarkerHashes,
       },
       { status: result.retryClass === 'RUNTIME_FIX_REQUIRED' ? 503 : 409, headers: RESPONSE_HEADERS },
     );
