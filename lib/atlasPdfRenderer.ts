@@ -644,6 +644,8 @@ function buildAtlasPdfStructuralQaItems(input: {
   const missingPageMarkers = input.profile.requiredPageMarkers.filter(
     (marker) => !input.inspection.pages.some((page) => atlasPdfTextIncludesMarker(page.normalizedText, marker)),
   );
+  const requiredTableMarkers = ['Evidence identity table', 'Output version', 'Content fingerprint'];
+  const missingTableMarkers = requiredTableMarkers.filter((marker) => !atlasPdfTextIncludesMarker(documentText, marker));
   const fileHashValid = /^[a-f0-9]{64}$/.test(input.fileHash) && input.fileHash === createHash('sha256').update(input.pdfBytes).digest('hex');
   return freezeArray<AtlasPdfQaItem>([
     { domain: 'CONTENT_MATCH', state: missingMarkers.length === 0 ? 'PASS' : 'FAIL', detail: missingMarkers.length === 0 ? 'All expected structural text markers extracted.' : `Missing marker IDs: ${missingMarkers.map((marker) => createHash('sha256').update(marker).digest('hex').slice(0, 12)).join(', ')}` },
@@ -651,7 +653,7 @@ function buildAtlasPdfStructuralQaItems(input: {
     { domain: 'RIGHTS', state: input.request.rightsState === 'RIGHTS_PASS' ? 'PASS' : 'FAIL', detail: input.request.rightsState },
     { domain: 'FRESHNESS', state: input.request.freshnessState === 'FRESHNESS_PASS' ? 'PASS' : 'FAIL', detail: input.request.freshnessState },
     { domain: 'PAGES', state: input.inspection.pageCount > 0 && missingPageMarkers.length === 0 && !input.inspection.pages.at(-1)?.isEmpty ? 'PASS' : 'FAIL', detail: `${input.inspection.pageCount} pages; page marker IDs missing: ${missingPageMarkers.map((marker) => createHash('sha256').update(marker).digest('hex').slice(0, 12)).join(', ') || 'none'}` },
-    { domain: 'TABLES', state: ['Evidence identity table', 'Output version', 'Content fingerprint'].every((marker) => atlasPdfTextIncludesMarker(documentText, marker)) ? 'PASS' : 'FAIL', detail: 'Evidence identity table caption and data labels extracted.' },
+    { domain: 'TABLES', state: missingTableMarkers.length === 0 ? 'PASS' : 'FAIL', detail: missingTableMarkers.length === 0 ? 'Evidence identity table caption and data labels extracted.' : `Missing table marker IDs: ${missingTableMarkers.map((marker) => createHash('sha256').update(marker).digest('hex').slice(0, 12)).join(', ')}` },
     { domain: 'MAP', state: atlasPdfTextIncludesMarker(documentText, 'Static Map Fallback') ? 'PASS' : 'FAIL', detail: 'Map fallback is text/table based.' },
     { domain: 'CHART', state: atlasPdfTextIncludesMarker(documentText, 'Static Chart Fallback') ? 'PASS' : 'FAIL', detail: 'Chart fallback is text/table based.' },
     { domain: 'IMAGE', state: 'PASS_WITH_LIMITATION', detail: 'Property image is controlled fallback; no remote image fetch.' },
