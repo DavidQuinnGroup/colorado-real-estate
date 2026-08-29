@@ -123,3 +123,7 @@ Current runtime classification:
 `OUTPUT_PERSISTENCE_FOUNDATION_V1_CERTIFIED_WITH_LIMITATIONS`
 
 The next bounded admission gate is `READY_FOR_DURABLE_OUTPUT_TO_PDF_ADAPTER_AND_OUTPUT_RENDER_PERSISTENCE_DESIGN_REVIEW`. It must explicitly decide whether the existing renderer should load an owned immutable `OutputVersion` and, separately, whether a future `OutputRender` record, private file storage, or delivery capability is justified.
+
+## Durable Output To PDF Design Review Result
+
+The subsequent [Durable Output To PDF Adapter And OutputRender Persistence Design Review](./DURABLE-OUTPUT-TO-PDF-ADAPTER-AND-OUTPUTRENDER-PERSISTENCE-DESIGN-REVIEW.md) found that the existing V1 payload is a durable reference manifest, not a persisted reviewed semantic-content or document-model snapshot. The current static PDF renderer therefore cannot be replaced by an exact persisted-output adapter without a separately authorized Core Output Persistence contract revision. Core V1 durability remains certified; the durable-to-PDF limitation remains open with this exact cause.
