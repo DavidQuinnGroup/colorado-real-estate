@@ -195,7 +195,9 @@ for (const forbidden of [
 ]) {
   assert.equal(component.includes(forbidden), false, `Seller composition preview must not include runtime token ${forbidden}`);
 }
-assert.equal(component.includes("fetch('/api/agent/output/pdf'"), true, 'Seller composition preview may only call the exact Agent PDF route.');
+assert.equal(component.includes("fetch('/api/agent/output/pdf'"), true, 'Seller composition preview must retain the Agent PDF route.');
+assert.equal(component.includes("fetch('/api/agent/outputs'"), true, 'Seller composition preview must restore Agent-owned persisted output history.');
+assert.equal(component.includes('data-testid="output-persistence-foundation"'), true, 'Seller composition preview must expose the Output Persistence V1 panel.');
 
 assert.equal(
   packageJson.scripts?.['check:seller-decision-brief-composition-preview'],

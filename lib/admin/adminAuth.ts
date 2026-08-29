@@ -68,6 +68,7 @@ export type AdminAuthenticationResult =
       role: AdminRole;
       mechanism: AdminAuthMechanism;
       canMutate: boolean;
+      subject?: string;
       surface: AdminProtectedSurfaceClassification;
     }
   | {
@@ -100,6 +101,7 @@ export const adminProtectedSurfaceClassifications: AdminProtectedSurfaceClassifi
   surface('/agent/prepare/seller/presentation', 'BROWSER_ADMIN_PAGE', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),
   surface('/agent/prepare/listing', 'BROWSER_ADMIN_PAGE', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),
   surface('/api/agent/output/pdf', 'READ_ONLY_ADMIN_API', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),
+  surface('/api/agent/outputs', 'MUTATING_ADMIN_API', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'MUTATION_CAPABLE', 'MUTATING_ADMIN', true),
   surface('/api/agent/prepare/property', 'READ_ONLY_ADMIN_API', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),
   surface('/api/agent/current-competing-listing-context', 'READ_ONLY_ADMIN_API', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),
   surface('/api/agent/current-snapshot-comparison', 'READ_ONLY_ADMIN_API', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),
@@ -373,15 +375,15 @@ export async function authorizeAdminRequest(
     if (
       protectedSurface.acceptedIdentityTypes.includes('HUMAN_AGENT') &&
       protectedSurface.allowedMechanisms.includes('HUMAN_AGENT_SESSION') &&
-      protectedSurface.requiredRoles.includes('AGENT') &&
-      protectedSurface.mutationPosture === 'READ_ONLY'
+      protectedSurface.requiredRoles.includes('AGENT')
     ) {
       return {
         authenticated: true,
         identityType: 'HUMAN_AGENT',
         role: 'AGENT',
         mechanism: 'HUMAN_AGENT_SESSION',
-        canMutate: false,
+        canMutate: protectedSurface.mutationPosture === 'MUTATION_CAPABLE',
+        subject: agentSessionValidation.payload.subject,
         surface: protectedSurface,
       };
     }

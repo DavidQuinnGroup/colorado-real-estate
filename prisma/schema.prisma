@@ -14,6 +14,87 @@ enum PublicSearchEligibility {
   CERTIFIED_INELIGIBLE
 }
 
+enum OutputProductKind {
+  SELLER_PRESENTATION
+  BUYER_PRESENTATION
+  MARKET_REPORT
+  PROPERTY_ANALYSIS
+  LOCATION_ANALYSIS
+  INVESTMENT_PROPERTY_ANALYSIS
+  MULTI_PROPERTY_FINANCIAL_BREAKEVEN_ANALYSIS
+  ADVISORY_BRIEFING
+  AGENT_INTERNAL_ANALYSIS
+}
+
+enum OutputAudience {
+  AGENT_INTERNAL
+  SELLER
+  BUYER
+  INVESTOR
+  HOMEOWNER
+  CLIENT
+  PROSPECT
+  PUBLIC
+}
+
+enum OutputVersionLifecycleState {
+  DRAFT
+  COMPOSED
+  AGENT_REVIEW_REQUIRED
+  AGENT_REVIEWED
+  READY_FOR_SELLER_REVIEW
+  SELLER_REVIEWED_OR_PRESENTED
+  INVALIDATED
+  SUPERSEDED
+  ARCHIVED_HISTORICAL_REFERENCE
+  FAIL_CLOSED
+}
+
+enum OutputDependencyType {
+  FACT_DEPENDENCY
+  MARKET_DEPENDENCY
+  COMPETITION_DEPENDENCY
+  SEARCH_BAND_DEPENDENCY
+  AGENT_INPUT_DEPENDENCY
+  NARRATIVE_DEPENDENCY
+  RECOMMENDATION_DEPENDENCY
+  PRICING_DEPENDENCY
+  FINANCIAL_DEPENDENCY
+  RIGHTS_DEPENDENCY
+  FRESHNESS_DEPENDENCY
+  PRESENTATION_DEPENDENCY
+}
+
+enum OutputInvalidationState {
+  CURRENT
+  REFRESH_RECOMMENDED
+  REVIEW_REQUIRED
+  RECOMPUTE_REQUIRED
+  RECOMPOSE_REQUIRED
+  RIGHTS_REVIEW_REQUIRED
+  FRESHNESS_REVIEW_REQUIRED
+  SUPERSEDED
+  EVIDENCE_INSUFFICIENT
+}
+
+enum OutputReviewDisposition {
+  APPROVED
+  REJECTED
+  REVIEW_REQUIRED
+}
+
+enum OutputDecisionDisposition {
+  SELECTED
+  DEFERRED
+  NOTED
+}
+
+enum OutputCheckpointState {
+  RECORDED
+  REVIEW_REQUIRED
+  COMPLETED
+}
+
 enum CountyJurisdictionType {
   COUNTY
   MUNICIPALITY
@@ -2178,6 +2259,153 @@ model EIAContinuousImprovementBacklogItem {
   @@index([actionId])
   @@index([rank])
   @@index([status])
+}
+
+model OutputProduct {
+  id                     String            @id @default(cuid())
+  ownerAgentSubject      String
+  productKind            OutputProductKind
+  audience               OutputAudience
+  subjectRef             String
+  purpose                String
+  outputContractVersion  String
+  lineageKey             String            @unique
+  createdAt              DateTime          @default(now())
+
+  versions               OutputVersion[]
+
+  @@unique([ownerAgentSubject, productKind, audience, subjectRef])
+  @@index([ownerAgentSubject, createdAt])
+  @@index([productKind, subjectRef])
+}
+
+model OutputVersion {
+  id                         String                      @id @default(cuid())
+  productId                  String
+  sourceVersionRef           String
+  versionOrdinal             Int
+  idempotencyKey             String                      @unique
+  outputContractVersion      String
+  displayVersion             String
+  audience                   OutputAudience
+  subjectRef                 String
+  purpose                    String
+  effectiveAsOf              DateTime
+  lifecycleState             OutputVersionLifecycleState
+  reviewState                String
+  contentVersion             String
+  compositionVersion         String
+  presentationVisualVersion  String
+  contentFingerprint         String
+  payloadSchemaVersion       String
+  contentPayload             Json
+  lineage                    Json
+  ownerAgentSubject          String
+  reviewedAt                 DateTime
+  immutableAt                DateTime                    @default(now())
+
+  product                    OutputProduct               @relation(fields: [productId], references: [id], onDelete: Restrict)
+  evidenceSnapshot           OutputEvidenceSnapshot?
+  dependencies               OutputDependency[]
+  reviews                    OutputReview[]
+  decisions                  OutputDecision[]
+  checkpoints                OutputCheckpoint[]
+
+  @@unique([productId, versionOrdinal])
+  @@unique([productId, sourceVersionRef])
+  @@index([ownerAgentSubject, reviewedAt])
+  @@index([productId, effectiveAsOf])
+  @@index([contentFingerprint])
+}
+
+model OutputEvidenceSnapshot {
+  id                     String        @id @default(cuid())
+  outputVersionId        String        @unique
+  snapshotSchemaVersion  String
+  sourceSnapshotRefs     Json
+  metricRefs             Json
+  analysisRefs           Json
+  agentInputRefs         Json
+  assumptionRefs         Json
+  limitationRefs         Json
+  rightsRefs             Json
+  freshnessRefs          Json
+  reviewState            String
+  fingerprint            String
+  createdAt              DateTime      @default(now())
+
+  outputVersion          OutputVersion @relation(fields: [outputVersionId], references: [id], onDelete: Restrict)
+
+  @@index([fingerprint])
+}
+
+model OutputDependency {
+  id                 String                  @id @default(cuid())
+  outputVersionId    String
+  upstreamArtifact   String
+  downstreamArtifact String
+  dependencyType     OutputDependencyType
+  materiality        String
+  versionUsed        String
+  fieldMetricScope   Json
+  changePolicy       String
+  invalidationPolicy OutputInvalidationState
+  reviewPolicy       String
+  currentState       OutputInvalidationState
+  createdAt          DateTime                @default(now())
+
+  outputVersion      OutputVersion           @relation(fields: [outputVersionId], references: [id], onDelete: Restrict)
+
+  @@unique([outputVersionId, upstreamArtifact, downstreamArtifact, dependencyType])
+  @@index([outputVersionId])
+  @@index([currentState])
+}
+
+model OutputReview {
+  id                    String                   @id @default(cuid())
+  outputVersionId       String
+  reviewerSubject       String
+  disposition           OutputReviewDisposition
+  reviewContractVersion String
+  reviewedAt            DateTime                 @default(now())
+  reviewNote            String?
+
+  outputVersion         OutputVersion            @relation(fields: [outputVersionId], references: [id], onDelete: Restrict)
+
+  @@index([outputVersionId, reviewedAt])
+  @@index([reviewerSubject, reviewedAt])
+}
+
+model OutputDecision {
+  id                    String                    @id @default(cuid())
+  outputVersionId       String
+  decisionRef           String
+  disposition           OutputDecisionDisposition
+  decisionSchemaVersion String
+  recordedBySubject     String
+  recordedAt            DateTime                  @default(now())
+  rationale             String?
+
+  outputVersion         OutputVersion             @relation(fields: [outputVersionId], references: [id], onDelete: Restrict)
+
+  @@unique([outputVersionId, decisionRef])
+  @@index([outputVersionId, recordedAt])
+}
+
+model OutputCheckpoint {
+  id                     String                @id @default(cuid())
+  outputVersionId        String
+  checkpointRef          String
+  state                  OutputCheckpointState
+  checkpointSchemaVersion String
+  recordedBySubject      String
+  recordedAt             DateTime              @default(now())
+  detail                 String?
+
+  outputVersion          OutputVersion         @relation(fields: [outputVersionId], references: [id], onDelete: Restrict)
+
+  @@unique([outputVersionId, checkpointRef])
+  @@index([outputVersionId, recordedAt])
 }
 
 // prisma/schema.prisma

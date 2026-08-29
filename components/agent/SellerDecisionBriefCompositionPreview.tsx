@@ -112,6 +112,18 @@ type AgentPdfResult = Readonly<{
   generatedAt: string;
 }>;
 
+type AgentPersistedOutput = Readonly<{
+  id: string;
+  sourceVersionRef: string;
+  versionOrdinal: number;
+  displayVersion: string;
+  contentFingerprint: string;
+  lifecycleState: string;
+  reviewedAt: string;
+  immutableAt: string;
+  created: boolean;
+}>;
+
 const fixturePropertyFacts = [
   ['Subject', preview.brief.outputProduct.context.subject.label],
   ['Type', 'Single-family reference property'],
@@ -147,10 +159,33 @@ export default function SellerDecisionBriefCompositionPreview() {
   const [pdfState, setPdfState] = useState<AgentPdfState>('PDF_RENDERER_READY');
   const [pdfResult, setPdfResult] = useState<AgentPdfResult | null>(null);
   const [pdfError, setPdfError] = useState<string | null>(null);
+  const [persistedOutputs, setPersistedOutputs] = useState<readonly AgentPersistedOutput[]>([]);
+  const [persistenceState, setPersistenceState] = useState<'LOADING' | 'READY' | 'PERSISTING' | 'FAILED'>('LOADING');
+  const [persistenceError, setPersistenceError] = useState<string | null>(null);
 
   useEffect(() => () => {
     if (pdfResult?.objectUrl) URL.revokeObjectURL(pdfResult.objectUrl);
   }, [pdfResult?.objectUrl]);
+
+  useEffect(() => {
+    let active = true;
+    void fetch('/api/agent/outputs', { credentials: 'same-origin', cache: 'no-store' })
+      .then(async (response) => {
+        if (!response.ok) throw new Error('Unable to restore reviewed output history.');
+        return response.json() as Promise<{ outputs?: AgentPersistedOutput[] }>;
+      })
+      .then((response) => {
+        if (!active) return;
+        setPersistedOutputs(response.outputs ?? []);
+        setPersistenceState('READY');
+      })
+      .catch(() => {
+        if (!active) return;
+        setPersistenceError('Reviewed output history could not be restored.');
+        setPersistenceState('FAILED');
+      });
+    return () => { active = false; };
+  }, []);
 
   function selectSection(section: SellerDecisionBriefSectionPresentation) {
     setSelectedSectionId(section.sectionId);
@@ -204,12 +239,33 @@ export default function SellerDecisionBriefCompositionPreview() {
     }
   }
 
+  async function persistReviewedOutput(sourceVersionRef: 'seller-decision-brief-v2-reviewed' | 'seller-update-current-version') {
+    setPersistenceError(null);
+    setPersistenceState('PERSISTING');
+    try {
+      const response = await fetch('/api/agent/outputs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        cache: 'no-store',
+        body: JSON.stringify({ sourceVersionRef, reviewConfirmation: 'AGENT_REVIEWED' }),
+      });
+      const payload = await response.json().catch(() => ({})) as { output?: AgentPersistedOutput; error?: string };
+      if (!response.ok || !payload.output) throw new Error(payload.error ?? 'Reviewed output persistence failed.');
+      setPersistedOutputs((current) => [payload.output!, ...current.filter((item) => item.id !== payload.output!.id)]);
+      setPersistenceState('READY');
+    } catch (error) {
+      setPersistenceError(error instanceof Error ? error.message : 'Reviewed output persistence failed.');
+      setPersistenceState('FAILED');
+    }
+  }
+
   return (
     <main
       className="min-h-screen bg-[#071014] px-5 py-6 text-slate-100 sm:px-8 sm:py-8 lg:px-12"
       data-testid="seller-decision-brief-composition-preview"
       data-agent-only="true"
-      data-persistence="false"
+      data-persistence="true"
       data-provider-activity="false"
       data-customer-data="false"
       data-pdf-generation="true"
@@ -223,7 +279,7 @@ export default function SellerDecisionBriefCompositionPreview() {
               pageTitle="SELLER PRESENTATION"
               taskHeading="Compose the Seller Decision Brief"
               description="Review the Seller Presentation through one canonical composition: Agent review, Seller preview, and print preview all use the same governed sections and modules."
-              scopeNote="Session-only preview with Agent-internal ephemeral PDF generation. No persistence, provider calls, share delivery, CRM, or customer mutation."
+              scopeNote="Agent-reviewed Seller outputs persist as immutable, owner-scoped records. PDF results remain ephemeral; no provider calls, share delivery, CRM, or customer mutation."
             />
             <a
               href="/agent/prepare/seller"
@@ -299,6 +355,12 @@ export default function SellerDecisionBriefCompositionPreview() {
 
           <section className={`bg-[#f7f3ec] text-[#172025] shadow-2xl shadow-black/30 ${mode === 'PRINT_PREVIEW' ? 'seller-brief-print-preview' : ''}`} data-testid="seller-brief-output-canvas" aria-label="Seller preview canvas">
             <PrintPreviewProductBar foundation={printRenderFoundation} mode={mode} />
+            <OutputPersistencePanel
+              outputs={persistedOutputs}
+              state={persistenceState}
+              error={persistenceError}
+              onPersist={(sourceVersionRef) => void persistReviewedOutput(sourceVersionRef)}
+            />
             <AgentPdfGenerationPanel
               productKind={pdfProductKind}
               state={pdfState}
@@ -1040,6 +1102,56 @@ function PrintPreviewProductBar({ foundation, mode }: { foundation: SellerPrintP
 
 function PrintBarMetric({ label, value }: { label: string; value: string }) {
   return <div className="border border-white/15 bg-white/[0.06] p-2"><p className="text-[10px] text-cyan-100/70">{label}</p><p className="mt-1 break-words text-white">{value.replaceAll('_', ' ')}</p></div>;
+}
+
+function OutputPersistencePanel({
+  outputs,
+  state,
+  error,
+  onPersist,
+}: {
+  outputs: readonly AgentPersistedOutput[];
+  state: 'LOADING' | 'READY' | 'PERSISTING' | 'FAILED';
+  error: string | null;
+  onPersist: (sourceVersionRef: 'seller-decision-brief-v2-reviewed' | 'seller-update-current-version') => void;
+}) {
+  const persisting = state === 'PERSISTING';
+  return (
+    <section className="border-b border-[#d8cfc0] bg-[#fffdf8] px-5 py-5 sm:px-8 lg:px-10" data-testid="output-persistence-foundation" data-persistence="true" data-pdf-storage="false" data-output-render-storage="false">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#71624e]">Output Persistence V1</p>
+          <h3 className="mt-2 text-2xl font-semibold leading-8 text-[#172025]">Persist reviewed Seller outputs with immutable evidence and lineage.</h3>
+          <p className="mt-2 max-w-3xl text-sm leading-6 text-[#4d5652]">Only reviewed Seller Decision Brief and Seller Update fixtures are eligible. Saved versions restore for the signed-in Agent; drafts, render files, PDF files, delivery, and provider activity remain outside this boundary.</p>
+        </div>
+        <div className="grid shrink-0 gap-2 sm:grid-cols-2" data-screen-only="true">
+          <button type="button" onClick={() => onPersist('seller-decision-brief-v2-reviewed')} disabled={persisting} className="inline-flex min-h-11 items-center justify-center gap-2 border border-[#172025] px-4 text-sm font-semibold text-[#172025] disabled:cursor-not-allowed disabled:border-[#d8cfc0] disabled:text-[#71624e]" data-testid="persist-seller-decision-brief">
+            <ClipboardCheck size={16} aria-hidden="true" />
+            Persist Seller Brief
+          </button>
+          <button type="button" onClick={() => onPersist('seller-update-current-version')} disabled={persisting} className="inline-flex min-h-11 items-center justify-center gap-2 bg-[#172025] px-4 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:bg-[#d8cfc0] disabled:text-[#71624e]" data-testid="persist-seller-update">
+            {persisting ? <Loader2 size={16} aria-hidden="true" className="animate-spin" /> : <CheckCircle2 size={16} aria-hidden="true" />}
+            Persist Seller Update
+          </button>
+        </div>
+      </div>
+      {error ? <p className="mt-4 border border-amber-300 bg-amber-50 p-3 text-sm font-semibold text-amber-900" data-testid="output-persistence-error">{error}</p> : null}
+      <div className="mt-4 border border-[#d8cfc0] bg-white" data-testid="output-persistence-history" aria-live="polite">
+        <div className="grid grid-cols-[minmax(0,1fr)_5rem_8rem] gap-3 border-b border-[#d8cfc0] px-4 py-2 text-xs font-bold uppercase tracking-[0.08em] text-[#71624e]">
+          <span>Reviewed output</span><span>Version</span><span>State</span>
+        </div>
+        {state === 'LOADING' ? <p className="px-4 py-3 text-sm text-[#4d5652]">Restoring owned output history.</p> : null}
+        {state !== 'LOADING' && outputs.length === 0 ? <p className="px-4 py-3 text-sm text-[#4d5652]">No reviewed outputs have been persisted for this Agent.</p> : null}
+        {outputs.slice(0, 6).map((output) => (
+          <div key={output.id} className="grid grid-cols-[minmax(0,1fr)_5rem_8rem] gap-3 border-b border-[#ece6dc] px-4 py-3 text-sm last:border-b-0" data-testid="output-persistence-history-row">
+            <span className="min-w-0"><span className="block break-words font-semibold text-[#172025]">{output.displayVersion}</span><span className="mt-1 block break-all text-xs text-[#71624e]">{output.contentFingerprint}</span></span>
+            <span className="text-[#4d5652]">#{output.versionOrdinal}</span>
+            <span className="text-xs font-semibold text-[#355d50]">{output.lifecycleState.replaceAll('_', ' ')}</span>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
 }
 
 function AgentPdfGenerationPanel({
