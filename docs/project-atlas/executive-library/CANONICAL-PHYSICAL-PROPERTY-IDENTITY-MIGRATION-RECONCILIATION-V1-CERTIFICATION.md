@@ -78,6 +78,6 @@ No canonical-property population, identity backfill, property merge, MLS/provide
 - `npx prisma migrate status`: database schema up to date after deployment.
 - Post-deploy aggregate and catalog inspection: expected tables, enums, foreign keys, indexes, and output append-only triggers present; legacy counts unchanged.
 
-## Continuation
+## Continuation Result
 
-The predecessor migration blocker is cleared. Output Persistence schema migration is also complete, but authenticated Agent runtime proof, durable fixture creation, idempotency, append-only behavior, history, and cross-session restore remain unverified. Production browser inspection reached the existing private-access gate at `/agent/prepare/seller/presentation`; runtime proof resumes only after normal private/Agent authentication.
+The predecessor migration blocker is cleared. The successor Output Persistence schema migration completed in the same ordered deployment and its authenticated Agent runtime proof subsequently completed. The controlled non-client Seller Brief and Seller Update fixtures persisted, restored across a fresh authenticated browser context, remained idempotent, and rejected an append-only mutation. See [Output Persistence Foundation V1 Certification](./OUTPUT-PERSISTENCE-FOUNDATION-V1-CERTIFICATION.md) for the runtime record and the separate limitation: the existing PDF route remains fixture-based rather than loading a durable `OutputVersion`.

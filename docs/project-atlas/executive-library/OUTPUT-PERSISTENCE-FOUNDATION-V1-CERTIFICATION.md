@@ -105,3 +105,21 @@ The deterministic persistence checker covers schema/migration presence, fixture 
 `READY_FOR_OUTPUT_PERSISTENCE_MIGRATION_AND_CONTROLLED_RUNTIME_VERIFICATION`
 
 The next package must explicitly authorize a target database/environment, migration execution, migration inspection, and a controlled signed-Agent runtime proof. It must not expand V1 into draft persistence, raw payload retention, generic output authoring, PDF storage, delivery, provider activity, or automatic backfill without separate authorization.
+
+## Controlled Target Runtime Addendum (2026-08-29)
+
+`CANONICAL_PHYSICAL_PROPERTY_IDENTITY_MIGRATION_RECONCILIATION_V1` subsequently cleared the ordered predecessor migration and applied this output-persistence migration to the configured controlled production Supabase target. Both migration records are complete and Prisma reports the target schema up to date. The target contains all seven output tables, eight output enums, restrictive foreign keys, required indexes, and the six append-only triggers.
+
+An authenticated Agent used the normal Seller Presentation workspace to persist only the two deterministic non-client V1 fixtures: `seller-decision-brief-v2-reviewed` and `seller-update-current-version`. The target now contains one owner-scoped `OutputProduct`, two immutable `AGENT_REVIEWED` `OutputVersion` rows, two evidence snapshots, seven dependency rows spanning seven dependency types, two approved reviews, two selected decisions, and two completed checkpoints. A replay of the Seller Brief created no third version. A fresh authenticated browser context restored the same two records.
+
+The evidence snapshots preserve the source fixture's `AGENT_REVIEW_REQUIRED` evidence posture, while the durable output-version review records are independently `AGENT_REVIEWED` and approved. This is expected V1 provenance preservation, not a failed write.
+
+The direct production database append-only proof attempted one `OutputVersion` update against a deterministic fixture. The database trigger rejected it with the expected append-only exception and post-check row counts remained unchanged. An unauthenticated production `POST /api/agent/outputs` request was rejected before a write. The existing deterministic checker separately exercises owner isolation and owned-PDF adapter refusal for a different Agent subject.
+
+The authenticated existing PDF renderer also completed successfully for the Seller Update fixture: `PDF_CERTIFIED`, structural QA passed, six pages, and an ephemeral file hash was returned. The current PDF route renders from the static `seller-update-current-version` fixture and does not yet load the persisted `OutputVersion` through `loadOwnedOutputForPdf`. Accordingly, durable database truth is certified, but `DURABLE_OUTPUT_TO_PDF` remains `NOT_IMPLEMENTED_IN_CURRENT_PDF_ROUTE`. No `OutputRender` table, durable file storage, delivery, portal access, provider activity, customer data, financial persistence, or historical backfill was created.
+
+Current runtime classification:
+
+`OUTPUT_PERSISTENCE_FOUNDATION_V1_CERTIFIED_WITH_LIMITATIONS`
+
+The next bounded admission gate is `READY_FOR_DURABLE_OUTPUT_TO_PDF_ADAPTER_AND_OUTPUT_RENDER_PERSISTENCE_DESIGN_REVIEW`. It must explicitly decide whether the existing renderer should load an owned immutable `OutputVersion` and, separately, whether a future `OutputRender` record, private file storage, or delivery capability is justified.
