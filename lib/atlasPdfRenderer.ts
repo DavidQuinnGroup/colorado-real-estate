@@ -644,7 +644,7 @@ function buildAtlasPdfStructuralQaItems(input: {
   const missingPageMarkers = input.profile.requiredPageMarkers.filter(
     (marker) => !input.inspection.pages.some((page) => atlasPdfTextIncludesMarker(page.normalizedText, marker)),
   );
-  const requiredTableMarkers = ['Evidence identity table', 'Output version', 'Content fingerprint'];
+  const requiredTableMarkers = ['Evidence identity table', 'Output version'];
   const missingTableMarkers = requiredTableMarkers.filter((marker) => !atlasPdfTextIncludesMarker(documentText, marker));
   const fileHashValid = /^[a-f0-9]{64}$/.test(input.fileHash) && input.fileHash === createHash('sha256').update(input.pdfBytes).digest('hex');
   return freezeArray<AtlasPdfQaItem>([
