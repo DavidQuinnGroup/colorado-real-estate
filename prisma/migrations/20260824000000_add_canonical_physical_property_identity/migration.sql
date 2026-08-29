@@ -1,5 +1,6 @@
 -- REIE canonical physical-property identity architecture.
--- Additive and intentionally empty. This migration is not applied by this package.
+-- Additive and intentionally empty. Population and runtime activation require
+-- separate source-admission authorization.
 
 ALTER TYPE "PropertySourceIdentifierType" ADD VALUE IF NOT EXISTS 'MLS_LISTING';
 ALTER TYPE "PropertySourceIdentifierType" ADD VALUE IF NOT EXISTS 'SOURCE_PROPERTY_RECORD';
