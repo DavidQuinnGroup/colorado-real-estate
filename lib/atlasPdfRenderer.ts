@@ -245,6 +245,7 @@ export type AtlasPdfFailureResult = Readonly<{
   noFileReturned: true;
   lifecycle: readonly AtlasPdfState[];
   tempFileRemoved: boolean;
+  diagnosticCodes: readonly string[];
 }>;
 
 export type AtlasPdfGenerationOutcome = AtlasPdfRenderResult | AtlasPdfFailureResult;
@@ -473,7 +474,12 @@ export function validateAtlasPdfRenderRequest(request: AtlasPdfRenderRequest): A
   return null;
 }
 
-function failedOutcome(request: AtlasPdfRenderRequest, failure: AtlasPdfFailure, lifecycle: readonly AtlasPdfState[] = ['PDF_RENDER_REQUESTED']): AtlasPdfFailureResult {
+function failedOutcome(
+  request: AtlasPdfRenderRequest,
+  failure: AtlasPdfFailure,
+  lifecycle: readonly AtlasPdfState[] = ['PDF_RENDER_REQUESTED'],
+  diagnosticCodes: readonly string[] = [],
+): AtlasPdfFailureResult {
   const finalLifecycle: AtlasPdfState[] = [...lifecycle, 'PDF_RENDER_FAILED'];
   return Object.freeze({
     requestId: request.requestId,
@@ -485,6 +491,7 @@ function failedOutcome(request: AtlasPdfRenderRequest, failure: AtlasPdfFailure,
     noFileReturned: true,
     lifecycle: freezeArray(finalLifecycle),
     tempFileRemoved: true,
+    diagnosticCodes: freezeArray(diagnosticCodes),
   });
 }
 
@@ -771,7 +778,7 @@ export async function generateAtlasPdf(
   const qa = await runAtlasPdfStructuralQa({ request, pdfBytes, fileHash });
   if (existsSync(tempPath)) unlinkSync(tempPath);
   const tempFileRemoved = !existsSync(tempPath);
-  if (qa.qaState !== 'PDF_QA_PASSED') return failedOutcome(request, 'QA_FAILURE', lifecycle);
+  if (qa.qaState !== 'PDF_QA_PASSED') return failedOutcome(request, 'QA_FAILURE', lifecycle, qa.failureCodes);
 
   lifecycle.push('PDF_READY', 'PDF_CERTIFIED');
   return Object.freeze({

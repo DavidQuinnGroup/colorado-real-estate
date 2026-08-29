@@ -49,6 +49,13 @@ export async function POST(request: NextRequest) {
   const result = await generateAtlasPdf(pdfRequest);
 
   if (result.pdfState === 'PDF_RENDER_FAILED') {
+    console.error(JSON.stringify({
+      event: 'ATLAS_PDF_RENDER_FAILED',
+      requestId: result.requestId,
+      failure: result.failure,
+      retryClass: result.retryClass,
+      diagnosticCodes: result.diagnosticCodes,
+    }));
     return NextResponse.json(
       {
         error: result.agentMessage,
@@ -57,6 +64,7 @@ export async function POST(request: NextRequest) {
         recovery: result.recovery,
         requestId: result.requestId,
         pdfState: result.pdfState,
+        diagnosticCodes: result.diagnosticCodes,
       },
       { status: result.retryClass === 'RUNTIME_FIX_REQUIRED' ? 503 : 409, headers: RESPONSE_HEADERS },
     );
