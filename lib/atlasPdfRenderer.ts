@@ -517,6 +517,7 @@ export function renderAtlasPdfHtml(request: AtlasPdfRenderRequest) {
         <p><strong>Display version:</strong> ${escapeHtml(request.outputDisplayVersion)}</p>
         <p><strong>As of:</strong> ${escapeHtml(documentModel.effectiveAsOf)}</p>
         <table>
+          <caption>Evidence identity table</caption>
           <thead><tr><th>Identity</th><th>Value</th></tr></thead>
           <tbody>
             <tr><td>Output version</td><td>${escapeHtml(request.outputVersionId)}</td></tr>
@@ -554,6 +555,7 @@ export function renderAtlasPdfHtml(request: AtlasPdfRenderRequest) {
     h3 { margin: 0.1in 0 0.05in; font-size: 13px; }
     p { margin: 0 0 0.07in; }
     table { width: 100%; border-collapse: collapse; margin: 0.12in 0; page-break-inside: avoid; break-inside: avoid; }
+    caption { margin-bottom: 0.04in; font-weight: 700; text-align: left; }
     thead { display: table-header-group; background: #efe5d4; }
     th, td { border: 1px solid #d8cfc0; padding: 0.055in; text-align: left; vertical-align: top; overflow-wrap: anywhere; }
     .block, .fallback, .provenance { border: 1px solid #d8cfc0; background: #fffdf8; padding: 0.12in; margin: 0 0 0.1in; page-break-inside: avoid; break-inside: avoid; }
@@ -646,7 +648,7 @@ function buildAtlasPdfStructuralQaItems(input: {
     { domain: 'RIGHTS', state: input.request.rightsState === 'RIGHTS_PASS' ? 'PASS' : 'FAIL', detail: input.request.rightsState },
     { domain: 'FRESHNESS', state: input.request.freshnessState === 'FRESHNESS_PASS' ? 'PASS' : 'FAIL', detail: input.request.freshnessState },
     { domain: 'PAGES', state: input.inspection.pageCount > 0 && missingPageMarkers.length === 0 && !input.inspection.pages.at(-1)?.isEmpty ? 'PASS' : 'FAIL', detail: `${input.inspection.pageCount} pages; page marker IDs missing: ${missingPageMarkers.map((marker) => createHash('sha256').update(marker).digest('hex').slice(0, 12)).join(', ') || 'none'}` },
-    { domain: 'TABLES', state: ['Identity', 'Output version', 'Content fingerprint'].every((marker) => atlasPdfTextIncludesMarker(documentText, marker)) ? 'PASS' : 'FAIL', detail: 'Identity/provenance table headers and data labels extracted.' },
+    { domain: 'TABLES', state: ['Evidence identity table', 'Output version', 'Content fingerprint'].every((marker) => atlasPdfTextIncludesMarker(documentText, marker)) ? 'PASS' : 'FAIL', detail: 'Evidence identity table caption and data labels extracted.' },
     { domain: 'MAP', state: atlasPdfTextIncludesMarker(documentText, 'Static Map Fallback') ? 'PASS' : 'FAIL', detail: 'Map fallback is text/table based.' },
     { domain: 'CHART', state: atlasPdfTextIncludesMarker(documentText, 'Static Chart Fallback') ? 'PASS' : 'FAIL', detail: 'Chart fallback is text/table based.' },
     { domain: 'IMAGE', state: 'PASS_WITH_LIMITATION', detail: 'Property image is controlled fallback; no remote image fetch.' },

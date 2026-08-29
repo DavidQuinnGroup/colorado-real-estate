@@ -160,6 +160,7 @@ assert(sellerUpdateRequest.fileName.endsWith('.pdf'));
 for (const marker of atlasPdfExpectedMarkers('SELLER', seller.documentModel, seller.outputRender)) {
   assert(renderAtlasPdfHtml(sellerRequest).includes(marker), `seller HTML missing marker ${marker}`);
 }
+assert(renderAtlasPdfHtml(sellerRequest).includes('Evidence identity table'), 'seller HTML missing evidence identity table caption');
 for (const marker of atlasPdfExpectedMarkers('SELLER_UPDATE', sellerUpdate.documentModel, sellerUpdate.outputRender)) {
   assert(renderAtlasPdfHtml(sellerUpdateRequest).includes(marker), `seller update HTML missing marker ${marker}`);
 }
