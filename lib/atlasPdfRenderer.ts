@@ -19,7 +19,6 @@ import {
   atlasPdfTextIncludesMarker,
   atlasPdfStructuralQaEngine,
   buildAtlasPdfQaProfile,
-  normalizeAtlasPdfText,
   type AtlasPdfQaCertificationProfile,
   type AtlasPdfStructuralInspection,
   type AtlasPdfStructuralQaFailure,

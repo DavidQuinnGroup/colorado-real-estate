@@ -4,6 +4,14 @@
 
 `ATLAS_PDF_RENDERER_V1_CERTIFIED_WITH_LIMITATIONS`
 
+## Deployment Validation Closure
+
+`ATLAS_PDF_RENDERER_DEPLOYMENT_VALIDATION_V1_CERTIFIED_WITH_LIMITATIONS`
+
+Production deployment `dpl_3UVoWMooFX4VZibUB5bc5FMn2xnS` at runtime commit `53cf3706` produced certified ephemeral PDF bytes for both supported products through the authenticated Agent workspace: Seller Update (6 pages / 95,888 bytes) and Seller (8 pages / 127,715 bytes). Both returned `PDF_QA_PASSED` under `ATLAS_PDF_STRUCTURAL_QA_ENGINE_V1` using `pdfreader@3.0.8/pdf2json@3.1.4`.
+
+The deployment gate is closed with limitations for advanced visual, tagged-PDF accessibility, bookmark-tree, and raster-asset QA. See `ATLAS-PDF-NODE-STRUCTURAL-QA-REMEDIATION-V1-CERTIFICATION.md` for the production evidence and failure/remediation record.
+
 PROJECT ATLAS now has a first reusable Agent-internal PDF renderer for the certified Seller and Seller Update output family.
 
 | Field | Result |
@@ -17,10 +25,10 @@ PROJECT ATLAS now has a first reusable Agent-internal PDF renderer for the certi
 | Agent PDF status | `AGENT_INTERNAL_PDF_GENERATION_ACTIVE_EPHEMERAL` |
 | Seller PDF status | `SELLER_PDF_GENERATION_CERTIFIED_AGENT_INTERNAL_EPHEMERAL` |
 | Seller Update PDF status | `SELLER_UPDATE_PDF_GENERATION_CERTIFIED_AGENT_INTERNAL_EPHEMERAL` |
-| Deployment position | `DEPLOYMENT_VALIDATION_REQUIRED` |
+| Deployment position | `DEPLOYMENT_VALIDATED_AGENT_INTERNAL_WITH_LIMITATIONS` |
 | Persistence position | `EPHEMERAL_RESULT_ONLY_OUTPUT_RENDER_PERSISTENCE_DEFERRED` |
-| Next gate | `ATLAS_PDF_RENDERER_DEPLOYMENT_VALIDATION_V1` |
-| Next primary package | `ATLAS_PDF_RENDERER_DEPLOYMENT_VALIDATION_V1` |
+| Next gate | `SEPARATE_AUTHORIZATION_REQUIRED_FOR_PERSISTENCE_DELIVERY_OR_ADVANCED_PDF_QA` |
+| Next primary package | `NONE_AUTHORIZED_BY_THIS_CERTIFICATION` |
 
 ## Dependency Chain
 
