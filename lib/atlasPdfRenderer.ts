@@ -637,7 +637,7 @@ function buildAtlasPdfStructuralQaItems(input: {
   const documentText = input.inspection.documentText;
   const missingMarkers = input.profile.requiredMarkers.filter((marker) => !atlasPdfTextIncludesMarker(documentText, marker));
   const missingPageMarkers = input.profile.requiredPageMarkers.filter(
-    (marker) => !input.inspection.pages.some((page) => page.normalizedText.includes(normalizeAtlasPdfText(marker))),
+    (marker) => !input.inspection.pages.some((page) => atlasPdfTextIncludesMarker(page.normalizedText, marker)),
   );
   const fileHashValid = /^[a-f0-9]{64}$/.test(input.fileHash) && input.fileHash === createHash('sha256').update(input.pdfBytes).digest('hex');
   return freezeArray<AtlasPdfQaItem>([
@@ -646,15 +646,15 @@ function buildAtlasPdfStructuralQaItems(input: {
     { domain: 'RIGHTS', state: input.request.rightsState === 'RIGHTS_PASS' ? 'PASS' : 'FAIL', detail: input.request.rightsState },
     { domain: 'FRESHNESS', state: input.request.freshnessState === 'FRESHNESS_PASS' ? 'PASS' : 'FAIL', detail: input.request.freshnessState },
     { domain: 'PAGES', state: input.inspection.pageCount > 0 && missingPageMarkers.length === 0 && !input.inspection.pages.at(-1)?.isEmpty ? 'PASS' : 'FAIL', detail: `${input.inspection.pageCount} pages; page marker IDs missing: ${missingPageMarkers.map((marker) => createHash('sha256').update(marker).digest('hex').slice(0, 12)).join(', ') || 'none'}` },
-    { domain: 'TABLES', state: documentText.includes('Identity') && documentText.includes('Output version') && documentText.includes('Content fingerprint') ? 'PASS' : 'FAIL', detail: 'Identity/provenance table headers and data labels extracted.' },
-    { domain: 'MAP', state: documentText.includes('Static Map Fallback') ? 'PASS' : 'FAIL', detail: 'Map fallback is text/table based.' },
-    { domain: 'CHART', state: documentText.includes('Static Chart Fallback') ? 'PASS' : 'FAIL', detail: 'Chart fallback is text/table based.' },
+    { domain: 'TABLES', state: ['Identity', 'Output version', 'Content fingerprint'].every((marker) => atlasPdfTextIncludesMarker(documentText, marker)) ? 'PASS' : 'FAIL', detail: 'Identity/provenance table headers and data labels extracted.' },
+    { domain: 'MAP', state: atlasPdfTextIncludesMarker(documentText, 'Static Map Fallback') ? 'PASS' : 'FAIL', detail: 'Map fallback is text/table based.' },
+    { domain: 'CHART', state: atlasPdfTextIncludesMarker(documentText, 'Static Chart Fallback') ? 'PASS' : 'FAIL', detail: 'Chart fallback is text/table based.' },
     { domain: 'IMAGE', state: 'PASS_WITH_LIMITATION', detail: 'Property image is controlled fallback; no remote image fetch.' },
     { domain: 'FONT', state: 'PASS_WITH_LIMITATION', detail: 'System font fallback rendered with Arial/Helvetica.' },
     { domain: 'METADATA', state: 'PASS_WITH_LIMITATION', detail: 'Metadata is not part of the structural parser profile.' },
     { domain: 'BOOKMARKS', state: 'PASS_WITH_LIMITATION', detail: 'Bookmark tree inspection remains outside structural QA.' },
     { domain: 'ACCESSIBILITY', state: 'PASS_WITH_LIMITATION', detail: 'Tagged-PDF verification remains a separate accessibility QA layer.' },
-    { domain: 'PROVENANCE', state: documentText.includes('Evidence and Provenance') && documentText.includes(normalizeAtlasPdfText(input.request.outputVersionId)) ? 'PASS' : 'FAIL', detail: 'Output, render, evidence, pricing, post-launch, and decision markers present.' },
+    { domain: 'PROVENANCE', state: atlasPdfTextIncludesMarker(documentText, 'Evidence and Provenance') && atlasPdfTextIncludesMarker(documentText, input.request.outputVersionId) ? 'PASS' : 'FAIL', detail: 'Output, render, evidence, pricing, post-launch, and decision markers present.' },
     { domain: 'FILE_HASH', state: fileHashValid ? 'PASS' : 'FAIL', detail: input.fileHash },
   ]);
 }
@@ -672,6 +672,10 @@ export async function runAtlasPdfStructuralQa(input: {
     const failureCodes: AtlasPdfStructuralQaFailure[] = [];
     if (items.some((item) => item.domain === 'CONTENT_MATCH' && item.state === 'FAIL')) failureCodes.push('PDF_REQUIRED_MARKER_MISSING');
     if (items.some((item) => item.domain === 'PAGES' && item.state === 'FAIL')) failureCodes.push('PDF_PAGE_STRUCTURE_INVALID');
+    if (items.some((item) => item.domain === 'TABLES' && item.state === 'FAIL')) failureCodes.push('PDF_TABLE_STRUCTURE_INVALID');
+    if (items.some((item) => item.state === 'FAIL' && (item.domain === 'MAP' || item.domain === 'CHART'))) failureCodes.push('PDF_STATIC_FALLBACK_MISSING');
+    if (items.some((item) => item.domain === 'PROVENANCE' && item.state === 'FAIL')) failureCodes.push('PDF_REQUIRED_SECTION_MISSING');
+    if (items.some((item) => item.domain === 'FILE_HASH' && item.state === 'FAIL')) failureCodes.push('PDF_FILE_HASH_INVALID');
     return Object.freeze({
       qaState: items.some((item) => item.state === 'FAIL') ? 'PDF_QA_FAILED' : 'PDF_QA_PASSED',
       pageCount: inspection.pageCount,
