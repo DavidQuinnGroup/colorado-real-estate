@@ -1,4 +1,3 @@
-import { execFileSync } from 'node:child_process';
 import { createHash, randomUUID } from 'node:crypto';
 import { existsSync, mkdirSync, readFileSync, unlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -13,6 +12,18 @@ import {
   resolveAtlasPdfPlaywrightChromium,
   resolveAtlasPdfRuntimeEnvironment,
 } from './atlasPdfDeploymentRuntime';
+import {
+  ATLAS_PDF_STRUCTURAL_QA_ENGINE_ID,
+  ATLAS_PDF_STRUCTURAL_QA_ENGINE_VERSION,
+  AtlasPdfStructuralQaError,
+  atlasPdfTextIncludesMarker,
+  atlasPdfStructuralQaEngine,
+  buildAtlasPdfQaProfile,
+  normalizeAtlasPdfText,
+  type AtlasPdfQaCertificationProfile,
+  type AtlasPdfStructuralInspection,
+  type AtlasPdfStructuralQaFailure,
+} from './atlasPdfStructuralQa';
 
 import {
   type AtlasDocumentModel,
@@ -200,6 +211,15 @@ export type AtlasPdfRenderResult = Readonly<{
   fileSize: number;
   fileHash: string;
   qaState: 'PDF_QA_PASSED' | 'PDF_QA_FAILED';
+  structuralQa: Readonly<{
+    engineId: typeof ATLAS_PDF_STRUCTURAL_QA_ENGINE_ID;
+    engineVersion: typeof ATLAS_PDF_STRUCTURAL_QA_ENGINE_VERSION;
+    parserId: string;
+    parserVersion: string;
+    profileId: AtlasPdfQaCertificationProfile['id'];
+    profileVersion: AtlasPdfQaCertificationProfile['version'];
+    certifiedAt: string;
+  }>;
   accessibilityState: 'PDF_ACCESSIBILITY_BASELINE_READY';
   provenanceState: 'PDF_PROVENANCE_COMPLETE';
   staticAssetState: 'STATIC_FALLBACKS_CERTIFIED';
@@ -590,139 +610,81 @@ function escapeHtml(value: string) {
   })[character] ?? character);
 }
 
-function pdfInfo(path: string) {
-  try {
-    return execFileSync('pdfinfo', [path], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
-  } catch {
-    return '';
-  }
-}
+export type AtlasPdfStructuralQaRuntimeResult = Readonly<{
+  qaState: 'PDF_QA_PASSED' | 'PDF_QA_FAILED';
+  pageCount: number;
+  items: readonly AtlasPdfQaItem[];
+  qaDurationMs: number;
+  profile: AtlasPdfQaCertificationProfile;
+  inspection: AtlasPdfStructuralInspection | null;
+  failureCodes: readonly AtlasPdfStructuralQaFailure[];
+}>;
 
-function pdfText(path: string) {
-  try {
-    return execFileSync('pdftotext', [path, '-'], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
-  } catch {
-    const python = process.env.ATLAS_PDF_PYTHON ?? '/Users/davidquinn/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3';
-    const script = [
-      'import pdfplumber, sys',
-      'with pdfplumber.open(sys.argv[1]) as pdf:',
-      '    print("\\n".join(page.extract_text() or "" for page in pdf.pages))',
-    ].join('\n');
-    try {
-      return execFileSync(python, ['-c', script, path], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
-    } catch {
-      return '';
-    }
-  }
-}
-
-function infoField(info: string, name: string) {
-  const line = info.split('\n').find((item) => item.startsWith(`${name}:`));
-  return line ? line.slice(name.length + 1).trim() : '';
-}
-
-export function runAtlasPdfStructuralQa(input: {
+function buildAtlasPdfStructuralQaItems(input: {
   request: AtlasPdfRenderRequest;
-  pdfPath: string;
   pdfBytes: Buffer;
   fileHash: string;
-}): { qaState: 'PDF_QA_PASSED' | 'PDF_QA_FAILED'; pageCount: number; items: readonly AtlasPdfQaItem[]; qaDurationMs: number } {
-  const started = Date.now();
-  const info = pdfInfo(input.pdfPath);
-  const text = pdfText(input.pdfPath);
-  const pageCount = Number(infoField(info, 'Pages') || 0);
-  const tagged = infoField(info, 'Tagged');
-  const title = infoField(info, 'Title');
-  const missingMarkers = input.request.expectedTextMarkers.filter((marker) => !text.includes(marker));
+  profile: AtlasPdfQaCertificationProfile;
+  inspection: AtlasPdfStructuralInspection;
+}) {
+  const documentText = input.inspection.documentText;
+  const missingMarkers = input.profile.requiredMarkers.filter((marker) => !atlasPdfTextIncludesMarker(documentText, marker));
+  const missingPageMarkers = input.profile.requiredPageMarkers.filter(
+    (marker) => !input.inspection.pages.some((page) => page.normalizedText.includes(normalizeAtlasPdfText(marker))),
+  );
   const fileHashValid = /^[a-f0-9]{64}$/.test(input.fileHash) && input.fileHash === createHash('sha256').update(input.pdfBytes).digest('hex');
-  const baseItems: AtlasPdfQaItem[] = [
-    { domain: 'CONTENT_MATCH', state: missingMarkers.length === 0 ? 'PASS' : 'FAIL', detail: missingMarkers.length === 0 ? 'All expected structural text markers extracted.' : `Missing markers: ${missingMarkers.join(', ')}` },
+  return freezeArray<AtlasPdfQaItem>([
+    { domain: 'CONTENT_MATCH', state: missingMarkers.length === 0 ? 'PASS' : 'FAIL', detail: missingMarkers.length === 0 ? 'All expected structural text markers extracted.' : `Missing marker IDs: ${missingMarkers.map((marker) => createHash('sha256').update(marker).digest('hex').slice(0, 12)).join(', ')}` },
     { domain: 'VERSION_MATCH', state: input.request.renderFingerprint === input.request.expectedRenderFingerprint ? 'PASS' : 'FAIL', detail: input.request.renderVersion },
     { domain: 'RIGHTS', state: input.request.rightsState === 'RIGHTS_PASS' ? 'PASS' : 'FAIL', detail: input.request.rightsState },
     { domain: 'FRESHNESS', state: input.request.freshnessState === 'FRESHNESS_PASS' ? 'PASS' : 'FAIL', detail: input.request.freshnessState },
-    { domain: 'PAGES', state: pageCount >= input.request.expectedTextMarkers.length / 8 ? 'PASS' : 'FAIL', detail: `${pageCount} pages` },
-    { domain: 'TABLES', state: text.includes('Identity') && text.includes('Value') ? 'PASS' : 'FAIL', detail: 'Identity/provenance tables extracted.' },
-    { domain: 'MAP', state: text.includes('Static Map Fallback') ? 'PASS' : 'FAIL', detail: 'Map fallback is text/table based.' },
-    { domain: 'CHART', state: text.includes('Static Chart Fallback') ? 'PASS' : 'FAIL', detail: 'Chart fallback is text/table based.' },
+    { domain: 'PAGES', state: input.inspection.pageCount > 0 && missingPageMarkers.length === 0 && !input.inspection.pages.at(-1)?.isEmpty ? 'PASS' : 'FAIL', detail: `${input.inspection.pageCount} pages; page marker IDs missing: ${missingPageMarkers.map((marker) => createHash('sha256').update(marker).digest('hex').slice(0, 12)).join(', ') || 'none'}` },
+    { domain: 'TABLES', state: documentText.includes('Identity') && documentText.includes('Output version') && documentText.includes('Content fingerprint') ? 'PASS' : 'FAIL', detail: 'Identity/provenance table headers and data labels extracted.' },
+    { domain: 'MAP', state: documentText.includes('Static Map Fallback') ? 'PASS' : 'FAIL', detail: 'Map fallback is text/table based.' },
+    { domain: 'CHART', state: documentText.includes('Static Chart Fallback') ? 'PASS' : 'FAIL', detail: 'Chart fallback is text/table based.' },
     { domain: 'IMAGE', state: 'PASS_WITH_LIMITATION', detail: 'Property image is controlled fallback; no remote image fetch.' },
     { domain: 'FONT', state: 'PASS_WITH_LIMITATION', detail: 'System font fallback rendered with Arial/Helvetica.' },
-    { domain: 'METADATA', state: title === input.request.metadata.title ? 'PASS_WITH_LIMITATION' : 'FAIL', detail: 'Chromium Title is present; custom metadata awaits post-processing.' },
-    { domain: 'BOOKMARKS', state: 'PASS_WITH_LIMITATION', detail: 'outline:true accepted; bookmark tree inspection deferred.' },
-    { domain: 'ACCESSIBILITY', state: tagged === 'yes' ? 'PASS_WITH_LIMITATION' : 'FAIL', detail: `Tagged: ${tagged || 'unknown'}` },
-    { domain: 'PROVENANCE', state: text.includes('Evidence and Provenance') && text.includes(input.request.outputVersionId) ? 'PASS' : 'FAIL', detail: 'Output, render, evidence, pricing, post-launch, and decision markers present.' },
+    { domain: 'METADATA', state: 'PASS_WITH_LIMITATION', detail: 'Metadata is not part of the structural parser profile.' },
+    { domain: 'BOOKMARKS', state: 'PASS_WITH_LIMITATION', detail: 'Bookmark tree inspection remains outside structural QA.' },
+    { domain: 'ACCESSIBILITY', state: 'PASS_WITH_LIMITATION', detail: 'Tagged-PDF verification remains a separate accessibility QA layer.' },
+    { domain: 'PROVENANCE', state: documentText.includes('Evidence and Provenance') && documentText.includes(normalizeAtlasPdfText(input.request.outputVersionId)) ? 'PASS' : 'FAIL', detail: 'Output, render, evidence, pricing, post-launch, and decision markers present.' },
     { domain: 'FILE_HASH', state: fileHashValid ? 'PASS' : 'FAIL', detail: input.fileHash },
-  ];
-  return {
-    qaState: baseItems.some((item) => item.state === 'FAIL') ? 'PDF_QA_FAILED' : 'PDF_QA_PASSED',
-    pageCount,
-    items: freezeArray(baseItems),
-    qaDurationMs: Date.now() - started,
-  };
+  ]);
 }
 
-async function parseAtlasPdfWithPdfJs(pdfBytes: Buffer) {
-  const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs');
-  const document = await pdfjs.getDocument({ data: new Uint8Array(pdfBytes) }).promise;
-  try {
-    const pages = await Promise.all(
-      Array.from({ length: document.numPages }, async (_, index) => {
-        const page = await document.getPage(index + 1);
-        const content = await page.getTextContent();
-        return content.items.map((item) => ('str' in item ? item.str : '')).join(' ');
-      }),
-    );
-    const metadata = await document.getMetadata();
-    const markInfo = await document.getMarkInfo().catch(() => null);
-    return {
-      pageCount: document.numPages,
-      text: pages.join('\n'),
-      title: typeof (metadata.info as { Title?: unknown }).Title === 'string' ? (metadata.info as { Title: string }).Title : '',
-      tagged: markInfo?.Marked === true ? 'yes' : 'unknown',
-    };
-  } finally {
-    await document.destroy();
-  }
-}
-
-export async function runAtlasPdfStructuralQaForRuntime(input: {
+export async function runAtlasPdfStructuralQa(input: {
   request: AtlasPdfRenderRequest;
-  pdfPath: string;
   pdfBytes: Buffer;
   fileHash: string;
-}): Promise<{ qaState: 'PDF_QA_PASSED' | 'PDF_QA_FAILED'; pageCount: number; items: readonly AtlasPdfQaItem[]; qaDurationMs: number }> {
-  const nativeResult = runAtlasPdfStructuralQa(input);
-  if (nativeResult.pageCount > 0) return nativeResult;
-
+}): Promise<AtlasPdfStructuralQaRuntimeResult> {
   const started = Date.now();
+  const profile = buildAtlasPdfQaProfile(input.request.productKind, input.request.expectedTextMarkers);
   try {
-    const parsed = await parseAtlasPdfWithPdfJs(input.pdfBytes);
-    const missingMarkers = input.request.expectedTextMarkers.filter((marker) => !parsed.text.includes(marker));
-    const fileHashValid = /^[a-f0-9]{64}$/.test(input.fileHash) && input.fileHash === createHash('sha256').update(input.pdfBytes).digest('hex');
-    const items: AtlasPdfQaItem[] = [
-      { domain: 'CONTENT_MATCH', state: missingMarkers.length === 0 ? 'PASS' : 'FAIL', detail: missingMarkers.length === 0 ? 'All expected structural text markers extracted with PDF.js.' : `Missing markers: ${missingMarkers.join(', ')}` },
-      { domain: 'VERSION_MATCH', state: input.request.renderFingerprint === input.request.expectedRenderFingerprint ? 'PASS' : 'FAIL', detail: input.request.renderVersion },
-      { domain: 'RIGHTS', state: input.request.rightsState === 'RIGHTS_PASS' ? 'PASS' : 'FAIL', detail: input.request.rightsState },
-      { domain: 'FRESHNESS', state: input.request.freshnessState === 'FRESHNESS_PASS' ? 'PASS' : 'FAIL', detail: input.request.freshnessState },
-      { domain: 'PAGES', state: parsed.pageCount >= input.request.expectedTextMarkers.length / 8 ? 'PASS' : 'FAIL', detail: `${parsed.pageCount} pages` },
-      { domain: 'TABLES', state: parsed.text.includes('Identity') && parsed.text.includes('Value') ? 'PASS' : 'FAIL', detail: 'Identity/provenance tables extracted with PDF.js.' },
-      { domain: 'MAP', state: parsed.text.includes('Static Map Fallback') ? 'PASS' : 'FAIL', detail: 'Map fallback is text/table based.' },
-      { domain: 'CHART', state: parsed.text.includes('Static Chart Fallback') ? 'PASS' : 'FAIL', detail: 'Chart fallback is text/table based.' },
-      { domain: 'IMAGE', state: 'PASS_WITH_LIMITATION', detail: 'Property image is controlled fallback; no remote image fetch.' },
-      { domain: 'FONT', state: 'PASS_WITH_LIMITATION', detail: 'System font fallback rendered with Arial/Helvetica.' },
-      { domain: 'METADATA', state: parsed.title === input.request.metadata.title ? 'PASS_WITH_LIMITATION' : 'FAIL', detail: 'Chromium Title is present; custom metadata awaits post-processing.' },
-      { domain: 'BOOKMARKS', state: 'PASS_WITH_LIMITATION', detail: 'outline:true accepted; bookmark tree inspection deferred.' },
-      { domain: 'ACCESSIBILITY', state: parsed.tagged === 'yes' ? 'PASS_WITH_LIMITATION' : 'FAIL', detail: `Tagged: ${parsed.tagged}` },
-      { domain: 'PROVENANCE', state: parsed.text.includes('Evidence and Provenance') && parsed.text.includes(input.request.outputVersionId) ? 'PASS' : 'FAIL', detail: 'Output, render, evidence, pricing, post-launch, and decision markers present.' },
-      { domain: 'FILE_HASH', state: fileHashValid ? 'PASS' : 'FAIL', detail: input.fileHash },
-    ];
+    const inspection = await atlasPdfStructuralQaEngine.inspectPdf(input.pdfBytes);
+    const items = buildAtlasPdfStructuralQaItems({ ...input, profile, inspection });
+    const failureCodes: AtlasPdfStructuralQaFailure[] = [];
+    if (items.some((item) => item.domain === 'CONTENT_MATCH' && item.state === 'FAIL')) failureCodes.push('PDF_REQUIRED_MARKER_MISSING');
+    if (items.some((item) => item.domain === 'PAGES' && item.state === 'FAIL')) failureCodes.push('PDF_PAGE_STRUCTURE_INVALID');
     return Object.freeze({
       qaState: items.some((item) => item.state === 'FAIL') ? 'PDF_QA_FAILED' : 'PDF_QA_PASSED',
-      pageCount: parsed.pageCount,
-      items: freezeArray(items),
+      pageCount: inspection.pageCount,
+      items,
       qaDurationMs: Date.now() - started,
+      profile,
+      inspection,
+      failureCodes: freezeArray(failureCodes),
     });
-  } catch {
-    return nativeResult;
+  } catch (error) {
+    const code: AtlasPdfStructuralQaFailure = error instanceof AtlasPdfStructuralQaError ? error.code : 'PDF_QA_INTERNAL_ERROR';
+    return Object.freeze({
+      qaState: 'PDF_QA_FAILED',
+      pageCount: 0,
+      items: freezeArray<AtlasPdfQaItem>([{ domain: 'CONTENT_MATCH', state: 'FAIL', detail: `Structural QA failure: ${code}` }]),
+      qaDurationMs: Date.now() - started,
+      profile,
+      inspection: null,
+      failureCodes: freezeArray([code]),
+    });
   }
 }
 
@@ -806,7 +768,7 @@ export async function generateAtlasPdf(
 
   lifecycle.push('PDF_QA_REQUIRED');
   const fileHash = createHash('sha256').update(pdfBytes).digest('hex');
-  const qa = await runAtlasPdfStructuralQaForRuntime({ request, pdfPath: tempPath, pdfBytes, fileHash });
+  const qa = await runAtlasPdfStructuralQa({ request, pdfBytes, fileHash });
   if (existsSync(tempPath)) unlinkSync(tempPath);
   const tempFileRemoved = !existsSync(tempPath);
   if (qa.qaState !== 'PDF_QA_PASSED') return failedOutcome(request, 'QA_FAILURE', lifecycle);
@@ -837,6 +799,15 @@ export async function generateAtlasPdf(
     fileSize: pdfBytes.byteLength,
     fileHash,
     qaState: 'PDF_QA_PASSED',
+    structuralQa: Object.freeze({
+      engineId: ATLAS_PDF_STRUCTURAL_QA_ENGINE_ID,
+      engineVersion: ATLAS_PDF_STRUCTURAL_QA_ENGINE_VERSION,
+      parserId: qa.inspection?.parserId ?? 'UNAVAILABLE',
+      parserVersion: qa.inspection?.parserVersion ?? 'UNAVAILABLE',
+      profileId: qa.profile.id,
+      profileVersion: qa.profile.version,
+      certifiedAt: new Date().toISOString(),
+    }),
     accessibilityState: 'PDF_ACCESSIBILITY_BASELINE_READY',
     provenanceState: 'PDF_PROVENANCE_COMPLETE',
     staticAssetState: 'STATIC_FALLBACKS_CERTIFIED',

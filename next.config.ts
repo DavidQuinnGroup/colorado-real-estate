@@ -6,9 +6,12 @@ const nextConfig: NextConfig = {
     '/api/agent/output/pdf': [
       './node_modules/@sparticuz/chromium/bin/**',
       './node_modules/playwright-core/**',
+      './node_modules/pdfreader/**',
+      './node_modules/pdf2json/**',
+      './node_modules/@xmldom/xmldom/**',
     ],
   },
-  serverExternalPackages: ['@sparticuz/chromium', 'playwright-core'],
+  serverExternalPackages: ['@sparticuz/chromium', 'playwright-core', 'pdfreader', 'pdf2json'],
   experimental: {
     turbo: {
       resolveAlias: {

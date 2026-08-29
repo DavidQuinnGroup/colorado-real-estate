@@ -41,6 +41,12 @@ import {
   resolveAtlasPdfRuntimeEnvironment,
 } from '../lib/atlasPdfDeploymentRuntime';
 import {
+  ATLAS_PDF_STRUCTURAL_QA_ENGINE_ID,
+  ATLAS_PDF_STRUCTURAL_QA_ENGINE_VERSION,
+  ATLAS_PDF_STRUCTURAL_QA_PARSER_ID,
+  ATLAS_PDF_STRUCTURAL_QA_PARSER_VERSION,
+} from '../lib/atlasPdfStructuralQa';
+import {
   HEADLESS_PDF_RENDERER_FEASIBILITY_SELECTED_RENDERER,
   HEADLESS_PDF_RENDERER_FEASIBILITY_STATUS,
 } from '../lib/headlessPdfRendererFeasibility';
@@ -158,22 +164,24 @@ for (const marker of atlasPdfExpectedMarkers('SELLER_UPDATE', sellerUpdate.docum
   assert(renderAtlasPdfHtml(sellerUpdateRequest).includes(marker), `seller update HTML missing marker ${marker}`);
 }
 
-const malformedPath = join('/private/tmp', 'atlas-pdf-renderer-check-malformed.pdf');
-const malformedBytes = Buffer.from('%PDF-1.4\n% malformed atlas check\n', 'utf8');
-writeFileSync(malformedPath, malformedBytes);
-const qaFailure = runAtlasPdfStructuralQa({
+const malformedBytes = Buffer.from('not a PDF', 'utf8');
+const qaFailure = await runAtlasPdfStructuralQa({
   request: buildAtlasPdfRenderRequest('SELLER_UPDATE', { expectedTextMarkers: ['definitely absent marker'] }),
-  pdfPath: malformedPath,
   pdfBytes: malformedBytes,
   fileHash: createHash('sha256').update(malformedBytes).digest('hex'),
 });
 assert.equal(qaFailure.qaState, 'PDF_QA_FAILED');
 assert(qaFailure.items.some((item) => item.domain === 'CONTENT_MATCH' && item.state === 'FAIL'));
+assert.deepEqual(qaFailure.failureCodes, ['PDF_SIGNATURE_INVALID']);
+assert.equal(ATLAS_PDF_STRUCTURAL_QA_ENGINE_ID, 'ATLAS_PDF_STRUCTURAL_QA_ENGINE');
+assert.equal(ATLAS_PDF_STRUCTURAL_QA_ENGINE_VERSION, 'ATLAS_PDF_STRUCTURAL_QA_ENGINE_V1');
+assert.equal(ATLAS_PDF_STRUCTURAL_QA_PARSER_ID, 'PDFREADER_PDF2JSON');
+assert.equal(ATLAS_PDF_STRUCTURAL_QA_PARSER_VERSION, 'pdfreader@3.0.8/pdf2json@3.1.4');
 
 for (const token of [
   'resolveAtlasPdfChromiumExecutable',
   'resolveAtlasPdfPlaywrightChromium',
-  'runAtlasPdfStructuralQaForRuntime',
+  'runAtlasPdfStructuralQa',
   'chromium.launch',
   'page.setContent',
   'page.pdf',
@@ -289,6 +297,8 @@ for (const token of [
 }
 
 assert.equal(packageJson.dependencies?.playwright, '1.62.1');
+assert.equal(packageJson.dependencies?.pdfreader, '3.0.8');
+assert.equal(packageJson.dependencies?.['pdfjs-dist'], undefined);
 assert.equal(packageJson.scripts?.['check:atlas-pdf-renderer'], 'jiti scripts/checkAtlasPdfRenderer.ts');
 assert.equal(packageJson.scripts?.['run:atlas-pdf-renderer-fixtures'], 'jiti scripts/runAtlasPdfRendererFixtures.ts');
 assert.deepEqual(buildAtlasPdfRendererCertification(), certification, 'PDF renderer certification fixture must be deterministic');

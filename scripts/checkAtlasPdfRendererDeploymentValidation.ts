@@ -14,6 +14,7 @@ import {
 const route = readFileSync('app/api/agent/output/pdf/route.ts', 'utf8');
 const renderer = readFileSync('lib/atlasPdfRenderer.ts', 'utf8');
 const runtimeAdapter = readFileSync('lib/atlasPdfDeploymentRuntime.ts', 'utf8');
+const structuralQa = readFileSync('lib/atlasPdfStructuralQa.ts', 'utf8');
 const config = readFileSync('next.config.ts', 'utf8');
 const packageJson = JSON.parse(readFileSync('package.json', 'utf8')) as {
   dependencies?: Record<string, string>;
@@ -69,7 +70,7 @@ for (const token of [
   'resolveAtlasPdfPlaywrightChromium',
   'resolveRuntimePackageVersion',
   "requireFromRuntime.resolve(packageName)",
-  'runAtlasPdfStructuralQaForRuntime',
+  'runAtlasPdfStructuralQa',
   'LOCAL_DOCUMENT_ONLY_NO_REMOTE_FETCH',
   'page.close',
   'browser.close',
@@ -77,6 +78,18 @@ for (const token of [
   'ATLAS_PDF_RENDERER_RUNTIME_FAILURE',
   'errorMessage: runtimeError.message',
 ]) assert(renderer.includes(token), `renderer missing deployment policy ${token}`);
+
+for (const token of [
+  "requireFromStructuralQa('pdfreader')",
+  'ATLAS_PDF_STRUCTURAL_QA_ENGINE_V1',
+  'PDFREADER_PDF2JSON',
+  'PDF_SIGNATURE_INVALID',
+  'PDF_QA_ENGINE_UNAVAILABLE',
+  'normalizeAtlasPdfText',
+  'atlasPdfTextIncludesMarker',
+]) assert(structuralQa.includes(token), `structural QA contract missing ${token}`);
+assert.doesNotMatch(structuralQa, /DOMMatrix|DOMParser|\bdocument\b|\bwindow\b|canvas|pdfjs-dist/);
+assert.doesNotMatch(renderer, /pdfinfo|pdftotext|pdfplumber|pdfjs-dist/);
 
 assert.equal(
   renderer.includes("requireFromRuntime(`${runtimeEnvironment === 'DEPLOYED_SERVER' ? 'playwright-core' : 'playwright'}/package.json`)"),
@@ -88,11 +101,14 @@ for (const token of [
   "'/api/agent/output/pdf': [",
   "'./node_modules/@sparticuz/chromium/bin/**'",
   "'./node_modules/playwright-core/**'",
-  "serverExternalPackages: ['@sparticuz/chromium', 'playwright-core']",
+  "'./node_modules/pdfreader/**'",
+  "'./node_modules/pdf2json/**'",
+  "serverExternalPackages: ['@sparticuz/chromium', 'playwright-core', 'pdfreader', 'pdf2json']",
 ]) assert(config.includes(token), `next config missing deployment trace policy ${token}`);
 
 assert.equal(packageJson.dependencies?.['@sparticuz/chromium'], '149.0.0');
-assert.equal(packageJson.dependencies?.['pdfjs-dist'], '5.4.530');
+assert.equal(packageJson.dependencies?.pdfreader, '3.0.8');
+assert.equal(packageJson.dependencies?.['pdfjs-dist'], undefined);
 assert.equal(packageJson.dependencies?.['playwright-core'], '^1.62.1');
 assert.equal(packageJson.scripts?.['check:atlas-pdf-renderer-deployment-validation'], 'jiti scripts/checkAtlasPdfRendererDeploymentValidation.ts');
 

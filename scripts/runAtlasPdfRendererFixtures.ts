@@ -52,6 +52,7 @@ async function renderFixture(productKind: 'SELLER' | 'SELLER_UPDATE') {
       fileSize: result.fileSize,
       fileHash: result.fileHash,
       qaState: result.qaState,
+      structuralQa: result.structuralQa,
       accessibilityState: result.accessibilityState,
       provenanceState: result.provenanceState,
       staticAssetState: result.staticAssetState,
@@ -68,7 +69,7 @@ async function renderFixture(productKind: 'SELLER' | 'SELLER_UPDATE') {
   };
 }
 
-async function negativeFixtures() {
+async function negativeFixtures(referencePdfBytes: Buffer) {
   const versionMismatch = await generateAtlasPdf(buildAtlasPdfRenderRequest('SELLER_UPDATE', {
     requestId: 'atlas-pdf-renderer-v1-version-mismatch',
     expectedRenderFingerprint: 'output-render-fingerprint-mismatch',
@@ -93,14 +94,26 @@ async function negativeFixtures() {
     requestId: 'atlas-pdf-renderer-v1-qa-failure',
     expectedTextMarkers: ['marker-that-is-intentionally-absent'],
   });
-  const fakePdf = Buffer.from('%PDF-1.4\n% atlas malformed fixture\n', 'utf8');
-  const fakePath = join(outputDir, 'atlas-pdf-renderer-v1-malformed-qa.pdf');
-  writeFileSync(fakePath, fakePdf);
-  const qaFailure = runAtlasPdfStructuralQa({
+  const fakePdf = Buffer.from('not a PDF', 'utf8');
+  const qaFailure = await runAtlasPdfStructuralQa({
     request: qaFailureRequest,
-    pdfPath: fakePath,
     pdfBytes: fakePdf,
     fileHash: createHash('sha256').update(fakePdf).digest('hex'),
+  });
+  const missingMarker = await runAtlasPdfStructuralQa({
+    request: buildAtlasPdfRenderRequest('SELLER', { expectedTextMarkers: ['marker-that-is-intentionally-absent'] }),
+    pdfBytes: referencePdfBytes,
+    fileHash: createHash('sha256').update(referencePdfBytes).digest('hex'),
+  });
+  const wrongProfile = await runAtlasPdfStructuralQa({
+    request: buildAtlasPdfRenderRequest('SELLER_UPDATE'),
+    pdfBytes: referencePdfBytes,
+    fileHash: createHash('sha256').update(referencePdfBytes).digest('hex'),
+  });
+  const truncated = await runAtlasPdfStructuralQa({
+    request: buildAtlasPdfRenderRequest('SELLER'),
+    pdfBytes: referencePdfBytes.subarray(0, 128),
+    fileHash: createHash('sha256').update(referencePdfBytes.subarray(0, 128)).digest('hex'),
   });
 
   return {
@@ -112,7 +125,23 @@ async function negativeFixtures() {
       requestId: qaFailureRequest.requestId,
       qaState: qaFailure.qaState,
       failedDomains: qaFailure.items.filter((item) => item.state === 'FAIL').map((item) => item.domain),
+      failureCodes: qaFailure.failureCodes,
       noCertifiedPdf: qaFailure.qaState === 'PDF_QA_FAILED',
+    },
+    missingMarker: {
+      qaState: missingMarker.qaState,
+      failureCodes: missingMarker.failureCodes,
+      noCertifiedPdf: missingMarker.qaState === 'PDF_QA_FAILED',
+    },
+    wrongProfile: {
+      qaState: wrongProfile.qaState,
+      failureCodes: wrongProfile.failureCodes,
+      noCertifiedPdf: wrongProfile.qaState === 'PDF_QA_FAILED',
+    },
+    truncated: {
+      qaState: truncated.qaState,
+      failureCodes: truncated.failureCodes,
+      noCertifiedPdf: truncated.qaState === 'PDF_QA_FAILED',
     },
   };
 }
@@ -120,7 +149,7 @@ async function negativeFixtures() {
 async function main() {
   const seller = await renderFixture('SELLER');
   const sellerUpdate = await renderFixture('SELLER_UPDATE');
-  const negative = await negativeFixtures();
+  const negative = await negativeFixtures(readFileSync(seller.file.pdfPath));
   const hashValidation = {
     sellerHashMatchesBytes: createHash('sha256').update(readFileSync(seller.file.pdfPath)).digest('hex') === seller.result.fileHash,
     sellerUpdateHashMatchesBytes: createHash('sha256').update(readFileSync(sellerUpdate.file.pdfPath)).digest('hex') === sellerUpdate.result.fileHash,
