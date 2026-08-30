@@ -20,6 +20,14 @@ import {
   sellerPresentationFinancialModuleFingerprint,
   SELLER_PRESENTATION_FINANCIAL_MODULE_ADAPTER_VERSION,
 } from './sellerPresentationFinancialModuleAdapter';
+import {
+  BUYER_DECISION_BRIEF_CERTIFICATION_FIXTURE_IDS,
+  BUYER_DECISION_BRIEF_FOUNDATION_VERSION,
+  buyerDecisionBriefFingerprint,
+  buyerDecisionBriefFixture,
+  isBuyerDecisionBrief,
+  type BuyerDecisionBriefCertificationFixtureId,
+} from './buyerDecisionBriefFoundation';
 
 export const OUTPUT_PERSISTENCE_FOUNDATION_VERSION = 'OUTPUT_PERSISTENCE_FOUNDATION_V1' as const;
 export const OUTPUT_PERSISTENCE_PAYLOAD_SCHEMA_VERSION = 'OUTPUT_PERSISTENCE_PAYLOAD_V1' as const;
@@ -86,10 +94,17 @@ export type SellerPresentationFinancialModulePersistenceSaveRequest = Readonly<{
   reviewNote?: string;
 }>;
 
+export type BuyerDecisionBriefPersistenceSaveRequest = Readonly<{
+  buyerDecisionBriefFixtureId: BuyerDecisionBriefCertificationFixtureId;
+  reviewConfirmation: 'AGENT_REVIEWED';
+  reviewNote?: string;
+}>;
+
 export type OutputPersistenceSaveRequest =
   | LegacyOutputPersistenceSaveRequest
   | SellerFinancialOutputPersistenceSaveRequest
-  | SellerPresentationFinancialModulePersistenceSaveRequest;
+  | SellerPresentationFinancialModulePersistenceSaveRequest
+  | BuyerDecisionBriefPersistenceSaveRequest;
 
 export type PersistedOutputSummary = Readonly<{
   id: string;
@@ -112,6 +127,10 @@ export type PersistedOutputSummary = Readonly<{
     estimatedNetProceedsCents: number;
     asOf: string;
     financialOutputVersionId: string;
+  }>;
+  buyerDecisionBrief?: Readonly<{
+    fixtureId: BuyerDecisionBriefCertificationFixtureId;
+    offerPriceContextCents: number;
   }>;
 }>;
 
@@ -236,6 +255,9 @@ export function parseOutputPersistenceSaveRequest(value: unknown): OutputPersist
   if (typeof input.sellerPresentationFinancialOutputVersionId === 'string' && input.sellerPresentationFinancialOutputVersionId.trim()) {
     return Object.freeze({ sellerPresentationFinancialOutputVersionId: input.sellerPresentationFinancialOutputVersionId, reviewConfirmation: 'AGENT_REVIEWED', reviewNote: input.reviewNote as string | undefined });
   }
+  if (typeof input.buyerDecisionBriefFixtureId === 'string' && BUYER_DECISION_BRIEF_CERTIFICATION_FIXTURE_IDS.includes(input.buyerDecisionBriefFixtureId as BuyerDecisionBriefCertificationFixtureId)) {
+    return Object.freeze({ buyerDecisionBriefFixtureId: input.buyerDecisionBriefFixtureId as BuyerDecisionBriefCertificationFixtureId, reviewConfirmation: 'AGENT_REVIEWED', reviewNote: input.reviewNote as string | undefined });
+  }
   if (typeof input.sourceVersionRef !== 'string') {
     throw new OutputPersistenceError('INVALID_REQUEST', 'A source output version or reviewed Seller Financial scenario is required.');
   }
@@ -261,9 +283,18 @@ function sellerPresentationFinancialModuleSummary(contentPayload: Prisma.JsonVal
   });
 }
 
+function buyerDecisionBriefSummary(contentPayload: Prisma.JsonValue) {
+  if (!isBuyerDecisionBrief(contentPayload)) return undefined;
+  return Object.freeze({
+    fixtureId: contentPayload.fixtureId,
+    offerPriceContextCents: contentPayload.decisionContext.offerPriceContextCents,
+  });
+}
+
 export function serializePersistedOutputSummary(version: Pick<OutputVersion, 'id' | 'productId' | 'sourceVersionRef' | 'versionOrdinal' | 'displayVersion' | 'contentFingerprint' | 'lifecycleState' | 'reviewedAt' | 'immutableAt' | 'contentPayload'>, created: boolean): PersistedOutputSummary {
   const sellerFinancial = sellerFinancialSummary(version.contentPayload);
   const sellerPresentationFinancialModule = sellerPresentationFinancialModuleSummary(version.contentPayload);
+  const buyerDecisionBrief = buyerDecisionBriefSummary(version.contentPayload);
   return Object.freeze({
     id: version.id,
     productId: version.productId,
@@ -277,6 +308,7 @@ export function serializePersistedOutputSummary(version: Pick<OutputVersion, 'id
     created,
     ...(sellerFinancial ? { sellerFinancial } : {}),
     ...(sellerPresentationFinancialModule ? { sellerPresentationFinancialModule } : {}),
+    ...(buyerDecisionBrief ? { buyerDecisionBrief } : {}),
   });
 }
 
@@ -403,13 +435,79 @@ export function createOutputPersistenceService(prisma: PrismaClient) {
     });
   }
 
+  function buildBuyerDecisionBriefFixture(fixtureId: BuyerDecisionBriefCertificationFixtureId): PersistableOutputFixture {
+    const brief = buyerDecisionBriefFixture(fixtureId);
+    const contentFingerprint = buyerDecisionBriefFingerprint(brief);
+    return Object.freeze({
+      sourceVersionRef: `buyer-decision-brief-v1:${fixtureId}`,
+      outputProductId: 'buyer-decision-brief-certification-product-v1',
+      productKind: 'BUYER_PRESENTATION',
+      audience: 'BUYER',
+      subjectRef: 'atlas-certification-buyer-decision-subject',
+      purpose: 'Agent-reviewed Buyer Decision Brief assembled from bounded synthetic certification inputs.',
+      displayVersion: `Buyer Decision Brief / ${fixtureId.endsWith('_A') ? 'A' : 'B'}`,
+      effectiveAsOf: brief.asOf,
+      contentVersion: BUYER_DECISION_BRIEF_FOUNDATION_VERSION,
+      compositionVersion: BUYER_DECISION_BRIEF_FOUNDATION_VERSION,
+      presentationVisualVersion: 'BUYER_DECISION_BRIEF_AGENT_REVIEW_V1',
+      outputContractVersion: BUYER_DECISION_BRIEF_FOUNDATION_VERSION,
+      payloadSchemaVersion: BUYER_DECISION_BRIEF_FOUNDATION_VERSION,
+      contentFingerprint,
+      contentPayload: brief as unknown as Prisma.JsonObject,
+      lineage: Object.freeze({
+        ...(fixtureId.endsWith('_B') ? { priorReviewedVersion: 'buyer-decision-brief-v1:ATLAS_CERTIFICATION_BUYER_BRIEF_A' } : {}),
+      }),
+      evidence: Object.freeze({
+        sourceSnapshotRefs: ['PROPERTY_SELLER_EVIDENCE_FIXTURES:PSER-001'],
+        metricRefs: [],
+        analysisRefs: [],
+        agentInputRefs: [`BuyerDecisionContext:${fixtureId}`],
+        assumptionRefs: [`OfferPriceContext:${brief.decisionContext.offerPriceContextCents}`],
+        limitationRefs: brief.limitations as Prisma.JsonValue[],
+        rightsRefs: ['SYNTHETIC_CERTIFICATION_INTERNAL_ONLY'],
+        freshnessRefs: [`AS_OF:${brief.asOf}`],
+        reviewState: 'AGENT_REVIEWED',
+        fingerprint: buyerDecisionBriefFingerprint(Object.freeze({ ...brief, fixtureId })),
+      }),
+      dependencies: Object.freeze([
+        {
+          upstreamArtifact: 'PROPERTY_SELLER_EVIDENCE_FIXTURES:PSER-001',
+          downstreamArtifact: 'BUYER_DECISION_BRIEF_V1',
+          dependencyType: 'FACT_DEPENDENCY' as const,
+          materiality: 'HIGH' as const,
+          versionUsed: 'PROPERTY_SELLER_EVIDENCE_READINESS_V1',
+          fieldMetricScope: ['property.reference', 'property.qualification', 'location.city'],
+          changePolicy: 'A revised property identity or qualification requires a new reviewed Buyer Decision Brief.',
+          invalidationPolicy: 'RECOMPOSE_REQUIRED' as const,
+          reviewPolicy: 'AGENT_REVIEW_REQUIRED' as const,
+          currentState: 'CURRENT' as const,
+        },
+        {
+          upstreamArtifact: `BuyerDecisionContext:${fixtureId}`,
+          downstreamArtifact: 'BUYER_DECISION_BRIEF_V1',
+          dependencyType: 'AGENT_INPUT_DEPENDENCY' as const,
+          materiality: 'HIGH' as const,
+          versionUsed: contentFingerprint,
+          fieldMetricScope: ['decisionContext', 'tradeoffs', 'followUp'],
+          changePolicy: 'A material decision-context change requires a successor reviewed Buyer Decision Brief.',
+          invalidationPolicy: 'REVIEW_REQUIRED' as const,
+          reviewPolicy: 'AGENT_REVIEW_REQUIRED' as const,
+          currentState: 'CURRENT' as const,
+        },
+      ]),
+      decisionRefs: [`BuyerDecisionContext:${fixtureId}`],
+    });
+  }
+
   async function persistReviewedOutput(ownerAgentSubject: string, request: OutputPersistenceSaveRequest): Promise<PersistedOutputSummary> {
     if (!ownerAgentSubject.trim()) throw new OutputPersistenceError('OWNERSHIP_DENIED', 'An Agent owner identity is required.');
     const fixture = 'financialScenarioId' in request
       ? await buildSellerFinancialFixture(ownerAgentSubject, request.financialScenarioId)
       : 'sellerPresentationFinancialOutputVersionId' in request
         ? await buildSellerPresentationFinancialModuleFixture(ownerAgentSubject, request.sellerPresentationFinancialOutputVersionId)
-        : buildPersistableOutputFixture(request.sourceVersionRef);
+        : 'buyerDecisionBriefFixtureId' in request
+          ? buildBuyerDecisionBriefFixture(request.buyerDecisionBriefFixtureId)
+          : buildPersistableOutputFixture(request.sourceVersionRef);
     const idempotencyKey = buildOutputPersistenceIdempotencyKey(ownerAgentSubject, fixture);
 
     for (let attempt = 0; attempt < 2; attempt += 1) {

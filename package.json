@@ -12,6 +12,7 @@
     "check:seller-financial-estimated-scenario": "jiti scripts/checkSellerFinancialEstimatedScenario.ts",
     "check:seller-financial-output-integration": "jiti scripts/checkSellerFinancialOutputIntegration.ts",
     "check:seller-presentation-financial-module-adapter": "jiti scripts/checkSellerPresentationFinancialModuleAdapter.ts",
+    "check:buyer-decision-brief-foundation": "jiti scripts/checkBuyerDecisionBriefFoundation.ts",
     "check:output-persistence-foundation": "jiti scripts/checkOutputPersistenceFoundation.ts",
     "check:evidence-admission-foundation": "jiti scripts/checkEvidenceAdmissionFoundation.ts",
     "check:professional-input-foundation": "jiti scripts/checkProfessionalInputFoundation.ts",
