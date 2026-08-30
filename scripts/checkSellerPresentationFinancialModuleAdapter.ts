@@ -40,6 +40,7 @@ const module = adaptSellerFinancialModuleToSellerPresentation({
 assert.equal(SELLER_PRESENTATION_FINANCIAL_MODULE_ADAPTER_VERSION, 'SELLER_PRESENTATION_FINANCIAL_MODULE_ADAPTER_V1');
 assert.equal(module.estimatedNetProceedsCents, 42_344_869);
 assert.equal(module.asOf, '2026-08-30T15:00:00.000Z');
+assert.equal(module.asOf.slice(0, 10), '2026-08-30');
 assert.equal(module.financialOutputVersionId, 'output-a');
 assert.equal(module.sourceQualifications[0]?.sourceQualifier, 'Agent estimate');
 assert.equal(module.unknownZeroNotIncluded[0]?.state, 'UNKNOWN');
@@ -54,6 +55,7 @@ assert.throws(() => adaptSellerFinancialModuleToSellerPresentation({
 
 assert.equal(outputSource.includes('sellerPresentationFinancialOutputVersionId'), true);
 assert.equal(outputSource.includes('buildSellerPresentationFinancialModuleFixture'), true);
+assert.equal(outputSource.includes('effectiveAsOf: presentationModule.asOf.slice(0, 10)'), true);
 assert.equal(outputSource.includes('sellerFinancialScenario.findFirst'), true);
 assert.equal(outputSource.includes('sellerFinancialScenario.update('), false);
 assert.equal(outputSource.includes('outputVersion.update('), false);

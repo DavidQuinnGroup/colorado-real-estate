@@ -366,7 +366,7 @@ export function createOutputPersistenceService(prisma: PrismaClient) {
       subjectRef: financialOutput.subjectRef,
       purpose: 'Reviewed Seller Presentation composed with an explicit immutable Seller Financial module.',
       displayVersion: `Seller Presentation / Financial output #${financialOutput.versionOrdinal}`,
-      effectiveAsOf: presentationModule.asOf,
+      effectiveAsOf: presentationModule.asOf.slice(0, 10),
       contentVersion: SELLER_PRESENTATION_FINANCIAL_MODULE_ADAPTER_VERSION,
       compositionVersion: SELLER_PRESENTATION_FINANCIAL_MODULE_ADAPTER_VERSION,
       presentationVisualVersion: 'SELLER_PRESENTATION_FINANCIAL_SECTION_V1',
