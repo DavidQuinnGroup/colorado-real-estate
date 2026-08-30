@@ -1,0 +1,42 @@
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+
+const workflow = readFileSync('components/agent/ProfessionalInputWorkflow.tsx', 'utf8');
+const page = readFileSync('app/agent/prepare/professional-inputs/page.tsx', 'utf8');
+const professionalRoute = readFileSync('app/api/agent/professional-inputs/route.ts', 'utf8');
+const evidenceRoute = readFileSync('app/api/agent/evidence/route.ts', 'utf8');
+const professionalService = readFileSync('lib/professionalInputFoundation.ts', 'utf8');
+const evidenceService = readFileSync('lib/evidenceAdmissionFoundation.ts', 'utf8');
+const auth = readFileSync('lib/admin/adminAuth.ts', 'utf8');
+const shell = readFileSync('components/agent/AgentWorkspaceShell.tsx', 'utf8');
+const home = readFileSync('components/agent/AgentWorkspaceHome.tsx', 'utf8');
+const packageJson = JSON.parse(readFileSync('package.json', 'utf8')) as { scripts?: Record<string, string> };
+
+assert.match(page, /ProfessionalInputWorkflow/);
+assert.match(workflow, /Record request/);
+assert.match(workflow, /Record response/);
+assert.match(workflow, /Admit and create input/);
+assert.match(workflow, /Candidate rejected\. Its history remains preserved/);
+assert.match(workflow, /Resolver-backed admitted inputs/);
+assert.match(workflow, /Read-only history/);
+assert.match(workflow, /External delivery is not activated/);
+assert.match(workflow, /Secure document exchange is not activated/);
+assert.match(workflow, /data-agent-only="true"/);
+assert.match(workflow, /data-client-portal="not-activated"/);
+assert.doesNotMatch(workflow, /textarea/);
+assert.doesNotMatch(workflow, /type="file"/);
+assert.doesNotMatch(workflow, /\/api\/agent\/outputs/);
+assert.match(professionalRoute, /RECORD_RESPONSE/);
+assert.match(professionalRoute, /listOwnedProfessionalInputHistory/);
+assert.match(evidenceRoute, /listOwnedEvidenceHistory/);
+assert.match(professionalService, /persistEvidenceCandidateInTransaction/);
+assert.match(professionalService, /candidate\.sourceKind !== 'PROFESSIONAL_REPORTED'/);
+assert.match(professionalService, /evidenceAdmissionId/);
+assert.match(evidenceService, /resolveEligibleEvidence/);
+assert.match(auth, /agent\/prepare\/professional-inputs/);
+assert.match(auth, /api\/agent\/professional-inputs/);
+assert.match(shell, /agent-workspace-professional-inputs-link/);
+assert.match(home, /Professional Inputs/);
+assert.equal(packageJson.scripts?.['check:evidence-professional-input-agent-workflow'], 'jiti scripts/checkEvidenceProfessionalInputAgentWorkflow.ts');
+
+console.log('EVIDENCE_PROFESSIONAL_INPUT_AGENT_WORKFLOW_CHECK: PASS');

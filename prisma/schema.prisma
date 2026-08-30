@@ -95,6 +95,67 @@ enum OutputCheckpointState {
   COMPLETED
 }
 
+enum EvidenceSourceKind {
+  TRUSTED_INTERNAL_DETERMINISTIC
+  PROFESSIONAL_REPORTED
+  PROFESSIONAL_DOCUMENT
+  OTHER_REVIEW_REQUIRED
+}
+
+enum EvidenceCandidateStatus {
+  PENDING_REVIEW
+  ADMITTED
+  REJECTED
+}
+
+enum EvidenceClaimKind {
+  LENDER_RATE
+  LENDER_TERM
+  PAYOFF_AMOUNT
+  INSURANCE_PREMIUM
+  INSURANCE_COVERAGE
+  PROPERTY_MANAGER_RENT
+  TAX_AMOUNT
+  TAX_ASSESSMENT
+  INSPECTION_OBSERVATION
+  HOA_INFORMATION
+  TITLE_INFORMATION
+}
+
+enum EvidenceVerificationStatus {
+  UNVERIFIED
+  SOURCE_ROLE_CLAIMED
+  SOURCE_ROLE_VERIFIED
+  VERIFICATION_LIMITED
+  VERIFICATION_FAILED
+}
+
+enum EvidenceAdmissionPolicy {
+  TRUSTED_INTERNAL_DETERMINISTIC_AUTO_ADMISSION
+  AGENT_REVIEWED_PROFESSIONAL_INPUT
+  AGENT_REVIEWED_MANUAL_EVIDENCE
+  FUTURE_DOCUMENT_VERIFIED_ADMISSION
+}
+
+enum EvidenceAdmissionAuditEventType {
+  CANDIDATE_CREATED
+  CANDIDATE_REVIEWED
+  CANDIDATE_ADMITTED
+  CANDIDATE_REJECTED
+  ADMISSION_SUPERSEDED
+}
+
+enum ProfessionalInputRequestStatus {
+  DRAFT
+  REQUESTED
+  ACKNOWLEDGED
+  RESPONDED
+  UNDER_REVIEW
+  COMPLETED
+  CANCELLED
+  EXPIRED
+}
+
 enum CountyJurisdictionType {
   COUNTY
   MUNICIPALITY
@@ -2406,6 +2467,145 @@ model OutputCheckpoint {
 
   @@unique([outputVersionId, checkpointRef])
   @@index([outputVersionId, recordedAt])
+}
+
+model EvidenceCandidate {
+  id                     String                  @id @default(cuid())
+  ownerAgentSubject      String
+  sourceKind             EvidenceSourceKind
+  sourceRef              String
+  claimKind              EvidenceClaimKind
+  candidatePayload       Json
+  observedAt             DateTime?
+  receivedAt             DateTime
+  status                 EvidenceCandidateStatus @default(PENDING_REVIEW)
+  provenance             Json
+  fingerprint            String
+  reviewedBySubject      String?
+  reviewedAt             DateTime?
+  rejectionReason        String?
+  admissionPolicyContext Json
+  admissionId            String?                 @unique
+  createdAt              DateTime                @default(now())
+  updatedAt              DateTime                @updatedAt
+
+  admission              EvidenceAdmission?      @relation("EvidenceCandidateAdmission", fields: [admissionId], references: [id], onDelete: Restrict)
+  admissionRecord        EvidenceAdmission?      @relation("EvidenceAdmissionCandidate")
+  auditEvents            EvidenceAdmissionAuditEvent[]
+  professionalResponse   ProfessionalInputResponse?
+
+  @@unique([ownerAgentSubject, fingerprint])
+  @@index([ownerAgentSubject, status, createdAt])
+  @@index([ownerAgentSubject, claimKind, status])
+}
+
+model EvidenceAdmission {
+  id                     String                  @id @default(cuid())
+  ownerAgentSubject      String
+  candidateId            String                  @unique
+  sourceKind             EvidenceSourceKind
+  sourceRef              String
+  claimKind              EvidenceClaimKind
+  admittedValue          Json
+  provenance             Json
+  admissionPolicy        EvidenceAdmissionPolicy
+  admittedBySubject      String
+  admittedAt             DateTime                @default(now())
+  effectiveAt            DateTime?
+  expiresAt              DateTime?
+  reviewAfter            DateTime?
+  supersedesAdmissionId  String?                 @unique
+  fingerprint            String                  @unique
+  createdAt              DateTime                @default(now())
+
+  candidate              EvidenceCandidate       @relation("EvidenceAdmissionCandidate", fields: [candidateId], references: [id], onDelete: Restrict)
+  candidateReference     EvidenceCandidate?      @relation("EvidenceCandidateAdmission")
+  supersedesAdmission    EvidenceAdmission?      @relation("EvidenceAdmissionSupersession", fields: [supersedesAdmissionId], references: [id], onDelete: Restrict)
+  supersededByAdmission  EvidenceAdmission?      @relation("EvidenceAdmissionSupersession")
+  auditEvents            EvidenceAdmissionAuditEvent[]
+  professionalInputs     ProfessionalInput[]
+
+  @@index([ownerAgentSubject, claimKind, effectiveAt])
+  @@index([ownerAgentSubject, expiresAt])
+}
+
+model EvidenceAdmissionAuditEvent {
+  id                 String                          @id @default(cuid())
+  ownerAgentSubject  String
+  candidateId        String?
+  admissionId        String?
+  eventType          EvidenceAdmissionAuditEventType
+  actorSubject       String
+  policyContext      Json
+  createdAt          DateTime                        @default(now())
+
+  candidate          EvidenceCandidate?              @relation(fields: [candidateId], references: [id], onDelete: Restrict)
+  admission          EvidenceAdmission?              @relation(fields: [admissionId], references: [id], onDelete: Restrict)
+
+  @@index([ownerAgentSubject, createdAt])
+  @@index([candidateId, createdAt])
+  @@index([admissionId, createdAt])
+}
+
+model ProfessionalInputRequest {
+  id                      String                         @id @default(cuid())
+  ownerAgentSubject       String
+  claimKind               EvidenceClaimKind
+  requestedSourceRole     String
+  status                  ProfessionalInputRequestStatus @default(DRAFT)
+  requestedBySubject      String
+  requestedAt             DateTime?
+  dueAt                   DateTime?
+  purpose                 String
+  supportDocumentRequired Boolean                        @default(false)
+  createdAt               DateTime                       @default(now())
+  updatedAt               DateTime                       @updatedAt
+
+  response                ProfessionalInputResponse?
+
+  @@index([ownerAgentSubject, status, createdAt])
+  @@index([ownerAgentSubject, claimKind, status])
+}
+
+model ProfessionalInputResponse {
+  id                      String                       @id @default(cuid())
+  requestId               String                       @unique
+  ownerAgentSubject       String
+  sourceReference         String
+  sourceRoleClaim         String?
+  sourceIdentityReference String?
+  providedAt              DateTime?
+  receivedAt              DateTime
+  responsePayload         Json
+  provenance              Json
+  verificationStatus      EvidenceVerificationStatus
+  candidateId             String                       @unique
+  createdAt               DateTime                     @default(now())
+
+  request                 ProfessionalInputRequest     @relation(fields: [requestId], references: [id], onDelete: Restrict)
+  candidate               EvidenceCandidate            @relation(fields: [candidateId], references: [id], onDelete: Restrict)
+
+  @@index([ownerAgentSubject, receivedAt])
+}
+
+model ProfessionalInput {
+  id                  String            @id @default(cuid())
+  ownerAgentSubject   String
+  claimKind           EvidenceClaimKind
+  versionOrdinal      Int
+  value               Json
+  evidenceAdmissionId String            @unique
+  effectiveAt         DateTime?
+  expiresAt           DateTime?
+  reviewAfter         DateTime?
+  provenance          Json
+  fingerprint         String            @unique
+  createdAt           DateTime          @default(now())
+
+  evidenceAdmission   EvidenceAdmission @relation(fields: [evidenceAdmissionId], references: [id], onDelete: Restrict)
+
+  @@unique([ownerAgentSubject, claimKind, versionOrdinal])
+  @@index([ownerAgentSubject, claimKind, effectiveAt])
 }
 
 // prisma/schema.prisma
