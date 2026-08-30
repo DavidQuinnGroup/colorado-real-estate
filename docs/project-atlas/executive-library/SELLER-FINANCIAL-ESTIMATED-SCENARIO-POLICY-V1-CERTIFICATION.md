@@ -10,7 +10,7 @@ Seller Financial V1 is a private Agent-only, owner-scoped estimated-scenario wor
 
 The configured migration target and authenticated Vercel Production runtime are the same physical database: PostgreSQL `postgres`, server `2600:1f14:359d:9302:23e1:fe60:8ad2:3846/128:5432`, with 23 applied Prisma migrations. The migration target and runtime each exposed the same owner-scoped certification anchors before successor creation: one Seller Financial scenario, eleven EvidenceAdmissions, and nine ProfessionalInputs.
 
-The earlier zero-history observation was a delayed private-history load, not a database target, environment-variable, migration, owner-scope, API-filter, or deployment-assignment mismatch. No Vercel environment variable was changed and no database data was copied.
+The earlier zero-history observation was an Agent UI history-state defect: the initial empty array rendered as an empty persisted history while the private request was still pending. The workspace now renders `Loading persisted scenario history` until the request resolves; a fresh production context showed loading first and then restored V1 and V2 without a false empty state. It was not a database target, environment-variable, migration, owner-scope, API-filter, or deployment-assignment mismatch. No Vercel environment variable was changed and no database data was copied.
 
 ## Calculation Contract
 
