@@ -26,6 +26,16 @@ export async function GET(request: NextRequest) {
   const subject = await subjectFor(request, 'GET');
   if (!subject) return NextResponse.json({ error: 'Agent authentication required.' }, { status: 403, headers: HEADERS });
   try {
+    if (request.nextUrl.searchParams.get('diagnostic') === '1') {
+      const [identity, migrationCount, sellerFinancial, evidenceAdmissions, professionalInputs] = await Promise.all([
+        prisma.$queryRaw<Array<{ database: string; host: string | null; port: number | null }>>`select current_database() as database, inet_server_addr()::text as host, inet_server_port() as port`,
+        prisma.$queryRaw<Array<{ count: number }>>`select count(*)::int as count from "_prisma_migrations" where finished_at is not null`,
+        prisma.sellerFinancialScenario.count({ where: { ownerAgentSubject: subject } }),
+        prisma.evidenceAdmission.count({ where: { ownerAgentSubject: subject } }),
+        prisma.professionalInput.count({ where: { ownerAgentSubject: subject } }),
+      ]);
+      return NextResponse.json({ diagnostic: { database: identity[0]?.database ?? null, host: identity[0]?.host ?? null, port: identity[0]?.port ?? null, appliedMigrationCount: migrationCount[0]?.count ?? 0, sellerFinancialScenarioCount: sellerFinancial, evidenceAdmissionCount: evidenceAdmissions, professionalInputCount: professionalInputs } }, { headers: HEADERS });
+    }
     const [history, professionalInputs] = await Promise.all([
       createSellerFinancialScenarioService(prisma).listOwned(subject),
       prisma.professionalInput.findMany({ where: { ownerAgentSubject: subject, claimKind: 'PAYOFF_AMOUNT' }, include: { evidenceAdmission: { include: { supersededByAdmission: { select: { id: true } } } } }, orderBy: [{ versionOrdinal: 'desc' }] }),
