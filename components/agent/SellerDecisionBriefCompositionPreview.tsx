@@ -122,7 +122,42 @@ type AgentPersistedOutput = Readonly<{
   reviewedAt: string;
   immutableAt: string;
   created: boolean;
+  sellerFinancial?: Readonly<{
+    scenarioVersionOrdinal: number;
+    estimatedNetProceedsCents: number;
+    asOf: string;
+    qualifier: 'ESTIMATED';
+  }>;
 }>;
+
+type AgentSellerFinancialResult = Readonly<{
+  id: string;
+  calculationContract: string;
+  resultPayload: Readonly<Record<string, unknown>>;
+}>;
+
+type AgentSellerFinancialScenario = Readonly<{
+  id: string;
+  scenarioKey: string;
+  versionOrdinal: number;
+  lifecycleState: string;
+  reviewedAt: string | null;
+  results: readonly AgentSellerFinancialResult[];
+}>;
+
+function formatCurrencyFromCents(value: number) {
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value / 100);
+}
+
+function financialSummaryForScenario(scenario: AgentSellerFinancialScenario) {
+  const result = scenario.results.find((candidate) => candidate.resultPayload.state === 'ESTIMATED');
+  if (!result) return null;
+  const net = result.resultPayload.estimatedNetProceedsCents;
+  const asOf = result.resultPayload.asOf;
+  return typeof net === 'number' && Number.isInteger(net) && typeof asOf === 'string'
+    ? Object.freeze({ resultId: result.id, netProceedsCents: net, asOf })
+    : null;
+}
 
 const fixturePropertyFacts = [
   ['Subject', preview.brief.outputProduct.context.subject.label],
@@ -162,6 +197,9 @@ export default function SellerDecisionBriefCompositionPreview() {
   const [persistedOutputs, setPersistedOutputs] = useState<readonly AgentPersistedOutput[]>([]);
   const [persistenceState, setPersistenceState] = useState<'LOADING' | 'READY' | 'PERSISTING' | 'FAILED'>('LOADING');
   const [persistenceError, setPersistenceError] = useState<string | null>(null);
+  const [financialScenarios, setFinancialScenarios] = useState<readonly AgentSellerFinancialScenario[]>([]);
+  const [financialHistoryState, setFinancialHistoryState] = useState<'LOADING' | 'READY' | 'FAILED'>('LOADING');
+  const [selectedFinancialScenarioId, setSelectedFinancialScenarioId] = useState<string>('');
 
   useEffect(() => () => {
     if (pdfResult?.objectUrl) URL.revokeObjectURL(pdfResult.objectUrl);
@@ -183,6 +221,27 @@ export default function SellerDecisionBriefCompositionPreview() {
         if (!active) return;
         setPersistenceError('Reviewed output history could not be restored.');
         setPersistenceState('FAILED');
+      });
+    return () => { active = false; };
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+    void fetch('/api/agent/seller-financial', { credentials: 'same-origin', cache: 'no-store' })
+      .then(async (response) => {
+        if (!response.ok) throw new Error('Unable to restore reviewed Seller Financial history.');
+        return response.json() as Promise<{ history?: AgentSellerFinancialScenario[] }>;
+      })
+      .then((response) => {
+        if (!active) return;
+        const reviewed = (response.history ?? []).filter((scenario) => scenario.lifecycleState === 'REVIEWED' && financialSummaryForScenario(scenario));
+        setFinancialScenarios(reviewed);
+        setSelectedFinancialScenarioId((current) => current || reviewed[0]?.id || '');
+        setFinancialHistoryState('READY');
+      })
+      .catch(() => {
+        if (!active) return;
+        setFinancialHistoryState('FAILED');
       });
     return () => { active = false; };
   }, []);
@@ -256,6 +315,27 @@ export default function SellerDecisionBriefCompositionPreview() {
       setPersistenceState('READY');
     } catch (error) {
       setPersistenceError(error instanceof Error ? error.message : 'Reviewed output persistence failed.');
+      setPersistenceState('FAILED');
+    }
+  }
+
+  async function persistSellerFinancialOutput(financialScenarioId: string) {
+    setPersistenceError(null);
+    setPersistenceState('PERSISTING');
+    try {
+      const response = await fetch('/api/agent/outputs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        cache: 'no-store',
+        body: JSON.stringify({ financialScenarioId, reviewConfirmation: 'AGENT_REVIEWED' }),
+      });
+      const payload = await response.json().catch(() => ({})) as { output?: AgentPersistedOutput; error?: string };
+      if (!response.ok || !payload.output) throw new Error(payload.error ?? 'Reviewed Seller Financial output persistence failed.');
+      setPersistedOutputs((current) => [payload.output!, ...current.filter((item) => item.id !== payload.output!.id)]);
+      setPersistenceState('READY');
+    } catch (error) {
+      setPersistenceError(error instanceof Error ? error.message : 'Reviewed Seller Financial output persistence failed.');
       setPersistenceState('FAILED');
     }
   }
@@ -360,6 +440,14 @@ export default function SellerDecisionBriefCompositionPreview() {
               state={persistenceState}
               error={persistenceError}
               onPersist={(sourceVersionRef) => void persistReviewedOutput(sourceVersionRef)}
+            />
+            <SellerFinancialOutputPanel
+              scenarios={financialScenarios}
+              state={financialHistoryState}
+              selectedScenarioId={selectedFinancialScenarioId}
+              persisting={persistenceState === 'PERSISTING'}
+              onSelect={setSelectedFinancialScenarioId}
+              onPersist={(scenarioId) => void persistSellerFinancialOutput(scenarioId)}
             />
             <AgentPdfGenerationPanel
               productKind={pdfProductKind}
@@ -1144,12 +1232,59 @@ function OutputPersistencePanel({
         {state !== 'LOADING' && outputs.length === 0 ? <p className="px-4 py-3 text-sm text-[#4d5652]">No reviewed outputs have been persisted for this Agent.</p> : null}
         {outputs.slice(0, 6).map((output) => (
           <div key={output.id} className="grid grid-cols-[minmax(0,1fr)_5rem_8rem] gap-3 border-b border-[#ece6dc] px-4 py-3 text-sm last:border-b-0" data-testid="output-persistence-history-row">
-            <span className="min-w-0"><span className="block break-words font-semibold text-[#172025]">{output.displayVersion}</span><span className="mt-1 block break-all text-xs text-[#71624e]">{output.contentFingerprint}</span></span>
+            <span className="min-w-0"><span className="block break-words font-semibold text-[#172025]">{output.displayVersion}</span>{output.sellerFinancial ? <span className="mt-1 block text-xs font-semibold text-[#355d50]">Estimated net proceeds: {formatCurrencyFromCents(output.sellerFinancial.estimatedNetProceedsCents)}</span> : null}<span className="mt-1 block break-all text-xs text-[#71624e]">{output.contentFingerprint}</span></span>
             <span className="text-[#4d5652]">#{output.versionOrdinal}</span>
             <span className="text-xs font-semibold text-[#355d50]">{output.lifecycleState.replaceAll('_', ' ')}</span>
           </div>
         ))}
       </div>
+    </section>
+  );
+}
+
+function SellerFinancialOutputPanel({
+  scenarios,
+  state,
+  selectedScenarioId,
+  persisting,
+  onSelect,
+  onPersist,
+}: {
+  scenarios: readonly AgentSellerFinancialScenario[];
+  state: 'LOADING' | 'READY' | 'FAILED';
+  selectedScenarioId: string;
+  persisting: boolean;
+  onSelect: (scenarioId: string) => void;
+  onPersist: (scenarioId: string) => void;
+}) {
+  const selected = scenarios.find((scenario) => scenario.id === selectedScenarioId) ?? null;
+  const summary = selected ? financialSummaryForScenario(selected) : null;
+  return (
+    <section className="border-b border-[#d8cfc0] bg-[#f4f8f5] px-5 py-5 sm:px-8 lg:px-10" data-testid="seller-financial-output-integration" data-persistence="true" data-pdf-storage="false" data-output-render-storage="false">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#355d50]">Seller Financial Output V1</p>
+          <h3 className="mt-2 text-2xl font-semibold leading-8 text-[#172025]">Review an exact estimated proceeds scenario before composing it.</h3>
+          <p className="mt-2 max-w-3xl text-sm leading-6 text-[#4d5652]">The reviewed output stores an immutable semantic snapshot with exact scenario and result dependencies. It remains estimated, point-in-time, and separate from PDF or delivery.</p>
+        </div>
+        <div className="grid min-w-64 gap-2" data-screen-only="true">
+          <label className="text-xs font-semibold text-[#4d5652]" htmlFor="seller-financial-output-scenario">Reviewed scenario</label>
+          <select id="seller-financial-output-scenario" value={selectedScenarioId} onChange={(event) => onSelect(event.target.value)} disabled={state !== 'READY' || persisting || scenarios.length === 0} className="min-h-11 border border-[#9ba9a2] bg-white px-3 text-sm text-[#172025] disabled:bg-[#ece6dc]" data-testid="seller-financial-output-scenario-select">
+            {scenarios.map((scenario) => {
+              const item = financialSummaryForScenario(scenario);
+              return <option key={scenario.id} value={scenario.id}>V{scenario.versionOrdinal} - {item ? formatCurrencyFromCents(item.netProceedsCents) : 'Unavailable'}</option>;
+            })}
+          </select>
+          <button type="button" onClick={() => selected && onPersist(selected.id)} disabled={!selected || !summary || persisting} className="inline-flex min-h-11 items-center justify-center gap-2 bg-[#355d50] px-4 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:bg-[#a9b5ad]" data-testid="persist-seller-financial-output">
+            {persisting ? <Loader2 size={16} aria-hidden="true" className="animate-spin" /> : <FileCheck2 size={16} aria-hidden="true" />}
+            Review and persist estimate
+          </button>
+        </div>
+      </div>
+      {state === 'LOADING' ? <p className="mt-4 text-sm text-[#4d5652]">Loading reviewed Seller Financial scenarios.</p> : null}
+      {state === 'FAILED' ? <p className="mt-4 border border-amber-300 bg-amber-50 p-3 text-sm font-semibold text-amber-900">Reviewed Seller Financial history could not be restored.</p> : null}
+      {state === 'READY' && scenarios.length === 0 ? <p className="mt-4 text-sm text-[#4d5652]">No reviewed Seller Financial scenarios are available for output composition.</p> : null}
+      {selected && summary ? <dl className="mt-4 grid gap-3 border border-[#cfd9d2] bg-white p-4 text-sm sm:grid-cols-3" data-testid="seller-financial-output-preview"><div><dt className="text-[#4d5652]">Selected scenario</dt><dd className="mt-1 font-semibold text-[#172025]">{selected.scenarioKey} V{selected.versionOrdinal}</dd></div><div><dt className="text-[#4d5652]">Estimated net proceeds</dt><dd className="mt-1 font-semibold text-[#172025]">{formatCurrencyFromCents(summary.netProceedsCents)}</dd></div><div><dt className="text-[#4d5652]">As of</dt><dd className="mt-1 font-semibold text-[#172025]">{summary.asOf}</dd></div><div className="sm:col-span-3"><dt className="text-[#4d5652]">Source qualification</dt><dd className="mt-1 text-[#172025]">Scenario assumptions and Agent estimates are retained as labeled, point-in-time estimated inputs. No current-source lookup occurs when the reviewed output is later read.</dd></div></dl> : null}
     </section>
   );
 }

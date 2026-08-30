@@ -7,6 +7,13 @@ import {
   type AtlasOutputEvidenceSnapshot,
   type AtlasOutputVersion,
 } from './outputVersionLineageInvalidationFoundation';
+import {
+  buildSellerFinancialOutputComposition,
+  isSellerFinancialOutputSemanticProfile,
+  SELLER_FINANCIAL_OUTPUT_INTEGRATION_VERSION,
+  SELLER_FINANCIAL_OUTPUT_SEMANTIC_PROFILE_VERSION,
+  type SellerFinancialOutputDependency,
+} from './sellerFinancialOutputIntegration';
 
 export const OUTPUT_PERSISTENCE_FOUNDATION_VERSION = 'OUTPUT_PERSISTENCE_FOUNDATION_V1' as const;
 export const OUTPUT_PERSISTENCE_PAYLOAD_SCHEMA_VERSION = 'OUTPUT_PERSISTENCE_PAYLOAD_V1' as const;
@@ -20,9 +27,10 @@ export const OUTPUT_PERSISTENCE_SUPPORTED_SOURCE_VERSION_REFS = [
 export type OutputPersistenceSupportedSourceVersionRef = (typeof OUTPUT_PERSISTENCE_SUPPORTED_SOURCE_VERSION_REFS)[number];
 
 type StringRecord = Readonly<Record<string, string | null>>;
+type PersistableOutputDependency = Omit<AtlasOutputDependency, 'id'>;
 
 export type PersistableOutputFixture = Readonly<{
-  sourceVersionRef: OutputPersistenceSupportedSourceVersionRef;
+  sourceVersionRef: string;
   outputProductId: string;
   productKind: AtlasOutputVersion['productKind'];
   audience: AtlasOutputVersion['audience'];
@@ -33,37 +41,40 @@ export type PersistableOutputFixture = Readonly<{
   contentVersion: string;
   compositionVersion: string;
   presentationVisualVersion: string;
+  outputContractVersion: string;
+  payloadSchemaVersion: string;
   contentFingerprint: string;
-  contentPayload: Readonly<{
-    schemaVersion: typeof OUTPUT_PERSISTENCE_PAYLOAD_SCHEMA_VERSION;
-    sourceVersionRef: string;
-    contentVersion: string;
-    compositionVersion: string;
-    presentationVisualVersion: string;
-    referenceGroups: Readonly<Record<string, readonly string[]>>;
-  }>;
+  contentPayload: Prisma.JsonObject;
   lineage: StringRecord;
   evidence: Readonly<{
-    sourceSnapshotRefs: readonly string[];
-    metricRefs: readonly string[];
-    analysisRefs: readonly string[];
-    agentInputRefs: readonly string[];
-    assumptionRefs: readonly string[];
-    limitationRefs: readonly string[];
-    rightsRefs: readonly string[];
-    freshnessRefs: readonly string[];
+    sourceSnapshotRefs: readonly Prisma.JsonValue[];
+    metricRefs: readonly Prisma.JsonValue[];
+    analysisRefs: readonly Prisma.JsonValue[];
+    agentInputRefs: readonly Prisma.JsonValue[];
+    assumptionRefs: readonly Prisma.JsonValue[];
+    limitationRefs: readonly Prisma.JsonValue[];
+    rightsRefs: readonly Prisma.JsonValue[];
+    freshnessRefs: readonly Prisma.JsonValue[];
     reviewState: string;
     fingerprint: string;
   }>;
-  dependencies: readonly AtlasOutputDependency[];
+  dependencies: readonly PersistableOutputDependency[];
   decisionRefs: readonly string[];
 }>;
 
-export type OutputPersistenceSaveRequest = Readonly<{
+export type LegacyOutputPersistenceSaveRequest = Readonly<{
   sourceVersionRef: OutputPersistenceSupportedSourceVersionRef;
   reviewConfirmation: 'AGENT_REVIEWED';
   reviewNote?: string;
 }>;
+
+export type SellerFinancialOutputPersistenceSaveRequest = Readonly<{
+  financialScenarioId: string;
+  reviewConfirmation: 'AGENT_REVIEWED';
+  reviewNote?: string;
+}>;
+
+export type OutputPersistenceSaveRequest = LegacyOutputPersistenceSaveRequest | SellerFinancialOutputPersistenceSaveRequest;
 
 export type PersistedOutputSummary = Readonly<{
   id: string;
@@ -76,6 +87,12 @@ export type PersistedOutputSummary = Readonly<{
   reviewedAt: string;
   immutableAt: string;
   created: boolean;
+  sellerFinancial?: Readonly<{
+    scenarioVersionOrdinal: number;
+    estimatedNetProceedsCents: number;
+    asOf: string;
+    qualifier: 'ESTIMATED';
+  }>;
 }>;
 
 export class OutputPersistenceError extends Error {
@@ -145,6 +162,8 @@ export function buildPersistableOutputFixture(sourceVersionRef: string): Persist
     compositionVersion: version.compositionVersion,
     presentationVisualVersion: version.presentationVisualVersion,
     contentFingerprint: version.contentFingerprint,
+    outputContractVersion: OUTPUT_PERSISTENCE_FOUNDATION_VERSION,
+    payloadSchemaVersion: OUTPUT_PERSISTENCE_PAYLOAD_SCHEMA_VERSION,
     contentPayload: Object.freeze({
       schemaVersion: OUTPUT_PERSISTENCE_PAYLOAD_SCHEMA_VERSION,
       sourceVersionRef: version.id,
@@ -161,7 +180,7 @@ export function buildPersistableOutputFixture(sourceVersionRef: string): Persist
         postLaunch: referenceIds(version.postLaunchReferences),
         decision: referenceIds(version.sellerClientDecisionReferences),
       }),
-    }),
+    }) as Prisma.JsonObject,
     lineage: outputLineage(version),
     evidence: Object.freeze({
       sourceSnapshotRefs: [...evidence.sourceSnapshotReferences],
@@ -185,23 +204,33 @@ export function parseOutputPersistenceSaveRequest(value: unknown): OutputPersist
     throw new OutputPersistenceError('INVALID_REQUEST', 'The output persistence request must be an object.');
   }
   const input = value as Record<string, unknown>;
-  if (typeof input.sourceVersionRef !== 'string') {
-    throw new OutputPersistenceError('INVALID_REQUEST', 'A source output version is required.');
-  }
   if (input.reviewConfirmation !== 'AGENT_REVIEWED') {
     throw new OutputPersistenceError('REVIEW_CONFIRMATION_REQUIRED', 'An Agent review confirmation is required before persistence.');
   }
   if (input.reviewNote !== undefined && (typeof input.reviewNote !== 'string' || input.reviewNote.length > 500)) {
     throw new OutputPersistenceError('INVALID_REQUEST', 'The review note is invalid.');
   }
+  if (typeof input.financialScenarioId === 'string' && input.financialScenarioId.trim()) {
+    return Object.freeze({ financialScenarioId: input.financialScenarioId, reviewConfirmation: 'AGENT_REVIEWED', reviewNote: input.reviewNote as string | undefined });
+  }
+  if (typeof input.sourceVersionRef !== 'string') {
+    throw new OutputPersistenceError('INVALID_REQUEST', 'A source output version or reviewed Seller Financial scenario is required.');
+  }
+  return Object.freeze({ sourceVersionRef: requireSupportedSourceVersionRef(input.sourceVersionRef), reviewConfirmation: 'AGENT_REVIEWED', reviewNote: input.reviewNote as string | undefined });
+}
+
+function sellerFinancialSummary(contentPayload: Prisma.JsonValue) {
+  if (!isSellerFinancialOutputSemanticProfile(contentPayload)) return undefined;
   return Object.freeze({
-    sourceVersionRef: requireSupportedSourceVersionRef(input.sourceVersionRef),
-    reviewConfirmation: 'AGENT_REVIEWED',
-    reviewNote: input.reviewNote as string | undefined,
+    scenarioVersionOrdinal: contentPayload.scenario.versionOrdinal,
+    estimatedNetProceedsCents: contentPayload.financials.estimatedNetProceedsCents,
+    asOf: contentPayload.result.asOf,
+    qualifier: 'ESTIMATED' as const,
   });
 }
 
-export function serializePersistedOutputSummary(version: Pick<OutputVersion, 'id' | 'productId' | 'sourceVersionRef' | 'versionOrdinal' | 'displayVersion' | 'contentFingerprint' | 'lifecycleState' | 'reviewedAt' | 'immutableAt'>, created: boolean): PersistedOutputSummary {
+export function serializePersistedOutputSummary(version: Pick<OutputVersion, 'id' | 'productId' | 'sourceVersionRef' | 'versionOrdinal' | 'displayVersion' | 'contentFingerprint' | 'lifecycleState' | 'reviewedAt' | 'immutableAt' | 'contentPayload'>, created: boolean): PersistedOutputSummary {
+  const sellerFinancial = sellerFinancialSummary(version.contentPayload);
   return Object.freeze({
     id: version.id,
     productId: version.productId,
@@ -213,6 +242,7 @@ export function serializePersistedOutputSummary(version: Pick<OutputVersion, 'id
     reviewedAt: version.reviewedAt.toISOString(),
     immutableAt: version.immutableAt.toISOString(),
     created,
+    ...(sellerFinancial ? { sellerFinancial } : {}),
   });
 }
 
@@ -221,9 +251,62 @@ export function buildOutputPersistenceIdempotencyKey(ownerAgentSubject: string, 
 }
 
 export function createOutputPersistenceService(prisma: PrismaClient) {
+  async function buildSellerFinancialFixture(ownerAgentSubject: string, scenarioId: string): Promise<PersistableOutputFixture> {
+    const scenario = await prisma.sellerFinancialScenario.findFirst({
+      where: { id: scenarioId, ownerAgentSubject },
+      include: { results: true },
+    });
+    if (!scenario) throw new OutputPersistenceError('OWNERSHIP_DENIED', 'The selected Seller Financial scenario is unavailable to this Agent.');
+    const result = scenario.results.find((candidate) => candidate.calculationContract === scenario.calculationContract);
+    if (!result) throw new OutputPersistenceError('PERSISTENCE_UNAVAILABLE', 'The selected Seller Financial result is unavailable.');
+    const professionalInputIds = Array.isArray(scenario.professionalInputRefs)
+      ? scenario.professionalInputRefs.flatMap((reference) => reference && typeof reference === 'object' && !Array.isArray(reference) && typeof (reference as { id?: unknown }).id === 'string' ? [(reference as { id: string }).id] : [])
+      : [];
+    if (professionalInputIds.length) {
+      const professionalInputs = await prisma.professionalInput.findMany({ where: { id: { in: professionalInputIds }, ownerAgentSubject } });
+      if (professionalInputs.length !== professionalInputIds.length) {
+        throw new OutputPersistenceError('OWNERSHIP_DENIED', 'A Seller Financial professional-input provenance reference is unavailable to this Agent.');
+      }
+    }
+    try {
+      const composition = buildSellerFinancialOutputComposition(scenario, result);
+      const productFixture = buildPersistableOutputFixture('seller-decision-brief-v2-reviewed');
+      return Object.freeze({
+        sourceVersionRef: composition.sourceVersionRef,
+        outputProductId: productFixture.outputProductId,
+        productKind: productFixture.productKind,
+        audience: productFixture.audience,
+        subjectRef: productFixture.subjectRef,
+        purpose: 'Reviewed Seller Presentation financial scenario module.',
+        displayVersion: composition.displayVersion,
+        effectiveAsOf: composition.effectiveAsOf.toISOString().slice(0, 10),
+        contentVersion: SELLER_FINANCIAL_OUTPUT_SEMANTIC_PROFILE_VERSION,
+        compositionVersion: SELLER_FINANCIAL_OUTPUT_INTEGRATION_VERSION,
+        presentationVisualVersion: 'SELLER_FINANCIAL_SEMANTIC_MODULE_V1',
+        outputContractVersion: SELLER_FINANCIAL_OUTPUT_INTEGRATION_VERSION,
+        payloadSchemaVersion: SELLER_FINANCIAL_OUTPUT_SEMANTIC_PROFILE_VERSION,
+        contentFingerprint: composition.contentFingerprint,
+        contentPayload: composition.semanticProfile as unknown as Prisma.JsonObject,
+        lineage: Object.freeze({
+          derivedFromVersion: `SellerFinancialScenario:${scenario.id}`,
+          resultVersion: `SellerFinancialResult:${result.id}`,
+          supersedesScenarioId: scenario.supersedesScenarioId,
+        }),
+        evidence: composition.evidence,
+        dependencies: composition.dependencies as readonly SellerFinancialOutputDependency[],
+        decisionRefs: [composition.decisionRef],
+      });
+    } catch (error) {
+      if (error instanceof Error) throw new OutputPersistenceError('PERSISTENCE_UNAVAILABLE', error.message);
+      throw error;
+    }
+  }
+
   async function persistReviewedOutput(ownerAgentSubject: string, request: OutputPersistenceSaveRequest): Promise<PersistedOutputSummary> {
     if (!ownerAgentSubject.trim()) throw new OutputPersistenceError('OWNERSHIP_DENIED', 'An Agent owner identity is required.');
-    const fixture = buildPersistableOutputFixture(request.sourceVersionRef);
+    const fixture = 'financialScenarioId' in request
+      ? await buildSellerFinancialFixture(ownerAgentSubject, request.financialScenarioId)
+      : buildPersistableOutputFixture(request.sourceVersionRef);
     const idempotencyKey = buildOutputPersistenceIdempotencyKey(ownerAgentSubject, fixture);
 
     for (let attempt = 0; attempt < 2; attempt += 1) {
@@ -244,7 +327,7 @@ export function createOutputPersistenceService(prisma: PrismaClient) {
               audience: fixture.audience,
               subjectRef: fixture.subjectRef,
               purpose: fixture.purpose,
-              outputContractVersion: OUTPUT_PERSISTENCE_FOUNDATION_VERSION,
+              outputContractVersion: fixture.outputContractVersion,
               lineageKey: `${ownerAgentSubject}|${fixture.productKind}|${fixture.audience}|${fixture.subjectRef}`,
             },
             update: {},
@@ -260,7 +343,7 @@ export function createOutputPersistenceService(prisma: PrismaClient) {
               sourceVersionRef: fixture.sourceVersionRef,
               versionOrdinal: count + 1,
               idempotencyKey,
-              outputContractVersion: OUTPUT_PERSISTENCE_FOUNDATION_VERSION,
+              outputContractVersion: fixture.outputContractVersion,
               displayVersion: fixture.displayVersion,
               audience: fixture.audience,
               subjectRef: fixture.subjectRef,
@@ -272,14 +355,14 @@ export function createOutputPersistenceService(prisma: PrismaClient) {
               compositionVersion: fixture.compositionVersion,
               presentationVisualVersion: fixture.presentationVisualVersion,
               contentFingerprint: fixture.contentFingerprint,
-              payloadSchemaVersion: OUTPUT_PERSISTENCE_PAYLOAD_SCHEMA_VERSION,
+              payloadSchemaVersion: fixture.payloadSchemaVersion,
               contentPayload: fixture.contentPayload as Prisma.InputJsonValue,
               lineage: fixture.lineage as Prisma.InputJsonValue,
               ownerAgentSubject,
               reviewedAt,
               evidenceSnapshot: {
                 create: {
-                  snapshotSchemaVersion: OUTPUT_PERSISTENCE_PAYLOAD_SCHEMA_VERSION,
+                  snapshotSchemaVersion: fixture.payloadSchemaVersion,
                   sourceSnapshotRefs: fixture.evidence.sourceSnapshotRefs as Prisma.InputJsonValue,
                   metricRefs: fixture.evidence.metricRefs as Prisma.InputJsonValue,
                   analysisRefs: fixture.evidence.analysisRefs as Prisma.InputJsonValue,

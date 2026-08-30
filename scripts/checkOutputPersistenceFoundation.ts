@@ -50,10 +50,12 @@ assert.equal(migration.includes('PDF'), false);
 
 const sellerFixture = buildPersistableOutputFixture('seller-decision-brief-v2-reviewed');
 const updateFixture = buildPersistableOutputFixture('seller-update-current-version');
-assert.equal(sellerFixture.contentPayload.schemaVersion, OUTPUT_PERSISTENCE_PAYLOAD_SCHEMA_VERSION);
-assert.equal(sellerFixture.contentPayload.sourceVersionRef, sellerFixture.sourceVersionRef);
-assert.equal(updateFixture.contentPayload.sourceVersionRef, updateFixture.sourceVersionRef);
-assert.equal(sellerFixture.contentPayload.referenceGroups.decision.length > 0, true);
+const sellerPayload = sellerFixture.contentPayload as unknown as { schemaVersion: string; sourceVersionRef: string; referenceGroups: Record<string, readonly string[]> };
+const updatePayload = updateFixture.contentPayload as unknown as { sourceVersionRef: string };
+assert.equal(sellerPayload.schemaVersion, OUTPUT_PERSISTENCE_PAYLOAD_SCHEMA_VERSION);
+assert.equal(sellerPayload.sourceVersionRef, sellerFixture.sourceVersionRef);
+assert.equal(updatePayload.sourceVersionRef, updateFixture.sourceVersionRef);
+assert.equal(sellerPayload.referenceGroups.decision.length > 0, true);
 assert.equal(updateFixture.evidence.sourceSnapshotRefs.length > 0, true);
 assert.equal(sellerFixture.dependencies.length > 0, true);
 assert.equal(buildOutputPersistenceIdempotencyKey('agent-a', sellerFixture), buildOutputPersistenceIdempotencyKey('agent-a', sellerFixture));
