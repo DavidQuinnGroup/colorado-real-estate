@@ -55,6 +55,8 @@ assert.throws(() => adaptSellerFinancialModuleToSellerPresentation({
 
 assert.equal(outputSource.includes('sellerPresentationFinancialOutputVersionId'), true);
 assert.equal(outputSource.includes('buildSellerPresentationFinancialModuleFixture'), true);
+assert.equal(outputSource.includes("where: { id: outputVersionId, ownerAgentSubject, lifecycleState: 'AGENT_REVIEWED' }"), true);
+assert.equal(outputSource.includes("throw new OutputPersistenceError('OWNERSHIP_DENIED', 'The selected reviewed Seller Financial output is unavailable to this Agent.')"), true);
 assert.equal(outputSource.includes('effectiveAsOf: presentationModule.asOf.slice(0, 10)'), true);
 assert.equal(outputSource.includes('sellerFinancialScenario.findFirst'), true);
 assert.equal(outputSource.includes('sellerFinancialScenario.update('), false);
