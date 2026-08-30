@@ -102,6 +102,7 @@ export function createProfessionalInputService(prisma: ProfessionalDatabase) {
     const owner = ownerScope(ownerAgentSubject);
     const request = await prisma.professionalInputRequest.findFirst({ where: { id: requestId, ownerAgentSubject: owner } });
     if (!request) throw new ProfessionalInputError('NOT_FOUND', 'The requested professional input request is unavailable.');
+    if (request.status === 'REQUESTED') return request;
     if (request.status !== 'DRAFT') throw new ProfessionalInputError('NOT_REVIEWABLE', 'The professional input request cannot be sent from its current state.');
     return prisma.professionalInputRequest.update({ where: { id: request.id }, data: { status: 'REQUESTED', requestedAt: new Date() } });
   }
