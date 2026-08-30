@@ -2608,4 +2608,58 @@ model ProfessionalInput {
   @@index([ownerAgentSubject, claimKind, effectiveAt])
 }
 
+model SellerFinancialScenario {
+  id                    String   @id @default(cuid())
+  ownerAgentSubject     String
+  scenarioKey           String
+  versionOrdinal        Int
+  lifecycleState        String
+  calculationContract   String
+  inputSnapshot         Json
+  sourceQualification   Json
+  professionalInputRefs Json
+  scenarioFingerprint   String   @unique
+  supersedesScenarioId  String?  @unique
+  createdAt             DateTime @default(now())
+  reviewedAt            DateTime?
+
+  supersedesScenario    SellerFinancialScenario?  @relation("SellerFinancialScenarioSupersession", fields: [supersedesScenarioId], references: [id], onDelete: Restrict)
+  supersededByScenario  SellerFinancialScenario?  @relation("SellerFinancialScenarioSupersession")
+  results               SellerFinancialResult[]
+  auditEvents           SellerFinancialAuditEvent[]
+
+  @@unique([ownerAgentSubject, scenarioKey, versionOrdinal])
+  @@index([ownerAgentSubject, scenarioKey, createdAt])
+}
+
+model SellerFinancialResult {
+  id                String   @id @default(cuid())
+  scenarioId        String
+  ownerAgentSubject String
+  calculationContract String
+  resultPayload     Json
+  resultFingerprint String   @unique
+  createdAt         DateTime @default(now())
+  immutableAt       DateTime @default(now())
+
+  scenario          SellerFinancialScenario @relation(fields: [scenarioId], references: [id], onDelete: Restrict)
+
+  @@unique([scenarioId, calculationContract])
+  @@index([ownerAgentSubject, createdAt])
+}
+
+model SellerFinancialAuditEvent {
+  id                String   @id @default(cuid())
+  scenarioId        String
+  ownerAgentSubject String
+  eventType         String
+  eventFingerprint  String   @unique
+  createdAt         DateTime @default(now())
+
+  scenario          SellerFinancialScenario @relation(fields: [scenarioId], references: [id], onDelete: Restrict)
+
+  @@index([ownerAgentSubject, createdAt])
+  @@index([scenarioId, createdAt])
+}
+
 // prisma/schema.prisma
