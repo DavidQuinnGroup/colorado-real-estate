@@ -128,6 +128,11 @@ type AgentPersistedOutput = Readonly<{
     asOf: string;
     qualifier: 'ESTIMATED';
   }>;
+  sellerPresentationFinancialModule?: Readonly<{
+    estimatedNetProceedsCents: number;
+    asOf: string;
+    financialOutputVersionId: string;
+  }>;
 }>;
 
 type AgentSellerFinancialResult = Readonly<{
@@ -200,6 +205,7 @@ export default function SellerDecisionBriefCompositionPreview() {
   const [financialScenarios, setFinancialScenarios] = useState<readonly AgentSellerFinancialScenario[]>([]);
   const [financialHistoryState, setFinancialHistoryState] = useState<'LOADING' | 'READY' | 'FAILED'>('LOADING');
   const [selectedFinancialScenarioId, setSelectedFinancialScenarioId] = useState<string>('');
+  const [selectedFinancialOutputVersionId, setSelectedFinancialOutputVersionId] = useState<string>('');
 
   useEffect(() => () => {
     if (pdfResult?.objectUrl) URL.revokeObjectURL(pdfResult.objectUrl);
@@ -215,6 +221,7 @@ export default function SellerDecisionBriefCompositionPreview() {
       .then((response) => {
         if (!active) return;
         setPersistedOutputs(response.outputs ?? []);
+        setSelectedFinancialOutputVersionId((current) => current || (response.outputs ?? []).find((output) => output.sellerFinancial)?.id || '');
         setPersistenceState('READY');
       })
       .catch(() => {
@@ -340,6 +347,27 @@ export default function SellerDecisionBriefCompositionPreview() {
     }
   }
 
+  async function persistSellerPresentationFinancialModule(financialOutputVersionId: string) {
+    setPersistenceError(null);
+    setPersistenceState('PERSISTING');
+    try {
+      const response = await fetch('/api/agent/outputs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        cache: 'no-store',
+        body: JSON.stringify({ sellerPresentationFinancialOutputVersionId: financialOutputVersionId, reviewConfirmation: 'AGENT_REVIEWED' }),
+      });
+      const payload = await response.json().catch(() => ({})) as { output?: AgentPersistedOutput; error?: string };
+      if (!response.ok || !payload.output) throw new Error(payload.error ?? 'Seller Presentation financial module persistence failed.');
+      setPersistedOutputs((current) => [payload.output!, ...current.filter((item) => item.id !== payload.output!.id)]);
+      setPersistenceState('READY');
+    } catch (error) {
+      setPersistenceError(error instanceof Error ? error.message : 'Seller Presentation financial module persistence failed.');
+      setPersistenceState('FAILED');
+    }
+  }
+
   return (
     <main
       className="min-h-screen bg-[#071014] px-5 py-6 text-slate-100 sm:px-8 sm:py-8 lg:px-12"
@@ -448,6 +476,13 @@ export default function SellerDecisionBriefCompositionPreview() {
               persisting={persistenceState === 'PERSISTING'}
               onSelect={setSelectedFinancialScenarioId}
               onPersist={(scenarioId) => void persistSellerFinancialOutput(scenarioId)}
+            />
+            <SellerPresentationFinancialModulePanel
+              outputs={persistedOutputs}
+              selectedOutputVersionId={selectedFinancialOutputVersionId}
+              state={persistenceState}
+              onSelect={setSelectedFinancialOutputVersionId}
+              onPersist={(outputVersionId) => void persistSellerPresentationFinancialModule(outputVersionId)}
             />
             <AgentPdfGenerationPanel
               productKind={pdfProductKind}
@@ -1285,6 +1320,46 @@ function SellerFinancialOutputPanel({
       {state === 'FAILED' ? <p className="mt-4 border border-amber-300 bg-amber-50 p-3 text-sm font-semibold text-amber-900">Reviewed Seller Financial history could not be restored.</p> : null}
       {state === 'READY' && scenarios.length === 0 ? <p className="mt-4 text-sm text-[#4d5652]">No reviewed Seller Financial scenarios are available for output composition.</p> : null}
       {selected && summary ? <dl className="mt-4 grid gap-3 border border-[#cfd9d2] bg-white p-4 text-sm sm:grid-cols-3" data-testid="seller-financial-output-preview"><div><dt className="text-[#4d5652]">Selected scenario</dt><dd className="mt-1 font-semibold text-[#172025]">{selected.scenarioKey} V{selected.versionOrdinal}</dd></div><div><dt className="text-[#4d5652]">Estimated net proceeds</dt><dd className="mt-1 font-semibold text-[#172025]">{formatCurrencyFromCents(summary.netProceedsCents)}</dd></div><div><dt className="text-[#4d5652]">As of</dt><dd className="mt-1 font-semibold text-[#172025]">{summary.asOf}</dd></div><div className="sm:col-span-3"><dt className="text-[#4d5652]">Source qualification</dt><dd className="mt-1 text-[#172025]">Scenario assumptions and Agent estimates are retained as labeled, point-in-time estimated inputs. No current-source lookup occurs when the reviewed output is later read.</dd></div></dl> : null}
+    </section>
+  );
+}
+
+function SellerPresentationFinancialModulePanel({
+  outputs,
+  selectedOutputVersionId,
+  state,
+  onSelect,
+  onPersist,
+}: {
+  outputs: readonly AgentPersistedOutput[];
+  selectedOutputVersionId: string;
+  state: 'LOADING' | 'READY' | 'PERSISTING' | 'FAILED';
+  onSelect: (outputVersionId: string) => void;
+  onPersist: (outputVersionId: string) => void;
+}) {
+  const financialOutputs = outputs.filter((output) => output.sellerFinancial);
+  const selected = financialOutputs.find((output) => output.id === selectedOutputVersionId) ?? financialOutputs[0] ?? null;
+  const financial = selected?.sellerFinancial;
+  return (
+    <section className="border-b border-[#d8cfc0] bg-[#eef4f1] px-5 py-5 sm:px-8 lg:px-10" data-testid="seller-presentation-financial-module-adapter" data-persistence="true" data-pdf-storage="false" data-output-render-storage="false">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#355d50]">Seller Presentation Financial Module</p>
+          <h3 className="mt-2 text-2xl font-semibold leading-8 text-[#172025]">Select a reviewed financial output for this presentation version.</h3>
+          <p className="mt-2 max-w-3xl text-sm leading-6 text-[#4d5652]">The presentation embeds the exact reviewed semantic module. It never recalculates from current financial, professional-input, or evidence state.</p>
+        </div>
+        <div className="grid min-w-72 gap-2" data-screen-only="true">
+          <label className="text-xs font-semibold text-[#4d5652]" htmlFor="seller-presentation-financial-output">Reviewed financial output</label>
+          <select id="seller-presentation-financial-output" value={selected?.id ?? ''} onChange={(event) => onSelect(event.target.value)} disabled={state !== 'READY' || financialOutputs.length === 0} className="min-h-11 border border-[#9ba9a2] bg-white px-3 text-sm text-[#172025] disabled:bg-[#ece6dc]" data-testid="seller-presentation-financial-output-select">
+            {financialOutputs.map((output) => <option key={output.id} value={output.id}>Output #{output.versionOrdinal} - {output.sellerFinancial ? formatCurrencyFromCents(output.sellerFinancial.estimatedNetProceedsCents) : 'Unavailable'}</option>)}
+          </select>
+          <button type="button" onClick={() => selected && onPersist(selected.id)} disabled={!selected || !financial || state !== 'READY'} className="inline-flex min-h-11 items-center justify-center gap-2 bg-[#355d50] px-4 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:bg-[#a9b5ad]" data-testid="persist-seller-presentation-financial-module">
+            <FileCheck2 size={16} aria-hidden="true" />
+            Review presentation module
+          </button>
+        </div>
+      </div>
+      {financial ? <dl className="mt-4 grid gap-3 border border-[#cfd9d2] bg-white p-4 text-sm sm:grid-cols-3" data-testid="seller-presentation-financial-module-preview"><div><dt className="text-[#4d5652]">Estimated net proceeds</dt><dd className="mt-1 font-semibold text-[#172025]">{formatCurrencyFromCents(financial.estimatedNetProceedsCents)}</dd></div><div><dt className="text-[#4d5652]">As of</dt><dd className="mt-1 font-semibold text-[#172025]">{financial.asOf}</dd></div><div><dt className="text-[#4d5652]">Dependency</dt><dd className="mt-1 break-all font-semibold text-[#172025]">Output #{selected?.versionOrdinal}</dd></div><div className="sm:col-span-3"><dt className="text-[#4d5652]">Qualification</dt><dd className="mt-1 text-[#172025]">Estimated value with source qualifications, assumptions, unknown/not-included states, and limitations preserved from the reviewed financial output.</dd></div></dl> : <p className="mt-4 text-sm text-[#4d5652]">Persist a reviewed Seller Financial output before composing a presentation module.</p>}
     </section>
   );
 }

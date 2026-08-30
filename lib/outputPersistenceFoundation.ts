@@ -14,6 +14,12 @@ import {
   SELLER_FINANCIAL_OUTPUT_SEMANTIC_PROFILE_VERSION,
   type SellerFinancialOutputDependency,
 } from './sellerFinancialOutputIntegration';
+import {
+  adaptSellerFinancialModuleToSellerPresentation,
+  isSellerPresentationFinancialModule,
+  sellerPresentationFinancialModuleFingerprint,
+  SELLER_PRESENTATION_FINANCIAL_MODULE_ADAPTER_VERSION,
+} from './sellerPresentationFinancialModuleAdapter';
 
 export const OUTPUT_PERSISTENCE_FOUNDATION_VERSION = 'OUTPUT_PERSISTENCE_FOUNDATION_V1' as const;
 export const OUTPUT_PERSISTENCE_PAYLOAD_SCHEMA_VERSION = 'OUTPUT_PERSISTENCE_PAYLOAD_V1' as const;
@@ -74,7 +80,16 @@ export type SellerFinancialOutputPersistenceSaveRequest = Readonly<{
   reviewNote?: string;
 }>;
 
-export type OutputPersistenceSaveRequest = LegacyOutputPersistenceSaveRequest | SellerFinancialOutputPersistenceSaveRequest;
+export type SellerPresentationFinancialModulePersistenceSaveRequest = Readonly<{
+  sellerPresentationFinancialOutputVersionId: string;
+  reviewConfirmation: 'AGENT_REVIEWED';
+  reviewNote?: string;
+}>;
+
+export type OutputPersistenceSaveRequest =
+  | LegacyOutputPersistenceSaveRequest
+  | SellerFinancialOutputPersistenceSaveRequest
+  | SellerPresentationFinancialModulePersistenceSaveRequest;
 
 export type PersistedOutputSummary = Readonly<{
   id: string;
@@ -92,6 +107,11 @@ export type PersistedOutputSummary = Readonly<{
     estimatedNetProceedsCents: number;
     asOf: string;
     qualifier: 'ESTIMATED';
+  }>;
+  sellerPresentationFinancialModule?: Readonly<{
+    estimatedNetProceedsCents: number;
+    asOf: string;
+    financialOutputVersionId: string;
   }>;
 }>;
 
@@ -213,6 +233,9 @@ export function parseOutputPersistenceSaveRequest(value: unknown): OutputPersist
   if (typeof input.financialScenarioId === 'string' && input.financialScenarioId.trim()) {
     return Object.freeze({ financialScenarioId: input.financialScenarioId, reviewConfirmation: 'AGENT_REVIEWED', reviewNote: input.reviewNote as string | undefined });
   }
+  if (typeof input.sellerPresentationFinancialOutputVersionId === 'string' && input.sellerPresentationFinancialOutputVersionId.trim()) {
+    return Object.freeze({ sellerPresentationFinancialOutputVersionId: input.sellerPresentationFinancialOutputVersionId, reviewConfirmation: 'AGENT_REVIEWED', reviewNote: input.reviewNote as string | undefined });
+  }
   if (typeof input.sourceVersionRef !== 'string') {
     throw new OutputPersistenceError('INVALID_REQUEST', 'A source output version or reviewed Seller Financial scenario is required.');
   }
@@ -229,8 +252,18 @@ function sellerFinancialSummary(contentPayload: Prisma.JsonValue) {
   });
 }
 
+function sellerPresentationFinancialModuleSummary(contentPayload: Prisma.JsonValue) {
+  if (!isSellerPresentationFinancialModule(contentPayload)) return undefined;
+  return Object.freeze({
+    estimatedNetProceedsCents: contentPayload.estimatedNetProceedsCents,
+    asOf: contentPayload.asOf,
+    financialOutputVersionId: contentPayload.financialOutputVersionId,
+  });
+}
+
 export function serializePersistedOutputSummary(version: Pick<OutputVersion, 'id' | 'productId' | 'sourceVersionRef' | 'versionOrdinal' | 'displayVersion' | 'contentFingerprint' | 'lifecycleState' | 'reviewedAt' | 'immutableAt' | 'contentPayload'>, created: boolean): PersistedOutputSummary {
   const sellerFinancial = sellerFinancialSummary(version.contentPayload);
+  const sellerPresentationFinancialModule = sellerPresentationFinancialModuleSummary(version.contentPayload);
   return Object.freeze({
     id: version.id,
     productId: version.productId,
@@ -243,6 +276,7 @@ export function serializePersistedOutputSummary(version: Pick<OutputVersion, 'id
     immutableAt: version.immutableAt.toISOString(),
     created,
     ...(sellerFinancial ? { sellerFinancial } : {}),
+    ...(sellerPresentationFinancialModule ? { sellerPresentationFinancialModule } : {}),
   });
 }
 
@@ -302,11 +336,80 @@ export function createOutputPersistenceService(prisma: PrismaClient) {
     }
   }
 
+  async function buildSellerPresentationFinancialModuleFixture(ownerAgentSubject: string, outputVersionId: string): Promise<PersistableOutputFixture> {
+    const financialOutput = await prisma.outputVersion.findFirst({
+      where: { id: outputVersionId, ownerAgentSubject, lifecycleState: 'AGENT_REVIEWED' },
+      include: { evidenceSnapshot: true, product: true },
+    });
+    if (!financialOutput) throw new OutputPersistenceError('OWNERSHIP_DENIED', 'The selected reviewed Seller Financial output is unavailable to this Agent.');
+    let presentationModule;
+    try {
+      presentationModule = adaptSellerFinancialModuleToSellerPresentation({
+        financialOutputVersionId: financialOutput.id,
+        financialOutputSourceVersionRef: financialOutput.sourceVersionRef,
+        financialOutputContentFingerprint: financialOutput.contentFingerprint,
+        contentPayload: financialOutput.contentPayload,
+      });
+    } catch (error) {
+      if (error instanceof Error) throw new OutputPersistenceError('INVALID_REQUEST', error.message);
+      throw error;
+    }
+    if (!financialOutput.evidenceSnapshot) {
+      throw new OutputPersistenceError('PERSISTENCE_UNAVAILABLE', 'The selected Seller Financial output has no governed evidence snapshot.');
+    }
+    const evidence = financialOutput.evidenceSnapshot;
+    return Object.freeze({
+      sourceVersionRef: `seller-presentation-financial-module-v1:${financialOutput.id}`,
+      outputProductId: financialOutput.productId,
+      productKind: financialOutput.product.productKind,
+      audience: financialOutput.audience,
+      subjectRef: financialOutput.subjectRef,
+      purpose: 'Reviewed Seller Presentation composed with an explicit immutable Seller Financial module.',
+      displayVersion: `Seller Presentation / Financial output #${financialOutput.versionOrdinal}`,
+      effectiveAsOf: presentationModule.asOf,
+      contentVersion: SELLER_PRESENTATION_FINANCIAL_MODULE_ADAPTER_VERSION,
+      compositionVersion: SELLER_PRESENTATION_FINANCIAL_MODULE_ADAPTER_VERSION,
+      presentationVisualVersion: 'SELLER_PRESENTATION_FINANCIAL_SECTION_V1',
+      outputContractVersion: SELLER_PRESENTATION_FINANCIAL_MODULE_ADAPTER_VERSION,
+      payloadSchemaVersion: SELLER_PRESENTATION_FINANCIAL_MODULE_ADAPTER_VERSION,
+      contentFingerprint: sellerPresentationFinancialModuleFingerprint(presentationModule),
+      contentPayload: presentationModule as unknown as Prisma.JsonObject,
+      lineage: Object.freeze({ derivedFromVersion: `OutputVersion:${financialOutput.id}` }),
+      evidence: Object.freeze({
+        sourceSnapshotRefs: evidence.sourceSnapshotRefs as Prisma.JsonValue[],
+        metricRefs: evidence.metricRefs as Prisma.JsonValue[],
+        analysisRefs: evidence.analysisRefs as Prisma.JsonValue[],
+        agentInputRefs: evidence.agentInputRefs as Prisma.JsonValue[],
+        assumptionRefs: evidence.assumptionRefs as Prisma.JsonValue[],
+        limitationRefs: evidence.limitationRefs as Prisma.JsonValue[],
+        rightsRefs: evidence.rightsRefs as Prisma.JsonValue[],
+        freshnessRefs: evidence.freshnessRefs as Prisma.JsonValue[],
+        reviewState: evidence.reviewState,
+        fingerprint: evidence.fingerprint,
+      }),
+      dependencies: Object.freeze([{
+        upstreamArtifact: `OutputVersion:${financialOutput.id}`,
+        downstreamArtifact: 'SELLER_PRESENTATION_FINANCIAL_MODULE_V1',
+        dependencyType: 'FACT_DEPENDENCY' as const,
+        materiality: 'HIGH' as const,
+        versionUsed: financialOutput.contentFingerprint,
+        fieldMetricScope: ['estimatedSalePriceCents', 'estimatedPayoffCents', 'estimatedSellerCostsCents', 'estimatedNetProceedsCents', 'costBreakdown', 'sourceQualifications', 'asOf'],
+        changePolicy: 'A different reviewed Seller Financial output requires a successor Seller Presentation version.',
+        invalidationPolicy: 'RECOMPOSE_REQUIRED' as const,
+        reviewPolicy: 'AGENT_REVIEW_REQUIRED' as const,
+        currentState: 'CURRENT' as const,
+      }]),
+      decisionRefs: [`OutputVersion:${financialOutput.id}`],
+    });
+  }
+
   async function persistReviewedOutput(ownerAgentSubject: string, request: OutputPersistenceSaveRequest): Promise<PersistedOutputSummary> {
     if (!ownerAgentSubject.trim()) throw new OutputPersistenceError('OWNERSHIP_DENIED', 'An Agent owner identity is required.');
     const fixture = 'financialScenarioId' in request
       ? await buildSellerFinancialFixture(ownerAgentSubject, request.financialScenarioId)
-      : buildPersistableOutputFixture(request.sourceVersionRef);
+      : 'sellerPresentationFinancialOutputVersionId' in request
+        ? await buildSellerPresentationFinancialModuleFixture(ownerAgentSubject, request.sellerPresentationFinancialOutputVersionId)
+        : buildPersistableOutputFixture(request.sourceVersionRef);
     const idempotencyKey = buildOutputPersistenceIdempotencyKey(ownerAgentSubject, fixture);
 
     for (let attempt = 0; attempt < 2; attempt += 1) {
