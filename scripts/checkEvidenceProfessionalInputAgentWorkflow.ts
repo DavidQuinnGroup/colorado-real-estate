@@ -10,6 +10,7 @@ const evidenceService = readFileSync('lib/evidenceAdmissionFoundation.ts', 'utf8
 const auth = readFileSync('lib/admin/adminAuth.ts', 'utf8');
 const shell = readFileSync('components/agent/AgentWorkspaceShell.tsx', 'utf8');
 const home = readFileSync('components/agent/AgentWorkspaceHome.tsx', 'utf8');
+const middleware = readFileSync('middleware.ts', 'utf8');
 const packageJson = JSON.parse(readFileSync('package.json', 'utf8')) as { scripts?: Record<string, string> };
 
 assert.match(page, /ProfessionalInputWorkflow/);
@@ -40,6 +41,9 @@ assert.match(auth, /agent\/prepare\/professional-inputs/);
 assert.match(auth, /api\/agent\/professional-inputs/);
 assert.match(shell, /agent-workspace-professional-inputs-link/);
 assert.match(home, /Professional Inputs/);
+assert.match(middleware, /agent\/prepare\/professional-inputs/);
+assert.match(middleware, /api\/agent\/professional-inputs/);
+assert.match(middleware, /api\/agent\/evidence/);
 assert.equal(packageJson.scripts?.['check:evidence-professional-input-agent-workflow'], 'jiti scripts/checkEvidenceProfessionalInputAgentWorkflow.ts');
 
 console.log('EVIDENCE_PROFESSIONAL_INPUT_AGENT_WORKFLOW_CHECK: PASS');
