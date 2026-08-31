@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 
 import {
   PROFESSIONAL_EXTERNAL_REQUEST_FOUNDATION_VERSION,
@@ -12,7 +12,8 @@ import {
 const schema = readFileSync('prisma/schema.prisma', 'utf8');
 const migration = readFileSync('prisma/migrations/20260831000000_add_professional_external_request_foundation/migration.sql', 'utf8');
 const service = readFileSync('lib/professionalExternalRequestFoundation.ts', 'utf8');
-const externalRoute = readFileSync('app/api/professional-request/respond/route.ts', 'utf8');
+const externalRoute = readFileSync('app/professional-request/respond/submit/route.ts', 'utf8');
+const externalResponseForm = readFileSync('components/professional-request/PropertyManagerRentEstimateResponseForm.tsx', 'utf8');
 const bootstrapRoute = readFileSync('app/professional-request/access/route.ts', 'utf8');
 const agentRoute = readFileSync('app/api/agent/professional-external-requests/route.ts', 'utf8');
 const workflow = readFileSync('components/agent/ProfessionalExternalRequestWorkflow.tsx', 'utf8');
@@ -39,6 +40,10 @@ assert.match(bootstrapRoute, /NextResponse\.redirect/);
 assert.match(bootstrapRoute, /Referrer-Policy/);
 assert.match(externalRoute, /sameOrigin/);
 assert.match(externalRoute, /csrfToken/);
+assert.match(externalResponseForm, /fetch\('\/professional-request\/respond\/submit'/);
+assert.doesNotMatch(externalResponseForm, /\/api\/professional-request\/respond/);
+assert.equal(existsSync('app/api/professional-request/respond/route.ts'), false);
+assert.doesNotMatch(middleware, /\/api\/professional-request\/respond/);
 assert.match(agentRoute, /PREPARE_SUCCESSOR/);
 assert.match(agentRoute, /authorizeAdminRequest/);
 assert.match(workflow, /controlled-synthetic-authorization-required/);

@@ -21,7 +21,7 @@ export default function PropertyManagerRentEstimateResponseForm({ disclosure, cs
       return value ? Number(value) : null;
     };
     try {
-      const response = await fetch('/api/professional-request/respond', {
+      const response = await fetch('/professional-request/respond/submit', {
         method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ csrfToken, response: { monthlyRent: Number(fields.get('monthlyRent')), rentRangeLow: optionalNumber('rentRangeLow'), rentRangeHigh: optionalNumber('rentRangeHigh'), asOf: String(fields.get('asOf') || '').trim() || null, note: String(fields.get('note') || '').trim() || null, responderName: String(fields.get('responderName') || '').trim() || null, responderOrganization: String(fields.get('responderOrganization') || '').trim() || null, responderRole: String(fields.get('responderRole') || '').trim() || null, businessEmail: String(fields.get('businessEmail') || '').trim() || null } }),
       });

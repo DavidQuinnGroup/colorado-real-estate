@@ -21,7 +21,7 @@ function isPrivateAccessAllowlist(pathname: string) {
 }
 
 function isProfessionalExternalRequestRoute(pathname: string) {
-  return pathname === '/professional-request' || pathname.startsWith('/professional-request/') || pathname === '/api/professional-request/respond' || pathname.startsWith('/api/webhooks/resend/professional-external-request');
+  return pathname === '/professional-request' || pathname.startsWith('/professional-request/') || pathname.startsWith('/api/webhooks/resend/professional-external-request');
 }
 
 function professionalExternalRequestContentSecurityPolicy(nonce: string) {
