@@ -156,6 +156,42 @@ enum ProfessionalInputRequestStatus {
   EXPIRED
 }
 
+enum ExternalRequestProfile {
+  PROPERTY_MANAGER_RENT_ESTIMATE_V1
+}
+
+enum ExternalRequestDeliveryStatus {
+  PREPARED
+  SENT
+  DELIVERED
+  DELIVERY_FAILED
+  ACCESSED
+  RESPONDED
+  REVOKED
+  EXPIRED
+}
+
+enum ExternalRequestIdentityDimension {
+  CHANNEL_CONTROL
+  PERSON_IDENTITY
+  ORGANIZATION_AFFILIATION
+  PROFESSIONAL_ROLE
+  CREDENTIAL_STATUS
+}
+
+enum ExternalRequestIdentityVerificationMethod {
+  AGENT_MANUAL_CONFIRMATION
+  EMAIL_CHANNEL_CONTROL
+  RESPONDER_CLAIM
+}
+
+enum ExternalRequestIdentityVerificationStatus {
+  CLAIMED
+  VERIFIED
+  LIMITED
+  FAILED
+}
+
 enum CountyJurisdictionType {
   COUNTY
   MUNICIPALITY
@@ -2558,13 +2594,109 @@ model ProfessionalInputRequest {
   dueAt                   DateTime?
   purpose                 String
   supportDocumentRequired Boolean                        @default(false)
+  supersedesRequestId     String?                        @unique
   createdAt               DateTime                       @default(now())
   updatedAt               DateTime                       @updatedAt
 
   response                ProfessionalInputResponse?
+  supersedesRequest       ProfessionalInputRequest?      @relation("ProfessionalInputRequestSupersession", fields: [supersedesRequestId], references: [id], onDelete: Restrict)
+  supersededByRequest     ProfessionalInputRequest?      @relation("ProfessionalInputRequestSupersession")
+  externalDelivery        ExternalRequestDelivery?
 
   @@index([ownerAgentSubject, status, createdAt])
   @@index([ownerAgentSubject, claimKind, status])
+}
+
+model ExternalRequestDelivery {
+  id                         String                        @id @default(cuid())
+  ownerAgentSubject          String
+  professionalInputRequestId String                        @unique
+  profile                    ExternalRequestProfile
+  recipientEmail             String
+  recipientDisplayName       String?
+  recipientOrganization      String?
+  provider                   String                        @default("RESEND")
+  status                     ExternalRequestDeliveryStatus @default(PREPARED)
+  requestFingerprint         String                        @unique
+  providerMessageId          String?                       @unique
+  sentAt                     DateTime?
+  deliveredAt                DateTime?
+  accessedAt                 DateTime?
+  respondedAt                DateTime?
+  revokedAt                  DateTime?
+  expiresAt                  DateTime
+  failureCode                String?
+  createdAt                  DateTime                      @default(now())
+  updatedAt                  DateTime                      @updatedAt
+
+  professionalInputRequest  ProfessionalInputRequest      @relation(fields: [professionalInputRequestId], references: [id], onDelete: Restrict)
+  capability                 ExternalRequestCapability?
+  sessions                   ExternalRequestSession[]
+  disclosureSnapshot         ExternalRequestDisclosureSnapshot?
+  identityVerifications      ExternalIdentityVerification[]
+
+  @@index([ownerAgentSubject, status, createdAt])
+  @@index([recipientEmail, status])
+}
+
+model ExternalRequestCapability {
+  id             String                  @id @default(cuid())
+  deliveryId     String                  @unique
+  tokenHash      String                  @unique
+  purpose        String
+  maxUses        Int                     @default(1)
+  useCount       Int                     @default(0)
+  exchangedAt    DateTime?
+  revokedAt      DateTime?
+  expiresAt      DateTime
+  createdAt      DateTime                @default(now())
+  updatedAt      DateTime                @updatedAt
+
+  delivery       ExternalRequestDelivery @relation(fields: [deliveryId], references: [id], onDelete: Restrict)
+}
+
+model ExternalRequestSession {
+  id              String                  @id @default(cuid())
+  deliveryId      String
+  sessionHash     String                  @unique
+  csrfTokenHash   String
+  expiresAt       DateTime
+  revokedAt       DateTime?
+  lastAccessedAt  DateTime?
+  submittedAt     DateTime?
+  createdAt       DateTime                @default(now())
+  updatedAt       DateTime                @updatedAt
+
+  delivery        ExternalRequestDelivery @relation(fields: [deliveryId], references: [id], onDelete: Restrict)
+
+  @@index([deliveryId, expiresAt])
+}
+
+model ExternalRequestDisclosureSnapshot {
+  id              String                  @id @default(cuid())
+  deliveryId      String                  @unique
+  contractVersion String
+  disclosure      Json
+  fingerprint     String                  @unique
+  createdAt       DateTime                @default(now())
+
+  delivery        ExternalRequestDelivery @relation(fields: [deliveryId], references: [id], onDelete: Restrict)
+}
+
+model ExternalIdentityVerification {
+  id                String                                  @id @default(cuid())
+  deliveryId        String
+  dimension         ExternalRequestIdentityDimension
+  method            ExternalRequestIdentityVerificationMethod
+  status            ExternalRequestIdentityVerificationStatus
+  assertedValue     String?
+  verifiedBySubject String?
+  createdAt         DateTime                                @default(now())
+
+  delivery          ExternalRequestDelivery                 @relation(fields: [deliveryId], references: [id], onDelete: Restrict)
+
+  @@unique([deliveryId, dimension, method])
+  @@index([deliveryId, createdAt])
 }
 
 model ProfessionalInputResponse {

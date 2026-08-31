@@ -156,7 +156,14 @@ function validatePayload(claimKind: EvidenceClaimKind, payload: JsonRecord) {
   } else if (amountClaim.includes(claimKind as (typeof amountClaim)[number])) {
     if (typeof payload.amount !== 'number' || !Number.isFinite(payload.amount) || payload.amount < 0 || payload.currency !== 'USD') throw new EvidenceAdmissionError('INVALID_REQUEST', `${claimKind} requires a non-negative USD amount.`);
     if (claimKind === 'INSURANCE_PREMIUM' && !['MONTHLY', 'ANNUAL'].includes(String(payload.period))) throw new EvidenceAdmissionError('INVALID_REQUEST', 'INSURANCE_PREMIUM requires a period.');
-    if (claimKind === 'PROPERTY_MANAGER_RENT' && payload.period !== 'MONTHLY') throw new EvidenceAdmissionError('INVALID_REQUEST', 'PROPERTY_MANAGER_RENT requires a monthly period.');
+    if (claimKind === 'PROPERTY_MANAGER_RENT') {
+      if (payload.period !== 'MONTHLY') throw new EvidenceAdmissionError('INVALID_REQUEST', 'PROPERTY_MANAGER_RENT requires a monthly period.');
+      const rangeLow = payload.rentRangeLow;
+      const rangeHigh = payload.rentRangeHigh;
+      if ((rangeLow === undefined) !== (rangeHigh === undefined) || (rangeLow !== undefined && (typeof rangeLow !== 'number' || typeof rangeHigh !== 'number' || !Number.isFinite(rangeLow) || !Number.isFinite(rangeHigh) || rangeLow < 0 || rangeLow > rangeHigh || payload.amount < rangeLow || payload.amount > rangeHigh))) throw new EvidenceAdmissionError('INVALID_REQUEST', 'PROPERTY_MANAGER_RENT range values must be a valid monthly range containing the estimate.');
+      if (payload.asOf !== undefined && (typeof payload.asOf !== 'string' || Number.isNaN(Date.parse(payload.asOf)))) throw new EvidenceAdmissionError('INVALID_REQUEST', 'PROPERTY_MANAGER_RENT asOf must be an ISO timestamp.');
+      if (payload.note !== undefined && (typeof payload.note !== 'string' || !payload.note.trim() || payload.note.length > 1000 || /[<>]/.test(payload.note))) throw new EvidenceAdmissionError('INVALID_REQUEST', 'PROPERTY_MANAGER_RENT note must be bounded plain text.');
+    }
     if ((claimKind === 'TAX_AMOUNT' || claimKind === 'TAX_ASSESSMENT') && typeof payload.taxPeriod !== 'string') throw new EvidenceAdmissionError('INVALID_REQUEST', `${claimKind} requires a tax period.`);
   } else {
     if (typeof payload.summary !== 'string' || !payload.summary.trim() || payload.summary.length > 1000) throw new EvidenceAdmissionError('INVALID_REQUEST', `${claimKind} requires a bounded summary.`);

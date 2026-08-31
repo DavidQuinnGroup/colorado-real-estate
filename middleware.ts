@@ -20,6 +20,20 @@ function isPrivateAccessAllowlist(pathname: string) {
   return pathname === '/private-access' || pathname.startsWith('/private-access/') || pathname === '/robots.txt' || pathname === '/favicon.svg';
 }
 
+function isProfessionalExternalRequestRoute(pathname: string) {
+  return pathname === '/professional-request' || pathname.startsWith('/professional-request/') || pathname === '/api/professional-request/respond' || pathname.startsWith('/api/webhooks/resend/professional-external-request');
+}
+
+function withProfessionalExternalRequestHeaders(response: NextResponse) {
+  response.headers.set('Cache-Control', 'private, no-store');
+  response.headers.set('Referrer-Policy', 'no-referrer');
+  response.headers.set('X-Content-Type-Options', 'nosniff');
+  response.headers.set('X-Frame-Options', 'DENY');
+  response.headers.set('X-Robots-Tag', 'noindex, nofollow, noarchive');
+  response.headers.set('Content-Security-Policy', "default-src 'self'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'");
+  return response;
+}
+
 function privateAccessPageResponse(request: NextRequest) {
   const headers = new Headers(request.headers);
   headers.set('x-project-atlas-private-gate', 'true');
@@ -39,6 +53,7 @@ export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const privateConfiguration = getPrivateSiteAccessConfiguration();
   if (isPrivateAccessAllowlist(pathname)) return pathname.startsWith('/private-access') ? privateAccessPageResponse(request) : withPrivateResponseHeaders(NextResponse.next());
+  if (isProfessionalExternalRequestRoute(pathname)) return withProfessionalExternalRequestHeaders(pathname.startsWith('/professional-request') ? privateAccessPageResponse(request) : NextResponse.next());
   if (privateConfiguration.enabled) {
     if (privateConfiguration.configurationState !== 'ENABLED') {
       if (pathname.startsWith('/api/')) return withPrivateResponseHeaders(NextResponse.json({ success: false, error: 'Private development access is unavailable.' }, { status: 503 }));
@@ -51,7 +66,7 @@ export async function middleware(request: NextRequest) {
     }
   }
   const isAgentWorkspaceRoute = pathname === "/agent" || pathname === "/agent/prepare/market" || pathname === "/agent/prepare/market-update" || pathname === "/agent/prepare/property" || pathname === "/agent/prepare/place" || pathname === "/agent/prepare/buyer" || pathname === "/agent/prepare/seller" || pathname === "/agent/prepare/seller/presentation" || pathname === "/agent/prepare/seller/financial" || pathname === "/agent/prepare/professional-inputs" || pathname === "/agent/prepare/listing";
-  const isAgentProtectedApiRoute = pathname === "/api/agent/output/pdf" || pathname === "/api/agent/evidence" || pathname === "/api/agent/professional-inputs" || pathname === "/api/agent/seller-financial";
+  const isAgentProtectedApiRoute = pathname === "/api/agent/output/pdf" || pathname === "/api/agent/evidence" || pathname === "/api/agent/professional-inputs" || pathname === "/api/agent/professional-external-requests" || pathname === "/api/agent/seller-financial";
   const isAdminProtectedRoute = pathname.startsWith('/admin') || pathname.startsWith('/api/admin/');
 
   if (!isAgentWorkspaceRoute && !isAgentProtectedApiRoute && !isAdminProtectedRoute) {
@@ -96,5 +111,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next/).*)', "/admin/:path*", "/api/admin/:path*", "/api/agent/output/pdf", "/api/agent/evidence", "/api/agent/professional-inputs", "/api/agent/seller-financial", "/agent", "/agent/prepare/market", "/agent/prepare/market-update", "/agent/prepare/property", "/agent/prepare/place", "/agent/prepare/buyer", "/agent/prepare/seller", "/agent/prepare/seller/presentation", "/agent/prepare/seller/financial", "/agent/prepare/professional-inputs", "/agent/prepare/listing"],
+  matcher: ['/((?!_next/).*)', "/admin/:path*", "/api/admin/:path*", "/api/agent/output/pdf", "/api/agent/evidence", "/api/agent/professional-inputs", "/api/agent/professional-external-requests", "/api/agent/seller-financial", "/agent", "/agent/prepare/market", "/agent/prepare/market-update", "/agent/prepare/property", "/agent/prepare/place", "/agent/prepare/buyer", "/agent/prepare/seller", "/agent/prepare/seller/presentation", "/agent/prepare/seller/financial", "/agent/prepare/professional-inputs", "/agent/prepare/listing"],
 };

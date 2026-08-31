@@ -4,6 +4,7 @@ import { AlertTriangle, CheckCircle2, ClipboardPlus, FileWarning, History, Loade
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { projectAtlasTitleHierarchy } from '@/components/ProjectAtlasTitleHierarchy';
+import ProfessionalExternalRequestWorkflow from '@/components/agent/ProfessionalExternalRequestWorkflow';
 
 type ClaimKind = 'LENDER_RATE' | 'PROPERTY_MANAGER_RENT' | 'PAYOFF_AMOUNT' | 'INSURANCE_PREMIUM';
 type VerificationStatus = 'UNVERIFIED' | 'SOURCE_ROLE_CLAIMED' | 'SOURCE_ROLE_VERIFIED' | 'VERIFICATION_LIMITED' | 'VERIFICATION_FAILED';
@@ -163,6 +164,8 @@ export default function ProfessionalInputWorkflow() {
 
         {notice ? <StatusBanner tone="success" message={notice} /> : null}
         {error ? <StatusBanner tone="error" message={error} /> : null}
+
+        <ProfessionalExternalRequestWorkflow />
 
         <section className="mt-8 grid gap-5 lg:grid-cols-[minmax(0,1fr)_20rem]" aria-label="Professional input request"><div className="border border-white/10 bg-[#0b171c] p-5 sm:p-6"><SectionTitle icon={<ClipboardPlus size={18} />} eyebrow="1. Internal request" title="Record what input is needed" /><div className="mt-5 grid gap-4 sm:grid-cols-2"><Field label="Input kind"><select value={requestKind} onChange={(event) => setRequestKind(event.target.value as ClaimKind)} className={inputClass}>{Object.entries(profiles).map(([kind, profile]) => <option key={kind} value={kind}>{profile.label}</option>)}</select></Field><Field label="Professional role"><div className="min-h-11 border border-white/15 bg-black/20 px-3 py-2 text-sm text-slate-200">{profiles[requestKind].role.replaceAll('_', ' ')}</div></Field><Field label="Purpose" wide><input value={requestPurpose} onChange={(event) => setRequestPurpose(event.target.value)} maxLength={1000} className={inputClass} /></Field></div><label className="mt-5 flex items-start gap-3 border border-white/10 bg-black/10 p-4 text-sm text-slate-300"><input type="checkbox" checked={supportDocumentRequired} onChange={(event) => setSupportDocumentRequired(event.target.checked)} className="mt-1 h-4 w-4 accent-cyan-200" /><span><span className="font-medium text-white">Support document required</span><span className="mt-1 block text-xs leading-5 text-slate-400">Secure document exchange is not activated. This records the requirement only.</span></span></label><div className="mt-5 flex items-center justify-between gap-4"><p className="text-xs leading-5 text-slate-400">{profiles[requestKind].description}</p><button type="button" onClick={() => void createRequest()} disabled={busy !== null} className={primaryButton}>{busy === 'request' ? <Loader2 className="animate-spin" size={16} /> : <ClipboardPlus size={16} />} Record request</button></div></div><aside className="border border-white/10 bg-[#0b171c] p-5"><ShieldCheck className="h-5 w-5 text-cyan-100" /><h2 className="mt-4 text-base font-semibold text-white">Truthful status</h2><p className="mt-2 text-sm leading-6 text-slate-400">A recorded request is an internal durable work item. It is not an email, delivery, notification, or external request token.</p></aside></section>
 
