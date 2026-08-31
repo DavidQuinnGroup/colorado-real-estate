@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowRight, Building2, ClipboardCheck, ClipboardList, FileText, Home, MapPinned, MessageSquareText, ShieldCheck, Store, Users } from 'lucide-react';
+import { ArrowRight, Building2, Calculator, ClipboardCheck, ClipboardList, FileText, Home, MapPinned, MessageSquareText, ShieldCheck, Store, Users } from 'lucide-react';
 
 import { projectAtlasTitleHierarchy } from '@/components/ProjectAtlasTitleHierarchy';
 
@@ -10,6 +10,7 @@ const preparationCapabilities = [
   { title: 'Professional Inputs', description: 'Record internal professional-input requests, review bounded evidence, and preserve admitted input history.', href: '/agent/prepare/professional-inputs', icon: ClipboardCheck },
   { title: 'Buyer Under Contract', description: 'Coordinate owner-scoped deadlines, factual issues, low-risk decisions, provenance, and reviewed internal outputs.', href: '/agent/under-contract', icon: ClipboardList },
   { title: 'Client Authorization', description: 'Review profile-governed synthetic authorization history, scope, lifecycle, and resolver results.', href: '/agent/authorizations', icon: ShieldCheck },
+  { title: 'Investment Breakeven', description: 'Model pre-tax capital, financing, rent, operating assumptions, and breakeven scenarios for Agent review.', href: '/agent/investment', icon: Calculator },
   { title: 'Listing Preparation', description: 'Prepare a listing appointment and the property-to-market questions that need review.', href: '/agent/prepare/listing', icon: Store },
   { title: 'Location Preparation', description: 'Prepare geographic and local context for a city, community, neighborhood, access, or place question.', href: '/agent/prepare/place', icon: MapPinned },
   { title: 'Property Preparation', description: 'Prepare property-specific diligence around an address, facts, condition, records, HOA, taxes, title, or insurance.', href: '/agent/prepare/property', icon: Home },

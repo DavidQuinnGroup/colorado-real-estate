@@ -3227,4 +3227,79 @@ model SellerFinancialAuditEvent {
   @@index([scenarioId, createdAt])
 }
 
+model InvestmentAnalysis {
+  id                 String   @id @default(cuid())
+  ownerAgentSubject  String
+  analysisKey        String
+  title              String
+  purpose            String
+  lifecycleState     String
+  calculationVersion String
+  assumptionPolicy   String
+  clientContextRef   String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  scenarios InvestmentScenario[]
+
+  @@unique([ownerAgentSubject, analysisKey])
+  @@index([ownerAgentSubject, createdAt])
+}
+
+model InvestmentScenario {
+  id                   String    @id @default(cuid())
+  analysisId           String
+  ownerAgentSubject    String
+  scenarioKey          String
+  versionOrdinal       Int
+  lifecycleState       String
+  calculationVersion   String
+  assumptionPolicy     String
+  inputSnapshot        Json
+  sourceQualification  Json
+  dependencySnapshot   Json
+  inputFingerprint     String    @unique
+  supersedesScenarioId String?   @unique
+  createdAt            DateTime  @default(now())
+  reviewedAt           DateTime?
+
+  analysis             InvestmentAnalysis             @relation(fields: [analysisId], references: [id], onDelete: Restrict)
+  result               InvestmentScenarioResult?
+  auditEvents          InvestmentScenarioAuditEvent[]
+  supersedesScenario   InvestmentScenario?            @relation("InvestmentScenarioSupersession", fields: [supersedesScenarioId], references: [id], onDelete: Restrict)
+  supersededByScenario InvestmentScenario?            @relation("InvestmentScenarioSupersession")
+
+  @@unique([analysisId, scenarioKey, versionOrdinal])
+  @@index([ownerAgentSubject, analysisId, createdAt])
+}
+
+model InvestmentScenarioResult {
+  id                 String   @id @default(cuid())
+  scenarioId         String   @unique
+  ownerAgentSubject  String
+  calculationVersion String
+  resultSnapshot     Json
+  resultFingerprint  String   @unique
+  createdAt          DateTime @default(now())
+  immutableAt        DateTime @default(now())
+
+  scenario InvestmentScenario @relation(fields: [scenarioId], references: [id], onDelete: Restrict)
+
+  @@index([ownerAgentSubject, createdAt])
+}
+
+model InvestmentScenarioAuditEvent {
+  id                String   @id @default(cuid())
+  scenarioId        String
+  ownerAgentSubject String
+  eventType         String
+  eventFingerprint  String   @unique
+  createdAt         DateTime @default(now())
+
+  scenario InvestmentScenario @relation(fields: [scenarioId], references: [id], onDelete: Restrict)
+
+  @@index([scenarioId, createdAt])
+  @@index([ownerAgentSubject, createdAt])
+}
+
 // prisma/schema.prisma
