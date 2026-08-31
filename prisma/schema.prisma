@@ -321,6 +321,60 @@ enum ExternalRequestIdentityVerificationStatus {
   FAILED
 }
 
+enum ClientAuthorizationProfileLifecycle {
+  DRAFT
+  REVIEWED
+  ACTIVE
+  RETIRED
+  POLICY_HELD
+  DEPENDENCY_HELD
+}
+
+enum ClientAuthorizationStatus {
+  DRAFT
+  PENDING_CONFIRMATION
+  ACTIVE
+  EXPIRED
+  REVOKED
+  SUPERSEDED
+  DECLINED
+  INVALIDATED
+}
+
+enum ClientAuthorizationPrincipalRequirement {
+  SINGLE_REQUIRED_PRINCIPAL
+  ALL_REQUIRED_PRINCIPALS
+  ANY_ONE_AUTHORIZED_PRINCIPAL
+  PROFILE_DEFINED_PRINCIPAL_SET
+}
+
+enum ClientAuthorizationCaptureMethod {
+  AGENT_RECORDED_VERBAL
+  AGENT_RECORDED_EMAIL
+  AGENT_RECORDED_TEXT
+  AGENT_RECORDED_MEETING
+  CLIENT_PORTAL_CONFIRMED
+  PURPOSE_BOUND_SECURE_LINK
+  SIGNED_DOCUMENT
+  E_SIGNATURE
+  PROVIDER_FORM
+  OTHER_GOVERNED_METHOD
+}
+
+enum ClientAuthorizationAssurance {
+  AGENT_RECORDED
+  CLIENT_CONFIRMED
+  STRONG_CLIENT_CONFIRMED
+  SIGNED
+  PROVIDER_VERIFIED
+}
+
+enum ClientAuthorizationResolution {
+  AUTHORIZED
+  NOT_AUTHORIZED
+  REVIEW_REQUIRED
+}
+
 enum CountyJurisdictionType {
   COUNTY
   MUNICIPALITY
@@ -483,15 +537,15 @@ model Property {
 
   publicSearchEligibility PublicSearchEligibility?
 
-  isPrivateExclusive     Boolean @default(false)
-  gcForensics            Json?
-  negotiationLevers      Json?
-  optimizedValue         Int     @default(0)
-  efficiencyScore        Int     @default(0)
-  resilienceScore        Int     @default(85)
-  altitude               Int     @default(5280)
-  soilType               String  @default("Front Range Mixed")
-  hasPolybutyleneRisk    Boolean @default(false)
+  isPrivateExclusive  Boolean @default(false)
+  gcForensics         Json?
+  negotiationLevers   Json?
+  optimizedValue      Int     @default(0)
+  efficiencyScore     Int     @default(0)
+  resilienceScore     Int     @default(85)
+  altitude            Int     @default(5280)
+  soilType            String  @default("Front Range Mixed")
+  hasPolybutyleneRisk Boolean @default(false)
 
   photos                  PropertyPhoto[]
   priceHistory            PriceHistory[]
@@ -516,30 +570,30 @@ model Property {
 }
 
 model PropertySourceIdentity {
-  id                String                       @id @default(cuid())
-  sourceId          String
-  jurisdictionType  CountyJurisdictionType
-  jurisdictionCode  String
-  identifierType    PropertySourceIdentifierType
-  sourceValue       String
-  normalizedValue   String
-  status            PropertySourceIdentityStatus @default(OBSERVED)
-  firstObservedAt   DateTime?
-  lastObservedAt    DateTime?
-  validFrom         DateTime?
-  validTo           DateTime?
-  isCurrent         Boolean                      @default(true)
-  supersededById    String?
-  createdAt         DateTime                     @default(now())
-  updatedAt         DateTime                     @updatedAt
+  id               String                       @id @default(cuid())
+  sourceId         String
+  jurisdictionType CountyJurisdictionType
+  jurisdictionCode String
+  identifierType   PropertySourceIdentifierType
+  sourceValue      String
+  normalizedValue  String
+  status           PropertySourceIdentityStatus @default(OBSERVED)
+  firstObservedAt  DateTime?
+  lastObservedAt   DateTime?
+  validFrom        DateTime?
+  validTo          DateTime?
+  isCurrent        Boolean                      @default(true)
+  supersededById   String?
+  createdAt        DateTime                     @default(now())
+  updatedAt        DateTime                     @updatedAt
 
-  supersededBy          PropertySourceIdentity?               @relation("PropertySourceIdentitySupersession", fields: [supersededById], references: [id], onDelete: Restrict)
-  supersedes            PropertySourceIdentity[]              @relation("PropertySourceIdentitySupersession")
-  observations          PropertySourceIdentityObservation[]
-  sourceRelationships   PropertySourceIdentityRelationship[]  @relation("PropertySourceIdentityRelationshipSource")
-  targetRelationships   PropertySourceIdentityRelationship[]  @relation("PropertySourceIdentityRelationshipTarget")
-  countyIdentityMappings PropertyCountyIdentityMapping[]
-  canonicalPropertyMappings CanonicalPhysicalPropertySourceIdentityMapping[]
+  supersededBy                  PropertySourceIdentity?                          @relation("PropertySourceIdentitySupersession", fields: [supersededById], references: [id], onDelete: Restrict)
+  supersedes                    PropertySourceIdentity[]                         @relation("PropertySourceIdentitySupersession")
+  observations                  PropertySourceIdentityObservation[]
+  sourceRelationships           PropertySourceIdentityRelationship[]             @relation("PropertySourceIdentityRelationshipSource")
+  targetRelationships           PropertySourceIdentityRelationship[]             @relation("PropertySourceIdentityRelationshipTarget")
+  countyIdentityMappings        PropertyCountyIdentityMapping[]
+  canonicalPropertyMappings     CanonicalPhysicalPropertySourceIdentityMapping[]
   canonicalPropertyObservations CanonicalPhysicalPropertyObservation[]
 
   @@unique([sourceId, jurisdictionCode, identifierType, normalizedValue], map: "PSI_source_jurisdiction_type_value_uq")
@@ -549,26 +603,26 @@ model PropertySourceIdentity {
 }
 
 model PropertySourceIdentityObservation {
-  id                    String                          @id @default(cuid())
-  identityId            String
-  sourceRecordReference String?
+  id                      String                           @id @default(cuid())
+  identityId              String
+  sourceRecordReference   String?
   fieldSemanticsReference String?
-  rightsPostureReference String?
-  attributionReference  String?
-  sourcePayloadReference String?
-  freshness             PropertySourceIdentityFreshness @default(UNKNOWN)
-  confidence            PropertySourceIdentityConfidence @default(UNVERIFIED)
-  observedAt            DateTime
-  ingestedAt            DateTime?
-  effectiveAt           DateTime?
-  validFrom             DateTime?
-  validTo               DateTime?
-  observationFingerprint String                           @unique(map: "PSIO_fingerprint_uq")
-  createdAt             DateTime                          @default(now())
+  rightsPostureReference  String?
+  attributionReference    String?
+  sourcePayloadReference  String?
+  freshness               PropertySourceIdentityFreshness  @default(UNKNOWN)
+  confidence              PropertySourceIdentityConfidence @default(UNVERIFIED)
+  observedAt              DateTime
+  ingestedAt              DateTime?
+  effectiveAt             DateTime?
+  validFrom               DateTime?
+  validTo                 DateTime?
+  observationFingerprint  String                           @unique(map: "PSIO_fingerprint_uq")
+  createdAt               DateTime                         @default(now())
 
-  identity      PropertySourceIdentity               @relation(fields: [identityId], references: [id], onDelete: Restrict)
-  relationships PropertySourceIdentityRelationship[]
-  mappings      PropertyCountyIdentityMapping[]
+  identity                      PropertySourceIdentity                 @relation(fields: [identityId], references: [id], onDelete: Restrict)
+  relationships                 PropertySourceIdentityRelationship[]
+  mappings                      PropertyCountyIdentityMapping[]
   canonicalPropertyObservations CanonicalPhysicalPropertyObservation[]
 
   @@index([identityId, observedAt], map: "PSIO_identity_observed_idx")
@@ -576,27 +630,27 @@ model PropertySourceIdentityObservation {
 }
 
 model PropertySourceIdentityRelationship {
-  id                    String                                    @id @default(cuid())
-  sourceIdentityId      String
-  targetIdentityId      String
-  relationshipType      PropertySourceIdentityRelationshipType
-  status                PropertySourceIdentityRelationshipStatus @default(OBSERVED)
-  confidence            PropertySourceIdentityConfidence         @default(UNVERIFIED)
-  observationId         String
-  effectiveAt           DateTime?
-  validFrom             DateTime?
-  validTo               DateTime?
-  isCurrent             Boolean                                   @default(true)
-  relationshipFingerprint String                                  @unique(map: "PSIR_fingerprint_uq")
-  supersededById        String?
-  createdAt             DateTime                                  @default(now())
-  updatedAt             DateTime                                  @updatedAt
+  id                      String                                   @id @default(cuid())
+  sourceIdentityId        String
+  targetIdentityId        String
+  relationshipType        PropertySourceIdentityRelationshipType
+  status                  PropertySourceIdentityRelationshipStatus @default(OBSERVED)
+  confidence              PropertySourceIdentityConfidence         @default(UNVERIFIED)
+  observationId           String
+  effectiveAt             DateTime?
+  validFrom               DateTime?
+  validTo                 DateTime?
+  isCurrent               Boolean                                  @default(true)
+  relationshipFingerprint String                                   @unique(map: "PSIR_fingerprint_uq")
+  supersededById          String?
+  createdAt               DateTime                                 @default(now())
+  updatedAt               DateTime                                 @updatedAt
 
-  sourceIdentity PropertySourceIdentity                    @relation("PropertySourceIdentityRelationshipSource", fields: [sourceIdentityId], references: [id], onDelete: Restrict)
-  targetIdentity PropertySourceIdentity                    @relation("PropertySourceIdentityRelationshipTarget", fields: [targetIdentityId], references: [id], onDelete: Restrict)
-  observation    PropertySourceIdentityObservation         @relation(fields: [observationId], references: [id], onDelete: Restrict)
-  supersededBy   PropertySourceIdentityRelationship?       @relation("PropertySourceIdentityRelationshipSupersession", fields: [supersededById], references: [id], onDelete: Restrict)
-  supersedes     PropertySourceIdentityRelationship[]      @relation("PropertySourceIdentityRelationshipSupersession")
+  sourceIdentity PropertySourceIdentity               @relation("PropertySourceIdentityRelationshipSource", fields: [sourceIdentityId], references: [id], onDelete: Restrict)
+  targetIdentity PropertySourceIdentity               @relation("PropertySourceIdentityRelationshipTarget", fields: [targetIdentityId], references: [id], onDelete: Restrict)
+  observation    PropertySourceIdentityObservation    @relation(fields: [observationId], references: [id], onDelete: Restrict)
+  supersededBy   PropertySourceIdentityRelationship?  @relation("PropertySourceIdentityRelationshipSupersession", fields: [supersededById], references: [id], onDelete: Restrict)
+  supersedes     PropertySourceIdentityRelationship[] @relation("PropertySourceIdentityRelationshipSupersession")
 
   @@index([sourceIdentityId, relationshipType, isCurrent], map: "PSIR_source_type_current_idx")
   @@index([targetIdentityId, relationshipType, isCurrent], map: "PSIR_target_type_current_idx")
@@ -605,22 +659,22 @@ model PropertySourceIdentityRelationship {
 }
 
 model PropertyCountyIdentityMapping {
-  id                    String                               @id @default(cuid())
-  propertyId            String
-  identityId            String
-  observationId         String?
-  status                PropertyCountyIdentityMappingStatus  @default(UNMATCHED)
-  confidence            PropertySourceIdentityConfidence     @default(UNVERIFIED)
-  basis                 PropertyCountyIdentityMappingBasis   @default(UNKNOWN)
-  verificationRequired  Boolean                              @default(true)
-  conflictReference     String?
-  firstObservedAt       DateTime?
-  lastObservedAt        DateTime?
-  validFrom             DateTime?
-  validTo               DateTime?
-  isCurrent             Boolean                              @default(true)
-  createdAt             DateTime                             @default(now())
-  updatedAt             DateTime                             @updatedAt
+  id                   String                              @id @default(cuid())
+  propertyId           String
+  identityId           String
+  observationId        String?
+  status               PropertyCountyIdentityMappingStatus @default(UNMATCHED)
+  confidence           PropertySourceIdentityConfidence    @default(UNVERIFIED)
+  basis                PropertyCountyIdentityMappingBasis  @default(UNKNOWN)
+  verificationRequired Boolean                             @default(true)
+  conflictReference    String?
+  firstObservedAt      DateTime?
+  lastObservedAt       DateTime?
+  validFrom            DateTime?
+  validTo              DateTime?
+  isCurrent            Boolean                             @default(true)
+  createdAt            DateTime                            @default(now())
+  updatedAt            DateTime                            @updatedAt
 
   property    Property                           @relation(fields: [propertyId], references: [id], onDelete: Restrict)
   identity    PropertySourceIdentity             @relation(fields: [identityId], references: [id], onDelete: Restrict)
@@ -635,38 +689,38 @@ model PropertyCountyIdentityMapping {
 // Source-independent physical-property anchor. It remains empty until a later
 // source-admission and population authorization; legacy Property rows stay listing-shaped.
 model CanonicalPhysicalProperty {
-  id                         String                                    @id @default(cuid())
-  identityStatus             CanonicalPhysicalPropertyIdentityStatus   @default(UNRESOLVED)
-  identityConfidence         CanonicalPhysicalPropertyIdentityConfidence @default(UNVERIFIED)
+  id                          String                                      @id @default(cuid())
+  identityStatus              CanonicalPhysicalPropertyIdentityStatus     @default(UNRESOLVED)
+  identityConfidence          CanonicalPhysicalPropertyIdentityConfidence @default(UNVERIFIED)
   sourceFormattedSitusAddress String?
-  normalizedSitusAddress     String?
-  streetNumber               String?
-  preDirectional             String?
-  streetName                 String?
-  streetSuffix               String?
-  postDirectional            String?
-  unit                       String?
-  city                       String?
-  state                      String?
-  postalCode                 String?
-  county                     String?
-  jurisdiction               String?
-  latitude                   Float?
-  longitude                  Float?
-  firstObservedAt            DateTime?
-  lastObservedAt             DateTime?
-  validFrom                  DateTime?
-  validTo                    DateTime?
-  supersededById             String?
-  createdAt                  DateTime                                  @default(now())
-  updatedAt                  DateTime                                  @updatedAt
+  normalizedSitusAddress      String?
+  streetNumber                String?
+  preDirectional              String?
+  streetName                  String?
+  streetSuffix                String?
+  postDirectional             String?
+  unit                        String?
+  city                        String?
+  state                       String?
+  postalCode                  String?
+  county                      String?
+  jurisdiction                String?
+  latitude                    Float?
+  longitude                   Float?
+  firstObservedAt             DateTime?
+  lastObservedAt              DateTime?
+  validFrom                   DateTime?
+  validTo                     DateTime?
+  supersededById              String?
+  createdAt                   DateTime                                    @default(now())
+  updatedAt                   DateTime                                    @updatedAt
 
-  supersededBy      CanonicalPhysicalProperty?                         @relation("CanonicalPhysicalPropertySupersession", fields: [supersededById], references: [id], onDelete: Restrict)
-  supersedes        CanonicalPhysicalProperty[]                        @relation("CanonicalPhysicalPropertySupersession")
-  sourceMappings    CanonicalPhysicalPropertySourceIdentityMapping[]
-  observations      CanonicalPhysicalPropertyObservation[]
-  listingEvents     CanonicalPropertyListingEvent[]
-  transactions      Transaction[]
+  supersededBy   CanonicalPhysicalProperty?                       @relation("CanonicalPhysicalPropertySupersession", fields: [supersededById], references: [id], onDelete: Restrict)
+  supersedes     CanonicalPhysicalProperty[]                      @relation("CanonicalPhysicalPropertySupersession")
+  sourceMappings CanonicalPhysicalPropertySourceIdentityMapping[]
+  observations   CanonicalPhysicalPropertyObservation[]
+  listingEvents  CanonicalPropertyListingEvent[]
+  transactions   Transaction[]
 
   @@index([identityStatus, identityConfidence], map: "CPP_status_confidence_idx")
   @@index([state, county, jurisdiction], map: "CPP_jurisdiction_idx")
@@ -675,28 +729,28 @@ model CanonicalPhysicalProperty {
 }
 
 model CanonicalPhysicalPropertySourceIdentityMapping {
-  id                    String                                      @id @default(cuid())
-  canonicalPropertyId   String
-  identityId            String
-  associationType       CanonicalPhysicalPropertyAssociationType
-  status                CanonicalPhysicalPropertyAssociationStatus @default(OBSERVED)
-  confidence            CanonicalPhysicalPropertyIdentityConfidence @default(UNVERIFIED)
-  basis                 CanonicalPhysicalPropertyAssociationBasis  @default(UNKNOWN)
-  verificationRequired  Boolean                                     @default(true)
-  conflictReference     String?
-  firstObservedAt       DateTime?
-  lastObservedAt        DateTime?
-  validFrom             DateTime?
-  validTo               DateTime?
-  isCurrent             Boolean                                     @default(true)
-  mappingFingerprint    String                                      @unique(map: "CPPSIM_fingerprint_uq")
-  supersededById        String?
-  createdAt             DateTime                                    @default(now())
-  updatedAt             DateTime                                    @updatedAt
+  id                   String                                      @id @default(cuid())
+  canonicalPropertyId  String
+  identityId           String
+  associationType      CanonicalPhysicalPropertyAssociationType
+  status               CanonicalPhysicalPropertyAssociationStatus  @default(OBSERVED)
+  confidence           CanonicalPhysicalPropertyIdentityConfidence @default(UNVERIFIED)
+  basis                CanonicalPhysicalPropertyAssociationBasis   @default(UNKNOWN)
+  verificationRequired Boolean                                     @default(true)
+  conflictReference    String?
+  firstObservedAt      DateTime?
+  lastObservedAt       DateTime?
+  validFrom            DateTime?
+  validTo              DateTime?
+  isCurrent            Boolean                                     @default(true)
+  mappingFingerprint   String                                      @unique(map: "CPPSIM_fingerprint_uq")
+  supersededById       String?
+  createdAt            DateTime                                    @default(now())
+  updatedAt            DateTime                                    @updatedAt
 
-  canonicalProperty CanonicalPhysicalProperty                       @relation(fields: [canonicalPropertyId], references: [id], onDelete: Restrict)
-  identity          PropertySourceIdentity                          @relation(fields: [identityId], references: [id], onDelete: Restrict)
-  supersededBy      CanonicalPhysicalPropertySourceIdentityMapping? @relation("CanonicalPhysicalPropertySourceIdentityMappingSupersession", fields: [supersededById], references: [id], onDelete: Restrict)
+  canonicalProperty CanonicalPhysicalProperty                        @relation(fields: [canonicalPropertyId], references: [id], onDelete: Restrict)
+  identity          PropertySourceIdentity                           @relation(fields: [identityId], references: [id], onDelete: Restrict)
+  supersededBy      CanonicalPhysicalPropertySourceIdentityMapping?  @relation("CanonicalPhysicalPropertySourceIdentityMappingSupersession", fields: [supersededById], references: [id], onDelete: Restrict)
   supersedes        CanonicalPhysicalPropertySourceIdentityMapping[] @relation("CanonicalPhysicalPropertySourceIdentityMappingSupersession")
 
   @@unique([canonicalPropertyId, identityId, associationType], map: "CPPSIM_property_identity_type_uq")
@@ -738,30 +792,30 @@ model CanonicalPhysicalPropertyObservation {
 }
 
 model CanonicalPropertyListingEvent {
-  id                    String                              @id @default(cuid())
-  canonicalPropertyId   String
-  propertyId            String
-  sourceId              String
+  id                     String                                      @id @default(cuid())
+  canonicalPropertyId    String
+  propertyId             String
+  sourceId               String
   sourceListingReference String
-  status                CanonicalPropertyListingEventStatus @default(UNRESOLVED)
-  confidence            CanonicalPhysicalPropertyIdentityConfidence @default(UNVERIFIED)
+  status                 CanonicalPropertyListingEventStatus         @default(UNRESOLVED)
+  confidence             CanonicalPhysicalPropertyIdentityConfidence @default(UNVERIFIED)
   rightsPostureReference String?
-  observationReference  String?
-  effectiveAt           DateTime?
-  validFrom             DateTime?
-  validTo               DateTime?
-  isCurrent             Boolean                             @default(false)
-  conflictReference     String?
-  verificationRequired  Boolean                             @default(true)
-  eventFingerprint      String                              @unique(map: "CPLE_fingerprint_uq")
-  supersededById        String?
-  createdAt             DateTime                            @default(now())
-  updatedAt             DateTime                            @updatedAt
+  observationReference   String?
+  effectiveAt            DateTime?
+  validFrom              DateTime?
+  validTo                DateTime?
+  isCurrent              Boolean                                     @default(false)
+  conflictReference      String?
+  verificationRequired   Boolean                                     @default(true)
+  eventFingerprint       String                                      @unique(map: "CPLE_fingerprint_uq")
+  supersededById         String?
+  createdAt              DateTime                                    @default(now())
+  updatedAt              DateTime                                    @updatedAt
 
-  canonicalProperty CanonicalPhysicalProperty           @relation(fields: [canonicalPropertyId], references: [id], onDelete: Restrict)
-  property          Property                            @relation(fields: [propertyId], references: [id], onDelete: Restrict)
-  supersededBy      CanonicalPropertyListingEvent?      @relation("CanonicalPropertyListingEventSupersession", fields: [supersededById], references: [id], onDelete: Restrict)
-  supersedes        CanonicalPropertyListingEvent[]     @relation("CanonicalPropertyListingEventSupersession")
+  canonicalProperty CanonicalPhysicalProperty       @relation(fields: [canonicalPropertyId], references: [id], onDelete: Restrict)
+  property          Property                        @relation(fields: [propertyId], references: [id], onDelete: Restrict)
+  supersededBy      CanonicalPropertyListingEvent?  @relation("CanonicalPropertyListingEventSupersession", fields: [supersededById], references: [id], onDelete: Restrict)
+  supersedes        CanonicalPropertyListingEvent[] @relation("CanonicalPropertyListingEventSupersession")
 
   @@unique([canonicalPropertyId, propertyId], map: "CPLE_property_listing_uq")
   @@index([canonicalPropertyId, status, isCurrent], map: "CPLE_canonical_status_idx")
@@ -2489,17 +2543,17 @@ model EIAContinuousImprovementBacklogItem {
 }
 
 model OutputProduct {
-  id                     String            @id @default(cuid())
-  ownerAgentSubject      String
-  productKind            OutputProductKind
-  audience               OutputAudience
-  subjectRef             String
-  purpose                String
-  outputContractVersion  String
-  lineageKey             String            @unique
-  createdAt              DateTime          @default(now())
+  id                    String            @id @default(cuid())
+  ownerAgentSubject     String
+  productKind           OutputProductKind
+  audience              OutputAudience
+  subjectRef            String
+  purpose               String
+  outputContractVersion String
+  lineageKey            String            @unique
+  createdAt             DateTime          @default(now())
 
-  versions               OutputVersion[]
+  versions OutputVersion[]
 
   @@unique([ownerAgentSubject, productKind, audience, subjectRef])
   @@index([ownerAgentSubject, createdAt])
@@ -2507,37 +2561,37 @@ model OutputProduct {
 }
 
 model OutputVersion {
-  id                         String                      @id @default(cuid())
-  productId                  String
-  sourceVersionRef           String
-  versionOrdinal             Int
-  idempotencyKey             String                      @unique
-  outputContractVersion      String
-  displayVersion             String
-  audience                   OutputAudience
-  subjectRef                 String
-  purpose                    String
-  effectiveAsOf              DateTime
-  lifecycleState             OutputVersionLifecycleState
-  reviewState                String
-  contentVersion             String
-  compositionVersion         String
-  presentationVisualVersion  String
-  contentFingerprint         String
-  payloadSchemaVersion       String
-  contentPayload             Json
-  lineage                    Json
-  ownerAgentSubject          String
-  reviewedAt                 DateTime
-  immutableAt                DateTime                    @default(now())
+  id                        String                      @id @default(cuid())
+  productId                 String
+  sourceVersionRef          String
+  versionOrdinal            Int
+  idempotencyKey            String                      @unique
+  outputContractVersion     String
+  displayVersion            String
+  audience                  OutputAudience
+  subjectRef                String
+  purpose                   String
+  effectiveAsOf             DateTime
+  lifecycleState            OutputVersionLifecycleState
+  reviewState               String
+  contentVersion            String
+  compositionVersion        String
+  presentationVisualVersion String
+  contentFingerprint        String
+  payloadSchemaVersion      String
+  contentPayload            Json
+  lineage                   Json
+  ownerAgentSubject         String
+  reviewedAt                DateTime
+  immutableAt               DateTime                    @default(now())
 
-  product                    OutputProduct               @relation(fields: [productId], references: [id], onDelete: Restrict)
-  evidenceSnapshot           OutputEvidenceSnapshot?
-  dependencies               OutputDependency[]
-  reviews                    OutputReview[]
-  decisions                  OutputDecision[]
-  checkpoints                OutputCheckpoint[]
-  transactionIssues          TransactionIssue[]      @relation("TransactionIssueOutputVersion")
+  product           OutputProduct           @relation(fields: [productId], references: [id], onDelete: Restrict)
+  evidenceSnapshot  OutputEvidenceSnapshot?
+  dependencies      OutputDependency[]
+  reviews           OutputReview[]
+  decisions         OutputDecision[]
+  checkpoints       OutputCheckpoint[]
+  transactionIssues TransactionIssue[]      @relation("TransactionIssueOutputVersion")
 
   @@unique([productId, versionOrdinal])
   @@unique([productId, sourceVersionRef])
@@ -2547,22 +2601,22 @@ model OutputVersion {
 }
 
 model OutputEvidenceSnapshot {
-  id                     String        @id @default(cuid())
-  outputVersionId        String        @unique
-  snapshotSchemaVersion  String
-  sourceSnapshotRefs     Json
-  metricRefs             Json
-  analysisRefs           Json
-  agentInputRefs         Json
-  assumptionRefs         Json
-  limitationRefs         Json
-  rightsRefs             Json
-  freshnessRefs          Json
-  reviewState            String
-  fingerprint            String
-  createdAt              DateTime      @default(now())
+  id                    String   @id @default(cuid())
+  outputVersionId       String   @unique
+  snapshotSchemaVersion String
+  sourceSnapshotRefs    Json
+  metricRefs            Json
+  analysisRefs          Json
+  agentInputRefs        Json
+  assumptionRefs        Json
+  limitationRefs        Json
+  rightsRefs            Json
+  freshnessRefs         Json
+  reviewState           String
+  fingerprint           String
+  createdAt             DateTime @default(now())
 
-  outputVersion          OutputVersion @relation(fields: [outputVersionId], references: [id], onDelete: Restrict)
+  outputVersion OutputVersion @relation(fields: [outputVersionId], references: [id], onDelete: Restrict)
 
   @@index([fingerprint])
 }
@@ -2582,7 +2636,7 @@ model OutputDependency {
   currentState       OutputInvalidationState
   createdAt          DateTime                @default(now())
 
-  outputVersion      OutputVersion           @relation(fields: [outputVersionId], references: [id], onDelete: Restrict)
+  outputVersion OutputVersion @relation(fields: [outputVersionId], references: [id], onDelete: Restrict)
 
   @@unique([outputVersionId, upstreamArtifact, downstreamArtifact, dependencyType])
   @@index([outputVersionId])
@@ -2590,15 +2644,15 @@ model OutputDependency {
 }
 
 model OutputReview {
-  id                    String                   @id @default(cuid())
+  id                    String                  @id @default(cuid())
   outputVersionId       String
   reviewerSubject       String
   disposition           OutputReviewDisposition
   reviewContractVersion String
-  reviewedAt            DateTime                 @default(now())
+  reviewedAt            DateTime                @default(now())
   reviewNote            String?
 
-  outputVersion         OutputVersion            @relation(fields: [outputVersionId], references: [id], onDelete: Restrict)
+  outputVersion OutputVersion @relation(fields: [outputVersionId], references: [id], onDelete: Restrict)
 
   @@index([outputVersionId, reviewedAt])
   @@index([reviewerSubject, reviewedAt])
@@ -2614,23 +2668,23 @@ model OutputDecision {
   recordedAt            DateTime                  @default(now())
   rationale             String?
 
-  outputVersion         OutputVersion             @relation(fields: [outputVersionId], references: [id], onDelete: Restrict)
+  outputVersion OutputVersion @relation(fields: [outputVersionId], references: [id], onDelete: Restrict)
 
   @@unique([outputVersionId, decisionRef])
   @@index([outputVersionId, recordedAt])
 }
 
 model OutputCheckpoint {
-  id                     String                @id @default(cuid())
-  outputVersionId        String
-  checkpointRef          String
-  state                  OutputCheckpointState
+  id                      String                @id @default(cuid())
+  outputVersionId         String
+  checkpointRef           String
+  state                   OutputCheckpointState
   checkpointSchemaVersion String
-  recordedBySubject      String
-  recordedAt             DateTime              @default(now())
-  detail                 String?
+  recordedBySubject       String
+  recordedAt              DateTime              @default(now())
+  detail                  String?
 
-  outputVersion          OutputVersion         @relation(fields: [outputVersionId], references: [id], onDelete: Restrict)
+  outputVersion OutputVersion @relation(fields: [outputVersionId], references: [id], onDelete: Restrict)
 
   @@unique([outputVersionId, checkpointRef])
   @@index([outputVersionId, recordedAt])
@@ -2656,11 +2710,11 @@ model EvidenceCandidate {
   createdAt              DateTime                @default(now())
   updatedAt              DateTime                @updatedAt
 
-  admission              EvidenceAdmission?      @relation("EvidenceCandidateAdmission", fields: [admissionId], references: [id], onDelete: Restrict)
-  admissionRecord        EvidenceAdmission?      @relation("EvidenceAdmissionCandidate")
-  auditEvents            EvidenceAdmissionAuditEvent[]
-  professionalResponse   ProfessionalInputResponse?
-  transactionIssues      TransactionIssue[] @relation("TransactionIssueEvidenceCandidate")
+  admission            EvidenceAdmission?            @relation("EvidenceCandidateAdmission", fields: [admissionId], references: [id], onDelete: Restrict)
+  admissionRecord      EvidenceAdmission?            @relation("EvidenceAdmissionCandidate")
+  auditEvents          EvidenceAdmissionAuditEvent[]
+  professionalResponse ProfessionalInputResponse?
+  transactionIssues    TransactionIssue[]            @relation("TransactionIssueEvidenceCandidate")
 
   @@unique([ownerAgentSubject, fingerprint])
   @@index([ownerAgentSubject, status, createdAt])
@@ -2668,48 +2722,48 @@ model EvidenceCandidate {
 }
 
 model EvidenceAdmission {
-  id                     String                  @id @default(cuid())
-  ownerAgentSubject      String
-  candidateId            String                  @unique
-  sourceKind             EvidenceSourceKind
-  sourceRef              String
-  claimKind              EvidenceClaimKind
-  admittedValue          Json
-  provenance             Json
-  admissionPolicy        EvidenceAdmissionPolicy
-  admittedBySubject      String
-  admittedAt             DateTime                @default(now())
-  effectiveAt            DateTime?
-  expiresAt              DateTime?
-  reviewAfter            DateTime?
-  supersedesAdmissionId  String?                 @unique
-  fingerprint            String                  @unique
-  createdAt              DateTime                @default(now())
+  id                    String                  @id @default(cuid())
+  ownerAgentSubject     String
+  candidateId           String                  @unique
+  sourceKind            EvidenceSourceKind
+  sourceRef             String
+  claimKind             EvidenceClaimKind
+  admittedValue         Json
+  provenance            Json
+  admissionPolicy       EvidenceAdmissionPolicy
+  admittedBySubject     String
+  admittedAt            DateTime                @default(now())
+  effectiveAt           DateTime?
+  expiresAt             DateTime?
+  reviewAfter           DateTime?
+  supersedesAdmissionId String?                 @unique
+  fingerprint           String                  @unique
+  createdAt             DateTime                @default(now())
 
-  candidate              EvidenceCandidate       @relation("EvidenceAdmissionCandidate", fields: [candidateId], references: [id], onDelete: Restrict)
-  candidateReference     EvidenceCandidate?      @relation("EvidenceCandidateAdmission")
-  supersedesAdmission    EvidenceAdmission?      @relation("EvidenceAdmissionSupersession", fields: [supersedesAdmissionId], references: [id], onDelete: Restrict)
-  supersededByAdmission  EvidenceAdmission?      @relation("EvidenceAdmissionSupersession")
-  auditEvents            EvidenceAdmissionAuditEvent[]
-  professionalInputs     ProfessionalInput[]
-  transactionIssues      TransactionIssue[] @relation("TransactionIssueEvidenceAdmission")
+  candidate             EvidenceCandidate             @relation("EvidenceAdmissionCandidate", fields: [candidateId], references: [id], onDelete: Restrict)
+  candidateReference    EvidenceCandidate?            @relation("EvidenceCandidateAdmission")
+  supersedesAdmission   EvidenceAdmission?            @relation("EvidenceAdmissionSupersession", fields: [supersedesAdmissionId], references: [id], onDelete: Restrict)
+  supersededByAdmission EvidenceAdmission?            @relation("EvidenceAdmissionSupersession")
+  auditEvents           EvidenceAdmissionAuditEvent[]
+  professionalInputs    ProfessionalInput[]
+  transactionIssues     TransactionIssue[]            @relation("TransactionIssueEvidenceAdmission")
 
   @@index([ownerAgentSubject, claimKind, effectiveAt])
   @@index([ownerAgentSubject, expiresAt])
 }
 
 model EvidenceAdmissionAuditEvent {
-  id                 String                          @id @default(cuid())
-  ownerAgentSubject  String
-  candidateId        String?
-  admissionId        String?
-  eventType          EvidenceAdmissionAuditEventType
-  actorSubject       String
-  policyContext      Json
-  createdAt          DateTime                        @default(now())
+  id                String                          @id @default(cuid())
+  ownerAgentSubject String
+  candidateId       String?
+  admissionId       String?
+  eventType         EvidenceAdmissionAuditEventType
+  actorSubject      String
+  policyContext     Json
+  createdAt         DateTime                        @default(now())
 
-  candidate          EvidenceCandidate?              @relation(fields: [candidateId], references: [id], onDelete: Restrict)
-  admission          EvidenceAdmission?              @relation(fields: [admissionId], references: [id], onDelete: Restrict)
+  candidate EvidenceCandidate? @relation(fields: [candidateId], references: [id], onDelete: Restrict)
+  admission EvidenceAdmission? @relation(fields: [admissionId], references: [id], onDelete: Restrict)
 
   @@index([ownerAgentSubject, createdAt])
   @@index([candidateId, createdAt])
@@ -2731,10 +2785,10 @@ model ProfessionalInputRequest {
   createdAt               DateTime                       @default(now())
   updatedAt               DateTime                       @updatedAt
 
-  response                ProfessionalInputResponse?
-  supersedesRequest       ProfessionalInputRequest?      @relation("ProfessionalInputRequestSupersession", fields: [supersedesRequestId], references: [id], onDelete: Restrict)
-  supersededByRequest     ProfessionalInputRequest?      @relation("ProfessionalInputRequestSupersession")
-  externalDelivery        ExternalRequestDelivery?
+  response            ProfessionalInputResponse?
+  supersedesRequest   ProfessionalInputRequest?  @relation("ProfessionalInputRequestSupersession", fields: [supersedesRequestId], references: [id], onDelete: Restrict)
+  supersededByRequest ProfessionalInputRequest?  @relation("ProfessionalInputRequestSupersession")
+  externalDelivery    ExternalRequestDelivery?
 
   @@index([ownerAgentSubject, status, createdAt])
   @@index([ownerAgentSubject, claimKind, status])
@@ -2762,79 +2816,79 @@ model ExternalRequestDelivery {
   createdAt                  DateTime                      @default(now())
   updatedAt                  DateTime                      @updatedAt
 
-  professionalInputRequest  ProfessionalInputRequest      @relation(fields: [professionalInputRequestId], references: [id], onDelete: Restrict)
-  capability                 ExternalRequestCapability?
-  sessions                   ExternalRequestSession[]
-  disclosureSnapshot         ExternalRequestDisclosureSnapshot?
-  identityVerifications      ExternalIdentityVerification[]
+  professionalInputRequest ProfessionalInputRequest           @relation(fields: [professionalInputRequestId], references: [id], onDelete: Restrict)
+  capability               ExternalRequestCapability?
+  sessions                 ExternalRequestSession[]
+  disclosureSnapshot       ExternalRequestDisclosureSnapshot?
+  identityVerifications    ExternalIdentityVerification[]
 
   @@index([ownerAgentSubject, status, createdAt])
   @@index([recipientEmail, status])
 }
 
 model ExternalRequestCapability {
-  id             String                  @id @default(cuid())
-  deliveryId     String                  @unique
-  tokenHash      String                  @unique
-  purpose        String
-  maxUses        Int                     @default(1)
-  useCount       Int                     @default(0)
-  exchangedAt    DateTime?
-  revokedAt      DateTime?
-  expiresAt      DateTime
-  createdAt      DateTime                @default(now())
-  updatedAt      DateTime                @updatedAt
+  id          String    @id @default(cuid())
+  deliveryId  String    @unique
+  tokenHash   String    @unique
+  purpose     String
+  maxUses     Int       @default(1)
+  useCount    Int       @default(0)
+  exchangedAt DateTime?
+  revokedAt   DateTime?
+  expiresAt   DateTime
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
-  delivery       ExternalRequestDelivery @relation(fields: [deliveryId], references: [id], onDelete: Restrict)
+  delivery ExternalRequestDelivery @relation(fields: [deliveryId], references: [id], onDelete: Restrict)
 }
 
 model ExternalRequestSession {
-  id              String                  @id @default(cuid())
-  deliveryId      String
-  sessionHash     String                  @unique
-  csrfTokenHash   String
-  expiresAt       DateTime
-  revokedAt       DateTime?
-  lastAccessedAt  DateTime?
-  submittedAt     DateTime?
-  createdAt       DateTime                @default(now())
-  updatedAt       DateTime                @updatedAt
+  id             String    @id @default(cuid())
+  deliveryId     String
+  sessionHash    String    @unique
+  csrfTokenHash  String
+  expiresAt      DateTime
+  revokedAt      DateTime?
+  lastAccessedAt DateTime?
+  submittedAt    DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
-  delivery        ExternalRequestDelivery @relation(fields: [deliveryId], references: [id], onDelete: Restrict)
+  delivery ExternalRequestDelivery @relation(fields: [deliveryId], references: [id], onDelete: Restrict)
 
   @@index([deliveryId, expiresAt])
 }
 
 model ExternalRequestDisclosureSnapshot {
-  id              String                  @id @default(cuid())
-  deliveryId      String                  @unique
+  id              String   @id @default(cuid())
+  deliveryId      String   @unique
   contractVersion String
   disclosure      Json
-  fingerprint     String                  @unique
-  createdAt       DateTime                @default(now())
+  fingerprint     String   @unique
+  createdAt       DateTime @default(now())
 
-  delivery        ExternalRequestDelivery @relation(fields: [deliveryId], references: [id], onDelete: Restrict)
+  delivery ExternalRequestDelivery @relation(fields: [deliveryId], references: [id], onDelete: Restrict)
 }
 
 model ExternalIdentityVerification {
-  id                String                                  @id @default(cuid())
+  id                String                                    @id @default(cuid())
   deliveryId        String
   dimension         ExternalRequestIdentityDimension
   method            ExternalRequestIdentityVerificationMethod
   status            ExternalRequestIdentityVerificationStatus
   assertedValue     String?
   verifiedBySubject String?
-  createdAt         DateTime                                @default(now())
+  createdAt         DateTime                                  @default(now())
 
-  delivery          ExternalRequestDelivery                 @relation(fields: [deliveryId], references: [id], onDelete: Restrict)
+  delivery ExternalRequestDelivery @relation(fields: [deliveryId], references: [id], onDelete: Restrict)
 
   @@unique([deliveryId, dimension, method])
   @@index([deliveryId, createdAt])
 }
 
 model ProfessionalInputResponse {
-  id                      String                       @id @default(cuid())
-  requestId               String                       @unique
+  id                      String                     @id @default(cuid())
+  requestId               String                     @unique
   ownerAgentSubject       String
   sourceReference         String
   sourceRoleClaim         String?
@@ -2844,12 +2898,12 @@ model ProfessionalInputResponse {
   responsePayload         Json
   provenance              Json
   verificationStatus      EvidenceVerificationStatus
-  candidateId             String                       @unique
-  createdAt               DateTime                     @default(now())
+  candidateId             String                     @unique
+  createdAt               DateTime                   @default(now())
 
-  request                 ProfessionalInputRequest     @relation(fields: [requestId], references: [id], onDelete: Restrict)
-  candidate               EvidenceCandidate            @relation(fields: [candidateId], references: [id], onDelete: Restrict)
-  transactionIssues       TransactionIssue[]           @relation("TransactionIssueProfessionalInputResponse")
+  request           ProfessionalInputRequest @relation(fields: [requestId], references: [id], onDelete: Restrict)
+  candidate         EvidenceCandidate        @relation(fields: [candidateId], references: [id], onDelete: Restrict)
+  transactionIssues TransactionIssue[]       @relation("TransactionIssueProfessionalInputResponse")
 
   @@index([ownerAgentSubject, receivedAt])
 }
@@ -2868,7 +2922,7 @@ model ProfessionalInput {
   fingerprint         String            @unique
   createdAt           DateTime          @default(now())
 
-  evidenceAdmission   EvidenceAdmission @relation(fields: [evidenceAdmissionId], references: [id], onDelete: Restrict)
+  evidenceAdmission EvidenceAdmission @relation(fields: [evidenceAdmissionId], references: [id], onDelete: Restrict)
 
   @@unique([ownerAgentSubject, claimKind, versionOrdinal])
   @@index([ownerAgentSubject, claimKind, effectiveAt])
@@ -2893,11 +2947,11 @@ model Transaction {
   createdAt                   DateTime                             @default(now())
   updatedAt                   DateTime                             @updatedAt
 
-  canonicalProperty           CanonicalPhysicalProperty            @relation(fields: [canonicalPropertyId], references: [id], onDelete: Restrict)
-  deadlines                   TransactionDeadline[]
-  issues                      TransactionIssue[]
-  decisions                   TransactionDecision[]
-  timelineEvents              TransactionTimelineEvent[]
+  canonicalProperty CanonicalPhysicalProperty  @relation(fields: [canonicalPropertyId], references: [id], onDelete: Restrict)
+  deadlines         TransactionDeadline[]
+  issues            TransactionIssue[]
+  decisions         TransactionDecision[]
+  timelineEvents    TransactionTimelineEvent[]
 
   @@index([ownerAgentSubject, createdAt])
   @@index([ownerAgentSubject, stage])
@@ -2905,7 +2959,7 @@ model Transaction {
 }
 
 model TransactionDeadline {
-  id                   String                               @id @default(cuid())
+  id                   String                                @id @default(cuid())
   transactionId        String
   category             TransactionDeadlineCategory
   label                String
@@ -2914,19 +2968,19 @@ model TransactionDeadline {
   sourceClass          TransactionDeadlineSourceClass
   sourceReference      String?
   verificationStatus   TransactionDeadlineVerificationStatus @default(RECORDED)
-  attentionState       TransactionDeadlineAttentionState    @default(UPCOMING)
+  attentionState       TransactionDeadlineAttentionState     @default(UPCOMING)
   recordedBySubject    String
-  recordedAt           DateTime                             @default(now())
+  recordedAt           DateTime                              @default(now())
   verifiedBySubject    String?
   verifiedAt           DateTime?
   notes                String?
   successorReason      String?
-  supersedesDeadlineId String?                              @unique
-  createdAt            DateTime                             @default(now())
+  supersedesDeadlineId String?                               @unique
+  createdAt            DateTime                              @default(now())
 
-  transaction          Transaction                          @relation(fields: [transactionId], references: [id], onDelete: Restrict)
-  supersedesDeadline   TransactionDeadline?                 @relation("TransactionDeadlineSupersession", fields: [supersedesDeadlineId], references: [id], onDelete: Restrict)
-  supersededByDeadline TransactionDeadline?                 @relation("TransactionDeadlineSupersession")
+  transaction          Transaction           @relation(fields: [transactionId], references: [id], onDelete: Restrict)
+  supersedesDeadline   TransactionDeadline?  @relation("TransactionDeadlineSupersession", fields: [supersedesDeadlineId], references: [id], onDelete: Restrict)
+  supersededByDeadline TransactionDeadline?  @relation("TransactionDeadlineSupersession")
   issues               TransactionIssue[]
   decisions            TransactionDecision[]
 
@@ -2956,29 +3010,29 @@ model TransactionIssue {
   resolvedAt                  DateTime?
   supersedesIssueId           String?                        @unique
 
-  transaction                 Transaction                    @relation(fields: [transactionId], references: [id], onDelete: Restrict)
-  relatedDeadline             TransactionDeadline?           @relation(fields: [relatedDeadlineId], references: [id], onDelete: Restrict)
-  professionalInputResponse   ProfessionalInputResponse?     @relation("TransactionIssueProfessionalInputResponse", fields: [professionalInputResponseId], references: [id], onDelete: Restrict)
-  evidenceCandidate           EvidenceCandidate?             @relation("TransactionIssueEvidenceCandidate", fields: [evidenceCandidateId], references: [id], onDelete: Restrict)
-  evidenceAdmission           EvidenceAdmission?             @relation("TransactionIssueEvidenceAdmission", fields: [evidenceAdmissionId], references: [id], onDelete: Restrict)
-  outputVersion               OutputVersion?                 @relation("TransactionIssueOutputVersion", fields: [outputVersionId], references: [id], onDelete: Restrict)
-  supersedesIssue             TransactionIssue?              @relation("TransactionIssueSupersession", fields: [supersedesIssueId], references: [id], onDelete: Restrict)
-  supersededByIssue           TransactionIssue?              @relation("TransactionIssueSupersession")
-  decisions                   TransactionDecision[]
+  transaction               Transaction                @relation(fields: [transactionId], references: [id], onDelete: Restrict)
+  relatedDeadline           TransactionDeadline?       @relation(fields: [relatedDeadlineId], references: [id], onDelete: Restrict)
+  professionalInputResponse ProfessionalInputResponse? @relation("TransactionIssueProfessionalInputResponse", fields: [professionalInputResponseId], references: [id], onDelete: Restrict)
+  evidenceCandidate         EvidenceCandidate?         @relation("TransactionIssueEvidenceCandidate", fields: [evidenceCandidateId], references: [id], onDelete: Restrict)
+  evidenceAdmission         EvidenceAdmission?         @relation("TransactionIssueEvidenceAdmission", fields: [evidenceAdmissionId], references: [id], onDelete: Restrict)
+  outputVersion             OutputVersion?             @relation("TransactionIssueOutputVersion", fields: [outputVersionId], references: [id], onDelete: Restrict)
+  supersedesIssue           TransactionIssue?          @relation("TransactionIssueSupersession", fields: [supersedesIssueId], references: [id], onDelete: Restrict)
+  supersededByIssue         TransactionIssue?          @relation("TransactionIssueSupersession")
+  decisions                 TransactionDecision[]
 
   @@index([transactionId, state, createdAt])
   @@index([transactionId, attentionLevel])
 }
 
 model TransactionDecision {
-  id                          String                           @id @default(cuid())
+  id                          String                          @id @default(cuid())
   transactionId               String
   profile                     TransactionDecisionProfile
   description                 String
   sourceMethod                TransactionDecisionSourceMethod
   clientContextLabel          String?
   occurredAt                  DateTime?
-  recordedAt                  DateTime                         @default(now())
+  recordedAt                  DateTime                        @default(now())
   recordedBySubject           String
   provenance                  Json
   limitations                 String
@@ -2987,15 +3041,15 @@ model TransactionDecision {
   professionalInputResponseId String?
   evidenceAdmissionId         String?
   policyClassification        String
-  idempotencyKey              String                           @unique
-  supersedesDecisionId        String?                          @unique
-  createdAt                   DateTime                         @default(now())
+  idempotencyKey              String                          @unique
+  supersedesDecisionId        String?                         @unique
+  createdAt                   DateTime                        @default(now())
 
-  transaction                 Transaction                      @relation(fields: [transactionId], references: [id], onDelete: Restrict)
-  relatedIssue                TransactionIssue?                @relation(fields: [relatedIssueId], references: [id], onDelete: Restrict)
-  relatedDeadline             TransactionDeadline?             @relation(fields: [relatedDeadlineId], references: [id], onDelete: Restrict)
-  supersedesDecision          TransactionDecision?             @relation("TransactionDecisionSupersession", fields: [supersedesDecisionId], references: [id], onDelete: Restrict)
-  supersededByDecision        TransactionDecision?             @relation("TransactionDecisionSupersession")
+  transaction          Transaction          @relation(fields: [transactionId], references: [id], onDelete: Restrict)
+  relatedIssue         TransactionIssue?    @relation(fields: [relatedIssueId], references: [id], onDelete: Restrict)
+  relatedDeadline      TransactionDeadline? @relation(fields: [relatedDeadlineId], references: [id], onDelete: Restrict)
+  supersedesDecision   TransactionDecision? @relation("TransactionDecisionSupersession", fields: [supersedesDecisionId], references: [id], onDelete: Restrict)
+  supersededByDecision TransactionDecision? @relation("TransactionDecisionSupersession")
 
   @@index([transactionId, recordedAt])
   @@index([transactionId, profile])
@@ -3013,14 +3067,114 @@ model TransactionTimelineEvent {
   payload         Json
   createdAt       DateTime                     @default(now())
 
-  transaction     Transaction                  @relation(fields: [transactionId], references: [id], onDelete: Restrict)
+  transaction Transaction @relation(fields: [transactionId], references: [id], onDelete: Restrict)
 
   @@index([transactionId, recordedAt])
   @@index([transactionId, eventType])
 }
 
+model ClientAuthorizationProfile {
+  id                    String                              @id @default(cuid())
+  profileKey            String
+  profileVersion        String
+  lifecycle             ClientAuthorizationProfileLifecycle
+  definition            Json
+  definitionFingerprint String                              @unique
+  createdAt             DateTime                            @default(now())
+
+  authorizations ClientAuthorization[]
+
+  @@unique([profileKey, profileVersion])
+  @@index([profileKey, lifecycle])
+}
+
+model ClientAuthorization {
+  id                        String                           @id @default(cuid())
+  ownerAgentSubject         String
+  profileId                 String
+  status                    ClientAuthorizationStatus        @default(DRAFT)
+  effectiveAt               DateTime?
+  expiresAt                 DateTime?
+  revokedAt                 DateTime?
+  revokedBySubject          String?
+  revocationReason          String?
+  supersededAt              DateTime?
+  supersedesAuthorizationId String?                          @unique
+  transactionId             String?
+  propertyId                String?
+  captureMethod             ClientAuthorizationCaptureMethod
+  assurance                 ClientAuthorizationAssurance
+  createdBySubject          String
+  idempotencyKey            String                           @unique
+  createdAt                 DateTime                         @default(now())
+  updatedAt                 DateTime                         @updatedAt
+
+  profile                   ClientAuthorizationProfile     @relation(fields: [profileId], references: [id], onDelete: Restrict)
+  principals                ClientAuthorizationPrincipal[]
+  snapshot                  ClientAuthorizationSnapshot?
+  uses                      ClientAuthorizationUse[]
+  supersedesAuthorization   ClientAuthorization?           @relation("ClientAuthorizationSupersession", fields: [supersedesAuthorizationId], references: [id], onDelete: Restrict)
+  supersededByAuthorization ClientAuthorization?           @relation("ClientAuthorizationSupersession")
+
+  @@index([ownerAgentSubject, status, createdAt])
+  @@index([ownerAgentSubject, profileId, status])
+  @@index([transactionId])
+  @@index([propertyId])
+}
+
+model ClientAuthorizationPrincipal {
+  id                      String   @id @default(cuid())
+  authorizationId         String
+  principalRef            String
+  displayLabel            String
+  representativeReference String?
+  createdAt               DateTime @default(now())
+
+  authorization ClientAuthorization @relation(fields: [authorizationId], references: [id], onDelete: Restrict)
+
+  @@unique([authorizationId, principalRef])
+  @@index([principalRef])
+}
+
+model ClientAuthorizationSnapshot {
+  id              String   @id @default(cuid())
+  authorizationId String   @unique
+  schemaVersion   String
+  snapshot        Json
+  fingerprint     String   @unique
+  createdAt       DateTime @default(now())
+
+  authorization ClientAuthorization @relation(fields: [authorizationId], references: [id], onDelete: Restrict)
+}
+
+model ClientAuthorizationUse {
+  id                   String                        @id @default(cuid())
+  authorizationId      String?
+  ownerAgentSubject    String
+  profileKey           String
+  profileVersion       String
+  principalRefs        Json
+  proposedAction       String
+  purpose              String
+  recipientClass       String?
+  recipientRef         String?
+  requestedDataClasses Json
+  resolvedDataClasses  Json
+  resolution           ClientAuthorizationResolution
+  reasons              Json
+  downstreamReference  String?
+  completedAt          DateTime?
+  idempotencyKey       String                        @unique
+  resolvedAt           DateTime                      @default(now())
+
+  authorization ClientAuthorization? @relation(fields: [authorizationId], references: [id], onDelete: Restrict)
+
+  @@index([ownerAgentSubject, resolvedAt])
+  @@index([authorizationId, resolvedAt])
+}
+
 model SellerFinancialScenario {
-  id                    String   @id @default(cuid())
+  id                    String    @id @default(cuid())
   ownerAgentSubject     String
   scenarioKey           String
   versionOrdinal        Int
@@ -3029,31 +3183,31 @@ model SellerFinancialScenario {
   inputSnapshot         Json
   sourceQualification   Json
   professionalInputRefs Json
-  scenarioFingerprint   String   @unique
-  supersedesScenarioId  String?  @unique
-  createdAt             DateTime @default(now())
+  scenarioFingerprint   String    @unique
+  supersedesScenarioId  String?   @unique
+  createdAt             DateTime  @default(now())
   reviewedAt            DateTime?
 
-  supersedesScenario    SellerFinancialScenario?  @relation("SellerFinancialScenarioSupersession", fields: [supersedesScenarioId], references: [id], onDelete: Restrict)
-  supersededByScenario  SellerFinancialScenario?  @relation("SellerFinancialScenarioSupersession")
-  results               SellerFinancialResult[]
-  auditEvents           SellerFinancialAuditEvent[]
+  supersedesScenario   SellerFinancialScenario?    @relation("SellerFinancialScenarioSupersession", fields: [supersedesScenarioId], references: [id], onDelete: Restrict)
+  supersededByScenario SellerFinancialScenario?    @relation("SellerFinancialScenarioSupersession")
+  results              SellerFinancialResult[]
+  auditEvents          SellerFinancialAuditEvent[]
 
   @@unique([ownerAgentSubject, scenarioKey, versionOrdinal])
   @@index([ownerAgentSubject, scenarioKey, createdAt])
 }
 
 model SellerFinancialResult {
-  id                String   @id @default(cuid())
-  scenarioId        String
-  ownerAgentSubject String
+  id                  String   @id @default(cuid())
+  scenarioId          String
+  ownerAgentSubject   String
   calculationContract String
-  resultPayload     Json
-  resultFingerprint String   @unique
-  createdAt         DateTime @default(now())
-  immutableAt       DateTime @default(now())
+  resultPayload       Json
+  resultFingerprint   String   @unique
+  createdAt           DateTime @default(now())
+  immutableAt         DateTime @default(now())
 
-  scenario          SellerFinancialScenario @relation(fields: [scenarioId], references: [id], onDelete: Restrict)
+  scenario SellerFinancialScenario @relation(fields: [scenarioId], references: [id], onDelete: Restrict)
 
   @@unique([scenarioId, calculationContract])
   @@index([ownerAgentSubject, createdAt])
@@ -3067,7 +3221,7 @@ model SellerFinancialAuditEvent {
   eventFingerprint  String   @unique
   createdAt         DateTime @default(now())
 
-  scenario          SellerFinancialScenario @relation(fields: [scenarioId], references: [id], onDelete: Restrict)
+  scenario SellerFinancialScenario @relation(fields: [scenarioId], references: [id], onDelete: Restrict)
 
   @@index([ownerAgentSubject, createdAt])
   @@index([scenarioId, createdAt])

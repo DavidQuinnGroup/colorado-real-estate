@@ -18,6 +18,7 @@
     "check:professional-input-foundation": "jiti scripts/checkProfessionalInputFoundation.ts",
     "check:evidence-professional-input-agent-workflow": "jiti scripts/checkEvidenceProfessionalInputAgentWorkflow.ts",
     "check:professional-external-request-foundation": "jiti scripts/checkProfessionalExternalRequestFoundation.ts",
+    "check:client-authorization-foundation": "jiti scripts/checkClientAuthorizationFoundation.ts",
     "check:professional-external-request-resend-safety": "jiti scripts/checkProfessionalExternalRequestResendSafety.ts",
     "check:buyer-under-contract-foundation": "jiti scripts/checkBuyerUnderContractFoundation.ts",
     "check": "npm run check:fast && npm run build",
