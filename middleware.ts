@@ -24,13 +24,28 @@ function isProfessionalExternalRequestRoute(pathname: string) {
   return pathname === '/professional-request' || pathname.startsWith('/professional-request/') || pathname === '/api/professional-request/respond' || pathname.startsWith('/api/webhooks/resend/professional-external-request');
 }
 
-function withProfessionalExternalRequestHeaders(response: NextResponse) {
+function professionalExternalRequestContentSecurityPolicy(nonce: string) {
+  return `default-src 'self'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'; object-src 'none'; script-src 'self' 'nonce-${nonce}'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'`;
+}
+
+function professionalExternalRequestNonce() {
+  const bytes = crypto.getRandomValues(new Uint8Array(16));
+  return btoa(String.fromCharCode(...bytes));
+}
+
+function professionalExternalRequestResponse(request: NextRequest) {
+  const nonce = professionalExternalRequestNonce();
+  const contentSecurityPolicy = professionalExternalRequestContentSecurityPolicy(nonce);
+  const headers = new Headers(request.headers);
+  headers.set('content-security-policy', contentSecurityPolicy);
+  headers.set('x-project-atlas-private-gate', 'true');
+  const response = withPrivateResponseHeaders(NextResponse.next({ request: { headers } }));
   response.headers.set('Cache-Control', 'private, no-store');
   response.headers.set('Referrer-Policy', 'no-referrer');
   response.headers.set('X-Content-Type-Options', 'nosniff');
   response.headers.set('X-Frame-Options', 'DENY');
   response.headers.set('X-Robots-Tag', 'noindex, nofollow, noarchive');
-  response.headers.set('Content-Security-Policy', "default-src 'self'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'");
+  response.headers.set('Content-Security-Policy', contentSecurityPolicy);
   return response;
 }
 
@@ -53,7 +68,7 @@ export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const privateConfiguration = getPrivateSiteAccessConfiguration();
   if (isPrivateAccessAllowlist(pathname)) return pathname.startsWith('/private-access') ? privateAccessPageResponse(request) : withPrivateResponseHeaders(NextResponse.next());
-  if (isProfessionalExternalRequestRoute(pathname)) return withProfessionalExternalRequestHeaders(pathname.startsWith('/professional-request') ? privateAccessPageResponse(request) : NextResponse.next());
+  if (isProfessionalExternalRequestRoute(pathname)) return professionalExternalRequestResponse(request);
   if (privateConfiguration.enabled) {
     if (privateConfiguration.configurationState !== 'ENABLED') {
       if (pathname.startsWith('/api/')) return withPrivateResponseHeaders(NextResponse.json({ success: false, error: 'Private development access is unavailable.' }, { status: 503 }));
