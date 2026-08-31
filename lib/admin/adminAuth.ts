@@ -101,12 +101,14 @@ export const adminProtectedSurfaceClassifications: AdminProtectedSurfaceClassifi
   surface('/agent/prepare/seller/presentation', 'BROWSER_ADMIN_PAGE', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),
   surface('/agent/prepare/seller/financial', 'BROWSER_ADMIN_PAGE', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),
   surface('/agent/prepare/professional-inputs', 'BROWSER_ADMIN_PAGE', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),
+  surface('/agent/under-contract', 'BROWSER_ADMIN_PAGE', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),
   surface('/agent/prepare/listing', 'BROWSER_ADMIN_PAGE', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),
   surface('/api/agent/output/pdf', 'READ_ONLY_ADMIN_API', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),
   surface('/api/agent/outputs', 'MUTATING_ADMIN_API', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'MUTATION_CAPABLE', 'MUTATING_ADMIN', true),
   surface('/api/agent/evidence', 'MUTATING_ADMIN_API', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'MUTATION_CAPABLE', 'MUTATING_ADMIN', true),
   surface('/api/agent/professional-inputs', 'MUTATING_ADMIN_API', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'MUTATION_CAPABLE', 'MUTATING_ADMIN', true),
   surface('/api/agent/professional-external-requests', 'MUTATING_ADMIN_API', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'MUTATION_CAPABLE', 'MUTATING_ADMIN', true),
+  surface('/api/agent/buyer-under-contract', 'MUTATING_ADMIN_API', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'MUTATION_CAPABLE', 'MUTATING_ADMIN', true),
   surface('/api/agent/seller-financial', 'MUTATING_ADMIN_API', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'MUTATION_CAPABLE', 'MUTATING_ADMIN', true),
   surface('/api/agent/prepare/property', 'READ_ONLY_ADMIN_API', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),
   surface('/api/agent/current-competing-listing-context', 'READ_ONLY_ADMIN_API', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),
@@ -188,7 +190,7 @@ export function sanitizeAdminReturnPath(value: string | null | undefined) {
 }
 
 export function sanitizeAgentReturnPath(value: string | null | undefined) {
-  return value === '/agent' || value === '/agent/prepare/market' || value === '/agent/prepare/market-update' || value === '/agent/prepare/property' || value === '/agent/prepare/place' || value === '/agent/prepare/buyer' || value === '/agent/prepare/seller' || value === '/agent/prepare/seller/presentation' || value === '/agent/prepare/seller/financial' || value === '/agent/prepare/professional-inputs' || value === '/agent/prepare/listing' ? value : '/agent';
+  return value === '/agent' || value === '/agent/prepare/market' || value === '/agent/prepare/market-update' || value === '/agent/prepare/property' || value === '/agent/prepare/place' || value === '/agent/prepare/buyer' || value === '/agent/prepare/seller' || value === '/agent/prepare/seller/presentation' || value === '/agent/prepare/seller/financial' || value === '/agent/prepare/professional-inputs' || value === '/agent/prepare/listing' || value === '/agent/under-contract' ? value : '/agent';
 }
 
 export function classifyAdminSurface(pathname: string, method = 'GET'): AdminProtectedSurfaceClassification {

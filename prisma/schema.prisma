@@ -130,6 +130,135 @@ enum EvidenceVerificationStatus {
   VERIFICATION_FAILED
 }
 
+enum TransactionSide {
+  BUYER
+}
+
+enum TransactionOperationalStage {
+  UNDER_CONTRACT
+  INSPECTION_PERIOD
+  TITLE_DUE_DILIGENCE
+  APPRAISAL_FINANCING
+  PRE_CLOSING
+  CLOSED
+  CANCELLED_REPORTED
+  OTHER_REVIEW_REQUIRED
+}
+
+enum TransactionContextVerificationStatus {
+  REPORTED
+  AGENT_VERIFIED
+  SOURCE_DOCUMENT_VERIFICATION_PENDING
+  CONFLICT_REQUIRES_REVIEW
+  UNKNOWN
+}
+
+enum TransactionDeadlineCategory {
+  INSPECTION
+  TITLE
+  APPRAISAL
+  FINANCING
+  HOA
+  INSURANCE
+  CLOSING
+  POSSESSION
+  CONTRACTUAL_OTHER
+  BROKERAGE_OPERATIONAL
+  OTHER
+}
+
+enum TransactionDeadlineSourceClass {
+  AGENT_RECORDED_SYNTHETIC_CONTRACT_FACT
+  AGENT_RECORDED_MANUAL_FACT
+  AGENT_REPORTED_AMENDMENT
+  AGENT_CORRECTION
+  SOURCE_CONFLICT
+  OTHER_REVIEW_REQUIRED
+}
+
+enum TransactionDeadlineVerificationStatus {
+  RECORDED
+  AGENT_VERIFIED
+  CONFLICT_REQUIRES_REVIEW
+  UNKNOWN
+}
+
+enum TransactionDeadlineAttentionState {
+  UPCOMING
+  DUE_SOON
+  PAST_DUE_REVIEW_REQUIRED
+  COMPLETED_REPORTED
+  SUPERSEDED
+  CONFLICT_REQUIRES_REVIEW
+  UNKNOWN
+}
+
+enum TransactionIssueCategory {
+  INSPECTION
+  TITLE
+  APPRAISAL
+  FINANCING
+  INSURANCE
+  HOA_DOCUMENTS
+  PROPERTY_CONDITION
+  PROFESSIONAL_INPUT_DEPENDENCY
+  DEADLINE_DEPENDENCY
+  UNRESOLVED_FACTUAL_QUESTION
+  OTHER
+}
+
+enum TransactionIssueAttentionLevel {
+  INFORMATIONAL
+  FOLLOW_UP
+  MATERIAL_REVIEW
+  URGENT_AGENT_ATTENTION
+  REVIEW_REQUIRED
+}
+
+enum TransactionIssueState {
+  OPEN
+  IN_REVIEW
+  AWAITING_PROFESSIONAL_INPUT
+  AWAITING_CLIENT_INPUT
+  RESOLVED_REPORTED
+  SUPERSEDED
+  CLOSED_INFORMATIONAL
+}
+
+enum TransactionDecisionProfile {
+  REQUEST_ADDITIONAL_INFORMATION
+  REQUEST_PROFESSIONAL_ESTIMATE
+  REQUEST_INSPECTION_OR_QUOTE
+  PREFERRED_SCHEDULING_OPTION
+  PREFERRED_PROVIDER_SELECTION
+  NON_BINDING_PRIORITY
+  ACKNOWLEDGED_AGENT_REVIEWED_INFORMATION
+  OTHER_LOW_RISK_REVIEW_REQUIRED
+}
+
+enum TransactionDecisionSourceMethod {
+  AGENT_RECORDED_VERBAL
+  AGENT_RECORDED_EMAIL
+  AGENT_RECORDED_TEXT
+  AGENT_RECORDED_MEETING
+  AGENT_RECORDED_OTHER
+  SYSTEM_RECORDED_AGENT_ACTION
+}
+
+enum TransactionTimelineEventType {
+  TRANSACTION_CREATED
+  STAGE_REPORTED
+  DEADLINE_RECORDED
+  DEADLINE_VERIFIED
+  DEADLINE_SUPERSEDED
+  ISSUE_CREATED
+  ISSUE_STATE_RECORDED
+  DECISION_RECORDED
+  DECISION_SUPERSEDED
+  OUTPUT_REVIEWED
+  COMPLIANCE_CHECKPOINT_RECORDED
+}
+
 enum EvidenceAdmissionPolicy {
   TRUSTED_INTERNAL_DETERMINISTIC_AUTO_ADMISSION
   AGENT_REVIEWED_PROFESSIONAL_INPUT
@@ -537,6 +666,7 @@ model CanonicalPhysicalProperty {
   sourceMappings    CanonicalPhysicalPropertySourceIdentityMapping[]
   observations      CanonicalPhysicalPropertyObservation[]
   listingEvents     CanonicalPropertyListingEvent[]
+  transactions      Transaction[]
 
   @@index([identityStatus, identityConfidence], map: "CPP_status_confidence_idx")
   @@index([state, county, jurisdiction], map: "CPP_jurisdiction_idx")
@@ -2407,6 +2537,7 @@ model OutputVersion {
   reviews                    OutputReview[]
   decisions                  OutputDecision[]
   checkpoints                OutputCheckpoint[]
+  transactionIssues          TransactionIssue[]      @relation("TransactionIssueOutputVersion")
 
   @@unique([productId, versionOrdinal])
   @@unique([productId, sourceVersionRef])
@@ -2529,6 +2660,7 @@ model EvidenceCandidate {
   admissionRecord        EvidenceAdmission?      @relation("EvidenceAdmissionCandidate")
   auditEvents            EvidenceAdmissionAuditEvent[]
   professionalResponse   ProfessionalInputResponse?
+  transactionIssues      TransactionIssue[] @relation("TransactionIssueEvidenceCandidate")
 
   @@unique([ownerAgentSubject, fingerprint])
   @@index([ownerAgentSubject, status, createdAt])
@@ -2560,6 +2692,7 @@ model EvidenceAdmission {
   supersededByAdmission  EvidenceAdmission?      @relation("EvidenceAdmissionSupersession")
   auditEvents            EvidenceAdmissionAuditEvent[]
   professionalInputs     ProfessionalInput[]
+  transactionIssues      TransactionIssue[] @relation("TransactionIssueEvidenceAdmission")
 
   @@index([ownerAgentSubject, claimKind, effectiveAt])
   @@index([ownerAgentSubject, expiresAt])
@@ -2716,6 +2849,7 @@ model ProfessionalInputResponse {
 
   request                 ProfessionalInputRequest     @relation(fields: [requestId], references: [id], onDelete: Restrict)
   candidate               EvidenceCandidate            @relation(fields: [candidateId], references: [id], onDelete: Restrict)
+  transactionIssues       TransactionIssue[]           @relation("TransactionIssueProfessionalInputResponse")
 
   @@index([ownerAgentSubject, receivedAt])
 }
@@ -2738,6 +2872,151 @@ model ProfessionalInput {
 
   @@unique([ownerAgentSubject, claimKind, versionOrdinal])
   @@index([ownerAgentSubject, claimKind, effectiveAt])
+}
+
+model Transaction {
+  id                          String                               @id @default(cuid())
+  ownerAgentSubject           String
+  canonicalPropertyId         String
+  label                       String
+  side                        TransactionSide
+  stage                       TransactionOperationalStage
+  clientContextLabel          String?
+  clientContextStatus         String                               @default("SYNTHETIC_OR_REVIEW_REQUIRED")
+  mutualExecutionAt           DateTime?
+  executionVerificationStatus TransactionContextVerificationStatus @default(UNKNOWN)
+  contractProfileReference    String?
+  sourceReference             String?
+  limitations                 String?
+  archivePolicyVersion        String                               @default("DQG_TRANSACTION_ARCHIVE_POLICY_V1")
+  idempotencyKey              String                               @unique
+  createdAt                   DateTime                             @default(now())
+  updatedAt                   DateTime                             @updatedAt
+
+  canonicalProperty           CanonicalPhysicalProperty            @relation(fields: [canonicalPropertyId], references: [id], onDelete: Restrict)
+  deadlines                   TransactionDeadline[]
+  issues                      TransactionIssue[]
+  decisions                   TransactionDecision[]
+  timelineEvents              TransactionTimelineEvent[]
+
+  @@index([ownerAgentSubject, createdAt])
+  @@index([ownerAgentSubject, stage])
+  @@index([canonicalPropertyId])
+}
+
+model TransactionDeadline {
+  id                   String                               @id @default(cuid())
+  transactionId        String
+  category             TransactionDeadlineCategory
+  label                String
+  dueAt                DateTime
+  timezone             String
+  sourceClass          TransactionDeadlineSourceClass
+  sourceReference      String?
+  verificationStatus   TransactionDeadlineVerificationStatus @default(RECORDED)
+  attentionState       TransactionDeadlineAttentionState    @default(UPCOMING)
+  recordedBySubject    String
+  recordedAt           DateTime                             @default(now())
+  verifiedBySubject    String?
+  verifiedAt           DateTime?
+  notes                String?
+  successorReason      String?
+  supersedesDeadlineId String?                              @unique
+  createdAt            DateTime                             @default(now())
+
+  transaction          Transaction                          @relation(fields: [transactionId], references: [id], onDelete: Restrict)
+  supersedesDeadline   TransactionDeadline?                 @relation("TransactionDeadlineSupersession", fields: [supersedesDeadlineId], references: [id], onDelete: Restrict)
+  supersededByDeadline TransactionDeadline?                 @relation("TransactionDeadlineSupersession")
+  issues               TransactionIssue[]
+  decisions            TransactionDecision[]
+
+  @@index([transactionId, dueAt])
+  @@index([transactionId, attentionState])
+}
+
+model TransactionIssue {
+  id                          String                         @id @default(cuid())
+  transactionId               String
+  category                    TransactionIssueCategory
+  title                       String
+  factualSummary              String
+  sourceClass                 String
+  sourceReference             String?
+  attentionLevel              TransactionIssueAttentionLevel
+  state                       TransactionIssueState          @default(OPEN)
+  relatedDeadlineId           String?
+  professionalInputResponseId String?
+  evidenceCandidateId         String?
+  evidenceAdmissionId         String?
+  outputVersionId             String?
+  agentNotes                  String?
+  createdBySubject            String
+  createdAt                   DateTime                       @default(now())
+  resolvedBySubject           String?
+  resolvedAt                  DateTime?
+  supersedesIssueId           String?                        @unique
+
+  transaction                 Transaction                    @relation(fields: [transactionId], references: [id], onDelete: Restrict)
+  relatedDeadline             TransactionDeadline?           @relation(fields: [relatedDeadlineId], references: [id], onDelete: Restrict)
+  professionalInputResponse   ProfessionalInputResponse?     @relation("TransactionIssueProfessionalInputResponse", fields: [professionalInputResponseId], references: [id], onDelete: Restrict)
+  evidenceCandidate           EvidenceCandidate?             @relation("TransactionIssueEvidenceCandidate", fields: [evidenceCandidateId], references: [id], onDelete: Restrict)
+  evidenceAdmission           EvidenceAdmission?             @relation("TransactionIssueEvidenceAdmission", fields: [evidenceAdmissionId], references: [id], onDelete: Restrict)
+  outputVersion               OutputVersion?                 @relation("TransactionIssueOutputVersion", fields: [outputVersionId], references: [id], onDelete: Restrict)
+  supersedesIssue             TransactionIssue?              @relation("TransactionIssueSupersession", fields: [supersedesIssueId], references: [id], onDelete: Restrict)
+  supersededByIssue           TransactionIssue?              @relation("TransactionIssueSupersession")
+  decisions                   TransactionDecision[]
+
+  @@index([transactionId, state, createdAt])
+  @@index([transactionId, attentionLevel])
+}
+
+model TransactionDecision {
+  id                          String                           @id @default(cuid())
+  transactionId               String
+  profile                     TransactionDecisionProfile
+  description                 String
+  sourceMethod                TransactionDecisionSourceMethod
+  clientContextLabel          String?
+  occurredAt                  DateTime?
+  recordedAt                  DateTime                         @default(now())
+  recordedBySubject           String
+  provenance                  Json
+  limitations                 String
+  relatedIssueId              String?
+  relatedDeadlineId           String?
+  professionalInputResponseId String?
+  evidenceAdmissionId         String?
+  policyClassification        String
+  idempotencyKey              String                           @unique
+  supersedesDecisionId        String?                          @unique
+  createdAt                   DateTime                         @default(now())
+
+  transaction                 Transaction                      @relation(fields: [transactionId], references: [id], onDelete: Restrict)
+  relatedIssue                TransactionIssue?                @relation(fields: [relatedIssueId], references: [id], onDelete: Restrict)
+  relatedDeadline             TransactionDeadline?             @relation(fields: [relatedDeadlineId], references: [id], onDelete: Restrict)
+  supersedesDecision          TransactionDecision?             @relation("TransactionDecisionSupersession", fields: [supersedesDecisionId], references: [id], onDelete: Restrict)
+  supersededByDecision        TransactionDecision?             @relation("TransactionDecisionSupersession")
+
+  @@index([transactionId, recordedAt])
+  @@index([transactionId, profile])
+}
+
+model TransactionTimelineEvent {
+  id              String                       @id @default(cuid())
+  transactionId   String
+  eventType       TransactionTimelineEventType
+  objectReference String
+  actorSubject    String
+  sourceType      String
+  occurredAt      DateTime?
+  recordedAt      DateTime                     @default(now())
+  payload         Json
+  createdAt       DateTime                     @default(now())
+
+  transaction     Transaction                  @relation(fields: [transactionId], references: [id], onDelete: Restrict)
+
+  @@index([transactionId, recordedAt])
+  @@index([transactionId, eventType])
 }
 
 model SellerFinancialScenario {

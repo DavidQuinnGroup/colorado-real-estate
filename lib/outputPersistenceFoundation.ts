@@ -499,15 +499,8 @@ export function createOutputPersistenceService(prisma: PrismaClient) {
     });
   }
 
-  async function persistReviewedOutput(ownerAgentSubject: string, request: OutputPersistenceSaveRequest): Promise<PersistedOutputSummary> {
+  async function persistReviewedFixture(ownerAgentSubject: string, fixture: PersistableOutputFixture, reviewNote?: string): Promise<PersistedOutputSummary> {
     if (!ownerAgentSubject.trim()) throw new OutputPersistenceError('OWNERSHIP_DENIED', 'An Agent owner identity is required.');
-    const fixture = 'financialScenarioId' in request
-      ? await buildSellerFinancialFixture(ownerAgentSubject, request.financialScenarioId)
-      : 'sellerPresentationFinancialOutputVersionId' in request
-        ? await buildSellerPresentationFinancialModuleFixture(ownerAgentSubject, request.sellerPresentationFinancialOutputVersionId)
-        : 'buyerDecisionBriefFixtureId' in request
-          ? buildBuyerDecisionBriefFixture(request.buyerDecisionBriefFixtureId)
-          : buildPersistableOutputFixture(request.sourceVersionRef);
     const idempotencyKey = buildOutputPersistenceIdempotencyKey(ownerAgentSubject, fixture);
 
     for (let attempt = 0; attempt < 2; attempt += 1) {
@@ -596,7 +589,7 @@ export function createOutputPersistenceService(prisma: PrismaClient) {
                   disposition: 'APPROVED',
                   reviewContractVersion: OUTPUT_PERSISTENCE_REVIEW_POLICY,
                   reviewedAt,
-                  reviewNote: request.reviewNote,
+                  reviewNote,
                 },
               },
               decisions: {
@@ -636,6 +629,17 @@ export function createOutputPersistenceService(prisma: PrismaClient) {
     throw new OutputPersistenceError('PERSISTENCE_CONFLICT', 'Concurrent output persistence could not be resolved.');
   }
 
+  async function persistReviewedOutput(ownerAgentSubject: string, request: OutputPersistenceSaveRequest): Promise<PersistedOutputSummary> {
+    const fixture = 'financialScenarioId' in request
+      ? await buildSellerFinancialFixture(ownerAgentSubject, request.financialScenarioId)
+      : 'sellerPresentationFinancialOutputVersionId' in request
+        ? await buildSellerPresentationFinancialModuleFixture(ownerAgentSubject, request.sellerPresentationFinancialOutputVersionId)
+        : 'buyerDecisionBriefFixtureId' in request
+          ? buildBuyerDecisionBriefFixture(request.buyerDecisionBriefFixtureId)
+          : buildPersistableOutputFixture(request.sourceVersionRef);
+    return persistReviewedFixture(ownerAgentSubject, fixture, request.reviewNote);
+  }
+
   async function listOwnedOutputHistory(ownerAgentSubject: string): Promise<readonly PersistedOutputSummary[]> {
     if (!ownerAgentSubject.trim()) throw new OutputPersistenceError('OWNERSHIP_DENIED', 'An Agent owner identity is required.');
     const versions = await prisma.outputVersion.findMany({
@@ -660,7 +664,7 @@ export function createOutputPersistenceService(prisma: PrismaClient) {
     });
   }
 
-  return Object.freeze({ persistReviewedOutput, listOwnedOutputHistory, loadOwnedOutputForPdf });
+  return Object.freeze({ persistReviewedFixture, persistReviewedOutput, listOwnedOutputHistory, loadOwnedOutputForPdf });
 }
 
 export function outputPersistenceLifecycleIsSupported(value: string) {

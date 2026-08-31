@@ -8,6 +8,7 @@ const preparationCapabilities = [
   { title: 'Seller Preparation', description: 'Prepare the conversation, timing, and review points for a seller consultation.', href: '/agent/prepare/seller', icon: ClipboardList },
   { title: 'Seller Presentation', description: 'Compose and review the Seller Decision Brief with Agent, Seller, and print preview modes.', href: '/agent/prepare/seller/presentation', icon: FileText },
   { title: 'Professional Inputs', description: 'Record internal professional-input requests, review bounded evidence, and preserve admitted input history.', href: '/agent/prepare/professional-inputs', icon: ClipboardCheck },
+  { title: 'Buyer Under Contract', description: 'Coordinate owner-scoped deadlines, factual issues, low-risk decisions, provenance, and reviewed internal outputs.', href: '/agent/under-contract', icon: ClipboardList },
   { title: 'Listing Preparation', description: 'Prepare a listing appointment and the property-to-market questions that need review.', href: '/agent/prepare/listing', icon: Store },
   { title: 'Location Preparation', description: 'Prepare geographic and local context for a city, community, neighborhood, access, or place question.', href: '/agent/prepare/place', icon: MapPinned },
   { title: 'Property Preparation', description: 'Prepare property-specific diligence around an address, facts, condition, records, HOA, taxes, title, or insurance.', href: '/agent/prepare/property', icon: Home },
