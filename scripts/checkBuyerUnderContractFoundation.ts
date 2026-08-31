@@ -35,8 +35,9 @@ assert.equal(archive.destructiveDeletionAuthorized, false);
 assert.equal(isLowRiskTransactionDecisionProfile('REQUEST_PROFESSIONAL_ESTIMATE'), true);
 assert.equal(isLowRiskTransactionDecisionProfile('NOTICE_TO_TERMINATE'), false);
 assert.equal(assertLowRiskTransactionDecisionProfile('NON_BINDING_PRIORITY'), 'NON_BINDING_PRIORITY');
-assert.throws(() => assertLowRiskTransactionDecisionProfile('NOTICE_TO_TERMINATE'), (error: unknown) => error instanceof BuyerUnderContractError && error.code === 'PROHIBITED_DECISION');
-assert.throws(() => assertLowRiskTransactionDecisionProfile('CONTRACT_AMENDMENT'), (error: unknown) => error instanceof BuyerUnderContractError && error.code === 'PROHIBITED_DECISION');
+for (const profile of ['INSPECTION_OBJECTION', 'INSPECTION_RESOLUTION', 'TITLE_OBJECTION', 'TITLE_ACCEPTANCE', 'APPRAISAL_OBJECTION', 'APPRAISAL_WAIVER', 'FINANCING_ELECTION', 'LOAN_APPROVAL', 'CONTINGENCY_WAIVER', 'NOTICE_TO_TERMINATE', 'TERMINATION', 'AMENDMENT_APPROVAL', 'COUNTERPROPOSAL_ACCEPTANCE', 'CONTRACTUAL_ACCEPTANCE', 'CONTRACTUAL_REJECTION', 'EARNEST_MONEY_RELEASE', 'CLOSING_FUNDS_INSTRUCTION', 'WIRE_INSTRUCTION', 'LEGAL_NOTICE', 'OTHER_CONTRACT_RIGHT_ELECTION']) {
+  assert.throws(() => assertLowRiskTransactionDecisionProfile(profile), (error: unknown) => error instanceof BuyerUnderContractError && error.code === 'PROHIBITED_DECISION');
+}
 
 for (const name of ['Transaction', 'TransactionDeadline', 'TransactionIssue', 'TransactionDecision', 'TransactionTimelineEvent']) {
   assert.match(schema, new RegExp(`model ${name} \\{`));
