@@ -9,6 +9,7 @@ export const SYNTHETIC_AUTHORIZATION_PROFILE_VERSION = '1.0.0' as const;
 
 const prohibitedDataClasses = new Set(['PASSWORD', 'MFA_CODE', 'REUSABLE_AUTH_TOKEN', 'PRIVATE_AUTHENTICATION_TOKEN', 'BANKING_LOGIN_CREDENTIAL', 'CARD_SECURITY_CODE', 'WIRE_CREDENTIAL', 'PAYMENT_INITIATION_SECRET']);
 const assuranceRank = { AGENT_RECORDED: 0, CLIENT_CONFIRMED: 1, STRONG_CLIENT_CONFIRMED: 2, SIGNED: 3, PROVIDER_VERIFIED: 4 } as const;
+export type AuthorizationAssurance = keyof typeof assuranceRank;
 
 export type AuthorizationRequirement = 'NOT_REQUIRED_BY_PROFILE' | 'REQUIRED';
 export type AuthorizationReason =
@@ -126,6 +127,10 @@ export function resolvePrincipalRequirement(principalRequirement: PrincipalRequi
     return { satisfiedPrincipalRefs: satisfied, missingPrincipalRefs: unrecognized.length ? unrecognized : requested.length === 1 && satisfied.length === 1 ? [] : authorized, authorized: !unrecognized.length && requested.length === 1 && satisfied.length === 1 };
   }
   return { satisfiedPrincipalRefs: requested.filter((item) => authorized.includes(item)), missingPrincipalRefs: [...unrecognized, ...absent], authorized: !unrecognized.length && !absent.length && authorized.length > 0 };
+}
+
+export function authorizationAssuranceSatisfies(recorded: AuthorizationAssurance, required: AuthorizationAssurance) {
+  return assuranceRank[recorded] >= assuranceRank[required];
 }
 
 function isRecord(value: unknown): value is RecordValue { return Boolean(value) && typeof value === 'object' && !Array.isArray(value); }
@@ -283,12 +288,17 @@ export function createClientAuthorizationService(prisma: AuthorizationDatabase) 
     if (!profileRow || profileRow.lifecycle !== 'ACTIVE') return Object.freeze({ requirement, resolution: 'NOT_AUTHORIZED', reasons: ['PROFILE_INACTIVE'], authorizationProfileKey: profileKey, authorizationProfileVersion: input.profileVersion, satisfiedPrincipalRefs: [], missingPrincipalRefs: [], resolvedAction, resolvedRecipient: input.recipientRef ?? null, resolvedDataClasses: [], resolvedAt: now.toISOString() });
     const records = await prisma.clientAuthorization.findMany({ where: { ownerAgentSubject: actor, profileId: profileRow.id }, include: { principals: true, snapshot: true, supersededByAuthorization: true }, orderBy: { createdAt: 'desc' } });
     if (!records.length) return Object.freeze({ requirement, resolution: 'NOT_AUTHORIZED', reasons: ['NOT_AUTHORIZED'], authorizationProfileKey: profileKey, authorizationProfileVersion: profile.profileVersion, satisfiedPrincipalRefs: [], missingPrincipalRefs: input.principalRefs ?? [], resolvedAction, resolvedRecipient: input.recipientRef ?? null, resolvedDataClasses: [], resolvedAt: now.toISOString() });
-    const scopedRecords = records.filter((item) => {
+    const actionScopedRecords = records.filter((item) => {
       const snapshot = item.snapshot?.snapshot as RecordValue | undefined;
-      return snapshot?.purpose === purpose && snapshot.actionClass === resolvedAction && snapshot.recipientClass === (input.recipientClass ?? null) && snapshot.recipientRef === (input.recipientRef ?? null) && (snapshot.transactionId ?? null) === (input.transactionId ?? null) && (snapshot.propertyId ?? null) === (input.propertyId ?? null);
+      return snapshot?.purpose === purpose && snapshot.actionClass === resolvedAction && (snapshot.transactionId ?? null) === (input.transactionId ?? null) && (snapshot.propertyId ?? null) === (input.propertyId ?? null);
     });
-    if (!scopedRecords.length) return Object.freeze({ requirement, resolution: 'NOT_AUTHORIZED', reasons: ['SCOPE_MISMATCH'], authorizationProfileKey: profileKey, authorizationProfileVersion: profile.profileVersion, satisfiedPrincipalRefs: [], missingPrincipalRefs: input.principalRefs ?? [], resolvedAction, resolvedRecipient: input.recipientRef ?? null, resolvedDataClasses: [], resolvedAt: now.toISOString() });
-    const current = scopedRecords.find((item) => !item.supersededByAuthorization) ?? scopedRecords[0];
+    if (!actionScopedRecords.length) return Object.freeze({ requirement, resolution: 'NOT_AUTHORIZED', reasons: ['SCOPE_MISMATCH'], authorizationProfileKey: profileKey, authorizationProfileVersion: profile.profileVersion, satisfiedPrincipalRefs: [], missingPrincipalRefs: input.principalRefs ?? [], resolvedAction, resolvedRecipient: input.recipientRef ?? null, resolvedDataClasses: [], resolvedAt: now.toISOString() });
+    const recipientScopedRecords = actionScopedRecords.filter((item) => {
+      const snapshot = item.snapshot?.snapshot as RecordValue | undefined;
+      return snapshot?.recipientClass === (input.recipientClass ?? null) && snapshot.recipientRef === (input.recipientRef ?? null);
+    });
+    if (!recipientScopedRecords.length) return Object.freeze({ requirement, resolution: 'NOT_AUTHORIZED', reasons: ['RECIPIENT_MISMATCH'], authorizationProfileKey: profileKey, authorizationProfileVersion: profile.profileVersion, satisfiedPrincipalRefs: [], missingPrincipalRefs: input.principalRefs ?? [], resolvedAction, resolvedRecipient: input.recipientRef ?? null, resolvedDataClasses: [], resolvedAt: now.toISOString() });
+    const current = recipientScopedRecords.find((item) => !item.supersededByAuthorization) ?? recipientScopedRecords[0];
     const statusReason = mapStatus(current.status);
     if (statusReason) return Object.freeze({ requirement, resolution: 'NOT_AUTHORIZED', reasons: [statusReason], authorizationId: current.id, authorizationProfileKey: profileKey, authorizationProfileVersion: profile.profileVersion, satisfiedPrincipalRefs: current.principals.map((item) => item.principalRef), missingPrincipalRefs: [], resolvedAction, resolvedRecipient: input.recipientRef ?? null, resolvedDataClasses: [], resolvedAt: now.toISOString() });
     if (!current.snapshot) throw new ClientAuthorizationError('PERSISTENCE_UNAVAILABLE', 'The authorization snapshot is unavailable.');
@@ -305,7 +315,7 @@ export function createClientAuthorizationService(prisma: AuthorizationDatabase) 
     if (snapshot.recipientClass !== (input.recipientClass ?? null) || snapshot.recipientRef !== (input.recipientRef ?? null)) return Object.freeze({ requirement, resolution: 'NOT_AUTHORIZED', reasons: ['RECIPIENT_MISMATCH'], authorizationId: current.id, authorizationProfileKey: profileKey, authorizationProfileVersion: profile.profileVersion, satisfiedPrincipalRefs: requestedPrincipals, missingPrincipalRefs: [], resolvedAction, resolvedRecipient: input.recipientRef ?? null, resolvedDataClasses: [], resolvedAt: now.toISOString() });
     const allowedDataClasses = Array.isArray(snapshot.allowedDataClasses) ? snapshot.allowedDataClasses as string[] : [];
     if (dataClasses.some((item) => !allowedDataClasses.includes(item))) return Object.freeze({ requirement, resolution: 'NOT_AUTHORIZED', reasons: ['DATA_CLASS_NOT_AUTHORIZED'], authorizationId: current.id, authorizationProfileKey: profileKey, authorizationProfileVersion: profile.profileVersion, satisfiedPrincipalRefs: requestedPrincipals, missingPrincipalRefs: [], resolvedAction, resolvedRecipient: input.recipientRef ?? null, resolvedDataClasses: [], resolvedAt: now.toISOString() });
-    if (assuranceRank[current.assurance] < assuranceRank[profile.requiredAssurance]) return Object.freeze({ requirement, resolution: 'NOT_AUTHORIZED', reasons: ['ASSURANCE_INSUFFICIENT'], authorizationId: current.id, authorizationProfileKey: profileKey, authorizationProfileVersion: profile.profileVersion, satisfiedPrincipalRefs: requestedPrincipals, missingPrincipalRefs: [], resolvedAction, resolvedRecipient: input.recipientRef ?? null, resolvedDataClasses: [], resolvedAt: now.toISOString() });
+    if (!authorizationAssuranceSatisfies(current.assurance, profile.requiredAssurance)) return Object.freeze({ requirement, resolution: 'NOT_AUTHORIZED', reasons: ['ASSURANCE_INSUFFICIENT'], authorizationId: current.id, authorizationProfileKey: profileKey, authorizationProfileVersion: profile.profileVersion, satisfiedPrincipalRefs: requestedPrincipals, missingPrincipalRefs: [], resolvedAction, resolvedRecipient: input.recipientRef ?? null, resolvedDataClasses: [], resolvedAt: now.toISOString() });
     return Object.freeze({ requirement, resolution: 'AUTHORIZED', reasons: ['AUTHORIZED'], authorizationId: current.id, authorizationProfileKey: profileKey, authorizationProfileVersion: profile.profileVersion, satisfiedPrincipalRefs: requestedPrincipals, missingPrincipalRefs: [], resolvedAction, resolvedRecipient: input.recipientRef ?? null, resolvedDataClasses: dataClasses, resolvedAt: now.toISOString() });
   }
 
