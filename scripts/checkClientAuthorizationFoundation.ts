@@ -9,6 +9,7 @@ import {
   buildClientAuthorizationSnapshot,
   clientAuthorizationFingerprint,
   clientAuthorizationRequirement,
+  resolvePrincipalRequirement,
 } from '../lib/clientAuthorizationFoundation';
 import { PROFESSIONAL_EXTERNAL_REQUEST_PROFILES } from '../lib/professionalExternalRequestProfileRegistry';
 import { assertLowRiskTransactionDecisionProfile, transactionArchivePolicy } from '../lib/buyerUnderContractFoundation';
@@ -40,6 +41,12 @@ const reordered = buildClientAuthorizationSnapshot({ ...authorizationTerms, prin
 assert.equal(first.snapshot.schemaVersion, CLIENT_AUTHORIZATION_SNAPSHOT_VERSION);
 assert.equal(first.fingerprint, reordered.fingerprint);
 assert.notEqual(first.fingerprint, clientAuthorizationFingerprint({ ...first.snapshot, recipientRef: 'ATLAS_SYNTHETIC_RECIPIENT_B' }));
+assert.deepEqual(resolvePrincipalRequirement('SINGLE_REQUIRED_PRINCIPAL', ['A'], ['A']), { satisfiedPrincipalRefs: ['A'], missingPrincipalRefs: [], authorized: true });
+assert.equal(resolvePrincipalRequirement('SINGLE_REQUIRED_PRINCIPAL', ['A'], []).authorized, false);
+assert.deepEqual(resolvePrincipalRequirement('ALL_REQUIRED_PRINCIPALS', ['A', 'B'], ['A']), { satisfiedPrincipalRefs: ['A'], missingPrincipalRefs: ['B'], authorized: false });
+assert.equal(resolvePrincipalRequirement('ALL_REQUIRED_PRINCIPALS', ['A', 'B'], ['A', 'B']).authorized, true);
+assert.equal(resolvePrincipalRequirement('ANY_ONE_AUTHORIZED_PRINCIPAL', ['A', 'B'], ['B']).authorized, true);
+assert.equal(resolvePrincipalRequirement('ANY_ONE_AUTHORIZED_PRINCIPAL', ['A', 'B'], ['C']).authorized, false);
 
 for (const name of ['ClientAuthorizationProfile', 'ClientAuthorization', 'ClientAuthorizationPrincipal', 'ClientAuthorizationSnapshot', 'ClientAuthorizationUse']) {
   assert.match(schema, new RegExp(`model ${name} \\{`));
@@ -65,6 +72,8 @@ assert.match(route, /isSameOriginAdminRequest/);
 assert.match(auth, /\/api\/agent\/client-authorizations/);
 assert.match(auth, /\/agent\/authorizations/);
 assert.match(workspace, /Synthetic authorization fixture/);
+assert.match(workspace, /Create revocation fixture/);
+assert.match(workspace, /Record synthetic use/);
 assert.match(workspace, /does not collect client authorization/);
 assert.doesNotMatch(workspace, /client email|secure-link confirmation/i);
 assert.equal(packageJson.scripts?.['check:client-authorization-foundation'], 'jiti scripts/checkClientAuthorizationFoundation.ts');

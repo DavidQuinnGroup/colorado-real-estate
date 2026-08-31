@@ -65,6 +65,8 @@ export type ResolveClientAuthorizationInput = Readonly<{
   requestedAt?: Date;
 }>;
 
+export type PrincipalRequirement = 'SINGLE_REQUIRED_PRINCIPAL' | 'ALL_REQUIRED_PRINCIPALS' | 'ANY_ONE_AUTHORIZED_PRINCIPAL' | 'PROFILE_DEFINED_PRINCIPAL_SET';
+
 type ProfileDefinition = Readonly<{
   profileKey: string;
   profileVersion: string;
@@ -74,7 +76,7 @@ type ProfileDefinition = Readonly<{
   allowedRecipientClasses: readonly string[];
   allowedDataClasses: readonly string[];
   prohibitedDataClasses: readonly string[];
-  principalRequirement: 'SINGLE_REQUIRED_PRINCIPAL' | 'ALL_REQUIRED_PRINCIPALS' | 'ANY_ONE_AUTHORIZED_PRINCIPAL' | 'PROFILE_DEFINED_PRINCIPAL_SET';
+  principalRequirement: PrincipalRequirement;
   captureMethodPolicy: readonly string[];
   requiredAssurance: keyof typeof assuranceRank;
   expirationPolicy: 'FIXED_DURATION';
@@ -108,6 +110,22 @@ export const SYNTHETIC_AUTHORIZATION_PROFILE: ProfileDefinition = Object.freeze(
 export function clientAuthorizationRequirement(profileKey: string): AuthorizationRequirement {
   if (profileKey === 'PROPERTY_MANAGER_RENT_ESTIMATE_V1' || profileKey === 'BUYER_UNDER_CONTRACT_LOW_RISK_AGENT_RECORDED_DECISION') return 'NOT_REQUIRED_BY_PROFILE';
   return 'REQUIRED';
+}
+
+export function resolvePrincipalRequirement(principalRequirement: PrincipalRequirement, authorizedPrincipalRefs: readonly string[], requestedPrincipalRefs: readonly string[]) {
+  const authorized = [...new Set(authorizedPrincipalRefs)].sort();
+  const requested = [...new Set(requestedPrincipalRefs)].sort();
+  const unrecognized = requested.filter((item) => !authorized.includes(item));
+  const absent = authorized.filter((item) => !requested.includes(item));
+  if (principalRequirement === 'ANY_ONE_AUTHORIZED_PRINCIPAL') {
+    const satisfied = requested.filter((item) => authorized.includes(item));
+    return { satisfiedPrincipalRefs: satisfied, missingPrincipalRefs: unrecognized.length ? unrecognized : satisfied.length ? [] : authorized, authorized: !unrecognized.length && satisfied.length > 0 };
+  }
+  if (principalRequirement === 'SINGLE_REQUIRED_PRINCIPAL') {
+    const satisfied = requested.filter((item) => authorized.includes(item));
+    return { satisfiedPrincipalRefs: satisfied, missingPrincipalRefs: unrecognized.length ? unrecognized : requested.length === 1 && satisfied.length === 1 ? [] : authorized, authorized: !unrecognized.length && requested.length === 1 && satisfied.length === 1 };
+  }
+  return { satisfiedPrincipalRefs: requested.filter((item) => authorized.includes(item)), missingPrincipalRefs: [...unrecognized, ...absent], authorized: !unrecognized.length && !absent.length && authorized.length > 0 };
 }
 
 function isRecord(value: unknown): value is RecordValue { return Boolean(value) && typeof value === 'object' && !Array.isArray(value); }
@@ -265,7 +283,12 @@ export function createClientAuthorizationService(prisma: AuthorizationDatabase) 
     if (!profileRow || profileRow.lifecycle !== 'ACTIVE') return Object.freeze({ requirement, resolution: 'NOT_AUTHORIZED', reasons: ['PROFILE_INACTIVE'], authorizationProfileKey: profileKey, authorizationProfileVersion: input.profileVersion, satisfiedPrincipalRefs: [], missingPrincipalRefs: [], resolvedAction, resolvedRecipient: input.recipientRef ?? null, resolvedDataClasses: [], resolvedAt: now.toISOString() });
     const records = await prisma.clientAuthorization.findMany({ where: { ownerAgentSubject: actor, profileId: profileRow.id }, include: { principals: true, snapshot: true, supersededByAuthorization: true }, orderBy: { createdAt: 'desc' } });
     if (!records.length) return Object.freeze({ requirement, resolution: 'NOT_AUTHORIZED', reasons: ['NOT_AUTHORIZED'], authorizationProfileKey: profileKey, authorizationProfileVersion: profile.profileVersion, satisfiedPrincipalRefs: [], missingPrincipalRefs: input.principalRefs ?? [], resolvedAction, resolvedRecipient: input.recipientRef ?? null, resolvedDataClasses: [], resolvedAt: now.toISOString() });
-    const current = records.find((item) => !item.supersededByAuthorization) ?? records[0];
+    const scopedRecords = records.filter((item) => {
+      const snapshot = item.snapshot?.snapshot as RecordValue | undefined;
+      return snapshot?.purpose === purpose && snapshot.actionClass === resolvedAction && snapshot.recipientClass === (input.recipientClass ?? null) && snapshot.recipientRef === (input.recipientRef ?? null) && (snapshot.transactionId ?? null) === (input.transactionId ?? null) && (snapshot.propertyId ?? null) === (input.propertyId ?? null);
+    });
+    if (!scopedRecords.length) return Object.freeze({ requirement, resolution: 'NOT_AUTHORIZED', reasons: ['SCOPE_MISMATCH'], authorizationProfileKey: profileKey, authorizationProfileVersion: profile.profileVersion, satisfiedPrincipalRefs: [], missingPrincipalRefs: input.principalRefs ?? [], resolvedAction, resolvedRecipient: input.recipientRef ?? null, resolvedDataClasses: [], resolvedAt: now.toISOString() });
+    const current = scopedRecords.find((item) => !item.supersededByAuthorization) ?? scopedRecords[0];
     const statusReason = mapStatus(current.status);
     if (statusReason) return Object.freeze({ requirement, resolution: 'NOT_AUTHORIZED', reasons: [statusReason], authorizationId: current.id, authorizationProfileKey: profileKey, authorizationProfileVersion: profile.profileVersion, satisfiedPrincipalRefs: current.principals.map((item) => item.principalRef), missingPrincipalRefs: [], resolvedAction, resolvedRecipient: input.recipientRef ?? null, resolvedDataClasses: [], resolvedAt: now.toISOString() });
     if (!current.snapshot) throw new ClientAuthorizationError('PERSISTENCE_UNAVAILABLE', 'The authorization snapshot is unavailable.');
@@ -276,9 +299,8 @@ export function createClientAuthorizationService(prisma: AuthorizationDatabase) 
     const snapshot = current.snapshot.snapshot as RecordValue;
     if ((snapshot.transactionId ?? null) !== (input.transactionId ?? null) || (snapshot.propertyId ?? null) !== (input.propertyId ?? null)) return Object.freeze({ requirement, resolution: 'NOT_AUTHORIZED', reasons: ['SCOPE_MISMATCH'], authorizationId: current.id, authorizationProfileKey: profileKey, authorizationProfileVersion: profile.profileVersion, satisfiedPrincipalRefs: [], missingPrincipalRefs: [], resolvedAction, resolvedRecipient: input.recipientRef ?? null, resolvedDataClasses: [], resolvedAt: now.toISOString() });
     const requestedPrincipals = input.principalRefs ? [...new Set(input.principalRefs)].sort() : [];
-    const authorizedPrincipals = current.principals.map((item) => item.principalRef).sort();
-    const missing = requestedPrincipals.filter((item) => !authorizedPrincipals.includes(item));
-    if (missing.length || (profile.principalRequirement === 'ALL_REQUIRED_PRINCIPALS' && authorizedPrincipals.some((item) => !requestedPrincipals.includes(item)))) return Object.freeze({ requirement, resolution: 'NOT_AUTHORIZED', reasons: ['MISSING_REQUIRED_PRINCIPAL'], authorizationId: current.id, authorizationProfileKey: profileKey, authorizationProfileVersion: profile.profileVersion, satisfiedPrincipalRefs: requestedPrincipals.filter((item) => authorizedPrincipals.includes(item)), missingPrincipalRefs: missing.length ? missing : authorizedPrincipals.filter((item) => !requestedPrincipals.includes(item)), resolvedAction, resolvedRecipient: input.recipientRef ?? null, resolvedDataClasses: [], resolvedAt: now.toISOString() });
+    const principalResolution = resolvePrincipalRequirement(profile.principalRequirement, current.principals.map((item) => item.principalRef), requestedPrincipals);
+    if (!principalResolution.authorized) return Object.freeze({ requirement, resolution: 'NOT_AUTHORIZED', reasons: ['MISSING_REQUIRED_PRINCIPAL'], authorizationId: current.id, authorizationProfileKey: profileKey, authorizationProfileVersion: profile.profileVersion, satisfiedPrincipalRefs: principalResolution.satisfiedPrincipalRefs, missingPrincipalRefs: principalResolution.missingPrincipalRefs, resolvedAction, resolvedRecipient: input.recipientRef ?? null, resolvedDataClasses: [], resolvedAt: now.toISOString() });
     if (snapshot.purpose !== purpose || snapshot.actionClass !== resolvedAction) return Object.freeze({ requirement, resolution: 'NOT_AUTHORIZED', reasons: ['SCOPE_MISMATCH'], authorizationId: current.id, authorizationProfileKey: profileKey, authorizationProfileVersion: profile.profileVersion, satisfiedPrincipalRefs: requestedPrincipals, missingPrincipalRefs: [], resolvedAction, resolvedRecipient: input.recipientRef ?? null, resolvedDataClasses: [], resolvedAt: now.toISOString() });
     if (snapshot.recipientClass !== (input.recipientClass ?? null) || snapshot.recipientRef !== (input.recipientRef ?? null)) return Object.freeze({ requirement, resolution: 'NOT_AUTHORIZED', reasons: ['RECIPIENT_MISMATCH'], authorizationId: current.id, authorizationProfileKey: profileKey, authorizationProfileVersion: profile.profileVersion, satisfiedPrincipalRefs: requestedPrincipals, missingPrincipalRefs: [], resolvedAction, resolvedRecipient: input.recipientRef ?? null, resolvedDataClasses: [], resolvedAt: now.toISOString() });
     const allowedDataClasses = Array.isArray(snapshot.allowedDataClasses) ? snapshot.allowedDataClasses as string[] : [];
