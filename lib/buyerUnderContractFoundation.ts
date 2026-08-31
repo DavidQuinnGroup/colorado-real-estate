@@ -210,6 +210,7 @@ export function createBuyerUnderContractService(prisma: PrismaClient) {
     const prior = await prisma.transactionDeadline.findFirst({ where: { id: string(input.deadlineId, 'deadlineId', 100)!, transaction: { ownerAgentSubject } } });
     if (!prior) throw new BuyerUnderContractError('NOT_FOUND', 'The deadline is unavailable to this Agent.');
     if (await prisma.transactionDeadline.findFirst({ where: { supersedesDeadlineId: prior.id } })) throw new BuyerUnderContractError('INVALID_REQUEST', 'A successor deadline already exists.');
+    const verificationStatus = enumValue(input.verificationStatus ?? 'RECORDED', deadlineVerifications, 'verificationStatus');
     const successor = await prisma.transactionDeadline.create({
       data: {
         transactionId: prior.transactionId,
@@ -219,8 +220,10 @@ export function createBuyerUnderContractService(prisma: PrismaClient) {
         timezone: assertTimeZone(input.timezone ?? prior.timezone),
         sourceClass: enumValue(input.sourceClass ?? 'AGENT_REPORTED_AMENDMENT', deadlineSourceClasses, 'sourceClass'),
         sourceReference: optionalString(input.sourceReference, 'sourceReference', 500),
-        verificationStatus: enumValue(input.verificationStatus ?? 'RECORDED', deadlineVerifications, 'verificationStatus'),
+        verificationStatus,
         recordedBySubject: ownerAgentSubject,
+        verifiedBySubject: verificationStatus === 'AGENT_VERIFIED' ? ownerAgentSubject : null,
+        verifiedAt: verificationStatus === 'AGENT_VERIFIED' ? new Date() : null,
         notes: optionalString(input.notes, 'notes', 1000),
         successorReason: string(input.successorReason, 'successorReason', 500)!,
         supersedesDeadlineId: prior.id,
@@ -228,6 +231,7 @@ export function createBuyerUnderContractService(prisma: PrismaClient) {
     });
     await prisma.transactionDeadline.update({ where: { id: prior.id }, data: { attentionState: 'SUPERSEDED' } });
     await appendTimeline(prior.transactionId, ownerAgentSubject, 'DEADLINE_SUPERSEDED', `TransactionDeadline:${prior.id}`, successor.sourceClass, { successorDeadlineId: successor.id, successorReason: successor.successorReason, priorDueAt: prior.dueAt.toISOString(), successorDueAt: successor.dueAt.toISOString() });
+    if (verificationStatus === 'AGENT_VERIFIED') await appendTimeline(prior.transactionId, ownerAgentSubject, 'DEADLINE_VERIFIED', `TransactionDeadline:${successor.id}`, 'AGENT_REVIEW', { verificationStatus }, successor.verifiedAt);
     return successor;
   }
 
