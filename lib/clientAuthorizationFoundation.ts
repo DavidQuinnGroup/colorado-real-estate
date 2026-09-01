@@ -26,7 +26,8 @@ export type AuthorizationReason =
   | 'ASSURANCE_INSUFFICIENT'
   | 'PROFILE_INACTIVE'
   | 'CONFLICT_REQUIRES_REVIEW'
-  | 'REVIEW_REQUIRED';
+  | 'REVIEW_REQUIRED'
+  | 'CONSUMED';
 
 export class ClientAuthorizationError extends Error {
   constructor(readonly code: 'INVALID_REQUEST' | 'NOT_FOUND' | 'OWNERSHIP_DENIED' | 'IMMUTABLE' | 'PROFILE_INACTIVE' | 'PERSISTENCE_UNAVAILABLE', message: string) {
@@ -68,7 +69,7 @@ export type ResolveClientAuthorizationInput = Readonly<{
 
 export type PrincipalRequirement = 'SINGLE_REQUIRED_PRINCIPAL' | 'ALL_REQUIRED_PRINCIPALS' | 'ANY_ONE_AUTHORIZED_PRINCIPAL' | 'PROFILE_DEFINED_PRINCIPAL_SET';
 
-type ProfileDefinition = Readonly<{
+export type ClientAuthorizationProfileDefinition = Readonly<{
   profileKey: string;
   profileVersion: string;
   purpose: string;
@@ -84,11 +85,11 @@ type ProfileDefinition = Readonly<{
   expirationDays: number;
   revocationPolicy: 'REVOCABLE';
   highConsequence: false;
-  lifecycle: 'ACTIVE';
+  lifecycle: 'ACTIVE' | 'SYNTHETIC_CERTIFICATION_ONLY';
   governingLimitations: readonly string[];
 }>;
 
-export const SYNTHETIC_AUTHORIZATION_PROFILE: ProfileDefinition = Object.freeze({
+export const SYNTHETIC_AUTHORIZATION_PROFILE: ClientAuthorizationProfileDefinition = Object.freeze({
   profileKey: SYNTHETIC_AUTHORIZATION_PROFILE_KEY,
   profileVersion: SYNTHETIC_AUTHORIZATION_PROFILE_VERSION,
   purpose: 'CERTIFY_CLIENT_AUTHORIZATION_GOVERNANCE',
@@ -106,6 +107,28 @@ export const SYNTHETIC_AUTHORIZATION_PROFILE: ProfileDefinition = Object.freeze(
   highConsequence: false,
   lifecycle: 'ACTIVE',
   governingLimitations: ['Synthetic certification only.', 'No external action, client contact, disclosure, provider request, document release, or contractual effect.'],
+});
+
+export const SECURE_CLIENT_CONFIRMATION_SYNTHETIC_PROFILE_KEY = 'SYNTHETIC_CLIENT_AUTHORIZATION_CONFIRMATION_V1' as const;
+export const SECURE_CLIENT_CONFIRMATION_SYNTHETIC_PROFILE_VERSION = '1.0.0' as const;
+export const SECURE_CLIENT_CONFIRMATION_SYNTHETIC_PROFILE: ClientAuthorizationProfileDefinition = Object.freeze({
+  profileKey: SECURE_CLIENT_CONFIRMATION_SYNTHETIC_PROFILE_KEY,
+  profileVersion: SECURE_CLIENT_CONFIRMATION_SYNTHETIC_PROFILE_VERSION,
+  purpose: 'CERTIFY_SECURE_CLIENT_CONFIRMATION',
+  authorizationClass: 'INERT_SYNTHETIC_AUTHORIZATION',
+  allowedActionClasses: ['SYNTHETIC_AUTHORIZED_ACTION_V1'],
+  allowedRecipientClasses: ['SYNTHETIC_CERTIFICATION_RECIPIENT'],
+  allowedDataClasses: ['SYNTHETIC_NON_SENSITIVE_DATA'],
+  prohibitedDataClasses: [...prohibitedDataClasses],
+  principalRequirement: 'SINGLE_REQUIRED_PRINCIPAL',
+  captureMethodPolicy: ['PURPOSE_BOUND_SECURE_LINK'],
+  requiredAssurance: 'CLIENT_CONFIRMED',
+  expirationPolicy: 'FIXED_DURATION',
+  expirationDays: 7,
+  revocationPolicy: 'REVOCABLE',
+  highConsequence: false,
+  lifecycle: 'SYNTHETIC_CERTIFICATION_ONLY',
+  governingLimitations: ['Synthetic certification only.', 'The profile is structurally inert: no real client, recipient, network delivery, document release, transaction mutation, or external action is permitted.'],
 });
 
 export function clientAuthorizationRequirement(profileKey: string): AuthorizationRequirement {
@@ -157,11 +180,12 @@ function date(value: unknown, field: string, required = false) {
   if (typeof value !== 'string' || Number.isNaN(Date.parse(value))) throw new ClientAuthorizationError('INVALID_REQUEST', `${field} is invalid.`);
   return new Date(value);
 }
-function profileDefinitionFor(key: string) {
-  if (key !== SYNTHETIC_AUTHORIZATION_PROFILE_KEY) throw new ClientAuthorizationError('PROFILE_INACTIVE', 'This authorization profile is not active in Foundation V1.');
-  return SYNTHETIC_AUTHORIZATION_PROFILE;
+export function clientAuthorizationProfileDefinitionFor(key: string) {
+  if (key === SYNTHETIC_AUTHORIZATION_PROFILE_KEY) return SYNTHETIC_AUTHORIZATION_PROFILE;
+  if (key === SECURE_CLIENT_CONFIRMATION_SYNTHETIC_PROFILE_KEY) return SECURE_CLIENT_CONFIRMATION_SYNTHETIC_PROFILE;
+  throw new ClientAuthorizationError('PROFILE_INACTIVE', 'This authorization profile is not active for the requested operation.');
 }
-function assertAllowedScope(profile: ProfileDefinition, actionClass: string, recipientClass: string, dataClasses: readonly string[], purpose: string) {
+function assertAllowedScope(profile: ClientAuthorizationProfileDefinition, actionClass: string, recipientClass: string, dataClasses: readonly string[], purpose: string) {
   if (purpose !== profile.purpose || !profile.allowedActionClasses.includes(actionClass)) throw new ClientAuthorizationError('INVALID_REQUEST', 'The action or purpose is outside the profile scope.');
   if (!profile.allowedRecipientClasses.includes(recipientClass)) throw new ClientAuthorizationError('INVALID_REQUEST', 'The recipient class is outside the profile scope.');
   if (dataClasses.some((item) => prohibitedDataClasses.has(item) || !profile.allowedDataClasses.includes(item))) throw new ClientAuthorizationError('INVALID_REQUEST', 'The requested data classes are outside the profile scope.');
@@ -214,7 +238,7 @@ export function createClientAuthorizationService(prisma: AuthorizationDatabase) 
   async function createSynthetic(ownerAgentSubject: string, raw: unknown) {
     const actor = owner(ownerAgentSubject);
     if (!isRecord(raw)) throw new ClientAuthorizationError('INVALID_REQUEST', 'authorization input is invalid.');
-    const profile = profileDefinitionFor(text(raw.profileKey ?? SYNTHETIC_AUTHORIZATION_PROFILE_KEY, 'profileKey', 160)!);
+    const profile = clientAuthorizationProfileDefinitionFor(text(raw.profileKey ?? SYNTHETIC_AUTHORIZATION_PROFILE_KEY, 'profileKey', 160)!);
     const profileRow = await ensureSyntheticProfile();
     const principalRefs = stringList(raw.principalRefs, 'principalRefs');
     const principalLabels = Array.isArray(raw.principalLabels) ? raw.principalLabels.map((value) => text(value, 'principalLabels', 160)!) : principalRefs;
@@ -283,9 +307,9 @@ export function createClientAuthorizationService(prisma: AuthorizationDatabase) 
     const dataClasses = input.requestedDataClasses ? [...new Set(input.requestedDataClasses)].sort() : [];
     if (requirement === 'NOT_REQUIRED_BY_PROFILE') return Object.freeze({ requirement, resolution: 'AUTHORIZED', reasons: ['PROFILE_DOES_NOT_REQUIRE_CLIENT_AUTHORIZATION'], authorizationProfileKey: profileKey, satisfiedPrincipalRefs: [], missingPrincipalRefs: [], resolvedAction, resolvedRecipient: input.recipientRef ?? null, resolvedDataClasses: dataClasses, resolvedAt: now.toISOString() });
     if (dataClasses.some((item) => prohibitedDataClasses.has(item))) return Object.freeze({ requirement, resolution: 'NOT_AUTHORIZED', reasons: ['DATA_CLASS_NOT_AUTHORIZED'], authorizationProfileKey: profileKey, satisfiedPrincipalRefs: [], missingPrincipalRefs: [], resolvedAction, resolvedRecipient: input.recipientRef ?? null, resolvedDataClasses: [], resolvedAt: now.toISOString() });
-    const profile = profileDefinitionFor(profileKey);
+    const profile = clientAuthorizationProfileDefinitionFor(profileKey);
     const profileRow = await prisma.clientAuthorizationProfile.findUnique({ where: { profileKey_profileVersion: { profileKey, profileVersion: input.profileVersion ?? profile.profileVersion } } });
-    if (!profileRow || profileRow.lifecycle !== 'ACTIVE') return Object.freeze({ requirement, resolution: 'NOT_AUTHORIZED', reasons: ['PROFILE_INACTIVE'], authorizationProfileKey: profileKey, authorizationProfileVersion: input.profileVersion, satisfiedPrincipalRefs: [], missingPrincipalRefs: [], resolvedAction, resolvedRecipient: input.recipientRef ?? null, resolvedDataClasses: [], resolvedAt: now.toISOString() });
+    if (!profileRow || (profileRow.lifecycle !== 'ACTIVE' && profileRow.lifecycle !== 'SYNTHETIC_CERTIFICATION_ONLY')) return Object.freeze({ requirement, resolution: 'NOT_AUTHORIZED', reasons: ['PROFILE_INACTIVE'], authorizationProfileKey: profileKey, authorizationProfileVersion: input.profileVersion, satisfiedPrincipalRefs: [], missingPrincipalRefs: [], resolvedAction, resolvedRecipient: input.recipientRef ?? null, resolvedDataClasses: [], resolvedAt: now.toISOString() });
     const records = await prisma.clientAuthorization.findMany({ where: { ownerAgentSubject: actor, profileId: profileRow.id }, include: { principals: true, snapshot: true, supersededByAuthorization: true }, orderBy: { createdAt: 'desc' } });
     if (!records.length) return Object.freeze({ requirement, resolution: 'NOT_AUTHORIZED', reasons: ['NOT_AUTHORIZED'], authorizationProfileKey: profileKey, authorizationProfileVersion: profile.profileVersion, satisfiedPrincipalRefs: [], missingPrincipalRefs: input.principalRefs ?? [], resolvedAction, resolvedRecipient: input.recipientRef ?? null, resolvedDataClasses: [], resolvedAt: now.toISOString() });
     const actionScopedRecords = records.filter((item) => {
@@ -306,6 +330,7 @@ export function createClientAuthorizationService(prisma: AuthorizationDatabase) 
       await prisma.clientAuthorization.update({ where: { id: current.id }, data: { status: 'EXPIRED' } });
       return Object.freeze({ requirement, resolution: 'NOT_AUTHORIZED', reasons: ['EXPIRED'], authorizationId: current.id, authorizationProfileKey: profileKey, authorizationProfileVersion: profile.profileVersion, satisfiedPrincipalRefs: current.principals.map((item) => item.principalRef), missingPrincipalRefs: [], resolvedAction, resolvedRecipient: input.recipientRef ?? null, resolvedDataClasses: [], resolvedAt: now.toISOString() });
     }
+    if (current.consumedAt) return Object.freeze({ requirement, resolution: 'NOT_AUTHORIZED', reasons: ['CONSUMED'], authorizationId: current.id, authorizationProfileKey: profileKey, authorizationProfileVersion: profile.profileVersion, satisfiedPrincipalRefs: current.principals.map((item) => item.principalRef), missingPrincipalRefs: [], resolvedAction, resolvedRecipient: input.recipientRef ?? null, resolvedDataClasses: [], resolvedAt: now.toISOString() });
     const snapshot = current.snapshot.snapshot as RecordValue;
     if ((snapshot.transactionId ?? null) !== (input.transactionId ?? null) || (snapshot.propertyId ?? null) !== (input.propertyId ?? null)) return Object.freeze({ requirement, resolution: 'NOT_AUTHORIZED', reasons: ['SCOPE_MISMATCH'], authorizationId: current.id, authorizationProfileKey: profileKey, authorizationProfileVersion: profile.profileVersion, satisfiedPrincipalRefs: [], missingPrincipalRefs: [], resolvedAction, resolvedRecipient: input.recipientRef ?? null, resolvedDataClasses: [], resolvedAt: now.toISOString() });
     const requestedPrincipals = input.principalRefs ? [...new Set(input.principalRefs)].sort() : [];
@@ -325,6 +350,10 @@ export function createClientAuthorizationService(prisma: AuthorizationDatabase) 
     const idempotencyKey = `ATLAS_CLIENT_AUTHORIZATION_USE_V1|${actor}|${clientAuthorizationFingerprint({ input, downstreamReference, clientMutationKey })}`;
     const existing = await prisma.clientAuthorizationUse.findUnique({ where: { idempotencyKey } });
     if (existing) return { result, use: existing };
+    if (result.resolution === 'AUTHORIZED' && result.authorizationId) {
+      const claimed = await prisma.clientAuthorization.updateMany({ where: { id: result.authorizationId, ownerAgentSubject: actor, status: 'ACTIVE', consumedAt: null }, data: { consumedAt: new Date(), consumptionIdempotencyKey: idempotencyKey } });
+      if (claimed.count !== 1) return { result: { ...result, resolution: 'NOT_AUTHORIZED' as const, reasons: ['CONSUMED'] }, use: null };
+    }
     const use = await prisma.clientAuthorizationUse.create({ data: { authorizationId: result.authorizationId, ownerAgentSubject: actor, profileKey: result.authorizationProfileKey, profileVersion: result.authorizationProfileVersion ?? 'NOT_REQUIRED_BY_PROFILE', principalRefs: result.satisfiedPrincipalRefs as unknown as Prisma.JsonArray, proposedAction: result.resolvedAction, purpose: input.purpose, recipientClass: input.recipientClass ?? null, recipientRef: input.recipientRef ?? null, requestedDataClasses: (input.requestedDataClasses ?? []) as unknown as Prisma.JsonArray, resolvedDataClasses: result.resolvedDataClasses as unknown as Prisma.JsonArray, resolution: result.resolution, reasons: result.reasons as unknown as Prisma.JsonArray, downstreamReference: text(downstreamReference, 'downstreamReference', 240), completedAt: result.resolution === 'AUTHORIZED' ? new Date() : null, idempotencyKey } });
     return { result, use };
   }

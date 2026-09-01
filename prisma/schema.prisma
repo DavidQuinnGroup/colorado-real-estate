@@ -325,6 +325,7 @@ enum ClientAuthorizationProfileLifecycle {
   DRAFT
   REVIEWED
   ACTIVE
+  SYNTHETIC_CERTIFICATION_ONLY
   RETIRED
   POLICY_HELD
   DEPENDENCY_HELD
@@ -3100,6 +3101,8 @@ model ClientAuthorization {
   revokedBySubject          String?
   revocationReason          String?
   supersededAt              DateTime?
+  consumedAt                DateTime?
+  consumptionIdempotencyKey String?
   supersedesAuthorizationId String?                          @unique
   transactionId             String?
   propertyId                String?
@@ -3110,17 +3113,21 @@ model ClientAuthorization {
   createdAt                 DateTime                         @default(now())
   updatedAt                 DateTime                         @updatedAt
 
-  profile                   ClientAuthorizationProfile     @relation(fields: [profileId], references: [id], onDelete: Restrict)
+  profile                   ClientAuthorizationProfile               @relation(fields: [profileId], references: [id], onDelete: Restrict)
   principals                ClientAuthorizationPrincipal[]
   snapshot                  ClientAuthorizationSnapshot?
   uses                      ClientAuthorizationUse[]
-  supersedesAuthorization   ClientAuthorization?           @relation("ClientAuthorizationSupersession", fields: [supersedesAuthorizationId], references: [id], onDelete: Restrict)
-  supersededByAuthorization ClientAuthorization?           @relation("ClientAuthorizationSupersession")
+  capabilities              ClientAuthorizationCapability[]
+  sessions                  ClientAuthorizationSession[]
+  confirmationEvidence      ClientAuthorizationConfirmationEvidence?
+  supersedesAuthorization   ClientAuthorization?                     @relation("ClientAuthorizationSupersession", fields: [supersedesAuthorizationId], references: [id], onDelete: Restrict)
+  supersededByAuthorization ClientAuthorization?                     @relation("ClientAuthorizationSupersession")
 
   @@index([ownerAgentSubject, status, createdAt])
   @@index([ownerAgentSubject, profileId, status])
   @@index([transactionId])
   @@index([propertyId])
+  @@index([ownerAgentSubject, consumedAt])
 }
 
 model ClientAuthorizationPrincipal {
@@ -3131,7 +3138,9 @@ model ClientAuthorizationPrincipal {
   representativeReference String?
   createdAt               DateTime @default(now())
 
-  authorization ClientAuthorization @relation(fields: [authorizationId], references: [id], onDelete: Restrict)
+  authorization ClientAuthorization                       @relation(fields: [authorizationId], references: [id], onDelete: Restrict)
+  sessions      ClientAuthorizationSession[]
+  evidence      ClientAuthorizationConfirmationEvidence[]
 
   @@unique([authorizationId, principalRef])
   @@index([principalRef])
@@ -3172,6 +3181,74 @@ model ClientAuthorizationUse {
 
   @@index([ownerAgentSubject, resolvedAt])
   @@index([authorizationId, resolvedAt])
+}
+
+model ClientAuthorizationCapability {
+  id              String    @id @default(cuid())
+  authorizationId String
+  tokenHash       String    @unique
+  purpose         String
+  issuanceKey     String    @unique
+  maxUses         Int       @default(1)
+  useCount        Int       @default(0)
+  exchangedAt     DateTime?
+  completedAt     DateTime?
+  revokedAt       DateTime?
+  expiresAt       DateTime
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  authorization                           ClientAuthorization                       @relation(fields: [authorizationId], references: [id], onDelete: Restrict)
+  ClientAuthorizationSession              ClientAuthorizationSession[]
+  ClientAuthorizationConfirmationEvidence ClientAuthorizationConfirmationEvidence[]
+
+  @@index([authorizationId, expiresAt])
+}
+
+model ClientAuthorizationSession {
+  id              String    @id @default(cuid())
+  authorizationId String
+  capabilityId    String
+  sessionHash     String    @unique
+  csrfTokenHash   String
+  expiresAt       DateTime
+  revokedAt       DateTime?
+  completedAt     DateTime?
+  lastAccessedAt  DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  authorization                  ClientAuthorization                       @relation(fields: [authorizationId], references: [id], onDelete: Restrict)
+  capability                     ClientAuthorizationCapability             @relation(fields: [capabilityId], references: [id], onDelete: Restrict)
+  evidence                       ClientAuthorizationConfirmationEvidence[]
+  ClientAuthorizationPrincipal   ClientAuthorizationPrincipal?             @relation(fields: [clientAuthorizationPrincipalId], references: [id])
+  clientAuthorizationPrincipalId String?
+
+  @@index([authorizationId, expiresAt])
+  @@index([capabilityId, expiresAt])
+}
+
+model ClientAuthorizationConfirmationEvidence {
+  id                 String   @id @default(cuid())
+  authorizationId    String   @unique
+  capabilityId       String
+  sessionId          String
+  decision           String
+  evidenceVersion    String
+  requestFingerprint String
+  profileKey         String
+  profileVersion     String
+  scopeSnapshot      Json
+  decidedAt          DateTime
+  createdAt          DateTime @default(now())
+
+  authorization                  ClientAuthorization           @relation(fields: [authorizationId], references: [id], onDelete: Restrict)
+  capability                     ClientAuthorizationCapability @relation(fields: [capabilityId], references: [id], onDelete: Restrict)
+  session                        ClientAuthorizationSession    @relation(fields: [sessionId], references: [id], onDelete: Restrict)
+  ClientAuthorizationPrincipal   ClientAuthorizationPrincipal? @relation(fields: [clientAuthorizationPrincipalId], references: [id])
+  clientAuthorizationPrincipalId String?
+
+  @@index([profileKey, profileVersion, decidedAt])
 }
 
 model SellerFinancialScenario {
