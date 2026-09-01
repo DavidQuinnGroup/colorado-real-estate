@@ -45,6 +45,7 @@ assert.equal(CLIENT_AUTHORIZATION_CONFIRMATION_COOKIE, 'project_atlas_client_aut
 assert.deepEqual(getClientAuthorizationSessionCookieOptions(true), { httpOnly: true, secure: true, sameSite: 'strict', path: '/client-authorization', maxAge: 1800 });
 
 const service = readFileSync('lib/clientAuthorizationSecureConfirmation.ts', 'utf8');
+const workspace = readFileSync('components/agent/ClientAuthorizationWorkspace.tsx', 'utf8');
 const accessRoute = readFileSync('app/client-authorization/access/route.ts', 'utf8');
 const submitRoute = readFileSync('app/client-authorization/confirm/submit/route.ts', 'utf8');
 const schema = readFileSync('prisma/schema.prisma', 'utf8');
@@ -58,6 +59,8 @@ assert.match(service, /csrfTokenHash/);
 assert.match(service, /status: decision === 'CONFIRMED' \? 'ACTIVE' : 'DECLINED'/);
 assert.match(service, /clientAuthorizationConfirmationEvidence/);
 assert.match(service, /updateMany\(\{ where: \{ authorizationId: record\.id, revokedAt: null, completedAt: null \}/);
+assert.match(service, /transactionId, propertyId \}\);/);
+assert.match(service, /createdBySubject: actor, idempotencyKey, transactionId, propertyId, principals:/);
 assert.match(accessRoute, /NextResponse\.redirect\(new URL\('\/client-authorization\/confirm'/);
 assert.match(accessRoute, /Referrer-Policy/);
 assert.match(accessRoute, /X-Robots-Tag/);
@@ -73,6 +76,7 @@ assert.match(middleware, /isClientAuthorizationConfirmationRoute/);
 assert.match(middleware, /isProfessionalExternalRequestRoute\(pathname\) \|\| isClientAuthorizationConfirmationRoute\(pathname\)/);
 assert.match(middleware, /pathname === "\/agent\/authorizations"/);
 assert.match(middleware, /pathname === "\/api\/agent\/client-authorizations"/);
+assert.match(workspace, /\['PENDING_CONFIRMATION', 'ACTIVE'\]\.includes\(authorization\.status\)/);
 assert.match(principalLinkRepairMigration, /ALTER TABLE "ClientAuthorizationSession" ADD COLUMN IF NOT EXISTS "clientAuthorizationPrincipalId" TEXT/);
 assert.match(principalLinkRepairMigration, /ALTER TABLE "ClientAuthorizationConfirmationEvidence" ADD COLUMN IF NOT EXISTS "clientAuthorizationPrincipalId" TEXT/);
 assert.match(principalLinkRepairMigration, /ClientAuthorizationSession_clientAuthorizationPrincipalId_fkey/);
