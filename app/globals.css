@@ -506,6 +506,29 @@ html, body {
   font-family: 'Inter', sans-serif;
 }
 
+@layer base {
+  :where(
+    a[href]:not([aria-disabled='true']),
+    area[href],
+    button:not(:disabled):not([aria-disabled='true']),
+    [role='button']:not([aria-disabled='true']),
+    [role='link']:not([aria-disabled='true']),
+    summary,
+    input[type='button']:not(:disabled),
+    input[type='submit']:not(:disabled),
+    input[type='reset']:not(:disabled),
+    input[type='image']:not(:disabled),
+    input[type='checkbox']:not(:disabled),
+    input[type='radio']:not(:disabled)
+  ) {
+    cursor: pointer;
+  }
+
+  :where(button:disabled, input:disabled, select:disabled, textarea:disabled) {
+    cursor: not-allowed;
+  }
+}
+
 @layer utilities {
   [data-agent-only="true"] fieldset > legend:not(.sr-only) {
     margin-bottom: 1rem;
