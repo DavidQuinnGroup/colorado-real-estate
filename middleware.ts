@@ -24,6 +24,10 @@ function isProfessionalExternalRequestRoute(pathname: string) {
   return pathname === '/professional-request' || pathname.startsWith('/professional-request/') || pathname.startsWith('/api/webhooks/resend/professional-external-request');
 }
 
+function isClientAuthorizationConfirmationRoute(pathname: string) {
+  return pathname === '/client-authorization' || pathname.startsWith('/client-authorization/');
+}
+
 function professionalExternalRequestContentSecurityPolicy(nonce: string) {
   return `default-src 'self'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'; object-src 'none'; script-src 'self' 'nonce-${nonce}'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'`;
 }
@@ -68,7 +72,7 @@ export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const privateConfiguration = getPrivateSiteAccessConfiguration();
   if (isPrivateAccessAllowlist(pathname)) return pathname.startsWith('/private-access') ? privateAccessPageResponse(request) : withPrivateResponseHeaders(NextResponse.next());
-  if (isProfessionalExternalRequestRoute(pathname)) return professionalExternalRequestResponse(request);
+  if (isProfessionalExternalRequestRoute(pathname) || isClientAuthorizationConfirmationRoute(pathname)) return professionalExternalRequestResponse(request);
   if (privateConfiguration.enabled) {
     if (privateConfiguration.configurationState !== 'ENABLED') {
       if (pathname.startsWith('/api/')) return withPrivateResponseHeaders(NextResponse.json({ success: false, error: 'Private development access is unavailable.' }, { status: 503 }));
@@ -80,8 +84,8 @@ export async function middleware(request: NextRequest) {
       return privateAccessGateResponse(request);
     }
   }
-  const isAgentWorkspaceRoute = pathname === "/agent" || pathname === "/agent/prepare/market" || pathname === "/agent/prepare/market-update" || pathname === "/agent/prepare/property" || pathname === "/agent/prepare/place" || pathname === "/agent/prepare/buyer" || pathname === "/agent/prepare/seller" || pathname === "/agent/prepare/seller/presentation" || pathname === "/agent/prepare/seller/financial" || pathname === "/agent/prepare/professional-inputs" || pathname === "/agent/prepare/listing";
-  const isAgentProtectedApiRoute = pathname === "/api/agent/output/pdf" || pathname === "/api/agent/evidence" || pathname === "/api/agent/professional-inputs" || pathname === "/api/agent/professional-external-requests" || pathname === "/api/agent/seller-financial";
+  const isAgentWorkspaceRoute = pathname === "/agent" || pathname === "/agent/authorizations" || pathname === "/agent/prepare/market" || pathname === "/agent/prepare/market-update" || pathname === "/agent/prepare/property" || pathname === "/agent/prepare/place" || pathname === "/agent/prepare/buyer" || pathname === "/agent/prepare/seller" || pathname === "/agent/prepare/seller/presentation" || pathname === "/agent/prepare/seller/financial" || pathname === "/agent/prepare/professional-inputs" || pathname === "/agent/prepare/listing";
+  const isAgentProtectedApiRoute = pathname === "/api/agent/client-authorizations" || pathname === "/api/agent/output/pdf" || pathname === "/api/agent/evidence" || pathname === "/api/agent/professional-inputs" || pathname === "/api/agent/professional-external-requests" || pathname === "/api/agent/seller-financial";
   const isAdminProtectedRoute = pathname.startsWith('/admin') || pathname.startsWith('/api/admin/');
 
   if (!isAgentWorkspaceRoute && !isAgentProtectedApiRoute && !isAdminProtectedRoute) {
@@ -126,5 +130,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next/).*)', "/admin/:path*", "/api/admin/:path*", "/api/agent/output/pdf", "/api/agent/evidence", "/api/agent/professional-inputs", "/api/agent/professional-external-requests", "/api/agent/seller-financial", "/agent", "/agent/prepare/market", "/agent/prepare/market-update", "/agent/prepare/property", "/agent/prepare/place", "/agent/prepare/buyer", "/agent/prepare/seller", "/agent/prepare/seller/presentation", "/agent/prepare/seller/financial", "/agent/prepare/professional-inputs", "/agent/prepare/listing"],
+  matcher: ['/((?!_next/).*)', "/admin/:path*", "/api/admin/:path*", "/api/agent/client-authorizations", "/api/agent/output/pdf", "/api/agent/evidence", "/api/agent/professional-inputs", "/api/agent/professional-external-requests", "/api/agent/seller-financial", "/agent", "/agent/authorizations", "/agent/prepare/market", "/agent/prepare/market-update", "/agent/prepare/property", "/agent/prepare/place", "/agent/prepare/buyer", "/agent/prepare/seller", "/agent/prepare/seller/presentation", "/agent/prepare/seller/financial", "/agent/prepare/professional-inputs", "/agent/prepare/listing"],
 };
