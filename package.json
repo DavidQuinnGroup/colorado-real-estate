@@ -23,6 +23,7 @@
     "check:professional-external-request-foundation": "jiti scripts/checkProfessionalExternalRequestFoundation.ts",
     "check:client-authorization-foundation": "jiti scripts/checkClientAuthorizationFoundation.ts",
     "check:client-authorization-secure-confirmation": "jiti scripts/checkClientAuthorizationSecureConfirmation.ts",
+    "check:client-authorization-interaction-hierarchy": "jiti scripts/checkClientAuthorizationInteractionHierarchy.ts",
     "check:interactive-cursor-styles": "jiti scripts/checkInteractiveCursorStyles.ts",
     "check:professional-external-request-resend-safety": "jiti scripts/checkProfessionalExternalRequestResendSafety.ts",
     "check:buyer-under-contract-foundation": "jiti scripts/checkBuyerUnderContractFoundation.ts",
