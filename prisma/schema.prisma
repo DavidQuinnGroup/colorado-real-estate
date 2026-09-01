@@ -3417,4 +3417,107 @@ model StrategyAlternativeAuditEvent {
   @@index([ownerAgentSubject, createdAt])
 }
 
+model AdvancedInvestmentReturnAnalysis {
+  id                 String   @id @default(cuid())
+  ownerAgentSubject  String
+  analysisKey        String
+  title              String
+  purpose            String
+  lifecycleState     String
+  calculationVersion String
+  projectionPolicy   String
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  projections AdvancedInvestmentReturnProjection[]
+
+  @@unique([ownerAgentSubject, analysisKey])
+  @@index([ownerAgentSubject, createdAt])
+}
+
+model AdvancedInvestmentReturnProjection {
+  id                     String    @id @default(cuid())
+  analysisId             String
+  ownerAgentSubject      String
+  projectionKey          String
+  versionOrdinal         Int
+  analysisProfile        String
+  sourceKind             String
+  sourceArtifactId       String
+  sourceResultId         String
+  sourceInputFingerprint String
+  lifecycleState         String
+  calculationVersion     String
+  projectionPolicy       String
+  selectedHorizonMonths  Json
+  inputSnapshot          Json
+  assumptionSnapshot     Json
+  dependencySnapshot     Json
+  inputFingerprint       String    @unique
+  supersedesProjectionId String?   @unique
+  createdAt              DateTime  @default(now())
+  reviewedAt             DateTime?
+
+  analysis               AdvancedInvestmentReturnAnalysis           @relation(fields: [analysisId], references: [id], onDelete: Restrict)
+  results                AdvancedInvestmentReturnProjectionResult[]
+  dependencies           AdvancedInvestmentReturnDependency[]
+  auditEvents            AdvancedInvestmentReturnAuditEvent[]
+  supersedesProjection   AdvancedInvestmentReturnProjection?        @relation("AdvancedInvestmentReturnProjectionSupersession", fields: [supersedesProjectionId], references: [id], onDelete: Restrict)
+  supersededByProjection AdvancedInvestmentReturnProjection?        @relation("AdvancedInvestmentReturnProjectionSupersession")
+
+  @@unique([analysisId, projectionKey, versionOrdinal])
+  @@index([ownerAgentSubject, analysisId, createdAt])
+}
+
+model AdvancedInvestmentReturnProjectionResult {
+  id                 String   @id @default(cuid())
+  projectionId       String
+  ownerAgentSubject  String
+  inputFingerprint   String
+  calculationVersion String
+  projectionPolicy   String
+  versionOrdinal     Int
+  resultSnapshot     Json
+  resultFingerprint  String   @unique
+  createdAt          DateTime @default(now())
+  immutableAt        DateTime @default(now())
+
+  projection AdvancedInvestmentReturnProjection @relation(fields: [projectionId], references: [id], onDelete: Restrict)
+
+  @@unique([projectionId, versionOrdinal])
+  @@index([ownerAgentSubject, createdAt])
+  @@index([projectionId, createdAt])
+}
+
+model AdvancedInvestmentReturnDependency {
+  id                String   @id @default(cuid())
+  projectionId      String
+  ownerAgentSubject String
+  upstreamArtifact  String
+  dependencyType    String
+  versionUsed       String
+  qualification     String
+  detail            Json
+  createdAt         DateTime @default(now())
+
+  projection AdvancedInvestmentReturnProjection @relation(fields: [projectionId], references: [id], onDelete: Restrict)
+
+  @@unique([projectionId, upstreamArtifact, dependencyType])
+  @@index([ownerAgentSubject, projectionId])
+}
+
+model AdvancedInvestmentReturnAuditEvent {
+  id                String   @id @default(cuid())
+  projectionId      String
+  ownerAgentSubject String
+  eventType         String
+  eventFingerprint  String   @unique
+  createdAt         DateTime @default(now())
+
+  projection AdvancedInvestmentReturnProjection @relation(fields: [projectionId], references: [id], onDelete: Restrict)
+
+  @@index([projectionId, createdAt])
+  @@index([ownerAgentSubject, createdAt])
+}
+
 // prisma/schema.prisma

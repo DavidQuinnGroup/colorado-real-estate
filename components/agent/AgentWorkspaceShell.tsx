@@ -3,7 +3,7 @@
 import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Calculator, ClipboardCheck, FileText, Globe2, Home, LogOut, NotebookTabs, ShieldCheck } from 'lucide-react';
+import { BarChart3, Calculator, ClipboardCheck, FileText, Globe2, Home, LogOut, NotebookTabs, ShieldCheck } from 'lucide-react';
 
 export default function AgentWorkspaceShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
@@ -56,6 +56,10 @@ export default function AgentWorkspaceShell({ children }: { children: ReactNode 
             <a href="/agent/strategy" className="inline-flex min-h-10 items-center gap-2 rounded-[7px] border border-white/15 px-3 py-2 text-xs font-semibold text-slate-200 transition hover:border-white/30 hover:bg-white/[0.06] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100" data-testid="agent-workspace-strategy-link">
               <Calculator size={15} aria-hidden="true" />
               Strategy Suite
+            </a>
+            <a href="/agent/advanced-return" className="inline-flex min-h-10 items-center gap-2 rounded-[7px] border border-white/15 px-3 py-2 text-xs font-semibold text-slate-200 transition hover:border-white/30 hover:bg-white/[0.06] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100" data-testid="agent-workspace-advanced-return-link">
+              <BarChart3 size={15} aria-hidden="true" />
+              Advanced Return
             </a>
             <a href="/agent/prepare/listing" className="rounded-[7px] px-3 py-2 text-xs font-semibold text-slate-200 transition hover:bg-white/[0.08] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100" data-testid="agent-workspace-listing-link">
               Listing Preparation
