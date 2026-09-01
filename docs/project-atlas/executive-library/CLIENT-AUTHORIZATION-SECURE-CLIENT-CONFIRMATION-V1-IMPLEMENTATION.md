@@ -35,3 +35,9 @@ The existing time-of-use resolver continues to resolve authorization only for th
 Authorization drafts are REIE/DQG internal working records. Capability/session metadata are internal security records. Confirmation evidence is client authorization evidence. Whether a particular completed artifact is separately required for a Compass transaction file or DQG transaction archive is a profile-specific record-classification decision; this package performs no automatic export or classification.
 
 Deferred: real client delivery, SMS, Client Portal, MFA/strong identity, e-signature, receipt PDF, document release, real Professional External Request client-authorization profile, and high-consequence Buyer Under Contract profiles.
+
+## Certification Defect Record
+
+Production human Agent certification initially failed when the Agent selected `Create synthetic authorization`: the workspace displayed `Client authorizations are unavailable.` and no draft persisted. The authenticated profile/list path was healthy, but the draft mutation failed with Prisma `P2022` because the original secure-confirmation migration created `ClientAuthorizationSession` and `ClientAuthorizationConfirmationEvidence` without the nullable `clientAuthorizationPrincipalId` columns selected by the generated Prisma client.
+
+Repair commit `94ccd475fb5896c5dfae324c92698da039b3b8e7` adds migration `20260904000000_repair_client_authorization_confirmation_principal_links`. It adds only those nullable columns, their `ON DELETE SET NULL` principal foreign keys, and lookup indexes. The focused checker now asserts that the schema and repair migration retain this contract. A production rollback-only draft creation proof succeeded after the repair, then deliberately aborted; a read-only query confirmed that no diagnostic authorization persisted. Human Agent positive-path certification remains pending and must not be reported as passed.
