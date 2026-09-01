@@ -48,6 +48,7 @@ export type InvestmentScenarioRequest = Readonly<{
 }>;
 
 function isRecord(value: unknown): value is RecordValue { return Boolean(value) && typeof value === 'object' && !Array.isArray(value); }
+function asRecord(value: unknown): RecordValue { return isRecord(value) ? value : {}; }
 function text(value: unknown, field: string, maximum = 160) { if (typeof value !== 'string' || !value.trim() || value.trim().length > maximum || /[<>]/.test(value)) throw new InvestmentBreakevenError('INVALID_REQUEST', `${field} is invalid.`); return value.trim(); }
 function wholeCents(value: unknown, field: string) { if (typeof value !== 'number' || !Number.isInteger(value) || value < 0 || value > 100_000_000_000) throw new InvestmentBreakevenError('INVALID_REQUEST', `${field} must be non-negative integer cents.`); return value; }
 function basisPoints(value: unknown, field: string) { if (typeof value !== 'number' || !Number.isInteger(value) || value < 0 || value > 100_000) throw new InvestmentBreakevenError('INVALID_REQUEST', `${field} is invalid.`); return value; }
@@ -114,6 +115,19 @@ export function calculateInvestmentScenario(input: InvestmentScenarioRequest) {
   return Object.freeze({ calculationVersion: INVESTMENT_BREAKEVEN_CALCULATION_V1, assumptionPolicy: INVESTMENT_ASSUMPTION_POLICY_V1, qualifier: 'MODELED_ESTIMATE', taxTreatment: 'PRE_TAX_ONLY', properties, availableCapitalCents, totalCashRequiredCents, remainingLiquidityCents, newPrimaryMonthlyCarryCents: primary?.monthlyCarryCents ?? null, investmentMonthlyCashFlowCents: investment?.monthlyCashFlowCents ?? null, investmentAnnualNoiCents: investment?.annualNoiCents ?? null, investmentCapRateBasisPoints: investment?.capRateBasisPoints ?? null, investmentPreTaxCashOnCashBasisPoints: investment?.cashOnCashBasisPoints ?? null, investmentBreakevenRentCents: investment?.breakevenRentCents ?? null, investmentBreakevenMarginCents: investment?.breakevenMarginCents ?? null, combinedMonthlyPropertyCashRequirementCents, limitations: ['Results are modeled estimates based on the assumptions shown.', 'Financing, rent, vacancy, expenses, and future value are not guaranteed.', 'Tax consequences, loan qualification, and lender approval are not modeled.'] });
 }
 
+export function calculateInvestmentSensitivity(input: InvestmentScenarioRequest, rentDeltaCents: number) {
+  if (!Number.isInteger(rentDeltaCents) || rentDeltaCents < -100_000_000 || rentDeltaCents > 100_000_000) {
+    throw new InvestmentBreakevenError('INVALID_REQUEST', 'rentDeltaCents is invalid.');
+  }
+  const adjusted = Object.freeze({
+    ...input,
+    properties: input.properties.map((property) => property.role === 'INVESTMENT_PROPERTY'
+      ? Object.freeze({ ...property, monthlyRentCents: Math.max(0, property.monthlyRentCents + rentDeltaCents) })
+      : property),
+  });
+  return Object.freeze({ rentDeltaCents, result: calculateInvestmentScenario(adjusted) });
+}
+
 export function createInvestmentBreakevenService(prisma: Database) {
   async function listOwned(ownerAgentSubject: string) { return prisma.investmentAnalysis.findMany({ where: { ownerAgentSubject }, include: { scenarios: { include: { result: true, auditEvents: true, supersededByScenario: true }, orderBy: { createdAt: 'desc' } } }, orderBy: { createdAt: 'desc' } }); }
   async function createScenario(ownerAgentSubject: string, raw: unknown) {
@@ -130,5 +144,38 @@ export function createInvestmentBreakevenService(prisma: Database) {
       return { scenario, result, created: true };
     });
   }
-  return Object.freeze({ listOwned, createScenario });
+  async function cloneScenario(ownerAgentSubject: string, raw: unknown) {
+    if (!isRecord(raw)) throw new InvestmentBreakevenError('INVALID_REQUEST', 'Clone request is malformed.');
+    const sourceScenarioId = text(raw.sourceScenarioId, 'sourceScenarioId');
+    const scenarioKey = text(raw.scenarioKey, 'scenarioKey');
+    const source = await prisma.investmentScenario.findFirst({ where: { id: sourceScenarioId, ownerAgentSubject } });
+    if (!source) throw new InvestmentBreakevenError('NOT_FOUND', 'The source scenario is unavailable.');
+    const sourceInput = asRecord(source.inputSnapshot);
+    return createScenario(ownerAgentSubject, {
+      ...sourceInput,
+      scenarioKey,
+      supersedesScenarioId: source.id,
+      review: false,
+    });
+  }
+  async function reviewScenario(ownerAgentSubject: string, scenarioId: string) {
+    const owner = text(ownerAgentSubject, 'ownerAgentSubject');
+    const scenario = await prisma.investmentScenario.findFirst({ where: { id: scenarioId, ownerAgentSubject: owner }, include: { result: true } });
+    if (!scenario) throw new InvestmentBreakevenError('NOT_FOUND', 'The scenario is unavailable.');
+    if (!scenario.result) throw new InvestmentBreakevenError('PERSISTENCE_UNAVAILABLE', 'The immutable scenario result is unavailable.');
+    if (scenario.lifecycleState === 'AGENT_REVIEWED') return { scenario, result: scenario.result, reviewed: false };
+    if (scenario.lifecycleState !== 'DRAFT') throw new InvestmentBreakevenError('IMMUTABLE', 'The scenario cannot be reviewed from its current state.');
+    return prisma.$transaction(async (tx) => {
+      const reviewedAt = new Date();
+      const reviewed = await tx.investmentScenario.update({ where: { id: scenario.id }, data: { lifecycleState: 'AGENT_REVIEWED', reviewedAt }, include: { result: true } });
+      await tx.investmentScenarioAuditEvent.create({ data: { scenarioId: scenario.id, ownerAgentSubject: owner, eventType: 'SCENARIO_AGENT_REVIEWED', eventFingerprint: investmentFingerprint({ scenarioId: scenario.id, event: 'SCENARIO_AGENT_REVIEWED' }) } });
+      return { scenario: reviewed, result: reviewed.result, reviewed: true };
+    });
+  }
+  async function calculateSensitivity(ownerAgentSubject: string, scenarioId: string, rentDeltaCents: number) {
+    const scenario = await prisma.investmentScenario.findFirst({ where: { id: scenarioId, ownerAgentSubject } });
+    if (!scenario) throw new InvestmentBreakevenError('NOT_FOUND', 'The scenario is unavailable.');
+    return calculateInvestmentSensitivity(validateInvestmentScenarioRequest(scenario.inputSnapshot), rentDeltaCents);
+  }
+  return Object.freeze({ listOwned, createScenario, cloneScenario, reviewScenario, calculateSensitivity });
 }

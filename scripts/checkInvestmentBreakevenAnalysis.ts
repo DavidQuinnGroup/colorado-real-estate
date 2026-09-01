@@ -1,12 +1,13 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
-import { calculateInvestmentScenario, INVESTMENT_ASSUMPTION_POLICY_V1, INVESTMENT_BREAKEVEN_CALCULATION_V1, validateInvestmentScenarioRequest } from '../lib/investmentBreakevenAnalysis';
+import { calculateInvestmentScenario, calculateInvestmentSensitivity, INVESTMENT_ASSUMPTION_POLICY_V1, INVESTMENT_BREAKEVEN_CALCULATION_V1, validateInvestmentScenarioRequest } from '../lib/investmentBreakevenAnalysis';
 
 const schema = readFileSync('prisma/schema.prisma', 'utf8');
 const migration = readFileSync('prisma/migrations/20260831120000_add_investment_breakeven_analysis/migration.sql', 'utf8');
 const route = readFileSync('app/api/agent/investment-breakeven/route.ts', 'utf8');
 const workspace = readFileSync('components/agent/InvestmentBreakevenWorkspace.tsx', 'utf8');
+const outputAdapter = readFileSync('lib/investmentBreakevenOutputPersistence.ts', 'utf8');
 const auth = readFileSync('lib/admin/adminAuth.ts', 'utf8');
 const packageJson = JSON.parse(readFileSync('package.json', 'utf8')) as { scripts: Record<string, string> };
 
@@ -17,9 +18,13 @@ const request = validateInvestmentScenarioRequest({ analysisKey: 'ATLAS_CHECK', 
 ] });
 const first = calculateInvestmentScenario(request); const second = calculateInvestmentScenario(request);
 assert.deepEqual(first, second); assert.equal(first.calculationVersion, INVESTMENT_BREAKEVEN_CALCULATION_V1); assert.equal(first.assumptionPolicy, INVESTMENT_ASSUMPTION_POLICY_V1); assert.equal(first.taxTreatment, 'PRE_TAX_ONLY'); assert.ok(typeof first.investmentBreakevenRentCents === 'number'); assert.ok(typeof first.investmentMonthlyCashFlowCents === 'number');
+const lowerRent = calculateInvestmentSensitivity(request, -20_000); const higherRent = calculateInvestmentSensitivity(request, 20_000);
+assert.equal(lowerRent.rentDeltaCents, -20_000); assert.equal(higherRent.rentDeltaCents, 20_000); assert.ok((lowerRent.result.investmentMonthlyCashFlowCents ?? 0) < (higherRent.result.investmentMonthlyCashFlowCents ?? 0));
 assert.throws(() => validateInvestmentScenarioRequest({ ...request, properties: [{ ...request.properties[0], role: 'INVALID' }] }));
 assert.throws(() => validateInvestmentScenarioRequest({ ...request, properties: [{ ...request.properties[2], downPaymentCents: 50000000 }] }));
 for (const model of ['InvestmentAnalysis', 'InvestmentScenario', 'InvestmentScenarioResult', 'InvestmentScenarioAuditEvent']) assert.match(schema, new RegExp(`model ${model} \\{`));
 for (const table of ['InvestmentAnalysis', 'InvestmentScenario', 'InvestmentScenarioResult', 'InvestmentScenarioAuditEvent']) assert.match(migration, new RegExp(`CREATE TABLE "${table}"`));
 assert.match(migration, /InvestmentScenarioResult_append_only/); assert.match(route, /authorizeAdminRequest/); assert.match(route, /isSameOriginAdminRequest/); assert.match(auth, /\/api\/agent\/investment-breakeven/); assert.match(auth, /\/agent\/investment/); assert.match(workspace, /pre-tax decision support/i); assert.match(workspace, /not financial advice/i); assert.doesNotMatch(workspace, /approved rate|guaranteed return/i); assert.equal(packageJson.scripts['check:investment-breakeven-analysis'], 'jiti scripts/checkInvestmentBreakevenAnalysis.ts');
+for (const action of ['CLONE_SCENARIO', 'REVIEW_SCENARIO', 'CALCULATE_SENSITIVITY', 'PERSIST_REVIEWED_OUTPUT']) assert.match(route, new RegExp(action));
+assert.match(outputAdapter, /MULTI_PROPERTY_FINANCIAL_BREAKEVEN_ANALYSIS/); assert.match(outputAdapter, /InvestmentScenarioResult:/); assert.match(outputAdapter, /SYNTHETIC_CERTIFICATION_INTERNAL_ONLY/); assert.match(outputAdapter, /buildInvestmentBreakevenOutputFixture/);
 console.log('INVESTMENT_BREAKEVEN_ANALYSIS_CHECK: PASS');
