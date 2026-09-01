@@ -41,7 +41,7 @@ This continuation completes the Agent-internal, synthetic-only investment workfl
 - Output A: `cmthx2id3000310g48emege98`, ordinal 1, A/B/C selection, content fingerprint `5908227d6c94fb3f4080d1c604cdc821b3f7728467250e7fea3ea68c9f1553b7`, seven dependencies, one review, three selected decisions.
 - Output B: `cmthx2p2x000k10g4subf3a78`, ordinal 2, A/C selection, content fingerprint `15038fe1686e796aa0a268f0fd8b78e3c926d66b76770a26e597ee2a997df069`, five dependencies, one review, two selected decisions, and `priorReviewedVersion` points to A.
 - Retrying Output A created no third OutputVersion. Fresh authenticated page reload restored A, B, and the reviewed clone independently from persistence.
-- A direct mutation attempt against synthetic Output A was rejected by the existing `OutputVersion_append_only` trigger. Its display version, source reference, and fingerprint remained byte-for-byte unchanged.
+- Direct mutations against synthetic Output A's semantic payload/fingerprint, evidence snapshot, dependency, and review metadata were each rejected by the existing shared append-only triggers. The corresponding persisted values remained byte-for-byte unchanged.
 - Unauthenticated `GET /api/agent/investment-breakeven` returned `401`; no mutation occurred.
 
 ## Final matrix
