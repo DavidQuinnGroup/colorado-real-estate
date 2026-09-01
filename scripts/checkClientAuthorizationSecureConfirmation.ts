@@ -77,6 +77,8 @@ assert.match(middleware, /isProfessionalExternalRequestRoute\(pathname\) \|\| is
 assert.match(middleware, /pathname === "\/agent\/authorizations"/);
 assert.match(middleware, /pathname === "\/api\/agent\/client-authorizations"/);
 assert.match(workspace, /\['PENDING_CONFIRMATION', 'ACTIVE'\]\.includes\(authorization\.status\)/);
+assert.match(workspace, /Field label="Property context" value=\{terms\.propertyId\}/);
+assert.match(workspace, /Field label="Transaction context" value=\{terms\.transactionId\}/);
 assert.match(principalLinkRepairMigration, /ALTER TABLE "ClientAuthorizationSession" ADD COLUMN IF NOT EXISTS "clientAuthorizationPrincipalId" TEXT/);
 assert.match(principalLinkRepairMigration, /ALTER TABLE "ClientAuthorizationConfirmationEvidence" ADD COLUMN IF NOT EXISTS "clientAuthorizationPrincipalId" TEXT/);
 assert.match(principalLinkRepairMigration, /ClientAuthorizationSession_clientAuthorizationPrincipalId_fkey/);
