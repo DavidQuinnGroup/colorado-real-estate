@@ -49,6 +49,7 @@ const accessRoute = readFileSync('app/client-authorization/access/route.ts', 'ut
 const submitRoute = readFileSync('app/client-authorization/confirm/submit/route.ts', 'utf8');
 const schema = readFileSync('prisma/schema.prisma', 'utf8');
 const migration = readFileSync('prisma/migrations/20260903000000_add_client_authorization_secure_confirmation_v1/migration.sql', 'utf8');
+const principalLinkRepairMigration = readFileSync('prisma/migrations/20260904000000_repair_client_authorization_confirmation_principal_links/migration.sql', 'utf8');
 const middleware = readFileSync('middleware.ts', 'utf8');
 assert.match(service, /tokenHash: hash\(capabilityPlaintext\)/);
 assert.match(service, /purpose !== CLIENT_AUTHORIZATION_CONFIRMATION_PURPOSE/);
@@ -63,6 +64,7 @@ assert.match(accessRoute, /X-Robots-Tag/);
 assert.match(submitRoute, /request\.headers\.get\('origin'\) !== request\.nextUrl\.origin/);
 assert.match(submitRoute, /export async function POST/);
 assert.match(schema, /model ClientAuthorizationConfirmationEvidence/);
+assert.match(schema, /clientAuthorizationPrincipalId String\?/);
 assert.match(migration, /ClientAuthorizationConfirmationEvidence_append_only/);
 assert.match(migration, /ClientAuthorizationUse_append_only/);
 assert.match(migration, /ClientAuthorizationSnapshot_freeze_when_prepared/);
@@ -71,6 +73,10 @@ assert.match(middleware, /isClientAuthorizationConfirmationRoute/);
 assert.match(middleware, /isProfessionalExternalRequestRoute\(pathname\) \|\| isClientAuthorizationConfirmationRoute\(pathname\)/);
 assert.match(middleware, /pathname === "\/agent\/authorizations"/);
 assert.match(middleware, /pathname === "\/api\/agent\/client-authorizations"/);
+assert.match(principalLinkRepairMigration, /ALTER TABLE "ClientAuthorizationSession" ADD COLUMN IF NOT EXISTS "clientAuthorizationPrincipalId" TEXT/);
+assert.match(principalLinkRepairMigration, /ALTER TABLE "ClientAuthorizationConfirmationEvidence" ADD COLUMN IF NOT EXISTS "clientAuthorizationPrincipalId" TEXT/);
+assert.match(principalLinkRepairMigration, /ClientAuthorizationSession_clientAuthorizationPrincipalId_fkey/);
+assert.match(principalLinkRepairMigration, /ClientAuthorizationConfirmationEvidence_clientAuthorizationPrincipalId_fkey/);
 assert.doesNotMatch(service, /tokenPlaintext|rawToken|capabilityPlaintext: capabilityPlaintext/);
 
 console.log('CLIENT_AUTHORIZATION_SECURE_CONFIRMATION_CHECKER: PASS');
