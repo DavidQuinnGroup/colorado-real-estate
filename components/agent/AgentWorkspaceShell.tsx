@@ -53,6 +53,10 @@ export default function AgentWorkspaceShell({ children }: { children: ReactNode 
               <Calculator size={15} aria-hidden="true" />
               Investment Breakeven
             </a>
+            <a href="/agent/strategy" className="inline-flex min-h-10 items-center gap-2 rounded-[7px] border border-white/15 px-3 py-2 text-xs font-semibold text-slate-200 transition hover:border-white/30 hover:bg-white/[0.06] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100" data-testid="agent-workspace-strategy-link">
+              <Calculator size={15} aria-hidden="true" />
+              Strategy Suite
+            </a>
             <a href="/agent/prepare/listing" className="rounded-[7px] px-3 py-2 text-xs font-semibold text-slate-200 transition hover:bg-white/[0.08] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100" data-testid="agent-workspace-listing-link">
               Listing Preparation
             </a>

@@ -1,0 +1,121 @@
+import { createHash } from 'node:crypto';
+import type { PrismaClient } from '@prisma/client';
+
+import { calculateInvestmentScenario, type InvestmentPropertyInput, validateInvestmentScenarioRequest } from './investmentBreakevenAnalysis';
+
+export const MULTI_DIMENSIONAL_STRATEGY_CALCULATION_V1 = 'MULTI_DIMENSIONAL_STRATEGY_CALCULATION_V1' as const;
+export const MULTI_DIMENSIONAL_STRATEGY_ASSUMPTION_POLICY_V1 = 'MULTI_DIMENSIONAL_STRATEGY_ASSUMPTION_POLICY_V1' as const;
+export const MULTI_DIMENSIONAL_STRATEGY_BRIEF_V1 = 'MULTI_DIMENSIONAL_STRATEGY_BRIEF_V1' as const;
+
+type Database = PrismaClient;
+type RecordValue = Record<string, unknown>;
+export type StrategyProfile = 'SELL_EXISTING_BUY_PRIMARY' | 'SELL_EXISTING_BUY_PRIMARY_AND_INVESTMENT' | 'KEEP_EXISTING_CONVERT_TO_RENTAL_AND_BUY_PRIMARY' | 'KEEP_EXISTING_CONVERT_TO_RENTAL_AND_BUY_PRIMARY_AND_INVESTMENT';
+
+export class StrategySuiteError extends Error {
+  constructor(readonly code: 'INVALID_REQUEST' | 'NOT_FOUND' | 'OWNERSHIP_DENIED' | 'STALE_RESULT' | 'IMMUTABLE' | 'PERSISTENCE_UNAVAILABLE', message: string) { super(message); }
+}
+
+function isRecord(value: unknown): value is RecordValue { return Boolean(value) && typeof value === 'object' && !Array.isArray(value); }
+function text(value: unknown, field: string, maximum = 160) { if (typeof value !== 'string' || !value.trim() || value.trim().length > maximum || /[<>]/.test(value)) throw new StrategySuiteError('INVALID_REQUEST', `${field} is invalid.`); return value.trim(); }
+function integer(value: unknown, field: string, maximum = 100_000_000_000) { if (!Number.isInteger(value) || Number(value) < 0 || Number(value) > maximum) throw new StrategySuiteError('INVALID_REQUEST', `${field} must be non-negative integer cents.`); return Number(value); }
+function bp(value: unknown, field: string) { return integer(value, field, 100_000); }
+function stable(value: unknown): string { if (Array.isArray(value)) return `[${value.map(stable).join(',')}]`; if (isRecord(value)) return `{${Object.keys(value).sort().map((key) => `${JSON.stringify(key)}:${stable(value[key])}`).join(',')}}`; return JSON.stringify(value); }
+export function strategyFingerprint(value: unknown) { return createHash('sha256').update(stable(value)).digest('hex'); }
+function rounded(value: number) { return Math.round(value); }
+
+type RetainedProperty = Readonly<{ canonicalPropertyId: string; label: string; saleProceedsCents: number; currentValueCents: number; debtBalanceCents: number; monthlyDebtPaymentCents: number; monthlyRentCents: number; vacancyBasisPoints: number; managementBasisPoints: number; monthlyTaxesCents: number; monthlyInsuranceCents: number; monthlyHoaCents: number; monthlyMaintenanceCents: number; monthlyCapexReserveCents: number; qualification: string; rentalPermissionStatus: 'NOT_VERIFIED' | 'VERIFIED'; sellerFinancialResultId: string | null }>;
+type StrategyAcquisitionProperty = InvestmentPropertyInput & { canonicalPropertyId: string };
+export type StrategyRequest = Readonly<{ analysisKey: string; analysisTitle: string; analysisPurpose: string; alternativeKey: string; strategyProfile: StrategyProfile; existing: RetainedProperty; acquisitionProperties: readonly StrategyAcquisitionProperty[]; additionalLiquidCapitalCents: number; reserveTargetCents: number; supersedesAlternativeId: string | null; review: boolean }>;
+
+function parseRetained(value: unknown): RetainedProperty {
+  if (!isRecord(value)) throw new StrategySuiteError('INVALID_REQUEST', 'existing property is required.');
+  const status = text(value.rentalPermissionStatus ?? 'NOT_VERIFIED', 'rentalPermissionStatus', 40);
+  if (status !== 'NOT_VERIFIED' && status !== 'VERIFIED') throw new StrategySuiteError('INVALID_REQUEST', 'rentalPermissionStatus is invalid.');
+  return Object.freeze({
+    canonicalPropertyId: text(value.canonicalPropertyId, 'canonicalPropertyId'), label: text(value.label, 'existing label'), saleProceedsCents: integer(value.saleProceedsCents, 'saleProceedsCents'), currentValueCents: integer(value.currentValueCents, 'currentValueCents'), debtBalanceCents: integer(value.debtBalanceCents, 'debtBalanceCents'), monthlyDebtPaymentCents: integer(value.monthlyDebtPaymentCents, 'monthlyDebtPaymentCents'), monthlyRentCents: integer(value.monthlyRentCents, 'monthlyRentCents'), vacancyBasisPoints: bp(value.vacancyBasisPoints, 'vacancyBasisPoints'), managementBasisPoints: bp(value.managementBasisPoints, 'managementBasisPoints'), monthlyTaxesCents: integer(value.monthlyTaxesCents, 'monthlyTaxesCents'), monthlyInsuranceCents: integer(value.monthlyInsuranceCents, 'monthlyInsuranceCents'), monthlyHoaCents: integer(value.monthlyHoaCents, 'monthlyHoaCents'), monthlyMaintenanceCents: integer(value.monthlyMaintenanceCents, 'monthlyMaintenanceCents'), monthlyCapexReserveCents: integer(value.monthlyCapexReserveCents, 'monthlyCapexReserveCents'), qualification: text(value.qualification, 'existing qualification', 80), rentalPermissionStatus: status, sellerFinancialResultId: typeof value.sellerFinancialResultId === 'string' ? text(value.sellerFinancialResultId, 'sellerFinancialResultId') : null,
+  });
+}
+
+export function validateStrategyRequest(raw: unknown): StrategyRequest {
+  if (!isRecord(raw)) throw new StrategySuiteError('INVALID_REQUEST', 'Strategy alternative is malformed.');
+  const strategyProfile = text(raw.strategyProfile, 'strategyProfile', 100) as StrategyProfile;
+  const profiles: StrategyProfile[] = ['SELL_EXISTING_BUY_PRIMARY', 'SELL_EXISTING_BUY_PRIMARY_AND_INVESTMENT', 'KEEP_EXISTING_CONVERT_TO_RENTAL_AND_BUY_PRIMARY', 'KEEP_EXISTING_CONVERT_TO_RENTAL_AND_BUY_PRIMARY_AND_INVESTMENT'];
+  if (!profiles.includes(strategyProfile)) throw new StrategySuiteError('INVALID_REQUEST', 'strategyProfile is unsupported.');
+  const existing = parseRetained(raw.existing);
+  if (!Array.isArray(raw.acquisitionProperties)) throw new StrategySuiteError('INVALID_REQUEST', 'acquisitionProperties are required.');
+  const hasInvestment = strategyProfile.endsWith('AND_INVESTMENT');
+  const expected = hasInvestment ? 2 : 1;
+  if (raw.acquisitionProperties.length !== expected) throw new StrategySuiteError('INVALID_REQUEST', 'The selected strategy profile has an invalid acquisition set.');
+  const canonicalPropertyIds = raw.acquisitionProperties.map((property) => isRecord(property) ? text(property.canonicalPropertyId, 'acquisition canonicalPropertyId') : '');
+  const acquisition = validateInvestmentScenarioRequest({ analysisKey: 'strategy-component', analysisTitle: 'strategy component', analysisPurpose: 'Strategy component calculation.', scenarioKey: 'component', properties: raw.acquisitionProperties, additionalCapitalCents: 0, reserveTargetCents: raw.reserveTargetCents ?? 0 });
+  const roles = acquisition.properties.map((property) => property.role);
+  if (!roles.includes('NEW_PRIMARY') || roles.includes('EXISTING_PRIMARY') || hasInvestment !== roles.includes('INVESTMENT_PROPERTY')) throw new StrategySuiteError('INVALID_REQUEST', 'Acquisition roles do not match the strategy profile.');
+  const acquisitionProperties = acquisition.properties.map((property, index) => Object.freeze({ ...property, canonicalPropertyId: canonicalPropertyIds[index] }));
+  const ids = [existing.canonicalPropertyId, ...acquisitionProperties.map((property) => property.canonicalPropertyId)];
+  if (ids.length !== new Set(ids).size) throw new StrategySuiteError('INVALID_REQUEST', 'A physical property cannot occupy conflicting roles in one strategy alternative.');
+  return Object.freeze({ analysisKey: text(raw.analysisKey, 'analysisKey'), analysisTitle: text(raw.analysisTitle, 'analysisTitle'), analysisPurpose: text(raw.analysisPurpose, 'analysisPurpose', 240), alternativeKey: text(raw.alternativeKey, 'alternativeKey'), strategyProfile, existing, acquisitionProperties, additionalLiquidCapitalCents: integer(raw.additionalLiquidCapitalCents ?? 0, 'additionalLiquidCapitalCents'), reserveTargetCents: integer(raw.reserveTargetCents ?? 0, 'reserveTargetCents'), supersedesAlternativeId: typeof raw.supersedesAlternativeId === 'string' ? raw.supersedesAlternativeId : null, review: raw.review === true });
+}
+
+function retainedResult(existing: RetainedProperty) {
+  const vacancyCents = rounded(existing.monthlyRentCents * existing.vacancyBasisPoints / 10_000);
+  const effectiveRentCents = existing.monthlyRentCents - vacancyCents;
+  const managementCents = rounded(effectiveRentCents * existing.managementBasisPoints / 10_000);
+  const monthlyOperatingExpensesCents = existing.monthlyTaxesCents + existing.monthlyInsuranceCents + existing.monthlyHoaCents + existing.monthlyMaintenanceCents + existing.monthlyCapexReserveCents + managementCents;
+  const monthlyNoiCents = effectiveRentCents - monthlyOperatingExpensesCents;
+  const monthlyCashFlowCents = monthlyNoiCents - existing.monthlyDebtPaymentCents;
+  const variableRate = existing.vacancyBasisPoints + (10_000 - existing.vacancyBasisPoints) * existing.managementBasisPoints / 10_000;
+  const fixed = existing.monthlyTaxesCents + existing.monthlyInsuranceCents + existing.monthlyHoaCents + existing.monthlyMaintenanceCents + existing.monthlyCapexReserveCents + existing.monthlyDebtPaymentCents;
+  return Object.freeze({ grossEquityCents: existing.currentValueCents - existing.debtBalanceCents, vacancyCents, effectiveRentCents, managementCents, monthlyOperatingExpensesCents, monthlyNoiCents, annualNoiCents: monthlyNoiCents * 12, monthlyCashFlowCents, breakevenRentCents: variableRate >= 10_000 ? null : rounded(fixed * 10_000 / (10_000 - variableRate)), rentalPermissionStatus: existing.rentalPermissionStatus });
+}
+
+export function calculateStrategyAlternative(input: StrategyRequest) {
+  const acquisitionInput = validateInvestmentScenarioRequest({ analysisKey: input.analysisKey, analysisTitle: input.analysisTitle, analysisPurpose: input.analysisPurpose, scenarioKey: input.alternativeKey, properties: input.acquisitionProperties, additionalCapitalCents: 0, reserveTargetCents: input.reserveTargetCents });
+  const acquisition = calculateInvestmentScenario(acquisitionInput);
+  const keeping = input.strategyProfile.startsWith('KEEP_');
+  const retained = keeping ? retainedResult(input.existing) : null;
+  const availableLiquidCapitalCents = input.additionalLiquidCapitalCents + (keeping ? 0 : input.existing.saleProceedsCents);
+  const totalAcquisitionCapitalRequiredCents = acquisition.totalCashRequiredCents;
+  const remainingLiquidityCents = availableLiquidCapitalCents - totalAcquisitionCapitalRequiredCents;
+  const totalModeledPropertyDebtCents = input.acquisitionProperties.reduce((total, property) => total + property.purchasePriceCents - property.downPaymentCents, 0) + (keeping ? input.existing.debtBalanceCents : 0);
+  const householdMonthlyPropertyCashRequirementCents = acquisition.combinedMonthlyPropertyCashRequirementCents - (retained?.monthlyCashFlowCents ?? 0);
+  const materialUnknowns = keeping && input.existing.rentalPermissionStatus === 'NOT_VERIFIED' ? ['Rental permission, HOA restrictions, licensing, and regulatory requirements are not verified.'] : [];
+  return Object.freeze({ calculationVersion: MULTI_DIMENSIONAL_STRATEGY_CALCULATION_V1, assumptionPolicy: MULTI_DIMENSIONAL_STRATEGY_ASSUMPTION_POLICY_V1, strategyProfile: input.strategyProfile, qualifier: 'MODELED_ESTIMATE', taxTreatment: 'PRE_TAX_ONLY', acquisitionComponent: acquisition, retainedProperty: retained, availableLiquidCapitalCents, totalAcquisitionCapitalRequiredCents, remainingLiquidityCents, fundingShortfallCents: Math.max(0, -remainingLiquidityCents), netRetainedPropertyEquityCents: retained?.grossEquityCents ?? 0, totalModeledPropertyDebtCents, householdMonthlyPropertyCashRequirementCents, materialUnknowns, tradeoffs: ['No strategy is selected automatically.', keeping ? 'Retained equity is shown separately and is not treated as liquid acquisition capital.' : 'Sale proceeds are modeled as qualified liquidity for this alternative.', 'Financing, rent, expenses, tax consequences, and rental permission are not guaranteed or determined here.'], limitations: ['Decision support only; not lender underwriting, tax advice, legal advice, appraisal, or a contractual election.', 'No client-facing delivery or external action is available in this workspace.'] });
+}
+
+function propertyRoles(input: StrategyRequest) {
+  const existingDisposition = input.strategyProfile.startsWith('KEEP_') ? 'RETAINED_RENTAL' : 'SOLD';
+  return [
+    { canonicalPropertyId: input.existing.canonicalPropertyId, role: 'EXISTING_PRIMARY', disposition: existingDisposition, inputSnapshot: input.existing, provenanceSnapshot: { qualification: input.existing.qualification, sellerFinancialResultId: input.existing.sellerFinancialResultId } },
+    ...input.acquisitionProperties.map((property) => ({ canonicalPropertyId: property.canonicalPropertyId, role: property.role === 'NEW_PRIMARY' ? 'NEW_PRIMARY' : 'NEW_INVESTMENT_PROPERTY', disposition: 'ACQUIRED', inputSnapshot: property, provenanceSnapshot: { qualification: property.qualification, sellerFinancialResultId: property.sellerFinancialResultId ?? null } })),
+  ];
+}
+
+export function createStrategySuiteService(prisma: Database) {
+  async function listOwned(owner: string) { return prisma.strategyAnalysis.findMany({ where: { ownerAgentSubject: owner }, include: { alternatives: { include: { results: { orderBy: { versionOrdinal: 'desc' } }, propertyRoles: true, auditEvents: true, dependencies: true }, orderBy: { createdAt: 'desc' } } }, orderBy: { createdAt: 'desc' } }); }
+  async function verifyCanonicalProperties(ids: string[]) { const found = await prisma.canonicalPhysicalProperty.findMany({ where: { id: { in: ids } }, select: { id: true } }); if (found.length !== ids.length) throw new StrategySuiteError('NOT_FOUND', 'A canonical physical property reference is unavailable.'); }
+  async function createAlternative(owner: string, raw: unknown) {
+    const input = validateStrategyRequest(raw); const roleRows = propertyRoles(input); await verifyCanonicalProperties(roleRows.map((row) => row.canonicalPropertyId));
+    if (input.existing.sellerFinancialResultId) {
+      const sellerFinancialResult = await prisma.sellerFinancialResult.findFirst({ where: { id: input.existing.sellerFinancialResultId, ownerAgentSubject: owner }, select: { id: true } });
+      if (!sellerFinancialResult) throw new StrategySuiteError('OWNERSHIP_DENIED', 'The referenced Seller Financial result is unavailable to this Agent.');
+    }
+    const fingerprint = strategyFingerprint({ owner, input, version: MULTI_DIMENSIONAL_STRATEGY_CALCULATION_V1 }); const snapshot = calculateStrategyAlternative(input);
+    return prisma.$transaction(async (tx) => {
+      const analysis = await tx.strategyAnalysis.upsert({ where: { ownerAgentSubject_analysisKey: { ownerAgentSubject: owner, analysisKey: input.analysisKey } }, create: { ownerAgentSubject: owner, analysisKey: input.analysisKey, title: input.analysisTitle, purpose: input.analysisPurpose, lifecycleState: 'DRAFT', engineVersion: MULTI_DIMENSIONAL_STRATEGY_CALCULATION_V1, assumptionPolicy: MULTI_DIMENSIONAL_STRATEGY_ASSUMPTION_POLICY_V1 }, update: {} });
+      const existing = await tx.strategyAlternative.findUnique({ where: { inputFingerprint: fingerprint }, include: { results: { orderBy: { versionOrdinal: 'desc' }, take: 1 } } }); if (existing) return { alternative: existing, result: existing.results[0] ?? null, created: false };
+      if (input.supersedesAlternativeId) { const predecessor = await tx.strategyAlternative.findFirst({ where: { id: input.supersedesAlternativeId, ownerAgentSubject: owner } }); if (!predecessor) throw new StrategySuiteError('NOT_FOUND', 'The superseded alternative is unavailable.'); }
+      const ordinal = await tx.strategyAlternative.count({ where: { analysisId: analysis.id, alternativeKey: input.alternativeKey } });
+      const alternative = await tx.strategyAlternative.create({ data: { analysisId: analysis.id, ownerAgentSubject: owner, alternativeKey: input.alternativeKey, versionOrdinal: ordinal + 1, strategyProfile: input.strategyProfile, lifecycleState: input.review ? 'AGENT_REVIEWED' : 'DRAFT', inputSnapshot: input as never, sourceQualification: { existing: input.existing.qualification, acquisitions: input.acquisitionProperties.map((p) => p.qualification) }, dependencySnapshot: { sellerFinancialResultId: input.existing.sellerFinancialResultId, investmentCalculationVersion: acquisitionVersion() }, inputFingerprint: fingerprint, supersedesAlternativeId: input.supersedesAlternativeId, reviewedAt: input.review ? new Date() : null, propertyRoles: { create: roleRows.map((row) => ({ ...row, ownerAgentSubject: owner, inputSnapshot: row.inputSnapshot as never, provenanceSnapshot: row.provenanceSnapshot as never })) }, dependencies: { create: [{ ownerAgentSubject: owner, upstreamArtifact: `CanonicalPhysicalProperty:${input.existing.canonicalPropertyId}`, dependencyType: 'PROPERTY_IDENTITY', versionUsed: 'CANONICAL_PHYSICAL_PROPERTY_V1', qualification: input.existing.qualification, detail: { role: 'EXISTING_PRIMARY' } }, ...input.acquisitionProperties.map((property) => ({ ownerAgentSubject: owner, upstreamArtifact: `CanonicalPhysicalProperty:${property.canonicalPropertyId}`, dependencyType: 'PROPERTY_IDENTITY', versionUsed: 'CANONICAL_PHYSICAL_PROPERTY_V1', qualification: property.qualification, detail: { role: property.role } })), ...(input.existing.sellerFinancialResultId ? [{ ownerAgentSubject: owner, upstreamArtifact: `SellerFinancialResult:${input.existing.sellerFinancialResultId}`, dependencyType: 'FINANCIAL_SOURCE', versionUsed: 'SELLER_FINANCIAL_ESTIMATED_SCENARIO_V1', qualification: input.existing.qualification, detail: { purpose: 'Sale proceeds provenance only; not a recommendation.' } }] : [])] } }, include: { results: true } });
+      const result = await tx.strategyAlternativeResult.create({ data: { alternativeId: alternative.id, ownerAgentSubject: owner, inputFingerprint: fingerprint, calculationVersion: MULTI_DIMENSIONAL_STRATEGY_CALCULATION_V1, versionOrdinal: 1, resultSnapshot: snapshot as never, resultFingerprint: strategyFingerprint({ alternativeId: alternative.id, snapshot }) } });
+      await tx.strategyAlternativeAuditEvent.createMany({ data: ['ALTERNATIVE_CREATED', 'RESULT_MATERIALIZED', ...(input.review ? ['ALTERNATIVE_AGENT_REVIEWED'] : [])].map((eventType) => ({ alternativeId: alternative.id, ownerAgentSubject: owner, eventType, eventFingerprint: strategyFingerprint({ alternativeId: alternative.id, eventType }) })) });
+      return { alternative, result, created: true };
+    });
+  }
+  async function cloneAlternative(owner: string, raw: unknown) { if (!isRecord(raw)) throw new StrategySuiteError('INVALID_REQUEST', 'Clone request is malformed.'); const sourceId = text(raw.sourceAlternativeId, 'sourceAlternativeId'); const key = text(raw.alternativeKey, 'alternativeKey'); const source = await prisma.strategyAlternative.findFirst({ where: { id: sourceId, ownerAgentSubject: owner } }); if (!source) throw new StrategySuiteError('NOT_FOUND', 'The source alternative is unavailable.'); return createAlternative(owner, { ...(source.inputSnapshot as RecordValue), alternativeKey: key, supersedesAlternativeId: source.id, review: false }); }
+  async function updateDraft(owner: string, alternativeId: string, retainedRentCents: number) { const alternative = await prisma.strategyAlternative.findFirst({ where: { id: alternativeId, ownerAgentSubject: owner } }); if (!alternative) throw new StrategySuiteError('NOT_FOUND', 'The alternative is unavailable.'); if (alternative.lifecycleState === 'AGENT_REVIEWED') throw new StrategySuiteError('IMMUTABLE', 'Clone a reviewed alternative before editing its assumptions.'); const input = alternative.inputSnapshot as RecordValue; const existing = { ...(input.existing as RecordValue), monthlyRentCents: integer(retainedRentCents, 'retainedRentCents') }; const next = validateStrategyRequest({ ...input, existing, review: false }); const fingerprint = strategyFingerprint({ owner, input: next, version: MULTI_DIMENSIONAL_STRATEGY_CALCULATION_V1 }); return prisma.$transaction(async (tx) => { const updated = await tx.strategyAlternative.update({ where: { id: alternative.id }, data: { inputSnapshot: next as never, inputFingerprint: fingerprint, lifecycleState: 'STALE_RESULT' } }); await tx.strategyAlternativeAuditEvent.create({ data: { alternativeId: alternative.id, ownerAgentSubject: owner, eventType: 'ASSUMPTION_EDITED_RESULT_STALE', eventFingerprint: strategyFingerprint({ alternativeId, event: 'ASSUMPTION_EDITED_RESULT_STALE', fingerprint }) } }); return updated; }); }
+  async function recalculate(owner: string, alternativeId: string) { const alternative = await prisma.strategyAlternative.findFirst({ where: { id: alternativeId, ownerAgentSubject: owner }, include: { results: true } }); if (!alternative) throw new StrategySuiteError('NOT_FOUND', 'The alternative is unavailable.'); if (alternative.lifecycleState === 'AGENT_REVIEWED') throw new StrategySuiteError('IMMUTABLE', 'Clone a reviewed alternative before recalculation.'); const input = validateStrategyRequest(alternative.inputSnapshot); const snapshot = calculateStrategyAlternative(input); const existing = alternative.results.find((result) => result.inputFingerprint === alternative.inputFingerprint); if (existing) return { result: existing, created: false }; const result = await prisma.strategyAlternativeResult.create({ data: { alternativeId, ownerAgentSubject: owner, inputFingerprint: alternative.inputFingerprint, calculationVersion: MULTI_DIMENSIONAL_STRATEGY_CALCULATION_V1, versionOrdinal: alternative.results.length + 1, resultSnapshot: snapshot as never, resultFingerprint: strategyFingerprint({ alternativeId, snapshot }) } }); await prisma.strategyAlternativeAuditEvent.create({ data: { alternativeId, ownerAgentSubject: owner, eventType: 'RESULT_RECALCULATED', eventFingerprint: strategyFingerprint({ alternativeId, event: 'RESULT_RECALCULATED', result: result.id }) } }); return { result, created: true }; }
+  async function reviewAlternative(owner: string, alternativeId: string) { const alternative = await prisma.strategyAlternative.findFirst({ where: { id: alternativeId, ownerAgentSubject: owner }, include: { results: { orderBy: { versionOrdinal: 'desc' }, take: 1 } } }); if (!alternative) throw new StrategySuiteError('NOT_FOUND', 'The alternative is unavailable.'); if (alternative.lifecycleState === 'AGENT_REVIEWED') return { alternative, reviewed: false }; const result = alternative.results[0]; if (!result || result.inputFingerprint !== alternative.inputFingerprint) throw new StrategySuiteError('STALE_RESULT', 'Recalculate the current assumptions before Agent review.'); return prisma.$transaction(async (tx) => { const reviewed = await tx.strategyAlternative.update({ where: { id: alternativeId }, data: { lifecycleState: 'AGENT_REVIEWED', reviewedAt: new Date() } }); await tx.strategyAlternativeAuditEvent.create({ data: { alternativeId, ownerAgentSubject: owner, eventType: 'ALTERNATIVE_AGENT_REVIEWED', eventFingerprint: strategyFingerprint({ alternativeId, event: 'ALTERNATIVE_AGENT_REVIEWED' }) } }); return { alternative: reviewed, reviewed: true }; }); }
+  async function sensitivity(owner: string, alternativeId: string, rentDeltaCents: number) { const alternative = await prisma.strategyAlternative.findFirst({ where: { id: alternativeId, ownerAgentSubject: owner } }); if (!alternative) throw new StrategySuiteError('NOT_FOUND', 'The alternative is unavailable.'); const input = alternative.inputSnapshot as RecordValue; const existing = { ...(input.existing as RecordValue), monthlyRentCents: Math.max(0, integer((input.existing as RecordValue).monthlyRentCents, 'monthlyRentCents') + rentDeltaCents) }; return calculateStrategyAlternative(validateStrategyRequest({ ...input, existing })); }
+  return Object.freeze({ listOwned, createAlternative, cloneAlternative, updateDraft, recalculate, reviewAlternative, sensitivity });
+}
+function acquisitionVersion() { return 'INVESTMENT_BREAKEVEN_CALCULATION_V1'; }

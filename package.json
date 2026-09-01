@@ -11,6 +11,7 @@
     "typecheck": "tsc --noEmit --pretty false",
     "check:seller-financial-estimated-scenario": "jiti scripts/checkSellerFinancialEstimatedScenario.ts",
     "check:investment-breakeven-analysis": "jiti scripts/checkInvestmentBreakevenAnalysis.ts",
+    "check:multi-dimensional-strategy-suite": "jiti scripts/checkMultiDimensionalStrategySuite.ts",
     "check:seller-financial-output-integration": "jiti scripts/checkSellerFinancialOutputIntegration.ts",
     "check:seller-presentation-financial-module-adapter": "jiti scripts/checkSellerPresentationFinancialModuleAdapter.ts",
     "check:buyer-decision-brief-foundation": "jiti scripts/checkBuyerDecisionBriefFoundation.ts",

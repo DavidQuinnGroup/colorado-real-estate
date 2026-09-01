@@ -715,12 +715,13 @@ model CanonicalPhysicalProperty {
   createdAt                   DateTime                                    @default(now())
   updatedAt                   DateTime                                    @updatedAt
 
-  supersededBy   CanonicalPhysicalProperty?                       @relation("CanonicalPhysicalPropertySupersession", fields: [supersededById], references: [id], onDelete: Restrict)
-  supersedes     CanonicalPhysicalProperty[]                      @relation("CanonicalPhysicalPropertySupersession")
-  sourceMappings CanonicalPhysicalPropertySourceIdentityMapping[]
-  observations   CanonicalPhysicalPropertyObservation[]
-  listingEvents  CanonicalPropertyListingEvent[]
-  transactions   Transaction[]
+  supersededBy          CanonicalPhysicalProperty?                       @relation("CanonicalPhysicalPropertySupersession", fields: [supersededById], references: [id], onDelete: Restrict)
+  supersedes            CanonicalPhysicalProperty[]                      @relation("CanonicalPhysicalPropertySupersession")
+  sourceMappings        CanonicalPhysicalPropertySourceIdentityMapping[]
+  observations          CanonicalPhysicalPropertyObservation[]
+  listingEvents         CanonicalPropertyListingEvent[]
+  transactions          Transaction[]
+  strategyPropertyRoles StrategyPropertyRole[]
 
   @@index([identityStatus, identityConfidence], map: "CPP_status_confidence_idx")
   @@index([state, county, jurisdiction], map: "CPP_jurisdiction_idx")
@@ -3299,6 +3300,120 @@ model InvestmentScenarioAuditEvent {
   scenario InvestmentScenario @relation(fields: [scenarioId], references: [id], onDelete: Restrict)
 
   @@index([scenarioId, createdAt])
+  @@index([ownerAgentSubject, createdAt])
+}
+
+model StrategyAnalysis {
+  id                String   @id @default(cuid())
+  ownerAgentSubject String
+  analysisKey       String
+  title             String
+  purpose           String
+  lifecycleState    String
+  engineVersion     String
+  assumptionPolicy  String
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  alternatives StrategyAlternative[]
+
+  @@unique([ownerAgentSubject, analysisKey])
+  @@index([ownerAgentSubject, createdAt])
+}
+
+model StrategyAlternative {
+  id                      String    @id @default(cuid())
+  analysisId              String
+  ownerAgentSubject       String
+  alternativeKey          String
+  versionOrdinal          Int
+  strategyProfile         String
+  lifecycleState          String
+  inputSnapshot           Json
+  sourceQualification     Json
+  dependencySnapshot      Json
+  inputFingerprint        String    @unique
+  supersedesAlternativeId String?   @unique
+  createdAt               DateTime  @default(now())
+  reviewedAt              DateTime?
+
+  analysis                StrategyAnalysis                @relation(fields: [analysisId], references: [id], onDelete: Restrict)
+  results                 StrategyAlternativeResult[]
+  propertyRoles           StrategyPropertyRole[]
+  dependencies            StrategyAlternativeDependency[]
+  auditEvents             StrategyAlternativeAuditEvent[]
+  supersedesAlternative   StrategyAlternative?            @relation("StrategyAlternativeSupersession", fields: [supersedesAlternativeId], references: [id], onDelete: Restrict)
+  supersededByAlternative StrategyAlternative?            @relation("StrategyAlternativeSupersession")
+
+  @@unique([analysisId, alternativeKey, versionOrdinal])
+  @@index([ownerAgentSubject, analysisId, createdAt])
+}
+
+model StrategyAlternativeResult {
+  id                 String   @id @default(cuid())
+  alternativeId      String
+  ownerAgentSubject  String
+  inputFingerprint   String
+  calculationVersion String
+  versionOrdinal     Int
+  resultSnapshot     Json
+  resultFingerprint  String   @unique
+  createdAt          DateTime @default(now())
+  immutableAt        DateTime @default(now())
+
+  alternative StrategyAlternative @relation(fields: [alternativeId], references: [id], onDelete: Restrict)
+
+  @@unique([alternativeId, versionOrdinal])
+  @@index([ownerAgentSubject, createdAt])
+  @@index([alternativeId, createdAt])
+}
+
+model StrategyPropertyRole {
+  id                  String   @id @default(cuid())
+  alternativeId       String
+  canonicalPropertyId String
+  ownerAgentSubject   String
+  role                String
+  disposition         String
+  inputSnapshot       Json
+  provenanceSnapshot  Json
+  createdAt           DateTime @default(now())
+
+  alternative       StrategyAlternative       @relation(fields: [alternativeId], references: [id], onDelete: Restrict)
+  canonicalProperty CanonicalPhysicalProperty @relation(fields: [canonicalPropertyId], references: [id], onDelete: Restrict)
+
+  @@unique([alternativeId, role])
+  @@index([ownerAgentSubject, canonicalPropertyId])
+}
+
+model StrategyAlternativeDependency {
+  id                String   @id @default(cuid())
+  alternativeId     String
+  ownerAgentSubject String
+  upstreamArtifact  String
+  dependencyType    String
+  versionUsed       String
+  qualification     String
+  detail            Json
+  createdAt         DateTime @default(now())
+
+  alternative StrategyAlternative @relation(fields: [alternativeId], references: [id], onDelete: Restrict)
+
+  @@unique([alternativeId, upstreamArtifact, dependencyType])
+  @@index([ownerAgentSubject, alternativeId])
+}
+
+model StrategyAlternativeAuditEvent {
+  id                String   @id @default(cuid())
+  alternativeId     String
+  ownerAgentSubject String
+  eventType         String
+  eventFingerprint  String   @unique
+  createdAt         DateTime @default(now())
+
+  alternative StrategyAlternative @relation(fields: [alternativeId], references: [id], onDelete: Restrict)
+
+  @@index([alternativeId, createdAt])
   @@index([ownerAgentSubject, createdAt])
 }
 
