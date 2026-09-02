@@ -53,6 +53,11 @@ export async function POST(request: NextRequest) {
       const result = await confirmation.issueCapability(subject, body.authorizationId, body.issuanceKey);
       return NextResponse.json({ capability: result.capability, confirmationToken: result.capabilityPlaintext, created: result.created }, { status: result.created ? 201 : 200, headers: HEADERS });
     }
+    if (body.action === 'RECOVER_SECURE_CONFIRMATION_CAPABILITY') {
+      if (typeof body.authorizationId !== 'string' || typeof body.recoveryKey !== 'string') throw new ClientAuthorizationError('INVALID_REQUEST', 'authorizationId and recoveryKey are required.');
+      const result = await confirmation.recoverCapability(subject, body.authorizationId, body.recoveryKey);
+      return NextResponse.json({ capability: result.capability, confirmationToken: result.capabilityPlaintext, created: result.created }, { status: result.created ? 201 : 200, headers: HEADERS });
+    }
     if (body.action === 'REVOKE_SECURE_CONFIRMATION_CAPABILITY') {
       if (typeof body.authorizationId !== 'string') throw new ClientAuthorizationError('INVALID_REQUEST', 'authorizationId is required.');
       return NextResponse.json({ authorization: await confirmation.revokeCapability(subject, body.authorizationId) }, { headers: HEADERS });

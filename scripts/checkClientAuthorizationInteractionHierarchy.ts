@@ -14,6 +14,8 @@ assert.match(workspace, /Secure link ready/);
 assert.match(workspace, /only display of this bearer link/);
 assert.match(workspace, /cannot be safely recovered or redisplayed/);
 assert.match(workspace, /Secure link issued and active/);
+assert.match(workspace, /Recover lost secure link/);
+assert.match(workspace, /Recovery revokes this unused capability before issuing one replacement/);
 assert.match(workspace, /!currentCapability/);
 assert.match(workspace, /atlas-authorization-record-historical/);
 assert.match(workspace, /atlas-action atlas-action-primary/);

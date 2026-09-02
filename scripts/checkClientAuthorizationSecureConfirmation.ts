@@ -46,6 +46,7 @@ assert.deepEqual(getClientAuthorizationSessionCookieOptions(true), { httpOnly: t
 
 const service = readFileSync('lib/clientAuthorizationSecureConfirmation.ts', 'utf8');
 const workspace = readFileSync('components/agent/ClientAuthorizationWorkspace.tsx', 'utf8');
+const agentRoute = readFileSync('app/api/agent/client-authorizations/route.ts', 'utf8');
 const accessRoute = readFileSync('app/client-authorization/access/route.ts', 'utf8');
 const submitRoute = readFileSync('app/client-authorization/confirm/submit/route.ts', 'utf8');
 const schema = readFileSync('prisma/schema.prisma', 'utf8');
@@ -59,6 +60,11 @@ assert.match(service, /csrfTokenHash/);
 assert.match(service, /status: decision === 'CONFIRMED' \? 'ACTIVE' : 'DECLINED'/);
 assert.match(service, /clientAuthorizationConfirmationEvidence/);
 assert.match(service, /updateMany\(\{ where: \{ authorizationId: record\.id, revokedAt: null, completedAt: null \}/);
+assert.match(service, /async function recoverCapability/);
+assert.match(service, /Recovery requires exactly one unused, unexpired confirmation capability/);
+assert.match(service, /clientAuthorizationSession\.findFirst/);
+assert.match(service, /exchangedAt: null, useCount: 0/);
+assert.match(agentRoute, /RECOVER_SECURE_CONFIRMATION_CAPABILITY/);
 assert.match(service, /transactionId, propertyId \}\);/);
 assert.match(service, /createdBySubject: actor, idempotencyKey, transactionId, propertyId, principals:/);
 assert.match(accessRoute, /NextResponse\.redirect\(new URL\('\/client-authorization\/confirm'/);
@@ -79,6 +85,8 @@ assert.match(middleware, /pathname === "\/api\/agent\/client-authorizations"/);
 assert.match(workspace, /\['PENDING_CONFIRMATION', 'ACTIVE'\]\.includes\(authorization\.status\)/);
 assert.match(workspace, /Field label="Property context" value=\{terms\.propertyId\}/);
 assert.match(workspace, /Field label="Transaction context" value=\{terms\.transactionId\}/);
+assert.match(workspace, /Recover lost secure link/);
+assert.match(workspace, /ATLAS_SECURE_CONFIRMATION_RECOVERY_/);
 assert.match(principalLinkRepairMigration, /ALTER TABLE "ClientAuthorizationSession" ADD COLUMN IF NOT EXISTS "clientAuthorizationPrincipalId" TEXT/);
 assert.match(principalLinkRepairMigration, /ALTER TABLE "ClientAuthorizationConfirmationEvidence" ADD COLUMN IF NOT EXISTS "clientAuthorizationPrincipalId" TEXT/);
 assert.match(principalLinkRepairMigration, /ClientAuthorizationSession_clientAuthorizationPrincipalId_fkey/);

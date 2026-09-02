@@ -108,6 +108,28 @@ export function createClientAuthorizationSecureConfirmationService(prisma: Datab
     return { capability, capabilityPlaintext, created: true };
   }
 
+  async function recoverCapability(ownerAgentSubject: string, authorizationId: string, recoveryKey: string) {
+    const record = await owned(ownerAgentSubject, authorizationId);
+    if (record.status !== 'PENDING_CONFIRMATION' || !record.snapshot) throw new ClientAuthorizationError('IMMUTABLE', 'Only a prepared authorization can recover a confirmation capability.');
+    const normalizedRecoveryKey = text(recoveryKey, 'recoveryKey', 160);
+    const existing = await prisma.clientAuthorizationCapability.findUnique({ where: { issuanceKey: normalizedRecoveryKey } });
+    if (existing) {
+      if (existing.authorizationId !== record.id) throw new ClientAuthorizationError('IMMUTABLE', 'The recovery key is unavailable for this authorization.');
+      return { capability: existing, capabilityPlaintext: null, created: false };
+    }
+    const active = record.capabilities.filter((capability: { revokedAt: Date | null; completedAt: Date | null }) => !capability.revokedAt && !capability.completedAt);
+    if (record.confirmationEvidence || record.uses.length || active.length !== 1 || active[0].exchangedAt || active[0].useCount !== 0 || active[0].maxUses !== 1 || active[0].expiresAt <= new Date()) throw new ClientAuthorizationError('IMMUTABLE', 'Recovery requires exactly one unused, unexpired confirmation capability with no recorded decision or downstream use.');
+    const capabilityPlaintext = secret(); const now = new Date(); const expiresAt = nowExpiry(now);
+    const capability = await prisma.$transaction(async (tx: Database) => {
+      const existingSession = await tx.clientAuthorizationSession.findFirst({ where: { authorizationId: record.id } });
+      if (existingSession) throw new ClientAuthorizationError('IMMUTABLE', 'Recovery is unavailable after a confirmation session has existed.');
+      const revoked = await tx.clientAuthorizationCapability.updateMany({ where: { id: active[0].id, authorizationId: record.id, revokedAt: null, completedAt: null, exchangedAt: null, useCount: 0 }, data: { revokedAt: now } });
+      if (revoked.count !== 1) throw new ClientAuthorizationError('IMMUTABLE', 'The active confirmation capability changed before recovery could complete.');
+      return tx.clientAuthorizationCapability.create({ data: { authorizationId: record.id, tokenHash: hash(capabilityPlaintext), purpose: CLIENT_AUTHORIZATION_CONFIRMATION_PURPOSE, issuanceKey: normalizedRecoveryKey, expiresAt } });
+    });
+    return { capability, capabilityPlaintext, created: true };
+  }
+
   async function revokeCapability(ownerAgentSubject: string, authorizationId: string) {
     const record = await owned(ownerAgentSubject, authorizationId);
     if (!['DRAFT', 'PENDING_CONFIRMATION'].includes(record.status)) throw new ClientAuthorizationError('IMMUTABLE', 'Only an unresolved authorization capability can be revoked.');
@@ -192,5 +214,5 @@ export function createClientAuthorizationSecureConfirmationService(prisma: Datab
     return prisma.clientAuthorization.findMany({ where: { ownerAgentSubject: owner(ownerAgentSubject) }, include: { profile: true, snapshot: true, principals: true, capabilities: { orderBy: { createdAt: 'desc' } }, confirmationEvidence: true, uses: { orderBy: { resolvedAt: 'desc' } }, supersedesAuthorization: true, supersededByAuthorization: true }, orderBy: { createdAt: 'desc' } });
   }
 
-  return Object.freeze({ ensureSyntheticProfile, createDraft, prepare, issueCapability, revokeCapability, supersede, bootstrap, context, decide, listOwned, getOwned: owned });
+  return Object.freeze({ ensureSyntheticProfile, createDraft, prepare, issueCapability, recoverCapability, revokeCapability, supersede, bootstrap, context, decide, listOwned, getOwned: owned });
 }
