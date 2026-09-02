@@ -46,6 +46,10 @@ assert.deepEqual(getClientAuthorizationSessionCookieOptions(true), { httpOnly: t
 
 const service = readFileSync('lib/clientAuthorizationSecureConfirmation.ts', 'utf8');
 const workspace = readFileSync('components/agent/ClientAuthorizationWorkspace.tsx', 'utf8');
+const externalShell = readFileSync('components/project-atlas/ProjectAtlasExternalShell.tsx', 'utf8');
+const externalNavigation = readFileSync('lib/projectAtlasExternalNavigation.ts', 'utf8');
+const externalLayout = readFileSync('app/client-authorization/layout.tsx', 'utf8');
+const confirmationForm = readFileSync('components/client-authorization/ClientAuthorizationConfirmationForm.tsx', 'utf8');
 const agentRoute = readFileSync('app/api/agent/client-authorizations/route.ts', 'utf8');
 const accessRoute = readFileSync('app/client-authorization/access/route.ts', 'utf8');
 const submitRoute = readFileSync('app/client-authorization/confirm/submit/route.ts', 'utf8');
@@ -70,6 +74,7 @@ assert.match(service, /createdBySubject: actor, idempotencyKey, transactionId, p
 assert.match(accessRoute, /NextResponse\.redirect\(new URL\('\/client-authorization\/confirm'/);
 assert.match(accessRoute, /Referrer-Policy/);
 assert.match(accessRoute, /X-Robots-Tag/);
+assert.match(accessRoute, /createProjectAtlasExternalUnavailableResponse/);
 assert.match(submitRoute, /request\.headers\.get\('origin'\) !== request\.nextUrl\.origin/);
 assert.match(submitRoute, /export async function POST/);
 assert.match(schema, /model ClientAuthorizationConfirmationEvidence/);
@@ -87,6 +92,12 @@ assert.match(workspace, /Field label="Property context" value=\{terms\.propertyI
 assert.match(workspace, /Field label="Transaction context" value=\{terms\.transactionId\}/);
 assert.match(workspace, /Recover lost secure link/);
 assert.match(workspace, /ATLAS_SECURE_CONFIRMATION_RECOVERY_/);
+assert.match(externalLayout, /ProjectAtlasExternalShell/);
+assert.match(confirmationForm, /ProjectAtlasPublicHomeAction terminal/);
+assert.match(externalShell, /href=\{PROJECT_ATLAS_PUBLIC_HOME_PATH\}/);
+assert.doesNotMatch(externalShell, /agent|token|cookie|session/i);
+assert.match(externalNavigation, /href="\$\{PUBLIC_HOME_PATH\}"/);
+assert.match(externalNavigation, /Referrer-Policy/);
 assert.match(principalLinkRepairMigration, /ALTER TABLE "ClientAuthorizationSession" ADD COLUMN IF NOT EXISTS "clientAuthorizationPrincipalId" TEXT/);
 assert.match(principalLinkRepairMigration, /ALTER TABLE "ClientAuthorizationConfirmationEvidence" ADD COLUMN IF NOT EXISTS "clientAuthorizationPrincipalId" TEXT/);
 assert.match(principalLinkRepairMigration, /ClientAuthorizationSession_clientAuthorizationPrincipalId_fkey/);

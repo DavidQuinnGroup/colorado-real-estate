@@ -731,6 +731,22 @@ html, body {
     color: #f8fafc;
   }
 
+  .atlas-external-shell {
+    min-height: 100vh;
+    background: #020617;
+  }
+
+  .atlas-external-navigation {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(7, 16, 20, 0.92);
+    padding: 0.8rem 1.25rem;
+  }
+
+  .atlas-public-home-action {
+    flex: none;
+    white-space: nowrap;
+  }
+
   .atlas-confirmation-panel {
     max-width: 42rem;
     margin: 0 auto;

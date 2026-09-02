@@ -3,6 +3,8 @@
 import { CheckCircle2, Loader2 } from 'lucide-react';
 import { FormEvent, useState } from 'react';
 
+import { ProjectAtlasPublicHomeAction } from '@/components/project-atlas/ProjectAtlasExternalShell';
+
 type Disclosure = Readonly<{ title?: string; property?: { label?: string; city?: string | null; state?: string | null }; purpose?: string; dueAt?: string | null; disclosures?: readonly string[] }>;
 
 export default function PropertyManagerRentEstimateResponseForm({ disclosure, csrfToken, alreadyResponded }: { disclosure: Disclosure; csrfToken: string; alreadyResponded: boolean }) {
@@ -42,7 +44,7 @@ export default function PropertyManagerRentEstimateResponseForm({ disclosure, cs
         <p className="mt-3 text-sm leading-6 text-slate-300">{disclosure.purpose}</p>
         {disclosure.dueAt ? <p className="mt-2 text-sm text-slate-400">Requested by {new Date(disclosure.dueAt).toLocaleString()}.</p> : null}
         <div className="mt-6 border-y border-white/10 py-5 text-sm leading-6 text-slate-400">{disclosure.disclosures?.map((item) => <p key={item} className="mt-2 first:mt-0">{item}</p>)}</div>
-        {complete ? <div className="mt-8 flex items-start gap-3 border border-emerald-300/25 bg-emerald-300/[0.06] p-5 text-sm leading-6 text-emerald-50" role="status"><CheckCircle2 className="mt-0.5 shrink-0" size={19} aria-hidden="true" /><p>Your estimate has been received for Agent review. It has not been automatically admitted as evidence.</p></div> : (
+        {complete ? <div className="mt-8 border border-emerald-300/25 bg-emerald-300/[0.06] p-5 text-sm leading-6 text-emerald-50" role="status"><div className="flex items-start gap-3"><CheckCircle2 className="mt-0.5 shrink-0" size={19} aria-hidden="true" /><p>Your estimate has been received for Agent review. It has not been automatically admitted as evidence.</p></div><div className="mt-5"><ProjectAtlasPublicHomeAction terminal /></div></div> : (
           <form onSubmit={submit} className="mt-8 grid gap-5" noValidate>
             <label className="grid gap-2 text-sm font-medium text-slate-100">Monthly rent estimate (USD)<input name="monthlyRent" type="number" min="0" max="50000000" step="1" required className="h-11 border border-white/20 bg-white/5 px-3 text-white outline-none focus:border-cyan-200" /></label>
             <div className="grid gap-5 sm:grid-cols-2"><label className="grid gap-2 text-sm font-medium text-slate-100">Monthly range low (optional)<input name="rentRangeLow" type="number" min="0" max="50000000" step="1" className="h-11 border border-white/20 bg-white/5 px-3 text-white outline-none focus:border-cyan-200" /></label><label className="grid gap-2 text-sm font-medium text-slate-100">Monthly range high (optional)<input name="rentRangeHigh" type="number" min="0" max="50000000" step="1" className="h-11 border border-white/20 bg-white/5 px-3 text-white outline-none focus:border-cyan-200" /></label></div>

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { createClientAuthorizationSecureConfirmationService, getClientAuthorizationSessionCookieOptions } from '@/lib/clientAuthorizationSecureConfirmation';
+import { createProjectAtlasExternalUnavailableResponse } from '@/lib/projectAtlasExternalNavigation';
 import { prisma } from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
@@ -18,6 +19,6 @@ export async function GET(request: NextRequest) {
     response.headers.set('X-Robots-Tag', 'noindex, nofollow, noarchive');
     return response;
   } catch {
-    return new NextResponse('This confirmation link is unavailable.', { status: 404, headers: { 'Cache-Control': 'no-store', 'Referrer-Policy': 'no-referrer', 'X-Robots-Tag': 'noindex, nofollow, noarchive' } });
+    return createProjectAtlasExternalUnavailableResponse({ title: 'Confirmation unavailable', message: 'This secure confirmation link is unavailable or has expired.', status: 404 });
   }
 }

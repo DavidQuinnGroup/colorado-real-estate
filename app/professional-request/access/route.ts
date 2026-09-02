@@ -1,7 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 
 import { createProfessionalExternalRequestBootstrapResponse } from '@/lib/professionalExternalRequestBootstrap';
 import { createProfessionalExternalRequestService } from '@/lib/professionalExternalRequestFoundation';
+import { createProjectAtlasExternalUnavailableResponse } from '@/lib/projectAtlasExternalNavigation';
 import { ProfessionalExternalRequestError } from '@/lib/professionalExternalRequestProfileRegistry';
 import { prisma } from '@/lib/prisma';
 
@@ -16,6 +17,6 @@ export async function GET(request: NextRequest) {
     return createProfessionalExternalRequestBootstrapResponse(exchange.cookieValue);
   } catch (error) {
     const status = error instanceof ProfessionalExternalRequestError && error.code === 'EXPIRED' ? 410 : error instanceof ProfessionalExternalRequestError && error.code === 'REVOKED' ? 403 : 404;
-    return new NextResponse('This request link is unavailable.', { status, headers: { 'Cache-Control': 'no-store', 'Referrer-Policy': 'no-referrer' } });
+    return createProjectAtlasExternalUnavailableResponse({ title: 'Request unavailable', message: 'This secure request is unavailable or has expired.', status });
   }
 }
