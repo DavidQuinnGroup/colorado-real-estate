@@ -21,6 +21,7 @@
     "check:professional-input-foundation": "jiti scripts/checkProfessionalInputFoundation.ts",
     "check:evidence-professional-input-agent-workflow": "jiti scripts/checkEvidenceProfessionalInputAgentWorkflow.ts",
     "check:professional-external-request-foundation": "jiti scripts/checkProfessionalExternalRequestFoundation.ts",
+    "check:agent-primary-navigation-entry": "jiti scripts/checkAgentPrimaryNavigationEntry.ts",
     "check:client-authorization-foundation": "jiti scripts/checkClientAuthorizationFoundation.ts",
     "check:client-authorization-secure-confirmation": "jiti scripts/checkClientAuthorizationSecureConfirmation.ts",
     "check:client-authorization-interaction-hierarchy": "jiti scripts/checkClientAuthorizationInteractionHierarchy.ts",

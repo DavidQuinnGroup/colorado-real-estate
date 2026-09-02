@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { LogIn } from 'lucide-react';
 
 import DisclosureStateIndicator from '@/components/DisclosureStateIndicator';
 
@@ -81,27 +82,37 @@ export default function PublicNavigation() {
         </Link>
 
         <div className="reie-public-desktop-navigation-links hidden items-center gap-2 lg:flex" data-testid="reie-public-navigation-links">
-          {[...publicNavigationLinks, agentNavigationEntry].map((link) => (
+          {publicNavigationLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
               className="reie-public-navigation-link rounded-[7px] px-3 py-2 text-[11px] font-black uppercase tracking-[0.13em] text-white/58 no-underline transition hover:bg-white/[0.06] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100"
               data-testid="reie-public-navigation-link"
               data-reie-public-route={link.href}
-              data-reie-agent-navigation-state={link.href === agentNavigationEntry.href ? (agentNavigationEntry.href === agentWorkspaceNavigationEntry.href ? 'SIGNED_IN_AGENT' : 'SIGNED_OUT_AGENT') : undefined}
             >
               {link.label}
             </Link>
           ))}
         </div>
 
-        <Link
-          href="/search"
-          className="inline-flex min-h-10 shrink-0 items-center justify-center rounded-[8px] bg-cyan-100 px-3 py-2 text-[10px] font-black uppercase tracking-[0.08em] text-[#071017] no-underline transition hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-100 sm:min-h-11 sm:px-4 sm:text-[11px] sm:tracking-[0.13em]"
-          data-testid="reie-public-navigation-primary-action"
-        >
-          Search Homes
-        </Link>
+        <div className="reie-public-navigation-actions flex shrink-0 items-center gap-2" data-testid="reie-public-navigation-actions">
+          <Link
+            href={agentNavigationEntry.href}
+            className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-[8px] border border-white/20 px-2.5 py-2 text-[9px] font-black uppercase tracking-[0.08em] text-white/82 no-underline transition hover:border-cyan-100/60 hover:bg-white/[0.08] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-100 sm:min-h-11 sm:px-3 sm:text-[10px] sm:tracking-[0.12em]"
+            data-testid="reie-public-navigation-agent-entry"
+            data-reie-agent-navigation-state={agentNavigationEntry.href === agentWorkspaceNavigationEntry.href ? 'SIGNED_IN_AGENT' : 'SIGNED_OUT_AGENT'}
+          >
+            <LogIn size={14} aria-hidden="true" />
+            {agentNavigationEntry.label}
+          </Link>
+          <Link
+            href="/search"
+            className="inline-flex min-h-10 shrink-0 items-center justify-center rounded-[8px] bg-cyan-100 px-3 py-2 text-[10px] font-black uppercase tracking-[0.08em] text-[#071017] no-underline transition hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-100 sm:min-h-11 sm:px-4 sm:text-[11px] sm:tracking-[0.13em]"
+            data-testid="reie-public-navigation-primary-action"
+          >
+            Search Homes
+          </Link>
+        </div>
       </nav>
 
       <details
@@ -114,14 +125,13 @@ export default function PublicNavigation() {
           <DisclosureStateIndicator className="h-4 w-4 text-cyan-100/70" />
         </summary>
         <nav className="reie-public-mobile-route-list grid gap-px bg-white/[0.06] sm:grid-cols-2" aria-label="Primary public mobile route list">
-          {[...publicNavigationLinks, agentNavigationEntry].map((link) => (
+          {publicNavigationLinks.map((link) => (
             <Link
               key={`mobile-${link.href}`}
               href={link.href}
               className="reie-public-navigation-link reie-public-mobile-menu-link flex min-h-12 items-center justify-between bg-[#071017]/94 px-4 py-3 text-[10px] font-black uppercase leading-4 tracking-[0.12em] text-white/62 no-underline transition hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-cyan-100 sm:px-8"
               data-testid="reie-public-mobile-navigation-link"
               data-reie-public-route={link.href}
-              data-reie-agent-navigation-state={link.href === agentNavigationEntry.href ? (agentNavigationEntry.href === agentWorkspaceNavigationEntry.href ? 'SIGNED_IN_AGENT' : 'SIGNED_OUT_AGENT') : undefined}
             >
               {link.label}
               <span aria-hidden="true" className="text-cyan-100/45">&rarr;</span>
