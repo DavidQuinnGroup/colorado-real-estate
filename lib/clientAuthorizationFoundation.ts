@@ -17,6 +17,7 @@ export type AuthorizationReason =
   | 'AUTHORIZED'
   | 'NOT_AUTHORIZED'
   | 'MISSING_REQUIRED_PRINCIPAL'
+  | 'NOT_EFFECTIVE'
   | 'EXPIRED'
   | 'REVOKED'
   | 'SUPERSEDED'
@@ -326,6 +327,7 @@ export function createClientAuthorizationService(prisma: AuthorizationDatabase) 
     const statusReason = mapStatus(current.status);
     if (statusReason) return Object.freeze({ requirement, resolution: 'NOT_AUTHORIZED', reasons: [statusReason], authorizationId: current.id, authorizationProfileKey: profileKey, authorizationProfileVersion: profile.profileVersion, satisfiedPrincipalRefs: current.principals.map((item) => item.principalRef), missingPrincipalRefs: [], resolvedAction, resolvedRecipient: input.recipientRef ?? null, resolvedDataClasses: [], resolvedAt: now.toISOString() });
     if (!current.snapshot) throw new ClientAuthorizationError('PERSISTENCE_UNAVAILABLE', 'The authorization snapshot is unavailable.');
+    if (current.effectiveAt && current.effectiveAt > now) return Object.freeze({ requirement, resolution: 'NOT_AUTHORIZED', reasons: ['NOT_EFFECTIVE'], authorizationId: current.id, authorizationProfileKey: profileKey, authorizationProfileVersion: profile.profileVersion, satisfiedPrincipalRefs: current.principals.map((item) => item.principalRef), missingPrincipalRefs: [], resolvedAction, resolvedRecipient: input.recipientRef ?? null, resolvedDataClasses: [], resolvedAt: now.toISOString() });
     if (current.expiresAt && current.expiresAt <= now) {
       await prisma.clientAuthorization.update({ where: { id: current.id }, data: { status: 'EXPIRED' } });
       return Object.freeze({ requirement, resolution: 'NOT_AUTHORIZED', reasons: ['EXPIRED'], authorizationId: current.id, authorizationProfileKey: profileKey, authorizationProfileVersion: profile.profileVersion, satisfiedPrincipalRefs: current.principals.map((item) => item.principalRef), missingPrincipalRefs: [], resolvedAction, resolvedRecipient: input.recipientRef ?? null, resolvedDataClasses: [], resolvedAt: now.toISOString() });

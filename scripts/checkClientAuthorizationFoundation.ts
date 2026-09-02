@@ -67,6 +67,7 @@ assert.match(service, /MISSING_REQUIRED_PRINCIPAL/);
 assert.match(service, /ASSURANCE_INSUFFICIENT/);
 assert.match(service, /DATA_CLASS_NOT_AUTHORIZED/);
 assert.match(service, /REVOKED/);
+assert.match(service, /NOT_EFFECTIVE/);
 assert.match(service, /EXPIRED/);
 assert.match(service, /recordUse/);
 assert.match(service, /clientAuthorizationRequirement/);
@@ -84,7 +85,7 @@ assert.equal(packageJson.scripts?.['check:client-authorization-foundation'], 'ji
 
 const resolverSnapshot = buildClientAuthorizationSnapshot({ ...authorizationTerms, principalRefs: ['ATLAS_SYNTHETIC_PRINCIPAL_A'], recipientRef: 'ATLAS_SYNTHETIC_RECIPIENT_B' }).snapshot;
 const resolverRecord = {
-  id: 'ATLAS_SYNTHETIC_RESOLVER_RECORD', status: 'ACTIVE', expiresAt: new Date('2026-09-30T12:00:00.000Z'), assurance: 'AGENT_RECORDED',
+  id: 'ATLAS_SYNTHETIC_RESOLVER_RECORD', status: 'ACTIVE', effectiveAt: new Date('2026-08-31T12:00:00.000Z'), expiresAt: new Date('2026-09-30T12:00:00.000Z'), assurance: 'AGENT_RECORDED',
   principals: [{ principalRef: 'ATLAS_SYNTHETIC_PRINCIPAL_A' }], snapshot: { snapshot: resolverSnapshot }, supersededByAuthorization: null,
 };
 const queriedOwners: string[] = [];
@@ -103,9 +104,10 @@ void (async () => {
   assert.deepEqual((await resolver.resolve('ATLAS_AGENT_OWNER_A', { ...resolverInput, recipientRef: 'ATLAS_SYNTHETIC_RECIPIENT_WRONG' })).reasons, ['RECIPIENT_MISMATCH']);
   assert.deepEqual((await resolver.resolve('ATLAS_AGENT_OWNER_A', { ...resolverInput, propertyId: 'ATLAS_PROPERTY_WRONG' })).reasons, ['SCOPE_MISMATCH']);
   assert.deepEqual((await resolver.resolve('ATLAS_AGENT_OWNER_A', { ...resolverInput, requestedDataClasses: ['SYNTHETIC_PROHIBITED_DATA'] })).reasons, ['DATA_CLASS_NOT_AUTHORIZED']);
+  assert.deepEqual((await resolver.resolve('ATLAS_AGENT_OWNER_A', { ...resolverInput, requestedAt: new Date('2026-08-30T12:00:00.000Z') })).reasons, ['NOT_EFFECTIVE']);
   assert.deepEqual((await resolver.resolve('ATLAS_AGENT_OWNER_A', { ...resolverInput, requestedAt: new Date('2026-10-01T12:00:00.000Z') })).reasons, ['EXPIRED']);
   assert.deepEqual((await resolver.resolve('ATLAS_AGENT_OWNER_A', { ...resolverInput, profileKey: 'PROPERTY_MANAGER_RENT_ESTIMATE_V1' })).reasons, ['PROFILE_DOES_NOT_REQUIRE_CLIENT_AUTHORIZATION']);
-  assert.deepEqual(queriedOwners, ['ATLAS_AGENT_OWNER_A', 'ATLAS_AGENT_OWNER_A', 'ATLAS_AGENT_OWNER_A', 'ATLAS_AGENT_OWNER_A', 'ATLAS_AGENT_OWNER_A', 'ATLAS_AGENT_OWNER_A']);
+  assert.deepEqual(queriedOwners, ['ATLAS_AGENT_OWNER_A', 'ATLAS_AGENT_OWNER_A', 'ATLAS_AGENT_OWNER_A', 'ATLAS_AGENT_OWNER_A', 'ATLAS_AGENT_OWNER_A', 'ATLAS_AGENT_OWNER_A', 'ATLAS_AGENT_OWNER_A']);
   const inactiveResolver = createClientAuthorizationService({ clientAuthorizationProfile: { findUnique: async () => ({ lifecycle: 'RETIRED' }) } } as never);
   assert.deepEqual((await inactiveResolver.resolve('ATLAS_AGENT_OWNER_A', resolverInput)).reasons, ['PROFILE_INACTIVE']);
   console.log('CLIENT_AUTHORIZATION_FOUNDATION_CHECK: PASS');
