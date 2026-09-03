@@ -200,7 +200,8 @@ export function sanitizeAdminReturnPath(value: string | null | undefined) {
 }
 
 export function sanitizeAgentReturnPath(value: string | null | undefined) {
-  return value === '/agent' || value === '/agent/prepare/market' || value === '/agent/prepare/market-update' || value === '/agent/prepare/property' || value === '/agent/prepare/place' || value === '/agent/prepare/buyer' || value === '/agent/prepare/seller' || value === '/agent/prepare/seller/presentation' || value === '/agent/prepare/seller/financial' || value === '/agent/prepare/professional-inputs' || value === '/agent/prepare/listing' || value === '/agent/under-contract' || value === '/agent/authorizations' || value === '/agent/clients' || value === '/agent/investment' || value === '/agent/strategy' || value === '/agent/advanced-return' ? value : '/agent';
+  if (!value || !value.startsWith('/agent') || value.startsWith('//') || value.includes('://') || value.includes('\\') || value.startsWith('/agent-auth') || value === '/agent/login' || value === '/agent/logout') return '/agent';
+  return value;
 }
 
 export function classifyAdminSurface(pathname: string, method = 'GET'): AdminProtectedSurfaceClassification {
@@ -211,8 +212,8 @@ export function classifyAdminSurface(pathname: string, method = 'GET'): AdminPro
     return adminProtectedSurfaceClassifications.find((candidate) => candidate.routePattern === '/admin/repository') ?? adminProtectedSurfaceClassifications[2];
   }
 
-  if (pathname.startsWith('/agent/clients/')) {
-    return surface('/agent/clients/:id', 'BROWSER_ADMIN_PAGE', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY', 'READ_ONLY_ADMIN', false);
+  if (pathname === '/agent' || pathname.startsWith('/agent/')) {
+    return surface('/agent/:path*', 'BROWSER_ADMIN_PAGE', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY', 'READ_ONLY_ADMIN', false);
   }
 
   if (pathname.startsWith('/admin')) {

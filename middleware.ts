@@ -84,7 +84,7 @@ export async function middleware(request: NextRequest) {
       return privateAccessGateResponse(request);
     }
   }
-  const isAgentWorkspaceRoute = pathname === "/agent" || pathname === "/agent/authorizations" || pathname === "/agent/clients" || pathname.startsWith('/agent/clients/') || pathname === "/agent/prepare/market" || pathname === "/agent/prepare/market-update" || pathname === "/agent/prepare/property" || pathname === "/agent/prepare/place" || pathname === "/agent/prepare/buyer" || pathname === "/agent/prepare/seller" || pathname === "/agent/prepare/seller/presentation" || pathname === "/agent/prepare/seller/financial" || pathname === "/agent/prepare/professional-inputs" || pathname === "/agent/prepare/listing";
+  const isAgentWorkspaceRoute = pathname === '/agent' || pathname.startsWith('/agent/');
   const isAgentProtectedApiRoute = pathname === "/api/agent/client-authorizations" || pathname === "/api/agent/client-cases" || pathname === "/api/agent/output/pdf" || pathname === "/api/agent/evidence" || pathname === "/api/agent/professional-inputs" || pathname === "/api/agent/professional-external-requests" || pathname === "/api/agent/seller-financial";
   const isAdminProtectedRoute = pathname.startsWith('/admin') || pathname.startsWith('/api/admin/');
 
@@ -130,5 +130,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next/).*)', "/admin/:path*", "/api/admin/:path*", "/api/agent/client-authorizations", "/api/agent/client-cases", "/api/agent/output/pdf", "/api/agent/evidence", "/api/agent/professional-inputs", "/api/agent/professional-external-requests", "/api/agent/seller-financial", "/agent", "/agent/authorizations", "/agent/clients/:path*", "/agent/prepare/market", "/agent/prepare/market-update", "/agent/prepare/property", "/agent/prepare/place", "/agent/prepare/buyer", "/agent/prepare/seller", "/agent/prepare/seller/presentation", "/agent/prepare/seller/financial", "/agent/prepare/professional-inputs", "/agent/prepare/listing"],
+  matcher: ['/((?!_next/).*)', "/admin/:path*", "/api/admin/:path*", "/api/agent/client-authorizations", "/api/agent/client-cases", "/api/agent/output/pdf", "/api/agent/evidence", "/api/agent/professional-inputs", "/api/agent/professional-external-requests", "/api/agent/seller-financial", "/agent/:path*"],
 };

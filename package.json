@@ -26,6 +26,7 @@
     "check:client-authorization-secure-confirmation": "jiti scripts/checkClientAuthorizationSecureConfirmation.ts",
     "check:client-authorization-interaction-hierarchy": "jiti scripts/checkClientAuthorizationInteractionHierarchy.ts",
     "check:canonical-client-case-context-foundation": "jiti scripts/checkCanonicalClientCaseContextFoundation.ts",
+    "check:agent-workspace-information-architecture": "jiti scripts/checkAgentWorkspaceInformationArchitecture.ts",
     "check:project-atlas-navigation-invariant": "jiti scripts/checkProjectAtlasNavigationInvariant.ts",
     "check:interactive-cursor-styles": "jiti scripts/checkInteractiveCursorStyles.ts",
     "check:professional-external-request-resend-safety": "jiti scripts/checkProfessionalExternalRequestResendSafety.ts",
