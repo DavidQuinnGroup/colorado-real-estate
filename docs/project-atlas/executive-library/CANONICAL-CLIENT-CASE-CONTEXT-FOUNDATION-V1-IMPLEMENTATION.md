@@ -24,9 +24,20 @@ Migration `20260905000000_add_canonical_client_case_context_foundation_v1` is ad
 
 The focused Case checker covers schema/cardinality, owner-scoped server access, foreign denial, archive/reactivate, nullable Transaction compatibility, canonical-property reuse, route-local context, non-mutating GET posture, and no global Case state. Client Authorization, secure confirmation, Agent shell/navigation, and canonical property identity regressions passed. Prisma validation/generation, typecheck, cache-isolated lint, production build, and `git diff --check` passed. Existing unrelated lint warnings and the known dynamic PDF renderer dependency warning remain non-blocking.
 
-## Human Certification Gate
+## Human Certification And Current State
 
-`SYNTHETIC_CASE_FIXTURE: NO` at implementation completion. No production Case data was created automatically. This foundation is `PRODUCTION_READY_PENDING_HUMAN_CERTIFICATION` after deployment. The Executive must use only a clearly synthetic Case label and party label, create one Case, verify route-local identity and explicit navigation, optionally attach only an existing synthetic canonical property, hard-refresh the Case detail, archive/reactivate the same Case, and stop. No real client data, Transaction, Output, authorization, professional contact, document, CRM, MLS, Compass, or external action is permitted.
+Implementation completion began with `SYNTHETIC_CASE_FIXTURE: NO` and `PRODUCTION_READY_PENDING_HUMAN_CERTIFICATION`; no production Case data was created automatically. On 2026-09-03, the Executive completed the authenticated production Agent certification using exactly one synthetic Case:
+
+- `SYNTHETIC_CASE_ID: cmtlsgepy00003yqsh1n54ltc`
+- `SYNTHETIC_CASE_DISPLAY_NAME: ATLAS Synthetic Client Case - Foundation V1`
+- `SYNTHETIC_PRIMARY_PARTY: ATLAS Synthetic Client Party`
+- `SYNTHETIC_PRIMARY_PARTY_ROLE: PRIMARY_CLIENT`
+
+The Executive verified the Client Work landing, created the Case exactly once, verified its `ACTIVE` status and Case detail at `/agent/clients/cmtlsgepy00003yqsh1n54ltc`, and confirmed one party with zero properties and zero Transactions. A hard refresh preserved the same route-local Case identity and state without creating a duplicate. Archive changed the same Case to `ARCHIVED` without destroying its contextual state; reactivate returned that same Case to `ACTIVE`. The final Client Work list contained exactly one active synthetic Case.
+
+Property attachment was not required because no existing synthetic canonical property was selected. No real client, property, or Transaction data was created or updated. No scenario, Output, Professional Input, Client Authorization, document, CRM, MLS, Compass, delivery, contact, or other downstream/external action occurred.
+
+The synthetic Case is retained as a synthetic-only fixture for explicitly authorized future cross-foundation certification; that retention does not authorize future mutation. The foundation's current state is `PRODUCTION_CERTIFIED_AND_CLOSED`; `HUMAN_CERTIFICATION: PASS`, `HUMAN_RETEST_REQUIRED: NO`, and `FOUNDATION_BLOCKER: NONE`.
 
 ## Deferred Boundaries
 
