@@ -342,6 +342,25 @@ enum ClientAuthorizationStatus {
   INVALIDATED
 }
 
+enum ClientCaseStatus {
+  ACTIVE
+  ARCHIVED
+}
+
+enum ClientCasePartyRole {
+  PRIMARY_CLIENT
+  ADDITIONAL_CLIENT
+  OTHER_PARTY
+}
+
+enum ClientCasePropertyRole {
+  CURRENT_HOME
+  NEW_PRIMARY
+  INVESTMENT_PROPERTY
+  SALE_PROPERTY
+  OTHER
+}
+
 enum ClientAuthorizationPrincipalRequirement {
   SINGLE_REQUIRED_PRINCIPAL
   ALL_REQUIRED_PRINCIPALS
@@ -722,6 +741,7 @@ model CanonicalPhysicalProperty {
   observations          CanonicalPhysicalPropertyObservation[]
   listingEvents         CanonicalPropertyListingEvent[]
   transactions          Transaction[]
+  clientCaseProperties  ClientCaseProperty[]
   strategyPropertyRoles StrategyPropertyRole[]
 
   @@index([identityStatus, identityConfidence], map: "CPP_status_confidence_idx")
@@ -2933,6 +2953,7 @@ model ProfessionalInput {
 model Transaction {
   id                          String                               @id @default(cuid())
   ownerAgentSubject           String
+  clientCaseId                String?
   canonicalPropertyId         String
   label                       String
   side                        TransactionSide
@@ -2950,6 +2971,7 @@ model Transaction {
   updatedAt                   DateTime                             @updatedAt
 
   canonicalProperty CanonicalPhysicalProperty  @relation(fields: [canonicalPropertyId], references: [id], onDelete: Restrict)
+  clientCase        ClientCase?                @relation(fields: [clientCaseId], references: [id], onDelete: SetNull)
   deadlines         TransactionDeadline[]
   issues            TransactionIssue[]
   decisions         TransactionDecision[]
@@ -2957,6 +2979,54 @@ model Transaction {
 
   @@index([ownerAgentSubject, createdAt])
   @@index([ownerAgentSubject, stage])
+  @@index([canonicalPropertyId])
+  @@index([clientCaseId])
+}
+
+model ClientCase {
+  id                String           @id @default(cuid())
+  ownerAgentSubject String
+  displayName       String
+  status            ClientCaseStatus @default(ACTIVE)
+  archivedAt        DateTime?
+  createdBySubject  String
+  idempotencyKey    String           @unique
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  parties      ClientCaseParty[]
+  properties   ClientCaseProperty[]
+  transactions Transaction[]
+
+  @@index([ownerAgentSubject, status, updatedAt])
+  @@index([ownerAgentSubject, createdAt])
+}
+
+model ClientCaseParty {
+  id           String               @id @default(cuid())
+  clientCaseId String
+  role         ClientCasePartyRole
+  displayLabel String
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+
+  clientCase ClientCase @relation(fields: [clientCaseId], references: [id], onDelete: Restrict)
+
+  @@index([clientCaseId, role])
+}
+
+model ClientCaseProperty {
+  id                  String                 @id @default(cuid())
+  clientCaseId        String
+  canonicalPropertyId String
+  role                ClientCasePropertyRole
+  createdAt           DateTime               @default(now())
+  updatedAt           DateTime               @updatedAt
+
+  clientCase        ClientCase                @relation(fields: [clientCaseId], references: [id], onDelete: Restrict)
+  canonicalProperty CanonicalPhysicalProperty @relation(fields: [canonicalPropertyId], references: [id], onDelete: Restrict)
+
+  @@unique([clientCaseId, canonicalPropertyId])
   @@index([canonicalPropertyId])
 }
 
