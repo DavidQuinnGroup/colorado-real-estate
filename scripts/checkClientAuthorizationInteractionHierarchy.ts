@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
+import { clientAuthorizationActionStatus } from '../lib/clientAuthorizationActionStatus';
+
 const styles = readFileSync('app/globals.css', 'utf8');
 const workspace = readFileSync('components/agent/ClientAuthorizationWorkspace.tsx', 'utf8');
 const confirmation = readFileSync('components/client-authorization/ClientAuthorizationConfirmationForm.tsx', 'utf8');
@@ -16,6 +18,9 @@ assert.match(workspace, /cannot be safely recovered or redisplayed/);
 assert.match(workspace, /Secure link issued and active/);
 assert.match(workspace, /Recover lost secure link/);
 assert.match(workspace, /Recovery revokes this unused capability before issuing one replacement/);
+assert.match(workspace, /clientAuthorizationActionStatus\(resolution/, 'A successful resolver result must be preserved before a follow-up history refresh.');
+assert.equal(clientAuthorizationActionStatus({ resolution: 'AUTHORIZED', reasons: ['AUTHORIZED'] }), 'AUTHORIZED: AUTHORIZED');
+assert.equal(clientAuthorizationActionStatus({ resolution: 'AUTHORIZED', reasons: ['AUTHORIZED'] }, 'Private access required.'), 'AUTHORIZED: AUTHORIZED. Authorization history refresh failed: Private access required.');
 assert.match(workspace, /!currentCapability/);
 assert.match(workspace, /atlas-authorization-record-historical/);
 assert.match(workspace, /atlas-action atlas-action-primary/);

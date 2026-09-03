@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react';
 import { CheckCircle2, ClipboardCheck, History, KeyRound, LockKeyhole, ShieldAlert, ShieldCheck, Users } from 'lucide-react';
 
+import { clientAuthorizationActionStatus } from '@/lib/clientAuthorizationActionStatus';
+
 type Authorization = {
   id: string; status: string; effectiveAt: string | null; expiresAt: string | null; revokedAt: string | null; revocationReason: string | null;
   profile: { profileKey: string; profileVersion: string; lifecycle: string };
@@ -41,9 +43,13 @@ export default function ClientAuthorizationWorkspace() {
       const response = await fetch('/api/agent/client-authorizations', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: actionName, ...payload }) });
       const body = await response.json();
       if (!response.ok) throw new Error(body.error || 'The authorization action could not be completed.');
-      await load();
       const resolution = body.resolution || body.result;
-      setStatus(resolution ? `${resolution.resolution}: ${resolution.reasons.join(', ')}` : 'Synthetic authorization record updated.');
+      try {
+        await load();
+        setStatus(clientAuthorizationActionStatus(resolution));
+      } catch (refreshError) {
+        setStatus(clientAuthorizationActionStatus(resolution, refreshError instanceof Error ? refreshError.message : 'Unable to refresh authorization history.'));
+      }
     } catch (error) { setStatus(error instanceof Error ? error.message : 'The authorization action could not be completed.'); }
     finally { setBusy(false); }
   }
