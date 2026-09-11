@@ -13,5 +13,6 @@ requireText('components/agent/AgentWorkspaceShell.tsx', '<a href="/agent/logout?
 requireText('components/agent/AgentWorkspaceHome.tsx', "fetch('/api/agent/client-cases'");
 requireText('components/agent/AgentWorkspaceHome.tsx', 'No recent active Client Cases');
 requireText('middleware.ts', "pathname === '/agent' || pathname.startsWith('/agent/')");
-requireText('lib/admin/adminAuth.ts', "pathname === '/agent' || pathname.startsWith('/agent/')");
+requireText('lib/admin/adminAuth.ts', "^\\/agent\\/clients\\/[^/]+$");
+requireText('lib/admin/adminAuth.ts', "'/agent/:unrecognized-path*'");
 console.log('Agent Workspace Information Architecture V1 checks passed.');

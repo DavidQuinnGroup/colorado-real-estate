@@ -17,7 +17,7 @@ import {
 import { createAgentLoginSuccessResponse } from '../lib/admin/agentLoginReturn';
 
 const credential = createHash('sha256').update('REIE_AGENT_CROSS_CAPABILITY_SESSION_CONTINUITY_CHECK').digest('base64url');
-const agentRoutes = ['/agent', '/agent/prepare/market', '/agent/prepare/market-update', '/agent/prepare/property', '/agent/prepare/place', '/agent/prepare/buyer', '/agent/prepare/seller', '/agent/prepare/listing'] as const;
+const agentRoutes = ['/agent', '/agent/prepare/market', '/agent/prepare/market-update', '/agent/prepare/property', '/agent/prepare/place', '/agent/prepare/buyer', '/agent/prepare/buyer/decision-brief', '/agent/prepare/seller', '/agent/prepare/listing'] as const;
 
 Object.assign(process.env, {
   NODE_ENV: 'production',
@@ -43,7 +43,7 @@ function location(response: Response) {
   return new URL(response.headers.get('location') || '', 'https://davidquinngroup.com').pathname;
 }
 
-async function assertAllowed(path: (typeof agentRoutes)[number], cookie: string) {
+async function assertAllowed(path: string, cookie: string) {
   const result = await authorizeAdminRequest(request(path, cookie));
   assert.equal(result.authenticated, true, `${path} must accept the same valid Agent session.`);
   if (result.authenticated) {
@@ -118,6 +118,8 @@ async function main() {
     await assertAllowed(path, cookie);
   }
 
+  await assertAllowed('/agent/clients/case-owned', cookie);
+
   for (const path of ['/agent/unknown', '/admin', '/admin/repository', '/api/admin/enterprise/operational-kpis', '/api/process-alerts']) {
     const result = await authorizeAdminRequest(request(path, cookie), { method: path === '/api/process-alerts' ? 'POST' : 'GET' });
     assert.equal(result.authenticated, false, `A valid Agent session must not gain ${path} access.`);
@@ -149,14 +151,15 @@ async function main() {
 
   const middleware = source('middleware.ts');
   const shell = source('components/agent/AgentWorkspaceShell.tsx');
-  assert.match(middleware, /pathname === "\/agent" \|\| pathname === "\/agent\/prepare\/market" \|\| pathname === "\/agent\/prepare\/market-update" \|\| pathname === "\/agent\/prepare\/property" \|\| pathname === "\/agent\/prepare\/place" \|\| pathname === "\/agent\/prepare\/buyer" \|\| pathname === "\/agent\/prepare\/seller" \|\| pathname === "\/agent\/prepare\/listing"/, 'Middleware must enumerate only the Agent Workspace Home and exact capabilities.');
+  assert.match(middleware, /const isAgentWorkspaceRoute = pathname === '\/agent' \|\| pathname\.startsWith\('\/agent\/'\);/, 'Middleware must protect the full Agent namespace before route-local authorization.');
+  assert.match(source('lib/admin/adminAuth.ts'), /\^\\\/agent\\\/clients\\\/\[\^\//, 'Canonical Client Case detail routes must remain Agent-authorized.');
+  assert.match(source('lib/admin/adminAuth.ts'), /surface\('\/agent\/:unrecognized-path\*'/, 'Unknown Agent paths must fail closed.');
   assert.match(middleware, /Cache-Control', 'private, no-store'/, 'Authenticated Agent route responses must be private and non-storable.');
   assert.match(middleware, /x-middleware-cache', 'no-cache'/, 'Middleware results must not persist in the client router cache.');
   assert.match(shell, /<Link href="\/" prefetch=\{false\}/, 'Public Site must use the repository-supported non-prefetched same-origin navigation primitive.');
-  for (const path of agentRoutes) {
-    assert.match(shell, new RegExp(`<a href="${path}"`), `${path} must use same-origin document navigation.`);
-  }
-  assert.doesNotMatch(middleware, /\/agent\/:path\*/, 'Middleware must not create generic Agent authorization.');
+  assert.match(shell, /agentWorkspaceNavigation\.map\(/, 'The Agent shell must render the canonical workspace navigation collection.');
+  assert.match(shell, /href=\{agentWorkspaceHref\(item, clientCaseId\)\}/, 'The Agent shell must preserve explicit same-origin workspace destinations.');
+  assert.doesNotMatch(source('lib/admin/adminAuth.ts'), /surface\('\/agent\/:path\*'/, 'The authorization classifier must not create a generic Agent authorization surface.');
 
   console.log('AGENT_CROSS_CAPABILITY_SESSION_CONTINUITY_CHECK: PASS');
 }

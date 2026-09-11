@@ -97,6 +97,7 @@ export const adminProtectedSurfaceClassifications: AdminProtectedSurfaceClassifi
   surface('/agent/prepare/property', 'BROWSER_ADMIN_PAGE', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),
   surface('/agent/prepare/place', 'BROWSER_ADMIN_PAGE', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),
   surface('/agent/prepare/buyer', 'BROWSER_ADMIN_PAGE', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),
+  surface('/agent/prepare/buyer/decision-brief', 'BROWSER_ADMIN_PAGE', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),
   surface('/agent/prepare/seller', 'BROWSER_ADMIN_PAGE', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),
   surface('/agent/prepare/seller/presentation', 'BROWSER_ADMIN_PAGE', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),
   surface('/agent/prepare/seller/financial', 'BROWSER_ADMIN_PAGE', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),
@@ -212,8 +213,12 @@ export function classifyAdminSurface(pathname: string, method = 'GET'): AdminPro
     return adminProtectedSurfaceClassifications.find((candidate) => candidate.routePattern === '/admin/repository') ?? adminProtectedSurfaceClassifications[2];
   }
 
+  if (/^\/agent\/clients\/[^/]+$/.test(pathname)) {
+    return adminProtectedSurfaceClassifications.find((candidate) => candidate.routePattern === '/agent/clients') ?? adminProtectedSurfaceClassifications[0];
+  }
+
   if (pathname === '/agent' || pathname.startsWith('/agent/')) {
-    return surface('/agent/:path*', 'BROWSER_ADMIN_PAGE', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY', 'READ_ONLY_ADMIN', false);
+    return surface('/agent/:unrecognized-path*', 'BROWSER_ADMIN_PAGE', [], [], [], 'READ_ONLY', 'AUTHENTICATION_ONLY', false);
   }
 
   if (pathname.startsWith('/admin')) {
