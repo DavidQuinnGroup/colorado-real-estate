@@ -34,7 +34,7 @@ assert.doesNotMatch(service, /delete\(/);
 assert.match(route, /authorizeAdminRequest/);
 assert.match(route, /isSameOriginAdminRequest/);
 assert.match(route, /if \(id\) return NextResponse\.json\(\{ clientCase: await service\.detail\(subject, id\)/);
-assert.match(middleware, /pathname === "\/agent\/clients" \|\| pathname\.startsWith\('\/agent\/clients\/'\)/);
+assert.match(middleware, /const isAgentWorkspaceRoute = pathname === '\/agent' \|\| pathname\.startsWith\('\/agent\/'\);/);
 assert.match(middleware, /pathname === "\/api\/agent\/client-cases"/);
 assert.match(auth, /surface\('\/agent\/clients'/);
 assert.match(auth, /surface\('\/api\/agent\/client-cases'/);

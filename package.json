@@ -17,6 +17,7 @@
     "check:seller-presentation-financial-module-adapter": "jiti scripts/checkSellerPresentationFinancialModuleAdapter.ts",
     "check:buyer-decision-brief-foundation": "jiti scripts/checkBuyerDecisionBriefFoundation.ts",
     "check:output-persistence-foundation": "jiti scripts/checkOutputPersistenceFoundation.ts",
+    "check:output-report-composition-foundation": "jiti scripts/checkOutputReportCompositionFoundation.ts",
     "check:evidence-admission-foundation": "jiti scripts/checkEvidenceAdmissionFoundation.ts",
     "check:professional-input-foundation": "jiti scripts/checkProfessionalInputFoundation.ts",
     "check:evidence-professional-input-agent-workflow": "jiti scripts/checkEvidenceProfessionalInputAgentWorkflow.ts",

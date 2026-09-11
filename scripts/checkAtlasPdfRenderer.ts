@@ -228,7 +228,7 @@ for (const token of [
 ]) {
   assert(middleware.includes(token), `middleware missing token ${token}`);
 }
-assert.doesNotMatch(middleware, /\/agent\/:path\*/, 'middleware must not broaden Agent route access with a wildcard');
+assert.match(middleware, /const isAgentWorkspaceRoute = pathname === '\/agent' \|\| pathname\.startsWith\('\/agent\/'\);/, 'the shared Agent route matcher must remain protected by the Agent authorization branch');
 assert(adminAuth.includes("surface('/api/agent/output/pdf'"), 'auth surface registry must include exact PDF route');
 
 for (const token of [

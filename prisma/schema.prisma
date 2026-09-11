@@ -2573,12 +2573,18 @@ model OutputProduct {
   purpose               String
   outputContractVersion String
   lineageKey            String            @unique
+  clientCaseId          String?
+  transactionId         String?
   createdAt             DateTime          @default(now())
 
-  versions OutputVersion[]
+  versions     OutputVersion[]
+  clientCase   ClientCase?   @relation(fields: [clientCaseId], references: [id], onDelete: SetNull)
+  transaction  Transaction?  @relation(fields: [transactionId], references: [id], onDelete: SetNull)
 
   @@unique([ownerAgentSubject, productKind, audience, subjectRef])
   @@index([ownerAgentSubject, createdAt])
+  @@index([ownerAgentSubject, clientCaseId, createdAt])
+  @@index([ownerAgentSubject, transactionId, createdAt])
   @@index([productKind, subjectRef])
 }
 
@@ -2976,6 +2982,7 @@ model Transaction {
   issues            TransactionIssue[]
   decisions         TransactionDecision[]
   timelineEvents    TransactionTimelineEvent[]
+  outputProducts    OutputProduct[]
 
   @@index([ownerAgentSubject, createdAt])
   @@index([ownerAgentSubject, stage])
@@ -2997,6 +3004,7 @@ model ClientCase {
   parties      ClientCaseParty[]
   properties   ClientCaseProperty[]
   transactions Transaction[]
+  outputProducts OutputProduct[]
 
   @@index([ownerAgentSubject, status, updatedAt])
   @@index([ownerAgentSubject, createdAt])

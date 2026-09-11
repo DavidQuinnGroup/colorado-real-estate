@@ -28,6 +28,16 @@ import {
   isBuyerDecisionBrief,
   type BuyerDecisionBriefCertificationFixtureId,
 } from './buyerDecisionBriefFoundation';
+import {
+  buildSyntheticOutputReportComposition,
+  OUTPUT_REPORT_COMPOSITION_FOUNDATION_VERSION,
+  OUTPUT_REPORT_COMPOSITION_SCHEMA_VERSION,
+  OUTPUT_REPORT_COMPOSITION_SYNTHETIC_SOURCE,
+  OUTPUT_REPORT_COMPOSITION_SYNTHETIC_SUBJECT,
+  outputReportCompositionFingerprint,
+  parseOutputReportComposition,
+  type OutputReportComposition,
+} from './outputReportCompositionFoundation';
 
 export const OUTPUT_PERSISTENCE_FOUNDATION_VERSION = 'OUTPUT_PERSISTENCE_FOUNDATION_V1' as const;
 export const OUTPUT_PERSISTENCE_PAYLOAD_SCHEMA_VERSION = 'OUTPUT_PERSISTENCE_PAYLOAD_V1' as const;
@@ -134,6 +144,36 @@ export type PersistedOutputSummary = Readonly<{
   }>;
 }>;
 
+export type OutputProductDetail = Readonly<{
+  id: string;
+  productKind: string;
+  audience: string;
+  subjectRef: string;
+  purpose: string;
+  clientCase: Readonly<{ id: string; displayName: string; status: string }> | null;
+  transaction: Readonly<{ id: string; label: string; stage: string }> | null;
+  currentVersionId: string | null;
+  reviewedVersionId: string | null;
+  versions: ReadonlyArray<Readonly<{
+    id: string;
+    versionOrdinal: number;
+    displayVersion: string;
+    lifecycleState: string;
+    reviewState: string;
+    createdAt: string;
+    reviewedAt: string;
+    immutableAt: string;
+    contentFingerprint: string;
+    composition: OutputReportComposition | null;
+    artifactState: 'NO_ARTIFACT';
+    reviews: ReadonlyArray<Readonly<{ id: string; reviewerSubject: string; disposition: string; reviewedAt: string; reviewNote: string | null }>>;
+    dependencies: ReadonlyArray<Readonly<{ id: string; upstreamArtifact: string; dependencyType: string; currentState: string; reviewPolicy: string }>>;
+    decisions: ReadonlyArray<Readonly<{ id: string; decisionRef: string; disposition: string; recordedAt: string }>>;
+    checkpoints: ReadonlyArray<Readonly<{ id: string; checkpointRef: string; state: string; recordedAt: string; detail: string | null }>>;
+    evidenceSnapshot: Readonly<{ fingerprint: string; reviewState: string; sourceSnapshotRefs: Prisma.JsonValue; limitationRefs: Prisma.JsonValue }> | null;
+  }>>;
+}>;
+
 export class OutputPersistenceError extends Error {
   constructor(
     readonly code:
@@ -148,6 +188,10 @@ export class OutputPersistenceError extends Error {
   ) {
     super(message);
   }
+}
+
+function asComposition(payload: Prisma.JsonValue): OutputReportComposition | null {
+  try { return parseOutputReportComposition(payload); } catch { return null; }
 }
 
 function referenceIds(values: readonly { id: string }[]) {
@@ -317,6 +361,143 @@ export function buildOutputPersistenceIdempotencyKey(ownerAgentSubject: string, 
 }
 
 export function createOutputPersistenceService(prisma: PrismaClient) {
+  function serializeOutputProductDetail(product: Prisma.OutputProductGetPayload<{
+    include: {
+      clientCase: { select: { id: true; displayName: true; status: true } };
+      transaction: { select: { id: true; label: true; stage: true } };
+      versions: {
+        include: { evidenceSnapshot: true; dependencies: true; reviews: true; decisions: true; checkpoints: true };
+      };
+    };
+  }>): OutputProductDetail {
+    const versions = [...product.versions].sort((left, right) => right.versionOrdinal - left.versionOrdinal);
+    const reviewed = versions.find((version) => version.lifecycleState === 'AGENT_REVIEWED') ?? null;
+    return Object.freeze({
+      id: product.id,
+      productKind: product.productKind,
+      audience: product.audience,
+      subjectRef: product.subjectRef,
+      purpose: product.purpose,
+      clientCase: product.clientCase ? Object.freeze({ id: product.clientCase.id, displayName: product.clientCase.displayName, status: product.clientCase.status }) : null,
+      transaction: product.transaction ? Object.freeze({ id: product.transaction.id, label: product.transaction.label, stage: product.transaction.stage }) : null,
+      currentVersionId: versions[0]?.id ?? null,
+      reviewedVersionId: reviewed?.id ?? null,
+      versions: Object.freeze(versions.map((version) => Object.freeze({
+        id: version.id,
+        versionOrdinal: version.versionOrdinal,
+        displayVersion: version.displayVersion,
+        lifecycleState: version.lifecycleState,
+        reviewState: version.reviewState,
+        createdAt: version.immutableAt.toISOString(),
+        reviewedAt: version.reviewedAt.toISOString(),
+        immutableAt: version.immutableAt.toISOString(),
+        contentFingerprint: version.contentFingerprint,
+        composition: asComposition(version.contentPayload),
+        artifactState: 'NO_ARTIFACT' as const,
+        reviews: Object.freeze(version.reviews.map((review) => Object.freeze({ id: review.id, reviewerSubject: review.reviewerSubject, disposition: review.disposition, reviewedAt: review.reviewedAt.toISOString(), reviewNote: review.reviewNote }))),
+        dependencies: Object.freeze(version.dependencies.map((dependency) => Object.freeze({ id: dependency.id, upstreamArtifact: dependency.upstreamArtifact, dependencyType: dependency.dependencyType, currentState: dependency.currentState, reviewPolicy: dependency.reviewPolicy }))),
+        decisions: Object.freeze(version.decisions.map((decision) => Object.freeze({ id: decision.id, decisionRef: decision.decisionRef, disposition: decision.disposition, recordedAt: decision.recordedAt.toISOString() }))),
+        checkpoints: Object.freeze(version.checkpoints.map((checkpoint) => Object.freeze({ id: checkpoint.id, checkpointRef: checkpoint.checkpointRef, state: checkpoint.state, recordedAt: checkpoint.recordedAt.toISOString(), detail: checkpoint.detail }))),
+        evidenceSnapshot: version.evidenceSnapshot ? Object.freeze({ fingerprint: version.evidenceSnapshot.fingerprint, reviewState: version.evidenceSnapshot.reviewState, sourceSnapshotRefs: version.evidenceSnapshot.sourceSnapshotRefs, limitationRefs: version.evidenceSnapshot.limitationRefs }) : null,
+      }))),
+    });
+  }
+
+  async function ownedProduct(ownerAgentSubject: string, productId: string) {
+    const product = await prisma.outputProduct.findFirst({
+      where: { id: productId, ownerAgentSubject },
+      include: {
+        clientCase: { select: { id: true, displayName: true, status: true } },
+        transaction: { select: { id: true, label: true, stage: true } },
+        versions: { include: { evidenceSnapshot: true, dependencies: true, reviews: true, decisions: true, checkpoints: true } },
+      },
+    });
+    if (!product) throw new OutputPersistenceError('OWNERSHIP_DENIED', 'The requested OutputProduct is unavailable to this Agent.');
+    return product;
+  }
+
+  async function createSyntheticOutputDraft(ownerAgentSubject: string, clientCaseId: string) {
+    if (!ownerAgentSubject.trim() || !clientCaseId.trim()) throw new OutputPersistenceError('INVALID_REQUEST', 'A Client Case context is required for the synthetic output fixture.');
+    const composition = buildSyntheticOutputReportComposition();
+    const contentFingerprint = outputReportCompositionFingerprint(composition);
+    return prisma.$transaction(async (tx) => {
+      const clientCase = await tx.clientCase.findFirst({ where: { id: clientCaseId, ownerAgentSubject }, select: { id: true } });
+      if (!clientCase) throw new OutputPersistenceError('OWNERSHIP_DENIED', 'The selected Client Case is unavailable to this Agent.');
+      const product = await tx.outputProduct.upsert({
+        where: { ownerAgentSubject_productKind_audience_subjectRef: { ownerAgentSubject, productKind: 'AGENT_INTERNAL_ANALYSIS', audience: 'AGENT_INTERNAL', subjectRef: OUTPUT_REPORT_COMPOSITION_SYNTHETIC_SUBJECT } },
+        create: {
+          ownerAgentSubject,
+          productKind: 'AGENT_INTERNAL_ANALYSIS',
+          audience: 'AGENT_INTERNAL',
+          subjectRef: OUTPUT_REPORT_COMPOSITION_SYNTHETIC_SUBJECT,
+          purpose: 'Inert Project Atlas Output report composition foundation certification.',
+          outputContractVersion: OUTPUT_REPORT_COMPOSITION_FOUNDATION_VERSION,
+          lineageKey: `${ownerAgentSubject}|AGENT_INTERNAL_ANALYSIS|AGENT_INTERNAL|${OUTPUT_REPORT_COMPOSITION_SYNTHETIC_SUBJECT}`,
+          clientCaseId: clientCase.id,
+        },
+        update: {},
+      });
+      if (product.clientCaseId !== clientCase.id) throw new OutputPersistenceError('OWNERSHIP_DENIED', 'The synthetic OutputProduct is already bound to a different Client Case.');
+      const existing = await tx.outputVersion.findFirst({ where: { productId: product.id, sourceVersionRef: OUTPUT_REPORT_COMPOSITION_SYNTHETIC_SOURCE } });
+      if (existing) return Object.freeze({ productId: product.id, versionId: existing.id, created: false });
+      const now = new Date();
+      const version = await tx.outputVersion.create({ data: {
+        productId: product.id,
+        sourceVersionRef: OUTPUT_REPORT_COMPOSITION_SYNTHETIC_SOURCE,
+        versionOrdinal: 1,
+        idempotencyKey: `ATLAS_OUTPUT_COMPOSITION_DRAFT_V1|${ownerAgentSubject}|${product.id}|${contentFingerprint}`,
+        outputContractVersion: OUTPUT_REPORT_COMPOSITION_FOUNDATION_VERSION,
+        displayVersion: 'ATLAS Synthetic Output - Foundation V1 / Draft',
+        audience: 'AGENT_INTERNAL', subjectRef: OUTPUT_REPORT_COMPOSITION_SYNTHETIC_SUBJECT,
+        purpose: product.purpose, effectiveAsOf: now,
+        lifecycleState: 'AGENT_REVIEW_REQUIRED', reviewState: 'AGENT_REVIEW_REQUIRED',
+        contentVersion: OUTPUT_REPORT_COMPOSITION_SCHEMA_VERSION,
+        compositionVersion: OUTPUT_REPORT_COMPOSITION_FOUNDATION_VERSION,
+        presentationVisualVersion: 'ATLAS_OUTPUT_SEMANTIC_PREVIEW_V1',
+        contentFingerprint, payloadSchemaVersion: OUTPUT_REPORT_COMPOSITION_SCHEMA_VERSION,
+        contentPayload: composition as unknown as Prisma.InputJsonValue,
+        lineage: { creationReason: 'SYNTHETIC_CERTIFICATION_DRAFT', clientCaseId } as Prisma.InputJsonValue,
+        ownerAgentSubject, reviewedAt: now,
+        evidenceSnapshot: { create: { snapshotSchemaVersion: OUTPUT_REPORT_COMPOSITION_SCHEMA_VERSION, sourceSnapshotRefs: ['SYNTHETIC_CERTIFICATION_INTERNAL_ONLY'], metricRefs: [], analysisRefs: [], agentInputRefs: [], assumptionRefs: [], limitationRefs: ['No real client, property, market, financial, or transaction claims.'], rightsRefs: ['SYNTHETIC_CERTIFICATION_INTERNAL_ONLY'], freshnessRefs: [], reviewState: 'AGENT_REVIEW_REQUIRED', fingerprint: contentFingerprint } },
+        dependencies: { create: [{ upstreamArtifact: 'ATLAS_SYNTHETIC_OUTPUT_COMPOSITION_V1', downstreamArtifact: 'ATLAS_SYNTHETIC_OUTPUT_FOUNDATION_V1', dependencyType: 'NARRATIVE_DEPENDENCY', materiality: 'LOW', versionUsed: OUTPUT_REPORT_COMPOSITION_FOUNDATION_VERSION, fieldMetricScope: ['syntheticCertification'], changePolicy: 'A material semantic change requires a successor OutputVersion.', invalidationPolicy: 'REVIEW_REQUIRED', reviewPolicy: 'AGENT_REVIEW_REQUIRED', currentState: 'CURRENT' }] },
+        checkpoints: { create: [{ checkpointRef: 'SYNTHETIC_OUTPUT_PREPARED', state: 'REVIEW_REQUIRED', checkpointSchemaVersion: OUTPUT_REPORT_COMPOSITION_FOUNDATION_VERSION, recordedBySubject: ownerAgentSubject, recordedAt: now, detail: 'Prepared for an explicit human Agent review. No delivery or render occurred.' }] },
+      } });
+      return Object.freeze({ productId: product.id, versionId: version.id, created: true });
+    });
+  }
+
+  async function reviewOutputVersion(ownerAgentSubject: string, outputVersionId: string, reviewNote?: string) {
+    if (reviewNote !== undefined && (typeof reviewNote !== 'string' || reviewNote.length > 500)) throw new OutputPersistenceError('INVALID_REQUEST', 'The review note is invalid.');
+    return prisma.$transaction(async (tx) => {
+      const draft = await tx.outputVersion.findFirst({ where: { id: outputVersionId, ownerAgentSubject }, include: { product: true, evidenceSnapshot: true, dependencies: true } });
+      if (!draft) throw new OutputPersistenceError('OWNERSHIP_DENIED', 'The requested OutputVersion is unavailable to this Agent.');
+      if (draft.lifecycleState !== 'AGENT_REVIEW_REQUIRED') throw new OutputPersistenceError('IMMUTABLE_VERSION', 'Only a review-required semantic version can be reviewed into an immutable successor.');
+      const idempotencyKey = `ATLAS_OUTPUT_COMPOSITION_REVIEW_V1|${ownerAgentSubject}|${draft.id}|${draft.contentFingerprint}`;
+      const existing = await tx.outputVersion.findFirst({ where: { idempotencyKey } });
+      if (existing) return Object.freeze({ productId: existing.productId, versionId: existing.id, created: false });
+      const ordinal = await tx.outputVersion.count({ where: { productId: draft.productId } }) + 1;
+      const now = new Date();
+      const reviewed = await tx.outputVersion.create({ data: {
+        productId: draft.productId,
+        sourceVersionRef: `${OUTPUT_REPORT_COMPOSITION_SYNTHETIC_SOURCE}:REVIEWED:${draft.id}`,
+        versionOrdinal: ordinal, idempotencyKey,
+        outputContractVersion: draft.outputContractVersion,
+        displayVersion: 'ATLAS Synthetic Output - Foundation V1 / Reviewed',
+        audience: draft.audience, subjectRef: draft.subjectRef, purpose: draft.purpose, effectiveAsOf: draft.effectiveAsOf,
+        lifecycleState: 'AGENT_REVIEWED', reviewState: 'AGENT_REVIEWED',
+        contentVersion: draft.contentVersion, compositionVersion: draft.compositionVersion, presentationVisualVersion: draft.presentationVisualVersion,
+        contentFingerprint: draft.contentFingerprint, payloadSchemaVersion: draft.payloadSchemaVersion,
+        contentPayload: draft.contentPayload as Prisma.InputJsonValue,
+        lineage: { reviewedFromVersion: draft.id, sourceFingerprint: draft.contentFingerprint } as Prisma.InputJsonValue,
+        ownerAgentSubject, reviewedAt: now,
+        evidenceSnapshot: { create: { snapshotSchemaVersion: draft.evidenceSnapshot?.snapshotSchemaVersion ?? draft.payloadSchemaVersion, sourceSnapshotRefs: draft.evidenceSnapshot?.sourceSnapshotRefs as Prisma.InputJsonValue ?? [], metricRefs: draft.evidenceSnapshot?.metricRefs as Prisma.InputJsonValue ?? [], analysisRefs: draft.evidenceSnapshot?.analysisRefs as Prisma.InputJsonValue ?? [], agentInputRefs: draft.evidenceSnapshot?.agentInputRefs as Prisma.InputJsonValue ?? [], assumptionRefs: draft.evidenceSnapshot?.assumptionRefs as Prisma.InputJsonValue ?? [], limitationRefs: draft.evidenceSnapshot?.limitationRefs as Prisma.InputJsonValue ?? [], rightsRefs: draft.evidenceSnapshot?.rightsRefs as Prisma.InputJsonValue ?? [], freshnessRefs: draft.evidenceSnapshot?.freshnessRefs as Prisma.InputJsonValue ?? [], reviewState: 'AGENT_REVIEWED', fingerprint: draft.evidenceSnapshot?.fingerprint ?? draft.contentFingerprint } },
+        dependencies: { create: draft.dependencies.map((dependency) => ({ upstreamArtifact: dependency.upstreamArtifact, downstreamArtifact: dependency.downstreamArtifact, dependencyType: dependency.dependencyType, materiality: dependency.materiality, versionUsed: dependency.versionUsed, fieldMetricScope: dependency.fieldMetricScope as Prisma.InputJsonValue, changePolicy: dependency.changePolicy, invalidationPolicy: dependency.invalidationPolicy, reviewPolicy: dependency.reviewPolicy, currentState: dependency.currentState })) },
+        reviews: { create: { reviewerSubject: ownerAgentSubject, disposition: 'APPROVED', reviewContractVersion: OUTPUT_REPORT_COMPOSITION_FOUNDATION_VERSION, reviewedAt: now, reviewNote } },
+        checkpoints: { create: [{ checkpointRef: 'SYNTHETIC_OUTPUT_REVIEWED', state: 'COMPLETED', checkpointSchemaVersion: OUTPUT_REPORT_COMPOSITION_FOUNDATION_VERSION, recordedBySubject: ownerAgentSubject, recordedAt: now, detail: 'Explicit Agent review created a new immutable reviewed OutputVersion. No delivery or render occurred.' }] },
+      } });
+      return Object.freeze({ productId: reviewed.productId, versionId: reviewed.id, created: true });
+    });
+  }
   async function buildSellerFinancialFixture(ownerAgentSubject: string, scenarioId: string): Promise<PersistableOutputFixture> {
     const scenario = await prisma.sellerFinancialScenario.findFirst({
       where: { id: scenarioId, ownerAgentSubject },
@@ -649,6 +830,35 @@ export function createOutputPersistenceService(prisma: PrismaClient) {
     return versions.map((version) => serializePersistedOutputSummary(version, false));
   }
 
+  async function listOwnedOutputProducts(ownerAgentSubject: string, clientCaseId?: string | null): Promise<readonly OutputProductDetail[]> {
+    if (!ownerAgentSubject.trim()) throw new OutputPersistenceError('OWNERSHIP_DENIED', 'An Agent owner identity is required.');
+    if (clientCaseId) {
+      const clientCase = await prisma.clientCase.findFirst({ where: { id: clientCaseId, ownerAgentSubject }, select: { id: true } });
+      if (!clientCase) throw new OutputPersistenceError('OWNERSHIP_DENIED', 'The selected Client Case is unavailable to this Agent.');
+    }
+    const products = await prisma.outputProduct.findMany({
+      where: { ownerAgentSubject, ...(clientCaseId ? { clientCaseId } : {}) },
+      orderBy: { createdAt: 'desc' },
+      include: {
+        clientCase: { select: { id: true, displayName: true, status: true } },
+        transaction: { select: { id: true, label: true, stage: true } },
+        versions: { include: { evidenceSnapshot: true, dependencies: true, reviews: true, decisions: true, checkpoints: true } },
+      },
+    });
+    return Object.freeze(products.map(serializeOutputProductDetail));
+  }
+
+  async function loadOwnedOutputProduct(ownerAgentSubject: string, productId: string) {
+    if (!ownerAgentSubject.trim()) throw new OutputPersistenceError('OWNERSHIP_DENIED', 'An Agent owner identity is required.');
+    return serializeOutputProductDetail(await ownedProduct(ownerAgentSubject, productId));
+  }
+
+  async function loadOwnedOutputVersion(ownerAgentSubject: string, outputVersionId: string) {
+    const version = await prisma.outputVersion.findFirst({ where: { id: outputVersionId, ownerAgentSubject }, select: { productId: true } });
+    if (!version) throw new OutputPersistenceError('OWNERSHIP_DENIED', 'The requested OutputVersion is unavailable to this Agent.');
+    return loadOwnedOutputProduct(ownerAgentSubject, version.productId);
+  }
+
   async function loadOwnedOutputForPdf(ownerAgentSubject: string, outputVersionId: string) {
     const version = await prisma.outputVersion.findFirst({
       where: { id: outputVersionId, ownerAgentSubject, lifecycleState: 'AGENT_REVIEWED' },
@@ -664,7 +874,17 @@ export function createOutputPersistenceService(prisma: PrismaClient) {
     });
   }
 
-  return Object.freeze({ persistReviewedFixture, persistReviewedOutput, listOwnedOutputHistory, loadOwnedOutputForPdf });
+  return Object.freeze({
+    persistReviewedFixture,
+    persistReviewedOutput,
+    listOwnedOutputHistory,
+    listOwnedOutputProducts,
+    loadOwnedOutputProduct,
+    loadOwnedOutputVersion,
+    createSyntheticOutputDraft,
+    reviewOutputVersion,
+    loadOwnedOutputForPdf,
+  });
 }
 
 export function outputPersistenceLifecycleIsSupported(value: string) {
