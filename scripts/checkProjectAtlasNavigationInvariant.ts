@@ -15,7 +15,7 @@ const styles = readFileSync('app/globals.css', 'utf8');
 
 assert.match(applicationShell, /<PublicNavigation \/>/);
 assert.match(publicNavigation, /href="\/"/);
-assert.match(agentShell, /agent-workspace-home-control/);
+assert.match(agentShell, /agent-workspace-home-link/);
 assert.match(agentShell, /agent-workspace-public-site-link/);
 assert.match(externalShell, /data-project-atlas-navigation-surface="PUBLIC_EXTERNAL"/);
 assert.match(externalShell, /Return to David Quinn Group/);

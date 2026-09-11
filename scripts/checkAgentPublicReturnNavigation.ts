@@ -59,7 +59,7 @@ async function main() {
   assert.match(layout, /<AgentWorkspaceShell>\{children\}<\/AgentWorkspaceShell>/, 'The shared Agent shell must cover every Agent route.');
   assert.match(shell, /<Link href="\/" prefetch=\{false\}[\s\S]*data-testid="agent-workspace-public-site-link"/, 'The shared Agent shell must expose a non-prefetched same-origin Public Site return link.');
   assert.match(shell, /<Globe2[^>]*aria-hidden="true"[^>]*\/>[\s\S]*Public Site/, 'Public Site must have an accessible visible label and familiar navigation icon.');
-  assert.ok(shell.indexOf('agent-workspace-home-control') < shell.indexOf('agent-workspace-public-site-link'), 'Workspace Home must precede Public Site in the Agent control hierarchy.');
+  assert.ok(shell.indexOf('agent-workspace-home-link') < shell.indexOf('agent-workspace-public-site-link'), 'Workspace Home must precede Public Site in the Agent control hierarchy.');
   assert.ok(shell.indexOf('agent-workspace-public-site-link') < shell.indexOf('agent-workspace-sign-out'), 'Public Site must precede Sign out in the Agent control hierarchy.');
   assert.match(shell, /import Link from 'next\/link'/, 'Public Site must use the repository-supported same-origin navigation primitive.');
   assert.ok(middleware.indexOf('const privateConfiguration = getPrivateSiteAccessConfiguration();') < middleware.indexOf('const isAgentWorkspaceRoute'), 'Private Development Access must remain outside Agent authorization.');
