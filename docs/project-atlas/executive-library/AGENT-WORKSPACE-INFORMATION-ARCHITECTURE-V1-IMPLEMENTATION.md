@@ -16,6 +16,14 @@ All `/agent/*` pages now use the existing Agent authentication boundary. Login r
 
 During production human certification on 2026-09-03, an authenticated Agent was unexpectedly redirected to `/agent/login?next=%2Fagent` during ordinary Workspace navigation. The Workspace shell had rendered the destructive GET logout route with `next/link`; framework prefetch could therefore invoke the logout handler and expire the valid Agent session without an intentional sign-out. The correction renders Sign out as an ordinary anchor so its GET handler runs only on explicit activation. Agent session validation remains a stateless signed, HttpOnly, Secure-in-production, SameSite Lax cookie at path `/`; no private-access or Agent authentication boundary was weakened. Human retest is required before Workspace IA certification can close.
 
-## Boundaries And Validation
+## Client Case Context And Presentation
 
-No database migration, Workspace persistence, production-data mutation, automatic Case creation, Transaction creation, Output creation, or external action is introduced. The retained synthetic Client Case remains read-only for this certification. Focused static IA checks and typecheck passed. Human certification, production deployment, and final state remain pending.
+The Executive requested direct lateral work navigation from a Case without hidden state. The implementation preserves the opaque `clientCaseId` only in authenticated route-local URLs, validates the Case through the owner-scoped Case API, and never writes browser, cookie, database, or global React active-Case state. Contextual Buyer, Seller, Financial Strategy, Intelligence, and Transactions pages render the same prominent Client Case title, status, and contextual navigation; Workspace Home and global Client Work intentionally exit Case context. Case lifecycle actions remain distinct from contextual work navigation.
+
+## Human Certification And Closure
+
+On 2026-09-11, the Executive completed production certification on `davidquinngroup.com` against `24d3bfd727eb0c12be29a1e65068a72c1c45d43d`. Workspace Home, recent Client Work, the retained synthetic Case `cmtlsgepy00003yqsh1n54ltc`, authentication continuity, all five contextual work domains, explicit context exit, and global Buyer without stale Case context passed. The synthetic Case remained `ACTIVE` with one party, zero properties, and zero Transactions; it was not mutated.
+
+The auth-session recovery is closed: root cause `DESTRUCTIVE_GET_LOGOUT_RENDERED_AS_PREFETCH_CAPABLE_NEXT_LINK`; correction `40cefe63267e58be115072b6f9579e2e50d07def`; human retest PASS. The route-local Case-context refinement is closed at `4bc4f46e8e253c561f475b135f74e7a4732cde9e`; the presentation-consistency refinement is closed at `24d3bfd727eb0c12be29a1e65068a72c1c45d43d`.
+
+No database migration, Workspace persistence, production-data mutation, automatic Case creation, Transaction creation, Output creation, Client Authorization mutation, or external action occurred. `AGENT_WORKSPACE_INFORMATION_ARCHITECTURE_V1` is `PRODUCTION_CERTIFIED_AND_CLOSED`; `HUMAN_RETEST_REQUIRED: NO`; `FOUNDATION_BLOCKER: NONE`. `OUTPUT_REPORT_COMPOSITION_FOUNDATION_V1` is the following Primary gate and is not implemented by this record.
