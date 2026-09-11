@@ -26,6 +26,24 @@ enum OutputProductKind {
   AGENT_INTERNAL_ANALYSIS
 }
 
+enum MultiPropertyFinancialScenarioLifecycleState {
+  ACTIVE
+  ARCHIVED
+}
+
+enum MultiPropertyFinancialScenarioPropertyRole {
+  CURRENT_HOME_SELL
+  CURRENT_HOME_RETAIN
+  REPLACEMENT_PRIMARY_ACQUIRE
+  INVESTMENT_ACQUIRE
+}
+
+enum MultiPropertyFinancialScenarioPropertyReferenceType {
+  CANONICAL
+  PROSPECTIVE
+  HYPOTHETICAL
+}
+
 enum OutputAudience {
   AGENT_INTERNAL
   SELLER
@@ -743,6 +761,7 @@ model CanonicalPhysicalProperty {
   transactions          Transaction[]
   clientCaseProperties  ClientCaseProperty[]
   strategyPropertyRoles StrategyPropertyRole[]
+  multiPropertyFinancialScenarioProperties MultiPropertyFinancialScenarioProperty[]
 
   @@index([identityStatus, identityConfidence], map: "CPP_status_confidence_idx")
   @@index([state, county, jurisdiction], map: "CPP_jurisdiction_idx")
@@ -2610,10 +2629,12 @@ model OutputVersion {
   contentPayload            Json
   lineage                   Json
   ownerAgentSubject         String
+  multiPropertyFinancialScenarioVersionId String?
   reviewedAt                DateTime
   immutableAt               DateTime                    @default(now())
 
   product           OutputProduct           @relation(fields: [productId], references: [id], onDelete: Restrict)
+  multiPropertyFinancialScenarioVersion MultiPropertyFinancialScenarioVersion? @relation(fields: [multiPropertyFinancialScenarioVersionId], references: [id], onDelete: SetNull)
   evidenceSnapshot  OutputEvidenceSnapshot?
   dependencies      OutputDependency[]
   reviews           OutputReview[]
@@ -2626,6 +2647,7 @@ model OutputVersion {
   @@index([ownerAgentSubject, reviewedAt])
   @@index([productId, effectiveAsOf])
   @@index([contentFingerprint])
+  @@index([multiPropertyFinancialScenarioVersionId])
 }
 
 model OutputEvidenceSnapshot {
@@ -3005,6 +3027,7 @@ model ClientCase {
   properties   ClientCaseProperty[]
   transactions Transaction[]
   outputProducts OutputProduct[]
+  multiPropertyFinancialScenarios MultiPropertyFinancialScenario[]
 
   @@index([ownerAgentSubject, status, updatedAt])
   @@index([ownerAgentSubject, createdAt])
@@ -3569,6 +3592,112 @@ model StrategyAlternativeAuditEvent {
   alternative StrategyAlternative @relation(fields: [alternativeId], references: [id], onDelete: Restrict)
 
   @@index([alternativeId, createdAt])
+  @@index([ownerAgentSubject, createdAt])
+}
+
+// Canonical durable root for coordinated sell, retain, replacement, and investment
+// scenarios. Existing seller, investment, and strategy records remain specialized
+// analysis families and are not repurposed as this root.
+model MultiPropertyFinancialScenario {
+  id                String                                       @id @default(cuid())
+  ownerAgentSubject String
+  clientCaseId      String?
+  scenarioKey       String
+  displayName       String
+  lifecycleState    MultiPropertyFinancialScenarioLifecycleState @default(ACTIVE)
+  createdBySubject  String
+  createdAt         DateTime                                     @default(now())
+  archivedAt        DateTime?
+
+  clientCase  ClientCase?                                @relation(fields: [clientCaseId], references: [id], onDelete: SetNull)
+  versions    MultiPropertyFinancialScenarioVersion[]
+  auditEvents MultiPropertyFinancialScenarioAuditEvent[]
+
+  @@unique([ownerAgentSubject, scenarioKey])
+  @@index([ownerAgentSubject, clientCaseId, createdAt])
+  @@index([ownerAgentSubject, lifecycleState, createdAt])
+}
+
+model MultiPropertyFinancialScenarioVersion {
+  id                  String   @id @default(cuid())
+  scenarioId          String
+  ownerAgentSubject   String
+  versionOrdinal      Int
+  schemaVersion       String
+  calculationEngine   String
+  inputSnapshot       Json
+  inputFingerprint    String   @unique
+  idempotencyKey      String   @unique
+  supersedesVersionId String?  @unique
+  createdBySubject    String
+  createdAt           DateTime @default(now())
+
+  scenario          MultiPropertyFinancialScenario             @relation(fields: [scenarioId], references: [id], onDelete: Restrict)
+  properties        MultiPropertyFinancialScenarioProperty[]
+  result            MultiPropertyFinancialScenarioResult?
+  outputVersions    OutputVersion[]
+  supersedesVersion MultiPropertyFinancialScenarioVersion?     @relation("MultiPropertyFinancialScenarioVersionSupersession", fields: [supersedesVersionId], references: [id], onDelete: Restrict)
+  supersededBy      MultiPropertyFinancialScenarioVersion?     @relation("MultiPropertyFinancialScenarioVersionSupersession")
+  auditEvents       MultiPropertyFinancialScenarioAuditEvent[]
+
+  @@unique([scenarioId, versionOrdinal])
+  @@index([ownerAgentSubject, scenarioId, createdAt])
+}
+
+model MultiPropertyFinancialScenarioProperty {
+  id                  String                                              @id @default(cuid())
+  scenarioVersionId   String
+  canonicalPropertyId String?
+  ownerAgentSubject   String
+  sequence            Int
+  role                MultiPropertyFinancialScenarioPropertyRole
+  referenceType       MultiPropertyFinancialScenarioPropertyReferenceType
+  displayLabel        String
+  inputSnapshot       Json
+  provenanceSnapshot  Json
+  createdAt           DateTime                                            @default(now())
+
+  scenarioVersion   MultiPropertyFinancialScenarioVersion @relation(fields: [scenarioVersionId], references: [id], onDelete: Restrict)
+  canonicalProperty CanonicalPhysicalProperty?            @relation(fields: [canonicalPropertyId], references: [id], onDelete: SetNull)
+
+  @@unique([scenarioVersionId, sequence])
+  @@index([ownerAgentSubject, canonicalPropertyId])
+  @@index([scenarioVersionId, role])
+}
+
+model MultiPropertyFinancialScenarioResult {
+  id                  String   @id @default(cuid())
+  scenarioVersionId   String   @unique
+  ownerAgentSubject   String
+  schemaVersion       String
+  calculationEngine   String
+  inputFingerprint    String
+  resultSnapshot      Json
+  resultFingerprint   String   @unique
+  calculatedBySubject String
+  calculatedAt        DateTime @default(now())
+  immutableAt         DateTime @default(now())
+
+  scenarioVersion MultiPropertyFinancialScenarioVersion @relation(fields: [scenarioVersionId], references: [id], onDelete: Restrict)
+
+  @@index([ownerAgentSubject, calculatedAt])
+  @@index([inputFingerprint])
+}
+
+model MultiPropertyFinancialScenarioAuditEvent {
+  id                String   @id @default(cuid())
+  scenarioId        String
+  scenarioVersionId String?
+  ownerAgentSubject String
+  eventType         String
+  eventFingerprint  String   @unique
+  detail            Json
+  createdAt         DateTime @default(now())
+
+  scenario        MultiPropertyFinancialScenario         @relation(fields: [scenarioId], references: [id], onDelete: Restrict)
+  scenarioVersion MultiPropertyFinancialScenarioVersion? @relation(fields: [scenarioVersionId], references: [id], onDelete: Restrict)
+
+  @@index([scenarioId, createdAt])
   @@index([ownerAgentSubject, createdAt])
 }
 

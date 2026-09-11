@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { Prisma, type OutputVersion, type PrismaClient } from '@prisma/client';
 
 import {
@@ -43,6 +44,11 @@ export const OUTPUT_PERSISTENCE_FOUNDATION_VERSION = 'OUTPUT_PERSISTENCE_FOUNDAT
 export const OUTPUT_PERSISTENCE_PAYLOAD_SCHEMA_VERSION = 'OUTPUT_PERSISTENCE_PAYLOAD_V1' as const;
 export const OUTPUT_PERSISTENCE_REVIEW_POLICY = 'PERSIST_REVIEWED_ONLY_V1' as const;
 export const OUTPUT_PERSISTENCE_API_ROUTE = '/api/agent/outputs' as const;
+export const MULTI_PROPERTY_FINANCIAL_SCENARIO_OUTPUT_VERSION = 'MULTI_PROPERTY_FINANCIAL_SCENARIO_OUTPUT_V1' as const;
+
+function multiPropertyScenarioOutputFingerprint(value: unknown) {
+  return createHash('sha256').update(JSON.stringify(value)).digest('hex');
+}
 export const OUTPUT_PERSISTENCE_SUPPORTED_SOURCE_VERSION_REFS = [
   'seller-decision-brief-v2-reviewed',
   'seller-update-current-version',
@@ -498,6 +504,82 @@ export function createOutputPersistenceService(prisma: PrismaClient) {
       return Object.freeze({ productId: reviewed.productId, versionId: reviewed.id, created: true });
     });
   }
+
+  async function createMultiPropertyFinancialScenarioOutputDraft(ownerAgentSubject: string, scenarioVersionId: string) {
+    if (!ownerAgentSubject.trim()) throw new OutputPersistenceError('OWNERSHIP_DENIED', 'An Agent owner identity is required.');
+    const scenarioVersion = await prisma.multiPropertyFinancialScenarioVersion.findFirst({
+      where: { id: scenarioVersionId, ownerAgentSubject },
+      include: { scenario: true, result: true, properties: true },
+    });
+    if (!scenarioVersion || !scenarioVersion.result) throw new OutputPersistenceError('OWNERSHIP_DENIED', 'The selected immutable scenario result is unavailable to this Agent.');
+    const scenarioResult = scenarioVersion.result;
+    const sourceVersionRef = `${MULTI_PROPERTY_FINANCIAL_SCENARIO_OUTPUT_VERSION}:${scenarioVersion.id}:${scenarioResult.id}`;
+    const contentPayload = {
+      schemaVersion: MULTI_PROPERTY_FINANCIAL_SCENARIO_OUTPUT_VERSION,
+      scenario: {
+        id: scenarioVersion.scenarioId,
+        key: scenarioVersion.scenario.scenarioKey,
+        displayName: scenarioVersion.scenario.displayName,
+        versionId: scenarioVersion.id,
+        versionOrdinal: scenarioVersion.versionOrdinal,
+        inputFingerprint: scenarioVersion.inputFingerprint,
+        resultId: scenarioResult.id,
+        resultFingerprint: scenarioResult.resultFingerprint,
+      },
+      result: scenarioResult.resultSnapshot,
+      limitations: [
+        'Agent-internal semantic output prepared from an immutable modeled scenario result.',
+        'No render, delivery, client portal publication, or external action occurred.',
+        'Explicit Agent review remains required before any later governed Output progression.',
+      ],
+      qualification: 'SYNTHETIC_CERTIFICATION_INTERNAL_ONLY',
+    };
+    const contentFingerprint = multiPropertyScenarioOutputFingerprint(contentPayload);
+    const idempotencyKey = `MPFS_OUTPUT_DRAFT_V1|${ownerAgentSubject}|${scenarioVersion.id}|${scenarioResult.resultFingerprint}`;
+    return prisma.$transaction(async (tx) => {
+      const product = await tx.outputProduct.upsert({
+        where: { ownerAgentSubject_productKind_audience_subjectRef: { ownerAgentSubject, productKind: 'MULTI_PROPERTY_FINANCIAL_BREAKEVEN_ANALYSIS', audience: 'AGENT_INTERNAL', subjectRef: `MultiPropertyFinancialScenario:${scenarioVersion.scenarioId}` } },
+        create: {
+          ownerAgentSubject,
+          productKind: 'MULTI_PROPERTY_FINANCIAL_BREAKEVEN_ANALYSIS',
+          audience: 'AGENT_INTERNAL',
+          subjectRef: `MultiPropertyFinancialScenario:${scenarioVersion.scenarioId}`,
+          purpose: 'Agent-internal multi-property financial scenario comparison prepared from one immutable version.',
+          outputContractVersion: MULTI_PROPERTY_FINANCIAL_SCENARIO_OUTPUT_VERSION,
+          lineageKey: `${ownerAgentSubject}|MULTI_PROPERTY_FINANCIAL_BREAKEVEN_ANALYSIS|AGENT_INTERNAL|MultiPropertyFinancialScenario:${scenarioVersion.scenarioId}`,
+          clientCaseId: scenarioVersion.scenario.clientCaseId,
+        },
+        update: {},
+      });
+      if (product.clientCaseId !== scenarioVersion.scenario.clientCaseId) throw new OutputPersistenceError('OWNERSHIP_DENIED', 'The OutputProduct is already bound to a different Client Case scope.');
+      const existing = await tx.outputVersion.findUnique({ where: { idempotencyKey } });
+      if (existing) return Object.freeze({ productId: product.id, versionId: existing.id, created: false });
+      const versionOrdinal = await tx.outputVersion.count({ where: { productId: product.id } }) + 1;
+      const now = new Date();
+      const outputVersion = await tx.outputVersion.create({ data: {
+        productId: product.id, sourceVersionRef, versionOrdinal, idempotencyKey,
+        outputContractVersion: MULTI_PROPERTY_FINANCIAL_SCENARIO_OUTPUT_VERSION,
+        displayVersion: `${scenarioVersion.scenario.displayName} / Scenario v${scenarioVersion.versionOrdinal}`,
+        audience: 'AGENT_INTERNAL', subjectRef: `MultiPropertyFinancialScenario:${scenarioVersion.scenarioId}`, purpose: product.purpose,
+        effectiveAsOf: now, lifecycleState: 'AGENT_REVIEW_REQUIRED', reviewState: 'AGENT_REVIEW_REQUIRED',
+        contentVersion: MULTI_PROPERTY_FINANCIAL_SCENARIO_OUTPUT_VERSION,
+        compositionVersion: MULTI_PROPERTY_FINANCIAL_SCENARIO_OUTPUT_VERSION,
+        presentationVisualVersion: 'MULTI_PROPERTY_FINANCIAL_SCENARIO_AGENT_SEMANTIC_V1',
+        contentFingerprint, payloadSchemaVersion: MULTI_PROPERTY_FINANCIAL_SCENARIO_OUTPUT_VERSION,
+        contentPayload: contentPayload as Prisma.InputJsonValue,
+        lineage: { scenarioId: scenarioVersion.scenarioId, scenarioVersionId: scenarioVersion.id, scenarioResultId: scenarioResult.id, inputFingerprint: scenarioVersion.inputFingerprint, resultFingerprint: scenarioResult.resultFingerprint } as Prisma.InputJsonValue,
+        ownerAgentSubject, multiPropertyFinancialScenarioVersionId: scenarioVersion.id, reviewedAt: now,
+        evidenceSnapshot: { create: { snapshotSchemaVersion: MULTI_PROPERTY_FINANCIAL_SCENARIO_OUTPUT_VERSION, sourceSnapshotRefs: [`MultiPropertyFinancialScenario:${scenarioVersion.scenarioId}`], metricRefs: [`MultiPropertyFinancialScenarioResult:${scenarioResult.id}`], analysisRefs: [`MultiPropertyFinancialScenarioVersion:${scenarioVersion.id}`], agentInputRefs: scenarioVersion.properties.map((property) => `MultiPropertyFinancialScenarioProperty:${property.id}`), assumptionRefs: [scenarioVersion.inputFingerprint, scenarioVersion.calculationEngine], limitationRefs: contentPayload.limitations, rightsRefs: ['SYNTHETIC_CERTIFICATION_INTERNAL_ONLY'], freshnessRefs: [`IMMUTABLE_RESULT:${scenarioResult.resultFingerprint}`], reviewState: 'AGENT_REVIEW_REQUIRED', fingerprint: contentFingerprint } },
+        dependencies: { create: [
+          { upstreamArtifact: `MultiPropertyFinancialScenarioVersion:${scenarioVersion.id}`, downstreamArtifact: MULTI_PROPERTY_FINANCIAL_SCENARIO_OUTPUT_VERSION, dependencyType: 'AGENT_INPUT_DEPENDENCY', materiality: 'HIGH', versionUsed: scenarioVersion.inputFingerprint, fieldMetricScope: ['inputSnapshot', 'properties'], changePolicy: 'A revised scenario input set requires a successor OutputVersion.', invalidationPolicy: 'RECOMPOSE_REQUIRED', reviewPolicy: 'AGENT_REVIEW_REQUIRED', currentState: 'CURRENT' },
+          { upstreamArtifact: `MultiPropertyFinancialScenarioResult:${scenarioResult.id}`, downstreamArtifact: MULTI_PROPERTY_FINANCIAL_SCENARIO_OUTPUT_VERSION, dependencyType: 'FINANCIAL_DEPENDENCY', materiality: 'HIGH', versionUsed: scenarioResult.resultFingerprint, fieldMetricScope: ['resultSnapshot', 'calculationEngine'], changePolicy: 'A revised immutable result requires a successor OutputVersion.', invalidationPolicy: 'RECOMPOSE_REQUIRED', reviewPolicy: 'AGENT_REVIEW_REQUIRED', currentState: 'CURRENT' },
+        ] },
+        checkpoints: { create: [{ checkpointRef: 'MULTI_PROPERTY_FINANCIAL_SCENARIO_OUTPUT_PREPARED', state: 'REVIEW_REQUIRED', checkpointSchemaVersion: MULTI_PROPERTY_FINANCIAL_SCENARIO_OUTPUT_VERSION, recordedBySubject: ownerAgentSubject, recordedAt: now, detail: 'Semantic output prepared from one immutable ScenarioVersion and ScenarioResult. No render or delivery occurred.' }] },
+      } });
+      await tx.multiPropertyFinancialScenarioAuditEvent.create({ data: { scenarioId: scenarioVersion.scenarioId, scenarioVersionId: scenarioVersion.id, ownerAgentSubject, eventType: 'OUTPUT_VERSION_PREPARED', eventFingerprint: multiPropertyScenarioOutputFingerprint({ scenarioVersionId: scenarioVersion.id, outputVersionId: outputVersion.id, event: 'OUTPUT_VERSION_PREPARED' }), detail: { outputVersionId: outputVersion.id, outputProductId: product.id, lifecycleState: 'AGENT_REVIEW_REQUIRED' } as Prisma.InputJsonValue } });
+      return Object.freeze({ productId: product.id, versionId: outputVersion.id, created: true });
+    });
+  }
   async function buildSellerFinancialFixture(ownerAgentSubject: string, scenarioId: string): Promise<PersistableOutputFixture> {
     const scenario = await prisma.sellerFinancialScenario.findFirst({
       where: { id: scenarioId, ownerAgentSubject },
@@ -882,6 +964,7 @@ export function createOutputPersistenceService(prisma: PrismaClient) {
     loadOwnedOutputProduct,
     loadOwnedOutputVersion,
     createSyntheticOutputDraft,
+    createMultiPropertyFinancialScenarioOutputDraft,
     reviewOutputVersion,
     loadOwnedOutputForPdf,
   });

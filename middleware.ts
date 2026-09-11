@@ -85,7 +85,7 @@ export async function middleware(request: NextRequest) {
     }
   }
   const isAgentWorkspaceRoute = pathname === '/agent' || pathname.startsWith('/agent/');
-  const isAgentProtectedApiRoute = pathname === "/api/agent/client-authorizations" || pathname === "/api/agent/client-cases" || pathname === "/api/agent/outputs" || pathname === "/api/agent/output/pdf" || pathname === "/api/agent/evidence" || pathname === "/api/agent/professional-inputs" || pathname === "/api/agent/professional-external-requests" || pathname === "/api/agent/seller-financial";
+  const isAgentProtectedApiRoute = pathname === "/api/agent/client-authorizations" || pathname === "/api/agent/client-cases" || pathname === "/api/agent/outputs" || pathname === "/api/agent/output/pdf" || pathname === "/api/agent/evidence" || pathname === "/api/agent/professional-inputs" || pathname === "/api/agent/professional-external-requests" || pathname === "/api/agent/seller-financial" || pathname === "/api/agent/multi-property-financial-scenarios";
   const isAdminProtectedRoute = pathname.startsWith('/admin') || pathname.startsWith('/api/admin/');
 
   if (!isAgentWorkspaceRoute && !isAgentProtectedApiRoute && !isAdminProtectedRoute) {
@@ -130,5 +130,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next/).*)', "/admin/:path*", "/api/admin/:path*", "/api/agent/client-authorizations", "/api/agent/client-cases", "/api/agent/outputs", "/api/agent/output/pdf", "/api/agent/evidence", "/api/agent/professional-inputs", "/api/agent/professional-external-requests", "/api/agent/seller-financial", "/agent/:path*"],
+  matcher: ['/((?!_next/).*)', "/admin/:path*", "/api/admin/:path*", "/api/agent/client-authorizations", "/api/agent/client-cases", "/api/agent/outputs", "/api/agent/output/pdf", "/api/agent/evidence", "/api/agent/professional-inputs", "/api/agent/professional-external-requests", "/api/agent/seller-financial", "/api/agent/multi-property-financial-scenarios", "/agent/:path*"],
 };

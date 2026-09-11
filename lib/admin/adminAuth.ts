@@ -120,6 +120,7 @@ export const adminProtectedSurfaceClassifications: AdminProtectedSurfaceClassifi
   surface('/api/agent/seller-financial', 'MUTATING_ADMIN_API', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'MUTATION_CAPABLE', 'MUTATING_ADMIN', true),
   surface('/api/agent/investment-breakeven', 'MUTATING_ADMIN_API', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'MUTATION_CAPABLE', 'MUTATING_ADMIN', true),
   surface('/api/agent/strategy-suite', 'MUTATING_ADMIN_API', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'MUTATION_CAPABLE', 'MUTATING_ADMIN', true),
+  surface('/api/agent/multi-property-financial-scenarios', 'MUTATING_ADMIN_API', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'MUTATION_CAPABLE', 'MUTATING_ADMIN', true),
   surface('/api/agent/advanced-investment-return', 'MUTATING_ADMIN_API', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'MUTATION_CAPABLE', 'MUTATING_ADMIN', true),
   surface('/api/agent/prepare/property', 'READ_ONLY_ADMIN_API', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),
   surface('/api/agent/current-competing-listing-context', 'READ_ONLY_ADMIN_API', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),
