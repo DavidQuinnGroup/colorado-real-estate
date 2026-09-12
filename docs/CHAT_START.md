@@ -10,7 +10,7 @@ Product:
 
 ## Latest New-Chat Handoff
 
-### Current Active Package: Master V7.1 Architecture Reconciliation
+### Current Active Package: Final Liquid Glass Design Architecture Canonicalization
 
 Workspace:
 
@@ -25,18 +25,16 @@ Canonical baseline to revalidate:
 
 Program:
 
-- `REIE_MASTER_V7_1_ARCHITECTURE_RECONCILIATION_AND_GOVERNING_STANDARD_FOUNDATION`
+- `PROJECT_ATLAS_FINAL_LIQUID_GLASS_DESIGN_EXECUTIVE_DISPOSITION_AND_CANONICALIZATION`
 
 Current package outcome:
 
-- Source Quality preview typing repair committed separately.
-- Four-Document Governing Check standard established.
-- Master V7.1 capability reconciliation register established for Modules 6,
-  7, 8, 10, and 16.
-- Seven architecture and supersession decision packets prepared.
-- No visual redesign, route redesign, provider access, data retrieval,
-  persistence, Search mutation, CRM activation, deployment, or production
-  activation is authorized by the package.
+- The Final Liquid Glass architecture is canonical in
+  `docs/project-atlas/design/PROJECT-ATLAS-FINAL-LIQUID-GLASS-DESIGN-ARCHITECTURE-V1.md`.
+- `LG-01` through `LG-05` are resolved; the system identity is
+  `PROJECT_ATLAS_LIQUID_GLASS_DESIGN_SYSTEM_V1`.
+- Design implementation has not started. Tier 2, Tier 3, and External Holds
+  remain preserved and do not become active capability authorization.
 
 Canonical governance records:
 
@@ -45,6 +43,8 @@ Canonical governance records:
 - `docs/project-atlas/executive-library/REIE-MASTER-V7.1-ARCHITECTURE-SUPERSESSION-DECISION-PACKETS.md`
 - `docs/project-atlas/executive-library/REIE-PRODUCT-EXPERIENCE-NORTH-STAR.md`
 - `docs/project-atlas/executive-library/REIE-CUSTOMER-FACING-CAPABILITY-COMPLETION-STANDARD.md`
+- `docs/project-atlas/executive-library/REIE-MASTER-V7-1-MODULE-DISPOSITION-REGISTER.md`
+- `docs/project-atlas/design/PROJECT-ATLAS-FINAL-LIQUID-GLASS-DESIGN-ARCHITECTURE-V1.md`
 
 Required governing check before material architecture, capability, customer
 claim, disclosure, route, brokerage, financing, or supersession changes:
@@ -58,9 +58,10 @@ claim, disclosure, route, brokerage, financing, or supersession changes:
 
 Next authorization gate:
 
-- Executive disposition of Modules 6, 7, 8, 10, and 16 decision packets before
-  any capability, navigation, information-architecture, or visual-system
-  implementation.
+- `PROJECT_ATLAS_LIQUID_GLASS_DESIGN_SYSTEM_FOUNDATION_V1`: a bounded Wave 0
+  authorization for shared design-system foundations only. It does not authorize
+  shell or page migration, database/schema work, provider activity, deployment,
+  or external action.
 
 ### Prior Active Handoff Retained Below For Audit History
 

@@ -661,7 +661,13 @@ PUBLIC_AUTHORITY_IMPLEMENTATION_STARTED: `NO`
 
 ANY_TIER_1_IMPLEMENTATION_AUTHORIZED: `NO`
 
-FINAL_LIQUID_GLASS_DESIGN_AUTHORIZED: `NO`
+FINAL_LIQUID_GLASS_DESIGN_AUTHORIZED: `CANONICAL_ARCHITECTURE_ONLY`
+
+FINAL_LIQUID_GLASS_DESIGN_ARCHITECTURE: `CANONICAL`
+
+FINAL_LIQUID_GLASS_DESIGN_ARCHITECTURE_DOCUMENT: `docs/project-atlas/design/PROJECT-ATLAS-FINAL-LIQUID-GLASS-DESIGN-ARCHITECTURE-V1.md`
+
+FINAL_LIQUID_GLASS_DESIGN_IMPLEMENTATION_ENTRY_READINESS: `READY`
 
 FINAL_LIQUID_GLASS_IMPLEMENTATION_AUTHORIZED: `NO`
 
@@ -673,24 +679,23 @@ CLIENT_PORTAL_REDESIGN_AUTHORIZED: `NO`
 
 ## Next Executive Gate Recommendation
 
-NEXT_RECOMMENDED_EXECUTIVE_GATE: `PROJECT_ATLAS_FINAL_LIQUID_GLASS_DESIGN_ARCHITECTURE_GATE`
+NEXT_RECOMMENDED_EXECUTIVE_GATE: `PROJECT_ATLAS_LIQUID_GLASS_DESIGN_SYSTEM_FOUNDATION_V1`
 
-WHY_THIS_GATE_NEXT: The eight required Tier 1 Master dispositions are canonical,
-while Tier 2, Tier 3, and provider/source holds do not block provider-neutral
-structural design. Existing public editorial and article foundations show that
-page-family design can be defined before any content-persistence implementation
-decision. Pending Transaction document, deadline/task, and advisory-lineage
-foundations can be represented as future capability areas without defining a
-new durable structural root in the design architecture.
+WHY_THIS_GATE_NEXT: The Tier 1 Master dispositions and Final Liquid Glass Design
+Architecture are canonical. Tier 2, Tier 3, and provider/source holds do not
+block a bounded provider-neutral Wave 0 design-system foundation. Page-family
+and shell implementation remain separate future work, and pending Transaction
+document, deadline/task, and advisory-lineage foundations remain future seams
+without a new durable root.
 
-WHAT_IT_RESOLVES: The authorized future gate may decide the provider-neutral
-information architecture, reusable public page families, public/private shells,
-Agent Workspace shell, navigation, component hierarchy, and Output presentation
-architecture.
+WHAT_IT_RESOLVES: The authorized future gate may implement only Wave 0 shared
+semantic tokens, theme primitives, typography hierarchy, material/surface,
+action/form/status/information-class primitives, focus/accessibility, motion,
+responsive primitives, and a local visual-regression baseline.
 
-WHAT_IT_DOES_NOT_AUTHORIZE: Application implementation, visual redesign,
-runtime changes, source/provider activation, content production, database or
-schema change, deployment, or resolution of Tier 2, Tier 3, or External Holds.
+WHAT_IT_DOES_NOT_AUTHORIZE: Shell migration, route or page-family redesign,
+source/provider activation, content production, database or schema change,
+deployment, or resolution of Tier 2, Tier 3, or External Holds.
 
 NEXT_GATE_STATE: `NOT_STARTED`
 
