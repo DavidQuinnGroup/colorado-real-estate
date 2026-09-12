@@ -115,3 +115,82 @@ After deployment, Executive HQ should inspect the existing retained synthetic Cl
 9. Navigate through Workspace Home to global Financial Strategy. Confirm no stale Client Case context and no unexpected Agent Sign In.
 
 The workstream remains `PRODUCTION_READY_PENDING_HUMAN_CERTIFICATION` until this visual check passes. `UX-001` and `UX-002` are `CLOSED_PENDING_HUMAN`. Final Liquid Glass or luxury design work remains out of scope. The following architectural gate is `TRANSACTION_CASE_HANDOFF_AND_WORKFLOW_V1`; it is not started by this workstream.
+
+## Final Human Certification and Closure - 2026-09-11
+
+### Executive Certification Decision
+
+Executive HQ completed the authorized production visual certification and recorded `PASS`. This closes `AGENT_WORKSPACE_INFORMATION_HIERARCHY_AND_FINANCIAL_TERMINOLOGY_V1` as `PRODUCTION_CERTIFIED_AND_CLOSED`.
+
+### Contextual Financial Strategy
+
+The Executive inspected `/agent/strategy?clientCaseId=cmtlsgepy00003yqsh1n54itc`. `ATLAS Synthetic Client Case - Foundation V1`, `ACTIVE` status, and Client Case work navigation remained above the Financial Strategy content.
+
+### Information Hierarchy
+
+The contextual page distinguished the Financial Strategy page title, Multi-property financial scenarios, New scenario version, Owned scenario versions, Multi-Dimensional Strategy Suite, participant headings, field groups, labels, and supporting text. The page has one Financial Strategy `h1`; durable content follows the documented section hierarchy.
+
+### New Scenario Version Discoverability
+
+`New scenario version` is a distinct subsection before its fields. Existing locked versions remain separately discoverable under `Owned scenario versions`; immutability semantics did not change.
+
+### Participant Hierarchy
+
+Participants use Agent-readable role and reference labels, including `Current home - Sell`, `Replacement primary - Buy`, and `Hypothetical property`. Financial controls retain clear dollar, monthly, percent, and years units.
+
+### Financial Terminology
+
+The certified labels are `Liquidity after planned sale`, `Cash required before sale proceeds`, `Modeled monthly property cash flow after sale`, and `Estimated net sale proceeds`. Metric help text remains present, and no label implies a bridge loan.
+
+### Financial Values
+
+The retained synthetic Scenario continues to display `$159,000`, `$193,000`, `-$2,570/mo`, and `$352,000`. No calculation, input schema, result schema, formula, or canonical result value changed.
+
+### Scenario Identity and Technical Metadata
+
+`ATLAS Synthetic Multi-Property Financial Scenario` is the primary Scenario identity. The Scenario key and technical fingerprint remain subordinate technical metadata; the synthetic designation remains visible.
+
+### Output State
+
+The linked retained synthetic Output remains `AGENT_REVIEW_REQUIRED`, with no review, render, PDF, delivery, public share, or external action created by this workstream or closure. Its existing provenance remains tied to the exact immutable Scenario Version and Result.
+
+### Legacy Strategy Suite
+
+Human-readable strategy titles are primary. `Technical ID` is explicitly secondary, and the responsive containment repair prevents long machine identifiers from overflowing or colliding across cards.
+
+### UX-001 Closure
+
+`UX-001` is closed: the Agent-facing page, section, subsection, card, field, and supporting-text hierarchy is visually distinct and was accepted by Executive human certification.
+
+### UX-002 Closure
+
+`UX-002` is closed: legacy Strategy Suite cards prioritize human titles, retain technical identifiers as secondary detail, and preserve containment at the two-column breakpoint.
+
+### Global Context Exit
+
+The Executive exited through Workspace Home to global `/agent/strategy`. The global page did not retain a Client Case query, header, contextual navigation, global active Case, or global active Scenario.
+
+### Authentication Continuity
+
+The Executive observed ordinary authenticated navigation without an unexpected Agent sign-in. Fresh deterministic session-continuity and public-return checks pass. A new uncredentialed browser context redirects to the existing Agent login route, as expected; no credentials were requested or entered during closure.
+
+### Remaining UX Polish
+
+- `UX-POLISH-001`: editable currency-input masking and human formatting remain `OPEN_NON_BLOCKING` for future Agent form-input or Liquid Glass work.
+- `UX-POLISH-002`: progressive disclosure of legacy Strategy technical IDs remains `OPEN_NON_BLOCKING` for future luxury-design polish.
+
+### Final Design Boundary
+
+The final Liquid Glass or luxury visual-system redesign remains deferred. No spacing, typography, animation, or other opportunistic presentation work was included in closure.
+
+### Regression / Non-Mutation
+
+Source evidence is implementation commit `9180adc3e825b4734171dd030622b40b7e57f1b7`, deployed Ready to `davidquinngroup.com`. Fresh checks passed for Project Atlas navigation, Agent Workspace information architecture, canonical Client Case context, Agent cross-capability session continuity, Agent public return navigation, admin-auth safety, Multi-property financial scenarios, Output persistence, and Output report composition. The historical `check:agent-operating-shell` static checker still expects literal route strings in the shared shell even though the canonical navigation registry supplies the exact routes; it is a pre-existing non-semantic checker limitation and was not changed during this documentation-only closure. No application source, test source, Prisma schema, migration, Scenario, ScenarioVersion, ScenarioResult, Output, OutputVersion, OutputReview, OutputRender, Client Authorization, Professional Input, CRM, MLS, Compass, email, SMS, or external action changed during closure.
+
+### Final Workstream State
+
+`AGENT_WORKSPACE_INFORMATION_HIERARCHY_AND_FINANCIAL_TERMINOLOGY_V1` is `PRODUCTION_CERTIFIED_AND_CLOSED`. `UX-001`, `UX-002`, financial terminology, and Agent-friendly read-only formatting are closed. Foundation blocker: `NONE`. Executive decisions required for this closed workstream: `NONE`.
+
+### Following Architectural Gate
+
+The next recommended architectural gate is `TRANSACTION_CASE_HANDOFF_AND_WORKFLOW_V1`. It is `NOT_STARTED`, requires fresh Executive authorization, and must not auto-start. Secondary remains `ON_HOLD`.
