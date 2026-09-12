@@ -60,15 +60,17 @@ route behavior while making the shared vocabulary available for later waves.
 
 **State:** `DEFERRED_WITH_REASON`.
 
-The repository includes Playwright but has no deterministic non-public
-design-system showcase or fixture route. Wave 0 does not create a discoverable
-production destination or migrate a page solely to obtain screenshots. A local
-visual baseline will be introduced only with an authorized fixture or consumer
-surface that provides stable, synthetic, non-public content.
+The authorized non-public visual fixture is now documented in
+`docs/project-atlas/design/PROJECT-ATLAS-LIQUID-GLASS-VISUAL-CERTIFICATION-FIXTURE-V1.md`.
+The repository includes Playwright but has no existing authenticated browser
+storage or protected-route screenshot convention. A committed baseline remains
+deferred rather than adding an authentication bypass, secret, or public fixture
+route. Executive visual review remains required.
 
 ## Technical Checks
 
 - `npm run check:liquid-glass-design-system-foundation`
+- `npm run check:liquid-glass-visual-certification-fixture`
 - `npm run check:interactive-cursor-styles`
 - `npm run check:tailwind-v4-style-pipeline`
 - `npm run check:project-atlas-navigation-invariant`
