@@ -10,7 +10,7 @@ Product:
 
 ## Latest New-Chat Handoff
 
-### Current Active Package: Final Liquid Glass Design Architecture Canonicalization
+### Current Active Package: Liquid Glass Design System Foundation V1
 
 Workspace:
 
@@ -25,16 +25,17 @@ Canonical baseline to revalidate:
 
 Program:
 
-- `PROJECT_ATLAS_FINAL_LIQUID_GLASS_DESIGN_EXECUTIVE_DISPOSITION_AND_CANONICALIZATION`
+- `PROJECT_ATLAS_LIQUID_GLASS_DESIGN_SYSTEM_FOUNDATION_V1`
 
 Current package outcome:
 
 - The Final Liquid Glass architecture is canonical in
   `docs/project-atlas/design/PROJECT-ATLAS-FINAL-LIQUID-GLASS-DESIGN-ARCHITECTURE-V1.md`.
-- `LG-01` through `LG-05` are resolved; the system identity is
-  `PROJECT_ATLAS_LIQUID_GLASS_DESIGN_SYSTEM_V1`.
-- Design implementation has not started. Tier 2, Tier 3, and External Holds
-  remain preserved and do not become active capability authorization.
+- Wave 0 establishes only the opt-in shared foundation defined in
+  `docs/project-atlas/design/PROJECT-ATLAS-LIQUID-GLASS-DESIGN-SYSTEM-FOUNDATION-V1.md`.
+- `LG-01` through `LG-05` remain preserved. No shell, navigation, or page-family
+  migration is authorized by this package. Tier 2, Tier 3, and External Holds
+  remain inactive.
 
 Canonical governance records:
 
@@ -56,12 +57,12 @@ claim, disclosure, route, brokerage, financing, or supersession changes:
 4. `2026_CREM_Ch 09` and `Compass Colorado Agent Policy Manual March 2026`
    where applicable.
 
-Next authorization gate:
+Next authorization gate after technical completion:
 
-- `PROJECT_ATLAS_LIQUID_GLASS_DESIGN_SYSTEM_FOUNDATION_V1`: a bounded Wave 0
-  authorization for shared design-system foundations only. It does not authorize
-  shell or page migration, database/schema work, provider activity, deployment,
-  or external action.
+- `PROJECT_ATLAS_LIQUID_GLASS_DESIGN_SYSTEM_FOUNDATION_V1_HUMAN_CERTIFICATION`:
+  inspect the technical foundation before any shell, navigation, or page-family
+  migration. It does not authorize database/schema work, provider activity,
+  production data creation, deployment configuration, or external action.
 
 ### Prior Active Handoff Retained Below For Audit History
 
