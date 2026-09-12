@@ -84,11 +84,13 @@ export async function middleware(request: NextRequest) {
       return privateAccessGateResponse(request);
     }
   }
+  const isClientAuthorizationWorkspaceRoute = pathname === "/agent/authorizations";
   const isAgentWorkspaceRoute = pathname === '/agent' || pathname.startsWith('/agent/');
-  const isAgentProtectedApiRoute = pathname === "/api/agent/client-authorizations" || pathname === "/api/agent/client-cases" || pathname === "/api/agent/outputs" || pathname === "/api/agent/output/pdf" || pathname === "/api/agent/evidence" || pathname === "/api/agent/professional-inputs" || pathname === "/api/agent/professional-external-requests" || pathname === "/api/agent/seller-financial" || pathname === "/api/agent/multi-property-financial-scenarios";
+  const isProtectedAgentWorkspaceRoute = isAgentWorkspaceRoute || isClientAuthorizationWorkspaceRoute;
+  const isAgentProtectedApiRoute = pathname === "/api/agent/client-authorizations" || pathname === "/api/agent/client-cases" || pathname === "/api/agent/transactions" || pathname === "/api/agent/outputs" || pathname === "/api/agent/output/pdf" || pathname === "/api/agent/evidence" || pathname === "/api/agent/professional-inputs" || pathname === "/api/agent/professional-external-requests" || pathname === "/api/agent/seller-financial" || pathname === "/api/agent/multi-property-financial-scenarios";
   const isAdminProtectedRoute = pathname.startsWith('/admin') || pathname.startsWith('/api/admin/');
 
-  if (!isAgentWorkspaceRoute && !isAgentProtectedApiRoute && !isAdminProtectedRoute) {
+  if (!isProtectedAgentWorkspaceRoute && !isAgentProtectedApiRoute && !isAdminProtectedRoute) {
     return privateConfiguration.enabled ? withPrivateResponseHeaders(NextResponse.next()) : NextResponse.next();
   }
 
@@ -103,7 +105,7 @@ export async function middleware(request: NextRequest) {
       return privateConfiguration.enabled ? withPrivateResponseHeaders(buildAdminLoginRedirect(request)) : buildAdminLoginRedirect(request);
     }
 
-    if (isAgentWorkspaceRoute) {
+    if (isProtectedAgentWorkspaceRoute) {
       return privateConfiguration.enabled ? withPrivateResponseHeaders(buildAgentLoginRedirect(request)) : buildAgentLoginRedirect(request);
     }
 
@@ -121,7 +123,7 @@ export async function middleware(request: NextRequest) {
     },
   });
 
-  if (isAgentWorkspaceRoute || isAgentProtectedApiRoute) {
+  if (isProtectedAgentWorkspaceRoute || isAgentProtectedApiRoute) {
     response.headers.set('Cache-Control', 'private, no-store');
     response.headers.set('x-middleware-cache', 'no-cache');
   }
@@ -130,5 +132,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next/).*)', "/admin/:path*", "/api/admin/:path*", "/api/agent/client-authorizations", "/api/agent/client-cases", "/api/agent/outputs", "/api/agent/output/pdf", "/api/agent/evidence", "/api/agent/professional-inputs", "/api/agent/professional-external-requests", "/api/agent/seller-financial", "/api/agent/multi-property-financial-scenarios", "/agent/:path*"],
+  matcher: ['/((?!_next/).*)', "/admin/:path*", "/api/admin/:path*", "/api/agent/client-authorizations", "/api/agent/client-cases", "/api/agent/transactions", "/api/agent/outputs", "/api/agent/output/pdf", "/api/agent/evidence", "/api/agent/professional-inputs", "/api/agent/professional-external-requests", "/api/agent/seller-financial", "/api/agent/multi-property-financial-scenarios", "/agent/:path*"],
 };

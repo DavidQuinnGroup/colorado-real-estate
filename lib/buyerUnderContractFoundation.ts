@@ -124,7 +124,7 @@ function assertTimeZone(value: unknown) {
 }
 
 async function ownedTransaction(prisma: PrismaClient, ownerAgentSubject: string, id: string) {
-  const transaction = await prisma.transaction.findFirst({ where: { id, ownerAgentSubject } });
+  const transaction = await prisma.transaction.findFirst({ where: { id, ownerAgentSubject, side: 'BUYER', canonicalPropertyId: { not: null } } });
   if (!transaction) throw new BuyerUnderContractError('NOT_FOUND', 'The transaction is unavailable to this Agent.');
   return transaction;
 }
@@ -336,7 +336,7 @@ export function createBuyerUnderContractService(prisma: PrismaClient) {
   }
 
   async function listOwned(ownerAgentSubject: string) {
-    return prisma.transaction.findMany({ where: { ownerAgentSubject }, include: { canonicalProperty: true }, orderBy: { updatedAt: 'desc' } });
+    return prisma.transaction.findMany({ where: { ownerAgentSubject, side: 'BUYER', canonicalPropertyId: { not: null }, stage: { not: 'PREPARATION' } }, include: { canonicalProperty: true }, orderBy: { updatedAt: 'desc' } });
   }
 
   async function persistUnderContractBrief(ownerAgentSubject: string, transactionId: string, versionLabel: string, reviewNote?: string) {
@@ -353,6 +353,8 @@ export function createBuyerUnderContractService(prisma: PrismaClient) {
 export function buildUnderContractBriefFixture(transaction: Awaited<ReturnType<ReturnType<typeof createBuyerUnderContractService>['getOwned']>>, versionLabel: string): PersistableOutputFixture {
   const trimmedVersion = string(versionLabel, 'versionLabel', 80);
   const archivePolicy = transactionArchivePolicy();
+  const canonicalProperty = transaction.canonicalProperty;
+  if (!canonicalProperty) throw new BuyerUnderContractError('PERSISTENCE_UNAVAILABLE', 'Buyer Under Contract requires a canonical property.');
   const contentPayload = {
     schemaVersion: BUYER_UNDER_CONTRACT_DECISION_BRIEF_VERSION,
     transaction: {
@@ -364,7 +366,7 @@ export function buildUnderContractBriefFixture(transaction: Awaited<ReturnType<R
       executionVerificationStatus: transaction.executionVerificationStatus,
       sourceReference: transaction.sourceReference,
       limitations: transaction.limitations,
-      canonicalProperty: { id: transaction.canonicalProperty.id, label: transaction.canonicalProperty.sourceFormattedSitusAddress, city: transaction.canonicalProperty.city, state: transaction.canonicalProperty.state, identityStatus: transaction.canonicalProperty.identityStatus, identityConfidence: transaction.canonicalProperty.identityConfidence },
+      canonicalProperty: { id: canonicalProperty.id, label: canonicalProperty.sourceFormattedSitusAddress, city: canonicalProperty.city, state: canonicalProperty.state, identityStatus: canonicalProperty.identityStatus, identityConfidence: canonicalProperty.identityConfidence },
     },
     deadlines: transaction.deadlines.map((deadline) => ({ id: deadline.id, label: deadline.label, category: deadline.category, dueAt: deadline.dueAt.toISOString(), timezone: deadline.timezone, verificationStatus: deadline.verificationStatus, attentionState: deadline.attentionState, supersededByDeadlineId: deadline.supersededByDeadline?.id ?? null })),
     issues: transaction.issues.map((issue) => ({ id: issue.id, title: issue.title, category: issue.category, factualSummary: issue.factualSummary, sourceClass: issue.sourceClass, state: issue.state, attentionLevel: issue.attentionLevel, professionalInputResponseId: issue.professionalInputResponseId, evidenceCandidateId: issue.evidenceCandidateId, evidenceCandidateStatus: issue.evidenceCandidate?.status ?? issue.professionalInputResponse?.candidate.status ?? null, evidenceAdmissionId: issue.evidenceAdmissionId })),

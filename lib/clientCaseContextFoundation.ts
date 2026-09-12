@@ -60,7 +60,7 @@ export function createClientCaseContextService(prisma: PrismaClient) {
       include: {
         parties: { orderBy: { createdAt: 'asc' } },
         properties: { include: { canonicalProperty: { select: { id: true, sourceFormattedSitusAddress: true, normalizedSitusAddress: true, city: true, state: true, postalCode: true } } }, orderBy: { createdAt: 'asc' } },
-        transactions: { select: { id: true, label: true, side: true, stage: true, updatedAt: true }, orderBy: { updatedAt: 'desc' }, take: 12 },
+        transactions: { select: { id: true, label: true, side: true, status: true, stage: true, updatedAt: true }, orderBy: { updatedAt: 'desc' }, take: 12 },
       },
     });
     if (!clientCase) throw new ClientCaseError('NOT_FOUND', 'The Client Case is unavailable to this Agent.');

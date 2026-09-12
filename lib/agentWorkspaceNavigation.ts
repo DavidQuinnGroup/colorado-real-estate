@@ -17,7 +17,7 @@ export const agentWorkspaceNavigation: AgentNavigationItem[] = [
   { key: 'seller', label: 'Seller', href: '/agent/prepare/seller', type: 'WORK_DOMAIN', active: startsWith('/agent/prepare/seller') || startsWith('/agent/prepare/listing') },
   { key: 'financial', label: 'Financial Strategy', href: '/agent/strategy', type: 'WORK_DOMAIN', active: (pathname) => ['/agent/strategy', '/agent/investment', '/agent/advanced-return'].includes(pathname) || startsWith('/agent/prepare/seller/financial')(pathname) },
   { key: 'intelligence', label: 'Intelligence', href: '/agent/prepare/market', type: 'WORK_DOMAIN', active: (pathname) => ['/agent/prepare/market', '/agent/prepare/market-update', '/agent/prepare/place', '/agent/prepare/property'].includes(pathname) },
-  { key: 'transactions', label: 'Transactions', href: '/agent/under-contract', type: 'WORK_DOMAIN', active: startsWith('/agent/under-contract') },
+  { key: 'transactions', label: 'Transactions', href: '/agent/transactions', type: 'WORK_DOMAIN', active: (pathname) => startsWith('/agent/transactions')(pathname) || startsWith('/agent/under-contract')(pathname) },
   { key: 'outputs', label: 'Outputs', href: '/agent/outputs', type: 'WORK_DOMAIN', active: startsWith('/agent/outputs') },
   { key: 'authorizations', label: 'Client Authorization', href: '/agent/authorizations', type: 'UTILITY', active: startsWith('/agent/authorizations') },
 ];

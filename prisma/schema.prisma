@@ -150,9 +150,18 @@ enum EvidenceVerificationStatus {
 
 enum TransactionSide {
   BUYER
+  SELLER
+}
+
+enum TransactionLifecycleStatus {
+  DRAFT
+  ACTIVE
+  CLOSED
+  CANCELLED
 }
 
 enum TransactionOperationalStage {
+  PREPARATION
   UNDER_CONTRACT
   INSPECTION_PERIOD
   TITLE_DUE_DILIGENCE
@@ -265,7 +274,10 @@ enum TransactionDecisionSourceMethod {
 
 enum TransactionTimelineEventType {
   TRANSACTION_CREATED
+  TRANSACTION_STATUS_CHANGED
   STAGE_REPORTED
+  PROPERTY_ASSOCIATED
+  PARTY_ATTACHED
   DEADLINE_RECORDED
   DEADLINE_VERIFIED
   DEADLINE_SUPERSEDED
@@ -275,6 +287,12 @@ enum TransactionTimelineEventType {
   DECISION_SUPERSEDED
   OUTPUT_REVIEWED
   COMPLIANCE_CHECKPOINT_RECORDED
+}
+
+enum TransactionPartyRole {
+  BUYER
+  SELLER
+  AUTHORIZED_REPRESENTATIVE
 }
 
 enum EvidenceAdmissionPolicy {
@@ -2982,9 +3000,10 @@ model Transaction {
   id                          String                               @id @default(cuid())
   ownerAgentSubject           String
   clientCaseId                String?
-  canonicalPropertyId         String
+  canonicalPropertyId         String?
   label                       String
   side                        TransactionSide
+  status                      TransactionLifecycleStatus           @default(ACTIVE)
   stage                       TransactionOperationalStage
   clientContextLabel          String?
   clientContextStatus         String                               @default("SYNTHETIC_OR_REVIEW_REQUIRED")
@@ -2993,23 +3012,42 @@ model Transaction {
   contractProfileReference    String?
   sourceReference             String?
   limitations                 String?
+  closedAt                    DateTime?
+  cancelledAt                 DateTime?
   archivePolicyVersion        String                               @default("DQG_TRANSACTION_ARCHIVE_POLICY_V1")
   idempotencyKey              String                               @unique
   createdAt                   DateTime                             @default(now())
   updatedAt                   DateTime                             @updatedAt
 
-  canonicalProperty CanonicalPhysicalProperty  @relation(fields: [canonicalPropertyId], references: [id], onDelete: Restrict)
+  canonicalProperty CanonicalPhysicalProperty? @relation(fields: [canonicalPropertyId], references: [id], onDelete: Restrict)
   clientCase        ClientCase?                @relation(fields: [clientCaseId], references: [id], onDelete: SetNull)
   deadlines         TransactionDeadline[]
   issues            TransactionIssue[]
   decisions         TransactionDecision[]
   timelineEvents    TransactionTimelineEvent[]
+  parties           TransactionParty[]
   outputProducts    OutputProduct[]
 
   @@index([ownerAgentSubject, createdAt])
   @@index([ownerAgentSubject, stage])
+  @@index([ownerAgentSubject, status])
   @@index([canonicalPropertyId])
   @@index([clientCaseId])
+}
+
+model TransactionParty {
+  id                   String               @id @default(cuid())
+  transactionId        String
+  clientCasePartyId    String
+  role                 TransactionPartyRole
+  displayLabelSnapshot String
+  createdAt            DateTime             @default(now())
+
+  transaction     Transaction     @relation(fields: [transactionId], references: [id], onDelete: Restrict)
+  clientCaseParty ClientCaseParty @relation(fields: [clientCasePartyId], references: [id], onDelete: Restrict)
+
+  @@unique([transactionId, clientCasePartyId])
+  @@index([clientCasePartyId])
 }
 
 model ClientCase {
@@ -3042,6 +3080,7 @@ model ClientCaseParty {
   updatedAt    DateTime             @updatedAt
 
   clientCase ClientCase @relation(fields: [clientCaseId], references: [id], onDelete: Restrict)
+  transactionParties TransactionParty[]
 
   @@index([clientCaseId, role])
 }
