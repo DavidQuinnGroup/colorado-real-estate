@@ -31,8 +31,11 @@ The profile classes are intentionally not attached to current layouts:
 - `atlas-ds-shell-client`: decision-oriented calm with comfortable spacing.
 - `atlas-ds-shell-admin`: compact, minimal operational density.
 
-Each profile only adjusts material strength, reading width, or density. It does
-not alter status, warning, error, focus, or information-class semantics.
+Each profile adjusts canonical material strength, blur, border emphasis, depth,
+canvas atmosphere, reading width, and density rhythm. It does not alter status,
+warning, error, focus, action, or information-class semantics. Public is the
+most editorial and spacious expression; Agent is restrained and analytical;
+Client is calm and decision-oriented; Admin is the most compact and utilitarian.
 
 ## Shared Primitives
 
@@ -71,6 +74,7 @@ route. Executive visual review remains required.
 
 - `npm run check:liquid-glass-design-system-foundation`
 - `npm run check:liquid-glass-visual-certification-fixture`
+- `npm run check:liquid-glass-human-certification-remediation`
 - `npm run check:interactive-cursor-styles`
 - `npm run check:tailwind-v4-style-pipeline`
 - `npm run check:project-atlas-navigation-invariant`

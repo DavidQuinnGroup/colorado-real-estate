@@ -12,6 +12,13 @@ assert.match(styles, /@media \(prefers-color-scheme: dark\)/);
 assert.match(styles, /@theme inline/);
 assert.match(styles, /--color-atlas-canvas: var\(--atlas-canvas\);/);
 assert.match(styles, /--atlas-surface-primary:/);
+assert.match(styles, /--atlas-surface-secondary:/);
+assert.match(styles, /--atlas-surface-elevated:/);
+assert.match(styles, /--atlas-surface-floating:/);
+assert.match(styles, /--atlas-surface-data:/);
+assert.match(styles, /--atlas-surface-reading:/);
+assert.match(styles, /--atlas-surface-critical:/);
+assert.match(styles, /--atlas-canvas-atmosphere:/);
 assert.match(styles, /--atlas-text-primary:/);
 assert.match(styles, /--atlas-action-primary:/);
 assert.match(styles, /--atlas-field-background:/);
@@ -25,6 +32,18 @@ assert.match(styles, /--atlas-duration-standard:/);
 
 for (const profile of ['public', 'agent', 'client', 'admin']) {
   assert.match(styles, new RegExp(`\\.atlas-ds-shell-${profile}`));
+}
+
+for (const profileVariable of [
+  '--atlas-profile-glass-opacity',
+  '--atlas-profile-glass-blur',
+  '--atlas-profile-glass-border',
+  '--atlas-profile-glass-depth',
+  '--atlas-profile-section-gap',
+  '--atlas-profile-panel-padding',
+  '--atlas-profile-control-gap',
+]) {
+  assert.match(styles, new RegExp(profileVariable));
 }
 
 for (const className of [
@@ -52,6 +71,7 @@ assert.match(styles, /@media \(prefers-contrast: more\), \(forced-colors: active
 assert.match(styles, /min-height: 2\.75rem/);
 assert.match(styles, /outline: 3px solid var\(--atlas-focus-ring\)/);
 assert.match(styles, /\.atlas-ds-surface-glass \.atlas-ds-surface-glass/);
+assert.match(styles, /background: linear-gradient\(135deg, var\(--atlas-profile-canvas-wash\)/);
 
 for (const exportName of [
   'AtlasSurface',

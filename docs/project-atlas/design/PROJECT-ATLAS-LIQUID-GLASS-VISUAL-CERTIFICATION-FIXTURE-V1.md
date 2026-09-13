@@ -34,14 +34,16 @@ theme override that would create a second theme mechanism.
 ## Direct Proof Coverage
 
 The fixture provides direct, synthetic inspection of all four shell profile
-classes, typography hierarchy, glass and solid material hierarchy, buttons and
-links, field states, status and notice roles, all eight information classes,
+classes using the same representative primitives in a comparison matrix. It
+also exposes typography hierarchy, glass and solid material hierarchy, buttons
+and links, field states, status and notice roles, all eight information classes,
 loading/empty/error states, analytical data primitives, responsive behavior, and
 keyboard focus/reduced-motion instructions.
 
 ## Validation
 
-Run `npm run check:liquid-glass-visual-certification-fixture` with the existing
+Run `npm run check:liquid-glass-visual-certification-fixture` and
+`npm run check:liquid-glass-human-certification-remediation` with the existing
 Wave 0 foundation, cursor, navigation, typecheck, lint, and build checks.
 
 The repository includes Playwright, but it has no pre-existing authenticated

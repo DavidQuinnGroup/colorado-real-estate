@@ -6,11 +6,14 @@
 .statePanel, .section, .profileSample, .typeSpecimen, .surfaceGrid > *, .informationGrid > *, .stateGrid > *, .noticeGrid > * { padding: var(--atlas-space-5); }
 .sectionNavigation { position: sticky; top: 0; z-index: 1; display: flex; gap: var(--atlas-space-4); overflow-x: auto; width: min(100%, 88rem); margin: 0 auto; padding: var(--atlas-space-3) var(--atlas-space-6); border-bottom: 1px solid var(--atlas-border-subtle); background: var(--atlas-surface-floating); }
 .sectionNavigation :global(.atlas-ds-link) { flex: 0 0 auto; }
-.content { display: grid; gap: var(--atlas-space-10); padding: var(--atlas-space-8) 0 var(--atlas-space-12); }
-.section { display: grid; gap: var(--atlas-space-5); scroll-margin-top: 4rem; }
-.controlRow, .actionGrid, .linkRow, .statusGrid, .accessibilityRow { display: flex; flex-wrap: wrap; gap: var(--atlas-space-3); align-items: center; }
+.content { display: grid; gap: var(--atlas-profile-section-gap); padding: var(--atlas-space-8) 0 var(--atlas-space-12); }
+.section { display: grid; gap: var(--atlas-profile-density-space); scroll-margin-top: 4rem; }
+.controlRow, .actionGrid, .linkRow, .statusGrid, .accessibilityRow { display: flex; flex-wrap: wrap; gap: var(--atlas-profile-control-gap); align-items: center; }
 .profileGrid, .surfaceGrid, .formGrid, .noticeGrid, .informationGrid, .stateGrid, .metricGrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--atlas-space-4); }
-.profileSample, .surfaceGrid > *, .informationGrid > *, .stateGrid > * { display: grid; gap: var(--atlas-space-3); min-height: 10rem; }
+.profileSample, .surfaceGrid > *, .informationGrid > *, .stateGrid > * { display: grid; gap: var(--atlas-profile-control-gap); min-height: 10rem; }
+.profileSample { padding: var(--atlas-profile-panel-padding); }
+.profileSample :global(.atlas-ds-field) { gap: var(--atlas-space-1); }
+.profileSample :global(.atlas-ds-action) { width: 100%; }
 .canvasSample { display: grid; align-content: center; min-height: 10rem; border: 1px dashed var(--atlas-border-strong); border-radius: var(--atlas-radius-lg); padding: var(--atlas-space-5); }
 .typeSpecimen { display: grid; gap: var(--atlas-space-4); }
 .noticeGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }

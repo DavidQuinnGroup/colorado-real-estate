@@ -57,6 +57,19 @@ function Section({ children, id, title }: { children: ReactNode; id: string; tit
   );
 }
 
+function ProfileSample({ profile }: { profile: ShellProfile }) {
+  return (
+    <AtlasSurface className={`atlas-ds-shell-${profile} ${styles.profileSample}`} data-profile-sample={profile} material="glass">
+      <p className="atlas-ds-label">{profileLabels[profile]} material profile</p>
+      <p className="atlas-ds-panel-title">Synthetic review context</p>
+      <p className="atlas-ds-metadata">The same primitives expose this profile&apos;s density, material strength, and boundary treatment.</p>
+      <AtlasField htmlFor={`fixture-profile-${profile}`} label="Illustrative scope"><input className="atlas-ds-input" id={`fixture-profile-${profile}`} readOnly value="Synthetic only" /></AtlasField>
+      <AtlasStatusLabel status="review-required" />
+      <AtlasButton tone="primary">Primary action</AtlasButton>
+    </AtlasSurface>
+  );
+}
+
 export function DesignSystemVisualCertificationFixture() {
   const [profile, setProfile] = useState<ShellProfile>('agent');
   const [systemTheme, setSystemTheme] = useState<'light' | 'dark' | null>(null);
@@ -105,7 +118,7 @@ export function DesignSystemVisualCertificationFixture() {
 
         <div className={styles.content}>
           <Section id="profiles" title="Shell profile comparison">
-            <p className={styles.supportingCopy}>Profile selection changes only fixture-local composition through the canonical shell profile class.</p>
+            <p className={styles.supportingCopy}>Each sample uses the same canonical primitives and profile class so material, density, and spacing differences can be compared directly.</p>
             <div className={styles.controlRow} data-testid="atlas-fixture-profile-controls">
               {(Object.keys(profileLabels) as ShellProfile[]).map((candidate) => (
                 <AtlasButton aria-pressed={profile === candidate} key={candidate} onClick={() => setProfile(candidate)} tone={profile === candidate ? 'primary' : 'secondary'}>
@@ -113,15 +126,7 @@ export function DesignSystemVisualCertificationFixture() {
                 </AtlasButton>
               ))}
             </div>
-            <div className={styles.profileGrid}>
-              {(Object.keys(profileLabels) as ShellProfile[]).map((candidate) => (
-                <AtlasSurface className={`atlas-ds-shell-${candidate} ${styles.profileSample}`} key={candidate} material="glass">
-                  <p className="atlas-ds-label">{profileLabels[candidate]} material profile</p>
-                  <p className="atlas-ds-panel-title">{candidate === profile ? 'Selected for inspection' : 'Comparison sample'}</p>
-                  <p className="atlas-ds-metadata">Actual profile density, reading width, and glass strength.</p>
-                </AtlasSurface>
-              ))}
-            </div>
+            <div className={styles.profileGrid}>{(Object.keys(profileLabels) as ShellProfile[]).map((candidate) => <ProfileSample key={candidate} profile={candidate} />)}</div>
           </Section>
 
           <Section id="typography" title="Typography hierarchy">
@@ -137,7 +142,7 @@ export function DesignSystemVisualCertificationFixture() {
           </Section>
 
           <Section id="surfaces" title="Surface and material hierarchy">
-            <div className={styles.surfaceGrid}>
+            <div aria-label="Canonical material comparison" className={styles.surfaceGrid} data-testid="atlas-fixture-material-matrix">
               <div className={styles.canvasSample}><p className="atlas-ds-label">Base canvas</p><p className="atlas-ds-metadata">Foundation layer</p></div>
               <AtlasSurface material="glass"><p className="atlas-ds-label">Primary glass</p><p className="atlas-ds-metadata">Spatial context</p></AtlasSurface>
               <AtlasSurface material="glass"><AtlasSurface material="glass"><p className="atlas-ds-label">Secondary glass</p><p className="atlas-ds-metadata">Nested glass removes additional blur.</p></AtlasSurface></AtlasSurface>

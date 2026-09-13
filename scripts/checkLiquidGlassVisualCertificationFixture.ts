@@ -33,7 +33,9 @@ for (const primitive of [
 
 assert.match(fixture, /type ShellProfile = 'public' \| 'agent' \| 'client' \| 'admin';/);
 assert.match(fixture, /atlas-ds-shell-\$\{profile\}/);
-assert.match(fixture, /atlas-ds-shell-\$\{candidate\}/);
+assert.match(fixture, /function ProfileSample/);
+assert.match(fixture, /data-profile-sample=\{profile\}/);
+assert.match(fixture, /data-testid="atlas-fixture-material-matrix"/);
 
 for (const informationClass of [
   'governed-fact',
@@ -56,6 +58,9 @@ assert.doesNotMatch(fixtureStyles, /--atlas-[\w-]+\s*:/, 'fixture styles must co
 assert.match(fixture, /prefers-color-scheme: dark/);
 assert.match(fixture, /prefers-reduced-motion: reduce/);
 assert.match(fixture, /data-testid="atlas-visual-certification-fixture"/);
+assert.match(fixtureStyles, /var\(--atlas-profile-section-gap\)/);
+assert.match(fixtureStyles, /var\(--atlas-profile-panel-padding\)/);
+assert.match(fixtureStyles, /var\(--atlas-profile-control-gap\)/);
 assert.equal(packageJson.scripts?.['check:liquid-glass-visual-certification-fixture'], 'jiti scripts/checkLiquidGlassVisualCertificationFixture.ts');
 
 console.log('LIQUID_GLASS_VISUAL_CERTIFICATION_FIXTURE_CHECK: PASS');
