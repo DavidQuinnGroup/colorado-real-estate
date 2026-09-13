@@ -5,7 +5,7 @@ import { createProjectAtlasExternalUnavailableResponse } from '../lib/projectAtl
 
 const applicationShell = readFileSync('components/ApplicationShell.tsx', 'utf8');
 const publicNavigation = readFileSync('components/PublicNavigation.tsx', 'utf8');
-const agentShell = readFileSync('components/agent/AgentWorkspaceShell.tsx', 'utf8');
+const agentShell = `${readFileSync('components/agent/AgentWorkspaceShell.tsx', 'utf8')}\n${readFileSync('components/agent/AgentWorkspaceNavigation.tsx', 'utf8')}`;
 const externalShell = readFileSync('components/project-atlas/ProjectAtlasExternalShell.tsx', 'utf8');
 const clientLayout = readFileSync('app/client-authorization/layout.tsx', 'utf8');
 const professionalLayout = readFileSync('app/professional-request/layout.tsx', 'utf8');

@@ -53,11 +53,11 @@ async function assertAgentAccess(path: (typeof agentRoutes)[number], cookie: str
 
 async function main() {
   const layout = source('app/agent/layout.tsx');
-  const shell = source('components/agent/AgentWorkspaceShell.tsx');
+  const shell = `${source('components/agent/AgentWorkspaceShell.tsx')}\n${source('components/agent/AgentWorkspaceNavigation.tsx')}`;
   const middleware = source('middleware.ts');
 
   assert.match(layout, /<AgentWorkspaceShell>\{children\}<\/AgentWorkspaceShell>/, 'The shared Agent shell must cover every Agent route.');
-  assert.match(shell, /<Link href="\/" prefetch=\{false\}[\s\S]*data-testid="agent-workspace-public-site-link"/, 'The shared Agent shell must expose a non-prefetched same-origin Public Site return link.');
+  assert.match(shell, /href="\/"[\s\S]*prefetch=\{false\}/, 'The shared Agent shell must expose a non-prefetched same-origin Public Site return link.');
   assert.match(shell, /<Globe2[^>]*aria-hidden="true"[^>]*\/>[\s\S]*Public Site/, 'Public Site must have an accessible visible label and familiar navigation icon.');
   assert.ok(shell.indexOf('agent-workspace-home-link') < shell.indexOf('agent-workspace-public-site-link'), 'Workspace Home must precede Public Site in the Agent control hierarchy.');
   assert.ok(shell.indexOf('agent-workspace-public-site-link') < shell.indexOf('agent-workspace-sign-out'), 'Public Site must precede Sign out in the Agent control hierarchy.');

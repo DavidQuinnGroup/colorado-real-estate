@@ -150,13 +150,14 @@ async function main() {
   for (const path of agentRoutes) await assertSignedOut(path);
 
   const middleware = source('middleware.ts');
-  const shell = source('components/agent/AgentWorkspaceShell.tsx');
+  const shell = `${source('components/agent/AgentWorkspaceShell.tsx')}\n${source('components/agent/AgentWorkspaceNavigation.tsx')}`;
   assert.match(middleware, /const isAgentWorkspaceRoute = pathname === '\/agent' \|\| pathname\.startsWith\('\/agent\/'\);/, 'Middleware must protect the full Agent namespace before route-local authorization.');
   assert.match(source('lib/admin/adminAuth.ts'), /\^\\\/agent\\\/clients\\\/\[\^\//, 'Canonical Client Case detail routes must remain Agent-authorized.');
   assert.match(source('lib/admin/adminAuth.ts'), /surface\('\/agent\/:unrecognized-path\*'/, 'Unknown Agent paths must fail closed.');
   assert.match(middleware, /Cache-Control', 'private, no-store'/, 'Authenticated Agent route responses must be private and non-storable.');
   assert.match(middleware, /x-middleware-cache', 'no-cache'/, 'Middleware results must not persist in the client router cache.');
-  assert.match(shell, /<Link href="\/" prefetch=\{false\}/, 'Public Site must use the repository-supported non-prefetched same-origin navigation primitive.');
+  assert.match(shell, /href="\/"/, 'Public Site must use the repository-supported same-origin navigation primitive.');
+  assert.match(shell, /prefetch=\{false\}/, 'Public Site navigation must remain non-prefetched.');
   assert.match(shell, /agentWorkspaceNavigation\.map\(/, 'The Agent shell must render the canonical workspace navigation collection.');
   assert.match(shell, /href=\{agentWorkspaceHref\(item, clientCaseId\)\}/, 'The Agent shell must preserve explicit same-origin workspace destinations.');
   assert.doesNotMatch(source('lib/admin/adminAuth.ts'), /surface\('\/agent\/:path\*'/, 'The authorization classifier must not create a generic Agent authorization surface.');

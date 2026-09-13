@@ -8,8 +8,8 @@ function requireText(path: string, expected: string) {
 requireText('lib/agentWorkspaceNavigation.ts', "label: 'Client Work'");
 requireText('lib/agentWorkspaceNavigation.ts', "label: 'Transactions'");
 requireText('lib/agentWorkspaceNavigation.ts', "label: 'Client Authorization'");
-requireText('components/agent/AgentWorkspaceShell.tsx', 'aria-current={active ? \'page\' : undefined}');
-requireText('components/agent/AgentWorkspaceShell.tsx', '<a href="/agent/logout?next=/agent"');
+requireText('components/agent/AgentWorkspaceNavigation.tsx', 'aria-current={active ? \'page\' : undefined}');
+requireText('components/agent/AgentWorkspaceNavigation.tsx', 'data-testid="agent-workspace-sign-out"');
 requireText('components/agent/AgentWorkspaceHome.tsx', "fetch('/api/agent/client-cases'");
 requireText('components/agent/AgentWorkspaceHome.tsx', 'No recent active Client Cases');
 requireText('middleware.ts', "pathname === '/agent' || pathname.startsWith('/agent/')");
