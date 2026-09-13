@@ -73,7 +73,7 @@ assert.match(styles, /@media \(prefers-contrast: more\), \(forced-colors: active
 assert.match(styles, /min-height: 2\.75rem/);
 assert.match(styles, /outline: 3px solid var\(--atlas-focus-ring\)/);
 assert.match(styles, /\.atlas-ds-surface-glass \.atlas-ds-surface-glass/);
-assert.match(styles, /background: linear-gradient\(135deg, var\(--atlas-profile-canvas-wash\)/);
+assert.match(styles, /\.atlas-ds-canvas \{[\s\S]*?background-color: var\(--atlas-canvas\);[\s\S]*?background-image: linear-gradient\(135deg, var\(--atlas-profile-canvas-wash\)/);
 assert.match(styles, /\.atlas-ds-field-control > \.atlas-ds-input[\s\S]*?flex: 1 1 0; width: auto; min-width: 0;/);
 
 for (const exportName of [

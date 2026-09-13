@@ -13,7 +13,7 @@
 .profileGrid, .surfaceGrid, .formGrid, .noticeGrid, .informationGrid, .stateGrid, .metricGrid { display: grid; min-width: 0; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--atlas-space-4); }
 .profileGrid, .surfaceGrid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .profileSample, .surfaceGrid > *, .informationGrid > *, .stateGrid > * { display: grid; gap: var(--atlas-profile-control-gap); min-height: 10rem; }
-.profileSample { padding: var(--atlas-profile-panel-padding); }
+.profileSample { align-self: start; gap: var(--atlas-profile-content-gap); padding: var(--atlas-profile-panel-padding); }
 .profileSample :global(.atlas-ds-metadata) { max-width: min(var(--atlas-profile-copy-measure), 100%); overflow-wrap: anywhere; }
 .profileSample :global(.atlas-ds-field) { gap: var(--atlas-space-1); }
 .profileSample :global(.atlas-ds-action) { width: 100%; }

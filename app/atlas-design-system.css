@@ -6,22 +6,22 @@
  */
 
 :root {
-  --atlas-canvas: #f7f9fc;
-  --atlas-canvas-raised: #edf3f7;
-  --atlas-canvas-atmosphere: linear-gradient(135deg, #fcfdff 0%, #eff5fa 54%, #e6f0f7 100%);
-  --atlas-surface-primary: rgb(255 255 255 / 0.74);
-  --atlas-surface-secondary: rgb(239 246 251 / 0.8);
-  --atlas-surface-elevated: #fafdff;
+  --atlas-canvas: #f5f8fb;
+  --atlas-canvas-raised: #eaf1f6;
+  --atlas-canvas-atmosphere: linear-gradient(135deg, #fcfdff 0%, #edf4f8 54%, #e4eef5 100%);
+  --atlas-surface-primary: rgb(255 255 255 / 0.9);
+  --atlas-surface-secondary: rgb(244 249 252 / 0.9);
+  --atlas-surface-elevated: #fbfdff;
   --atlas-surface-floating: #ffffff;
-  --atlas-surface-data: #e8f0f6;
+  --atlas-surface-data: #eef4f8;
   --atlas-surface-reading: #fffefa;
-  --atlas-surface-critical: #fff1f3;
+  --atlas-surface-critical: #fff3f4;
   --atlas-text-primary: #102235;
   --atlas-text-secondary: #385064;
   --atlas-text-muted: #5f7284;
   --atlas-text-inverse: #ffffff;
-  --atlas-border-subtle: rgb(71 101 125 / 0.28);
-  --atlas-border-strong: rgb(48 76 99 / 0.62);
+  --atlas-border-subtle: rgb(71 101 125 / 0.26);
+  --atlas-border-strong: rgb(48 76 99 / 0.48);
   --atlas-action-primary: #0f5c74;
   --atlas-action-primary-hover: #0a4960;
   --atlas-action-secondary: rgb(255 255 255 / 0.62);
@@ -31,9 +31,9 @@
   --atlas-action-secure-hover: #0c4a6e;
   --atlas-action-destructive: #b4233e;
   --atlas-action-destructive-hover: #8f1d35;
-  --atlas-field-background: rgb(255 255 255 / 0.92);
-  --atlas-field-readonly: rgb(226 232 240 / 0.64);
-  --atlas-field-placeholder: #718096;
+  --atlas-field-background: #ffffff;
+  --atlas-field-readonly: #edf3f7;
+  --atlas-field-placeholder: #60758a;
   --atlas-focus-ring: #0891b2;
   --atlas-status-active: #087443;
   --atlas-status-pending: #9a6700;
@@ -65,9 +65,11 @@
   --atlas-space-4: 1rem;
   --atlas-space-5: 1.25rem;
   --atlas-space-6: 1.5rem;
+  --atlas-space-7: 1.75rem;
   --atlas-space-8: 2rem;
   --atlas-space-10: 2.5rem;
   --atlas-space-12: 3rem;
+  --atlas-space-16: 4rem;
   --atlas-radius-sm: 0.375rem;
   --atlas-radius-md: 0.5rem;
   --atlas-radius-lg: 0.75rem;
@@ -161,6 +163,7 @@
 @layer components {
   .atlas-ds-root {
     min-width: 0;
+    background-color: var(--atlas-canvas);
     color: var(--atlas-text-primary);
     font-family: var(--atlas-font-sans);
     color-scheme: light;
@@ -176,6 +179,7 @@
     --atlas-profile-glass-depth: var(--atlas-depth-1);
     --atlas-profile-section-gap: var(--atlas-space-8);
     --atlas-profile-panel-padding: var(--atlas-space-5);
+    --atlas-profile-content-gap: var(--atlas-space-3);
     --atlas-profile-control-gap: var(--atlas-space-3);
     --atlas-profile-canvas-wash: transparent;
     --atlas-profile-copy-measure: 100%;
@@ -183,55 +187,59 @@
 
   .atlas-ds-shell-public {
     --atlas-profile-reading-width: 74rem;
-    --atlas-profile-density-space: var(--atlas-space-8);
-    --atlas-profile-glass-opacity: 0.7;
-    --atlas-profile-glass-blur: 26px;
-    --atlas-profile-glass-border: color-mix(in srgb, var(--atlas-border-subtle) 36%, white);
+    --atlas-profile-density-space: var(--atlas-space-10);
+    --atlas-profile-glass-opacity: 0.64;
+    --atlas-profile-glass-blur: 24px;
+    --atlas-profile-glass-border: color-mix(in srgb, var(--atlas-border-subtle) 28%, white);
     --atlas-profile-glass-depth: var(--atlas-depth-2);
-    --atlas-profile-section-gap: var(--atlas-space-12);
-    --atlas-profile-panel-padding: var(--atlas-space-8);
-    --atlas-profile-control-gap: var(--atlas-space-5);
-    --atlas-profile-canvas-wash: rgb(190 221 237 / 0.26);
-    --atlas-profile-copy-measure: 34ch;
+    --atlas-profile-section-gap: var(--atlas-space-16);
+    --atlas-profile-panel-padding: var(--atlas-space-10);
+    --atlas-profile-content-gap: var(--atlas-space-6);
+    --atlas-profile-control-gap: var(--atlas-space-4);
+    --atlas-profile-canvas-wash: rgb(190 221 237 / 0.32);
+    --atlas-profile-copy-measure: 40ch;
   }
 
   .atlas-ds-shell-agent {
     --atlas-profile-reading-width: 100%;
     --atlas-profile-density-space: var(--atlas-space-2);
-    --atlas-profile-glass-opacity: 1;
-    --atlas-profile-glass-blur: 8px;
-    --atlas-profile-glass-border: color-mix(in srgb, var(--atlas-border-strong) 82%, var(--atlas-border-subtle));
+    --atlas-profile-glass-opacity: 0.96;
+    --atlas-profile-glass-blur: 6px;
+    --atlas-profile-glass-border: color-mix(in srgb, var(--atlas-border-strong) 88%, var(--atlas-border-subtle));
     --atlas-profile-glass-depth: var(--atlas-depth-1);
-    --atlas-profile-section-gap: var(--atlas-space-5);
-    --atlas-profile-panel-padding: var(--atlas-space-3);
+    --atlas-profile-section-gap: var(--atlas-space-6);
+    --atlas-profile-panel-padding: var(--atlas-space-4);
+    --atlas-profile-content-gap: var(--atlas-space-2);
     --atlas-profile-control-gap: var(--atlas-space-2);
-    --atlas-profile-canvas-wash: rgb(148 188 207 / 0.05);
+    --atlas-profile-canvas-wash: rgb(148 188 207 / 0.02);
     --atlas-profile-copy-measure: 100%;
   }
 
   .atlas-ds-shell-client {
     --atlas-profile-reading-width: 68rem;
-    --atlas-profile-density-space: var(--atlas-space-5);
-    --atlas-profile-glass-opacity: 0.86;
-    --atlas-profile-glass-blur: 18px;
-    --atlas-profile-glass-border: color-mix(in srgb, var(--atlas-border-subtle) 64%, white);
+    --atlas-profile-density-space: var(--atlas-space-6);
+    --atlas-profile-glass-opacity: 0.78;
+    --atlas-profile-glass-blur: 14px;
+    --atlas-profile-glass-border: color-mix(in srgb, var(--atlas-border-subtle) 58%, white);
     --atlas-profile-glass-depth: var(--atlas-depth-2);
-    --atlas-profile-section-gap: var(--atlas-space-10);
-    --atlas-profile-panel-padding: var(--atlas-space-6);
+    --atlas-profile-section-gap: var(--atlas-space-12);
+    --atlas-profile-panel-padding: var(--atlas-space-7);
+    --atlas-profile-content-gap: var(--atlas-space-4);
     --atlas-profile-control-gap: var(--atlas-space-3);
-    --atlas-profile-canvas-wash: rgb(197 215 235 / 0.18);
-    --atlas-profile-copy-measure: 38ch;
+    --atlas-profile-canvas-wash: rgb(197 215 235 / 0.2);
+    --atlas-profile-copy-measure: 46ch;
   }
 
   .atlas-ds-shell-admin {
     --atlas-profile-reading-width: 100%;
     --atlas-profile-density-space: var(--atlas-space-1);
     --atlas-profile-glass-opacity: 1;
-    --atlas-profile-glass-blur: 4px;
+    --atlas-profile-glass-blur: 0px;
     --atlas-profile-glass-border: var(--atlas-border-strong);
     --atlas-profile-glass-depth: var(--atlas-depth-1);
     --atlas-profile-section-gap: var(--atlas-space-4);
-    --atlas-profile-panel-padding: var(--atlas-space-2);
+    --atlas-profile-panel-padding: var(--atlas-space-3);
+    --atlas-profile-content-gap: var(--atlas-space-1);
     --atlas-profile-control-gap: var(--atlas-space-1);
     --atlas-profile-canvas-wash: rgb(117 150 169 / 0.03);
     --atlas-profile-copy-measure: 100%;
@@ -242,7 +250,8 @@
 
   .atlas-ds-canvas {
     min-height: 100%;
-    background: linear-gradient(135deg, var(--atlas-profile-canvas-wash) 0%, transparent 56%), var(--atlas-canvas-atmosphere);
+    background-color: var(--atlas-canvas);
+    background-image: linear-gradient(135deg, var(--atlas-profile-canvas-wash) 0%, transparent 56%), var(--atlas-canvas-atmosphere);
     color: var(--atlas-text-primary);
   }
 
