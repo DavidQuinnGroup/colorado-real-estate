@@ -9,6 +9,18 @@
 **Route migration:** none  
 **Theme strategy:** system-aware CSS variables with no account preference or client theme runtime
 
+## Current Certification Status
+
+`PROJECT_ATLAS_LIQUID_GLASS_DESIGN_SYSTEM_FOUNDATION_V1` is
+`CERTIFIED_AND_CLOSED` as of `2026-09-13`. The certified implementation is
+`b88d3e94ac7dd44acea2278ee5c0a46eb7b6a5ff`; the canonical Executive human
+certification, closure evidence, adoption boundary, and baseline governance
+are recorded in
+`docs/project-atlas/design/PROJECT-ATLAS-LIQUID-GLASS-DESIGN-SYSTEM-FOUNDATION-V1-EXECUTIVE-HUMAN-CERTIFICATION-AND-CLOSURE.md`.
+
+This completion certifies the opt-in foundation only. It does not authorize a
+shell migration, navigation redesign, page-family conversion, or Wave 1.
+
 ## Source Of Truth
 
 `app/atlas-design-system.css` is the canonical Wave 0 token source. Its roles
@@ -82,11 +94,13 @@ route. Executive visual review remains required.
 - `npm run typecheck`
 - `npm run build`
 
-## Human Certification Package
+## Historic Human Certification Package
 
-Human certification remains required before Wave 0 may be described as
-certified. Inspect representative existing routes and any authorized future
-consumer surface using this sequence:
+The following was the required Executive review sequence before Foundation V1
+could be certified. It is retained as the historical certification method;
+the final Executive PASS is recorded in the canonical closure record above.
+Inspect representative existing routes and any authorized future consumer
+surface using this sequence:
 
 1. **HC-LG0-01 Theme:** switch system light and dark preference. Confirm the
    foundation has coherent contrast, no visible flash, and related shell
@@ -120,7 +134,7 @@ workflow for these screenshots.
 
 ## Next Gate
 
-`PROJECT_ATLAS_LIQUID_GLASS_DESIGN_SYSTEM_FOUNDATION_V1_HUMAN_CERTIFICATION`
-
-No shell migration, navigation migration, page-family redesign, or Wave 1 work
-is authorized by this foundation contract.
+`PROJECT_ATLAS_LIQUID_GLASS_AGENT_WORKSPACE_SHELL_ADOPTION_V1` is the
+recommended first bounded adoption candidate and requires separate Executive
+authorization. No shell migration, navigation migration, page-family redesign,
+or Wave 1 work is authorized by this foundation contract alone.
