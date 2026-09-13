@@ -28,10 +28,10 @@ for (const darkValue of ['#071017', 'rgb(15 28 39 / 0.74)', 'rgb(7 16 23 / 0.78)
 }
 
 assert.match(styles, /\.atlas-ds-root \{[\s\S]*?background-color: var\(--atlas-canvas\);/);
-assert.match(styles, /\.atlas-ds-canvas \{[\s\S]*?background-color: var\(--atlas-canvas\);[\s\S]*?background-image: linear-gradient/);
-assert.match(styles, /\.atlas-ds-surface-glass \{[\s\S]*?background: color-mix\(in srgb, var\(--atlas-surface-primary\)/);
-assert.match(styles, /\.atlas-ds-input,[\s\S]*?background: var\(--atlas-field-background\);/);
-assert.match(styles, /\.atlas-ds-input\[readonly\][\s\S]*?background: var\(--atlas-field-readonly\);/);
+assert.match(styles, /\.atlas-ds-canvas \{[\s\S]*?background-color: var\(--atlas-profile-canvas\);[\s\S]*?background-image: linear-gradient/);
+assert.match(styles, /\.atlas-ds-surface-glass \{[\s\S]*?background: color-mix\(in srgb, var\(--atlas-profile-surface-primary\)/);
+assert.match(styles, /\.atlas-ds-input,[\s\S]*?background: var\(--atlas-profile-field-background\);/);
+assert.match(styles, /\.atlas-ds-input\[readonly\][\s\S]*?background: var\(--atlas-profile-field-readonly\);/);
 
 const profiles = {
   public: {
@@ -49,7 +49,8 @@ const profiles = {
 };
 
 for (const [profile, expected] of Object.entries(profiles)) {
-  const start = styles.indexOf(`.atlas-ds-shell-${profile} {\n    --atlas-profile-reading-width:`);
+  const profileStyles = styles.slice(0, styles.indexOf('\n  @media (prefers-color-scheme: dark)'));
+  const start = profileStyles.lastIndexOf(`.atlas-ds-shell-${profile} {`);
   assert.notEqual(start, -1, `${profile} profile block must exist`);
   const end = styles.indexOf('\n  }', start);
   assert.notEqual(end, -1, `${profile} profile block must close`);

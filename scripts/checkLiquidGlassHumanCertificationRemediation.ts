@@ -65,7 +65,7 @@ for (const variable of profileVariables) {
   assert.equal(new Set(values).size > 1, true, `${variable} must differentiate at least one profile.`);
 }
 
-assert.match(styles, /\.atlas-ds-canvas \{[\s\S]*?background-color: var\(--atlas-canvas\);[\s\S]*?background-image: linear-gradient\(135deg, var\(--atlas-profile-canvas-wash\)/);
+assert.match(styles, /\.atlas-ds-canvas \{[\s\S]*?background-color: var\(--atlas-profile-canvas\);[\s\S]*?background-image: linear-gradient\(135deg, var\(--atlas-profile-canvas-wash\)/);
 assert.match(styles, /backdrop-filter: blur\(var\(--atlas-profile-glass-blur\)\)/);
 assert.match(styles, /box-shadow: var\(--atlas-profile-glass-depth/);
 assert.match(fixture, /function ProfileSample/);
