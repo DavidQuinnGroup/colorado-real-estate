@@ -96,6 +96,7 @@ export default function AgentWorkspaceNavigation({ clientCaseId }: AgentWorkspac
       <nav
         aria-label="Agent workspace navigation"
         className={`${styles.mobileNavigation} ${menuOpen ? styles.mobileNavigationOpen : ''}`}
+        hidden={!menuOpen}
         id="agent-workspace-mobile-navigation"
       >
         <div className={styles.mobileNavigationInner}>

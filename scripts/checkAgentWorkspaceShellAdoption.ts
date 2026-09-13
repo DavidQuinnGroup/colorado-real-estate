@@ -23,6 +23,7 @@ assert.match(navigation, /agentWorkspaceNavigation\.map/, 'Both responsive navig
 assert.match(navigation, /aria-current=\{active \? 'page' : undefined\}/, 'Active routes must remain programmatically identified.');
 assert.match(navigation, /aria-expanded=\{menuOpen\}/, 'The mobile navigation trigger must expose its state.');
 assert.match(navigation, /aria-controls="agent-workspace-mobile-navigation"/, 'The mobile navigation trigger must control the disclosure region.');
+assert.match(navigation, /hidden=\{!menuOpen\}/, 'Collapsed mobile navigation must be removed from the accessibility tree.');
 assert.match(navigation, /event\.key !== 'Escape'/, 'The mobile navigation must support Escape dismissal.');
 assert.match(navigation, /triggerRef\.current\?\.focus\(\)/, 'Escape dismissal must restore trigger focus.');
 assert.match(navigation, /href="\/" prefetch=\{false\}/, 'Public Site must retain its non-prefetched same-origin navigation behavior.');
