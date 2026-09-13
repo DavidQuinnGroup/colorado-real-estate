@@ -44,7 +44,7 @@ for (const [label, href, route] of [
   ['Buyer', '/agent/prepare/buyer', 'app/agent/prepare/buyer/page.tsx'],
   ['Seller', '/agent/prepare/seller', 'app/agent/prepare/seller/page.tsx'],
   ['Financial Strategy', '/agent/strategy', 'app/agent/strategy/page.tsx'],
-  ['Intelligence', '/agent/prepare/market', 'app/agent/prepare/market/page.tsx'],
+  ['Intelligence', '/agent/prepare', 'app/agent/prepare/page.tsx'],
   ['Transactions', '/agent/transactions', 'app/agent/transactions/page.tsx'],
   ['Outputs', '/agent/outputs', 'app/agent/outputs/page.tsx'],
   ['Client Authorization', '/agent/authorizations', 'app/agent/authorizations/page.tsx'],

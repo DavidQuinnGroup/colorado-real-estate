@@ -63,13 +63,12 @@ expectFailure('prohibitedRecommendation', 'RECOMMENDATION_PROHIBITED');
 
 const auth = source('lib/admin/adminAuth.ts');
 const middleware = source('middleware.ts');
-const agentShell = source('components/agent/AgentWorkspaceShell.tsx');
+const intelligenceLanding = source('components/agent/IntelligenceWorkspace.tsx');
 assert.ok(auth.includes("surface('/agent/prepare/market'"), 'Existing exact Agent Market classification must remain present.');
 assert.ok(auth.includes("surface('/agent/prepare/property', 'BROWSER_ADMIN_PAGE', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY'"), 'The certified exact Agent property route must be classified read-only without Admin inheritance.');
-assert.ok(middleware.includes('pathname === "/agent/prepare/market"'), 'Existing exact Agent Market middleware protection must remain present.');
-assert.ok(middleware.includes('pathname === "/agent/prepare/property"'), 'The exact Agent property route must use the existing Agent login redirect.');
-assert.ok(!middleware.includes('/agent/:path*'), 'Property preparation must not create a generic Agent authorization grant.');
-assert.ok(agentShell.includes('/agent/prepare/property'), 'The certified Property Preparation capability must be visible in the Agent shell.');
+assert.ok(middleware.includes("pathname === '/agent' || pathname.startsWith('/agent/')") && middleware.includes('buildAgentLoginRedirect'), 'Existing Agent preparation routes must remain protected by the centralized login guard.');
+assert.ok(auth.includes("surface('/agent/:unrecognized-path*', 'BROWSER_ADMIN_PAGE', [], [], []"), 'Unknown Agent paths must remain fail-closed rather than receiving a generic authorization grant.');
+assert.ok(intelligenceLanding.includes("href: '/agent/prepare/property'"), 'The certified Property Preparation capability must be visible through Intelligence.');
 assert.equal(existsSync(resolve(process.cwd(), 'app/agent/prepare/property/page.tsx')), true, 'The exact Agent property UI route must exist.');
 
 console.log('AGENT_PROPERTY_PREPARATION_ADMISSION_CHECK: PASS');

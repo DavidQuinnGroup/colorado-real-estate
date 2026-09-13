@@ -12,6 +12,8 @@ import AgentPreparationPageHeader from '@/components/agent/AgentPreparationPageH
 import { AGENT_PLACE_PREPARATION_P0_CITIES } from '@/lib/agent-advisory-workbench/agentPlacePreparationAdmission';
 import { prepareAgentPlaceConversation } from '@/lib/agent-advisory-workbench/agentPlaceConversationPreparation';
 
+import styles from './IntelligenceWorkspace.module.css';
+
 const PRESENTATION_LABELS = {
   FACT: 'Confirmed fact',
   CONTEXT: 'Local context',
@@ -41,8 +43,8 @@ export default function PlaceConversationExperience() {
   const composition = briefing?.composition ?? null;
 
   return (
-    <main className="min-h-screen bg-[#071014] px-5 py-6 text-slate-100 sm:px-8 sm:py-8 lg:px-12" data-testid="agent-place-conversation-experience" data-agent-only="true" data-persistence="false" data-customer-data="false" data-provider-activity="false" data-recommendation="false" data-suitability="false" data-fair-housing-inference="false">
-      <div className="mx-auto max-w-6xl">
+    <main className={styles.page} data-testid="agent-place-conversation-experience" data-agent-only="true" data-persistence="false" data-customer-data="false" data-provider-activity="false" data-recommendation="false" data-suitability="false" data-fair-housing-inference="false">
+      <div className={styles.content}>
         <header className="flex flex-col gap-6 border-b border-white/10 pb-8 sm:flex-row sm:items-end sm:justify-between">
           <AgentPreparationPageHeader pageTitle="LOCATION PREPARATION" taskHeading="Prepare for a location conversation" description="Choose a certified City to receive governed local orientation before opening supporting detail." scopeNote="Location context is durable orientation and supports address-level verification." />
         </header>

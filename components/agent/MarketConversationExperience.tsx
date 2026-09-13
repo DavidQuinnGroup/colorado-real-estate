@@ -10,6 +10,8 @@ import AgentCurrentSnapshotComparison from '@/components/agent/AgentCurrentSnaps
 import AgentPreparationPageHeader from '@/components/agent/AgentPreparationPageHeader';
 import { prepareMarketConversation } from '@/lib/agent-advisory-workbench/marketConversationExperience';
 
+import styles from './IntelligenceWorkspace.module.css';
+
 const MARKETS = [
   { id: 'boulder-co-housing-market', label: 'Boulder' },
   { id: 'louisville-co-housing-market', label: 'Louisville' },
@@ -49,8 +51,8 @@ export default function MarketConversationExperience() {
   const requiresReview = Boolean(briefing && briefing.state !== 'READY');
 
   return (
-    <main className="min-h-screen bg-[#071014] px-5 py-6 text-slate-100 sm:px-8 sm:py-8 lg:px-12" data-testid="agent-market-conversation-experience" data-agent-only="true" data-persistence="false" data-customer-data="false" data-provider-activity="false">
-      <div className="mx-auto max-w-6xl">
+    <main className={styles.page} data-testid="agent-market-conversation-experience" data-agent-only="true" data-persistence="false" data-customer-data="false" data-provider-activity="false">
+      <div className={styles.content}>
         <header className="flex flex-col gap-6 border-b border-white/10 pb-8 sm:flex-row sm:items-end sm:justify-between">
           <AgentPreparationPageHeader pageTitle="MARKET PREPARATION" taskHeading="Prepare for a market conversation" description="Choose a market to receive a concise, evidence-grounded briefing before opening supporting detail." scopeNote="Market context is point-in-time and preparation-focused. It does not replace professional judgment." />
         </header>

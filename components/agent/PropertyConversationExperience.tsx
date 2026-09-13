@@ -20,6 +20,8 @@ import {
   AGENT_COHORT_SUPPORTED_STATUS_SCOPES,
 } from '@/lib/agentCohortBuilder';
 
+import styles from './IntelligenceWorkspace.module.css';
+
 type CompetingContextFilterKey = 'city' | 'zip' | 'propertyType' | 'statusScope' | 'priceMin' | 'priceMax' | 'bedsMin' | 'bedsMax' | 'bedsExact' | 'bathsMin' | 'bathsMax' | 'bathsExact' | 'sqftMin' | 'sqftMax' | 'yearBuiltMin' | 'yearBuiltMax' | 'lotSizeMin' | 'lotSizeMax';
 type CompetingContextFilters = Partial<Record<CompetingContextFilterKey, string | number | readonly string[] | null>>;
 type CompetingContextPayload = Readonly<{
@@ -303,8 +305,8 @@ export default function PropertyConversationExperience() {
   }
 
   return (
-    <main className="min-h-screen bg-[#071014] px-5 py-6 text-slate-100 sm:px-8 sm:py-8 lg:px-12" data-testid="agent-property-conversation-experience" data-agent-only="true" data-persistence="false" data-customer-data="false" data-provider-activity="false" data-public-record-retrieval="false" data-recommendation="false" data-fair-housing-inference="false">
-      <div className="mx-auto max-w-6xl">
+    <main className={styles.page} data-testid="agent-property-conversation-experience" data-agent-only="true" data-persistence="false" data-customer-data="false" data-provider-activity="false" data-public-record-retrieval="false" data-recommendation="false" data-fair-housing-inference="false">
+      <div className={styles.content}>
         <header className="flex flex-col gap-6 border-b border-white/10 pb-8 sm:flex-row sm:items-end sm:justify-between">
           <AgentPreparationPageHeader pageTitle="PROPERTY PREPARATION" taskHeading="Prepare for a property conversation" description="Choose one supported property to receive a concise listing and verification briefing before opening supporting detail." scopeNote="The briefing uses stored listing facts for orientation. Material details still require direct verification." />
         </header>

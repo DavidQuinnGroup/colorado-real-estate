@@ -1,0 +1,61 @@
+.page {
+  min-height: 100%;
+  padding: clamp(var(--atlas-space-6), 4vw, var(--atlas-space-10)) clamp(var(--atlas-space-4), 3vw, var(--atlas-space-8));
+  background: var(--atlas-profile-canvas);
+  color: var(--atlas-text-primary);
+}
+
+.content { width: min(100%, 88rem); margin-inline: auto; }
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: var(--atlas-space-5);
+  border-bottom: 1px solid var(--atlas-profile-border-subtle);
+  padding-bottom: var(--atlas-space-6);
+}
+
+.eyebrow { margin: 0; color: var(--atlas-text-muted); font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
+.title { max-width: 48rem; margin: var(--atlas-space-2) 0 0; color: var(--atlas-text-primary); font-family: var(--atlas-font-display); font-size: clamp(2rem, 4vw, 3.25rem); font-weight: 700; line-height: 1.08; }
+.introduction { max-width: 52rem; margin: var(--atlas-space-3) 0 0; color: var(--atlas-text-secondary); font-size: 1rem; line-height: 1.6; }
+.scope { max-width: 20rem; margin: 0; color: var(--atlas-text-muted); font-size: 0.875rem; line-height: 1.55; }
+
+.workAreaGrid { display: grid; gap: var(--atlas-space-4); margin-top: var(--atlas-space-8); }
+.workArea { display: grid; min-height: 16rem; align-content: space-between; gap: var(--atlas-space-6); padding: var(--atlas-space-6); color: var(--atlas-text-primary); text-decoration: none; transition: border-color var(--atlas-duration-standard) var(--atlas-ease-standard), background-color var(--atlas-duration-standard) var(--atlas-ease-standard), transform var(--atlas-duration-standard) var(--atlas-ease-standard); }
+.workArea:hover { border-color: var(--atlas-profile-border-strong); background: var(--atlas-profile-surface-elevated); transform: translateY(-2px); }
+.workArea:focus-visible, .page :global(button:focus-visible), .page :global(input:focus-visible), .page :global(select:focus-visible), .page :global(summary:focus-visible) { outline: 3px solid var(--atlas-focus-ring); outline-offset: 3px; }
+.workAreaIcon { color: var(--atlas-action-primary); }
+.workAreaTitle { margin: var(--atlas-space-4) 0 0; font-size: 1.25rem; font-weight: 700; line-height: 1.25; }
+.workAreaCopy { margin: var(--atlas-space-2) 0 0; color: var(--atlas-text-secondary); font-size: 0.9375rem; line-height: 1.55; }
+.workAreaAction { display: inline-flex; align-items: center; gap: var(--atlas-space-2); color: var(--atlas-action-primary); font-size: 0.875rem; font-weight: 700; }
+.principles { display: grid; gap: var(--atlas-space-4); margin-top: var(--atlas-space-8); padding: var(--atlas-space-5); }
+.principlesTitle { margin: 0; font-size: 1rem; font-weight: 700; }
+.principlesList { display: flex; flex-wrap: wrap; gap: var(--atlas-space-2); margin: 0; padding: 0; list-style: none; }
+
+/* Existing Intelligence routes retain their analytical markup. This scoped layer
+   maps it onto the certified agent profile without changing any contracts. */
+.page :global(.text-white), .page :global(.text-slate-100), .page :global(.text-slate-200) { color: var(--atlas-text-primary) !important; }
+.page :global(.text-slate-300), .page :global(.text-slate-400), .page :global(.text-slate-500) { color: var(--atlas-text-secondary) !important; }
+.page :global(.text-cyan-100) { color: var(--atlas-information-system-status) !important; }
+.page :global(.text-emerald-100) { color: var(--atlas-notice-success) !important; }
+.page :global(.text-amber-100), .page :global(.text-amber-50) { color: var(--atlas-notice-warning) !important; }
+.page :global([class*='border-white']), .page :global([class*='border-cyan']), .page :global([class*='border-amber']) { border-color: var(--atlas-profile-border-subtle) !important; }
+.page :global([class*='bg-white']), .page :global([class*='bg-black']) { background: var(--atlas-profile-surface-primary) !important; }
+.page :global([class*='bg-cyan']) { background: var(--atlas-profile-surface-data) !important; }
+.page :global([class*='bg-amber']) { background: color-mix(in srgb, var(--atlas-surface-critical) 66%, var(--atlas-profile-surface-reading)) !important; }
+.page :global(button:not(:disabled)), .page :global(a[href]), .page :global(label:has(input)) { cursor: pointer; }
+.page :global(button:disabled) { cursor: not-allowed; }
+
+.page :global([data-testid='agent-property-search-input']), .page :global(select), .page :global(input[type='text']) { border-color: var(--atlas-profile-border-strong) !important; background: var(--atlas-profile-field-background) !important; color: var(--atlas-text-primary) !important; }
+.page :global([data-testid='agent-property-search-submit']), .page :global([data-testid$='prepare-briefing']) { border-color: var(--atlas-action-primary) !important; background: var(--atlas-action-primary) !important; color: var(--atlas-text-inverse) !important; }
+.page :global([data-testid$='prepare-briefing']:disabled) { border-color: var(--atlas-profile-border-subtle) !important; background: var(--atlas-profile-field-readonly) !important; color: var(--atlas-text-muted) !important; }
+.page :global([data-testid$='empty-state']) { border-color: var(--atlas-profile-border-strong) !important; background: var(--atlas-profile-surface-reading) !important; }
+.page :global([data-testid$='sources-limitations']), .page :global([data-testid='agent-current-competing-listing-context']) { background: var(--atlas-profile-surface-reading) !important; }
+.page :global([data-testid='agent-current-competing-listing-context'] [class*='bg-']) { background: var(--atlas-profile-surface-data) !important; }
+.page :global([data-testid='agent-current-snapshot-comparison']) { border-color: var(--atlas-profile-border-subtle) !important; background: var(--atlas-profile-surface-reading) !important; color: var(--atlas-text-primary) !important; }
+
+@media (min-width: 48rem) { .workAreaGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 40rem) { .header { align-items: start; } .scope { max-width: none; } .workArea { min-height: 0; } }
+@media (prefers-reduced-motion: reduce) { .workArea { transition-duration: 0ms; } .workArea:hover { transform: none; } }

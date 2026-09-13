@@ -36,8 +36,8 @@ assert.deepEqual(buildAgentMarketHumanBriefing(admitAgentMarketPreparationContex
 
 for (const token of ['fetch(', 'PrismaClient', '@prisma', 'process.env', 'Typesense', 'sendEmail', 'strategyGate', 'REIEControlState']) assert.equal(adapter.includes(token), false, `adapter must not depend on ${token}`);
 assert(auth.includes("surface('/agent/prepare/market', 'BROWSER_ADMIN_PAGE', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY', 'READ_ONLY_ADMIN', false)"), 'future route must remain exact AGENT-only read-only access');
-assert(auth.includes("value === '/agent/prepare/market' || value === '/agent/prepare/market-update' || value === '/agent/prepare/property'"), 'Agent return paths must remain exact and default-deny');
-assert(middleware.includes('"/agent/prepare/market"') && middleware.includes('buildAgentLoginRedirect'), 'future market route must be middleware protected and use the Agent login flow exactly');
+assert(auth.includes("surface('/agent/prepare/market'") && auth.includes("surface('/agent/prepare/property'") && auth.includes('const admitted = adminProtectedSurfaceClassifications.some') && auth.includes("return admitted ? `${candidate.pathname}${candidate.search}${candidate.hash}` : '/agent';"), 'Agent return paths must remain exact and default-deny');
+assert(middleware.includes("pathname === '/agent' || pathname.startsWith('/agent/')") && middleware.includes('buildAgentLoginRedirect'), 'Market preparation must be protected by the centralized Agent login flow.');
 assert(proof.includes('Synthetic, local-only preparation proof'), 'existing proof harness must remain separate');
 assert.equal(packageJson.scripts?.['check:agent-market-preparation-context-adapter'], 'jiti scripts/checkAgentMarketPreparationContextAdapter.ts');
 

@@ -16,7 +16,7 @@ const adapter = source('lib/agent-advisory-workbench/agentPlaceConversationPrepa
 const admission = source('lib/agent-advisory-workbench/agentPlacePreparationAdmission.ts');
 const auth = source('lib/admin/adminAuth.ts');
 const middleware = source('middleware.ts');
-const agentShell = source('components/agent/AgentWorkspaceShell.tsx');
+const intelligenceLanding = source('components/agent/IntelligenceWorkspace.tsx');
 const cityPage = source('app/market/[city]/page.tsx');
 const neighborhoodProduct = source('lib/neighborhoodProduct3.ts');
 const packageJson = JSON.parse(source('package.json')) as { scripts?: Record<string, string> };
@@ -78,11 +78,11 @@ for (const forbidden of [
 
 assert.ok(auth.includes("surface('/agent/prepare/place', 'BROWSER_ADMIN_PAGE', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY'"), 'Place preparation must have exact Agent-only authorization.');
 assert.ok(!auth.includes("surface('/agent/:path*'"), 'Place preparation must not create a generic Agent grant.');
-assert.ok(middleware.includes('pathname === "/agent/prepare/place"') && middleware.includes('buildAgentLoginRedirect'), 'Unauthenticated Place access must use the Agent login flow.');
+assert.ok(middleware.includes("pathname === '/agent' || pathname.startsWith('/agent/')") && middleware.includes('buildAgentLoginRedirect'), 'Unauthenticated Place access must use the centralized Agent login guard.');
 assert.equal(sanitizeAgentReturnPath('/agent/prepare/place'), '/agent/prepare/place', 'The exact Place route must survive the Agent return-path allowlist.');
 assert.equal(sanitizeAgentReturnPath('/agent/place'), '/agent', 'Unknown Agent returns must fail closed to the safe Workspace Home fallback.');
-assert.ok(agentShell.includes('href="/agent/prepare/place"') && agentShell.includes('Location Preparation'), 'Location Preparation must appear in the Agent shell.');
-assert.ok(agentShell.includes('href="/agent/prepare/property"') && agentShell.includes('href="/agent/prepare/market"'), 'Property and Market navigation must remain.');
+assert.ok(intelligenceLanding.includes("href: '/agent/prepare/place'") && intelligenceLanding.includes('Location Intelligence'), 'Location Preparation must remain available through Intelligence.');
+assert.ok(intelligenceLanding.includes("href: '/agent/prepare/property'") && intelligenceLanding.includes("href: '/agent/prepare/market'"), 'Property and Market must remain available through Intelligence.');
 
 assert.ok(admission.includes("publicActivationState: 'NOT_AUTHORIZED'"), 'Private route authorization must not authorize public activation.');
 assert.ok(cityPage.includes('getCityByMarketSlug'), 'The public City route must retain its existing read path.');

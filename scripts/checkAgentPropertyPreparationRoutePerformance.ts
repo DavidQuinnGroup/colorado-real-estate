@@ -24,7 +24,7 @@ assert.ok(propertyApi.includes("authorizeAdminRequest(request, { pathname: AGENT
 assert.ok(propertyApi.includes("'Cache-Control': 'private, no-store'") && propertyApi.includes('export const revalidate = 0'), 'The deferred response must remain private and uncached.');
 assert.ok(auth.includes("surface('/api/agent/prepare/property', 'READ_ONLY_ADMIN_API', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY'"), 'The deferred read must not broaden Agent access.');
 assert.ok(!auth.includes("surface('/api/agent/:path*'"), 'The deferred read must not create generic Agent API authorization.');
-assert.ok(middleware.includes('pathname === "/agent/prepare/property"') && middleware.includes('buildAgentLoginRedirect'), 'The protected page must retain the established Agent sign-in return behavior.');
+assert.ok(middleware.includes("pathname === '/agent' || pathname.startsWith('/agent/')") && middleware.includes('buildAgentLoginRedirect'), 'The protected page must retain the centralized Agent sign-in return behavior.');
 assert.ok(!experience.match(/localStorage|sessionStorage|sendBeacon|CRM|ATTOM|LightBox|providerRuntime|customerData/i), 'The performance path must not add persistence, customer, provider, or CRM activity.');
 
 console.log('AGENT_PROPERTY_PREPARATION_ROUTE_PERFORMANCE_CHECK: PASS');

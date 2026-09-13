@@ -92,6 +92,7 @@ export const adminProtectedSurfaceClassifications: AdminProtectedSurfaceClassifi
   surface('/admin/repository/executive-operations-dashboard', 'BROWSER_ADMIN_PAGE', ['HUMAN_ADMIN', 'MACHINE_ADMIN', 'DEVELOPMENT_OPERATOR'], ['EXECUTIVE_ADMIN', 'REPOSITORY_ADMIN', 'SERVICE_ADMIN'], ['HUMAN_SESSION', 'X_ADMIN_KEY', 'BEARER_ADMIN_KEY', 'LEGACY_ADMIN_KEY_COOKIE', 'DEVELOPMENT_NO_KEY_FALLBACK'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),
   surface('/admin/agent-briefing-preparation', 'BROWSER_ADMIN_PAGE', ['HUMAN_AGENT', 'HUMAN_ADMIN'], ['AGENT', 'REPOSITORY_ADMIN'], ['HUMAN_AGENT_SESSION', 'HUMAN_SESSION'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),
   surface('/agent', 'BROWSER_ADMIN_PAGE', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),
+  surface('/agent/prepare', 'BROWSER_ADMIN_PAGE', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),
   surface('/agent/prepare/market', 'BROWSER_ADMIN_PAGE', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),
   surface('/agent/prepare/market-update', 'BROWSER_ADMIN_PAGE', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),
   surface('/agent/prepare/property', 'BROWSER_ADMIN_PAGE', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),

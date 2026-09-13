@@ -35,7 +35,7 @@ const repository = source('lib/agent-advisory-workbench/agentPropertyConversatio
 const propertyApi = source('app/api/agent/prepare/property/route.ts');
 const auth = source('lib/admin/adminAuth.ts');
 const middleware = source('middleware.ts');
-const agentShell = source('components/agent/AgentWorkspaceShell.tsx');
+const intelligenceLanding = source('components/agent/IntelligenceWorkspace.tsx');
 const publicPropertyPage = source('app/properties/[id]/page.tsx');
 const marketPage = source('app/agent/prepare/market/page.tsx');
 
@@ -71,11 +71,11 @@ assert.ok(page.includes('PropertyConversationExperience') && !page.includes('get
 assert.ok(auth.includes("surface('/agent/prepare/property', 'BROWSER_ADMIN_PAGE', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY'"), 'Property preparation must be exact Agent-only read-only authorization.');
 assert.ok(auth.includes("surface('/api/agent/prepare/property', 'READ_ONLY_ADMIN_API', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY'"), 'Deferred Property reads must remain exact Agent-only read-only authorization.');
 assert.ok(!auth.includes("surface('/agent/:path*'"), 'Property preparation must not create a generic Agent authorization grant.');
-assert.ok(middleware.includes('pathname === "/agent/prepare/property"') && middleware.includes('buildAgentLoginRedirect'), 'Unauthenticated Property preparation must use the existing Agent login flow.');
+assert.ok(middleware.includes("pathname === '/agent' || pathname.startsWith('/agent/')") && middleware.includes('buildAgentLoginRedirect'), 'Unauthenticated Property preparation must use the centralized Agent login guard.');
 assert.equal(sanitizeAgentReturnPath('/agent/prepare/property'), '/agent/prepare/property', 'The exact Property route must survive the existing Agent login return-path allowlist.');
 assert.equal(sanitizeAgentReturnPath('/agent/other'), '/agent', 'The Agent login return-path allowlist must remain exact and use the safe Workspace Home fallback.');
-assert.ok(agentShell.includes('href="/agent/prepare/property"') && agentShell.includes('Property Preparation'), 'Property Preparation navigation must appear in the Agent shell.');
-assert.ok(agentShell.includes('href="/agent/prepare/market"') && agentShell.includes('Market Preparation'), 'Existing Market Preparation navigation must remain.');
+assert.ok(intelligenceLanding.includes("href: '/agent/prepare/property'") && intelligenceLanding.includes('Property Intelligence'), 'Property Preparation must remain available through Intelligence.');
+assert.ok(intelligenceLanding.includes("href: '/agent/prepare/market'") && intelligenceLanding.includes('Market Intelligence'), 'Market Preparation must remain available through Intelligence.');
 
 for (const expected of [
   'agent-property-conversation-experience',
