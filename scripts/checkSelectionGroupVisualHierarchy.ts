@@ -29,10 +29,10 @@ function main() {
   }
   assert.match(marketUpdate, /selectionSection/);
   assert.match(marketUpdate, /grid gap-x-6 gap-y-8 lg:grid-cols-2/);
-  assert.match(buyer, /projectAtlasTitleHierarchy\.selectionGroup/);
-  assert.match(buyer, /projectAtlasTitleHierarchy\.selectionSection/);
-  assert.match(seller, /projectAtlasTitleHierarchy\.selectionGroup/);
-  assert.match(seller, /projectAtlasTitleHierarchy\.selectionSection/);
+  assert.match(buyer, /PreparationStartingStateOption/);
+  assert.match(buyer, /PreparationTopicOption/);
+  assert.match(seller, /PreparationStartingStateOption/);
+  assert.match(seller, /PreparationTopicOption/);
   assert.match(listing, /<fieldset[\s\S]*<legend className=(?:\{projectAtlasTitleHierarchy\.selectionGroup\}|"text-sm font-semibold text-white")>Preparation position/);
   assert.match(globalStyles, /agent-listing-preparation-experience.*Listing preparation choices/);
   assert.doesNotMatch(buyer, /<legend[^>]*>\s*[12]\.\s*Choose/);

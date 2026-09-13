@@ -24,7 +24,7 @@ const adapter = source(
 const renderer = source("components/agent/AgentBriefingComposition.tsx");
 const auth = source("lib/admin/adminAuth.ts");
 const middleware = source("middleware.ts");
-const agentShell = source("components/agent/AgentWorkspaceShell.tsx");
+const agentNavigation = source("lib/agentWorkspaceNavigation.ts");
 const publicBuyerPage = source("app/buy/page.tsx");
 const marketPage = source("app/agent/prepare/market/page.tsx");
 const placePage = source("app/agent/prepare/place/page.tsx");
@@ -291,7 +291,7 @@ assert.ok(
 );
 assert.ok(!auth.includes("surface('/agent/:path*'"));
 assert.ok(
-  middleware.includes('pathname === "/agent/prepare/buyer"') &&
+  middleware.includes("pathname.startsWith('/agent/')") &&
     middleware.includes("buildAgentLoginRedirect"),
 );
 assert.equal(
@@ -303,15 +303,10 @@ assert.equal(
   "/agent",
 );
 assert.ok(
-  agentShell.includes('href="/agent/prepare/buyer"') &&
-    agentShell.includes("Buyer Preparation"),
+  agentNavigation.includes("label: 'Buyer'") &&
+    agentNavigation.includes("href: '/agent/prepare/buyer'"),
 );
-for (const retained of [
-  "/agent/prepare/market",
-  "/agent/prepare/place",
-  "/agent/prepare/property",
-])
-  assert.ok(agentShell.includes(`href="${retained}"`));
+assert.ok(agentNavigation.includes("href: '/agent/prepare/market'"));
 assert.ok(publicBuyerPage.includes("Buyer"));
 assert.ok(marketPage.includes("MarketConversationExperience"));
 assert.ok(placePage.includes("PlaceConversationExperience"));

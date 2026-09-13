@@ -1,0 +1,140 @@
+.page {
+  min-height: 100%;
+  background: var(--atlas-profile-canvas);
+  color: var(--atlas-text-primary);
+  padding: clamp(var(--atlas-space-4), 3vw, var(--atlas-space-10));
+}
+
+.container { width: min(100%, 80rem); margin-inline: auto; }
+
+.pageHeader {
+  display: grid;
+  gap: var(--atlas-space-5);
+  border-bottom: 1px solid var(--atlas-profile-border-subtle);
+  padding-bottom: var(--atlas-space-8);
+}
+
+@media (min-width: 48rem) {
+  .pageHeader { grid-template-columns: minmax(0, 1fr) minmax(14rem, 19rem); align-items: end; }
+}
+
+.eyebrow, .sectionEyebrow {
+  margin: 0;
+  color: var(--atlas-information-system-status);
+  font-size: 0.6875rem;
+  font-weight: 750;
+  letter-spacing: 0.12em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.pageLabel { margin: var(--atlas-space-4) 0 0; color: var(--atlas-text-secondary); font-size: 0.8125rem; font-weight: 750; letter-spacing: 0.08em; line-height: 1.4; text-transform: uppercase; }
+.pageTitle { margin: var(--atlas-space-2) 0 0; color: var(--atlas-text-primary); font-family: var(--atlas-font-display); font-size: clamp(1.875rem, 3vw, 2.625rem); font-weight: 700; line-height: 1.12; }
+.pageDescription { max-width: 46rem; margin: var(--atlas-space-3) 0 0; color: var(--atlas-text-secondary); font-size: 1rem; line-height: 1.65; }
+.scopeNote { margin: 0; color: var(--atlas-text-muted); font-size: 0.875rem; line-height: 1.6; }
+
+.workspaceGrid { display: grid; gap: var(--atlas-space-5); margin-top: var(--atlas-space-8); }
+@media (min-width: 70rem) { .workspaceGrid { grid-template-columns: minmax(0, 1fr) minmax(17rem, 21rem); align-items: start; } }
+
+.workspace, .guidance, .briefingCard, .emptyState, .updateState, .failureState {
+  border: 1px solid var(--atlas-profile-glass-border);
+  border-radius: var(--atlas-radius-lg);
+}
+.workspace { padding: clamp(var(--atlas-space-5), 3vw, var(--atlas-space-7)); background: color-mix(in srgb, var(--atlas-profile-surface-primary) calc(var(--atlas-profile-glass-opacity) * 100%), transparent); box-shadow: var(--atlas-profile-glass-depth); backdrop-filter: blur(var(--atlas-profile-glass-blur)) saturate(118%); -webkit-backdrop-filter: blur(var(--atlas-profile-glass-blur)) saturate(118%); }
+.guidance { padding: var(--atlas-space-6); background: var(--atlas-profile-surface-reading); box-shadow: var(--atlas-profile-glass-depth); }
+.guidanceIcon { color: var(--atlas-information-system-status); }
+.guidanceTitle { margin: var(--atlas-space-4) 0 0; color: var(--atlas-text-primary); font-size: 1.0625rem; font-weight: 700; line-height: 1.35; }
+.guidanceCopy { margin: var(--atlas-space-2) 0 0; color: var(--atlas-text-secondary); font-size: 0.9375rem; line-height: 1.6; }
+
+.section + .section { margin-top: var(--atlas-space-8); border-top: 1px solid var(--atlas-profile-border-subtle); padding-top: var(--atlas-space-7); }
+.sectionHeader { display: flex; flex-wrap: wrap; align-items: start; justify-content: space-between; gap: var(--atlas-space-3); }
+.sectionTitle { margin: var(--atlas-space-2) 0 0; color: var(--atlas-text-primary); font-family: var(--atlas-font-display); font-size: clamp(1.25rem, 2.5vw, 1.625rem); font-weight: 700; line-height: 1.25; }
+.sectionCopy { max-width: 52rem; margin: var(--atlas-space-2) 0 0; color: var(--atlas-text-secondary); font-size: 0.9375rem; line-height: 1.6; }
+.sessionStatus { display: inline-flex; flex: none; align-items: center; min-height: 2rem; border: 1px solid color-mix(in srgb, var(--atlas-information-system-status) 32%, var(--atlas-profile-border-subtle)); border-radius: var(--atlas-radius-md); padding: 0 var(--atlas-space-3); background: color-mix(in srgb, var(--atlas-profile-surface-data) 82%, transparent); color: var(--atlas-text-secondary); font-size: 0.75rem; font-weight: 700; }
+
+.optionGrid { display: grid; gap: var(--atlas-space-3); margin-top: var(--atlas-space-4); }
+@media (min-width: 40rem) { .optionGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.selectionCard, .topicOption { position: relative; display: grid; min-width: 0; border: 1px solid var(--atlas-profile-border-subtle); border-radius: var(--atlas-radius-md); background: var(--atlas-profile-surface-secondary); color: var(--atlas-text-primary); cursor: pointer; transition: border-color var(--atlas-duration-standard) var(--atlas-ease-standard), background-color var(--atlas-duration-standard) var(--atlas-ease-standard), box-shadow var(--atlas-duration-standard) var(--atlas-ease-standard), transform var(--atlas-duration-fast) var(--atlas-ease-standard); }
+.selectionCard { grid-template-columns: minmax(0, 1fr) auto; gap: var(--atlas-space-4); min-height: 7.5rem; padding: var(--atlas-space-5); }
+.selectionCard:hover, .topicOption:hover { border-color: var(--atlas-profile-border-strong); background: var(--atlas-profile-surface-elevated); box-shadow: var(--atlas-profile-glass-depth); }
+.selectionCard[data-selected='true'], .topicOption[data-selected='true'] { border-color: var(--atlas-action-primary); background: color-mix(in srgb, var(--atlas-profile-surface-data) 78%, var(--atlas-profile-surface-elevated)); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--atlas-action-primary) 55%, transparent), var(--atlas-profile-glass-depth); }
+.selectionCard:focus-within, .topicOption:focus-within { outline: 3px solid var(--atlas-focus-ring); outline-offset: 3px; }
+.visuallyHidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
+.selectionTitle, .topicTitle { color: var(--atlas-text-primary); font-size: 0.9375rem; font-weight: 750; line-height: 1.4; }
+.selectionDescription { display: block; margin-top: var(--atlas-space-2); color: var(--atlas-text-secondary); font-size: 0.875rem; line-height: 1.55; }
+.selectionIndicator, .topicIndicator { display: inline-grid; flex: none; width: 1.4rem; height: 1.4rem; place-items: center; border: 1px solid var(--atlas-profile-border-strong); border-radius: 999px; color: transparent; }
+.selectionCard[data-selected='true'] .selectionIndicator, .topicOption[data-selected='true'] .topicIndicator { border-color: var(--atlas-action-primary); background: var(--atlas-action-primary); color: var(--atlas-text-inverse); }
+
+.topicGrid { display: grid; gap: var(--atlas-space-3); margin-top: var(--atlas-space-4); }
+@media (min-width: 40rem) { .topicGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 72rem) { .topicGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.topicOption { grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: var(--atlas-space-3); min-height: 3.75rem; padding: var(--atlas-space-3) var(--atlas-space-4); }
+.topicIndicator { border-radius: var(--atlas-radius-sm); }
+.topicOption[data-selected='true'] .topicIndicator { border-radius: var(--atlas-radius-sm); }
+
+.contextGrid { display: grid; gap: var(--atlas-space-4); margin-top: var(--atlas-space-5); }
+@media (min-width: 42rem) { .contextGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.field { display: grid; gap: var(--atlas-space-2); min-width: 0; color: var(--atlas-text-primary); font-size: 0.875rem; font-weight: 700; line-height: 1.4; }
+.fieldHelp { margin: 0; color: var(--atlas-text-muted); font-size: 0.75rem; font-weight: 500; line-height: 1.5; }
+.select { width: 100%; min-height: 2.75rem; border: 1px solid var(--atlas-profile-border-strong); border-radius: var(--atlas-radius-md); padding: 0 var(--atlas-space-3); background: var(--atlas-profile-field-background); color: var(--atlas-text-primary); font: inherit; font-weight: 500; }
+.select:focus-visible, .action:focus-visible { outline: 3px solid var(--atlas-focus-ring); outline-offset: 3px; }
+
+.actionBar { display: flex; flex-direction: column; gap: var(--atlas-space-4); margin-top: var(--atlas-space-8); border-top: 1px solid var(--atlas-profile-border-subtle); padding-top: var(--atlas-space-6); }
+@media (min-width: 42rem) { .actionBar { flex-direction: row; align-items: center; justify-content: space-between; } }
+.actionMessage { max-width: 45rem; margin: 0; color: var(--atlas-text-secondary); font-size: 0.875rem; line-height: 1.6; }
+.action { display: inline-flex; flex: none; align-items: center; justify-content: center; gap: var(--atlas-space-2); min-height: 2.75rem; border: 1px solid var(--atlas-action-primary); border-radius: var(--atlas-radius-md); padding: 0.625rem var(--atlas-space-5); background: var(--atlas-action-primary); color: var(--atlas-text-inverse); cursor: pointer; font: inherit; font-size: 0.875rem; font-weight: 750; text-decoration: none; transition: background-color var(--atlas-duration-standard) var(--atlas-ease-standard), transform var(--atlas-duration-fast) var(--atlas-ease-standard); }
+.action:hover { background: var(--atlas-action-primary-hover); }
+.action:disabled { border-color: var(--atlas-profile-border-subtle); background: var(--atlas-profile-field-readonly); color: var(--atlas-text-muted); cursor: not-allowed; }
+@media (max-width: 40rem) { .action { width: 100%; } }
+
+.workspace :global([data-testid='agent-property-criteria-profile']) { border-color: var(--atlas-profile-border-subtle) !important; }
+.workspace :global([data-testid='agent-property-criteria-profile'] .text-white) { color: var(--atlas-text-primary) !important; }
+.workspace :global([data-testid='agent-property-criteria-profile'] .text-slate-300),
+.workspace :global([data-testid='agent-property-criteria-profile'] .text-slate-400),
+.workspace :global([data-testid='agent-property-criteria-profile'] .text-slate-500) { color: var(--atlas-text-secondary) !important; }
+.workspace :global([data-testid='agent-property-criteria-profile'] > div > div > div) { border-color: var(--atlas-profile-border-subtle) !important; background: var(--atlas-profile-surface-secondary) !important; }
+.workspace :global([data-testid='agent-property-criteria-profile'] select),
+.workspace :global([data-testid='agent-property-criteria-profile'] input) { border-color: var(--atlas-profile-border-strong) !important; background: var(--atlas-profile-field-background) !important; color: var(--atlas-text-primary) !important; }
+
+.emptyState, .updateState, .failureState { margin-top: var(--atlas-space-8); padding: var(--atlas-space-6); color: var(--atlas-text-secondary); font-size: 0.9375rem; line-height: 1.6; }
+.emptyState { border-style: dashed; background: var(--atlas-profile-surface-reading); }
+.updateState { border-color: color-mix(in srgb, var(--atlas-notice-information) 44%, var(--atlas-profile-border-subtle)); background: color-mix(in srgb, var(--atlas-profile-surface-data) 64%, transparent); }
+.failureState { border-color: color-mix(in srgb, var(--atlas-notice-warning) 54%, var(--atlas-profile-border-subtle)); background: color-mix(in srgb, var(--atlas-surface-critical) 62%, transparent); }
+.statusMessage { display: inline-flex; align-items: center; gap: var(--atlas-space-2); margin: 0; color: var(--atlas-text-primary); font-size: 0.875rem; font-weight: 750; }
+.statusSuccess, .statusCaution { display: inline-grid; width: 1.25rem; height: 1.25rem; place-items: center; border-radius: 999px; }
+.statusSuccess { background: color-mix(in srgb, var(--atlas-notice-success) 16%, transparent); color: var(--atlas-notice-success); }
+.statusCaution { background: color-mix(in srgb, var(--atlas-notice-warning) 16%, transparent); color: var(--atlas-notice-warning); }
+
+.briefing { margin-top: var(--atlas-space-8); }
+.briefingSummary { display: grid; gap: var(--atlas-space-5); margin: var(--atlas-space-6) 0; }
+@media (min-width: 56rem) { .briefingSummary { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.briefingCard { padding: var(--atlas-space-6); background: var(--atlas-profile-surface-reading); }
+.briefingList { margin: var(--atlas-space-4) 0 0; padding-left: var(--atlas-space-5); color: var(--atlas-text-secondary); font-size: 0.9375rem; line-height: 1.6; }
+.briefing :global([data-testid='agent-shared-briefing-composition']) > :global(section),
+.briefing :global([data-testid='agent-buyer-professional-playbook']) > :global(div),
+.briefing :global([data-testid='agent-buyer-professional-playbook']) > :global(section),
+.briefing :global([data-testid='agent-seller-professional-playbook']) > :global(div),
+.briefing :global([data-testid='agent-seller-professional-playbook']) > :global(section),
+.briefing :global([data-testid='agent-buyer-playbook-section']),
+.briefing :global([data-testid='agent-seller-playbook-section']) {
+  border-color: var(--atlas-profile-border-subtle) !important;
+  background: var(--atlas-profile-surface-reading) !important;
+  color: var(--atlas-text-primary) !important;
+  box-shadow: var(--atlas-profile-glass-depth);
+}
+.briefing :global([data-testid='agent-shared-briefing-composition']) > :global(section):first-child,
+.briefing :global([data-testid='agent-buyer-professional-playbook']) > :global(div):first-child,
+.briefing :global([data-testid='agent-seller-professional-playbook']) > :global(div):first-child {
+  border-color: color-mix(in srgb, var(--atlas-information-system-status) 36%, var(--atlas-profile-border-subtle)) !important;
+  background: var(--atlas-profile-surface-data) !important;
+}
+.briefing :global(.text-white), .briefing :global(.text-slate-300), .briefing :global(.text-slate-200), .briefing :global(.text-slate-400), .briefing :global(.text-slate-500) { color: var(--atlas-text-secondary) !important; }
+.briefing :global(h1), .briefing :global(h2), .briefing :global(h3), .briefing :global(h4), .briefing :global(.font-semibold) { color: var(--atlas-text-primary) !important; }
+.briefing :global(.text-cyan-100), .briefing :global(.text-emerald-100), .briefing :global(.text-amber-100) { color: var(--atlas-information-system-status) !important; }
+.briefing :global(details) { border-color: var(--atlas-profile-border-subtle) !important; background: var(--atlas-profile-surface-secondary) !important; }
+.briefing :global([data-testid='agent-current-snapshot-comparison']) { border-color: var(--atlas-profile-border-subtle) !important; background: var(--atlas-profile-surface-reading) !important; color: var(--atlas-text-primary) !important; }
+.briefing :global([data-testid='agent-current-snapshot-comparison'] .text-white), .briefing :global([data-testid='agent-current-snapshot-comparison'] .text-slate-300), .briefing :global([data-testid='agent-current-snapshot-comparison'] .text-slate-400) { color: var(--atlas-text-secondary) !important; }
+
+@media (prefers-reduced-motion: reduce) {
+  .selectionCard, .topicOption, .action { transition-duration: 0ms; }
+}

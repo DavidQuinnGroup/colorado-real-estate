@@ -7,14 +7,14 @@ import { AGENT_SELLER_PREPARATION_FIXTURE } from "../lib/agent-advisory-workbenc
 import { prepareAgentSellerConsultation } from "../lib/agent-advisory-workbench/agentSellerConsultationPreparation";
 
 function source(path: string) { return readFileSync(resolve(process.cwd(), path), "utf8"); }
-const page = source("app/agent/prepare/seller/page.tsx"); const experienceSource = source("components/agent/SellerConsultationExperience.tsx"); const playbookSource = source("components/agent/SellerConsultationPlaybook.tsx"); const contractSource = source("lib/agent-advisory-workbench/agentSellerPreparationAdmission.ts"); const middleware = source("middleware.ts"); const shell = source("components/agent/AgentWorkspaceShell.tsx"); const packageJson = JSON.parse(source("package.json")) as { scripts?: Record<string, string> };
+const page = source("app/agent/prepare/seller/page.tsx"); const experienceSource = source("components/agent/SellerConsultationExperience.tsx"); const playbookSource = source("components/agent/SellerConsultationPlaybook.tsx"); const contractSource = source("lib/agent-advisory-workbench/agentSellerPreparationAdmission.ts"); const middleware = source("middleware.ts"); const navigation = source("lib/agentWorkspaceNavigation.ts"); const packageJson = JSON.parse(source("package.json")) as { scripts?: Record<string, string> };
 
 assert.equal(existsSync(resolve(process.cwd(), "app/agent/prepare/seller/page.tsx")), true);
 assert.ok(page.includes('title: "Seller Preparation | Project Atlas"'));
 assert.ok(page.includes("SellerConsultationExperience"));
 assert.equal(sanitizeAgentReturnPath("/agent/prepare/seller"), "/agent/prepare/seller");
-assert.ok(middleware.includes('pathname === "/agent/prepare/seller"'));
-assert.ok(shell.includes('href="/agent/prepare/seller"') && shell.includes("Seller Preparation"));
+assert.ok(middleware.includes("pathname.startsWith('/agent/')"));
+assert.ok(navigation.includes("label: 'Seller'") && navigation.includes("href: '/agent/prepare/seller'"));
 
 const ready = prepareAgentSellerConsultation(AGENT_SELLER_PREPARATION_FIXTURE);
 assert.equal(ready.packet.admission, "ADMITTED"); assert.ok(ready.composition); assert.ok(ready.playbook); assert.equal(ready.composition?.surface, "SELLER");
