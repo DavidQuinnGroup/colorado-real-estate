@@ -299,6 +299,7 @@
     "check:property-preparation-address-autocomplete": "jiti scripts/checkPropertyPreparationAddressAutocomplete.ts",
     "check:agent-post-login-return-path": "jiti scripts/checkAgentPostLoginReturnPath.ts",
     "check:agent-cross-capability-session-continuity": "jiti scripts/checkAgentCrossCapabilitySessionContinuity.ts",
+    "check:agent-outputs-authorization-classification": "jiti scripts/checkAgentOutputsAuthorizationClassification.ts",
     "check:tailwind-v4-style-pipeline": "jiti scripts/checkTailwindV4StylePipeline.ts",
     "check:liquid-glass-design-system-foundation": "jiti scripts/checkLiquidGlassDesignSystemFoundation.ts",
     "check:liquid-glass-visual-certification-fixture": "jiti scripts/checkLiquidGlassVisualCertificationFixture.ts",
