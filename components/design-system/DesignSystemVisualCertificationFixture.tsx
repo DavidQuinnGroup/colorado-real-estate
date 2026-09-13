@@ -222,6 +222,7 @@ export function DesignSystemVisualCertificationFixture() {
             <AtlasSurface material="reading">
               <p className="atlas-ds-panel-title">Direct inspection sequence</p>
               <ol className={styles.inspectionList}><li>Use the operating system to compare light and dark themes.</li><li>Tab through the profile selector, links, actions, and fields. Focus must remain visible on glass and solid surfaces.</li><li>Use the operating system reduced-motion preference to confirm that nonessential transitions stop without hiding information.</li><li>Resize to approximately 390px wide. Controls should stack, labels remain visible, and the synthetic table remains intentionally scrollable.</li></ol>
+              <AtlasButton data-testid="atlas-fixture-focus-target" tone="secondary">Keyboard focus target</AtlasButton>
               <div className={styles.accessibilityRow}><ShieldCheck aria-hidden="true" size={20} /><span>Labels, text, borders, shapes, and semantics support state recognition beyond color alone.</span></div>
             </AtlasSurface>
           </Section>

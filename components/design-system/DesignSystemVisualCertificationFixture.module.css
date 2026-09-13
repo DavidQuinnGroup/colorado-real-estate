@@ -1,25 +1,30 @@
-.fixture { min-height: 100vh; }
-.fixture :global(.atlas-ds-canvas) { padding: var(--atlas-space-6); }
-.header, .content { width: min(100%, 88rem); margin: 0 auto; }
+.fixture, .fixture * { box-sizing: border-box; min-width: 0; }
+.fixture { min-height: 100vh; width: 100%; max-width: 100%; }
+.fixture :global(.atlas-ds-canvas) { width: 100%; max-width: 100%; padding: var(--atlas-space-6); }
+.header, .content { width: 100%; max-width: 88rem; margin: 0 auto; }
 .header { display: grid; grid-template-columns: minmax(0, 1fr) minmax(17rem, 24rem); gap: var(--atlas-space-8); align-items: start; padding: var(--atlas-space-8) 0; }
-.introduction, .supportingCopy, .bodyCopy { max-width: 70ch; color: var(--atlas-text-secondary); line-height: 1.6; }
-.statePanel, .section, .profileSample, .typeSpecimen, .surfaceGrid > *, .informationGrid > *, .stateGrid > *, .noticeGrid > * { padding: var(--atlas-space-5); }
-.sectionNavigation { position: sticky; top: 0; z-index: 1; display: flex; gap: var(--atlas-space-4); overflow-x: auto; width: min(100%, 88rem); margin: 0 auto; padding: var(--atlas-space-3) var(--atlas-space-6); border-bottom: 1px solid var(--atlas-border-subtle); background: var(--atlas-surface-floating); }
+.introduction, .supportingCopy, .bodyCopy { max-width: min(70ch, 100%); overflow-wrap: anywhere; color: var(--atlas-text-secondary); line-height: 1.6; }
+.statePanel, .section, .profileSample, .typeSpecimen, .surfaceGrid > *, .informationGrid > *, .stateGrid > *, .noticeGrid > * { min-width: 0; max-width: 100%; padding: var(--atlas-space-5); }
+.sectionNavigation { position: sticky; top: 0; z-index: 1; display: flex; gap: var(--atlas-space-4); overflow-x: auto; overscroll-behavior-inline: contain; width: 100%; max-width: 88rem; margin: 0 auto; padding: var(--atlas-space-3) var(--atlas-space-6); border-bottom: 1px solid var(--atlas-border-subtle); background: var(--atlas-surface-floating); }
 .sectionNavigation :global(.atlas-ds-link) { flex: 0 0 auto; }
 .content { display: grid; gap: var(--atlas-profile-section-gap); padding: var(--atlas-space-8) 0 var(--atlas-space-12); }
 .section { display: grid; gap: var(--atlas-profile-density-space); scroll-margin-top: 4rem; }
-.controlRow, .actionGrid, .linkRow, .statusGrid, .accessibilityRow { display: flex; flex-wrap: wrap; gap: var(--atlas-profile-control-gap); align-items: center; }
-.profileGrid, .surfaceGrid, .formGrid, .noticeGrid, .informationGrid, .stateGrid, .metricGrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--atlas-space-4); }
+.controlRow, .actionGrid, .linkRow, .statusGrid, .accessibilityRow { display: flex; flex-wrap: wrap; min-width: 0; gap: var(--atlas-profile-control-gap); align-items: center; }
+.profileGrid, .surfaceGrid, .formGrid, .noticeGrid, .informationGrid, .stateGrid, .metricGrid { display: grid; min-width: 0; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--atlas-space-4); }
+.profileGrid, .surfaceGrid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .profileSample, .surfaceGrid > *, .informationGrid > *, .stateGrid > * { display: grid; gap: var(--atlas-profile-control-gap); min-height: 10rem; }
 .profileSample { padding: var(--atlas-profile-panel-padding); }
+.profileSample :global(.atlas-ds-metadata) { max-width: min(var(--atlas-profile-copy-measure), 100%); overflow-wrap: anywhere; }
 .profileSample :global(.atlas-ds-field) { gap: var(--atlas-space-1); }
 .profileSample :global(.atlas-ds-action) { width: 100%; }
 .canvasSample { display: grid; align-content: center; min-height: 10rem; border: 1px dashed var(--atlas-border-strong); border-radius: var(--atlas-radius-lg); padding: var(--atlas-space-5); }
 .typeSpecimen { display: grid; gap: var(--atlas-space-4); }
 .noticeGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.syntheticLabel { width: fit-content; margin: 0; border: 1px solid var(--atlas-border-strong); border-radius: var(--atlas-radius-sm); padding: var(--atlas-space-2) var(--atlas-space-3); color: var(--atlas-text-secondary); font-size: 0.8125rem; font-weight: 650; }
+.linkRow :global(.atlas-ds-link) { display: inline-flex; max-width: 100%; overflow-wrap: anywhere; }
+.syntheticLabel { width: fit-content; max-width: 100%; margin: 0; overflow-wrap: anywhere; border: 1px solid var(--atlas-border-strong); border-radius: var(--atlas-radius-sm); padding: var(--atlas-space-2) var(--atlas-space-3); color: var(--atlas-text-secondary); font-size: 0.8125rem; font-weight: 650; }
 .metricGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-bottom: var(--atlas-space-5); }
 .inspectionList { display: grid; gap: var(--atlas-space-3); margin: 0; padding-left: var(--atlas-space-5); color: var(--atlas-text-secondary); line-height: 1.6; }
 .accessibilityRow { color: var(--atlas-text-secondary); line-height: 1.5; }
-@media (max-width: 52rem) { .header, .profileGrid, .surfaceGrid, .formGrid, .informationGrid, .stateGrid, .metricGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .header { align-items: stretch; } }
-@media (max-width: 40rem) { .fixture :global(.atlas-ds-canvas) { padding: var(--atlas-space-4); } .header, .profileGrid, .surfaceGrid, .formGrid, .noticeGrid, .informationGrid, .stateGrid, .metricGrid { grid-template-columns: 1fr; } .header { gap: var(--atlas-space-5); padding-top: var(--atlas-space-5); } .sectionNavigation { padding-inline: var(--atlas-space-4); } }
+@media (max-width: 64rem) { .profileGrid, .surfaceGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 52rem) { .header, .formGrid, .informationGrid, .stateGrid, .metricGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .header { align-items: stretch; } }
+@media (max-width: 40rem) { .fixture :global(.atlas-ds-canvas) { padding: var(--atlas-space-4); } .header, .profileGrid, .surfaceGrid, .formGrid, .noticeGrid, .informationGrid, .stateGrid, .metricGrid { grid-template-columns: 1fr; } .header { gap: var(--atlas-space-5); padding-top: var(--atlas-space-5); } .sectionNavigation { gap: var(--atlas-space-3); padding-inline: var(--atlas-space-4); } .controlRow { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); width: 100%; } .controlRow :global(.atlas-ds-action), .actionGrid :global(.atlas-ds-action), .linkRow :global(.atlas-ds-link) { width: 100%; } .linkRow { align-items: stretch; } }

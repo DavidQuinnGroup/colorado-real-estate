@@ -27,9 +27,9 @@ for (const selector of [
   '.atlas-ds-surface-glass .atlas-ds-surface-glass',
   '.atlas-ds-surface-elevated',
   '.atlas-ds-surface-floating',
-  '.atlas-ds-data-surface',
-  '.atlas-ds-reading-surface',
-  '.atlas-ds-critical-surface',
+  '.atlas-ds-surface-data',
+  '.atlas-ds-surface-reading',
+  '.atlas-ds-surface-critical',
 ]) {
   assert.match(styles, new RegExp(selector.replaceAll('.', '\\.'), 'g'));
 }

@@ -58,6 +58,7 @@ assert.doesNotMatch(fixtureStyles, /--atlas-[\w-]+\s*:/, 'fixture styles must co
 assert.match(fixture, /prefers-color-scheme: dark/);
 assert.match(fixture, /prefers-reduced-motion: reduce/);
 assert.match(fixture, /data-testid="atlas-visual-certification-fixture"/);
+assert.match(fixture, /data-testid="atlas-fixture-focus-target"/);
 assert.match(fixtureStyles, /var\(--atlas-profile-section-gap\)/);
 assert.match(fixtureStyles, /var\(--atlas-profile-panel-padding\)/);
 assert.match(fixtureStyles, /var\(--atlas-profile-control-gap\)/);
