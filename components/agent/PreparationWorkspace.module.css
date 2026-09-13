@@ -47,10 +47,18 @@
 .guidanceCopy { margin: var(--atlas-space-2) 0 0; color: var(--atlas-text-secondary); font-size: 0.9375rem; line-height: 1.6; }
 
 .section + .section { margin-top: var(--atlas-space-8); border-top: 1px solid var(--atlas-profile-border-subtle); padding-top: var(--atlas-space-7); }
-.sectionHeader { display: flex; flex-wrap: wrap; align-items: start; justify-content: space-between; gap: var(--atlas-space-3); }
+.sectionHeader { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "eyebrow status" "title status"; column-gap: var(--atlas-space-3); row-gap: var(--atlas-space-1); }
+.sectionHeader > .sectionEyebrow { grid-area: eyebrow; align-self: end; }
+.sectionHeader > .sectionTitle { grid-area: title; }
 .sectionTitle { margin: var(--atlas-space-2) 0 0; color: var(--atlas-text-primary); font-family: var(--atlas-font-display); font-size: clamp(1.25rem, 2.5vw, 1.625rem); font-weight: 700; line-height: 1.25; }
 .sectionCopy { max-width: 52rem; margin: var(--atlas-space-2) 0 0; color: var(--atlas-text-secondary); font-size: 0.9375rem; line-height: 1.6; }
-.sessionStatus { display: inline-flex; flex: none; align-items: center; min-height: 2rem; border: 1px solid color-mix(in srgb, var(--atlas-information-system-status) 32%, var(--atlas-profile-border-subtle)); border-radius: var(--atlas-radius-md); padding: 0 var(--atlas-space-3); background: color-mix(in srgb, var(--atlas-profile-surface-data) 82%, transparent); color: var(--atlas-text-secondary); font-size: 0.75rem; font-weight: 700; }
+.sessionStatus { grid-area: status; display: inline-flex; align-items: center; align-self: center; min-height: 2rem; border: 1px solid color-mix(in srgb, var(--atlas-information-system-status) 32%, var(--atlas-profile-border-subtle)); border-radius: var(--atlas-radius-md); padding: 0 var(--atlas-space-3); background: color-mix(in srgb, var(--atlas-profile-surface-data) 82%, transparent); color: var(--atlas-text-secondary); cursor: default; font-size: 0.75rem; font-weight: 700; line-height: 1.4; }
+
+@media (max-width: 39.9375rem) {
+  .sectionHeader { grid-template-columns: minmax(0, 1fr); grid-template-areas: "eyebrow" "status" "title"; row-gap: var(--atlas-space-2); }
+  .sectionHeader > .sectionTitle { margin-top: var(--atlas-space-1); }
+  .sessionStatus { justify-self: start; min-height: auto; border: 0; border-radius: 0; padding: 0; background: transparent; color: var(--atlas-text-muted); font-size: 0.75rem; font-weight: 600; }
+}
 
 .optionGrid { display: grid; gap: var(--atlas-space-3); margin-top: var(--atlas-space-4); }
 @media (min-width: 40rem) { .optionGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

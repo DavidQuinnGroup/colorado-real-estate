@@ -5,7 +5,7 @@ import { useMemo, useState } from "react";
 
 import AgentBriefingComposition from "@/components/agent/AgentBriefingComposition";
 import PropertyCriteriaProfileEditor from "@/components/agent/PropertyCriteriaProfileEditor";
-import { PreparationField, PreparationStartingStateOption, PreparationTopicOption, preparationWorkspaceStyles as styles } from "@/components/agent/PreparationWorkspace";
+import { PreparationField, PreparationSessionStatus, PreparationStartingStateOption, PreparationTopicOption, preparationWorkspaceStyles as styles } from "@/components/agent/PreparationWorkspace";
 import SellerConsultationPlaybook from "@/components/agent/SellerConsultationPlaybook";
 import {
   AGENT_SELLER_CONSULTATION_POSITIONS,
@@ -71,7 +71,7 @@ export default function SellerConsultationExperience() {
       <section className={styles.workspaceGrid} aria-labelledby="seller-setup-heading">
         <div className={styles.workspace}>
           <section className={styles.section}>
-            <div className={styles.sectionHeader}><div><p className={styles.sectionEyebrow}>Consultation setup</p><h2 id="seller-setup-heading" className={styles.sectionTitle}>Choose what the conversation needs to emphasize</h2></div><span className={styles.sessionStatus}>No information is saved</span></div>
+            <div className={styles.sectionHeader}><p className={styles.sectionEyebrow}>Consultation setup</p><PreparationSessionStatus /><h2 id="seller-setup-heading" className={styles.sectionTitle}>Choose what the conversation needs to emphasize</h2></div>
             <fieldset className={styles.section}>
               <legend className={styles.sectionTitle}>Choose where this seller conversation begins</legend>
               <p className={styles.sectionCopy}>Choose the description that best matches the conversation you are preparing.</p>

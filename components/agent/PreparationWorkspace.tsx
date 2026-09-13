@@ -36,4 +36,8 @@ export function PreparationField({ label, children, helper }: Readonly<{ label: 
   return <label className={styles.field}><span>{label}</span>{children}{helper ? <span className={styles.fieldHelp}>{helper}</span> : null}</label>;
 }
 
+export function PreparationSessionStatus() {
+  return <span className={styles.sessionStatus}>No information is saved</span>;
+}
+
 export { styles as preparationWorkspaceStyles };

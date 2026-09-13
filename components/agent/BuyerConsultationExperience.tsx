@@ -7,7 +7,7 @@ import AgentBriefingComposition from "@/components/agent/AgentBriefingCompositio
 import AgentCurrentSnapshotComparison from "@/components/agent/AgentCurrentSnapshotComparison";
 import BuyerConsultationPlaybook from "@/components/agent/BuyerConsultationPlaybook";
 import PropertyCriteriaProfileEditor from "@/components/agent/PropertyCriteriaProfileEditor";
-import { PreparationField, PreparationStartingStateOption, PreparationTopicOption, preparationWorkspaceStyles as styles } from "@/components/agent/PreparationWorkspace";
+import { PreparationField, PreparationSessionStatus, PreparationStartingStateOption, PreparationTopicOption, preparationWorkspaceStyles as styles } from "@/components/agent/PreparationWorkspace";
 import {
   AGENT_BUYER_CERTIFIED_CITIES,
   AGENT_BUYER_DISCUSSION_PRIORITIES,
@@ -95,8 +95,9 @@ export default function BuyerConsultationExperience() {
         <div className={styles.workspace}>
           <section className={styles.section}>
             <div className={styles.sectionHeader}>
-              <div><p className={styles.sectionEyebrow}>Consultation setup</p><h2 id="buyer-setup-heading" className={styles.sectionTitle}>Choose what the conversation needs to cover</h2></div>
-              <span className={styles.sessionStatus}>No information is saved</span>
+              <p className={styles.sectionEyebrow}>Consultation setup</p>
+              <PreparationSessionStatus />
+              <h2 id="buyer-setup-heading" className={styles.sectionTitle}>Choose what the conversation needs to cover</h2>
             </div>
             <fieldset className={styles.section}>
               <legend className={styles.sectionTitle}>Choose where this buyer conversation begins</legend>
