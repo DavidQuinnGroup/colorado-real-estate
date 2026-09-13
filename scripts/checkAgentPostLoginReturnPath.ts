@@ -3,6 +3,7 @@ import { createHash } from 'node:crypto';
 
 import {
   AGENT_SESSION_COOKIE,
+  adminProtectedSurfaceClassifications,
   buildAgentLoginRedirect,
   sanitizeAgentReturnPath,
 } from '../lib/admin/adminAuth';
@@ -32,6 +33,20 @@ function location(response: Response) {
 }
 
 async function main() {
+  const admittedAgentBrowserRoutes = adminProtectedSurfaceClassifications
+    .filter((surface) => (
+      surface.surfaceType === 'BROWSER_ADMIN_PAGE'
+      && surface.acceptedIdentityTypes.length === 1
+      && surface.acceptedIdentityTypes[0] === 'HUMAN_AGENT'
+      && surface.requiredRoles.length === 1
+      && surface.requiredRoles[0] === 'AGENT'
+      && surface.allowedMechanisms.length === 1
+      && surface.allowedMechanisms[0] === 'HUMAN_AGENT_SESSION'
+    ))
+    .map((surface) => surface.routePattern);
+
+  assert.ok(admittedAgentBrowserRoutes.includes('/agent'));
+  assert.ok(admittedAgentBrowserRoutes.includes('/agent/outputs'));
   assert.equal(sanitizeAgentReturnPath('/agent'), '/agent');
   assert.equal(sanitizeAgentReturnPath('/agent/prepare/property'), '/agent/prepare/property');
   assert.equal(sanitizeAgentReturnPath('/agent/prepare/market'), '/agent/prepare/market');
@@ -39,6 +54,8 @@ async function main() {
   assert.equal(sanitizeAgentReturnPath('/agent/prepare/place'), '/agent/prepare/place');
   assert.equal(sanitizeAgentReturnPath('/agent/prepare/buyer'), '/agent/prepare/buyer');
   assert.equal(sanitizeAgentReturnPath('/agent/prepare/listing'), '/agent/prepare/listing');
+  assert.equal(sanitizeAgentReturnPath('/agent/outputs'), '/agent/outputs');
+  assert.equal(sanitizeAgentReturnPath('/agent/outputs?view=review#current'), '/agent/outputs?view=review#current');
   assert.equal(sanitizeAgentReturnPath(null), '/agent');
 
   for (const value of [
@@ -48,10 +65,15 @@ async function main() {
     '/admin/agent-briefing-preparation',
     '/admin/repository',
     '/agent/unknown',
+    '/agent/unknown?view=review',
+    '/agent/prepare/unknown',
+    '/agent%2funknown',
+    '/agent/%2e%2e/admin',
     'javascript:alert(1)',
     'data:text/html,test',
     '/agent/prepare/property?next=/admin',
-    '/agent/%2e%2e/admin',
+    '/agent/outputs?NEXT=/admin',
+    '/agent/outputs?redirect=https://example.com',
     '/agent/prepare/%2e%2e%2fproperty',
   ]) {
     assert.equal(sanitizeAgentReturnPath(value), '/agent', `${value} must fail closed to the Agent Workspace Home fallback.`);
@@ -93,6 +115,8 @@ async function main() {
     ['/agent/prepare/place', '/agent/prepare/place'],
     ['/agent/prepare/buyer', '/agent/prepare/buyer'],
     ['/agent/prepare/listing', '/agent/prepare/listing'],
+    ['/agent/outputs', '/agent/outputs'],
+    ['/agent/outputs?view=review#current', '/agent/outputs'],
     [undefined, '/agent'],
     ['/admin/agent-briefing-preparation', '/agent'],
     ['https://example.com', '/agent'],

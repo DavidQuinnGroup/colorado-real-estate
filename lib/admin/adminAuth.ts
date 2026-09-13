@@ -206,8 +206,33 @@ export function sanitizeAdminReturnPath(value: string | null | undefined) {
 }
 
 export function sanitizeAgentReturnPath(value: string | null | undefined) {
-  if (!value || !value.startsWith('/agent') || value.startsWith('//') || value.includes('://') || value.includes('\\') || value.startsWith('/agent-auth') || value === '/agent/login' || value === '/agent/logout') return '/agent';
-  return value;
+  if (!value) return '/agent';
+  const trimmed = value.trim();
+  if (!trimmed.startsWith('/') || trimmed.startsWith('//') || trimmed.includes('://') || trimmed.includes('\\')) return '/agent';
+
+  let candidate: URL;
+  try {
+    candidate = new URL(trimmed, 'https://agent-return-path.invalid');
+  } catch {
+    return '/agent';
+  }
+
+  for (const parameter of candidate.searchParams.keys()) {
+    if (['next', 'redirect', 'redirect_uri', 'return', 'url'].includes(parameter.toLowerCase())) return '/agent';
+  }
+
+  const admitted = adminProtectedSurfaceClassifications.some((surface) => (
+    surface.routePattern === candidate.pathname
+    && surface.surfaceType === 'BROWSER_ADMIN_PAGE'
+    && surface.acceptedIdentityTypes.length === 1
+    && surface.acceptedIdentityTypes[0] === 'HUMAN_AGENT'
+    && surface.requiredRoles.length === 1
+    && surface.requiredRoles[0] === 'AGENT'
+    && surface.allowedMechanisms.length === 1
+    && surface.allowedMechanisms[0] === 'HUMAN_AGENT_SESSION'
+  ));
+
+  return admitted ? `${candidate.pathname}${candidate.search}${candidate.hash}` : '/agent';
 }
 
 export function classifyAdminSurface(pathname: string, method = 'GET'): AdminProtectedSurfaceClassification {
