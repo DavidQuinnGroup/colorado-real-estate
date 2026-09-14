@@ -55,6 +55,15 @@ for (const [path, current] of [
 for (const marker of ['min-height: 2.75rem', '@media (max-width: 40rem)', 'grid-template-columns: repeat(3, minmax(0, 1fr))', 'aria-current']) {
   assert.ok(intelligenceStyles.includes(marker), `Intelligence navigation must retain ${marker}.`);
 }
+assert.match(intelligenceStyles, /\.childPageHeader \{ margin-top: var\(--atlas-space-6\); \}/, 'Child Intelligence pages must use a deliberate shared desktop separation.');
+assert.match(intelligenceStyles, /\.childPageHeader \{ margin-top: var\(--atlas-space-5\); \}/, 'Child Intelligence pages must retain compact mobile separation.');
+for (const path of [
+  'components/agent/PropertyConversationExperience.tsx',
+  'components/agent/PlaceConversationExperience.tsx',
+  'components/agent/MarketConversationExperience.tsx',
+]) {
+  assert.match(source(path), /styles\.childPageHeader/, `${path} must use the shared Intelligence child-page separation.`);
+}
 
 assert.match(agentShell, /atlas-ds-root atlas-ds-shell-agent atlas-ds-density-operational/);
 assert.match(agentHome, /launchGroups/);

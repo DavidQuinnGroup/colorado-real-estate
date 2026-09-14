@@ -47,7 +47,7 @@ export default function PlaceConversationExperience() {
     <main className={styles.page} data-testid="agent-place-conversation-experience" data-agent-only="true" data-persistence="false" data-customer-data="false" data-provider-activity="false" data-recommendation="false" data-suitability="false" data-fair-housing-inference="false">
       <div className={styles.content}>
         <IntelligenceContextNavigation current="location" />
-        <header className="flex flex-col gap-6 border-b border-white/10 pb-8 sm:flex-row sm:items-end sm:justify-between">
+        <header className={`${styles.childPageHeader} flex flex-col gap-6 border-b border-white/10 pb-8 sm:flex-row sm:items-end sm:justify-between`}>
           <AgentPreparationPageHeader pageTitle="LOCATION PREPARATION" taskHeading="Prepare for a location conversation" description="Choose a certified City to receive governed local orientation before opening supporting detail." scopeNote="Location context is durable orientation and supports address-level verification." />
         </header>
 
