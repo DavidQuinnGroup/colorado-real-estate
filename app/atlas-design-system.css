@@ -619,6 +619,20 @@
   .atlas-ds-table-wrap th, .atlas-ds-table-wrap td { border-bottom: 1px solid var(--atlas-border-subtle); padding: var(--atlas-space-3); text-align: left; }
   .atlas-ds-metric { border-left: 3px solid var(--atlas-border-strong); padding-left: var(--atlas-space-3); }
 
+  .atlas-ds-access-page { min-height: 100vh; }
+  .atlas-ds-access-canvas { display: grid; min-height: 100vh; place-items: center; padding: clamp(var(--atlas-space-4), 4vw, var(--atlas-space-10)); }
+  .atlas-ds-access-panel { display: grid; width: min(100%, 28rem); gap: var(--atlas-space-6); padding: clamp(var(--atlas-space-5), 4vw, var(--atlas-space-8)); }
+  .atlas-ds-access-brand { width: fit-content; color: var(--atlas-text-muted); font-size: 0.75rem; font-weight: 700; letter-spacing: 0.12em; line-height: 1.4; text-decoration: none; text-transform: uppercase; }
+  .atlas-ds-access-brand:hover { color: var(--atlas-action-primary); }
+  .atlas-ds-access-heading { display: grid; gap: var(--atlas-space-3); }
+  .atlas-ds-access-eyebrow { margin: 0; color: var(--atlas-information-system-status); font-size: 0.75rem; font-weight: 700; letter-spacing: 0.12em; line-height: 1.4; text-transform: uppercase; }
+  .atlas-ds-access-title { margin: 0; color: var(--atlas-text-primary); font-family: var(--atlas-font-display); font-size: clamp(1.875rem, 5vw, 2.5rem); font-weight: 700; line-height: 1.12; }
+  .atlas-ds-access-copy { margin: 0; color: var(--atlas-text-secondary); font-size: 0.9375rem; line-height: 1.6; }
+  .atlas-ds-access-form { display: grid; gap: var(--atlas-space-4); }
+  .atlas-ds-access-alert { margin: 0; border: 1px solid currentColor; border-left-width: 4px; border-radius: var(--atlas-radius-md); padding: var(--atlas-space-3) var(--atlas-space-4); color: var(--atlas-notice-error); font-size: 0.875rem; line-height: 1.5; }
+  .atlas-ds-access-alert[data-tone='warning'] { color: var(--atlas-notice-warning); }
+  .atlas-ds-access-brand:focus-visible { outline: 3px solid var(--atlas-focus-ring); outline-offset: 3px; }
+
   @media (prefers-color-scheme: dark) {
     .atlas-ds-root { color-scheme: dark; }
   }
@@ -628,6 +642,7 @@
     .atlas-ds-action { width: 100%; }
     .atlas-ds-field-control { flex-wrap: nowrap; }
     .atlas-ds-field-unit { width: auto; }
+    .atlas-ds-access-panel { gap: var(--atlas-space-5); }
   }
 
   @media (prefers-contrast: more), (forced-colors: active) {

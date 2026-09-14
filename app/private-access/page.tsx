@@ -1,10 +1,35 @@
 import { getPrivateSiteAccessConfiguration, sanitizePrivateAccessReturnPath } from '@/lib/privateSiteAccess';
 
+import { AtlasButton, AtlasField, AtlasSurface } from '@/components/design-system/AtlasDesignSystem';
+
 export const dynamic = 'force-dynamic';
 
 export default async function PrivateAccessPage({ searchParams }: { searchParams?: Promise<{ next?: string; error?: string; unavailable?: string }> }) {
   const params = await searchParams;
   const unavailable = params?.unavailable === '1' || getPrivateSiteAccessConfiguration().configurationState === 'MISSING_SECRET';
   const nextPath = sanitizePrivateAccessReturnPath(params?.next);
-  return <main className="min-h-screen bg-[#06080c] px-6 py-10 text-slate-100"><section className="mx-auto flex min-h-[calc(100vh-5rem)] max-w-md items-center"><div className="w-full border border-white/10 bg-white/[0.03] p-6 shadow-2xl shadow-black/20"><p className="text-xs font-medium uppercase tracking-[0.24em] text-white/45">PROJECT ATLAS(TM)</p><h1 className="mt-3 text-3xl font-semibold">Private Development Access</h1><p className="mt-3 text-sm leading-6 text-white/60">PROJECT ATLAS is currently in private development.</p>{unavailable ? <p className="mt-6 border border-amber-300/30 bg-amber-300/10 px-4 py-3 text-sm text-amber-100" role="alert">Private access is temporarily unavailable.</p> : null}{params?.error === '1' && !unavailable ? <p className="mt-6 border border-rose-300/30 bg-rose-300/10 px-4 py-3 text-sm text-rose-100" role="alert">Access could not be verified. Please try again.</p> : null}{!unavailable ? <form action="/private-access/login" method="post" className="mt-6 space-y-4"><input type="hidden" name="next" value={nextPath} /><div><label htmlFor="privateAccessSecret" className="text-sm font-medium text-white/80">Private access password</label><input id="privateAccessSecret" name="privateAccessSecret" type="password" autoComplete="current-password" required className="mt-2 w-full border border-white/15 bg-black/30 px-3 py-3 text-base text-white outline-none transition focus:border-cyan-300" /></div><button type="submit" className="w-full bg-cyan-300 px-4 py-3 text-sm font-semibold uppercase tracking-[0.16em] text-slate-950 transition hover:bg-cyan-200 focus:outline-none focus:ring-2 focus:ring-cyan-200 focus:ring-offset-2 focus:ring-offset-[#06080c]">Enter PROJECT ATLAS</button></form> : null}</div></section></main>;
+  return (
+    <main className="atlas-ds-root atlas-ds-shell-public atlas-ds-access-page">
+      <section className="atlas-ds-canvas atlas-ds-access-canvas">
+        <AtlasSurface className="atlas-ds-access-panel" material="glass">
+          <div className="atlas-ds-access-heading">
+            <p className="atlas-ds-access-eyebrow">Project Atlas</p>
+            <h1 className="atlas-ds-access-title" id="private-access-title">Private Development Access</h1>
+            <p className="atlas-ds-access-copy">PROJECT ATLAS is currently in private development.</p>
+          </div>
+          {unavailable ? <p className="atlas-ds-access-alert" data-tone="warning" role="alert">Private access is temporarily unavailable.</p> : null}
+          {params?.error === '1' && !unavailable ? <p className="atlas-ds-access-alert" role="alert">Access could not be verified. Please try again.</p> : null}
+          {!unavailable ? (
+            <form action="/private-access/login" aria-labelledby="private-access-title" className="atlas-ds-access-form" data-autofill-identity="atlas-public-access" id="atlas-public-access-form" method="post" name="atlas-public-access">
+              <input type="hidden" name="next" value={nextPath} />
+              <AtlasField htmlFor="atlas-public-access-password" label="Private access password">
+                <input autoComplete="section-atlas-public-access current-password" className="atlas-ds-input" id="atlas-public-access-password" name="privateAccessSecret" required type="password" />
+              </AtlasField>
+              <AtlasButton type="submit">Enter PROJECT ATLAS</AtlasButton>
+            </form>
+          ) : null}
+        </AtlasSurface>
+      </section>
+    </main>
+  );
 }

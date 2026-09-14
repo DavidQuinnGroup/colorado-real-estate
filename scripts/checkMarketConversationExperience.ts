@@ -30,7 +30,7 @@ assert(page.includes('MarketConversationExperience'));
 assert(layout.includes('return <>{children}</>;'));
 assert.equal(layout.includes('fixed inset-0 z-50'), false, 'Agent workspace shell must own page geometry');
 assert(auth.includes("surface('/agent/prepare/market', 'BROWSER_ADMIN_PAGE', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY', 'READ_ONLY_ADMIN', false)"));
-assert(middleware.includes('"/agent/prepare/market"') && middleware.includes('buildAgentLoginRedirect'));
+assert(middleware.includes("const isAgentWorkspaceRoute = pathname === '/agent' || pathname.startsWith('/agent/')") && middleware.includes('buildAgentLoginRedirect'));
 assert(proof.includes('Synthetic, local-only preparation proof'));
 assert.equal(packageJson.scripts?.['check:market-conversation-experience'], 'jiti scripts/checkMarketConversationExperience.ts');
 console.log('MARKET_CONVERSATION_EXPERIENCE_CHECK: PASS');

@@ -60,8 +60,8 @@ function Section({ children, id, title }: { children: ReactNode; id: string; tit
 function ProfileSample({ profile }: { profile: ShellProfile }) {
   return (
     <AtlasSurface className={`atlas-ds-shell-${profile} ${styles.profileSample}`} data-profile-sample={profile} material="glass">
-      <p className="atlas-ds-label">{profileLabels[profile]} material profile</p>
-      <p className="atlas-ds-panel-title">Synthetic review context</p>
+      <h3 className={styles.profileTitle} data-testid={`atlas-fixture-profile-title-${profile}`}>{profileLabels[profile]} material profile</h3>
+      <p className="atlas-ds-label">Synthetic review context</p>
       <p className="atlas-ds-metadata">The same primitives expose this profile&apos;s density, material strength, and boundary treatment.</p>
       <AtlasField htmlFor={`fixture-profile-${profile}`} label="Illustrative scope"><input className="atlas-ds-input" id={`fixture-profile-${profile}`} readOnly value="Synthetic only" /></AtlasField>
       <AtlasStatusLabel status="review-required" />

@@ -306,7 +306,12 @@ assert.ok(
   agentNavigation.includes("label: 'Buyer'") &&
     agentNavigation.includes("href: '/agent/prepare/buyer'"),
 );
-assert.ok(agentNavigation.includes("href: '/agent/prepare/market'"));
+assert.ok(
+  agentNavigation.includes("key: 'intelligence'") &&
+    agentNavigation.includes("href: '/agent/prepare'") &&
+    agentNavigation.includes("'/agent/prepare/market'"),
+  'Market must remain an active contextual Intelligence route rather than a separate global navigation item.',
+);
 assert.ok(publicBuyerPage.includes("Buyer"));
 assert.ok(marketPage.includes("MarketConversationExperience"));
 assert.ok(placePage.includes("PlaceConversationExperience"));

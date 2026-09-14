@@ -14,6 +14,7 @@
 .profileGrid, .surfaceGrid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .profileSample, .surfaceGrid > *, .informationGrid > *, .stateGrid > * { display: grid; gap: var(--atlas-profile-control-gap); min-height: 10rem; }
 .profileSample { align-self: start; gap: var(--atlas-profile-content-gap); padding: var(--atlas-profile-panel-padding); }
+.profileTitle { margin: 0; color: var(--atlas-text-primary); font-family: var(--atlas-font-display); font-size: 1.375rem; font-weight: 700; line-height: 1.2; }
 .profileSample :global(.atlas-ds-metadata) { max-width: min(var(--atlas-profile-copy-measure), 100%); overflow-wrap: anywhere; }
 .profileSample :global(.atlas-ds-field) { gap: var(--atlas-space-1); }
 .profileSample :global(.atlas-ds-action) { width: 100%; }

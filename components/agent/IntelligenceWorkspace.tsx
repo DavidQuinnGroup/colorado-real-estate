@@ -6,10 +6,30 @@ import { AtlasInformationClassLabel, AtlasSurface } from '@/components/design-sy
 import styles from './IntelligenceWorkspace.module.css';
 
 const workAreas = [
-  { href: '/agent/prepare/property', title: 'Property Intelligence', description: 'Research one supported property, its listing facts, comparative context, and verification needs.', action: 'Analyze property', icon: Building2 },
-  { href: '/agent/prepare/place', title: 'Location Intelligence', description: 'Evaluate certified city context, local evidence, and the questions that require direct verification.', action: 'Explore location', icon: MapPinned },
-  { href: '/agent/prepare/market', title: 'Market Intelligence', description: 'Review supported market conditions, current observations, evidence posture, and limitations.', action: 'Analyze market', icon: ChartNoAxesCombined },
+  { key: 'property', href: '/agent/prepare/property', title: 'Property Intelligence', description: 'Research one supported property, its listing facts, comparative context, and verification needs.', action: 'Analyze property', icon: Building2 },
+  { key: 'location', href: '/agent/prepare/place', title: 'Location Intelligence', description: 'Evaluate certified city context, local evidence, and the questions that require direct verification.', action: 'Explore location', icon: MapPinned },
+  { key: 'market', href: '/agent/prepare/market', title: 'Market Intelligence', description: 'Review supported market conditions, current observations, evidence posture, and limitations.', action: 'Analyze market', icon: ChartNoAxesCombined },
 ] as const;
+
+type IntelligenceArea = (typeof workAreas)[number]['key'];
+
+export function IntelligenceContextNavigation({ current }: { current: IntelligenceArea }) {
+  return (
+    <nav aria-label="Intelligence work areas" className={styles.contextNavigation} data-testid="agent-intelligence-context-navigation">
+      <div className={styles.contextNavigationHeading}>
+        <Link className={styles.contextHubLink} href="/agent/prepare">Intelligence</Link>
+        <p>Move between the distinct Property, Location, and Market analysis work areas.</p>
+      </div>
+      <div className={styles.contextNavigationLinks}>
+        {workAreas.map((area) => (
+          <Link aria-current={current === area.key ? 'page' : undefined} className={styles.contextNavigationLink} href={area.href} key={area.href}>
+            {area.title.replace(' Intelligence', '')}
+          </Link>
+        ))}
+      </div>
+    </nav>
+  );
+}
 
 export default function IntelligenceWorkspace() {
   return (
@@ -23,6 +43,16 @@ export default function IntelligenceWorkspace() {
           </div>
           <p className={styles.scope}>Each workspace stays session-only until its existing workflow explicitly says otherwise. Review evidence and limitations before relying on analytical context.</p>
         </header>
+
+        <nav aria-label="Intelligence work areas" className={styles.contextNavigation} data-testid="agent-intelligence-context-navigation">
+          <div className={styles.contextNavigationHeading}>
+            <span className={styles.contextHubLink}>Intelligence</span>
+            <p>Choose an analytical work area without relying on hidden route knowledge.</p>
+          </div>
+          <div className={styles.contextNavigationLinks}>
+            {workAreas.map((area) => <Link className={styles.contextNavigationLink} href={area.href} key={area.href}>{area.title.replace(' Intelligence', '')}</Link>)}
+          </div>
+        </nav>
 
         <section aria-label="Intelligence work areas" className={styles.workAreaGrid}>
           {workAreas.map((area) => {

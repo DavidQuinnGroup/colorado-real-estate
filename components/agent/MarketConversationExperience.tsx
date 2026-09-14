@@ -8,6 +8,7 @@ import { projectAtlasTitleHierarchy } from '@/components/ProjectAtlasTitleHierar
 import AgentBriefingComposition from '@/components/agent/AgentBriefingComposition';
 import AgentCurrentSnapshotComparison from '@/components/agent/AgentCurrentSnapshotComparison';
 import AgentPreparationPageHeader from '@/components/agent/AgentPreparationPageHeader';
+import { IntelligenceContextNavigation } from '@/components/agent/IntelligenceWorkspace';
 import { prepareMarketConversation } from '@/lib/agent-advisory-workbench/marketConversationExperience';
 
 import styles from './IntelligenceWorkspace.module.css';
@@ -53,6 +54,7 @@ export default function MarketConversationExperience() {
   return (
     <main className={styles.page} data-testid="agent-market-conversation-experience" data-agent-only="true" data-persistence="false" data-customer-data="false" data-provider-activity="false">
       <div className={styles.content}>
+        <IntelligenceContextNavigation current="market" />
         <header className="flex flex-col gap-6 border-b border-white/10 pb-8 sm:flex-row sm:items-end sm:justify-between">
           <AgentPreparationPageHeader pageTitle="MARKET PREPARATION" taskHeading="Prepare for a market conversation" description="Choose a market to receive a concise, evidence-grounded briefing before opening supporting detail." scopeNote="Market context is point-in-time and preparation-focused. It does not replace professional judgment." />
         </header>
