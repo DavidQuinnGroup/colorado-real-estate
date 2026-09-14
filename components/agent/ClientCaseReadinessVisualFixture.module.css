@@ -1,0 +1,16 @@
+.fixture { min-height: 100%; }
+.fixture > :global(.atlas-ds-canvas) { min-height: 100%; padding: 1.5rem; }
+.header, .panelHeading { display: flex; justify-content: space-between; gap: 1rem; align-items: flex-start; max-width: 76rem; margin: 0 auto 1.25rem; }
+.header p:not(:global(.atlas-ds-label)) { max-width: 52rem; color: var(--atlas-text-secondary); line-height: 1.6; }
+.panel, .result, .empty { display: grid; gap: 1.25rem; max-width: 76rem; margin: 0 auto 1.25rem; padding: 1.25rem; }
+.selectionGrid, .resultGrid, .noticeGrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+.resultGrid { grid-template-columns: minmax(14rem, .8fr) minmax(0, 1.5fr); }
+.resultGrid > div, .noticeGrid > div { padding: 1rem; }
+.resultGrid dl { display: grid; gap: .75rem; margin: .875rem 0 0; }
+.resultGrid dt { color: var(--atlas-text-muted); font-size: .75rem; font-weight: 650; }
+.resultGrid dd { margin: .15rem 0 0; }
+.resultGrid table { width: 100%; margin-top: .75rem; border-collapse: collapse; font-size: .8125rem; }
+.resultGrid th, .resultGrid td { padding: .625rem; text-align: left; border-bottom: 1px solid var(--atlas-profile-border-subtle); }
+.noticeGrid > div { display: grid; gap: .5rem; }
+.noticeGrid p { margin: 0; color: var(--atlas-text-secondary); }
+@media (max-width: 760px) { .fixture > :global(.atlas-ds-canvas) { padding: 1rem; } .header, .panelHeading { flex-direction: column; } .selectionGrid, .resultGrid, .noticeGrid { grid-template-columns: 1fr; } .panel :global(.atlas-ds-action) { width: 100%; } }

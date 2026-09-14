@@ -107,6 +107,7 @@ export const adminProtectedSurfaceClassifications: AdminProtectedSurfaceClassifi
   surface('/agent/transactions', 'BROWSER_ADMIN_PAGE', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),
   surface('/agent/authorizations', 'BROWSER_ADMIN_PAGE', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),
   surface('/agent/design-system/visual-certification', 'BROWSER_ADMIN_PAGE', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),
+  surface('/agent/design-system/visual-certification/client-readiness', 'BROWSER_ADMIN_PAGE', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),
   surface('/agent/clients', 'BROWSER_ADMIN_PAGE', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),
   surface('/agent/outputs', 'BROWSER_ADMIN_PAGE', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),
   surface('/agent/investment', 'BROWSER_ADMIN_PAGE', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),
@@ -122,6 +123,7 @@ export const adminProtectedSurfaceClassifications: AdminProtectedSurfaceClassifi
   surface('/api/agent/transactions', 'MUTATING_ADMIN_API', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'MUTATION_CAPABLE', 'MUTATING_ADMIN', true),
   surface('/api/agent/client-authorizations', 'MUTATING_ADMIN_API', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'MUTATION_CAPABLE', 'MUTATING_ADMIN', true),
   surface('/api/agent/client-cases', 'MUTATING_ADMIN_API', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'MUTATION_CAPABLE', 'MUTATING_ADMIN', true),
+  surface('/api/agent/client-case-readiness', 'READ_ONLY_ADMIN_API', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'READ_ONLY', 'READ_ONLY_ADMIN', false),
   surface('/api/agent/seller-financial', 'MUTATING_ADMIN_API', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'MUTATION_CAPABLE', 'MUTATING_ADMIN', true),
   surface('/api/agent/investment-breakeven', 'MUTATING_ADMIN_API', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'MUTATION_CAPABLE', 'MUTATING_ADMIN', true),
   surface('/api/agent/strategy-suite', 'MUTATING_ADMIN_API', ['HUMAN_AGENT'], ['AGENT'], ['HUMAN_AGENT_SESSION'], 'MUTATION_CAPABLE', 'MUTATING_ADMIN', true),
@@ -222,7 +224,8 @@ export function sanitizeAgentReturnPath(value: string | null | undefined) {
     if (['next', 'redirect', 'redirect_uri', 'return', 'url'].includes(parameter.toLowerCase())) return '/agent';
   }
 
-  const admitted = adminProtectedSurfaceClassifications.some((surface) => (
+  const isClientCaseReadinessReturn = /^\/agent\/clients\/[^/]+\/readiness$/.test(candidate.pathname);
+  const admitted = isClientCaseReadinessReturn || adminProtectedSurfaceClassifications.some((surface) => (
     surface.routePattern === candidate.pathname
     && surface.surfaceType === 'BROWSER_ADMIN_PAGE'
     && surface.acceptedIdentityTypes.length === 1
@@ -245,6 +248,10 @@ export function classifyAdminSurface(pathname: string, method = 'GET'): AdminPro
   }
 
   if (/^\/agent\/clients\/[^/]+$/.test(pathname)) {
+    return adminProtectedSurfaceClassifications.find((candidate) => candidate.routePattern === '/agent/clients') ?? adminProtectedSurfaceClassifications[0];
+  }
+
+  if (/^\/agent\/clients\/[^/]+\/readiness$/.test(pathname)) {
     return adminProtectedSurfaceClassifications.find((candidate) => candidate.routePattern === '/agent/clients') ?? adminProtectedSurfaceClassifications[0];
   }
 

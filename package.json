@@ -32,6 +32,8 @@
     "check:client-case-scenario-foundation": "jiti scripts/checkClientCaseScenarioFoundation.ts",
     "check:client-case-effective-context-resolver": "jiti scripts/checkClientCaseEffectiveContextResolver.ts",
     "check:client-case-capability-readiness-foundation": "jiti scripts/checkClientCaseCapabilityReadinessFoundation.ts",
+    "check:client-case-agent-readiness-workflow": "jiti scripts/checkClientCaseAgentReadinessWorkflow.ts",
+    "check:client-case-agent-readiness-visual-structure": "jiti scripts/checkClientCaseAgentReadinessVisualStructure.ts",
     "check:agent-workspace-information-architecture": "jiti scripts/checkAgentWorkspaceInformationArchitecture.ts",
     "check:agent-workspace-shell-adoption": "jiti scripts/checkAgentWorkspaceShellAdoption.ts",
     "check:project-atlas-navigation-invariant": "jiti scripts/checkProjectAtlasNavigationInvariant.ts",
