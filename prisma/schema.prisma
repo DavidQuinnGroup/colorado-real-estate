@@ -397,6 +397,33 @@ enum ClientCasePropertyRole {
   OTHER
 }
 
+enum ClientCaseObjectiveType {
+  BUY_PRIMARY_HOME
+  SELL_CURRENT_HOME
+  INVESTMENT_ACQUISITION
+  FINANCIAL_STRATEGY
+}
+
+enum ClientCaseObjectiveStatus {
+  ACTIVE
+  COMPLETED
+  ARCHIVED
+}
+
+enum ClientCaseContextScope {
+  CASE
+  OBJECTIVE
+  PROPERTY
+}
+
+enum ClientCaseContextSourcePosture {
+  CLIENT_STATED
+  AGENT_ENTERED
+  EVIDENCE_SUPPORTED
+  PROFESSIONAL_INPUT_SUPPORTED
+  SYSTEM_DERIVED
+}
+
 enum ClientAuthorizationPrincipalRequirement {
   SINGLE_REQUIRED_PRINCIPAL
   ALL_REQUIRED_PRINCIPALS
@@ -2814,6 +2841,8 @@ model EvidenceAdmission {
   supersededByAdmission EvidenceAdmission?            @relation("EvidenceAdmissionSupersession")
   auditEvents           EvidenceAdmissionAuditEvent[]
   professionalInputs    ProfessionalInput[]
+  clientCaseFacts       ClientCaseFact[]              @relation("ClientCaseFactEvidenceAdmission")
+  clientCaseCriteria    ClientCaseCriterion[]         @relation("ClientCaseCriterionEvidenceAdmission")
   transactionIssues     TransactionIssue[]            @relation("TransactionIssueEvidenceAdmission")
 
   @@index([ownerAgentSubject, claimKind, effectiveAt])
@@ -2990,7 +3019,9 @@ model ProfessionalInput {
   fingerprint         String            @unique
   createdAt           DateTime          @default(now())
 
-  evidenceAdmission EvidenceAdmission @relation(fields: [evidenceAdmissionId], references: [id], onDelete: Restrict)
+  evidenceAdmission  EvidenceAdmission     @relation(fields: [evidenceAdmissionId], references: [id], onDelete: Restrict)
+  clientCaseFacts    ClientCaseFact[]      @relation("ClientCaseFactProfessionalInput")
+  clientCaseCriteria ClientCaseCriterion[] @relation("ClientCaseCriterionProfessionalInput")
 
   @@unique([ownerAgentSubject, claimKind, versionOrdinal])
   @@index([ownerAgentSubject, claimKind, effectiveAt])
@@ -3063,6 +3094,9 @@ model ClientCase {
 
   parties      ClientCaseParty[]
   properties   ClientCaseProperty[]
+  objectives   ClientCaseObjective[]
+  facts        ClientCaseFact[]
+  criteria     ClientCaseCriterion[]
   transactions Transaction[]
   outputProducts OutputProduct[]
   multiPropertyFinancialScenarios MultiPropertyFinancialScenario[]
@@ -3095,9 +3129,106 @@ model ClientCaseProperty {
 
   clientCase        ClientCase                @relation(fields: [clientCaseId], references: [id], onDelete: Restrict)
   canonicalProperty CanonicalPhysicalProperty @relation(fields: [canonicalPropertyId], references: [id], onDelete: Restrict)
+  facts             ClientCaseFact[]
+  criteria          ClientCaseCriterion[]
 
   @@unique([clientCaseId, canonicalPropertyId])
   @@index([canonicalPropertyId])
+}
+
+model ClientCaseObjective {
+  id               String                    @id @default(cuid())
+  clientCaseId     String
+  objectiveType    ClientCaseObjectiveType
+  status           ClientCaseObjectiveStatus @default(ACTIVE)
+  title            String
+  createdBySubject String
+  completedAt      DateTime?
+  archivedAt       DateTime?
+  idempotencyKey   String                    @unique
+  createdAt        DateTime                  @default(now())
+  updatedAt        DateTime                  @updatedAt
+
+  clientCase ClientCase            @relation(fields: [clientCaseId], references: [id], onDelete: Restrict)
+  facts      ClientCaseFact[]
+  criteria   ClientCaseCriterion[]
+
+  @@index([clientCaseId, status, createdAt])
+  @@index([clientCaseId, objectiveType, status])
+}
+
+model ClientCaseFact {
+  id                   String                         @id @default(cuid())
+  clientCaseId         String
+  objectiveId          String?
+  clientCasePropertyId String?
+  semanticKey          String
+  scope                ClientCaseContextScope
+  scopeReference       String
+  value                Json
+  sourcePosture        ClientCaseContextSourcePosture
+  evidenceAdmissionId  String?
+  professionalInputId  String?
+  recordedBySubject    String
+  observedAt           DateTime?
+  effectiveAt          DateTime?
+  reviewAfter          DateTime?
+  limitation           String?
+  supersedesFactId     String?                        @unique
+  supersededAt         DateTime?
+  createdAt            DateTime                       @default(now())
+  updatedAt            DateTime                       @updatedAt
+
+  clientCase         ClientCase           @relation(fields: [clientCaseId], references: [id], onDelete: Restrict)
+  objective          ClientCaseObjective? @relation(fields: [objectiveId], references: [id], onDelete: Restrict)
+  clientCaseProperty ClientCaseProperty?  @relation(fields: [clientCasePropertyId], references: [id], onDelete: Restrict)
+  evidenceAdmission  EvidenceAdmission?   @relation("ClientCaseFactEvidenceAdmission", fields: [evidenceAdmissionId], references: [id], onDelete: Restrict)
+  professionalInput  ProfessionalInput?   @relation("ClientCaseFactProfessionalInput", fields: [professionalInputId], references: [id], onDelete: Restrict)
+  supersedesFact     ClientCaseFact?      @relation("ClientCaseFactSupersession", fields: [supersedesFactId], references: [id], onDelete: Restrict)
+  supersededByFact   ClientCaseFact?      @relation("ClientCaseFactSupersession")
+
+  @@index([clientCaseId, semanticKey, scopeReference, createdAt])
+  @@index([objectiveId, semanticKey, createdAt])
+  @@index([clientCasePropertyId, semanticKey, createdAt])
+  @@index([evidenceAdmissionId])
+  @@index([professionalInputId])
+}
+
+model ClientCaseCriterion {
+  id                    String                         @id @default(cuid())
+  clientCaseId          String
+  objectiveId           String?
+  clientCasePropertyId  String?
+  semanticKey           String
+  scope                 ClientCaseContextScope
+  scopeReference        String
+  value                 Json
+  sourcePosture         ClientCaseContextSourcePosture
+  evidenceAdmissionId   String?
+  professionalInputId   String?
+  recordedBySubject     String
+  observedAt            DateTime?
+  effectiveAt           DateTime?
+  reviewAfter           DateTime?
+  limitation            String?
+  supersedesCriterionId String?                        @unique
+  supersededAt          DateTime?
+  createdAt             DateTime                       @default(now())
+  updatedAt             DateTime                       @updatedAt
+
+  clientCase            ClientCase           @relation(fields: [clientCaseId], references: [id], onDelete: Restrict)
+  objective             ClientCaseObjective? @relation(fields: [objectiveId], references: [id], onDelete: Restrict)
+  clientCaseProperty    ClientCaseProperty?  @relation(fields: [clientCasePropertyId], references: [id], onDelete: Restrict)
+  evidenceAdmission     EvidenceAdmission?   @relation("ClientCaseCriterionEvidenceAdmission", fields: [evidenceAdmissionId], references: [id], onDelete: Restrict)
+  professionalInput     ProfessionalInput?   @relation("ClientCaseCriterionProfessionalInput", fields: [professionalInputId], references: [id], onDelete: Restrict)
+  supersedesCriterion   ClientCaseCriterion? @relation("ClientCaseCriterionSupersession", fields: [supersedesCriterionId], references: [id], onDelete: Restrict)
+  supersededByCriterion ClientCaseCriterion? @relation("ClientCaseCriterionSupersession")
+
+  @@index([clientCaseId, semanticKey, scopeReference, createdAt])
+  @@index([objectiveId, semanticKey, createdAt])
+  @@index([clientCasePropertyId, semanticKey, createdAt])
+  @@index([evidenceAdmissionId])
+  @@index([professionalInputId])
 }
 
 model TransactionDeadline {
