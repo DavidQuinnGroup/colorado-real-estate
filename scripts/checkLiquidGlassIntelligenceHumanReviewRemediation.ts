@@ -50,20 +50,16 @@ for (const [path, current] of [
   ['components/agent/PlaceConversationExperience.tsx', 'location'],
   ['components/agent/MarketConversationExperience.tsx', 'market'],
 ] as const) {
-  assert.match(source(path), new RegExp(`IntelligenceContextNavigation current="${current}"`), `${path} must retain contextual Intelligence navigation.`);
+  const childPage = source(path);
+  assert.match(childPage, new RegExp(`IntelligenceChildPageHeader current="${current}"`), `${path} must retain the shared Intelligence child-page composition.`);
+  assert.match(childPage, new RegExp(`IntelligenceChildPageHeader current="${current}">[\\s\\S]*?<header[\\s\\S]*?<\\/header>[\\s\\S]*?<\\/IntelligenceChildPageHeader>`), `${path} must render its header before the shared Intelligence navigation.`);
+  assert.doesNotMatch(childPage, /IntelligenceContextNavigation current=/, `${path} must not place the Intelligence navigation independently.`);
 }
 for (const marker of ['min-height: 2.75rem', '@media (max-width: 40rem)', 'grid-template-columns: repeat(3, minmax(0, 1fr))', 'aria-current']) {
   assert.ok(intelligenceStyles.includes(marker), `Intelligence navigation must retain ${marker}.`);
 }
-assert.match(intelligenceStyles, /\.childPageHeader \{ margin-top: var\(--atlas-space-6\); \}/, 'Child Intelligence pages must use a deliberate shared desktop separation.');
-assert.match(intelligenceStyles, /\.childPageHeader \{ margin-top: var\(--atlas-space-5\); \}/, 'Child Intelligence pages must retain compact mobile separation.');
-for (const path of [
-  'components/agent/PropertyConversationExperience.tsx',
-  'components/agent/PlaceConversationExperience.tsx',
-  'components/agent/MarketConversationExperience.tsx',
-]) {
-  assert.match(source(path), /styles\.childPageHeader/, `${path} must use the shared Intelligence child-page separation.`);
-}
+assert.match(intelligence, /export function IntelligenceChildPageHeader[\s\S]*?<IntelligenceContextNavigation current=\{current\} \/>/, 'The shared child-page composition must render navigation after its supplied header.');
+assert.doesNotMatch(intelligenceStyles, /childPageHeader/, 'The obsolete compensating child-header spacing must not remain after structural correction.');
 
 assert.match(agentShell, /atlas-ds-root atlas-ds-shell-agent atlas-ds-density-operational/);
 assert.match(agentHome, /launchGroups/);

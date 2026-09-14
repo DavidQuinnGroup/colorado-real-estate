@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import type { ReactNode } from 'react';
 import { ArrowRight, Building2, ChartNoAxesCombined, MapPinned, ShieldCheck } from 'lucide-react';
 
 import { AtlasInformationClassLabel, AtlasSurface } from '@/components/design-system/AtlasDesignSystem';
@@ -29,6 +30,10 @@ export function IntelligenceContextNavigation({ current }: { current: Intelligen
       </div>
     </nav>
   );
+}
+
+export function IntelligenceChildPageHeader({ children, current }: { children: ReactNode; current: IntelligenceArea }) {
+  return <>{children}<IntelligenceContextNavigation current={current} /></>;
 }
 
 export default function IntelligenceWorkspace() {

@@ -9,7 +9,7 @@ import { projectAtlasTitleHierarchy } from '@/components/ProjectAtlasTitleHierar
 import AgentBriefingComposition from '@/components/agent/AgentBriefingComposition';
 import AgentCurrentSnapshotComparison from '@/components/agent/AgentCurrentSnapshotComparison';
 import AgentPreparationPageHeader from '@/components/agent/AgentPreparationPageHeader';
-import { IntelligenceContextNavigation } from '@/components/agent/IntelligenceWorkspace';
+import { IntelligenceChildPageHeader } from '@/components/agent/IntelligenceWorkspace';
 import { AGENT_PLACE_PREPARATION_P0_CITIES } from '@/lib/agent-advisory-workbench/agentPlacePreparationAdmission';
 import { prepareAgentPlaceConversation } from '@/lib/agent-advisory-workbench/agentPlaceConversationPreparation';
 
@@ -46,10 +46,11 @@ export default function PlaceConversationExperience() {
   return (
     <main className={styles.page} data-testid="agent-place-conversation-experience" data-agent-only="true" data-persistence="false" data-customer-data="false" data-provider-activity="false" data-recommendation="false" data-suitability="false" data-fair-housing-inference="false">
       <div className={styles.content}>
-        <IntelligenceContextNavigation current="location" />
-        <header className={`${styles.childPageHeader} flex flex-col gap-6 border-b border-white/10 pb-8 sm:flex-row sm:items-end sm:justify-between`}>
-          <AgentPreparationPageHeader pageTitle="LOCATION PREPARATION" taskHeading="Prepare for a location conversation" description="Choose a certified City to receive governed local orientation before opening supporting detail." scopeNote="Location context is durable orientation and supports address-level verification." />
-        </header>
+        <IntelligenceChildPageHeader current="location">
+          <header className="flex flex-col gap-6 border-b border-white/10 pb-8 sm:flex-row sm:items-end sm:justify-between">
+            <AgentPreparationPageHeader pageTitle="LOCATION PREPARATION" taskHeading="Prepare for a location conversation" description="Choose a certified City to receive governed local orientation before opening supporting detail." scopeNote="Location context is durable orientation and supports address-level verification." />
+          </header>
+        </IntelligenceChildPageHeader>
 
         <section className="mt-8 grid gap-5 lg:grid-cols-[minmax(0,1fr)_18rem]" aria-labelledby="place-selection-heading">
           <div className="border border-white/10 bg-white/[0.035] p-5 sm:p-6"><div className="flex items-start justify-between gap-4"><div><h2 id="place-selection-heading" className={projectAtlasTitleHierarchy.selectionGroup}>Choose one certified City</h2></div><span className="text-xs text-slate-400">Three available Cities</span></div>

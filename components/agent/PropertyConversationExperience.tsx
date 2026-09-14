@@ -7,7 +7,7 @@ import { ArrowRight, BarChart3, CheckCircle2, CircleAlert, ClipboardList, Clock3
 import DisclosureStateIndicator from '@/components/DisclosureStateIndicator';
 import { projectAtlasTitleHierarchy } from '@/components/ProjectAtlasTitleHierarchy';
 import AgentBriefingComposition from '@/components/agent/AgentBriefingComposition';
-import { IntelligenceContextNavigation } from '@/components/agent/IntelligenceWorkspace';
+import { IntelligenceChildPageHeader } from '@/components/agent/IntelligenceWorkspace';
 import PropertyCriteriaProfileEditor from '@/components/agent/PropertyCriteriaProfileEditor';
 import AgentPreparationPageHeader from '@/components/agent/AgentPreparationPageHeader';
 import {
@@ -308,10 +308,11 @@ export default function PropertyConversationExperience() {
   return (
     <main className={styles.page} data-testid="agent-property-conversation-experience" data-agent-only="true" data-persistence="false" data-customer-data="false" data-provider-activity="false" data-public-record-retrieval="false" data-recommendation="false" data-fair-housing-inference="false">
       <div className={styles.content}>
-        <IntelligenceContextNavigation current="property" />
-        <header className={`${styles.childPageHeader} flex flex-col gap-6 border-b border-white/10 pb-8 sm:flex-row sm:items-end sm:justify-between`}>
-          <AgentPreparationPageHeader pageTitle="PROPERTY PREPARATION" taskHeading="Prepare for a property conversation" description="Choose one supported property to receive a concise listing and verification briefing before opening supporting detail." scopeNote="The briefing uses stored listing facts for orientation. Material details still require direct verification." />
-        </header>
+        <IntelligenceChildPageHeader current="property">
+          <header className="flex flex-col gap-6 border-b border-white/10 pb-8 sm:flex-row sm:items-end sm:justify-between">
+            <AgentPreparationPageHeader pageTitle="PROPERTY PREPARATION" taskHeading="Prepare for a property conversation" description="Choose one supported property to receive a concise listing and verification briefing before opening supporting detail." scopeNote="The briefing uses stored listing facts for orientation. Material details still require direct verification." />
+          </header>
+        </IntelligenceChildPageHeader>
 
         <section className="mt-8 grid gap-5 lg:grid-cols-[minmax(0,1fr)_18rem]" aria-labelledby="property-selection-heading">
           <div className="border border-white/10 bg-white/[0.035] p-5 sm:p-6">

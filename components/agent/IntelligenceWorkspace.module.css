@@ -33,9 +33,6 @@ a.contextHubLink:hover { color: var(--atlas-action-primary); text-decoration: un
 .contextNavigationLink[aria-current='page'] { box-shadow: inset 0 -2px 0 var(--atlas-action-primary); }
 .contextHubLink:focus-visible, .contextNavigationLink:focus-visible { outline: 3px solid var(--atlas-focus-ring); outline-offset: 3px; }
 
-/* Child work areas deliberately begin after the shared navigation object. */
-.childPageHeader { margin-top: var(--atlas-space-6); }
-
 .workAreaGrid { display: grid; gap: var(--atlas-space-4); margin-top: var(--atlas-space-8); }
 .workArea { display: grid; min-height: 16rem; align-content: space-between; gap: var(--atlas-space-6); padding: var(--atlas-space-6); color: var(--atlas-text-primary); text-decoration: none; transition: border-color var(--atlas-duration-standard) var(--atlas-ease-standard), background-color var(--atlas-duration-standard) var(--atlas-ease-standard), transform var(--atlas-duration-standard) var(--atlas-ease-standard); }
 .workArea:hover { border-color: var(--atlas-profile-border-strong); background: var(--atlas-profile-surface-elevated); transform: translateY(-2px); }
@@ -71,5 +68,5 @@ a.contextHubLink:hover { color: var(--atlas-action-primary); text-decoration: un
 .page :global([data-testid='agent-current-snapshot-comparison']) { border-color: var(--atlas-profile-border-subtle) !important; background: var(--atlas-profile-surface-reading) !important; color: var(--atlas-text-primary) !important; }
 
 @media (min-width: 48rem) { .workAreaGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-@media (max-width: 40rem) { .header { align-items: start; } .scope { max-width: none; } .contextNavigation { align-items: stretch; } .contextNavigationLinks { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); } .contextNavigationLink { justify-content: center; padding-inline: var(--atlas-space-2); text-align: center; } .childPageHeader { margin-top: var(--atlas-space-5); } .workArea { min-height: 0; } }
+@media (max-width: 40rem) { .header { align-items: start; } .scope { max-width: none; } .contextNavigation { align-items: stretch; } .contextNavigationLinks { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); } .contextNavigationLink { justify-content: center; padding-inline: var(--atlas-space-2); text-align: center; } .workArea { min-height: 0; } }
 @media (prefers-reduced-motion: reduce) { .workArea { transition-duration: 0ms; } .workArea:hover { transform: none; } }
