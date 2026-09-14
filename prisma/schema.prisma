@@ -424,6 +424,24 @@ enum ClientCaseContextSourcePosture {
   SYSTEM_DERIVED
 }
 
+enum ClientCaseScenarioStatus {
+  ACTIVE
+  ARCHIVED
+}
+
+enum ClientCaseScenarioValueType {
+  MONEY_CENTS
+  PERCENT_BPS
+  INTEGER
+  STRING_SET
+}
+
+enum ClientCaseScenarioPropertyDispositionType {
+  SELL
+  RETAIN
+  RETAIN_AS_RENTAL
+}
+
 enum ClientAuthorizationPrincipalRequirement {
   SINGLE_REQUIRED_PRINCIPAL
   ALL_REQUIRED_PRINCIPALS
@@ -3097,6 +3115,7 @@ model ClientCase {
   objectives   ClientCaseObjective[]
   facts        ClientCaseFact[]
   criteria     ClientCaseCriterion[]
+  scenarios    ClientCaseScenario[]
   transactions Transaction[]
   outputProducts OutputProduct[]
   multiPropertyFinancialScenarios MultiPropertyFinancialScenario[]
@@ -3131,6 +3150,7 @@ model ClientCaseProperty {
   canonicalProperty CanonicalPhysicalProperty @relation(fields: [canonicalPropertyId], references: [id], onDelete: Restrict)
   facts             ClientCaseFact[]
   criteria          ClientCaseCriterion[]
+  scenarioPropertyDispositions ClientCaseScenarioPropertyDisposition[]
 
   @@unique([clientCaseId, canonicalPropertyId])
   @@index([canonicalPropertyId])
@@ -3152,6 +3172,7 @@ model ClientCaseObjective {
   clientCase ClientCase            @relation(fields: [clientCaseId], references: [id], onDelete: Restrict)
   facts      ClientCaseFact[]
   criteria   ClientCaseCriterion[]
+  scenarioObjectiveLinks ClientCaseScenarioObjective[]
 
   @@index([clientCaseId, status, createdAt])
   @@index([clientCaseId, objectiveType, status])
@@ -3229,6 +3250,104 @@ model ClientCaseCriterion {
   @@index([clientCasePropertyId, semanticKey, createdAt])
   @@index([evidenceAdmissionId])
   @@index([professionalInputId])
+}
+
+model ClientCaseScenario {
+  id                             String                    @id @default(cuid())
+  clientCaseId                   String
+  name                           String
+  description                    String?
+  status                         ClientCaseScenarioStatus  @default(ACTIVE)
+  archivedAt                     DateTime?
+  currentVersionId               String?                   @unique
+  duplicatedFromScenarioId       String?
+  duplicatedFromScenarioVersionId String?
+  createdBySubject               String
+  createdAt                      DateTime                  @default(now())
+  updatedAt                      DateTime                  @updatedAt
+
+  clientCase                   ClientCase                @relation(fields: [clientCaseId], references: [id], onDelete: Restrict)
+  currentVersion               ClientCaseScenarioVersion? @relation("ClientCaseScenarioCurrentVersion", fields: [currentVersionId], references: [id], onDelete: Restrict)
+  versions                     ClientCaseScenarioVersion[] @relation("ClientCaseScenarioVersions")
+  duplicatedFromScenario       ClientCaseScenario?       @relation("ClientCaseScenarioDuplication", fields: [duplicatedFromScenarioId], references: [id], onDelete: Restrict)
+  duplicatedScenarios          ClientCaseScenario[]      @relation("ClientCaseScenarioDuplication")
+  duplicatedFromScenarioVersion ClientCaseScenarioVersion? @relation("ClientCaseScenarioVersionDuplication", fields: [duplicatedFromScenarioVersionId], references: [id], onDelete: Restrict)
+
+  @@index([clientCaseId, status, createdAt])
+  @@index([duplicatedFromScenarioId])
+  @@index([duplicatedFromScenarioVersionId])
+}
+
+model ClientCaseScenarioVersion {
+  id        String   @id @default(cuid())
+  scenarioId String
+  versionNumber Int
+  createdBySubject String
+  createdAt DateTime @default(now())
+
+  scenario              ClientCaseScenario @relation("ClientCaseScenarioVersions", fields: [scenarioId], references: [id], onDelete: Restrict)
+  currentForScenario    ClientCaseScenario? @relation("ClientCaseScenarioCurrentVersion")
+  duplicatedToScenarios ClientCaseScenario[] @relation("ClientCaseScenarioVersionDuplication")
+  assumptions           ClientCaseScenarioAssumption[]
+  criteria              ClientCaseScenarioCriterion[]
+  propertyDispositions  ClientCaseScenarioPropertyDisposition[]
+  objectiveLinks        ClientCaseScenarioObjective[]
+
+  @@unique([scenarioId, versionNumber])
+  @@index([scenarioId, createdAt])
+}
+
+model ClientCaseScenarioAssumption {
+  id                String                      @id @default(cuid())
+  scenarioVersionId String
+  semanticKey       String
+  valueType         ClientCaseScenarioValueType
+  value             Json
+  createdAt         DateTime                    @default(now())
+
+  scenarioVersion ClientCaseScenarioVersion @relation(fields: [scenarioVersionId], references: [id], onDelete: Restrict)
+
+  @@unique([scenarioVersionId, semanticKey])
+}
+
+model ClientCaseScenarioCriterion {
+  id                String                      @id @default(cuid())
+  scenarioVersionId String
+  semanticKey       String
+  valueType         ClientCaseScenarioValueType
+  value             Json
+  createdAt         DateTime                    @default(now())
+
+  scenarioVersion ClientCaseScenarioVersion @relation(fields: [scenarioVersionId], references: [id], onDelete: Restrict)
+
+  @@unique([scenarioVersionId, semanticKey])
+}
+
+model ClientCaseScenarioPropertyDisposition {
+  id                   String                                   @id @default(cuid())
+  scenarioVersionId    String
+  clientCasePropertyId String
+  disposition          ClientCaseScenarioPropertyDispositionType
+  createdAt            DateTime                                 @default(now())
+
+  scenarioVersion    ClientCaseScenarioVersion @relation(fields: [scenarioVersionId], references: [id], onDelete: Restrict)
+  clientCaseProperty ClientCaseProperty        @relation(fields: [clientCasePropertyId], references: [id], onDelete: Restrict)
+
+  @@unique([scenarioVersionId, clientCasePropertyId])
+  @@index([clientCasePropertyId])
+}
+
+model ClientCaseScenarioObjective {
+  id                    String   @id @default(cuid())
+  scenarioVersionId     String
+  clientCaseObjectiveId String
+  createdAt             DateTime @default(now())
+
+  scenarioVersion     ClientCaseScenarioVersion @relation(fields: [scenarioVersionId], references: [id], onDelete: Restrict)
+  clientCaseObjective ClientCaseObjective       @relation(fields: [clientCaseObjectiveId], references: [id], onDelete: Restrict)
+
+  @@unique([scenarioVersionId, clientCaseObjectiveId])
+  @@index([clientCaseObjectiveId])
 }
 
 model TransactionDeadline {
