@@ -37,6 +37,7 @@
     "check:agent-workspace-information-architecture": "jiti scripts/checkAgentWorkspaceInformationArchitecture.ts",
     "check:agent-workspace-shell-adoption": "jiti scripts/checkAgentWorkspaceShellAdoption.ts",
     "check:agent-workspace-public-material-visual-remediation": "jiti scripts/checkAgentWorkspacePublicMaterialVisualRemediation.ts",
+    "check:agent-liquid-glass-surface-boundary-refinement": "jiti scripts/checkAgentLiquidGlassSurfaceBoundaryRefinement.ts",
     "check:project-atlas-navigation-invariant": "jiti scripts/checkProjectAtlasNavigationInvariant.ts",
     "check:agent-workspace-information-hierarchy-and-financial-terminology": "jiti scripts/checkAgentWorkspaceInformationHierarchyAndFinancialTerminology.ts",
     "check:interactive-cursor-styles": "jiti scripts/checkInteractiveCursorStyles.ts",

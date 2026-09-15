@@ -233,7 +233,7 @@
     --atlas-profile-density-space: var(--atlas-space-3);
     --atlas-profile-glass-opacity: 0.66;
     --atlas-profile-glass-blur: 24px;
-    --atlas-profile-glass-border: color-mix(in srgb, var(--atlas-border-subtle) 22%, transparent);
+    --atlas-profile-glass-border: color-mix(in srgb, var(--atlas-border-subtle) 10%, transparent);
     --atlas-profile-glass-depth: var(--atlas-depth-2);
     --atlas-profile-elevated-depth: var(--atlas-depth-2);
     --atlas-profile-floating-depth: var(--atlas-depth-3);
@@ -383,17 +383,18 @@
   }
 
   .atlas-ds-shell-agent .atlas-ds-surface {
-    border-color: color-mix(in srgb, var(--atlas-profile-glass-border) 54%, transparent);
+    border-color: transparent;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.18), var(--atlas-profile-glass-depth, var(--atlas-depth-1));
   }
 
   .atlas-ds-shell-agent .atlas-ds-surface-data,
   .atlas-ds-shell-agent .atlas-ds-surface-reading {
-    border-color: color-mix(in srgb, var(--atlas-profile-border-subtle) 45%, transparent);
-    box-shadow: var(--atlas-depth-1);
+    border-color: color-mix(in srgb, var(--atlas-profile-border-subtle) 12%, transparent);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.12), var(--atlas-depth-1);
   }
 
   .atlas-ds-surface-glass .atlas-ds-surface-glass {
-    border-color: var(--atlas-profile-border-subtle);
+    border-color: transparent;
     background: color-mix(in srgb, var(--atlas-profile-surface-secondary) calc(var(--atlas-profile-glass-opacity, 1) * 100%), transparent);
     box-shadow: none;
     backdrop-filter: none;
