@@ -28,7 +28,9 @@ const outputs = source('components/agent/AgentOutputsWorkspace.tsx');
 assert.match(preparationStyles, /\.workspace \{[\s\S]*?background: transparent;/, 'Buyer/Seller must not use one oversized inner dark page surface.');
 assert.match(preparationStyles, /\.workspace > \.section, \.workspace > :global\(\[data-testid='agent-property-criteria-profile'\]\) \{[\s\S]*?background: color-mix\(in srgb, var\(--atlas-profile-surface-primary\)/, 'Buyer/Seller primary setup surfaces must use canonical Agent material.');
 assert.match(preparationStyles, /\.workspace > \.section, \.workspace > :global\(\[data-testid='agent-property-criteria-profile'\]\) \{[\s\S]*?box-shadow: var\(--atlas-profile-glass-depth\);/, 'Buyer/Seller primary setup surfaces must float through shared elevation.');
-assert.match(preparationStyles, /\.workspace fieldset\.section \{[\s\S]*?box-shadow: var\(--atlas-surface-elevation-low\);/, 'Buyer/Seller nested controls must be subordinate surfaces.');
+assert.match(preparationStyles, /\.flatSection \{[\s\S]*?background: transparent;[\s\S]*?box-shadow: none;/, 'Buyer/Seller starting-point and topic sections must sit flat inside the primary setup surface.');
+assert.match(preparationStyles, /\.flatSection \+ \.flatSection \{[\s\S]*?border-top: 1px solid color-mix\(in srgb, var\(--atlas-profile-border-subtle\) 30%, transparent\);/, 'Buyer/Seller flat sections may use only a subtle section divider.');
+assert.doesNotMatch(preparationStyles, /\.workspace fieldset\.section \{/, 'Buyer/Seller must not reintroduce redundant filled fieldset surfaces.');
 
 for (const [name, file] of [
   ['multi-property scenario', financialScenario],

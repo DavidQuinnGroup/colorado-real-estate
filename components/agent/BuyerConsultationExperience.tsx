@@ -99,7 +99,7 @@ export default function BuyerConsultationExperience() {
               <PreparationSessionStatus />
               <h2 id="buyer-setup-heading" className={styles.sectionTitle}>Choose what the conversation needs to cover</h2>
             </div>
-            <fieldset className={styles.section}>
+            <fieldset className={styles.flatSection}>
               <legend className={styles.sectionTitle}>Choose where this buyer conversation begins</legend>
               <p className={styles.sectionCopy}>Choose the description that best matches the conversation you are preparing.</p>
               <div className={styles.optionGrid}>
@@ -107,7 +107,7 @@ export default function BuyerConsultationExperience() {
                 <PreparationStartingStateOption name="consultation-stage" value="READINESS" checked={stage === "READINESS"} onChange={() => { setStage("READINESS"); markBriefingForUpdate(); }} title="Preparing for an active search" description="Organize the open questions and verification steps before search activity begins." />
               </div>
             </fieldset>
-            <fieldset className={styles.section}>
+            <fieldset className={styles.flatSection}>
               <legend className={styles.sectionTitle}>Choose the topics to emphasize</legend>
               <p className={styles.sectionCopy}>{priorities.length} selected. Every selected topic receives Priority Focus treatment; the complete Buyer consultation playbook remains available.</p>
               <div className={styles.topicGrid}>{AGENT_BUYER_DISCUSSION_PRIORITIES.map((priority) => <PreparationTopicOption key={priority} checked={priorities.includes(priority)} onChange={() => togglePriority(priority)} label={PRIORITY_LABELS[priority]} />)}</div>

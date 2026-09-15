@@ -254,6 +254,7 @@
     "check:agent-buyer-preparation-agent-ready-consultation-content": "jiti scripts/checkAgentBuyerPreparationAgentReadyConsultationContent.ts",
     "check:agent-seller-consultation-preparation": "jiti scripts/checkAgentSellerConsultationPreparation.ts",
     "check:liquid-glass-buyer-seller-preparation-adoption": "jiti scripts/checkLiquidGlassBuyerSellerPreparationAdoption.ts",
+    "check:buyer-seller-final-liquid-glass-composition": "jiti scripts/checkBuyerSellerFinalLiquidGlassComposition.ts",
     "check:liquid-glass-intelligence-workspace-adoption": "jiti scripts/checkLiquidGlassIntelligenceWorkspaceAdoption.ts",
     "check:liquid-glass-intelligence-human-review-remediation": "jiti scripts/checkLiquidGlassIntelligenceHumanReviewRemediation.ts",
     "check:agent-listing-preparation": "jiti scripts/checkAgentListingPreparation.ts",

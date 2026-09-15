@@ -72,7 +72,7 @@ export default function SellerConsultationExperience() {
         <div className={styles.workspace}>
           <section className={styles.section}>
             <div className={styles.sectionHeader}><p className={styles.sectionEyebrow}>Consultation setup</p><PreparationSessionStatus /><h2 id="seller-setup-heading" className={styles.sectionTitle}>Choose what the conversation needs to emphasize</h2></div>
-            <fieldset className={styles.section}>
+            <fieldset className={styles.flatSection}>
               <legend className={styles.sectionTitle}>Choose where this seller conversation begins</legend>
               <p className={styles.sectionCopy}>Choose the description that best matches the conversation you are preparing.</p>
               <div className={styles.optionGrid}>
@@ -80,7 +80,7 @@ export default function SellerConsultationExperience() {
                 <PreparationStartingStateOption name="seller-consultation-position" value={AGENT_SELLER_CONSULTATION_POSITIONS[1]} checked={position === AGENT_SELLER_CONSULTATION_POSITIONS[1]} onChange={() => { setPosition(AGENT_SELLER_CONSULTATION_POSITIONS[1]); changed(); }} title="Preparing to move toward market" description="Organize readiness questions and preparation steps before a listing plan is treated as settled." />
               </div>
             </fieldset>
-            <fieldset className={styles.section}>
+            <fieldset className={styles.flatSection}>
               <legend className={styles.sectionTitle}>Choose the topics to emphasize</legend>
               <p className={styles.sectionCopy}>{priorities.length} selected. Every selected topic receives Priority Focus treatment; the complete Seller consultation playbook remains available.</p>
               <div className={styles.topicGrid}>{AGENT_SELLER_DISCUSSION_PRIORITIES.map((priority) => <PreparationTopicOption key={priority} checked={priorities.includes(priority)} onChange={() => toggle(priority)} label={labels[priority]} />)}</div>
