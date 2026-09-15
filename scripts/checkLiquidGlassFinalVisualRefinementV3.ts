@@ -41,7 +41,7 @@ const profiles = {
     sectionGap: 'var(--atlas-space-12)', panelPadding: 'var(--atlas-space-7)', contentGap: 'var(--atlas-space-4)', opacity: '0.78', blur: '14px', depth: 'var(--atlas-depth-2)',
   },
   agent: {
-    sectionGap: 'var(--atlas-space-6)', panelPadding: 'var(--atlas-space-4)', contentGap: 'var(--atlas-space-2)', opacity: '0.96', blur: '6px', depth: 'var(--atlas-depth-1)',
+    sectionGap: 'var(--atlas-space-8)', panelPadding: 'var(--atlas-space-5)', contentGap: 'var(--atlas-space-4)', opacity: '0.66', blur: '24px', depth: 'var(--atlas-depth-2)',
   },
   admin: {
     sectionGap: 'var(--atlas-space-4)', panelPadding: 'var(--atlas-space-3)', contentGap: 'var(--atlas-space-1)', opacity: '1', blur: '0px', depth: 'var(--atlas-depth-1)',

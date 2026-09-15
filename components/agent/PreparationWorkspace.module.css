@@ -10,7 +10,7 @@
 .pageHeader {
   display: grid;
   gap: var(--atlas-space-5);
-  border-bottom: 1px solid var(--atlas-profile-border-subtle);
+  border-bottom: 1px solid color-mix(in srgb, var(--atlas-profile-border-subtle) 34%, transparent);
   padding-bottom: var(--atlas-space-8);
 }
 
@@ -37,16 +37,16 @@
 @media (min-width: 70rem) { .workspaceGrid { grid-template-columns: minmax(0, 1fr) minmax(17rem, 21rem); align-items: start; } }
 
 .workspace, .guidance, .briefingCard, .emptyState, .updateState, .failureState {
-  border: 1px solid var(--atlas-profile-glass-border);
+  border: 1px solid color-mix(in srgb, var(--atlas-profile-glass-border) 58%, transparent);
   border-radius: var(--atlas-radius-lg);
 }
-.workspace { padding: clamp(var(--atlas-space-5), 3vw, var(--atlas-space-7)); background: color-mix(in srgb, var(--atlas-profile-surface-primary) calc(var(--atlas-profile-glass-opacity) * 100%), transparent); box-shadow: var(--atlas-profile-glass-depth); backdrop-filter: blur(var(--atlas-profile-glass-blur)) saturate(118%); -webkit-backdrop-filter: blur(var(--atlas-profile-glass-blur)) saturate(118%); }
-.guidance { padding: var(--atlas-space-6); background: var(--atlas-profile-surface-reading); box-shadow: var(--atlas-profile-glass-depth); }
+.workspace { padding: clamp(var(--atlas-space-5), 3vw, var(--atlas-space-7)); background: color-mix(in srgb, var(--atlas-profile-surface-primary) calc(var(--atlas-profile-glass-opacity) * 100%), transparent); box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.2), var(--atlas-profile-glass-depth); backdrop-filter: blur(var(--atlas-profile-glass-blur)) saturate(118%); -webkit-backdrop-filter: blur(var(--atlas-profile-glass-blur)) saturate(118%); }
+.guidance { padding: var(--atlas-space-6); background: color-mix(in srgb, var(--atlas-profile-surface-reading) 82%, transparent); box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.18), var(--atlas-profile-glass-depth); }
 .guidanceIcon { color: var(--atlas-information-system-status); }
 .guidanceTitle { margin: var(--atlas-space-4) 0 0; color: var(--atlas-text-primary); font-size: 1.0625rem; font-weight: 700; line-height: 1.35; }
 .guidanceCopy { margin: var(--atlas-space-2) 0 0; color: var(--atlas-text-secondary); font-size: 0.9375rem; line-height: 1.6; }
 
-.section + .section { margin-top: var(--atlas-space-8); border-top: 1px solid var(--atlas-profile-border-subtle); padding-top: var(--atlas-space-7); }
+.section + .section { margin-top: var(--atlas-space-8); border-top: 1px solid color-mix(in srgb, var(--atlas-profile-border-subtle) 34%, transparent); padding-top: var(--atlas-space-7); }
 .sectionHeader { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "eyebrow status" "title status"; column-gap: var(--atlas-space-3); row-gap: var(--atlas-space-1); }
 .sectionHeader > .sectionEyebrow { grid-area: eyebrow; align-self: end; }
 .sectionHeader > .sectionTitle { grid-area: title; }
@@ -62,10 +62,10 @@
 
 .optionGrid { display: grid; gap: var(--atlas-space-3); margin-top: var(--atlas-space-4); }
 @media (min-width: 40rem) { .optionGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-.selectionCard, .topicOption { position: relative; display: grid; min-width: 0; border: 1px solid var(--atlas-profile-border-subtle); border-radius: var(--atlas-radius-md); background: var(--atlas-profile-surface-secondary); color: var(--atlas-text-primary); cursor: pointer; transition: border-color var(--atlas-duration-standard) var(--atlas-ease-standard), background-color var(--atlas-duration-standard) var(--atlas-ease-standard), box-shadow var(--atlas-duration-standard) var(--atlas-ease-standard), transform var(--atlas-duration-fast) var(--atlas-ease-standard); }
+.selectionCard, .topicOption { position: relative; display: grid; min-width: 0; border: 1px solid color-mix(in srgb, var(--atlas-profile-border-subtle) 40%, transparent); border-radius: var(--atlas-radius-md); background: color-mix(in srgb, var(--atlas-profile-surface-secondary) 82%, transparent); color: var(--atlas-text-primary); cursor: pointer; box-shadow: var(--atlas-depth-1); transition: border-color var(--atlas-duration-standard) var(--atlas-ease-standard), background-color var(--atlas-duration-standard) var(--atlas-ease-standard), box-shadow var(--atlas-duration-standard) var(--atlas-ease-standard), transform var(--atlas-duration-fast) var(--atlas-ease-standard); }
 .selectionCard { grid-template-columns: minmax(0, 1fr) auto; gap: var(--atlas-space-4); min-height: 7.5rem; padding: var(--atlas-space-5); }
-.selectionCard:hover, .topicOption:hover { border-color: var(--atlas-profile-border-strong); background: var(--atlas-profile-surface-elevated); box-shadow: var(--atlas-profile-glass-depth); }
-.selectionCard[data-selected='true'], .topicOption[data-selected='true'] { border-color: var(--atlas-action-primary); background: color-mix(in srgb, var(--atlas-profile-surface-data) 78%, var(--atlas-profile-surface-elevated)); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--atlas-action-primary) 55%, transparent), var(--atlas-profile-glass-depth); }
+.selectionCard:hover, .topicOption:hover { border-color: color-mix(in srgb, var(--atlas-profile-border-subtle) 52%, transparent); background: color-mix(in srgb, var(--atlas-profile-surface-elevated) 84%, transparent); box-shadow: var(--atlas-profile-glass-depth); }
+.selectionCard[data-selected='true'], .topicOption[data-selected='true'] { border-color: color-mix(in srgb, var(--atlas-action-primary) 72%, transparent); background: color-mix(in srgb, var(--atlas-profile-surface-data) 72%, var(--atlas-profile-surface-elevated)); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--atlas-action-primary) 42%, transparent), var(--atlas-profile-glass-depth); }
 .selectionCard:focus-within, .topicOption:focus-within { outline: 3px solid var(--atlas-focus-ring); outline-offset: 3px; }
 .visuallyHidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
 .selectionTitle, .topicTitle { color: var(--atlas-text-primary); font-size: 0.9375rem; font-weight: 750; line-height: 1.4; }
@@ -87,7 +87,7 @@
 .select { width: 100%; min-height: 2.75rem; border: 1px solid var(--atlas-profile-border-strong); border-radius: var(--atlas-radius-md); padding: 0 var(--atlas-space-3); background: var(--atlas-profile-field-background); color: var(--atlas-text-primary); font: inherit; font-weight: 500; }
 .select:focus-visible, .action:focus-visible { outline: 3px solid var(--atlas-focus-ring); outline-offset: 3px; }
 
-.actionBar { display: flex; flex-direction: column; gap: var(--atlas-space-4); margin-top: var(--atlas-space-8); border-top: 1px solid var(--atlas-profile-border-subtle); padding-top: var(--atlas-space-6); }
+.actionBar { display: flex; flex-direction: column; gap: var(--atlas-space-4); margin-top: var(--atlas-space-8); border-top: 1px solid color-mix(in srgb, var(--atlas-profile-border-subtle) 34%, transparent); padding-top: var(--atlas-space-6); }
 @media (min-width: 42rem) { .actionBar { flex-direction: row; align-items: center; justify-content: space-between; } }
 .actionMessage { max-width: 45rem; margin: 0; color: var(--atlas-text-secondary); font-size: 0.875rem; line-height: 1.6; }
 .action { display: inline-flex; flex: none; align-items: center; justify-content: center; gap: var(--atlas-space-2); min-height: 2.75rem; border: 1px solid var(--atlas-action-primary); border-radius: var(--atlas-radius-md); padding: 0.625rem var(--atlas-space-5); background: var(--atlas-action-primary); color: var(--atlas-text-inverse); cursor: pointer; font: inherit; font-size: 0.875rem; font-weight: 750; text-decoration: none; transition: background-color var(--atlas-duration-standard) var(--atlas-ease-standard), transform var(--atlas-duration-fast) var(--atlas-ease-standard); }
@@ -95,12 +95,12 @@
 .action:disabled { border-color: var(--atlas-profile-border-subtle); background: var(--atlas-profile-field-readonly); color: var(--atlas-text-muted); cursor: not-allowed; }
 @media (max-width: 40rem) { .action { width: 100%; } }
 
-.workspace :global([data-testid='agent-property-criteria-profile']) { border-color: var(--atlas-profile-border-subtle) !important; }
+.workspace :global([data-testid='agent-property-criteria-profile']) { border-color: color-mix(in srgb, var(--atlas-profile-border-subtle) 38%, transparent) !important; }
 .workspace :global([data-testid='agent-property-criteria-profile'] .text-white) { color: var(--atlas-text-primary) !important; }
 .workspace :global([data-testid='agent-property-criteria-profile'] .text-slate-300),
 .workspace :global([data-testid='agent-property-criteria-profile'] .text-slate-400),
 .workspace :global([data-testid='agent-property-criteria-profile'] .text-slate-500) { color: var(--atlas-text-secondary) !important; }
-.workspace :global([data-testid='agent-property-criteria-profile'] > div > div > div) { border-color: var(--atlas-profile-border-subtle) !important; background: var(--atlas-profile-surface-secondary) !important; }
+.workspace :global([data-testid='agent-property-criteria-profile'] > div > div > div) { border-color: color-mix(in srgb, var(--atlas-profile-border-subtle) 38%, transparent) !important; background: color-mix(in srgb, var(--atlas-profile-surface-secondary) 82%, transparent) !important; }
 .workspace :global([data-testid='agent-property-criteria-profile'] select),
 .workspace :global([data-testid='agent-property-criteria-profile'] input) { border-color: var(--atlas-profile-border-strong) !important; background: var(--atlas-profile-field-background) !important; color: var(--atlas-text-primary) !important; }
 
@@ -116,7 +116,7 @@
 .briefing { margin-top: var(--atlas-space-8); }
 .briefingSummary { display: grid; gap: var(--atlas-space-5); margin: var(--atlas-space-6) 0; }
 @media (min-width: 56rem) { .briefingSummary { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-.briefingCard { padding: var(--atlas-space-6); background: var(--atlas-profile-surface-reading); }
+.briefingCard { padding: var(--atlas-space-6); background: color-mix(in srgb, var(--atlas-profile-surface-reading) 82%, transparent); box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.18), var(--atlas-profile-glass-depth); }
 .briefingList { margin: var(--atlas-space-4) 0 0; padding-left: var(--atlas-space-5); color: var(--atlas-text-secondary); font-size: 0.9375rem; line-height: 1.6; }
 .briefing :global([data-testid='agent-shared-briefing-composition']) > :global(section),
 .briefing :global([data-testid='agent-buyer-professional-playbook']) > :global(div),

@@ -50,7 +50,7 @@ for (const profile of ['agent', 'client', 'admin'] as const) {
 
 const publicBlock = profileBlock('public');
 assert.doesNotMatch(publicBlock, /--atlas-profile-surface-(?:primary|secondary|elevated|floating|data|reading):/, 'Public must retain base canonical material aliases.');
-assert.match(styles, /@media \(prefers-color-scheme: dark\) \{[\s\S]*?\.atlas-ds-shell-agent \{[\s\S]*?--atlas-profile-canvas: #071b27;/);
+assert.match(styles, /@media \(prefers-color-scheme: dark\) \{[\s\S]*?\.atlas-ds-shell-agent \{[\s\S]*?--atlas-profile-canvas: var\(--atlas-canvas\);/);
 assert.match(styles, /@media \(prefers-color-scheme: dark\) \{[\s\S]*?\.atlas-ds-shell-client \{[\s\S]*?--atlas-profile-canvas: #102131;/);
 assert.match(styles, /@media \(prefers-color-scheme: dark\) \{[\s\S]*?\.atlas-ds-shell-admin \{[\s\S]*?--atlas-profile-canvas: #101d29;/);
 
