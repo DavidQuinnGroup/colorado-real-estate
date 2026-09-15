@@ -79,7 +79,7 @@ export default function BuyerConsultationExperience() {
     setFormMessage(updating ? "Your session-only consultation briefing has been updated for the current selections." : "Your session-only consultation briefing is ready for review.");
   }
 
-  return <main className={`${styles.page} atlas-agent-page-canvas`} data-testid="agent-buyer-consultation-experience" data-agent-only="true" data-persistence="false" data-customer-data="false" data-provider-activity="false" data-recommendation="false" data-suitability="false" data-fair-housing-inference="false" data-same-page-decision-continuity="true">
+  return <main className={styles.page} data-testid="agent-buyer-consultation-experience" data-agent-only="true" data-persistence="false" data-customer-data="false" data-provider-activity="false" data-recommendation="false" data-suitability="false" data-fair-housing-inference="false" data-same-page-decision-continuity="true">
     <div className={styles.container}>
       <header className={styles.pageHeader}>
         <div>

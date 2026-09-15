@@ -34,7 +34,7 @@ for (const [name, experience, marker] of [
   ['Market', market, 'agent-market-conversation-experience'],
 ] as const) {
   assert.ok(experience.includes("import styles from './IntelligenceWorkspace.module.css'"), `${name} must use the shared Intelligence presentation layer.`);
-  assert.ok(experience.includes(`className={styles.page}`), `${name} must use the shared Liquid Glass canvas.`);
+  assert.ok(experience.includes(`className={styles.page}`), `${name} must use the shared Liquid Glass content layer.`);
   assert.ok(experience.includes(marker), `${name} must retain its exact route marker.`);
   assert.ok(experience.includes('data-persistence="false"'), `${name} must remain session-only.`);
   assert.equal(experience.includes('localStorage'), false, `${name} must not add browser persistence.`);
@@ -53,7 +53,8 @@ for (const marker of [
   assert.ok(styles.includes(marker), `Shared Intelligence styling must retain ${marker}.`);
 }
 
-assert.ok(landing.includes('atlas-agent-page-canvas'), 'Intelligence landing must use the canonical Agent page canvas.');
+assert.ok(landing.includes('className={styles.page}'), 'Intelligence landing must render content inside the Agent shell canvas.');
+assert.equal(landing.includes('atlas-agent-page-canvas'), false, 'Intelligence landing must not repaint the Agent shell canvas.');
 
 assert.equal(styles.includes('#071014'), false, 'Shared Intelligence styling must not introduce a fixed dark canvas.');
 assert.equal(styles.includes('localStorage'), false, 'Shared Intelligence styling must not introduce persistence.');

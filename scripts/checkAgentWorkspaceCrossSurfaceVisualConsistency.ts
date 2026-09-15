@@ -44,8 +44,8 @@ for (const [name, file] of [
 }
 assert.match(strategySuite, /atlas-financial-card-grid/, 'Strategy Suite result cards must use normalized Financial card grid treatment.');
 
-assert.match(globals, /\.atlas-financial-context,[\s\S]*?\.atlas-financial-work-surface \{[\s\S]*?border: 1px solid transparent;/, 'Financial structural surfaces must be borderless.');
-assert.match(globals, /\.atlas-financial-context,[\s\S]*?\.atlas-financial-work-surface \{[\s\S]*?box-shadow: var\(--atlas-profile-glass-depth\);/, 'Financial context must use canonical elevation.');
+assert.match(globals, /\.atlas-financial-context \{[\s\S]*?background: transparent;[\s\S]*?box-shadow: none;[\s\S]*?backdrop-filter: none;/, 'Financial context headers must be canvas-integrated instead of floating cards.');
+assert.match(globals, /\.atlas-financial-work-surface \{[\s\S]*?background: color-mix\(in srgb, var\(--atlas-profile-surface-elevated\) 82%, transparent\);/, 'Financial work surfaces must keep the shared elevated material.');
 assert.match(globals, /\.atlas-financial-work-surface \{[\s\S]*?box-shadow: var\(--atlas-profile-elevated-depth\);/, 'Financial work surfaces must use the shared elevated depth.');
 assert.match(globals, /\.atlas-financial-work-surface article,[\s\S]*?\.atlas-financial-card-grid > article \{[\s\S]*?box-shadow: var\(--atlas-surface-elevation-low\);/, 'Financial nested cards must use low shared elevation.');
 
