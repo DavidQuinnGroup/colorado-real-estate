@@ -93,7 +93,7 @@ export default function BuyerConsultationExperience() {
 
       <section className={styles.workspaceGrid} aria-labelledby="buyer-setup-heading">
         <div className={styles.workspace}>
-          <section className={styles.section}>
+          <section className={`${styles.section} ${styles.consultationSetup}`}>
             <div className={styles.sectionHeader}>
               <p className={styles.sectionEyebrow}>Consultation setup</p>
               <PreparationSessionStatus />

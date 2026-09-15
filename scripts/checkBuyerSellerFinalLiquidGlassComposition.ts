@@ -18,14 +18,14 @@ for (const [name, experience] of [
   ["Buyer", buyer],
   ["Seller", seller],
 ] as const) {
+  assert.equal(countMatches(experience, /className=\{`\$\{styles\.section\} \$\{styles\.consultationSetup\}`\}/g), 1, `${name} must make Consultation Setup canvas-integrated instead of a large structural card.`);
   assert.equal(countMatches(experience, /<fieldset className=\{styles\.flatSection\}>/g), 2, `${name} setup must use two flat internal fieldsets.`);
   assert.equal(countMatches(experience, /<fieldset className=\{styles\.section\}>/g), 0, `${name} setup must not use section fieldsets as redundant structural panels.`);
-  assert.match(experience, /<section className=\{styles\.section\}>[\s\S]*?<PreparationSessionStatus \/>[\s\S]*?<fieldset className=\{styles\.flatSection\}>[\s\S]*?<PreparationStartingStateOption[\s\S]*?<fieldset className=\{styles\.flatSection\}>[\s\S]*?<PreparationTopicOption/, `${name} must preserve one primary Consultation Setup surface with flat starting-point and topic sections inside it.`);
+  assert.match(experience, /<section className=\{`\$\{styles\.section\} \$\{styles\.consultationSetup\}`\}>[\s\S]*?<PreparationSessionStatus \/>[\s\S]*?<fieldset className=\{styles\.flatSection\}>[\s\S]*?<PreparationStartingStateOption[\s\S]*?<fieldset className=\{styles\.flatSection\}>[\s\S]*?<PreparationTopicOption/, `${name} must preserve canvas-integrated Consultation Setup with flat starting-point and topic sections.`);
   assert.match(experience, /complete (Buyer|Seller) consultation playbook remains available/, `${name} topic selection must preserve unlimited Priority Focus semantics.`);
 }
 
-assert.match(styles, /\.workspace > \.section, \.workspace > :global\(\[data-testid='agent-property-criteria-profile'\]\) \{[\s\S]*?background: color-mix\(in srgb, var\(--atlas-profile-surface-primary\)/, "Primary consultation surface must retain canonical material.");
-assert.match(styles, /\.workspace > \.section, \.workspace > :global\(\[data-testid='agent-property-criteria-profile'\]\) \{[\s\S]*?box-shadow: var\(--atlas-profile-glass-depth\);/, "Primary consultation surface must retain floating elevation.");
+assert.match(styles, /\.workspace > \.consultationSetup \{[\s\S]*?border: 0;[\s\S]*?border-radius: 0;[\s\S]*?padding: 0;[\s\S]*?background: transparent;[\s\S]*?box-shadow: none;[\s\S]*?backdrop-filter: none;/, "Consultation Setup must be canvas-integrated, not a large Liquid Glass structural surface.");
 assert.match(styles, /\.flatSection \{[\s\S]*?border: 0;[\s\S]*?background: transparent;[\s\S]*?box-shadow: none;/, "Starting-point and topic sections must not be redundant filled structural wrappers.");
 assert.match(styles, /\.flatSection \+ \.flatSection \{[\s\S]*?border-top: 1px solid color-mix\(in srgb, var\(--atlas-profile-border-subtle\) 30%, transparent\);/, "Major setup sections may use one subtle low-contrast divider.");
 assert.doesNotMatch(styles, /\.workspace fieldset\.section \{/, "The old filled inner fieldset structural panel must not return.");

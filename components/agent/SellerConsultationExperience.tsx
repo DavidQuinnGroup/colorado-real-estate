@@ -70,7 +70,7 @@ export default function SellerConsultationExperience() {
 
       <section className={styles.workspaceGrid} aria-labelledby="seller-setup-heading">
         <div className={styles.workspace}>
-          <section className={styles.section}>
+          <section className={`${styles.section} ${styles.consultationSetup}`}>
             <div className={styles.sectionHeader}><p className={styles.sectionEyebrow}>Consultation setup</p><PreparationSessionStatus /><h2 id="seller-setup-heading" className={styles.sectionTitle}>Choose what the conversation needs to emphasize</h2></div>
             <fieldset className={styles.flatSection}>
               <legend className={styles.sectionTitle}>Choose where this seller conversation begins</legend>

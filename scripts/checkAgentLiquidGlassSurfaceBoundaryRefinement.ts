@@ -55,6 +55,7 @@ assert.match(readinessStyles, /\.resultList \{[\s\S]*?box-shadow: var\(--atlas-s
 assert.match(preparationStyles, /\.workspace, \.guidance, \.briefingCard, \.emptyState, \.updateState, \.failureState \{[\s\S]*?border: 1px solid transparent;/);
 assert.match(preparationStyles, /\.workspace \{[\s\S]*?background: transparent;/);
 assert.match(preparationStyles, /\.workspace > \.section, \.workspace > :global\(\[data-testid='agent-property-criteria-profile'\]\) \{[\s\S]*?box-shadow: var\(--atlas-profile-glass-depth\);/);
+assert.match(preparationStyles, /\.workspace > \.consultationSetup \{[\s\S]*?background: transparent;[\s\S]*?box-shadow: none;/);
 assert.match(preparationStyles, /\.flatSection \{[\s\S]*?background: transparent;[\s\S]*?box-shadow: none;/);
 assert.doesNotMatch(preparationStyles, /\.workspace fieldset\.section \{/);
 assert.match(preparationStyles, /\.selectionCard, \.topicOption \{[\s\S]*?border: 1px solid color-mix\(in srgb, var\(--atlas-profile-border-subtle\) 26%, transparent\);/);
