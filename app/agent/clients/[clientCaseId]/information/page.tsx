@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 
-import { ClientCaseInformationWorkspace, informationIntentFromRequirement } from '@/components/agent/ClientCaseInformationWorkspace';
+import { ClientCaseInformationWorkspace } from '@/components/agent/ClientCaseInformationWorkspace';
+import { informationIntentFromRequirement } from '@/lib/clientCaseInformationIntent';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;

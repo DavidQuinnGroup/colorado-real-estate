@@ -15,6 +15,7 @@ import {
   AtlasStatusLabel,
   AtlasSurface,
 } from '@/components/design-system/AtlasDesignSystem';
+import { clientCaseInformationHref } from '@/lib/clientCaseInformationIntent';
 import styles from './ClientCaseReadinessWorkspace.module.css';
 
 type ClientCase = { id: string; displayName: string; status: string };
@@ -40,15 +41,6 @@ type ReadinessResult = {
 type WorkspaceResponse = { clientCase?: ClientCase; clientCases: ClientCase[]; scenarios?: Scenario[]; capabilities: Capability[]; error?: string };
 
 const baseline = '__baseline__';
-const informationRequirementIds = new Set([
-  'BUYER_DECISION_OBJECTIVE',
-  'FINANCIAL_STRATEGY_OBJECTIVE',
-  'BUYER_DECISION_TARGET_CITIES',
-  'MARKET_INTELLIGENCE_TARGET_CITIES',
-  'BUYER_DECISION_PRICE_RANGE',
-  'BUYER_DECISION_MIN_BEDROOMS',
-]);
-
 function errorMessage(payload: unknown) {
   return typeof payload === 'object' && payload && 'error' in payload && typeof payload.error === 'string' ? payload.error : 'The readiness check could not be completed.';
 }
@@ -57,14 +49,10 @@ function requirementList(ids: readonly string[], labels: Record<string, string>)
   return ids.map((id) => ({ id, label: labels[id] ?? id }));
 }
 
-function informationHref(clientCaseId: string, requirementId: string) {
-  return informationRequirementIds.has(requirementId) ? `/agent/clients/${encodeURIComponent(clientCaseId)}/information?requirement=${encodeURIComponent(requirementId)}` : null;
-}
-
 function ResultList({ clientCaseId, ids, labels, title }: { clientCaseId: string; ids: readonly string[]; labels: Record<string, string>; title: string }) {
   if (!ids.length) return null;
   return <section className={styles.resultList}><h3 className="atlas-ds-panel-title">{title}</h3><ul>{requirementList(ids, labels).map(({ id, label }) => {
-    const href = informationHref(clientCaseId, id);
+    const href = clientCaseInformationHref(clientCaseId, id);
     return <li key={id}>{href ? <Link className="atlas-ds-link" href={href}>{label}</Link> : label}</li>;
   })}</ul></section>;
 }

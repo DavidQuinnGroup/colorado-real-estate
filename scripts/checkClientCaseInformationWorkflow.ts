@@ -8,6 +8,7 @@ const route = readFileSync('app/api/agent/client-case-information/route.ts', 'ut
 const page = readFileSync('app/agent/clients/[clientCaseId]/information/page.tsx', 'utf8');
 const workspace = readFileSync('components/agent/ClientCaseInformationWorkspace.tsx', 'utf8');
 const readinessWorkspace = readFileSync('components/agent/ClientCaseReadinessWorkspace.tsx', 'utf8');
+const intent = readFileSync('lib/clientCaseInformationIntent.ts', 'utf8');
 const clientCaseWorkspace = readFileSync('components/agent/ClientCasesWorkspace.tsx', 'utf8');
 const auth = readFileSync('lib/admin/adminAuth.ts', 'utf8');
 const schema = readFileSync('prisma/schema.prisma', 'utf8');
@@ -44,6 +45,8 @@ assert.doesNotMatch(route, /semanticKey/);
 assert.match(route, /Cache-Control': 'private, no-store/);
 
 assert.match(page, /ClientCaseInformationWorkspace/);
+assert.match(page, /@\/lib\/clientCaseInformationIntent/);
+assert.doesNotMatch(page, /informationIntentFromRequirement } from '@\/components\/agent\/ClientCaseInformationWorkspace'/);
 assert.match(workspace, /data-testid="client-case-information-workspace"/);
 assert.match(workspace, /data-canonical-information-route="true"/);
 assert.match(workspace, /data-scenario-authoring="false"/);
@@ -51,14 +54,16 @@ assert.match(workspace, /data-readiness-persistence="false"/);
 assert.match(workspace, /Save and review readiness/);
 assert.match(workspace, /\/api\/agent\/client-case-information/);
 assert.match(workspace, /SAVE_CANONICAL_INFORMATION/);
-assert.match(workspace, /informationIntentFromRequirement/);
+assert.doesNotMatch(workspace, /export function informationIntentFromRequirement/);
+assert.match(intent, /CLIENT_CASE_INFORMATION_REQUIREMENT_INTENTS/);
+assert.match(intent, /BUYER_DECISION_TARGET_CITIES/);
+assert.match(intent, /return value \? CLIENT_CASE_INFORMATION_REQUIREMENT_INTENTS\[value\] \?\? null : null/);
 assert.match(workspace, /Target acquisition price, down payment, cash allocation, holding period/i);
 assert.match(workspace, /Evidence and Professional Input references are handled by their owning workflows/);
 
 assert.match(clientCaseWorkspace, /\/information/);
 assert.match(clientCaseWorkspace, /client-case-information-summary-card/);
-assert.match(readinessWorkspace, /informationRequirementIds/);
-assert.match(readinessWorkspace, /\/information\?requirement=/);
+assert.match(readinessWorkspace, /clientCaseInformationHref/);
 assert.match(auth, /\/api\/agent\/client-case-information/);
 assert.match(auth, /surface\('\/api\/agent\/client-case-information', 'MUTATING_ADMIN_API'/);
 assert.match(auth, /\^\\\/agent\\\/clients\\\/\[\^\/\]\+\\\/information\$/);

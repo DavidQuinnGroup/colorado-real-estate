@@ -14,9 +14,9 @@ import {
   AtlasNotice,
   AtlasSurface,
 } from '@/components/design-system/AtlasDesignSystem';
+import type { ClientCaseInformationIntent } from '@/lib/clientCaseInformationIntent';
 import styles from './ClientCaseInformationWorkspace.module.css';
 
-type Intent = 'objectives' | 'target-cities' | 'purchase-price-range' | 'min-bedrooms' | 'property-occupancy' | null;
 type ContextRecord = { id: string; semanticKey: string; value: unknown; sourcePosture: string; observedAt: string | null; effectiveAt: string | null; reviewAfter: string | null; createdAt: string };
 type PropertyRelation = { id: string; canonicalPropertyId: string; role: string; canonicalProperty?: { sourceFormattedSitusAddress?: string | null; normalizedSitusAddress?: string | null; city?: string | null; state?: string | null; postalCode?: string | null } };
 type ObjectiveRecord = { id: string; objectiveType: string; status: string; title: string; archivedAt: string | null };
@@ -35,20 +35,7 @@ type InformationResponse = {
   error?: string;
 };
 
-const requirementIntentMap: Record<string, Exclude<Intent, null>> = {
-  BUYER_DECISION_OBJECTIVE: 'objectives',
-  FINANCIAL_STRATEGY_OBJECTIVE: 'objectives',
-  BUYER_DECISION_TARGET_CITIES: 'target-cities',
-  MARKET_INTELLIGENCE_TARGET_CITIES: 'target-cities',
-  BUYER_DECISION_PRICE_RANGE: 'purchase-price-range',
-  BUYER_DECISION_MIN_BEDROOMS: 'min-bedrooms',
-};
-
 const occupancyOptions = ['OWNER_OCCUPIED', 'TENANT_OCCUPIED', 'VACANT', 'UNKNOWN'];
-
-export function informationIntentFromRequirement(value: string | undefined): Intent {
-  return value ? requirementIntentMap[value] ?? null : null;
-}
 
 function errorMessage(payload: unknown) {
   return typeof payload === 'object' && payload && 'error' in payload && typeof payload.error === 'string' ? payload.error : 'Client Case information is unavailable.';
@@ -71,7 +58,7 @@ async function api(clientCaseId: string, body?: Record<string, unknown>) {
   return payload;
 }
 
-export function ClientCaseInformationWorkspace({ clientCaseId, intent }: { clientCaseId: string; intent: Intent }) {
+export function ClientCaseInformationWorkspace({ clientCaseId, intent }: { clientCaseId: string; intent: ClientCaseInformationIntent }) {
   const [workspace, setWorkspace] = useState<InformationResponse | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
