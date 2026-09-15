@@ -53,7 +53,9 @@ assert.match(readinessStyles, /\.resultList \{[\s\S]*?border: 1px solid transpar
 assert.match(readinessStyles, /\.resultList \{[\s\S]*?box-shadow: var\(--atlas-surface-elevation-low\);/);
 
 assert.match(preparationStyles, /\.workspace, \.guidance, \.briefingCard, \.emptyState, \.updateState, \.failureState \{[\s\S]*?border: 1px solid transparent;/);
-assert.match(preparationStyles, /\.workspace \{[\s\S]*?box-shadow: var\(--atlas-profile-glass-depth\);/);
+assert.match(preparationStyles, /\.workspace \{[\s\S]*?background: transparent;/);
+assert.match(preparationStyles, /\.workspace > \.section, \.workspace > :global\(\[data-testid='agent-property-criteria-profile'\]\) \{[\s\S]*?box-shadow: var\(--atlas-profile-glass-depth\);/);
+assert.match(preparationStyles, /\.workspace fieldset\.section \{[\s\S]*?box-shadow: var\(--atlas-surface-elevation-low\);/);
 assert.match(preparationStyles, /\.selectionCard, \.topicOption \{[\s\S]*?border: 1px solid color-mix\(in srgb, var\(--atlas-profile-border-subtle\) 26%, transparent\);/);
 assert.match(preparationStyles, /\.selectionCard\[data-selected='true'\], \.topicOption\[data-selected='true'\] \{[\s\S]*?border-color: color-mix\(in srgb, var\(--atlas-action-primary\) 72%, transparent\);/);
 assert.match(preparationStyles, /\.select \{[\s\S]*?border: 1px solid var\(--atlas-profile-border-strong\);/);

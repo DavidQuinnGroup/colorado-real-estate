@@ -319,6 +319,7 @@
     "check:liquid-glass-human-certification-remediation-v2": "jiti scripts/checkLiquidGlassHumanCertificationRemediationV2.ts",
     "check:liquid-glass-final-visual-refinement-v3": "jiti scripts/checkLiquidGlassFinalVisualRefinementV3.ts",
     "check:liquid-glass-profile-contrast-refinement-v4": "jiti scripts/checkLiquidGlassProfileContrastRefinementV4.ts",
+    "check:agent-workspace-cross-surface-visual-consistency": "jiti scripts/checkAgentWorkspaceCrossSurfaceVisualConsistency.ts",
     "check:agent-per-user-credential-identity": "npm run worker:build && node dist/scripts/checkAgentPerUserCredentialIdentity.js",
     "check:five-city-decision-guide-authority-wave": "npm run worker:build && node --experimental-specifier-resolution=node dist/scripts/checkFiveCityDecisionGuideAuthorityWave.js",
     "check:wave-2-city-orientation-guide-authority-expansion": "npm run worker:build && node --experimental-specifier-resolution=node dist/scripts/checkWave2CityOrientationGuideAuthorityExpansion.js",
