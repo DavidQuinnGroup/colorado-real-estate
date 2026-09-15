@@ -38,7 +38,7 @@ export function IntelligenceChildPageHeader({ children, current }: { children: R
 
 export default function IntelligenceWorkspace() {
   return (
-    <main className={styles.page} data-testid="agent-intelligence-workspace" data-agent-only="true" data-persistence="false" data-customer-data="false" data-provider-activity="false">
+    <main className={`${styles.page} atlas-agent-page-canvas`} data-testid="agent-intelligence-workspace" data-agent-only="true" data-persistence="false" data-customer-data="false" data-provider-activity="false">
       <div className={styles.content}>
         <header className={styles.header}>
           <div>

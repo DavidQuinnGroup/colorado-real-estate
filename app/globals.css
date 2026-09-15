@@ -115,6 +115,13 @@
   padding: clamp(3rem, 5vw, 4rem) clamp(1.25rem, 4vw, 2.5rem);
 }
 
+.atlas-agent-page-canvas {
+  min-height: 100%;
+  background-color: var(--atlas-profile-canvas);
+  background-image: linear-gradient(135deg, var(--atlas-profile-canvas-wash) 0%, transparent 56%), var(--atlas-profile-canvas-atmosphere);
+  color: var(--atlas-text-primary);
+}
+
 [data-testid="vis-prototype"] header {
   display: grid;
   gap: 2rem;

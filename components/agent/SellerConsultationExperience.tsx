@@ -61,7 +61,7 @@ export default function SellerConsultationExperience() {
     setMessage(updating ? "Your session-only Seller consultation briefing has been updated for the current selections." : "Your session-only Seller consultation briefing is ready for review.");
   }
 
-  return <main className={styles.page} data-testid="agent-seller-consultation-experience" data-agent-only="true" data-persistence="false" data-customer-data="false" data-provider-activity="false" data-recommendation="false" data-suitability="false" data-fair-housing-inference="false" data-same-page-decision-continuity="true">
+  return <main className={`${styles.page} atlas-agent-page-canvas`} data-testid="agent-seller-consultation-experience" data-agent-only="true" data-persistence="false" data-customer-data="false" data-provider-activity="false" data-recommendation="false" data-suitability="false" data-fair-housing-inference="false" data-same-page-decision-continuity="true">
     <div className={styles.container}>
       <header className={styles.pageHeader}>
         <div><p className={styles.eyebrow}>Project Atlas / Agent Workspace</p><p className={styles.pageLabel}>SELLER PREPARATION</p><h1 className={styles.pageTitle}>Prepare for a seller consultation</h1><p className={styles.pageDescription}>Organize an explicit, session-only Seller consultation briefing before the conversation begins.</p></div>

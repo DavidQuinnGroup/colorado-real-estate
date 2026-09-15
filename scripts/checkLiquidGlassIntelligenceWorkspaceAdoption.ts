@@ -41,7 +41,6 @@ for (const [name, experience, marker] of [
 }
 
 for (const marker of [
-  'var(--atlas-profile-canvas)',
   'var(--atlas-profile-surface-primary)',
   'var(--atlas-profile-field-background)',
   'var(--atlas-focus-ring)',
@@ -53,6 +52,8 @@ for (const marker of [
 ]) {
   assert.ok(styles.includes(marker), `Shared Intelligence styling must retain ${marker}.`);
 }
+
+assert.ok(landing.includes('atlas-agent-page-canvas'), 'Intelligence landing must use the canonical Agent page canvas.');
 
 assert.equal(styles.includes('#071014'), false, 'Shared Intelligence styling must not introduce a fixed dark canvas.');
 assert.equal(styles.includes('localStorage'), false, 'Shared Intelligence styling must not introduce persistence.');

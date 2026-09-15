@@ -1,7 +1,6 @@
 .page {
   min-height: 100%;
   padding: clamp(var(--atlas-space-6), 4vw, var(--atlas-space-10)) clamp(var(--atlas-space-4), 3vw, var(--atlas-space-8));
-  background: var(--atlas-profile-canvas);
   color: var(--atlas-text-primary);
 }
 
