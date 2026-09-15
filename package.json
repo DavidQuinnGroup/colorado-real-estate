@@ -34,6 +34,8 @@
     "check:client-case-capability-readiness-foundation": "jiti scripts/checkClientCaseCapabilityReadinessFoundation.ts",
     "check:client-case-agent-readiness-workflow": "jiti scripts/checkClientCaseAgentReadinessWorkflow.ts",
     "check:client-case-agent-readiness-visual-structure": "jiti scripts/checkClientCaseAgentReadinessVisualStructure.ts",
+    "check:client-case-information-workflow": "jiti scripts/checkClientCaseInformationWorkflow.ts",
+    "check:client-case-information-visual-structure": "jiti scripts/checkClientCaseInformationVisualStructure.ts",
     "check:agent-workspace-information-architecture": "jiti scripts/checkAgentWorkspaceInformationArchitecture.ts",
     "check:agent-workspace-shell-adoption": "jiti scripts/checkAgentWorkspaceShellAdoption.ts",
     "check:agent-workspace-public-material-visual-remediation": "jiti scripts/checkAgentWorkspacePublicMaterialVisualRemediation.ts",

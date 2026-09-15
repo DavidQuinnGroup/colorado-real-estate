@@ -40,18 +40,33 @@ type ReadinessResult = {
 type WorkspaceResponse = { clientCase?: ClientCase; clientCases: ClientCase[]; scenarios?: Scenario[]; capabilities: Capability[]; error?: string };
 
 const baseline = '__baseline__';
+const informationRequirementIds = new Set([
+  'BUYER_DECISION_OBJECTIVE',
+  'FINANCIAL_STRATEGY_OBJECTIVE',
+  'BUYER_DECISION_TARGET_CITIES',
+  'MARKET_INTELLIGENCE_TARGET_CITIES',
+  'BUYER_DECISION_PRICE_RANGE',
+  'BUYER_DECISION_MIN_BEDROOMS',
+]);
 
 function errorMessage(payload: unknown) {
   return typeof payload === 'object' && payload && 'error' in payload && typeof payload.error === 'string' ? payload.error : 'The readiness check could not be completed.';
 }
 
 function requirementList(ids: readonly string[], labels: Record<string, string>) {
-  return ids.map((id) => labels[id] ?? id);
+  return ids.map((id) => ({ id, label: labels[id] ?? id }));
 }
 
-function ResultList({ ids, labels, title }: { ids: readonly string[]; labels: Record<string, string>; title: string }) {
+function informationHref(clientCaseId: string, requirementId: string) {
+  return informationRequirementIds.has(requirementId) ? `/agent/clients/${encodeURIComponent(clientCaseId)}/information?requirement=${encodeURIComponent(requirementId)}` : null;
+}
+
+function ResultList({ clientCaseId, ids, labels, title }: { clientCaseId: string; ids: readonly string[]; labels: Record<string, string>; title: string }) {
   if (!ids.length) return null;
-  return <section className={styles.resultList}><h3 className="atlas-ds-panel-title">{title}</h3><ul>{requirementList(ids, labels).map((label) => <li key={label}>{label}</li>)}</ul></section>;
+  return <section className={styles.resultList}><h3 className="atlas-ds-panel-title">{title}</h3><ul>{requirementList(ids, labels).map(({ id, label }) => {
+    const href = informationHref(clientCaseId, id);
+    return <li key={id}>{href ? <Link className="atlas-ds-link" href={href}>{label}</Link> : label}</li>;
+  })}</ul></section>;
 }
 
 function statusPresentation(status: ReadinessResult['result']['status']) {
@@ -173,7 +188,7 @@ function ClientCaseReadinessWorkspaceState({ clientCaseId }: { clientCaseId: str
           <AtlasSurface material="data"><h3 className="atlas-ds-panel-title">Context summary</h3><dl className={styles.summaryList}><div><dt>Client Case</dt><dd>{workspace.clientCase.displayName}</dd></div><div><dt>Context</dt><dd>{result.result.context.mode === 'CANONICAL_BASELINE' ? 'Canonical baseline' : 'Selected scenario current version'}</dd></div><div><dt>Scenario version</dt><dd>{result.result.context.scenarioVersionId ?? 'Not selected'}</dd></div><div><dt>Ruleset</dt><dd>Effective Context V{result.result.context.effectiveContextRulesetVersion}</dd></div></dl></AtlasSurface>
           <AtlasSurface material="reading"><h3 className="atlas-ds-panel-title">Requirement detail</h3><div className={styles.requirementTable}><table><caption className="sr-only">Readiness requirements for the selected capability</caption><thead><tr><th>Requirement</th><th>Level</th><th>State</th></tr></thead><tbody>{result.result.requirements.map((requirement) => <tr key={requirement.requirementId}><td>{result.requirementLabels[requirement.requirementId] ?? requirement.requirementId}</td><td>{requirement.level.replaceAll('_', ' ')}</td><td>{[requirement.presence, requirement.verification, requirement.freshness, requirement.professionalInput, requirement.conflict ? 'CONFLICT' : null].filter((value) => value && value !== 'NOT_REQUIRED' && value !== 'NOT_APPLICABLE').join(' / ') || 'Satisfied'}</td></tr>)}</tbody></table></div></AtlasSurface>
         </div>
-        <div className={styles.resultLists}><ResultList ids={result.result.missingPreliminary} labels={result.requirementLabels} title="Missing preliminary required" /><ResultList ids={result.result.missingComprehensive} labels={result.requirementLabels} title="Comprehensive required" /><ResultList ids={result.result.helpfulMissing} labels={result.requirementLabels} title="Helpful missing" /><ResultList ids={result.result.unverified} labels={result.requirementLabels} title="Verification needed" /><ResultList ids={result.result.stale} labels={result.requirementLabels} title="Stale information" /><ResultList ids={result.result.professionalInputNeeded} labels={result.requirementLabels} title="Professional input needed" /><ResultList ids={result.result.conflicts} labels={result.requirementLabels} title="Conflicts needing review" />{result.result.limitations.length ? <section className={styles.resultList}><h3 className="atlas-ds-panel-title">Limitations</h3><ul>{result.result.limitations.map((limitation, index) => <li key={`${limitation.code}-${index}`}>{limitation.code.replaceAll('_', ' ')}</li>)}</ul></section> : null}</div>
+        <div className={styles.resultLists}><ResultList clientCaseId={clientCaseId} ids={result.result.missingPreliminary} labels={result.requirementLabels} title="Missing preliminary required" /><ResultList clientCaseId={clientCaseId} ids={result.result.missingComprehensive} labels={result.requirementLabels} title="Comprehensive required" /><ResultList clientCaseId={clientCaseId} ids={result.result.helpfulMissing} labels={result.requirementLabels} title="Helpful missing" /><ResultList clientCaseId={clientCaseId} ids={result.result.unverified} labels={result.requirementLabels} title="Verification needed" /><ResultList clientCaseId={clientCaseId} ids={result.result.stale} labels={result.requirementLabels} title="Stale information" /><ResultList clientCaseId={clientCaseId} ids={result.result.professionalInputNeeded} labels={result.requirementLabels} title="Professional input needed" /><ResultList clientCaseId={clientCaseId} ids={result.result.conflicts} labels={result.requirementLabels} title="Conflicts needing review" />{result.result.limitations.length ? <section className={styles.resultList}><h3 className="atlas-ds-panel-title">Limitations</h3><ul>{result.result.limitations.map((limitation, index) => <li key={`${limitation.code}-${index}`}>{limitation.code.replaceAll('_', ' ')}</li>)}</ul></section> : null}</div>
         <p className="atlas-ds-metadata"><CheckCircle2 aria-hidden="true" size={15} /> Evaluated {new Date(result.result.evaluatedAt).toLocaleString()}. Readiness does not execute analysis, alter the Client Case, or create a record.</p>
       </section> : null}
       {!result && !resultError && !checking ? <AtlasSurface className={styles.initialState} material="reading"><CircleAlert aria-hidden="true" size={18} /><p>Select an admitted capability and check readiness to see the current canonical context and supported limitations.</p></AtlasSurface> : null}
