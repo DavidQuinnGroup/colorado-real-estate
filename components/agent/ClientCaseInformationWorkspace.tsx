@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowLeft, CheckCircle2, ClipboardCheck, Plus, Save, X } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, ClipboardCheck, LinkIcon, Plus, Save, UserPlus, X } from 'lucide-react';
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 
 import {
@@ -20,6 +20,9 @@ import styles from './ClientCaseInformationWorkspace.module.css';
 type ContextRecord = { id: string; semanticKey: string; value: unknown; sourcePosture: string; observedAt: string | null; effectiveAt: string | null; reviewAfter: string | null; createdAt: string };
 type PropertyRelation = { id: string; canonicalPropertyId: string; role: string; canonicalProperty?: { sourceFormattedSitusAddress?: string | null; normalizedSitusAddress?: string | null; city?: string | null; state?: string | null; postalCode?: string | null } };
 type ObjectiveRecord = { id: string; objectiveType: string; status: string; title: string; archivedAt: string | null };
+type ContactMethod = { id: string; kind: 'EMAIL' | 'PHONE'; displayValue: string; normalizedValue: string; isPrimary: boolean; lifecycleStatus: string };
+type ContactRecord = { id: string; displayName: string; givenName: string | null; familyName: string | null; entityType: 'PERSON' | 'ORGANIZATION'; lifecycleStatus: string; methods: ContactMethod[] };
+type ParticipationRecord = { id: string; role: string; displayLabel: string; participationStatus: string; contact: ContactRecord | null; advisoryRoles: Array<{ id: string; role: string }> };
 type InformationResponse = {
   clientCase: { id: string; displayName: string; status: string; properties?: PropertyRelation[] };
   current: {
@@ -31,6 +34,7 @@ type InformationResponse = {
     propertyOccupancy: Array<{ clientCasePropertyId: string; current: ContextRecord | null }>;
     properties: PropertyRelation[];
   };
+  people: { contacts: ContactRecord[]; participations: ParticipationRecord[] };
   readinessPreview: Record<string, { status: string; missingPreliminary: string[]; missingComprehensive: string[]; helpfulMissing: string[] } | null>;
   error?: string;
 };
@@ -53,9 +57,16 @@ function propertyLabel(property: PropertyRelation) {
 
 async function api(clientCaseId: string, body?: Record<string, unknown>) {
   const response = await fetch(`/api/agent/client-case-information?clientCaseId=${encodeURIComponent(clientCaseId)}`, body ? { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) } : { cache: 'no-store' });
-  const payload = await response.json() as InformationResponse;
+  const payload = await response.json() as InformationResponse | { workspace?: InformationResponse };
   if (!response.ok) throw new Error(errorMessage(payload));
-  return payload;
+  return 'workspace' in payload && payload.workspace ? payload.workspace : payload as InformationResponse;
+}
+
+async function duplicateCandidates(clientCaseId: string, methods: Array<{ kind: string; displayValue: string; isPrimary: boolean }>) {
+  const response = await fetch(`/api/agent/client-case-information?clientCaseId=${encodeURIComponent(clientCaseId)}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'DUPLICATE_CANDIDATES', clientCaseId, input: { methods } }) });
+  const payload = await response.json() as { candidates?: ContactRecord[]; error?: string };
+  if (!response.ok) throw new Error(errorMessage(payload));
+  return payload.candidates ?? [];
 }
 
 export function ClientCaseInformationWorkspace({ clientCaseId, intent }: { clientCaseId: string; intent: ClientCaseInformationIntent }) {
@@ -75,6 +86,19 @@ export function ClientCaseInformationWorkspace({ clientCaseId, intent }: { clien
   const [effectiveAt, setEffectiveAt] = useState('');
   const [reviewAfter, setReviewAfter] = useState('');
   const [occupancy, setOccupancy] = useState<Record<string, string>>({});
+  const [contactName, setContactName] = useState('');
+  const [contactEmail, setContactEmail] = useState('');
+  const [contactPhone, setContactPhone] = useState('');
+  const [contactEntityType, setContactEntityType] = useState<'PERSON' | 'ORGANIZATION'>('PERSON');
+  const [participationRole, setParticipationRole] = useState('ADDITIONAL_CLIENT');
+  const [advisoryRoles, setAdvisoryRoles] = useState<string[]>([]);
+  const [linkContactId, setLinkContactId] = useState('');
+  const [editContactId, setEditContactId] = useState('');
+  const [editContactName, setEditContactName] = useState('');
+  const [editContactEmail, setEditContactEmail] = useState('');
+  const [editContactPhone, setEditContactPhone] = useState('');
+  const [editContactEntityType, setEditContactEntityType] = useState<'PERSON' | 'ORGANIZATION'>('PERSON');
+  const [duplicateState, setDuplicateState] = useState<ContactRecord[]>([]);
 
   useEffect(() => {
     let cancelled = false;
@@ -97,10 +121,14 @@ export function ClientCaseInformationWorkspace({ clientCaseId, intent }: { clien
   const activeBuyerObjective = buyerObjective || Boolean(workspace?.current.objectives.BUY_PRIMARY_HOME);
   const readinessHref = `/agent/clients/${encodeURIComponent(clientCaseId)}/readiness`;
   const canSave = !saving && Boolean(workspace);
+  const activeParticipations = workspace?.people.participations.filter((entry) => entry.participationStatus === 'ACTIVE') ?? [];
+  const endedParticipations = workspace?.people.participations.filter((entry) => entry.participationStatus === 'ENDED') ?? [];
+  const unlinkedContacts = workspace?.people.contacts.filter((contact) => !activeParticipations.some((party) => party.contact?.id === contact.id)) ?? [];
+  const editableContacts = workspace?.people.contacts.filter((contact) => contact.lifecycleStatus === 'ACTIVE') ?? [];
   const summary = useMemo(() => ([
     ['Objectives', [buyerObjective ? 'Buyer decision' : null, financialObjective ? 'Financial strategy' : null].filter(Boolean).join(', ') || 'Not provided'],
     ['Target cities', cities.length ? cities.join(', ') : 'Not provided'],
-    ['Purchase range', minimumDollars && maximumDollars ? `$${Number(minimumDollars).toLocaleString()} - $${Number(maximumDollars).toLocaleString()}` : 'Not provided'],
+    ['Stated purchase range', minimumDollars && maximumDollars ? `$${Number(minimumDollars).toLocaleString()} - $${Number(maximumDollars).toLocaleString()}` : 'Not provided'],
     ['Minimum bedrooms', minBedrooms || 'Not provided'],
   ] as const), [buyerObjective, financialObjective, cities, minimumDollars, maximumDollars, minBedrooms]);
 
@@ -142,6 +170,118 @@ export function ClientCaseInformationWorkspace({ clientCaseId, intent }: { clien
     }
   }
 
+  function contactMethods() {
+    return [
+      ...(contactEmail.trim() ? [{ kind: 'EMAIL', displayValue: contactEmail, isPrimary: true }] : []),
+      ...(contactPhone.trim() ? [{ kind: 'PHONE', displayValue: contactPhone, isPrimary: !contactEmail.trim() }] : []),
+    ];
+  }
+
+  function buildMethods(email: string, phone: string) {
+    return [
+      ...(email.trim() ? [{ kind: 'EMAIL', displayValue: email, isPrimary: true }] : []),
+      ...(phone.trim() ? [{ kind: 'PHONE', displayValue: phone, isPrimary: !email.trim() }] : []),
+    ];
+  }
+
+  function toggleAdvisoryRole(role: string) {
+    setAdvisoryRoles((current) => current.includes(role) ? current.filter((entry) => entry !== role) : [...current, role]);
+  }
+
+  async function checkDuplicates() {
+    setStatus(null);
+    try {
+      setDuplicateState(await duplicateCandidates(clientCaseId, contactMethods()));
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : 'Duplicate candidates are unavailable.');
+    }
+  }
+
+  async function createPerson() {
+    if (!workspace) return;
+    setSaving(true);
+    setStatus(null);
+    try {
+      const payload = await api(clientCaseId, {
+        action: 'CREATE_CONTACT_PARTICIPATION',
+        clientCaseId,
+        input: {
+          contact: { displayName: contactName, entityType: contactEntityType, methods: contactMethods() },
+          participation: { role: participationRole, advisoryRoles },
+        },
+      });
+      setWorkspace(payload);
+      setContactName('');
+      setContactEmail('');
+      setContactPhone('');
+      setAdvisoryRoles([]);
+      setDuplicateState([]);
+      setStatus('Contact and Case participation saved. Duplicate candidates are advisory only; no Contact was merged silently.');
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : 'Contact could not be saved.');
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function linkExistingContact() {
+    if (!workspace || !linkContactId) return;
+    setSaving(true);
+    setStatus(null);
+    try {
+      setWorkspace(await api(clientCaseId, { action: 'LINK_CONTACT', clientCaseId, input: { contactId: linkContactId, participation: { role: participationRole, advisoryRoles } } }));
+      setLinkContactId('');
+      setAdvisoryRoles([]);
+      setStatus('Existing authorized Contact linked to this Client Case.');
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : 'Contact could not be linked.');
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  function selectEditableContact(contactId: string) {
+    setEditContactId(contactId);
+    const contact = workspace?.people.contacts.find((entry) => entry.id === contactId);
+    setEditContactName(contact?.displayName ?? '');
+    setEditContactEntityType(contact?.entityType ?? 'PERSON');
+    setEditContactEmail(contact?.methods.find((method) => method.kind === 'EMAIL')?.displayValue ?? '');
+    setEditContactPhone(contact?.methods.find((method) => method.kind === 'PHONE')?.displayValue ?? '');
+  }
+
+  async function updateContact() {
+    if (!workspace || !editContactId) return;
+    setSaving(true);
+    setStatus(null);
+    try {
+      setWorkspace(await api(clientCaseId, {
+        action: 'UPDATE_CONTACT',
+        clientCaseId,
+        contactId: editContactId,
+        input: { displayName: editContactName, entityType: editContactEntityType, methods: buildMethods(editContactEmail, editContactPhone) },
+      }));
+      setStatus('Contact identity updated for authorized future use. Existing Case participation history was preserved.');
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : 'Contact could not be updated.');
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function endParticipation(clientCasePartyId: string) {
+    if (!workspace) return;
+    setSaving(true);
+    setStatus(null);
+    try {
+      setWorkspace(await api(clientCaseId, { action: 'END_PARTICIPATION', clientCaseId, clientCasePartyId }));
+      setStatus('Participation ended. The durable Contact identity remains available for authorized future use.');
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : 'Participation could not be ended.');
+    } finally {
+      setSaving(false);
+    }
+  }
+
   if (loadError) return <main className={styles.page}><AtlasErrorState title="Client Case information is unavailable"><p>{loadError}</p><Link className={styles.link} href={`/agent/clients/${encodeURIComponent(clientCaseId)}`}><ArrowLeft size={16} />Client Case</Link></AtlasErrorState></main>;
   if (!workspace) return <main className={styles.page}><AtlasLoadingState>Loading canonical Client Case information.</AtlasLoadingState></main>;
 
@@ -160,7 +300,50 @@ export function ClientCaseInformationWorkspace({ clientCaseId, intent }: { clien
         {status ? <AtlasNotice title="Information workflow" tone={status.includes('could not') || status.includes('required') ? 'attention' : 'success'}>{status}</AtlasNotice> : null}
         <AtlasNotice title="Canonical boundary" tone="information">Use this page for factual or generally applicable Client Case information. Target acquisition price, down payment, cash allocation, holding period, hypothetical city or bedroom overrides, and sell/retain/rent alternatives remain Scenario Version inputs.</AtlasNotice>
 
-        <div className={styles.sectionGrid}>
+        <nav className={styles.sectionNav} aria-label="Client Information sections">
+          {['Case overview', 'People', 'Goals', 'Current information', 'Readiness'].map((item) => <a key={item} href={`#${item.toLowerCase().replaceAll(' ', '-')}`}>{item}</a>)}
+        </nav>
+
+        <AtlasSurface material="floating" data-testid="client-case-information-case-overview" id="case-overview">
+          <div className={styles.panelHeading}><div><h2 className="atlas-ds-major-section">Case Overview</h2><p className={styles.metadata}>Client Information keeps durable case context separate from CRM activity, Scenario assumptions, Transaction files, and Outputs.</p></div><AtlasInformationClassLabel informationClass="governed-fact" /></div>
+          <ul className={styles.summaryList}>
+            <li className={styles.summaryItem}><p className={styles.summaryLabel}>Client Case</p><p className={styles.summaryValue}>{workspace.clientCase.displayName}</p></li>
+            <li className={styles.summaryItem}><p className={styles.summaryLabel}>Active participants</p><p className={styles.summaryValue}>{activeParticipations.length || 'None yet'}</p></li>
+            <li className={styles.summaryItem}><p className={styles.summaryLabel}>Linked properties</p><p className={styles.summaryValue}>{workspace.current.properties.length || 'None yet'}</p></li>
+          </ul>
+        </AtlasSurface>
+
+        <AtlasSurface material="floating" data-testid="client-case-information-people" id="people">
+          <div className={styles.panelHeading}><div><h2 className="atlas-ds-major-section">People</h2><p className={styles.metadata}>Contacts are durable identities. Case participation describes how a Contact is involved here.</p></div><AtlasInformationClassLabel informationClass="governed-fact" label="Owner scoped" /></div>
+          <ul className={styles.peopleList}>{activeParticipations.length ? activeParticipations.map((party) => <li className={styles.personItem} key={party.id}><div><p className={styles.optionTitle}>{party.contact?.displayName ?? party.displayLabel}</p><p className={styles.optionDescription}>{party.role.replaceAll('_', ' ')} · {party.advisoryRoles.map((role) => role.role.replaceAll('_', ' ')).join(', ') || 'No advisory role yet'}</p><p className={styles.optionDescription}>{party.contact?.methods.map((method) => `${method.kind.toLowerCase()}: ${method.displayValue}`).join(' · ') || 'No contact method'}</p></div><AtlasButton disabled={saving} tone="ghost" onClick={() => void endParticipation(party.id)}>End participation</AtlasButton></li>) : <li><AtlasEmptyState title="No active people"><p>Add or link an authorized Contact before assigning advisory roles.</p></AtlasEmptyState></li>}</ul>
+          {endedParticipations.length ? <p className={styles.metadata}>{endedParticipations.length} ended participation record{endedParticipations.length === 1 ? '' : 's'} preserved for history.</p> : null}
+          <div className={styles.peopleEditor}>
+            <div className={styles.fieldGrid}>
+              <AtlasField htmlFor="contact-name" label="Display name"><input className={styles.input} id="contact-name" maxLength={160} value={contactName} onChange={(event) => setContactName(event.target.value)} /></AtlasField>
+              <AtlasField htmlFor="contact-type" label="Identity type"><select className={styles.select} id="contact-type" value={contactEntityType} onChange={(event) => setContactEntityType(event.target.value as 'PERSON' | 'ORGANIZATION')}><option value="PERSON">Person</option><option value="ORGANIZATION">Organization / entity</option></select></AtlasField>
+              <AtlasField htmlFor="contact-email" label="Email"><input className={styles.input} id="contact-email" inputMode="email" value={contactEmail} onChange={(event) => setContactEmail(event.target.value)} /></AtlasField>
+              <AtlasField htmlFor="contact-phone" label="Phone"><input className={styles.input} id="contact-phone" inputMode="tel" value={contactPhone} onChange={(event) => setContactPhone(event.target.value)} /></AtlasField>
+              <AtlasField htmlFor="participation-role" label="Case participation"><select className={styles.select} id="participation-role" value={participationRole} onChange={(event) => setParticipationRole(event.target.value)}><option value="PRIMARY_CLIENT">Primary client</option><option value="ADDITIONAL_CLIENT">Co-client / co-participant</option><option value="OTHER_PARTY">Other relevant party</option></select></AtlasField>
+              <div className={styles.rolePicker} aria-label="Advisory roles">{['BUYER', 'SELLER', 'INVESTOR', 'AUTHORIZED_PARTICIPANT', 'CO_PARTICIPANT'].map((role) => <label className={styles.roleCheck} key={role}><input checked={advisoryRoles.includes(role)} type="checkbox" onChange={() => toggleAdvisoryRole(role)} />{role.replaceAll('_', ' ')}</label>)}</div>
+            </div>
+            {duplicateState.length ? <AtlasNotice title="Possible duplicate Contacts" tone="attention"><ul className={styles.compactList}>{duplicateState.map((candidate) => <li key={candidate.id}>{candidate.displayName} · {candidate.methods.map((method) => method.displayValue).join(', ')}</li>)}</ul><p>Review only. PROJECT ATLAS did not merge these Contacts.</p></AtlasNotice> : null}
+            <div className={styles.actions}><AtlasButton disabled={saving || !contactName.trim()} tone="secondary" onClick={() => void checkDuplicates()}><ClipboardCheck size={16} />Check duplicates</AtlasButton><AtlasButton disabled={saving || !contactName.trim()} onClick={() => void createPerson()}><UserPlus size={16} />Add Contact to Case</AtlasButton></div>
+          </div>
+          {unlinkedContacts.length ? <div className={styles.linkExisting}><AtlasField htmlFor="existing-contact" label="Link existing authorized Contact"><select className={styles.select} id="existing-contact" value={linkContactId} onChange={(event) => setLinkContactId(event.target.value)}><option value="">Select a Contact</option>{unlinkedContacts.map((contact) => <option key={contact.id} value={contact.id}>{contact.displayName}</option>)}</select></AtlasField><AtlasButton disabled={saving || !linkContactId} tone="secondary" onClick={() => void linkExistingContact()}><LinkIcon size={16} />Link to Case</AtlasButton></div> : null}
+          {editableContacts.length ? <div className={styles.peopleEditor}>
+            <div className={styles.panelHeading}><div><h3 className={styles.optionTitle}>Edit authorized Contact</h3><p className={styles.metadata}>Updates Contact identity and active methods. Case participation history stays intact.</p></div></div>
+            <div className={styles.fieldGrid}>
+              <AtlasField htmlFor="edit-contact" label="Contact"><select className={styles.select} id="edit-contact" value={editContactId} onChange={(event) => selectEditableContact(event.target.value)}><option value="">Select a Contact</option>{editableContacts.map((contact) => <option key={contact.id} value={contact.id}>{contact.displayName}</option>)}</select></AtlasField>
+              <AtlasField htmlFor="edit-contact-type" label="Identity type"><select className={styles.select} disabled={!editContactId} id="edit-contact-type" value={editContactEntityType} onChange={(event) => setEditContactEntityType(event.target.value as 'PERSON' | 'ORGANIZATION')}><option value="PERSON">Person</option><option value="ORGANIZATION">Organization / entity</option></select></AtlasField>
+              <AtlasField htmlFor="edit-contact-name" label="Display name"><input className={styles.input} disabled={!editContactId} id="edit-contact-name" maxLength={160} value={editContactName} onChange={(event) => setEditContactName(event.target.value)} /></AtlasField>
+              <AtlasField htmlFor="edit-contact-email" label="Email"><input className={styles.input} disabled={!editContactId} id="edit-contact-email" inputMode="email" value={editContactEmail} onChange={(event) => setEditContactEmail(event.target.value)} /></AtlasField>
+              <AtlasField htmlFor="edit-contact-phone" label="Phone"><input className={styles.input} disabled={!editContactId} id="edit-contact-phone" inputMode="tel" value={editContactPhone} onChange={(event) => setEditContactPhone(event.target.value)} /></AtlasField>
+            </div>
+            <div className={styles.actions}><AtlasButton disabled={saving || !editContactId || !editContactName.trim()} tone="secondary" onClick={() => void updateContact()}><Save size={16} />Update Contact</AtlasButton></div>
+          </div> : null}
+        </AtlasSurface>
+
+        <div className={styles.sectionGrid} id="goals">
           <AtlasSurface className={intent === 'objectives' ? styles.intent : undefined} material="glass" data-testid="client-case-information-objectives">
             <div className={styles.panelHeading}><div><h2 className="atlas-ds-major-section">Objectives</h2><p className={styles.metadata}>Ordinary objective lifecycle records, not immutable fact revisions.</p></div><AtlasInformationClassLabel informationClass="governed-fact" /></div>
             <div className={styles.objectiveList}>
@@ -169,8 +352,8 @@ export function ClientCaseInformationWorkspace({ clientCaseId, intent }: { clien
             </div>
           </AtlasSurface>
 
-          <AtlasSurface className={intent === 'target-cities' || intent === 'purchase-price-range' || intent === 'min-bedrooms' ? styles.intent : undefined} material="glass" data-testid="client-case-information-buyer-criteria">
-            <div className={styles.panelHeading}><div><h2 className="atlas-ds-major-section">Buyer Criteria</h2><p className={styles.metadata}>Only current canonical criteria registered in the repository.</p></div><AtlasInformationClassLabel informationClass="governed-fact" /></div>
+          <AtlasSurface className={intent === 'target-cities' || intent === 'purchase-price-range' || intent === 'min-bedrooms' ? styles.intent : undefined} material="glass" data-testid="client-case-information-buyer-criteria" id="current-information">
+            <div className={styles.panelHeading}><div><h2 className="atlas-ds-major-section">Buyer Criteria</h2><p className={styles.metadata}>Only current canonical criteria registered in the repository. Stated purchase range is a preference, not demonstrated affordability.</p></div><AtlasInformationClassLabel informationClass="governed-fact" /></div>
             <form className={styles.fieldGrid} onSubmit={addCity}>
               <AtlasField htmlFor="target-city" label="Target cities"><input className={styles.input} id="target-city" maxLength={80} placeholder="Add a city" value={cityDraft} onChange={(event) => setCityDraft(event.target.value)} /></AtlasField>
               <div className={styles.actions}><AtlasButton tone="secondary" type="submit"><Plus size={16} />Add city</AtlasButton></div>
@@ -178,8 +361,8 @@ export function ClientCaseInformationWorkspace({ clientCaseId, intent }: { clien
             <div className={styles.citiesRow}>{cities.length ? cities.map((city) => <span className={styles.cityChip} key={city}>{city}<button aria-label={`Remove ${city}`} type="button" onClick={() => setCities((current) => current.filter((item) => item !== city))}><X size={14} /></button></span>) : <p className={styles.emptyText}>Not provided.</p>}</div>
             <div className={styles.fieldGrid}>
               <div className={styles.rangeGrid}>
-                <AtlasField htmlFor="minimum-dollars" label="Minimum purchase price"><input className={styles.input} id="minimum-dollars" inputMode="decimal" placeholder="500000" value={minimumDollars} onChange={(event) => setMinimumDollars(event.target.value)} /></AtlasField>
-                <AtlasField htmlFor="maximum-dollars" label="Maximum purchase price"><input className={styles.input} id="maximum-dollars" inputMode="decimal" placeholder="750000" value={maximumDollars} onChange={(event) => setMaximumDollars(event.target.value)} /></AtlasField>
+                <AtlasField htmlFor="minimum-dollars" label="Minimum stated purchase price"><input className={styles.input} id="minimum-dollars" inputMode="decimal" placeholder="500000" value={minimumDollars} onChange={(event) => setMinimumDollars(event.target.value)} /></AtlasField>
+                <AtlasField htmlFor="maximum-dollars" label="Maximum stated purchase price"><input className={styles.input} id="maximum-dollars" inputMode="decimal" placeholder="750000" value={maximumDollars} onChange={(event) => setMaximumDollars(event.target.value)} /></AtlasField>
               </div>
               <AtlasField description={activeBuyerObjective ? undefined : 'Save the Buyer decision objective before saving objective-scoped buyer criteria.'} htmlFor="min-bedrooms" label="Minimum bedrooms"><input className={styles.input} id="min-bedrooms" inputMode="numeric" min="0" type="number" value={minBedrooms} onChange={(event) => setMinBedrooms(event.target.value)} /></AtlasField>
             </div>
@@ -201,7 +384,7 @@ export function ClientCaseInformationWorkspace({ clientCaseId, intent }: { clien
           </div>
         </AtlasSurface>
 
-        <div className={styles.sectionGrid}>
+        <div className={styles.sectionGrid} id="readiness">
           <AtlasSurface material="data" data-testid="client-case-information-summary">
             <h2 className="atlas-ds-major-section">Canonical Context Summary</h2>
             <ul className={styles.summaryList}>{summary.map(([label, value]) => <li className={styles.summaryItem} key={label}><p className={styles.summaryLabel}>{label}</p><p className={styles.summaryValue}>{value}</p></li>)}</ul>

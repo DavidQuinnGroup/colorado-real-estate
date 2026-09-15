@@ -383,10 +383,38 @@ enum ClientCaseStatus {
   ARCHIVED
 }
 
+enum ContactEntityType {
+  PERSON
+  ORGANIZATION
+}
+
+enum ContactLifecycleStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum ContactMethodKind {
+  EMAIL
+  PHONE
+}
+
 enum ClientCasePartyRole {
   PRIMARY_CLIENT
   ADDITIONAL_CLIENT
   OTHER_PARTY
+}
+
+enum ClientCaseParticipationStatus {
+  ACTIVE
+  ENDED
+}
+
+enum ClientCaseAdvisoryRole {
+  BUYER
+  SELLER
+  INVESTOR
+  AUTHORIZED_PARTICIPANT
+  CO_PARTICIPANT
 }
 
 enum ClientCasePropertyRole {
@@ -3124,18 +3152,73 @@ model ClientCase {
   @@index([ownerAgentSubject, createdAt])
 }
 
+model Contact {
+  id                String                 @id @default(cuid())
+  ownerAgentSubject String
+  displayName       String
+  givenName         String?
+  familyName        String?
+  entityType        ContactEntityType      @default(PERSON)
+  lifecycleStatus   ContactLifecycleStatus @default(ACTIVE)
+  createdBySubject  String
+  createdAt         DateTime               @default(now())
+  updatedAt         DateTime               @updatedAt
+
+  methods       ContactMethod[]
+  participations ClientCaseParty[]
+
+  @@index([ownerAgentSubject, lifecycleStatus, updatedAt])
+  @@index([ownerAgentSubject, displayName])
+}
+
+model ContactMethod {
+  id              String                 @id @default(cuid())
+  contactId       String
+  kind            ContactMethodKind
+  displayValue    String
+  normalizedValue String
+  isPrimary       Boolean                @default(false)
+  lifecycleStatus ContactLifecycleStatus @default(ACTIVE)
+  createdAt       DateTime               @default(now())
+  updatedAt       DateTime               @updatedAt
+
+  contact Contact @relation(fields: [contactId], references: [id], onDelete: Restrict)
+
+  @@index([contactId, kind, lifecycleStatus])
+  @@index([kind, normalizedValue])
+}
+
 model ClientCaseParty {
-  id           String               @id @default(cuid())
-  clientCaseId String
-  role         ClientCasePartyRole
-  displayLabel String
-  createdAt    DateTime             @default(now())
-  updatedAt    DateTime             @updatedAt
+  id                  String                        @id @default(cuid())
+  clientCaseId        String
+  contactId           String?
+  role                ClientCasePartyRole
+  participationStatus ClientCaseParticipationStatus @default(ACTIVE)
+  displayLabel        String
+  startedAt           DateTime                      @default(now())
+  endedAt             DateTime?
+  createdAt           DateTime                      @default(now())
+  updatedAt           DateTime                      @updatedAt
 
   clientCase ClientCase @relation(fields: [clientCaseId], references: [id], onDelete: Restrict)
+  contact    Contact?   @relation(fields: [contactId], references: [id], onDelete: Restrict)
   transactionParties TransactionParty[]
+  advisoryRoles ClientCasePartyAdvisoryRole[]
 
-  @@index([clientCaseId, role])
+  @@index([clientCaseId, role, participationStatus])
+  @@index([contactId])
+}
+
+model ClientCasePartyAdvisoryRole {
+  id                String                 @id @default(cuid())
+  clientCasePartyId String
+  role              ClientCaseAdvisoryRole
+  createdAt         DateTime               @default(now())
+
+  clientCaseParty ClientCaseParty @relation(fields: [clientCasePartyId], references: [id], onDelete: Restrict)
+
+  @@unique([clientCasePartyId, role])
+  @@index([role])
 }
 
 model ClientCaseProperty {

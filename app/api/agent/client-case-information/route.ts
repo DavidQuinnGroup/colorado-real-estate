@@ -10,6 +10,7 @@ import { ClientCaseError } from '@/lib/clientCaseContextFoundation';
 import { ClientCaseContextRecordsError } from '@/lib/clientCaseContextRecordsFoundation';
 import { ClientCaseCapabilityReadinessError } from '@/lib/clientCaseCapabilityReadinessEvaluator';
 import { ClientCaseEffectiveContextError } from '@/lib/clientCaseEffectiveContextResolver';
+import { ClientInformationWaveAError, createClientInformationWaveAService } from '@/lib/clientInformationWaveAFoundation';
 import { prisma } from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
@@ -31,7 +32,7 @@ async function subjectFor(request: NextRequest, method: 'GET' | 'POST') {
 }
 
 function errorResponse(error: unknown) {
-  if (error instanceof ClientCaseInformationError || error instanceof ClientCaseContextRecordsError || error instanceof ClientCaseError || error instanceof ClientCaseEffectiveContextError || error instanceof ClientCaseCapabilityReadinessError) {
+  if (error instanceof ClientCaseInformationError || error instanceof ClientCaseContextRecordsError || error instanceof ClientCaseError || error instanceof ClientCaseEffectiveContextError || error instanceof ClientCaseCapabilityReadinessError || error instanceof ClientInformationWaveAError) {
     const code = 'code' in error ? error.code : 'PERSISTENCE_UNAVAILABLE';
     const status = code === 'NOT_FOUND' ? 404 : code === 'OWNERSHIP_DENIED' ? 403 : code === 'CONFLICT' ? 409 : code === 'PERSISTENCE_UNAVAILABLE' ? 503 : 400;
     return NextResponse.json({ error: error.message, code }, { status, headers: HEADERS });
@@ -56,9 +57,25 @@ export async function POST(request: NextRequest) {
   if (!subject) return NextResponse.json({ error: 'Agent authentication required.' }, { status: 403, headers: HEADERS });
   try {
     const body = await request.json() as Record<string, unknown>;
-    if (body.action !== 'SAVE_CANONICAL_INFORMATION') throw new ClientCaseInformationError('INVALID_REQUEST', 'Unsupported Client Case information action.');
     if (typeof body.clientCaseId !== 'string') throw new ClientCaseInformationError('INVALID_REQUEST', 'clientCaseId is required.');
-    return NextResponse.json(await createClientCaseInformationWorkflowService(prisma).save(subject, body.clientCaseId, body.input), { headers: HEADERS });
+    const waveA = createClientInformationWaveAService(prisma);
+    if (body.action === 'SAVE_CANONICAL_INFORMATION') return NextResponse.json(await createClientCaseInformationWorkflowService(prisma).save(subject, body.clientCaseId, body.input), { headers: HEADERS });
+    if (body.action === 'CREATE_CONTACT_PARTICIPATION') return NextResponse.json({ result: await waveA.createContactAndParticipation(subject, body.clientCaseId, body.input), workspace: await createClientCaseInformationWorkflowService(prisma).load(subject, body.clientCaseId) }, { headers: HEADERS });
+    if (body.action === 'LINK_CONTACT') return NextResponse.json({ result: await waveA.linkContact(subject, body.clientCaseId, body.input), workspace: await createClientCaseInformationWorkflowService(prisma).load(subject, body.clientCaseId) }, { headers: HEADERS });
+    if (body.action === 'UPDATE_CONTACT') {
+      if (typeof body.contactId !== 'string') throw new ClientCaseInformationError('INVALID_REQUEST', 'contactId is required.');
+      return NextResponse.json({ result: await waveA.updateContact(subject, body.contactId, body.input), workspace: await createClientCaseInformationWorkflowService(prisma).load(subject, body.clientCaseId) }, { headers: HEADERS });
+    }
+    if (body.action === 'UPDATE_PARTICIPATION') {
+      if (typeof body.clientCasePartyId !== 'string') throw new ClientCaseInformationError('INVALID_REQUEST', 'clientCasePartyId is required.');
+      return NextResponse.json({ result: await waveA.updateParticipation(subject, body.clientCaseId, body.clientCasePartyId, body.input), workspace: await createClientCaseInformationWorkflowService(prisma).load(subject, body.clientCaseId) }, { headers: HEADERS });
+    }
+    if (body.action === 'END_PARTICIPATION') {
+      if (typeof body.clientCasePartyId !== 'string') throw new ClientCaseInformationError('INVALID_REQUEST', 'clientCasePartyId is required.');
+      return NextResponse.json({ result: await waveA.endParticipation(subject, body.clientCaseId, body.clientCasePartyId), workspace: await createClientCaseInformationWorkflowService(prisma).load(subject, body.clientCaseId) }, { headers: HEADERS });
+    }
+    if (body.action === 'DUPLICATE_CANDIDATES') return NextResponse.json({ candidates: await waveA.duplicateCandidates(subject, body.input) }, { headers: HEADERS });
+    throw new ClientCaseInformationError('INVALID_REQUEST', 'Unsupported Client Case information action.');
   } catch (error) {
     return errorResponse(error);
   }

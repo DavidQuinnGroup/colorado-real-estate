@@ -4,6 +4,7 @@ import { createClientCaseCapabilityReadinessService } from './clientCaseCapabili
 import { createClientCaseContextService } from './clientCaseContextFoundation';
 import { createClientCaseContextRecordsService } from './clientCaseContextRecordsFoundation';
 import { CRITERION_SEMANTICS, FACT_SEMANTICS, OBJECTIVE_TYPES } from './clientCaseContextSemanticRegistry';
+import { createClientInformationWaveAService } from './clientInformationWaveAFoundation';
 
 export const CLIENT_CASE_INFORMATION_WORKFLOW_VERSION = 'CANONICAL_CLIENT_CASE_INFORMATION_WORKFLOW_V1' as const;
 export const CLIENT_CASE_INFORMATION_API_ROUTE = '/api/agent/client-case-information' as const;
@@ -127,12 +128,14 @@ export function createClientCaseInformationWorkflowService(prisma: InformationDa
   const cases = createClientCaseContextService(prisma as PrismaClient);
   const records = createClientCaseContextRecordsService(prisma);
   const readiness = createClientCaseCapabilityReadinessService(prisma);
+  const people = createClientInformationWaveAService(prisma as PrismaClient);
 
   async function load(ownerAgentSubject: string, clientCaseId: string) {
     await ownedCase(prisma, ownerAgentSubject, clientCaseId);
-    const [clientCase, current] = await Promise.all([
+    const [clientCase, current, peopleState] = await Promise.all([
       cases.detail(ownerAgentSubject, clientCaseId),
       records.readCurrent(ownerAgentSubject, clientCaseId),
+      people.listPeople(ownerAgentSubject, clientCaseId),
     ]);
     const buyerObjective = current.objectives.find((entry) => entry.objectiveType === 'BUY_PRIMARY_HOME' && entry.status === 'ACTIVE' && !entry.archivedAt) ?? null;
     const financialObjective = current.objectives.find((entry) => entry.objectiveType === 'FINANCIAL_STRATEGY' && entry.status === 'ACTIVE' && !entry.archivedAt) ?? null;
@@ -168,6 +171,7 @@ export function createClientCaseInformationWorkflowService(prisma: InformationDa
         propertyOccupancy: occupancy,
         properties: current.properties,
       },
+      people: peopleState,
       readinessPreview: {
         BUYER_DECISION: buyerReadiness,
         FINANCIAL_STRATEGY: financialReadiness,
