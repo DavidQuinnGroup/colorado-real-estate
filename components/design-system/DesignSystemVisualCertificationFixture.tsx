@@ -144,13 +144,13 @@ export function DesignSystemVisualCertificationFixture() {
           <Section id="surfaces" title="Surface and material hierarchy">
             <div aria-label="Canonical material comparison" className={styles.surfaceGrid} data-testid="atlas-fixture-material-matrix">
               <div className={styles.canvasSample}><p className="atlas-ds-label">Base canvas</p><p className="atlas-ds-metadata">Foundation layer</p></div>
-              <AtlasSurface material="glass"><p className="atlas-ds-label">Primary glass</p><p className="atlas-ds-metadata">Spatial context</p></AtlasSurface>
-              <AtlasSurface material="glass"><AtlasSurface material="glass"><p className="atlas-ds-label">Secondary glass</p><p className="atlas-ds-metadata">Nested glass removes additional blur.</p></AtlasSurface></AtlasSurface>
-              <AtlasSurface material="elevated"><p className="atlas-ds-label">Elevated panel</p><p className="atlas-ds-metadata">Stronger decision grouping</p></AtlasSurface>
-              <AtlasSurface material="floating"><p className="atlas-ds-label">Floating / popover surface</p><p className="atlas-ds-metadata">Highest non-modal emphasis</p></AtlasSurface>
-              <AtlasSurface material="data"><p className="atlas-ds-label">Solid data surface</p><p className="atlas-ds-metadata">Stable analytical contrast</p></AtlasSurface>
-              <AtlasSurface material="reading"><p className="atlas-ds-label">Solid reading surface</p><p className="atlas-ds-metadata">Long-form context</p></AtlasSurface>
-              <AtlasSurface material="critical"><p className="atlas-ds-label">Critical high-contrast surface</p><p className="atlas-ds-metadata">Clear exception treatment</p></AtlasSurface>
+              <AtlasSurface data-testid="atlas-fixture-structural-glass-surface" material="glass"><p className="atlas-ds-label">Structural glass surface</p><p className="atlas-ds-metadata">Borderless elevated grouping</p></AtlasSurface>
+              <AtlasSurface data-testid="atlas-fixture-secondary-glass-surface" material="glass"><AtlasSurface material="glass"><p className="atlas-ds-label">Secondary glass</p><p className="atlas-ds-metadata">Nested glass removes additional blur.</p></AtlasSurface></AtlasSurface>
+              <AtlasSurface data-testid="atlas-fixture-elevated-surface" material="elevated"><p className="atlas-ds-label">Elevated panel</p><p className="atlas-ds-metadata">Stronger decision grouping</p></AtlasSurface>
+              <AtlasSurface data-testid="atlas-fixture-floating-surface" material="floating"><p className="atlas-ds-label">Floating / popover surface</p><p className="atlas-ds-metadata">Highest non-modal emphasis</p></AtlasSurface>
+              <AtlasSurface data-testid="atlas-fixture-data-surface" material="data"><p className="atlas-ds-label">Solid data surface</p><p className="atlas-ds-metadata">Stable analytical contrast</p></AtlasSurface>
+              <AtlasSurface data-testid="atlas-fixture-reading-surface" material="reading"><p className="atlas-ds-label">Solid reading surface</p><p className="atlas-ds-metadata">Long-form context</p></AtlasSurface>
+              <AtlasSurface data-testid="atlas-fixture-semantic-surface" material="critical"><p className="atlas-ds-label">Semantic critical surface</p><p className="atlas-ds-metadata">Meaningful boundary retained</p></AtlasSurface>
             </div>
           </Section>
 

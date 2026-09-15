@@ -77,6 +77,9 @@
   --atlas-depth-1: 0 2px 7px rgb(15 35 52 / 0.06);
   --atlas-depth-2: 0 16px 36px rgb(15 35 52 / 0.13);
   --atlas-depth-3: 0 28px 64px rgb(15 35 52 / 0.2);
+  --atlas-surface-elevation-low: 0 10px 24px rgb(15 35 52 / 0.09), 0 2px 8px rgb(15 35 52 / 0.05);
+  --atlas-surface-elevation-medium: 0 18px 44px rgb(15 35 52 / 0.13), 0 4px 14px rgb(15 35 52 / 0.07);
+  --atlas-surface-elevation-high: 0 30px 72px rgb(15 35 52 / 0.19), 0 10px 24px rgb(15 35 52 / 0.09);
   --atlas-glass-blur: 18px;
   --atlas-duration-fast: 120ms;
   --atlas-duration-standard: 180ms;
@@ -143,6 +146,9 @@
     --atlas-depth-1: 0 1px 2px rgb(0 0 0 / 0.22);
     --atlas-depth-2: 0 12px 30px rgb(0 0 0 / 0.26);
     --atlas-depth-3: 0 28px 64px rgb(0 0 0 / 0.36);
+    --atlas-surface-elevation-low: 0 14px 30px rgb(0 0 0 / 0.3), 0 2px 10px rgb(12 38 52 / 0.2);
+    --atlas-surface-elevation-medium: 0 22px 52px rgb(0 0 0 / 0.36), 0 8px 18px rgb(12 38 52 / 0.24);
+    --atlas-surface-elevation-high: 0 34px 78px rgb(0 0 0 / 0.46), 0 14px 30px rgb(12 38 52 / 0.28);
   }
 }
 
@@ -233,10 +239,10 @@
     --atlas-profile-density-space: var(--atlas-space-3);
     --atlas-profile-glass-opacity: 0.66;
     --atlas-profile-glass-blur: 24px;
-    --atlas-profile-glass-border: color-mix(in srgb, var(--atlas-border-subtle) 10%, transparent);
-    --atlas-profile-glass-depth: var(--atlas-depth-2);
-    --atlas-profile-elevated-depth: var(--atlas-depth-2);
-    --atlas-profile-floating-depth: var(--atlas-depth-3);
+    --atlas-profile-glass-border: transparent;
+    --atlas-profile-glass-depth: var(--atlas-surface-elevation-low);
+    --atlas-profile-elevated-depth: var(--atlas-surface-elevation-medium);
+    --atlas-profile-floating-depth: var(--atlas-surface-elevation-high);
     --atlas-profile-section-gap: var(--atlas-space-8);
     --atlas-profile-panel-padding: var(--atlas-space-5);
     --atlas-profile-content-gap: var(--atlas-space-4);
@@ -316,7 +322,7 @@
       --atlas-profile-field-readonly: var(--atlas-field-readonly);
       --atlas-profile-border-subtle: color-mix(in srgb, var(--atlas-border-subtle) 44%, transparent);
       --atlas-profile-border-strong: color-mix(in srgb, var(--atlas-border-strong) 58%, transparent);
-      --atlas-profile-glass-border: color-mix(in srgb, var(--atlas-border-subtle) 22%, transparent);
+      --atlas-profile-glass-border: transparent;
     }
 
     .atlas-ds-shell-client {
@@ -384,19 +390,33 @@
 
   .atlas-ds-shell-agent .atlas-ds-surface {
     border-color: transparent;
-    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.18), var(--atlas-profile-glass-depth, var(--atlas-depth-1));
+    box-shadow: var(--atlas-profile-glass-depth, var(--atlas-surface-elevation-low));
   }
 
   .atlas-ds-shell-agent .atlas-ds-surface-data,
   .atlas-ds-shell-agent .atlas-ds-surface-reading {
-    border-color: color-mix(in srgb, var(--atlas-profile-border-subtle) 12%, transparent);
-    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.12), var(--atlas-depth-1);
+    border-color: transparent;
+    box-shadow: var(--atlas-surface-elevation-low);
+  }
+
+  .atlas-ds-shell-agent .atlas-ds-surface-glass {
+    box-shadow: var(--atlas-profile-glass-depth, var(--atlas-surface-elevation-low));
+  }
+
+  .atlas-ds-shell-agent .atlas-ds-surface-elevated {
+    border-color: transparent;
+    box-shadow: var(--atlas-profile-elevated-depth, var(--atlas-surface-elevation-medium));
+  }
+
+  .atlas-ds-shell-agent .atlas-ds-surface-floating {
+    border-color: transparent;
+    box-shadow: var(--atlas-profile-floating-depth, var(--atlas-surface-elevation-high));
   }
 
   .atlas-ds-surface-glass .atlas-ds-surface-glass {
     border-color: transparent;
     background: color-mix(in srgb, var(--atlas-profile-surface-secondary) calc(var(--atlas-profile-glass-opacity, 1) * 100%), transparent);
-    box-shadow: none;
+    box-shadow: var(--atlas-surface-elevation-low);
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
   }
@@ -432,6 +452,11 @@
     border-color: color-mix(in srgb, var(--atlas-notice-error) 76%, var(--atlas-profile-border-strong));
     background: var(--atlas-surface-critical);
     box-shadow: inset 4px 0 0 color-mix(in srgb, var(--atlas-notice-error) 72%, transparent), var(--atlas-depth-1);
+  }
+
+  .atlas-ds-shell-agent .atlas-ds-surface-critical {
+    border-color: color-mix(in srgb, var(--atlas-notice-error) 76%, var(--atlas-profile-border-strong));
+    box-shadow: inset 4px 0 0 color-mix(in srgb, var(--atlas-notice-error) 72%, transparent), var(--atlas-surface-elevation-low);
   }
 
   .atlas-ds-page-title,

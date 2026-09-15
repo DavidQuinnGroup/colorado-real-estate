@@ -2,7 +2,7 @@
 .heading, .panelHeading, .resultHeading, .checkRow { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
 .heading > div { max-width: 52rem; }
 .introduction { margin: .75rem 0 0; color: var(--atlas-text-secondary); line-height: 1.6; }
-.selectionPanel, .resultSection { display: grid; gap: 1.25rem; border-color: transparent; padding: 1.25rem; box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.18), var(--atlas-profile-glass-depth); backdrop-filter: blur(var(--atlas-profile-glass-blur)) saturate(118%); -webkit-backdrop-filter: blur(var(--atlas-profile-glass-blur)) saturate(118%); }
+.selectionPanel, .resultSection { display: grid; gap: 1.25rem; border-color: transparent; padding: 1.25rem; box-shadow: var(--atlas-profile-glass-depth); backdrop-filter: blur(var(--atlas-profile-glass-blur)) saturate(118%); -webkit-backdrop-filter: blur(var(--atlas-profile-glass-blur)) saturate(118%); }
 .selectionGrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; align-items: start; }
 .checkRow { align-items: center; }
 .inlineEmpty { padding: 1rem; }
@@ -18,7 +18,7 @@
 .requirementTable th, .requirementTable td { padding: .625rem; text-align: left; vertical-align: top; border-bottom: 1px solid color-mix(in srgb, var(--atlas-profile-border-subtle) 38%, transparent); overflow-wrap: anywhere; }
 .requirementTable th { color: var(--atlas-text-secondary); font-weight: 650; }
 .resultLists { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 1rem; }
-.resultList { padding: 1rem; border: 1px solid color-mix(in srgb, var(--atlas-profile-border-subtle) 12%, transparent); border-radius: var(--atlas-radius-md); background: color-mix(in srgb, var(--atlas-profile-surface-data) 82%, transparent); box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.1), var(--atlas-depth-1); }
+.resultList { padding: 1rem; border: 1px solid transparent; border-radius: var(--atlas-radius-md); background: color-mix(in srgb, var(--atlas-profile-surface-data) 82%, transparent); box-shadow: var(--atlas-surface-elevation-low); }
 .resultList ul { margin: .625rem 0 0; padding-left: 1.125rem; color: var(--atlas-text-secondary); }
 .resultList li + li { margin-top: .25rem; }
 .initialState { display: flex; align-items: center; gap: .625rem; padding: 1rem; color: var(--atlas-text-secondary); }

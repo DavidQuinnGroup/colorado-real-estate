@@ -40,8 +40,8 @@
   border: 1px solid transparent;
   border-radius: var(--atlas-radius-lg);
 }
-.workspace { padding: clamp(var(--atlas-space-5), 3vw, var(--atlas-space-7)); background: color-mix(in srgb, var(--atlas-profile-surface-primary) calc(var(--atlas-profile-glass-opacity) * 100%), transparent); box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.2), var(--atlas-profile-glass-depth); backdrop-filter: blur(var(--atlas-profile-glass-blur)) saturate(118%); -webkit-backdrop-filter: blur(var(--atlas-profile-glass-blur)) saturate(118%); }
-.guidance { padding: var(--atlas-space-6); background: color-mix(in srgb, var(--atlas-profile-surface-reading) 82%, transparent); box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.18), var(--atlas-profile-glass-depth); }
+.workspace { padding: clamp(var(--atlas-space-5), 3vw, var(--atlas-space-7)); background: color-mix(in srgb, var(--atlas-profile-surface-primary) calc(var(--atlas-profile-glass-opacity) * 100%), transparent); box-shadow: var(--atlas-profile-glass-depth); backdrop-filter: blur(var(--atlas-profile-glass-blur)) saturate(118%); -webkit-backdrop-filter: blur(var(--atlas-profile-glass-blur)) saturate(118%); }
+.guidance { padding: var(--atlas-space-6); background: color-mix(in srgb, var(--atlas-profile-surface-reading) 82%, transparent); box-shadow: var(--atlas-profile-elevated-depth); }
 .guidanceIcon { color: var(--atlas-information-system-status); }
 .guidanceTitle { margin: var(--atlas-space-4) 0 0; color: var(--atlas-text-primary); font-size: 1.0625rem; font-weight: 700; line-height: 1.35; }
 .guidanceCopy { margin: var(--atlas-space-2) 0 0; color: var(--atlas-text-secondary); font-size: 0.9375rem; line-height: 1.6; }
@@ -100,12 +100,12 @@
 .workspace :global([data-testid='agent-property-criteria-profile'] .text-slate-300),
 .workspace :global([data-testid='agent-property-criteria-profile'] .text-slate-400),
 .workspace :global([data-testid='agent-property-criteria-profile'] .text-slate-500) { color: var(--atlas-text-secondary) !important; }
-.workspace :global([data-testid='agent-property-criteria-profile'] > div > div > div) { border-color: color-mix(in srgb, var(--atlas-profile-border-subtle) 12%, transparent) !important; background: color-mix(in srgb, var(--atlas-profile-surface-secondary) 82%, transparent) !important; }
+.workspace :global([data-testid='agent-property-criteria-profile'] > div > div > div) { border-color: transparent !important; background: color-mix(in srgb, var(--atlas-profile-surface-secondary) 82%, transparent) !important; box-shadow: var(--atlas-surface-elevation-low); }
 .workspace :global([data-testid='agent-property-criteria-profile'] select),
 .workspace :global([data-testid='agent-property-criteria-profile'] input) { border-color: var(--atlas-profile-border-strong) !important; background: var(--atlas-profile-field-background) !important; color: var(--atlas-text-primary) !important; }
 
 .emptyState, .updateState, .failureState { margin-top: var(--atlas-space-8); padding: var(--atlas-space-6); color: var(--atlas-text-secondary); font-size: 0.9375rem; line-height: 1.6; }
-.emptyState { background: var(--atlas-profile-surface-reading); }
+.emptyState { background: var(--atlas-profile-surface-reading); box-shadow: var(--atlas-surface-elevation-low); }
 .updateState { border-color: color-mix(in srgb, var(--atlas-notice-information) 44%, var(--atlas-profile-border-subtle)); background: color-mix(in srgb, var(--atlas-profile-surface-data) 64%, transparent); }
 .failureState { border-color: color-mix(in srgb, var(--atlas-notice-warning) 54%, var(--atlas-profile-border-subtle)); background: color-mix(in srgb, var(--atlas-surface-critical) 62%, transparent); }
 .statusMessage { display: inline-flex; align-items: center; gap: var(--atlas-space-2); margin: 0; color: var(--atlas-text-primary); font-size: 0.875rem; font-weight: 750; }
@@ -116,7 +116,7 @@
 .briefing { margin-top: var(--atlas-space-8); }
 .briefingSummary { display: grid; gap: var(--atlas-space-5); margin: var(--atlas-space-6) 0; }
 @media (min-width: 56rem) { .briefingSummary { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-.briefingCard { padding: var(--atlas-space-6); background: color-mix(in srgb, var(--atlas-profile-surface-reading) 82%, transparent); box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.18), var(--atlas-profile-glass-depth); }
+.briefingCard { padding: var(--atlas-space-6); background: color-mix(in srgb, var(--atlas-profile-surface-reading) 82%, transparent); box-shadow: var(--atlas-profile-glass-depth); }
 .briefingList { margin: var(--atlas-space-4) 0 0; padding-left: var(--atlas-space-5); color: var(--atlas-text-secondary); font-size: 0.9375rem; line-height: 1.6; }
 .briefing :global([data-testid='agent-shared-briefing-composition']) > :global(section),
 .briefing :global([data-testid='agent-buyer-professional-playbook']) > :global(div),
@@ -125,7 +125,7 @@
 .briefing :global([data-testid='agent-seller-professional-playbook']) > :global(section),
 .briefing :global([data-testid='agent-buyer-playbook-section']),
 .briefing :global([data-testid='agent-seller-playbook-section']) {
-  border-color: var(--atlas-profile-border-subtle) !important;
+  border-color: transparent !important;
   background: var(--atlas-profile-surface-reading) !important;
   color: var(--atlas-text-primary) !important;
   box-shadow: var(--atlas-profile-glass-depth);
@@ -133,14 +133,15 @@
 .briefing :global([data-testid='agent-shared-briefing-composition']) > :global(section):first-child,
 .briefing :global([data-testid='agent-buyer-professional-playbook']) > :global(div):first-child,
 .briefing :global([data-testid='agent-seller-professional-playbook']) > :global(div):first-child {
-  border-color: color-mix(in srgb, var(--atlas-information-system-status) 36%, var(--atlas-profile-border-subtle)) !important;
+  border-color: transparent !important;
   background: var(--atlas-profile-surface-data) !important;
+  box-shadow: var(--atlas-profile-elevated-depth);
 }
 .briefing :global(.text-white), .briefing :global(.text-slate-300), .briefing :global(.text-slate-200), .briefing :global(.text-slate-400), .briefing :global(.text-slate-500) { color: var(--atlas-text-secondary) !important; }
 .briefing :global(h1), .briefing :global(h2), .briefing :global(h3), .briefing :global(h4), .briefing :global(.font-semibold) { color: var(--atlas-text-primary) !important; }
 .briefing :global(.text-cyan-100), .briefing :global(.text-emerald-100), .briefing :global(.text-amber-100) { color: var(--atlas-information-system-status) !important; }
 .briefing :global(details) { border-color: var(--atlas-profile-border-subtle) !important; background: var(--atlas-profile-surface-secondary) !important; }
-.briefing :global([data-testid='agent-current-snapshot-comparison']) { border-color: var(--atlas-profile-border-subtle) !important; background: var(--atlas-profile-surface-reading) !important; color: var(--atlas-text-primary) !important; }
+.briefing :global([data-testid='agent-current-snapshot-comparison']) { border-color: transparent !important; background: var(--atlas-profile-surface-reading) !important; color: var(--atlas-text-primary) !important; box-shadow: var(--atlas-profile-glass-depth); }
 .briefing :global([data-testid='agent-current-snapshot-comparison'] .text-white), .briefing :global([data-testid='agent-current-snapshot-comparison'] .text-slate-300), .briefing :global([data-testid='agent-current-snapshot-comparison'] .text-slate-400) { color: var(--atlas-text-secondary) !important; }
 
 @media (prefers-reduced-motion: reduce) {
