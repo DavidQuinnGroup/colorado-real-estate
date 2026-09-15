@@ -47,6 +47,7 @@ for (const cssClass of [
   'roleCheck',
   'compactList',
   'linkExisting',
+  'canonicalBoundaryNotice',
 ]) {
   assert.match(css, new RegExp(`\\.${cssClass}\\s*\\{`), `${cssClass} style is required`);
 }
@@ -70,6 +71,9 @@ for (const structuralClass of [
 
 assert.match(classBlock('input'), /border\s*:/);
 assert.match(classBlock('select'), /border\s*:/);
+assert.doesNotMatch(classBlock('canonicalBoundaryNotice'), /border\s*:/);
+assert.match(classBlock('canonicalBoundaryNotice'), /border-color:\s*transparent/);
+assert.match(classBlock('canonicalBoundaryNotice'), /inset 4px 0 0/);
 assert.match(css, /\.input:focus-visible,\s*\.select:focus-visible,\s*\.link:focus-visible/);
 assert.match(css, /@media \(max-width: 40rem\)/);
 assert.match(css, /overflow-wrap: anywhere/);

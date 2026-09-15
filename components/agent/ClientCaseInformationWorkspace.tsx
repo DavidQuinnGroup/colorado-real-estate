@@ -298,7 +298,7 @@ export function ClientCaseInformationWorkspace({ clientCaseId, intent }: { clien
         </header>
 
         {status ? <AtlasNotice title="Information workflow" tone={status.includes('could not') || status.includes('required') ? 'attention' : 'success'}>{status}</AtlasNotice> : null}
-        <AtlasNotice title="Canonical boundary" tone="information">Use this page for factual or generally applicable Client Case information. Target acquisition price, down payment, cash allocation, holding period, hypothetical city or bedroom overrides, and sell/retain/rent alternatives remain Scenario Version inputs.</AtlasNotice>
+        <AtlasNotice className={styles.canonicalBoundaryNotice} title="Canonical boundary" tone="information">Use this page for factual or generally applicable Client Case information. Target acquisition price, down payment, cash allocation, holding period, hypothetical city or bedroom overrides, and sell/retain/rent alternatives remain Scenario Version inputs.</AtlasNotice>
 
         <nav className={styles.sectionNav} aria-label="Client Information sections">
           {['Case overview', 'People', 'Goals', 'Current information', 'Readiness'].map((item) => <a key={item} href={`#${item.toLowerCase().replaceAll(' ', '-')}`}>{item}</a>)}
