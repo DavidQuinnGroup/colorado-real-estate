@@ -7,9 +7,12 @@ const packageJson = JSON.parse(readFileSync('package.json', 'utf8')) as { script
 
 assert.equal(packageJson.scripts?.['check:client-information-wave-b-visual-structure'], 'jiti scripts/checkClientInformationWaveBVisualStructure.ts');
 assert.match(workspace, /client-case-information-properties/);
-assert.match(workspace, /Add \/ Link Property/);
-assert.match(workspace, /Current linking mechanism: explicit canonical Property ID/);
-assert.match(workspace, /Address autocomplete, off-market discovery, provider lookup, and provisional Property creation are deferred/);
+assert.match(workspace, /Search property/);
+assert.match(workspace, /Add to Client Case/);
+assert.match(workspace, /Stage 1 searches existing property records only/);
+assert.match(workspace, /Off-market discovery, provider lookup, and provisional Property creation are deferred/);
+assert.match(workspace, /data-selected-property-summary="true"/);
+assert.doesNotMatch(workspace, /Canonical physical Property ID|CanonicalPhysicalProperty ID/);
 assert.match(workspace, /data-client-case-property-card="true"/);
 assert.match(workspace, /Scenario:/);
 assert.match(workspace, /Operational state remains in Transactions/);

@@ -45,7 +45,20 @@
 .linkExisting { display: grid; gap: var(--atlas-space-3); align-items: end; margin-top: var(--atlas-space-4); }
 @media (min-width: 42rem) { .linkExisting { grid-template-columns: minmax(0, 1fr) auto; } }
 .propertyLinkForm { display: grid; gap: var(--atlas-space-4); margin-top: var(--atlas-space-4); padding-top: var(--atlas-space-4); box-shadow: inset 0 1px 0 color-mix(in srgb, var(--atlas-profile-border-subtle) 16%, transparent); }
-@media (min-width: 52rem) { .propertyLinkForm { grid-template-columns: minmax(14rem, 1fr) minmax(16rem, 1fr) auto; align-items: end; } }
+@media (min-width: 52rem) { .propertyLinkForm { grid-template-columns: minmax(18rem, 1.3fr) minmax(16rem, 1fr) auto; align-items: start; } }
+.propertySearchColumn { position: relative; display: grid; min-width: 0; gap: var(--atlas-space-2); }
+.comboboxWrap { position: relative; display: grid; }
+.comboboxIcon { position: absolute; left: var(--atlas-space-3); top: 50%; color: var(--atlas-text-muted); transform: translateY(-50%); pointer-events: none; }
+.searchInput { padding-left: 2.35rem; }
+.searchStatus { margin: 0; color: var(--atlas-text-secondary); font-size: 0.8125rem; line-height: 1.5; }
+.suggestionPanel { position: absolute; z-index: 20; top: calc(100% + var(--atlas-space-2)); left: 0; right: 0; display: grid; max-height: min(22rem, 64vh); overflow-y: auto; border-radius: var(--atlas-radius-lg); padding: var(--atlas-space-2); background: color-mix(in srgb, var(--atlas-profile-surface-primary) calc(var(--atlas-profile-glass-opacity, 1) * 100%), rgba(4, 12, 15, 0.92)); box-shadow: var(--atlas-profile-glass-depth, var(--atlas-surface-elevation-high)); backdrop-filter: blur(var(--atlas-profile-glass-blur)); }
+.suggestionOption { display: grid; width: 100%; min-height: 3.7rem; gap: 0.2rem; border: 0; border-radius: var(--atlas-radius-md); padding: var(--atlas-space-3); background: transparent; color: var(--atlas-text-primary); text-align: left; cursor: pointer; }
+.suggestionOption:hover, .suggestionOptionActive { background: var(--atlas-action-ghost-hover); }
+.suggestionOption:disabled { cursor: not-allowed; opacity: 0.68; }
+.suggestionOption:focus-visible { outline: 3px solid var(--atlas-focus-ring); outline-offset: 2px; }
+.suggestionTitle { font-size: 0.875rem; font-weight: 800; line-height: 1.35; overflow-wrap: anywhere; }
+.suggestionMeta { color: var(--atlas-text-secondary); font-size: 0.75rem; font-weight: 700; line-height: 1.4; }
+.selectedPropertySummary { display: grid; gap: var(--atlas-space-2); border-radius: var(--atlas-radius-lg); padding: var(--atlas-space-3); background: color-mix(in srgb, var(--atlas-profile-surface-secondary) 54%, transparent); box-shadow: var(--atlas-profile-glass-depth, var(--atlas-surface-elevation-low)); }
 .propertyCardGrid { display: grid; gap: var(--atlas-space-4); margin-top: var(--atlas-space-5); }
 .propertyCard { display: grid; min-width: 0; gap: var(--atlas-space-4); border-radius: var(--atlas-radius-lg); padding: var(--atlas-space-4); background: color-mix(in srgb, var(--atlas-profile-surface-primary) calc(var(--atlas-profile-glass-opacity, 1) * 100%), transparent); box-shadow: var(--atlas-profile-glass-depth, var(--atlas-surface-elevation-medium)); backdrop-filter: blur(var(--atlas-profile-glass-blur)); }
 .propertyTitle { margin: var(--atlas-space-1) 0 0; color: var(--atlas-text-primary); font-size: clamp(1rem, 1.8vw, 1.25rem); line-height: 1.35; overflow-wrap: anywhere; }

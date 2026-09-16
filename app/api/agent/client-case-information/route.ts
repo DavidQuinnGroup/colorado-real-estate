@@ -12,6 +12,7 @@ import { ClientCaseCapabilityReadinessError } from '@/lib/clientCaseCapabilityRe
 import { ClientCaseEffectiveContextError } from '@/lib/clientCaseEffectiveContextResolver';
 import { ClientCasePropertyRelationshipError } from '@/lib/clientCasePropertyRelationshipRoles';
 import { ClientInformationWaveAError, createClientInformationWaveAService } from '@/lib/clientInformationWaveAFoundation';
+import { createAgentPropertyDiscoveryService } from '@/lib/agentPropertyDiscovery';
 import { prisma } from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
@@ -62,6 +63,13 @@ export async function POST(request: NextRequest) {
     const workflow = createClientCaseInformationWorkflowService(prisma);
     const waveA = createClientInformationWaveAService(prisma);
     if (body.action === 'SAVE_CANONICAL_INFORMATION') return NextResponse.json(await workflow.save(subject, body.clientCaseId, body.input), { headers: HEADERS });
+    if (body.action === 'ATTACH_DISCOVERED_PROPERTY') {
+      const input = body.input && typeof body.input === 'object' && !Array.isArray(body.input) ? body.input as Record<string, unknown> : {};
+      const resultToken = typeof input.discoveryResultToken === 'string' ? input.discoveryResultToken : '';
+      const canonicalPropertyId = await createAgentPropertyDiscoveryService(prisma).canonicalPropertyIdForResultToken(subject, body.clientCaseId, resultToken);
+      if (!canonicalPropertyId) throw new ClientCaseInformationError('INVALID_REQUEST', 'Property is no longer available for attachment.');
+      return NextResponse.json(await workflow.attachExistingProperty(subject, body.clientCaseId, { canonicalPropertyId, roles: input.roles }), { headers: HEADERS });
+    }
     if (body.action === 'ATTACH_EXISTING_PROPERTY') return NextResponse.json(await workflow.attachExistingProperty(subject, body.clientCaseId, body.input), { headers: HEADERS });
     if (body.action === 'ADD_PROPERTY_RELATIONSHIP_ROLE') {
       if (typeof body.clientCasePropertyId !== 'string') throw new ClientCaseInformationError('INVALID_REQUEST', 'clientCasePropertyId is required.');

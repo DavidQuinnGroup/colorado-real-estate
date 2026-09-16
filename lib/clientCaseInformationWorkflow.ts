@@ -178,9 +178,9 @@ export function createClientCaseInformationWorkflowService(prisma: InformationDa
       },
       propertyRelationships: {
         relationshipRoles: ['CURRENT_HOME', 'TARGET_PRIMARY', 'INVESTMENT_PROPERTY', 'SALE_RELEVANT', 'OTHER'],
-        currentLinkingMechanism: 'EXPLICIT_CANONICAL_PROPERTY_ID',
-        propertyDiscoveryUx: 'FOUNDATION_ONLY',
-        addressAutocomplete: 'DEFERRED',
+        currentLinkingMechanism: 'AGENT_PROPERTY_SEARCH_SELECT',
+        propertyDiscoveryUx: 'STAGE_1_EXISTING_DATA_SEARCH_SELECT',
+        addressAutocomplete: 'REPOSITORY_DATA_SEARCH_AS_YOU_TYPE',
         offMarketDiscovery: 'DEFERRED',
         provisionalPropertyCreate: 'NOT_IMPLEMENTED',
       },
