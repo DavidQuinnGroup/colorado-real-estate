@@ -1,6 +1,13 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
+  // The build script runs lint before Next compilation and the full generated-route-aware typecheck after it.
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
   outputFileTracingIncludes: {
     '/api/admin/enterprise/geographic-persistence-pilot': ['./prisma/schema.prisma'],
     '/api/agent/output/pdf': [

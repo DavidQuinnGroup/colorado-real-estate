@@ -4,11 +4,12 @@
   "type": "module",
   "scripts": {
     "dev": "next dev --turbo",
-    "build": "prisma generate && next build",
+    "build": "prisma generate && npm run lint && next build && npm run typecheck",
     "postinstall": "prisma generate",
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit --pretty false",
+    "check:production-build-validation": "jiti scripts/checkProductionBuildValidation.ts",
     "check:seller-financial-estimated-scenario": "jiti scripts/checkSellerFinancialEstimatedScenario.ts",
     "check:investment-breakeven-analysis": "jiti scripts/checkInvestmentBreakevenAnalysis.ts",
     "check:multi-dimensional-strategy-suite": "jiti scripts/checkMultiDimensionalStrategySuite.ts",
