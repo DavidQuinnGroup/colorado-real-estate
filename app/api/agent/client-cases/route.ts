@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { authorizeAdminRequest, isSameOriginAdminRequest } from '@/lib/admin/adminAuth';
+import { createAgentPropertyDiscoveryService } from '@/lib/agentPropertyDiscovery';
 import { ClientCaseError, createClientCaseContextService } from '@/lib/clientCaseContextFoundation';
 import { prisma } from '@/lib/prisma';
 
@@ -44,7 +45,13 @@ export async function POST(request: NextRequest) {
     if (body.action === 'ARCHIVE') return NextResponse.json({ clientCase: await service.archive(subject, body.clientCaseId) }, { headers: HEADERS });
     if (body.action === 'REACTIVATE') return NextResponse.json({ clientCase: await service.reactivate(subject, body.clientCaseId) }, { headers: HEADERS });
     if (body.action === 'ADD_PARTY') return NextResponse.json({ clientCase: await service.addParty(subject, body.clientCaseId, body.input) }, { headers: HEADERS });
-    if (body.action === 'ATTACH_PROPERTY') return NextResponse.json({ clientCase: await service.attachProperty(subject, body.clientCaseId, body.input) }, { headers: HEADERS });
+    if (body.action === 'ATTACH_DISCOVERED_PROPERTY') {
+      const input = body.input && typeof body.input === 'object' && !Array.isArray(body.input) ? body.input as Record<string, unknown> : {};
+      const resultToken = typeof input.discoveryResultToken === 'string' ? input.discoveryResultToken : '';
+      const canonicalPropertyId = await createAgentPropertyDiscoveryService(prisma).canonicalPropertyIdForResultToken(subject, body.clientCaseId, resultToken);
+      if (!canonicalPropertyId) throw new ClientCaseError('INVALID_REQUEST', 'Property is no longer available for attachment.');
+      return NextResponse.json({ clientCase: await service.attachDiscoveredProperty(subject, body.clientCaseId, { canonicalPropertyId, roles: input.roles }) }, { headers: HEADERS });
+    }
     if (body.action === 'UPDATE_PROPERTY_ROLE') {
       if (typeof body.clientCasePropertyId !== 'string') throw new ClientCaseError('INVALID_REQUEST', 'clientCasePropertyId is required.');
       return NextResponse.json({ clientCase: await service.updatePropertyRole(subject, body.clientCaseId, body.clientCasePropertyId, body.input) }, { headers: HEADERS });

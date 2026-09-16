@@ -43,6 +43,7 @@
     "check:client-information-wave-b-property-relationships": "jiti scripts/checkClientInformationWaveBPropertyRelationships.ts",
     "check:client-information-wave-b-visual-structure": "jiti scripts/checkClientInformationWaveBVisualStructure.ts",
     "check:agent-property-discovery-search-select": "jiti scripts/checkAgentPropertyDiscoverySearchSelect.ts",
+    "check:agent-property-discovery-raw-id-agent-ux": "jiti scripts/checkAgentPropertyDiscoveryRawIdAgentUx.ts",
     "check:agent-property-discovery-visual-structure": "jiti scripts/checkAgentPropertyDiscoveryVisualStructure.ts",
     "check:agent-workspace-information-architecture": "jiti scripts/checkAgentWorkspaceInformationArchitecture.ts",
     "check:agent-workspace-shell-adoption": "jiti scripts/checkAgentWorkspaceShellAdoption.ts",

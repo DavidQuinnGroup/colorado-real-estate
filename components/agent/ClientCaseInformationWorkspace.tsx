@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowLeft, CheckCircle2, ClipboardCheck, LinkIcon, Plus, Save, Search, UserPlus, X } from 'lucide-react';
-import { FormEvent, KeyboardEvent, useEffect, useRef, useState } from 'react';
+import { ArrowLeft, CheckCircle2, ClipboardCheck, LinkIcon, Plus, Save, UserPlus, X } from 'lucide-react';
+import { FormEvent, useEffect, useState } from 'react';
 
 import {
   AtlasButton,
@@ -15,6 +15,7 @@ import {
   AtlasSurface,
 } from '@/components/design-system/AtlasDesignSystem';
 import type { ClientCaseInformationIntent } from '@/lib/clientCaseInformationIntent';
+import { AgentPropertyDiscoverySelect, type AgentPropertyDiscoverySelection } from './AgentPropertyDiscoverySelect';
 import styles from './ClientCaseInformationWorkspace.module.css';
 
 type ContextRecord = { id: string; semanticKey: string; value: unknown; sourcePosture: string; observedAt: string | null; effectiveAt: string | null; reviewAfter: string | null; createdAt: string };
@@ -58,26 +59,6 @@ type InformationResponse = {
   readinessPreview: Record<string, { status: string; missingPreliminary: string[]; missingComprehensive: string[]; helpfulMissing: string[] } | null>;
   error?: string;
 };
-type PropertyDiscoveryResult = {
-  resultToken: string;
-  displayAddress: string;
-  structuredAddress: { address: string | null; unit: string | null; city: string | null; state: string | null; postalCode: string | null };
-  sourceKind: 'CANONICAL_DATABASE' | 'ACTIVE_LISTING';
-  resolutionState: 'EXISTING_CANONICAL' | 'EXISTING_LISTING_WITH_CANONICAL_ASSOCIATION' | 'LISTING_FOUND_BUT_NOT_ATTACHABLE' | 'AMBIGUOUS';
-  canonicalPropertyId: string | null;
-  listingIdentity: { propertyId: string; mlsId: string; status: string } | null;
-  attachable: boolean;
-  alreadyLinked: boolean;
-  context: string;
-};
-type PropertyDiscoveryResponse = {
-  query: string;
-  minimumQueryLength: number;
-  state: 'QUERY_TOO_SHORT' | 'NO_RESULT' | 'RESULTS';
-  results: PropertyDiscoveryResult[];
-  error?: string;
-};
-
 const occupancyOptions = ['OWNER_OCCUPIED', 'TENANT_OCCUPIED', 'VACANT', 'UNKNOWN'];
 const relationshipRoleOptions = ['CURRENT_HOME', 'TARGET_PRIMARY', 'INVESTMENT_PROPERTY', 'SALE_RELEVANT', 'OTHER'];
 
@@ -121,13 +102,6 @@ async function duplicateCandidates(clientCaseId: string, methods: Array<{ kind: 
   return payload.candidates ?? [];
 }
 
-async function discoverProperties(clientCaseId: string, query: string, signal: AbortSignal) {
-  const response = await fetch(`/api/agent/property-discovery?clientCaseId=${encodeURIComponent(clientCaseId)}&q=${encodeURIComponent(query)}`, { cache: 'no-store', signal });
-  const payload = await response.json() as PropertyDiscoveryResponse;
-  if (!response.ok) throw new Error(errorMessage(payload));
-  return payload;
-}
-
 export function ClientCaseInformationWorkspace({ clientCaseId, intent }: { clientCaseId: string; intent: ClientCaseInformationIntent }) {
   const [workspace, setWorkspace] = useState<InformationResponse | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -158,14 +132,6 @@ export function ClientCaseInformationWorkspace({ clientCaseId, intent }: { clien
   const [editContactPhone, setEditContactPhone] = useState('');
   const [editContactEntityType, setEditContactEntityType] = useState<'PERSON' | 'ORGANIZATION'>('PERSON');
   const [duplicateState, setDuplicateState] = useState<ContactRecord[]>([]);
-  const [propertySearch, setPropertySearch] = useState('');
-  const [propertySearchState, setPropertySearchState] = useState<'idle' | 'loading' | 'ready' | 'no-result' | 'error'>('idle');
-  const [propertySearchError, setPropertySearchError] = useState('');
-  const [propertyResults, setPropertyResults] = useState<PropertyDiscoveryResult[]>([]);
-  const [selectedProperty, setSelectedProperty] = useState<PropertyDiscoveryResult | null>(null);
-  const [activePropertyIndex, setActivePropertyIndex] = useState(-1);
-  const propertySearchSequence = useRef(0);
-  const [newPropertyRoles, setNewPropertyRoles] = useState<string[]>(['CURRENT_HOME']);
   const [roleDraft, setRoleDraft] = useState<Record<string, string>>({});
 
   useEffect(() => {
@@ -352,88 +318,18 @@ export function ClientCaseInformationWorkspace({ clientCaseId, intent }: { clien
     }
   }
 
-  function toggleNewPropertyRole(role: string) {
-    setNewPropertyRoles((current) => current.includes(role) ? current.filter((entry) => entry !== role) : [...current, role]);
-  }
-
-  function clearPropertySelection() {
-    setSelectedProperty(null);
-    setPropertySearch('');
-    setPropertyResults([]);
-    setPropertySearchState('idle');
-    setPropertySearchError('');
-    setNewPropertyRoles(['CURRENT_HOME']);
-    setActivePropertyIndex(-1);
-  }
-
-  function selectPropertyResult(result: PropertyDiscoveryResult) {
-    if (!result.attachable) return;
-    setSelectedProperty(result);
-    setPropertySearch(result.displayAddress);
-    setPropertyResults([]);
-    setPropertySearchState('ready');
-    setPropertySearchError('');
-    setActivePropertyIndex(-1);
-  }
-
-  function handlePropertySearchKeys(event: KeyboardEvent<HTMLInputElement>) {
-    if (!propertyResults.length) return;
-    if (event.key === 'ArrowDown') {
-      event.preventDefault();
-      setActivePropertyIndex((current) => Math.min(propertyResults.length - 1, current + 1));
-    }
-    if (event.key === 'ArrowUp') {
-      event.preventDefault();
-      setActivePropertyIndex((current) => Math.max(0, current < 0 ? propertyResults.length - 1 : current - 1));
-    }
-    if (event.key === 'Enter' && activePropertyIndex >= 0) {
-      event.preventDefault();
-      selectPropertyResult(propertyResults[activePropertyIndex]);
-    }
-    if (event.key === 'Escape') {
-      setPropertyResults([]);
-      setActivePropertyIndex(-1);
-    }
-  }
-
-  useEffect(() => {
-    if (selectedProperty) return;
-    const query = propertySearch.trim();
-    propertySearchSequence.current += 1;
-    const sequence = propertySearchSequence.current;
-    if (query.length < 2) return;
-    const controller = new AbortController();
-    const timer = window.setTimeout(() => {
-      void discoverProperties(clientCaseId, query, controller.signal).then((payload) => {
-        if (sequence !== propertySearchSequence.current) return;
-        setPropertyResults(payload.results);
-        setPropertySearchState(payload.state === 'NO_RESULT' ? 'no-result' : 'ready');
-      }).catch((error: unknown) => {
-        if (controller.signal.aborted || sequence !== propertySearchSequence.current) return;
-        setPropertyResults([]);
-        setPropertySearchState('error');
-        setPropertySearchError(error instanceof Error ? error.message : 'Unable to search properties right now.');
-      });
-    }, 250);
-    return () => {
-      controller.abort();
-      window.clearTimeout(timer);
-    };
-  }, [clientCaseId, propertySearch, selectedProperty]);
-
-  async function attachProperty(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (!workspace || !selectedProperty?.attachable || !newPropertyRoles.length) return;
+  async function attachDiscoveredProperty(selection: AgentPropertyDiscoverySelection) {
+    if (!workspace) return;
     setSaving(true);
     setStatus(null);
     try {
-      const payload = await api(clientCaseId, { action: 'ATTACH_DISCOVERED_PROPERTY', clientCaseId, input: { discoveryResultToken: selectedProperty.resultToken, roles: newPropertyRoles } });
+      const payload = await api(clientCaseId, { action: 'ATTACH_DISCOVERED_PROPERTY', clientCaseId, input: { discoveryResultToken: selection.discoveryResultToken, roles: selection.roles } });
       setWorkspace(payload);
-      clearPropertySelection();
-      setNewPropertyRoles(['CURRENT_HOME']);
-      setStatus(selectedProperty.alreadyLinked ? 'Property was already linked. Relationship roles are now current where needed.' : 'Property relationship saved. Existing property identity was linked without external lookup.');
+      setStatus(selection.alreadyLinked ? 'Property was already linked. Relationship roles are now current where needed.' : 'Property relationship saved. Existing property identity was linked without external lookup.');
     } catch (error) {
-      setStatus(error instanceof Error ? error.message : 'Property relationship could not be saved.');
+      const message = error instanceof Error ? error.message : 'Property relationship could not be saved.';
+      setStatus(message);
+      throw new Error(message);
     } finally {
       setSaving(false);
     }
@@ -559,69 +455,7 @@ export function ClientCaseInformationWorkspace({ clientCaseId, intent }: { clien
         <AtlasSurface material="floating" data-testid="client-case-information-properties" id="properties">
           <div className={styles.panelHeading}><div><h2 className="atlas-ds-major-section">Properties</h2><p className={styles.metadata}>Search existing PROJECT ATLAS property data and manage durable Case relationship roles. Off-market discovery, provider lookup, and provisional Property creation are deferred.</p></div><AtlasInformationClassLabel informationClass="governed-fact" label="Wave B" /></div>
           <AtlasNotice title="Property discovery boundary" tone="information">Stage 1 searches existing property records only. Some found listings may not yet be available to add to a Client Case.</AtlasNotice>
-          <form className={styles.propertyLinkForm} onSubmit={attachProperty}>
-            <div className={styles.propertySearchColumn}>
-              <AtlasField htmlFor="property-search" label="Search property">
-                <div className={styles.comboboxWrap}>
-                  <Search aria-hidden="true" className={styles.comboboxIcon} size={16} />
-                  <input
-                    aria-activedescendant={activePropertyIndex >= 0 ? `property-result-${activePropertyIndex}` : undefined}
-                    aria-autocomplete="list"
-                    aria-controls="property-results"
-                    aria-expanded={propertyResults.length > 0}
-                    aria-label="Search existing properties"
-                    className={`${styles.input} ${styles.searchInput}`}
-                    id="property-search"
-                    maxLength={160}
-                    onChange={(event) => {
-                      const next = event.target.value;
-                      setSelectedProperty(null);
-                      setPropertySearch(next);
-                      setPropertySearchError('');
-                      setActivePropertyIndex(-1);
-                      if (next.trim().length < 2) {
-                        setPropertyResults([]);
-                        setPropertySearchState('idle');
-                      } else {
-                        setPropertySearchState('loading');
-                      }
-                    }}
-                    onKeyDown={handlePropertySearchKeys}
-                    placeholder="Start typing an address"
-                    role="combobox"
-                    value={propertySearch}
-                  />
-                </div>
-              </AtlasField>
-              {propertySearchState === 'loading' ? <p className={styles.searchStatus}>Searching existing property data.</p> : null}
-              {propertySearchState === 'error' ? <p className={styles.searchStatus}>{propertySearchError || 'Unable to search properties right now.'}</p> : null}
-              {propertySearchState === 'no-result' ? <p className={styles.searchStatus}>No matching property found in the currently available property data.</p> : null}
-              {propertyResults.length ? <div className={styles.suggestionPanel} id="property-results" role="listbox" aria-label="Property search suggestions">
-                {propertyResults.map((result, index) => <button
-                  aria-disabled={!result.attachable}
-                  aria-selected={index === activePropertyIndex}
-                  className={`${styles.suggestionOption} ${index === activePropertyIndex ? styles.suggestionOptionActive : ''}`}
-                  disabled={!result.attachable}
-                  id={`property-result-${index}`}
-                  key={`${result.resultToken || result.listingIdentity?.propertyId}-${index}`}
-                  onClick={() => selectPropertyResult(result)}
-                  role="option"
-                  type="button"
-                >
-                  <span className={styles.suggestionTitle}>{result.displayAddress}</span>
-                  <span className={styles.suggestionMeta}>{result.context}{result.alreadyLinked ? ' · Already linked' : ''}</span>
-                </button>)}
-              </div> : null}
-              {selectedProperty ? <div className={styles.selectedPropertySummary} data-selected-property-summary="true">
-                <p className={styles.summaryLabel}>Selected property</p>
-                <p className={styles.summaryValue}>{selectedProperty.displayAddress}</p>
-                <p className={styles.optionDescription}>{selectedProperty.alreadyLinked ? 'Already linked to this Client Case. You can add another durable role.' : selectedProperty.context}</p>
-                <AtlasButton disabled={saving} tone="ghost" type="button" onClick={clearPropertySelection}><X size={15} />Clear selection</AtlasButton>
-              </div> : null}
-            </div>
-            <div className={styles.rolePicker} aria-label="Initial relationship roles">{relationshipRoleOptions.map((option) => <label className={styles.roleCheck} key={option}><input checked={newPropertyRoles.includes(option)} type="checkbox" onChange={() => toggleNewPropertyRole(option)} />{roleLabel(option)}</label>)}</div>
-            <div className={styles.actions}><AtlasButton disabled={saving || !selectedProperty?.attachable || !newPropertyRoles.length} type="submit"><Plus size={16} />Add to Client Case</AtlasButton></div>
-          </form>
+          <AgentPropertyDiscoverySelect busy={saving} clientCaseId={clientCaseId} onAttach={attachDiscoveredProperty} />
           {workspace.current.properties.length ? <div className={styles.propertyCardGrid}>{workspace.current.properties.map((property) => {
             const activeRoles = property.relationshipRoles?.filter((entry) => entry.status === 'ACTIVE') ?? [];
             const endedRoles = property.relationshipRoles?.filter((entry) => entry.status === 'ENDED') ?? [];

@@ -137,6 +137,20 @@ export function createClientCaseContextService(prisma: PrismaClient) {
       return detail(ownerAgentSubject, id);
     },
 
+    async attachDiscoveredProperty(ownerAgentSubject: string, id: string, raw: unknown) {
+      await ownedCase(prisma, ownerAgentSubject, id);
+      const input = record(raw);
+      const canonicalPropertyId = text(input.canonicalPropertyId, 'canonicalPropertyId', 160)!;
+      try {
+        await propertyRelationships.attachExistingProperty(ownerAgentSubject, id, { canonicalPropertyId, roles: input.roles });
+      } catch (error) {
+        if ((error as { code?: string }).code === 'CONFLICT') throw new ClientCaseError('CONFLICT', 'That property relationship is already current for this Client Case.');
+        if ((error as { code?: string }).code === 'NOT_FOUND') throw new ClientCaseError('NOT_FOUND', 'The canonical property is unavailable.');
+        throw error;
+      }
+      return detail(ownerAgentSubject, id);
+    },
+
     async updatePropertyRole(ownerAgentSubject: string, id: string, propertyId: string, raw: unknown) {
       await ownedCase(prisma, ownerAgentSubject, id);
       const input = record(raw);

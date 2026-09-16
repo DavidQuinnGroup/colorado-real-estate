@@ -70,7 +70,6 @@ export async function POST(request: NextRequest) {
       if (!canonicalPropertyId) throw new ClientCaseInformationError('INVALID_REQUEST', 'Property is no longer available for attachment.');
       return NextResponse.json(await workflow.attachExistingProperty(subject, body.clientCaseId, { canonicalPropertyId, roles: input.roles }), { headers: HEADERS });
     }
-    if (body.action === 'ATTACH_EXISTING_PROPERTY') return NextResponse.json(await workflow.attachExistingProperty(subject, body.clientCaseId, body.input), { headers: HEADERS });
     if (body.action === 'ADD_PROPERTY_RELATIONSHIP_ROLE') {
       if (typeof body.clientCasePropertyId !== 'string') throw new ClientCaseInformationError('INVALID_REQUEST', 'clientCasePropertyId is required.');
       return NextResponse.json(await workflow.addRelationshipRole(subject, body.clientCaseId, body.clientCasePropertyId, body.input), { headers: HEADERS });
