@@ -1,4 +1,5 @@
 import { CRITERION_SEMANTICS, FACT_SEMANTICS, OBJECTIVE_TYPES } from './clientCaseContextSemanticRegistry';
+import { RELATIONSHIP_ROLES } from './clientCasePropertyRelationshipRoles';
 import { SCENARIO_ASSUMPTION_SEMANTICS, SCENARIO_CRITERION_SEMANTICS } from './clientCaseScenarioSemanticRegistry';
 
 export const CLIENT_CASE_CAPABILITY_READINESS_FOUNDATION_VERSION = 'CANONICAL_CLIENT_CASE_CAPABILITY_READINESS_FOUNDATION_V1' as const;
@@ -21,7 +22,7 @@ export type VerificationPolicy = 'ANY_ACCEPTABLE_ORIGIN' | 'EVIDENCE_OR_PROFESSI
 export type ProfessionalInputPolicy = 'NOT_REQUIRED' | 'PROFESSIONAL_INPUT_REQUIRED';
 export type FreshnessPolicy = Readonly<{ kind: 'NONE' }> | Readonly<{ kind: 'MAX_AGE_DAYS'; days: number }>;
 export type ExecutionParameterKey = 'annualInterestRateBasisPoints' | 'marketScope';
-export type ReadinessInputOrigin = 'CANONICAL_FACT' | 'CANONICAL_CRITERION' | 'SCENARIO_ASSUMPTION' | 'SCENARIO_CRITERION' | 'EXECUTION_PARAMETER';
+export type ReadinessInputOrigin = 'CANONICAL_FACT' | 'CANONICAL_CRITERION' | 'CANONICAL_CASE_PROPERTY' | 'SCENARIO_ASSUMPTION' | 'SCENARIO_CRITERION' | 'EXECUTION_PARAMETER';
 
 export type CapabilityRequirement = Readonly<{
   id: string;
@@ -110,6 +111,7 @@ export const CAPABILITY_INPUT_CONTRACTS = Object.freeze([
       requirement('BUYER_DECISION_OBJECTIVE', 'Buyer objective', 'CLIENT', 'PRELIMINARY_REQUIRED', 'OBJECTIVE', 'BUY_PRIMARY_HOME', [], { path: 'lib/clientCaseContextSemanticRegistry.ts', rationale: 'Certified Client Case objective type.' }),
       requirement('BUYER_DECISION_TARGET_CITIES', 'Target cities', 'LOCATION', 'PRELIMINARY_REQUIRED', 'EFFECTIVE_INPUT', 'TARGET_CITIES', ['CANONICAL_CRITERION', 'SCENARIO_CRITERION'], { path: 'lib/clientCaseContextSemanticRegistry.ts', rationale: 'Certified Buyer location criterion with registered Scenario override semantics.' }),
       requirement('BUYER_DECISION_PRICE_RANGE', 'Purchase price range', 'FINANCIAL', 'COMPREHENSIVE_REQUIRED', 'EFFECTIVE_INPUT', 'PURCHASE_PRICE_RANGE_CENTS', ['CANONICAL_CRITERION'], { path: 'lib/clientCaseContextSemanticRegistry.ts', rationale: 'Certified Buyer Criterion semantic.' }),
+      requirement('BUYER_DECISION_TARGET_PROPERTY', 'Specific target property', 'CLIENT', 'HELPFUL', 'CASE_PROPERTY', 'TARGET_PRIMARY', [], { path: 'lib/clientCasePropertyRelationshipRoles.ts', rationale: 'Wave B active durable target-property role.' }),
       requirement('BUYER_DECISION_MIN_BEDROOMS', 'Minimum bedrooms', 'CLIENT', 'HELPFUL', 'EFFECTIVE_INPUT', 'MIN_BEDROOMS', ['CANONICAL_CRITERION', 'SCENARIO_CRITERION'], { path: 'lib/clientCaseContextSemanticRegistry.ts', rationale: 'Certified Buyer Criterion with registered Scenario override semantics.' }),
     ]),
   }),
@@ -131,7 +133,7 @@ const REGISTERED_EFFECTIVE_SEMANTICS = new Set<string>([
 ]);
 const EXECUTION_PARAMETERS = new Set<ExecutionParameterKey>(['annualInterestRateBasisPoints', 'marketScope']);
 const LEVELS = new Set<RequirementLevel>(['PRELIMINARY_REQUIRED', 'COMPREHENSIVE_REQUIRED', 'HELPFUL']);
-const ORIGINS = new Set<ReadinessInputOrigin>(['CANONICAL_FACT', 'CANONICAL_CRITERION', 'SCENARIO_ASSUMPTION', 'SCENARIO_CRITERION', 'EXECUTION_PARAMETER']);
+const ORIGINS = new Set<ReadinessInputOrigin>(['CANONICAL_FACT', 'CANONICAL_CRITERION', 'CANONICAL_CASE_PROPERTY', 'SCENARIO_ASSUMPTION', 'SCENARIO_CRITERION', 'EXECUTION_PARAMETER']);
 
 export class ClientCaseCapabilityContractError extends Error {
   constructor(message: string) {
@@ -170,7 +172,7 @@ export function assertCapabilityContractRegistryIntegrity(
       if (item.source === 'EFFECTIVE_INPUT' && !REGISTERED_EFFECTIVE_SEMANTICS.has(item.semanticKey)) throw new ClientCaseCapabilityContractError('Capability requirement semantic is not registered.');
       if (item.source === 'OBJECTIVE' && !OBJECTIVE_TYPES.includes(item.semanticKey as (typeof OBJECTIVE_TYPES)[number])) throw new ClientCaseCapabilityContractError('Capability objective requirement is invalid.');
       if (item.source === 'EXECUTION_PARAMETER' && !EXECUTION_PARAMETERS.has(item.semanticKey as ExecutionParameterKey)) throw new ClientCaseCapabilityContractError('Capability execution-parameter requirement is invalid.');
-      if (item.source === 'CASE_PROPERTY') throw new ClientCaseCapabilityContractError('Case Property requirements are not admitted until a registered semantic contract exists.');
+      if (item.source === 'CASE_PROPERTY' && !RELATIONSHIP_ROLES.includes(item.semanticKey as (typeof RELATIONSHIP_ROLES)[number])) throw new ClientCaseCapabilityContractError('Case Property requirement role is invalid.');
       if (item.source !== 'EFFECTIVE_INPUT' && item.acceptableOrigins.length !== 0 && !(item.source === 'EXECUTION_PARAMETER' && item.acceptableOrigins.length === 1 && item.acceptableOrigins[0] === 'EXECUTION_PARAMETER')) {
         throw new ClientCaseCapabilityContractError('Capability requirement origin policy is invalid.');
       }

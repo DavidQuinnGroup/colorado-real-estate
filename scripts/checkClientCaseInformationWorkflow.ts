@@ -40,7 +40,8 @@ assert.match(route, /authorizeAdminRequest/);
 assert.match(route, /isSameOriginAdminRequest/);
 assert.match(route, /SAVE_CANONICAL_INFORMATION/);
 assert.match(route, /createClientCaseInformationWorkflowService\(prisma\)\.load/);
-assert.match(route, /createClientCaseInformationWorkflowService\(prisma\)\.save/);
+assert.match(route, /createClientCaseInformationWorkflowService\(prisma\)/);
+assert.match(route, /workflow\.save/);
 assert.doesNotMatch(route, /semanticKey/);
 assert.match(route, /Cache-Control': 'private, no-store/);
 

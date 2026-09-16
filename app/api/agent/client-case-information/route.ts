@@ -10,6 +10,7 @@ import { ClientCaseError } from '@/lib/clientCaseContextFoundation';
 import { ClientCaseContextRecordsError } from '@/lib/clientCaseContextRecordsFoundation';
 import { ClientCaseCapabilityReadinessError } from '@/lib/clientCaseCapabilityReadinessEvaluator';
 import { ClientCaseEffectiveContextError } from '@/lib/clientCaseEffectiveContextResolver';
+import { ClientCasePropertyRelationshipError } from '@/lib/clientCasePropertyRelationshipRoles';
 import { ClientInformationWaveAError, createClientInformationWaveAService } from '@/lib/clientInformationWaveAFoundation';
 import { prisma } from '@/lib/prisma';
 
@@ -32,7 +33,7 @@ async function subjectFor(request: NextRequest, method: 'GET' | 'POST') {
 }
 
 function errorResponse(error: unknown) {
-  if (error instanceof ClientCaseInformationError || error instanceof ClientCaseContextRecordsError || error instanceof ClientCaseError || error instanceof ClientCaseEffectiveContextError || error instanceof ClientCaseCapabilityReadinessError || error instanceof ClientInformationWaveAError) {
+  if (error instanceof ClientCaseInformationError || error instanceof ClientCaseContextRecordsError || error instanceof ClientCaseError || error instanceof ClientCaseEffectiveContextError || error instanceof ClientCaseCapabilityReadinessError || error instanceof ClientInformationWaveAError || error instanceof ClientCasePropertyRelationshipError) {
     const code = 'code' in error ? error.code : 'PERSISTENCE_UNAVAILABLE';
     const status = code === 'NOT_FOUND' ? 404 : code === 'OWNERSHIP_DENIED' ? 403 : code === 'CONFLICT' ? 409 : code === 'PERSISTENCE_UNAVAILABLE' ? 503 : 400;
     return NextResponse.json({ error: error.message, code }, { status, headers: HEADERS });
@@ -58,8 +59,18 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json() as Record<string, unknown>;
     if (typeof body.clientCaseId !== 'string') throw new ClientCaseInformationError('INVALID_REQUEST', 'clientCaseId is required.');
+    const workflow = createClientCaseInformationWorkflowService(prisma);
     const waveA = createClientInformationWaveAService(prisma);
-    if (body.action === 'SAVE_CANONICAL_INFORMATION') return NextResponse.json(await createClientCaseInformationWorkflowService(prisma).save(subject, body.clientCaseId, body.input), { headers: HEADERS });
+    if (body.action === 'SAVE_CANONICAL_INFORMATION') return NextResponse.json(await workflow.save(subject, body.clientCaseId, body.input), { headers: HEADERS });
+    if (body.action === 'ATTACH_EXISTING_PROPERTY') return NextResponse.json(await workflow.attachExistingProperty(subject, body.clientCaseId, body.input), { headers: HEADERS });
+    if (body.action === 'ADD_PROPERTY_RELATIONSHIP_ROLE') {
+      if (typeof body.clientCasePropertyId !== 'string') throw new ClientCaseInformationError('INVALID_REQUEST', 'clientCasePropertyId is required.');
+      return NextResponse.json(await workflow.addRelationshipRole(subject, body.clientCaseId, body.clientCasePropertyId, body.input), { headers: HEADERS });
+    }
+    if (body.action === 'END_PROPERTY_RELATIONSHIP_ROLE') {
+      if (typeof body.relationshipRoleId !== 'string') throw new ClientCaseInformationError('INVALID_REQUEST', 'relationshipRoleId is required.');
+      return NextResponse.json(await workflow.endRelationshipRole(subject, body.clientCaseId, body.relationshipRoleId), { headers: HEADERS });
+    }
     if (body.action === 'CREATE_CONTACT_PARTICIPATION') return NextResponse.json({ result: await waveA.createContactAndParticipation(subject, body.clientCaseId, body.input), workspace: await createClientCaseInformationWorkflowService(prisma).load(subject, body.clientCaseId) }, { headers: HEADERS });
     if (body.action === 'LINK_CONTACT') return NextResponse.json({ result: await waveA.linkContact(subject, body.clientCaseId, body.input), workspace: await createClientCaseInformationWorkflowService(prisma).load(subject, body.clientCaseId) }, { headers: HEADERS });
     if (body.action === 'UPDATE_CONTACT') {

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { ArrowLeft, CheckCircle2, ClipboardCheck, LinkIcon, Plus, Save, UserPlus, X } from 'lucide-react';
-import { FormEvent, useEffect, useMemo, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 
 import {
   AtlasButton,
@@ -18,7 +18,19 @@ import type { ClientCaseInformationIntent } from '@/lib/clientCaseInformationInt
 import styles from './ClientCaseInformationWorkspace.module.css';
 
 type ContextRecord = { id: string; semanticKey: string; value: unknown; sourcePosture: string; observedAt: string | null; effectiveAt: string | null; reviewAfter: string | null; createdAt: string };
-type PropertyRelation = { id: string; canonicalPropertyId: string; role: string; canonicalProperty?: { sourceFormattedSitusAddress?: string | null; normalizedSitusAddress?: string | null; city?: string | null; state?: string | null; postalCode?: string | null } };
+type RelationshipRole = { id: string; role: string; status: 'ACTIVE' | 'ENDED'; startedAt: string; endedAt: string | null };
+type PropertyRelation = {
+  id: string;
+  canonicalPropertyId: string;
+  role: string;
+  displayLabel?: string;
+  activeRelationshipRoleLabels?: string[];
+  legacyRoleReadBehavior?: string;
+  canonicalProperty?: { sourceFormattedSitusAddress?: string | null; normalizedSitusAddress?: string | null; city?: string | null; state?: string | null; postalCode?: string | null };
+  relationshipRoles?: RelationshipRole[];
+  facts?: ContextRecord[];
+  scenarioPropertyDispositions?: Array<{ id: string; disposition: string; scenarioVersion: { id: string; versionNumber: number; scenario: { id: string; name: string; currentVersionId: string | null } } }>;
+};
 type ObjectiveRecord = { id: string; objectiveType: string; status: string; title: string; archivedAt: string | null };
 type ContactMethod = { id: string; kind: 'EMAIL' | 'PHONE'; displayValue: string; normalizedValue: string; isPrimary: boolean; lifecycleStatus: string };
 type ContactRecord = { id: string; displayName: string; givenName: string | null; familyName: string | null; entityType: 'PERSON' | 'ORGANIZATION'; lifecycleStatus: string; methods: ContactMethod[] };
@@ -35,11 +47,20 @@ type InformationResponse = {
     properties: PropertyRelation[];
   };
   people: { contacts: ContactRecord[]; participations: ParticipationRecord[] };
+  propertyRelationships?: {
+    relationshipRoles: string[];
+    currentLinkingMechanism: string;
+    propertyDiscoveryUx: string;
+    addressAutocomplete: string;
+    offMarketDiscovery: string;
+    provisionalPropertyCreate: string;
+  };
   readinessPreview: Record<string, { status: string; missingPreliminary: string[]; missingComprehensive: string[]; helpfulMissing: string[] } | null>;
   error?: string;
 };
 
 const occupancyOptions = ['OWNER_OCCUPIED', 'TENANT_OCCUPIED', 'VACANT', 'UNKNOWN'];
+const relationshipRoleOptions = ['CURRENT_HOME', 'TARGET_PRIMARY', 'INVESTMENT_PROPERTY', 'SALE_RELEVANT', 'OTHER'];
 
 function errorMessage(payload: unknown) {
   return typeof payload === 'object' && payload && 'error' in payload && typeof payload.error === 'string' ? payload.error : 'Client Case information is unavailable.';
@@ -52,7 +73,19 @@ function formatMoney(value: unknown, key: 'minimumCents' | 'maximumCents') {
 }
 
 function propertyLabel(property: PropertyRelation) {
-  return property.canonicalProperty?.sourceFormattedSitusAddress || property.canonicalProperty?.normalizedSitusAddress || property.canonicalPropertyId;
+  return property.displayLabel || property.canonicalProperty?.sourceFormattedSitusAddress || property.canonicalProperty?.normalizedSitusAddress || property.canonicalPropertyId;
+}
+
+function humanize(value: string) {
+  return value.replaceAll('_', ' ').toLowerCase().replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
+function roleLabel(value: string) {
+  if (value === 'CURRENT_HOME') return 'Current home';
+  if (value === 'TARGET_PRIMARY') return 'Primary-home target';
+  if (value === 'INVESTMENT_PROPERTY') return 'Investment property';
+  if (value === 'SALE_RELEVANT') return 'Planning to sell';
+  return 'Other property';
 }
 
 async function api(clientCaseId: string, body?: Record<string, unknown>) {
@@ -99,6 +132,9 @@ export function ClientCaseInformationWorkspace({ clientCaseId, intent }: { clien
   const [editContactPhone, setEditContactPhone] = useState('');
   const [editContactEntityType, setEditContactEntityType] = useState<'PERSON' | 'ORGANIZATION'>('PERSON');
   const [duplicateState, setDuplicateState] = useState<ContactRecord[]>([]);
+  const [canonicalPropertyId, setCanonicalPropertyId] = useState('');
+  const [newPropertyRoles, setNewPropertyRoles] = useState<string[]>(['CURRENT_HOME']);
+  const [roleDraft, setRoleDraft] = useState<Record<string, string>>({});
 
   useEffect(() => {
     let cancelled = false;
@@ -125,12 +161,14 @@ export function ClientCaseInformationWorkspace({ clientCaseId, intent }: { clien
   const endedParticipations = workspace?.people.participations.filter((entry) => entry.participationStatus === 'ENDED') ?? [];
   const unlinkedContacts = workspace?.people.contacts.filter((contact) => !activeParticipations.some((party) => party.contact?.id === contact.id)) ?? [];
   const editableContacts = workspace?.people.contacts.filter((contact) => contact.lifecycleStatus === 'ACTIVE') ?? [];
-  const summary = useMemo(() => ([
+  const propertySummary = workspace?.current.properties.length ? `${workspace.current.properties.length} linked · ${[...new Set(workspace.current.properties.flatMap((property) => property.activeRelationshipRoleLabels ?? property.relationshipRoles?.filter((entry) => entry.status === 'ACTIVE').map((entry) => roleLabel(entry.role)) ?? [roleLabel(property.role)]))].slice(0, 3).join(', ')}` : 'None linked';
+  const summary = [
     ['Objectives', [buyerObjective ? 'Buyer decision' : null, financialObjective ? 'Financial strategy' : null].filter(Boolean).join(', ') || 'Not provided'],
+    ['Properties', propertySummary],
     ['Target cities', cities.length ? cities.join(', ') : 'Not provided'],
     ['Stated purchase range', minimumDollars && maximumDollars ? `$${Number(minimumDollars).toLocaleString()} - $${Number(maximumDollars).toLocaleString()}` : 'Not provided'],
     ['Minimum bedrooms', minBedrooms || 'Not provided'],
-  ] as const), [buyerObjective, financialObjective, cities, minimumDollars, maximumDollars, minBedrooms]);
+  ] as const;
 
   function addCity(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -282,6 +320,58 @@ export function ClientCaseInformationWorkspace({ clientCaseId, intent }: { clien
     }
   }
 
+  function toggleNewPropertyRole(role: string) {
+    setNewPropertyRoles((current) => current.includes(role) ? current.filter((entry) => entry !== role) : [...current, role]);
+  }
+
+  async function attachProperty(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!workspace || !canonicalPropertyId.trim() || !newPropertyRoles.length) return;
+    setSaving(true);
+    setStatus(null);
+    try {
+      const payload = await api(clientCaseId, { action: 'ATTACH_EXISTING_PROPERTY', clientCaseId, input: { canonicalPropertyId, roles: newPropertyRoles } });
+      setWorkspace(payload);
+      setCanonicalPropertyId('');
+      setNewPropertyRoles(['CURRENT_HOME']);
+      setStatus('Property relationship saved. Existing canonical Property identity was linked without external lookup.');
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : 'Property relationship could not be saved.');
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function addRelationshipRole(clientCasePropertyId: string) {
+    const nextRole = roleDraft[clientCasePropertyId];
+    if (!workspace || !nextRole) return;
+    setSaving(true);
+    setStatus(null);
+    try {
+      setWorkspace(await api(clientCaseId, { action: 'ADD_PROPERTY_RELATIONSHIP_ROLE', clientCaseId, clientCasePropertyId, input: { role: nextRole } }));
+      setRoleDraft((current) => ({ ...current, [clientCasePropertyId]: '' }));
+      setStatus('Relationship role added. Scenario dispositions and Transactions were not changed.');
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : 'Relationship role could not be added.');
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function endRelationshipRole(relationshipRoleId: string) {
+    if (!workspace) return;
+    setSaving(true);
+    setStatus(null);
+    try {
+      setWorkspace(await api(clientCaseId, { action: 'END_PROPERTY_RELATIONSHIP_ROLE', clientCaseId, relationshipRoleId }));
+      setStatus('Relationship role ended and preserved in history. The Property anchor remains linked.');
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : 'Relationship role could not be ended.');
+    } finally {
+      setSaving(false);
+    }
+  }
+
   if (loadError) return <main className={styles.page}><AtlasErrorState title="Client Case information is unavailable"><p>{loadError}</p><Link className={styles.link} href={`/agent/clients/${encodeURIComponent(clientCaseId)}`}><ArrowLeft size={16} />Client Case</Link></AtlasErrorState></main>;
   if (!workspace) return <main className={styles.page}><AtlasLoadingState>Loading canonical Client Case information.</AtlasLoadingState></main>;
 
@@ -301,7 +391,7 @@ export function ClientCaseInformationWorkspace({ clientCaseId, intent }: { clien
         <AtlasNotice className={styles.canonicalBoundaryNotice} title="Canonical boundary" tone="information">Use this page for factual or generally applicable Client Case information. Target acquisition price, down payment, cash allocation, holding period, hypothetical city or bedroom overrides, and sell/retain/rent alternatives remain Scenario Version inputs.</AtlasNotice>
 
         <nav className={styles.sectionNav} aria-label="Client Information sections">
-          {['Case overview', 'People', 'Goals', 'Current information', 'Readiness'].map((item) => <a key={item} href={`#${item.toLowerCase().replaceAll(' ', '-')}`}>{item}</a>)}
+          {['Case overview', 'People', 'Goals', 'Properties', 'Current information', 'Readiness'].map((item) => <a key={item} href={`#${item.toLowerCase().replaceAll(' ', '-')}`}>{item}</a>)}
         </nav>
 
         <AtlasSurface material="floating" data-testid="client-case-information-case-overview" id="case-overview">
@@ -309,7 +399,7 @@ export function ClientCaseInformationWorkspace({ clientCaseId, intent }: { clien
           <ul className={styles.summaryList}>
             <li className={styles.summaryItem}><p className={styles.summaryLabel}>Client Case</p><p className={styles.summaryValue}>{workspace.clientCase.displayName}</p></li>
             <li className={styles.summaryItem}><p className={styles.summaryLabel}>Active participants</p><p className={styles.summaryValue}>{activeParticipations.length || 'None yet'}</p></li>
-            <li className={styles.summaryItem}><p className={styles.summaryLabel}>Linked properties</p><p className={styles.summaryValue}>{workspace.current.properties.length || 'None yet'}</p></li>
+            <li className={styles.summaryItem}><p className={styles.summaryLabel}>Linked properties</p><p className={styles.summaryValue}>{workspace.current.properties.length ? `${workspace.current.properties.length} linked` : 'None yet'}</p>{workspace.current.properties.length ? <p className={styles.optionDescription}>{workspace.current.properties.flatMap((property) => property.activeRelationshipRoleLabels ?? []).slice(0, 4).join(' · ') || 'Relationship roles pending migration fallback'}</p> : null}</li>
           </ul>
         </AtlasSurface>
 
@@ -368,6 +458,39 @@ export function ClientCaseInformationWorkspace({ clientCaseId, intent }: { clien
             </div>
           </AtlasSurface>
         </div>
+
+        <AtlasSurface material="floating" data-testid="client-case-information-properties" id="properties">
+          <div className={styles.panelHeading}><div><h2 className="atlas-ds-major-section">Properties</h2><p className={styles.metadata}>Link existing canonical physical Properties and manage durable Case relationship roles. Address autocomplete, off-market discovery, provider lookup, and provisional Property creation are deferred.</p></div><AtlasInformationClassLabel informationClass="governed-fact" label="Wave B" /></div>
+          <AtlasNotice title="Property discovery boundary" tone="information">Current linking mechanism: explicit canonical Property ID. Agent-friendly property search is foundation-only in this wave.</AtlasNotice>
+          <form className={styles.propertyLinkForm} onSubmit={attachProperty}>
+            <AtlasField htmlFor="canonical-property-id" label="Canonical physical Property ID"><input className={styles.input} id="canonical-property-id" maxLength={160} value={canonicalPropertyId} onChange={(event) => setCanonicalPropertyId(event.target.value)} placeholder="CanonicalPhysicalProperty ID" /></AtlasField>
+            <div className={styles.rolePicker} aria-label="Initial relationship roles">{relationshipRoleOptions.map((option) => <label className={styles.roleCheck} key={option}><input checked={newPropertyRoles.includes(option)} type="checkbox" onChange={() => toggleNewPropertyRole(option)} />{roleLabel(option)}</label>)}</div>
+            <div className={styles.actions}><AtlasButton disabled={saving || !canonicalPropertyId.trim() || !newPropertyRoles.length} type="submit"><Plus size={16} />Add / Link Property</AtlasButton></div>
+          </form>
+          {workspace.current.properties.length ? <div className={styles.propertyCardGrid}>{workspace.current.properties.map((property) => {
+            const activeRoles = property.relationshipRoles?.filter((entry) => entry.status === 'ACTIVE') ?? [];
+            const endedRoles = property.relationshipRoles?.filter((entry) => entry.status === 'ENDED') ?? [];
+            const currentOccupancy = workspace.current.propertyOccupancy.find((entry) => entry.clientCasePropertyId === property.id)?.current;
+            return (
+              <article className={styles.propertyCard} key={property.id} data-client-case-property-card="true">
+                <div className={styles.panelHeading}><div><p className={styles.propertyLabel}>Property identity</p><h3 className={styles.propertyTitle}>{propertyLabel(property)}</h3></div><Link className={styles.link} href={`/agent/clients/${encodeURIComponent(clientCaseId)}/readiness`}>View Readiness</Link></div>
+                <div className={styles.roleChipRow}>{activeRoles.length ? activeRoles.map((entry) => <span className={styles.roleChip} key={entry.id}>{roleLabel(entry.role)}</span>) : <span className={styles.roleChip}>{roleLabel(property.role)}</span>}</div>
+                <div className={styles.propertyMetaGrid}>
+                  <div><p className={styles.summaryLabel}>Occupancy</p><p className={styles.summaryValue}>{typeof currentOccupancy?.value === 'string' ? humanize(currentOccupancy.value) : 'Not provided'}</p></div>
+                  <div><p className={styles.summaryLabel}>Scenario overlay</p><p className={styles.summaryValue}>{property.scenarioPropertyDispositions?.length ? property.scenarioPropertyDispositions.map((entry) => `Scenario: ${humanize(entry.disposition)}`).join(' · ') : 'No selected Scenario disposition shown'}</p></div>
+                  <div><p className={styles.summaryLabel}>Transactions</p><p className={styles.summaryValue}>Operational state remains in Transactions</p></div>
+                </div>
+                <AtlasField htmlFor={`property-occupancy-${property.id}`} label="Edit occupancy"><select className={styles.select} id={`property-occupancy-${property.id}`} value={occupancy[property.id] ?? ''} onChange={(event) => setOccupancy((current) => ({ ...current, [property.id]: event.target.value }))}><option value="">Not provided</option>{occupancyOptions.map((option) => <option key={option} value={option}>{humanize(option)}</option>)}</select></AtlasField>
+                <div className={styles.relationshipActions}>
+                  <AtlasField htmlFor={`role-${property.id}`} label="Add relationship role"><select className={styles.select} id={`role-${property.id}`} value={roleDraft[property.id] ?? ''} onChange={(event) => setRoleDraft((current) => ({ ...current, [property.id]: event.target.value }))}><option value="">Select role</option>{relationshipRoleOptions.map((option) => <option key={option} value={option}>{roleLabel(option)}</option>)}</select></AtlasField>
+                  <AtlasButton disabled={saving || !roleDraft[property.id]} tone="secondary" onClick={() => void addRelationshipRole(property.id)}>Add Role</AtlasButton>
+                </div>
+                {activeRoles.length ? <div className={styles.relationshipHistory}><p className={styles.summaryLabel}>Active relationships</p>{activeRoles.map((entry) => <div className={styles.historyRow} key={entry.id}><span>{roleLabel(entry.role)}</span><AtlasButton disabled={saving} tone="ghost" onClick={() => void endRelationshipRole(entry.id)}>End role</AtlasButton></div>)}</div> : null}
+                {endedRoles.length ? <div className={styles.relationshipHistory}><p className={styles.summaryLabel}>Relationship history</p>{endedRoles.map((entry) => <p className={styles.optionDescription} key={entry.id}>{roleLabel(entry.role)} ended {entry.endedAt ? new Date(entry.endedAt).toLocaleDateString() : 'previously'}</p>)}</div> : null}
+              </article>
+            );
+          })}</div> : <AtlasEmptyState title="No linked properties"><p>Add an existing canonical physical Property when a specific Property becomes part of the Client Case. Criteria such as target cities and bedrooms do not create Property anchors.</p></AtlasEmptyState>}
+        </AtlasSurface>
 
         <AtlasSurface className={intent === 'property-occupancy' ? styles.intent : undefined} material="glass" data-testid="client-case-information-property-occupancy">
           <div className={styles.panelHeading}><div><h2 className="atlas-ds-major-section">Property / Occupancy Facts</h2><p className={styles.metadata}>Occupancy is property-scoped. Select an existing authorized Client Case property relationship.</p></div><AtlasInformationClassLabel informationClass="governed-fact" /></div>

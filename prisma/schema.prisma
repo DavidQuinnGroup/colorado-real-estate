@@ -425,6 +425,19 @@ enum ClientCasePropertyRole {
   OTHER
 }
 
+enum ClientCasePropertyRelationshipRoleType {
+  CURRENT_HOME
+  TARGET_PRIMARY
+  INVESTMENT_PROPERTY
+  SALE_RELEVANT
+  OTHER
+}
+
+enum ClientCasePropertyRelationshipRoleStatus {
+  ACTIVE
+  ENDED
+}
+
 enum ClientCaseObjectiveType {
   BUY_PRIMARY_HOME
   SELL_CURRENT_HOME
@@ -3234,9 +3247,27 @@ model ClientCaseProperty {
   facts             ClientCaseFact[]
   criteria          ClientCaseCriterion[]
   scenarioPropertyDispositions ClientCaseScenarioPropertyDisposition[]
+  relationshipRoles ClientCasePropertyRelationshipRole[]
 
   @@unique([clientCaseId, canonicalPropertyId])
   @@index([canonicalPropertyId])
+}
+
+model ClientCasePropertyRelationshipRole {
+  id                   String                                   @id @default(cuid())
+  clientCasePropertyId String
+  role                 ClientCasePropertyRelationshipRoleType
+  status               ClientCasePropertyRelationshipRoleStatus @default(ACTIVE)
+  startedAt            DateTime                                 @default(now())
+  endedAt              DateTime?
+  createdBySubject     String
+  createdAt            DateTime                                 @default(now())
+  updatedAt            DateTime                                 @updatedAt
+
+  clientCaseProperty ClientCaseProperty @relation(fields: [clientCasePropertyId], references: [id], onDelete: Restrict)
+
+  @@index([clientCasePropertyId, status], map: "CCPRR_property_status_idx")
+  @@index([role, status], map: "CCPRR_role_status_idx")
 }
 
 model ClientCaseObjective {

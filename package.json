@@ -39,6 +39,8 @@
     "check:client-case-information-server-boundary": "jiti scripts/checkClientCaseInformationServerBoundary.ts",
     "check:client-information-wave-a-foundation": "jiti scripts/checkClientInformationWaveAFoundation.ts",
     "check:client-information-wave-a-visual-structure": "jiti scripts/checkClientInformationWaveAVisualStructure.ts",
+    "check:client-information-wave-b-property-relationships": "jiti scripts/checkClientInformationWaveBPropertyRelationships.ts",
+    "check:client-information-wave-b-visual-structure": "jiti scripts/checkClientInformationWaveBVisualStructure.ts",
     "check:agent-workspace-information-architecture": "jiti scripts/checkAgentWorkspaceInformationArchitecture.ts",
     "check:agent-workspace-shell-adoption": "jiti scripts/checkAgentWorkspaceShellAdoption.ts",
     "check:agent-workspace-public-material-visual-remediation": "jiti scripts/checkAgentWorkspacePublicMaterialVisualRemediation.ts",

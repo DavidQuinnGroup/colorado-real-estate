@@ -71,7 +71,8 @@ type CanonicalFact = {
 
 type CanonicalCriterion = CanonicalFact;
 type CanonicalObjective = { id: string; objectiveType: string; status: string; title: string; createdAt: Date; completedAt: Date | null; archivedAt: Date | null };
-type CanonicalProperty = { id: string; canonicalPropertyId: string; role: string; createdAt: Date };
+type CanonicalPropertyRelationshipRole = { id: string; clientCasePropertyId: string; role: string; status: string; startedAt: Date; endedAt: Date | null; createdBySubject: string };
+type CanonicalProperty = { id: string; canonicalPropertyId: string; role: string; createdAt: Date; relationshipRoles: CanonicalPropertyRelationshipRole[] };
 type ScenarioAssumption = { id: string; semanticKey: string; valueType: ClientCaseScenarioValueType; value: JsonValue };
 type ScenarioCriterion = ScenarioAssumption;
 type ScenarioPropertyDisposition = { id: string; clientCasePropertyId: string; disposition: string };
@@ -252,7 +253,20 @@ export function createClientCaseEffectiveContextResolver(prisma: EffectiveContex
         objectives: { select: { id: true, objectiveType: true, status: true, title: true, createdAt: true, completedAt: true, archivedAt: true }, orderBy: { createdAt: 'asc' } },
         facts: { where: { supersededAt: null }, select: { id: true, semanticKey: true, scope: true, scopeReference: true, objectiveId: true, clientCasePropertyId: true, value: true, sourcePosture: true, evidenceAdmissionId: true, professionalInputId: true, observedAt: true, effectiveAt: true, reviewAfter: true, limitation: true }, orderBy: [{ semanticKey: 'asc' }, { scopeReference: 'asc' }, { id: 'asc' }] },
         criteria: { where: { supersededAt: null }, select: { id: true, semanticKey: true, scope: true, scopeReference: true, objectiveId: true, clientCasePropertyId: true, value: true, sourcePosture: true, evidenceAdmissionId: true, professionalInputId: true, observedAt: true, effectiveAt: true, reviewAfter: true, limitation: true }, orderBy: [{ semanticKey: 'asc' }, { scopeReference: 'asc' }, { id: 'asc' }] },
-        properties: { select: { id: true, canonicalPropertyId: true, role: true, createdAt: true }, orderBy: [{ role: 'asc' }, { canonicalPropertyId: 'asc' }, { id: 'asc' }] },
+        properties: {
+          select: {
+            id: true,
+            canonicalPropertyId: true,
+            role: true,
+            createdAt: true,
+            relationshipRoles: {
+              where: { status: 'ACTIVE' },
+              select: { id: true, clientCasePropertyId: true, role: true, status: true, startedAt: true, endedAt: true, createdBySubject: true },
+              orderBy: [{ role: 'asc' }, { startedAt: 'asc' }, { id: 'asc' }],
+            },
+          },
+          orderBy: [{ role: 'asc' }, { canonicalPropertyId: 'asc' }, { id: 'asc' }],
+        },
       },
     });
     if (!clientCase) throw new ClientCaseEffectiveContextError('NOT_FOUND', 'The Client Case is unavailable to this Agent.');

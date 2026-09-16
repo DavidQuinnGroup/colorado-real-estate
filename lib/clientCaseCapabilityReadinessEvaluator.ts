@@ -149,6 +149,10 @@ function hasObjective(context: EffectiveContext, semanticKey: string) {
   return context.objectives.some((objective) => objective.objectiveType === semanticKey && objective.status === 'ACTIVE' && objective.archivedAt === null);
 }
 
+function hasCasePropertyRole(context: EffectiveContext, semanticKey: string) {
+  return context.properties.some((property) => property.relationshipRoles?.some((entry) => entry.status === 'ACTIVE' && entry.role === semanticKey));
+}
+
 function hasExecutionParameter(parameters: ClientCaseCapabilityReadinessExecutionParameters, key: string) {
   return Object.hasOwn(parameters, key);
 }
@@ -158,7 +162,7 @@ function requirementPresence(context: EffectiveContext, requirement: CapabilityR
   if (requirement.source === 'EFFECTIVE_INPUT') return inputs.length ? 'PRESENT' : 'MISSING';
   if (requirement.source === 'OBJECTIVE') return hasObjective(context, requirement.semanticKey) ? 'PRESENT' : 'MISSING';
   if (requirement.source === 'EXECUTION_PARAMETER') return hasExecutionParameter(parameters, requirement.semanticKey) ? 'PRESENT' : 'MISSING';
-  return context.properties.length ? 'PRESENT' : 'MISSING';
+  return hasCasePropertyRole(context, requirement.semanticKey) ? 'PRESENT' : 'MISSING';
 }
 
 function verification(requirement: CapabilityRequirement, presence: RequirementPresence, inputs: readonly ResolvedInput[]): RequirementVerification {

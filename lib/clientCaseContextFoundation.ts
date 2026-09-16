@@ -2,6 +2,8 @@ import { createHash } from 'node:crypto';
 
 import type { ClientCasePartyRole, ClientCasePropertyRole, PrismaClient } from '@prisma/client';
 
+import { createClientCasePropertyRelationshipService, LEGACY_ROLE_TO_RELATIONSHIP_ROLE } from './clientCasePropertyRelationshipRoles';
+
 const PARTY_ROLES = ['PRIMARY_CLIENT', 'ADDITIONAL_CLIENT', 'OTHER_PARTY'] as const satisfies readonly ClientCasePartyRole[];
 const PROPERTY_ROLES = ['CURRENT_HOME', 'NEW_PRIMARY', 'INVESTMENT_PROPERTY', 'SALE_PROPERTY', 'OTHER'] as const satisfies readonly ClientCasePropertyRole[];
 
@@ -54,12 +56,14 @@ async function ownedCase(prisma: PrismaClient, ownerAgentSubject: string, id: st
 }
 
 export function createClientCaseContextService(prisma: PrismaClient) {
+  const propertyRelationships = createClientCasePropertyRelationshipService(prisma);
+
   async function detail(ownerAgentSubject: string, id: string) {
     const clientCase = await prisma.clientCase.findFirst({
       where: { id, ownerAgentSubject },
       include: {
         parties: { orderBy: { createdAt: 'asc' } },
-        properties: { include: { canonicalProperty: { select: { id: true, sourceFormattedSitusAddress: true, normalizedSitusAddress: true, city: true, state: true, postalCode: true } } }, orderBy: { createdAt: 'asc' } },
+        properties: { include: { canonicalProperty: { select: { id: true, sourceFormattedSitusAddress: true, normalizedSitusAddress: true, city: true, state: true, postalCode: true } }, relationshipRoles: { orderBy: [{ status: 'asc' }, { startedAt: 'asc' }] } }, orderBy: { createdAt: 'asc' } },
         transactions: { select: { id: true, label: true, side: true, status: true, stage: true, updatedAt: true }, orderBy: { updatedAt: 'desc' }, take: 12 },
       },
     });
@@ -123,11 +127,11 @@ export function createClientCaseContextService(prisma: PrismaClient) {
       await ownedCase(prisma, ownerAgentSubject, id);
       const input = record(raw);
       const canonicalPropertyId = text(input.canonicalPropertyId, 'canonicalPropertyId', 160)!;
-      if (!await prisma.canonicalPhysicalProperty.findUnique({ where: { id: canonicalPropertyId }, select: { id: true } })) throw new ClientCaseError('NOT_FOUND', 'The canonical property is unavailable.');
       try {
-        await prisma.clientCaseProperty.create({ data: { clientCaseId: id, canonicalPropertyId, role: enumValue(input.role, PROPERTY_ROLES, 'role') as ClientCasePropertyRole } });
+        await propertyRelationships.attachExistingProperty(ownerAgentSubject, id, { canonicalPropertyId, roles: [LEGACY_ROLE_TO_RELATIONSHIP_ROLE[enumValue(input.role, PROPERTY_ROLES, 'role') as ClientCasePropertyRole]] });
       } catch (error) {
-        if ((error as { code?: string }).code === 'P2002') throw new ClientCaseError('CONFLICT', 'That property is already attached to this Client Case.');
+        if ((error as { code?: string }).code === 'CONFLICT') throw new ClientCaseError('CONFLICT', 'That property is already attached to this Client Case.');
+        if ((error as { code?: string }).code === 'NOT_FOUND') throw new ClientCaseError('NOT_FOUND', 'The canonical property is unavailable.');
         throw error;
       }
       return detail(ownerAgentSubject, id);

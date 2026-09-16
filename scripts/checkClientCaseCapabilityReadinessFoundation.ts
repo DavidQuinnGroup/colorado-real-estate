@@ -136,7 +136,7 @@ const comprehensiveBuyer = evaluateCapabilityReadinessFromContext(baseline, buye
 assert.equal(comprehensiveBuyer.status, 'COMPREHENSIVE_READY');
 const helpfulMissingBuyer = evaluateCapabilityReadinessFromContext(context({ inputs: buyerInputs.filter((entry) => entry.semanticKey !== 'MIN_BEDROOMS') }), buyer, {}, now);
 assert.equal(helpfulMissingBuyer.status, 'COMPREHENSIVE_READY');
-assert.deepEqual(helpfulMissingBuyer.helpfulMissing, ['BUYER_DECISION_MIN_BEDROOMS']);
+assert.deepEqual(helpfulMissingBuyer.helpfulMissing, ['BUYER_DECISION_TARGET_PROPERTY', 'BUYER_DECISION_MIN_BEDROOMS']);
 
 const marketState = evaluateCapabilityReadinessFromContext(context({ inputs: [] }), market, { marketScope: 'STATE' }, now);
 assert.equal(marketState.status, 'COMPREHENSIVE_READY');

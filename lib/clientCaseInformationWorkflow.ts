@@ -4,6 +4,7 @@ import { createClientCaseCapabilityReadinessService } from './clientCaseCapabili
 import { createClientCaseContextService } from './clientCaseContextFoundation';
 import { createClientCaseContextRecordsService } from './clientCaseContextRecordsFoundation';
 import { CRITERION_SEMANTICS, FACT_SEMANTICS, OBJECTIVE_TYPES } from './clientCaseContextSemanticRegistry';
+import { createClientCasePropertyRelationshipService } from './clientCasePropertyRelationshipRoles';
 import { createClientInformationWaveAService } from './clientInformationWaveAFoundation';
 
 export const CLIENT_CASE_INFORMATION_WORKFLOW_VERSION = 'CANONICAL_CLIENT_CASE_INFORMATION_WORKFLOW_V1' as const;
@@ -21,6 +22,8 @@ type InformationDatabase = Pick<
   | 'clientCase'
   | 'clientCaseObjective'
   | 'clientCaseProperty'
+  | 'canonicalPhysicalProperty'
+  | 'clientCasePropertyRelationshipRole'
   | 'clientCaseFact'
   | 'clientCaseCriterion'
   | 'evidenceAdmission'
@@ -129,13 +132,15 @@ export function createClientCaseInformationWorkflowService(prisma: InformationDa
   const records = createClientCaseContextRecordsService(prisma);
   const readiness = createClientCaseCapabilityReadinessService(prisma);
   const people = createClientInformationWaveAService(prisma as PrismaClient);
+  const propertyRelationships = createClientCasePropertyRelationshipService(prisma as PrismaClient);
 
   async function load(ownerAgentSubject: string, clientCaseId: string) {
     await ownedCase(prisma, ownerAgentSubject, clientCaseId);
-    const [clientCase, current, peopleState] = await Promise.all([
+    const [clientCase, current, peopleState, relationshipProperties] = await Promise.all([
       cases.detail(ownerAgentSubject, clientCaseId),
       records.readCurrent(ownerAgentSubject, clientCaseId),
       people.listPeople(ownerAgentSubject, clientCaseId),
+      propertyRelationships.listProperties(ownerAgentSubject, clientCaseId),
     ]);
     const buyerObjective = current.objectives.find((entry) => entry.objectiveType === 'BUY_PRIMARY_HOME' && entry.status === 'ACTIVE' && !entry.archivedAt) ?? null;
     const financialObjective = current.objectives.find((entry) => entry.objectiveType === 'FINANCIAL_STRATEGY' && entry.status === 'ACTIVE' && !entry.archivedAt) ?? null;
@@ -169,7 +174,15 @@ export function createClientCaseInformationWorkflowService(prisma: InformationDa
         purchasePriceRange: purchaseRange,
         minBedrooms,
         propertyOccupancy: occupancy,
-        properties: current.properties,
+        properties: relationshipProperties,
+      },
+      propertyRelationships: {
+        relationshipRoles: ['CURRENT_HOME', 'TARGET_PRIMARY', 'INVESTMENT_PROPERTY', 'SALE_RELEVANT', 'OTHER'],
+        currentLinkingMechanism: 'EXPLICIT_CANONICAL_PROPERTY_ID',
+        propertyDiscoveryUx: 'FOUNDATION_ONLY',
+        addressAutocomplete: 'DEFERRED',
+        offMarketDiscovery: 'DEFERRED',
+        provisionalPropertyCreate: 'NOT_IMPLEMENTED',
       },
       people: peopleState,
       readinessPreview: {
@@ -243,5 +256,20 @@ export function createClientCaseInformationWorkflowService(prisma: InformationDa
     return load(ownerAgentSubject, clientCaseId);
   }
 
-  return { load, save };
+  async function attachExistingProperty(ownerAgentSubject: string, clientCaseId: string, raw: unknown) {
+    await propertyRelationships.attachExistingProperty(ownerAgentSubject, clientCaseId, raw);
+    return load(ownerAgentSubject, clientCaseId);
+  }
+
+  async function addRelationshipRole(ownerAgentSubject: string, clientCaseId: string, clientCasePropertyId: string, raw: unknown) {
+    await propertyRelationships.addRelationshipRole(ownerAgentSubject, clientCaseId, clientCasePropertyId, raw);
+    return load(ownerAgentSubject, clientCaseId);
+  }
+
+  async function endRelationshipRole(ownerAgentSubject: string, clientCaseId: string, relationshipRoleId: string) {
+    await propertyRelationships.endRelationshipRole(ownerAgentSubject, clientCaseId, relationshipRoleId);
+    return load(ownerAgentSubject, clientCaseId);
+  }
+
+  return { load, save, attachExistingProperty, addRelationshipRole, endRelationshipRole };
 }
