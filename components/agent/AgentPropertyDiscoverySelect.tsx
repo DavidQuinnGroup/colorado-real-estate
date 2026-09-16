@@ -141,68 +141,70 @@ export function AgentPropertyDiscoverySelect({ clientCaseId, busy = false, onAtt
   }
 
   return <form className={styles.propertyLinkForm} onSubmit={(event) => { event.preventDefault(); void attachProperty(); }} data-testid="agent-property-discovery-select">
-    <div className={styles.propertySearchColumn}>
-      <AtlasField htmlFor="property-search" label="Search property">
-        <div className={styles.comboboxWrap}>
-          <Search aria-hidden="true" className={styles.comboboxIcon} size={16} />
-          <input
-            aria-activedescendant={activePropertyIndex >= 0 ? `property-result-${activePropertyIndex}` : undefined}
-            aria-autocomplete="list"
-            aria-controls="property-results"
-            aria-expanded={propertyResults.length > 0}
-            aria-label="Search existing properties"
-            className={`${styles.input} ${styles.searchInput}`}
-            id="property-search"
-            maxLength={160}
-            onChange={(event) => {
-              const next = event.target.value;
-              setSelectedProperty(null);
-              setPropertySearch(next);
-              setPropertySearchError('');
-              setAttachError('');
-              setActivePropertyIndex(-1);
-              if (next.trim().length < 2) {
-                setPropertyResults([]);
-                setPropertySearchState('idle');
-              } else {
-                setPropertySearchState('loading');
-              }
-            }}
-            onKeyDown={handlePropertySearchKeys}
-            placeholder="Start typing an address"
-            role="combobox"
-            value={propertySearch}
-          />
-        </div>
-      </AtlasField>
-      {propertySearchState === 'loading' ? <p className={styles.searchStatus}>Searching existing property data.</p> : null}
-      {propertySearchState === 'error' ? <p className={styles.searchStatus}>{propertySearchError || 'Unable to search properties right now.'}</p> : null}
-      {propertySearchState === 'no-result' ? <p className={styles.searchStatus}>No matching property found in the currently available property data.</p> : null}
-      {propertyResults.length ? <div className={styles.suggestionPanel} id="property-results" role="listbox" aria-label="Property search suggestions">
-        {propertyResults.map((result, index) => <button
-          aria-disabled={!result.attachable}
-          aria-selected={index === activePropertyIndex}
-          className={`${styles.suggestionOption} ${index === activePropertyIndex ? styles.suggestionOptionActive : ''}`}
-          disabled={!result.attachable}
-          id={`property-result-${index}`}
-          key={`${result.resultToken}-${index}`}
-          onClick={() => selectPropertyResult(result)}
-          role="option"
-          type="button"
-        >
-          <span className={styles.suggestionTitle}>{result.displayAddress}</span>
-          <span className={styles.suggestionMeta}>{result.context}{result.alreadyLinked ? ' · Already linked' : ''}</span>
-        </button>)}
-      </div> : null}
-      {selectedProperty ? <div className={styles.selectedPropertySummary} data-selected-property-summary="true">
-        <p className={styles.summaryLabel}>Selected property</p>
-        <p className={styles.summaryValue}>{selectedProperty.displayAddress}</p>
-        <p className={styles.optionDescription}>{selectedProperty.alreadyLinked ? 'Already linked to this Client Case. You can add another durable role.' : selectedProperty.context}</p>
-        <AtlasButton disabled={busy} tone="ghost" type="button" onClick={clearSelection}><X size={15} />Clear selection</AtlasButton>
-      </div> : null}
+    <div className={styles.propertyLinkLayout}>
+      <div className={styles.propertySearchColumn}>
+        <AtlasField htmlFor="property-search" label="Search property">
+          <div className={styles.comboboxWrap}>
+            <Search aria-hidden="true" className={styles.comboboxIcon} size={16} />
+            <input
+              aria-activedescendant={activePropertyIndex >= 0 ? `property-result-${activePropertyIndex}` : undefined}
+              aria-autocomplete="list"
+              aria-controls="property-results"
+              aria-expanded={propertyResults.length > 0}
+              aria-label="Search existing properties"
+              className={`${styles.input} ${styles.searchInput}`}
+              id="property-search"
+              maxLength={160}
+              onChange={(event) => {
+                const next = event.target.value;
+                setSelectedProperty(null);
+                setPropertySearch(next);
+                setPropertySearchError('');
+                setAttachError('');
+                setActivePropertyIndex(-1);
+                if (next.trim().length < 2) {
+                  setPropertyResults([]);
+                  setPropertySearchState('idle');
+                } else {
+                  setPropertySearchState('loading');
+                }
+              }}
+              onKeyDown={handlePropertySearchKeys}
+              placeholder="Start typing an address"
+              role="combobox"
+              value={propertySearch}
+            />
+          </div>
+        </AtlasField>
+        {propertySearchState === 'loading' ? <p className={styles.searchStatus}>Searching existing property data.</p> : null}
+        {propertySearchState === 'error' ? <p className={styles.searchStatus}>{propertySearchError || 'Unable to search properties right now.'}</p> : null}
+        {propertySearchState === 'no-result' ? <p className={styles.searchStatus}>No matching property found in the currently available property data.</p> : null}
+        {propertyResults.length ? <div className={styles.suggestionPanel} id="property-results" role="listbox" aria-label="Property search suggestions">
+          {propertyResults.map((result, index) => <button
+            aria-disabled={!result.attachable}
+            aria-selected={index === activePropertyIndex}
+            className={`${styles.suggestionOption} ${index === activePropertyIndex ? styles.suggestionOptionActive : ''}`}
+            disabled={!result.attachable}
+            id={`property-result-${index}`}
+            key={`${result.resultToken}-${index}`}
+            onClick={() => selectPropertyResult(result)}
+            role="option"
+            type="button"
+          >
+            <span className={styles.suggestionTitle}>{result.displayAddress}</span>
+            <span className={styles.suggestionMeta}>{result.context}{result.alreadyLinked ? ' · Already linked' : ''}</span>
+          </button>)}
+        </div> : null}
+        {selectedProperty ? <div className={styles.selectedPropertySummary} data-selected-property-summary="true">
+          <p className={styles.summaryLabel}>Selected property</p>
+          <p className={styles.summaryValue}>{selectedProperty.displayAddress}</p>
+          <p className={styles.optionDescription}>{selectedProperty.alreadyLinked ? 'Already linked to this Client Case. You can add another durable role.' : selectedProperty.context}</p>
+          <AtlasButton disabled={busy} tone="ghost" type="button" onClick={clearSelection}><X size={15} />Clear selection</AtlasButton>
+        </div> : null}
+      </div>
+      <div className={styles.rolePicker} aria-label="Initial relationship roles">{relationshipRoleOptions.map((option) => <label className={styles.roleCheck} key={option}><input checked={roles.includes(option)} type="checkbox" onChange={() => toggleRole(option)} />{roleLabel(option)}</label>)}</div>
+      {attachError ? <p className={styles.searchStatus} role="status">{attachError}</p> : null}
+      <div className={styles.propertyLinkActions}><AtlasButton disabled={busy || !selectedProperty?.attachable || !roles.length} type="submit"><Plus size={16} />Add to Client Case</AtlasButton></div>
     </div>
-    <div className={styles.rolePicker} aria-label="Initial relationship roles">{relationshipRoleOptions.map((option) => <label className={styles.roleCheck} key={option}><input checked={roles.includes(option)} type="checkbox" onChange={() => toggleRole(option)} />{roleLabel(option)}</label>)}</div>
-    {attachError ? <p className={styles.searchStatus} role="status">{attachError}</p> : null}
-    <div className={styles.actions}><AtlasButton disabled={busy || !selectedProperty?.attachable || !roles.length} type="submit"><Plus size={16} />Add to Client Case</AtlasButton></div>
   </form>;
 }

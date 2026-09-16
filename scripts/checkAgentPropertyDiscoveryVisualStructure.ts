@@ -24,7 +24,13 @@ assert.match(discoverySelect, /disabled=\{!result\.attachable\}/);
 assert.match(styles, /\.suggestionPanel/);
 assert.match(styles, /backdrop-filter: blur/);
 assert.match(styles, /\.selectedPropertySummary/);
-assert.match(styles, /@media \(min-width: 52rem\)/);
+assert.match(styles, /\.propertyLinkLayout/);
+assert.match(styles, /container-type:\s*inline-size/);
+assert.match(styles, /@container \(min-width: 52rem\)/);
+assert.match(styles, /grid-template-columns:\s*minmax\(18rem, 1\.3fr\) minmax\(16rem, 1fr\) max-content/);
+assert.match(styles, /white-space:\s*nowrap/);
+assert.match(styles, /@container \(max-width: 31rem\)/);
+assert.doesNotMatch(styles, /@media \(min-width: 52rem\) \{ \.propertyLinkForm/);
 assert.doesNotMatch(discoverySelect, /Canonical physical Property ID|CanonicalPhysicalProperty ID/);
 assert.doesNotMatch(styles, /overflow-x:\s*scroll|overflow-x:\s*auto/);
 

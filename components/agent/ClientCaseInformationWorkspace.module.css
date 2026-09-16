@@ -44,8 +44,9 @@
 .compactList { display: grid; gap: var(--atlas-space-2); margin: var(--atlas-space-2) 0; padding-left: 1.1rem; }
 .linkExisting { display: grid; gap: var(--atlas-space-3); align-items: end; margin-top: var(--atlas-space-4); }
 @media (min-width: 42rem) { .linkExisting { grid-template-columns: minmax(0, 1fr) auto; } }
-.propertyLinkForm { display: grid; gap: var(--atlas-space-4); margin-top: var(--atlas-space-4); padding-top: var(--atlas-space-4); box-shadow: inset 0 1px 0 color-mix(in srgb, var(--atlas-profile-border-subtle) 16%, transparent); }
-@media (min-width: 52rem) { .propertyLinkForm { grid-template-columns: minmax(18rem, 1.3fr) minmax(16rem, 1fr) auto; align-items: start; } }
+.propertyLinkForm { margin-top: var(--atlas-space-4); padding-top: var(--atlas-space-4); box-shadow: inset 0 1px 0 color-mix(in srgb, var(--atlas-profile-border-subtle) 16%, transparent); container-type: inline-size; }
+.propertyLinkLayout { display: grid; gap: var(--atlas-space-4); }
+@container (min-width: 52rem) { .propertyLinkLayout { grid-template-columns: minmax(18rem, 1.3fr) minmax(16rem, 1fr) max-content; align-items: start; } }
 .propertySearchColumn { position: relative; display: grid; min-width: 0; gap: var(--atlas-space-2); }
 .comboboxWrap { position: relative; display: grid; }
 .comboboxIcon { position: absolute; left: var(--atlas-space-3); top: 50%; color: var(--atlas-text-muted); transform: translateY(-50%); pointer-events: none; }
@@ -59,6 +60,9 @@
 .suggestionTitle { font-size: 0.875rem; font-weight: 800; line-height: 1.35; overflow-wrap: anywhere; }
 .suggestionMeta { color: var(--atlas-text-secondary); font-size: 0.75rem; font-weight: 700; line-height: 1.4; }
 .selectedPropertySummary { display: grid; gap: var(--atlas-space-2); border-radius: var(--atlas-radius-lg); padding: var(--atlas-space-3); background: color-mix(in srgb, var(--atlas-profile-surface-secondary) 54%, transparent); box-shadow: var(--atlas-profile-glass-depth, var(--atlas-surface-elevation-low)); }
+.propertyLinkActions { display: flex; align-items: center; justify-self: start; }
+.propertyLinkActions :global(.atlas-ds-action) { white-space: nowrap; }
+@container (max-width: 31rem) { .propertyLinkActions { width: 100%; } .propertyLinkActions :global(.atlas-ds-action) { width: 100%; justify-content: center; } }
 .propertyCardGrid { display: grid; gap: var(--atlas-space-4); margin-top: var(--atlas-space-5); }
 .propertyCard { display: grid; min-width: 0; gap: var(--atlas-space-4); border-radius: var(--atlas-radius-lg); padding: var(--atlas-space-4); background: color-mix(in srgb, var(--atlas-profile-surface-primary) calc(var(--atlas-profile-glass-opacity, 1) * 100%), transparent); box-shadow: var(--atlas-profile-glass-depth, var(--atlas-surface-elevation-medium)); backdrop-filter: blur(var(--atlas-profile-glass-blur)); }
 .propertyTitle { margin: var(--atlas-space-1) 0 0; color: var(--atlas-text-primary); font-size: clamp(1rem, 1.8vw, 1.25rem); line-height: 1.35; overflow-wrap: anywhere; }
