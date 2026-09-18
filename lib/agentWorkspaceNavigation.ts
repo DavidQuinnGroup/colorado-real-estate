@@ -25,6 +25,6 @@ export const agentWorkspaceNavigation: AgentNavigationItem[] = [
 export const agentWorkspacePrimaryDomains = agentWorkspaceNavigation.filter((item) => item.type === 'WORK_DOMAIN');
 
 export function agentWorkspaceHref(item: AgentNavigationItem, clientCaseId?: string | null) {
-  if (!clientCaseId || !['buyer', 'seller', 'financial', 'intelligence', 'transactions', 'outputs'].includes(item.key)) return item.href;
+  if (!clientCaseId || !['buyer', 'seller', 'financial', 'intelligence', 'transactions', 'outputs', 'authorizations'].includes(item.key)) return item.href;
   return `${item.href}?clientCaseId=${encodeURIComponent(clientCaseId)}`;
 }
