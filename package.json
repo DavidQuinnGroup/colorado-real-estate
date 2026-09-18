@@ -35,6 +35,7 @@
     "check:client-case-capability-readiness-foundation": "jiti scripts/checkClientCaseCapabilityReadinessFoundation.ts",
     "check:client-case-agent-readiness-workflow": "jiti scripts/checkClientCaseAgentReadinessWorkflow.ts",
     "check:client-case-agent-readiness-visual-structure": "jiti scripts/checkClientCaseAgentReadinessVisualStructure.ts",
+    "check:cross-workspace-client-context": "jiti scripts/checkCrossWorkspaceClientContext.ts",
     "check:unified-agent-workspace-client-command-center-wave-1": "jiti scripts/checkUnifiedAgentWorkspaceClientCommandCenterWave1.ts",
     "check:client-case-information-workflow": "jiti scripts/checkClientCaseInformationWorkflow.ts",
     "check:client-case-information-visual-structure": "jiti scripts/checkClientCaseInformationVisualStructure.ts",
