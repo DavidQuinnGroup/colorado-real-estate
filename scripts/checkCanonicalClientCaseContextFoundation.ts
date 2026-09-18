@@ -58,7 +58,12 @@ const foundationService = createClientCaseContextService({
   clientCaseParty: { create: async () => ({}) },
   clientCaseProperty: { create: async () => ({}), findFirst: async () => null, update: async () => ({}) },
   canonicalPhysicalProperty: { findUnique: async () => ({ id: 'property-owned' }) },
-  transaction: { findFirst: async () => null, update: async () => ({}) },
+  transaction: {
+    findFirst: async () => null,
+    findMany: async () => [],
+    groupBy: async () => [],
+    update: async () => ({}),
+  },
 } as never);
 
 void (async () => {

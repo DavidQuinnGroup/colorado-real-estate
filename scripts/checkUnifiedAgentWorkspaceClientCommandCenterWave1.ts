@@ -19,6 +19,9 @@ assert.match(tracker, /Search Clients/);
 assert.match(commandCenter, /\/api\/agent\/client-cases\?id=/);
 assert.match(commandCenter, /\/api\/agent\/client-case-information\?clientCaseId=/);
 assert.match(commandCenter, /\/api\/agent\/outputs\?clientCaseId=/);
+assert.match(commandCenter, /formatTransactionSummary\(clientCase\.transactionSummary\)/);
+assert.match(commandCenter, /formatTransactionSectionSummary\(clientCase\.transactionSummary\)/);
+assert.doesNotMatch(commandCenter, /_count\?\.transactions/);
 assert.match(commandCenter, /useSearchParams\(\)/);
 assert.match(commandCenter, /router\.push/);
 assert.match(commandCenter, /clientCaseId=/);
@@ -31,6 +34,8 @@ assert.match(section, /data-client-command-center-section/);
 for (const sectionName of ['overview', 'people', 'goals', 'properties', 'information', 'readiness', 'buyer', 'seller', 'financial', 'intelligence', 'transactions', 'outputs', 'authorizations']) assert.match(registry, new RegExp(`'${sectionName}'`));
 assert.match(navigation, /'authorizations'/);
 assert.match(fixture, /Static synthetic interface only/);
+assert.match(fixture, /1 person · 0 properties · 1 transaction/);
+assert.match(fixture, /1 draft transaction/);
 assert.doesNotMatch(fixture, /fetch\(|prisma|\/api\//i);
 assert.match(auth, /\/agent\/design-system\/visual-certification\/client-command-center/);
 

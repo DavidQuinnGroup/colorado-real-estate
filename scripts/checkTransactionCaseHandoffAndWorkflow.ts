@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
 import { TransactionCaseHandoffError, TRANSACTION_CASE_HANDOFF_AND_WORKFLOW_VERSION, createTransactionCaseHandoffService, isAllowedTransactionStageTransition, isAllowedTransactionStatusTransition } from '../lib/transactionCaseHandoff';
+import { formatCount, formatTransactionSectionSummary, formatTransactionSummary } from '../components/agent/clientCommandCenterTypes';
 import { humanizeTransactionValue } from '../lib/transactionPresentation';
 
 const schema = readFileSync('prisma/schema.prisma', 'utf8');
@@ -48,6 +49,8 @@ assert.match(workspace, /data-testid="transactions-workspace"/);
 assert.match(detail, /data-testid="transaction-detail-workspace"/);
 assert.doesNotMatch(service, /delete\(/);
 assert.doesNotMatch(service, /createOutput|sendEmail|sendSms|calendar/i);
+assert.match(service, /summaryForClientCase/);
+assert.match(service, /groupBy\(\{ by: \['status'\]/);
 assert.equal(packageJson.scripts?.['check:transaction-case-handoff-and-workflow'], 'jiti scripts/checkTransactionCaseHandoffAndWorkflow.ts');
 
 const calls: Array<{ operation: string; where?: Record<string, unknown> }> = [];
@@ -57,9 +60,58 @@ const serviceForSecurity = createTransactionCaseHandoffService({
   transaction: { findMany: async (query: { where: Record<string, unknown> }) => { calls.push({ operation: 'list', where: query.where }); return []; }, findFirst: async () => null, findUnique: async () => null },
 } as never);
 
+const summaryCalls: Array<Record<string, unknown>> = [];
+const summaryService = createTransactionCaseHandoffService({
+  clientCase: { findFirst: async (query: { where: Record<string, unknown> }) => ['case-owned', 'case-empty'].includes(query.where.id as string) && query.where.ownerAgentSubject === 'AGENT_A' ? { ...ownedCase, id: query.where.id as string } : null },
+  transaction: {
+    groupBy: async (query: Record<string, unknown>) => {
+      summaryCalls.push(query);
+      return (query.where as { clientCaseId?: string }).clientCaseId === 'case-empty'
+        ? []
+        : [{ status: 'DRAFT', _count: { _all: 1 } }, { status: 'ACTIVE', _count: { _all: 2 } }];
+    },
+    findMany: async (query: Record<string, unknown>) => {
+      summaryCalls.push(query);
+      return (query.where as { clientCaseId?: string }).clientCaseId === 'case-empty'
+        ? []
+        : [
+      { id: 'draft-1', label: 'Draft transaction', side: 'BUYER', status: 'DRAFT', stage: 'PREPARATION', updatedAt: new Date('2026-09-18T00:00:00Z') },
+      { id: 'active-1', label: 'Active transaction', side: 'SELLER', status: 'ACTIVE', stage: 'UNDER_CONTRACT', updatedAt: new Date('2026-09-17T00:00:00Z') },
+        ];
+    },
+  },
+} as never);
+
 void (async () => {
   await serviceForSecurity.listOwned('AGENT_A');
   assert.deepEqual(calls[0], { operation: 'list', where: { ownerAgentSubject: 'AGENT_A' } });
   await assert.rejects(() => serviceForSecurity.listOwned('AGENT_A', 'case-foreign'), (error: unknown) => error instanceof TransactionCaseHandoffError && error.code === 'OWNERSHIP_DENIED');
+  const summary = await summaryService.summaryForClientCase('AGENT_A', 'case-owned');
+  assert.deepEqual(summary, {
+    totalTransactionCount: 3,
+    draftTransactionCount: 1,
+    activeTransactionCount: 2,
+    recentTransactions: [
+      { id: 'draft-1', label: 'Draft transaction', side: 'BUYER', status: 'DRAFT', stage: 'PREPARATION', updatedAt: new Date('2026-09-18T00:00:00Z') },
+      { id: 'active-1', label: 'Active transaction', side: 'SELLER', status: 'ACTIVE', stage: 'UNDER_CONTRACT', updatedAt: new Date('2026-09-17T00:00:00Z') },
+    ],
+  });
+  assert.deepEqual(summaryCalls.map((query) => query.where), [
+    { ownerAgentSubject: 'AGENT_A', clientCaseId: 'case-owned' },
+    { ownerAgentSubject: 'AGENT_A', clientCaseId: 'case-owned' },
+  ]);
+  const emptySummary = await summaryService.summaryForClientCase('AGENT_A', 'case-empty');
+  assert.deepEqual(emptySummary, { totalTransactionCount: 0, draftTransactionCount: 0, activeTransactionCount: 0, recentTransactions: [] });
+  await assert.rejects(() => summaryService.summaryForClientCase('AGENT_A', 'case-foreign'), (error: unknown) => error instanceof TransactionCaseHandoffError && error.code === 'OWNERSHIP_DENIED');
+  assert.equal(formatTransactionSummary({ totalTransactionCount: 0, draftTransactionCount: 0, activeTransactionCount: 0 }), 'None recorded');
+  assert.equal(formatTransactionSummary({ totalTransactionCount: 1, draftTransactionCount: 1, activeTransactionCount: 0 }), '1 draft transaction');
+  assert.equal(formatTransactionSummary({ totalTransactionCount: 1, draftTransactionCount: 0, activeTransactionCount: 1 }), '1 transaction');
+  assert.equal(formatTransactionSummary({ totalTransactionCount: 2, draftTransactionCount: 2, activeTransactionCount: 0 }), '2 draft transactions');
+  assert.equal(formatTransactionSummary({ totalTransactionCount: 2, draftTransactionCount: 1, activeTransactionCount: 1 }), '2 transactions');
+  assert.equal(formatTransactionSectionSummary({ totalTransactionCount: 1, draftTransactionCount: 1, activeTransactionCount: 0 }), '1 draft transaction.');
+  assert.equal(formatCount(0, 'person', 'people'), '0 people');
+  assert.equal(formatCount(1, 'person', 'people'), '1 person');
+  assert.equal(formatCount(2, 'property', 'properties'), '2 properties');
+  assert.equal(formatCount(1, 'transaction', 'transactions'), '1 transaction');
   console.log('TRANSACTION_CASE_HANDOFF_AND_WORKFLOW_CHECK: PASS');
 })().catch((error) => { console.error(error); process.exitCode = 1; });

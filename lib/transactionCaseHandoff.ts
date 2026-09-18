@@ -41,6 +41,13 @@ export class TransactionCaseHandoffError extends Error {
   }
 }
 
+export type ClientScopedTransactionSummary = {
+  totalTransactionCount: number;
+  draftTransactionCount: number;
+  activeTransactionCount: number;
+  recentTransactions: Array<{ id: string; label: string; side: TransactionSide; status: TransactionLifecycleStatus; stage: TransactionOperationalStage; updatedAt: Date }>;
+};
+
 type RecordValue = Record<string, unknown>;
 
 function record(value: unknown, field = 'request'): RecordValue {
@@ -144,9 +151,31 @@ export function createTransactionCaseHandoffService(prisma: PrismaClient) {
     return transactions.map((transaction) => ({ ...transaction, displayTitle: transaction.label, propertyDisplay: propertyTitle(transaction.canonicalProperty) }));
   }
 
+  async function summaryForClientCase(ownerAgentSubject: string, clientCaseId: string): Promise<ClientScopedTransactionSummary> {
+    await ownedCase(ownerAgentSubject, clientCaseId);
+    const where = { ownerAgentSubject, clientCaseId };
+    const [statusCounts, recentTransactions] = await Promise.all([
+      prisma.transaction.groupBy({ by: ['status'], where, _count: { _all: true } }),
+      prisma.transaction.findMany({
+        where,
+        select: { id: true, label: true, side: true, status: true, stage: true, updatedAt: true },
+        orderBy: { updatedAt: 'desc' },
+        take: 12,
+      }),
+    ]);
+    const countFor = (status: TransactionLifecycleStatus) => statusCounts.find((entry) => entry.status === status)?._count._all || 0;
+    return {
+      totalTransactionCount: statusCounts.reduce((total, entry) => total + entry._count._all, 0),
+      draftTransactionCount: countFor('DRAFT'),
+      activeTransactionCount: countFor('ACTIVE'),
+      recentTransactions,
+    };
+  }
+
   return {
     detail,
     listOwned,
+    summaryForClientCase,
 
     async create(ownerAgentSubject: string, raw: unknown) {
       const input = record(raw);

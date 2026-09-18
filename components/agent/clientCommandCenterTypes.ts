@@ -38,7 +38,7 @@ export type ClientCaseSummary = {
     canonicalProperty: { id: string; sourceFormattedSitusAddress: string | null; normalizedSitusAddress: string | null; city: string | null; state: string | null; postalCode: string | null };
   }>;
   transactions: Array<{ id: string; label: string; side: string; status: string; stage: string; updatedAt: string }>;
-  _count?: { parties: number; properties: number; transactions: number };
+  transactionSummary: { totalTransactionCount: number; draftTransactionCount: number; activeTransactionCount: number };
 };
 
 export type InformationWorkspaceSummary = {
@@ -56,6 +56,21 @@ export type OutputSummary = { id: string; productKind: string; subjectRef: strin
 
 export function humanize(value: string) {
   return value.replaceAll('_', ' ').toLowerCase().replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
+export function formatCount(count: number, singular: string, plural: string) {
+  return `${count} ${count === 1 ? singular : plural}`;
+}
+
+export function formatTransactionSummary(summary: ClientCaseSummary['transactionSummary']) {
+  if (!summary.totalTransactionCount) return 'None recorded';
+  if (summary.draftTransactionCount === summary.totalTransactionCount) return formatCount(summary.totalTransactionCount, 'draft transaction', 'draft transactions');
+  return formatCount(summary.totalTransactionCount, 'transaction', 'transactions');
+}
+
+export function formatTransactionSectionSummary(summary: ClientCaseSummary['transactionSummary']) {
+  if (!summary.totalTransactionCount) return 'No transactions linked.';
+  return `${formatTransactionSummary(summary)}.`;
 }
 
 export function propertyLabel(property: ClientCaseSummary['properties'][number]) {
