@@ -69,6 +69,7 @@ function makeProperty(data: NonNullable<ReturnType<typeof buildPropertyRecordWit
     gcForensics: (data.gcForensics ?? null) as Property['gcForensics'],
     hasPolybutyleneRisk: data.hasPolybutyleneRisk ?? false,
     id,
+    uuid: `synthetic-${id}`,
     isPrivateExclusive: false,
     lastIntelligenceSync: data.lastIntelligenceSync ? new Date(data.lastIntelligenceSync) : null,
     lat: data.lat,

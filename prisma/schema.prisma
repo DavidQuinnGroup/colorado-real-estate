@@ -649,9 +649,10 @@ enum CanonicalPropertyListingEventStatus {
 }
 
 model Property {
-  id                   String    @id @default(cuid())
-  mlsId                String    @unique
-  slug                 String    @unique
+  uuid                 String    @id @default(dbgenerated("gen_random_uuid()"))
+  id                   String    @unique(map: "Property_id_key") @default(cuid())
+  mlsId                String    @unique(map: "property_mlsid_unique_idx")
+  slug                 String    @unique(map: "property_slug_idx")
   address              String
   city                 String
   state                String
@@ -682,7 +683,7 @@ model Property {
   isPrivateExclusive  Boolean @default(false)
   gcForensics         Json?
   negotiationLevers   Json?
-  optimizedValue      Int     @default(0)
+  optimizedValue      Int?
   efficiencyScore     Int     @default(0)
   resilienceScore     Int     @default(85)
   altitude            Int     @default(5280)
@@ -893,9 +894,9 @@ model CanonicalPhysicalPropertySourceIdentityMapping {
   createdAt            DateTime                                    @default(now())
   updatedAt            DateTime                                    @updatedAt
 
-  canonicalProperty CanonicalPhysicalProperty                        @relation(fields: [canonicalPropertyId], references: [id], onDelete: Restrict)
+  canonicalProperty CanonicalPhysicalProperty                        @relation(fields: [canonicalPropertyId], references: [id], onDelete: Restrict, map: "CanonicalPhysicalPropertySourceIdentityMapping_canonicalPropert")
   identity          PropertySourceIdentity                           @relation(fields: [identityId], references: [id], onDelete: Restrict)
-  supersededBy      CanonicalPhysicalPropertySourceIdentityMapping?  @relation("CanonicalPhysicalPropertySourceIdentityMappingSupersession", fields: [supersededById], references: [id], onDelete: Restrict)
+  supersededBy      CanonicalPhysicalPropertySourceIdentityMapping?  @relation("CanonicalPhysicalPropertySourceIdentityMappingSupersession", fields: [supersededById], references: [id], onDelete: Restrict, map: "CanonicalPhysicalPropertySourceIdentityMapping_supersededById_f")
   supersedes        CanonicalPhysicalPropertySourceIdentityMapping[] @relation("CanonicalPhysicalPropertySourceIdentityMappingSupersession")
 
   @@unique([canonicalPropertyId, identityId, associationType], map: "CPPSIM_property_identity_type_uq")
@@ -928,7 +929,7 @@ model CanonicalPhysicalPropertyObservation {
 
   canonicalProperty         CanonicalPhysicalProperty          @relation(fields: [canonicalPropertyId], references: [id], onDelete: Restrict)
   sourceIdentity            PropertySourceIdentity?            @relation(fields: [sourceIdentityId], references: [id], onDelete: Restrict)
-  sourceIdentityObservation PropertySourceIdentityObservation? @relation(fields: [sourceIdentityObservationId], references: [id], onDelete: Restrict)
+  sourceIdentityObservation PropertySourceIdentityObservation? @relation(fields: [sourceIdentityObservationId], references: [id], onDelete: Restrict, map: "CanonicalPhysicalPropertyObservation_sourceIdentityObservationI")
 
   @@index([canonicalPropertyId, observedAt], map: "CPPO_property_observed_idx")
   @@index([sourceId, observationKind], map: "CPPO_source_kind_idx")
@@ -981,8 +982,8 @@ model MlsSyncState {
 model REIEControlState {
   key       String   @id
   state     Json
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamptz(6)
 }
 
 model PropertyPhoto {
@@ -1047,11 +1048,11 @@ model User {
 }
 
 model CRMTask {
-  id           String      @id @default(cuid())
+  id           String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   leadId       String
   user         User        @relation(fields: [leadId], references: [id], onDelete: Cascade)
   sellerLeadId String?     @map("leadid") @db.Uuid
-  sellerLead   SellerLead? @relation(fields: [sellerLeadId], references: [id], onDelete: Cascade)
+  sellerLead   SellerLead? @relation(fields: [sellerLeadId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "CRMTask_leadid_fkey")
   type         String
   status       String      @default("pending")
   priority     String      @default("medium")
@@ -1079,15 +1080,15 @@ model UserInteraction {
 }
 
 model LeadInteraction {
-  id              String   @id @default(cuid())
+  id              String   @id @default(dbgenerated("(gen_random_uuid())::text"))
   clientId        String
   propertyId      String
   interactionType String
   metadata        Json?
   createdAt       DateTime @default(now())
 
-  user     User     @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [clientId], references: [id], onDelete: Cascade, onUpdate: Cascade, map: "LeadInteraction_clientId_fkey")
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade, onUpdate: Cascade, map: "LeadInteraction_propertyId_fkey")
 
   @@index([clientId])
   @@index([propertyId])
@@ -1095,14 +1096,14 @@ model LeadInteraction {
 }
 
 model UserPreference {
-  id        String   @id @default(cuid())
+  id        String   @id @default(dbgenerated("(gen_random_uuid())::text"))
   userId    String   @unique
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
   avgPrice  Int?
   avgBeds   Int?
-  topCities String[]
+  topCities String[] @default([])
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt DateTime @default(now()) @updatedAt
 }
 
 model NorthStar {
@@ -1199,7 +1200,7 @@ model City {
   state         String         @default("CO")
   neighborhoods Neighborhood[]
   createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  updatedAt     DateTime       @default(now()) @updatedAt
 }
 
 model Neighborhood {
@@ -1219,7 +1220,7 @@ model Neighborhood {
   insuranceComplexity String?
   waterRights         Boolean?
   createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  updatedAt           DateTime @default(now()) @updatedAt
 
   @@unique([cityId, slug])
   @@index([slug])
@@ -1401,7 +1402,7 @@ model GeographicAlias {
   object GeographicObject  @relation(fields: [objectId], references: [id], onDelete: Restrict)
   source GeographicSource? @relation(fields: [sourceId], references: [id], onDelete: Restrict)
 
-  @@unique([objectId, normalizedValue, aliasType, language, lifecycleStatus])
+  @@unique([objectId, normalizedValue, aliasType, language, lifecycleStatus], map: "GeographicAlias_objectId_normalizedValue_aliasType_language_lif")
   @@index([normalizedValue])
   @@index([sourceId])
   @@index([lifecycleStatus])
@@ -1426,7 +1427,7 @@ model GeographicRelationship {
   targetObject GeographicObject  @relation("GeographicRelationshipTarget", fields: [targetObjectId], references: [id], onDelete: Restrict)
   source       GeographicSource? @relation(fields: [sourceId], references: [id], onDelete: Restrict)
 
-  @@unique([sourceObjectId, targetObjectId, relationshipType, directionality, lifecycleStatus])
+  @@unique([sourceObjectId, targetObjectId, relationshipType, directionality, lifecycleStatus], map: "GeographicRelationship_sourceObjectId_targetObjectId_relationsh")
   @@index([sourceObjectId, relationshipType])
   @@index([targetObjectId, relationshipType])
   @@index([sourceId])
@@ -1522,9 +1523,9 @@ model PropertyGeographicRelationship {
   geographicObject GeographicObject  @relation(fields: [geographicObjectId], references: [id], onDelete: Restrict)
   source           GeographicSource? @relation(fields: [sourceId], references: [id], onDelete: Restrict)
 
-  @@unique([propertyId, geographicObjectId, relationshipType, lifecycleStatus])
+  @@unique([propertyId, geographicObjectId, relationshipType, lifecycleStatus], map: "PropertyGeographicRelationship_propertyId_geographicObjectId_re")
   @@index([propertyId])
-  @@index([geographicObjectId, relationshipType])
+  @@index([geographicObjectId, relationshipType], map: "PropertyGeographicRelationship_geographicObjectId_relationshipT")
   @@index([sourceId])
 }
 
@@ -2704,7 +2705,7 @@ model OutputProduct {
   clientCase   ClientCase?   @relation(fields: [clientCaseId], references: [id], onDelete: SetNull)
   transaction  Transaction?  @relation(fields: [transactionId], references: [id], onDelete: SetNull)
 
-  @@unique([ownerAgentSubject, productKind, audience, subjectRef])
+  @@unique([ownerAgentSubject, productKind, audience, subjectRef], map: "OutputProduct_ownerAgentSubject_productKind_audience_subjectRef")
   @@index([ownerAgentSubject, createdAt])
   @@index([ownerAgentSubject, clientCaseId, createdAt])
   @@index([ownerAgentSubject, transactionId, createdAt])
@@ -2792,7 +2793,7 @@ model OutputDependency {
 
   outputVersion OutputVersion @relation(fields: [outputVersionId], references: [id], onDelete: Restrict)
 
-  @@unique([outputVersionId, upstreamArtifact, downstreamArtifact, dependencyType])
+  @@unique([outputVersionId, upstreamArtifact, downstreamArtifact, dependencyType], map: "OutputDependency_outputVersionId_upstreamArtifact_downstreamArt")
   @@index([outputVersionId])
   @@index([currentState])
 }
@@ -2862,7 +2863,7 @@ model EvidenceCandidate {
   admissionPolicyContext Json
   admissionId            String?                 @unique
   createdAt              DateTime                @default(now())
-  updatedAt              DateTime                @updatedAt
+  updatedAt              DateTime                @default(now()) @updatedAt
 
   admission            EvidenceAdmission?            @relation("EvidenceCandidateAdmission", fields: [admissionId], references: [id], onDelete: Restrict)
   admissionRecord      EvidenceAdmission?            @relation("EvidenceAdmissionCandidate")
@@ -2939,7 +2940,7 @@ model ProfessionalInputRequest {
   supportDocumentRequired Boolean                        @default(false)
   supersedesRequestId     String?                        @unique
   createdAt               DateTime                       @default(now())
-  updatedAt               DateTime                       @updatedAt
+  updatedAt               DateTime                       @default(now()) @updatedAt
 
   response            ProfessionalInputResponse?
   supersedesRequest   ProfessionalInputRequest?  @relation("ProfessionalInputRequestSupersession", fields: [supersedesRequestId], references: [id], onDelete: Restrict)
@@ -2970,7 +2971,7 @@ model ExternalRequestDelivery {
   expiresAt                  DateTime
   failureCode                String?
   createdAt                  DateTime                      @default(now())
-  updatedAt                  DateTime                      @updatedAt
+  updatedAt                  DateTime                      @default(now()) @updatedAt
 
   professionalInputRequest ProfessionalInputRequest           @relation(fields: [professionalInputRequestId], references: [id], onDelete: Restrict)
   capability               ExternalRequestCapability?
@@ -2993,7 +2994,7 @@ model ExternalRequestCapability {
   revokedAt   DateTime?
   expiresAt   DateTime
   createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  updatedAt   DateTime  @default(now()) @updatedAt
 
   delivery ExternalRequestDelivery @relation(fields: [deliveryId], references: [id], onDelete: Restrict)
 }
@@ -3008,7 +3009,7 @@ model ExternalRequestSession {
   lastAccessedAt DateTime?
   submittedAt    DateTime?
   createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  updatedAt      DateTime  @default(now()) @updatedAt
 
   delivery ExternalRequestDelivery @relation(fields: [deliveryId], references: [id], onDelete: Restrict)
 
@@ -3082,7 +3083,7 @@ model ProfessionalInput {
   clientCaseFacts    ClientCaseFact[]      @relation("ClientCaseFactProfessionalInput")
   clientCaseCriteria ClientCaseCriterion[] @relation("ClientCaseCriterionProfessionalInput")
 
-  @@unique([ownerAgentSubject, claimKind, versionOrdinal])
+  @@unique([ownerAgentSubject, claimKind, versionOrdinal], map: "ProfessionalInput_ownerAgentSubject_claimKind_versionOrdinal_ke")
   @@index([ownerAgentSubject, claimKind, effectiveAt])
 }
 
@@ -3107,7 +3108,7 @@ model Transaction {
   archivePolicyVersion        String                               @default("DQG_TRANSACTION_ARCHIVE_POLICY_V1")
   idempotencyKey              String                               @unique
   createdAt                   DateTime                             @default(now())
-  updatedAt                   DateTime                             @updatedAt
+  updatedAt                   DateTime                             @default(now()) @updatedAt
 
   canonicalProperty CanonicalPhysicalProperty? @relation(fields: [canonicalPropertyId], references: [id], onDelete: Restrict)
   clientCase        ClientCase?                @relation(fields: [clientCaseId], references: [id], onDelete: SetNull)
@@ -3219,6 +3220,7 @@ model ClientCaseParty {
   advisoryRoles ClientCasePartyAdvisoryRole[]
 
   @@index([clientCaseId, role, participationStatus])
+  @@index([clientCaseId, role], map: "ClientCaseParty_clientCaseId_role_idx")
   @@index([contactId])
 }
 
@@ -3262,7 +3264,7 @@ model ClientCasePropertyRelationshipRole {
   endedAt              DateTime?
   createdBySubject     String
   createdAt            DateTime                                 @default(now())
-  updatedAt            DateTime                                 @updatedAt
+  updatedAt            DateTime                                 @default(now()) @updatedAt
 
   clientCaseProperty ClientCaseProperty @relation(fields: [clientCasePropertyId], references: [id], onDelete: Restrict)
 
@@ -3322,7 +3324,7 @@ model ClientCaseFact {
   supersedesFact     ClientCaseFact?      @relation("ClientCaseFactSupersession", fields: [supersedesFactId], references: [id], onDelete: Restrict)
   supersededByFact   ClientCaseFact?      @relation("ClientCaseFactSupersession")
 
-  @@index([clientCaseId, semanticKey, scopeReference, createdAt])
+  @@index([clientCaseId, semanticKey, scopeReference, createdAt], map: "ClientCaseFact_clientCaseId_semanticKey_scopeReference_createdA")
   @@index([objectiveId, semanticKey, createdAt])
   @@index([clientCasePropertyId, semanticKey, createdAt])
   @@index([evidenceAdmissionId])
@@ -3359,9 +3361,9 @@ model ClientCaseCriterion {
   supersedesCriterion   ClientCaseCriterion? @relation("ClientCaseCriterionSupersession", fields: [supersedesCriterionId], references: [id], onDelete: Restrict)
   supersededByCriterion ClientCaseCriterion? @relation("ClientCaseCriterionSupersession")
 
-  @@index([clientCaseId, semanticKey, scopeReference, createdAt])
+  @@index([clientCaseId, semanticKey, scopeReference, createdAt], map: "ClientCaseCriterion_clientCaseId_semanticKey_scopeReference_cre")
   @@index([objectiveId, semanticKey, createdAt])
-  @@index([clientCasePropertyId, semanticKey, createdAt])
+  @@index([clientCasePropertyId, semanticKey, createdAt], map: "ClientCaseCriterion_clientCasePropertyId_semanticKey_createdAt_")
   @@index([evidenceAdmissionId])
   @@index([professionalInputId])
 }
@@ -3447,7 +3449,7 @@ model ClientCaseScenarioPropertyDisposition {
   scenarioVersion    ClientCaseScenarioVersion @relation(fields: [scenarioVersionId], references: [id], onDelete: Restrict)
   clientCaseProperty ClientCaseProperty        @relation(fields: [clientCasePropertyId], references: [id], onDelete: Restrict)
 
-  @@unique([scenarioVersionId, clientCasePropertyId])
+  @@unique([scenarioVersionId, clientCasePropertyId], map: "ClientCaseScenarioPropertyDisposition_scenarioVersionId_clientC")
   @@index([clientCasePropertyId])
 }
 
@@ -3460,7 +3462,7 @@ model ClientCaseScenarioObjective {
   scenarioVersion     ClientCaseScenarioVersion @relation(fields: [scenarioVersionId], references: [id], onDelete: Restrict)
   clientCaseObjective ClientCaseObjective       @relation(fields: [clientCaseObjectiveId], references: [id], onDelete: Restrict)
 
-  @@unique([scenarioVersionId, clientCaseObjectiveId])
+  @@unique([scenarioVersionId, clientCaseObjectiveId], map: "ClientCaseScenarioObjective_scenarioVersionId_clientCaseObjecti")
   @@index([clientCaseObjectiveId])
 }
 
@@ -3615,7 +3617,7 @@ model ClientAuthorization {
   createdBySubject          String
   idempotencyKey            String                           @unique
   createdAt                 DateTime                         @default(now())
-  updatedAt                 DateTime                         @updatedAt
+  updatedAt                 DateTime                         @default(now()) @updatedAt
 
   profile                   ClientAuthorizationProfile               @relation(fields: [profileId], references: [id], onDelete: Restrict)
   principals                ClientAuthorizationPrincipal[]
@@ -3730,6 +3732,7 @@ model ClientAuthorizationSession {
 
   @@index([authorizationId, expiresAt])
   @@index([capabilityId, expiresAt])
+  @@index([clientAuthorizationPrincipalId], map: "ClientAuthorizationSession_clientAuthorizationPrincipalId_idx")
 }
 
 model ClientAuthorizationConfirmationEvidence {
@@ -3752,7 +3755,8 @@ model ClientAuthorizationConfirmationEvidence {
   ClientAuthorizationPrincipal   ClientAuthorizationPrincipal? @relation(fields: [clientAuthorizationPrincipalId], references: [id])
   clientAuthorizationPrincipalId String?
 
-  @@index([profileKey, profileVersion, decidedAt])
+  @@index([profileKey, profileVersion, decidedAt], map: "ClientAuthorizationConfirmationEvidence_profileKey_profileVersi")
+  @@index([clientAuthorizationPrincipalId], map: "ClientAuthorizationConfirmationEvidence_clientAuthorizationPrin")
 }
 
 model SellerFinancialScenario {
@@ -3775,8 +3779,8 @@ model SellerFinancialScenario {
   results              SellerFinancialResult[]
   auditEvents          SellerFinancialAuditEvent[]
 
-  @@unique([ownerAgentSubject, scenarioKey, versionOrdinal])
-  @@index([ownerAgentSubject, scenarioKey, createdAt])
+  @@unique([ownerAgentSubject, scenarioKey, versionOrdinal], map: "SellerFinancialScenario_ownerAgentSubject_scenarioKey_versionOr")
+  @@index([ownerAgentSubject, scenarioKey, createdAt], map: "SellerFinancialScenario_ownerAgentSubject_scenarioKey_createdAt")
 }
 
 model SellerFinancialResult {
@@ -3926,7 +3930,7 @@ model StrategyAlternative {
   supersedesAlternative   StrategyAlternative?            @relation("StrategyAlternativeSupersession", fields: [supersedesAlternativeId], references: [id], onDelete: Restrict)
   supersededByAlternative StrategyAlternative?            @relation("StrategyAlternativeSupersession")
 
-  @@unique([analysisId, alternativeKey, versionOrdinal])
+  @@unique([analysisId, alternativeKey, versionOrdinal], map: "StrategyAlternative_analysisId_alternativeKey_versionOrdinal_ke")
   @@index([ownerAgentSubject, analysisId, createdAt])
 }
 
@@ -3980,8 +3984,8 @@ model StrategyAlternativeDependency {
 
   alternative StrategyAlternative @relation(fields: [alternativeId], references: [id], onDelete: Restrict)
 
-  @@unique([alternativeId, upstreamArtifact, dependencyType])
-  @@index([ownerAgentSubject, alternativeId])
+  @@unique([alternativeId, upstreamArtifact, dependencyType], map: "StrategyAlternativeDependency_alternativeId_upstreamArtifact_de")
+  @@index([ownerAgentSubject, alternativeId], map: "StrategyAlternativeDependency_ownerAgentSubject_alternativeId_i")
 }
 
 model StrategyAlternativeAuditEvent {
@@ -4016,9 +4020,9 @@ model MultiPropertyFinancialScenario {
   versions    MultiPropertyFinancialScenarioVersion[]
   auditEvents MultiPropertyFinancialScenarioAuditEvent[]
 
-  @@unique([ownerAgentSubject, scenarioKey])
-  @@index([ownerAgentSubject, clientCaseId, createdAt])
-  @@index([ownerAgentSubject, lifecycleState, createdAt])
+  @@unique([ownerAgentSubject, scenarioKey], map: "MultiPropertyFinancialScenario_ownerAgentSubject_scenarioKey_ke")
+  @@index([ownerAgentSubject, clientCaseId, createdAt], map: "MultiPropertyFinancialScenario_ownerAgentSubject_clientCaseId_c")
+  @@index([ownerAgentSubject, lifecycleState, createdAt], map: "MultiPropertyFinancialScenario_ownerAgentSubject_lifecycleState")
 }
 
 model MultiPropertyFinancialScenarioVersion {
@@ -4043,8 +4047,8 @@ model MultiPropertyFinancialScenarioVersion {
   supersededBy      MultiPropertyFinancialScenarioVersion?     @relation("MultiPropertyFinancialScenarioVersionSupersession")
   auditEvents       MultiPropertyFinancialScenarioAuditEvent[]
 
-  @@unique([scenarioId, versionOrdinal])
-  @@index([ownerAgentSubject, scenarioId, createdAt])
+  @@unique([scenarioId, versionOrdinal], map: "MultiPropertyFinancialScenarioVersion_scenarioId_versionOrdinal")
+  @@index([ownerAgentSubject, scenarioId, createdAt], map: "MultiPropertyFinancialScenarioVersion_ownerAgentSubject_scenari")
 }
 
 model MultiPropertyFinancialScenarioProperty {
@@ -4063,9 +4067,9 @@ model MultiPropertyFinancialScenarioProperty {
   scenarioVersion   MultiPropertyFinancialScenarioVersion @relation(fields: [scenarioVersionId], references: [id], onDelete: Restrict)
   canonicalProperty CanonicalPhysicalProperty?            @relation(fields: [canonicalPropertyId], references: [id], onDelete: SetNull)
 
-  @@unique([scenarioVersionId, sequence])
-  @@index([ownerAgentSubject, canonicalPropertyId])
-  @@index([scenarioVersionId, role])
+  @@unique([scenarioVersionId, sequence], map: "MultiPropertyFinancialScenarioProperty_scenarioVersionId_sequen")
+  @@index([ownerAgentSubject, canonicalPropertyId], map: "MultiPropertyFinancialScenarioProperty_ownerAgentSubject_canoni")
+  @@index([scenarioVersionId, role], map: "MultiPropertyFinancialScenarioProperty_scenarioVersionId_role_i")
 }
 
 model MultiPropertyFinancialScenarioResult {
@@ -4083,7 +4087,7 @@ model MultiPropertyFinancialScenarioResult {
 
   scenarioVersion MultiPropertyFinancialScenarioVersion @relation(fields: [scenarioVersionId], references: [id], onDelete: Restrict)
 
-  @@index([ownerAgentSubject, calculatedAt])
+  @@index([ownerAgentSubject, calculatedAt], map: "MultiPropertyFinancialScenarioResult_ownerAgentSubject_calculat")
   @@index([inputFingerprint])
 }
 
@@ -4100,8 +4104,8 @@ model MultiPropertyFinancialScenarioAuditEvent {
   scenario        MultiPropertyFinancialScenario         @relation(fields: [scenarioId], references: [id], onDelete: Restrict)
   scenarioVersion MultiPropertyFinancialScenarioVersion? @relation(fields: [scenarioVersionId], references: [id], onDelete: Restrict)
 
-  @@index([scenarioId, createdAt])
-  @@index([ownerAgentSubject, createdAt])
+  @@index([scenarioId, createdAt], map: "MultiPropertyFinancialScenarioAuditEvent_scenarioId_createdAt_i")
+  @@index([ownerAgentSubject, createdAt], map: "MultiPropertyFinancialScenarioAuditEvent_ownerAgentSubject_crea")
 }
 
 model AdvancedInvestmentReturnAnalysis {
@@ -4118,8 +4122,8 @@ model AdvancedInvestmentReturnAnalysis {
 
   projections AdvancedInvestmentReturnProjection[]
 
-  @@unique([ownerAgentSubject, analysisKey])
-  @@index([ownerAgentSubject, createdAt])
+  @@unique([ownerAgentSubject, analysisKey], map: "AdvancedInvestmentReturnAnalysis_ownerAgentSubject_analysisKey_")
+  @@index([ownerAgentSubject, createdAt], map: "AdvancedInvestmentReturnAnalysis_ownerAgentSubject_createdAt_id")
 }
 
 model AdvancedInvestmentReturnProjection {
@@ -4152,8 +4156,8 @@ model AdvancedInvestmentReturnProjection {
   supersedesProjection   AdvancedInvestmentReturnProjection?        @relation("AdvancedInvestmentReturnProjectionSupersession", fields: [supersedesProjectionId], references: [id], onDelete: Restrict)
   supersededByProjection AdvancedInvestmentReturnProjection?        @relation("AdvancedInvestmentReturnProjectionSupersession")
 
-  @@unique([analysisId, projectionKey, versionOrdinal])
-  @@index([ownerAgentSubject, analysisId, createdAt])
+  @@unique([analysisId, projectionKey, versionOrdinal], map: "AdvancedInvestmentReturnProjection_analysisId_projectionKey_ver")
+  @@index([ownerAgentSubject, analysisId, createdAt], map: "AdvancedInvestmentReturnProjection_ownerAgentSubject_analysisId")
 }
 
 model AdvancedInvestmentReturnProjectionResult {
@@ -4171,9 +4175,9 @@ model AdvancedInvestmentReturnProjectionResult {
 
   projection AdvancedInvestmentReturnProjection @relation(fields: [projectionId], references: [id], onDelete: Restrict)
 
-  @@unique([projectionId, versionOrdinal])
-  @@index([ownerAgentSubject, createdAt])
-  @@index([projectionId, createdAt])
+  @@unique([projectionId, versionOrdinal], map: "AdvancedInvestmentReturnProjectionResult_projectionId_versionOr")
+  @@index([ownerAgentSubject, createdAt], map: "AdvancedInvestmentReturnProjectionResult_ownerAgentSubject_crea")
+  @@index([projectionId, createdAt], map: "AdvancedInvestmentReturnProjectionResult_projectionId_createdAt")
 }
 
 model AdvancedInvestmentReturnDependency {
@@ -4189,8 +4193,8 @@ model AdvancedInvestmentReturnDependency {
 
   projection AdvancedInvestmentReturnProjection @relation(fields: [projectionId], references: [id], onDelete: Restrict)
 
-  @@unique([projectionId, upstreamArtifact, dependencyType])
-  @@index([ownerAgentSubject, projectionId])
+  @@unique([projectionId, upstreamArtifact, dependencyType], map: "AdvancedInvestmentReturnDependency_projectionId_upstreamArtifac")
+  @@index([ownerAgentSubject, projectionId], map: "AdvancedInvestmentReturnDependency_ownerAgentSubject_projection")
 }
 
 model AdvancedInvestmentReturnAuditEvent {
@@ -4204,7 +4208,7 @@ model AdvancedInvestmentReturnAuditEvent {
   projection AdvancedInvestmentReturnProjection @relation(fields: [projectionId], references: [id], onDelete: Restrict)
 
   @@index([projectionId, createdAt])
-  @@index([ownerAgentSubject, createdAt])
+  @@index([ownerAgentSubject, createdAt], map: "AdvancedInvestmentReturnAuditEvent_ownerAgentSubject_createdAt_")
 }
 
 // prisma/schema.prisma
