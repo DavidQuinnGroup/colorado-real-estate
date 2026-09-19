@@ -451,6 +451,16 @@ enum ClientCaseObjectiveStatus {
   ARCHIVED
 }
 
+enum ClientCaseObjectivePropertyRelationshipRole {
+  SUBJECT
+  CANDIDATE
+}
+
+enum ClientCaseObjectivePropertyRelationshipStatus {
+  ACTIVE
+  ENDED
+}
+
 enum ClientCaseContextScope {
   CASE
   OBJECTIVE
@@ -3155,6 +3165,7 @@ model ClientCase {
   parties      ClientCaseParty[]
   properties   ClientCaseProperty[]
   objectives   ClientCaseObjective[]
+  objectivePropertyRelationships ClientCaseObjectivePropertyRelationship[]
   facts        ClientCaseFact[]
   criteria     ClientCaseCriterion[]
   scenarios    ClientCaseScenario[]
@@ -3250,8 +3261,10 @@ model ClientCaseProperty {
   criteria          ClientCaseCriterion[]
   scenarioPropertyDispositions ClientCaseScenarioPropertyDisposition[]
   relationshipRoles ClientCasePropertyRelationshipRole[]
+  objectivePropertyRelationships ClientCaseObjectivePropertyRelationship[]
 
   @@unique([clientCaseId, canonicalPropertyId])
+  @@unique([clientCaseId, id])
   @@index([canonicalPropertyId])
 }
 
@@ -3289,9 +3302,33 @@ model ClientCaseObjective {
   facts      ClientCaseFact[]
   criteria   ClientCaseCriterion[]
   scenarioObjectiveLinks ClientCaseScenarioObjective[]
+  propertyRelationships ClientCaseObjectivePropertyRelationship[]
 
+  @@unique([clientCaseId, id])
   @@index([clientCaseId, status, createdAt])
   @@index([clientCaseId, objectiveType, status])
+}
+
+model ClientCaseObjectivePropertyRelationship {
+  id                   String                                             @id @default(cuid())
+  clientCaseId         String
+  objectiveId          String
+  clientCasePropertyId String
+  role                 ClientCaseObjectivePropertyRelationshipRole
+  status               ClientCaseObjectivePropertyRelationshipStatus     @default(ACTIVE)
+  startedAt            DateTime                                           @default(now())
+  endedAt              DateTime?
+  createdBySubject     String
+  createdAt            DateTime                                           @default(now())
+  updatedAt            DateTime                                           @updatedAt
+
+  clientCase         ClientCase          @relation(fields: [clientCaseId], references: [id], onDelete: Restrict)
+  objective          ClientCaseObjective @relation(fields: [clientCaseId, objectiveId], references: [clientCaseId, id], onDelete: Restrict)
+  clientCaseProperty ClientCaseProperty  @relation(fields: [clientCaseId, clientCasePropertyId], references: [clientCaseId, id], onDelete: Restrict)
+
+  @@index([clientCaseId, status], map: "CCOPR_case_status_idx")
+  @@index([objectiveId, status], map: "CCOPR_objective_status_idx")
+  @@index([clientCasePropertyId, status], map: "CCOPR_property_status_idx")
 }
 
 model ClientCaseFact {
