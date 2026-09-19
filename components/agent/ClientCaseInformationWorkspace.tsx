@@ -15,6 +15,7 @@ import {
   AtlasSurface,
 } from '@/components/design-system/AtlasDesignSystem';
 import type { ClientCaseInformationIntent } from '@/lib/clientCaseInformationIntent';
+import { objectiveTypeMetadata } from '@/lib/clientCaseContextSemanticRegistry';
 import { AgentPropertyDiscoverySelect, type AgentPropertyDiscoverySelection } from './AgentPropertyDiscoverySelect';
 import styles from './ClientCaseInformationWorkspace.module.css';
 
@@ -32,14 +33,13 @@ type PropertyRelation = {
   facts?: ContextRecord[];
   scenarioPropertyDispositions?: Array<{ id: string; disposition: string; scenarioVersion: { id: string; versionNumber: number; scenario: { id: string; name: string; currentVersionId: string | null } } }>;
 };
-type ObjectiveRecord = { id: string; objectiveType: string; status: string; title: string; archivedAt: string | null };
+type ObjectiveRecord = { id: string; objectiveType: string; status: string; title: string; archivedAt: string | null; createdAt: string };
 type ContactMethod = { id: string; kind: 'EMAIL' | 'PHONE'; displayValue: string; normalizedValue: string; isPrimary: boolean; lifecycleStatus: string };
 type ContactRecord = { id: string; displayName: string; givenName: string | null; familyName: string | null; entityType: 'PERSON' | 'ORGANIZATION'; lifecycleStatus: string; methods: ContactMethod[] };
 type ParticipationRecord = { id: string; role: string; displayLabel: string; participationStatus: string; contact: ContactRecord | null; advisoryRoles: Array<{ id: string; role: string }> };
 type InformationResponse = {
   clientCase: { id: string; displayName: string; status: string; properties?: PropertyRelation[] };
   current: {
-    objectives: { BUY_PRIMARY_HOME: boolean; FINANCIAL_STRATEGY: boolean };
     objectiveRecords: ObjectiveRecord[];
     targetCities: ContextRecord | null;
     purchasePriceRange: ContextRecord | null;
@@ -107,8 +107,6 @@ export function ClientCaseInformationWorkspace({ clientCaseId, intent }: { clien
   const [loadError, setLoadError] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
-  const [buyerObjective, setBuyerObjective] = useState(false);
-  const [financialObjective, setFinancialObjective] = useState(false);
   const [cities, setCities] = useState<string[]>([]);
   const [cityDraft, setCityDraft] = useState('');
   const [minimumDollars, setMinimumDollars] = useState('');
@@ -139,8 +137,6 @@ export function ClientCaseInformationWorkspace({ clientCaseId, intent }: { clien
     void api(clientCaseId).then((payload) => {
       if (cancelled) return;
       setWorkspace(payload);
-      setBuyerObjective(payload.current.objectives.BUY_PRIMARY_HOME);
-      setFinancialObjective(payload.current.objectives.FINANCIAL_STRATEGY);
       setCities(Array.isArray(payload.current.targetCities?.value) ? payload.current.targetCities.value.filter((entry): entry is string => typeof entry === 'string') : []);
       setMinimumDollars(formatMoney(payload.current.purchasePriceRange?.value, 'minimumCents'));
       setMaximumDollars(formatMoney(payload.current.purchasePriceRange?.value, 'maximumCents'));
@@ -152,7 +148,8 @@ export function ClientCaseInformationWorkspace({ clientCaseId, intent }: { clien
     return () => { cancelled = true; };
   }, [clientCaseId]);
 
-  const activeBuyerObjective = buyerObjective || Boolean(workspace?.current.objectives.BUY_PRIMARY_HOME);
+  const activeObjectives = workspace?.current.objectiveRecords.filter((objective) => objective.status === 'ACTIVE') ?? [];
+  const activeBuyerObjective = activeObjectives.some((objective) => objective.objectiveType === 'BUY_PRIMARY_HOME');
   const readinessHref = `/agent/clients/${encodeURIComponent(clientCaseId)}/readiness`;
   const canSave = !saving && Boolean(workspace);
   const activeParticipations = workspace?.people.participations.filter((entry) => entry.participationStatus === 'ACTIVE') ?? [];
@@ -161,7 +158,7 @@ export function ClientCaseInformationWorkspace({ clientCaseId, intent }: { clien
   const editableContacts = workspace?.people.contacts.filter((contact) => contact.lifecycleStatus === 'ACTIVE') ?? [];
   const propertySummary = workspace?.current.properties.length ? `${workspace.current.properties.length} linked · ${[...new Set(workspace.current.properties.flatMap((property) => property.activeRelationshipRoleLabels ?? property.relationshipRoles?.filter((entry) => entry.status === 'ACTIVE').map((entry) => roleLabel(entry.role)) ?? [roleLabel(property.role)]))].slice(0, 3).join(', ')}` : 'None linked';
   const summary = [
-    ['Objectives', [buyerObjective ? 'Buyer decision' : null, financialObjective ? 'Financial strategy' : null].filter(Boolean).join(', ') || 'Not provided'],
+    ['Objectives', activeObjectives.map((objective) => `${objectiveTypeMetadata(objective.objectiveType).displayLabel}: ${objective.title}`).join(', ') || 'No current Objectives'],
     ['Properties', propertySummary],
     ['Target cities', cities.length ? cities.join(', ') : 'Not provided'],
     ['Stated purchase range', minimumDollars && maximumDollars ? `$${Number(minimumDollars).toLocaleString()} - $${Number(maximumDollars).toLocaleString()}` : 'Not provided'],
@@ -185,7 +182,6 @@ export function ClientCaseInformationWorkspace({ clientCaseId, intent }: { clien
         action: 'SAVE_CANONICAL_INFORMATION',
         clientCaseId,
         input: {
-          objectives: { BUY_PRIMARY_HOME: buyerObjective, FINANCIAL_STRATEGY: financialObjective },
           targetCities: cities,
           ...(minimumDollars && maximumDollars ? { purchasePriceRange: { minimumDollars, maximumDollars } } : {}),
           ...(minBedrooms ? { minBedrooms } : {}),
@@ -428,11 +424,9 @@ export function ClientCaseInformationWorkspace({ clientCaseId, intent }: { clien
 
         <div className={styles.sectionGrid} id="goals">
           <AtlasSurface className={intent === 'objectives' ? styles.intent : undefined} material="glass" data-testid="client-case-information-objectives">
-            <div className={styles.panelHeading}><div><h2 className="atlas-ds-major-section">Objectives</h2><p className={styles.metadata}>Ordinary objective lifecycle records, not immutable fact revisions.</p></div><AtlasInformationClassLabel informationClass="governed-fact" /></div>
-            <div className={styles.objectiveList}>
-              <label className={styles.objectiveOption}><input checked={buyerObjective} onChange={(event) => setBuyerObjective(event.target.checked)} type="checkbox" /><span className={styles.optionText}><span className={styles.optionTitle}>Buyer decision objective</span><span className={styles.optionDescription}>Enables buyer criteria such as price range and minimum bedrooms.</span></span></label>
-              <label className={styles.objectiveOption}><input checked={financialObjective} onChange={(event) => setFinancialObjective(event.target.checked)} type="checkbox" /><span className={styles.optionText}><span className={styles.optionTitle}>Financial strategy objective</span><span className={styles.optionDescription}>Supports Financial Strategy readiness without storing scenario assumptions.</span></span></label>
-            </div>
+            <div className={styles.panelHeading}><div><h2 className="atlas-ds-major-section">Objectives</h2><p className={styles.metadata}>Current pursuit records are managed from the Client Command Center.</p></div><AtlasInformationClassLabel informationClass="governed-fact" /></div>
+            <div className={styles.objectiveList}>{activeObjectives.length ? activeObjectives.map((objective) => <div className={styles.objectiveOption} key={objective.id}><span className={styles.optionText}><span className={styles.optionTitle}>{objectiveTypeMetadata(objective.objectiveType).displayLabel}: {objective.title}</span><span className={styles.optionDescription}>Active Objective</span></span></div>) : <p className={styles.emptyText}>No current Objectives are recorded.</p>}</div>
+            <Link className="atlas-action atlas-action-secondary" href={`/agent/clients/${encodeURIComponent(clientCaseId)}?section=goals`}>Open Objectives</Link>
           </AtlasSurface>
 
           <AtlasSurface className={intent === 'target-cities' || intent === 'purchase-price-range' || intent === 'min-bedrooms' ? styles.intent : undefined} material="glass" data-testid="client-case-information-buyer-criteria" id="current-information">
@@ -447,7 +441,7 @@ export function ClientCaseInformationWorkspace({ clientCaseId, intent }: { clien
                 <AtlasField htmlFor="minimum-dollars" label="Minimum stated purchase price"><input className={styles.input} id="minimum-dollars" inputMode="decimal" placeholder="500000" value={minimumDollars} onChange={(event) => setMinimumDollars(event.target.value)} /></AtlasField>
                 <AtlasField htmlFor="maximum-dollars" label="Maximum stated purchase price"><input className={styles.input} id="maximum-dollars" inputMode="decimal" placeholder="750000" value={maximumDollars} onChange={(event) => setMaximumDollars(event.target.value)} /></AtlasField>
               </div>
-              <AtlasField description={activeBuyerObjective ? undefined : 'Save the Buyer decision objective before saving objective-scoped buyer criteria.'} htmlFor="min-bedrooms" label="Minimum bedrooms"><input className={styles.input} id="min-bedrooms" inputMode="numeric" min="0" type="number" value={minBedrooms} onChange={(event) => setMinBedrooms(event.target.value)} /></AtlasField>
+              <AtlasField description={activeBuyerObjective ? undefined : 'Add a Buy Objective from the Client Command Center before saving objective-scoped buyer criteria.'} htmlFor="min-bedrooms" label="Minimum bedrooms"><input className={styles.input} id="min-bedrooms" inputMode="numeric" min="0" type="number" value={minBedrooms} onChange={(event) => setMinBedrooms(event.target.value)} /></AtlasField>
             </div>
           </AtlasSurface>
         </div>

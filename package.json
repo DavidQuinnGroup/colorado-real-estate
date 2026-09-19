@@ -38,6 +38,7 @@
     "check:cross-workspace-client-context": "jiti scripts/checkCrossWorkspaceClientContext.ts",
     "check:unified-agent-workspace-client-command-center-wave-1": "jiti scripts/checkUnifiedAgentWorkspaceClientCommandCenterWave1.ts",
     "check:client-case-information-workflow": "jiti scripts/checkClientCaseInformationWorkflow.ts",
+    "check:client-objective-wave-a": "jiti scripts/checkClientObjectiveWaveA.ts",
     "check:client-case-information-visual-structure": "jiti scripts/checkClientCaseInformationVisualStructure.ts",
     "check:client-case-information-server-boundary": "jiti scripts/checkClientCaseInformationServerBoundary.ts",
     "check:client-information-wave-a-foundation": "jiti scripts/checkClientInformationWaveAFoundation.ts",

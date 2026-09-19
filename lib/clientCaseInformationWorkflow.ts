@@ -3,18 +3,16 @@ import type { ClientCaseContextSourcePosture, Prisma, PrismaClient } from '@pris
 import { createClientCaseCapabilityReadinessService } from './clientCaseCapabilityReadinessEvaluator';
 import { createClientCaseContextService } from './clientCaseContextFoundation';
 import { createClientCaseContextRecordsService } from './clientCaseContextRecordsFoundation';
-import { CRITERION_SEMANTICS, FACT_SEMANTICS, OBJECTIVE_TYPES } from './clientCaseContextSemanticRegistry';
+import { CRITERION_SEMANTICS, FACT_SEMANTICS } from './clientCaseContextSemanticRegistry';
 import { createClientCasePropertyRelationshipService } from './clientCasePropertyRelationshipRoles';
 import { createClientInformationWaveAService } from './clientInformationWaveAFoundation';
 
 export const CLIENT_CASE_INFORMATION_WORKFLOW_VERSION = 'CANONICAL_CLIENT_CASE_INFORMATION_WORKFLOW_V1' as const;
 export const CLIENT_CASE_INFORMATION_API_ROUTE = '/api/agent/client-case-information' as const;
 
-const SUPPORTED_OBJECTIVES = ['BUY_PRIMARY_HOME', 'FINANCIAL_STRATEGY'] as const;
 const DIRECT_ENTRY_POSTURES = ['CLIENT_STATED', 'AGENT_ENTERED'] as const satisfies readonly ClientCaseContextSourcePosture[];
 const PROPERTY_OCCUPANCY_VALUES = FACT_SEMANTICS.PROPERTY_OCCUPANCY_STATUS.enumValues;
 
-type SupportedObjective = (typeof SUPPORTED_OBJECTIVES)[number];
 type DirectEntryPosture = (typeof DIRECT_ENTRY_POSTURES)[number];
 type RecordValue = Record<string, unknown>;
 type InformationDatabase = Pick<
@@ -33,7 +31,6 @@ type InformationDatabase = Pick<
 >;
 
 export type ClientCaseInformationSaveInput = Readonly<{
-  objectives?: Partial<Record<SupportedObjective, boolean>>;
   targetCities?: readonly string[];
   purchasePriceRange?: Readonly<{ minimumDollars: string | number; maximumDollars: string | number }>;
   minBedrooms?: string | number | null;
@@ -143,7 +140,6 @@ export function createClientCaseInformationWorkflowService(prisma: InformationDa
       propertyRelationships.listProperties(ownerAgentSubject, clientCaseId),
     ]);
     const buyerObjective = current.objectives.find((entry) => entry.objectiveType === 'BUY_PRIMARY_HOME' && entry.status === 'ACTIVE' && !entry.archivedAt) ?? null;
-    const financialObjective = current.objectives.find((entry) => entry.objectiveType === 'FINANCIAL_STRATEGY' && entry.status === 'ACTIVE' && !entry.archivedAt) ?? null;
     const targetCities = currentBySemantic(current.criteria, 'TARGET_CITIES', 'CASE');
     const purchaseRange = buyerObjective ? currentBySemantic(current.criteria, 'PURCHASE_PRICE_RANGE_CENTS', `OBJECTIVE:${buyerObjective.id}`) : null;
     const minBedrooms = buyerObjective ? currentBySemantic(current.criteria, 'MIN_BEDROOMS', `OBJECTIVE:${buyerObjective.id}`) : null;
@@ -159,16 +155,11 @@ export function createClientCaseInformationWorkflowService(prisma: InformationDa
       workflowVersion: CLIENT_CASE_INFORMATION_WORKFLOW_VERSION,
       clientCase,
       supported: {
-        objectives: [...SUPPORTED_OBJECTIVES],
         criteria: Object.keys(CRITERION_SEMANTICS),
         facts: Object.keys(FACT_SEMANTICS),
         sourcePostures: [...DIRECT_ENTRY_POSTURES],
       },
       current: {
-        objectives: {
-          BUY_PRIMARY_HOME: Boolean(buyerObjective),
-          FINANCIAL_STRATEGY: Boolean(financialObjective),
-        },
         objectiveRecords: current.objectives,
         targetCities,
         purchasePriceRange: purchaseRange,
@@ -199,20 +190,7 @@ export function createClientCaseInformationWorkflowService(prisma: InformationDa
     const context = directContext(input);
     const before = await records.readCurrent(ownerAgentSubject, clientCaseId);
 
-    for (const objectiveType of SUPPORTED_OBJECTIVES) {
-      const requested = input.objectives?.[objectiveType];
-      if (requested === undefined) continue;
-      if (!OBJECTIVE_TYPES.includes(objectiveType)) throw new ClientCaseInformationError('INVALID_REQUEST', 'Objective is unsupported.');
-      const active = before.objectives.find((entry) => entry.objectiveType === objectiveType && entry.status === 'ACTIVE' && !entry.archivedAt);
-      if (requested && !active) {
-        await records.createObjective(ownerAgentSubject, clientCaseId, { objectiveType, title: objectiveType === 'BUY_PRIMARY_HOME' ? 'Buyer decision objective' : 'Financial strategy objective', clientMutationKey: `CLIENT_CASE_INFORMATION_${objectiveType}_${Date.now()}` });
-      }
-      if (!requested && active) {
-        await records.transitionObjective(ownerAgentSubject, clientCaseId, active.id, { status: 'ARCHIVED' });
-      }
-    }
-
-    const current = await records.readCurrent(ownerAgentSubject, clientCaseId);
+    const current = before;
     const buyerObjective = current.objectives.find((entry) => entry.objectiveType === 'BUY_PRIMARY_HOME' && entry.status === 'ACTIVE' && !entry.archivedAt) ?? null;
 
     async function upsertCriterion(semanticKey: 'TARGET_CITIES' | 'PURCHASE_PRICE_RANGE_CENTS' | 'MIN_BEDROOMS', value: Prisma.InputJsonValue, scope: 'CASE' | 'OBJECTIVE', objectiveId?: string) {

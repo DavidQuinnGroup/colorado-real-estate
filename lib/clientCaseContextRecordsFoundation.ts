@@ -4,6 +4,7 @@ import type { Prisma, PrismaClient } from '@prisma/client';
 
 import {
   CONTEXT_SCOPES,
+  CREATABLE_PURSUIT_OBJECTIVE_TYPES,
   CRITERION_SEMANTICS,
   FACT_SEMANTICS,
   OBJECTIVE_STATUSES,
@@ -190,10 +191,41 @@ export function createClientCaseContextRecordsService(prisma: ContextDatabase) {
   }
 
   return {
+    async listObjectiveSummary(ownerAgentSubject: string, clientCaseId: string) {
+      await ownedCase(prisma, ownerAgentSubject, clientCaseId);
+      const objectives = await prisma.clientCaseObjective.findMany({
+        where: { clientCaseId },
+        select: { id: true, objectiveType: true, status: true, title: true, createdAt: true, completedAt: true, archivedAt: true },
+        orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+      });
+      const current = objectives.filter((objective) => objective.status === 'ACTIVE');
+      const historical = objectives.filter((objective) => objective.status !== 'ACTIVE');
+      return {
+        clientCaseId,
+        current,
+        historical,
+        currentCount: current.length,
+        historicalCount: historical.length,
+      };
+    },
+
     async createObjective(ownerAgentSubject: string, clientCaseId: string, raw: unknown) {
       await ownedCase(prisma, ownerAgentSubject, clientCaseId);
       const input = object(raw);
       const objectiveType = registryValue(input.objectiveType, OBJECTIVE_TYPES, 'objectiveType') as ObjectiveType;
+      const title = label(input.title, 'title', 160)!;
+      const mutationKey = requiredId(input.clientMutationKey, 'clientMutationKey');
+      const idempotencyKey = `ATLAS_CLIENT_CASE_OBJECTIVE_V1|${ownerAgentSubject}|${clientCaseId}|${fingerprint({ objectiveType, title, mutationKey })}`;
+      const existing = await prisma.clientCaseObjective.findUnique({ where: { idempotencyKey } });
+      if (existing) return existing;
+      return prisma.clientCaseObjective.create({ data: { clientCaseId, objectiveType, title, createdBySubject: ownerAgentSubject, idempotencyKey } });
+    },
+
+    async createPursuitObjective(ownerAgentSubject: string, clientCaseId: string, raw: unknown) {
+      await ownedCase(prisma, ownerAgentSubject, clientCaseId);
+      const input = object(raw);
+      const objectiveType = registryValue(input.objectiveType, OBJECTIVE_TYPES, 'objectiveType') as ObjectiveType;
+      if (!CREATABLE_PURSUIT_OBJECTIVE_TYPES.includes(objectiveType)) throw new ClientCaseContextRecordsError('INVALID_REQUEST', 'This Objective type is not available for new pursuits.');
       const title = label(input.title, 'title', 160)!;
       const mutationKey = requiredId(input.clientMutationKey, 'clientMutationKey');
       const idempotencyKey = `ATLAS_CLIENT_CASE_OBJECTIVE_V1|${ownerAgentSubject}|${clientCaseId}|${fingerprint({ objectiveType, title, mutationKey })}`;

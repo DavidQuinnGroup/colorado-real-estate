@@ -19,7 +19,7 @@ assert.equal(packageJson.scripts?.['check:client-case-information-workflow'], 'j
 assert.match(service, /CANONICAL_CLIENT_CASE_INFORMATION_WORKFLOW_V1/);
 assert.match(service, /createClientCaseContextRecordsService\(prisma\)/);
 assert.match(service, /createClientCaseCapabilityReadinessService\(prisma\)/);
-assert.match(service, /SUPPORTED_OBJECTIVES = \['BUY_PRIMARY_HOME', 'FINANCIAL_STRATEGY'\]/);
+assert.match(service, /objectiveRecords: current\.objectives/);
 assert.match(service, /TARGET_CITIES/);
 assert.match(service, /PURCHASE_PRICE_RANGE_CENTS/);
 assert.match(service, /MIN_BEDROOMS/);
@@ -55,6 +55,8 @@ assert.match(workspace, /data-readiness-persistence="false"/);
 assert.match(workspace, /Save and review readiness/);
 assert.match(workspace, /\/api\/agent\/client-case-information/);
 assert.match(workspace, /SAVE_CANONICAL_INFORMATION/);
+assert.match(workspace, /Open Objectives/);
+assert.doesNotMatch(workspace, /setBuyerObjective|setFinancialObjective|Buyer decision objective|Financial strategy objective/);
 assert.doesNotMatch(workspace, /export function informationIntentFromRequirement/);
 assert.match(intent, /CLIENT_CASE_INFORMATION_REQUIREMENT_INTENTS/);
 assert.match(intent, /BUYER_DECISION_TARGET_CITIES/);

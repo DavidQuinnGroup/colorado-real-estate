@@ -43,13 +43,30 @@ export type ClientCaseSummary = {
 
 export type InformationWorkspaceSummary = {
   current: {
-    objectives: { BUY_PRIMARY_HOME: boolean; FINANCIAL_STRATEGY: boolean };
     targetCities: { value: unknown } | null;
     purchasePriceRange: { value: unknown } | null;
     minBedrooms: { value: unknown } | null;
   };
   people: { participations: Array<{ id: string; displayLabel: string; role: string; contact: { displayName: string } | null }> };
   readinessPreview: Record<string, { status: string; missingPreliminary: string[]; missingComprehensive: string[]; helpfulMissing: string[] } | null>;
+};
+
+export type ClientCaseObjectiveSummary = {
+  clientCaseId: string;
+  current: ClientCaseObjectiveSummaryRecord[];
+  historical: ClientCaseObjectiveSummaryRecord[];
+  currentCount: number;
+  historicalCount: number;
+};
+
+export type ClientCaseObjectiveSummaryRecord = {
+  id: string;
+  objectiveType: string;
+  status: string;
+  title: string;
+  createdAt: string;
+  completedAt: string | null;
+  archivedAt: string | null;
 };
 
 export type OutputSummary = { id: string; productKind: string; subjectRef: string; versions: Array<{ versionOrdinal: number; composition: { title?: string } | null }> };

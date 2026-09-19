@@ -11,6 +11,27 @@ export type ContextScope = (typeof CONTEXT_SCOPES)[number];
 export type SourcePosture = (typeof SOURCE_POSTURES)[number];
 export type ContextValueType = 'ENUM' | 'INTEGER' | 'RANGE_CENTS' | 'STRING_SET';
 
+export type ObjectiveTypeMetadata = Readonly<{
+  displayLabel: string;
+  creatablePursuit: boolean;
+  domainAction: 'BUYER' | 'SELLER' | null;
+  legacy: boolean;
+}>;
+
+export const OBJECTIVE_TYPE_METADATA = Object.freeze({
+  BUY_PRIMARY_HOME: { displayLabel: 'Buy', creatablePursuit: true, domainAction: 'BUYER', legacy: false },
+  SELL_CURRENT_HOME: { displayLabel: 'Sell', creatablePursuit: true, domainAction: 'SELLER', legacy: false },
+  INVESTMENT_ACQUISITION: { displayLabel: 'Invest', creatablePursuit: true, domainAction: null, legacy: false },
+  FINANCIAL_STRATEGY: { displayLabel: 'Financial Strategy', creatablePursuit: false, domainAction: null, legacy: true },
+} as const satisfies Record<ObjectiveType, ObjectiveTypeMetadata>);
+
+export const CREATABLE_PURSUIT_OBJECTIVE_TYPES = OBJECTIVE_TYPES.filter((objectiveType) => OBJECTIVE_TYPE_METADATA[objectiveType].creatablePursuit) as readonly ObjectiveType[];
+
+export function objectiveTypeMetadata(value: string): ObjectiveTypeMetadata & { known: boolean } {
+  const metadata = OBJECTIVE_TYPE_METADATA[value as ObjectiveType];
+  return metadata ? { ...metadata, known: true } : { displayLabel: 'Objective', creatablePursuit: false, domainAction: null, legacy: false, known: false };
+}
+
 export type SemanticDefinition = Readonly<{
   key: string;
   valueType: ContextValueType;
