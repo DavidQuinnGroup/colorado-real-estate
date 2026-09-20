@@ -145,7 +145,7 @@ function listInput(raw: unknown) {
 async function ownedCase(prisma: Database, ownerAgentSubject: string, clientCaseId: string) {
   const clientCase = await prisma.clientCase.findFirst({
     where: { id: clientCaseId, ownerAgentSubject },
-    select: { id: true },
+    select: { id: true, status: true },
   });
   if (!clientCase) throw new ClientCaseObjectivePropertyRelationshipError('NOT_FOUND', 'The Client Case is unavailable to this Agent.');
   return clientCase;
@@ -156,10 +156,13 @@ function isPrismaError(error: unknown, code: string) {
 }
 
 export function createClientCaseObjectivePropertyRelationshipService(prisma: Database) {
-  async function authorize(ownerAgentSubject: unknown, clientCaseId: unknown) {
+  async function authorize(ownerAgentSubject: unknown, clientCaseId: unknown, mutation = false) {
     const subject = identifier(ownerAgentSubject, 'authenticated subject');
     const caseId = identifier(clientCaseId, 'clientCaseId');
-    await ownedCase(prisma, subject, caseId);
+    const clientCase = await ownedCase(prisma, subject, caseId);
+    if (mutation && clientCase.status !== 'ACTIVE') {
+      throw new ClientCaseObjectivePropertyRelationshipError('CONFLICT', 'Archived Client Cases are read-only for Objective-Property relationships.');
+    }
     return { subject, caseId };
   }
 
@@ -174,12 +177,12 @@ export function createClientCaseObjectivePropertyRelationshipService(prisma: Dat
 
   return {
     async link(ownerAgentSubject: string, clientCaseId: string, raw: unknown): Promise<ObjectivePropertyRelationshipSummary> {
-      const { subject, caseId } = await authorize(ownerAgentSubject, clientCaseId);
+      const { subject, caseId } = await authorize(ownerAgentSubject, clientCaseId, true);
       const input = linkInput(raw);
       try {
         return await prisma.$transaction(async (tx) => {
           const [objective, clientCaseProperty] = await Promise.all([
-            tx.clientCaseObjective.findFirst({ where: { id: input.objectiveId, clientCaseId: caseId }, select: { id: true } }),
+            tx.clientCaseObjective.findFirst({ where: { id: input.objectiveId, clientCaseId: caseId, status: 'ACTIVE' }, select: { id: true } }),
             tx.clientCaseProperty.findFirst({ where: { id: input.clientCasePropertyId, clientCaseId: caseId }, select: { id: true } }),
           ]);
           if (!objective) throw new ClientCaseObjectivePropertyRelationshipError('NOT_FOUND', 'The Client Case Objective is unavailable to this Agent.');
@@ -202,7 +205,7 @@ export function createClientCaseObjectivePropertyRelationshipService(prisma: Dat
     },
 
     async end(ownerAgentSubject: string, clientCaseId: string, relationshipId: string): Promise<ObjectivePropertyRelationshipSummary> {
-      const { caseId } = await authorize(ownerAgentSubject, clientCaseId);
+      const { caseId } = await authorize(ownerAgentSubject, clientCaseId, true);
       const id = identifier(relationshipId, 'relationshipId');
       const existing = await prisma.clientCaseObjectivePropertyRelationship.findFirst({
         where: { id, clientCaseId: caseId, status: 'ACTIVE' },

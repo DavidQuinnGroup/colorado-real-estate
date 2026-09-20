@@ -1,0 +1,33 @@
+.fixture { min-height: 100%; color: var(--atlas-text-primary); }
+.fixture > :global(.atlas-ds-canvas) { min-height: 100%; padding: clamp(var(--atlas-space-5), 3vw, var(--atlas-space-8)); }
+.header, .grid, .complex { width: min(100%, 74rem); margin-inline: auto; }
+.header, .heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
+.header { margin-bottom: 1rem; }
+.header p { max-width: 48rem; margin: .5rem 0 0; color: var(--atlas-text-secondary); line-height: 1.5; }
+.grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+.case, .complex { display: grid; gap: 1rem; border-color: transparent; }
+.kicker, .propertyRole { margin: 0; color: var(--atlas-text-muted); font-size: .75rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.current, .linkForm, .endState { display: grid; gap: .45rem; padding-top: .8rem; box-shadow: inset 0 1px 0 color-mix(in srgb, var(--atlas-profile-border-subtle) 22%, transparent); }
+.current strong, .objectiveList strong { color: var(--atlas-text-primary); font-size: .875rem; }
+.current span, .objectiveList small, .empty, .past, .endState span { color: var(--atlas-text-secondary); font-size: .8125rem; line-height: 1.45; }
+.current div, .linkForm div, .endState { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; }
+.history { display: inline-flex; align-items: center; justify-content: flex-start; gap: .4rem; width: fit-content; min-height: 2.25rem; border: 0; padding: 0; background: transparent; color: var(--atlas-action-primary); font: inherit; font-size: .875rem; font-weight: 700; cursor: pointer; }
+.linkForm label, .linkForm fieldset { display: grid; gap: .35rem; min-width: 0; color: var(--atlas-text-secondary); font-size: .8125rem; font-weight: 700; }
+.linkForm select { min-height: 2.6rem; border: 1px solid color-mix(in srgb, var(--atlas-profile-border-strong) 54%, transparent); border-radius: var(--atlas-radius-md); padding: 0 .75rem; background: color-mix(in srgb, var(--atlas-profile-field-background) 88%, transparent); color: var(--atlas-text-primary); font: inherit; }
+.linkForm fieldset { grid-template-columns: repeat(2, minmax(0, 1fr)); border: 0; padding: 0; }
+.linkForm legend { grid-column: 1 / -1; }
+.linkForm fieldset label { display: flex; align-items: center; gap: .4rem; font-weight: 400; }
+.objectiveList { display: grid; gap: .5rem; margin: 0; padding: .75rem 0 0; list-style: none; box-shadow: inset 0 1px 0 color-mix(in srgb, var(--atlas-profile-border-subtle) 22%, transparent); }
+.objectiveList li { display: flex; align-items: center; justify-content: space-between; gap: .75rem; }
+.objectiveList span { display: grid; gap: .15rem; min-width: 0; }
+.objectiveList a { color: var(--atlas-action-primary); font-size: .8125rem; font-weight: 700; text-decoration: none; }
+.complex { margin-top: 1rem; }
+.count { color: var(--atlas-text-muted); font-size: .8125rem; }
+.objectiveGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem; }
+.objectiveGrid section { min-width: 0; padding: .75rem 0; box-shadow: inset 0 1px 0 color-mix(in srgb, var(--atlas-profile-border-subtle) 22%, transparent); }
+.objectiveGrid h3 { margin: 0; color: var(--atlas-text-primary); font-size: .875rem; }
+.objectiveGrid p { margin: .35rem 0 0; color: var(--atlas-text-secondary); font-size: .8125rem; line-height: 1.45; }
+.endState { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; }
+.endState strong { grid-column: 1 / -1; color: var(--atlas-text-primary); font-size: .875rem; }
+.endState span { grid-column: 1 / -1; }
+@media (max-width: 760px) { .grid, .objectiveGrid { grid-template-columns: 1fr; } .endState { grid-template-columns: 1fr; } .objectiveList li, .header, .heading { align-items: flex-start; flex-direction: column; } .linkForm fieldset { grid-template-columns: 1fr; } }

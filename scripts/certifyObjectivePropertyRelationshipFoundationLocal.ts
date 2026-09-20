@@ -5,6 +5,7 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { Prisma, PrismaClient } from '@prisma/client';
 
 import { createClientCaseObjectivePropertyRelationshipService } from '../lib/clientCaseObjectivePropertyRelationships';
+import { createClientCaseContextRecordsService } from '../lib/clientCaseContextRecordsFoundation';
 import { CANONICAL_DATABASE_BASELINE } from '../lib/schema/canonicalDatabaseBaseline';
 import {
   bootstrapCanonicalDatabaseBaseline,
@@ -257,6 +258,15 @@ try {
   assert.equal(measured.queryCounter.value, oneRowQueryCount, 'Client batch reads must not add queries per relationship.');
   assert.ok(measured.queryCounter.value <= 5, `Client batch lookup must remain bounded; observed ${measured.queryCounter.value} queries.`);
   assert.ok(batch.length >= 6);
+  const contextRecords = createClientCaseContextRecordsService(pathAPrisma);
+  await reject(() => contextRecords.transitionObjective('agent-a', 'case-a', 'objective-life', { status: 'COMPLETED' }));
+  await measuredService.end('agent-a', 'case-a', 'active-valid');
+  assert.equal((await contextRecords.transitionObjective('agent-a', 'case-a', 'objective-life', { status: 'COMPLETED' })).status, 'COMPLETED');
+  await reject(() => measuredService.link('agent-a', 'case-a', { objectiveId: 'objective-life', clientCasePropertyId: 'property-b', role: 'CANDIDATE' }));
+  await pathAPrisma.clientCase.update({ where: { id: 'case-a' }, data: { status: 'ARCHIVED', archivedAt: new Date() } });
+  await reject(() => measuredService.link('agent-a', 'case-a', { objectiveId: 'objective-b2', clientCasePropertyId: 'property-e', role: 'CANDIDATE' }));
+  await reject(() => measuredService.end('agent-a', 'case-a', batch[0].id));
+  assert.ok((await measuredService.listByClientCase('agent-a', 'case-a', { status: 'ACTIVE', take: 100 })).length > 0, 'Archived Client Cases retain readable relationship history.');
 
   const indexDefinition = localBaselineSql(pathA.database, `SELECT indexdef FROM pg_indexes WHERE schemaname = 'public' AND indexname = 'CCOPR_active_objective_property_uq';`);
   assert.match(indexDefinition, /UNIQUE INDEX[\s\S]*\("objectiveId", "clientCasePropertyId"\)[\s\S]*WHERE[\s\S]*\(?"?status"? = 'ACTIVE'/);

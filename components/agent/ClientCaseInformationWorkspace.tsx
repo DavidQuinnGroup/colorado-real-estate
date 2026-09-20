@@ -17,6 +17,8 @@ import {
 import type { ClientCaseInformationIntent } from '@/lib/clientCaseInformationIntent';
 import { objectiveTypeMetadata } from '@/lib/clientCaseContextSemanticRegistry';
 import { AgentPropertyDiscoverySelect, type AgentPropertyDiscoverySelection } from './AgentPropertyDiscoverySelect';
+import { fetchCurrentObjectivePropertyRelationships, type RelationshipResponse } from './clientCaseObjectivePropertyRelationshipClient';
+import { relationshipRoleLabel } from '@/lib/clientCaseObjectivePropertyRelationshipPresentation';
 import styles from './ClientCaseInformationWorkspace.module.css';
 
 type ContextRecord = { id: string; semanticKey: string; value: unknown; sourcePosture: string; observedAt: string | null; effectiveAt: string | null; reviewAfter: string | null; createdAt: string };
@@ -131,6 +133,7 @@ export function ClientCaseInformationWorkspace({ clientCaseId, intent }: { clien
   const [editContactEntityType, setEditContactEntityType] = useState<'PERSON' | 'ORGANIZATION'>('PERSON');
   const [duplicateState, setDuplicateState] = useState<ContactRecord[]>([]);
   const [roleDraft, setRoleDraft] = useState<Record<string, string>>({});
+  const [objectivePropertyRelationships, setObjectivePropertyRelationships] = useState<RelationshipResponse | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -146,6 +149,19 @@ export function ClientCaseInformationWorkspace({ clientCaseId, intent }: { clien
       if (!cancelled) setLoadError(error instanceof Error ? error.message : 'Client Case information is unavailable.');
     });
     return () => { cancelled = true; };
+  }, [clientCaseId]);
+
+  useEffect(() => {
+    let cancelled = false;
+    const timer = window.setTimeout(() => {
+      setObjectivePropertyRelationships(null);
+      void fetchCurrentObjectivePropertyRelationships(clientCaseId).then((payload) => {
+        if (!cancelled) setObjectivePropertyRelationships(payload);
+      }).catch(() => {
+        if (!cancelled) setObjectivePropertyRelationships({ clientCaseId, relationships: [] });
+      });
+    }, 0);
+    return () => { cancelled = true; window.clearTimeout(timer); };
   }, [clientCaseId]);
 
   const activeObjectives = workspace?.current.objectiveRecords.filter((objective) => objective.status === 'ACTIVE') ?? [];
@@ -454,10 +470,12 @@ export function ClientCaseInformationWorkspace({ clientCaseId, intent }: { clien
             const activeRoles = property.relationshipRoles?.filter((entry) => entry.status === 'ACTIVE') ?? [];
             const endedRoles = property.relationshipRoles?.filter((entry) => entry.status === 'ENDED') ?? [];
             const currentOccupancy = workspace.current.propertyOccupancy.find((entry) => entry.clientCasePropertyId === property.id)?.current;
+            const relatedObjectives = objectivePropertyRelationships?.relationships.filter((relationship) => relationship.clientCasePropertyId === property.id) ?? [];
             return (
               <article className={styles.propertyCard} key={property.id} data-client-case-property-card="true">
                 <div className={styles.panelHeading}><div><p className={styles.propertyLabel}>Property identity</p><h3 className={styles.propertyTitle}>{propertyLabel(property)}</h3></div><Link className={styles.link} href={`/agent/clients/${encodeURIComponent(clientCaseId)}/readiness`}>View Readiness</Link></div>
                 <div className={styles.roleChipRow}>{activeRoles.length ? activeRoles.map((entry) => <span className={styles.roleChip} key={entry.id}>{roleLabel(entry.role)}</span>) : <span className={styles.roleChip}>{roleLabel(property.role)}</span>}</div>
+                {relatedObjectives.length ? <div className={styles.objectiveRelationshipSummary}><p className={styles.summaryLabel}>Current Objective relationships</p><ul>{relatedObjectives.map((relationship) => <li key={relationship.relationshipId}><span><strong>{objectiveTypeMetadata(relationship.objective.objectiveType).displayLabel}: {relationship.objective.title}</strong><small>{relationshipRoleLabel(relationship.role)}</small></span><Link className={styles.link} href={`/agent/clients/${encodeURIComponent(clientCaseId)}?section=goals`}>Open Objective</Link></li>)}</ul></div> : <p className={styles.optionDescription}>No current Objective relationships.</p>}
                 <div className={styles.propertyMetaGrid}>
                   <div><p className={styles.summaryLabel}>Occupancy</p><p className={styles.summaryValue}>{typeof currentOccupancy?.value === 'string' ? humanize(currentOccupancy.value) : 'Not provided'}</p></div>
                   <div><p className={styles.summaryLabel}>Scenario overlay</p><p className={styles.summaryValue}>{property.scenarioPropertyDispositions?.length ? property.scenarioPropertyDispositions.map((entry) => `Scenario: ${humanize(entry.disposition)}`).join(' · ') : 'No selected Scenario disposition shown'}</p></div>

@@ -19,6 +19,7 @@ type InformationDatabase = Pick<
   PrismaClient,
   | 'clientCase'
   | 'clientCaseObjective'
+  | 'clientCaseObjectivePropertyRelationship'
   | 'clientCaseProperty'
   | 'canonicalPhysicalProperty'
   | 'clientCasePropertyRelationshipRole'

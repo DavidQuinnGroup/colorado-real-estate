@@ -1,12 +1,13 @@
 'use client';
 
 import Link from 'next/link';
-import { Archive, ArrowLeft, ArrowUpRight, CheckCircle2, Home, LoaderCircle, Plus } from 'lucide-react';
+import { ArrowLeft, ArrowUpRight, Home, LoaderCircle, Plus } from 'lucide-react';
 import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 import { ClientCommandCenterSection } from './ClientCommandCenterSection';
+import { ClientObjectivePropertyRelationships } from './ClientObjectivePropertyRelationships';
 import { clientCommandCenterSections, clientCommandCenterSectionsFromIntent, formatCount, formatInformationValue, formatTransactionSectionSummary, formatTransactionSummary, humanize, propertyLabel, type ClientCaseObjectiveSummary, type ClientCaseObjectiveSummaryRecord, type ClientCaseSummary, type ClientCommandCenterSectionId, type InformationWorkspaceSummary, type OutputSummary } from './clientCommandCenterTypes';
 import { CREATABLE_PURSUIT_OBJECTIVE_TYPES, objectiveTypeMetadata } from '@/lib/clientCaseContextSemanticRegistry';
 import styles from './ClientCommandCenter.module.css';
@@ -17,15 +18,6 @@ const pending = <p className={styles.localizedStatus} role="status"><LoaderCircl
 function dateTime(value: string) { return new Date(value).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }); }
 function sectionHref(clientCaseId: string, section: ClientCommandCenterSectionId) { return `/agent/clients/${encodeURIComponent(clientCaseId)}?section=${section}`; }
 function domainHref(path: string, clientCaseId: string) { return `${path}?clientCaseId=${encodeURIComponent(clientCaseId)}`; }
-
-function ObjectiveRow({ clientCaseId, disabled, objective, onTransition }: { clientCaseId: string; disabled: boolean; objective: ClientCaseObjectiveSummaryRecord; onTransition: (objective: ClientCaseObjectiveSummaryRecord, status: 'COMPLETED' | 'ARCHIVED') => void }) {
-  const metadata = objectiveTypeMetadata(objective.objectiveType);
-  const domain = metadata.domainAction === 'BUYER' ? { label: 'Open Buyer', href: domainHref('/agent/prepare/buyer', clientCaseId) } : metadata.domainAction === 'SELLER' ? { label: 'Open Seller', href: domainHref('/agent/prepare/seller', clientCaseId) } : null;
-  return <li className={styles.objectiveRow}>
-    <div className={styles.objectiveIdentity}><strong>{metadata.displayLabel}: {objective.title}</strong><span>{objective.status === 'ACTIVE' ? `Active since ${dateTime(objective.createdAt)}` : `${humanize(objective.status)} · ${dateTime(objective.completedAt || objective.archivedAt || objective.createdAt)}`}</span></div>
-    <div className={styles.objectiveActions}>{domain ? <Link className="atlas-action atlas-action-secondary" href={domain.href}>{domain.label}<ArrowUpRight aria-hidden="true" size={16} /></Link> : null}{objective.status === 'ACTIVE' ? <><button className="atlas-action atlas-action-secondary" disabled={disabled} onClick={() => onTransition(objective, 'COMPLETED')} type="button"><CheckCircle2 aria-hidden="true" size={16} />Complete</button><button className="atlas-action atlas-action-secondary" disabled={disabled} onClick={() => onTransition(objective, 'ARCHIVED')} type="button"><Archive aria-hidden="true" size={16} />Archive</button></> : null}</div>
-  </li>;
-}
 
 export default function ClientCommandCenter({ clientCaseId }: { clientCaseId: string }) {
   const router = useRouter();
@@ -167,11 +159,11 @@ export default function ClientCommandCenter({ clientCaseId }: { clientCaseId: st
         {objectiveStatus ? <p className={objectiveStatus.error ? styles.localizedError : styles.localizedStatus} role={objectiveStatus.error ? 'alert' : 'status'}>{objectiveStatus.message}</p> : null}
         <div className={styles.objectiveGroup}>
           <div className={styles.objectiveGroupHeading}><h3>Current Objectives</h3><span>{formatCount(currentObjectives?.value?.currentCount || 0, 'Objective', 'Objectives')}</span></div>
-          {currentObjectives?.value?.current.length ? <ul className={styles.objectiveList}>{currentObjectives.value.current.map((objective) => <ObjectiveRow key={objective.id} objective={objective} clientCaseId={clientCase.id} disabled={objectiveBusy} onTransition={transitionObjective} />)}</ul> : <p className={styles.detailNote}>No current Objectives are recorded for this Client.</p>}
+          {currentObjectives?.value?.current.length ? <ClientObjectivePropertyRelationships clientCaseId={clientCase.id} objectiveBusy={objectiveBusy} objectives={currentObjectives.value.current} onTransition={transitionObjective} properties={clientCase.properties} /> : <p className={styles.detailNote}>No current Objectives are recorded for this Client.</p>}
         </div>
         <div className={styles.objectiveGroup}>
           <div className={styles.objectiveGroupHeading}><h3>Historical Objectives</h3><span>{formatCount(currentObjectives?.value?.historicalCount || 0, 'Objective', 'Objectives')}</span></div>
-          {currentObjectives?.value?.historical.length ? <ul className={styles.objectiveList}>{currentObjectives.value.historical.map((objective) => <ObjectiveRow key={objective.id} objective={objective} clientCaseId={clientCase.id} disabled onTransition={transitionObjective} />)}</ul> : <p className={styles.detailNote}>No historical Objectives are recorded.</p>}
+          {currentObjectives?.value?.historical.length ? <ul className={styles.objectiveList}>{currentObjectives.value.historical.map((objective) => <li className={styles.objectiveRow} key={objective.id}><div className={styles.objectiveIdentity}><strong>{objectiveTypeMetadata(objective.objectiveType).displayLabel}: {objective.title}</strong><span>{humanize(objective.status)} · {dateTime(objective.completedAt || objective.archivedAt || objective.createdAt)}</span></div></li>)}</ul> : <p className={styles.detailNote}>No historical Objectives are recorded.</p>}
         </div>
       </div>)}
       {section('properties', 'Properties', clientCase.properties.length ? `${clientCase.properties.length} linked ${clientCase.properties.length === 1 ? 'property' : 'properties'}.` : 'No properties linked.', launch('Manage properties', `${informationHref}?requirement=PROPERTIES`), <div className={styles.detailList}>{clientCase.properties.length ? clientCase.properties.map((property) => <p key={property.id}><strong>{propertyLabel(property)}</strong><span>{humanize(property.role)}</span></p>) : <p>No properties are linked to this Client.</p>}<p className={styles.detailNote}>Property search and relationships remain in Client Information.</p></div>)}

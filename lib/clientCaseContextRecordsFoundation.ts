@@ -22,14 +22,14 @@ import {
 export { CLIENT_CASE_CONTEXT_RECORDS_FOUNDATION_VERSION } from './clientCaseContextSemanticRegistry';
 
 export class ClientCaseContextRecordsError extends Error {
-  constructor(readonly code: 'INVALID_REQUEST' | 'NOT_FOUND' | 'OWNERSHIP_DENIED' | 'CONFLICT', message: string) {
+  constructor(readonly code: 'INVALID_REQUEST' | 'NOT_FOUND' | 'OWNERSHIP_DENIED' | 'CONFLICT' | 'ACTIVE_PROPERTY_RELATIONSHIPS_EXIST', message: string) {
     super(message);
   }
 }
 
 type RecordValue = Record<string, unknown>;
 type ContextKind = 'fact' | 'criterion';
-type ContextDatabase = Pick<PrismaClient, 'clientCase' | 'clientCaseObjective' | 'clientCaseProperty' | 'clientCaseFact' | 'clientCaseCriterion' | 'evidenceAdmission' | 'professionalInput' | '$transaction'>;
+type ContextDatabase = Pick<PrismaClient, 'clientCase' | 'clientCaseObjective' | 'clientCaseProperty' | 'clientCaseObjectivePropertyRelationship' | 'clientCaseFact' | 'clientCaseCriterion' | 'evidenceAdmission' | 'professionalInput' | '$transaction'>;
 
 function object(value: unknown, field = 'request'): RecordValue {
   if (!value || typeof value !== 'object' || Array.isArray(value)) throw new ClientCaseContextRecordsError('INVALID_REQUEST', `${field} must be an object.`);
@@ -242,6 +242,14 @@ export function createClientCaseContextRecordsService(prisma: ContextDatabase) {
       if (!objective) throw new ClientCaseContextRecordsError('NOT_FOUND', 'The Client Case Objective is unavailable to this Agent.');
       if (objective.status === status) return objective;
       if (objective.status !== 'ACTIVE') throw new ClientCaseContextRecordsError('CONFLICT', 'Completed or archived Objectives are immutable in Foundation V1.');
+      if (status !== 'ACTIVE') {
+        const activeRelationshipCount = await prisma.clientCaseObjectivePropertyRelationship.count({
+          where: { clientCaseId, objectiveId: objective.id, status: 'ACTIVE' },
+        });
+        if (activeRelationshipCount) {
+          throw new ClientCaseContextRecordsError('ACTIVE_PROPERTY_RELATIONSHIPS_EXIST', 'End current Property relationships before completing or archiving this Objective.');
+        }
+      }
       return prisma.clientCaseObjective.update({ where: { id: objective.id }, data: { status, completedAt: status === 'COMPLETED' ? new Date() : null, archivedAt: status === 'ARCHIVED' ? new Date() : null } });
     },
 

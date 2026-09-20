@@ -45,6 +45,7 @@
     "check:client-case-information-workflow": "jiti scripts/checkClientCaseInformationWorkflow.ts",
     "check:client-objective-wave-a": "jiti scripts/checkClientObjectiveWaveA.ts",
     "check:objective-property-relationship-foundation": "jiti scripts/checkObjectivePropertyRelationshipFoundation.ts",
+    "check:client-case-objective-property-workflow": "jiti scripts/checkClientCaseObjectivePropertyWorkflow.ts",
     "certify:objective-property-relationship-foundation:local": "node scripts/certifyObjectivePropertyRelationshipFoundationLocalRunner.cjs",
     "check:client-case-information-visual-structure": "jiti scripts/checkClientCaseInformationVisualStructure.ts",
     "check:client-case-information-server-boundary": "jiti scripts/checkClientCaseInformationServerBoundary.ts",

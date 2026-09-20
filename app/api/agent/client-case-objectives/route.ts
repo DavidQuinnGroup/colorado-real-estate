@@ -26,7 +26,7 @@ async function subjectFor(request: NextRequest, method: 'GET' | 'POST') {
 
 function errorResponse(error: unknown) {
   if (error instanceof ClientCaseContextRecordsError) {
-    const status = error.code === 'NOT_FOUND' ? 404 : error.code === 'OWNERSHIP_DENIED' ? 403 : error.code === 'CONFLICT' ? 409 : 400;
+    const status = error.code === 'NOT_FOUND' ? 404 : error.code === 'OWNERSHIP_DENIED' ? 403 : error.code === 'CONFLICT' || error.code === 'ACTIVE_PROPERTY_RELATIONSHIPS_EXIST' ? 409 : 400;
     return NextResponse.json({ error: error.message, code: error.code }, { status, headers: HEADERS });
   }
   return NextResponse.json({ error: 'Client Case Objectives are unavailable.', code: 'PERSISTENCE_UNAVAILABLE' }, { status: 503, headers: HEADERS });

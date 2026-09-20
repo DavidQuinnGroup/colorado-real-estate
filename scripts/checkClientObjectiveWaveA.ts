@@ -71,6 +71,9 @@ const db = {
       return objective;
     },
   },
+  clientCaseObjectivePropertyRelationship: {
+    count: async () => 0,
+  },
 };
 
 void (async () => {

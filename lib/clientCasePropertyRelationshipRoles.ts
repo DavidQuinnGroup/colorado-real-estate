@@ -77,7 +77,7 @@ function roles(value: unknown): ClientCasePropertyRelationshipRoleType[] {
   return parsed;
 }
 
-function propertyDisplay(property: { sourceFormattedSitusAddress: string | null; normalizedSitusAddress: string | null; city: string | null; state: string | null; postalCode: string | null; id: string }) {
+export function clientCasePropertyDisplayLabel(property: { sourceFormattedSitusAddress: string | null; normalizedSitusAddress: string | null; city: string | null; state: string | null; postalCode: string | null; id: string }) {
   const address = property.sourceFormattedSitusAddress || property.normalizedSitusAddress || property.id;
   const place = [property.city, property.state, property.postalCode].filter(Boolean).join(', ');
   return place && address !== property.id ? `${address} · ${place}` : address;
@@ -129,7 +129,7 @@ export function createClientCasePropertyRelationshipService(prisma: Database) {
     });
     return properties.map((property) => ({
       ...property,
-      displayLabel: propertyDisplay(property.canonicalProperty),
+      displayLabel: clientCasePropertyDisplayLabel(property.canonicalProperty),
       activeRelationshipRoleLabels: relationshipRoleSummary(property),
       legacyRoleReadBehavior: property.relationshipRoles.some((entry) => entry.status === 'ACTIVE') ? 'NORMALIZED_AUTHORITATIVE' : 'LEGACY_FALLBACK',
     }));
