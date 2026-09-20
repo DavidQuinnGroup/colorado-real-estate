@@ -18,7 +18,7 @@ export class ClientCaseScenarioError extends Error {
 type RecordValue = Record<string, unknown>;
 type ScenarioDatabase = Pick<PrismaClient, 'clientCase' | 'clientCaseObjective' | 'clientCaseProperty' | 'clientCaseScenario' | 'clientCaseScenarioVersion' | '$transaction'>;
 type ScenarioTransaction = Prisma.TransactionClient;
-type Definition = {
+export type ClientCaseScenarioDefinition = {
   assumptions: Array<{ semanticKey: string; valueType: ClientCaseScenarioValueType; value: Prisma.InputJsonValue }>;
   criteria: Array<{ semanticKey: string; valueType: ClientCaseScenarioValueType; value: Prisma.InputJsonValue }>;
   propertyDispositions: Array<{ clientCasePropertyId: string; disposition: ClientCaseScenarioPropertyDispositionType }>;
@@ -86,7 +86,7 @@ function semanticEntries(value: unknown, registry: Record<string, ScenarioSemant
   return unique(entries, field, (entry) => entry.semanticKey);
 }
 
-function definition(value: unknown): Definition {
+function definition(value: unknown): ClientCaseScenarioDefinition {
   const input = object(value, 'definition');
   const propertyDispositions = array(input.propertyDispositions, 'propertyDispositions').map((entry) => {
     const disposition = object(entry, 'propertyDisposition');
@@ -96,8 +96,8 @@ function definition(value: unknown): Definition {
   });
   const objectiveIds = array(input.objectiveIds, 'objectiveIds').map((entry) => id(entry, 'objectiveId'));
   return {
-    assumptions: semanticEntries(input.assumptions, SCENARIO_ASSUMPTION_SEMANTICS, 'assumptions') as Definition['assumptions'],
-    criteria: semanticEntries(input.criteria, SCENARIO_CRITERION_SEMANTICS, 'criteria') as Definition['criteria'],
+    assumptions: semanticEntries(input.assumptions, SCENARIO_ASSUMPTION_SEMANTICS, 'assumptions') as ClientCaseScenarioDefinition['assumptions'],
+    criteria: semanticEntries(input.criteria, SCENARIO_CRITERION_SEMANTICS, 'criteria') as ClientCaseScenarioDefinition['criteria'],
     propertyDispositions: unique(propertyDispositions, 'propertyDispositions', (entry) => entry.clientCasePropertyId),
     objectiveIds: unique(objectiveIds, 'objectiveIds', (entry) => entry),
   };
@@ -115,7 +115,7 @@ async function ownedScenario(prisma: Pick<ScenarioDatabase, 'clientCaseScenario'
   return scenario;
 }
 
-async function validateDefinitionReferences(prisma: Pick<ScenarioDatabase, 'clientCaseObjective' | 'clientCaseProperty'>, clientCaseId: string, next: Definition) {
+async function validateDefinitionReferences(prisma: Pick<ScenarioDatabase, 'clientCaseObjective' | 'clientCaseProperty'>, clientCaseId: string, next: ClientCaseScenarioDefinition) {
   for (const objectiveId of next.objectiveIds) {
     if (!await prisma.clientCaseObjective.findFirst({ where: { id: objectiveId, clientCaseId }, select: { id: true } })) throw new ClientCaseScenarioError('NOT_FOUND', 'A Scenario Objective is unavailable to this Client Case.');
   }
@@ -124,7 +124,7 @@ async function validateDefinitionReferences(prisma: Pick<ScenarioDatabase, 'clie
   }
 }
 
-async function createVersion(prisma: ScenarioTransaction, scenarioId: string, versionNumber: number, createdBySubject: string, next: Definition) {
+export async function createClientCaseScenarioVersion(prisma: ScenarioTransaction, scenarioId: string, versionNumber: number, createdBySubject: string, next: ClientCaseScenarioDefinition) {
   return prisma.clientCaseScenarioVersion.create({
     data: {
       scenarioId,
@@ -136,6 +136,20 @@ async function createVersion(prisma: ScenarioTransaction, scenarioId: string, ve
       objectiveLinks: next.objectiveIds.length ? { create: next.objectiveIds.map((clientCaseObjectiveId) => ({ clientCaseObjective: { connect: { id: clientCaseObjectiveId } } })) } : undefined,
     },
   });
+}
+
+export function definitionFromClientCaseScenarioVersion(version: {
+  assumptions: ReadonlyArray<{ semanticKey: string; valueType: ClientCaseScenarioValueType; value: Prisma.JsonValue }>;
+  criteria: ReadonlyArray<{ semanticKey: string; valueType: ClientCaseScenarioValueType; value: Prisma.JsonValue }>;
+  propertyDispositions: ReadonlyArray<{ clientCasePropertyId: string; disposition: ClientCaseScenarioPropertyDispositionType }>;
+  objectiveLinks: ReadonlyArray<{ clientCaseObjectiveId: string }>;
+}): ClientCaseScenarioDefinition {
+  return {
+    assumptions: version.assumptions.map((entry) => ({ semanticKey: entry.semanticKey, valueType: entry.valueType, value: entry.value as Prisma.InputJsonValue })),
+    criteria: version.criteria.map((entry) => ({ semanticKey: entry.semanticKey, valueType: entry.valueType, value: entry.value as Prisma.InputJsonValue })),
+    propertyDispositions: version.propertyDispositions.map((entry) => ({ clientCasePropertyId: entry.clientCasePropertyId, disposition: entry.disposition })),
+    objectiveIds: version.objectiveLinks.map((entry) => entry.clientCaseObjectiveId),
+  };
 }
 
 function scenarioInclude() {
@@ -194,7 +208,7 @@ export function createClientCaseScenarioService(prisma: ScenarioDatabase) {
       return prisma.$transaction(async (tx) => {
         await validateDefinitionReferences(tx as never, clientCaseId, initialDefinition);
         const scenario = await tx.clientCaseScenario.create({ data: { clientCaseId, name, description, createdBySubject: ownerAgentSubject } });
-        const version = await createVersion(tx, scenario.id, 1, ownerAgentSubject, initialDefinition);
+        const version = await createClientCaseScenarioVersion(tx, scenario.id, 1, ownerAgentSubject, initialDefinition);
         await tx.clientCaseScenario.update({ where: { id: scenario.id }, data: { currentVersionId: version.id } });
         return get(ownerAgentSubject, clientCaseId, scenario.id, tx as never);
       });
@@ -213,7 +227,7 @@ export function createClientCaseScenarioService(prisma: ScenarioDatabase) {
         const current = await tx.clientCaseScenarioVersion.findFirst({ where: { id: expectedCurrentVersionId, scenarioId }, select: { versionNumber: true } });
         if (!current) throw new ClientCaseScenarioError('CONFLICT', 'The Scenario current-version relationship is invalid.');
         await validateDefinitionReferences(tx as never, clientCaseId, nextDefinition);
-        const version = await createVersion(tx, scenarioId, current.versionNumber + 1, ownerAgentSubject, nextDefinition);
+        const version = await createClientCaseScenarioVersion(tx, scenarioId, current.versionNumber + 1, ownerAgentSubject, nextDefinition);
         const advanced = await tx.clientCaseScenario.updateMany({ where: { id: scenarioId, currentVersionId: expectedCurrentVersionId, status: 'ACTIVE' }, data: { currentVersionId: version.id } });
         if (advanced.count !== 1) throw new ClientCaseScenarioError('CONFLICT', 'The Scenario definition is stale.');
         return get(ownerAgentSubject, clientCaseId, scenarioId, tx as never);
@@ -249,14 +263,9 @@ export function createClientCaseScenarioService(prisma: ScenarioDatabase) {
           include: { assumptions: true, criteria: true, propertyDispositions: true, objectiveLinks: true },
         });
         if (!current) throw new ClientCaseScenarioError('CONFLICT', 'The Scenario current-version relationship is invalid.');
-        const copied: Definition = {
-          assumptions: current.assumptions.map((entry) => ({ semanticKey: entry.semanticKey, valueType: entry.valueType, value: entry.value as Prisma.InputJsonValue })),
-          criteria: current.criteria.map((entry) => ({ semanticKey: entry.semanticKey, valueType: entry.valueType, value: entry.value as Prisma.InputJsonValue })),
-          propertyDispositions: current.propertyDispositions.map((entry) => ({ clientCasePropertyId: entry.clientCasePropertyId, disposition: entry.disposition })),
-          objectiveIds: current.objectiveLinks.map((entry) => entry.clientCaseObjectiveId),
-        };
+        const copied = definitionFromClientCaseScenarioVersion(current);
         const duplicate = await tx.clientCaseScenario.create({ data: { clientCaseId, name, description: source.description, duplicatedFromScenarioId: scenarioId, duplicatedFromScenarioVersionId: current.id, createdBySubject: ownerAgentSubject } });
-        const version = await createVersion(tx, duplicate.id, 1, ownerAgentSubject, copied);
+        const version = await createClientCaseScenarioVersion(tx, duplicate.id, 1, ownerAgentSubject, copied);
         await tx.clientCaseScenario.update({ where: { id: duplicate.id }, data: { currentVersionId: version.id } });
         return get(ownerAgentSubject, clientCaseId, duplicate.id, tx as never);
       });

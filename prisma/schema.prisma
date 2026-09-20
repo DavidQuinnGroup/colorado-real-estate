@@ -215,6 +215,20 @@ enum ClientFinancialObservationKind {
   CORRECTION
 }
 
+enum ClientCaseScenarioFinancialContextCaptureState {
+  CAPTURED
+  NO_FINANCIAL_POSITION
+  EMPTY_SELECTION
+}
+
+enum ClientCaseScenarioFinancialContextEntryDomain {
+  ASSET
+  LIABILITY
+  INCOME
+  BORROWING_QUALIFICATION
+  FINANCIAL_CONSTRAINT
+}
+
 enum TransactionSide {
   BUYER
   SELLER
@@ -3250,6 +3264,7 @@ model ClientCase {
   multiPropertyFinancialScenarios MultiPropertyFinancialScenario[]
   financialPosition               ClientFinancialPosition?
   governedSources                 ClientCaseGovernedSource[]
+  scenarioFinancialContextManifests ClientCaseScenarioFinancialContextManifest[]
 
   @@unique([id, ownerAgentSubject], map: "ClientCase_id_ownerAgentSubject_key")
   @@index([ownerAgentSubject, status, updatedAt])
@@ -3311,6 +3326,7 @@ model ClientCaseParty {
   financialAssets        ClientFinancialAsset[]
   financialLiabilities   ClientFinancialLiability[]
   financialIncomeSources ClientFinancialIncomeSource[]
+  scenarioFinancialContextEntries ClientCaseScenarioFinancialContextManifestEntry[] @relation("ScenarioFinancialContextEntryParty")
 
   @@unique([clientCaseId, id], map: "ClientCaseParty_clientCaseId_id_key")
   @@index([clientCaseId, role, participationStatus])
@@ -3347,6 +3363,7 @@ model ClientCaseProperty {
   objectivePropertyRelationships ClientCaseObjectivePropertyRelationship[]
   financialLiabilities           ClientFinancialLiability[]
   financialIncomeSources         ClientFinancialIncomeSource[]
+  scenarioFinancialContextEntries ClientCaseScenarioFinancialContextManifestEntry[] @relation("ScenarioFinancialContextEntryProperty")
 
   @@unique([clientCaseId, canonicalPropertyId])
   @@unique([clientCaseId, id])
@@ -3504,6 +3521,7 @@ model ClientCaseGovernedSource {
   evidenceAdmission EvidenceAdmission?   @relation("ClientCaseGovernedSourceEvidenceAdmission", fields: [evidenceAdmissionId, ownerAgentSubject], references: [id, ownerAgentSubject], onDelete: Restrict)
   professionalInput ProfessionalInput?   @relation("ClientCaseGovernedSourceProfessionalInput", fields: [professionalInputId, ownerAgentSubject], references: [id, ownerAgentSubject], onDelete: Restrict)
   financialSources  ClientFinancialSource[]
+  scenarioFinancialContextEntries ClientCaseScenarioFinancialContextManifestEntry[] @relation("ScenarioFinancialContextEntryGovernedSource")
 
   @@unique([clientCaseId, id], map: "ClientCaseGovernedSource_clientCaseId_id_key")
   @@unique([clientCaseId, evidenceAdmissionId], map: "ClientCaseGovernedSource_clientCaseId_evidenceAdmissionId_key")
@@ -3543,6 +3561,7 @@ model ClientFinancialSource {
   incomeObservations        ClientFinancialIncomeObservation[]
   qualificationObservations ClientFinancialQualificationObservation[]
   constraintObservations    ClientFinancialConstraintObservation[]
+  scenarioFinancialContextEntries ClientCaseScenarioFinancialContextManifestEntry[] @relation("ScenarioFinancialContextEntryFinancialSource")
 
   @@unique([clientCaseId, id], map: "ClientFinancialSource_clientCaseId_id_key")
   @@unique([clientCaseId, clientCaseGovernedSourceId], map: "ClientFinancialSource_caseSource_key")
@@ -3562,6 +3581,7 @@ model ClientFinancialAsset {
   financialPosition ClientFinancialPosition           @relation(fields: [clientCaseId, financialPositionId], references: [clientCaseId, id], onDelete: Restrict)
   clientCaseParty   ClientCaseParty?                  @relation(fields: [clientCaseId, clientCasePartyId], references: [clientCaseId, id], onDelete: Restrict)
   observations      ClientFinancialAssetObservation[]
+  scenarioFinancialContextEntries ClientCaseScenarioFinancialContextManifestEntry[] @relation("ScenarioFinancialContextEntryAsset")
 
   @@unique([clientCaseId, id], map: "ClientFinancialAsset_clientCaseId_id_key")
   @@index([clientCaseId, category, createdAt])
@@ -3593,9 +3613,11 @@ model ClientFinancialAssetObservation {
   financialSource         ClientFinancialSource?           @relation(fields: [clientCaseId, financialSourceId], references: [clientCaseId, id], onDelete: Restrict)
   supersedesObservation   ClientFinancialAssetObservation? @relation("ClientFinancialAssetObservationSupersession", fields: [supersedesObservationId], references: [id], onDelete: Restrict)
   supersededByObservation ClientFinancialAssetObservation? @relation("ClientFinancialAssetObservationSupersession")
+  scenarioFinancialContextEntries ClientCaseScenarioFinancialContextManifestEntry[] @relation("ScenarioFinancialContextEntryAssetObservation")
 
   @@index([clientCaseId, assetId, supersededAt, asOf])
   @@index([clientCaseId, financialSourceId])
+  @@unique([clientCaseId, id], map: "CFPAO_case_id_key")
 }
 
 model ClientFinancialLiability {
@@ -3613,6 +3635,7 @@ model ClientFinancialLiability {
   clientCaseParty    ClientCaseParty?                      @relation(fields: [clientCaseId, clientCasePartyId], references: [clientCaseId, id], onDelete: Restrict)
   clientCaseProperty ClientCaseProperty?                   @relation(fields: [clientCaseId, clientCasePropertyId], references: [clientCaseId, id], onDelete: Restrict)
   observations       ClientFinancialLiabilityObservation[]
+  scenarioFinancialContextEntries ClientCaseScenarioFinancialContextManifestEntry[] @relation("ScenarioFinancialContextEntryLiability")
 
   @@unique([clientCaseId, id], map: "ClientFinancialLiability_clientCaseId_id_key")
   @@index([clientCaseId, category, createdAt])
@@ -3645,9 +3668,11 @@ model ClientFinancialLiabilityObservation {
   financialSource         ClientFinancialSource?               @relation(fields: [clientCaseId, financialSourceId], references: [clientCaseId, id], onDelete: Restrict)
   supersedesObservation   ClientFinancialLiabilityObservation? @relation("ClientFinancialLiabilityObservationSupersession", fields: [supersedesObservationId], references: [id], onDelete: Restrict)
   supersededByObservation ClientFinancialLiabilityObservation? @relation("ClientFinancialLiabilityObservationSupersession")
+  scenarioFinancialContextEntries ClientCaseScenarioFinancialContextManifestEntry[] @relation("ScenarioFinancialContextEntryLiabilityObservation")
 
   @@index([clientCaseId, liabilityId, supersededAt, asOf])
   @@index([clientCaseId, financialSourceId])
+  @@unique([clientCaseId, id], map: "CFPLO_case_id_key")
 }
 
 model ClientFinancialIncomeSource {
@@ -3665,6 +3690,7 @@ model ClientFinancialIncomeSource {
   clientCaseParty    ClientCaseParty?                   @relation(fields: [clientCaseId, clientCasePartyId], references: [clientCaseId, id], onDelete: Restrict)
   clientCaseProperty ClientCaseProperty?                @relation(fields: [clientCaseId, clientCasePropertyId], references: [clientCaseId, id], onDelete: Restrict)
   observations       ClientFinancialIncomeObservation[]
+  scenarioFinancialContextEntries ClientCaseScenarioFinancialContextManifestEntry[] @relation("ScenarioFinancialContextEntryIncomeSource")
 
   @@unique([clientCaseId, id], map: "ClientFinancialIncomeSource_clientCaseId_id_key")
   @@index([clientCaseId, category, createdAt])
@@ -3695,9 +3721,11 @@ model ClientFinancialIncomeObservation {
   financialSource         ClientFinancialSource?            @relation(fields: [clientCaseId, financialSourceId], references: [clientCaseId, id], onDelete: Restrict)
   supersedesObservation   ClientFinancialIncomeObservation? @relation("ClientFinancialIncomeObservationSupersession", fields: [supersedesObservationId], references: [id], onDelete: Restrict)
   supersededByObservation ClientFinancialIncomeObservation? @relation("ClientFinancialIncomeObservationSupersession")
+  scenarioFinancialContextEntries ClientCaseScenarioFinancialContextManifestEntry[] @relation("ScenarioFinancialContextEntryIncomeObservation")
 
   @@index([clientCaseId, incomeSourceId, supersededAt, asOf])
   @@index([clientCaseId, financialSourceId])
+  @@unique([clientCaseId, id], map: "CFPIO_case_id_key")
 }
 
 model ClientFinancialQualification {
@@ -3711,6 +3739,7 @@ model ClientFinancialQualification {
 
   financialPosition ClientFinancialPosition                   @relation(fields: [clientCaseId, financialPositionId], references: [clientCaseId, id], onDelete: Restrict)
   observations      ClientFinancialQualificationObservation[]
+  scenarioFinancialContextEntries ClientCaseScenarioFinancialContextManifestEntry[] @relation("ScenarioFinancialContextEntryQualification")
 
   @@unique([clientCaseId, id], map: "ClientFinancialQualification_clientCaseId_id_key")
   @@index([clientCaseId, qualificationType, createdAt])
@@ -3745,9 +3774,11 @@ model ClientFinancialQualificationObservation {
   financialSource         ClientFinancialSource?                   @relation(fields: [clientCaseId, financialSourceId], references: [clientCaseId, id], onDelete: Restrict)
   supersedesObservation   ClientFinancialQualificationObservation? @relation("ClientFinancialQualificationObservationSupersession", fields: [supersedesObservationId], references: [id], onDelete: Restrict)
   supersededByObservation ClientFinancialQualificationObservation? @relation("ClientFinancialQualificationObservationSupersession")
+  scenarioFinancialContextEntries ClientCaseScenarioFinancialContextManifestEntry[] @relation("ScenarioFinancialContextEntryQualificationObservation")
 
   @@index([clientCaseId, qualificationId, supersededAt, expiresAt])
   @@index([clientCaseId, financialSourceId])
+  @@unique([clientCaseId, id], map: "CFPQO_case_id_key")
 }
 
 model ClientFinancialConstraint {
@@ -3760,6 +3791,7 @@ model ClientFinancialConstraint {
 
   financialPosition ClientFinancialPosition                @relation(fields: [clientCaseId, financialPositionId], references: [clientCaseId, id], onDelete: Restrict)
   observations      ClientFinancialConstraintObservation[]
+  scenarioFinancialContextEntries ClientCaseScenarioFinancialContextManifestEntry[] @relation("ScenarioFinancialContextEntryConstraint")
 
   @@unique([clientCaseId, id], map: "ClientFinancialConstraint_clientCaseId_id_key")
   @@index([clientCaseId, constraintType, createdAt])
@@ -3789,9 +3821,11 @@ model ClientFinancialConstraintObservation {
   financialSource         ClientFinancialSource?                @relation(fields: [clientCaseId, financialSourceId], references: [clientCaseId, id], onDelete: Restrict)
   supersedesObservation   ClientFinancialConstraintObservation? @relation("ClientFinancialConstraintObservationSupersession", fields: [supersedesObservationId], references: [id], onDelete: Restrict)
   supersededByObservation ClientFinancialConstraintObservation? @relation("ClientFinancialConstraintObservationSupersession")
+  scenarioFinancialContextEntries ClientCaseScenarioFinancialContextManifestEntry[] @relation("ScenarioFinancialContextEntryConstraintObservation")
 
   @@index([clientCaseId, constraintId, supersededAt, asOf])
   @@index([clientCaseId, financialSourceId])
+  @@unique([clientCaseId, id], map: "CFPCO_case_id_key")
 }
 
 model ClientCaseScenario {
@@ -3834,9 +3868,115 @@ model ClientCaseScenarioVersion {
   criteria              ClientCaseScenarioCriterion[]
   propertyDispositions  ClientCaseScenarioPropertyDisposition[]
   objectiveLinks        ClientCaseScenarioObjective[]
+  financialContextManifest ClientCaseScenarioFinancialContextManifest?
 
   @@unique([scenarioId, versionNumber])
   @@index([scenarioId, createdAt])
+}
+
+model ClientCaseScenarioFinancialContextManifest {
+  id                    String                                           @id @default(cuid())
+  scenarioVersionId     String                                           @unique
+  clientCaseId          String
+  ownerAgentSubject     String
+  captureState          ClientCaseScenarioFinancialContextCaptureState
+  manifestSchemaVersion Int
+  fingerprint           String
+  idempotencyKey        String                                           @unique
+  capturedAt            DateTime
+  capturedBySubject     String
+  createdAt             DateTime                                         @default(now())
+
+  scenarioVersion ClientCaseScenarioVersion @relation(fields: [scenarioVersionId], references: [id], onDelete: Restrict, map: "CSFCM_scenario_version_fk")
+  clientCase       ClientCase                @relation(fields: [clientCaseId, ownerAgentSubject], references: [id, ownerAgentSubject], onDelete: Restrict, map: "CSFCM_case_owner_fk")
+  entries          ClientCaseScenarioFinancialContextManifestEntry[]
+
+  @@unique([clientCaseId, id], map: "CSFCM_case_id_key")
+  @@index([ownerAgentSubject, clientCaseId, capturedAt], map: "CSFCM_owner_case_capture_idx")
+  @@index([clientCaseId, fingerprint], map: "CSFCM_case_fingerprint_idx")
+}
+
+model ClientCaseScenarioFinancialContextManifestEntry {
+  id                    String                                           @id @default(cuid())
+  manifestId            String
+  clientCaseId          String
+  domain                ClientCaseScenarioFinancialContextEntryDomain
+  assetId               String?
+  assetObservationId    String?
+  liabilityId           String?
+  liabilityObservationId String?
+  incomeSourceId        String?
+  incomeObservationId   String?
+  qualificationId       String?
+  qualificationObservationId String?
+  constraintId          String?
+  constraintObservationId String?
+  clientCasePartyId     String?
+  clientCasePropertyId  String?
+  financialSourceId     String?
+  clientCaseGovernedSourceId String?
+  entityLabel           String?
+  participantDisplayLabel String?
+  propertyDisplayLabel  String?
+  sourceKind            ClientCaseGovernedSourceKind?
+  sourcePosture         ClientFinancialSourcePosture
+  verificationState     ClientFinancialVerificationState
+  observationKind       ClientFinancialObservationKind
+  limitation            String?
+  currencyCode          String
+  asOf                  DateTime
+  observedAt            DateTime?
+  effectiveAt           DateTime?
+  expiresAt             DateTime?
+  reviewAfter           DateTime?
+  assetCategory         ClientFinancialAssetCategory?
+  assetMarketValueCents BigInt?
+  assetLiquidValueCents BigInt?
+  assetAvailableAmountCents BigInt?
+  liabilityCategory     ClientFinancialLiabilityCategory?
+  liabilityCurrentBalanceCents BigInt?
+  liabilityMonthlyObligationCents BigInt?
+  liabilityRateBps      Int?
+  incomeCategory        ClientFinancialIncomeCategory?
+  incomeAmountCents     BigInt?
+  incomeFrequency       ClientFinancialFrequency?
+  qualificationType     ClientFinancialQualificationType?
+  qualificationMaximumLoanAmountCents BigInt?
+  qualificationMaximumPurchaseAmountCents BigInt?
+  qualificationRateBps  Int?
+  qualificationProgramLabel String?
+  constraintType        ClientFinancialConstraintType?
+  constraintAmountCents BigInt?
+  createdAt             DateTime @default(now())
+
+  manifest ClientCaseScenarioFinancialContextManifest @relation(fields: [clientCaseId, manifestId], references: [clientCaseId, id], onDelete: Restrict, map: "CSFCME_manifest_fk")
+  asset ClientFinancialAsset? @relation("ScenarioFinancialContextEntryAsset", fields: [clientCaseId, assetId], references: [clientCaseId, id], onDelete: Restrict, map: "CSFCME_asset_fk")
+  assetObservation ClientFinancialAssetObservation? @relation("ScenarioFinancialContextEntryAssetObservation", fields: [clientCaseId, assetObservationId], references: [clientCaseId, id], onDelete: Restrict, map: "CSFCME_asset_obs_fk")
+  liability ClientFinancialLiability? @relation("ScenarioFinancialContextEntryLiability", fields: [clientCaseId, liabilityId], references: [clientCaseId, id], onDelete: Restrict, map: "CSFCME_liability_fk")
+  liabilityObservation ClientFinancialLiabilityObservation? @relation("ScenarioFinancialContextEntryLiabilityObservation", fields: [clientCaseId, liabilityObservationId], references: [clientCaseId, id], onDelete: Restrict, map: "CSFCME_liability_obs_fk")
+  incomeSource ClientFinancialIncomeSource? @relation("ScenarioFinancialContextEntryIncomeSource", fields: [clientCaseId, incomeSourceId], references: [clientCaseId, id], onDelete: Restrict, map: "CSFCME_income_fk")
+  incomeObservation ClientFinancialIncomeObservation? @relation("ScenarioFinancialContextEntryIncomeObservation", fields: [clientCaseId, incomeObservationId], references: [clientCaseId, id], onDelete: Restrict, map: "CSFCME_income_obs_fk")
+  qualification ClientFinancialQualification? @relation("ScenarioFinancialContextEntryQualification", fields: [clientCaseId, qualificationId], references: [clientCaseId, id], onDelete: Restrict, map: "CSFCME_qualification_fk")
+  qualificationObservation ClientFinancialQualificationObservation? @relation("ScenarioFinancialContextEntryQualificationObservation", fields: [clientCaseId, qualificationObservationId], references: [clientCaseId, id], onDelete: Restrict, map: "CSFCME_qualification_obs_fk")
+  constraint ClientFinancialConstraint? @relation("ScenarioFinancialContextEntryConstraint", fields: [clientCaseId, constraintId], references: [clientCaseId, id], onDelete: Restrict, map: "CSFCME_constraint_fk")
+  constraintObservation ClientFinancialConstraintObservation? @relation("ScenarioFinancialContextEntryConstraintObservation", fields: [clientCaseId, constraintObservationId], references: [clientCaseId, id], onDelete: Restrict, map: "CSFCME_constraint_obs_fk")
+  clientCaseParty ClientCaseParty? @relation("ScenarioFinancialContextEntryParty", fields: [clientCaseId, clientCasePartyId], references: [clientCaseId, id], onDelete: Restrict, map: "CSFCME_party_fk")
+  clientCaseProperty ClientCaseProperty? @relation("ScenarioFinancialContextEntryProperty", fields: [clientCaseId, clientCasePropertyId], references: [clientCaseId, id], onDelete: Restrict, map: "CSFCME_property_fk")
+  financialSource ClientFinancialSource? @relation("ScenarioFinancialContextEntryFinancialSource", fields: [clientCaseId, financialSourceId], references: [clientCaseId, id], onDelete: Restrict, map: "CSFCME_source_fk")
+  clientCaseGovernedSource ClientCaseGovernedSource? @relation("ScenarioFinancialContextEntryGovernedSource", fields: [clientCaseId, clientCaseGovernedSourceId], references: [clientCaseId, id], onDelete: Restrict, map: "CSFCME_governed_source_fk")
+
+  @@unique([clientCaseId, id], map: "CSFCME_case_id_key")
+  @@unique([manifestId, assetObservationId], map: "CSFCME_manifest_asset_obs_key")
+  @@unique([manifestId, liabilityObservationId], map: "CSFCME_manifest_liability_obs_key")
+  @@unique([manifestId, incomeObservationId], map: "CSFCME_manifest_income_obs_key")
+  @@unique([manifestId, qualificationObservationId], map: "CSFCME_manifest_qualification_obs_key")
+  @@unique([manifestId, constraintObservationId], map: "CSFCME_manifest_constraint_obs_key")
+  @@index([clientCaseId, assetObservationId], map: "CSFCME_case_asset_obs_idx")
+  @@index([clientCaseId, liabilityObservationId], map: "CSFCME_case_liability_obs_idx")
+  @@index([clientCaseId, incomeObservationId], map: "CSFCME_case_income_obs_idx")
+  @@index([clientCaseId, qualificationObservationId], map: "CSFCME_case_qualification_obs_idx")
+  @@index([clientCaseId, constraintObservationId], map: "CSFCME_case_constraint_obs_idx")
+  @@index([manifestId, domain], map: "CSFCME_manifest_domain_idx")
 }
 
 model ClientCaseScenarioAssumption {
