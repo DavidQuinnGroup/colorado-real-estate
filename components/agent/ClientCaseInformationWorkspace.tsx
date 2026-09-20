@@ -17,6 +17,7 @@ import {
 import type { ClientCaseInformationIntent } from '@/lib/clientCaseInformationIntent';
 import { objectiveTypeMetadata } from '@/lib/clientCaseContextSemanticRegistry';
 import { AgentPropertyDiscoverySelect, type AgentPropertyDiscoverySelection } from './AgentPropertyDiscoverySelect';
+import { ClientFinancialPositionWorkspace } from './ClientFinancialPositionWorkspace';
 import { fetchCurrentObjectivePropertyRelationships, type RelationshipResponse } from './clientCaseObjectivePropertyRelationshipClient';
 import { relationshipRoleLabel } from '@/lib/clientCaseObjectivePropertyRelationshipPresentation';
 import styles from './ClientCaseInformationWorkspace.module.css';
@@ -396,7 +397,7 @@ export function ClientCaseInformationWorkspace({ clientCaseId, intent }: { clien
         <AtlasNotice className={styles.canonicalBoundaryNotice} title="Canonical boundary" tone="information">Use this page for factual or generally applicable Client Case information. Target acquisition price, down payment, cash allocation, holding period, hypothetical city or bedroom overrides, and sell/retain/rent alternatives remain Scenario Version inputs.</AtlasNotice>
 
         <nav className={styles.sectionNav} aria-label="Client Information sections">
-          {['Case overview', 'People', 'Goals', 'Properties', 'Current information', 'Readiness'].map((item) => <a key={item} href={`#${item.toLowerCase().replaceAll(' ', '-')}`}>{item}</a>)}
+          {['Case overview', 'People', 'Goals', 'Properties', 'Current information', 'Financial Position', 'Readiness'].map((item) => <a key={item} href={`#${item.toLowerCase().replaceAll(' ', '-')}`}>{item}</a>)}
         </nav>
 
         <AtlasSurface material="floating" data-testid="client-case-information-case-overview" id="case-overview">
@@ -461,6 +462,10 @@ export function ClientCaseInformationWorkspace({ clientCaseId, intent }: { clien
             </div>
           </AtlasSurface>
         </div>
+
+        <AtlasSurface material="glass" id="financial-position">
+          <ClientFinancialPositionWorkspace clientCaseId={clientCaseId} />
+        </AtlasSurface>
 
         <AtlasSurface material="floating" data-testid="client-case-information-properties" id="properties">
           <div className={styles.panelHeading}><div><h2 className="atlas-ds-major-section">Properties</h2><p className={styles.metadata}>Search existing PROJECT ATLAS property data and manage durable Case relationship roles. Off-market discovery, provider lookup, and provisional Property creation are deferred.</p></div><AtlasInformationClassLabel informationClass="governed-fact" label="Wave B" /></div>

@@ -157,6 +157,20 @@ function observationInput(raw: unknown, extras: readonly string[], includeExpira
   } as ParsedObservationInput;
 }
 
+function newRecordInput(raw: unknown, entityKeys: readonly string[], observationKeys: readonly string[], includeExpiration = false) {
+  const input = object(raw);
+  rejectUnexpectedKeys(input, ['entity', 'observation', 'clientCaseGovernedSourceId']);
+  const entity = object(input.entity, 'entity');
+  rejectUnexpectedKeys(entity, entityKeys);
+  const observation = object(input.observation, 'observation');
+  if ('financialSourceId' in observation) throw new ClientFinancialPositionError('INVALID_REQUEST', 'financialSourceId is derived from the selected governed source.');
+  return {
+    entity,
+    observation: observationInput({ ...observation, financialSourceId: null }, observationKeys, includeExpiration),
+    clientCaseGovernedSourceId: optionalIdentifier(input.clientCaseGovernedSourceId, 'clientCaseGovernedSourceId'),
+  };
+}
+
 function assertProvenance(source: Source | null, posture: ClientFinancialSourcePosture, verification: ClientFinancialVerificationState) {
   if (posture === 'DOCUMENT_SUPPORTED' || verification === 'DOCUMENT_SUPPORTED') {
     if (!source || source.kind !== 'EVIDENCE') throw new ClientFinancialPositionError('INVALID_REQUEST', 'Document-supported observations require an Evidence financial source binding.');
@@ -213,6 +227,32 @@ export function createClientFinancialPositionService(prisma: PrismaClient) {
     }
   }
 
+  async function sourceForGovernedSource(
+    tx: Prisma.TransactionClient,
+    ownerAgentSubject: string,
+    caseId: string,
+    financialPositionId: string,
+    clientCaseGovernedSourceId: string | null,
+  ): Promise<Source | null> {
+    if (!clientCaseGovernedSourceId) return null;
+    try {
+      const governedSource = await assertEligibleClientCaseGovernedSource(tx, ownerAgentSubject, caseId, clientCaseGovernedSourceId);
+      const existing = await tx.clientFinancialSource.findFirst({
+        where: { clientCaseId: caseId, clientCaseGovernedSourceId: governedSource.id },
+        select: { id: true },
+      });
+      if (existing) return { id: existing.id, kind: governedSource.sourceKind };
+      const source = await tx.clientFinancialSource.create({
+        data: { clientCaseId: caseId, financialPositionId, clientCaseGovernedSourceId: governedSource.id, createdBySubject: ownerAgentSubject },
+        select: { id: true },
+      });
+      return { id: source.id, kind: governedSource.sourceKind };
+    } catch (error) {
+      if (error instanceof ClientCaseGovernedSourceError) throw new ClientFinancialPositionError(error.code === 'NOT_FOUND' ? 'NOT_FOUND' : error.code === 'CONFLICT' ? 'CONFLICT' : 'INVALID_REQUEST', error.message);
+      throw error;
+    }
+  }
+
   async function stableEntity(tx: Prisma.TransactionClient, model: 'asset' | 'liability' | 'income' | 'qualification' | 'constraint', caseId: string, id: string) {
     if (model === 'asset') return tx.clientFinancialAsset.findFirst({ where: { id, clientCaseId: caseId }, select: { id: true } });
     if (model === 'liability') return tx.clientFinancialLiability.findFirst({ where: { id, clientCaseId: caseId }, select: { id: true } });
@@ -255,6 +295,107 @@ export function createClientFinancialPositionService(prisma: PrismaClient) {
   }
 
   return {
+    async createAssetWithInitialObservation(ownerAgentSubject: string, clientCaseId: string, raw: unknown) {
+      const { subject, caseId } = await authorize(ownerAgentSubject, clientCaseId, true);
+      const input = newRecordInput(raw, ['category', 'label', 'clientCasePartyId'], ['marketValueCents', 'liquidValueCents', 'availableAmountCents']);
+      const category = oneOf(input.entity.category, CLIENT_FINANCIAL_ASSET_CATEGORIES, 'category') as ClientFinancialAssetCategory;
+      const label = boundedText(input.entity.label, 'label', 160, true)!;
+      const clientCasePartyId = optionalIdentifier(input.entity.clientCasePartyId, 'clientCasePartyId');
+      const marketValueCents = cents(input.observation.marketValueCents, 'marketValueCents');
+      const liquidValueCents = cents(input.observation.liquidValueCents, 'liquidValueCents');
+      const availableAmountCents = cents(input.observation.availableAmountCents, 'availableAmountCents');
+      if (marketValueCents === null && liquidValueCents === null && availableAmountCents === null) throw new ClientFinancialPositionError('INVALID_REQUEST', 'An Asset observation requires at least one amount.');
+      return prisma.$transaction(async (tx) => {
+        const position = await ensure(subject, caseId, tx);
+        if (clientCasePartyId && !await tx.clientCaseParty.findFirst({ where: { id: clientCasePartyId, clientCaseId: caseId }, select: { id: true } })) throw new ClientFinancialPositionError('NOT_FOUND', 'The Client Case participant is unavailable to this Client Case.');
+        const source = await sourceForGovernedSource(tx, subject, caseId, position.id, input.clientCaseGovernedSourceId);
+        assertProvenance(source, input.observation.sourcePosture, input.observation.verificationState);
+        const asset = await tx.clientFinancialAsset.create({ data: { clientCaseId: caseId, financialPositionId: position.id, clientCasePartyId, category, label, createdBySubject: subject } });
+        const observation = await tx.clientFinancialAssetObservation.create({ data: { clientCaseId: caseId, assetId: asset.id, financialSourceId: source?.id ?? null, marketValueCents, liquidValueCents, availableAmountCents, currencyCode: input.observation.currencyCode, sourcePosture: input.observation.sourcePosture, verificationState: input.observation.verificationState, observationKind: input.observation.observationKind, limitation: input.observation.limitation, asOf: input.observation.asOf, observedAt: input.observation.observedAt, effectiveAt: input.observation.effectiveAt, reviewAfter: input.observation.reviewAfter, createdBySubject: subject } });
+        return { asset, observation };
+      });
+    },
+
+    async createLiabilityWithInitialObservation(ownerAgentSubject: string, clientCaseId: string, raw: unknown) {
+      const { subject, caseId } = await authorize(ownerAgentSubject, clientCaseId, true);
+      const input = newRecordInput(raw, ['category', 'label', 'clientCasePartyId', 'clientCasePropertyId'], ['currentBalanceCents', 'monthlyObligationCents', 'rateBps']);
+      const category = oneOf(input.entity.category, CLIENT_FINANCIAL_LIABILITY_CATEGORIES, 'category') as ClientFinancialLiabilityCategory;
+      const label = boundedText(input.entity.label, 'label', 160, true)!;
+      const clientCasePartyId = optionalIdentifier(input.entity.clientCasePartyId, 'clientCasePartyId');
+      const clientCasePropertyId = optionalIdentifier(input.entity.clientCasePropertyId, 'clientCasePropertyId');
+      const currentBalanceCents = cents(input.observation.currentBalanceCents, 'currentBalanceCents');
+      const monthlyObligationCents = cents(input.observation.monthlyObligationCents, 'monthlyObligationCents');
+      const rateBps = rate(input.observation.rateBps, 'rateBps');
+      if (currentBalanceCents === null && monthlyObligationCents === null) throw new ClientFinancialPositionError('INVALID_REQUEST', 'A Liability observation requires a balance or monthly obligation.');
+      return prisma.$transaction(async (tx) => {
+        const position = await ensure(subject, caseId, tx);
+        if (clientCasePartyId && !await tx.clientCaseParty.findFirst({ where: { id: clientCasePartyId, clientCaseId: caseId }, select: { id: true } })) throw new ClientFinancialPositionError('NOT_FOUND', 'The Client Case participant is unavailable to this Client Case.');
+        if (clientCasePropertyId && !await tx.clientCaseProperty.findFirst({ where: { id: clientCasePropertyId, clientCaseId: caseId }, select: { id: true } })) throw new ClientFinancialPositionError('NOT_FOUND', 'The Client Case Property is unavailable to this Client Case.');
+        const source = await sourceForGovernedSource(tx, subject, caseId, position.id, input.clientCaseGovernedSourceId);
+        assertProvenance(source, input.observation.sourcePosture, input.observation.verificationState);
+        const liability = await tx.clientFinancialLiability.create({ data: { clientCaseId: caseId, financialPositionId: position.id, clientCasePartyId, clientCasePropertyId, category, label, createdBySubject: subject } });
+        const observation = await tx.clientFinancialLiabilityObservation.create({ data: { clientCaseId: caseId, liabilityId: liability.id, financialSourceId: source?.id ?? null, currentBalanceCents, monthlyObligationCents, rateBps, currencyCode: input.observation.currencyCode, sourcePosture: input.observation.sourcePosture, verificationState: input.observation.verificationState, observationKind: input.observation.observationKind, limitation: input.observation.limitation, asOf: input.observation.asOf, observedAt: input.observation.observedAt, effectiveAt: input.observation.effectiveAt, reviewAfter: input.observation.reviewAfter, createdBySubject: subject } });
+        return { liability, observation };
+      });
+    },
+
+    async createIncomeWithInitialObservation(ownerAgentSubject: string, clientCaseId: string, raw: unknown) {
+      const { subject, caseId } = await authorize(ownerAgentSubject, clientCaseId, true);
+      const input = newRecordInput(raw, ['category', 'label', 'clientCasePartyId', 'clientCasePropertyId'], ['amountCents', 'frequency']);
+      const category = oneOf(input.entity.category, CLIENT_FINANCIAL_INCOME_CATEGORIES, 'category') as ClientFinancialIncomeCategory;
+      const label = boundedText(input.entity.label, 'label', 160, true)!;
+      const clientCasePartyId = optionalIdentifier(input.entity.clientCasePartyId, 'clientCasePartyId');
+      const clientCasePropertyId = optionalIdentifier(input.entity.clientCasePropertyId, 'clientCasePropertyId');
+      const amountCents = cents(input.observation.amountCents, 'amountCents', true)!;
+      const frequency = oneOf(input.observation.frequency, CLIENT_FINANCIAL_FREQUENCIES, 'frequency') as ClientFinancialFrequency;
+      return prisma.$transaction(async (tx) => {
+        const position = await ensure(subject, caseId, tx);
+        if (clientCasePartyId && !await tx.clientCaseParty.findFirst({ where: { id: clientCasePartyId, clientCaseId: caseId }, select: { id: true } })) throw new ClientFinancialPositionError('NOT_FOUND', 'The Client Case participant is unavailable to this Client Case.');
+        if (clientCasePropertyId && !await tx.clientCaseProperty.findFirst({ where: { id: clientCasePropertyId, clientCaseId: caseId }, select: { id: true } })) throw new ClientFinancialPositionError('NOT_FOUND', 'The Client Case Property is unavailable to this Client Case.');
+        const source = await sourceForGovernedSource(tx, subject, caseId, position.id, input.clientCaseGovernedSourceId);
+        assertProvenance(source, input.observation.sourcePosture, input.observation.verificationState);
+        const income = await tx.clientFinancialIncomeSource.create({ data: { clientCaseId: caseId, financialPositionId: position.id, clientCasePartyId, clientCasePropertyId, category, label, createdBySubject: subject } });
+        const observation = await tx.clientFinancialIncomeObservation.create({ data: { clientCaseId: caseId, incomeSourceId: income.id, financialSourceId: source?.id ?? null, amountCents, frequency, currencyCode: input.observation.currencyCode, sourcePosture: input.observation.sourcePosture, verificationState: input.observation.verificationState, observationKind: input.observation.observationKind, limitation: input.observation.limitation, asOf: input.observation.asOf, observedAt: input.observation.observedAt, effectiveAt: input.observation.effectiveAt, reviewAfter: input.observation.reviewAfter, createdBySubject: subject } });
+        return { income, observation };
+      });
+    },
+
+    async createQualificationWithInitialObservation(ownerAgentSubject: string, clientCaseId: string, raw: unknown) {
+      const { subject, caseId } = await authorize(ownerAgentSubject, clientCaseId, true);
+      const input = newRecordInput(raw, ['qualificationType', 'label'], ['maximumLoanAmountCents', 'maximumPurchaseAmountCents', 'rateBps', 'programLabel', 'conditions'], true);
+      const qualificationType = oneOf(input.entity.qualificationType, CLIENT_FINANCIAL_QUALIFICATION_TYPES, 'qualificationType') as ClientFinancialQualificationType;
+      const label = boundedText(input.entity.label, 'label', 160, true)!;
+      const maximumLoanAmountCents = cents(input.observation.maximumLoanAmountCents, 'maximumLoanAmountCents');
+      const maximumPurchaseAmountCents = cents(input.observation.maximumPurchaseAmountCents, 'maximumPurchaseAmountCents');
+      const rateBps = rate(input.observation.rateBps, 'rateBps');
+      const programLabel = boundedText(input.observation.programLabel, 'programLabel', 160);
+      const conditions = boundedText(input.observation.conditions, 'conditions', 1000);
+      if (maximumLoanAmountCents === null && maximumPurchaseAmountCents === null) throw new ClientFinancialPositionError('INVALID_REQUEST', 'A Qualification observation requires a maximum loan or purchase amount.');
+      return prisma.$transaction(async (tx) => {
+        const position = await ensure(subject, caseId, tx);
+        const source = await sourceForGovernedSource(tx, subject, caseId, position.id, input.clientCaseGovernedSourceId);
+        assertProvenance(source, input.observation.sourcePosture, input.observation.verificationState);
+        const qualification = await tx.clientFinancialQualification.create({ data: { clientCaseId: caseId, financialPositionId: position.id, qualificationType, label, createdBySubject: subject } });
+        const observation = await tx.clientFinancialQualificationObservation.create({ data: { clientCaseId: caseId, qualificationId: qualification.id, financialSourceId: source?.id ?? null, maximumLoanAmountCents, maximumPurchaseAmountCents, rateBps, programLabel, conditions, currencyCode: input.observation.currencyCode, sourcePosture: input.observation.sourcePosture, verificationState: input.observation.verificationState, observationKind: input.observation.observationKind, limitation: input.observation.limitation, asOf: input.observation.asOf, observedAt: input.observation.observedAt, effectiveAt: input.observation.effectiveAt, expiresAt: input.observation.expiresAt ?? null, reviewAfter: input.observation.reviewAfter, createdBySubject: subject } });
+        return { qualification, observation };
+      });
+    },
+
+    async createConstraintWithInitialObservation(ownerAgentSubject: string, clientCaseId: string, raw: unknown) {
+      const { subject, caseId } = await authorize(ownerAgentSubject, clientCaseId, true);
+      const input = newRecordInput(raw, ['constraintType'], ['amountCents']);
+      const constraintType = oneOf(input.entity.constraintType, CLIENT_FINANCIAL_CONSTRAINT_TYPES, 'constraintType') as ClientFinancialConstraintType;
+      const amountCents = cents(input.observation.amountCents, 'amountCents', true)!;
+      return prisma.$transaction(async (tx) => {
+        const position = await ensure(subject, caseId, tx);
+        const source = await sourceForGovernedSource(tx, subject, caseId, position.id, input.clientCaseGovernedSourceId);
+        assertProvenance(source, input.observation.sourcePosture, input.observation.verificationState);
+        const constraint = await tx.clientFinancialConstraint.create({ data: { clientCaseId: caseId, financialPositionId: position.id, constraintType, createdBySubject: subject } });
+        const observation = await tx.clientFinancialConstraintObservation.create({ data: { clientCaseId: caseId, constraintId: constraint.id, financialSourceId: source?.id ?? null, amountCents, currencyCode: input.observation.currencyCode, sourcePosture: input.observation.sourcePosture, verificationState: input.observation.verificationState, observationKind: input.observation.observationKind, limitation: input.observation.limitation, asOf: input.observation.asOf, observedAt: input.observation.observedAt, effectiveAt: input.observation.effectiveAt, reviewAfter: input.observation.reviewAfter, createdBySubject: subject } });
+        return { constraint, observation };
+      });
+    },
+
     async ensureClientFinancialPosition(ownerAgentSubject: string, clientCaseId: string) {
       const { subject, caseId } = await authorize(ownerAgentSubject, clientCaseId, true);
       return prisma.$transaction((tx) => ensure(subject, caseId, tx));
@@ -439,11 +580,11 @@ export function createClientFinancialPositionService(prisma: PrismaClient) {
       const position = await prisma.clientFinancialPosition.findUnique({ where: { clientCaseId: caseId }, select: { id: true, clientCaseId: true, createdAt: true } });
       if (!position) return null;
       const [assets, liabilities, incomeSources, qualifications, constraints] = await Promise.all([
-        prisma.clientFinancialAsset.findMany({ where: { clientCaseId: caseId }, select: { id: true, category: true, label: true, clientCasePartyId: true, observations: { where: { supersededAt: null }, select: { id: true, marketValueCents: true, liquidValueCents: true, availableAmountCents: true, sourcePosture: true, verificationState: true, asOf: true, reviewAfter: true, financialSourceId: true } } }, orderBy: { createdAt: 'asc' } }),
-        prisma.clientFinancialLiability.findMany({ where: { clientCaseId: caseId }, select: { id: true, category: true, label: true, clientCasePartyId: true, clientCasePropertyId: true, observations: { where: { supersededAt: null }, select: { id: true, currentBalanceCents: true, monthlyObligationCents: true, rateBps: true, sourcePosture: true, verificationState: true, asOf: true, reviewAfter: true, financialSourceId: true } } }, orderBy: { createdAt: 'asc' } }),
-        prisma.clientFinancialIncomeSource.findMany({ where: { clientCaseId: caseId }, select: { id: true, category: true, label: true, clientCasePartyId: true, clientCasePropertyId: true, observations: { where: { supersededAt: null }, select: { id: true, amountCents: true, frequency: true, sourcePosture: true, verificationState: true, asOf: true, reviewAfter: true, financialSourceId: true } } }, orderBy: { createdAt: 'asc' } }),
-        prisma.clientFinancialQualification.findMany({ where: { clientCaseId: caseId }, select: { id: true, qualificationType: true, label: true, observations: { where: { supersededAt: null }, select: { id: true, maximumLoanAmountCents: true, maximumPurchaseAmountCents: true, rateBps: true, sourcePosture: true, verificationState: true, asOf: true, expiresAt: true, reviewAfter: true, financialSourceId: true } } }, orderBy: { createdAt: 'asc' } }),
-        prisma.clientFinancialConstraint.findMany({ where: { clientCaseId: caseId }, select: { id: true, constraintType: true, observations: { where: { supersededAt: null }, select: { id: true, amountCents: true, sourcePosture: true, verificationState: true, asOf: true, reviewAfter: true, financialSourceId: true } } }, orderBy: { createdAt: 'asc' } }),
+        prisma.clientFinancialAsset.findMany({ where: { clientCaseId: caseId }, select: { id: true, category: true, label: true, clientCasePartyId: true, observations: { where: { supersededAt: null }, select: { id: true, marketValueCents: true, liquidValueCents: true, availableAmountCents: true, sourcePosture: true, verificationState: true, observationKind: true, asOf: true, observedAt: true, effectiveAt: true, reviewAfter: true, financialSourceId: true } } }, orderBy: { createdAt: 'asc' } }),
+        prisma.clientFinancialLiability.findMany({ where: { clientCaseId: caseId }, select: { id: true, category: true, label: true, clientCasePartyId: true, clientCasePropertyId: true, observations: { where: { supersededAt: null }, select: { id: true, currentBalanceCents: true, monthlyObligationCents: true, rateBps: true, sourcePosture: true, verificationState: true, observationKind: true, asOf: true, observedAt: true, effectiveAt: true, reviewAfter: true, financialSourceId: true } } }, orderBy: { createdAt: 'asc' } }),
+        prisma.clientFinancialIncomeSource.findMany({ where: { clientCaseId: caseId }, select: { id: true, category: true, label: true, clientCasePartyId: true, clientCasePropertyId: true, observations: { where: { supersededAt: null }, select: { id: true, amountCents: true, frequency: true, sourcePosture: true, verificationState: true, observationKind: true, asOf: true, observedAt: true, effectiveAt: true, reviewAfter: true, financialSourceId: true } } }, orderBy: { createdAt: 'asc' } }),
+        prisma.clientFinancialQualification.findMany({ where: { clientCaseId: caseId }, select: { id: true, qualificationType: true, label: true, observations: { where: { supersededAt: null }, select: { id: true, maximumLoanAmountCents: true, maximumPurchaseAmountCents: true, rateBps: true, programLabel: true, conditions: true, sourcePosture: true, verificationState: true, observationKind: true, asOf: true, observedAt: true, effectiveAt: true, expiresAt: true, reviewAfter: true, financialSourceId: true } } }, orderBy: { createdAt: 'asc' } }),
+        prisma.clientFinancialConstraint.findMany({ where: { clientCaseId: caseId }, select: { id: true, constraintType: true, observations: { where: { supersededAt: null }, select: { id: true, amountCents: true, sourcePosture: true, verificationState: true, observationKind: true, asOf: true, observedAt: true, effectiveAt: true, reviewAfter: true, financialSourceId: true } } }, orderBy: { createdAt: 'asc' } }),
       ]);
       return { ...position, assets, liabilities, incomeSources, qualifications: qualifications.map((qualification) => ({ ...qualification, observations: qualification.observations.map((observation) => ({ ...observation, currentState: currentState(observation.expiresAt) })) })), constraints };
     },

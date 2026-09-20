@@ -4,6 +4,7 @@ export const clientCommandCenterSections = [
   'goals',
   'properties',
   'information',
+  'financial-position',
   'readiness',
   'buyer',
   'seller',

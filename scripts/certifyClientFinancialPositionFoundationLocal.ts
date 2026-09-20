@@ -147,6 +147,33 @@ export async function certifyClientFinancialPositionFoundationLocal() {
     const staleAssociation = await governedSources.associateEvidenceToClientCase('agent-a', 'case-a', { evidenceAdmissionId: 'evidence-stale' });
     await prismaA.evidenceAdmission.update({ where: { id: 'evidence-stale' }, data: { expiresAt: new Date(Date.now() - 1_000) } });
     await reject(() => service.bindFinancialSource('agent-a', 'case-a', { clientCaseGovernedSourceId: staleAssociation.id }));
+    await reject(() => service.createAssetWithInitialObservation('agent-b', 'case-b', {
+      entity: { category: 'CASH', label: 'Rejected root' },
+      observation: { marketValueCents: 1, sourcePosture: 'DOCUMENT_SUPPORTED', verificationState: 'DOCUMENT_SUPPORTED', asOf: '2026-09-20T00:00:00.000Z' },
+    }));
+    assert.equal(await prismaA.clientFinancialPosition.count({ where: { clientCaseId: 'case-b' } }), 0, 'A failed first save must not leave an empty Financial Position root.');
+    const atomicAsset = await service.createAssetWithInitialObservation('agent-a', 'case-c', {
+      entity: { category: 'CASH', label: 'Atomic resource', clientCasePartyId: 'party-c' },
+      observation: { availableAmountCents: 100, sourcePosture: 'CLIENT_STATED', verificationState: 'UNVERIFIED', asOf: '2026-09-20T00:00:00.000Z' },
+    });
+    const atomicLiability = await service.createLiabilityWithInitialObservation('agent-a', 'case-c', {
+      entity: { category: 'MORTGAGE', label: 'Atomic debt', clientCasePropertyId: 'case-property-c' },
+      observation: { currentBalanceCents: 100, sourcePosture: 'CLIENT_STATED', verificationState: 'UNVERIFIED', asOf: '2026-09-20T00:00:00.000Z' },
+    });
+    const atomicIncome = await service.createIncomeWithInitialObservation('agent-a', 'case-c', {
+      entity: { category: 'SALARY', label: 'Atomic income', clientCasePartyId: 'party-c' },
+      observation: { amountCents: 100, frequency: 'MONTHLY', sourcePosture: 'CLIENT_STATED', verificationState: 'UNVERIFIED', asOf: '2026-09-20T00:00:00.000Z' },
+    });
+    const atomicQualification = await service.createQualificationWithInitialObservation('agent-a', 'case-c', {
+      entity: { qualificationType: 'PREAPPROVAL', label: 'Atomic qualification' },
+      observation: { maximumLoanAmountCents: 100, sourcePosture: 'CLIENT_STATED', verificationState: 'UNVERIFIED', asOf: '2026-09-20T00:00:00.000Z' },
+    });
+    const atomicConstraint = await service.createConstraintWithInitialObservation('agent-a', 'case-c', {
+      entity: { constraintType: 'MINIMUM_RETAINED_LIQUIDITY' },
+      observation: { amountCents: 100, sourcePosture: 'CLIENT_STATED', verificationState: 'UNVERIFIED', asOf: '2026-09-20T00:00:00.000Z' },
+    });
+    assert.ok(atomicAsset.asset.id && atomicLiability.liability.id && atomicIncome.income.id && atomicQualification.qualification.id && atomicConstraint.constraint.id, 'Atomic first-save commands must create their typed entity and first observation together.');
+    assert.equal(await prismaA.clientFinancialPosition.count({ where: { clientCaseId: 'case-c' } }), 1, 'Atomic first saves must establish one stable Case root.');
     const positionA = await service.ensureClientFinancialPosition('agent-a', 'case-a');
     assert.equal((await service.ensureClientFinancialPosition('agent-a', 'case-a')).id, positionA.id, 'Root ensure must be idempotent.');
     const asset = await service.createAsset('agent-a', 'case-a', { category: 'CASH', label: 'Joint liquid resource' });
@@ -183,7 +210,7 @@ export async function certifyClientFinancialPositionFoundationLocal() {
 
     const status = runLocalCommand('npx', ['prisma', 'migrate', 'status', '--schema', 'prisma/schema.prisma'], prismaLocalEnvironment(pathA.url));
     assert.match(status, /Database schema is up to date!/);
-    console.log('[client-financial-position-local] ok: dual-path governed-source reconciliation, zero-backfill, Case/owner/type source integrity, stale and archived rejection, bounded source listing, observation provenance, history/current resolution, and synthetic-only data are certified.');
+    console.log('[client-financial-position-local] ok: dual-path governed-source reconciliation, zero-backfill, atomic first-save rollback and typed creation, Case/owner/type source integrity, stale and archived rejection, bounded source listing, observation provenance, history/current resolution, and synthetic-only data are certified.');
   } finally {
     await prismaA?.$disconnect();
     await prismaB?.$disconnect();
