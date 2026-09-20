@@ -195,11 +195,6 @@ enum ClientFinancialConstraintType {
   MAXIMUM_COMFORTABLE_HOUSING_PAYMENT
 }
 
-enum ClientFinancialSourceKind {
-  EVIDENCE
-  PROFESSIONAL_INPUT
-}
-
 enum ClientFinancialSourcePosture {
   CLIENT_STATED
   AGENT_ENTERED_FROM_CLIENT
@@ -372,6 +367,11 @@ enum EvidenceAdmissionPolicy {
   AGENT_REVIEWED_PROFESSIONAL_INPUT
   AGENT_REVIEWED_MANUAL_EVIDENCE
   FUTURE_DOCUMENT_VERIFIED_ADMISSION
+}
+
+enum ClientCaseGovernedSourceKind {
+  EVIDENCE
+  PROFESSIONAL_INPUT
 }
 
 enum EvidenceAdmissionAuditEventType {
@@ -2986,8 +2986,9 @@ model EvidenceAdmission {
   clientCaseFacts       ClientCaseFact[]              @relation("ClientCaseFactEvidenceAdmission")
   clientCaseCriteria    ClientCaseCriterion[]         @relation("ClientCaseCriterionEvidenceAdmission")
   transactionIssues     TransactionIssue[]            @relation("TransactionIssueEvidenceAdmission")
-  financialSources      ClientFinancialSource[]       @relation("ClientFinancialSourceEvidenceAdmission")
+  clientCaseGovernedSources ClientCaseGovernedSource[] @relation("ClientCaseGovernedSourceEvidenceAdmission")
 
+  @@unique([id, ownerAgentSubject], map: "EvidenceAdmission_id_ownerAgentSubject_key")
   @@index([ownerAgentSubject, claimKind, effectiveAt])
   @@index([ownerAgentSubject, expiresAt])
 }
@@ -3165,8 +3166,9 @@ model ProfessionalInput {
   evidenceAdmission  EvidenceAdmission     @relation(fields: [evidenceAdmissionId], references: [id], onDelete: Restrict)
   clientCaseFacts    ClientCaseFact[]      @relation("ClientCaseFactProfessionalInput")
   clientCaseCriteria ClientCaseCriterion[] @relation("ClientCaseCriterionProfessionalInput")
-  financialSources   ClientFinancialSource[] @relation("ClientFinancialSourceProfessionalInput")
+  clientCaseGovernedSources ClientCaseGovernedSource[] @relation("ClientCaseGovernedSourceProfessionalInput")
 
+  @@unique([id, ownerAgentSubject], map: "ProfessionalInput_id_ownerAgentSubject_key")
   @@unique([ownerAgentSubject, claimKind, versionOrdinal], map: "ProfessionalInput_ownerAgentSubject_claimKind_versionOrdinal_ke")
   @@index([ownerAgentSubject, claimKind, effectiveAt])
 }
@@ -3247,7 +3249,9 @@ model ClientCase {
   outputProducts OutputProduct[]
   multiPropertyFinancialScenarios MultiPropertyFinancialScenario[]
   financialPosition               ClientFinancialPosition?
+  governedSources                 ClientCaseGovernedSource[]
 
+  @@unique([id, ownerAgentSubject], map: "ClientCase_id_ownerAgentSubject_key")
   @@index([ownerAgentSubject, status, updatedAt])
   @@index([ownerAgentSubject, createdAt])
 }
@@ -3486,6 +3490,27 @@ model ClientCaseCriterion {
   @@index([professionalInputId])
 }
 
+model ClientCaseGovernedSource {
+  id                  String                       @id @default(cuid())
+  clientCaseId        String
+  ownerAgentSubject   String
+  sourceKind          ClientCaseGovernedSourceKind
+  evidenceAdmissionId String?
+  professionalInputId String?
+  createdBySubject    String
+  createdAt           DateTime                     @default(now())
+
+  clientCase        ClientCase           @relation(fields: [clientCaseId, ownerAgentSubject], references: [id, ownerAgentSubject], onDelete: Restrict)
+  evidenceAdmission EvidenceAdmission?   @relation("ClientCaseGovernedSourceEvidenceAdmission", fields: [evidenceAdmissionId, ownerAgentSubject], references: [id, ownerAgentSubject], onDelete: Restrict)
+  professionalInput ProfessionalInput?   @relation("ClientCaseGovernedSourceProfessionalInput", fields: [professionalInputId, ownerAgentSubject], references: [id, ownerAgentSubject], onDelete: Restrict)
+  financialSources  ClientFinancialSource[]
+
+  @@unique([clientCaseId, id], map: "ClientCaseGovernedSource_clientCaseId_id_key")
+  @@unique([clientCaseId, evidenceAdmissionId], map: "ClientCaseGovernedSource_clientCaseId_evidenceAdmissionId_key")
+  @@unique([clientCaseId, professionalInputId], map: "ClientCaseGovernedSource_clientCaseId_professionalInputId_key")
+  @@index([clientCaseId, createdAt], map: "ClientCaseGovernedSource_clientCaseId_createdAt_idx")
+}
+
 model ClientFinancialPosition {
   id               String   @id @default(cuid())
   clientCaseId     String   @unique
@@ -3507,15 +3532,12 @@ model ClientFinancialSource {
   id                  String                    @id @default(cuid())
   clientCaseId        String
   financialPositionId String
-  kind                ClientFinancialSourceKind
-  evidenceAdmissionId String?                   @unique
-  professionalInputId String?                   @unique
+  clientCaseGovernedSourceId String
   createdBySubject    String
   createdAt           DateTime                  @default(now())
 
   financialPosition         ClientFinancialPosition                   @relation(fields: [clientCaseId, financialPositionId], references: [clientCaseId, id], onDelete: Restrict)
-  evidenceAdmission         EvidenceAdmission?                        @relation("ClientFinancialSourceEvidenceAdmission", fields: [evidenceAdmissionId], references: [id], onDelete: Restrict)
-  professionalInput         ProfessionalInput?                        @relation("ClientFinancialSourceProfessionalInput", fields: [professionalInputId], references: [id], onDelete: Restrict)
+  clientCaseGovernedSource  ClientCaseGovernedSource                  @relation(fields: [clientCaseId, clientCaseGovernedSourceId], references: [clientCaseId, id], onDelete: Restrict)
   assetObservations         ClientFinancialAssetObservation[]
   liabilityObservations     ClientFinancialLiabilityObservation[]
   incomeObservations        ClientFinancialIncomeObservation[]
@@ -3523,6 +3545,7 @@ model ClientFinancialSource {
   constraintObservations    ClientFinancialConstraintObservation[]
 
   @@unique([clientCaseId, id], map: "ClientFinancialSource_clientCaseId_id_key")
+  @@unique([clientCaseId, clientCaseGovernedSourceId], map: "ClientFinancialSource_caseSource_key")
   @@index([clientCaseId, createdAt])
 }
 

@@ -3,6 +3,7 @@ import { createHash } from 'node:crypto';
 import { readFileSync, readdirSync } from 'node:fs';
 import { PrismaClient } from '@prisma/client';
 
+import { createClientCaseGovernedSourceService } from '../lib/clientCaseGovernedSourceFoundation';
 import { createClientFinancialPositionService } from '../lib/clientFinancialPositionFoundation';
 import { CANONICAL_DATABASE_BASELINE } from '../lib/schema/canonicalDatabaseBaseline';
 import {
@@ -59,6 +60,7 @@ async function seed(prisma: PrismaClient) {
   await prisma.clientCase.createMany({ data: [
     { id: 'case-a', ownerAgentSubject: 'agent-a', displayName: 'Synthetic A', createdBySubject: 'agent-a', idempotencyKey: 'case-a' },
     { id: 'case-c', ownerAgentSubject: 'agent-a', displayName: 'Synthetic C', createdBySubject: 'agent-a', idempotencyKey: 'case-c' },
+    { id: 'case-b', ownerAgentSubject: 'agent-b', displayName: 'Synthetic B', createdBySubject: 'agent-b', idempotencyKey: 'case-b' },
   ] });
   await prisma.clientCaseParty.createMany({ data: [
     { id: 'party-a', clientCaseId: 'case-a', role: 'PRIMARY_CLIENT', displayLabel: 'Synthetic A' },
@@ -73,6 +75,18 @@ async function seed(prisma: PrismaClient) {
   } });
   await prisma.evidenceAdmission.create({ data: {
     id: 'evidence-a', ownerAgentSubject: 'agent-a', candidateId: 'evidence-candidate-a', sourceKind: 'PROFESSIONAL_DOCUMENT', sourceRef: 'synthetic-evidence', claimKind: 'PAYOFF_AMOUNT', admittedValue: {}, provenance: {}, admissionPolicy: 'AGENT_REVIEWED_MANUAL_EVIDENCE', admittedBySubject: 'agent-a', fingerprint: 'evidence-a',
+  } });
+  await prisma.evidenceCandidate.create({ data: {
+    id: 'evidence-candidate-stale', ownerAgentSubject: 'agent-a', sourceKind: 'PROFESSIONAL_DOCUMENT', sourceRef: 'synthetic-evidence-stale', claimKind: 'PAYOFF_AMOUNT', candidatePayload: {}, receivedAt: new Date(), provenance: {}, fingerprint: 'evidence-candidate-stale', admissionPolicyContext: {},
+  } });
+  await prisma.evidenceAdmission.create({ data: {
+    id: 'evidence-stale', ownerAgentSubject: 'agent-a', candidateId: 'evidence-candidate-stale', sourceKind: 'PROFESSIONAL_DOCUMENT', sourceRef: 'synthetic-evidence-stale', claimKind: 'PAYOFF_AMOUNT', admittedValue: {}, provenance: {}, admissionPolicy: 'AGENT_REVIEWED_MANUAL_EVIDENCE', admittedBySubject: 'agent-a', fingerprint: 'evidence-stale',
+  } });
+  await prisma.evidenceCandidate.create({ data: {
+    id: 'evidence-candidate-b', ownerAgentSubject: 'agent-b', sourceKind: 'PROFESSIONAL_DOCUMENT', sourceRef: 'synthetic-evidence-b', claimKind: 'PAYOFF_AMOUNT', candidatePayload: {}, receivedAt: new Date(), provenance: {}, fingerprint: 'evidence-candidate-b', admissionPolicyContext: {},
+  } });
+  await prisma.evidenceAdmission.create({ data: {
+    id: 'evidence-b', ownerAgentSubject: 'agent-b', candidateId: 'evidence-candidate-b', sourceKind: 'PROFESSIONAL_DOCUMENT', sourceRef: 'synthetic-evidence-b', claimKind: 'PAYOFF_AMOUNT', admittedValue: {}, provenance: {}, admissionPolicy: 'AGENT_REVIEWED_MANUAL_EVIDENCE', admittedBySubject: 'agent-b', fingerprint: 'evidence-b',
   } });
   await prisma.evidenceCandidate.create({ data: {
     id: 'professional-candidate-a', ownerAgentSubject: 'agent-a', sourceKind: 'PROFESSIONAL_REPORTED', sourceRef: 'synthetic-professional', claimKind: 'LENDER_TERM', candidatePayload: {}, receivedAt: new Date(), provenance: {}, fingerprint: 'professional-candidate-a', admissionPolicyContext: {},
@@ -102,6 +116,7 @@ export async function certifyClientFinancialPositionFoundationLocal() {
     assert.match(deployA, new RegExp(`Applying migration[\\s\\S]*${migrationName}`));
     prismaA = client(pathA.url);
     assert.equal(await prismaA.clientFinancialPosition.count(), 0, 'The Path A migration must not create financial business rows.');
+    assert.equal(await prismaA.clientCaseGovernedSource.count(), 0, 'The Path A migration must not create governed-source associations.');
 
     bootstrapCanonicalDatabaseBaseline(pathB, { resolveHistoricalMigrations: false });
     historicalLedger(pathB.database);
@@ -112,7 +127,7 @@ export async function certifyClientFinancialPositionFoundationLocal() {
       prismaB.clientFinancialPosition.count(), prismaB.clientFinancialAsset.count(), prismaB.clientFinancialAssetObservation.count(),
       prismaB.clientFinancialLiability.count(), prismaB.clientFinancialLiabilityObservation.count(), prismaB.clientFinancialIncomeSource.count(),
       prismaB.clientFinancialIncomeObservation.count(), prismaB.clientFinancialQualification.count(), prismaB.clientFinancialQualificationObservation.count(),
-      prismaB.clientFinancialConstraint.count(), prismaB.clientFinancialConstraintObservation.count(), prismaB.clientFinancialSource.count(),
+      prismaB.clientFinancialConstraint.count(), prismaB.clientFinancialConstraintObservation.count(), prismaB.clientFinancialSource.count(), prismaB.clientCaseGovernedSource.count(),
     ]);
     assert.deepEqual(freshCounts, Array.from({ length: freshCounts.length }, () => 0), 'Fresh Path B Financial Position tables must begin empty.');
     await prismaB.$disconnect();
@@ -121,7 +136,17 @@ export async function certifyClientFinancialPositionFoundationLocal() {
     const convergence = runLocalCommand('npx', ['prisma', 'migrate', 'diff', '--from-url', pathA.url, '--to-url', pathB.url, '--script'], prismaLocalEnvironment(pathA.url));
     assertEmptyMigrationDiff(convergence, 'The existing-data and fresh baseline paths must converge.');
 
+    const governedSources = createClientCaseGovernedSourceService(prismaA);
     const service = createClientFinancialPositionService(prismaA);
+    const evidenceAssociation = await governedSources.associateEvidenceToClientCase('agent-a', 'case-a', { evidenceAdmissionId: 'evidence-a' });
+    const professionalAssociation = await governedSources.associateProfessionalInputToClientCase('agent-a', 'case-a', { professionalInputId: 'professional-input-a' });
+    const caseCEvidenceAssociation = await governedSources.associateEvidenceToClientCase('agent-a', 'case-c', { evidenceAdmissionId: 'evidence-a' });
+    assert.deepEqual((await governedSources.listClientCaseGovernedSources('agent-a', 'case-a')).map((source) => source.id).sort(), [evidenceAssociation.id, professionalAssociation.id].sort(), 'Case-scoped source listing must return only explicit eligible associations.');
+    assert.equal('admittedValue' in (await governedSources.listClientCaseGovernedSources('agent-a', 'case-a'))[0]!.source, false, 'The governed-source candidate list must not expose Evidence payloads.');
+    await reject(() => governedSources.associateEvidenceToClientCase('agent-a', 'case-a', { evidenceAdmissionId: 'evidence-b' }));
+    const staleAssociation = await governedSources.associateEvidenceToClientCase('agent-a', 'case-a', { evidenceAdmissionId: 'evidence-stale' });
+    await prismaA.evidenceAdmission.update({ where: { id: 'evidence-stale' }, data: { expiresAt: new Date(Date.now() - 1_000) } });
+    await reject(() => service.bindFinancialSource('agent-a', 'case-a', { clientCaseGovernedSourceId: staleAssociation.id }));
     const positionA = await service.ensureClientFinancialPosition('agent-a', 'case-a');
     assert.equal((await service.ensureClientFinancialPosition('agent-a', 'case-a')).id, positionA.id, 'Root ensure must be idempotent.');
     const asset = await service.createAsset('agent-a', 'case-a', { category: 'CASH', label: 'Joint liquid resource' });
@@ -134,8 +159,8 @@ export async function certifyClientFinancialPositionFoundationLocal() {
     await service.recordLiabilityObservation('agent-a', 'case-a', liability.id, { currentBalanceCents: 45000000, monthlyObligationCents: 250000, rateBps: 650, sourcePosture: 'CLIENT_STATED', verificationState: 'UNVERIFIED', asOf: '2026-09-20T00:00:00.000Z' });
     const income = await service.createIncomeSource('agent-a', 'case-a', { category: 'SALARY', label: 'Primary salary', clientCasePartyId: 'party-a' });
     await service.recordIncomeObservation('agent-a', 'case-a', income.id, { amountCents: 1500000, frequency: 'MONTHLY', sourcePosture: 'CLIENT_STATED', verificationState: 'UNVERIFIED', asOf: '2026-09-20T00:00:00.000Z' });
-    const evidenceSource = await service.bindFinancialSource('agent-a', 'case-a', { kind: 'EVIDENCE', evidenceAdmissionId: 'evidence-a' });
-    const qualificationSource = await service.bindFinancialSource('agent-a', 'case-a', { kind: 'PROFESSIONAL_INPUT', professionalInputId: 'professional-input-a' });
+    const evidenceSource = await service.bindFinancialSource('agent-a', 'case-a', { clientCaseGovernedSourceId: evidenceAssociation.id });
+    const qualificationSource = await service.bindFinancialSource('agent-a', 'case-a', { clientCaseGovernedSourceId: professionalAssociation.id });
     const qualification = await service.createQualification('agent-a', 'case-a', { qualificationType: 'PREAPPROVAL', label: 'Synthetic lender qualification' });
     await service.recordQualificationObservation('agent-a', 'case-a', qualification.id, { maximumLoanAmountCents: 70000000, financialSourceId: qualificationSource.id, sourcePosture: 'PROFESSIONAL_PROVIDED', verificationState: 'PROFESSIONAL_CONFIRMED', asOf: '2026-09-20T00:00:00.000Z', effectiveAt: '2026-09-20T00:00:00.000Z', expiresAt: '2026-10-20T00:00:00.000Z' });
     const constraint = await service.createConstraint('agent-a', 'case-a', { constraintType: 'MINIMUM_RETAINED_LIQUIDITY' });
@@ -144,17 +169,21 @@ export async function certifyClientFinancialPositionFoundationLocal() {
     await reject(() => service.createAsset('agent-a', 'case-a', { category: 'CASH', label: 'Cross-case party', clientCasePartyId: 'party-c' }));
     await reject(() => service.createLiability('agent-a', 'case-a', { category: 'MORTGAGE', label: 'Cross-case property', clientCasePropertyId: 'case-property-c' }));
     await reject(() => service.recordAssetObservation('agent-a', 'case-c', asset.id, { marketValueCents: 1, sourcePosture: 'CLIENT_STATED', verificationState: 'UNVERIFIED', asOf: '2026-09-20T00:00:00.000Z' }));
-    await reject(() => service.bindFinancialSource('agent-a', 'case-c', { kind: 'EVIDENCE', evidenceAdmissionId: 'evidence-a' }));
+    await reject(() => service.bindFinancialSource('agent-a', 'case-c', { clientCaseGovernedSourceId: evidenceAssociation.id }));
     await reject(() => service.recordAssetObservation('agent-a', 'case-a', asset.id, { marketValueCents: 1.5, sourcePosture: 'CLIENT_STATED', verificationState: 'UNVERIFIED', asOf: '2026-09-20T00:00:00.000Z' }));
     await reject(() => service.recordAssetObservation('agent-a', 'case-a', asset.id, { marketValueCents: 1, currencyCode: 'CAD', sourcePosture: 'CLIENT_STATED', verificationState: 'UNVERIFIED', asOf: '2026-09-20T00:00:00.000Z' }));
-    await reject(() => service.bindFinancialSource('agent-a', 'case-a', { kind: 'EVIDENCE', evidenceAdmissionId: 'evidence-a', professionalInputId: 'professional-input-a' }));
+    await reject(() => service.bindFinancialSource('agent-a', 'case-a', { evidenceAdmissionId: 'evidence-a' }));
+    await prismaA.clientCase.update({ where: { id: 'case-c' }, data: { status: 'ARCHIVED' } });
+    await reject(() => governedSources.associateEvidenceToClientCase('agent-a', 'case-c', { evidenceAdmissionId: 'evidence-stale' }));
 
     await assert.rejects(() => prismaA!.$executeRawUnsafe(`INSERT INTO "ClientFinancialLiability" ("id", "clientCaseId", "financialPositionId", "clientCasePropertyId", "category", "label", "createdBySubject") VALUES ('cross-property-sql', 'case-a', '${positionA.id}', 'case-property-c', 'MORTGAGE', 'Cross property', 'agent-a')`));
-    await assert.rejects(() => prismaA!.$executeRawUnsafe(`INSERT INTO "ClientFinancialSource" ("id", "clientCaseId", "financialPositionId", "kind", "evidenceAdmissionId", "professionalInputId", "createdBySubject") VALUES ('invalid-source-sql', 'case-a', '${positionA.id}', 'EVIDENCE', 'evidence-a', 'professional-input-a', 'agent-a')`));
+    await assert.rejects(() => prismaA!.$executeRawUnsafe(`INSERT INTO "ClientCaseGovernedSource" ("id", "clientCaseId", "ownerAgentSubject", "sourceKind", "evidenceAdmissionId", "professionalInputId", "createdBySubject") VALUES ('invalid-governed-source-sql', 'case-a', 'agent-a', 'EVIDENCE', 'evidence-a', 'professional-input-a', 'agent-a')`));
+    await assert.rejects(() => prismaA!.$executeRawUnsafe(`INSERT INTO "ClientCaseGovernedSource" ("id", "clientCaseId", "ownerAgentSubject", "sourceKind", "evidenceAdmissionId", "createdBySubject") VALUES ('cross-owner-governed-source-sql', 'case-a', 'agent-a', 'EVIDENCE', 'evidence-b', 'agent-a')`));
+    await assert.rejects(() => prismaA!.$executeRawUnsafe(`INSERT INTO "ClientFinancialSource" ("id", "clientCaseId", "financialPositionId", "clientCaseGovernedSourceId", "createdBySubject") VALUES ('cross-case-financial-source-sql', 'case-a', '${positionA.id}', '${caseCEvidenceAssociation.id}', 'agent-a')`));
 
     const status = runLocalCommand('npx', ['prisma', 'migrate', 'status', '--schema', 'prisma/schema.prisma'], prismaLocalEnvironment(pathA.url));
     assert.match(status, /Database schema is up to date!/);
-    console.log('[client-financial-position-local] ok: dual-path additive migration, zero-backfill, typed observations, source binding, composite Case integrity, history/current resolution, and synthetic-only data are certified.');
+    console.log('[client-financial-position-local] ok: dual-path governed-source reconciliation, zero-backfill, Case/owner/type source integrity, stale and archived rejection, bounded source listing, observation provenance, history/current resolution, and synthetic-only data are certified.');
   } finally {
     await prismaA?.$disconnect();
     await prismaB?.$disconnect();

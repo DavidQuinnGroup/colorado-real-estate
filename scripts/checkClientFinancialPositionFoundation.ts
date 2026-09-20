@@ -21,7 +21,7 @@ for (const model of [
 ]) assert.match(schema, new RegExp(`model ${model} \\{`));
 
 for (const token of [
-  'ClientFinancialSourceKind',
+  'ClientCaseGovernedSourceKind',
   'ClientFinancialSourcePosture',
   'ClientFinancialVerificationState',
   'ClientFinancialObservationKind',

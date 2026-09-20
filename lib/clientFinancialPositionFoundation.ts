@@ -6,12 +6,13 @@ import type {
   ClientFinancialLiabilityCategory,
   ClientFinancialObservationKind,
   ClientFinancialQualificationType,
-  ClientFinancialSourceKind,
   ClientFinancialSourcePosture,
   ClientFinancialVerificationState,
   Prisma,
   PrismaClient,
 } from '@prisma/client';
+
+import { assertEligibleClientCaseGovernedSource, ClientCaseGovernedSourceError } from './clientCaseGovernedSourceFoundation';
 
 export const CLIENT_FINANCIAL_POSITION_FOUNDATION_VERSION = 'CLIENT_FINANCIAL_POSITION_FOUNDATION_V1' as const;
 export const CLIENT_FINANCIAL_POSITION_CURRENCY = 'USD' as const;
@@ -24,13 +25,12 @@ export const CLIENT_FINANCIAL_INCOME_CATEGORIES = ['SALARY', 'SELF_EMPLOYMENT', 
 export const CLIENT_FINANCIAL_FREQUENCIES = ['WEEKLY', 'BIWEEKLY', 'SEMIMONTHLY', 'MONTHLY', 'QUARTERLY', 'ANNUAL'] as const satisfies readonly ClientFinancialFrequency[];
 export const CLIENT_FINANCIAL_QUALIFICATION_TYPES = ['PREAPPROVAL', 'PREQUALIFICATION', 'OTHER_LENDER_QUALIFICATION'] as const satisfies readonly ClientFinancialQualificationType[];
 export const CLIENT_FINANCIAL_CONSTRAINT_TYPES = ['MINIMUM_RETAINED_LIQUIDITY', 'MAXIMUM_CASH_DEPLOYMENT', 'MAXIMUM_COMFORTABLE_HOUSING_PAYMENT'] as const satisfies readonly ClientFinancialConstraintType[];
-export const CLIENT_FINANCIAL_SOURCE_KINDS = ['EVIDENCE', 'PROFESSIONAL_INPUT'] as const satisfies readonly ClientFinancialSourceKind[];
 export const CLIENT_FINANCIAL_SOURCE_POSTURES = ['CLIENT_STATED', 'AGENT_ENTERED_FROM_CLIENT', 'PROFESSIONAL_PROVIDED', 'DOCUMENT_SUPPORTED', 'SYSTEM_DERIVED_CANONICAL'] as const satisfies readonly ClientFinancialSourcePosture[];
 export const CLIENT_FINANCIAL_VERIFICATION_STATES = ['UNVERIFIED', 'CLIENT_CONFIRMED', 'DOCUMENT_SUPPORTED', 'PROFESSIONAL_CONFIRMED'] as const satisfies readonly ClientFinancialVerificationState[];
 export const CLIENT_FINANCIAL_OBSERVATION_KINDS = ['REPORTED', 'CORRECTION'] as const satisfies readonly ClientFinancialObservationKind[];
 
 type RecordValue = Record<string, unknown>;
-type Source = { id: string; kind: ClientFinancialSourceKind };
+type Source = { id: string; kind: 'EVIDENCE' | 'PROFESSIONAL_INPUT' };
 
 export class ClientFinancialPositionError extends Error {
   constructor(readonly code: 'INVALID_REQUEST' | 'NOT_FOUND' | 'CONFLICT', message: string) {
@@ -200,11 +200,17 @@ export function createClientFinancialPositionService(prisma: PrismaClient) {
     }
   }
 
-  async function sourceFor(tx: Prisma.TransactionClient, caseId: string, sourceId: string | null) {
+  async function sourceFor(tx: Prisma.TransactionClient, ownerAgentSubject: string, caseId: string, sourceId: string | null) {
     if (!sourceId) return null;
-    const source = await tx.clientFinancialSource.findFirst({ where: { id: sourceId, clientCaseId: caseId }, select: { id: true, kind: true } });
+    const source = await tx.clientFinancialSource.findFirst({ where: { id: sourceId, clientCaseId: caseId }, select: { id: true, clientCaseGovernedSourceId: true } });
     if (!source) throw new ClientFinancialPositionError('NOT_FOUND', 'The financial source binding is unavailable to this Client Case.');
-    return source;
+    try {
+      const governedSource = await assertEligibleClientCaseGovernedSource(tx, ownerAgentSubject, caseId, source.clientCaseGovernedSourceId);
+      return { id: source.id, kind: governedSource.sourceKind };
+    } catch (error) {
+      if (error instanceof ClientCaseGovernedSourceError) throw new ClientFinancialPositionError(error.code === 'NOT_FOUND' ? 'NOT_FOUND' : error.code === 'CONFLICT' ? 'CONFLICT' : 'INVALID_REQUEST', error.message);
+      throw error;
+    }
   }
 
   async function stableEntity(tx: Prisma.TransactionClient, model: 'asset' | 'liability' | 'income' | 'qualification' | 'constraint', caseId: string, id: string) {
@@ -257,27 +263,16 @@ export function createClientFinancialPositionService(prisma: PrismaClient) {
     async bindFinancialSource(ownerAgentSubject: string, clientCaseId: string, raw: unknown) {
       const { subject, caseId } = await authorize(ownerAgentSubject, clientCaseId, true);
       const input = object(raw);
-      rejectUnexpectedKeys(input, ['kind', 'evidenceAdmissionId', 'professionalInputId']);
-      const kind = oneOf(input.kind, CLIENT_FINANCIAL_SOURCE_KINDS, 'kind') as ClientFinancialSourceKind;
-      const evidenceAdmissionId = optionalIdentifier(input.evidenceAdmissionId, 'evidenceAdmissionId');
-      const professionalInputId = optionalIdentifier(input.professionalInputId, 'professionalInputId');
-      if ((kind === 'EVIDENCE' && (!evidenceAdmissionId || professionalInputId)) || (kind === 'PROFESSIONAL_INPUT' && (!professionalInputId || evidenceAdmissionId))) {
-        throw new ClientFinancialPositionError('INVALID_REQUEST', 'Financial source binding shape is invalid.');
-      }
+      rejectUnexpectedKeys(input, ['clientCaseGovernedSourceId']);
+      const clientCaseGovernedSourceId = identifier(input.clientCaseGovernedSourceId, 'clientCaseGovernedSourceId');
       try {
         return await prisma.$transaction(async (tx) => {
           const position = await ensure(subject, caseId, tx);
-          if (evidenceAdmissionId) {
-            const evidence = await tx.evidenceAdmission.findFirst({ where: { id: evidenceAdmissionId, ownerAgentSubject: subject }, select: { id: true } });
-            if (!evidence) throw new ClientFinancialPositionError('NOT_FOUND', 'The Evidence Admission is unavailable to this Agent.');
-          }
-          if (professionalInputId) {
-            const professionalInput = await tx.professionalInput.findFirst({ where: { id: professionalInputId, ownerAgentSubject: subject }, select: { id: true } });
-            if (!professionalInput) throw new ClientFinancialPositionError('NOT_FOUND', 'The Professional Input is unavailable to this Agent.');
-          }
-          return tx.clientFinancialSource.create({ data: { clientCaseId: caseId, financialPositionId: position.id, kind, evidenceAdmissionId, professionalInputId, createdBySubject: subject } });
+          const governedSource = await assertEligibleClientCaseGovernedSource(tx, subject, caseId, clientCaseGovernedSourceId);
+          return tx.clientFinancialSource.create({ data: { clientCaseId: caseId, financialPositionId: position.id, clientCaseGovernedSourceId: governedSource.id, createdBySubject: subject } });
         });
       } catch (error) {
+        if (error instanceof ClientCaseGovernedSourceError) throw new ClientFinancialPositionError(error.code === 'NOT_FOUND' ? 'NOT_FOUND' : error.code === 'CONFLICT' ? 'CONFLICT' : 'INVALID_REQUEST', error.message);
         if (isPrismaError(error, 'P2002')) throw new ClientFinancialPositionError('CONFLICT', 'That governed source is already bound to a Client Case Financial Position.');
         throw error;
       }
@@ -307,7 +302,7 @@ export function createClientFinancialPositionService(prisma: PrismaClient) {
       if (marketValueCents === null && liquidValueCents === null && availableAmountCents === null) throw new ClientFinancialPositionError('INVALID_REQUEST', 'An Asset observation requires at least one amount.');
       return prisma.$transaction(async (tx) => {
         if (!await stableEntity(tx, 'asset', caseId, id)) throw new ClientFinancialPositionError('NOT_FOUND', 'The Asset is unavailable to this Client Case.');
-        const source = await sourceFor(tx, caseId, input.financialSourceId);
+        const source = await sourceFor(tx, subject, caseId, input.financialSourceId);
         assertProvenance(source, input.sourcePosture, input.verificationState);
         const predecessor = await assertCurrentPredecessor(tx, 'asset', caseId, id, input.supersedesObservationId);
         if (predecessor) await markSuperseded(tx, 'asset', predecessor.id);
@@ -341,7 +336,7 @@ export function createClientFinancialPositionService(prisma: PrismaClient) {
       if (currentBalanceCents === null && monthlyObligationCents === null) throw new ClientFinancialPositionError('INVALID_REQUEST', 'A Liability observation requires a balance or monthly obligation.');
       return prisma.$transaction(async (tx) => {
         if (!await stableEntity(tx, 'liability', caseId, id)) throw new ClientFinancialPositionError('NOT_FOUND', 'The Liability is unavailable to this Client Case.');
-        const source = await sourceFor(tx, caseId, input.financialSourceId);
+        const source = await sourceFor(tx, subject, caseId, input.financialSourceId);
         assertProvenance(source, input.sourcePosture, input.verificationState);
         const predecessor = await assertCurrentPredecessor(tx, 'liability', caseId, id, input.supersedesObservationId);
         if (predecessor) await markSuperseded(tx, 'liability', predecessor.id);
@@ -373,7 +368,7 @@ export function createClientFinancialPositionService(prisma: PrismaClient) {
       const frequency = oneOf(input.frequency, CLIENT_FINANCIAL_FREQUENCIES, 'frequency') as ClientFinancialFrequency;
       return prisma.$transaction(async (tx) => {
         if (!await stableEntity(tx, 'income', caseId, id)) throw new ClientFinancialPositionError('NOT_FOUND', 'The Income source is unavailable to this Client Case.');
-        const source = await sourceFor(tx, caseId, input.financialSourceId);
+        const source = await sourceFor(tx, subject, caseId, input.financialSourceId);
         assertProvenance(source, input.sourcePosture, input.verificationState);
         const predecessor = await assertCurrentPredecessor(tx, 'income', caseId, id, input.supersedesObservationId);
         if (predecessor) await markSuperseded(tx, 'income', predecessor.id);
@@ -405,7 +400,7 @@ export function createClientFinancialPositionService(prisma: PrismaClient) {
       if (maximumLoanAmountCents === null && maximumPurchaseAmountCents === null) throw new ClientFinancialPositionError('INVALID_REQUEST', 'A Qualification observation requires a maximum loan or purchase amount.');
       return prisma.$transaction(async (tx) => {
         if (!await stableEntity(tx, 'qualification', caseId, id)) throw new ClientFinancialPositionError('NOT_FOUND', 'The Qualification is unavailable to this Client Case.');
-        const source = await sourceFor(tx, caseId, input.financialSourceId);
+        const source = await sourceFor(tx, subject, caseId, input.financialSourceId);
         assertProvenance(source, input.sourcePosture, input.verificationState);
         const predecessor = await assertCurrentPredecessor(tx, 'qualification', caseId, id, input.supersedesObservationId);
         if (predecessor) await markSuperseded(tx, 'qualification', predecessor.id);
@@ -431,7 +426,7 @@ export function createClientFinancialPositionService(prisma: PrismaClient) {
       const amountCents = cents(input.amountCents, 'amountCents', true)!;
       return prisma.$transaction(async (tx) => {
         if (!await stableEntity(tx, 'constraint', caseId, id)) throw new ClientFinancialPositionError('NOT_FOUND', 'The Financial Constraint is unavailable to this Client Case.');
-        const source = await sourceFor(tx, caseId, input.financialSourceId);
+        const source = await sourceFor(tx, subject, caseId, input.financialSourceId);
         assertProvenance(source, input.sourcePosture, input.verificationState);
         const predecessor = await assertCurrentPredecessor(tx, 'constraint', caseId, id, input.supersedesObservationId);
         if (predecessor) await markSuperseded(tx, 'constraint', predecessor.id);
