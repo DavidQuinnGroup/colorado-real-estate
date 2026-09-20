@@ -148,6 +148,78 @@ enum EvidenceVerificationStatus {
   VERIFICATION_FAILED
 }
 
+enum ClientFinancialAssetCategory {
+  CASH
+  LIQUID_INVESTMENT
+  RETIREMENT_ACCESSIBLE
+  OTHER_AVAILABLE_RESOURCE
+}
+
+enum ClientFinancialLiabilityCategory {
+  MORTGAGE
+  HELOC
+  AUTO_LOAN
+  STUDENT_LOAN
+  CREDIT_CARD
+  PERSONAL_LOAN
+  OTHER
+}
+
+enum ClientFinancialIncomeCategory {
+  SALARY
+  SELF_EMPLOYMENT
+  COMMISSION
+  BONUS
+  RENTAL
+  OTHER
+}
+
+enum ClientFinancialFrequency {
+  WEEKLY
+  BIWEEKLY
+  SEMIMONTHLY
+  MONTHLY
+  QUARTERLY
+  ANNUAL
+}
+
+enum ClientFinancialQualificationType {
+  PREAPPROVAL
+  PREQUALIFICATION
+  OTHER_LENDER_QUALIFICATION
+}
+
+enum ClientFinancialConstraintType {
+  MINIMUM_RETAINED_LIQUIDITY
+  MAXIMUM_CASH_DEPLOYMENT
+  MAXIMUM_COMFORTABLE_HOUSING_PAYMENT
+}
+
+enum ClientFinancialSourceKind {
+  EVIDENCE
+  PROFESSIONAL_INPUT
+}
+
+enum ClientFinancialSourcePosture {
+  CLIENT_STATED
+  AGENT_ENTERED_FROM_CLIENT
+  PROFESSIONAL_PROVIDED
+  DOCUMENT_SUPPORTED
+  SYSTEM_DERIVED_CANONICAL
+}
+
+enum ClientFinancialVerificationState {
+  UNVERIFIED
+  CLIENT_CONFIRMED
+  DOCUMENT_SUPPORTED
+  PROFESSIONAL_CONFIRMED
+}
+
+enum ClientFinancialObservationKind {
+  REPORTED
+  CORRECTION
+}
+
 enum TransactionSide {
   BUYER
   SELLER
@@ -2914,6 +2986,7 @@ model EvidenceAdmission {
   clientCaseFacts       ClientCaseFact[]              @relation("ClientCaseFactEvidenceAdmission")
   clientCaseCriteria    ClientCaseCriterion[]         @relation("ClientCaseCriterionEvidenceAdmission")
   transactionIssues     TransactionIssue[]            @relation("TransactionIssueEvidenceAdmission")
+  financialSources      ClientFinancialSource[]       @relation("ClientFinancialSourceEvidenceAdmission")
 
   @@index([ownerAgentSubject, claimKind, effectiveAt])
   @@index([ownerAgentSubject, expiresAt])
@@ -3092,6 +3165,7 @@ model ProfessionalInput {
   evidenceAdmission  EvidenceAdmission     @relation(fields: [evidenceAdmissionId], references: [id], onDelete: Restrict)
   clientCaseFacts    ClientCaseFact[]      @relation("ClientCaseFactProfessionalInput")
   clientCaseCriteria ClientCaseCriterion[] @relation("ClientCaseCriterionProfessionalInput")
+  financialSources   ClientFinancialSource[] @relation("ClientFinancialSourceProfessionalInput")
 
   @@unique([ownerAgentSubject, claimKind, versionOrdinal], map: "ProfessionalInput_ownerAgentSubject_claimKind_versionOrdinal_ke")
   @@index([ownerAgentSubject, claimKind, effectiveAt])
@@ -3172,6 +3246,7 @@ model ClientCase {
   transactions Transaction[]
   outputProducts OutputProduct[]
   multiPropertyFinancialScenarios MultiPropertyFinancialScenario[]
+  financialPosition               ClientFinancialPosition?
 
   @@index([ownerAgentSubject, status, updatedAt])
   @@index([ownerAgentSubject, createdAt])
@@ -3229,7 +3304,11 @@ model ClientCaseParty {
   contact    Contact?   @relation(fields: [contactId], references: [id], onDelete: Restrict)
   transactionParties TransactionParty[]
   advisoryRoles ClientCasePartyAdvisoryRole[]
+  financialAssets        ClientFinancialAsset[]
+  financialLiabilities   ClientFinancialLiability[]
+  financialIncomeSources ClientFinancialIncomeSource[]
 
+  @@unique([clientCaseId, id], map: "ClientCaseParty_clientCaseId_id_key")
   @@index([clientCaseId, role, participationStatus])
   @@index([clientCaseId, role], map: "ClientCaseParty_clientCaseId_role_idx")
   @@index([contactId])
@@ -3262,6 +3341,8 @@ model ClientCaseProperty {
   scenarioPropertyDispositions ClientCaseScenarioPropertyDisposition[]
   relationshipRoles ClientCasePropertyRelationshipRole[]
   objectivePropertyRelationships ClientCaseObjectivePropertyRelationship[]
+  financialLiabilities           ClientFinancialLiability[]
+  financialIncomeSources         ClientFinancialIncomeSource[]
 
   @@unique([clientCaseId, canonicalPropertyId])
   @@unique([clientCaseId, id])
@@ -3403,6 +3484,291 @@ model ClientCaseCriterion {
   @@index([clientCasePropertyId, semanticKey, createdAt], map: "ClientCaseCriterion_clientCasePropertyId_semanticKey_createdAt_")
   @@index([evidenceAdmissionId])
   @@index([professionalInputId])
+}
+
+model ClientFinancialPosition {
+  id               String   @id @default(cuid())
+  clientCaseId     String   @unique
+  createdBySubject String
+  createdAt        DateTime @default(now())
+
+  clientCase     ClientCase                     @relation(fields: [clientCaseId], references: [id], onDelete: Restrict)
+  sources        ClientFinancialSource[]
+  assets         ClientFinancialAsset[]
+  liabilities    ClientFinancialLiability[]
+  incomeSources  ClientFinancialIncomeSource[]
+  qualifications ClientFinancialQualification[]
+  constraints    ClientFinancialConstraint[]
+
+  @@unique([clientCaseId, id], map: "ClientFinancialPosition_clientCaseId_id_key")
+}
+
+model ClientFinancialSource {
+  id                  String                    @id @default(cuid())
+  clientCaseId        String
+  financialPositionId String
+  kind                ClientFinancialSourceKind
+  evidenceAdmissionId String?                   @unique
+  professionalInputId String?                   @unique
+  createdBySubject    String
+  createdAt           DateTime                  @default(now())
+
+  financialPosition         ClientFinancialPosition                   @relation(fields: [clientCaseId, financialPositionId], references: [clientCaseId, id], onDelete: Restrict)
+  evidenceAdmission         EvidenceAdmission?                        @relation("ClientFinancialSourceEvidenceAdmission", fields: [evidenceAdmissionId], references: [id], onDelete: Restrict)
+  professionalInput         ProfessionalInput?                        @relation("ClientFinancialSourceProfessionalInput", fields: [professionalInputId], references: [id], onDelete: Restrict)
+  assetObservations         ClientFinancialAssetObservation[]
+  liabilityObservations     ClientFinancialLiabilityObservation[]
+  incomeObservations        ClientFinancialIncomeObservation[]
+  qualificationObservations ClientFinancialQualificationObservation[]
+  constraintObservations    ClientFinancialConstraintObservation[]
+
+  @@unique([clientCaseId, id], map: "ClientFinancialSource_clientCaseId_id_key")
+  @@index([clientCaseId, createdAt])
+}
+
+model ClientFinancialAsset {
+  id                  String                       @id @default(cuid())
+  clientCaseId        String
+  financialPositionId String
+  clientCasePartyId   String?
+  category            ClientFinancialAssetCategory
+  label               String
+  createdBySubject    String
+  createdAt           DateTime                     @default(now())
+
+  financialPosition ClientFinancialPosition           @relation(fields: [clientCaseId, financialPositionId], references: [clientCaseId, id], onDelete: Restrict)
+  clientCaseParty   ClientCaseParty?                  @relation(fields: [clientCaseId, clientCasePartyId], references: [clientCaseId, id], onDelete: Restrict)
+  observations      ClientFinancialAssetObservation[]
+
+  @@unique([clientCaseId, id], map: "ClientFinancialAsset_clientCaseId_id_key")
+  @@index([clientCaseId, category, createdAt])
+}
+
+model ClientFinancialAssetObservation {
+  id                      String                           @id @default(cuid())
+  clientCaseId            String
+  assetId                 String
+  financialSourceId       String?
+  marketValueCents        BigInt?
+  liquidValueCents        BigInt?
+  availableAmountCents    BigInt?
+  currencyCode            String                           @default("USD")
+  sourcePosture           ClientFinancialSourcePosture
+  verificationState       ClientFinancialVerificationState
+  observationKind         ClientFinancialObservationKind   @default(REPORTED)
+  limitation              String?
+  asOf                    DateTime
+  observedAt              DateTime?
+  effectiveAt             DateTime?
+  reviewAfter             DateTime?
+  supersedesObservationId String?                          @unique
+  supersededAt            DateTime?
+  createdBySubject        String
+  createdAt               DateTime                         @default(now())
+
+  asset                   ClientFinancialAsset             @relation(fields: [clientCaseId, assetId], references: [clientCaseId, id], onDelete: Restrict)
+  financialSource         ClientFinancialSource?           @relation(fields: [clientCaseId, financialSourceId], references: [clientCaseId, id], onDelete: Restrict)
+  supersedesObservation   ClientFinancialAssetObservation? @relation("ClientFinancialAssetObservationSupersession", fields: [supersedesObservationId], references: [id], onDelete: Restrict)
+  supersededByObservation ClientFinancialAssetObservation? @relation("ClientFinancialAssetObservationSupersession")
+
+  @@index([clientCaseId, assetId, supersededAt, asOf])
+  @@index([clientCaseId, financialSourceId])
+}
+
+model ClientFinancialLiability {
+  id                   String                           @id @default(cuid())
+  clientCaseId         String
+  financialPositionId  String
+  clientCasePartyId    String?
+  clientCasePropertyId String?
+  category             ClientFinancialLiabilityCategory
+  label                String
+  createdBySubject     String
+  createdAt            DateTime                         @default(now())
+
+  financialPosition  ClientFinancialPosition               @relation(fields: [clientCaseId, financialPositionId], references: [clientCaseId, id], onDelete: Restrict)
+  clientCaseParty    ClientCaseParty?                      @relation(fields: [clientCaseId, clientCasePartyId], references: [clientCaseId, id], onDelete: Restrict)
+  clientCaseProperty ClientCaseProperty?                   @relation(fields: [clientCaseId, clientCasePropertyId], references: [clientCaseId, id], onDelete: Restrict)
+  observations       ClientFinancialLiabilityObservation[]
+
+  @@unique([clientCaseId, id], map: "ClientFinancialLiability_clientCaseId_id_key")
+  @@index([clientCaseId, category, createdAt])
+  @@index([clientCaseId, clientCasePropertyId])
+}
+
+model ClientFinancialLiabilityObservation {
+  id                      String                           @id @default(cuid())
+  clientCaseId            String
+  liabilityId             String
+  financialSourceId       String?
+  currentBalanceCents     BigInt?
+  monthlyObligationCents  BigInt?
+  rateBps                 Int?
+  currencyCode            String                           @default("USD")
+  sourcePosture           ClientFinancialSourcePosture
+  verificationState       ClientFinancialVerificationState
+  observationKind         ClientFinancialObservationKind   @default(REPORTED)
+  limitation              String?
+  asOf                    DateTime
+  observedAt              DateTime?
+  effectiveAt             DateTime?
+  reviewAfter             DateTime?
+  supersedesObservationId String?                          @unique
+  supersededAt            DateTime?
+  createdBySubject        String
+  createdAt               DateTime                         @default(now())
+
+  liability               ClientFinancialLiability             @relation(fields: [clientCaseId, liabilityId], references: [clientCaseId, id], onDelete: Restrict)
+  financialSource         ClientFinancialSource?               @relation(fields: [clientCaseId, financialSourceId], references: [clientCaseId, id], onDelete: Restrict)
+  supersedesObservation   ClientFinancialLiabilityObservation? @relation("ClientFinancialLiabilityObservationSupersession", fields: [supersedesObservationId], references: [id], onDelete: Restrict)
+  supersededByObservation ClientFinancialLiabilityObservation? @relation("ClientFinancialLiabilityObservationSupersession")
+
+  @@index([clientCaseId, liabilityId, supersededAt, asOf])
+  @@index([clientCaseId, financialSourceId])
+}
+
+model ClientFinancialIncomeSource {
+  id                   String                        @id @default(cuid())
+  clientCaseId         String
+  financialPositionId  String
+  clientCasePartyId    String?
+  clientCasePropertyId String?
+  category             ClientFinancialIncomeCategory
+  label                String
+  createdBySubject     String
+  createdAt            DateTime                      @default(now())
+
+  financialPosition  ClientFinancialPosition            @relation(fields: [clientCaseId, financialPositionId], references: [clientCaseId, id], onDelete: Restrict)
+  clientCaseParty    ClientCaseParty?                   @relation(fields: [clientCaseId, clientCasePartyId], references: [clientCaseId, id], onDelete: Restrict)
+  clientCaseProperty ClientCaseProperty?                @relation(fields: [clientCaseId, clientCasePropertyId], references: [clientCaseId, id], onDelete: Restrict)
+  observations       ClientFinancialIncomeObservation[]
+
+  @@unique([clientCaseId, id], map: "ClientFinancialIncomeSource_clientCaseId_id_key")
+  @@index([clientCaseId, category, createdAt])
+}
+
+model ClientFinancialIncomeObservation {
+  id                      String                           @id @default(cuid())
+  clientCaseId            String
+  incomeSourceId          String
+  financialSourceId       String?
+  amountCents             BigInt
+  frequency               ClientFinancialFrequency
+  currencyCode            String                           @default("USD")
+  sourcePosture           ClientFinancialSourcePosture
+  verificationState       ClientFinancialVerificationState
+  observationKind         ClientFinancialObservationKind   @default(REPORTED)
+  limitation              String?
+  asOf                    DateTime
+  observedAt              DateTime?
+  effectiveAt             DateTime?
+  reviewAfter             DateTime?
+  supersedesObservationId String?                          @unique
+  supersededAt            DateTime?
+  createdBySubject        String
+  createdAt               DateTime                         @default(now())
+
+  incomeSource            ClientFinancialIncomeSource       @relation(fields: [clientCaseId, incomeSourceId], references: [clientCaseId, id], onDelete: Restrict)
+  financialSource         ClientFinancialSource?            @relation(fields: [clientCaseId, financialSourceId], references: [clientCaseId, id], onDelete: Restrict)
+  supersedesObservation   ClientFinancialIncomeObservation? @relation("ClientFinancialIncomeObservationSupersession", fields: [supersedesObservationId], references: [id], onDelete: Restrict)
+  supersededByObservation ClientFinancialIncomeObservation? @relation("ClientFinancialIncomeObservationSupersession")
+
+  @@index([clientCaseId, incomeSourceId, supersededAt, asOf])
+  @@index([clientCaseId, financialSourceId])
+}
+
+model ClientFinancialQualification {
+  id                  String                           @id @default(cuid())
+  clientCaseId        String
+  financialPositionId String
+  qualificationType   ClientFinancialQualificationType
+  label               String
+  createdBySubject    String
+  createdAt           DateTime                         @default(now())
+
+  financialPosition ClientFinancialPosition                   @relation(fields: [clientCaseId, financialPositionId], references: [clientCaseId, id], onDelete: Restrict)
+  observations      ClientFinancialQualificationObservation[]
+
+  @@unique([clientCaseId, id], map: "ClientFinancialQualification_clientCaseId_id_key")
+  @@index([clientCaseId, qualificationType, createdAt])
+}
+
+model ClientFinancialQualificationObservation {
+  id                         String                           @id @default(cuid())
+  clientCaseId               String
+  qualificationId            String
+  financialSourceId          String?
+  maximumLoanAmountCents     BigInt?
+  maximumPurchaseAmountCents BigInt?
+  rateBps                    Int?
+  programLabel               String?
+  conditions                 String?
+  currencyCode               String                           @default("USD")
+  sourcePosture              ClientFinancialSourcePosture
+  verificationState          ClientFinancialVerificationState
+  observationKind            ClientFinancialObservationKind   @default(REPORTED)
+  limitation                 String?
+  asOf                       DateTime
+  observedAt                 DateTime?
+  effectiveAt                DateTime?
+  expiresAt                  DateTime?
+  reviewAfter                DateTime?
+  supersedesObservationId    String?                          @unique
+  supersededAt               DateTime?
+  createdBySubject           String
+  createdAt                  DateTime                         @default(now())
+
+  qualification           ClientFinancialQualification             @relation(fields: [clientCaseId, qualificationId], references: [clientCaseId, id], onDelete: Restrict)
+  financialSource         ClientFinancialSource?                   @relation(fields: [clientCaseId, financialSourceId], references: [clientCaseId, id], onDelete: Restrict)
+  supersedesObservation   ClientFinancialQualificationObservation? @relation("ClientFinancialQualificationObservationSupersession", fields: [supersedesObservationId], references: [id], onDelete: Restrict)
+  supersededByObservation ClientFinancialQualificationObservation? @relation("ClientFinancialQualificationObservationSupersession")
+
+  @@index([clientCaseId, qualificationId, supersededAt, expiresAt])
+  @@index([clientCaseId, financialSourceId])
+}
+
+model ClientFinancialConstraint {
+  id                  String                        @id @default(cuid())
+  clientCaseId        String
+  financialPositionId String
+  constraintType      ClientFinancialConstraintType
+  createdBySubject    String
+  createdAt           DateTime                      @default(now())
+
+  financialPosition ClientFinancialPosition                @relation(fields: [clientCaseId, financialPositionId], references: [clientCaseId, id], onDelete: Restrict)
+  observations      ClientFinancialConstraintObservation[]
+
+  @@unique([clientCaseId, id], map: "ClientFinancialConstraint_clientCaseId_id_key")
+  @@index([clientCaseId, constraintType, createdAt])
+}
+
+model ClientFinancialConstraintObservation {
+  id                      String                           @id @default(cuid())
+  clientCaseId            String
+  constraintId            String
+  financialSourceId       String?
+  amountCents             BigInt
+  currencyCode            String                           @default("USD")
+  sourcePosture           ClientFinancialSourcePosture
+  verificationState       ClientFinancialVerificationState
+  observationKind         ClientFinancialObservationKind   @default(REPORTED)
+  limitation              String?
+  asOf                    DateTime
+  observedAt              DateTime?
+  effectiveAt             DateTime?
+  reviewAfter             DateTime?
+  supersedesObservationId String?                          @unique
+  supersededAt            DateTime?
+  createdBySubject        String
+  createdAt               DateTime                         @default(now())
+
+  constraint              ClientFinancialConstraint             @relation(fields: [clientCaseId, constraintId], references: [clientCaseId, id], onDelete: Restrict)
+  financialSource         ClientFinancialSource?                @relation(fields: [clientCaseId, financialSourceId], references: [clientCaseId, id], onDelete: Restrict)
+  supersedesObservation   ClientFinancialConstraintObservation? @relation("ClientFinancialConstraintObservationSupersession", fields: [supersedesObservationId], references: [id], onDelete: Restrict)
+  supersededByObservation ClientFinancialConstraintObservation? @relation("ClientFinancialConstraintObservationSupersession")
+
+  @@index([clientCaseId, constraintId, supersededAt, asOf])
+  @@index([clientCaseId, financialSourceId])
 }
 
 model ClientCaseScenario {
