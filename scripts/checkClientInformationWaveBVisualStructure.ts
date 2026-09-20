@@ -4,6 +4,9 @@ import { readFileSync } from 'node:fs';
 const workspace = readFileSync('components/agent/ClientCaseInformationWorkspace.tsx', 'utf8');
 const discoverySelect = readFileSync('components/agent/AgentPropertyDiscoverySelect.tsx', 'utf8');
 const styles = readFileSync('components/agent/ClientCaseInformationWorkspace.module.css', 'utf8');
+const fixture = readFileSync('components/agent/ClientInformationPropertyBoundariesVisualFixture.tsx', 'utf8');
+const fixturePage = readFileSync('app/agent/design-system/visual-certification/client-information-property-boundaries/page.tsx', 'utf8');
+const auth = readFileSync('lib/admin/adminAuth.ts', 'utf8');
 const packageJson = JSON.parse(readFileSync('package.json', 'utf8')) as { scripts?: Record<string, string> };
 
 assert.equal(packageJson.scripts?.['check:client-information-wave-b-visual-structure'], 'jiti scripts/checkClientInformationWaveBVisualStructure.ts');
@@ -34,5 +37,14 @@ assert.match(styles, /@media \(min-width: 48rem\)/);
 assert.match(styles, /@media \(max-width: 40rem\)/);
 assert.match(styles, /overflow-wrap: anywhere/);
 assert.doesNotMatch(styles, /border:\s*1px solid(?! color-mix\(in srgb, var\(--atlas-profile-border-strong\))/);
+assert.match(styles, /\.contentBoundaryHeading \{ margin-bottom: var\(--atlas-space-4\); \}/);
+assert.match(workspace, /styles\.contentBoundaryHeading/);
+assert.match(fixture, /Client Information/);
+assert.match(fixture, /Static synthetic interface only/);
+assert.match(fixture, /Property discovery boundary/);
+assert.match(fixture, /No property relationship/);
+assert.match(fixture, /styles\.contentBoundaryHeading/);
+assert.match(fixturePage, /ClientInformationPropertyBoundariesVisualFixture/);
+assert.match(auth, /\/agent\/design-system\/visual-certification\/client-information-property-boundaries/);
 
 console.log('client-information-wave-b-visual-structure: PASS');

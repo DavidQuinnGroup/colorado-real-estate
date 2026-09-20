@@ -3,6 +3,7 @@
 .heading { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--atlas-space-4); padding-bottom: var(--atlas-space-5); box-shadow: inset 0 -1px 0 color-mix(in srgb, var(--atlas-profile-border-subtle) 22%, transparent); }
 .introduction { max-width: 52rem; margin: var(--atlas-space-3) 0 0; color: var(--atlas-text-secondary); font-size: 0.9375rem; line-height: 1.6; }
 .panelHeading { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--atlas-space-4); }
+.contentBoundaryHeading { margin-bottom: var(--atlas-space-4); }
 .sectionNav { display: flex; flex-wrap: wrap; gap: var(--atlas-space-2); align-items: center; }
 .sectionNav a { display: inline-flex; min-height: 2.25rem; align-items: center; border-radius: var(--atlas-radius-md); padding: 0 var(--atlas-space-3); background: color-mix(in srgb, var(--atlas-profile-surface-secondary) 42%, transparent); color: var(--atlas-text-secondary); font-size: 0.8125rem; font-weight: 700; text-decoration: none; box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--atlas-profile-border-subtle) 18%, transparent); }
 .sectionNav a:hover { background: var(--atlas-action-ghost-hover); color: var(--atlas-text-primary); }

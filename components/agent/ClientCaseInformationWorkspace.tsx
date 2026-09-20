@@ -468,7 +468,7 @@ export function ClientCaseInformationWorkspace({ clientCaseId, intent }: { clien
         </AtlasSurface>
 
         <AtlasSurface material="floating" data-testid="client-case-information-properties" id="properties">
-          <div className={styles.panelHeading}><div><h2 className="atlas-ds-major-section">Properties</h2><p className={styles.metadata}>Search existing PROJECT ATLAS property data and manage durable Case relationship roles. Off-market discovery, provider lookup, and provisional Property creation are deferred.</p></div><AtlasInformationClassLabel informationClass="governed-fact" label="Wave B" /></div>
+          <div className={`${styles.panelHeading} ${styles.contentBoundaryHeading}`}><div><h2 className="atlas-ds-major-section">Properties</h2><p className={styles.metadata}>Search existing PROJECT ATLAS property data and manage durable Case relationship roles. Off-market discovery, provider lookup, and provisional Property creation are deferred.</p></div><AtlasInformationClassLabel informationClass="governed-fact" label="Wave B" /></div>
           <AtlasNotice title="Property discovery boundary" tone="information">Stage 1 searches existing property records only. Some found listings may not yet be available to add to a Client Case.</AtlasNotice>
           <AgentPropertyDiscoverySelect busy={saving} clientCaseId={clientCaseId} onAttach={attachDiscoveredProperty} />
           {workspace.current.properties.length ? <div className={styles.propertyCardGrid}>{workspace.current.properties.map((property) => {
@@ -499,7 +499,7 @@ export function ClientCaseInformationWorkspace({ clientCaseId, intent }: { clien
         </AtlasSurface>
 
         <AtlasSurface className={intent === 'property-occupancy' ? styles.intent : undefined} material="glass" data-testid="client-case-information-property-occupancy">
-          <div className={styles.panelHeading}><div><h2 className="atlas-ds-major-section">Property / Occupancy Facts</h2><p className={styles.metadata}>Occupancy is property-scoped. Select an existing authorized Client Case property relationship.</p></div><AtlasInformationClassLabel informationClass="governed-fact" /></div>
+          <div className={`${styles.panelHeading} ${styles.contentBoundaryHeading}`}><div><h2 className="atlas-ds-major-section">Property / Occupancy Facts</h2><p className={styles.metadata}>Occupancy is property-scoped. Select an existing authorized Client Case property relationship.</p></div><AtlasInformationClassLabel informationClass="governed-fact" /></div>
           {workspace.current.properties.length ? <ul className={styles.occupancyList}>{workspace.current.properties.map((property) => <li className={styles.occupancyItem} key={property.id}><p className={styles.propertyLabel}>{property.role.replaceAll('_', ' ')}</p><p className={styles.propertyValue}>{propertyLabel(property)}</p><AtlasField htmlFor={`occupancy-${property.id}`} label="Occupancy status"><select className={styles.select} id={`occupancy-${property.id}`} value={occupancy[property.id] ?? ''} onChange={(event) => setOccupancy((current) => ({ ...current, [property.id]: event.target.value }))}><option value="">Not provided</option>{occupancyOptions.map((option) => <option key={option} value={option}>{option.replaceAll('_', ' ')}</option>)}</select></AtlasField></li>)}</ul> : <AtlasEmptyState title="No property relationship"><p>Attach an authorized Client Case property before recording property-scoped occupancy facts.</p></AtlasEmptyState>}
         </AtlasSurface>
 
