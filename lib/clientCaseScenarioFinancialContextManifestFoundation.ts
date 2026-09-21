@@ -43,10 +43,16 @@ export class ClientCaseScenarioFinancialContextManifestError extends Error {
   }
 }
 
-type Selection = Readonly<{
+export type ClientCaseScenarioFinancialContextFreezeSelection = Readonly<{
   domain: ClientCaseScenarioFinancialContextEntryDomain;
   entityId: string;
   observationId: string;
+}>;
+
+export type ClientCaseScenarioFinancialContextFreezeInput = Readonly<{
+  expectedCurrentVersionId: string;
+  selectedFacts: readonly ClientCaseScenarioFinancialContextFreezeSelection[];
+  clientMutationKey: string;
 }>;
 
 type Entry = Record<string, unknown> & Readonly<{
@@ -69,7 +75,7 @@ function exactKeys(value: RecordValue, keys: readonly string[]) {
   if (Object.keys(value).some((key) => !keys.includes(key))) throw new ClientCaseScenarioFinancialContextManifestError('INVALID_REQUEST', 'The request contains unsupported fields.');
 }
 
-function selections(value: unknown): Selection[] {
+function selections(value: unknown): ClientCaseScenarioFinancialContextFreezeSelection[] {
   if (!Array.isArray(value) || value.length > 100) throw new ClientCaseScenarioFinancialContextManifestError('INVALID_REQUEST', 'selectedFacts is invalid.');
   const parsed = value.map((entry) => {
     const input = record(entry, 'selectedFacts');
@@ -164,7 +170,7 @@ async function lockCurrentObservation(tx: Transaction, domain: ClientCaseScenari
   if (!rows.length) throw new ClientCaseScenarioFinancialContextManifestError('CONFLICT', 'The selected observation is no longer current.');
 }
 
-async function resolveEntry(tx: Transaction, ownerAgentSubject: string, clientCaseId: string, financialPositionId: string, selection: Selection, capturedAt: Date): Promise<Entry> {
+async function resolveEntry(tx: Transaction, ownerAgentSubject: string, clientCaseId: string, financialPositionId: string, selection: ClientCaseScenarioFinancialContextFreezeSelection, capturedAt: Date): Promise<Entry> {
   await lockCurrentObservation(tx, selection.domain, clientCaseId, selection.observationId);
   if (selection.domain === 'ASSET') {
     const observation = await tx.clientFinancialAssetObservation.findFirst({
@@ -250,18 +256,73 @@ async function resolveEntry(tx: Transaction, ownerAgentSubject: string, clientCa
   };
 }
 
-function idempotencyKey(ownerAgentSubject: string, clientCaseId: string, scenarioId: string, predecessorVersionId: string, clientMutationKey: string) {
+export function scenarioFinancialContextManifestIdempotencyKey(ownerAgentSubject: string, clientCaseId: string, scenarioId: string, predecessorVersionId: string, clientMutationKey: string) {
   return `ATLAS_SCENARIO_FINANCIAL_CONTEXT_FREEZE_V1|${ownerAgentSubject}|${clientCaseId}|${scenarioId}|${predecessorVersionId}|${clientMutationKey}`;
 }
 
-export function createClientCaseScenarioFinancialContextManifestService(prisma: Database) {
-  async function existingResult(ownerAgentSubject: string, clientCaseId: string, key: string, database: Database = prisma) {
-    return database.clientCaseScenarioFinancialContextManifest.findFirst({
-      where: { idempotencyKey: key, ownerAgentSubject, clientCaseId },
-      include: { entries: { orderBy: [{ domain: 'asc' }, { id: 'asc' }] }, scenarioVersion: true },
-    });
-  }
+async function existingResult(database: Pick<Database, 'clientCaseScenarioFinancialContextManifest'>, ownerAgentSubject: string, clientCaseId: string, key: string) {
+  return database.clientCaseScenarioFinancialContextManifest.findFirst({
+    where: { idempotencyKey: key, ownerAgentSubject, clientCaseId },
+    include: { entries: { orderBy: [{ domain: 'asc' }, { id: 'asc' }] }, scenarioVersion: true },
+  });
+}
 
+export async function freezeScenarioForAnalysisWithFinancialContextInTransaction(
+  tx: Transaction,
+  ownerAgentSubject: string,
+  clientCaseId: string,
+  scenarioId: string,
+  input: ClientCaseScenarioFinancialContextFreezeInput,
+) {
+  const { expectedCurrentVersionId, selectedFacts, clientMutationKey } = input;
+  const key = scenarioFinancialContextManifestIdempotencyKey(ownerAgentSubject, clientCaseId, scenarioId, expectedCurrentVersionId, clientMutationKey);
+  const alreadyCreated = await existingResult(tx, ownerAgentSubject, clientCaseId, key);
+  if (alreadyCreated) return Object.freeze({ manifest: alreadyCreated, scenarioVersion: alreadyCreated.scenarioVersion, created: false });
+  const scenario = await tx.clientCaseScenario.findFirst({
+    where: { id: scenarioId, clientCaseId, status: 'ACTIVE', currentVersionId: expectedCurrentVersionId, clientCase: { ownerAgentSubject } },
+    select: { id: true, currentVersionId: true },
+  });
+  if (!scenario) throw new ClientCaseScenarioFinancialContextManifestError('CONFLICT', 'The Scenario is unavailable or stale for financial-context capture.');
+  const predecessor = await tx.clientCaseScenarioVersion.findFirst({
+    where: { id: expectedCurrentVersionId, scenarioId },
+    include: { assumptions: true, criteria: true, propertyDispositions: true, objectiveLinks: true },
+  });
+  if (!predecessor) throw new ClientCaseScenarioFinancialContextManifestError('CONFLICT', 'The Scenario current-version relationship is invalid.');
+  const capturedAt = new Date();
+  const position = await tx.clientFinancialPosition.findUnique({ where: { clientCaseId }, select: { id: true } });
+  if (!position && selectedFacts.length) throw new ClientCaseScenarioFinancialContextManifestError('NOT_FOUND', 'Selected financial facts require a Client Financial Position.');
+  const captureState = !position ? 'NO_FINANCIAL_POSITION' : selectedFacts.length ? 'CAPTURED' : 'EMPTY_SELECTION';
+  const entries = position
+    ? await Promise.all(selectedFacts.map((selection) => resolveEntry(tx, ownerAgentSubject, clientCaseId, position.id, selection, capturedAt)))
+    : [];
+  const content = canonicalManifestContent(captureState, entries);
+  const fingerprint = scenarioFinancialContextManifestFingerprint(content);
+  const successor = await createClientCaseScenarioVersion(tx, scenario.id, predecessor.versionNumber + 1, ownerAgentSubject, definitionFromClientCaseScenarioVersion(predecessor));
+  const advanced = await tx.clientCaseScenario.updateMany({
+    where: { id: scenario.id, currentVersionId: expectedCurrentVersionId, status: 'ACTIVE' },
+    data: { currentVersionId: successor.id },
+  });
+  if (advanced.count !== 1) throw new ClientCaseScenarioFinancialContextManifestError('CONFLICT', 'The Scenario changed during financial-context capture.');
+  const manifest = await tx.clientCaseScenarioFinancialContextManifest.create({
+    data: {
+      scenarioVersionId: successor.id, clientCaseId, ownerAgentSubject, captureState,
+      manifestSchemaVersion: CLIENT_CASE_SCENARIO_FINANCIAL_CONTEXT_MANIFEST_SCHEMA_VERSION,
+      fingerprint, idempotencyKey: key, capturedAt, capturedBySubject: ownerAgentSubject,
+      entries: entries.length ? {
+        create: entries.map((entry) => {
+          const { entityId, observationId, ...persistedEntry } = entry;
+          void entityId;
+          void observationId;
+          return persistedEntry as unknown as Prisma.ClientCaseScenarioFinancialContextManifestEntryCreateWithoutManifestInput;
+        }),
+      } : undefined,
+    },
+    include: { entries: { orderBy: [{ domain: 'asc' }, { id: 'asc' }] } },
+  });
+  return Object.freeze({ manifest, scenarioVersion: successor, created: true });
+}
+
+export function createClientCaseScenarioFinancialContextManifestService(prisma: Database) {
   return Object.freeze({
     async freezeScenarioForAnalysisWithFinancialContext(ownerAgentSubject: string, clientCaseId: string, scenarioId: string, raw: unknown) {
       const input = record(raw);
@@ -269,57 +330,18 @@ export function createClientCaseScenarioFinancialContextManifestService(prisma: 
       const expectedCurrentVersionId = text(input.expectedCurrentVersionId, 'expectedCurrentVersionId');
       const selectedFacts = selections(input.selectedFacts);
       const clientMutationKey = text(input.clientMutationKey, 'clientMutationKey');
-      const key = idempotencyKey(ownerAgentSubject, clientCaseId, scenarioId, expectedCurrentVersionId, clientMutationKey);
-      const prior = await existingResult(ownerAgentSubject, clientCaseId, key);
+      const key = scenarioFinancialContextManifestIdempotencyKey(ownerAgentSubject, clientCaseId, scenarioId, expectedCurrentVersionId, clientMutationKey);
+      const prior = await existingResult(prisma, ownerAgentSubject, clientCaseId, key);
       if (prior) return Object.freeze({ manifest: prior, scenarioVersion: prior.scenarioVersion, created: false });
 
       try {
-        return await prisma.$transaction(async (tx) => {
-          const alreadyCreated = await existingResult(ownerAgentSubject, clientCaseId, key, tx as never);
-          if (alreadyCreated) return Object.freeze({ manifest: alreadyCreated, scenarioVersion: alreadyCreated.scenarioVersion, created: false });
-          const scenario = await tx.clientCaseScenario.findFirst({
-            where: { id: scenarioId, clientCaseId, status: 'ACTIVE', currentVersionId: expectedCurrentVersionId, clientCase: { ownerAgentSubject } },
-            select: { id: true, currentVersionId: true },
-          });
-          if (!scenario) throw new ClientCaseScenarioFinancialContextManifestError('CONFLICT', 'The Scenario is unavailable or stale for financial-context capture.');
-          const predecessor = await tx.clientCaseScenarioVersion.findFirst({
-            where: { id: expectedCurrentVersionId, scenarioId },
-            include: { assumptions: true, criteria: true, propertyDispositions: true, objectiveLinks: true },
-          });
-          if (!predecessor) throw new ClientCaseScenarioFinancialContextManifestError('CONFLICT', 'The Scenario current-version relationship is invalid.');
-          const capturedAt = new Date();
-          const position = await tx.clientFinancialPosition.findUnique({ where: { clientCaseId }, select: { id: true } });
-          if (!position && selectedFacts.length) throw new ClientCaseScenarioFinancialContextManifestError('NOT_FOUND', 'Selected financial facts require a Client Financial Position.');
-          const captureState = !position ? 'NO_FINANCIAL_POSITION' : selectedFacts.length ? 'CAPTURED' : 'EMPTY_SELECTION';
-          const entries = position
-            ? await Promise.all(selectedFacts.map((selection) => resolveEntry(tx, ownerAgentSubject, clientCaseId, position.id, selection, capturedAt)))
-            : [];
-          const content = canonicalManifestContent(captureState, entries);
-          const fingerprint = scenarioFinancialContextManifestFingerprint(content);
-          const successor = await createClientCaseScenarioVersion(tx, scenario.id, predecessor.versionNumber + 1, ownerAgentSubject, definitionFromClientCaseScenarioVersion(predecessor));
-          const advanced = await tx.clientCaseScenario.updateMany({
-            where: { id: scenario.id, currentVersionId: expectedCurrentVersionId, status: 'ACTIVE' },
-            data: { currentVersionId: successor.id },
-          });
-          if (advanced.count !== 1) throw new ClientCaseScenarioFinancialContextManifestError('CONFLICT', 'The Scenario changed during financial-context capture.');
-          const manifest = await tx.clientCaseScenarioFinancialContextManifest.create({
-            data: {
-              scenarioVersionId: successor.id, clientCaseId, ownerAgentSubject, captureState,
-              manifestSchemaVersion: CLIENT_CASE_SCENARIO_FINANCIAL_CONTEXT_MANIFEST_SCHEMA_VERSION,
-              fingerprint, idempotencyKey: key, capturedAt, capturedBySubject: ownerAgentSubject,
-              entries: entries.length ? {
-                create: entries.map((entry) => {
-                  const { entityId, observationId, ...persistedEntry } = entry;
-                  void entityId;
-                  void observationId;
-                  return persistedEntry as unknown as Prisma.ClientCaseScenarioFinancialContextManifestEntryCreateWithoutManifestInput;
-                }),
-              } : undefined,
-            },
-            include: { entries: { orderBy: [{ domain: 'asc' }, { id: 'asc' }] } },
-          });
-          return Object.freeze({ manifest, scenarioVersion: successor, created: true });
-        });
+        return await prisma.$transaction((tx) => freezeScenarioForAnalysisWithFinancialContextInTransaction(
+          tx,
+          ownerAgentSubject,
+          clientCaseId,
+          scenarioId,
+          { expectedCurrentVersionId, selectedFacts, clientMutationKey },
+        ));
       } catch (error) {
         if ((error as { code?: string }).code === 'P2002') throw new ClientCaseScenarioFinancialContextManifestError('CONFLICT', 'A concurrent financial-context capture already created a successor.');
         throw error;
