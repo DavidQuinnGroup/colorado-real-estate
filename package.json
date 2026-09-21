@@ -34,6 +34,8 @@
     "check:client-case-scenario-financial-context-manifest-foundation": "jiti scripts/checkClientCaseScenarioFinancialContextManifestFoundation.ts",
     "check:client-case-scenario-financial-context-manifest-workflow": "jiti scripts/checkClientCaseScenarioFinancialContextManifestWorkflow.ts",
     "check:client-case-scenario-financial-context-manifest-security": "jiti scripts/checkClientCaseScenarioFinancialContextManifestSecurity.ts",
+    "check:client-case-scenario-financial-context-draft-foundation": "jiti scripts/checkClientCaseScenarioFinancialContextDraftFoundation.ts",
+    "check:client-case-scenario-financial-context-draft-workflow": "jiti scripts/checkClientCaseScenarioFinancialContextDraftWorkflow.ts",
     "check:client-case-effective-context-resolver": "jiti scripts/checkClientCaseEffectiveContextResolver.ts",
     "check:client-case-capability-readiness-foundation": "jiti scripts/checkClientCaseCapabilityReadinessFoundation.ts",
     "check:client-case-agent-readiness-workflow": "jiti scripts/checkClientCaseAgentReadinessWorkflow.ts",
