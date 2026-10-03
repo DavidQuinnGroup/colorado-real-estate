@@ -113,6 +113,47 @@ enum OutputCheckpointState {
   COMPLETED
 }
 
+enum MethodResultRegistryLifecycleState {
+  ADMITTED
+  ADMITTED_WITH_QUALIFICATIONS
+  CANDIDATE
+  GOVERNED_BUT_UNADMITTED
+  HELD_PENDING_GOVERNANCE
+  SUPERSEDED
+  CORRECTED
+  WITHDRAWN
+  HISTORICAL_ONLY
+  NOT_A_METHOD_PROFESSIONAL_JUDGMENT
+  UNKNOWN
+}
+
+enum ProductResultRoleKind {
+  CONSUMER
+  COMMUNICATOR
+  PROJECTION_COMPOSITION
+}
+
+enum MethodResultAliasKind {
+  CALCULATION_VERSION
+  CALCULATION_CONTRACT
+  CALCULATION_ENGINE
+  LEGACY_IDENTIFIER
+  IMPLEMENTATION_REFERENCE
+  OTHER
+}
+
+enum MethodResultAliasAdjudicationState {
+  ADJUDICATED
+  HELD
+  UNMAPPED
+  REJECTED
+}
+
+enum MethodVersionGovernanceReferenceKind {
+  SHARED_PRIMITIVE
+  SHARED_CONTRACT
+}
+
 enum EvidenceSourceKind {
   TRUSTED_INTERNAL_DETERMINISTIC
   PROFESSIONAL_REPORTED
@@ -2947,6 +2988,219 @@ model OutputCheckpoint {
 
   @@unique([outputVersionId, checkpointRef])
   @@index([outputVersionId, recordedAt])
+}
+
+model CanonicalMethod {
+  id                   String                             @id @default(cuid())
+  semanticKey          String                             @unique
+  semanticLabel        String
+  lifecycleState       MethodResultRegistryLifecycleState
+  authorityRef         String
+  provenance           Json
+  integrityFingerprint String                             @unique
+  supersedesMethodId   String?                            @unique
+  correctionOfMethodId String?                            @unique
+  createdAt            DateTime                           @default(now())
+
+  versions           CanonicalMethodVersion[]
+  aliases            MethodResultAlias[]      @relation("MethodResultAliasMethod")
+  supersedesMethod   CanonicalMethod?         @relation("CanonicalMethodSupersession", fields: [supersedesMethodId], references: [id], onDelete: Restrict)
+  supersededByMethod CanonicalMethod?         @relation("CanonicalMethodSupersession")
+  correctionOfMethod CanonicalMethod?         @relation("CanonicalMethodCorrection", fields: [correctionOfMethodId], references: [id], onDelete: Restrict)
+  correctedByMethod  CanonicalMethod?         @relation("CanonicalMethodCorrection")
+
+  @@index([lifecycleState])
+}
+
+model CanonicalMethodVersion {
+  id                          String                             @id @default(cuid())
+  methodId                    String
+  versionKey                  String
+  lifecycleState              MethodResultRegistryLifecycleState
+  inputContractRef            String?
+  resultContractRef           String?
+  qualification               Json
+  provenance                  Json
+  implementationRefs          Json
+  integrityFingerprint        String                             @unique
+  effectiveAt                 DateTime?
+  admittedAt                  DateTime?
+  supersedesMethodVersionId   String?                            @unique
+  correctionOfMethodVersionId String?                            @unique
+  createdAt                   DateTime                           @default(now())
+  immutableAt                 DateTime                           @default(now())
+
+  method                    CanonicalMethod                    @relation(fields: [methodId], references: [id], onDelete: Restrict)
+  aliases                   MethodResultAlias[]                @relation("MethodResultAliasMethodVersion")
+  productionEdges           MethodResultProductionEdge[]
+  governanceReferences      MethodVersionGovernanceReference[]
+  supersedesMethodVersion   CanonicalMethodVersion?            @relation("CanonicalMethodVersionSupersession", fields: [supersedesMethodVersionId], references: [id], onDelete: Restrict)
+  supersededByMethodVersion CanonicalMethodVersion?            @relation("CanonicalMethodVersionSupersession")
+  correctionOfMethodVersion CanonicalMethodVersion?            @relation("CanonicalMethodVersionCorrection", fields: [correctionOfMethodVersionId], references: [id], onDelete: Restrict)
+  correctedByMethodVersion  CanonicalMethodVersion?            @relation("CanonicalMethodVersionCorrection")
+
+  @@unique([methodId, versionKey])
+  @@index([lifecycleState])
+  @@index([methodId, admittedAt])
+}
+
+model CanonicalResult {
+  id                   String                             @id @default(cuid())
+  semanticKey          String                             @unique
+  semanticLabel        String
+  lifecycleState       MethodResultRegistryLifecycleState
+  authorityRef         String
+  provenance           Json
+  integrityFingerprint String                             @unique
+  supersedesResultId   String?                            @unique
+  correctionOfResultId String?                            @unique
+  createdAt            DateTime                           @default(now())
+
+  versions           CanonicalResultVersion[]
+  owner              CanonicalResultOwner?
+  productRoles       ProductResultRole[]
+  aliases            MethodResultAlias[]      @relation("MethodResultAliasResult")
+  supersedesResult   CanonicalResult?         @relation("CanonicalResultSupersession", fields: [supersedesResultId], references: [id], onDelete: Restrict)
+  supersededByResult CanonicalResult?         @relation("CanonicalResultSupersession")
+  correctionOfResult CanonicalResult?         @relation("CanonicalResultCorrection", fields: [correctionOfResultId], references: [id], onDelete: Restrict)
+  correctedByResult  CanonicalResult?         @relation("CanonicalResultCorrection")
+
+  @@index([lifecycleState])
+}
+
+model CanonicalResultVersion {
+  id                          String                             @id @default(cuid())
+  resultId                    String
+  versionKey                  String
+  lifecycleState              MethodResultRegistryLifecycleState
+  qualification               Json
+  contextSnapshot             Json
+  provenance                  Json
+  integrityFingerprint        String                             @unique
+  effectiveAt                 DateTime?
+  admittedAt                  DateTime?
+  supersedesResultVersionId   String?                            @unique
+  correctionOfResultVersionId String?                            @unique
+  createdAt                   DateTime                           @default(now())
+  immutableAt                 DateTime                           @default(now())
+
+  result                    CanonicalResult             @relation(fields: [resultId], references: [id], onDelete: Restrict)
+  aliases                   MethodResultAlias[]         @relation("MethodResultAliasResultVersion")
+  productionEdge            MethodResultProductionEdge?
+  constituentsAsComposite   ResultVersionConstituent[]  @relation("CompositeResultVersion")
+  constituentsAsComponent   ResultVersionConstituent[]  @relation("ConstituentResultVersion")
+  supersedesResultVersion   CanonicalResultVersion?     @relation("CanonicalResultVersionSupersession", fields: [supersedesResultVersionId], references: [id], onDelete: Restrict)
+  supersededByResultVersion CanonicalResultVersion?     @relation("CanonicalResultVersionSupersession")
+  correctionOfResultVersion CanonicalResultVersion?     @relation("CanonicalResultVersionCorrection", fields: [correctionOfResultVersionId], references: [id], onDelete: Restrict)
+  correctedByResultVersion  CanonicalResultVersion?     @relation("CanonicalResultVersionCorrection")
+
+  @@unique([resultId, versionKey])
+  @@index([lifecycleState])
+  @@index([resultId, admittedAt])
+}
+
+model MethodResultProductionEdge {
+  id                   String   @id @default(cuid())
+  methodVersionId      String
+  resultVersionId      String   @unique
+  provenance           Json
+  integrityFingerprint String   @unique
+  createdAt            DateTime @default(now())
+
+  methodVersion CanonicalMethodVersion @relation(fields: [methodVersionId], references: [id], onDelete: Restrict)
+  resultVersion CanonicalResultVersion @relation(fields: [resultVersionId], references: [id], onDelete: Restrict)
+
+  @@index([methodVersionId, createdAt])
+}
+
+model CanonicalResultOwner {
+  id                          String   @id @default(cuid())
+  resultId                    String   @unique
+  productDefinitionRef        String
+  productDefinitionVersionRef String
+  provenance                  Json
+  integrityFingerprint        String   @unique
+  createdAt                   DateTime @default(now())
+
+  result CanonicalResult @relation(fields: [resultId], references: [id], onDelete: Restrict)
+
+  @@unique([productDefinitionRef, productDefinitionVersionRef, resultId])
+  @@index([productDefinitionRef, productDefinitionVersionRef])
+}
+
+model ProductResultRole {
+  id                          String                @id @default(cuid())
+  resultId                    String
+  productDefinitionRef        String
+  productDefinitionVersionRef String
+  role                        ProductResultRoleKind
+  provenance                  Json
+  integrityFingerprint        String                @unique
+  createdAt                   DateTime              @default(now())
+
+  result CanonicalResult @relation(fields: [resultId], references: [id], onDelete: Restrict)
+
+  @@unique([resultId, productDefinitionRef, productDefinitionVersionRef, role])
+  @@index([productDefinitionRef, productDefinitionVersionRef, role])
+}
+
+model MethodResultAlias {
+  id                   String                             @id @default(cuid())
+  aliasNamespace       String
+  aliasKind            MethodResultAliasKind
+  aliasValue           String
+  adjudicationState    MethodResultAliasAdjudicationState
+  methodId             String?
+  methodVersionId      String?
+  resultId             String?
+  resultVersionId      String?
+  provenance           Json
+  integrityFingerprint String                             @unique
+  createdAt            DateTime                           @default(now())
+  immutableAt          DateTime                           @default(now())
+
+  method        CanonicalMethod?        @relation("MethodResultAliasMethod", fields: [methodId], references: [id], onDelete: Restrict)
+  methodVersion CanonicalMethodVersion? @relation("MethodResultAliasMethodVersion", fields: [methodVersionId], references: [id], onDelete: Restrict)
+  result        CanonicalResult?        @relation("MethodResultAliasResult", fields: [resultId], references: [id], onDelete: Restrict)
+  resultVersion CanonicalResultVersion? @relation("MethodResultAliasResultVersion", fields: [resultVersionId], references: [id], onDelete: Restrict)
+
+  @@unique([aliasNamespace, aliasKind, aliasValue])
+  @@index([methodId])
+  @@index([methodVersionId])
+  @@index([resultId])
+  @@index([resultVersionId])
+}
+
+model MethodVersionGovernanceReference {
+  id                   String                               @id @default(cuid())
+  methodVersionId      String
+  referenceKind        MethodVersionGovernanceReferenceKind
+  semanticRef          String
+  versionRef           String?
+  provenance           Json
+  integrityFingerprint String                               @unique
+  createdAt            DateTime                             @default(now())
+
+  methodVersion CanonicalMethodVersion @relation(fields: [methodVersionId], references: [id], onDelete: Restrict)
+
+  @@index([methodVersionId, referenceKind])
+}
+
+model ResultVersionConstituent {
+  id                         String   @id @default(cuid())
+  compositeResultVersionId   String
+  constituentResultVersionId String
+  roleRef                    String
+  sequence                   Int?
+  provenance                 Json
+  integrityFingerprint       String   @unique
+  createdAt                  DateTime @default(now())
+
+  compositeResultVersion   CanonicalResultVersion @relation("CompositeResultVersion", fields: [compositeResultVersionId], references: [id], onDelete: Restrict)
+  constituentResultVersion CanonicalResultVersion @relation("ConstituentResultVersion", fields: [constituentResultVersionId], references: [id], onDelete: Restrict)
+
+  @@unique([compositeResultVersionId, constituentResultVersionId, roleRef])
+  @@index([constituentResultVersionId])
 }
 
 model EvidenceCandidate {
