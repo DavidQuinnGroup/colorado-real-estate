@@ -162,6 +162,18 @@ enum ResultVersionMethodRequirement {
   METHOD_VERSION_NOT_APPLICABLE
 }
 
+enum QualificationApplicationScope {
+  RESULT
+  METHOD
+  BASELINE
+  REPORTING_PERIOD
+  ANALYTICAL_BASIS
+  COMPATIBILITY_CONTEXT
+  OUTPUT_SNAPSHOT
+  PRODUCT_DEFINITION
+  EVIDENCE
+}
+
 enum EvidenceSourceKind {
   TRUSTED_INTERNAL_DETERMINISTIC
   PROFESSIONAL_REPORTED
@@ -2925,7 +2937,8 @@ model OutputEvidenceSnapshot {
   fingerprint           String
   createdAt             DateTime @default(now())
 
-  outputVersion OutputVersion @relation(fields: [outputVersionId], references: [id], onDelete: Restrict)
+  outputVersion          OutputVersion                         @relation(fields: [outputVersionId], references: [id], onDelete: Restrict)
+  qualificationSubjects QualificationOutputEvidenceSubject[]
 
   @@index([fingerprint])
 }
@@ -2949,6 +2962,7 @@ model OutputSemanticCompositionSnapshot {
   reportingPeriodVersionPins OutputSemanticCompositionReportingPeriodVersionPin[]
   analyticalBasisVersionPins OutputSemanticCompositionAnalyticalBasisVersionPin[]
   compatibilityContexts OutputSemanticCompositionCompatibilityContext[]
+  qualificationSubjects QualificationOutputSnapshotSubject[]
 
   @@index([productDefinitionRef, productDefinitionVersionRef], map: "OutputSemanticCompositionSnapshot_productReference_idx")
 }
@@ -3106,6 +3120,7 @@ model CanonicalMethodVersion {
   productionEdges           MethodResultProductionEdge[]
   governanceReferences      MethodVersionGovernanceReference[]
   semanticCompositionPins   OutputSemanticCompositionMethodVersionPin[]
+  qualificationSubjects     QualificationMethodVersionSubject[]
   supersedesMethodVersion   CanonicalMethodVersion?            @relation("CanonicalMethodVersionSupersession", fields: [supersedesMethodVersionId], references: [id], onDelete: Restrict)
   supersededByMethodVersion CanonicalMethodVersion?            @relation("CanonicalMethodVersionSupersession")
   correctionOfMethodVersion CanonicalMethodVersion?            @relation("CanonicalMethodVersionCorrection", fields: [correctionOfMethodVersionId], references: [id], onDelete: Restrict)
@@ -3163,6 +3178,7 @@ model CanonicalResultVersion {
   constituentsAsComposite   ResultVersionConstituent[]  @relation("CompositeResultVersion")
   constituentsAsComponent   ResultVersionConstituent[]  @relation("ConstituentResultVersion")
   semanticCompositionPins   OutputSemanticCompositionResultVersionPin[]
+  qualificationSubjects     QualificationResultVersionSubject[]
   supersedesResultVersion   CanonicalResultVersion?     @relation("CanonicalResultVersionSupersession", fields: [supersedesResultVersionId], references: [id], onDelete: Restrict)
   supersededByResultVersion CanonicalResultVersion?     @relation("CanonicalResultVersionSupersession")
   correctionOfResultVersion CanonicalResultVersion?     @relation("CanonicalResultVersionCorrection", fields: [correctionOfResultVersionId], references: [id], onDelete: Restrict)
@@ -3234,6 +3250,7 @@ model ProductDefinitionReference {
   resultRoles  ProductResultRole[]
   semanticCompositionSnapshots OutputSemanticCompositionSnapshot[]
   baselineReferences BaselineReference[]
+  qualificationSubjects QualificationProductDefinitionSubject[]
 
   @@unique([productDefinitionRef, productDefinitionVersionRef])
   @@index([lifecycleState])
@@ -3285,6 +3302,7 @@ model BaselineReferenceVersion {
   supersededByReferenceVersion BaselineReferenceVersion? @relation("BaselineReferenceVersionSupersession")
   correctionOfReferenceVersion BaselineReferenceVersion? @relation("BaselineReferenceVersionCorrection", fields: [correctionOfReferenceVersionId], references: [id], onDelete: Restrict)
   correctedByReferenceVersion  BaselineReferenceVersion? @relation("BaselineReferenceVersionCorrection")
+  qualificationSubjects        QualificationBaselineVersionSubject[]
 
   @@unique([baselineReferenceId, versionRef], map: "BaselineReferenceVersion_reference_version_key")
   @@index([targetResourceType, targetResourceId, targetResourceVersion], map: "BaselineReferenceVersion_exact_target_idx")
@@ -3331,6 +3349,7 @@ model ReportingPeriodReferenceVersion {
   supersededByReferenceVersion   ReportingPeriodReferenceVersion? @relation("ReportingPeriodReferenceVersionSupersession")
   correctionOfReferenceVersion   ReportingPeriodReferenceVersion? @relation("ReportingPeriodReferenceVersionCorrection", fields: [correctionOfReferenceVersionId], references: [id], onDelete: Restrict)
   correctedByReferenceVersion    ReportingPeriodReferenceVersion? @relation("ReportingPeriodReferenceVersionCorrection")
+  qualificationSubjects          QualificationReportingPeriodVersionSubject[]
 
   @@unique([reportingPeriodReferenceId, versionRef], map: "ReportingPeriodReferenceVersion_reference_version_key")
   @@index([asOfAt, periodStartAt, periodEndAt], map: "ReportingPeriodReferenceVersion_temporal_idx")
@@ -3379,6 +3398,7 @@ model AnalyticalBasisReferenceVersion {
   supersededByReferenceVersion   AnalyticalBasisReferenceVersion? @relation("AnalyticalBasisReferenceVersionSupersession")
   correctionOfReferenceVersion   AnalyticalBasisReferenceVersion? @relation("AnalyticalBasisReferenceVersionCorrection", fields: [correctionOfReferenceVersionId], references: [id], onDelete: Restrict)
   correctedByReferenceVersion    AnalyticalBasisReferenceVersion? @relation("AnalyticalBasisReferenceVersionCorrection")
+  qualificationSubjects          QualificationAnalyticalBasisVersionSubject[]
 
   @@unique([analyticalBasisReferenceId, versionRef], map: "AnalyticalBasisReferenceVersion_reference_version_key")
 }
@@ -3442,12 +3462,274 @@ model OutputSemanticCompositionCompatibilityContext {
   resultVersionPin          OutputSemanticCompositionResultVersionPin           @relation(fields: [resultVersionPinId], references: [id], onDelete: Restrict, map: "OutputSemanticCompatibilityContext_resultPin_fkey")
   reportingPeriodVersionPin OutputSemanticCompositionReportingPeriodVersionPin  @relation(fields: [reportingPeriodVersionPinId], references: [id], onDelete: Restrict, map: "OutputSemanticCompatibilityContext_periodPin_fkey")
   analyticalBasisVersionPin OutputSemanticCompositionAnalyticalBasisVersionPin  @relation(fields: [analyticalBasisVersionPinId], references: [id], onDelete: Restrict, map: "OutputSemanticCompatibilityContext_basisPin_fkey")
+  qualificationSubjects     QualificationCompatibilityContextSubject[]
 
   @@unique([snapshotId, resultVersionPinId, reportingPeriodVersionPinId, analyticalBasisVersionPinId, roleRef], map: "OutputSemanticCompatibilityContext_exact_tuple_key")
   @@unique([snapshotId, roleRef, ordinal], map: "OutputSemanticCompatibilityContext_role_ordinal_key")
   @@index([resultVersionPinId], map: "OutputSemanticCompatibilityContext_resultPin_idx")
   @@index([reportingPeriodVersionPinId], map: "OutputSemanticCompatibilityContext_periodPin_idx")
   @@index([analyticalBasisVersionPinId], map: "OutputSemanticCompatibilityContext_basisPin_idx")
+}
+
+model QualificationDefinition {
+  id                   String   @id @default(cuid())
+  definitionKey        String   @unique
+  authorityRef         String
+  provenance           Json
+  integrityFingerprint String   @unique
+  createdAt            DateTime @default(now())
+  immutableAt          DateTime @default(now())
+
+  versions     QualificationDefinitionVersion[]
+  applications QualificationApplication[]
+}
+
+model QualificationDefinitionVersion {
+  id                               String   @id @default(cuid())
+  qualificationDefinitionId        String
+  versionKey                       String
+  governedCodeRef                  String
+  categoryPayload                  Json?
+  authorityRef                     String
+  lifecycleStateRef                String
+  effectAuthorityRef               String?
+  blocksFormalization              Boolean?
+  blocksDelivery                   Boolean?
+  requiresReview                   Boolean?
+  requiresDisplay                  Boolean?
+  informationalOnly                Boolean?
+  provenance                       Json
+  integrityFingerprint             String   @unique
+  formalizedAt                     DateTime?
+  admittedAt                       DateTime?
+  supersedesDefinitionVersionId    String?  @unique
+  correctionOfDefinitionVersionId  String?  @unique
+  createdAt                        DateTime @default(now())
+  immutableAt                      DateTime @default(now())
+
+  definition                    QualificationDefinition         @relation(fields: [qualificationDefinitionId], references: [id], onDelete: Restrict, map: "QualificationDefinitionVersion_definition_fkey")
+  applicationVersions           QualificationApplicationVersion[]
+  supersedesDefinitionVersion   QualificationDefinitionVersion? @relation("QualificationDefinitionVersionSupersession", fields: [supersedesDefinitionVersionId], references: [id], onDelete: Restrict)
+  supersededByDefinitionVersion QualificationDefinitionVersion? @relation("QualificationDefinitionVersionSupersession")
+  correctionOfDefinitionVersion QualificationDefinitionVersion? @relation("QualificationDefinitionVersionCorrection", fields: [correctionOfDefinitionVersionId], references: [id], onDelete: Restrict)
+  correctedByDefinitionVersion  QualificationDefinitionVersion? @relation("QualificationDefinitionVersionCorrection")
+
+  @@unique([qualificationDefinitionId, versionKey], map: "QualificationDefinitionVersion_definition_version_key")
+  @@index([qualificationDefinitionId, formalizedAt, admittedAt], map: "QualificationDefinitionVersion_state_idx")
+}
+
+model QualificationApplication {
+  id                        String   @id @default(cuid())
+  applicationKey            String   @unique
+  qualificationDefinitionId String
+  authorityRef              String
+  provenance                Json
+  integrityFingerprint      String   @unique
+  createdAt                 DateTime @default(now())
+  immutableAt               DateTime @default(now())
+
+  definition QualificationDefinition          @relation(fields: [qualificationDefinitionId], references: [id], onDelete: Restrict, map: "QualificationApplication_definition_fkey")
+  versions   QualificationApplicationVersion[]
+
+  @@index([qualificationDefinitionId], map: "QualificationApplication_definition_idx")
+}
+
+model QualificationApplicationVersion {
+  id                                String                        @id @default(cuid())
+  qualificationApplicationId        String
+  qualificationDefinitionVersionId  String
+  versionKey                        String
+  scope                             QualificationApplicationScope
+  lifecycleStateRef                 String
+  sourceRef                         String?
+  reasonRef                         String?
+  effectiveAsOf                     DateTime?
+  authorityRef                      String
+  effectAuthorityRef                String?
+  blocksFormalization               Boolean?
+  blocksDelivery                    Boolean?
+  requiresReview                    Boolean?
+  requiresDisplay                   Boolean?
+  informationalOnly                 Boolean?
+  provenance                        Json
+  integrityFingerprint              String                        @unique
+  formalizedAt                      DateTime?
+  admittedAt                        DateTime?
+  supersedesApplicationVersionId    String?                       @unique
+  correctionOfApplicationVersionId  String?                       @unique
+  createdAt                         DateTime                      @default(now())
+  immutableAt                       DateTime                      @default(now())
+
+  application                    QualificationApplication         @relation(fields: [qualificationApplicationId], references: [id], onDelete: Restrict, map: "QualificationApplicationVersion_application_fkey")
+  definitionVersion              QualificationDefinitionVersion   @relation(fields: [qualificationDefinitionVersionId], references: [id], onDelete: Restrict, map: "QualificationApplicationVersion_definitionVersion_fkey")
+  supersedesApplicationVersion   QualificationApplicationVersion? @relation("QualificationApplicationVersionSupersession", fields: [supersedesApplicationVersionId], references: [id], onDelete: Restrict)
+  supersededByApplicationVersion QualificationApplicationVersion? @relation("QualificationApplicationVersionSupersession")
+  correctionOfApplicationVersion QualificationApplicationVersion? @relation("QualificationApplicationVersionCorrection", fields: [correctionOfApplicationVersionId], references: [id], onDelete: Restrict)
+  correctedByApplicationVersion  QualificationApplicationVersion? @relation("QualificationApplicationVersionCorrection")
+  resultVersionSubject           QualificationResultVersionSubject?
+  methodVersionSubject           QualificationMethodVersionSubject?
+  baselineVersionSubject         QualificationBaselineVersionSubject?
+  reportingPeriodVersionSubject  QualificationReportingPeriodVersionSubject?
+  analyticalBasisVersionSubject  QualificationAnalyticalBasisVersionSubject?
+  compatibilityContextSubject    QualificationCompatibilityContextSubject?
+  outputSnapshotSubject          QualificationOutputSnapshotSubject?
+  productDefinitionSubject       QualificationProductDefinitionSubject?
+  outputEvidenceSubject          QualificationOutputEvidenceSubject?
+  evidenceAdmissionSubject       QualificationEvidenceAdmissionSubject?
+
+  @@unique([qualificationApplicationId, versionKey], map: "QualificationApplicationVersion_application_version_key")
+  @@index([qualificationDefinitionVersionId], map: "QualificationApplicationVersion_definitionVersion_idx")
+  @@index([scope, formalizedAt, admittedAt], map: "QualificationApplicationVersion_scope_state_idx")
+}
+
+model QualificationResultVersionSubject {
+  id                    String   @id @default(cuid())
+  applicationVersionId  String   @unique
+  resultVersionId       String
+  provenance            Json
+  integrityFingerprint  String   @unique
+  createdAt             DateTime @default(now())
+  immutableAt           DateTime @default(now())
+
+  applicationVersion QualificationApplicationVersion @relation(fields: [applicationVersionId], references: [id], onDelete: Restrict, map: "QualificationResultSubject_applicationVersion_fkey")
+  resultVersion      CanonicalResultVersion            @relation(fields: [resultVersionId], references: [id], onDelete: Restrict, map: "QualificationResultSubject_resultVersion_fkey")
+
+  @@index([resultVersionId], map: "QualificationResultSubject_resultVersion_idx")
+}
+
+model QualificationMethodVersionSubject {
+  id                    String   @id @default(cuid())
+  applicationVersionId  String   @unique
+  methodVersionId       String
+  provenance            Json
+  integrityFingerprint  String   @unique
+  createdAt             DateTime @default(now())
+  immutableAt           DateTime @default(now())
+
+  applicationVersion QualificationApplicationVersion @relation(fields: [applicationVersionId], references: [id], onDelete: Restrict, map: "QualificationMethodSubject_applicationVersion_fkey")
+  methodVersion      CanonicalMethodVersion            @relation(fields: [methodVersionId], references: [id], onDelete: Restrict, map: "QualificationMethodSubject_methodVersion_fkey")
+
+  @@index([methodVersionId], map: "QualificationMethodSubject_methodVersion_idx")
+}
+
+model QualificationBaselineVersionSubject {
+  id                         String   @id @default(cuid())
+  applicationVersionId       String   @unique
+  baselineReferenceVersionId String
+  provenance                 Json
+  integrityFingerprint       String   @unique
+  createdAt                  DateTime @default(now())
+  immutableAt                DateTime @default(now())
+
+  applicationVersion       QualificationApplicationVersion @relation(fields: [applicationVersionId], references: [id], onDelete: Restrict, map: "QualificationBaselineSubject_applicationVersion_fkey")
+  baselineReferenceVersion BaselineReferenceVersion         @relation(fields: [baselineReferenceVersionId], references: [id], onDelete: Restrict, map: "QualificationBaselineSubject_baselineVersion_fkey")
+
+  @@index([baselineReferenceVersionId], map: "QualificationBaselineSubject_baselineVersion_idx")
+}
+
+model QualificationReportingPeriodVersionSubject {
+  id                                String   @id @default(cuid())
+  applicationVersionId              String   @unique
+  reportingPeriodReferenceVersionId String
+  provenance                        Json
+  integrityFingerprint              String   @unique
+  createdAt                         DateTime @default(now())
+  immutableAt                       DateTime @default(now())
+
+  applicationVersion             QualificationApplicationVersion @relation(fields: [applicationVersionId], references: [id], onDelete: Restrict, map: "QualificationPeriodSubject_applicationVersion_fkey")
+  reportingPeriodReferenceVersion ReportingPeriodReferenceVersion @relation(fields: [reportingPeriodReferenceVersionId], references: [id], onDelete: Restrict, map: "QualificationPeriodSubject_periodVersion_fkey")
+
+  @@index([reportingPeriodReferenceVersionId], map: "QualificationPeriodSubject_periodVersion_idx")
+}
+
+model QualificationAnalyticalBasisVersionSubject {
+  id                                String   @id @default(cuid())
+  applicationVersionId              String   @unique
+  analyticalBasisReferenceVersionId String
+  provenance                        Json
+  integrityFingerprint              String   @unique
+  createdAt                         DateTime @default(now())
+  immutableAt                       DateTime @default(now())
+
+  applicationVersion            QualificationApplicationVersion @relation(fields: [applicationVersionId], references: [id], onDelete: Restrict, map: "QualificationBasisSubject_applicationVersion_fkey")
+  analyticalBasisReferenceVersion AnalyticalBasisReferenceVersion @relation(fields: [analyticalBasisReferenceVersionId], references: [id], onDelete: Restrict, map: "QualificationBasisSubject_basisVersion_fkey")
+
+  @@index([analyticalBasisReferenceVersionId], map: "QualificationBasisSubject_basisVersion_idx")
+}
+
+model QualificationCompatibilityContextSubject {
+  id                     String   @id @default(cuid())
+  applicationVersionId   String   @unique
+  compatibilityContextId String
+  provenance             Json
+  integrityFingerprint   String   @unique
+  createdAt              DateTime @default(now())
+  immutableAt            DateTime @default(now())
+
+  applicationVersion   QualificationApplicationVersion                    @relation(fields: [applicationVersionId], references: [id], onDelete: Restrict, map: "QualificationCompatibilitySubject_applicationVersion_fkey")
+  compatibilityContext OutputSemanticCompositionCompatibilityContext      @relation(fields: [compatibilityContextId], references: [id], onDelete: Restrict, map: "QualificationCompatibilitySubject_context_fkey")
+
+  @@index([compatibilityContextId], map: "QualificationCompatibilitySubject_context_idx")
+}
+
+model QualificationOutputSnapshotSubject {
+  id                   String   @id @default(cuid())
+  applicationVersionId String   @unique
+  snapshotId           String
+  provenance           Json
+  integrityFingerprint String   @unique
+  createdAt            DateTime @default(now())
+  immutableAt          DateTime @default(now())
+
+  applicationVersion QualificationApplicationVersion   @relation(fields: [applicationVersionId], references: [id], onDelete: Restrict, map: "QualificationOutputSnapshotSubject_applicationVersion_fkey")
+  snapshot           OutputSemanticCompositionSnapshot @relation(fields: [snapshotId], references: [id], onDelete: Restrict, map: "QualificationOutputSnapshotSubject_snapshot_fkey")
+
+  @@index([snapshotId], map: "QualificationOutputSnapshotSubject_snapshot_idx")
+}
+
+model QualificationProductDefinitionSubject {
+  id                           String   @id @default(cuid())
+  applicationVersionId         String   @unique
+  productDefinitionReferenceId String
+  provenance                   Json
+  integrityFingerprint         String   @unique
+  createdAt                    DateTime @default(now())
+  immutableAt                  DateTime @default(now())
+
+  applicationVersion       QualificationApplicationVersion @relation(fields: [applicationVersionId], references: [id], onDelete: Restrict, map: "QualificationProductSubject_applicationVersion_fkey")
+  productDefinitionReference ProductDefinitionReference     @relation(fields: [productDefinitionReferenceId], references: [id], onDelete: Restrict, map: "QualificationProductSubject_productDefinition_fkey")
+
+  @@index([productDefinitionReferenceId], map: "QualificationProductSubject_productDefinition_idx")
+}
+
+model QualificationOutputEvidenceSubject {
+  id                       String   @id @default(cuid())
+  applicationVersionId     String   @unique
+  outputEvidenceSnapshotId String
+  provenance               Json
+  integrityFingerprint     String   @unique
+  createdAt                DateTime @default(now())
+  immutableAt              DateTime @default(now())
+
+  applicationVersion    QualificationApplicationVersion @relation(fields: [applicationVersionId], references: [id], onDelete: Restrict, map: "QualificationOutputEvidenceSubject_applicationVersion_fkey")
+  outputEvidenceSnapshot OutputEvidenceSnapshot           @relation(fields: [outputEvidenceSnapshotId], references: [id], onDelete: Restrict, map: "QualificationOutputEvidenceSubject_snapshot_fkey")
+
+  @@index([outputEvidenceSnapshotId], map: "QualificationOutputEvidenceSubject_snapshot_idx")
+}
+
+model QualificationEvidenceAdmissionSubject {
+  id                    String   @id @default(cuid())
+  applicationVersionId  String   @unique
+  evidenceAdmissionId   String
+  provenance            Json
+  integrityFingerprint  String   @unique
+  createdAt             DateTime @default(now())
+  immutableAt           DateTime @default(now())
+
+  applicationVersion QualificationApplicationVersion @relation(fields: [applicationVersionId], references: [id], onDelete: Restrict, map: "QualificationEvidenceAdmissionSubject_applicationVersion_fkey")
+  evidenceAdmission   EvidenceAdmission                @relation(fields: [evidenceAdmissionId], references: [id], onDelete: Restrict, map: "QualificationEvidenceAdmissionSubject_admission_fkey")
+
+  @@index([evidenceAdmissionId], map: "QualificationEvidenceAdmissionSubject_admission_idx")
 }
 
 model MethodResultAlias {
@@ -3570,6 +3852,7 @@ model EvidenceAdmission {
   clientCaseCriteria    ClientCaseCriterion[]         @relation("ClientCaseCriterionEvidenceAdmission")
   transactionIssues     TransactionIssue[]            @relation("TransactionIssueEvidenceAdmission")
   clientCaseGovernedSources ClientCaseGovernedSource[] @relation("ClientCaseGovernedSourceEvidenceAdmission")
+  qualificationSubjects QualificationEvidenceAdmissionSubject[]
 
   @@unique([id, ownerAgentSubject], map: "EvidenceAdmission_id_ownerAgentSubject_key")
   @@index([ownerAgentSubject, claimKind, effectiveAt])
