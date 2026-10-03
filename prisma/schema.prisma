@@ -143,6 +143,7 @@ enum MethodResultAliasKind {
 }
 
 enum MethodResultAliasAdjudicationState {
+  UNADJUDICATED
   ADJUDICATED
   HELD
   UNMAPPED
