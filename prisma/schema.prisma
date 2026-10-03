@@ -3183,13 +3183,14 @@ model MethodVersionGovernanceReference {
   methodVersionId      String
   referenceKind        MethodVersionGovernanceReferenceKind
   semanticRef          String
-  versionRef           String?
+  versionRef           String
   provenance           Json
   integrityFingerprint String                               @unique
   createdAt            DateTime                             @default(now())
 
   methodVersion CanonicalMethodVersion @relation(fields: [methodVersionId], references: [id], onDelete: Restrict)
 
+  @@unique([methodVersionId, referenceKind, semanticRef, versionRef])
   @@index([methodVersionId, referenceKind])
 }
 
