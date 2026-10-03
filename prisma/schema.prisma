@@ -131,6 +131,8 @@ enum ProductResultRoleKind {
   CONSUMER
   COMMUNICATOR
   PROJECTION_COMPOSITION
+  PROJECTION
+  COMPOSITION
 }
 
 enum MethodResultAliasKind {
@@ -3129,7 +3131,8 @@ model CanonicalResultOwner {
   integrityFingerprint        String   @unique
   createdAt                   DateTime @default(now())
 
-  result CanonicalResult @relation(fields: [resultId], references: [id], onDelete: Restrict)
+  result           CanonicalResult            @relation(fields: [resultId], references: [id], onDelete: Restrict)
+  productReference ProductDefinitionReference @relation(fields: [productDefinitionRef, productDefinitionVersionRef], references: [productDefinitionRef, productDefinitionVersionRef], onDelete: Restrict)
 
   @@unique([productDefinitionRef, productDefinitionVersionRef, resultId])
   @@index([productDefinitionRef, productDefinitionVersionRef])
@@ -3145,10 +3148,28 @@ model ProductResultRole {
   integrityFingerprint        String                @unique
   createdAt                   DateTime              @default(now())
 
-  result CanonicalResult @relation(fields: [resultId], references: [id], onDelete: Restrict)
+  result           CanonicalResult            @relation(fields: [resultId], references: [id], onDelete: Restrict)
+  productReference ProductDefinitionReference @relation(fields: [productDefinitionRef, productDefinitionVersionRef], references: [productDefinitionRef, productDefinitionVersionRef], onDelete: Restrict)
 
   @@unique([resultId, productDefinitionRef, productDefinitionVersionRef, role])
   @@index([productDefinitionRef, productDefinitionVersionRef, role])
+}
+
+model ProductDefinitionReference {
+  id                          String                             @id @default(cuid())
+  productDefinitionRef        String
+  productDefinitionVersionRef String
+  lifecycleState              MethodResultRegistryLifecycleState
+  provenance                  Json
+  integrityFingerprint        String                             @unique
+  createdAt                   DateTime                           @default(now())
+  immutableAt                 DateTime                           @default(now())
+
+  ownedResults CanonicalResultOwner[]
+  resultRoles  ProductResultRole[]
+
+  @@unique([productDefinitionRef, productDefinitionVersionRef])
+  @@index([lifecycleState])
 }
 
 model MethodResultAlias {
