@@ -2894,6 +2894,7 @@ model OutputVersion {
   product           OutputProduct           @relation(fields: [productId], references: [id], onDelete: Restrict)
   multiPropertyFinancialScenarioVersion MultiPropertyFinancialScenarioVersion? @relation(fields: [multiPropertyFinancialScenarioVersionId], references: [id], onDelete: SetNull)
   evidenceSnapshot  OutputEvidenceSnapshot?
+  semanticCompositionSnapshot OutputSemanticCompositionSnapshot?
   dependencies      OutputDependency[]
   reviews           OutputReview[]
   decisions         OutputDecision[]
@@ -2927,6 +2928,64 @@ model OutputEvidenceSnapshot {
   outputVersion OutputVersion @relation(fields: [outputVersionId], references: [id], onDelete: Restrict)
 
   @@index([fingerprint])
+}
+
+model OutputSemanticCompositionSnapshot {
+  id                          String   @id @default(cuid())
+  outputVersionId             String   @unique
+  productDefinitionRef        String
+  productDefinitionVersionRef String
+  snapshotSchemaVersion       String
+  provenance                  Json
+  integrityFingerprint        String   @unique
+  createdAt                   DateTime @default(now())
+  immutableAt                 DateTime @default(now())
+  formalizedAt                DateTime?
+
+  outputVersion     OutputVersion                               @relation(fields: [outputVersionId], references: [id], onDelete: Restrict)
+  productReference  ProductDefinitionReference                  @relation(fields: [productDefinitionRef, productDefinitionVersionRef], references: [productDefinitionRef, productDefinitionVersionRef], onDelete: Restrict, map: "OutputSemanticCompositionSnapshot_productReference_fkey")
+  methodVersionPins OutputSemanticCompositionMethodVersionPin[]
+  resultVersionPins OutputSemanticCompositionResultVersionPin[]
+
+  @@index([productDefinitionRef, productDefinitionVersionRef], map: "OutputSemanticCompositionSnapshot_productReference_idx")
+}
+
+model OutputSemanticCompositionMethodVersionPin {
+  id                   String   @id @default(cuid())
+  snapshotId           String
+  methodVersionId      String
+  roleRef              String
+  ordinal              Int
+  provenance           Json
+  integrityFingerprint String   @unique
+  createdAt            DateTime @default(now())
+  immutableAt          DateTime @default(now())
+
+  snapshot      OutputSemanticCompositionSnapshot @relation(fields: [snapshotId], references: [id], onDelete: Restrict, map: "OutputSemanticMethodPin_snapshot_fkey")
+  methodVersion CanonicalMethodVersion            @relation(fields: [methodVersionId], references: [id], onDelete: Restrict, map: "OutputSemanticMethodPin_methodVersion_fkey")
+
+  @@unique([snapshotId, methodVersionId, roleRef], map: "OutputSemanticMethodPin_exact_role_key")
+  @@unique([snapshotId, roleRef, ordinal], map: "OutputSemanticMethodPin_role_ordinal_key")
+  @@index([methodVersionId], map: "OutputSemanticMethodPin_methodVersion_idx")
+}
+
+model OutputSemanticCompositionResultVersionPin {
+  id                   String   @id @default(cuid())
+  snapshotId           String
+  resultVersionId      String
+  roleRef              String
+  ordinal              Int
+  provenance           Json
+  integrityFingerprint String   @unique
+  createdAt            DateTime @default(now())
+  immutableAt          DateTime @default(now())
+
+  snapshot      OutputSemanticCompositionSnapshot @relation(fields: [snapshotId], references: [id], onDelete: Restrict, map: "OutputSemanticResultPin_snapshot_fkey")
+  resultVersion CanonicalResultVersion            @relation(fields: [resultVersionId], references: [id], onDelete: Restrict, map: "OutputSemanticResultPin_resultVersion_fkey")
+
+  @@unique([snapshotId, resultVersionId, roleRef], map: "OutputSemanticResultPin_exact_role_key")
+  @@unique([snapshotId, roleRef, ordinal], map: "OutputSemanticResultPin_role_ordinal_key")
+  @@index([resultVersionId], map: "OutputSemanticResultPin_resultVersion_idx")
 }
 
 model OutputDependency {
@@ -3042,6 +3101,7 @@ model CanonicalMethodVersion {
   aliases                   MethodResultAlias[]                @relation("MethodResultAliasMethodVersion")
   productionEdges           MethodResultProductionEdge[]
   governanceReferences      MethodVersionGovernanceReference[]
+  semanticCompositionPins   OutputSemanticCompositionMethodVersionPin[]
   supersedesMethodVersion   CanonicalMethodVersion?            @relation("CanonicalMethodVersionSupersession", fields: [supersedesMethodVersionId], references: [id], onDelete: Restrict)
   supersededByMethodVersion CanonicalMethodVersion?            @relation("CanonicalMethodVersionSupersession")
   correctionOfMethodVersion CanonicalMethodVersion?            @relation("CanonicalMethodVersionCorrection", fields: [correctionOfMethodVersionId], references: [id], onDelete: Restrict)
@@ -3098,6 +3158,7 @@ model CanonicalResultVersion {
   productionEdge            MethodResultProductionEdge?
   constituentsAsComposite   ResultVersionConstituent[]  @relation("CompositeResultVersion")
   constituentsAsComponent   ResultVersionConstituent[]  @relation("ConstituentResultVersion")
+  semanticCompositionPins   OutputSemanticCompositionResultVersionPin[]
   supersedesResultVersion   CanonicalResultVersion?     @relation("CanonicalResultVersionSupersession", fields: [supersedesResultVersionId], references: [id], onDelete: Restrict)
   supersededByResultVersion CanonicalResultVersion?     @relation("CanonicalResultVersionSupersession")
   correctionOfResultVersion CanonicalResultVersion?     @relation("CanonicalResultVersionCorrection", fields: [correctionOfResultVersionId], references: [id], onDelete: Restrict)
@@ -3167,6 +3228,7 @@ model ProductDefinitionReference {
 
   ownedResults CanonicalResultOwner[]
   resultRoles  ProductResultRole[]
+  semanticCompositionSnapshots OutputSemanticCompositionSnapshot[]
 
   @@unique([productDefinitionRef, productDefinitionVersionRef])
   @@index([lifecycleState])
