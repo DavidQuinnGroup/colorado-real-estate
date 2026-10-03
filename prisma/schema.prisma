@@ -2948,6 +2948,7 @@ model OutputSemanticCompositionSnapshot {
   resultVersionPins OutputSemanticCompositionResultVersionPin[]
   reportingPeriodVersionPins OutputSemanticCompositionReportingPeriodVersionPin[]
   analyticalBasisVersionPins OutputSemanticCompositionAnalyticalBasisVersionPin[]
+  compatibilityContexts OutputSemanticCompositionCompatibilityContext[]
 
   @@index([productDefinitionRef, productDefinitionVersionRef], map: "OutputSemanticCompositionSnapshot_productReference_idx")
 }
@@ -2984,6 +2985,7 @@ model OutputSemanticCompositionResultVersionPin {
 
   snapshot      OutputSemanticCompositionSnapshot @relation(fields: [snapshotId], references: [id], onDelete: Restrict, map: "OutputSemanticResultPin_snapshot_fkey")
   resultVersion CanonicalResultVersion            @relation(fields: [resultVersionId], references: [id], onDelete: Restrict, map: "OutputSemanticResultPin_resultVersion_fkey")
+  compatibilityContexts OutputSemanticCompositionCompatibilityContext[]
 
   @@unique([snapshotId, resultVersionId, roleRef], map: "OutputSemanticResultPin_exact_role_key")
   @@unique([snapshotId, roleRef, ordinal], map: "OutputSemanticResultPin_role_ordinal_key")
@@ -3394,6 +3396,7 @@ model OutputSemanticCompositionReportingPeriodVersionPin {
 
   snapshot                      OutputSemanticCompositionSnapshot @relation(fields: [snapshotId], references: [id], onDelete: Restrict, map: "OutputSemanticPeriodPin_snapshot_fkey")
   reportingPeriodReferenceVersion ReportingPeriodReferenceVersion  @relation(fields: [reportingPeriodReferenceVersionId], references: [id], onDelete: Restrict, map: "OutputSemanticPeriodPin_periodVersion_fkey")
+  compatibilityContexts         OutputSemanticCompositionCompatibilityContext[]
 
   @@unique([snapshotId, reportingPeriodReferenceVersionId, roleRef], map: "OutputSemanticPeriodPin_exact_role_key")
   @@unique([snapshotId, roleRef, ordinal], map: "OutputSemanticPeriodPin_role_ordinal_key")
@@ -3413,10 +3416,38 @@ model OutputSemanticCompositionAnalyticalBasisVersionPin {
 
   snapshot                     OutputSemanticCompositionSnapshot @relation(fields: [snapshotId], references: [id], onDelete: Restrict, map: "OutputSemanticBasisPin_snapshot_fkey")
   analyticalBasisReferenceVersion AnalyticalBasisReferenceVersion  @relation(fields: [analyticalBasisReferenceVersionId], references: [id], onDelete: Restrict, map: "OutputSemanticBasisPin_basisVersion_fkey")
+  compatibilityContexts        OutputSemanticCompositionCompatibilityContext[]
 
   @@unique([snapshotId, analyticalBasisReferenceVersionId, roleRef], map: "OutputSemanticBasisPin_exact_role_key")
   @@unique([snapshotId, roleRef, ordinal], map: "OutputSemanticBasisPin_role_ordinal_key")
   @@index([analyticalBasisReferenceVersionId], map: "OutputSemanticBasisPin_basisVersion_idx")
+}
+
+model OutputSemanticCompositionCompatibilityContext {
+  id                          String   @id @default(cuid())
+  snapshotId                  String
+  resultVersionPinId          String
+  reportingPeriodVersionPinId String
+  analyticalBasisVersionPinId String
+  authorityRef                String
+  roleRef                     String
+  ordinal                     Int
+  provenance                  Json
+  integrityFingerprint        String   @unique(map: "OutputSemanticCompatibilityContext_fingerprint_key")
+  formalizedAt                DateTime?
+  createdAt                   DateTime @default(now())
+  immutableAt                 DateTime @default(now())
+
+  snapshot                  OutputSemanticCompositionSnapshot                   @relation(fields: [snapshotId], references: [id], onDelete: Restrict, map: "OutputSemanticCompatibilityContext_snapshot_fkey")
+  resultVersionPin          OutputSemanticCompositionResultVersionPin           @relation(fields: [resultVersionPinId], references: [id], onDelete: Restrict, map: "OutputSemanticCompatibilityContext_resultPin_fkey")
+  reportingPeriodVersionPin OutputSemanticCompositionReportingPeriodVersionPin  @relation(fields: [reportingPeriodVersionPinId], references: [id], onDelete: Restrict, map: "OutputSemanticCompatibilityContext_periodPin_fkey")
+  analyticalBasisVersionPin OutputSemanticCompositionAnalyticalBasisVersionPin  @relation(fields: [analyticalBasisVersionPinId], references: [id], onDelete: Restrict, map: "OutputSemanticCompatibilityContext_basisPin_fkey")
+
+  @@unique([snapshotId, resultVersionPinId, reportingPeriodVersionPinId, analyticalBasisVersionPinId, roleRef], map: "OutputSemanticCompatibilityContext_exact_tuple_key")
+  @@unique([snapshotId, roleRef, ordinal], map: "OutputSemanticCompatibilityContext_role_ordinal_key")
+  @@index([resultVersionPinId], map: "OutputSemanticCompatibilityContext_resultPin_idx")
+  @@index([reportingPeriodVersionPinId], map: "OutputSemanticCompatibilityContext_periodPin_idx")
+  @@index([analyticalBasisVersionPinId], map: "OutputSemanticCompatibilityContext_basisPin_idx")
 }
 
 model MethodResultAlias {
