@@ -2946,6 +2946,8 @@ model OutputSemanticCompositionSnapshot {
   productReference  ProductDefinitionReference                  @relation(fields: [productDefinitionRef, productDefinitionVersionRef], references: [productDefinitionRef, productDefinitionVersionRef], onDelete: Restrict, map: "OutputSemanticCompositionSnapshot_productReference_fkey")
   methodVersionPins OutputSemanticCompositionMethodVersionPin[]
   resultVersionPins OutputSemanticCompositionResultVersionPin[]
+  reportingPeriodVersionPins OutputSemanticCompositionReportingPeriodVersionPin[]
+  analyticalBasisVersionPins OutputSemanticCompositionAnalyticalBasisVersionPin[]
 
   @@index([productDefinitionRef, productDefinitionVersionRef], map: "OutputSemanticCompositionSnapshot_productReference_idx")
 }
@@ -3284,6 +3286,137 @@ model BaselineReferenceVersion {
 
   @@unique([baselineReferenceId, versionRef], map: "BaselineReferenceVersion_reference_version_key")
   @@index([targetResourceType, targetResourceId, targetResourceVersion], map: "BaselineReferenceVersion_exact_target_idx")
+}
+
+model ReportingPeriodReference {
+  id                     String   @id @default(cuid())
+  referenceKey           String   @unique
+  periodTypeRef          String
+  governingAuthorityRef  String
+  provenance             Json
+  integrityFingerprint   String   @unique
+  createdAt              DateTime @default(now())
+  immutableAt            DateTime @default(now())
+
+  versions ReportingPeriodReferenceVersion[]
+
+  @@index([periodTypeRef, governingAuthorityRef], map: "ReportingPeriodReference_type_authority_idx")
+}
+
+model ReportingPeriodReferenceVersion {
+  id                               String    @id @default(cuid())
+  reportingPeriodReferenceId       String
+  versionRef                       String
+  asOfAt                           DateTime?
+  periodStartAt                    DateTime?
+  periodEndAt                      DateTime?
+  timezoneRef                      String?
+  endpointRuleRef                  String?
+  dataThroughAt                    DateTime?
+  postureRef                       String?
+  completenessRef                  String?
+  provenance                       Json
+  integrityFingerprint             String    @unique
+  formalizedAt                     DateTime?
+  supersedesReferenceVersionId     String?   @unique
+  correctionOfReferenceVersionId   String?   @unique
+  createdAt                        DateTime  @default(now())
+  immutableAt                      DateTime  @default(now())
+
+  reportingPeriodReference       ReportingPeriodReference         @relation(fields: [reportingPeriodReferenceId], references: [id], onDelete: Restrict, map: "ReportingPeriodReferenceVersion_reference_fkey")
+  semanticCompositionPins        OutputSemanticCompositionReportingPeriodVersionPin[]
+  supersedesReferenceVersion     ReportingPeriodReferenceVersion? @relation("ReportingPeriodReferenceVersionSupersession", fields: [supersedesReferenceVersionId], references: [id], onDelete: Restrict)
+  supersededByReferenceVersion   ReportingPeriodReferenceVersion? @relation("ReportingPeriodReferenceVersionSupersession")
+  correctionOfReferenceVersion   ReportingPeriodReferenceVersion? @relation("ReportingPeriodReferenceVersionCorrection", fields: [correctionOfReferenceVersionId], references: [id], onDelete: Restrict)
+  correctedByReferenceVersion    ReportingPeriodReferenceVersion? @relation("ReportingPeriodReferenceVersionCorrection")
+
+  @@unique([reportingPeriodReferenceId, versionRef], map: "ReportingPeriodReferenceVersion_reference_version_key")
+  @@index([asOfAt, periodStartAt, periodEndAt], map: "ReportingPeriodReferenceVersion_temporal_idx")
+}
+
+model AnalyticalBasisReference {
+  id                     String   @id @default(cuid())
+  referenceKey           String   @unique
+  governingAuthorityRef  String
+  provenance             Json
+  integrityFingerprint   String   @unique
+  createdAt              DateTime @default(now())
+  immutableAt            DateTime @default(now())
+
+  versions AnalyticalBasisReferenceVersion[]
+
+  @@index([governingAuthorityRef], map: "AnalyticalBasisReference_authority_idx")
+}
+
+model AnalyticalBasisReferenceVersion {
+  id                               String    @id @default(cuid())
+  analyticalBasisReferenceId       String
+  versionRef                       String
+  semanticDimensions               Json
+  unitsRef                         String?
+  currencyRef                      String?
+  nominalRealRef                   String?
+  taxTreatmentRef                  String?
+  grossNetRef                      String?
+  cashAccrualRef                   String?
+  leverageRef                      String?
+  grainRef                         String?
+  postureRef                       String?
+  truthClassRef                    String?
+  provenance                       Json
+  integrityFingerprint             String    @unique
+  formalizedAt                     DateTime?
+  supersedesReferenceVersionId     String?   @unique
+  correctionOfReferenceVersionId   String?   @unique
+  createdAt                        DateTime  @default(now())
+  immutableAt                      DateTime  @default(now())
+
+  analyticalBasisReference       AnalyticalBasisReference         @relation(fields: [analyticalBasisReferenceId], references: [id], onDelete: Restrict, map: "AnalyticalBasisReferenceVersion_reference_fkey")
+  semanticCompositionPins        OutputSemanticCompositionAnalyticalBasisVersionPin[]
+  supersedesReferenceVersion     AnalyticalBasisReferenceVersion? @relation("AnalyticalBasisReferenceVersionSupersession", fields: [supersedesReferenceVersionId], references: [id], onDelete: Restrict)
+  supersededByReferenceVersion   AnalyticalBasisReferenceVersion? @relation("AnalyticalBasisReferenceVersionSupersession")
+  correctionOfReferenceVersion   AnalyticalBasisReferenceVersion? @relation("AnalyticalBasisReferenceVersionCorrection", fields: [correctionOfReferenceVersionId], references: [id], onDelete: Restrict)
+  correctedByReferenceVersion    AnalyticalBasisReferenceVersion? @relation("AnalyticalBasisReferenceVersionCorrection")
+
+  @@unique([analyticalBasisReferenceId, versionRef], map: "AnalyticalBasisReferenceVersion_reference_version_key")
+}
+
+model OutputSemanticCompositionReportingPeriodVersionPin {
+  id                                String   @id @default(cuid())
+  snapshotId                        String
+  reportingPeriodReferenceVersionId String
+  roleRef                           String
+  ordinal                           Int
+  provenance                        Json
+  integrityFingerprint              String   @unique
+  createdAt                         DateTime @default(now())
+  immutableAt                       DateTime @default(now())
+
+  snapshot                      OutputSemanticCompositionSnapshot @relation(fields: [snapshotId], references: [id], onDelete: Restrict, map: "OutputSemanticPeriodPin_snapshot_fkey")
+  reportingPeriodReferenceVersion ReportingPeriodReferenceVersion  @relation(fields: [reportingPeriodReferenceVersionId], references: [id], onDelete: Restrict, map: "OutputSemanticPeriodPin_periodVersion_fkey")
+
+  @@unique([snapshotId, reportingPeriodReferenceVersionId, roleRef], map: "OutputSemanticPeriodPin_exact_role_key")
+  @@unique([snapshotId, roleRef, ordinal], map: "OutputSemanticPeriodPin_role_ordinal_key")
+  @@index([reportingPeriodReferenceVersionId], map: "OutputSemanticPeriodPin_periodVersion_idx")
+}
+
+model OutputSemanticCompositionAnalyticalBasisVersionPin {
+  id                                String   @id @default(cuid())
+  snapshotId                        String
+  analyticalBasisReferenceVersionId String
+  roleRef                           String
+  ordinal                           Int
+  provenance                        Json
+  integrityFingerprint              String   @unique
+  createdAt                         DateTime @default(now())
+  immutableAt                       DateTime @default(now())
+
+  snapshot                     OutputSemanticCompositionSnapshot @relation(fields: [snapshotId], references: [id], onDelete: Restrict, map: "OutputSemanticBasisPin_snapshot_fkey")
+  analyticalBasisReferenceVersion AnalyticalBasisReferenceVersion  @relation(fields: [analyticalBasisReferenceVersionId], references: [id], onDelete: Restrict, map: "OutputSemanticBasisPin_basisVersion_fkey")
+
+  @@unique([snapshotId, analyticalBasisReferenceVersionId, roleRef], map: "OutputSemanticBasisPin_exact_role_key")
+  @@unique([snapshotId, roleRef, ordinal], map: "OutputSemanticBasisPin_role_ordinal_key")
+  @@index([analyticalBasisReferenceVersionId], map: "OutputSemanticBasisPin_basisVersion_idx")
 }
 
 model MethodResultAlias {
