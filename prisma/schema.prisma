@@ -3229,9 +3229,61 @@ model ProductDefinitionReference {
   ownedResults CanonicalResultOwner[]
   resultRoles  ProductResultRole[]
   semanticCompositionSnapshots OutputSemanticCompositionSnapshot[]
+  baselineReferences BaselineReference[]
 
   @@unique([productDefinitionRef, productDefinitionVersionRef])
   @@index([lifecycleState])
+}
+
+model BaselineReference {
+  id                          String   @id @default(cuid())
+  referenceKey                String   @unique
+  baselineFamilyRef           String
+  governingOwnerRef           String
+  purposeRef                  String
+  subjectRef                  String
+  contextRef                  String?
+  productDefinitionRef        String?
+  productDefinitionVersionRef String?
+  provenance                  Json
+  integrityFingerprint        String   @unique
+  createdAt                   DateTime @default(now())
+  immutableAt                 DateTime @default(now())
+
+  versions         BaselineReferenceVersion[]
+  productReference ProductDefinitionReference? @relation(fields: [productDefinitionRef, productDefinitionVersionRef], references: [productDefinitionRef, productDefinitionVersionRef], onDelete: Restrict, map: "BaselineReference_productReference_fkey")
+
+  @@index([baselineFamilyRef, governingOwnerRef], map: "BaselineReference_family_owner_idx")
+  @@index([productDefinitionRef, productDefinitionVersionRef], map: "BaselineReference_productReference_idx")
+}
+
+model BaselineReferenceVersion {
+  id                             String    @id @default(cuid())
+  baselineReferenceId            String
+  versionRef                     String
+  targetResourceType             String
+  targetResourceId               String
+  targetResourceVersion          String
+  effectiveAsOf                  DateTime?
+  reviewStateRef                 String?
+  finalityStateRef               String?
+  selectionProvenance            Json?
+  provenance                     Json
+  integrityFingerprint           String    @unique
+  formalizedAt                   DateTime?
+  supersedesReferenceVersionId   String?   @unique
+  correctionOfReferenceVersionId String?   @unique
+  createdAt                      DateTime  @default(now())
+  immutableAt                    DateTime  @default(now())
+
+  baselineReference            BaselineReference         @relation(fields: [baselineReferenceId], references: [id], onDelete: Restrict, map: "BaselineReferenceVersion_reference_fkey")
+  supersedesReferenceVersion   BaselineReferenceVersion? @relation("BaselineReferenceVersionSupersession", fields: [supersedesReferenceVersionId], references: [id], onDelete: Restrict)
+  supersededByReferenceVersion BaselineReferenceVersion? @relation("BaselineReferenceVersionSupersession")
+  correctionOfReferenceVersion BaselineReferenceVersion? @relation("BaselineReferenceVersionCorrection", fields: [correctionOfReferenceVersionId], references: [id], onDelete: Restrict)
+  correctedByReferenceVersion  BaselineReferenceVersion? @relation("BaselineReferenceVersionCorrection")
+
+  @@unique([baselineReferenceId, versionRef], map: "BaselineReferenceVersion_reference_version_key")
+  @@index([targetResourceType, targetResourceId, targetResourceVersion], map: "BaselineReferenceVersion_exact_target_idx")
 }
 
 model MethodResultAlias {
