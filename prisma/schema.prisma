@@ -154,6 +154,11 @@ enum MethodVersionGovernanceReferenceKind {
   SHARED_CONTRACT
 }
 
+enum ResultVersionMethodRequirement {
+  METHOD_VERSION_REQUIRED
+  METHOD_VERSION_NOT_APPLICABLE
+}
+
 enum EvidenceSourceKind {
   TRUSTED_INTERNAL_DETERMINISTIC
   PROFESSIONAL_REPORTED
@@ -3073,6 +3078,7 @@ model CanonicalResultVersion {
   resultId                    String
   versionKey                  String
   lifecycleState              MethodResultRegistryLifecycleState
+  methodRequirement           ResultVersionMethodRequirement?
   qualification               Json
   contextSnapshot             Json
   provenance                  Json
