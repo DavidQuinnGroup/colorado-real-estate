@@ -3128,6 +3128,7 @@ model CanonicalMethodVersion {
   qualificationSubjects     QualificationMethodVersionSubject[]
   currentnessPrimarySubjects CurrentnessEventPrimarySubject[] @relation("CurrentnessPrimaryMethodVersion")
   currentnessDependencies    CurrentnessEventDependency[]     @relation("CurrentnessDependencyMethodVersion")
+  currentnessPolicyVersions  CurrentnessPolicyVersion[]
   supersedesMethodVersion   CanonicalMethodVersion?            @relation("CanonicalMethodVersionSupersession", fields: [supersedesMethodVersionId], references: [id], onDelete: Restrict)
   supersededByMethodVersion CanonicalMethodVersion?            @relation("CanonicalMethodVersionSupersession")
   correctionOfMethodVersion CanonicalMethodVersion?            @relation("CanonicalMethodVersionCorrection", fields: [correctionOfMethodVersionId], references: [id], onDelete: Restrict)
@@ -3262,6 +3263,7 @@ model ProductDefinitionReference {
   qualificationSubjects QualificationProductDefinitionSubject[]
   currentnessPrimarySubjects CurrentnessEventPrimarySubject[] @relation("CurrentnessPrimaryProductDefinition")
   currentnessDependencies CurrentnessEventDependency[] @relation("CurrentnessDependencyProductDefinition")
+  currentnessPolicyReferences CurrentnessPolicyReference[]
 
   @@unique([productDefinitionRef, productDefinitionVersionRef])
   @@index([lifecycleState])
@@ -3687,6 +3689,51 @@ model CurrentnessEventDependency {
   @@index([outputEvidenceSnapshotId], map: "CurrentnessDependency_outputEvidence_idx")
   @@index([evidenceAdmissionId], map: "CurrentnessDependency_evidenceAdmission_idx")
   @@index([productDefinitionReferenceId], map: "CurrentnessDependency_productDefinition_idx")
+}
+
+model CurrentnessPolicyReference {
+  id                           String   @id @default(cuid())
+  policyKey                    String   @unique
+  authorityRef                 String
+  productDefinitionReferenceId String?
+  provenance                   Json
+  integrityFingerprint         String   @unique
+  createdAt                    DateTime @default(now())
+  immutableAt                  DateTime @default(now())
+
+  productDefinitionReference ProductDefinitionReference? @relation(fields: [productDefinitionReferenceId], references: [id], onDelete: Restrict, map: "CurrentnessPolicyReference_productDefinition_fkey")
+  versions                   CurrentnessPolicyVersion[]
+
+  @@index([productDefinitionReferenceId], map: "CurrentnessPolicyReference_productDefinition_idx")
+}
+
+model CurrentnessPolicyVersion {
+  id                         String                             @id @default(cuid())
+  policyReferenceId          String
+  versionKey                 String
+  lifecycleState             MethodResultRegistryLifecycleState
+  authorityRef               String
+  methodVersionId            String?
+  provenance                 Json
+  integrityFingerprint       String                             @unique
+  effectiveAt                DateTime?
+  formalizedAt               DateTime?
+  admittedAt                 DateTime?
+  supersedesPolicyVersionId  String?                            @unique
+  correctionOfPolicyVersionId String?                           @unique
+  createdAt                  DateTime                           @default(now())
+  immutableAt                DateTime                           @default(now())
+
+  policyReference          CurrentnessPolicyReference @relation(fields: [policyReferenceId], references: [id], onDelete: Restrict, map: "CurrentnessPolicyVersion_reference_fkey")
+  methodVersion            CanonicalMethodVersion?     @relation(fields: [methodVersionId], references: [id], onDelete: Restrict, map: "CurrentnessPolicyVersion_methodVersion_fkey")
+  supersedesPolicyVersion  CurrentnessPolicyVersion?   @relation("CurrentnessPolicyVersionSupersession", fields: [supersedesPolicyVersionId], references: [id], onDelete: Restrict, map: "CurrentnessPolicyVersion_supersedes_fkey")
+  supersededByPolicyVersion CurrentnessPolicyVersion?   @relation("CurrentnessPolicyVersionSupersession")
+  correctionOfPolicyVersion CurrentnessPolicyVersion?  @relation("CurrentnessPolicyVersionCorrection", fields: [correctionOfPolicyVersionId], references: [id], onDelete: Restrict, map: "CurrentnessPolicyVersion_correction_fkey")
+  correctedByPolicyVersion CurrentnessPolicyVersion?   @relation("CurrentnessPolicyVersionCorrection")
+
+  @@unique([policyReferenceId, versionKey], map: "CurrentnessPolicyVersion_reference_version_key")
+  @@index([lifecycleState, formalizedAt, admittedAt], map: "CurrentnessPolicyVersion_state_idx")
+  @@index([methodVersionId], map: "CurrentnessPolicyVersion_methodVersion_idx")
 }
 
 model QualificationDefinition {
