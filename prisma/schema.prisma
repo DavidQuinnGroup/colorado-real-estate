@@ -2967,6 +2967,8 @@ model OutputSemanticCompositionSnapshot {
   analyticalBasisVersionPins OutputSemanticCompositionAnalyticalBasisVersionPin[]
   compatibilityContexts OutputSemanticCompositionCompatibilityContext[]
   qualificationVersionPins OutputSemanticCompositionQualificationPin[]
+  currentnessPolicyVersionPins OutputSemanticCompositionCurrentnessPolicyPin[]
+  currentnessProjectionVersionPins OutputSemanticCompositionCurrentnessProjectionPin[]
   qualificationSubjects QualificationOutputSnapshotSubject[]
   currentnessPrimarySubjects CurrentnessEventPrimarySubject[] @relation("CurrentnessPrimaryOutputSnapshot")
   currentnessDependencies CurrentnessEventDependency[] @relation("CurrentnessDependencyOutputSnapshot")
@@ -3530,6 +3532,44 @@ model OutputSemanticCompositionQualificationPin {
   @@index([qualificationApplicationVersionId], map: "OutputSemanticQualificationPin_applicationVersion_idx")
 }
 
+model OutputSemanticCompositionCurrentnessPolicyPin {
+  id                   String   @id @default(cuid())
+  snapshotId           String
+  policyVersionId      String
+  roleRef              String
+  ordinal              Int
+  provenance           Json
+  integrityFingerprint String   @unique(map: "OutputSemanticCurrentnessPolicyPin_fingerprint_key")
+  createdAt            DateTime @default(now())
+  immutableAt          DateTime @default(now())
+
+  snapshot      OutputSemanticCompositionSnapshot @relation(fields: [snapshotId], references: [id], onDelete: Restrict, map: "OutputSemanticCurrentnessPolicyPin_snapshot_fkey")
+  policyVersion CurrentnessPolicyVersion            @relation(fields: [policyVersionId], references: [id], onDelete: Restrict, map: "OutputSemanticCurrentnessPolicyPin_policyVersion_fkey")
+
+  @@unique([snapshotId, policyVersionId, roleRef], map: "OutputSemanticCurrentnessPolicyPin_exact_role_key")
+  @@unique([snapshotId, roleRef, ordinal], map: "OutputSemanticCurrentnessPolicyPin_role_ordinal_key")
+  @@index([policyVersionId], map: "OutputSemanticCurrentnessPolicyPin_policyVersion_idx")
+}
+
+model OutputSemanticCompositionCurrentnessProjectionPin {
+  id                   String   @id @default(cuid())
+  snapshotId           String
+  projectionVersionId  String
+  roleRef              String
+  ordinal              Int
+  provenance           Json
+  integrityFingerprint String   @unique(map: "OutputSemanticCurrentnessProjectionPin_fingerprint_key")
+  createdAt            DateTime @default(now())
+  immutableAt          DateTime @default(now())
+
+  snapshot          OutputSemanticCompositionSnapshot @relation(fields: [snapshotId], references: [id], onDelete: Restrict, map: "OutputSemanticCurrentnessProjectionPin_snapshot_fkey")
+  projectionVersion CurrentnessProjectionVersion       @relation(fields: [projectionVersionId], references: [id], onDelete: Restrict, map: "OutputSemanticCurrentnessProjectionPin_projectionVersion_fkey")
+
+  @@unique([snapshotId, projectionVersionId, roleRef], map: "OutputSemanticCurrentnessProjectionPin_exact_role_key")
+  @@unique([snapshotId, roleRef, ordinal], map: "OutputSemanticCurrentnessProjectionPin_role_ordinal_key")
+  @@index([projectionVersionId], map: "OutputSemanticCurrentnessProjectionPin_projectionVersion_idx")
+}
+
 model OutputSemanticCompatibilityQualificationLink {
   id                                String   @id @default(cuid())
   compatibilityContextId            String
@@ -3751,6 +3791,7 @@ model CurrentnessPolicyVersion {
   correctionOfPolicyVersion CurrentnessPolicyVersion?  @relation("CurrentnessPolicyVersionCorrection", fields: [correctionOfPolicyVersionId], references: [id], onDelete: Restrict, map: "CurrentnessPolicyVersion_correction_fkey")
   correctedByPolicyVersion CurrentnessPolicyVersion?   @relation("CurrentnessPolicyVersionCorrection")
   projectionVersions       CurrentnessProjectionVersion[]
+  semanticCompositionPins  OutputSemanticCompositionCurrentnessPolicyPin[]
 
   @@unique([policyReferenceId, versionKey], map: "CurrentnessPolicyVersion_reference_version_key")
   @@index([lifecycleState, formalizedAt, admittedAt], map: "CurrentnessPolicyVersion_state_idx")
@@ -3856,6 +3897,7 @@ model CurrentnessProjectionVersion {
   supersededByProjectionVersion  CurrentnessProjectionVersion?    @relation("CurrentnessProjectionVersionSupersession")
   correctionOfProjectionVersion  CurrentnessProjectionVersion?    @relation("CurrentnessProjectionVersionCorrection", fields: [correctionOfProjectionVersionId], references: [id], onDelete: Restrict, map: "CurrentnessProjectionVersion_correction_fkey")
   correctedByProjectionVersion   CurrentnessProjectionVersion?    @relation("CurrentnessProjectionVersionCorrection")
+  semanticCompositionPins        OutputSemanticCompositionCurrentnessProjectionPin[]
 
   @@unique([projectionReferenceId, versionKey], map: "CurrentnessProjectionVersion_reference_version_key")
   @@index([lifecycleState, formalizedAt, admittedAt], map: "CurrentnessProjectionVersion_state_idx")
