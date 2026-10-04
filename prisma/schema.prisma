@@ -2941,6 +2941,8 @@ model OutputEvidenceSnapshot {
   qualificationSubjects QualificationOutputEvidenceSubject[]
   currentnessPrimarySubjects CurrentnessEventPrimarySubject[] @relation("CurrentnessPrimaryOutputEvidence")
   currentnessDependencies CurrentnessEventDependency[] @relation("CurrentnessDependencyOutputEvidence")
+  currentnessProjectionPrimarySubjects CurrentnessProjectionPrimarySubject[] @relation("CurrentnessProjectionPrimaryOutputEvidence")
+  currentnessProjectionDependencies CurrentnessProjectionDependency[] @relation("CurrentnessProjectionDependencyOutputEvidence")
 
   @@index([fingerprint])
 }
@@ -2968,6 +2970,8 @@ model OutputSemanticCompositionSnapshot {
   qualificationSubjects QualificationOutputSnapshotSubject[]
   currentnessPrimarySubjects CurrentnessEventPrimarySubject[] @relation("CurrentnessPrimaryOutputSnapshot")
   currentnessDependencies CurrentnessEventDependency[] @relation("CurrentnessDependencyOutputSnapshot")
+  currentnessProjectionPrimarySubjects CurrentnessProjectionPrimarySubject[] @relation("CurrentnessProjectionPrimaryOutputSnapshot")
+  currentnessProjectionDependencies CurrentnessProjectionDependency[] @relation("CurrentnessProjectionDependencyOutputSnapshot")
 
   @@index([productDefinitionRef, productDefinitionVersionRef], map: "OutputSemanticCompositionSnapshot_productReference_idx")
 }
@@ -3129,6 +3133,8 @@ model CanonicalMethodVersion {
   currentnessPrimarySubjects CurrentnessEventPrimarySubject[] @relation("CurrentnessPrimaryMethodVersion")
   currentnessDependencies    CurrentnessEventDependency[]     @relation("CurrentnessDependencyMethodVersion")
   currentnessPolicyVersions  CurrentnessPolicyVersion[]
+  currentnessProjectionPrimarySubjects CurrentnessProjectionPrimarySubject[] @relation("CurrentnessProjectionPrimaryMethodVersion")
+  currentnessProjectionDependencies    CurrentnessProjectionDependency[]     @relation("CurrentnessProjectionDependencyMethodVersion")
   supersedesMethodVersion   CanonicalMethodVersion?            @relation("CanonicalMethodVersionSupersession", fields: [supersedesMethodVersionId], references: [id], onDelete: Restrict)
   supersededByMethodVersion CanonicalMethodVersion?            @relation("CanonicalMethodVersionSupersession")
   correctionOfMethodVersion CanonicalMethodVersion?            @relation("CanonicalMethodVersionCorrection", fields: [correctionOfMethodVersionId], references: [id], onDelete: Restrict)
@@ -3189,6 +3195,8 @@ model CanonicalResultVersion {
   qualificationSubjects     QualificationResultVersionSubject[]
   currentnessPrimarySubjects CurrentnessEventPrimarySubject[] @relation("CurrentnessPrimaryResultVersion")
   currentnessDependencies    CurrentnessEventDependency[]     @relation("CurrentnessDependencyResultVersion")
+  currentnessProjectionPrimarySubjects CurrentnessProjectionPrimarySubject[] @relation("CurrentnessProjectionPrimaryResultVersion")
+  currentnessProjectionDependencies    CurrentnessProjectionDependency[]     @relation("CurrentnessProjectionDependencyResultVersion")
   supersedesResultVersion   CanonicalResultVersion?     @relation("CanonicalResultVersionSupersession", fields: [supersedesResultVersionId], references: [id], onDelete: Restrict)
   supersededByResultVersion CanonicalResultVersion?     @relation("CanonicalResultVersionSupersession")
   correctionOfResultVersion CanonicalResultVersion?     @relation("CanonicalResultVersionCorrection", fields: [correctionOfResultVersionId], references: [id], onDelete: Restrict)
@@ -3264,6 +3272,8 @@ model ProductDefinitionReference {
   currentnessPrimarySubjects CurrentnessEventPrimarySubject[] @relation("CurrentnessPrimaryProductDefinition")
   currentnessDependencies CurrentnessEventDependency[] @relation("CurrentnessDependencyProductDefinition")
   currentnessPolicyReferences CurrentnessPolicyReference[]
+  currentnessProjectionPrimarySubjects CurrentnessProjectionPrimarySubject[] @relation("CurrentnessProjectionPrimaryProductDefinition")
+  currentnessProjectionDependencies CurrentnessProjectionDependency[] @relation("CurrentnessProjectionDependencyProductDefinition")
 
   @@unique([productDefinitionRef, productDefinitionVersionRef])
   @@index([lifecycleState])
@@ -3318,6 +3328,8 @@ model BaselineReferenceVersion {
   qualificationSubjects        QualificationBaselineVersionSubject[]
   currentnessPrimarySubjects   CurrentnessEventPrimarySubject[] @relation("CurrentnessPrimaryBaselineVersion")
   currentnessDependencies      CurrentnessEventDependency[]     @relation("CurrentnessDependencyBaselineVersion")
+  currentnessProjectionPrimarySubjects CurrentnessProjectionPrimarySubject[] @relation("CurrentnessProjectionPrimaryBaselineVersion")
+  currentnessProjectionDependencies CurrentnessProjectionDependency[] @relation("CurrentnessProjectionDependencyBaselineVersion")
 
   @@unique([baselineReferenceId, versionRef], map: "BaselineReferenceVersion_reference_version_key")
   @@index([targetResourceType, targetResourceId, targetResourceVersion], map: "BaselineReferenceVersion_exact_target_idx")
@@ -3367,6 +3379,8 @@ model ReportingPeriodReferenceVersion {
   qualificationSubjects          QualificationReportingPeriodVersionSubject[]
   currentnessPrimarySubjects     CurrentnessEventPrimarySubject[] @relation("CurrentnessPrimaryReportingPeriodVersion")
   currentnessDependencies        CurrentnessEventDependency[]     @relation("CurrentnessDependencyReportingPeriodVersion")
+  currentnessProjectionPrimarySubjects CurrentnessProjectionPrimarySubject[] @relation("CurrentnessProjectionPrimaryReportingPeriodVersion")
+  currentnessProjectionDependencies CurrentnessProjectionDependency[] @relation("CurrentnessProjectionDependencyReportingPeriodVersion")
 
   @@unique([reportingPeriodReferenceId, versionRef], map: "ReportingPeriodReferenceVersion_reference_version_key")
   @@index([asOfAt, periodStartAt, periodEndAt], map: "ReportingPeriodReferenceVersion_temporal_idx")
@@ -3418,6 +3432,8 @@ model AnalyticalBasisReferenceVersion {
   qualificationSubjects          QualificationAnalyticalBasisVersionSubject[]
   currentnessPrimarySubjects     CurrentnessEventPrimarySubject[] @relation("CurrentnessPrimaryAnalyticalBasisVersion")
   currentnessDependencies        CurrentnessEventDependency[]     @relation("CurrentnessDependencyAnalyticalBasisVersion")
+  currentnessProjectionPrimarySubjects CurrentnessProjectionPrimarySubject[] @relation("CurrentnessProjectionPrimaryAnalyticalBasisVersion")
+  currentnessProjectionDependencies CurrentnessProjectionDependency[] @relation("CurrentnessProjectionDependencyAnalyticalBasisVersion")
 
   @@unique([analyticalBasisReferenceId, versionRef], map: "AnalyticalBasisReferenceVersion_reference_version_key")
 }
@@ -3485,6 +3501,8 @@ model OutputSemanticCompositionCompatibilityContext {
   qualificationSubjects     QualificationCompatibilityContextSubject[]
   currentnessPrimarySubjects CurrentnessEventPrimarySubject[] @relation("CurrentnessPrimaryCompatibilityContext")
   currentnessDependencies CurrentnessEventDependency[] @relation("CurrentnessDependencyCompatibilityContext")
+  currentnessProjectionPrimarySubjects CurrentnessProjectionPrimarySubject[] @relation("CurrentnessProjectionPrimaryCompatibilityContext")
+  currentnessProjectionDependencies CurrentnessProjectionDependency[] @relation("CurrentnessProjectionDependencyCompatibilityContext")
 
   @@unique([snapshotId, resultVersionPinId, reportingPeriodVersionPinId, analyticalBasisVersionPinId, roleRef], map: "OutputSemanticCompatibilityContext_exact_tuple_key")
   @@unique([snapshotId, roleRef, ordinal], map: "OutputSemanticCompatibilityContext_role_ordinal_key")
@@ -3592,6 +3610,7 @@ model CurrentnessEvent {
   correctedByEvent  CurrentnessEvent?               @relation("CurrentnessEventCorrection")
   causalEvent       CurrentnessEvent?               @relation("CurrentnessEventCausality", fields: [causalEventId], references: [id], onDelete: Restrict, map: "CurrentnessEvent_causal_fkey")
   causedEvents      CurrentnessEvent[]              @relation("CurrentnessEventCausality")
+  projectionMemberships CurrentnessProjectionEventMembership[]
 
   @@index([eventTypeVersionId, recordedAt], map: "CurrentnessEvent_type_recorded_idx")
   @@index([effectiveAt], map: "CurrentnessEvent_effectiveAt_idx")
@@ -3703,6 +3722,7 @@ model CurrentnessPolicyReference {
 
   productDefinitionReference ProductDefinitionReference? @relation(fields: [productDefinitionReferenceId], references: [id], onDelete: Restrict, map: "CurrentnessPolicyReference_productDefinition_fkey")
   versions                   CurrentnessPolicyVersion[]
+  projectionReferences       CurrentnessProjectionReference[]
 
   @@index([productDefinitionReferenceId], map: "CurrentnessPolicyReference_productDefinition_idx")
 }
@@ -3730,10 +3750,182 @@ model CurrentnessPolicyVersion {
   supersededByPolicyVersion CurrentnessPolicyVersion?   @relation("CurrentnessPolicyVersionSupersession")
   correctionOfPolicyVersion CurrentnessPolicyVersion?  @relation("CurrentnessPolicyVersionCorrection", fields: [correctionOfPolicyVersionId], references: [id], onDelete: Restrict, map: "CurrentnessPolicyVersion_correction_fkey")
   correctedByPolicyVersion CurrentnessPolicyVersion?   @relation("CurrentnessPolicyVersionCorrection")
+  projectionVersions       CurrentnessProjectionVersion[]
 
   @@unique([policyReferenceId, versionKey], map: "CurrentnessPolicyVersion_reference_version_key")
   @@index([lifecycleState, formalizedAt, admittedAt], map: "CurrentnessPolicyVersion_state_idx")
   @@index([methodVersionId], map: "CurrentnessPolicyVersion_methodVersion_idx")
+}
+
+model CurrentnessProjectionReference {
+  id                   String   @id @default(cuid())
+  projectionKey        String   @unique(map: "CurrentnessProjectionReference_projectionKey_key")
+  policyReferenceId    String
+  purposeRef           String?
+  authorityRef         String
+  provenance           Json
+  integrityFingerprint String   @unique(map: "CurrentnessProjectionReference_fingerprint_key")
+  createdAt            DateTime @default(now())
+  immutableAt          DateTime @default(now())
+
+  policyReference CurrentnessPolicyReference          @relation(fields: [policyReferenceId], references: [id], onDelete: Restrict, map: "CurrentnessProjectionReference_policy_fkey")
+  primarySubject  CurrentnessProjectionPrimarySubject?
+  versions        CurrentnessProjectionVersion[]
+
+  @@index([policyReferenceId], map: "CurrentnessProjectionReference_policy_idx")
+  @@index([purposeRef], map: "CurrentnessProjectionReference_purpose_idx")
+}
+
+model CurrentnessProjectionPrimarySubject {
+  id                                String   @id @default(cuid())
+  projectionReferenceId             String   @unique(map: "CurrentnessProjectionPrimary_reference_key")
+  methodVersionId                   String?
+  resultVersionId                   String?
+  baselineReferenceVersionId        String?
+  reportingPeriodVersionId          String?
+  analyticalBasisVersionId          String?
+  compatibilityContextId            String?
+  qualificationApplicationVersionId String?
+  outputSnapshotId                  String?
+  outputEvidenceSnapshotId          String?
+  evidenceAdmissionId               String?
+  productDefinitionReferenceId      String?
+  provenance                        Json
+  integrityFingerprint              String   @unique(map: "CurrentnessProjectionPrimary_fingerprint_key")
+  createdAt                         DateTime @default(now())
+  immutableAt                       DateTime @default(now())
+
+  projectionReference            CurrentnessProjectionReference                 @relation(fields: [projectionReferenceId], references: [id], onDelete: Restrict, map: "CurrentnessProjectionPrimary_reference_fkey")
+  methodVersion                  CanonicalMethodVersion?                         @relation("CurrentnessProjectionPrimaryMethodVersion", fields: [methodVersionId], references: [id], onDelete: Restrict, map: "CurrentnessProjectionPrimary_method_fkey")
+  resultVersion                  CanonicalResultVersion?                         @relation("CurrentnessProjectionPrimaryResultVersion", fields: [resultVersionId], references: [id], onDelete: Restrict, map: "CurrentnessProjectionPrimary_result_fkey")
+  baselineReferenceVersion       BaselineReferenceVersion?                       @relation("CurrentnessProjectionPrimaryBaselineVersion", fields: [baselineReferenceVersionId], references: [id], onDelete: Restrict, map: "CurrentnessProjectionPrimary_baseline_fkey")
+  reportingPeriodVersion         ReportingPeriodReferenceVersion?                @relation("CurrentnessProjectionPrimaryReportingPeriodVersion", fields: [reportingPeriodVersionId], references: [id], onDelete: Restrict, map: "CurrentnessProjectionPrimary_period_fkey")
+  analyticalBasisVersion         AnalyticalBasisReferenceVersion?                @relation("CurrentnessProjectionPrimaryAnalyticalBasisVersion", fields: [analyticalBasisVersionId], references: [id], onDelete: Restrict, map: "CurrentnessProjectionPrimary_basis_fkey")
+  compatibilityContext           OutputSemanticCompositionCompatibilityContext?  @relation("CurrentnessProjectionPrimaryCompatibilityContext", fields: [compatibilityContextId], references: [id], onDelete: Restrict, map: "CurrentnessProjectionPrimary_compatibility_fkey")
+  qualificationApplicationVersion QualificationApplicationVersion?              @relation("CurrentnessProjectionPrimaryQualificationVersion", fields: [qualificationApplicationVersionId], references: [id], onDelete: Restrict, map: "CurrentnessProjectionPrimary_qualification_fkey")
+  outputSnapshot                 OutputSemanticCompositionSnapshot?              @relation("CurrentnessProjectionPrimaryOutputSnapshot", fields: [outputSnapshotId], references: [id], onDelete: Restrict, map: "CurrentnessProjectionPrimary_outputSnapshot_fkey")
+  outputEvidenceSnapshot         OutputEvidenceSnapshot?                         @relation("CurrentnessProjectionPrimaryOutputEvidence", fields: [outputEvidenceSnapshotId], references: [id], onDelete: Restrict, map: "CurrentnessProjectionPrimary_outputEvidence_fkey")
+  evidenceAdmission              EvidenceAdmission?                              @relation("CurrentnessProjectionPrimaryEvidenceAdmission", fields: [evidenceAdmissionId], references: [id], onDelete: Restrict, map: "CurrentnessProjectionPrimary_evidence_fkey")
+  productDefinitionReference     ProductDefinitionReference?                     @relation("CurrentnessProjectionPrimaryProductDefinition", fields: [productDefinitionReferenceId], references: [id], onDelete: Restrict, map: "CurrentnessProjectionPrimary_product_fkey")
+
+  @@index([methodVersionId], map: "CurrentnessProjectionPrimary_method_idx")
+  @@index([resultVersionId], map: "CurrentnessProjectionPrimary_result_idx")
+  @@index([baselineReferenceVersionId], map: "CurrentnessProjectionPrimary_baseline_idx")
+  @@index([reportingPeriodVersionId], map: "CurrentnessProjectionPrimary_period_idx")
+  @@index([analyticalBasisVersionId], map: "CurrentnessProjectionPrimary_basis_idx")
+  @@index([compatibilityContextId], map: "CurrentnessProjectionPrimary_compatibility_idx")
+  @@index([qualificationApplicationVersionId], map: "CurrentnessProjectionPrimary_qualification_idx")
+  @@index([outputSnapshotId], map: "CurrentnessProjectionPrimary_outputSnapshot_idx")
+  @@index([outputEvidenceSnapshotId], map: "CurrentnessProjectionPrimary_outputEvidence_idx")
+  @@index([evidenceAdmissionId], map: "CurrentnessProjectionPrimary_evidence_idx")
+  @@index([productDefinitionReferenceId], map: "CurrentnessProjectionPrimary_product_idx")
+}
+
+model CurrentnessProjectionVersion {
+  id                                String                             @id @default(cuid())
+  projectionReferenceId             String
+  versionKey                        String
+  lifecycleState                    MethodResultRegistryLifecycleState
+  policyVersionId                   String
+  projectedStateAuthorityRef        String
+  projectedStateKey                 String
+  projectedStateVersionRef          String
+  projectedStateGoverningSourceRef  String?
+  projectedStateIntegrityFingerprint String
+  evaluatedAt                       DateTime
+  evaluationCutoffAt                DateTime?
+  recordedThroughAt                 DateTime
+  projectedAt                       DateTime
+  eventManifestCount                Int
+  eventManifestFingerprint          String
+  authorityRef                      String
+  provenance                        Json
+  integrityFingerprint              String                             @unique(map: "CurrentnessProjectionVersion_fingerprint_key")
+  formalizedAt                      DateTime?
+  admittedAt                        DateTime?
+  supersedesProjectionVersionId     String?                            @unique(map: "CurrentnessProjectionVersion_supersedes_key")
+  correctionOfProjectionVersionId   String?                            @unique(map: "CurrentnessProjectionVersion_correction_key")
+  createdAt                         DateTime                           @default(now())
+  immutableAt                       DateTime                           @default(now())
+
+  projectionReference            CurrentnessProjectionReference @relation(fields: [projectionReferenceId], references: [id], onDelete: Restrict, map: "CurrentnessProjectionVersion_reference_fkey")
+  policyVersion                  CurrentnessPolicyVersion         @relation(fields: [policyVersionId], references: [id], onDelete: Restrict, map: "CurrentnessProjectionVersion_policy_fkey")
+  dependencies                   CurrentnessProjectionDependency[]
+  eventMemberships               CurrentnessProjectionEventMembership[]
+  supersedesProjectionVersion    CurrentnessProjectionVersion?    @relation("CurrentnessProjectionVersionSupersession", fields: [supersedesProjectionVersionId], references: [id], onDelete: Restrict, map: "CurrentnessProjectionVersion_supersedes_fkey")
+  supersededByProjectionVersion  CurrentnessProjectionVersion?    @relation("CurrentnessProjectionVersionSupersession")
+  correctionOfProjectionVersion  CurrentnessProjectionVersion?    @relation("CurrentnessProjectionVersionCorrection", fields: [correctionOfProjectionVersionId], references: [id], onDelete: Restrict, map: "CurrentnessProjectionVersion_correction_fkey")
+  correctedByProjectionVersion   CurrentnessProjectionVersion?    @relation("CurrentnessProjectionVersionCorrection")
+
+  @@unique([projectionReferenceId, versionKey], map: "CurrentnessProjectionVersion_reference_version_key")
+  @@index([lifecycleState, formalizedAt, admittedAt], map: "CurrentnessProjectionVersion_state_idx")
+  @@index([policyVersionId], map: "CurrentnessProjectionVersion_policy_idx")
+  @@index([projectedStateAuthorityRef, projectedStateKey, projectedStateVersionRef], map: "CurrentnessProjectionVersion_state_ref_idx")
+  @@index([evaluatedAt, recordedThroughAt, projectedAt], map: "CurrentnessProjectionVersion_temporal_idx")
+}
+
+model CurrentnessProjectionDependency {
+  id                                String   @id @default(cuid())
+  projectionVersionId               String
+  roleRef                           String
+  ordinal                           Int
+  methodVersionId                   String?
+  resultVersionId                   String?
+  baselineReferenceVersionId        String?
+  reportingPeriodVersionId          String?
+  analyticalBasisVersionId          String?
+  compatibilityContextId            String?
+  qualificationApplicationVersionId String?
+  outputSnapshotId                  String?
+  outputEvidenceSnapshotId          String?
+  evidenceAdmissionId               String?
+  productDefinitionReferenceId      String?
+  provenance                        Json
+  integrityFingerprint              String   @unique(map: "CurrentnessProjectionDependency_fingerprint_key")
+  createdAt                         DateTime @default(now())
+  immutableAt                       DateTime @default(now())
+
+  projectionVersion              CurrentnessProjectionVersion                  @relation(fields: [projectionVersionId], references: [id], onDelete: Restrict, map: "CurrentnessProjectionDependency_version_fkey")
+  methodVersion                  CanonicalMethodVersion?                        @relation("CurrentnessProjectionDependencyMethodVersion", fields: [methodVersionId], references: [id], onDelete: Restrict, map: "CurrentnessProjectionDependency_method_fkey")
+  resultVersion                  CanonicalResultVersion?                        @relation("CurrentnessProjectionDependencyResultVersion", fields: [resultVersionId], references: [id], onDelete: Restrict, map: "CurrentnessProjectionDependency_result_fkey")
+  baselineReferenceVersion       BaselineReferenceVersion?                      @relation("CurrentnessProjectionDependencyBaselineVersion", fields: [baselineReferenceVersionId], references: [id], onDelete: Restrict, map: "CurrentnessProjectionDependency_baseline_fkey")
+  reportingPeriodVersion         ReportingPeriodReferenceVersion?               @relation("CurrentnessProjectionDependencyReportingPeriodVersion", fields: [reportingPeriodVersionId], references: [id], onDelete: Restrict, map: "CurrentnessProjectionDependency_period_fkey")
+  analyticalBasisVersion         AnalyticalBasisReferenceVersion?               @relation("CurrentnessProjectionDependencyAnalyticalBasisVersion", fields: [analyticalBasisVersionId], references: [id], onDelete: Restrict, map: "CurrentnessProjectionDependency_basis_fkey")
+  compatibilityContext           OutputSemanticCompositionCompatibilityContext? @relation("CurrentnessProjectionDependencyCompatibilityContext", fields: [compatibilityContextId], references: [id], onDelete: Restrict, map: "CurrentnessProjectionDependency_compatibility_fkey")
+  qualificationApplicationVersion QualificationApplicationVersion?              @relation("CurrentnessProjectionDependencyQualificationVersion", fields: [qualificationApplicationVersionId], references: [id], onDelete: Restrict, map: "CurrentnessProjectionDependency_qualification_fkey")
+  outputSnapshot                 OutputSemanticCompositionSnapshot?              @relation("CurrentnessProjectionDependencyOutputSnapshot", fields: [outputSnapshotId], references: [id], onDelete: Restrict, map: "CurrentnessProjectionDependency_outputSnapshot_fkey")
+  outputEvidenceSnapshot         OutputEvidenceSnapshot?                         @relation("CurrentnessProjectionDependencyOutputEvidence", fields: [outputEvidenceSnapshotId], references: [id], onDelete: Restrict, map: "CurrentnessProjectionDependency_outputEvidence_fkey")
+  evidenceAdmission              EvidenceAdmission?                              @relation("CurrentnessProjectionDependencyEvidenceAdmission", fields: [evidenceAdmissionId], references: [id], onDelete: Restrict, map: "CurrentnessProjectionDependency_evidence_fkey")
+  productDefinitionReference     ProductDefinitionReference?                     @relation("CurrentnessProjectionDependencyProductDefinition", fields: [productDefinitionReferenceId], references: [id], onDelete: Restrict, map: "CurrentnessProjectionDependency_product_fkey")
+
+  @@unique([projectionVersionId, roleRef, ordinal], map: "CurrentnessProjectionDependency_role_ordinal_key")
+  @@index([methodVersionId], map: "CurrentnessProjectionDependency_method_idx")
+  @@index([resultVersionId], map: "CurrentnessProjectionDependency_result_idx")
+  @@index([baselineReferenceVersionId], map: "CurrentnessProjectionDependency_baseline_idx")
+  @@index([reportingPeriodVersionId], map: "CurrentnessProjectionDependency_period_idx")
+  @@index([analyticalBasisVersionId], map: "CurrentnessProjectionDependency_basis_idx")
+  @@index([compatibilityContextId], map: "CurrentnessProjectionDependency_compatibility_idx")
+  @@index([qualificationApplicationVersionId], map: "CurrentnessProjectionDependency_qualification_idx")
+  @@index([outputSnapshotId], map: "CurrentnessProjectionDependency_outputSnapshot_idx")
+  @@index([outputEvidenceSnapshotId], map: "CurrentnessProjectionDependency_outputEvidence_idx")
+  @@index([evidenceAdmissionId], map: "CurrentnessProjectionDependency_evidence_idx")
+  @@index([productDefinitionReferenceId], map: "CurrentnessProjectionDependency_product_idx")
+}
+
+model CurrentnessProjectionEventMembership {
+  id                   String   @id @default(cuid())
+  projectionVersionId  String
+  eventId              String
+  provenance           Json
+  integrityFingerprint String   @unique(map: "CurrentnessProjectionMembership_fingerprint_key")
+  createdAt            DateTime @default(now())
+  immutableAt          DateTime @default(now())
+
+  projectionVersion CurrentnessProjectionVersion @relation(fields: [projectionVersionId], references: [id], onDelete: Restrict, map: "CurrentnessProjectionEventMembership_version_fkey")
+  event             CurrentnessEvent             @relation(fields: [eventId], references: [id], onDelete: Restrict, map: "CurrentnessProjectionEventMembership_event_fkey")
+
+  @@unique([projectionVersionId, eventId], map: "CurrentnessProjectionEventMembership_version_event_key")
+  @@index([eventId], map: "CurrentnessProjectionEventMembership_event_idx")
 }
 
 model QualificationDefinition {
@@ -3847,6 +4039,8 @@ model QualificationApplicationVersion {
   compatibilityContextLinks      OutputSemanticCompatibilityQualificationLink[]
   currentnessPrimarySubjects     CurrentnessEventPrimarySubject[] @relation("CurrentnessPrimaryQualificationVersion")
   currentnessDependencies        CurrentnessEventDependency[] @relation("CurrentnessDependencyQualificationVersion")
+  currentnessProjectionPrimarySubjects CurrentnessProjectionPrimarySubject[] @relation("CurrentnessProjectionPrimaryQualificationVersion")
+  currentnessProjectionDependencies CurrentnessProjectionDependency[] @relation("CurrentnessProjectionDependencyQualificationVersion")
 
   @@unique([qualificationApplicationId, versionKey], map: "QualificationApplicationVersion_application_version_key")
   @@index([qualificationDefinitionVersionId], map: "QualificationApplicationVersion_definitionVersion_idx")
@@ -4154,6 +4348,8 @@ model EvidenceAdmission {
   qualificationSubjects QualificationEvidenceAdmissionSubject[]
   currentnessPrimarySubjects CurrentnessEventPrimarySubject[] @relation("CurrentnessPrimaryEvidenceAdmission")
   currentnessDependencies CurrentnessEventDependency[] @relation("CurrentnessDependencyEvidenceAdmission")
+  currentnessProjectionPrimarySubjects CurrentnessProjectionPrimarySubject[] @relation("CurrentnessProjectionPrimaryEvidenceAdmission")
+  currentnessProjectionDependencies CurrentnessProjectionDependency[] @relation("CurrentnessProjectionDependencyEvidenceAdmission")
 
   @@unique([id, ownerAgentSubject], map: "EvidenceAdmission_id_ownerAgentSubject_key")
   @@index([ownerAgentSubject, claimKind, effectiveAt])
