@@ -3576,6 +3576,8 @@ model QualificationApplicationVersion {
   productDefinitionSubject       QualificationProductDefinitionSubject?
   outputEvidenceSubject          QualificationOutputEvidenceSubject?
   evidenceAdmissionSubject       QualificationEvidenceAdmissionSubject?
+  clearances                     QualificationClearance[]                @relation("QualificationClearanceTarget")
+  replacementForClearances       QualificationClearance[]                @relation("QualificationClearanceReplacement")
 
   @@unique([qualificationApplicationId, versionKey], map: "QualificationApplicationVersion_application_version_key")
   @@index([qualificationDefinitionVersionId], map: "QualificationApplicationVersion_definitionVersion_idx")
@@ -3730,6 +3732,34 @@ model QualificationEvidenceAdmissionSubject {
   evidenceAdmission   EvidenceAdmission                @relation(fields: [evidenceAdmissionId], references: [id], onDelete: Restrict, map: "QualificationEvidenceAdmissionSubject_admission_fkey")
 
   @@index([evidenceAdmissionId], map: "QualificationEvidenceAdmissionSubject_admission_idx")
+}
+
+model QualificationClearance {
+  id                                String   @id @default(cuid())
+  qualificationApplicationVersionId String
+  replacementApplicationVersionId   String?
+  actorRef                          String
+  authorityRef                      String
+  reasonRef                         String
+  clearedAt                         DateTime
+  effectiveAt                       DateTime
+  provenance                        Json
+  integrityFingerprint              String   @unique
+  supersedesClearanceId             String?  @unique
+  correctionOfClearanceId           String?  @unique
+  createdAt                         DateTime @default(now())
+  immutableAt                       DateTime @default(now())
+
+  qualificationApplicationVersion QualificationApplicationVersion @relation("QualificationClearanceTarget", fields: [qualificationApplicationVersionId], references: [id], onDelete: Restrict, map: "QualificationClearance_applicationVersion_fkey")
+  replacementApplicationVersion   QualificationApplicationVersion? @relation("QualificationClearanceReplacement", fields: [replacementApplicationVersionId], references: [id], onDelete: Restrict, map: "QualificationClearance_replacementVersion_fkey")
+  supersedesClearance              QualificationClearance?          @relation("QualificationClearanceSupersession", fields: [supersedesClearanceId], references: [id], onDelete: Restrict)
+  supersededByClearance            QualificationClearance?          @relation("QualificationClearanceSupersession")
+  correctionOfClearance            QualificationClearance?          @relation("QualificationClearanceCorrection", fields: [correctionOfClearanceId], references: [id], onDelete: Restrict)
+  correctedByClearance             QualificationClearance?          @relation("QualificationClearanceCorrection")
+
+  @@index([qualificationApplicationVersionId, clearedAt], map: "QualificationClearance_target_clearedAt_idx")
+  @@index([replacementApplicationVersionId], map: "QualificationClearance_replacementVersion_idx")
+  @@index([effectiveAt], map: "QualificationClearance_effectiveAt_idx")
 }
 
 model MethodResultAlias {
