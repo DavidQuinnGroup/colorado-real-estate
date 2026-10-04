@@ -2962,6 +2962,7 @@ model OutputSemanticCompositionSnapshot {
   reportingPeriodVersionPins OutputSemanticCompositionReportingPeriodVersionPin[]
   analyticalBasisVersionPins OutputSemanticCompositionAnalyticalBasisVersionPin[]
   compatibilityContexts OutputSemanticCompositionCompatibilityContext[]
+  qualificationVersionPins OutputSemanticCompositionQualificationPin[]
   qualificationSubjects QualificationOutputSnapshotSubject[]
 
   @@index([productDefinitionRef, productDefinitionVersionRef], map: "OutputSemanticCompositionSnapshot_productReference_idx")
@@ -3462,6 +3463,7 @@ model OutputSemanticCompositionCompatibilityContext {
   resultVersionPin          OutputSemanticCompositionResultVersionPin           @relation(fields: [resultVersionPinId], references: [id], onDelete: Restrict, map: "OutputSemanticCompatibilityContext_resultPin_fkey")
   reportingPeriodVersionPin OutputSemanticCompositionReportingPeriodVersionPin  @relation(fields: [reportingPeriodVersionPinId], references: [id], onDelete: Restrict, map: "OutputSemanticCompatibilityContext_periodPin_fkey")
   analyticalBasisVersionPin OutputSemanticCompositionAnalyticalBasisVersionPin  @relation(fields: [analyticalBasisVersionPinId], references: [id], onDelete: Restrict, map: "OutputSemanticCompatibilityContext_basisPin_fkey")
+  qualificationVersionLinks OutputSemanticCompatibilityQualificationLink[]
   qualificationSubjects     QualificationCompatibilityContextSubject[]
 
   @@unique([snapshotId, resultVersionPinId, reportingPeriodVersionPinId, analyticalBasisVersionPinId, roleRef], map: "OutputSemanticCompatibilityContext_exact_tuple_key")
@@ -3469,6 +3471,44 @@ model OutputSemanticCompositionCompatibilityContext {
   @@index([resultVersionPinId], map: "OutputSemanticCompatibilityContext_resultPin_idx")
   @@index([reportingPeriodVersionPinId], map: "OutputSemanticCompatibilityContext_periodPin_idx")
   @@index([analyticalBasisVersionPinId], map: "OutputSemanticCompatibilityContext_basisPin_idx")
+}
+
+model OutputSemanticCompositionQualificationPin {
+  id                                String   @id @default(cuid())
+  snapshotId                        String
+  qualificationApplicationVersionId String
+  roleRef                           String
+  ordinal                           Int
+  provenance                        Json
+  integrityFingerprint              String   @unique
+  createdAt                         DateTime @default(now())
+  immutableAt                       DateTime @default(now())
+
+  snapshot                       OutputSemanticCompositionSnapshot @relation(fields: [snapshotId], references: [id], onDelete: Restrict, map: "OutputSemanticQualificationPin_snapshot_fkey")
+  qualificationApplicationVersion QualificationApplicationVersion  @relation(fields: [qualificationApplicationVersionId], references: [id], onDelete: Restrict, map: "OutputSemanticQualificationPin_applicationVersion_fkey")
+
+  @@unique([snapshotId, qualificationApplicationVersionId, roleRef], map: "OutputSemanticQualificationPin_exact_role_key")
+  @@unique([snapshotId, roleRef, ordinal], map: "OutputSemanticQualificationPin_role_ordinal_key")
+  @@index([qualificationApplicationVersionId], map: "OutputSemanticQualificationPin_applicationVersion_idx")
+}
+
+model OutputSemanticCompatibilityQualificationLink {
+  id                                String   @id @default(cuid())
+  compatibilityContextId            String
+  qualificationApplicationVersionId String
+  roleRef                           String
+  ordinal                           Int
+  provenance                        Json
+  integrityFingerprint              String   @unique
+  createdAt                         DateTime @default(now())
+  immutableAt                       DateTime @default(now())
+
+  compatibilityContext            OutputSemanticCompositionCompatibilityContext @relation(fields: [compatibilityContextId], references: [id], onDelete: Restrict, map: "OutputSemanticCompatibilityQualification_context_fkey")
+  qualificationApplicationVersion QualificationApplicationVersion               @relation(fields: [qualificationApplicationVersionId], references: [id], onDelete: Restrict, map: "OutputSemanticCompatibilityQualification_application_fkey")
+
+  @@unique([compatibilityContextId, qualificationApplicationVersionId, roleRef], map: "OutputSemanticCompatibilityQualification_exact_role_key")
+  @@unique([compatibilityContextId, roleRef, ordinal], map: "OutputSemanticCompatibilityQualification_role_ordinal_key")
+  @@index([qualificationApplicationVersionId], map: "OutputSemanticCompatibilityQualification_application_idx")
 }
 
 model QualificationDefinition {
@@ -3578,6 +3618,8 @@ model QualificationApplicationVersion {
   evidenceAdmissionSubject       QualificationEvidenceAdmissionSubject?
   clearances                     QualificationClearance[]                @relation("QualificationClearanceTarget")
   replacementForClearances       QualificationClearance[]                @relation("QualificationClearanceReplacement")
+  semanticCompositionPins        OutputSemanticCompositionQualificationPin[]
+  compatibilityContextLinks      OutputSemanticCompatibilityQualificationLink[]
 
   @@unique([qualificationApplicationId, versionKey], map: "QualificationApplicationVersion_application_version_key")
   @@index([qualificationDefinitionVersionId], map: "QualificationApplicationVersion_definitionVersion_idx")
