@@ -30,6 +30,8 @@ for (const expected of [
   'advanced.count !== 1',
   'The Scenario Financial Context draft revision is stale.',
   'deleteMany({ where: entityDeleteWhere(draft.id, resolved) })',
+  'selectedDraftEntry(tx, draft.id, clientCaseId, input.selection)',
+  "clientCaseScenarioFinancialContextDraftSelection.delete({ where: { id: existing.id } })",
   'deleteMany({ where: { draftId: draft.id, clientCaseId } })',
   'mutationKind: \'REVIEW\'',
   'clientCase: { ownerAgentSubject }',

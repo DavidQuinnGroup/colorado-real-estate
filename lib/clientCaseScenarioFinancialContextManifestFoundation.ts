@@ -310,7 +310,8 @@ export async function freezeScenarioForAnalysisWithFinancialContextInTransaction
       fingerprint, idempotencyKey: key, capturedAt, capturedBySubject: ownerAgentSubject,
       entries: entries.length ? {
         create: entries.map((entry) => {
-          const { entityId, observationId, ...persistedEntry } = entry;
+          const { clientCaseId: entryClientCaseId, entityId, observationId, ...persistedEntry } = entry;
+          void entryClientCaseId;
           void entityId;
           void observationId;
           return persistedEntry as unknown as Prisma.ClientCaseScenarioFinancialContextManifestEntryCreateWithoutManifestInput;

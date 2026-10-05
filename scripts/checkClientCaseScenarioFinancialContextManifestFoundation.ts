@@ -58,6 +58,8 @@ for (const token of [
   'LEGACY_NO_FINANCIAL_CONTEXT',
 ]) assert.match(service, new RegExp(token.replace(/[()[\]{}?+*.^$|]/g, '\\$&')));
 
+assert.match(service, /clientCaseId: entryClientCaseId/, 'Nested Manifest entries must inherit the composite Client Case key from their Manifest parent.');
+
 for (const forbidden of ['app/api/', 'components/', 'fetch(', 'outputVersion.create(', 'transaction.create(', 'clientFinancialAsset.update(', 'clientCaseGovernedSource.create(']) {
   assert.doesNotMatch(service, new RegExp(forbidden.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
 }

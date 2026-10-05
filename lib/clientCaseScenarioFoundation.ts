@@ -178,7 +178,11 @@ export function createClientCaseScenarioService(prisma: ScenarioDatabase) {
       await ownedCase(prisma, ownerAgentSubject, clientCaseId);
       return prisma.clientCaseScenario.findMany({
         where: { clientCaseId, clientCase: { ownerAgentSubject }, status: archived ? 'ARCHIVED' : 'ACTIVE' },
-        select: { id: true, name: true, description: true, status: true, archivedAt: true, currentVersionId: true, createdAt: true, updatedAt: true },
+        select: {
+          id: true, name: true, description: true, status: true, archivedAt: true, currentVersionId: true, createdAt: true, updatedAt: true,
+          currentVersion: { select: { id: true, versionNumber: true, createdAt: true } },
+          _count: { select: { versions: true } },
+        },
         orderBy: { createdAt: 'asc' },
       });
     },

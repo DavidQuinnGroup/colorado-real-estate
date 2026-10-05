@@ -1,0 +1,152 @@
+.page { min-height: 100%; padding: clamp(1rem, 3vw, 2.5rem); }
+.container { display: grid; width: min(100%, 84rem); gap: 1.5rem; margin-inline: auto; }
+.pageHeader { display: grid; gap: 1rem; }
+.breadcrumbs { display: flex; flex-wrap: wrap; gap: .55rem 1rem; }
+.breadcrumbs a, .versionRail a, .sectionHeading > a { display: inline-flex; min-height: 2.25rem; align-items: center; gap: .4rem; color: var(--atlas-action-primary); font-size: .84rem; font-weight: 700; text-decoration: underline; text-underline-offset: .2em; }
+.breadcrumbs a:focus-visible, .versionRail a:focus-visible, .sectionHeading > a:focus-visible, .textButton:focus-visible, .iconButton:focus-visible, .scenarioLink:focus-visible { outline: 3px solid var(--atlas-focus-ring); outline-offset: 3px; }
+.titleRow, .financialHeader, .sectionHeading, .actionFooter, .dialogHeading, .dialogActions, .comparisonTitle { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
+.titleRow > div, .financialHeader > div { max-width: 52rem; }
+.titleRow h1 { margin: .2rem 0 0; color: var(--atlas-text-primary); font-family: var(--atlas-font-display); font-size: clamp(1.85rem, 4vw, 2.8rem); line-height: 1.08; }
+.eyebrow { margin: 0; color: var(--atlas-text-muted); font-size: .72rem; font-weight: 750; letter-spacing: .1em; text-transform: uppercase; }
+.introduction, .financialHeader p { margin: .6rem 0 0; color: var(--atlas-text-secondary); line-height: 1.55; }
+.headerMeta { display: flex; flex-wrap: wrap; gap: .5rem 1.25rem; color: var(--atlas-text-secondary); font-size: .84rem; }
+.workingBadge, .fixedBadge { display: inline-flex; flex: 0 0 auto; min-height: 2.25rem; align-items: center; gap: .4rem; border-radius: 999px; padding: .45rem .75rem; font-size: .78rem; font-weight: 750; }
+.workingBadge { background: color-mix(in srgb, var(--atlas-information-system-status) 13%, transparent); color: var(--atlas-text-primary); }
+.fixedBadge { background: color-mix(in srgb, var(--atlas-information-source) 15%, transparent); color: var(--atlas-text-primary); }
+.scenarioContext, .financialSurface, .indexSurface, .versionRail, .dialog { border: 1px solid transparent; border-radius: var(--atlas-radius-lg); background: color-mix(in srgb, var(--atlas-profile-surface-primary) calc(var(--atlas-profile-glass-opacity) * 100%), transparent); box-shadow: var(--atlas-profile-glass-depth); backdrop-filter: blur(var(--atlas-profile-glass-blur)) saturate(118%); -webkit-backdrop-filter: blur(var(--atlas-profile-glass-blur)) saturate(118%); }
+.scenarioContext, .versionRail, .indexSurface { padding: clamp(1rem, 2.2vw, 1.5rem); }
+.financialSurface { display: grid; gap: 1.35rem; padding: clamp(1rem, 2.5vw, 1.75rem); box-shadow: var(--atlas-profile-floating-depth); }
+.sectionHeading { align-items: center; }
+.sectionHeading h2, .financialHeader h2, .sectionHeading h3, .dialogHeading h2 { margin: .2rem 0 0; color: var(--atlas-text-primary); font-size: 1.25rem; line-height: 1.25; }
+.sectionHeading > span { color: var(--atlas-text-muted); font-size: .8rem; }
+.assumptionGrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); gap: .75rem; margin: 1rem 0 0; }
+.assumptionGrid div { display: grid; gap: .25rem; border-radius: var(--atlas-radius-md); padding: .8rem; background: color-mix(in srgb, var(--atlas-profile-surface-data) 76%, transparent); }
+.assumptionGrid dt { color: var(--atlas-text-muted); font-size: .72rem; font-weight: 700; text-transform: uppercase; }
+.assumptionGrid dd { margin: 0; color: var(--atlas-text-primary); font-weight: 700; }
+.quietState { margin: .8rem 0 0; color: var(--atlas-text-secondary); }
+.summaryBar { display: flex; flex-wrap: wrap; gap: .5rem; }
+.summaryBar > span { display: inline-flex; align-items: center; gap: .3rem; border-radius: 999px; padding: .4rem .65rem; background: color-mix(in srgb, var(--atlas-profile-surface-data) 82%, transparent); color: var(--atlas-text-secondary); font-size: .76rem; }
+.summaryBar strong { color: var(--atlas-text-primary); }
+.domainList { display: grid; gap: .85rem; }
+.domainGroup { border-radius: var(--atlas-radius-md); background: color-mix(in srgb, var(--atlas-profile-surface-data) 66%, transparent); box-shadow: var(--atlas-surface-elevation-low); }
+.domainGroup summary { display: flex; min-height: 3.5rem; cursor: pointer; list-style: none; align-items: center; justify-content: space-between; gap: 1rem; padding: .9rem 1rem; }
+.domainGroup summary::-webkit-details-marker { display: none; }
+.domainGroup summary > span { display: grid; gap: .15rem; }
+.domainGroup summary strong { color: var(--atlas-text-primary); font-size: .92rem; }
+.domainGroup summary small { color: var(--atlas-text-muted); }
+.domainGroup summary svg { transition: transform var(--atlas-duration-fast) var(--atlas-ease-standard); }
+.domainGroup[open] summary svg { transform: rotate(180deg); }
+.domainGroup summary:focus-visible { outline: 3px solid var(--atlas-focus-ring); outline-offset: -3px; }
+.factList, .fixedList, .comparisonList, .scenarioList { display: grid; margin: 0; padding: 0; list-style: none; }
+.factRow { display: grid; gap: .6rem; padding: 1rem; border-top: 1px solid color-mix(in srgb, var(--atlas-profile-border-subtle) 30%, transparent); }
+.factSelected { background: color-mix(in srgb, var(--atlas-action-primary) 5%, transparent); }
+.factReview { box-shadow: inset .22rem 0 0 color-mix(in srgb, var(--atlas-information-system-status) 75%, transparent); }
+.factMain { display: grid; grid-template-columns: 1.35rem minmax(0, 1fr) auto; gap: .7rem; align-items: center; }
+.factMain input { width: 1.15rem; height: 1.15rem; margin: 0; cursor: pointer; accent-color: var(--atlas-action-primary); }
+.factMain input:focus-visible { outline: 3px solid var(--atlas-focus-ring); outline-offset: 3px; }
+.factMain label { display: grid; min-width: 0; cursor: pointer; gap: .12rem; }
+.factLabel, .factValue { color: var(--atlas-text-primary); }
+.factCategory { color: var(--atlas-text-muted); font-size: .72rem; }
+.factValue { white-space: nowrap; }
+.factDetails { display: flex; flex-wrap: wrap; gap: .35rem .85rem; padding-left: 2.05rem; color: var(--atlas-text-muted); font-size: .74rem; }
+.contextLabels { display: contents; }
+.statusGood, .statusWarning { display: inline-flex; align-items: center; gap: .25rem; font-weight: 700; }
+.statusGood { color: var(--atlas-information-confidence); }
+.statusWarning { color: var(--atlas-text-primary); }
+.reviewCallout { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-left: 2.05rem; border-radius: var(--atlas-radius-md); padding: .75rem; background: color-mix(in srgb, var(--atlas-information-system-status) 10%, transparent); }
+.reviewCallout p { margin: 0; color: var(--atlas-text-secondary); font-size: .8rem; line-height: 1.45; }
+.inlineState, .notice, .error { display: flex; align-items: center; gap: .6rem; border-radius: var(--atlas-radius-md); padding: .8rem 1rem; }
+.inlineState { margin: 0; background: color-mix(in srgb, var(--atlas-information-system-status) 9%, transparent); color: var(--atlas-text-secondary); }
+.notice { background: color-mix(in srgb, var(--atlas-information-confidence) 12%, transparent); color: var(--atlas-text-primary); }
+.error { background: color-mix(in srgb, var(--atlas-action-destructive) 11%, transparent); color: var(--atlas-text-primary); }
+.error span, .notice span { flex: 1; }
+.textButton, .iconButton { cursor: pointer; border: 0; background: transparent; color: var(--atlas-action-primary); font: inherit; font-weight: 700; text-decoration: underline; text-underline-offset: .18em; }
+.textButton:disabled, .iconButton:disabled { cursor: not-allowed; opacity: .5; }
+.iconButton { display: inline-grid; width: 2.5rem; height: 2.5rem; place-items: center; border-radius: 50%; padding: 0; text-decoration: none; }
+.iconButton:hover:not(:disabled) { background: var(--atlas-action-ghost-hover); }
+.actionFooter { align-items: center; border-top: 1px solid color-mix(in srgb, var(--atlas-profile-border-subtle) 35%, transparent); padding-top: 1.1rem; }
+.actionFooter > div { display: grid; gap: .35rem; }
+.actionFooter p { margin: 0; color: var(--atlas-text-secondary); font-size: .82rem; }
+.actionFooter .textButton { justify-self: start; padding: 0; }
+.emptyState { display: grid; justify-items: start; gap: .65rem; padding: 1.25rem; border-radius: var(--atlas-radius-md); background: color-mix(in srgb, var(--atlas-profile-surface-data) 70%, transparent); }
+.emptyState h2, .emptyState h3, .emptyState p { margin: 0; }
+.emptyState p { max-width: 44rem; color: var(--atlas-text-secondary); line-height: 1.55; }
+.fixedList { gap: .75rem; }
+.fixedFact { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: .65rem 1rem; border-radius: var(--atlas-radius-md); padding: 1rem; background: color-mix(in srgb, var(--atlas-profile-surface-data) 72%, transparent); box-shadow: var(--atlas-surface-elevation-low); }
+.fixedFact > div { min-width: 0; }
+.fixedFact h4 { margin: .15rem 0 0; overflow-wrap: anywhere; color: var(--atlas-text-primary); }
+.fixedFact > strong { align-self: center; color: var(--atlas-text-primary); }
+.fixedFact .factDetails { grid-column: 1 / -1; padding-left: 0; }
+.comparisonActions { display: flex; min-width: 0; justify-content: flex-end; }
+.comparisonActions > button { max-width: 100%; white-space: normal; }
+.comparison { display: grid; gap: 1rem; border-top: 1px solid color-mix(in srgb, var(--atlas-profile-border-subtle) 35%, transparent); padding-top: 1.2rem; }
+.comparisonList { gap: .7rem; }
+.comparisonRow { display: grid; gap: .75rem; border-radius: var(--atlas-radius-md); padding: 1rem; background: color-mix(in srgb, var(--atlas-profile-surface-data) 70%, transparent); }
+.comparisonTitle { align-items: center; }
+.comparisonTitle strong { min-width: 0; overflow-wrap: anywhere; }
+.comparisonTitle span { border-radius: 999px; padding: .3rem .55rem; background: color-mix(in srgb, var(--atlas-information-system-status) 12%, transparent); color: var(--atlas-text-primary); font-size: .7rem; font-weight: 750; }
+.comparisonValues { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem; }
+.comparisonValues div { display: grid; gap: .25rem; border-radius: var(--atlas-radius-sm); padding: .75rem; background: color-mix(in srgb, var(--atlas-profile-surface-primary) 58%, transparent); }
+.comparisonValues span { color: var(--atlas-text-muted); font-size: .7rem; font-weight: 700; text-transform: uppercase; }
+.comparisonRow p { margin: 0; color: var(--atlas-text-secondary); font-size: .8rem; }
+.versionLinks { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: .85rem; }
+.versionLinks a { display: grid; min-width: 8.5rem; gap: .12rem; border-radius: var(--atlas-radius-md); padding: .65rem .8rem; background: color-mix(in srgb, var(--atlas-profile-surface-data) 70%, transparent); color: var(--atlas-text-primary); text-decoration: none; }
+.versionLinks a[aria-current='page'] { box-shadow: inset 0 0 0 2px var(--atlas-action-primary); }
+.versionLinks small { color: var(--atlas-text-muted); }
+.scenarioList li + li { border-top: 1px solid color-mix(in srgb, var(--atlas-profile-border-subtle) 30%, transparent); }
+.scenarioLink { display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; align-items: center; gap: 1rem; border-radius: var(--atlas-radius-md); padding: 1rem; color: var(--atlas-text-primary); text-decoration: none; }
+.scenarioLink:hover { background: var(--atlas-action-ghost-hover); }
+.scenarioIcon { display: inline-grid; width: 2.6rem; height: 2.6rem; place-items: center; border-radius: 50%; background: color-mix(in srgb, var(--atlas-action-primary) 10%, transparent); }
+.scenarioIdentity, .scenarioMeta { display: grid; gap: .2rem; }
+.scenarioIdentity span, .scenarioMeta { color: var(--atlas-text-muted); font-size: .78rem; }
+.scenarioMeta { text-align: right; }
+.loading { display: flex; align-items: center; gap: .55rem; color: var(--atlas-text-secondary); }
+.spin { animation: spin 900ms linear infinite; }
+.dialogBackdrop { position: fixed; z-index: 80; inset: 0; display: grid; overflow-y: auto; place-items: center; padding: 1rem; background: color-mix(in srgb, #0b1018 48%, transparent); backdrop-filter: blur(.35rem); }
+.dialog { display: grid; width: min(100%, 34rem); max-height: calc(100dvh - 2rem); gap: 1rem; overflow-y: auto; padding: 1.25rem; }
+.reviewDialog { width: min(100%, 44rem); }
+.createForm, .createForm label { display: grid; gap: .45rem; }
+.createForm { gap: 1rem; }
+.createForm label > span { color: var(--atlas-text-primary); font-size: .82rem; font-weight: 700; }
+.createForm small { color: var(--atlas-text-muted); font-weight: 500; }
+.createForm input, .createForm textarea { width: 100%; border: 1px solid color-mix(in srgb, var(--atlas-profile-border-strong) 50%, transparent); border-radius: var(--atlas-radius-md); padding: .7rem .75rem; font: inherit; }
+.formNote { margin: 0; color: var(--atlas-text-secondary); font-size: .8rem; line-height: 1.5; }
+.dialogActions { justify-content: flex-end; }
+.reviewBody { display: grid; gap: 1rem; }
+.reviewContext { display: flex; align-items: center; justify-content: space-between; gap: 1rem; border-radius: var(--atlas-radius-md); padding: .8rem; background: color-mix(in srgb, var(--atlas-profile-surface-data) 75%, transparent); }
+.reviewBlocker { display: flex; gap: .65rem; border-radius: var(--atlas-radius-md); padding: .85rem; background: color-mix(in srgb, var(--atlas-action-destructive) 10%, transparent); }
+.reviewBlocker p { margin: .25rem 0 0; color: var(--atlas-text-secondary); }
+.reviewFacts { display: grid; gap: .4rem; }
+.reviewFacts div { display: flex; justify-content: space-between; gap: 1rem; border-radius: var(--atlas-radius-sm); padding: .65rem .75rem; background: color-mix(in srgb, var(--atlas-profile-surface-data) 66%, transparent); }
+.consequenceList { margin: 0; padding-left: 1.2rem; color: var(--atlas-text-secondary); line-height: 1.6; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (hover: hover) { .textButton:hover:not(:disabled) { color: var(--atlas-action-primary-hover); } }
+@media (max-width: 48rem) {
+  .page { padding: 1rem; }
+  .titleRow, .financialHeader, .actionFooter { align-items: stretch; flex-direction: column; }
+  .titleRow > span { align-self: flex-start; }
+  .financialHeader > a, .actionFooter > button { width: 100%; }
+  .factMain { grid-template-columns: 1.35rem minmax(0, 1fr); }
+  .factValue { grid-column: 2; white-space: normal; }
+  .factDetails, .reviewCallout { margin-left: 0; padding-left: 2.05rem; }
+  .reviewCallout { align-items: stretch; flex-direction: column; }
+  .reviewCallout button { width: 100%; }
+  .comparisonValues { grid-template-columns: 1fr; }
+  .scenarioLink { grid-template-columns: auto minmax(0, 1fr) auto; }
+  .scenarioMeta { grid-column: 2; text-align: left; }
+  .dialogBackdrop { align-items: end; padding: .5rem; }
+  .dialog { max-height: calc(100dvh - 1rem); }
+}
+@media (max-width: 28rem) {
+  .page { padding: .75rem; }
+  .container { gap: 1rem; }
+  .scenarioContext, .versionRail, .indexSurface, .financialSurface { padding: 1rem; }
+  .fixedFact { grid-template-columns: 1fr; }
+  .fixedFact .factDetails { grid-column: auto; }
+  .comparisonActions > button { width: 100%; }
+  .comparisonTitle { align-items: flex-start; flex-direction: column; }
+  .comparisonTitle span { align-self: flex-start; }
+  .reviewContext, .reviewFacts div, .dialogActions { align-items: stretch; flex-direction: column; }
+  .dialogActions button { width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) { .spin { animation: none; } .domainGroup summary svg { transition: none; } }

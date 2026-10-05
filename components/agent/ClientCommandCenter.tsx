@@ -11,6 +11,7 @@ import { ClientObjectivePropertyRelationships } from './ClientObjectivePropertyR
 import { clientCommandCenterSections, clientCommandCenterSectionsFromIntent, formatCount, formatInformationValue, formatTransactionSectionSummary, formatTransactionSummary, humanize, propertyLabel, type ClientCaseObjectiveSummary, type ClientCaseObjectiveSummaryRecord, type ClientCaseSummary, type ClientCommandCenterSectionId, type InformationWorkspaceSummary, type OutputSummary } from './clientCommandCenterTypes';
 import { CREATABLE_PURSUIT_OBJECTIVE_TYPES, objectiveTypeMetadata } from '@/lib/clientCaseContextSemanticRegistry';
 import styles from './ClientCommandCenter.module.css';
+import type { ScenarioSummary } from './clientCaseScenarioTypes';
 
 type SectionData<T> = { clientCaseId: string | null; value: T | null; error: string | null };
 type FinancialPositionSummary = { position: { id: string } | null; summary: { entered: boolean; domains: Array<{ domain: string; count: number }>; reviewRecommended: number; expiredQualifications: number } };
@@ -30,10 +31,12 @@ export default function ClientCommandCenter({ clientCaseId }: { clientCaseId: st
   const [objectiveSummary, setObjectiveSummary] = useState<SectionData<ClientCaseObjectiveSummary>>({ clientCaseId: null, value: null, error: null });
   const [outputs, setOutputs] = useState<SectionData<OutputSummary[]>>({ clientCaseId: null, value: null, error: null });
   const [financialPosition, setFinancialPosition] = useState<SectionData<FinancialPositionSummary>>({ clientCaseId: null, value: null, error: null });
+  const [scenarios, setScenarios] = useState<SectionData<ScenarioSummary[]>>({ clientCaseId: null, value: null, error: null });
   const informationRequestCaseId = useRef<string | null>(null);
   const objectiveRequestSequence = useRef(0);
   const outputRequestCaseId = useRef<string | null>(null);
   const financialPositionRequestCaseId = useRef<string | null>(null);
+  const scenarioRequestCaseId = useRef<string | null>(null);
   const [objectiveType, setObjectiveType] = useState<(typeof CREATABLE_PURSUIT_OBJECTIVE_TYPES)[number]>('BUY_PRIMARY_HOME');
   const [objectiveTitle, setObjectiveTitle] = useState('');
   const [objectiveBusy, setObjectiveBusy] = useState(false);
@@ -102,6 +105,17 @@ export default function ClientCommandCenter({ clientCaseId }: { clientCaseId: st
     }).then((value) => setFinancialPosition({ clientCaseId, value, error: null })).catch((reason) => setFinancialPosition({ clientCaseId, value: null, error: reason instanceof Error ? reason.message : 'Financial Position is unavailable.' }));
   }, [clientCaseId, expanded, financialPosition]);
 
+  useEffect(() => {
+    const currentScenarios = scenarios.clientCaseId === clientCaseId ? scenarios : null;
+    if (!expanded.has('scenarios') || currentScenarios?.value || currentScenarios?.error || scenarioRequestCaseId.current === clientCaseId) return;
+    scenarioRequestCaseId.current = clientCaseId;
+    void fetch(`/api/agent/client-case-scenarios?clientCaseId=${encodeURIComponent(clientCaseId)}`, { cache: 'no-store' }).then(async (response) => {
+      const payload = await response.json() as { scenarios?: ScenarioSummary[]; error?: string };
+      if (!response.ok) throw new Error(payload.error || 'Scenarios are unavailable.');
+      return payload.scenarios || [];
+    }).then((value) => setScenarios({ clientCaseId, value, error: null })).catch((reason) => setScenarios({ clientCaseId, value: null, error: reason instanceof Error ? reason.message : 'Scenarios are unavailable.' }));
+  }, [clientCaseId, expanded, scenarios]);
+
   function toggleSection(section: ClientCommandCenterSectionId) {
     const currentlyOpen = expanded.has(section);
     const next = new Set(expanded);
@@ -115,6 +129,7 @@ export default function ClientCommandCenter({ clientCaseId }: { clientCaseId: st
   const currentObjectives = objectiveSummary.clientCaseId === clientCaseId ? objectiveSummary : null;
   const currentOutputs = outputs.clientCaseId === clientCaseId ? outputs : null;
   const currentFinancialPosition = financialPosition.clientCaseId === clientCaseId ? financialPosition : null;
+  const currentScenarios = scenarios.clientCaseId === clientCaseId ? scenarios : null;
   const financialSummary = currentFinancialPosition?.value ?? null;
   const financialPositionSummary = !financialSummary
     ? 'Open to review Financial Position.'
@@ -197,6 +212,7 @@ export default function ClientCommandCenter({ clientCaseId }: { clientCaseId: st
       {section('properties', 'Properties', clientCase.properties.length ? `${clientCase.properties.length} linked ${clientCase.properties.length === 1 ? 'property' : 'properties'}.` : 'No properties linked.', launch('Manage properties', `${informationHref}?requirement=PROPERTIES`), <div className={styles.detailList}>{clientCase.properties.length ? clientCase.properties.map((property) => <p key={property.id}><strong>{propertyLabel(property)}</strong><span>{humanize(property.role)}</span></p>) : <p>No properties are linked to this Client.</p>}<p className={styles.detailNote}>Property search and relationships remain in Client Information.</p></div>)}
       {section('information', 'Current information', currentInformation?.value ? `${formatInformationValue(currentInformation.value.current.targetCities?.value)}${currentInformation.value.current.purchasePriceRange ? ' · Context recorded' : ''}` : 'Open to review current context.', launch('Open information', informationHref), !currentInformation?.value && !currentInformation?.error ? pending : currentInformation.error ? <p className={styles.localizedError} role="alert">{currentInformation.error}</p> : <div className={styles.overviewGrid}><div><span>Target cities</span><strong>{formatInformationValue(currentInformation.value?.current.targetCities?.value)}</strong></div><div><span>Purchase range</span><strong>{formatInformationValue(currentInformation.value?.current.purchasePriceRange?.value)}</strong></div><div><span>Minimum bedrooms</span><strong>{formatInformationValue(currentInformation.value?.current.minBedrooms?.value)}</strong></div></div>)}
       {section('financial-position', 'Financial Position', financialPositionSummary, launch('View Financial Position', `${informationHref}#financial-position`), financialPositionContent)}
+      {section('scenarios', 'Scenarios', currentScenarios?.value ? currentScenarios.value.length ? `${formatCount(currentScenarios.value.length, 'working Scenario', 'working Scenarios')}.` : 'No Scenarios yet.' : 'Open to review Scenarios.', launch('Open Scenarios', `/agent/clients/${encodeURIComponent(clientCase.id)}/scenarios`), !currentScenarios?.value && !currentScenarios?.error ? pending : currentScenarios?.error ? <p className={styles.localizedError} role="alert">{currentScenarios.error}</p> : <div className={styles.detailList}>{currentScenarios.value?.length ? currentScenarios.value.map((scenario) => <p key={scenario.id}><Link href={`/agent/clients/${encodeURIComponent(clientCase.id)}/scenarios/${encodeURIComponent(scenario.id)}`}>{scenario.name}</Link><span>Working · Version {scenario.currentVersion?.versionNumber || 'not recorded'}</span></p>) : <p>No Scenarios are recorded for this Client Case.</p>}<p className={styles.detailNote}>Financial Position remains owned by Client Information. Scenario Financial Context selects relevant current facts without editing them.</p></div>)}
       {section('readiness', 'Readiness', currentInformation?.value ? Object.values(currentInformation.value.readinessPreview).filter(Boolean).map((entry) => humanize(entry!.status)).join(' · ') || 'Select a capability to check.' : 'Select a capability to check.', launch('View readiness', readinessHref), !currentInformation?.value && !currentInformation?.error ? pending : currentInformation.error ? <p className={styles.localizedError} role="alert">{currentInformation.error}</p> : <div className={styles.detailList}>{Object.entries(currentInformation.value?.readinessPreview || {}).map(([capability, result]) => <p key={capability}><strong>{humanize(capability)}</strong><span>{result ? `${humanize(result.status)}${result.missingPreliminary.length ? ` · ${result.missingPreliminary.length} preliminary item${result.missingPreliminary.length === 1 ? '' : 's'} needed` : ''}` : 'Check unavailable'}</span></p>)}<p className={styles.detailNote}>Readiness remains computed and is never stored by this workspace.</p></div>)}
       {section('buyer', 'Buyer', 'Open the existing buyer workspace with this Client in context.', launch('Open Buyer', domainHref('/agent/prepare/buyer', clientCase.id)), <p className={styles.detailNote}>Buyer preparation remains in its established workspace.</p>)}
       {section('seller', 'Seller', 'Open the existing seller workspace with this Client in context.', launch('Open Seller', domainHref('/agent/prepare/seller', clientCase.id)), <p className={styles.detailNote}>Seller preparation remains in its established workspace.</p>)}

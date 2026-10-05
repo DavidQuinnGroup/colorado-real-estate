@@ -185,6 +185,20 @@ function entityDeleteWhere(draftId: string, resolved: ResolvedSelection) {
   return { draftId, constraintId: resolved.constraintId };
 }
 
+async function selectedDraftEntry(tx: Transaction, draftId: string, clientCaseId: string, input: SelectionInput) {
+  const shared = { draftId, clientCaseId, domain: input.domain };
+  const where = input.domain === 'ASSET'
+    ? { ...shared, assetId: input.entityId, assetObservationId: input.observationId }
+    : input.domain === 'LIABILITY'
+      ? { ...shared, liabilityId: input.entityId, liabilityObservationId: input.observationId }
+      : input.domain === 'INCOME'
+        ? { ...shared, incomeSourceId: input.entityId, incomeObservationId: input.observationId }
+        : input.domain === 'BORROWING_QUALIFICATION'
+          ? { ...shared, qualificationId: input.entityId, qualificationObservationId: input.observationId }
+          : { ...shared, constraintId: input.entityId, constraintObservationId: input.observationId };
+  return tx.clientCaseScenarioFinancialContextDraftSelection.findFirst({ where, select: { id: true } });
+}
+
 function selectionCreateData(draftId: string, clientCaseId: string, subject: string, resolved: ResolvedSelection): Prisma.ClientCaseScenarioFinancialContextDraftSelectionUncheckedCreateInput {
   return {
     draftId,
@@ -281,8 +295,9 @@ export function createClientCaseScenarioFinancialContextDraftService(prisma: Dat
       return prisma.$transaction(async (tx) => {
         const draft = await draftForMutation(tx, ownerAgentSubject, clientCaseId, scenarioId, input.expectedRevision);
         const nextRevision = await advanceRevision(tx, draft.id, draft.revision, ownerAgentSubject);
-        const resolved = await resolveSelection(tx, ownerAgentSubject, clientCaseId, await positionId(tx, clientCaseId), input.selection);
-        await tx.clientCaseScenarioFinancialContextDraftSelection.deleteMany({ where: entityDeleteWhere(draft.id, resolved) });
+        const existing = await selectedDraftEntry(tx, draft.id, clientCaseId, input.selection);
+        if (!existing) throw new ClientCaseScenarioFinancialContextDraftError('NOT_FOUND', 'The selected financial context entry is unavailable to this draft.');
+        await tx.clientCaseScenarioFinancialContextDraftSelection.delete({ where: { id: existing.id } });
         const result = await readDraft(ownerAgentSubject, clientCaseId, scenarioId, tx as never);
         return Object.freeze({ ...result, revision: nextRevision, created: false });
       });
